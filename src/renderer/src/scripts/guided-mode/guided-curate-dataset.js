@@ -72,8 +72,6 @@ import fileXlsx from "/img/excel-file.png";
 import fileJpeg from "/img/jpeg-file.png";
 import fileOther from "/img/other-file.png";
 import hasConnectedAccountWithPennsieve from "../others/authentication/auth";
-import { data } from "jquery";
-import { remove } from "fs-extra";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -128,10 +126,7 @@ const guidedCreateEventDataPrepareMetadata = (destination, value) => {
     };
   }
 
-  return {
-    value,
-    destination,
-  };
+  return { value, destination };
 };
 
 document
@@ -200,16 +195,8 @@ const lottieAnimationManager = {
       loop: true,
       autoplay: true,
     },
-    "guided-start-new-lottie": {
-      animationData: startNew,
-      loop: true,
-      autoplay: true,
-    },
-    "guided-resume-exiting-lottie": {
-      animationData: resumeExisting,
-      loop: true,
-      autoplay: true,
-    },
+    "guided-start-new-lottie": { animationData: startNew, loop: true, autoplay: true },
+    "guided-resume-exiting-lottie": { animationData: resumeExisting, loop: true, autoplay: true },
   },
 
   animations: {},
@@ -627,10 +614,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         .classList.contains("selected");
 
       if (!startingNewCuration && !resumingExistingProgress && !resumingPennsieveDataset) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please select a dataset start location",
-        });
+        errorArray.push({ type: "notyf", message: "Please select a dataset start location" });
         throw errorArray;
       }
 
@@ -1100,10 +1084,7 @@ const savePageChanges = async (pageBeingLeftID) => {
 
       //Throw error if no dataset name or subtitle were added
       if (!datasetNameInput) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please enter a dataset name.",
-        });
+        errorArray.push({ type: "notyf", message: "Please enter a dataset name." });
       }
 
       const datasetNameContainsForbiddenCharacters = window.evaluateStringAgainstSdsRequirements(
@@ -1117,10 +1098,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         });
       }
       if (!datasetSubtitleInput) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please enter a dataset subtitle.",
-        });
+        errorArray.push({ type: "notyf", message: "Please enter a dataset subtitle." });
       }
 
       if (errorArray.length > 0) {
@@ -1231,10 +1209,7 @@ const savePageChanges = async (pageBeingLeftID) => {
 
     if (pageBeingLeftID === "guided-subjects-addition-tab") {
       if (window.getExistingSubjectNames().length === 0) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please add at least one subject",
-        });
+        errorArray.push({ type: "notyf", message: "Please add at least one subject" });
         throw errorArray;
       }
     }
@@ -1497,10 +1472,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           );
           //check if the innerhtml of the code description path element is a valid path
           if (codeDescriptionPathElement.innerHTML === "") {
-            errorArray.push({
-              type: "notyf",
-              message: "Please import your code description file",
-            });
+            errorArray.push({ type: "notyf", message: "Please import your code description file" });
             throw errorArray;
           }
 
@@ -1548,10 +1520,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           );
           //check if the innerhtml of the code description path element is a valid path
           if (codeDescriptionPathElement.innerHTML === "") {
-            errorArray.push({
-              type: "notyf",
-              message: "Please import your code description file",
-            });
+            errorArray.push({ type: "notyf", message: "Please import your code description file" });
             throw errorArray;
           }
 
@@ -1644,10 +1613,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       const selectedLicenseButton =
         licenseRadioButtonContainer.getElementsByClassName("selected")[0];
       if (!selectedLicenseButton) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please select a license",
-        });
+        errorArray.push({ type: "notyf", message: "Please select a license" });
         throw errorArray;
       }
       const selectedLicense = selectedLicenseButton.dataset.value;
@@ -1742,10 +1708,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
 
         if (protocols.length === 0) {
-          errorArray.push({
-            type: "notyf",
-            message: "Please add at least one protocol",
-          });
+          errorArray.push({ type: "notyf", message: "Please add at least one protocol" });
           throw errorArray;
         }
 
@@ -1772,10 +1735,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         guidedSaveDescriptionContributorInformation();
       } catch (error) {
         console.log(error);
-        errorArray.push({
-          type: "notyf",
-          message: error,
-        });
+        errorArray.push({ type: "notyf", message: error });
         throw errorArray;
       }
     }
@@ -1783,10 +1743,7 @@ const savePageChanges = async (pageBeingLeftID) => {
     if (pageBeingLeftID === "guided-create-readme-metadata-tab") {
       const readMeTextArea = document.getElementById("guided-textarea-create-readme");
       if (readMeTextArea.value.trim() === "") {
-        errorArray.push({
-          type: "notyf",
-          message: "Please enter a README for your dataset",
-        });
+        errorArray.push({ type: "notyf", message: "Please enter a README for your dataset" });
         throw errorArray;
       } else {
         const readMe = readMeTextArea.value.trim();
@@ -1797,10 +1754,7 @@ const savePageChanges = async (pageBeingLeftID) => {
     if (pageBeingLeftID === "guided-create-changes-metadata-tab") {
       const changesTextArea = document.getElementById("guided-textarea-create-changes");
       if (changesTextArea.value.trim() === "") {
-        errorArray.push({
-          type: "notyf",
-          message: "Please enter CHANGES for your dataset",
-        });
+        errorArray.push({ type: "notyf", message: "Please enter CHANGES for your dataset" });
         throw errorArray;
       } else {
         const changes = changesTextArea.value.trim();
@@ -2136,10 +2090,7 @@ const updateDatasetUploadProgressTable = (destination, progressObject) => {
 };
 
 const createGuidedStructureFromSubSamMetadata = (subjectsMetadataRows, samplesMetadataRows) => {
-  const poolSubSamStructure = {
-    pools: {},
-    subjects: {},
-  };
+  const poolSubSamStructure = { pools: {}, subjects: {} };
 
   const datasetPools = [
     ...new Set(
@@ -2396,12 +2347,8 @@ const guidedSetDOIUI = (doiInformation) => {
       title: "Cannot reserve DOI",
       text: "Your dataset is locked, so modification is not allowed.",
       icon: "error",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
+      showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+      hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
     });
 
     return;
@@ -2792,11 +2739,7 @@ const generateProgressCardElement = (progressFileJSONObj) => {
     progressFileJSONObj["digital-metadata"]["subtitle"] || "No designated subtitle";
   const progressFileLastModified = new Date(progressFileJSONObj["last-modified"]).toLocaleString(
     [],
-    {
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
-    }
+    { year: "numeric", month: "numeric", day: "numeric" }
   );
   const savedUploadDataProgress =
     progressFileJSONObj["previously-uploaded-data"] &&
@@ -3017,10 +2960,7 @@ const guidedRenderProgressCards = async () => {
       .map((progressFile) => generateProgressCardElement(progressFile))
       .join("\n");
 
-    tippy(".progress-card-popover", {
-      allowHTML: true,
-      interactive: true,
-    });
+    tippy(".progress-card-popover", { allowHTML: true, interactive: true });
   } else {
     progressCardsContainer.innerHTML = `
       <h2 class="guided--text-user-directions" style="color: var(--color-bg-plum) !important">
@@ -3122,10 +3062,7 @@ window.guidedOpenManifestEditSwal = async () => {
     } else {
       window.electron.ipcRenderer.removeAllListeners("spreadsheet-reply");
 
-      window.sodaJSONObj["guided-manifest-file-data"] = {
-        headers: result[0],
-        data: result[1],
-      };
+      window.sodaJSONObj["guided-manifest-file-data"] = { headers: result[0], data: result[1] };
       await guidedSaveProgress();
       renderManifestCards();
     }
@@ -3196,10 +3133,7 @@ window.diffCheckManifestFiles = (newManifestData, existingManifestData) => {
     }
   }
 
-  return {
-    headers: combinedManifestDataHeaders,
-    data: combinedManifestDataData,
-  };
+  return { headers: combinedManifestDataHeaders, data: combinedManifestDataData };
 };
 
 document
@@ -3278,12 +3212,8 @@ document
       try {
         manifestJSONResponse = await client.post(
           "/skeleton_dataset/manifest_json",
-          {
-            sodajsonobject: window.sodaJSONObj,
-          },
-          {
-            timeout: 0,
-          }
+          { sodajsonobject: window.sodaJSONObj },
+          { timeout: 0 }
         );
       } catch (error) {
         throw new Error("Failed to generate manifest files");
@@ -3344,12 +3274,8 @@ document
             backdrop: "rgba(0,0,0, 0.4)",
             reverseButtons: window.reverseSwalButtons,
             heightAuto: false,
-            showClass: {
-              popup: "animate__animated animate__zoomIn animate__faster",
-            },
-            hideClass: {
-              popup: "animate__animated animate__zoomOut animate__faster",
-            },
+            showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+            hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
           });
         } else if (error.response && error.response.status == 400) {
           let msg = error.response.data.message;
@@ -3364,12 +3290,8 @@ document
             backdrop: "rgba(0,0,0, 0.4)",
             reverseButtons: window.reverseSwalButtons,
             heightAuto: false,
-            showClass: {
-              popup: "animate__animated animate__zoomIn animate__faster",
-            },
-            hideClass: {
-              popup: "animate__animated animate__zoomOut animate__faster",
-            },
+            showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+            hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
           });
         } else {
           await Swal.fire({
@@ -3588,9 +3510,7 @@ const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
   datasetSelectionSelectPicker.empty();
   try {
     let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
-      params: {
-        selected_account: window.defaultBfAccount,
-      },
+      params: { selected_account: window.defaultBfAccount },
     });
     const datasets = responseObject.data.datasets;
     //Add the datasets to the select picker
@@ -3667,10 +3587,7 @@ window.guidedPrepareHomeScreen = async () => {
 const guidedShowTreePreview = (new_dataset_name, targetElementId) => {
   const folderStructurePreview = document.getElementById(targetElementId);
   $(folderStructurePreview).jstree({
-    core: {
-      check_callback: true,
-      data: {},
-    },
+    core: { check_callback: true, data: {} },
     plugins: ["types", "sort"],
     sort: function (a, b) {
       let a1 = this.get_node(a);
@@ -3685,60 +3602,24 @@ const guidedShowTreePreview = (new_dataset_name, targetElementId) => {
       }
     },
     types: {
-      folder: {
-        icon: "fas fa-folder fa-fw",
-      },
-      "folder open": {
-        icon: "fas fa-folder-open fa-fw",
-      },
-      "folder closed": {
-        icon: "fas fa-folder fa-fw",
-      },
-      "file xlsx": {
-        icon: fileXlsx,
-      },
-      "file xls": {
-        icon: fileXlsx,
-      },
-      "file png": {
-        icon: filePng,
-      },
-      "file PNG": {
-        icon: filePng,
-      },
-      "file pdf": {
-        icon: filePdf,
-      },
-      "file txt": {
-        icon: fileTxt,
-      },
-      "file csv": {
-        icon: fileCsv,
-      },
-      "file CSV": {
-        icon: fileCsv,
-      },
-      "file DOC": {
-        icon: fileDoc,
-      },
-      "file DOCX": {
-        icon: fileDoc,
-      },
-      "file docx": {
-        icon: fileDoc,
-      },
-      "file doc": {
-        icon: fileDoc,
-      },
-      "file jpeg": {
-        icon: fileJpeg,
-      },
-      "file JPEG": {
-        icon: fileJpeg,
-      },
-      "file other": {
-        icon: fileOther,
-      },
+      folder: { icon: "fas fa-folder fa-fw" },
+      "folder open": { icon: "fas fa-folder-open fa-fw" },
+      "folder closed": { icon: "fas fa-folder fa-fw" },
+      "file xlsx": { icon: fileXlsx },
+      "file xls": { icon: fileXlsx },
+      "file png": { icon: filePng },
+      "file PNG": { icon: filePng },
+      "file pdf": { icon: filePdf },
+      "file txt": { icon: fileTxt },
+      "file csv": { icon: fileCsv },
+      "file CSV": { icon: fileCsv },
+      "file DOC": { icon: fileDoc },
+      "file DOCX": { icon: fileDoc },
+      "file docx": { icon: fileDoc },
+      "file doc": { icon: fileDoc },
+      "file jpeg": { icon: fileJpeg },
+      "file JPEG": { icon: fileJpeg },
+      "file other": { icon: fileOther },
     },
   });
   $(folderStructurePreview).on("open_node.jstree", function (event, data) {
@@ -3751,11 +3632,7 @@ const guidedShowTreePreview = (new_dataset_name, targetElementId) => {
 
   //Add the code_description metadata file to the preview if the code_description path has been declared
   if (window.sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"]) {
-    dsJsonObjCopy["files"]["code_description.xlsx"] = {
-      action: ["new"],
-      path: "",
-      type: "local",
-    };
+    dsJsonObjCopy["files"]["code_description.xlsx"] = { action: ["new"], path: "", type: "local" };
   }
 
   //Add the dataset_description metadata file to the preview if the dataset_description page has been completed
@@ -3783,38 +3660,22 @@ const guidedShowTreePreview = (new_dataset_name, targetElementId) => {
 
   //Add the Readme file to the preview if it exists in JSON
   if (window.sodaJSONObj["dataset-metadata"]["README"]) {
-    dsJsonObjCopy["files"]["README.txt"] = {
-      action: ["new"],
-      path: "",
-      type: "local",
-    };
+    dsJsonObjCopy["files"]["README.txt"] = { action: ["new"], path: "", type: "local" };
   }
 
   //Add the Samples metadata file to the preview if at least one sample has been added
   if (window.samplesTableData.length > 0) {
-    dsJsonObjCopy["files"]["samples.xlsx"] = {
-      action: ["new"],
-      path: "",
-      type: "local",
-    };
+    dsJsonObjCopy["files"]["samples.xlsx"] = { action: ["new"], path: "", type: "local" };
   }
 
   //Add the Subjects metadata file to the preview if at least one subject has been added
   if (window.subjectsTableData.length > 0) {
-    dsJsonObjCopy["files"]["subjects.xlsx"] = {
-      action: ["new"],
-      path: "",
-      type: "local",
-    };
+    dsJsonObjCopy["files"]["subjects.xlsx"] = { action: ["new"], path: "", type: "local" };
   }
 
   //Add the submission metadata file to the preview if the submission metadata page has been completed
   if (window.sodaJSONObj["completed-tabs"].includes("guided-create-submission-metadata-tab")) {
-    dsJsonObjCopy["files"]["submission.xlsx"] = {
-      action: ["new"],
-      path: "",
-      type: "local",
-    };
+    dsJsonObjCopy["files"]["submission.xlsx"] = { action: ["new"], path: "", type: "local" };
   }
 
   const guidedJsTreePreviewData = window.create_child_node(
@@ -4229,11 +4090,7 @@ let removeEventListener = false;
 const copyLink = (link) => {
   Clipboard.writeText(link);
 
-  window.notyf.open({
-    duration: "2000",
-    type: "success",
-    message: "Link copied!",
-  });
+  window.notyf.open({ duration: "2000", type: "success", message: "Link copied!" });
 };
 
 const checkIfPageIsValid = async (pageID) => {
@@ -4497,7 +4354,9 @@ window.openPage = async (targetPageID) => {
         }
       }
       if (targetPageComponentType === "dataset-entity-structure-page") {
+        console.log("Entered dataset-entity-structure-page");
       }
+
       if (targetPageComponentType === "entity-selection-page") {
         const pageEntityType = targetPageDataset.entityType;
         const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
@@ -4505,8 +4364,8 @@ window.openPage = async (targetPageID) => {
         setDatasetEntityObj(savedDatasetEntityObj);
 
         // Make any adjustments to the dataset entity object before setting it in the zustand store
-        /*if (pageEntityType === "bucketed-data") {
-          const bucketTypes = ["Code", "Experimental", "Other"];
+        if (pageEntityType === "bucketed-data") {
+          const bucketTypes = ["Code", "Experimental data", "Other"];
 
           for (const bucketType of Object.keys(savedDatasetEntityObj?.["bucketed-data"] || {})) {
             if (!bucketTypes.includes(bucketType)) {
@@ -4517,9 +4376,8 @@ window.openPage = async (targetPageID) => {
           for (const bucketType of bucketTypes) {
             addEntityToEntityList("bucketed-data", bucketType);
           }
-
           console.log("datasetEntityObj", useGlobalStore.getState().datasetEntityObj);
-        }*/
+        }
 
         console.log("savedDatasetEntityObj", savedDatasetEntityObj);
         console.log("pageEntityType", pageEntityType);
@@ -4698,9 +4556,7 @@ window.openPage = async (targetPageID) => {
     if (targetPageID === "guided-unstructured-data-import-tab") {
       if (0 === 1) {
         const responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
-          params: {
-            selected_account: window.defaultBfAccount,
-          },
+          params: { selected_account: window.defaultBfAccount },
         });
         const datasets = responseObject.data.datasets;
         console.log("Got datasets", datasets);
@@ -4733,10 +4589,7 @@ window.openPage = async (targetPageID) => {
             for (const row of subjectFileRows) {
               newRows.push(row[0]);
             }
-            foundIDs.push({
-              dataset: dataset,
-              rows: newRows,
-            });
+            foundIDs.push({ dataset: dataset, rows: newRows });
 
             console.log("subjectsMetadataResponse", subjectsMetadataResponse);
           } catch (error) {
@@ -5365,10 +5218,7 @@ window.openPage = async (targetPageID) => {
 
             window.sodaJSONObj["dataset-metadata"]["description-metadata"][
               "contributor-information"
-            ] = {
-              funding: studyFunding,
-              acknowledgment: studyAcknowledgements,
-            };
+            ] = { funding: studyFunding, acknowledgment: studyAcknowledgements };
           }
           // Add  the related Links
           let relatedInformationData = metadata_import.data["Related information"];
@@ -5835,10 +5685,7 @@ window.openPage = async (targetPageID) => {
                 deleteFromPennsieve: false,
               });
             } else {
-              partialUserDetails.push({
-                permission: userPermiss,
-                userName: userName,
-              });
+              partialUserDetails.push({ permission: userPermiss, userName: userName });
             }
           }
           // After loop use the array of objects to find the UUID and email
@@ -6397,10 +6244,7 @@ window.openPage = async (targetPageID) => {
       window.CURRENT_PAGE = targetPage;
       window.CURRENT_PAGE.classList.remove("hidden");
       //smooth scroll to top of guidedBody
-      guidedBody.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
+      guidedBody.scrollTo({ top: 0, behavior: "smooth" });
     } else {
       window.CURRENT_PAGE.classList.add("hidden");
       currentParentTab.classList.add("hidden");
@@ -6408,9 +6252,7 @@ window.openPage = async (targetPageID) => {
       window.CURRENT_PAGE = targetPage;
       window.CURRENT_PAGE.classList.remove("hidden");
       //smooth scroll to top of guidedBody
-      guidedBody.scrollTo({
-        top: 0,
-      });
+      guidedBody.scrollTo({ top: 0 });
     }
 
     // Start any animations that need to be started
@@ -6688,12 +6530,7 @@ const removeAlertMessageIfExists = (elementToCheck) => {
 //function that creates a new folder object
 const newEmptyFolderObj = () => {
   console.log("newEmptyFolderObj");
-  return {
-    folders: {},
-    files: {},
-    type: "virtual",
-    action: ["new"],
-  };
+  return { folders: {}, files: {}, type: "virtual", action: ["new"] };
 };
 
 const getDatasetStructureJsonFolderContentsAtNestedArrayPath = (folderPathArray) => {
@@ -7010,9 +6847,7 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
           // Check to make sure the dataset structure on Pennsieve is the same as when the user started editing this dataset
           let filesFoldersResponse = await client.post(
             `/organize_datasets/dataset_files_and_folders`,
-            {
-              sodajsonobject: datasetResumeJsonObj,
-            },
+            { sodajsonobject: datasetResumeJsonObj },
             { timeout: 0 }
           );
           let data = filesFoldersResponse.data;
@@ -7840,10 +7675,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
       this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
     )) {
       for (const sampleName of Object.keys(subjectData)) {
-        samplesOutsidePools.push({
-          sampleName: sampleName,
-          subjectName: subjectName,
-        });
+        samplesOutsidePools.push({ sampleName: sampleName, subjectName: subjectName });
       }
     }
     return [samplesInPools, samplesOutsidePools];
@@ -7867,10 +7699,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     for (const [subjectName, subjectData] of Object.entries(
       this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
     )) {
-      subjectsOutsidePools.push({
-        subjectName: subjectName,
-        samples: Object.keys(subjectData),
-      });
+      subjectsOutsidePools.push({ subjectName: subjectName, samples: Object.keys(subjectData) });
     }
     return [subjectsInPools, subjectsOutsidePools];
   };
@@ -8242,9 +8071,7 @@ window.openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
       const contributorAffiliationInput = document.getElementById(
         "guided-contributor-affiliation-input"
       );
-      affiliationTagify = new Tagify(contributorAffiliationInput, {
-        duplicate: false,
-      });
+      affiliationTagify = new Tagify(contributorAffiliationInput, { duplicate: false });
       window.createDragSort(affiliationTagify);
       affiliationTagify.addTags(contributorAffiliationsArray);
 
@@ -8273,12 +8100,7 @@ window.openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
           "Other",
         ],
         enforceWhitelist: true,
-        dropdown: {
-          maxItems: Infinity,
-          enabled: 0,
-          closeOnSelect: true,
-          position: "auto",
-        },
+        dropdown: { maxItems: Infinity, enabled: 0, closeOnSelect: true, position: "auto" },
       });
       window.createDragSort(contributorRolesTagify);
       contributorRolesTagify.addTags(contributorRolesArray);
@@ -8519,9 +8341,7 @@ window.openGuidedAddContributorSwal = async () => {
       const contributorAffiliationInput = document.getElementById(
         "guided-contributor-affiliation-input"
       );
-      affiliationTagify = new Tagify(contributorAffiliationInput, {
-        duplicate: false,
-      });
+      affiliationTagify = new Tagify(contributorAffiliationInput, { duplicate: false });
       window.createDragSort(affiliationTagify);
 
       const contributorRolesInput = document.getElementById("guided-contributor-roles-input");
@@ -8549,18 +8369,11 @@ window.openGuidedAddContributorSwal = async () => {
           "Other",
         ],
         enforceWhitelist: true,
-        dropdown: {
-          maxItems: Infinity,
-          enabled: 0,
-          closeOnSelect: true,
-          position: "auto",
-        },
+        dropdown: { maxItems: Infinity, enabled: 0, closeOnSelect: true, position: "auto" },
       });
       window.createDragSort(contributorRolesTagify);
 
-      $("#guided-stored-contributors-select").selectpicker({
-        style: "SODA-select-picker",
-      });
+      $("#guided-stored-contributors-select").selectpicker({ style: "SODA-select-picker" });
       $("#guided-stored-contributors-select").selectpicker("refresh");
       $("#guided-stored-contributors-select").on("change", function () {
         const selectedFirstName = $("#guided-stored-contributors-select option:selected").data(
@@ -8855,13 +8668,7 @@ const addGuidedProtocol = (link, description, type) => {
   //add the new protocol to the JSONObj
   window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = [
     ...window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"],
-    {
-      link: link,
-      type: type,
-      relation: "IsProtocolFor",
-      description: description,
-      isFair: isFair,
-    },
+    { link: link, type: type, relation: "IsProtocolFor", description: description, isFair: isFair },
   ];
 };
 const editGuidedProtocol = (oldLink, newLink, description, type) => {
@@ -9665,11 +9472,7 @@ window.confirmEnter = (button) => {
     sampleTable = true;
     // window.addSampleSpecificationTableRow();
   }
-  const ke = new KeyboardEvent("keyup", {
-    bubbles: true,
-    cancelable: true,
-    keyCode: 13,
-  });
+  const ke = new KeyboardEvent("keyup", { bubbles: true, cancelable: true, keyCode: 13 });
 
   let input_field = button.previousElementSibling;
   if (input_field.tagName === "INPUT") {
@@ -9759,7 +9562,7 @@ window.getExistingSubjectNames = () => {
 };
 
 const getSubjectsPool = (subjectName) => {
-  const [subjectsInPools, _] = window.sodaJSONObj.getAllSubjects();
+  const [subjectsInPools] = window.sodaJSONObj.getAllSubjects();
   for (const subject of subjectsInPools) {
     if (subject["subjectName"] === subjectName) {
       return subject["poolName"];
@@ -10553,12 +10356,8 @@ $("#guided-button-no-source-data").on("click", () => {
       heightAuto: false,
       customClass: "swal-wide",
       backdrop: "rgba(0,0,0, 0.4)",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
+      showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+      hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
     }).then((result) => {
       if (result.isConfirmed) {
         //User agrees to delete source folder
@@ -10593,20 +10392,14 @@ $("#guided-submission-completion-date").change(function () {
       showCancelButton: false,
       title: `<span style="text-align:center"> Enter your Milestone completion date </span>`,
       html: `<input type="date" id="milestone_date_picker" >`,
-      showClass: {
-        popup: "animate__animated animate__fadeInDown animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__fadeOutUp animate__faster",
-      },
+      showClass: { popup: "animate__animated animate__fadeInDown animate__faster" },
+      hideClass: { popup: "animate__animated animate__fadeOutUp animate__faster" },
       didOpen: () => {
         document.getElementById("milestone_date_picker").valueAsDate = new Date();
       },
       preConfirm: async () => {
         const input_date = document.getElementById("milestone_date_picker").value;
-        return {
-          date: input_date,
-        };
+        return { date: input_date };
       },
     }).then((result) => {
       if (result.isConfirmed) {
@@ -10642,20 +10435,14 @@ $("#guided-submission-completion-date-manual").change(function () {
       showCancelButton: false,
       title: `<span style="text-align:center"> Enter your Milestone completion date </span>`,
       html: `<input type="date" id="milestone_date_picker" >`,
-      showClass: {
-        popup: "animate__animated animate__fadeInDown animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__fadeOutUp animate__faster",
-      },
+      showClass: { popup: "animate__animated animate__fadeInDown animate__faster" },
+      hideClass: { popup: "animate__animated animate__fadeOutUp animate__faster" },
       didOpen: () => {
         document.getElementById("milestone_date_picker").valueAsDate = new Date();
       },
       preConfirm: async () => {
         const input_date = document.getElementById("milestone_date_picker").value;
-        return {
-          date: input_date,
-        };
+        return { date: input_date };
       },
     }).then((result) => {
       if (result.isConfirmed) {
@@ -11377,16 +11164,10 @@ $("#guided-button-add-permission-user-or-team").on("click", function () {
       };
       guidedAddTeamPermission(newTeamPermissionObj);
     }
-    $(this)[0].scrollIntoView({
-      behavior: "smooth",
-    });
+    $(this)[0].scrollIntoView({ behavior: "smooth" });
     guidedResetUserTeamPermissionsDropdowns();
   } catch (error) {
-    window.notyf.open({
-      duration: "4000",
-      type: "error",
-      message: error,
-    });
+    window.notyf.open({ duration: "4000", type: "error", message: error });
   }
 });
 
@@ -11538,9 +11319,7 @@ $(".guided--radio-button").on("click", async function () {
       "guided-div-update-uploaded-cards",
     ];
     if (!elementsToNotScrollTo.includes(nextQuestionID)) {
-      nextQuestionElement.scrollIntoView({
-        behavior: "smooth",
-      });
+      nextQuestionElement.scrollIntoView({ behavior: "smooth" });
     }
   }
 });
@@ -11559,10 +11338,7 @@ $("#guided-button-samples-same").on("click", () => {
 let guidedJstreePreview = document.getElementById("guided-div-dataset-tree-preview");
 
 $(guidedJstreePreview).jstree({
-  core: {
-    check_callback: true,
-    data: {},
-  },
+  core: { check_callback: true, data: {} },
   plugins: ["types", "sort"],
   sort: function (a, b) {
     a1 = this.get_node(a);
@@ -11577,60 +11353,24 @@ $(guidedJstreePreview).jstree({
     }
   },
   types: {
-    folder: {
-      icon: "fas fa-folder fa-fw",
-    },
-    "folder open": {
-      icon: "fas fa-folder-open fa-fw",
-    },
-    "folder closed": {
-      icon: "fas fa-folder fa-fw",
-    },
-    "file xlsx": {
-      icon: fileXlsx,
-    },
-    "file xls": {
-      icon: fileXlsx,
-    },
-    "file png": {
-      icon: filePng,
-    },
-    "file PNG": {
-      icon: filePng,
-    },
-    "file pdf": {
-      icon: filePdf,
-    },
-    "file txt": {
-      icon: fileTxt,
-    },
-    "file csv": {
-      icon: fileCsv,
-    },
-    "file CSV": {
-      icon: fileCsv,
-    },
-    "file DOC": {
-      icon: fileDoc,
-    },
-    "file DOCX": {
-      icon: fileDoc,
-    },
-    "file docx": {
-      icon: fileDoc,
-    },
-    "file doc": {
-      icon: fileDoc,
-    },
-    "file jpeg": {
-      icon: fileJpeg,
-    },
-    "file JPEG": {
-      icon: fileJpeg,
-    },
-    "file other": {
-      icon: fileOther,
-    },
+    folder: { icon: "fas fa-folder fa-fw" },
+    "folder open": { icon: "fas fa-folder-open fa-fw" },
+    "folder closed": { icon: "fas fa-folder fa-fw" },
+    "file xlsx": { icon: fileXlsx },
+    "file xls": { icon: fileXlsx },
+    "file png": { icon: filePng },
+    "file PNG": { icon: filePng },
+    "file pdf": { icon: filePdf },
+    "file txt": { icon: fileTxt },
+    "file csv": { icon: fileCsv },
+    "file CSV": { icon: fileCsv },
+    "file DOC": { icon: fileDoc },
+    "file DOCX": { icon: fileDoc },
+    "file docx": { icon: fileDoc },
+    "file doc": { icon: fileDoc },
+    "file jpeg": { icon: fileJpeg },
+    "file JPEG": { icon: fileJpeg },
+    "file other": { icon: fileOther },
   },
 });
 
@@ -11739,9 +11479,7 @@ const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
         try {
           await client.put(
             `/manage_datasets/ps_rename_dataset`,
-            {
-              input_new_name: datasetName,
-            },
+            { input_new_name: datasetName },
             {
               params: {
                 selected_account: bfAccount,
@@ -11771,14 +11509,8 @@ const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
   try {
     let bf_new_dataset = await client.post(
       `/manage_datasets/datasets`,
-      {
-        input_dataset_name: datasetName,
-      },
-      {
-        params: {
-          selected_account: bfAccount,
-        },
-      }
+      { input_dataset_name: datasetName },
+      { params: { selected_account: bfAccount } }
     );
     let createdDatasetsID = bf_new_dataset.data.id;
     let createdDatasetIntId = bf_new_dataset.data.int_id;
@@ -11869,15 +11601,8 @@ const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle)
   try {
     await client.put(
       `/manage_datasets/bf_dataset_subtitle`,
-      {
-        input_subtitle: datasetSubtitle,
-      },
-      {
-        params: {
-          selected_account: bfAccount,
-          selected_dataset: datasetName,
-        },
-      }
+      { input_subtitle: datasetSubtitle },
+      { params: { selected_account: bfAccount, selected_dataset: datasetName } }
     );
 
     datasetSubtitleUploadText.innerHTML = `Successfully added dataset subtitle: ${datasetSubtitle}`;
@@ -12043,15 +11768,8 @@ const uploadValidBannerImage = async (bfAccount, datasetName, bannerImagePath) =
   try {
     await client.put(
       `/manage_datasets/bf_banner_image`,
-      {
-        input_banner_image_path: bannerImagePath,
-      },
-      {
-        params: {
-          selected_account: bfAccount,
-          selected_dataset: datasetName,
-        },
-      }
+      { input_banner_image_path: bannerImagePath },
+      { params: { selected_account: bfAccount, selected_dataset: datasetName } }
     );
     datasetBannerImageUploadText.innerHTML = `Successfully added dataset banner image!`;
     guidedUploadStatusIcon("guided-dataset-banner-image-upload-status", "success");
@@ -12136,15 +11854,8 @@ const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) =
   try {
     await client.put(
       `/manage_datasets/bf_license`,
-      {
-        input_license: datasetLicense,
-      },
-      {
-        params: {
-          selected_account: bfAccount,
-          selected_dataset: datasetName,
-        },
-      }
+      { input_license: datasetLicense },
+      { params: { selected_account: bfAccount, selected_dataset: datasetName } }
     );
     datasetLicenseUploadText.innerHTML = `Successfully added dataset license: ${datasetLicense}`;
     guidedUploadStatusIcon("guided-dataset-license-upload-status", "success");
@@ -12212,11 +11923,7 @@ const guidedAddDatasetTags = async (bfAccount, datasetName, tags) => {
     await client.put(
       `/manage_datasets/datasets/${datasetName}/tags`,
       { tags },
-      {
-        params: {
-          selected_account: bfAccount,
-        },
-      }
+      { params: { selected_account: bfAccount } }
     );
 
     datasetTagsUploadText.innerHTML = `Successfully added dataset tags: ${tags.join(", ")}`;
@@ -12320,9 +12027,7 @@ const guidedGrantUserPermission = async (
   try {
     await client.patch(
       `/manage_datasets/bf_dataset_permissions`,
-      {
-        input_role: selectedRole,
-      },
+      { input_role: selectedRole },
       {
         params: {
           selected_account: bfAccount,
@@ -12466,9 +12171,7 @@ const guidedGrantTeamPermission = async (
   try {
     await client.patch(
       `/manage_datasets/bf_dataset_permissions`,
-      {
-        input_role: selectedRole,
-      },
+      { input_role: selectedRole },
       {
         params: {
           selected_account: bfAccount,
@@ -12723,9 +12426,7 @@ window.electron.ipcRenderer.on(
       await trackLocalDatasetGenerationProgress();
 
       setGuidedProgressBarValue("local", 100);
-      updateDatasetUploadProgressTable("local", {
-        "Current action": `Generating metadata files`,
-      });
+      updateDatasetUploadProgressTable("local", { "Current action": `Generating metadata files` });
 
       // Generate all dataset metadata files
       await guidedGenerateSubjectsMetadata(
@@ -12805,11 +12506,7 @@ const guidedGenerateSubjectsMetadata = async (destination) => {
           generationDestination === "Pennsieve" ? guidedGetDatasetName(window.sodaJSONObj) : "",
         subjects_header_row: window.subjectsTableData,
       },
-      {
-        params: {
-          upload_boolean: generationDestination === "Pennsieve",
-        },
-      }
+      { params: { upload_boolean: generationDestination === "Pennsieve" } }
     );
 
     // Update UI for successful generation (Pennsieve) and send success event
@@ -12878,11 +12575,7 @@ const guidedGenerateSamplesMetadata = async (destination) => {
           generationDestination === "Pennsieve" ? guidedGetDatasetName(window.sodaJSONObj) : "",
         samples_str: window.samplesTableData,
       },
-      {
-        params: {
-          upload_boolean: generationDestination === "Pennsieve",
-        },
-      }
+      { params: { upload_boolean: generationDestination === "Pennsieve" } }
     );
     // Update UI for successful generation (Pennsieve) and send success event
     if (generationDestination === "Pennsieve") {
@@ -13083,11 +12776,7 @@ const guidedGenerateDatasetDescriptionMetadata = async (destination) => {
         contributor_str: guidedContributorInformation,
         related_info_str: datasetLinks,
       },
-      {
-        params: {
-          upload_boolean: generationDestination === "Pennsieve",
-        },
-      }
+      { params: { upload_boolean: generationDestination === "Pennsieve" } }
     );
 
     // Update UI for successful generation (Pennsieve) and send success event
@@ -13233,9 +12922,7 @@ const guidedGenerateReadmeMetadata = async (destination) => {
     if (generationDestination === "Pennsieve") {
       await client.post(
         `/prepare_metadata/readme_changes_file`,
-        {
-          text: guidedReadMeMetadata,
-        },
+        { text: guidedReadMeMetadata },
         {
           params: {
             file_type: "README.txt",
@@ -13309,9 +12996,7 @@ const guidedGenerateChangesMetadata = async (destination) => {
     if (generationDestination === "Pennsieve") {
       await client.post(
         `/prepare_metadata/readme_changes_file`,
-        {
-          text: guidedChangesMetadata,
-        },
+        { text: guidedChangesMetadata },
         {
           params: {
             file_type: "CHANGES.txt",
@@ -13485,12 +13170,8 @@ const guidedPennsieveDatasetUpload = async () => {
       showCancelButton: true,
       cancelButtonText: "Save and Exit",
       confirmButtonText: "Retry Upload",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
+      showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+      hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
     });
 
     if (res.isConfirmed) {
@@ -13573,19 +13254,13 @@ const openGuidedDatasetRenameSwal = async () => {
     html: `<b>Current dataset name:</b> ${currentDatasetUploadName}<br /><br />Enter a new name for your dataset below:`,
     input: "text",
     inputPlaceholder: "Enter a new name for your dataset",
-    inputAttributes: {
-      autocapitalize: "off",
-    },
+    inputAttributes: { autocapitalize: "off" },
     inputValue: currentDatasetUploadName,
     showCancelButton: true,
     confirmButtonText: "Rename",
     confirmButtonColor: "#3085d6 !important",
-    showClass: {
-      popup: "animate__animated animate__zoomIn animate__faster",
-    },
-    hideClass: {
-      popup: "animate__animated animate__zoomOut animate__faster",
-    },
+    showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+    hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
     preConfirm: (inputValue) => {
       if (inputValue === "") {
         Swal.showValidationMessage("Please enter a name for your dataset!");
@@ -13636,10 +13311,7 @@ const guidedUploadDatasetToPennsieve = async () => {
   client
     .post(
       `/curate_datasets/curation`,
-      {
-        soda_json_structure: window.sodaJSONObj,
-        resume: !!window.retryGuidedMode,
-      },
+      { soda_json_structure: window.sodaJSONObj, resume: !!window.retryGuidedMode },
       { timeout: 0 }
     )
     .then(async (curationRes) => {
@@ -13757,9 +13429,7 @@ const guidedUploadDatasetToPennsieve = async () => {
 
       try {
         let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
-          params: {
-            selected_account: window.defaultBfAccount,
-          },
+          params: { selected_account: window.defaultBfAccount },
         });
         window.datasetList = [];
         window.datasetList = responseObject.data.datasets;
@@ -13887,9 +13557,7 @@ const guidedUploadDatasetToPennsieve = async () => {
       let emessage = userErrorMessage(error);
       try {
         let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
-          params: {
-            selected_account: window.defaultBfAccount,
-          },
+          params: { selected_account: window.defaultBfAccount },
         });
         window.datasetList = [];
         window.datasetList = responseObject.data.datasets;
@@ -13916,12 +13584,8 @@ const guidedUploadDatasetToPennsieve = async () => {
         showCancelButton: true,
         cancelButtonText: "Save and Exit",
         confirmButtonText: "Retry Upload",
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
+        showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+        hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
       });
 
       if (res.isConfirmed) {
@@ -14119,12 +13783,8 @@ const guidedGenerateRCFilesHelper = (type) => {
       backdrop: "rgba(0,0,0, 0.4)",
       icon: "error",
       showCancelButton: false,
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
+      showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+      hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
     });
     return "empty";
   }
@@ -14367,12 +14027,8 @@ $("#guided-save-banner-image").click(async () => {
         confirmButtonText: "Yes",
         cancelButtonText: "No",
         reverseButtons: window.reverseSwalButtons,
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
+        showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+        hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
       }).then(async () => {
         if (window.guidedFormBannerHeight.value < 1024) {
           Swal.fire({
@@ -14385,12 +14041,8 @@ $("#guided-save-banner-image").click(async () => {
             confirmButtonText: "Yes",
             cancelButtonText: "No",
             reverseButtons: window.reverseSwalButtons,
-            showClass: {
-              popup: "animate__animated animate__zoomIn animate__faster",
-            },
-            hideClass: {
-              popup: "animate__animated animate__zoomOut animate__faster",
-            },
+            showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+            hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
           }).then(async (result) => {
             if (result.isConfirmed) {
               guidedSaveBannerImage();
@@ -14407,12 +14059,8 @@ $("#guided-save-banner-image").click(async () => {
             confirmButtonText: "Yes",
             cancelButtonText: "No",
             reverseButtons: window.reverseSwalButtons,
-            showClass: {
-              popup: "animate__animated animate__zoomIn animate__faster",
-            },
-            hideClass: {
-              popup: "animate__animated animate__zoomOut animate__faster",
-            },
+            showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+            hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
           }).then(async (result) => {
             if (result.isConfirmed) {
               guidedSaveBannerImage();
@@ -14481,11 +14129,7 @@ $("#guided-next-button").on("click", async function () {
       error.map((error) => {
         // get the total number of words in error.message
         if (error.type === "notyf") {
-          window.notyf.open({
-            duration: "7000",
-            type: "error",
-            message: error.message,
-          });
+          window.notyf.open({ duration: "7000", type: "error", message: error.message });
         }
 
         if (error.type === "swal") {
@@ -14545,9 +14189,7 @@ $("#guided-back-button").on("click", async () => {
 
 //tagify initializations
 const guidedOtherFundingSourcesInput = document.getElementById("guided-ds-other-funding");
-guidedOtherFundingsourcesTagify = new Tagify(guidedOtherFundingSourcesInput, {
-  duplicates: false,
-});
+guidedOtherFundingsourcesTagify = new Tagify(guidedOtherFundingSourcesInput, { duplicates: false });
 window.createDragSort(guidedOtherFundingsourcesTagify);
 const guidedStudyOrganSystemsInput = document.getElementById("guided-ds-study-organ-system");
 guidedStudyOrganSystemsTagify = new Tagify(guidedStudyOrganSystemsInput, {
@@ -14573,11 +14215,7 @@ guidedStudyOrganSystemsTagify = new Tagify(guidedStudyOrganSystemsInput, {
     "urinary bladder",
   ],
   duplicates: false,
-  dropdown: {
-    maxItems: Infinity,
-    enabled: 0,
-    closeOnSelect: true,
-  },
+  dropdown: { maxItems: Infinity, enabled: 0, closeOnSelect: true },
 });
 window.createDragSort(guidedStudyOrganSystemsTagify);
 
@@ -14590,15 +14228,11 @@ guidedDatasetKeywordsTagify = new Tagify(guidedDatasetKeyWordsInput, {
 window.createDragSort(guidedDatasetKeywordsTagify);
 
 const guidedStudyApproachInput = document.getElementById("guided-ds-study-approach");
-guidedStudyApproachTagify = new Tagify(guidedStudyApproachInput, {
-  duplicates: false,
-});
+guidedStudyApproachTagify = new Tagify(guidedStudyApproachInput, { duplicates: false });
 window.createDragSort(guidedStudyApproachTagify);
 
 const guidedStudyTechniquesInput = document.getElementById("guided-ds-study-technique");
-guidedStudyTechniquesTagify = new Tagify(guidedStudyTechniquesInput, {
-  duplicates: false,
-});
+guidedStudyTechniquesTagify = new Tagify(guidedStudyTechniquesInput, { duplicates: false });
 window.createDragSort(guidedStudyTechniquesTagify);
 
 /// back button Curate
@@ -14646,12 +14280,8 @@ $("#guided-new-folder").on("click", () => {
       showCancelButton: "Cancel",
       confirmButtonText: "Add folder",
       reverseButtons: window.reverseSwalButtons,
-      showClass: {
-        popup: "animate__animated animate__fadeInDown animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__fadeOutUp animate__faster",
-      },
+      showClass: { popup: "animate__animated animate__fadeInDown animate__faster" },
+      hideClass: { popup: "animate__animated animate__fadeOutUp animate__faster" },
       didOpen: () => {
         let swal_container = document.getElementsByClassName("swal2-popup")[0];
         swal_container.style.width = "600px";
@@ -14758,12 +14388,8 @@ $("#guided-new-folder").on("click", () => {
       confirmButtonText: "OK",
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
+      showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+      hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
     });
   }
 });

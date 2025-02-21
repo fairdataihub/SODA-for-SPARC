@@ -390,7 +390,7 @@ const DatasetTreeViewRenderer = ({
     <Paper padding="md" shadow="sm" radius="md" p="sm" flex={1} w="100%" withBorder>
       {itemSelectInstructions && (
         <SodaGreenPaper>
-          <Text>{itemSelectInstructions}</Text>
+          <Text fw={400}>{itemSelectInstructions}</Text>
         </SodaGreenPaper>
       )}
       {!hideSearchBar && (

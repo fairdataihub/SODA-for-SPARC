@@ -16,6 +16,7 @@ const DataImporter = ({ dataType, relativeFolderPathToImportDataInto }) => {
 
   // Handles the file drop logic
   const handleDrop = async (files) => {
+    console.log("Dropped files:", files);
     const syntheticDropEvent = createSyntheticDropEvent(files);
     await window.drop(syntheticDropEvent);
   };
@@ -23,6 +24,7 @@ const DataImporter = ({ dataType, relativeFolderPathToImportDataInto }) => {
   // Opens the dataset dialog on click
   const handleClick = async (event) => {
     event.preventDefault();
+    console.log("relativeFolderPathToImportDataInto", relativeFolderPathToImportDataInto);
     window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog", {
       importRelativePath: relativeFolderPathToImportDataInto,
     });
@@ -49,7 +51,9 @@ const DataImporter = ({ dataType, relativeFolderPathToImportDataInto }) => {
           </Dropzone.Idle>
 
           <Text size="xl" inline>
-            Drag {dataType} data here or click to import from your computer
+            {dataType
+              ? `Drag ${dataType} data here or click to import from your computer`
+              : "Drag data here or click to import from your computer"}
           </Text>
         </Group>
       </Dropzone>

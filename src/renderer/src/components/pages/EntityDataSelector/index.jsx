@@ -19,6 +19,7 @@ import {
   Divider,
   Tooltip,
   Box,
+  Progress,
 } from "@mantine/core";
 import { IconWand } from "@tabler/icons-react";
 import useGlobalStore from "../../../stores/globalStore";
@@ -32,7 +33,6 @@ import {
   autoSelectDatasetFoldersAndFilesForEnteredEntityIds,
 } from "../../../stores/slices/datasetEntitySelectorSlice";
 import { naturalSort } from "../../shared/utils/util-functions";
-import { get } from "jquery";
 
 const ENTITY_PREFIXES = ["sub-", "sam-", "perf-"];
 
@@ -140,9 +140,11 @@ const renderEntityList = (entityType, activeEntity, datasetEntityObj) => {
 const getInstructionalTextByEntityType = (entityType) => {
   console.log("entityType", entityType);
   const instructionalText = {
-    Code: "Choose all folders and files containing scripts, computational models, analysis pipelines, or any software used for data processing or analysis.",
-    ExperimentalData: "Select the files that contain protocols.",
-    Other: "Select the files that contain documentation.",
+    Code: "Select all folders and files containing scripts, computational models, analysis pipelines, or any other software used for data processing or analysis.",
+    "Experimental data":
+      "Select the folders and files containing data collected from experiments or analyses.",
+    Other:
+      "Select the folders and files that do not contain experimental data or code. Some examples might be protocols, notes, or supplementary materials.",
   };
 
   return instructionalText[entityType] || "Select the files that contain data." + entityType;
@@ -157,6 +159,29 @@ const EntityDataSelectorPage = ({
 }) => {
   const activeEntity = useGlobalStore((state) => state.activeEntity);
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
+  const datasetStructureJSONObj = useGlobalStore((state) => state.datasetStructureJSONObj);
+  const countFilesInDatasetStructure = (datasetStructure) => {
+    if (!datasetStructure) return 0;
+    let totalFiles = 0;
+    const keys = Object.keys(datasetStructure);
+    for (const key of keys) {
+      if (key === "files") {
+        totalFiles += Object.keys(datasetStructure[key]).length;
+      }
+      if (key === "folders") {
+        const folders = Object.keys(datasetStructure[key]);
+        totalFiles += folders.length;
+        for (const folder of folders) {
+          totalFiles += countFilesInDatasetStructure(datasetStructure[key][folder]);
+        }
+      }
+    }
+    return totalFiles;
+  };
+  console.log(
+    "countFilesInDatasetStructure",
+    countFilesInDatasetStructure(datasetStructureJSONObj) - 1
+  );
 
   return (
     <GuidedModePage pageHeader={pageName}>
@@ -212,6 +237,19 @@ const EntityDataSelectorPage = ({
             </Button>*/}
           </Stack>
         )}
+      </GuidedModeSection>
+      <GuidedModeSection>
+        <Progress.Root size="xl">
+          <Progress.Section value={35} color="cyan">
+            <Progress.Label>Documents</Progress.Label>
+          </Progress.Section>
+          <Progress.Section value={28} color="pink">
+            <Progress.Label>Photos</Progress.Label>
+          </Progress.Section>
+          <Progress.Section value={15} color="orange">
+            <Progress.Label>Other</Progress.Label>
+          </Progress.Section>
+        </Progress.Root>
       </GuidedModeSection>
       <GuidedModeSection>
         <Grid gutter="lg">

@@ -4,11 +4,10 @@ import react from "@vitejs/plugin-react";
 import copy from "rollup-plugin-copy";
 import inject from "@rollup/plugin-inject";
 
-const commonjsPackages = ["image-data-uri"];
-
 export default defineConfig({
   main: {
     plugins: [externalizeDepsPlugin()],
+
     watch: {
       ignored: ["node_modules/**"],
     },
