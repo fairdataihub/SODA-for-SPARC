@@ -14516,7 +14516,7 @@ const guidedSaveDescriptionContributorInformation = () => {
   };
 };
 
-const continueHackGm = true;
+const continueHackGm = false;
 
 const doTheHack = async () => {
   console.log("Doing the hack");

@@ -108,9 +108,9 @@ const renderEntityList = (entityType, activeEntity, datasetEntityObj) => {
         <Group justify="space-between" align="center">
           <Text size="sm">{entity}</Text>
           <Group spacing="xs" align="center">
-            <Text size="xs" fw={200}>
+            {/*<Text size="xs" fw={200}>
               {entityItemsCount}
-            </Text>
+            </Text>*/}
 
             {showSearchIcon && (
               <Tooltip label="Search dataset for this entity" zIndex={2999}>
@@ -185,8 +185,16 @@ const EntityDataSelectorPage = ({
     }
     return totalItems;
   };
+  const countSelectedItemsByEntityType = (entityType) => {
+    if (!datasetEntityObj?.[entityType]) return 0;
+    return Object.values(datasetEntityObj[entityType]).reduce(
+      (acc, entity) => acc + entity.length,
+      0
+    );
+  };
 
   const itemCount = countItemsInDatasetStructure(datasetStructureJSONObj) - 1; // Subtract 1 to exclude the root folder
+  const countItemsSelected = countSelectedItemsByEntityType(entityType);
 
   return (
     <GuidedModePage pageHeader={pageName}>
@@ -195,21 +203,12 @@ const EntityDataSelectorPage = ({
           <Stack>
             <Text>
               The SDS requires you to classify certain types of data separately from the rest of
-              your imported data:
+              your imported data.
             </Text>
+
             <Text>
-              <b>Code:</b> Scripts, computational models, analysis pipelines, or other software used
-              for data processing or analysis.
-            </Text>
-            <Text>
-              <b>Protocol:</b> Instructions for conducting an experiment or analysis.
-            </Text>
-            <Text>
-              <b>Documentation:</b> Supporting documents related to the dataset.
-            </Text>
-            <Text>
-              To categorize your data, select a data type from the list on the left and associate
-              the relevant files from your imported data on the right.
+              If you have data that fits into the any of the buckets listed on the left, click on
+              the bucket and associate the relevant files from the dataset on the right.
             </Text>
           </Stack>
         ) : (
@@ -225,22 +224,27 @@ const EntityDataSelectorPage = ({
       </GuidedModeSection>
       {datasetEntityObj?.[entityType] && (
         <GuidedModeSection>
-          <Progress.Root size="xl">
-            {Object.keys(datasetEntityObj[entityType]).map((entity) => {
-              const entityItemsCount = datasetEntityObj[entityType][entity].length || 0;
-              const progressValue = (entityItemsCount / itemCount) * 100;
+          <Paper p="xs" shadow="sm">
+            <Text size="sm" c="gray">
+              Progress: {countItemsSelected} of {itemCount} items selected
+            </Text>
+            <Progress.Root size="xl">
+              {Object.keys(datasetEntityObj[entityType]).map((entity) => {
+                const entityItemsCount = datasetEntityObj[entityType][entity].length || 0;
+                const progressValue = (entityItemsCount / itemCount) * 100;
 
-              return (
-                <Progress.Section
-                  value={progressValue}
-                  color={getProgressSectionColorByEntityType(entity)}
-                  key={entity}
-                >
-                  <Progress.Label>{entity}</Progress.Label>
-                </Progress.Section>
-              );
-            })}
-          </Progress.Root>
+                return (
+                  <Progress.Section
+                    value={progressValue}
+                    color={getProgressSectionColorByEntityType(entity)}
+                    key={entity}
+                  >
+                    <Progress.Label>{entity}</Progress.Label>
+                  </Progress.Section>
+                );
+              })}
+            </Progress.Root>
+          </Paper>
         </GuidedModeSection>
       )}
       <GuidedModeSection>

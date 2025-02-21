@@ -142,7 +142,7 @@ const FileItem = ({ name, content, onFileClick, isFileSelected, allowStructureEd
       >
         {name}
       </Text>
-      {content.relativePath.includes("mouse-1") && (
+      {/*{content.relativePath.includes("mouse-1") && (
         <Badge color="blue" variant="light" size="sm">
           sub-mouse-1
         </Badge>
@@ -151,7 +151,7 @@ const FileItem = ({ name, content, onFileClick, isFileSelected, allowStructureEd
         <Badge color="red" variant="light" size="sm">
           sam-tissue-1
         </Badge>
-      )}
+      )}*/}
     </Group>
   );
 };
@@ -275,16 +275,16 @@ const FolderItem = ({
         >
           {name}
         </Text>
-        {content.relativePath.includes("mouse-1") && (
-          <Badge color="blue" variant="light" size="sm">
-            sub-mouse-1
-          </Badge>
-        )}
-        {content.relativePath.includes("Tissue_1") && (
-          <Badge color="red" variant="light" size="sm">
-            sam-tissue-1
-          </Badge>
-        )}
+        {/*{content.relativePath.includes("mouse-1") && (
+        <Badge color="blue" variant="light" size="sm">
+          sub-mouse-1
+        </Badge>
+      )}
+      {content.relativePath.includes("Tissue_1") && (
+        <Badge color="red" variant="light" size="sm">
+          sam-tissue-1
+        </Badge>
+      )}*/}
       </Group>
       <Collapse in={isOpen}>
         {naturalSort(Object.keys(content?.folders || {})).map((folderName) => (
@@ -360,7 +360,7 @@ const DatasetTreeViewRenderer = ({
 
   if (renderObjIsEmpty) {
     return (
-      <Paper padding="md" shadow="sm" radius="md" mih={200} p="sm" flex={1} w="100%" withBorder>
+      <Paper padding="md" shadow="sm" radius="md" mih={80} p="sm" flex={1} w="100%" withBorder>
         {itemSelectInstructions && (
           <SodaGreenPaper>
             <Text>{itemSelectInstructions}</Text>
@@ -420,7 +420,8 @@ const DatasetTreeViewRenderer = ({
                   onFolderClick={folderActions?.["on-folder-click"]}
                   onFileClick={fileActions?.["on-file-click"]}
                   folderClickHoverText={
-                    folderActions?.["folder-click-hover-text"] || "Select this folder"
+                    folderActions?.["folder-click-hover-text"] ||
+                    "Toggle this folder and its contents"
                   }
                   datasetStructureSearchFilter={datasetStructureSearchFilter}
                   isFolderSelected={folderActions?.["is-folder-selected"]}

@@ -80,6 +80,15 @@ const contentOptionsMap = {
   },
 };
 
+const wipOptions = [
+  "sites",
+  "subject-sites",
+  "sample-sites",
+  "performances",
+  "subject-performances",
+  "sample-performances",
+];
+
 const DatasetContentSelector = () => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   console.log("selectedEntities", selectedEntities);
@@ -110,13 +119,17 @@ const DatasetContentSelector = () => {
     <FullWidthContainer>
       <Stack spacing="xs">
         {Object.entries(contentOptionsMap).map(([key, option]) => {
-          const isDisabled = option.dependsOn?.some((dep) => !selectedEntities.includes(dep));
+          const isWip = wipOptions.includes(key);
+          const isDisabled =
+            option.dependsOn?.some((dep) => !selectedEntities.includes(dep)) || isWip;
           const isSelected = selectedEntities.includes(key) && !isDisabled;
 
           return (
             <Tooltip
               key={key}
-              label={isDisabled ? option.dependsOnNotSatiatedMessage : ""}
+              label={
+                isDisabled ? (isWip ? "Work in progress!" : option.dependsOnNotSatiatedMessage) : ""
+              }
               disabled={!isDisabled}
               zIndex={2999}
             >
