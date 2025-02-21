@@ -373,6 +373,7 @@ const DatasetTreeViewRenderer = ({
             onChange={handleSearchChange}
             leftSection={<IconSearch stroke={1.5} />}
             mt="md"
+            mb="xs"
           />
         )}
         <Center mt="md">
@@ -400,6 +401,7 @@ const DatasetTreeViewRenderer = ({
           onChange={handleSearchChange}
           leftSection={<IconSearch stroke={1.5} />}
           mt="md"
+          mb="xs"
         />
       )}
       <Stack gap={1} style={{ maxHeight: 700, overflowY: "auto" }} py={3}>

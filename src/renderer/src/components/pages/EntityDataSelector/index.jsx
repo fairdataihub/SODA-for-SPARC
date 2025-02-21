@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo } from "react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import EntityListContainer from "../../containers/EntityListContainer";
@@ -83,10 +83,7 @@ const renderEntityList = (entityType, activeEntity, datasetEntityObj) => {
 
   return naturalSort(Object.keys(datasetEntityObj[entityType])).map((entity) => {
     const entityItemsCount = datasetEntityObj[entityType][entity].length || 0;
-    console.log("entity", entity);
-    console.log("activeEntity", activeEntity);
     const isActive = entity === activeEntity;
-    console.log("isActive", isActive);
 
     // Check if search icon should be shown for specific entities
     const showSearchIcon = ENTITY_PREFIXES.some((prefix) => entity.startsWith(prefix));
@@ -138,16 +135,24 @@ const renderEntityList = (entityType, activeEntity, datasetEntityObj) => {
 };
 
 const getInstructionalTextByEntityType = (entityType) => {
-  console.log("entityType", entityType);
   const instructionalText = {
     Code: "Select all folders and files containing scripts, computational models, analysis pipelines, or any other software used for data processing or analysis.",
     "Experimental data":
-      "Select the folders and files containing data collected from experiments or analyses.",
+      "Select the folders and files containing data collected from experiments or analysis.",
     Other:
       "Select the folders and files that do not contain experimental data or code. Some examples might be protocols, notes, or supplementary materials.",
   };
 
-  return instructionalText[entityType] || "Select the files that contain data." + entityType;
+  return instructionalText[entityType] || `Select the files that contain data for ${entityType}`;
+};
+
+const getProgressSectionColorByEntityType = (entityType) => {
+  const colorMap = {
+    Code: "red",
+    "Experimental data": "cyan",
+    Other: "gray",
+  };
+  return colorMap[entityType] || "cyan";
 };
 
 const EntityDataSelectorPage = ({
@@ -160,28 +165,28 @@ const EntityDataSelectorPage = ({
   const activeEntity = useGlobalStore((state) => state.activeEntity);
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
   const datasetStructureJSONObj = useGlobalStore((state) => state.datasetStructureJSONObj);
-  const countFilesInDatasetStructure = (datasetStructure) => {
+
+  const countItemsInDatasetStructure = (datasetStructure) => {
     if (!datasetStructure) return 0;
-    let totalFiles = 0;
+    let totalItems = 0;
     const keys = Object.keys(datasetStructure);
+
     for (const key of keys) {
       if (key === "files") {
-        totalFiles += Object.keys(datasetStructure[key]).length;
+        totalItems += Object.keys(datasetStructure[key]).length;
       }
       if (key === "folders") {
         const folders = Object.keys(datasetStructure[key]);
-        totalFiles += folders.length;
+        totalItems += folders.length;
         for (const folder of folders) {
-          totalFiles += countFilesInDatasetStructure(datasetStructure[key][folder]);
+          totalItems += countItemsInDatasetStructure(datasetStructure[key][folder]);
         }
       }
     }
-    return totalFiles;
+    return totalItems;
   };
-  console.log(
-    "countFilesInDatasetStructure",
-    countFilesInDatasetStructure(datasetStructureJSONObj) - 1
-  );
+
+  const itemCount = countItemsInDatasetStructure(datasetStructureJSONObj) - 1; // Subtract 1 to exclude the root folder
 
   return (
     <GuidedModePage pageHeader={pageName}>
@@ -215,42 +220,29 @@ const EntityDataSelectorPage = ({
               from the list on the left, then choose the corresponding folders and files from your
               data on the right.
             </Text>
-            {/*
-            <Text>
-              If you have data with folder or file names that match the {entityTypeStringSingular}{" "}
-              IDs you entered, you can automatically associate them by clicking the button below.
-            </Text>
-            <Button
-              w="500px"
-              mt="-5px"
-              mb="lg"
-              onClick={() => {
-                autoSelectDatasetFoldersAndFilesForEnteredEntityIds(
-                  window.datasetStructureJSONObj["folders"]["primary"],
-                  entityType,
-                  entityTypeStringSingular
-                );
-              }}
-              leftSection={<IconWand />}
-            >
-              Auto-associate folders and files containing {entityTypeStringPlural} IDs
-            </Button>*/}
           </Stack>
         )}
       </GuidedModeSection>
-      <GuidedModeSection>
-        <Progress.Root size="xl">
-          <Progress.Section value={35} color="cyan">
-            <Progress.Label>Documents</Progress.Label>
-          </Progress.Section>
-          <Progress.Section value={28} color="pink">
-            <Progress.Label>Photos</Progress.Label>
-          </Progress.Section>
-          <Progress.Section value={15} color="orange">
-            <Progress.Label>Other</Progress.Label>
-          </Progress.Section>
-        </Progress.Root>
-      </GuidedModeSection>
+      {datasetEntityObj?.[entityType] && (
+        <GuidedModeSection>
+          <Progress.Root size="xl">
+            {Object.keys(datasetEntityObj[entityType]).map((entity) => {
+              const entityItemsCount = datasetEntityObj[entityType][entity].length || 0;
+              const progressValue = (entityItemsCount / itemCount) * 100;
+
+              return (
+                <Progress.Section
+                  value={progressValue}
+                  color={getProgressSectionColorByEntityType(entity)}
+                  key={entity}
+                >
+                  <Progress.Label>{entity}</Progress.Label>
+                </Progress.Section>
+              );
+            })}
+          </Progress.Root>
+        </GuidedModeSection>
+      )}
       <GuidedModeSection>
         <Grid gutter="lg">
           <Grid.Col span={4} style={{ position: "sticky", top: "20px" }}>
@@ -266,10 +258,6 @@ const EntityDataSelectorPage = ({
                   itemSelectInstructions={getInstructionalTextByEntityType(activeEntity)}
                   folderActions={{
                     "on-folder-click": (folderName, folderContents, folderIsSelected) => {
-                      console.log("on-folder-click");
-                      console.log("folderName", folderName);
-                      console.log("folderContents", folderContents);
-                      console.log("folderIsSelected", folderIsSelected);
                       handleFolderClick(
                         entityType,
                         activeEntity,

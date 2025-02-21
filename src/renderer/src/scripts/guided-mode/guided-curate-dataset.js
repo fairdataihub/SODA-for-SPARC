@@ -56,7 +56,10 @@ import {
   externallySetSearchFilterValue,
 } from "../../stores/slices/datasetTreeViewSlice";
 import { setSelectedEntities } from "../../stores/slices/datasetContentSelectorSlice";
-import { getZustandStoreDatasetEntityStructure } from "../../stores/slices/datasetEntityStructureSlice";
+import {
+  getZustandStoreDatasetEntityStructure,
+  setZustandStoreDatasetEntityStructure,
+} from "../../stores/slices/datasetEntityStructureSlice";
 
 import "bootstrap-select";
 import Cropper from "cropperjs";
@@ -569,6 +572,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       if (pageBeingLeftComponentType === "dataset-entity-structure-page") {
         const datasetEntityStructure = getZustandStoreDatasetEntityStructure();
         console.log("datasetEntityStructure when leaving", datasetEntityStructure);
+        window.sodaJSONObj["dataset-entity-structure"] = datasetEntityStructure;
       }
       if (pageBeingLeftComponentType === "entity-selection-page") {
         const entityType = pageBeingLeftDataSet.entityType;
@@ -4354,7 +4358,9 @@ window.openPage = async (targetPageID) => {
         }
       }
       if (targetPageComponentType === "dataset-entity-structure-page") {
-        console.log("Entered dataset-entity-structure-page");
+        setZustandStoreDatasetEntityStructure(
+          window.sodaJSONObj["dataset-entity-structure"] || { subjects: [] }
+        );
       }
 
       if (targetPageComponentType === "entity-selection-page") {
@@ -4377,6 +4383,9 @@ window.openPage = async (targetPageID) => {
             addEntityToEntityList("bucketed-data", bucketType);
           }
           console.log("datasetEntityObj", useGlobalStore.getState().datasetEntityObj);
+        }
+
+        if (pageEntityType === "subjects") {
         }
 
         console.log("savedDatasetEntityObj", savedDatasetEntityObj);

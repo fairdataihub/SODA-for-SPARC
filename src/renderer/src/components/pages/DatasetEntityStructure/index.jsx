@@ -30,56 +30,30 @@ const generateChildId = (parentId, childPrefix, childLabel, childIndex, appendIn
 const DatasetEntityStructurePage = () => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
 
-  // The species configuration is used to build subjects.
-  const initialOrganism = {
-    subjectCount: 1,
-    species: "mouse",
-    metadata: {},
-    // Subject-level sites/performances (if enabled)
-    subjectSiteCount: selectedEntities.includes("subject-sites") ? 1 : 0,
-    subjectPerformanceCount: selectedEntities.includes("subject-performances") ? 1 : 0,
-    // Sample-related configuration
-    sampleTypes: [
-      {
-        label: "tissue", // used only for ID generation
-        count: 1,
-        metadata: {},
-        siteCount: selectedEntities.includes("sample-sites") ? 1 : 0,
-        performanceCount: selectedEntities.includes("sample-performances") ? 1 : 0,
-      },
-      {
-        label: "blood",
-        count: 2,
-        metadata: {},
-        siteCount: selectedEntities.includes("sample-sites") ? 1 : 0,
-        performanceCount: selectedEntities.includes("sample-performances") ? 1 : 0,
-      },
-    ],
-  };
-
-  // Even though the UI groups configuration by organism,
+  // Even though the UI groups configuration by species,
   // the final JSON is a flat array of subjects.
-  const [organisms, setOrganisms] = useState([initialOrganism]);
+  const [speciesList, setSpeciesList] = useState([]);
   const [datasetEntityStructure, setDataEntityStructure] = useState({ subjects: [] });
+  console.log("speciesList", speciesList);
   console.log("datasetEntityStructure", datasetEntityStructure);
 
   useEffect(() => {
-    const newSubjects = organisms
-      .filter((org) => org.species.trim())
-      .flatMap((org) =>
-        Array.from({ length: org.subjectCount }, (_, i) => {
-          // Generate subjectId using the organism's species.
-          const subjectId = `sub-${org.species}-${i + 1}`;
+    const newSubjects = speciesList
+      .filter((sp) => sp.species.trim())
+      .flatMap((sp) =>
+        Array.from({ length: sp.subjectCount }, (_, i) => {
+          // Generate subjectId using the species name.
+          const subjectId = `sub-${sp.species}-${i + 1}`;
           // Generate subject-level sites and performances if applicable.
           const subjectSites = selectedEntities.includes("subject-sites")
-            ? createSubjectSites(subjectId, org)
+            ? createSubjectSites(subjectId, sp)
             : [];
           const subjectPerformances = selectedEntities.includes("subject-performances")
-            ? createSubjectPerformances(subjectId, org)
+            ? createSubjectPerformances(subjectId, sp)
             : [];
           // Generate samples only if "samples" is selected.
           const samples = selectedEntities.includes("samples")
-            ? org.sampleTypes
+            ? sp.sampleTypes
                 .filter((sampleType) => sampleType.label.trim())
                 .flatMap((sampleType) => createSamples(subjectId, sampleType))
             : [];
@@ -94,18 +68,18 @@ const DatasetEntityStructurePage = () => {
       );
     setDataEntityStructure({ subjects: newSubjects });
     setZustandStoreDatasetEntityStructure({ subjects: newSubjects });
-  }, [organisms, selectedEntities]);
+  }, [speciesList, selectedEntities]);
 
   // Helper functions for subject-level sites and performances.
-  const createSubjectSites = (subjectId, organism) => {
-    return Array.from({ length: organism.subjectSiteCount }, (_, idx) => {
+  const createSubjectSites = (subjectId, species) => {
+    return Array.from({ length: species.subjectSiteCount }, (_, idx) => {
       const siteId = `site-${subjectId}-site-${idx + 1}`;
       return { siteId, metadata: {} };
     });
   };
 
-  const createSubjectPerformances = (subjectId, organism) => {
-    return Array.from({ length: organism.subjectPerformanceCount }, (_, idx) => {
+  const createSubjectPerformances = (subjectId, species) => {
+    return Array.from({ length: species.subjectPerformanceCount }, (_, idx) => {
       const performanceId = `perf-${subjectId}-perf-${idx + 1}`;
       return { performanceId, metadata: {} };
     });
@@ -146,14 +120,14 @@ const DatasetEntityStructurePage = () => {
     });
   };
 
-  // ─── Organism / Subject Handlers ─────────────────────────────
+  // ─── Species / Subject Handlers ─────────────────────────────
 
-  const handleOrganismCountChange = (count) => {
-    setOrganisms((prev) => {
+  const handleSpeciesCountChange = (count) => {
+    setSpeciesList((prev) => {
       const newCount = count || 0;
-      const newOrgs = [...prev];
-      while (newOrgs.length < newCount) {
-        newOrgs.push({
+      const newSpecies = [...prev];
+      while (newSpecies.length < newCount) {
+        newSpecies.push({
           subjectCount: 1,
           species: "",
           metadata: {},
@@ -170,12 +144,12 @@ const DatasetEntityStructurePage = () => {
           ],
         });
       }
-      return newOrgs.slice(0, newCount);
+      return newSpecies.slice(0, newCount);
     });
   };
 
   const handleSpeciesNameChange = (index, value) => {
-    setOrganisms((prev) => {
+    setSpeciesList((prev) => {
       const updated = [...prev];
       updated[index] = { ...updated[index], species: value };
       return updated;
@@ -183,7 +157,7 @@ const DatasetEntityStructurePage = () => {
   };
 
   const handleSubjectCountChange = (index, value) => {
-    setOrganisms((prev) => {
+    setSpeciesList((prev) => {
       const updated = [...prev];
       updated[index] = { ...updated[index], subjectCount: value || 1 };
       return updated;
@@ -192,28 +166,28 @@ const DatasetEntityStructurePage = () => {
 
   // ─── Handlers for Subject-Level Options (sites and performances) ─────
 
-  const handleOrganismSubjectSiteCountChange = (orgIndex, value) => {
-    setOrganisms((prev) => {
+  const handleSpeciesSubjectSiteCountChange = (speciesIndex, value) => {
+    setSpeciesList((prev) => {
       const updated = [...prev];
-      updated[orgIndex].subjectSiteCount = value;
+      updated[speciesIndex].subjectSiteCount = value;
       return updated;
     });
   };
 
-  const handleOrganismSubjectPerformanceCountChange = (orgIndex, value) => {
-    setOrganisms((prev) => {
+  const handleSpeciesSubjectPerformanceCountChange = (speciesIndex, value) => {
+    setSpeciesList((prev) => {
       const updated = [...prev];
-      updated[orgIndex].subjectPerformanceCount = value;
+      updated[speciesIndex].subjectPerformanceCount = value;
       return updated;
     });
   };
 
-  // ─── Sample Type Handlers for Each Organism ─────────────────────────────
+  // ─── Sample Type Handlers for Each Species ─────────────────────────────
   // (These controls are only relevant if "samples" is selected.)
-  const handleOrganismSampleCountChange = (orgIndex, count) => {
-    setOrganisms((prev) => {
+  const handleSpeciesSampleCountChange = (speciesIndex, count) => {
+    setSpeciesList((prev) => {
       const updated = [...prev];
-      const current = updated[orgIndex].sampleTypes;
+      const current = updated[speciesIndex].sampleTypes;
       const newCount = count || 0;
       if (newCount > current.length) {
         const defaults = Array(newCount - current.length)
@@ -225,37 +199,37 @@ const DatasetEntityStructurePage = () => {
             siteCount: selectedEntities.includes("sample-sites") ? 1 : 0,
             performanceCount: selectedEntities.includes("sample-performances") ? 1 : 0,
           }));
-        updated[orgIndex].sampleTypes = [...current, ...defaults];
+        updated[speciesIndex].sampleTypes = [...current, ...defaults];
       } else {
-        updated[orgIndex].sampleTypes = current.slice(0, newCount);
+        updated[speciesIndex].sampleTypes = current.slice(0, newCount);
       }
       return updated;
     });
   };
 
-  const handleOrganismSampleTypeChange = (orgIndex, sampleIndex, field, value) => {
-    setOrganisms((prev) => {
+  const handleSpeciesSampleTypeChange = (speciesIndex, sampleIndex, field, value) => {
+    setSpeciesList((prev) => {
       const updated = [...prev];
-      updated[orgIndex].sampleTypes[sampleIndex] = {
-        ...updated[orgIndex].sampleTypes[sampleIndex],
+      updated[speciesIndex].sampleTypes[sampleIndex] = {
+        ...updated[speciesIndex].sampleTypes[sampleIndex],
         [field]: value,
       };
       return updated;
     });
   };
 
-  const handleOrganismSiteCountChange = (orgIndex, sampleIndex, value) => {
-    setOrganisms((prev) => {
+  const handleSpeciesSiteCountChange = (speciesIndex, sampleIndex, value) => {
+    setSpeciesList((prev) => {
       const updated = [...prev];
-      updated[orgIndex].sampleTypes[sampleIndex].siteCount = value;
+      updated[speciesIndex].sampleTypes[sampleIndex].siteCount = value;
       return updated;
     });
   };
 
-  const handleOrganismPerformanceCountChange = (orgIndex, sampleIndex, value) => {
-    setOrganisms((prev) => {
+  const handleSpeciesPerformanceCountChange = (speciesIndex, sampleIndex, value) => {
+    setSpeciesList((prev) => {
       const updated = [...prev];
-      updated[orgIndex].sampleTypes[sampleIndex].performanceCount = value;
+      updated[speciesIndex].sampleTypes[sampleIndex].performanceCount = value;
       return updated;
     });
   };
@@ -264,14 +238,14 @@ const DatasetEntityStructurePage = () => {
 
   // Render inputs for each sample type.
   // This section is only rendered if "samples" is in selectedEntities.
-  const renderOrganismSampleTypeInputs = (orgIndex, sampleType, sampleIndex) => (
+  const renderSpeciesSampleTypeInputs = (speciesIndex, sampleType, sampleIndex) => (
     <Stack key={sampleIndex} spacing="xs" my="md">
       <Group align="flex-start" w="100%">
         <TextInput
           label={`Enter sample type for sample ${sampleIndex + 1}:`}
           value={sampleType.label}
           onChange={(e) =>
-            handleOrganismSampleTypeChange(orgIndex, sampleIndex, "label", e.target.value)
+            handleSpeciesSampleTypeChange(speciesIndex, sampleIndex, "label", e.target.value)
           }
           placeholder="e.g., tissue"
           flex={1}
@@ -281,7 +255,7 @@ const DatasetEntityStructurePage = () => {
             label={`Number of ${sampleType.label} samples per subject:`}
             value={sampleType.count}
             onChange={(value) =>
-              handleOrganismSampleTypeChange(orgIndex, sampleIndex, "count", value)
+              handleSpeciesSampleTypeChange(speciesIndex, sampleIndex, "count", value)
             }
             min={1}
             max={200}
@@ -296,7 +270,7 @@ const DatasetEntityStructurePage = () => {
           <NumberInput
             label={`Number of sites for ${sampleType.label || "samples"}`}
             value={sampleType.siteCount}
-            onChange={(value) => handleOrganismSiteCountChange(orgIndex, sampleIndex, value)}
+            onChange={(value) => handleSpeciesSiteCountChange(speciesIndex, sampleIndex, value)}
             min={0}
             max={10}
             step={1}
@@ -309,7 +283,9 @@ const DatasetEntityStructurePage = () => {
           <NumberInput
             label={`Number of performances for ${sampleType.label || "samples"}`}
             value={sampleType.performanceCount}
-            onChange={(value) => handleOrganismPerformanceCountChange(orgIndex, sampleIndex, value)}
+            onChange={(value) =>
+              handleSpeciesPerformanceCountChange(speciesIndex, sampleIndex, value)
+            }
             min={0}
             max={10}
             step={1}
@@ -320,19 +296,19 @@ const DatasetEntityStructurePage = () => {
   );
 
   // Render configuration for a single species.
-  const renderOrganism = (organism, orgIndex) => (
-    <Paper key={orgIndex} withBorder shadow="xs" p="md" my="sm">
-      <Text size="md" fw={600}>{`Species ${orgIndex + 1}`}</Text>
+  const renderSpecies = (species, speciesIndex) => (
+    <Paper key={speciesIndex} withBorder shadow="xs" p="md" my="sm">
+      <Text size="md" fw={600}>{`Species ${speciesIndex + 1}`}</Text>
       <TextInput
         label="Species Name"
         placeholder="e.g., mouse"
-        value={organism.species}
-        onChange={(e) => handleSpeciesNameChange(orgIndex, e.target.value)}
+        value={species.species}
+        onChange={(e) => handleSpeciesNameChange(speciesIndex, e.target.value)}
       />
       <NumberInput
         label="How many subjects did you collect data from for this species?"
-        value={organism.subjectCount}
-        onChange={(value) => handleSubjectCountChange(orgIndex, value)}
+        value={species.subjectCount}
+        onChange={(value) => handleSubjectCountChange(speciesIndex, value)}
         min={1}
         max={100}
         step={1}
@@ -341,8 +317,8 @@ const DatasetEntityStructurePage = () => {
       {selectedEntities.includes("subject-sites") && (
         <NumberInput
           label="Number of subject sites for this species"
-          value={organism.subjectSiteCount}
-          onChange={(value) => handleOrganismSubjectSiteCountChange(orgIndex, value)}
+          value={species.subjectSiteCount}
+          onChange={(value) => handleSpeciesSubjectSiteCountChange(speciesIndex, value)}
           min={0}
           max={10}
           step={1}
@@ -350,9 +326,9 @@ const DatasetEntityStructurePage = () => {
       )}
       {selectedEntities.includes("subject-performances") && (
         <NumberInput
-          label="Number of subject performances for this species or organism"
-          value={organism.subjectPerformanceCount}
-          onChange={(value) => handleOrganismSubjectPerformanceCountChange(orgIndex, value)}
+          label="Number of subject performances for this species"
+          value={species.subjectPerformanceCount}
+          onChange={(value) => handleSpeciesSubjectPerformanceCountChange(speciesIndex, value)}
           min={0}
           max={10}
           step={1}
@@ -362,18 +338,18 @@ const DatasetEntityStructurePage = () => {
         <>
           <Divider my="md" />
           <Text size="md" fw={600}>
-            {`${organism.species} samples`}
+            {`${species.species} samples`}
           </Text>
           <NumberInput
             label="How many types of samples did you collect from each subject?"
-            value={organism.sampleTypes.length}
-            onChange={(value) => handleOrganismSampleCountChange(orgIndex, value)}
+            value={species.sampleTypes.length}
+            onChange={(value) => handleSpeciesSampleCountChange(speciesIndex, value)}
             min={1}
             max={10}
             step={1}
           />
-          {organism.sampleTypes.map((sampleType, sampleIndex) =>
-            renderOrganismSampleTypeInputs(orgIndex, sampleType, sampleIndex)
+          {species.sampleTypes.map((sampleType, sampleIndex) =>
+            renderSpeciesSampleTypeInputs(speciesIndex, sampleType, sampleIndex)
           )}
         </>
       )}
@@ -454,8 +430,8 @@ const DatasetEntityStructurePage = () => {
     <GuidedModePage pageHeader="Generate IDs to Associate Data With">
       <GuidedModeSection>
         <Text>
-          Provide details about the entities from which you collected data from during your study.
-          This information will be used to generate unique IDs for data association in the following
+          Provide details about the entities from which you collected data during your study. This
+          information will be used to generate unique IDs for data association in the following
           steps.
         </Text>
       </GuidedModeSection>
@@ -464,13 +440,13 @@ const DatasetEntityStructurePage = () => {
           <Paper withBorder shadow="sm" p="md">
             <NumberInput
               label="How many different species did you collect data from?"
-              value={organisms.length}
-              onChange={handleOrganismCountChange}
+              value={speciesList.length}
+              onChange={handleSpeciesCountChange}
               min={1}
               max={10}
               step={1}
             />
-            {organisms.map(renderOrganism)}
+            {speciesList.map(renderSpecies)}
           </Paper>
 
           <Divider my="md" />
