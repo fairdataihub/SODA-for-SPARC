@@ -120,15 +120,14 @@ const DatasetContentSelector = () => {
       <Stack spacing="xs">
         {Object.entries(contentOptionsMap).map(([key, option]) => {
           const isWip = wipOptions.includes(key);
-          const isDisabled =
-            option.dependsOn?.some((dep) => !selectedEntities.includes(dep)) || isWip;
+          const isDisabled = option.dependsOn?.some((dep) => !selectedEntities.includes(dep));
           const isSelected = selectedEntities.includes(key) && !isDisabled;
 
           return (
             <Tooltip
               key={key}
               label={
-                isDisabled ? (isWip ? "Work in progress!" : option.dependsOnNotSatiatedMessage) : ""
+                isDisabled ? option.dependsOnNotSatiatedMessage || "This option is disabled" : null
               }
               disabled={!isDisabled}
               zIndex={2999}

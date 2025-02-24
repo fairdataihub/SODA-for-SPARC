@@ -1,83 +1,80 @@
-import { Stack, Group, Text, Box, Flex } from "@mantine/core";
+import { Stack, Text, Box, Flex } from "@mantine/core";
 import { IconUser, IconFlask, IconClipboard, IconPin } from "@tabler/icons-react";
 
-const EntityHierarchyRenderer = ({ datasetEntityStructure }) => {
-  if (!datasetEntityStructure) {
-    return null;
-  }
+const HierarchyItem = ({ icon: Icon, label, children, borderColor }) => (
+  <Box ml="xs" style={{ borderLeft: `3px solid gray` }}>
+    <Flex align="center" gap="5px">
+      <Box bg="gray" h="3px" w="10px"></Box>
+      <Icon size={15} />
+      <Text>{label}</Text>
+    </Flex>
+    {children}
+  </Box>
+);
+
+const EntityHierarchyRenderer = ({ datasetEntityArray }) => {
+  if (!datasetEntityArray?.length) return null;
+
   return (
     <Stack spacing="md">
-      {datasetEntityStructure.subjects.map((subject) => (
+      {datasetEntityArray.map((subject) => (
         <Box
           key={subject.subjectId}
-          sx={{
+          style={{
             border: "1px solid #ddd",
             borderRadius: "8px",
             padding: "8px",
             marginBottom: "8px",
           }}
         >
-          <Flex gap="xs" align="center">
+          <Flex align="center" gap="xs">
             <IconUser size={15} />
             <Text fw={600}>{subject.subjectId}</Text>
           </Flex>
 
-          {subject.subjectSites?.length > 0 && (
-            <Box ml="xs" pl="xs" style={{ borderLeft: "2px solid purple" }}>
-              {subject.subjectSites.map((site) => (
-                <Flex key={site.siteId} gap="xs" align="center">
-                  <IconPin size={15} />
-                  <Text>{site.siteId}</Text>
-                </Flex>
+          {subject.subjectSites?.map((site) => (
+            <HierarchyItem
+              key={site.siteId}
+              icon={IconPin}
+              label={site.siteId}
+              borderColor="purple"
+            />
+          ))}
+
+          {subject.subjectPerformances?.map((performance) => (
+            <HierarchyItem
+              key={performance.performanceId}
+              icon={IconClipboard}
+              label={performance.performanceId}
+              borderColor="teal"
+            />
+          ))}
+
+          {subject.samples?.map((sample) => (
+            <HierarchyItem
+              key={sample.sampleId}
+              icon={IconFlask}
+              label={sample.sampleId}
+              borderColor="green"
+            >
+              {sample.sites?.map((site) => (
+                <HierarchyItem
+                  key={site.siteId}
+                  icon={IconPin}
+                  label={site.siteId}
+                  borderColor="orange"
+                />
               ))}
-            </Box>
-          )}
-
-          {subject.subjectPerformances?.length > 0 && (
-            <Box ml="xs" pl="xs" style={{ borderLeft: "2px solid teal" }}>
-              {subject.subjectPerformances.map((performance) => (
-                <Flex key={performance.performanceId} gap="xs" align="center">
-                  <IconClipboard size={15} />
-                  <Text>{performance.performanceId}</Text>
-                </Flex>
+              {sample.performances?.map((performance) => (
+                <HierarchyItem
+                  key={performance.performanceId}
+                  icon={IconClipboard}
+                  label={performance.performanceId}
+                  borderColor="blue"
+                />
               ))}
-            </Box>
-          )}
-
-          {subject.samples?.length > 0 && (
-            <Box ml="xs" pl="xs" style={{ borderLeft: "2px solid green" }}>
-              {subject.samples.map((sample) => (
-                <Box key={sample.sampleId} ml="xs" mb="4px">
-                  <Flex gap="xs" align="center">
-                    <IconFlask size={15} />
-                    <Text fw={500}>{sample.sampleId}</Text>
-                  </Flex>
-
-                  {sample.sites?.length > 0 && (
-                    <Box ml="xs" pl="xs" style={{ borderLeft: "2px solid orange" }}>
-                      {sample.sites.map((site) => (
-                        <Flex key={site.siteId} gap="xs" align="center">
-                          <IconPin size={15} />
-                          <Text>{site.siteId}</Text>
-                        </Flex>
-                      ))}
-                    </Box>
-                  )}
-
-                  {sample.performances?.length > 0 && (
-                    <Box ml="xs" pl="xs" style={{ borderLeft: "2px solid blue" }}>
-                      {sample.performances.map((performance) => (
-                        <Flex key={performance.performanceId} gap="xs" align="center">
-                          <IconClipboard size={15} />
-                          <Text>{performance.performanceId}</Text>
-                        </Flex>
-                      ))}
-                    </Box>
-                  )}
-                </Box>
-              ))}
-            </Box>
-          )}
+            </HierarchyItem>
+          ))}
         </Box>
       ))}
     </Stack>

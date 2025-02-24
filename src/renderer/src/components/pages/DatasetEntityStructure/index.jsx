@@ -17,9 +17,18 @@ import { IconUser, IconFlask, IconClipboard, IconPin } from "@tabler/icons-react
 import { setZustandStoreDatasetEntityStructure } from "../../../stores/slices/datasetEntityStructureSlice";
 import EntityHierarchyRenderer from "../../shared/EntityHierarchyRenderer";
 
-// Helper: Generates a child ID using the parent's ID, a prefix, a label, and an index.
+/**
+ * Generates a child ID based on the parent's ID.
+ *
+ * @param {string} parentId - The parent's ID.
+ * @param {string} childPrefix - The prefix for the child (e.g., "sam").
+ * @param {string} childLabel - A label for the child (e.g., sample type).
+ * @param {number} childIndex - The child’s index (1-based).
+ * @param {boolean} appendIndex - Whether to append the index.
+
+ * @returns {string} The generated child ID.
+ */
 const generateChildId = (parentId, childPrefix, childLabel, childIndex, appendIndex = true) => {
-  // The label (e.g., a sample type) is used in the generated ID.
   const dashIndex = parentId.indexOf("-");
   const rest = dashIndex >= 0 ? parentId.substring(dashIndex) : "";
   return appendIndex
@@ -28,30 +37,30 @@ const generateChildId = (parentId, childPrefix, childLabel, childIndex, appendIn
 };
 
 const DatasetEntityStructurePage = () => {
+  // Global configuration for what entities to include.
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
 
-  // Even though the UI groups configuration by species,
-  // the final JSON is a flat array of subjects.
+  // The list of species configurations (each containing sample info, counts, etc.)
   const [speciesList, setSpeciesList] = useState([]);
-  const [datasetEntityStructure, setDataEntityStructure] = useState({ subjects: [] });
-  console.log("speciesList", speciesList);
-  console.log("datasetEntityStructure", datasetEntityStructure);
+  // Main data structure: an array of subjects.
+  const [datasetEntityArray, setDatasetEntityArray] = useState([]);
+  console.log("subjects", datasetEntityArray);
 
+  /**
+   * When the speciesList or selectedEntities change, rebuild the subjects array.
+   */
   useEffect(() => {
     const newSubjects = speciesList
       .filter((sp) => sp.species.trim())
       .flatMap((sp) =>
         Array.from({ length: sp.subjectCount }, (_, i) => {
-          // Generate subjectId using the species name.
           const subjectId = `sub-${sp.species}-${i + 1}`;
-          // Generate subject-level sites and performances if applicable.
           const subjectSites = selectedEntities.includes("subject-sites")
             ? createSubjectSites(subjectId, sp)
             : [];
           const subjectPerformances = selectedEntities.includes("subject-performances")
             ? createSubjectPerformances(subjectId, sp)
             : [];
-          // Generate samples only if "samples" is selected.
           const samples = selectedEntities.includes("samples")
             ? sp.sampleTypes
                 .filter((sampleType) => sampleType.label.trim())
@@ -66,28 +75,27 @@ const DatasetEntityStructurePage = () => {
           };
         })
       );
-    setDataEntityStructure({ subjects: newSubjects });
-    setZustandStoreDatasetEntityStructure({ subjects: newSubjects });
+    setDatasetEntityArray(newSubjects);
+    // Update the global store with the new array of subjects.
+    setZustandStoreDatasetEntityStructure(newSubjects);
   }, [speciesList, selectedEntities]);
 
-  // Helper functions for subject-level sites and performances.
-  const createSubjectSites = (subjectId, species) => {
-    return Array.from({ length: species.subjectSiteCount }, (_, idx) => {
-      const siteId = `site-${subjectId}-site-${idx + 1}`;
-      return { siteId, metadata: {} };
-    });
-  };
+  // ─── Helper Functions for Generating Entities ─────────────────────────────
 
-  const createSubjectPerformances = (subjectId, species) => {
-    return Array.from({ length: species.subjectPerformanceCount }, (_, idx) => {
-      const performanceId = `perf-${subjectId}-perf-${idx + 1}`;
-      return { performanceId, metadata: {} };
-    });
-  };
+  const createSubjectSites = (subjectId, species) =>
+    Array.from({ length: species.subjectSiteCount }, (_, idx) => ({
+      siteId: `site-${subjectId}-site-${idx + 1}`,
+      metadata: {},
+    }));
 
-  // Create samples for a subject.
-  const createSamples = (parentId, sampleType) => {
-    return Array.from({ length: sampleType.count }, (_, sampleInstance) => {
+  const createSubjectPerformances = (subjectId, species) =>
+    Array.from({ length: species.subjectPerformanceCount }, (_, idx) => ({
+      performanceId: `perf-${subjectId}-perf-${idx + 1}`,
+      metadata: {},
+    }));
+
+  const createSamples = (parentId, sampleType) =>
+    Array.from({ length: sampleType.count }, (_, sampleInstance) => {
       const sampleId = generateChildId(parentId, "sam", sampleType.label, sampleInstance + 1, true);
       const sampleSites = selectedEntities.includes("sample-sites")
         ? createSampleSites(sampleId, sampleType)
@@ -104,23 +112,20 @@ const DatasetEntityStructurePage = () => {
         }),
       };
     });
-  };
 
-  const createSampleSites = (parentId, sampleType) => {
-    return Array.from({ length: sampleType.siteCount }, (_, idx) => {
-      const siteId = generateChildId(parentId, "site", sampleType.label, idx + 1, true);
-      return { siteId, metadata: {} };
-    });
-  };
+  const createSampleSites = (parentId, sampleType) =>
+    Array.from({ length: sampleType.siteCount }, (_, idx) => ({
+      siteId: generateChildId(parentId, "site", sampleType.label, idx + 1, true),
+      metadata: {},
+    }));
 
-  const createSamplePerformances = (parentId, sampleType) => {
-    return Array.from({ length: sampleType.performanceCount }, (_, idx) => {
-      const performanceId = generateChildId(parentId, "perf", sampleType.label, idx + 1, true);
-      return { performanceId, metadata: {} };
-    });
-  };
+  const createSamplePerformances = (parentId, sampleType) =>
+    Array.from({ length: sampleType.performanceCount }, (_, idx) => ({
+      performanceId: generateChildId(parentId, "perf", sampleType.label, idx + 1, true),
+      metadata: {},
+    }));
 
-  // ─── Species / Subject Handlers ─────────────────────────────
+  // ─── Handlers for Updating Species and Sample Configurations ─────────────
 
   const handleSpeciesCountChange = (count) => {
     setSpeciesList((prev) => {
@@ -164,8 +169,6 @@ const DatasetEntityStructurePage = () => {
     });
   };
 
-  // ─── Handlers for Subject-Level Options (sites and performances) ─────
-
   const handleSpeciesSubjectSiteCountChange = (speciesIndex, value) => {
     setSpeciesList((prev) => {
       const updated = [...prev];
@@ -182,8 +185,6 @@ const DatasetEntityStructurePage = () => {
     });
   };
 
-  // ─── Sample Type Handlers for Each Species ─────────────────────────────
-  // (These controls are only relevant if "samples" is selected.)
   const handleSpeciesSampleCountChange = (speciesIndex, count) => {
     setSpeciesList((prev) => {
       const updated = [...prev];
@@ -236,8 +237,6 @@ const DatasetEntityStructurePage = () => {
 
   // ─── Rendering Functions ─────────────────────────────
 
-  // Render inputs for each sample type.
-  // This section is only rendered if "samples" is in selectedEntities.
   const renderSpeciesSampleTypeInputs = (speciesIndex, sampleType, sampleIndex) => (
     <Stack key={sampleIndex} spacing="xs" my="md">
       <Group align="flex-start" w="100%">
@@ -295,7 +294,6 @@ const DatasetEntityStructurePage = () => {
     </Stack>
   );
 
-  // Render configuration for a single species.
   const renderSpecies = (species, speciesIndex) => (
     <Paper key={speciesIndex} withBorder shadow="xs" p="md" my="sm">
       <Text size="md" fw={600}>{`Species ${speciesIndex + 1}`}</Text>
@@ -337,9 +335,7 @@ const DatasetEntityStructurePage = () => {
       {selectedEntities.includes("samples") && (
         <>
           <Divider my="md" />
-          <Text size="md" fw={600}>
-            {`${species.species} samples`}
-          </Text>
+          <Text size="md" fw={600}>{`${species.species} samples`}</Text>
           <NumberInput
             label="How many types of samples did you collect from each subject?"
             value={species.sampleTypes.length}
@@ -356,7 +352,6 @@ const DatasetEntityStructurePage = () => {
     </Paper>
   );
 
-  // Render a preview for a single subject.
   const renderSubjectSamples = (subject) => (
     <Box
       key={subject.subjectId}
@@ -391,7 +386,7 @@ const DatasetEntityStructurePage = () => {
           ))}
         </Box>
       )}
-      {selectedEntities.includes("samples") && subject?.samples.length > 0 && (
+      {selectedEntities.includes("samples") && subject.samples?.length > 0 && (
         <Box ml="xs" pl="xs" style={{ borderLeft: "2px solid green" }}>
           {subject.samples.map((sample) => (
             <Box key={sample.sampleId} ml="xs" mb="4px">
@@ -459,12 +454,7 @@ const DatasetEntityStructurePage = () => {
             <Text mb="md">
               Please verify that the generated structure below is correct before proceeding.
             </Text>
-            <EntityHierarchyRenderer datasetEntityStructure={datasetEntityStructure} />
-            {/*{datasetEntityStructure.subjects && datasetEntityStructure.subjects.length > 0 && (
-              <Stack spacing="3px">
-                {datasetEntityStructure.subjects.map(renderSubjectSamples)}
-              </Stack>
-            )}*/}
+            <EntityHierarchyRenderer datasetEntityArray={datasetEntityArray} />
           </Paper>
         </Stack>
       </GuidedModeSection>

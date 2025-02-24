@@ -569,7 +569,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         window.sodaJSONObj["dataset-entity-obj"] = datasetEntityObj;
       }
 
-      if (pageBeingLeftComponentType === "dataset-entity-structure-page") {
+      if (pageBeingLeftComponentType === "dataset-entity-id-generation-page") {
         const datasetEntityStructure = getZustandStoreDatasetEntityStructure();
         console.log("datasetEntityStructure when leaving", datasetEntityStructure);
         window.sodaJSONObj["dataset-entity-structure"] = datasetEntityStructure;
@@ -4357,7 +4357,7 @@ window.openPage = async (targetPageID) => {
           }
         }
       }
-      if (targetPageComponentType === "dataset-entity-structure-page") {
+      if (targetPageComponentType === "dataset-entity-id-generation-page") {
         setZustandStoreDatasetEntityStructure(
           window.sodaJSONObj["dataset-entity-structure"] || { subjects: [] }
         );
@@ -4408,7 +4408,7 @@ window.openPage = async (targetPageID) => {
         }
         */
       }
-      if (targetPageComponentType === "dataset-entity-structure-page") {
+      if (targetPageComponentType === "dataset-entity-id-generation-page") {
         setSelectedEntities(window.sodaJSONObj["selected-entities"] || []);
       }
     }

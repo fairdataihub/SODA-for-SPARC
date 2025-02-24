@@ -159,11 +159,19 @@ const componentTypeRenderers = {
       </SodaComponentWrapper>
     );
   },
-  "dataset-entity-structure-page": (componentSlot) => {
+  "dataset-entity-id-generation-page": (componentSlot) => {
     const root = createRoot(componentSlot);
     root.render(
       <SodaComponentWrapper>
         <DatasetEntityStructurePage />
+      </SodaComponentWrapper>
+    );
+  },
+  "dataset-entity-id-management-page": (componentSlot) => {
+    const root = createRoot(componentSlot);
+    root.render(
+      <SodaComponentWrapper>
+        <DatasetEntityManagementPage />
       </SodaComponentWrapper>
     );
   },

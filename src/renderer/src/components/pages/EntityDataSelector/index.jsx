@@ -221,7 +221,7 @@ const EntityDataSelectorPage = ({
         <GuidedModeSection>
           <Paper p="xs" shadow="sm">
             <Text size="sm" c="gray">
-              Progress: {countItemsSelected} of {itemCount} items selected
+              Progress: {countItemsSelected} of {itemCount} folders and files bucketed
             </Text>
             <Progress.Root size="xl">
               {Object.keys(datasetEntityObj[entityType]).map((entity) => {

@@ -1,8 +1,21 @@
 import useGlobalStore from "../globalStore";
 
 export const datasetEntityStructureSlice = (set) => ({
-  datasetEntityStructure: { subjects: [] },
+  speciesList: [],
+  datasetEntityArray: [],
 });
+
+export const setSpeciesList = (speciesList) => {
+  useGlobalStore.setState({
+    speciesList,
+  });
+};
+
+export const setDatasetEntityArray = (subjects) => {
+  useGlobalStore.setState({
+    subjects,
+  });
+};
 
 export const setZustandStoreDatasetEntityStructure = (datasetEntityStructure) => {
   useGlobalStore.setState({
