@@ -436,10 +436,11 @@
         </div>
 
         <div class="guided--page" id="guided-curation-preparation-intro-tab" data-page-name="Intro">
-          <h1 class="text-sub-step-title">Curation Preparation Introduction</h1>
+          <h1 class="text-sub-step-title">Let's get started!</h1>
           <div class="guided--section">
             <p class="help-text">
-              Let’s start with some high-level questions so we can understand your dataset.
+              We will ask you some high-level questions in the next few steps to understand your
+              data.
             </p>
           </div>
           <div class="guided--section">
@@ -455,7 +456,6 @@
             </h2>
           </div>
         </div>
-
         <div
           class="guided--page"
           id="guided-ask-if-submission-is-sparc-funded-tab"
@@ -626,8 +626,12 @@
           </div>
         </div>
 
-        <div id="guided-prepare-helpers-tab" class="guided--page" data-page-name="Prepare data">
-          <h1 class="text-sub-step-title">Before getting started</h1>
+        <div
+          id="guided-prepare-helpers-tab"
+          class="guided--page"
+          data-page-name="Prerequisite resources"
+        >
+          <h1 class="text-sub-step-title">Prerequisite resources</h1>
 
           <div class="guided--section">
             <p class="help-text">
@@ -1046,6 +1050,36 @@
         </div>
         -->
         <div
+          id="guided-unstructured-data-import-tab"
+          class="guided--page"
+          data-page-name="Data Importation"
+        >
+          <div class="guided--section">
+            <h1 class="text-sub-step-title">Data Importation</h1>
+            <p class="help-text w-100">
+              Import all of the data that you would like to include in your dataset below.
+            </p>
+          </div>
+          <div
+            data-component-type="data-importer"
+            data-data-type=""
+            data-relative-folder-path-to-import-data-into="data/"
+            class="guided--section"
+          ></div>
+        </div>
+
+        <div
+          id="data-bucketing-tab"
+          data-page-name="Data bucketing"
+          class="guided--page"
+          data-component-type="entity-selection-page"
+          data-entity-type="bucketed-data"
+          data-entity-type-string-singular="Data buckets"
+          data-entity-type-string-plural="Data buckets"
+          data-entity-type-prefix=""
+        ></div>
+
+        <div
           class="guided--page"
           id="guided-prepare-dataset-structure-tab"
           data-page-name="Dataset content"
@@ -1053,62 +1087,25 @@
           <h1 class="text-sub-step-title">Describe the content of your dataset</h1>
           <div class="guided--section">
             <p class="help-text">
-              Select all of the following that apply to the data you collected:
+              Check the boxes that apply to the data collected during your study in order to help
+              SODA determine the optimal workflow to organize your dataset. more.
             </p>
           </div>
           <div data-component-type="dataset-content-selector" class="guided--section"></div>
         </div>
         <div
-          id="guided-unstructured-data-import-tab"
+          id="guided-dataset-entity-id-generation-tab"
+          data-page-name="Generate entity IDs"
           class="guided--page"
-          data-page-name="Data importation"
-        >
-          <div class="guided--section">
-            <h1 class="text-sub-step-title">Import Your Data</h1>
-            <p class="help-text w-100">
-              Import the data that was collected or generated during your study below. This
-              includes: experimental data, code used for analysis, protocol files, documentation
-              supporting your experiment, and any other files that are part of your study.
-            </p>
-            <p class="help-text">
-              <b>Note:</b> If your data is organized into subfolders (e.g., "microscopy,"
-              "imaging"), make sure to import the subfolders directly rather than the parent folder
-              they’re in.
-            </p>
-          </div>
-          <div
-            data-component-type="data-importer"
-            data-data-type="collected"
-            data-relative-folder-path-to-import-data-into="data/"
-            class="guided--section"
-          ></div>
-        </div>
-
-        <div id="guided-code-folder-tab" class="guided--page" data-page-name="Code import">
-          <div class="guided--section">
-            <h1 class="text-sub-step-title">Code importation</h1>
-            <p class="help-text">
-              Import any scripts, computational models, analysis pipelines, or other code/tools used
-              during the study for data processing or analysis below.
-            </p>
-          </div>
-          <div
-            data-component-type="data-importer"
-            data-data-type="code"
-            data-relative-folder-path-to-import-data-into="code/"
-            class="guided--section"
-          ></div>
-        </div>
-        <div
-          id="supporting-data-tab"
-          data-page-name="Annotate supporting data"
-          class="guided--page"
-          data-component-type="entity-selection-page"
-          data-entity-type="supporting-data"
-          data-entity-type-string-singular="Supporting Data"
-          data-entity-type-string-plural="Supporting Data"
-          data-entity-type-prefix=""
+          data-component-type="dataset-entity-id-generation-page"
         ></div>
+        <div
+          id="guided-dataset-entity-id-management-tab"
+          data-page-name="Entity ID management"
+          class="guided--page"
+          data-component-type="dataset-entity-id-management-page"
+        ></div>
+
         <!--
         <div id="guided-protocol-folder-tab" class="guided--page" data-page-name="Protocols import">
           <div class="guided--section">
@@ -1200,12 +1197,14 @@
           data-entity-type-string-plural="subjects"
           data-entity-type-prefix="sub-"
         ></div>
+        <!--
         <div
-          id="guided-subjects-entity-selection-tab-mega"
-          data-page-name="Generate entity IDs"
+          id="guided-subjects-entity-management-tab"
+          data-page-name="Manage entity IDs"
           class="guided--page"
-          data-component-type="dataset-entity-structure-page"
+          data-component-type="dataset-entity-management-page"
         ></div>
+        -->
         <div
           id="guided-subjects-entity-selection-tab"
           data-page-name="Subjects data selection"
@@ -1290,24 +1289,21 @@
         <div
           class="guided--page"
           id="guided-manifest-file-generation-tab"
-          data-page-name="Create manifest files"
+          data-page-name="View/edit manifest file"
         >
           <div class="guided--section">
-            <h1 class="text-sub-step-title">Manifest files</h1>
+            <h1 class="text-sub-step-title">Manifest file</h1>
             <p class="help-text">
-              The SPARC guidelines require all datasets to include metadata files called manifest
-              files. One manifest file must be included in each high level folder. Manifest files
-              are intended to contain information about all of the data files in its high level
-              folder.
+              The SPARC guidelines require all datasets to include a manifest file, which is an
+              excel file that contains information about all of the files in your dataset.
             </p>
           </div>
           <div class="guided--section" id="guided-section-auto-generate-manifest-files">
-            <h2 class="text-sub-step-title">Preview/Edit manifest files</h2>
+            <h2 class="text-sub-step-title">Preview/Edit manifest file</h2>
             <p class="help-text">
-              Click on any manifest file below if you would like to preview it or add additional
-              metadata. Note that SODA will automatically include the "filename", "timestamp", and
-              "file type" in your manifest files. Click 'Save and Continue' to move on to the next
-              step.
+              Click on the manifest below to preview it or add additional metadata in a separate
+              page. Note that SODA will automatically include the "filename", "timestamp", and "file
+              type" in your manifest files. Click 'Save and Continue' to move on to the next step.
             </p>
 
             <div class="guided--section" id="guided-container-manifest-file-cards"></div>

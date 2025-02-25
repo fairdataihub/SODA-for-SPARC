@@ -16,6 +16,7 @@ const DataImporter = ({ dataType, relativeFolderPathToImportDataInto }) => {
 
   // Handles the file drop logic
   const handleDrop = async (files) => {
+    console.log("Dropped files:", files);
     const syntheticDropEvent = createSyntheticDropEvent(files);
     await window.drop(syntheticDropEvent);
   };
@@ -23,6 +24,7 @@ const DataImporter = ({ dataType, relativeFolderPathToImportDataInto }) => {
   // Opens the dataset dialog on click
   const handleClick = async (event) => {
     event.preventDefault();
+    console.log("relativeFolderPathToImportDataInto", relativeFolderPathToImportDataInto);
     window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog", {
       importRelativePath: relativeFolderPathToImportDataInto,
     });
@@ -35,6 +37,7 @@ const DataImporter = ({ dataType, relativeFolderPathToImportDataInto }) => {
         onClick={handleClick}
         onReject={(files) => console.log("Rejected files:", files)}
         onDragOver={allowDrop}
+        mb="lg"
       >
         <Group justify="center" gap="xl" mih={120} style={{ pointerEvents: "none" }}>
           <Dropzone.Accept>
@@ -48,11 +51,13 @@ const DataImporter = ({ dataType, relativeFolderPathToImportDataInto }) => {
           </Dropzone.Idle>
 
           <Text size="xl" inline>
-            Drag {dataType} data here or click to import from your computer
+            {dataType
+              ? `Drag ${dataType} data here or click to import from your computer`
+              : "Drag and drop files or folders or click here to import from your computer"}
           </Text>
         </Group>
       </Dropzone>
-      <DatasetTreeViewRenderer allowStructureEditing={true} />
+      <DatasetTreeViewRenderer allowStructureEditing={true} hideSearchBar={true} />
     </FullWidthContainer>
   );
 };

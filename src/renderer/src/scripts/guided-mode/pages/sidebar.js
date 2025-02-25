@@ -216,6 +216,8 @@ const checkIfPageIsValid = async (pageID) => {
     await openPage(pageID);
     await savePageChanges(pageID);
   } catch (error) {
+    console.log("Error on page: ", pageID);
+    console.log("Error: ", error);
     throw error;
   }
 };

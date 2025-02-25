@@ -27,11 +27,46 @@ import {
 } from "../utils/swal-utils";
 
 // Import state management stores
-import { getDatasetEntityObj } from "../../stores/slices/datasetEntitySelectorSlice";
-import { setTreeViewDatasetStructure } from "../../stores/slices/datasetTreeViewSlice";
+import useGlobalStore from "../../stores/globalStore";
+import { setDropdownState } from "../../stores/slices/dropDownSlice";
+import {
+  setGuidedDatasetName,
+  setGuidedDatasetSubtitle,
+} from "../../stores/slices/guidedModeSlice";
+import {
+  setEntityType,
+  getEntityObjForEntityType,
+  setEntityListForEntityType,
+  setActiveEntity,
+  getDatasetEntityObj,
+  setDatasetEntityObj,
+  addEntityToEntityList,
+  removeEntityFromEntityList,
+} from "../../stores/slices/datasetEntitySelectorSlice";
+import {
+  setTreeViewDatasetStructure,
+  externallySetSearchFilterValue,
+} from "../../stores/slices/datasetTreeViewSlice";
+import { setSelectedEntities } from "../../stores/slices/datasetContentSelectorSlice";
+import {
+  getZustandStoreDatasetEntityStructure,
+  setZustandStoreDatasetEntityStructure,
+} from "../../stores/slices/datasetEntityStructureSlice";
 
 import "bootstrap-select";
 import Cropper from "cropperjs";
+
+import "jstree";
+
+import fileTxt from "/img/txt-file.png";
+import filePng from "/img/png-file.png";
+import filePdf from "/img/pdf-file.png";
+import fileCsv from "/img/csv-file.png";
+import fileDoc from "/img/doc-file.png";
+import fileXlsx from "/img/excel-file.png";
+import fileJpeg from "/img/jpeg-file.png";
+import fileOther from "/img/other-file.png";
+import hasConnectedAccountWithPennsieve from "../others/authentication/auth";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -197,12 +232,8 @@ const guidedSetDOIUI = (doiInformation) => {
       title: "Cannot reserve DOI",
       text: "Your dataset is locked, so modification is not allowed.",
       icon: "error",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
+      showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+      hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
     });
 
     return;
@@ -408,10 +439,7 @@ window.guidedOpenManifestEditSwal = async () => {
     } else {
       window.electron.ipcRenderer.removeAllListeners("spreadsheet-reply");
 
-      window.sodaJSONObj["guided-manifest-file-data"] = {
-        headers: result[0],
-        data: result[1],
-      };
+      window.sodaJSONObj["guided-manifest-file-data"] = { headers: result[0], data: result[1] };
       await guidedSaveProgress();
       renderManifestCards();
     }
@@ -482,10 +510,7 @@ window.diffCheckManifestFiles = (newManifestData, existingManifestData) => {
     }
   }
 
-  return {
-    headers: combinedManifestDataHeaders,
-    data: combinedManifestDataData,
-  };
+  return { headers: combinedManifestDataHeaders, data: combinedManifestDataData };
 };
 
 document
@@ -564,12 +589,8 @@ document
       try {
         manifestJSONResponse = await client.post(
           "/skeleton_dataset/manifest_json",
-          {
-            sodajsonobject: window.sodaJSONObj,
-          },
-          {
-            timeout: 0,
-          }
+          { sodajsonobject: window.sodaJSONObj },
+          { timeout: 0 }
         );
       } catch (error) {
         throw new Error("Failed to generate manifest files");
@@ -630,12 +651,8 @@ document
             backdrop: "rgba(0,0,0, 0.4)",
             reverseButtons: window.reverseSwalButtons,
             heightAuto: false,
-            showClass: {
-              popup: "animate__animated animate__zoomIn animate__faster",
-            },
-            hideClass: {
-              popup: "animate__animated animate__zoomOut animate__faster",
-            },
+            showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+            hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
           });
         } else if (error.response && error.response.status == 400) {
           let msg = error.response.data.message;
@@ -650,12 +667,8 @@ document
             backdrop: "rgba(0,0,0, 0.4)",
             reverseButtons: window.reverseSwalButtons,
             heightAuto: false,
-            showClass: {
-              popup: "animate__animated animate__zoomIn animate__faster",
-            },
-            hideClass: {
-              popup: "animate__animated animate__zoomOut animate__faster",
-            },
+            showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+            hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
           });
         } else {
           await Swal.fire({
@@ -884,9 +897,7 @@ const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
   datasetSelectionSelectPicker.empty();
   try {
     let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
-      params: {
-        selected_account: window.defaultBfAccount,
-      },
+      params: { selected_account: window.defaultBfAccount },
     });
     const datasets = responseObject.data.datasets;
     //Add the datasets to the select picker
@@ -1504,12 +1515,7 @@ const removeAlertMessageIfExists = (elementToCheck) => {
 //function that creates a new folder object
 const newEmptyFolderObj = () => {
   console.log("newEmptyFolderObj");
-  return {
-    folders: {},
-    files: {},
-    type: "virtual",
-    action: ["new"],
-  };
+  return { folders: {}, files: {}, type: "virtual", action: ["new"] };
 };
 
 const getDatasetStructureJsonFolderContentsAtNestedArrayPath = (folderPathArray) => {
@@ -1873,9 +1879,7 @@ window.openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
       const contributorAffiliationInput = document.getElementById(
         "guided-contributor-affiliation-input"
       );
-      affiliationTagify = new Tagify(contributorAffiliationInput, {
-        duplicate: false,
-      });
+      affiliationTagify = new Tagify(contributorAffiliationInput, { duplicate: false });
       window.createDragSort(affiliationTagify);
       affiliationTagify.addTags(contributorAffiliationsArray);
 
@@ -1904,12 +1908,7 @@ window.openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
           "Other",
         ],
         enforceWhitelist: true,
-        dropdown: {
-          maxItems: Infinity,
-          enabled: 0,
-          closeOnSelect: true,
-          position: "auto",
-        },
+        dropdown: { maxItems: Infinity, enabled: 0, closeOnSelect: true, position: "auto" },
       });
       window.createDragSort(contributorRolesTagify);
       contributorRolesTagify.addTags(contributorRolesArray);
@@ -2150,9 +2149,7 @@ window.openGuidedAddContributorSwal = async () => {
       const contributorAffiliationInput = document.getElementById(
         "guided-contributor-affiliation-input"
       );
-      affiliationTagify = new Tagify(contributorAffiliationInput, {
-        duplicate: false,
-      });
+      affiliationTagify = new Tagify(contributorAffiliationInput, { duplicate: false });
       window.createDragSort(affiliationTagify);
 
       const contributorRolesInput = document.getElementById("guided-contributor-roles-input");
@@ -2180,18 +2177,11 @@ window.openGuidedAddContributorSwal = async () => {
           "Other",
         ],
         enforceWhitelist: true,
-        dropdown: {
-          maxItems: Infinity,
-          enabled: 0,
-          closeOnSelect: true,
-          position: "auto",
-        },
+        dropdown: { maxItems: Infinity, enabled: 0, closeOnSelect: true, position: "auto" },
       });
       window.createDragSort(contributorRolesTagify);
 
-      $("#guided-stored-contributors-select").selectpicker({
-        style: "SODA-select-picker",
-      });
+      $("#guided-stored-contributors-select").selectpicker({ style: "SODA-select-picker" });
       $("#guided-stored-contributors-select").selectpicker("refresh");
       $("#guided-stored-contributors-select").on("change", function () {
         const selectedFirstName = $("#guided-stored-contributors-select option:selected").data(
@@ -3004,11 +2994,7 @@ window.confirmEnter = (button) => {
     sampleTable = true;
     // window.addSampleSpecificationTableRow();
   }
-  const ke = new KeyboardEvent("keyup", {
-    bubbles: true,
-    cancelable: true,
-    keyCode: 13,
-  });
+  const ke = new KeyboardEvent("keyup", { bubbles: true, cancelable: true, keyCode: 13 });
 
   let input_field = button.previousElementSibling;
   if (input_field.tagName === "INPUT") {
@@ -3098,7 +3084,7 @@ window.getExistingSubjectNames = () => {
 };
 
 const getSubjectsPool = (subjectName) => {
-  const [subjectsInPools, _] = window.sodaJSONObj.getAllSubjects();
+  const [subjectsInPools] = window.sodaJSONObj.getAllSubjects();
   for (const subject of subjectsInPools) {
     if (subject["subjectName"] === subjectName) {
       return subject["poolName"];
@@ -3892,12 +3878,8 @@ $("#guided-button-no-source-data").on("click", () => {
       heightAuto: false,
       customClass: "swal-wide",
       backdrop: "rgba(0,0,0, 0.4)",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
+      showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+      hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
     }).then((result) => {
       if (result.isConfirmed) {
         //User agrees to delete source folder
@@ -3932,20 +3914,14 @@ $("#guided-submission-completion-date").change(function () {
       showCancelButton: false,
       title: `<span style="text-align:center"> Enter your Milestone completion date </span>`,
       html: `<input type="date" id="milestone_date_picker" >`,
-      showClass: {
-        popup: "animate__animated animate__fadeInDown animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__fadeOutUp animate__faster",
-      },
+      showClass: { popup: "animate__animated animate__fadeInDown animate__faster" },
+      hideClass: { popup: "animate__animated animate__fadeOutUp animate__faster" },
       didOpen: () => {
         document.getElementById("milestone_date_picker").valueAsDate = new Date();
       },
       preConfirm: async () => {
         const input_date = document.getElementById("milestone_date_picker").value;
-        return {
-          date: input_date,
-        };
+        return { date: input_date };
       },
     }).then((result) => {
       if (result.isConfirmed) {
@@ -3981,20 +3957,14 @@ $("#guided-submission-completion-date-manual").change(function () {
       showCancelButton: false,
       title: `<span style="text-align:center"> Enter your Milestone completion date </span>`,
       html: `<input type="date" id="milestone_date_picker" >`,
-      showClass: {
-        popup: "animate__animated animate__fadeInDown animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__fadeOutUp animate__faster",
-      },
+      showClass: { popup: "animate__animated animate__fadeInDown animate__faster" },
+      hideClass: { popup: "animate__animated animate__fadeOutUp animate__faster" },
       didOpen: () => {
         document.getElementById("milestone_date_picker").valueAsDate = new Date();
       },
       preConfirm: async () => {
         const input_date = document.getElementById("milestone_date_picker").value;
-        return {
-          date: input_date,
-        };
+        return { date: input_date };
       },
     }).then((result) => {
       if (result.isConfirmed) {
@@ -4637,16 +4607,10 @@ $("#guided-button-add-permission-user-or-team").on("click", function () {
       };
       guidedAddTeamPermission(newTeamPermissionObj);
     }
-    $(this)[0].scrollIntoView({
-      behavior: "smooth",
-    });
+    $(this)[0].scrollIntoView({ behavior: "smooth" });
     guidedResetUserTeamPermissionsDropdowns();
   } catch (error) {
-    window.notyf.open({
-      duration: "4000",
-      type: "error",
-      message: error,
-    });
+    window.notyf.open({ duration: "4000", type: "error", message: error });
   }
 });
 
@@ -4948,9 +4912,7 @@ window.electron.ipcRenderer.on(
       await trackLocalDatasetGenerationProgress();
 
       setGuidedProgressBarValue("local", 100);
-      updateDatasetUploadProgressTable("local", {
-        "Current action": `Generating metadata files`,
-      });
+      updateDatasetUploadProgressTable("local", { "Current action": `Generating metadata files` });
 
       // Generate all dataset metadata files
       await guidedGenerateSubjectsMetadata(
@@ -5115,12 +5077,8 @@ const guidedGenerateRCFilesHelper = (type) => {
       backdrop: "rgba(0,0,0, 0.4)",
       icon: "error",
       showCancelButton: false,
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
+      showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+      hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
     });
     return "empty";
   }
@@ -5221,9 +5179,7 @@ $("#guided-generate-changes-file").on("click", () => {
 
 //tagify initializations
 const guidedOtherFundingSourcesInput = document.getElementById("guided-ds-other-funding");
-guidedOtherFundingsourcesTagify = new Tagify(guidedOtherFundingSourcesInput, {
-  duplicates: false,
-});
+guidedOtherFundingsourcesTagify = new Tagify(guidedOtherFundingSourcesInput, { duplicates: false });
 window.createDragSort(guidedOtherFundingsourcesTagify);
 const guidedStudyOrganSystemsInput = document.getElementById("guided-ds-study-organ-system");
 guidedStudyOrganSystemsTagify = new Tagify(guidedStudyOrganSystemsInput, {
@@ -5249,11 +5205,7 @@ guidedStudyOrganSystemsTagify = new Tagify(guidedStudyOrganSystemsInput, {
     "urinary bladder",
   ],
   duplicates: false,
-  dropdown: {
-    maxItems: Infinity,
-    enabled: 0,
-    closeOnSelect: true,
-  },
+  dropdown: { maxItems: Infinity, enabled: 0, closeOnSelect: true },
 });
 window.createDragSort(guidedStudyOrganSystemsTagify);
 
@@ -5266,15 +5218,11 @@ guidedDatasetKeywordsTagify = new Tagify(guidedDatasetKeyWordsInput, {
 window.createDragSort(guidedDatasetKeywordsTagify);
 
 const guidedStudyApproachInput = document.getElementById("guided-ds-study-approach");
-guidedStudyApproachTagify = new Tagify(guidedStudyApproachInput, {
-  duplicates: false,
-});
+guidedStudyApproachTagify = new Tagify(guidedStudyApproachInput, { duplicates: false });
 window.createDragSort(guidedStudyApproachTagify);
 
 const guidedStudyTechniquesInput = document.getElementById("guided-ds-study-technique");
-guidedStudyTechniquesTagify = new Tagify(guidedStudyTechniquesInput, {
-  duplicates: false,
-});
+guidedStudyTechniquesTagify = new Tagify(guidedStudyTechniquesInput, { duplicates: false });
 window.createDragSort(guidedStudyTechniquesTagify);
 
 /// back button Curate
@@ -5322,12 +5270,8 @@ $("#guided-new-folder").on("click", () => {
       showCancelButton: "Cancel",
       confirmButtonText: "Add folder",
       reverseButtons: window.reverseSwalButtons,
-      showClass: {
-        popup: "animate__animated animate__fadeInDown animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__fadeOutUp animate__faster",
-      },
+      showClass: { popup: "animate__animated animate__fadeInDown animate__faster" },
+      hideClass: { popup: "animate__animated animate__fadeOutUp animate__faster" },
       didOpen: () => {
         let swal_container = document.getElementsByClassName("swal2-popup")[0];
         swal_container.style.width = "600px";
@@ -5434,12 +5378,8 @@ $("#guided-new-folder").on("click", () => {
       confirmButtonText: "OK",
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
+      showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+      hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
     });
   }
 });
@@ -5557,7 +5497,7 @@ const guidedSaveDescriptionContributorInformation = () => {
   };
 };
 
-const continueHackGm = true;
+const continueHackGm = false;
 
 const doTheHack = async () => {
   console.log("Doing the hack");

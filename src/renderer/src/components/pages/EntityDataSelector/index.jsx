@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useMemo } from "react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import EntityListContainer from "../../containers/EntityListContainer";
 import { IconSearch } from "@tabler/icons-react";
+import EntityHierarchyRenderer from "../../shared/EntityHierarchyRenderer";
 import {
   TextInput,
   Textarea,
@@ -18,6 +19,7 @@ import {
   Divider,
   Tooltip,
   Box,
+  Progress,
 } from "@mantine/core";
 import { IconWand } from "@tabler/icons-react";
 import useGlobalStore from "../../../stores/globalStore";
@@ -81,10 +83,7 @@ const renderEntityList = (entityType, activeEntity, datasetEntityObj) => {
 
   return naturalSort(Object.keys(datasetEntityObj[entityType])).map((entity) => {
     const entityItemsCount = datasetEntityObj[entityType][entity].length || 0;
-    console.log("entity", entity);
-    console.log("activeEntity", activeEntity);
     const isActive = entity === activeEntity;
-    console.log("isActive", isActive);
 
     // Check if search icon should be shown for specific entities
     const showSearchIcon = ENTITY_PREFIXES.some((prefix) => entity.startsWith(prefix));
@@ -102,14 +101,16 @@ const renderEntityList = (entityType, activeEntity, datasetEntityObj) => {
           borderLeft: `3px solid ${isActive ? "#2196f3" : "transparent"}`,
           cursor: "pointer",
           transition: "background-color 0.2s ease, border-color 0.2s ease",
+          wordBreak: "break-word", // Apply word break for better wrapping
+          whiteSpace: "normal", // Allow text wrapping instead of one long line
         }}
       >
         <Group justify="space-between" align="center">
           <Text size="sm">{entity}</Text>
           <Group spacing="xs" align="center">
-            <Text size="xs" fw={200}>
+            {/*<Text size="xs" fw={200}>
               {entityItemsCount}
-            </Text>
+            </Text>*/}
 
             {showSearchIcon && (
               <Tooltip label="Search dataset for this entity" zIndex={2999}>
@@ -133,6 +134,27 @@ const renderEntityList = (entityType, activeEntity, datasetEntityObj) => {
   });
 };
 
+const getInstructionalTextByEntityType = (entityType) => {
+  const instructionalText = {
+    Code: "Select all folders and files containing scripts, computational models, analysis pipelines, or any other software used for data processing or analysis.",
+    "Experimental data":
+      "Select the folders and files containing data collected from experiments or analysis.",
+    Other:
+      "Select the folders and files that do not contain experimental data or code. Some examples might be protocols, notes, or supplementary materials.",
+  };
+
+  return instructionalText[entityType] || `Select the files that contain data for ${entityType}`;
+};
+
+const getProgressSectionColorByEntityType = (entityType) => {
+  const colorMap = {
+    Code: "red",
+    "Experimental data": "cyan",
+    Other: "gray",
+  };
+  return colorMap[entityType] || "cyan";
+};
+
 const EntityDataSelectorPage = ({
   pageName,
   entityType,
@@ -140,27 +162,49 @@ const EntityDataSelectorPage = ({
   entityTypeStringPlural,
   entityTypePrefix,
 }) => {
-  console.log("entityType", entityType);
-
   const activeEntity = useGlobalStore((state) => state.activeEntity);
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
+  const datasetStructureJSONObj = useGlobalStore((state) => state.datasetStructureJSONObj);
+
+  const countItemsInDatasetStructure = (datasetStructure) => {
+    if (!datasetStructure) return 0;
+    let totalItems = 0;
+    const keys = Object.keys(datasetStructure);
+
+    for (const key of keys) {
+      if (key === "files") {
+        totalItems += Object.keys(datasetStructure[key]).length;
+      }
+      if (key === "folders") {
+        const folders = Object.keys(datasetStructure[key]);
+        totalItems += folders.length;
+        for (const folder of folders) {
+          totalItems += countItemsInDatasetStructure(datasetStructure[key][folder]);
+        }
+      }
+    }
+    return totalItems;
+  };
+  const countSelectedItemsByEntityType = (entityType) => {
+    if (!datasetEntityObj?.[entityType]) return 0;
+    return Object.values(datasetEntityObj[entityType]).reduce(
+      (acc, entity) => acc + entity.length,
+      0
+    );
+  };
+
+  const itemCount = countItemsInDatasetStructure(datasetStructureJSONObj) - 1; // Subtract 1 to exclude the root folder
+  const countItemsSelected = countSelectedItemsByEntityType(entityType);
 
   return (
     <GuidedModePage pageHeader={pageName}>
       <GuidedModeSection>
-        {entityType === "supporting-data" ? (
+        {entityType === "bucketed-data" ? (
           <Stack>
             <Text>
-              <b>Source data</b> is raw, unaltered data from an experiment such as recorded neural
-              signals or unprocessed microscope images.
+              The SDS requires data to be classified in three categories: experimental, code, and
+              other. Use the interface below to classify your data files.
             </Text>
-            <Text>
-              <b>Derivative data</b> is data that has been processed or transformed data such as ...
-            </Text>
-            <Text>
-              <b>The rest of the options</b> More info
-            </Text>
-            <Text>Annotate the data below.....</Text>
           </Stack>
         ) : (
           <Stack>
@@ -170,29 +214,34 @@ const EntityDataSelectorPage = ({
               from the list on the left, then choose the corresponding folders and files from your
               data on the right.
             </Text>
-            {/*
-            <Text>
-              If you have data with folder or file names that match the {entityTypeStringSingular}{" "}
-              IDs you entered, you can automatically associate them by clicking the button below.
-            </Text>
-            <Button
-              w="500px"
-              mt="-5px"
-              mb="lg"
-              onClick={() => {
-                autoSelectDatasetFoldersAndFilesForEnteredEntityIds(
-                  window.datasetStructureJSONObj["folders"]["primary"],
-                  entityType,
-                  entityTypeStringSingular
-                );
-              }}
-              leftSection={<IconWand />}
-            >
-              Auto-associate folders and files containing {entityTypeStringPlural} IDs
-            </Button>*/}
           </Stack>
         )}
       </GuidedModeSection>
+      {datasetEntityObj?.[entityType] && (
+        <GuidedModeSection>
+          <Paper p="xs" shadow="sm">
+            <Text size="sm" c="gray">
+              Progress: {countItemsSelected} of {itemCount} folders and files bucketed
+            </Text>
+            <Progress.Root size="xl">
+              {Object.keys(datasetEntityObj[entityType]).map((entity) => {
+                const entityItemsCount = datasetEntityObj[entityType][entity].length || 0;
+                const progressValue = (entityItemsCount / itemCount) * 100;
+
+                return (
+                  <Progress.Section
+                    value={progressValue}
+                    color={getProgressSectionColorByEntityType(entity)}
+                    key={entity}
+                  >
+                    <Progress.Label>{entity}</Progress.Label>
+                  </Progress.Section>
+                );
+              })}
+            </Progress.Root>
+          </Paper>
+        </GuidedModeSection>
+      )}
       <GuidedModeSection>
         <Grid gutter="lg">
           <Grid.Col span={4} style={{ position: "sticky", top: "20px" }}>
@@ -205,12 +254,9 @@ const EntityDataSelectorPage = ({
             {activeEntity ? (
               <Paper shadow="sm" radius="md">
                 <DatasetTreeViewRenderer
+                  itemSelectInstructions={getInstructionalTextByEntityType(activeEntity)}
                   folderActions={{
                     "on-folder-click": (folderName, folderContents, folderIsSelected) => {
-                      console.log("on-folder-click");
-                      console.log("folderName", folderName);
-                      console.log("folderContents", folderContents);
-                      console.log("folderIsSelected", folderIsSelected);
                       handleFolderClick(
                         entityType,
                         activeEntity,

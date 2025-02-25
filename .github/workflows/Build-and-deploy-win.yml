@@ -7,9 +7,7 @@ on:
       - main
       - staging
       - pre-staging
-      - sds3
-      - folder-build
-      - gm-data-import-rework
+      - ut-demo
 
 jobs:
   deploy-on-windows:

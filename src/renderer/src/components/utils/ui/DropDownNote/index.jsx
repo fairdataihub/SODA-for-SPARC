@@ -1,38 +1,30 @@
-import { Stack, Space, Button, Text, Paper } from "@mantine/core";
-import { useState } from "react";
+import { Stack, Button, Text, Paper } from "@mantine/core";
+import { useToggle } from "@mantine/hooks";
 import { IconChevronRight, IconChevronDown, IconInfoCircle } from "@tabler/icons-react";
 import classes from "./DropDownNote.module.css";
-
 import SodaGreenPaper from "../SodaGreenPaper";
 
+const dropDownIcons = {
+  info: <IconInfoCircle className={classes.dropDownIcon} color="black" />,
+};
+
 const DropDownNote = ({ dropDownIcon, dropDownButtonText, dropDownNote }) => {
-  const dropDownIcons = {
-    info: <IconInfoCircle color="black" className={classes.dropDownIcon} />,
-  };
-  const [dropDownOpen, setDropDownOpen] = useState(false);
+  const [isOpen, toggleOpen] = useToggle([false, true]);
+
   return (
     <Stack gap="xs">
-      <Button justify="left" variant="subtle" onClick={() => setDropDownOpen(!dropDownOpen)}>
+      <Button variant="subtle" justify="left" onClick={toggleOpen} className={classes.button}>
         {dropDownIcon && dropDownIcons[dropDownIcon]}
-        <Text
-          td="underline"
-          size="lg"
-          className={classes.dropDownButtonText}
-          style={{
-            marginLeft: "4px",
-            marginRight: "7px",
-          }}
-        >
+        <Text td="underline" className={classes.dropDownButtonText} sx={{ mx: 6 }}>
           {dropDownButtonText}
         </Text>
-        {dropDownOpen ? (
-          <IconChevronDown color="black" className={classes.dropDownIcon} />
+        {isOpen ? (
+          <IconChevronDown className={classes.dropDownIcon} />
         ) : (
-          <IconChevronRight color="black" className={classes.dropDownIcon} />
+          <IconChevronRight className={classes.dropDownIcon} />
         )}
       </Button>
-      {dropDownOpen && <SodaGreenPaper>{dropDownNote}</SodaGreenPaper>}
-      <Space />
+      {isOpen && <SodaGreenPaper>{dropDownNote}</SodaGreenPaper>}
     </Stack>
   );
 };

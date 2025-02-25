@@ -3,17 +3,153 @@ import { filterStructure, addRelativePaths } from "./datasetTreeViewSlice";
 import { swalFileListDoubleAction } from "../../scripts/utils/swal-utils";
 import { produce } from "immer";
 
-// Initial state for managing dataset entities
-const initialState = {
+// Slice initialization for the entity selector state
+export const datasetEntitySelectorSlice = (set) => ({
   activeEntity: null, // Currently active entity
   entityType: null, // Type of the selected entity
   datasetEntityObj: {}, // Stores entities grouped by type
+  entityStructureObj: {
+    subjects: {},
+  }, // Example structure: { sub-01: { samples: { sam-01: { performances: [], sites: [] } } } }
+});
+
+// SUBJECT MANAGEMENT
+export const addSubject = (subjectID) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      if (!state.entityStructureObj.subjects[subjectID]) {
+        state.entityStructureObj.subjects[subjectID] = { samples: {} };
+      }
+    })
+  );
 };
 
-// Slice initialization for the entity selector state
-export const datasetEntitySelectorSlice = (set) => ({
-  ...initialState,
-});
+export const removeSubject = (subjectID) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      delete state.entityStructureObj.subjects[subjectID];
+    })
+  );
+};
+
+// SAMPLE MANAGEMENT
+export const addSample = (subjectID, sampleID) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      if (state.entityStructureObj.subjects[subjectID]) {
+        state.entityStructureObj.subjects[subjectID].samples[sampleID] = {
+          performances: [],
+          sites: [],
+        };
+      }
+    })
+  );
+};
+
+export const removeSample = (subjectID, sampleID) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      delete state.entityStructureObj.subjects[subjectID]?.samples[sampleID];
+    })
+  );
+};
+
+// PERFORMANCE & SITE MANAGEMENT
+export const addPerformance = (subjectID, sampleID, performanceID) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      if (state.entityStructureObj.subjects[subjectID]?.samples[sampleID]) {
+        state.entityStructureObj.subjects[subjectID].samples[sampleID].performances.push(
+          performanceID
+        );
+      }
+    })
+  );
+};
+
+export const removePerformance = (subjectID, sampleID, performanceID) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      const performances =
+        state.entityStructureObj.subjects[subjectID]?.samples[sampleID]?.performances;
+      if (performances) {
+        state.entityStructureObj.subjects[subjectID].samples[sampleID].performances =
+          performances.filter((id) => id !== performanceID);
+      }
+    })
+  );
+};
+
+export const addSite = (subjectID, sampleID, siteID) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      if (state.entityStructureObj.subjects[subjectID]?.samples[sampleID]) {
+        state.entityStructureObj.subjects[subjectID].samples[sampleID].sites.push(siteID);
+      }
+    })
+  );
+};
+
+export const removeSite = (subjectID, sampleID, siteID) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      const sites = state.entityStructureObj.subjects[subjectID]?.samples[sampleID]?.sites;
+      if (sites) {
+        state.entityStructureObj.subjects[subjectID].samples[sampleID].sites = sites.filter(
+          (id) => id !== siteID
+        );
+      }
+    })
+  );
+};
+
+export const addSubjectToEntityStructure = (subjectID) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      if (!state.entityStructureObj) {
+        state.entityStructureObj = {};
+      }
+
+      if (!state.entityStructureObj["subjects"]) {
+        state.entityStructureObj["subjects"] = {};
+      }
+
+      if (!state.entityStructureObj["subjects"][subjectID]) {
+        state.entityStructureObj["subjects"][subjectID] = [];
+      }
+    })
+  );
+};
+
+export const removeSubjectFromEntityStructure = (subjectID) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      delete state.entityStructureObj?.["subjects"]?.[subjectID];
+    })
+  );
+};
+
+export const addSampleToEntityStructure = (subjectID, sampleID) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      if (!state.entityStructureObj) {
+        state.entityStructureObj = {};
+      }
+
+      if (!state.entityStructureObj["samples"]) {
+        state.entityStructureObj["samples"] = {};
+      }
+
+      if (!state.entityStructureObj["samples"][subjectID]) {
+        state.entityStructureObj["samples"][subjectID] = {};
+      }
+
+      if (!state.entityStructureObj["samples"][subjectID][sampleID]) {
+        state.entityStructureObj["samples"][subjectID][sampleID] = [];
+      }
+    })
+  );
+};
 
 // Add an entity to the specified entity type's list
 export const addEntityToEntityList = (entityType, entityName) => {
@@ -34,6 +170,24 @@ export const addEntityToEntityList = (entityType, entityName) => {
       if (!state.datasetEntityObj[entityType][entityName]) {
         state.datasetEntityObj[entityType][entityName] = []; // Initialize the entity list where folder and file paths will be added
       }
+    })
+  );
+};
+
+export const setEntityListUsingArray = (entityType, entityArray) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      if (!state.datasetEntityObj) {
+        state.datasetEntityObj = {};
+      }
+
+      if (!state.datasetEntityObj[entityType]) {
+        state.datasetEntityObj[entityType] = {};
+      }
+
+      entityArray.forEach((entity) => {
+        state.datasetEntityObj[entityType][entity] = [];
+      });
     })
   );
 };
@@ -157,8 +311,7 @@ const findMatchingRelativePaths = (obj, entityTypeLowerCased, matchingPaths) => 
   for (const fileName in obj?.files || {}) {
     const file = obj.files[fileName];
     const fileRelativePath = file.relativePath.toLowerCase();
-    console.log("fileRelativePath: ", fileRelativePath);
-    console.log("entityTypeLowerCased: ", entityTypeLowerCased);
+
     if (file.relativePath.toLowerCase().includes(entityTypeLowerCased)) {
       console.log("Found matching file: ", file.relativePath);
       matchingPaths.push(file.relativePath);

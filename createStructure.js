@@ -37,75 +37,42 @@ function createFile(filePath, content) {
   fs.writeFileSync(filePath, content);
 }
 
-// Generate subject-based data collection structure
+// Experimental Data folder
+createDir(`${rootDir}/Experimental-Data/Participants`);
+
+// Generate sample-based data collection structure
 for (let i = 1; i <= 3; i++) {
-  const subjectID = `S00${i}`;
-  const sessionDate = new Date(2025, 0, i + 1).toISOString().split("T")[0];
+  const sampleID = `mouse-${i}`;
 
-  // Subjects (all data stored per subject)
-  createDir(`${rootDir}/Subjects/${subjectID}`);
+  // Participant directory
+  createDir(`${rootDir}/Experimental-Data/Participants/${sampleID}`);
 
+  // Blood Samples
   for (let j = 1; j <= 2; j++) {
-    const performanceID = `Performance_${j}`;
-    createDir(`${rootDir}/Subjects/${subjectID}/Session_${sessionDate}/${performanceID}`);
+    createDir(`${rootDir}/Experimental-Data/Participants/${sampleID}/Blood_${j}`);
     createFile(
-      `${rootDir}/Subjects/${subjectID}/Session_${sessionDate}/${performanceID}/reaction_times.csv`,
-      sampleCSV(subjectID)
+      `${rootDir}/Experimental-Data/Participants/${sampleID}/Blood_${j}/blood_sample.json`,
+      sampleJSON(sampleID, "Blood")
     );
     createFile(
-      `${rootDir}/Subjects/${subjectID}/Session_${sessionDate}/${performanceID}/eeg_data.txt`,
-      `EEG data for ${subjectID}, performance ${j}`
+      `${rootDir}/Experimental-Data/Participants/${sampleID}/Blood_${j}/blood_analysis.csv`,
+      sampleCSV(sampleID)
     );
   }
 
-  // Session-based subfolders
-  createDir(`${rootDir}/Subjects/${subjectID}/Session_${sessionDate}`);
-  createFile(
-    `${rootDir}/Subjects/${subjectID}/Session_${sessionDate}/MRI_raw.txt`,
-    `MRI raw data for subject ${subjectID}`
-  );
-  createFile(
-    `${rootDir}/Subjects/${subjectID}/Session_${sessionDate}/EEG_raw.csv`,
-    sampleCSV(subjectID)
-  );
-  createFile(
-    `${rootDir}/Subjects/${subjectID}/Session_${sessionDate}/experiment_notes.log`,
-    logEntry(subjectID)
-  );
-
-  // Samples collected during the session
-  createDir(`${rootDir}/Subjects/${subjectID}/Session_${sessionDate}/Samples`);
-
   // Tissue Samples
-  createDir(`${rootDir}/Subjects/${subjectID}/Session_${sessionDate}/Samples/Tissue`);
-  createFile(
-    `${rootDir}/Subjects/${subjectID}/Session_${sessionDate}/Samples/Tissue/tissue_sample.json`,
-    sampleJSON(subjectID, "Tissue")
-  );
-  createFile(
-    `${rootDir}/Subjects/${subjectID}/Session_${sessionDate}/Samples/Tissue/tissue_analysis.csv`,
-    sampleCSV(subjectID)
-  );
-
-  // Blood Samples
-  createDir(`${rootDir}/Subjects/${subjectID}/Session_${sessionDate}/Samples/Blood`);
-  createFile(
-    `${rootDir}/Subjects/${subjectID}/Session_${sessionDate}/Samples/Blood/blood_sample.json`,
-    sampleJSON(subjectID, "Blood")
-  );
-  createFile(
-    `${rootDir}/Subjects/${subjectID}/Session_${sessionDate}/Samples/Blood/blood_analysis.csv`,
-    sampleCSV(subjectID)
-  );
+  for (let j = 1; j <= 2; j++) {
+    createDir(`${rootDir}/Experimental-Data/Participants/${sampleID}/Tissue_${j}`);
+    createFile(
+      `${rootDir}/Experimental-Data/Participants/${sampleID}/Tissue_${j}/tissue_sample.json`,
+      sampleJSON(sampleID, "Tissue")
+    );
+    createFile(
+      `${rootDir}/Experimental-Data/Participants/${sampleID}/Tissue_${j}/tissue_analysis.csv`,
+      sampleCSV(sampleID)
+    );
+  }
 }
-
-// Raw Data (Unprocessed files researchers would collect)
-createDir(`${rootDir}/Raw-Data`);
-createFile(
-  `${rootDir}/Raw-Data/brain-scan-${new Date().toISOString().split("T")[0]}.txt`,
-  "Raw MRI scan data."
-);
-createFile(`${rootDir}/Raw-Data/eeg-unfiltered_${new Date().getTime()}.csv`, sampleCSV("EEG"));
 
 // Protocols
 createDir(`${rootDir}/Protocols`);
@@ -116,6 +83,17 @@ createFile(`${rootDir}/Protocols/Blood-collection.txt`, protocolText);
 createDir(`${rootDir}/Logs`);
 createFile(`${rootDir}/Logs/data-collection.log`, logEntry("General"));
 
+// Scripts folder with dummy files
+createDir(`${rootDir}/Scripts`);
+createFile(
+  `${rootDir}/Scripts/analysis.py`,
+  "# Dummy Python script\nprint('Data analysis started')"
+);
+createFile(
+  `${rootDir}/Scripts/index.html`,
+  "<!DOCTYPE html>\n<html>\n<head><title>Research Project</title></head>\n<body><h1>Welcome to the Research Project</h1></body>\n</html>"
+);
+
 console.log(
-  "Realistic research dataset structure with Tissue and Blood samples created successfully!"
+  "Dataset structure with mouse samples (Blood and Tissue) in Experimental Data created successfully!"
 );

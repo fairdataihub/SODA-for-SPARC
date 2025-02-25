@@ -592,7 +592,7 @@ ipcMain.on("open-folders-organize-datasets-dialog", async (event, args) => {
 
   let folders = await dialog.showOpenDialog(mainWindow, {
     properties: ["openDirectory", "multiSelections"],
-    title: `Select data folder(s) to import into ${importRelativePath}`,
+    title: `Select folder(s) to import into SODA`,
   });
 
   if (folders.canceled) {
