@@ -14,7 +14,7 @@ const HierarchyItem = ({ icon: Icon, label, children, borderColor }) => (
 
 const EntityHierarchyRenderer = ({ datasetEntityArray }) => {
   if (!datasetEntityArray?.length) return null;
-
+  console.log("datasetEntityArray", datasetEntityArray);
   return (
     <Stack spacing="md">
       {datasetEntityArray.map((subject) => (

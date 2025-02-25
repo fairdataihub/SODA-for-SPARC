@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import useGlobalStore from "../../../stores/globalStore";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
@@ -14,7 +14,10 @@ import {
   Divider,
 } from "@mantine/core";
 import { IconUser, IconFlask, IconClipboard, IconPin } from "@tabler/icons-react";
-import { setZustandStoreDatasetEntityStructure } from "../../../stores/slices/datasetEntityStructureSlice";
+import {
+  setZustandStoreDatasetEntityStructure,
+  setSpeciesList,
+} from "../../../stores/slices/datasetEntityStructureSlice";
 import EntityHierarchyRenderer from "../../shared/EntityHierarchyRenderer";
 
 /**
@@ -25,7 +28,6 @@ import EntityHierarchyRenderer from "../../shared/EntityHierarchyRenderer";
  * @param {string} childLabel - A label for the child (e.g., sample type).
  * @param {number} childIndex - The child’s index (1-based).
  * @param {boolean} appendIndex - Whether to append the index.
-
  * @returns {string} The generated child ID.
  */
 const generateChildId = (parentId, childPrefix, childLabel, childIndex, appendIndex = true) => {
@@ -39,12 +41,27 @@ const generateChildId = (parentId, childPrefix, childLabel, childIndex, appendIn
 const DatasetEntityStructurePage = () => {
   // Global configuration for what entities to include.
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
+  // Retrieve species list and the generated structure from the global store.
+  const speciesList = useGlobalStore((state) => state.speciesList);
+  const datasetEntityStructure = useGlobalStore((state) => state.datasetEntityStructure);
 
-  // The list of species configurations (each containing sample info, counts, etc.)
-  const [speciesList, setSpeciesList] = useState([]);
-  // Main data structure: an array of subjects.
-  const [datasetEntityArray, setDatasetEntityArray] = useState([]);
-  console.log("subjects", datasetEntityArray);
+  // ─── Helper Update Functions ─────────────────────────────
+  // Updates a species at a given index immutably.
+  const updateSpecies = (speciesIndex, updateFn) => {
+    const current = useGlobalStore.getState().speciesList;
+    const updated = current.map((species, i) => (i === speciesIndex ? updateFn(species) : species));
+    setSpeciesList(updated);
+  };
+
+  // Updates a sample type within a species immutably.
+  const updateSampleType = (speciesIndex, sampleIndex, updateFn) => {
+    updateSpecies(speciesIndex, (species) => ({
+      ...species,
+      sampleTypes: species.sampleTypes.map((sample, j) =>
+        j === sampleIndex ? updateFn(sample) : sample
+      ),
+    }));
+  };
 
   /**
    * When the speciesList or selectedEntities change, rebuild the subjects array.
@@ -75,8 +92,6 @@ const DatasetEntityStructurePage = () => {
           };
         })
       );
-    setDatasetEntityArray(newSubjects);
-    // Update the global store with the new array of subjects.
     setZustandStoreDatasetEntityStructure(newSubjects);
   }, [speciesList, selectedEntities]);
 
@@ -125,114 +140,91 @@ const DatasetEntityStructurePage = () => {
       metadata: {},
     }));
 
-  // ─── Handlers for Updating Species and Sample Configurations ─────────────
+  // ─── Handlers for Updating Species and Sample Configurations ─────────────────────────────
 
   const handleSpeciesCountChange = (count) => {
-    setSpeciesList((prev) => {
-      const newCount = count || 0;
-      const newSpecies = [...prev];
-      while (newSpecies.length < newCount) {
-        newSpecies.push({
-          subjectCount: 1,
-          species: "",
-          metadata: {},
-          subjectSiteCount: selectedEntities.includes("subject-sites") ? 1 : 0,
-          subjectPerformanceCount: selectedEntities.includes("subject-performances") ? 1 : 0,
-          sampleTypes: [
-            {
-              label: "",
-              count: 1,
-              metadata: {},
-              siteCount: selectedEntities.includes("sample-sites") ? 1 : 0,
-              performanceCount: selectedEntities.includes("sample-performances") ? 1 : 0,
-            },
-          ],
-        });
-      }
-      return newSpecies.slice(0, newCount);
-    });
+    const current = useGlobalStore.getState().speciesList;
+    const newCount = count || 0;
+    let newSpecies;
+    if (current.length < newCount) {
+      newSpecies = [
+        ...current,
+        ...Array(newCount - current.length)
+          .fill(null)
+          .map(() => ({
+            subjectCount: 1,
+            species: "",
+            metadata: {},
+            subjectSiteCount: selectedEntities.includes("subject-sites") ? 1 : 0,
+            subjectPerformanceCount: selectedEntities.includes("subject-performances") ? 1 : 0,
+            sampleTypes: [
+              {
+                label: "",
+                count: 1,
+                metadata: {},
+                siteCount: selectedEntities.includes("sample-sites") ? 1 : 0,
+                performanceCount: selectedEntities.includes("sample-performances") ? 1 : 0,
+              },
+            ],
+          })),
+      ];
+    } else {
+      newSpecies = current.slice(0, newCount);
+    }
+    setSpeciesList(newSpecies);
   };
 
   const handleSpeciesNameChange = (index, value) => {
-    setSpeciesList((prev) => {
-      const updated = [...prev];
-      updated[index] = { ...updated[index], species: value };
-      return updated;
-    });
+    updateSpecies(index, (species) => ({ ...species, species: value }));
   };
 
   const handleSubjectCountChange = (index, value) => {
-    setSpeciesList((prev) => {
-      const updated = [...prev];
-      updated[index] = { ...updated[index], subjectCount: value || 1 };
-      return updated;
-    });
+    updateSpecies(index, (species) => ({ ...species, subjectCount: value || 1 }));
   };
 
   const handleSpeciesSubjectSiteCountChange = (speciesIndex, value) => {
-    setSpeciesList((prev) => {
-      const updated = [...prev];
-      updated[speciesIndex].subjectSiteCount = value;
-      return updated;
-    });
+    updateSpecies(speciesIndex, (species) => ({ ...species, subjectSiteCount: value }));
   };
 
   const handleSpeciesSubjectPerformanceCountChange = (speciesIndex, value) => {
-    setSpeciesList((prev) => {
-      const updated = [...prev];
-      updated[speciesIndex].subjectPerformanceCount = value;
-      return updated;
-    });
+    updateSpecies(speciesIndex, (species) => ({ ...species, subjectPerformanceCount: value }));
   };
 
   const handleSpeciesSampleCountChange = (speciesIndex, count) => {
-    setSpeciesList((prev) => {
-      const updated = [...prev];
-      const current = updated[speciesIndex].sampleTypes;
-      const newCount = count || 0;
-      if (newCount > current.length) {
-        const defaults = Array(newCount - current.length)
-          .fill(null)
-          .map(() => ({
-            label: "",
-            count: 1,
-            metadata: {},
-            siteCount: selectedEntities.includes("sample-sites") ? 1 : 0,
-            performanceCount: selectedEntities.includes("sample-performances") ? 1 : 0,
-          }));
-        updated[speciesIndex].sampleTypes = [...current, ...defaults];
-      } else {
-        updated[speciesIndex].sampleTypes = current.slice(0, newCount);
-      }
-      return updated;
-    });
+    const current = useGlobalStore.getState().speciesList;
+    const currentSamples = current[speciesIndex].sampleTypes;
+    const newCount = count || 0;
+    let newSamples;
+    if (newCount > currentSamples.length) {
+      const defaults = Array(newCount - currentSamples.length)
+        .fill(null)
+        .map(() => ({
+          label: "",
+          count: 1,
+          metadata: {},
+          siteCount: selectedEntities.includes("sample-sites") ? 1 : 0,
+          performanceCount: selectedEntities.includes("sample-performances") ? 1 : 0,
+        }));
+      newSamples = [...currentSamples, ...defaults];
+    } else {
+      newSamples = currentSamples.slice(0, newCount);
+    }
+    updateSpecies(speciesIndex, (species) => ({ ...species, sampleTypes: newSamples }));
   };
 
   const handleSpeciesSampleTypeChange = (speciesIndex, sampleIndex, field, value) => {
-    setSpeciesList((prev) => {
-      const updated = [...prev];
-      updated[speciesIndex].sampleTypes[sampleIndex] = {
-        ...updated[speciesIndex].sampleTypes[sampleIndex],
-        [field]: value,
-      };
-      return updated;
-    });
+    updateSampleType(speciesIndex, sampleIndex, (sample) => ({ ...sample, [field]: value }));
   };
 
   const handleSpeciesSiteCountChange = (speciesIndex, sampleIndex, value) => {
-    setSpeciesList((prev) => {
-      const updated = [...prev];
-      updated[speciesIndex].sampleTypes[sampleIndex].siteCount = value;
-      return updated;
-    });
+    updateSampleType(speciesIndex, sampleIndex, (sample) => ({ ...sample, siteCount: value }));
   };
 
   const handleSpeciesPerformanceCountChange = (speciesIndex, sampleIndex, value) => {
-    setSpeciesList((prev) => {
-      const updated = [...prev];
-      updated[speciesIndex].sampleTypes[sampleIndex].performanceCount = value;
-      return updated;
-    });
+    updateSampleType(speciesIndex, sampleIndex, (sample) => ({
+      ...sample,
+      performanceCount: value,
+    }));
   };
 
   // ─── Rendering Functions ─────────────────────────────
@@ -454,7 +446,7 @@ const DatasetEntityStructurePage = () => {
             <Text mb="md">
               Please verify that the generated structure below is correct before proceeding.
             </Text>
-            <EntityHierarchyRenderer datasetEntityArray={datasetEntityArray} />
+            <EntityHierarchyRenderer datasetEntityArray={datasetEntityStructure} />
           </Paper>
         </Stack>
       </GuidedModeSection>
