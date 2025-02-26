@@ -12,6 +12,11 @@ import {
   addEntityToEntityList,
   setActiveEntity,
 } from "../../../stores/slices/datasetEntitySelectorSlice.js";
+import {
+  setSpeciesList,
+  setDatasetEntityArray,
+} from "../../../stores/slices/datasetEntityStructureSlice.js";
+import { setSelectedEntities } from "../../../stores/slices/datasetContentSelectorSlice.js";
 import { setDatasetEntityObj } from "../../../stores/slices/datasetEntitySelectorSlice.js";
 
 import { guidedSetNavLoadingState } from "./navigationUtils/pageLoading.js";
@@ -342,7 +347,12 @@ export const openPage = async (targetPageID) => {
       }
 
       if (targetPageComponentType === "dataset-entity-id-generation-page") {
-        console.log("Bing bong");
+        const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
+        const speciesList = window.sodaJSONObj["species-list"] || [];
+        const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
+        setSelectedEntities(selectedEntities);
+        setSpeciesList(speciesList);
+        setDatasetEntityArray(datasetEntityArray);
       }
     }
 
@@ -351,6 +361,7 @@ export const openPage = async (targetPageID) => {
       const importProgressCircle = document.querySelector(
         "#guided_loading_pennsieve_dataset-organize"
       );
+
       importProgressCircle.classList.add("hidden");
     }
 

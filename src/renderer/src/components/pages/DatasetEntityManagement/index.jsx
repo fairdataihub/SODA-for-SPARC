@@ -1,54 +1,55 @@
-import { useState } from "react";
+import { useEffect } from "react";
+import useGlobalStore from "../../../stores/globalStore";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
-import { TextInput, Button, Text, Stack, Group, Box } from "@mantine/core";
-import useGlobalStore from "../../../stores/globalStore";
-import { addSubject } from "../../../stores/slices/datasetEntitySelectorSlice";
-import { IconUser } from "@tabler/icons-react"; // Add this import
-
-/* THIS IS OLD AND CAN PROBABLY BE DELETED */
+import {
+  TextInput,
+  NumberInput,
+  Text,
+  Stack,
+  Group,
+  Box,
+  Flex,
+  Paper,
+  Divider,
+  ScrollArea,
+} from "@mantine/core";
+import { IconUser, IconFlask, IconClipboard, IconPin } from "@tabler/icons-react";
+import {
+  setDatasetEntityArray,
+  setSpeciesList,
+} from "../../../stores/slices/datasetEntityStructureSlice";
+import EntityHierarchyRenderer from "../../shared/EntityHierarchyRenderer";
 
 const DatasetEntityManagementPage = () => {
-  const [subjectID, setSubjectID] = useState("");
-  const entityStructureObj = useGlobalStore((state) => state.entityStructureObj);
-  console.log("entityStructureObj", entityStructureObj);
-
-  const handleAddSubject = () => {
-    if (subjectID.trim()) {
-      addSubject(subjectID.trim());
-      setSubjectID("");
-    }
-  };
+  // Global configuration for what entities to include.
+  const selectedEntities = useGlobalStore((state) => state.selectedEntities);
+  // Retrieve species list and the generated structure from the global store.
+  const speciesList = useGlobalStore((state) => state.speciesList);
+  const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
 
   return (
-    <GuidedModePage pageHeader="Generate IDs to associate data">
+    <GuidedModePage pageHeader="Generate IDs to Associate Data With">
       <GuidedModeSection>
         <Text>
-          Provide details about the subjects you collected data from to generate unique IDs for data
-          association.
+          Provide details about the entities from which you collected data during your study. This
+          information will be used to generate unique IDs for data association in the following
+          steps.
         </Text>
       </GuidedModeSection>
       <GuidedModeSection>
-        <Stack spacing="md">
-          <Group>
-            <TextInput
-              placeholder="Enter Subject ID"
-              value={subjectID}
-              onChange={(e) => setSubjectID(e.target.value)}
-            />
-            <Button onClick={handleAddSubject}>Add Subject</Button>
-          </Group>
-          <Box>
-            <Text weight={500}>Subjects:</Text> {/* Add the IconUser here */}
-            {entityStructureObj?.subjects &&
-              Object.keys(entityStructureObj.subjects).map((id) => (
-                <Text key={id}>
-                  <IconUser />
-                  {id}
-                </Text>
-              ))}
-          </Box>
-        </Stack>
+        {/* Data Structure Preview */}
+        <Paper withBorder shadow="sm" p="md" mb="sm">
+          <Text size="lg" fw={700} mb="sm">
+            Data Structure Preview
+          </Text>
+          <Text mb="md">
+            Please verify that the generated structure below is correct before proceeding.
+          </Text>
+          <ScrollArea h={650}>
+            <EntityHierarchyRenderer datasetEntityArray={datasetEntityArray} />
+          </ScrollArea>
+        </Paper>
       </GuidedModeSection>
     </GuidedModePage>
   );

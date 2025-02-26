@@ -78,6 +78,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
       const pageBeingLeftComponentType = pageBeingLeftDataSet.componentType;
       if (pageBeingLeftComponentType === "entity-management-page") {
         const entityType = pageBeingLeftDataSet.entityType;
+        const entityTypeSingular = pageBeingLeftDataSet.entityTypeSingular;
         const datasetEntityObj = getDatasetEntityObj();
         console.log("datasetEntityObj when leaving" + pageBeingLeftID, datasetEntityObj);
         console.log("pageBeingLeftDataSet.entityType", entityType);
@@ -105,12 +106,21 @@ export const savePageChanges = async (pageBeingLeftID) => {
       }
       if (pageBeingLeftComponentType === "dataset-entity-id-generation-page") {
         const speciesList = useGlobalStore.getState().speciesList;
-
         const datasetEntityArray = useGlobalStore.getState().datasetEntityArray;
 
-        console.log("speciesList when leaving" + pageBeingLeftID, speciesList);
+        // Save the dataset entity object to the progress file
+        window.sodaJSONObj["species-list"] = speciesList;
+        window.sodaJSONObj["dataset-entity-array"] = datasetEntityArray;
 
-        console.log("datasetEntityArray when leaving" + pageBeingLeftID, datasetEntityArray);
+        console.log(
+          "speciesList when leaving" + pageBeingLeftID,
+          window.sodaJSONObj["species-list"]
+        );
+
+        console.log(
+          "datasetEntityArray when leaving" + pageBeingLeftID,
+          window.sodaJSONObj["dataset-entity-array"]
+        );
       }
     }
 
