@@ -49,8 +49,8 @@ import {
 } from "../../stores/slices/datasetTreeViewSlice";
 import { setSelectedEntities } from "../../stores/slices/datasetContentSelectorSlice";
 import {
-  getZustandStoreDatasetEntityStructure,
-  setZustandStoreDatasetEntityStructure,
+  getDatasetEntityArray,
+  setDatasetEntityArray,
 } from "../../stores/slices/datasetEntityStructureSlice";
 
 import "bootstrap-select";
@@ -1510,25 +1510,6 @@ const removeAlertMessageIfExists = (elementToCheck) => {
   if (alertMessageToRemove.hasClass("alert")) {
     elementToCheck.next().remove();
   }
-};
-
-//function that creates a new folder object
-const newEmptyFolderObj = () => {
-  console.log("newEmptyFolderObj");
-  return { folders: {}, files: {}, type: "virtual", action: ["new"] };
-};
-
-const getDatasetStructureJsonFolderContentsAtNestedArrayPath = (folderPathArray) => {
-  let currentFolder = window.datasetStructureJSONObj;
-  folderPathArray.forEach((folder) => {
-    console.log("currentFolder[folders'][folder]", currentFolder["folders"][folder]);
-    // Continue to recursively create folders if they don't exist
-    if (!currentFolder["folders"][folder]) {
-      currentFolder["folders"][folder] = newEmptyFolderObj();
-    }
-    currentFolder = currentFolder["folders"][folder];
-  });
-  return currentFolder;
 };
 
 const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
@@ -5497,8 +5478,6 @@ const guidedSaveDescriptionContributorInformation = () => {
   };
 };
 
-const continueHackGm = false;
-
 const doTheHack = async () => {
   console.log("Doing the hack");
   // wait for a second
@@ -5523,6 +5502,10 @@ const doTheHack = async () => {
   await new Promise((resolve) => setTimeout(resolve, 4000));
   document.querySelector(".primary-selection-aside-item.selection-aside-item").click();
 };
+
+// If this variable is set to true, you will be taken back to the last guided mode page you were working on
+// (always set to false when making production builds)
+const continueHackGm = true;
 if (continueHackGm) {
-  // doTheHack();
+  doTheHack();
 }

@@ -3,6 +3,7 @@ import { getDatasetEntityObj } from "../../../stores/slices/datasetEntitySelecto
 import { startOrStopAnimationsInContainer } from "../lotties/lottie";
 import { savePageCurationPreparation } from "./curationPreparation/savePage";
 import { savePagePrepareMetadata } from "./prepareMetadata/savePage";
+import useGlobalStore from "../../../stores/globalStore";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -77,7 +78,6 @@ export const savePageChanges = async (pageBeingLeftID) => {
       const pageBeingLeftComponentType = pageBeingLeftDataSet.componentType;
       if (pageBeingLeftComponentType === "entity-management-page") {
         const entityType = pageBeingLeftDataSet.entityType;
-        const entityTypeSingular = pageBeingLeftDataSet.entityTypeStringSingular;
         const datasetEntityObj = getDatasetEntityObj();
         console.log("datasetEntityObj when leaving" + pageBeingLeftID, datasetEntityObj);
         console.log("pageBeingLeftDataSet.entityType", entityType);
@@ -91,26 +91,26 @@ export const savePageChanges = async (pageBeingLeftID) => {
         // Save the dataset entity object to the progress file
         window.sodaJSONObj["dataset-entity-obj"] = datasetEntityObj;
       }
+
       if (pageBeingLeftComponentType === "entity-selection-page") {
         const entityType = pageBeingLeftDataSet.entityType;
-        const entityTypeSingular = pageBeingLeftDataSet.entityTypeStringSingular;
         const datasetEntityObj = getDatasetEntityObj();
         console.log("datasetEntityObj when leaving" + pageBeingLeftID, datasetEntityObj);
         console.log("pageBeingLeftDataSet.entityType", entityType);
         const entityItems = Object.keys(datasetEntityObj?.[entityType] || {});
         console.log("entityItems", entityItems);
 
-        let noDataAddedToEntities = false; // Changed from const to let
-
-        for (const item of entityItems) {
-          if (datasetEntityObj[entityType][item].length !== 0) {
-            noDataAddedToEntities = true;
-            break;
-          }
-        }
-
         // Save the dataset entity object to the progress file
         window.sodaJSONObj["dataset-entity-obj"] = datasetEntityObj;
+      }
+      if (pageBeingLeftComponentType === "dataset-entity-id-generation-page") {
+        const speciesList = useGlobalStore.getState().speciesList;
+
+        const datasetEntityArray = useGlobalStore.getState().datasetEntityArray;
+
+        console.log("speciesList when leaving" + pageBeingLeftID, speciesList);
+
+        console.log("datasetEntityArray when leaving" + pageBeingLeftID, datasetEntityArray);
       }
     }
 

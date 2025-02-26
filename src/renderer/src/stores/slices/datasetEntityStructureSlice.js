@@ -11,18 +11,12 @@ export const setSpeciesList = (speciesList) => {
   });
 };
 
-export const setDatasetEntityArray = (subjects) => {
+export const setDatasetEntityArray = (datasetEntityArray) => {
   useGlobalStore.setState({
-    subjects,
+    datasetEntityArray,
   });
 };
 
-export const setZustandStoreDatasetEntityStructure = (datasetEntityStructure) => {
-  useGlobalStore.setState({
-    datasetEntityStructure,
-  });
-};
-
-export const getZustandStoreDatasetEntityStructure = () => {
-  return useGlobalStore.getState().datasetEntityStructure;
+export const getDatasetEntityArray = () => {
+  return useGlobalStore.getState().datasetEntityArray;
 };
