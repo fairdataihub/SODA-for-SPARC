@@ -9,12 +9,15 @@ import {
   addEntityToEntityList,
   setActiveEntity,
 } from "../../../stores/slices/datasetEntitySelectorSlice.js";
+import { setDatasetEntityObj } from "../../../stores/slices/datasetEntitySelectorSlice.js";
+import { setTreeViewDatasetStructure } from "../../../stores/slices/datasetTreeViewSlice.js";
 import { guidedSetNavLoadingState } from "./navigationUtils/pageLoading.js";
 import Swal from "sweetalert2";
 import { userErrorMessage } from "../../others/http-error-handler/error-handler.js";
 import { getNonSkippedGuidedModePages } from "./navigationUtils/pageSkipping.js";
 import { startOrStopAnimationsInContainer } from "../lotties/lottie.js";
 import { renderSideBar } from "./sidebar.js";
+import useGlobalStore from "../../../stores/globalStore.js";
 
 // Function that handles the visibility of the back button
 const handleBackButtonVisibility = (targetPageID) => {
@@ -112,6 +115,77 @@ const setActiveProgressionTab = (targetPageID) => {
   targetProgressionTab.addClass("selected-tab");
 };
 
+//function that creates a new folder object
+const newEmptyFolderObj = () => {
+  console.log("newEmptyFolderObj");
+  return { folders: {}, files: {}, type: "virtual", action: ["new"] };
+};
+
+const getDatasetStructureJsonFolderContentsAtNestedArrayPath = (folderPathArray) => {
+  let currentFolder = window.datasetStructureJSONObj;
+  folderPathArray.forEach((folder) => {
+    console.log("currentFolder[folders'][folder]", currentFolder["folders"][folder]);
+    // Continue to recursively create folders if they don't exist
+    if (!currentFolder["folders"][folder]) {
+      currentFolder["folders"][folder] = newEmptyFolderObj();
+    }
+    currentFolder = currentFolder["folders"][folder];
+  });
+  return currentFolder;
+};
+
+const guidedUpdateFolderStructureUI = (folderPathSeperatedBySlashes) => {
+  console.log("Function called: guidedUpdateFolderStructureUI");
+  console.log("Input - folder path (separated by slashes):", folderPathSeperatedBySlashes);
+
+  const fileExplorer = document.getElementById("guided-file-explorer-elements");
+  console.log("File explorer element retrieved:", fileExplorer);
+
+  // Remove transition class to reset animation or styles
+  fileExplorer.classList.remove("file-explorer-transition");
+  console.log("Removed 'file-explorer-transition' class from file explorer.");
+
+  // Update the global path input value with the new path
+  $("#guided-input-global-path").val(`dataset_root/${folderPathSeperatedBySlashes}`);
+  console.log("Set global input path to:", `dataset_root/${folderPathSeperatedBySlashes}`);
+
+  window.organizeDSglobalPath = $("#guided-input-global-path")[0];
+
+  // Filter and format the path using the global path function
+  const filtered = window.getGlobalPath(window.organizeDSglobalPath);
+  console.log("Filtered path from getGlobalPath:", filtered);
+
+  window.organizeDSglobalPath.value = `${filtered.join("/")}/`;
+  console.log("Set window.organizeDSglobalPath.value to:", window.organizeDSglobalPath.value);
+
+  // Prepare the path array for nested JSON retrieval
+  const arrayPathToNestedJsonToRender = filtered.slice(1);
+  console.log("Path array for JSON content retrieval:", arrayPathToNestedJsonToRender);
+
+  // Retrieve content at the nested path in the dataset structure
+  const datasetContent = getDatasetStructureJsonFolderContentsAtNestedArrayPath(
+    arrayPathToNestedJsonToRender
+  );
+  console.log("Retrieved dataset content at nested path:", datasetContent);
+
+  // Update the UI with the files and folders retrieved
+  window.listItems(datasetContent, "#items", 500, true);
+  console.log("Called window.listItems to update the UI.");
+
+  // Set up click behavior for folder items in the list
+  window.getInFolder(
+    ".single-item",
+    "#items",
+    window.organizeDSglobalPath,
+    window.datasetStructureJSONObj
+  );
+  console.log("arrayPathToNestedJsonToRender:", arrayPathToNestedJsonToRender);
+
+  // Refresh the tree view to match the current folder structure
+  setTreeViewDatasetStructure(window.datasetStructureJSONObj, arrayPathToNestedJsonToRender);
+  console.log("Updated tree view structure based on current path.");
+};
+
 /**
  *
  * Prepares the state of the target page based on the state of the window.sodaJSONObj and then displays the page.
@@ -207,32 +281,66 @@ export const openPage = async (targetPageID) => {
       guidedLockSideBar(true);
     }
 
-    // if (targetPageDataset.componentType) {
-    //     const targetPageComponentType = targetPageDataset.componentType;
-    //     console.log("targetPageDataset", targetPageDataset);
-    //     if (targetPageComponentType === "entity-management-page") {
-    //         // Set the dataset entity object to the saved dataset entity object from the JSON
-    //         const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
-    //         setDatasetEntityObj(savedDatasetEntityObj);
-    //         setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["data"]);
-    //     }
-    //     if (targetPageComponentType === "entity-selection-page") {
-    //         const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
-    //         setDatasetEntityObj(savedDatasetEntityObj);
+    if (targetPageDataset.componentType) {
+      const targetPageComponentType = targetPageDataset.componentType;
+      console.log("targetPageDataset", targetPageDataset);
+      if (targetPageComponentType === "entity-management-page") {
+        // Set the dataset entity object to the saved dataset entity object from the JSON
+        const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
+        setDatasetEntityObj(savedDatasetEntityObj);
+        setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["data"]);
+      }
+      if (targetPageComponentType === "entity-selection-page") {
+        const pageEntityType = targetPageDataset.entityType;
+        const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
+        setActiveEntity(null);
+        setDatasetEntityObj(savedDatasetEntityObj);
 
-    //         setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["data"]);
-    //         /*
-    //         if (!window.sodaJSONObj["completed-tabs"].includes(targetPageID)) {
-    //           console.log("Calling autoSelectDatasetFoldersAndFilesForEnteredEntityIds");
-    //           autoSelectDatasetFoldersAndFilesForEnteredEntityIds(
-    //             window.datasetStructureJSONObj["folders"]["primary"],
-    //             targetPageDataset.entityType,
-    //             targetPageDataset.entityTypeStringSingular
-    //           );
-    //         }
-    //         */
-    //     }
-    // }
+        // Make any adjustments to the dataset entity object before setting it in the zustand store
+        if (pageEntityType === "bucketed-data") {
+          const bucketTypes = ["Code", "Experimental data", "Other"];
+
+          for (const bucketType of Object.keys(savedDatasetEntityObj?.["bucketed-data"] || {})) {
+            if (!bucketTypes.includes(bucketType)) {
+              removeEntityFromEntityList("bucketed-data", bucketType);
+            }
+          }
+
+          for (const bucketType of bucketTypes) {
+            addEntityToEntityList("bucketed-data", bucketType);
+          }
+          console.log("datasetEntityObj", useGlobalStore.getState().datasetEntityObj);
+        }
+
+        if (pageEntityType === "subjects") {
+          console.log("Wip");
+        }
+
+        console.log("savedDatasetEntityObj", savedDatasetEntityObj);
+        console.log("pageEntityType", pageEntityType);
+
+        console.log(
+          "savedDatasetEntityObj when opening entity-selection-page",
+          savedDatasetEntityObj
+        );
+
+        setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["data"]);
+        /*
+        if (!window.sodaJSONObj["completed-tabs"].includes(targetPageID)) {
+          console.log("Calling autoSelectDatasetFoldersAndFilesForEnteredEntityIds");
+          autoSelectDatasetFoldersAndFilesForEnteredEntityIds(
+            window.datasetStructureJSONObj["folders"]["primary"],
+            targetPageDataset.entityType,
+            targetPageDataset.entityTypeStringSingular
+          );
+        }
+        */
+      }
+
+      if (targetPageComponentType === "dataset-entity-id-generation-page") {
+        console.log("Bing bong");
+      }
+    }
 
     if (targetPageID === "guided-select-starting-point-tab") {
       // Hide the pennsieve dataset import progress circle
@@ -289,9 +397,9 @@ export const openPage = async (targetPageID) => {
     //         renderSamplesTable();
     //     }
 
-    //     if (targetPageID === "guided-unstructured-data-import-tab") {
-    //         guidedUpdateFolderStructureUI("data/");
-    //     }
+    if (targetPageID === "guided-unstructured-data-import-tab") {
+      guidedUpdateFolderStructureUI("data/");
+    }
 
     //     if (targetPageID === "guided-denote-derivative-data-tab") {
     //         // Set the folder structure as the primary folder since the user is

@@ -16,13 +16,3 @@ export const setDatasetEntityArray = (subjects) => {
     subjects,
   });
 };
-
-export const setZustandStoreDatasetEntityStructure = (datasetEntityStructure) => {
-  useGlobalStore.setState({
-    datasetEntityStructure,
-  });
-};
-
-export const getZustandStoreDatasetEntityStructure = () => {
-  return useGlobalStore.getState().datasetEntityStructure;
-};

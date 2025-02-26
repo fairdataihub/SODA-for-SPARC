@@ -1,77 +1,57 @@
 import { Stack, Text, Box, Flex } from "@mantine/core";
 import { IconUser, IconFlask, IconClipboard, IconPin } from "@tabler/icons-react";
 
-const HierarchyItem = ({ icon: Icon, label, children, borderColor }) => (
-  <Box ml="xs" style={{ borderLeft: `3px solid gray` }}>
-    <Flex align="center" gap="5px">
-      <Box bg="gray" h="3px" w="10px"></Box>
-      <Icon size={15} />
-      <Text>{label}</Text>
-    </Flex>
-    {children}
-  </Box>
-);
+const HierarchyItem = ({ icon: Icon, label, children, level = 1 }) => {
+  return (
+    <Box ml="xs" style={{ borderLeft: `2px solid #ccc` }}>
+      <Flex align="center">
+        <Box bg="#ccc" h="2px" w="10px"></Box>
+        <Icon size={15} />
+        <Text ml="4px" fw={500}>
+          {label}
+        </Text>
+      </Flex>
+      <Stack gap="xs" ml="md">
+        {children}
+      </Stack>
+    </Box>
+  );
+};
 
 const EntityHierarchyRenderer = ({ datasetEntityArray }) => {
-  if (!datasetEntityArray?.length) return null;
   console.log("datasetEntityArray", datasetEntityArray);
+
+  if (!datasetEntityArray?.length) return null;
+
   return (
-    <Stack spacing="md">
+    <Stack gap="xs">
       {datasetEntityArray.map((subject) => (
         <Box
           key={subject.subjectId}
           style={{
             border: "1px solid #ddd",
             borderRadius: "8px",
-            padding: "8px",
-            marginBottom: "8px",
+            backgroundColor: "#f9f9f9",
           }}
+          p="sm"
         >
+          {/* Subject */}
           <Flex align="center" gap="xs">
             <IconUser size={15} />
             <Text fw={600}>{subject.subjectId}</Text>
           </Flex>
 
+          {/* Subject Sites */}
           {subject.subjectSites?.map((site) => (
-            <HierarchyItem
-              key={site.siteId}
-              icon={IconPin}
-              label={site.siteId}
-              borderColor="purple"
-            />
+            <HierarchyItem key={site.siteId} icon={IconPin} label={site.siteId} level={2} />
           ))}
 
-          {subject.subjectPerformances?.map((performance) => (
-            <HierarchyItem
-              key={performance.performanceId}
-              icon={IconClipboard}
-              label={performance.performanceId}
-              borderColor="teal"
-            />
-          ))}
-
+          {/* Samples */}
           {subject.samples?.map((sample) => (
-            <HierarchyItem
-              key={sample.sampleId}
-              icon={IconFlask}
-              label={sample.sampleId}
-              borderColor="green"
-            >
+            <HierarchyItem key={sample.sampleId} icon={IconFlask} label={sample.sampleId} level={2}>
+              {/* Sample Sites */}
               {sample.sites?.map((site) => (
-                <HierarchyItem
-                  key={site.siteId}
-                  icon={IconPin}
-                  label={site.siteId}
-                  borderColor="orange"
-                />
-              ))}
-              {sample.performances?.map((performance) => (
-                <HierarchyItem
-                  key={performance.performanceId}
-                  icon={IconClipboard}
-                  label={performance.performanceId}
-                  borderColor="blue"
-                />
+                <HierarchyItem key={site.siteId} icon={IconPin} label={site.siteId} level={3} />
               ))}
             </HierarchyItem>
           ))}

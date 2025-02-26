@@ -12,11 +12,12 @@ import {
   Flex,
   Paper,
   Divider,
+  ScrollArea,
 } from "@mantine/core";
 import { IconUser, IconFlask, IconClipboard, IconPin } from "@tabler/icons-react";
 import {
-  setZustandStoreDatasetEntityStructure,
   setSpeciesList,
+  setDatasetEntityArray,
 } from "../../../stores/slices/datasetEntityStructureSlice";
 import EntityHierarchyRenderer from "../../shared/EntityHierarchyRenderer";
 
@@ -43,7 +44,7 @@ const DatasetEntityStructurePage = () => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   // Retrieve species list and the generated structure from the global store.
   const speciesList = useGlobalStore((state) => state.speciesList);
-  const datasetEntityStructure = useGlobalStore((state) => state.datasetEntityStructure);
+  const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
 
   // ─── Helper Update Functions ─────────────────────────────
   // Updates a species at a given index immutably.
@@ -92,7 +93,7 @@ const DatasetEntityStructurePage = () => {
           };
         })
       );
-    setZustandStoreDatasetEntityStructure(newSubjects);
+    setDatasetEntityArray(newSubjects);
   }, [speciesList, selectedEntities]);
 
   // ─── Helper Functions for Generating Entities ─────────────────────────────
@@ -249,7 +250,7 @@ const DatasetEntityStructurePage = () => {
               handleSpeciesSampleTypeChange(speciesIndex, sampleIndex, "count", value)
             }
             min={1}
-            max={200}
+            max={100}
             step={1}
             flex={1}
           />
@@ -306,7 +307,7 @@ const DatasetEntityStructurePage = () => {
       />
       {selectedEntities.includes("subject-sites") && (
         <NumberInput
-          label="Number of subject sites for this species"
+          label="How many different sites did you collect data from from each subject?"
           value={species.subjectSiteCount}
           onChange={(value) => handleSpeciesSubjectSiteCountChange(speciesIndex, value)}
           min={0}
@@ -344,75 +345,6 @@ const DatasetEntityStructurePage = () => {
     </Paper>
   );
 
-  const renderSubjectSamples = (subject) => (
-    <Box
-      key={subject.subjectId}
-      sx={{
-        border: "1px solid #ddd",
-        borderRadius: "8px",
-        padding: "8px",
-        marginBottom: "8px",
-      }}
-    >
-      <Flex gap="xs" align="center">
-        <IconUser size={15} />
-        <Text fw={600}>{subject.subjectId}</Text>
-      </Flex>
-      {subject.subjectSites && subject.subjectSites.length > 0 && (
-        <Box ml="xs" pl="xs" style={{ borderLeft: "2px solid purple" }}>
-          {subject.subjectSites.map((site) => (
-            <Flex key={site.siteId} gap="xs" align="center">
-              <IconPin size={15} />
-              <Text>{site.siteId}</Text>
-            </Flex>
-          ))}
-        </Box>
-      )}
-      {subject.subjectPerformances && subject.subjectPerformances.length > 0 && (
-        <Box ml="xs" pl="xs" style={{ borderLeft: "2px solid teal" }}>
-          {subject.subjectPerformances.map((performance) => (
-            <Flex key={performance.performanceId} gap="xs" align="center">
-              <IconClipboard size={15} />
-              <Text>{performance.performanceId}</Text>
-            </Flex>
-          ))}
-        </Box>
-      )}
-      {selectedEntities.includes("samples") && subject.samples?.length > 0 && (
-        <Box ml="xs" pl="xs" style={{ borderLeft: "2px solid green" }}>
-          {subject.samples.map((sample) => (
-            <Box key={sample.sampleId} ml="xs" mb="4px">
-              <Flex gap="xs" align="center">
-                <IconFlask size={15} />
-                <Text fw={500}>{sample.sampleId}</Text>
-              </Flex>
-              {sample.sites && sample.sites.length > 0 && (
-                <Box ml="xs" pl="xs" style={{ borderLeft: "2px solid orange" }}>
-                  {sample.sites.map((site) => (
-                    <Flex key={site.siteId} gap="xs" align="center">
-                      <IconPin size={15} />
-                      <Text>{site.siteId}</Text>
-                    </Flex>
-                  ))}
-                </Box>
-              )}
-              {sample.performances && sample.performances.length > 0 && (
-                <Box ml="xs" pl="xs" style={{ borderLeft: "2px solid blue" }}>
-                  {sample.performances.map((performance) => (
-                    <Flex key={performance.performanceId} gap="xs" align="center">
-                      <IconClipboard size={15} />
-                      <Text>{performance.performanceId}</Text>
-                    </Flex>
-                  ))}
-                </Box>
-              )}
-            </Box>
-          ))}
-        </Box>
-      )}
-    </Box>
-  );
-
   return (
     <GuidedModePage pageHeader="Generate IDs to Associate Data With">
       <GuidedModeSection>
@@ -439,14 +371,16 @@ const DatasetEntityStructurePage = () => {
           <Divider my="md" />
 
           {/* Data Structure Preview */}
-          <Paper withBorder shadow="sm" p="md" mb="sm">
+          <Paper withBorder shadow="sm" p="md" mb="sm" sc>
             <Text size="lg" fw={700} mb="sm">
               Data Structure Preview
             </Text>
             <Text mb="md">
               Please verify that the generated structure below is correct before proceeding.
             </Text>
-            <EntityHierarchyRenderer datasetEntityArray={datasetEntityStructure} />
+            <ScrollArea h={650}>
+              <EntityHierarchyRenderer datasetEntityArray={datasetEntityArray} />
+            </ScrollArea>
           </Paper>
         </Stack>
       </GuidedModeSection>
