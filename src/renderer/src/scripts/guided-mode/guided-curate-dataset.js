@@ -3188,23 +3188,6 @@ window.electron.ipcRenderer.on("selected-subject-names-from-dialog", async (even
   guidedAddListOfSubjects(subjectNames, true);
 });
 
-const convertArrayToCommaSeparatedString = (array) => {
-  // Convert the array to a comma separated string with an "and" before the last element if there are more than 2 elements
-  if (array.length === 0) {
-    return "";
-  }
-  if (array.length === 1) {
-    return array[0];
-  }
-  if (array.length === 2) {
-    return `${array[0]} and ${array[1]}`;
-  }
-  if (array.length > 2) {
-    const lastElement = array.pop();
-    return `${array.join(", ")}, and ${lastElement}`;
-  }
-};
-
 const guidedOpenEntityAdditionSwal = async (entityName) => {
   // Get a list of the existing entities so we can check for duplicates
   // const subjects = window.getExistingSubjectNames();

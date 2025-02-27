@@ -18,8 +18,10 @@ import {
   IconPlus,
   IconTrash,
 } from "@tabler/icons-react";
+import { useState, useMemo, useEffect } from "react";
 import { addSubject, deleteSubject } from "../../../stores/slices/datasetEntityStructureSlice";
 import useGlobalStore from "../../../stores/globalStore";
+import { guidedOpenEntityAdditionSwal, guidedOpenEntityEditSwal } from "./utils";
 
 // Utility for getting the appropriate icon component
 const getEntityIcon = (iconType) => {
@@ -94,18 +96,87 @@ const HierarchyItem = ({
   );
 };
 
-const EntityHierarchyRenderer = ({ datasetEntityArray, allowEntityStructureEditing }) => {
-  if (!datasetEntityArray?.length) return null;
+const EntityHierarchyRenderer = ({
+  datasetEntityArray = [],
+  allowEntityStructureEditing = false,
+}) => {
+  // Always call all hooks unconditionally at the top
+  const [subjectInput, setSubjectInput] = useState("");
+  const [inputError, setInputError] = useState("");
+  const selectedEntities = useGlobalStore((state) => state.selectedEntities);
 
-  const selectedEntities = useGlobalStore((state) => state.selectedEntities || []);
-  const isEntitySelected = (entityType) => selectedEntities.includes(entityType);
+  // Generate the full subject ID with prefix
+  const fullSubjectId = useMemo(() => {
+    if (!subjectInput.trim()) return "";
+    // Don't double-add the prefix
+    return subjectInput.trim().startsWith("sub-")
+      ? subjectInput.trim()
+      : `sub-${subjectInput.trim()}`;
+  }, [subjectInput]);
 
-  // Determine which sections to show based on global state
-  const showSamples = isEntitySelected("samples");
-  const showSubjectSites = isEntitySelected("subject-sites");
-  const showSampleSites = isEntitySelected("sample-sites");
-  const showSubjectPerformances = isEntitySelected("subject-performances");
-  const showSamplePerformances = isEntitySelected("sample-performances");
+  // Real-time validation effect
+  useEffect(() => {
+    if (!subjectInput.trim()) {
+      setInputError("");
+      return;
+    }
+
+    // Check if the ID already exists
+    const subjectExists = datasetEntityArray.some((subject) => subject.subjectId === fullSubjectId);
+    if (subjectExists) {
+      setInputError("Subject ID already exists");
+      return;
+    }
+
+    setInputError("");
+  }, [subjectInput, fullSubjectId, datasetEntityArray]);
+
+  // Memoize derived values to avoid recalculation
+  const {
+    showSamples,
+    showSubjectSites,
+    showSampleSites,
+    showSubjectPerformances,
+    showSamplePerformances,
+  } = useMemo(
+    () => ({
+      showSamples: selectedEntities.includes("samples"),
+      showSubjectSites: selectedEntities.includes("subject-sites"),
+      showSampleSites: selectedEntities.includes("sample-sites"),
+      showSubjectPerformances: selectedEntities.includes("subject-performances"),
+      showSamplePerformances: selectedEntities.includes("sample-performances"),
+    }),
+    [selectedEntities]
+  );
+
+  // Handler for adding a new subject with validation and error handling
+  const handleAddSubject = () => {
+    if (!subjectInput.trim()) {
+      setInputError("Subject ID cannot be empty");
+      return;
+    }
+
+    // Check if the ID already exists (using the full ID with prefix)
+    const subjectExists = datasetEntityArray.some((subject) => subject.subjectId === fullSubjectId);
+    if (subjectExists) {
+      setInputError("Subject ID already exists");
+      return;
+    }
+
+    try {
+      addSubject(fullSubjectId);
+      setSubjectInput("");
+      setInputError(""); // Clear any previous errors
+    } catch (error) {
+      setInputError(error.message || "Failed to add subject");
+      console.error("Error adding subject:", error);
+    }
+  };
+
+  // Handle input changes with immediate validation
+  const handleInputChange = (e) => {
+    setSubjectInput(e.target.value);
+  };
 
   // Handler functions for deletion
   const handleDeleteSample = (subjectIndex, sampleId) => {
@@ -117,37 +188,56 @@ const EntityHierarchyRenderer = ({ datasetEntityArray, allowEntityStructureEditi
     console.log(
       `Delete site ${siteId} from sample ${sampleId} of subject at index ${subjectIndex}`
     );
-    // Implement deletion logic here
   };
 
   const handleDeletePerformance = (subjectIndex, sampleId, performanceId) => {
     console.log(
       `Delete performance ${performanceId} from sample ${sampleId} of subject at index ${subjectIndex}`
     );
-    // Implement deletion logic here
   };
 
   const handleDeleteSubjectSite = (subjectIndex, siteId) => {
     console.log(`Delete site ${siteId} from subject at index ${subjectIndex}`);
-    // Implement deletion logic here
   };
 
   const handleDeleteSubjectPerformance = (subjectIndex, performanceId) => {
     console.log(`Delete performance ${performanceId} from subject at index ${subjectIndex}`);
-    // Implement deletion logic here
   };
+
+  // We can check if we should show empty state after all hooks are called
+  const shouldShowEmptyState = !datasetEntityArray?.length && !allowEntityStructureEditing;
+
+  // Render empty state
+  if (shouldShowEmptyState) {
+    return <Text>No entity structure data available.</Text>;
+  }
 
   return (
     <ScrollArea h={650} type="auto">
-      <Group spacing="xs" align="start" width="100%" my="sm">
-        <TextInput flex={1} placeholder={`Enter  name`} value={""} />
-        <Button onClick={() => {}}>Add Subject</Button>
-      </Group>
+      {allowEntityStructureEditing && (
+        <Group spacing="xs" align="center" width="100%" my="sm">
+          <TextInput
+            flex={1}
+            placeholder="Enter subject ID (sub- will be automatically added)"
+            value={subjectInput}
+            onChange={handleInputChange}
+            error={inputError}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && subjectInput.trim() && !inputError) {
+                handleAddSubject();
+              }
+            }}
+          />
+          <Button onClick={handleAddSubject} disabled={!subjectInput.trim() || inputError !== ""}>
+            Add Subject
+          </Button>
+        </Group>
+      )}
 
       <Stack gap="xs">
-        {datasetEntityArray.map((subject, subjectIndex) => (
+        {datasetEntityArray?.map((subject, subjectIndex) => (
           <Box
-            key={subject.subjectId}
+            key={subject.subjectId || subjectIndex}
             style={{
               border: "1px solid #ddd",
               borderRadius: "8px",
