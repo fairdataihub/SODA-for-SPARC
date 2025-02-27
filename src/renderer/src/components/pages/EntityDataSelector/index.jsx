@@ -3,7 +3,6 @@ import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import EntityListContainer from "../../containers/EntityListContainer";
 import { IconSearch } from "@tabler/icons-react";
-import EntityHierarchyRenderer from "../../shared/EntityHierarchyRenderer";
 import {
   TextInput,
   Textarea,
@@ -136,11 +135,11 @@ const renderEntityList = (entityType, activeEntity, datasetEntityObj) => {
 
 const getInstructionalTextByEntityType = (entityType) => {
   const instructionalText = {
-    Code: "Select all folders and files containing scripts, computational models, analysis pipelines, or any other software used for data processing or analysis.",
+    Code: "Select all folders and files that contain scripts, computational models, analysis pipelines, or other software used for data processing or analysis.",
     "Experimental data":
-      "Select the folders and files containing data collected from experiments or analysis.",
+      "Select all folders and files containing data collected from experiments or analysis.",
     Other:
-      "Select the folders and files that do not contain experimental data or code. Some examples might be protocols, notes, or supplementary materials.",
+      "Select all folders and files that do not contain experimental data or code, such as protocols, notes, or supplementary materials.",
   };
 
   return instructionalText[entityType] || `Select the files that contain data for ${entityType}`;
@@ -199,11 +198,12 @@ const EntityDataSelectorPage = ({
   return (
     <GuidedModePage pageHeader={pageName}>
       <GuidedModeSection>
-        {entityType === "bucketed-data" ? (
+        {entityType === "categorized-data" ? (
           <Stack>
             <Text>
-              The SDS requires data to be classified in three categories: experimental, code, and
-              other. Use the interface below to classify your data files.
+              The SDS requires data to be categorized into three categories: experimental, code, and
+              other (data that is not experimental or code). Use the interface below to classify
+              your data files.
             </Text>
           </Stack>
         ) : (
@@ -221,7 +221,7 @@ const EntityDataSelectorPage = ({
         <GuidedModeSection>
           <Paper p="xs" shadow="sm">
             <Text size="sm" c="gray">
-              Progress: {countItemsSelected} of {itemCount} folders and files bucketed
+              Progress: {countItemsSelected} of {itemCount} folders and files categorized
             </Text>
             <Progress.Root size="xl">
               {Object.keys(datasetEntityObj[entityType]).map((entity) => {

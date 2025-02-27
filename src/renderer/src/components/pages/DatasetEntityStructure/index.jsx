@@ -330,7 +330,8 @@ const DatasetEntityStructurePage = () => {
           <Divider my="md" />
           <Text size="md" fw={600}>{`${species.species} samples`}</Text>
           <NumberInput
-            label="How many types of samples did you collect from each subject?"
+            label="Number of sample types per subject"
+            description="Specify how many different types of samples were collected (e.g., blood, tissue, saliva)."
             value={species.sampleTypes.length}
             onChange={(value) => handleSpeciesSampleCountChange(speciesIndex, value)}
             min={1}
@@ -373,14 +374,12 @@ const DatasetEntityStructurePage = () => {
           {/* Data Structure Preview */}
           <Paper withBorder shadow="sm" p="md" mb="sm">
             <Text size="lg" fw={700} mb="sm">
-              Data Structure Preview
+              Entity Structure Preview
             </Text>
             <Text mb="md">
               Please verify that the generated structure below is correct before proceeding.
             </Text>
-            <ScrollArea h={650}>
-              <EntityHierarchyRenderer datasetEntityArray={datasetEntityArray} />
-            </ScrollArea>
+            <EntityHierarchyRenderer datasetEntityArray={datasetEntityArray} />
           </Paper>
         </Stack>
       </GuidedModeSection>

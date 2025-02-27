@@ -573,6 +573,7 @@ export const guidedTransitionToHome = () => {
   }
   window.CURRENT_PAGE = undefined;
 
+  document.getElementById("guided-header-div").classList.add("hidden");
   document.getElementById("guided-footer-div").classList.add("hidden");
 };
 

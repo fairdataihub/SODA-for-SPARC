@@ -313,17 +313,17 @@ export const openPage = async (targetPageID) => {
 
         // Make any adjustments to the dataset entity object before setting it in the zustand store
 
-        if (pageEntityType === "bucketed-data") {
+        if (pageEntityType === "categorized-data") {
           const bucketTypes = ["Code", "Experimental data", "Other"];
 
-          for (const bucketType of Object.keys(savedDatasetEntityObj?.["bucketed-data"] || {})) {
+          for (const bucketType of Object.keys(savedDatasetEntityObj?.["categorized-data"] || {})) {
             if (!bucketTypes.includes(bucketType)) {
-              removeEntityFromEntityList("bucketed-data", bucketType);
+              removeEntityFromEntityList("categorized-data", bucketType);
             }
           }
 
           for (const bucketType of bucketTypes) {
-            addEntityToEntityList("bucketed-data", bucketType);
+            addEntityToEntityList("categorized-data", bucketType);
           }
 
           console.log("datasetEntityObj", useGlobalStore.getState().datasetEntityObj);
