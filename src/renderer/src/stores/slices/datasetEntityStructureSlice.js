@@ -17,6 +17,16 @@ export const setDatasetEntityArray = (datasetEntityArray) => {
   });
 };
 
+export const deleteSubject = (subjectId) => {
+  const { datasetEntityArray } = useGlobalStore.getState();
+  const updatedDatasetEntityArray = datasetEntityArray.filter(
+    (subject) => subject.subjectId !== subjectId
+  );
+  useGlobalStore.setState({
+    datasetEntityArray: updatedDatasetEntityArray,
+  });
+};
+
 export const getDatasetEntityArray = () => {
   return useGlobalStore.getState().datasetEntityArray;
 };

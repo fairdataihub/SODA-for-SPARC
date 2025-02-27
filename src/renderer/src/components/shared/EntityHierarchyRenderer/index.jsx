@@ -6,7 +6,10 @@ import {
   IconPin,
   IconEdit,
   IconPlus,
+  IconTrash,
 } from "@tabler/icons-react";
+import { deleteSubject } from "../../../stores/slices/datasetEntityStructureSlice";
+import useGlobalStore from "../../../stores/globalStore";
 
 // Utility function for getting the appropriate icon
 const getEntityIcon = (iconType) => {
@@ -37,31 +40,52 @@ const HierarchyItem = ({
   children,
   level,
   allowEntityStructureEditing,
-  isAddButton = false,
   onClick = null,
+  onDelete = null,
 }) => {
   let ml = 0;
   for (let i = 1; i < level; i++) {
     ml += 8;
   }
+
+  // Determine if this is an "Add" button based on the label
+  const isAddButton = icon === "add";
+
   return (
-    <Box ml={`${ml}px`} style={{ borderLeft: `2px solid #ccc` }}>
+    <Box ml={`${ml}px`} style={{ borderLeft: `2px solid #ccc` }} py="3px">
       <Flex
         align="center"
         onClick={isAddButton ? onClick : undefined}
         style={isAddButton ? { cursor: "pointer" } : {}}
       >
         <Box bg="#ccc" h="2px" w="10px"></Box>
-        {isAddButton ? getEntityIcon("add") : getEntityIcon(icon)}
+        {getEntityIcon(isAddButton ? "add" : icon)}
         <Text
           ml="4px"
           fw={isAddButton ? 400 : 500}
           size={isAddButton ? "xs" : undefined}
-          color={isAddButton ? "dimmed" : undefined}
+          c={isAddButton ? "dimmed" : undefined}
         >
           {label}
         </Text>
-        {!isAddButton && allowEntityStructureEditing && <IconEdit color="blue" size={18} />}
+        {!isAddButton && allowEntityStructureEditing && (
+          <>
+            <IconEdit color="blue" size={18} />
+            <IconTrash
+              color="red"
+              size={16}
+              style={{
+                marginLeft: "4px",
+                opacity: 0.6,
+                cursor: "pointer",
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onDelete) onDelete();
+              }}
+            />
+          </>
+        )}
       </Flex>
       {children && <Stack gap="0px">{children}</Stack>}
     </Box>
@@ -70,12 +94,44 @@ const HierarchyItem = ({
 
 // Main component
 const EntityHierarchyRenderer = ({ datasetEntityArray, allowEntityStructureEditing }) => {
+  console.log("datasetEntityArray", datasetEntityArray);
   if (!datasetEntityArray?.length) return null;
+  const selectedEntities = useGlobalStore((state) => state.selectedEntities);
+  console.log("selectedEntities", selectedEntities);
+  // Handler functions for deleting entities
+  const handleDeleteSample = (subjectIndex, sampleId) => {
+    console.log(`Delete sample ${sampleId} from subject at index ${subjectIndex}`);
+    // Implement actual deletion logic
+  };
+
+  const handleDeleteSite = (subjectIndex, sampleId, siteId) => {
+    console.log(
+      `Delete site ${siteId} from sample ${sampleId} of subject at index ${subjectIndex}`
+    );
+    // Implement actual deletion logic
+  };
+
+  const handleDeletePerformance = (subjectIndex, sampleId, performanceId) => {
+    console.log(
+      `Delete performance ${performanceId} from sample ${sampleId} of subject at index ${subjectIndex}`
+    );
+    // Implement actual deletion logic
+  };
+
+  const handleDeleteSubjectSite = (subjectIndex, siteId) => {
+    console.log(`Delete site ${siteId} from subject at index ${subjectIndex}`);
+    // Implement actual deletion logic
+  };
+
+  const handleDeleteSubjectPerformance = (subjectIndex, performanceId) => {
+    console.log(`Delete performance ${performanceId} from subject at index ${subjectIndex}`);
+    // Implement actual deletion logic
+  };
 
   return (
     <ScrollArea h={650} type="auto">
       <Stack gap="xs">
-        {datasetEntityArray.map((subject) => (
+        {datasetEntityArray.map((subject, subjectIndex) => (
           <Box
             key={subject.subjectId}
             style={{
@@ -89,10 +145,22 @@ const EntityHierarchyRenderer = ({ datasetEntityArray, allowEntityStructureEditi
             <Flex align="center" gap="xs">
               <IconUser size={15} />
               <Text fw={600}>{subject.subjectId}</Text>
-              {allowEntityStructureEditing && <IconEdit color="blue" size={18} />}
+              {allowEntityStructureEditing && (
+                <>
+                  <IconEdit color="blue" size={18} />
+                  <IconTrash
+                    color="red"
+                    size={16}
+                    onClick={() => {
+                      deleteSubject(subject.subjectId);
+                    }}
+                  />
+                </>
+              )}
             </Flex>
 
             {/* Samples */}
+
             {subject.samples?.map((sample) => (
               <HierarchyItem
                 key={sample.sampleId}
@@ -100,6 +168,7 @@ const EntityHierarchyRenderer = ({ datasetEntityArray, allowEntityStructureEditi
                 label={sample.sampleId}
                 level={2}
                 allowEntityStructureEditing={allowEntityStructureEditing}
+                onDelete={() => handleDeleteSample(subjectIndex, sample.sampleId)}
               >
                 {/* Sample Sites */}
                 {sample.sites?.map((site) => (
@@ -109,10 +178,16 @@ const EntityHierarchyRenderer = ({ datasetEntityArray, allowEntityStructureEditi
                     label={site.siteId}
                     level={3}
                     allowEntityStructureEditing={allowEntityStructureEditing}
+                    onDelete={() => handleDeleteSite(subjectIndex, sample.sampleId, site.siteId)}
                   />
                 ))}
                 {allowEntityStructureEditing && (
-                  <HierarchyItem label="Add Site" level={3} isAddButton={true} onClick={() => {}} />
+                  <HierarchyItem
+                    label={`Add site to ${sample.sampleId}`}
+                    icon="add"
+                    level={3}
+                    onClick={() => {}}
+                  />
                 )}
 
                 {/* Sample Performances */}
@@ -123,20 +198,32 @@ const EntityHierarchyRenderer = ({ datasetEntityArray, allowEntityStructureEditi
                     label={performance.performanceId}
                     level={3}
                     allowEntityStructureEditing={allowEntityStructureEditing}
+                    onDelete={() =>
+                      handleDeletePerformance(
+                        subjectIndex,
+                        sample.sampleId,
+                        performance.performanceId
+                      )
+                    }
                   />
                 ))}
                 {allowEntityStructureEditing && (
                   <HierarchyItem
-                    label="Add Performance"
+                    label={`Add performance to ${sample.sampleId}`}
+                    icon="add"
                     level={3}
-                    isAddButton={true}
                     onClick={() => {}}
                   />
                 )}
               </HierarchyItem>
             ))}
             {allowEntityStructureEditing && (
-              <HierarchyItem label="Add Sample" level={2} isAddButton={true} onClick={() => {}} />
+              <HierarchyItem
+                label={`Add sample to ${subject.subjectId}`}
+                icon="add"
+                level={2}
+                onClick={() => {}}
+              />
             )}
 
             {/* Subject Sites */}
@@ -147,13 +234,14 @@ const EntityHierarchyRenderer = ({ datasetEntityArray, allowEntityStructureEditi
                 label={site.siteId}
                 level={2}
                 allowEntityStructureEditing={allowEntityStructureEditing}
+                onDelete={() => handleDeleteSubjectSite(subjectIndex, site.siteId)}
               />
             ))}
             {allowEntityStructureEditing && (
               <HierarchyItem
-                label="Add Subject Site"
+                label={`Add site to ${subject.subjectId}`}
+                icon="add"
                 level={2}
-                isAddButton={true}
                 onClick={() => {}}
               />
             )}
@@ -166,13 +254,16 @@ const EntityHierarchyRenderer = ({ datasetEntityArray, allowEntityStructureEditi
                 label={performance.performanceId}
                 level={2}
                 allowEntityStructureEditing={allowEntityStructureEditing}
+                onDelete={() =>
+                  handleDeleteSubjectPerformance(subjectIndex, performance.performanceId)
+                }
               />
             ))}
             {allowEntityStructureEditing && (
               <HierarchyItem
-                label="Add Subject Performance"
+                label={`Add performance to ${subject.subjectId}`}
+                icon="add"
                 level={2}
-                isAddButton={true}
                 onClick={() => {}}
               />
             )}

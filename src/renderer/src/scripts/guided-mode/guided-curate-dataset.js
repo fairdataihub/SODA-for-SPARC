@@ -58,16 +58,6 @@ import Cropper from "cropperjs";
 
 import "jstree";
 
-import fileTxt from "/img/txt-file.png";
-import filePng from "/img/png-file.png";
-import filePdf from "/img/pdf-file.png";
-import fileCsv from "/img/csv-file.png";
-import fileDoc from "/img/doc-file.png";
-import fileXlsx from "/img/excel-file.png";
-import fileJpeg from "/img/jpeg-file.png";
-import fileOther from "/img/other-file.png";
-import hasConnectedAccountWithPennsieve from "../others/authentication/auth";
-
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }

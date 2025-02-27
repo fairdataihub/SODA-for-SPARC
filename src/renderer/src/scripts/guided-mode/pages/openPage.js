@@ -354,6 +354,13 @@ export const openPage = async (targetPageID) => {
         setSpeciesList(speciesList);
         setDatasetEntityArray(datasetEntityArray);
       }
+
+      if (targetPageComponentType === "dataset-entity-id-management-page") {
+        const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
+        const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
+        setSelectedEntities(selectedEntities);
+        setDatasetEntityArray(datasetEntityArray);
+      }
     }
 
     if (targetPageID === "guided-select-starting-point-tab") {
