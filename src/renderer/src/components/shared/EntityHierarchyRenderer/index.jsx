@@ -1,45 +1,80 @@
-import { Stack, Text, Box, Flex, ScrollArea } from "@mantine/core";
-import { IconUser, IconFlask, IconClipboard, IconPin, IconEdit } from "@tabler/icons-react";
+import { Stack, Text, Box, Flex, ScrollArea, ActionIcon } from "@mantine/core";
+import {
+  IconUser,
+  IconFlask,
+  IconClipboard,
+  IconPin,
+  IconEdit,
+  IconPlus,
+} from "@tabler/icons-react";
 
-const HierarchyItem = ({ icon, label, children, level = 1, allowEntityStructureEditing }) => {
-  const getIcon = (icon) => {
-    switch (icon) {
-      case "subject":
-        return <IconUser size={15} />;
-      case "sample":
-        return <IconFlask size={15} color="#74b816" />;
-      case "site":
-        return <IconClipboard size={15} />;
-      case "performance":
-        return <IconPin size={15} />;
-      default:
-        return null;
-    }
-  };
+// Utility function for getting the appropriate icon
+const getEntityIcon = (iconType) => {
+  switch (iconType) {
+    case "subject":
+      return <IconUser size={15} />;
+    case "sample":
+      return <IconFlask size={15} color="#74b816" />;
+    case "site":
+      return <IconPin size={15} />;
+    case "performance":
+      return <IconClipboard size={15} />;
+    case "add":
+      return (
+        <ActionIcon variant="light" color="blue" radius="xl" size="sm">
+          <IconPlus size={14} />
+        </ActionIcon>
+      );
+    default:
+      return null;
+  }
+};
+
+// HierarchyItem component for rendering nested items
+const HierarchyItem = ({
+  icon,
+  label,
+  children,
+  level,
+  allowEntityStructureEditing,
+  isAddButton = false,
+  onClick = null,
+}) => {
+  let ml = 0;
+  for (let i = 1; i < level; i++) {
+    ml += 8;
+  }
   return (
-    <Box ml="8px" style={{ borderLeft: `2px solid #ccc` }}>
-      <Flex align="center">
+    <Box ml={`${ml}px`} style={{ borderLeft: `2px solid #ccc` }}>
+      <Flex
+        align="center"
+        onClick={isAddButton ? onClick : undefined}
+        style={isAddButton ? { cursor: "pointer" } : {}}
+      >
         <Box bg="#ccc" h="2px" w="10px"></Box>
-        {getIcon(icon)}
-        <Text ml="4px" fw={500}>
+        {isAddButton ? getEntityIcon("add") : getEntityIcon(icon)}
+        <Text
+          ml="4px"
+          fw={isAddButton ? 400 : 500}
+          size={isAddButton ? "xs" : undefined}
+          color={isAddButton ? "dimmed" : undefined}
+        >
           {label}
         </Text>
-        {allowEntityStructureEditing && <IconEdit color="blue" size={18} />}
+        {!isAddButton && allowEntityStructureEditing && <IconEdit color="blue" size={18} />}
       </Flex>
-      <Stack gap="0px">{children}</Stack>
+      {children && <Stack gap="0px">{children}</Stack>}
     </Box>
   );
 };
 
+// Main component
 const EntityHierarchyRenderer = ({ datasetEntityArray, allowEntityStructureEditing }) => {
-  console.log("datasetEntityArray", datasetEntityArray);
-
   if (!datasetEntityArray?.length) return null;
 
   return (
     <ScrollArea h={650} type="auto">
       <Stack gap="xs">
-        {allowEntityStructureEditing && <Text>hi</Text>}
         {datasetEntityArray.map((subject) => (
           <Box
             key={subject.subjectId}
@@ -76,18 +111,33 @@ const EntityHierarchyRenderer = ({ datasetEntityArray, allowEntityStructureEditi
                     allowEntityStructureEditing={allowEntityStructureEditing}
                   />
                 ))}
+                {allowEntityStructureEditing && (
+                  <HierarchyItem label="Add Site" level={3} isAddButton={true} onClick={() => {}} />
+                )}
+
                 {/* Sample Performances */}
                 {sample.performances?.map((performance) => (
                   <HierarchyItem
                     key={performance.performanceId}
                     icon="performance"
                     label={performance.performanceId}
-                    borderColor="blue"
+                    level={3}
                     allowEntityStructureEditing={allowEntityStructureEditing}
                   />
                 ))}
+                {allowEntityStructureEditing && (
+                  <HierarchyItem
+                    label="Add Performance"
+                    level={3}
+                    isAddButton={true}
+                    onClick={() => {}}
+                  />
+                )}
               </HierarchyItem>
             ))}
+            {allowEntityStructureEditing && (
+              <HierarchyItem label="Add Sample" level={2} isAddButton={true} onClick={() => {}} />
+            )}
 
             {/* Subject Sites */}
             {subject.subjectSites?.map((site) => (
@@ -99,6 +149,14 @@ const EntityHierarchyRenderer = ({ datasetEntityArray, allowEntityStructureEditi
                 allowEntityStructureEditing={allowEntityStructureEditing}
               />
             ))}
+            {allowEntityStructureEditing && (
+              <HierarchyItem
+                label="Add Subject Site"
+                level={2}
+                isAddButton={true}
+                onClick={() => {}}
+              />
+            )}
 
             {/* Subject Performances */}
             {subject.subjectPerformances?.map((performance) => (
@@ -110,6 +168,14 @@ const EntityHierarchyRenderer = ({ datasetEntityArray, allowEntityStructureEditi
                 allowEntityStructureEditing={allowEntityStructureEditing}
               />
             ))}
+            {allowEntityStructureEditing && (
+              <HierarchyItem
+                label="Add Subject Performance"
+                level={2}
+                isAddButton={true}
+                onClick={() => {}}
+              />
+            )}
           </Box>
         ))}
       </Stack>

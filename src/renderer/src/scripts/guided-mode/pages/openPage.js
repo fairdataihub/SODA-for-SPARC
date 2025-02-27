@@ -379,24 +379,6 @@ export const openPage = async (targetPageID) => {
       // console.log("datasetEntityObj", useGlobalStore.getState().datasetEntityObj);
     }
 
-    // if (targetPageID === "guided-prepare-helpers-tab") {
-    //   const sparcFundedHelperSections = document
-    //     .getElementById("guided-prepare-helpers-tab")
-    //     .querySelectorAll(".sparc-funded-only");
-
-    //   if (datasetIsSparcFunded()) {
-    //     // If the dataset is SPARC funded, then show the SPARC funded helper sections
-    //     sparcFundedHelperSections.forEach((element) => {
-    //       element.classList.remove("hidden");
-    //     });
-    //   } else {
-    //     // If the dataset is not SPARC funded, then hide the SPARC funded helper sections
-    //     sparcFundedHelperSections.forEach((element) => {
-    //       element.classList.add("hidden");
-    //     });
-    //   }
-    // }
-
     //     if (targetPageID === "guided-subject-structure-spreadsheet-importation-tab") {
     //         const savedSpreadSheetPath = window.sodaJSONObj["dataset-structure-spreadsheet-path"];
     //         setUiBasedOnSavedDatasetStructurePath(savedSpreadSheetPath);
