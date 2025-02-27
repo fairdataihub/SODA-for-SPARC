@@ -7,6 +7,7 @@ import EntityHierarchyRenderer from "../../shared/EntityHierarchyRenderer";
 
 const DatasetEntityManagementPage = () => {
   const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
+  console.log("datasetEntityArray", datasetEntityArray);
 
   return (
     <GuidedModePage pageHeader="Manage Entity IDs">
