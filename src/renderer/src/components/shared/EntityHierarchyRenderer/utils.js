@@ -3,8 +3,10 @@ import useGlobalStore from "../../../stores/globalStore";
 import {
   getExistingSubjectIds,
   getExistingSampleIds,
+  addSampleToSubject,
 } from "../../../stores/slices/datasetEntityStructureSlice";
-export const guidedOpenEntityAdditionSwal = async (entityName) => {
+import { addSubject } from "../../../stores/slices/datasetEntityStructureSlice";
+export const guidedOpenEntityAdditionSwal = async ({ entityType, subjectId, sampleId }) => {
   // Get a list of the existing entities so we can check for duplicates
   // const subjects = window.getExistingSubjectNames();
   let preExistingEntities;
@@ -15,27 +17,28 @@ export const guidedOpenEntityAdditionSwal = async (entityName) => {
   console.log("datasetEntityArray", datasetEntityArray);
 
   // case when adding subjects
-  if (entityName === "subjects") {
+  if (entityType === "subjects") {
     preExistingEntities = getExistingSubjectIds();
     entityNameSingular = "subject";
     entityPrefix = "sub-";
   }
 
-  if (entityName === "samples") {
+  if (entityType === "samples") {
     preExistingEntities = getExistingSampleIds();
+    console.log("preExistingEntities", preExistingEntities);
     entityNameSingular = "sample";
     entityPrefix = "sam-";
   }
 
   // case when adding samples to a subject
-  if (entityName.startsWith("sub-")) {
+  if (entityType.startsWith("sub-")) {
     preExistingEntities = getExistingSampleNames();
     entityNameSingular = "sample";
     entityPrefix = "sam-";
   }
 
   // case when adding pools
-  if (entityName === "pools") {
+  if (entityType === "pools") {
     preExistingEntities = getExistingPoolNames();
     entityNameSingular = "pool";
     entityPrefix = "pool-";
@@ -110,11 +113,7 @@ export const guidedOpenEntityAdditionSwal = async (entityName) => {
   };
   `${entityNameSingular} addition`;
   const additionConfirmed = await Swal.fire({
-    title: `${
-      entityName.startsWith("sub-")
-        ? `Add samples taken from ${entityName}`
-        : `${entityNameSingular} addition`
-    }`,
+    title: `my cool title`,
     html: `
       <p class="help-text">
         Enter a unique ${entityNameSingular} ID and press enter or the
@@ -182,29 +181,22 @@ export const guidedOpenEntityAdditionSwal = async (entityName) => {
   if (additionConfirmed.isConfirmed) {
     // reverse newEntities array
     newEntities.reverse();
-    if (entityName === "subjects") {
-      for (const subjectName of newEntities) {
-        window.sodaJSONObj.addSubject(subjectName);
+    if (entityType === "subjects") {
+      for (const subjectId of newEntities) {
+        console.log("Adding subject", subjectId);
+        addSubject(subjectId);
       }
-      renderSubjectsTable();
     }
-    if (entityName === "pools") {
-      for (const poolName of newEntities) {
-        window.sodaJSONObj.addPool(poolName);
+
+    if (entityType === "samples") {
+      for (const sampleId of newEntities) {
+        addSampleToSubject(subjectId, sampleId);
       }
-      renderPoolsTable();
-    }
-    if (entityName.startsWith("sub-")) {
-      const subjectsPool = getSubjectsPool(entityName);
-      for (const sampleName of newEntities) {
-        window.sodaJSONObj.addSampleToSubject(sampleName, subjectsPool, entityName);
-      }
-      renderSamplesTable();
     }
   }
 };
 
-export const guidedOpenEntityEditSwal = async (entityName) => {
+export const guidedOpenEntityEditSwal = async ({ entityType, subjectName, sampleName }) => {
   let preExistingEntities;
   let entityNameSingular;
   let entityPrefix;

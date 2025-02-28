@@ -112,7 +112,7 @@ const EntityHierarchyRenderer = ({
 
   // Subject operations
   const handleAddSubjects = useCallback(() => {
-    return guidedOpenEntityAdditionSwal("subjects");
+    return guidedOpenEntityAdditionSwal({ entityType: "subjects" });
   }, []);
 
   const handleEditSubject = useCallback((subject) => {
@@ -126,7 +126,7 @@ const EntityHierarchyRenderer = ({
   // Sample operations
   const handleAddSample = useCallback((subject) => {
     console.log(`Add sample to subject: ${subject.subjectId}`);
-    // Implement your sample addition logic here
+    return guidedOpenEntityAdditionSwal({ entityType: "samples", subjectId: subject.subjectId });
   }, []);
 
   const handleEditSample = useCallback((sample, subject) => {
