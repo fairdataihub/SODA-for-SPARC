@@ -1,14 +1,4 @@
-import {
-  Stack,
-  Text,
-  Box,
-  Flex,
-  ScrollArea,
-  Button,
-  ActionIcon,
-  Group,
-  TextInput,
-} from "@mantine/core";
+import { Stack, Text, Box, Flex, ScrollArea, Button, ActionIcon, Group } from "@mantine/core";
 import {
   IconUser,
   IconFlask,
@@ -18,7 +8,7 @@ import {
   IconPlus,
   IconTrash,
 } from "@tabler/icons-react";
-import { useState, useMemo, useEffect } from "react";
+import { useMemo, useCallback } from "react";
 import { addSubject, deleteSubject } from "../../../stores/slices/datasetEntityStructureSlice";
 import useGlobalStore from "../../../stores/globalStore";
 import { guidedOpenEntityAdditionSwal, guidedOpenEntityEditSwal } from "./utils";
@@ -32,7 +22,7 @@ const getEntityIcon = (iconType) => {
     case "sample":
       return <IconFlask size={iconSize} color="#74b816" />;
     case "site":
-      return <IconPin size={iconSize} />;
+      return <IconPin size={iconSize} color="red" />;
     case "performance":
       return <IconClipboard size={iconSize} />;
     case "add":
@@ -53,17 +43,36 @@ const HierarchyItem = ({
   children,
   level = 1,
   allowEntityStructureEditing = false,
-  onClick = null,
+  entityData = null,
+  entityType = null,
+  parentEntityData = null,
+  onAdd = null,
+  onEdit = null,
   onDelete = null,
 }) => {
   const marginLeft = (level - 1) * 8;
   const isAddButton = icon === "add";
 
+  const handleAdd = (e) => {
+    e.stopPropagation();
+    onAdd && onAdd(parentEntityData);
+  };
+
+  const handleEdit = (e) => {
+    e.stopPropagation();
+    onEdit && onEdit(entityData, parentEntityData);
+  };
+
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    onDelete && onDelete(entityData, parentEntityData);
+  };
+
   return (
     <Box ml={`${marginLeft}px`} style={{ borderLeft: "2px solid #ccc" }} py="3px">
       <Flex
         align="center"
-        onClick={isAddButton ? onClick : undefined}
+        onClick={isAddButton ? handleAdd : undefined}
         style={isAddButton ? { cursor: "pointer" } : {}}
       >
         <Box bg="#ccc" h="2px" w="10px" />
@@ -78,15 +87,12 @@ const HierarchyItem = ({
         </Text>
         {!isAddButton && allowEntityStructureEditing && (
           <>
-            <IconEdit color="blue" size={18} />
+            <IconEdit color="blue" size={18} style={{ cursor: "pointer" }} onClick={handleEdit} />
             <IconTrash
               color="red"
               size={16}
               style={{ marginLeft: "4px", opacity: 0.6, cursor: "pointer" }}
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete && onDelete();
-              }}
+              onClick={handleDelete}
             />
           </>
         )}
@@ -100,36 +106,112 @@ const EntityHierarchyRenderer = ({
   datasetEntityArray = [],
   allowEntityStructureEditing = false,
 }) => {
-  // Always call all hooks unconditionally at the top
-  const [subjectInput, setSubjectInput] = useState("");
-  const [inputError, setInputError] = useState("");
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
 
-  // Generate the full subject ID with prefix
-  const fullSubjectId = useMemo(() => {
-    if (!subjectInput.trim()) return "";
-    // Don't double-add the prefix
-    return subjectInput.trim().startsWith("sub-")
-      ? subjectInput.trim()
-      : `sub-${subjectInput.trim()}`;
-  }, [subjectInput]);
+  // Define all entity operations within the component
 
-  // Real-time validation effect
-  useEffect(() => {
-    if (!subjectInput.trim()) {
-      setInputError("");
-      return;
-    }
+  // Subject operations
+  const handleAddSubjects = useCallback(() => {
+    return guidedOpenEntityAdditionSwal("subjects");
+  }, []);
 
-    // Check if the ID already exists
-    const subjectExists = datasetEntityArray.some((subject) => subject.subjectId === fullSubjectId);
-    if (subjectExists) {
-      setInputError("Subject ID already exists");
-      return;
-    }
+  const handleEditSubject = useCallback((subject) => {
+    return guidedOpenEntityEditSwal("subject", subject);
+  }, []);
 
-    setInputError("");
-  }, [subjectInput, fullSubjectId, datasetEntityArray]);
+  const handleDeleteSubject = useCallback((subject) => {
+    return deleteSubject(subject.subjectId);
+  }, []);
+
+  // Sample operations
+  const handleAddSample = useCallback((subject) => {
+    console.log(`Add sample to subject: ${subject.subjectId}`);
+    // Implement your sample addition logic here
+  }, []);
+
+  const handleEditSample = useCallback((sample, subject) => {
+    console.log(`Edit sample ${sample.sampleId} of subject ${subject.subjectId}`);
+    // Implement your sample editing logic here
+  }, []);
+
+  const handleDeleteSample = useCallback((sample, subject) => {
+    console.log(`Delete sample ${sample.sampleId} from subject ${subject.subjectId}`);
+    // Implement your sample deletion logic here
+  }, []);
+
+  // Subject site operations
+  const handleAddSubjectSite = useCallback((subject) => {
+    console.log(`Add site to subject: ${subject.subjectId}`);
+    // Implement your subject site addition logic here
+  }, []);
+
+  const handleEditSubjectSite = useCallback((site, subject) => {
+    console.log(`Edit site ${site.siteId} of subject ${subject.subjectId}`);
+    // Implement your subject site editing logic here
+  }, []);
+
+  const handleDeleteSubjectSite = useCallback((site, subject) => {
+    console.log(`Delete site ${site.siteId} from subject ${subject.subjectId}`);
+    // Implement your subject site deletion logic here
+  }, []);
+
+  // Subject performance operations
+  const handleAddSubjectPerformance = useCallback((subject) => {
+    console.log(`Add performance to subject: ${subject.subjectId}`);
+    // Implement your subject performance addition logic here
+  }, []);
+
+  const handleEditSubjectPerformance = useCallback((performance, subject) => {
+    console.log(`Edit performance ${performance.performanceId} of subject ${subject.subjectId}`);
+    // Implement your subject performance editing logic here
+  }, []);
+
+  const handleDeleteSubjectPerformance = useCallback((performance, subject) => {
+    console.log(
+      `Delete performance ${performance.performanceId} from subject ${subject.subjectId}`
+    );
+    // Implement your subject performance deletion logic here
+  }, []);
+
+  // Sample site operations
+  const handleAddSampleSite = useCallback(({ sample, subject }) => {
+    console.log(`Add site to sample ${sample.sampleId} of subject ${subject.subjectId}`);
+    // Implement your sample site addition logic here
+  }, []);
+
+  const handleEditSampleSite = useCallback((site, { sample, subject }) => {
+    console.log(
+      `Edit site ${site.siteId} of sample ${sample.sampleId} of subject ${subject.subjectId}`
+    );
+    // Implement your sample site editing logic here
+  }, []);
+
+  const handleDeleteSampleSite = useCallback((site, { sample, subject }) => {
+    console.log(
+      `Delete site ${site.siteId} from sample ${sample.sampleId} of subject ${subject.subjectId}`
+    );
+    // Implement your sample site deletion logic here
+  }, []);
+
+  // Sample performance operations
+  const handleAddSamplePerformance = useCallback(({ sample, subject }) => {
+    console.log(`Add performance to sample ${sample.sampleId} of subject ${subject.subjectId}`);
+    // Implement your sample performance addition logic here
+  }, []);
+
+  const handleEditSamplePerformance = useCallback((performance, { sample, subject }) => {
+    console.log(
+      `Edit performance ${performance.performanceId} of sample ${sample.sampleId} of subject ${subject.subjectId}`
+    );
+    // Implement your sample performance editing logic here
+  }, []);
+
+  const handleDeleteSamplePerformance = useCallback((performance, { sample, subject }) => {
+    console.log(
+      `Delete performance ${performance.performanceId} from sample ${sample.sampleId} of subject ${subject.subjectId}`
+    );
+    // Implement your sample performance deletion logic here
+  }, []);
 
   // Memoize derived values to avoid recalculation
   const {
@@ -140,69 +222,14 @@ const EntityHierarchyRenderer = ({
     showSamplePerformances,
   } = useMemo(
     () => ({
-      showSamples: selectedEntities.includes("samples"),
-      showSubjectSites: selectedEntities.includes("subject-sites"),
-      showSampleSites: selectedEntities.includes("sample-sites"),
-      showSubjectPerformances: selectedEntities.includes("subject-performances"),
-      showSamplePerformances: selectedEntities.includes("sample-performances"),
+      showSamples: selectedEntities?.includes("samples") || false,
+      showSubjectSites: selectedEntities?.includes("subject-sites") || false,
+      showSampleSites: selectedEntities?.includes("sample-sites") || false,
+      showSubjectPerformances: selectedEntities?.includes("subject-performances") || false,
+      showSamplePerformances: selectedEntities?.includes("sample-performances") || false,
     }),
     [selectedEntities]
   );
-
-  // Handler for adding a new subject with validation and error handling
-  const handleAddSubject = () => {
-    if (!subjectInput.trim()) {
-      setInputError("Subject ID cannot be empty");
-      return;
-    }
-
-    // Check if the ID already exists (using the full ID with prefix)
-    const subjectExists = datasetEntityArray.some((subject) => subject.subjectId === fullSubjectId);
-    if (subjectExists) {
-      setInputError("Subject ID already exists");
-      return;
-    }
-
-    try {
-      addSubject(fullSubjectId);
-      setSubjectInput("");
-      setInputError(""); // Clear any previous errors
-    } catch (error) {
-      setInputError(error.message || "Failed to add subject");
-      console.error("Error adding subject:", error);
-    }
-  };
-
-  // Handle input changes with immediate validation
-  const handleInputChange = (e) => {
-    setSubjectInput(e.target.value);
-  };
-
-  // Handler functions for deletion
-  const handleDeleteSample = (subjectIndex, sampleId) => {
-    console.log(`Delete sample ${sampleId} from subject at index ${subjectIndex}`);
-    // Implement deletion logic here
-  };
-
-  const handleDeleteSite = (subjectIndex, sampleId, siteId) => {
-    console.log(
-      `Delete site ${siteId} from sample ${sampleId} of subject at index ${subjectIndex}`
-    );
-  };
-
-  const handleDeletePerformance = (subjectIndex, sampleId, performanceId) => {
-    console.log(
-      `Delete performance ${performanceId} from sample ${sampleId} of subject at index ${subjectIndex}`
-    );
-  };
-
-  const handleDeleteSubjectSite = (subjectIndex, siteId) => {
-    console.log(`Delete site ${siteId} from subject at index ${subjectIndex}`);
-  };
-
-  const handleDeleteSubjectPerformance = (subjectIndex, performanceId) => {
-    console.log(`Delete performance ${performanceId} from subject at index ${subjectIndex}`);
-  };
 
   // We can check if we should show empty state after all hooks are called
   const shouldShowEmptyState = !datasetEntityArray?.length && !allowEntityStructureEditing;
@@ -215,29 +242,17 @@ const EntityHierarchyRenderer = ({
   return (
     <ScrollArea h={650} type="auto">
       {allowEntityStructureEditing && (
-        <Group spacing="xs" align="center" width="100%" my="sm">
-          <TextInput
-            flex={1}
-            placeholder="Enter subject ID (sub- will be automatically added)"
-            value={subjectInput}
-            onChange={handleInputChange}
-            error={inputError}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && subjectInput.trim() && !inputError) {
-                handleAddSubject();
-              }
-            }}
-          />
-          <Button onClick={handleAddSubject} disabled={!subjectInput.trim() || inputError !== ""}>
-            Add Subject
+        <Group position="right" width="100%" my="sm">
+          <Button onClick={handleAddSubjects} leftIcon={<IconPlus size={16} />}>
+            Add Subjects
           </Button>
         </Group>
       )}
 
       <Stack gap="xs">
-        {datasetEntityArray?.map((subject, subjectIndex) => (
+        {datasetEntityArray?.map((subject) => (
           <Box
-            key={subject.subjectId || subjectIndex}
+            key={subject.subjectId}
             style={{
               border: "1px solid #ddd",
               borderRadius: "8px",
@@ -251,11 +266,17 @@ const EntityHierarchyRenderer = ({
               <Text fw={600}>{subject.subjectId}</Text>
               {allowEntityStructureEditing && (
                 <>
-                  <IconEdit color="blue" size={18} />
+                  <IconEdit
+                    color="blue"
+                    size={18}
+                    style={{ cursor: "pointer" }}
+                    onClick={() => handleEditSubject(subject)}
+                  />
                   <IconTrash
                     color="red"
                     size={16}
-                    onClick={() => deleteSubject(subject.subjectId)}
+                    style={{ cursor: "pointer" }}
+                    onClick={() => handleDeleteSubject(subject)}
                   />
                 </>
               )}
@@ -270,7 +291,11 @@ const EntityHierarchyRenderer = ({
                   label={sample.sampleId}
                   level={2}
                   allowEntityStructureEditing={allowEntityStructureEditing}
-                  onDelete={() => handleDeleteSample(subjectIndex, sample.sampleId)}
+                  entityData={sample}
+                  entityType="sample"
+                  parentEntityData={subject}
+                  onEdit={() => handleEditSample(sample, subject)}
+                  onDelete={() => handleDeleteSample(sample, subject)}
                 >
                   {/* Sample Sites */}
                   {showSampleSites &&
@@ -281,9 +306,11 @@ const EntityHierarchyRenderer = ({
                         label={site.siteId}
                         level={3}
                         allowEntityStructureEditing={allowEntityStructureEditing}
-                        onDelete={() =>
-                          handleDeleteSite(subjectIndex, sample.sampleId, site.siteId)
-                        }
+                        entityData={site}
+                        entityType="site"
+                        parentEntityData={{ sample, subject }}
+                        onEdit={() => handleEditSampleSite(site, { sample, subject })}
+                        onDelete={() => handleDeleteSampleSite(site, { sample, subject })}
                       />
                     ))}
                   {allowEntityStructureEditing && showSampleSites && (
@@ -291,7 +318,8 @@ const EntityHierarchyRenderer = ({
                       label={`Add site to ${sample.sampleId}`}
                       icon="add"
                       level={3}
-                      onClick={() => {}}
+                      parentEntityData={{ sample, subject }}
+                      onAdd={handleAddSampleSite}
                     />
                   )}
 
@@ -304,12 +332,12 @@ const EntityHierarchyRenderer = ({
                         label={performance.performanceId}
                         level={3}
                         allowEntityStructureEditing={allowEntityStructureEditing}
+                        entityData={performance}
+                        entityType="performance"
+                        parentEntityData={{ sample, subject }}
+                        onEdit={() => handleEditSamplePerformance(performance, { sample, subject })}
                         onDelete={() =>
-                          handleDeletePerformance(
-                            subjectIndex,
-                            sample.sampleId,
-                            performance.performanceId
-                          )
+                          handleDeleteSamplePerformance(performance, { sample, subject })
                         }
                       />
                     ))}
@@ -318,17 +346,19 @@ const EntityHierarchyRenderer = ({
                       label={`Add performance to ${sample.sampleId}`}
                       icon="add"
                       level={3}
-                      onClick={() => {}}
+                      parentEntityData={{ sample, subject }}
+                      onAdd={handleAddSamplePerformance}
                     />
                   )}
                 </HierarchyItem>
               ))}
             {allowEntityStructureEditing && showSamples && (
               <HierarchyItem
-                label={`Add sample to ${subject.subjectId}`}
+                label={`Add sample(s) to ${subject.subjectId}`}
                 icon="add"
                 level={2}
-                onClick={() => {}}
+                parentEntityData={subject}
+                onAdd={handleAddSample}
               />
             )}
 
@@ -341,7 +371,11 @@ const EntityHierarchyRenderer = ({
                   label={site.siteId}
                   level={2}
                   allowEntityStructureEditing={allowEntityStructureEditing}
-                  onDelete={() => handleDeleteSubjectSite(subjectIndex, site.siteId)}
+                  entityData={site}
+                  entityType="site"
+                  parentEntityData={subject}
+                  onEdit={() => handleEditSubjectSite(site, subject)}
+                  onDelete={() => handleDeleteSubjectSite(site, subject)}
                 />
               ))}
             {allowEntityStructureEditing && showSubjectSites && (
@@ -349,7 +383,8 @@ const EntityHierarchyRenderer = ({
                 label={`Add site to ${subject.subjectId}`}
                 icon="add"
                 level={2}
-                onClick={() => {}}
+                parentEntityData={subject}
+                onAdd={handleAddSubjectSite}
               />
             )}
 
@@ -362,9 +397,11 @@ const EntityHierarchyRenderer = ({
                   label={performance.performanceId}
                   level={2}
                   allowEntityStructureEditing={allowEntityStructureEditing}
-                  onDelete={() =>
-                    handleDeleteSubjectPerformance(subjectIndex, performance.performanceId)
-                  }
+                  entityData={performance}
+                  entityType="performance"
+                  parentEntityData={subject}
+                  onEdit={() => handleEditSubjectPerformance(performance, subject)}
+                  onDelete={() => handleDeleteSubjectPerformance(performance, subject)}
                 />
               ))}
             {allowEntityStructureEditing && showSubjectPerformances && (
@@ -372,7 +409,8 @@ const EntityHierarchyRenderer = ({
                 label={`Add performance to ${subject.subjectId}`}
                 icon="add"
                 level={2}
-                onClick={() => {}}
+                parentEntityData={subject}
+                onAdd={handleAddSubjectPerformance}
               />
             )}
           </Box>

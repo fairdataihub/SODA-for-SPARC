@@ -1,5 +1,9 @@
 import Swal from "sweetalert2";
-
+import useGlobalStore from "../../../stores/globalStore";
+import {
+  getExistingSubjectIds,
+  getExistingSampleIds,
+} from "../../../stores/slices/datasetEntityStructureSlice";
 export const guidedOpenEntityAdditionSwal = async (entityName) => {
   // Get a list of the existing entities so we can check for duplicates
   // const subjects = window.getExistingSubjectNames();
@@ -7,11 +11,20 @@ export const guidedOpenEntityAdditionSwal = async (entityName) => {
   let entityNameSingular;
   let entityPrefix;
 
+  const datasetEntityArray = useGlobalStore.getState().datasetEntityArray;
+  console.log("datasetEntityArray", datasetEntityArray);
+
   // case when adding subjects
   if (entityName === "subjects") {
-    preExistingEntities = window.getExistingSubjectNames();
+    preExistingEntities = getExistingSubjectIds();
     entityNameSingular = "subject";
     entityPrefix = "sub-";
+  }
+
+  if (entityName === "samples") {
+    preExistingEntities = getExistingSampleIds();
+    entityNameSingular = "sample";
+    entityPrefix = "sam-";
   }
 
   // case when adding samples to a subject
