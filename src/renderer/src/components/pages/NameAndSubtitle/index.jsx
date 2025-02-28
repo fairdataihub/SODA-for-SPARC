@@ -40,8 +40,8 @@ const NameAndSubtitlePage = () => {
       </GuidedModeSection>
       <GuidedModeSection>
         <Textarea
-          label="Dataset Subtitle:"
-          placeholder="Enter dataset subtitle"
+          label="Brief dataset description:"
+          placeholder="Enter a brief description of the dataset (255 characters max)"
           autosize
           minRows={5}
           value={guidedDatasetSubtitle}
@@ -53,7 +53,7 @@ const NameAndSubtitlePage = () => {
         </Text>
         <DropDownNote
           dropDownIcon="info"
-          dropDownButtonText="What is the dataset subtitle used for?"
+          dropDownButtonText="What is the dataset description used for?"
           dropDownNote={
             <Text>
               This field will become the short description visible immediately under the title of

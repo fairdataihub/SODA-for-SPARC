@@ -95,6 +95,12 @@ $("#guided-next-button").on("click", async function () {
  */
 $("#guided-back-button").on("click", async () => {
   window.pageBeingLeftID = window.CURRENT_PAGE.id;
+
+  try {
+    await savePageChanges(window.pageBeingLeftID);
+  } catch (error) {
+    console.error("Error saving page changes during back button click", error);
+  }
   const targetPage = getPrevPageNotSkipped(window.pageBeingLeftID);
 
   // If the target page when clicking the back button does not exist, then we are on the first not skipped page.
@@ -573,7 +579,6 @@ export const guidedTransitionToHome = () => {
   }
   window.CURRENT_PAGE = undefined;
 
-  document.getElementById("guided-header-div").classList.add("hidden");
   document.getElementById("guided-footer-div").classList.add("hidden");
 };
 

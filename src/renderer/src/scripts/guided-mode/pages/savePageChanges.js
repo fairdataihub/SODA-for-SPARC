@@ -122,6 +122,25 @@ export const savePageChanges = async (pageBeingLeftID) => {
           window.sodaJSONObj["dataset-entity-array"]
         );
       }
+      if (pageBeingLeftComponentType === "dataset-entity-id-management-page") {
+        ("dataset-entity-id-management-page");
+        const speciesList = useGlobalStore.getState().speciesList;
+        const datasetEntityArray = useGlobalStore.getState().datasetEntityArray;
+
+        // Save the dataset entity object to the progress file
+        window.sodaJSONObj["species-list"] = speciesList;
+        window.sodaJSONObj["dataset-entity-array"] = datasetEntityArray;
+
+        console.log(
+          "speciesList when leaving" + pageBeingLeftID,
+          window.sodaJSONObj["species-list"]
+        );
+
+        console.log(
+          "datasetEntityArray when leaving" + pageBeingLeftID,
+          window.sodaJSONObj["dataset-entity-array"]
+        );
+      }
     }
 
     await savePageCurationPreparation(pageBeingLeftID);

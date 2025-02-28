@@ -87,11 +87,16 @@ const HierarchyItem = ({
         </Text>
         {!isAddButton && allowEntityStructureEditing && (
           <>
-            <IconEdit color="blue" size={18} style={{ cursor: "pointer" }} onClick={handleEdit} />
+            <IconEdit
+              color="blue"
+              size={18}
+              style={{ marginLeft: "4px", opacity: 0.6, cursor: "pointer" }}
+              onClick={handleEdit}
+            />
             <IconTrash
               color="red"
               size={16}
-              style={{ marginLeft: "4px", opacity: 0.6, cursor: "pointer" }}
+              style={{ opacity: 0.6, cursor: "pointer" }}
               onClick={handleDelete}
             />
           </>
@@ -269,13 +274,13 @@ const EntityHierarchyRenderer = ({
                   <IconEdit
                     color="blue"
                     size={18}
-                    style={{ cursor: "pointer" }}
+                    style={{ marginLeft: "4px", opacity: 0.6, cursor: "pointer" }}
                     onClick={() => handleEditSubject(subject)}
                   />
                   <IconTrash
                     color="red"
                     size={16}
-                    style={{ cursor: "pointer" }}
+                    style={{ opacity: 0.6, cursor: "pointer" }}
                     onClick={() => handleDeleteSubject(subject)}
                   />
                 </>

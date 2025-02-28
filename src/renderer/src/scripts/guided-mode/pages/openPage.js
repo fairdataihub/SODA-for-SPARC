@@ -358,6 +358,8 @@ export const openPage = async (targetPageID) => {
       if (targetPageComponentType === "dataset-entity-id-management-page") {
         const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
         const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
+        console.log("Selected entities", selectedEntities);
+        console.log("Dataset entity array", datasetEntityArray);
         setSelectedEntities(selectedEntities);
         setDatasetEntityArray(datasetEntityArray);
       }
