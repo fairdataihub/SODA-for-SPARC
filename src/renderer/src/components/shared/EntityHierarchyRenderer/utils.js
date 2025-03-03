@@ -1,12 +1,20 @@
 import Swal from "sweetalert2";
 import useGlobalStore from "../../../stores/globalStore";
 import {
+  addSubject,
   getExistingSubjectIds,
   getExistingSampleIds,
+  getExistingPerformanceIds,
+  getExistingSiteIds,
   addSampleToSubject,
+  addPerformanceToSubject,
+  addPerformanceToSample,
 } from "../../../stores/slices/datasetEntityStructureSlice";
-import { addSubject } from "../../../stores/slices/datasetEntityStructureSlice";
 export const guidedOpenEntityAdditionSwal = async ({ entityType, subjectId, sampleId }) => {
+  console.log("guidedOpenEntityAdditionSwal called");
+  console.log("entityType", entityType);
+  console.log("subjectId", subjectId);
+  console.log("sampleId", sampleId);
   // Get a list of the existing entities so we can check for duplicates
   // const subjects = window.getExistingSubjectNames();
   let preExistingEntities;
@@ -30,18 +38,11 @@ export const guidedOpenEntityAdditionSwal = async ({ entityType, subjectId, samp
     entityPrefix = "sam-";
   }
 
-  // case when adding samples to a subject
-  if (entityType.startsWith("sub-")) {
-    preExistingEntities = getExistingSampleNames();
-    entityNameSingular = "sample";
-    entityPrefix = "sam-";
-  }
-
-  // case when adding pools
-  if (entityType === "pools") {
-    preExistingEntities = getExistingPoolNames();
-    entityNameSingular = "pool";
-    entityPrefix = "pool-";
+  if (entityType === "performances") {
+    preExistingEntities = getExistingPerformanceIds();
+    console.log("preExistingEntities", preExistingEntities);
+    entityNameSingular = "performance";
+    entityPrefix = "perf-";
   }
 
   let newEntities = [];
@@ -191,6 +192,20 @@ export const guidedOpenEntityAdditionSwal = async ({ entityType, subjectId, samp
     if (entityType === "samples") {
       for (const sampleId of newEntities) {
         addSampleToSubject(subjectId, sampleId);
+      }
+    }
+
+    if (entityType === "performances") {
+      console.log("subjectId", subjectId);
+      console.log("sampleId", sampleId);
+      if (sampleId) {
+        for (const performanceId of newEntities) {
+          addPerformanceToSample(performanceId, subjectId, sampleId);
+        }
+      } else {
+        for (const performanceId of newEntities) {
+          addPerformanceToSubject(subjectId, performanceId);
+        }
       }
     }
   }

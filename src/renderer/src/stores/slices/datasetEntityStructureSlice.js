@@ -1,3 +1,4 @@
+import { use } from "react";
 import useGlobalStore from "../globalStore";
 
 export const datasetEntityStructureSlice = (set) => ({
@@ -159,9 +160,18 @@ export const deleteSiteFromSubject = (subjectId, siteId) => {
   });
 };
 
+export const getExistingPerformanceIds = () => {
+  const { datasetEntityArray } = useGlobalStore.getState();
+  return datasetEntityArray.flatMap((subject) =>
+    subject.subjectPerformances.map((perf) => perf.performanceId)
+  );
+};
+
 // Subject performance management functions
 export const addPerformanceToSubject = (subjectId, performanceId) => {
+  console.log(`Adding performance ${performanceId} to subject ${subjectId}`);
   const { datasetEntityArray } = useGlobalStore.getState();
+  console.log("datasetEntityArray", datasetEntityArray);
   const updatedDatasetEntityArray = datasetEntityArray.map((subject) => {
     if (subject.subjectId === subjectId) {
       const subjectPerformances = subject.subjectPerformances || [];
@@ -174,6 +184,33 @@ export const addPerformanceToSubject = (subjectId, performanceId) => {
             metadata: {},
           },
         ],
+      };
+    }
+    return subject;
+  });
+  useGlobalStore.setState({
+    datasetEntityArray: updatedDatasetEntityArray,
+  });
+  // log the updated datasetEntityArray
+  console.log("updatedDatasetEntityArray", useGlobalStore.getState().datasetEntityArray);
+};
+
+export const addPerformanceToSample = (subjectId, sampleId, performanceId) => {
+  const { datasetEntityArray } = useGlobalStore.getState();
+  const updatedDatasetEntityArray = datasetEntityArray.map((subject) => {
+    if (subject.subjectId === subjectId && subject.samples) {
+      return {
+        ...subject,
+        samples: subject.samples.map((sample) => {
+          if (sample.sampleId === sampleId) {
+            const performances = sample.performances || [];
+            return {
+              ...sample,
+              performances: [...performances, { performanceId, metadata: {} }],
+            };
+          }
+          return sample;
+        }),
       };
     }
     return subject;
@@ -199,6 +236,13 @@ export const deletePerformanceFromSubject = (subjectId, performanceId) => {
   useGlobalStore.setState({
     datasetEntityArray: updatedDatasetEntityArray,
   });
+};
+
+export const getExistingSiteIds = () => {
+  const { datasetEntityArray } = useGlobalStore.getState();
+  return datasetEntityArray.flatMap((subject) =>
+    subject.samples.flatMap((sample) => sample.sites.map((site) => site.siteId))
+  );
 };
 
 // Sample site management functions
@@ -238,32 +282,6 @@ export const deleteSiteFromSample = (subjectId, sampleId, siteId) => {
             return {
               ...sample,
               sites: sample.sites.filter((site) => site.siteId !== siteId),
-            };
-          }
-          return sample;
-        }),
-      };
-    }
-    return subject;
-  });
-  useGlobalStore.setState({
-    datasetEntityArray: updatedDatasetEntityArray,
-  });
-};
-
-// Sample performance management functions
-export const addPerformanceToSample = (subjectId, sampleId, performanceId) => {
-  const { datasetEntityArray } = useGlobalStore.getState();
-  const updatedDatasetEntityArray = datasetEntityArray.map((subject) => {
-    if (subject.subjectId === subjectId && subject.samples) {
-      return {
-        ...subject,
-        samples: subject.samples.map((sample) => {
-          if (sample.sampleId === sampleId) {
-            const performances = sample.performances || [];
-            return {
-              ...sample,
-              performances: [...performances, { performanceId, metadata: {} }],
             };
           }
           return sample;

@@ -163,6 +163,7 @@ const EntityHierarchyRenderer = ({
   // Subject performance operations
   const handleAddSubjectPerformance = useCallback((subject) => {
     console.log(`Add performance to subject: ${subject.subjectId}`);
+    guidedOpenEntityAdditionSwal({ entityType: "performances", subjectId: subject.subjectId });
     // Implement your subject performance addition logic here
   }, []);
 
@@ -201,7 +202,11 @@ const EntityHierarchyRenderer = ({
   // Sample performance operations
   const handleAddSamplePerformance = useCallback(({ sample, subject }) => {
     console.log(`Add performance to sample ${sample.sampleId} of subject ${subject.subjectId}`);
-    // Implement your sample performance addition logic here
+    guidedOpenEntityAdditionSwal({
+      entityType: "performances",
+      subjectId: subject.subjectId,
+      sampleId: sample.sampleId,
+    });
   }, []);
 
   const handleEditSamplePerformance = useCallback((performance, { sample, subject }) => {
@@ -287,6 +292,16 @@ const EntityHierarchyRenderer = ({
               )}
             </Flex>
 
+            {allowEntityStructureEditing && showSamples && (
+              <HierarchyItem
+                label={`Add sample(s) to ${subject.subjectId}`}
+                icon="add"
+                level={2}
+                parentEntityData={subject}
+                onAdd={handleAddSample}
+              />
+            )}
+
             {/* Samples */}
             {showSamples &&
               subject.samples?.map((sample) => (
@@ -327,7 +342,15 @@ const EntityHierarchyRenderer = ({
                       onAdd={handleAddSampleSite}
                     />
                   )}
-
+                  {allowEntityStructureEditing && showSamplePerformances && (
+                    <HierarchyItem
+                      label={`Add performance(s) to ${sample.sampleId}`}
+                      icon="add"
+                      level={3}
+                      parentEntityData={{ sample, subject }}
+                      onAdd={handleAddSamplePerformance}
+                    />
+                  )}
                   {/* Sample Performances */}
                   {showSamplePerformances &&
                     sample.performances?.map((performance) => (
@@ -346,26 +369,8 @@ const EntityHierarchyRenderer = ({
                         }
                       />
                     ))}
-                  {allowEntityStructureEditing && showSamplePerformances && (
-                    <HierarchyItem
-                      label={`Add performance to ${sample.sampleId}`}
-                      icon="add"
-                      level={3}
-                      parentEntityData={{ sample, subject }}
-                      onAdd={handleAddSamplePerformance}
-                    />
-                  )}
                 </HierarchyItem>
               ))}
-            {allowEntityStructureEditing && showSamples && (
-              <HierarchyItem
-                label={`Add sample(s) to ${subject.subjectId}`}
-                icon="add"
-                level={2}
-                parentEntityData={subject}
-                onAdd={handleAddSample}
-              />
-            )}
 
             {/* Subject Sites */}
             {showSubjectSites &&
@@ -392,8 +397,15 @@ const EntityHierarchyRenderer = ({
                 onAdd={handleAddSubjectSite}
               />
             )}
-
-            {/* Subject Performances */}
+            {allowEntityStructureEditing && showSubjectPerformances && (
+              <HierarchyItem
+                label={`Add performance(s) to ${subject.subjectId}`}
+                icon="add"
+                level={2}
+                parentEntityData={subject}
+                onAdd={handleAddSubjectPerformance}
+              />
+            )}
             {showSubjectPerformances &&
               subject.subjectPerformances?.map((performance) => (
                 <HierarchyItem
@@ -409,15 +421,6 @@ const EntityHierarchyRenderer = ({
                   onDelete={() => handleDeleteSubjectPerformance(performance, subject)}
                 />
               ))}
-            {allowEntityStructureEditing && showSubjectPerformances && (
-              <HierarchyItem
-                label={`Add performance to ${subject.subjectId}`}
-                icon="add"
-                level={2}
-                parentEntityData={subject}
-                onAdd={handleAddSubjectPerformance}
-              />
-            )}
           </Box>
         ))}
       </Stack>
