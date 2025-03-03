@@ -120,6 +120,31 @@ export const getExistingSampleIds = () => {
   return datasetEntityArray.flatMap((subject) => subject.samples.map((sample) => sample.sampleId));
 };
 
+// Additional sample management functions
+export const modifySampleId = (subjectId, oldSampleId, newSampleId) => {
+  const { datasetEntityArray } = useGlobalStore.getState();
+  const updatedDatasetEntityArray = datasetEntityArray.map((subject) => {
+    if (subject.subjectId === subjectId) {
+      return {
+        ...subject,
+        samples: subject.samples.map((sample) => {
+          if (sample.sampleId === oldSampleId) {
+            return {
+              ...sample,
+              sampleId: newSampleId,
+            };
+          }
+          return sample;
+        }),
+      };
+    }
+    return subject;
+  });
+  useGlobalStore.setState({
+    datasetEntityArray: updatedDatasetEntityArray,
+  });
+};
+
 // Subject site management functions
 export const addSiteToSubject = (subjectId, siteId) => {
   const { datasetEntityArray } = useGlobalStore.getState();
@@ -196,7 +221,10 @@ export const addPerformanceToSubject = (subjectId, performanceId) => {
 };
 
 export const addPerformanceToSample = (subjectId, sampleId, performanceId) => {
+  console.log(`Adding performance ${performanceId} to sample ${sampleId} of subject ${subjectId}`);
   const { datasetEntityArray } = useGlobalStore.getState();
+  console.log("Before update:", JSON.stringify(datasetEntityArray, null, 2));
+
   const updatedDatasetEntityArray = datasetEntityArray.map((subject) => {
     if (subject.subjectId === subjectId && subject.samples) {
       return {
@@ -215,9 +243,15 @@ export const addPerformanceToSample = (subjectId, sampleId, performanceId) => {
     }
     return subject;
   });
+
   useGlobalStore.setState({
     datasetEntityArray: updatedDatasetEntityArray,
   });
+
+  console.log(
+    "After update:",
+    JSON.stringify(useGlobalStore.getState().datasetEntityArray, null, 2)
+  );
 };
 
 export const deletePerformanceFromSubject = (subjectId, performanceId) => {
@@ -308,6 +342,127 @@ export const deletePerformanceFromSample = (subjectId, sampleId, performanceId) 
               performances: sample.performances.filter(
                 (perf) => perf.performanceId !== performanceId
               ),
+            };
+          }
+          return sample;
+        }),
+      };
+    }
+    return subject;
+  });
+  useGlobalStore.setState({
+    datasetEntityArray: updatedDatasetEntityArray,
+  });
+};
+
+// Subject performance management - missing functions
+export const modifySubjectPerformanceId = (subjectId, oldPerformanceId, newPerformanceId) => {
+  const { datasetEntityArray } = useGlobalStore.getState();
+  const updatedDatasetEntityArray = datasetEntityArray.map((subject) => {
+    if (subject.subjectId === subjectId) {
+      return {
+        ...subject,
+        subjectPerformances: subject.subjectPerformances.map((performance) => {
+          if (performance.performanceId === oldPerformanceId) {
+            return {
+              ...performance,
+              performanceId: newPerformanceId,
+            };
+          }
+          return performance;
+        }),
+      };
+    }
+    return subject;
+  });
+  useGlobalStore.setState({
+    datasetEntityArray: updatedDatasetEntityArray,
+  });
+};
+
+// Sample performance management - missing functions
+export const modifySamplePerformanceId = (
+  subjectId,
+  sampleId,
+  oldPerformanceId,
+  newPerformanceId
+) => {
+  const { datasetEntityArray } = useGlobalStore.getState();
+  const updatedDatasetEntityArray = datasetEntityArray.map((subject) => {
+    if (subject.subjectId === subjectId) {
+      return {
+        ...subject,
+        samples: subject.samples.map((sample) => {
+          if (sample.sampleId === sampleId) {
+            return {
+              ...sample,
+              performances: sample.performances.map((performance) => {
+                if (performance.performanceId === oldPerformanceId) {
+                  return {
+                    ...performance,
+                    performanceId: newPerformanceId,
+                  };
+                }
+                return performance;
+              }),
+            };
+          }
+          return sample;
+        }),
+      };
+    }
+    return subject;
+  });
+  useGlobalStore.setState({
+    datasetEntityArray: updatedDatasetEntityArray,
+  });
+};
+
+// Subject site management - missing functions
+export const modifySubjectSiteId = (subjectId, oldSiteId, newSiteId) => {
+  const { datasetEntityArray } = useGlobalStore.getState();
+  const updatedDatasetEntityArray = datasetEntityArray.map((subject) => {
+    if (subject.subjectId === subjectId) {
+      return {
+        ...subject,
+        subjectSites: subject.subjectSites.map((site) => {
+          if (site.siteId === oldSiteId) {
+            return {
+              ...site,
+              siteId: newSiteId,
+            };
+          }
+          return site;
+        }),
+      };
+    }
+    return subject;
+  });
+  useGlobalStore.setState({
+    datasetEntityArray: updatedDatasetEntityArray,
+  });
+};
+
+// Sample site management - missing functions
+export const modifySampleSiteId = (subjectId, sampleId, oldSiteId, newSiteId) => {
+  const { datasetEntityArray } = useGlobalStore.getState();
+  const updatedDatasetEntityArray = datasetEntityArray.map((subject) => {
+    if (subject.subjectId === subjectId) {
+      return {
+        ...subject,
+        samples: subject.samples.map((sample) => {
+          if (sample.sampleId === sampleId) {
+            return {
+              ...sample,
+              sites: sample.sites.map((site) => {
+                if (site.siteId === oldSiteId) {
+                  return {
+                    ...site,
+                    siteId: newSiteId,
+                  };
+                }
+                return site;
+              }),
             };
           }
           return sample;

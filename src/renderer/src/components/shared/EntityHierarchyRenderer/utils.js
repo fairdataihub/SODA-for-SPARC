@@ -9,6 +9,8 @@ import {
   addSampleToSubject,
   addPerformanceToSubject,
   addPerformanceToSample,
+  addSiteToSample,
+  addSiteToSubject,
 } from "../../../stores/slices/datasetEntityStructureSlice";
 export const guidedOpenEntityAdditionSwal = async ({ entityType, subjectId, sampleId }) => {
   console.log("guidedOpenEntityAdditionSwal called");
@@ -43,6 +45,14 @@ export const guidedOpenEntityAdditionSwal = async ({ entityType, subjectId, samp
     console.log("preExistingEntities", preExistingEntities);
     entityNameSingular = "performance";
     entityPrefix = "perf-";
+  }
+
+  // Add sites entity type
+  if (entityType === "sites") {
+    preExistingEntities = getExistingSiteIds();
+    console.log("preExistingEntities", preExistingEntities);
+    entityNameSingular = "site";
+    entityPrefix = "site-";
   }
 
   let newEntities = [];
@@ -200,7 +210,10 @@ export const guidedOpenEntityAdditionSwal = async ({ entityType, subjectId, samp
       console.log("sampleId", sampleId);
       if (sampleId) {
         for (const performanceId of newEntities) {
-          addPerformanceToSample(performanceId, subjectId, sampleId);
+          console.log("Adding performance", performanceId);
+          console.log("subjectId", subjectId);
+          console.log("sampleId", sampleId);
+          addPerformanceToSample(subjectId, sampleId, performanceId);
         }
       } else {
         for (const performanceId of newEntities) {
@@ -208,29 +221,57 @@ export const guidedOpenEntityAdditionSwal = async ({ entityType, subjectId, samp
         }
       }
     }
+
+    // Add sites handling
+    if (entityType === "sites") {
+      console.log("subjectId", subjectId);
+      console.log("sampleId", sampleId);
+      if (sampleId) {
+        for (const siteId of newEntities) {
+          console.log("Adding site", siteId);
+          console.log("subjectId", subjectId);
+          console.log("sampleId", sampleId);
+          addSiteToSample(subjectId, sampleId, siteId);
+        }
+      } else {
+        for (const siteId of newEntities) {
+          addSiteToSubject(subjectId, siteId);
+        }
+      }
+    }
   }
 };
 
-export const guidedOpenEntityEditSwal = async ({ entityType, subjectName, sampleName }) => {
+export const guidedOpenEntityEditSwal = async ({ entityType, entityData, parentEntityData }) => {
   let preExistingEntities;
   let entityNameSingular;
   let entityPrefix;
+  let entityName = "";
 
-  if (entityName.startsWith("sub-")) {
-    preExistingEntities = window.getExistingSubjectNames();
+  if (entityType === "subject") {
+    entityName = entityData.subjectId;
+    preExistingEntities = getExistingSubjectIds();
     entityNameSingular = "subject";
     entityPrefix = "sub-";
-  }
-  if (entityName.startsWith("pool-")) {
-    preExistingEntities = getExistingPoolNames();
-    entityNameSingular = "pool";
-    entityPrefix = "pool-";
-  }
-  if (entityName.startsWith("sam-")) {
-    preExistingEntities = getExistingSampleNames();
+  } else if (entityType === "sample") {
+    entityName = entityData.sampleId;
+    preExistingEntities = getExistingSampleIds();
     entityNameSingular = "sample";
     entityPrefix = "sam-";
+  } else if (entityType === "performance") {
+    entityName = entityData.performanceId;
+    preExistingEntities = getExistingPerformanceIds();
+    entityNameSingular = "performance";
+    entityPrefix = "perf-";
+  } else if (entityType === "site") {
+    entityName = entityData.siteId;
+    preExistingEntities = getExistingSiteIds();
+    entityNameSingular = "site";
+    entityPrefix = "site-";
   }
+
+  // Remove the current entity ID from the list to prevent false duplication error
+  preExistingEntities = preExistingEntities.filter((id) => id !== entityName);
 
   let newEntityName;
 
@@ -268,42 +309,39 @@ export const guidedOpenEntityEditSwal = async ({ entityType, subjectName, sample
       let newEntityInputValue = document.getElementById("input-new-entity-name").value;
       if (newEntityInputValue.length === 0) {
         Swal.showValidationMessage(`Please enter a new ${entityNameSingular} name`);
-        return;
+        return false;
       }
 
       newEntityName = `${entityPrefix}${newEntityInputValue}`;
       if (newEntityName === entityName) {
         Swal.close();
+        return false;
       }
+
       const entityNameIsValid = window.evaluateStringAgainstSdsRequirements(
         newEntityName,
         "string-adheres-to-identifier-conventions"
       );
+
       if (!entityNameIsValid) {
         Swal.showValidationMessage(
           `${entityNameSingular} names can not contain spaces or special characters`
         );
-        return;
+        return false;
       }
+
       if (preExistingEntities.includes(newEntityName)) {
         Swal.showValidationMessage(`A ${entityNameSingular} with that name already exists`);
-        return;
+        return false;
       }
+
+      return true;
     },
   });
 
   if (entityEditConfirmed.isConfirmed) {
-    if (entityName.startsWith("sub-")) {
-      window.sodaJSONObj.renameSubject(entityName, newEntityName);
-      renderSubjectsTable();
-    }
-    if (entityName.startsWith("pool-")) {
-      window.sodaJSONObj.renamePool(entityName, newEntityName);
-      renderPoolsTable();
-    }
-    if (entityName.startsWith("sam-")) {
-      window.sodaJSONObj.renameSample(entityName, newEntityName);
-      renderSamplesTable();
-    }
+    return { oldName: entityName, newName: newEntityName };
   }
+
+  return null;
 };

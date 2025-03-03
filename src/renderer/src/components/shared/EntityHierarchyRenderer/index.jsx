@@ -9,7 +9,22 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 import { useMemo, useCallback } from "react";
-import { addSubject, deleteSubject } from "../../../stores/slices/datasetEntityStructureSlice";
+import {
+  addSubject,
+  deleteSubject,
+  modifySubjectId,
+  deleteSampleFromSubject,
+  modifySampleId,
+  addSiteToSubject,
+  deleteSiteFromSubject,
+  modifySubjectSiteId,
+  deletePerformanceFromSubject,
+  modifySubjectPerformanceId,
+  deleteSiteFromSample,
+  modifySampleSiteId,
+  deletePerformanceFromSample,
+  modifySamplePerformanceId,
+} from "../../../stores/slices/datasetEntityStructureSlice";
 import useGlobalStore from "../../../stores/globalStore";
 import { guidedOpenEntityAdditionSwal, guidedOpenEntityEditSwal } from "./utils";
 
@@ -134,69 +149,107 @@ const EntityHierarchyRenderer = ({
     return guidedOpenEntityAdditionSwal({ entityType: "samples", subjectId: subject.subjectId });
   }, []);
 
-  const handleEditSample = useCallback((sample, subject) => {
+  const handleEditSample = useCallback(async (sample, subject) => {
     console.log(`Edit sample ${sample.sampleId} of subject ${subject.subjectId}`);
-    // Implement your sample editing logic here
+    const result = await guidedOpenEntityEditSwal({
+      entityType: "sample",
+      entityData: sample,
+      parentEntityData: subject,
+    });
+
+    if (result) {
+      modifySampleId(subject.subjectId, result.oldName, result.newName);
+    }
   }, []);
 
   const handleDeleteSample = useCallback((sample, subject) => {
     console.log(`Delete sample ${sample.sampleId} from subject ${subject.subjectId}`);
-    // Implement your sample deletion logic here
+    return deleteSampleFromSubject(subject.subjectId, sample.sampleId);
   }, []);
 
   // Subject site operations
   const handleAddSubjectSite = useCallback((subject) => {
     console.log(`Add site to subject: ${subject.subjectId}`);
-    // Implement your subject site addition logic here
+    return guidedOpenEntityAdditionSwal({
+      entityType: "sites",
+      subjectId: subject.subjectId,
+    });
   }, []);
 
-  const handleEditSubjectSite = useCallback((site, subject) => {
+  const handleEditSubjectSite = useCallback(async (site, subject) => {
     console.log(`Edit site ${site.siteId} of subject ${subject.subjectId}`);
-    // Implement your subject site editing logic here
+    const result = await guidedOpenEntityEditSwal({
+      entityType: "site",
+      entityData: site,
+      parentEntityData: subject,
+    });
+
+    if (result) {
+      modifySubjectSiteId(subject.subjectId, result.oldName, result.newName);
+    }
   }, []);
 
   const handleDeleteSubjectSite = useCallback((site, subject) => {
     console.log(`Delete site ${site.siteId} from subject ${subject.subjectId}`);
-    // Implement your subject site deletion logic here
+    return deleteSiteFromSubject(subject.subjectId, site.siteId);
   }, []);
 
   // Subject performance operations
   const handleAddSubjectPerformance = useCallback((subject) => {
     console.log(`Add performance to subject: ${subject.subjectId}`);
     guidedOpenEntityAdditionSwal({ entityType: "performances", subjectId: subject.subjectId });
-    // Implement your subject performance addition logic here
   }, []);
 
-  const handleEditSubjectPerformance = useCallback((performance, subject) => {
+  const handleEditSubjectPerformance = useCallback(async (performance, subject) => {
     console.log(`Edit performance ${performance.performanceId} of subject ${subject.subjectId}`);
-    // Implement your subject performance editing logic here
+    const result = await guidedOpenEntityEditSwal({
+      entityType: "performance",
+      entityData: performance,
+      parentEntityData: subject,
+    });
+
+    if (result) {
+      modifySubjectPerformanceId(subject.subjectId, result.oldName, result.newName);
+    }
   }, []);
 
   const handleDeleteSubjectPerformance = useCallback((performance, subject) => {
     console.log(
       `Delete performance ${performance.performanceId} from subject ${subject.subjectId}`
     );
-    // Implement your subject performance deletion logic here
+    return deletePerformanceFromSubject(subject.subjectId, performance.performanceId);
   }, []);
 
   // Sample site operations
   const handleAddSampleSite = useCallback(({ sample, subject }) => {
     console.log(`Add site to sample ${sample.sampleId} of subject ${subject.subjectId}`);
-    // Implement your sample site addition logic here
+    guidedOpenEntityAdditionSwal({
+      entityType: "sites",
+      subjectId: subject.subjectId,
+      sampleId: sample.sampleId,
+    });
   }, []);
 
-  const handleEditSampleSite = useCallback((site, { sample, subject }) => {
+  const handleEditSampleSite = useCallback(async (site, { sample, subject }) => {
     console.log(
       `Edit site ${site.siteId} of sample ${sample.sampleId} of subject ${subject.subjectId}`
     );
-    // Implement your sample site editing logic here
+    const result = await guidedOpenEntityEditSwal({
+      entityType: "site",
+      entityData: site,
+      parentEntityData: { sample, subject },
+    });
+
+    if (result) {
+      modifySampleSiteId(subject.subjectId, sample.sampleId, result.oldName, result.newName);
+    }
   }, []);
 
   const handleDeleteSampleSite = useCallback((site, { sample, subject }) => {
     console.log(
       `Delete site ${site.siteId} from sample ${sample.sampleId} of subject ${subject.subjectId}`
     );
-    // Implement your sample site deletion logic here
+    return deleteSiteFromSample(subject.subjectId, sample.sampleId, site.siteId);
   }, []);
 
   // Sample performance operations
@@ -209,18 +262,30 @@ const EntityHierarchyRenderer = ({
     });
   }, []);
 
-  const handleEditSamplePerformance = useCallback((performance, { sample, subject }) => {
+  const handleEditSamplePerformance = useCallback(async (performance, { sample, subject }) => {
     console.log(
       `Edit performance ${performance.performanceId} of sample ${sample.sampleId} of subject ${subject.subjectId}`
     );
-    // Implement your sample performance editing logic here
+    const result = await guidedOpenEntityEditSwal({
+      entityType: "performance",
+      entityData: performance,
+      parentEntityData: { sample, subject },
+    });
+
+    if (result) {
+      modifySamplePerformanceId(subject.subjectId, sample.sampleId, result.oldName, result.newName);
+    }
   }, []);
 
   const handleDeleteSamplePerformance = useCallback((performance, { sample, subject }) => {
     console.log(
       `Delete performance ${performance.performanceId} from sample ${sample.sampleId} of subject ${subject.subjectId}`
     );
-    // Implement your sample performance deletion logic here
+    return deletePerformanceFromSample(
+      subject.subjectId,
+      sample.sampleId,
+      performance.performanceId
+    );
   }, []);
 
   // Memoize derived values to avoid recalculation
@@ -318,6 +383,15 @@ const EntityHierarchyRenderer = ({
                   onDelete={() => handleDeleteSample(sample, subject)}
                 >
                   {/* Sample Sites */}
+                  {allowEntityStructureEditing && showSampleSites && (
+                    <HierarchyItem
+                      label={`Add site to ${sample.sampleId}`}
+                      icon="add"
+                      level={3}
+                      parentEntityData={{ sample, subject }}
+                      onAdd={handleAddSampleSite}
+                    />
+                  )}
                   {showSampleSites &&
                     sample.sites?.map((site) => (
                       <HierarchyItem
@@ -333,15 +407,7 @@ const EntityHierarchyRenderer = ({
                         onDelete={() => handleDeleteSampleSite(site, { sample, subject })}
                       />
                     ))}
-                  {allowEntityStructureEditing && showSampleSites && (
-                    <HierarchyItem
-                      label={`Add site to ${sample.sampleId}`}
-                      icon="add"
-                      level={3}
-                      parentEntityData={{ sample, subject }}
-                      onAdd={handleAddSampleSite}
-                    />
-                  )}
+
                   {allowEntityStructureEditing && showSamplePerformances && (
                     <HierarchyItem
                       label={`Add performance(s) to ${sample.sampleId}`}
