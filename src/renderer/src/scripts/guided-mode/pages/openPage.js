@@ -302,7 +302,7 @@ export const openPage = async (targetPageID) => {
         setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["data"]);
       }
 
-      if (targetPageComponentType === "entity-selection-page") {
+      if (targetPageComponentType === "data-categorization-page") {
         const pageEntityType = targetPageDataset.entityType;
 
         const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
@@ -338,7 +338,7 @@ export const openPage = async (targetPageID) => {
         console.log("pageEntityType", pageEntityType);
 
         console.log(
-          "savedDatasetEntityObj when opening entity-selection-page",
+          "savedDatasetEntityObj when opening data-categorization-page",
 
           savedDatasetEntityObj
         );

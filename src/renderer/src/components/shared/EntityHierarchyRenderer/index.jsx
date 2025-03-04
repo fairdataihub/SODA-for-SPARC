@@ -1,4 +1,4 @@
-import { Stack, Text, Box, Flex, ScrollArea, Button, ActionIcon, Group } from "@mantine/core";
+import { Stack, Text, Box, Flex, ScrollArea, ActionIcon, Group } from "@mantine/core";
 import {
   IconUser,
   IconFlask,
@@ -122,11 +122,9 @@ const HierarchyItem = ({
   );
 };
 
-const EntityHierarchyRenderer = ({
-  datasetEntityArray = [],
-  allowEntityStructureEditing = false,
-}) => {
+const EntityHierarchyRenderer = ({ allowEntityStructureEditing }) => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
+  const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
 
   // Define all entity operations within the component
 
@@ -307,188 +305,214 @@ const EntityHierarchyRenderer = ({
   );
 
   // We can check if we should show empty state after all hooks are called
-  const shouldShowEmptyState = !datasetEntityArray?.length && !allowEntityStructureEditing;
+  const shouldShowEmptyState = !datasetEntityArray?.length;
 
-  // Render empty state
-  if (shouldShowEmptyState) {
-    return <Text>No entity structure data available.</Text>;
-  }
+  console.log("Should show empty state: ", shouldShowEmptyState);
 
   return (
     <ScrollArea h={650} type="auto">
-      {allowEntityStructureEditing && (
-        <Group position="right" width="100%" my="sm">
-          <Button onClick={handleAddSubjects} leftIcon={<IconPlus size={16} />}>
-            Add Subjects
-          </Button>
-        </Group>
-      )}
-
       <Stack gap="xs">
-        {datasetEntityArray?.map((subject) => (
+        {allowEntityStructureEditing && (
           <Box
-            key={subject.subjectId}
+            style={{
+              border: "1px solid #ddd",
+              borderRadius: "8px",
+              backgroundColor: "#f0f9ff",
+              cursor: "pointer",
+            }}
+            p="sm"
+            onClick={handleAddSubjects}
+          >
+            <Flex align="center" gap="xs">
+              <IconPlus size={15} color="#1c7ed6" />
+              <Text fw={500} c="#1c7ed6">
+                Add Subjects
+              </Text>
+            </Flex>
+          </Box>
+        )}
+
+        {shouldShowEmptyState ? (
+          <Box
             style={{
               border: "1px solid #ddd",
               borderRadius: "8px",
               backgroundColor: "#f9f9f9",
             }}
-            p="sm"
+            p="md"
           >
-            {/* Subject Header */}
-            <Flex align="center" gap="xs">
-              <IconUser size={15} />
-              <Text fw={600}>{subject.subjectId}</Text>
-              {allowEntityStructureEditing && (
-                <>
-                  <IconEdit
-                    color="blue"
-                    size={18}
-                    style={{ marginLeft: "4px", opacity: 0.6, cursor: "pointer" }}
-                    onClick={() => handleEditSubject(subject)}
-                  />
-                  <IconTrash
-                    color="red"
-                    size={16}
-                    style={{ opacity: 0.6, cursor: "pointer" }}
-                    onClick={() => handleDeleteSubject(subject)}
-                  />
-                </>
-              )}
-            </Flex>
-
-            {allowEntityStructureEditing && showSamples && (
-              <HierarchyItem
-                label={`Add sample(s) to ${subject.subjectId}`}
-                icon="add"
-                level={2}
-                parentEntityData={subject}
-                onAdd={handleAddSample}
-              />
-            )}
-
-            {/* Samples */}
-            {showSamples &&
-              subject.samples?.map((sample) => (
-                <HierarchyItem
-                  key={sample.sampleId}
-                  icon="sample"
-                  label={sample.sampleId}
-                  level={2}
-                  allowEntityStructureEditing={allowEntityStructureEditing}
-                  entityData={sample}
-                  entityType="sample"
-                  parentEntityData={subject}
-                  onEdit={() => handleEditSample(sample, subject)}
-                  onDelete={() => handleDeleteSample(sample, subject)}
-                >
-                  {/* Sample Sites */}
-                  {allowEntityStructureEditing && showSampleSites && (
-                    <HierarchyItem
-                      label={`Add site to ${sample.sampleId}`}
-                      icon="add"
-                      level={3}
-                      parentEntityData={{ sample, subject }}
-                      onAdd={handleAddSampleSite}
-                    />
-                  )}
-                  {showSampleSites &&
-                    sample.sites?.map((site) => (
-                      <HierarchyItem
-                        key={site.siteId}
-                        icon="site"
-                        label={site.siteId}
-                        level={3}
-                        allowEntityStructureEditing={allowEntityStructureEditing}
-                        entityData={site}
-                        entityType="site"
-                        parentEntityData={{ sample, subject }}
-                        onEdit={() => handleEditSampleSite(site, { sample, subject })}
-                        onDelete={() => handleDeleteSampleSite(site, { sample, subject })}
-                      />
-                    ))}
-
-                  {allowEntityStructureEditing && showSamplePerformances && (
-                    <HierarchyItem
-                      label={`Add performance(s) to ${sample.sampleId}`}
-                      icon="add"
-                      level={3}
-                      parentEntityData={{ sample, subject }}
-                      onAdd={handleAddSamplePerformance}
-                    />
-                  )}
-                  {/* Sample Performances */}
-                  {showSamplePerformances &&
-                    sample.performances?.map((performance) => (
-                      <HierarchyItem
-                        key={performance.performanceId}
-                        icon="performance"
-                        label={performance.performanceId}
-                        level={3}
-                        allowEntityStructureEditing={allowEntityStructureEditing}
-                        entityData={performance}
-                        entityType="performance"
-                        parentEntityData={{ sample, subject }}
-                        onEdit={() => handleEditSamplePerformance(performance, { sample, subject })}
-                        onDelete={() =>
-                          handleDeleteSamplePerformance(performance, { sample, subject })
-                        }
-                      />
-                    ))}
-                </HierarchyItem>
-              ))}
-
-            {/* Subject Sites */}
-            {showSubjectSites &&
-              subject.subjectSites?.map((site) => (
-                <HierarchyItem
-                  key={site.siteId}
-                  icon="site"
-                  label={site.siteId}
-                  level={2}
-                  allowEntityStructureEditing={allowEntityStructureEditing}
-                  entityData={site}
-                  entityType="site"
-                  parentEntityData={subject}
-                  onEdit={() => handleEditSubjectSite(site, subject)}
-                  onDelete={() => handleDeleteSubjectSite(site, subject)}
-                />
-              ))}
-            {allowEntityStructureEditing && showSubjectSites && (
-              <HierarchyItem
-                label={`Add site to ${subject.subjectId}`}
-                icon="add"
-                level={2}
-                parentEntityData={subject}
-                onAdd={handleAddSubjectSite}
-              />
-            )}
-            {allowEntityStructureEditing && showSubjectPerformances && (
-              <HierarchyItem
-                label={`Add performance(s) to ${subject.subjectId}`}
-                icon="add"
-                level={2}
-                parentEntityData={subject}
-                onAdd={handleAddSubjectPerformance}
-              />
-            )}
-            {showSubjectPerformances &&
-              subject.subjectPerformances?.map((performance) => (
-                <HierarchyItem
-                  key={performance.performanceId}
-                  icon="performance"
-                  label={performance.performanceId}
-                  level={2}
-                  allowEntityStructureEditing={allowEntityStructureEditing}
-                  entityData={performance}
-                  entityType="performance"
-                  parentEntityData={subject}
-                  onEdit={() => handleEditSubjectPerformance(performance, subject)}
-                  onDelete={() => handleDeleteSubjectPerformance(performance, subject)}
-                />
-              ))}
+            <Text c="dimmed" ta="center">
+              Use the button above to add subjects.
+            </Text>
           </Box>
-        ))}
+        ) : (
+          datasetEntityArray.map((subject) => (
+            <Box
+              key={subject.subjectId}
+              style={{
+                border: "1px solid #ddd",
+                borderRadius: "8px",
+                backgroundColor: "#f9f9f9",
+              }}
+              p="sm"
+            >
+              {/* Subject Header */}
+              <Flex align="center" gap="xs">
+                <IconUser size={15} />
+                <Text fw={600}>{subject.subjectId}</Text>
+                {allowEntityStructureEditing && (
+                  <>
+                    <IconEdit
+                      color="blue"
+                      size={18}
+                      style={{ marginLeft: "4px", opacity: 0.6, cursor: "pointer" }}
+                      onClick={() => handleEditSubject(subject)}
+                    />
+                    <IconTrash
+                      color="red"
+                      size={16}
+                      style={{ opacity: 0.6, cursor: "pointer" }}
+                      onClick={() => handleDeleteSubject(subject)}
+                    />
+                  </>
+                )}
+              </Flex>
+
+              {allowEntityStructureEditing && showSamples && (
+                <HierarchyItem
+                  label={`Add sample(s) to ${subject.subjectId}`}
+                  icon="add"
+                  level={2}
+                  parentEntityData={subject}
+                  onAdd={handleAddSample}
+                />
+              )}
+
+              {/* Samples */}
+              {showSamples &&
+                subject.samples?.map((sample) => (
+                  <HierarchyItem
+                    key={sample.sampleId}
+                    icon="sample"
+                    label={sample.sampleId}
+                    level={2}
+                    allowEntityStructureEditing={allowEntityStructureEditing}
+                    entityData={sample}
+                    entityType="sample"
+                    parentEntityData={subject}
+                    onEdit={() => handleEditSample(sample, subject)}
+                    onDelete={() => handleDeleteSample(sample, subject)}
+                  >
+                    {/* Sample Sites */}
+                    {allowEntityStructureEditing && showSampleSites && (
+                      <HierarchyItem
+                        label={`Add site to ${sample.sampleId}`}
+                        icon="add"
+                        level={3}
+                        parentEntityData={{ sample, subject }}
+                        onAdd={handleAddSampleSite}
+                      />
+                    )}
+                    {showSampleSites &&
+                      sample.sites?.map((site) => (
+                        <HierarchyItem
+                          key={site.siteId}
+                          icon="site"
+                          label={site.siteId}
+                          level={3}
+                          allowEntityStructureEditing={allowEntityStructureEditing}
+                          entityData={site}
+                          entityType="site"
+                          parentEntityData={{ sample, subject }}
+                          onEdit={() => handleEditSampleSite(site, { sample, subject })}
+                          onDelete={() => handleDeleteSampleSite(site, { sample, subject })}
+                        />
+                      ))}
+
+                    {allowEntityStructureEditing && showSamplePerformances && (
+                      <HierarchyItem
+                        label={`Add performance(s) to ${sample.sampleId}`}
+                        icon="add"
+                        level={3}
+                        parentEntityData={{ sample, subject }}
+                        onAdd={handleAddSamplePerformance}
+                      />
+                    )}
+                    {/* Sample Performances */}
+                    {showSamplePerformances &&
+                      sample.performances?.map((performance) => (
+                        <HierarchyItem
+                          key={performance.performanceId}
+                          icon="performance"
+                          label={performance.performanceId}
+                          level={3}
+                          allowEntityStructureEditing={allowEntityStructureEditing}
+                          entityData={performance}
+                          entityType="performance"
+                          parentEntityData={{ sample, subject }}
+                          onEdit={() =>
+                            handleEditSamplePerformance(performance, { sample, subject })
+                          }
+                          onDelete={() =>
+                            handleDeleteSamplePerformance(performance, { sample, subject })
+                          }
+                        />
+                      ))}
+                  </HierarchyItem>
+                ))}
+
+              {/* Subject Sites */}
+              {showSubjectSites &&
+                subject.subjectSites?.map((site) => (
+                  <HierarchyItem
+                    key={site.siteId}
+                    icon="site"
+                    label={site.siteId}
+                    level={2}
+                    allowEntityStructureEditing={allowEntityStructureEditing}
+                    entityData={site}
+                    entityType="site"
+                    parentEntityData={subject}
+                    onEdit={() => handleEditSubjectSite(site, subject)}
+                    onDelete={() => handleDeleteSubjectSite(site, subject)}
+                  />
+                ))}
+              {allowEntityStructureEditing && showSubjectSites && (
+                <HierarchyItem
+                  label={`Add site to ${subject.subjectId}`}
+                  icon="add"
+                  level={2}
+                  parentEntityData={subject}
+                  onAdd={handleAddSubjectSite}
+                />
+              )}
+              {allowEntityStructureEditing && showSubjectPerformances && (
+                <HierarchyItem
+                  label={`Add performance(s) to ${subject.subjectId}`}
+                  icon="add"
+                  level={2}
+                  parentEntityData={subject}
+                  onAdd={handleAddSubjectPerformance}
+                />
+              )}
+              {showSubjectPerformances &&
+                subject.subjectPerformances?.map((performance) => (
+                  <HierarchyItem
+                    key={performance.performanceId}
+                    icon="performance"
+                    label={performance.performanceId}
+                    level={2}
+                    allowEntityStructureEditing={allowEntityStructureEditing}
+                    entityData={performance}
+                    entityType="performance"
+                    parentEntityData={subject}
+                    onEdit={() => handleEditSubjectPerformance(performance, subject)}
+                    onDelete={() => handleDeleteSubjectPerformance(performance, subject)}
+                  />
+                ))}
+            </Box>
+          ))
+        )}
       </Stack>
     </ScrollArea>
   );

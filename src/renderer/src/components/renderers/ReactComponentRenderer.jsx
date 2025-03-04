@@ -10,7 +10,8 @@ import SingleColumnTable from "../tables/singleColumn";
 import PennsieveAgentCheckDisplay from "../backgroundServices/PennsieveAgentCheckDisplay";
 import DatasetEntityStructurePage from "../pages/DatasetEntityStructure";
 import DatasetEntityManagementPage from "../pages/DatasetEntityManagement";
-import EntitySelectorPage from "../pages/EntitySelector";
+// import EntitySelectorPage from "../pages/EntitySelector";
+import DatasetEntityFileMapper from "../pages/DatasetEntityFileMapper";
 import EntityDataSelectorPage from "../pages/EntityDataSelector";
 import DataImporter from "../shared/DataImporter";
 import DatasetContentSelector from "../shared/DatasetContentSelector";
@@ -126,6 +127,7 @@ const componentTypeRenderers = {
       </SodaComponentWrapper>
     );
   },
+  /* OLD PAGE WHERE YOU WRITE OUT INDIVIDUAL ENTITY IDS
   "entity-management-page": (componentSlot) => {
     const root = createRoot(componentSlot);
     const props = {
@@ -141,9 +143,17 @@ const componentTypeRenderers = {
         <EntitySelectorPage {...props} />
       </SodaComponentWrapper>
     );
+  }*/
+  "entity-file-mapping-page": (componentSlot) => {
+    const root = createRoot(componentSlot);
+    root.render(
+      <SodaComponentWrapper>
+        <DatasetEntityFileMapper />
+      </SodaComponentWrapper>
+    );
   },
 
-  "entity-selection-page": (componentSlot) => {
+  "data-categorization-page": (componentSlot) => {
     const root = createRoot(componentSlot);
     const props = {
       pageName: componentSlot.getAttribute("data-page-name"),

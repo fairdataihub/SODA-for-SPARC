@@ -93,7 +93,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
         window.sodaJSONObj["dataset-entity-obj"] = datasetEntityObj;
       }
 
-      if (pageBeingLeftComponentType === "entity-selection-page") {
+      if (pageBeingLeftComponentType === "data-categorization-page") {
         const entityType = pageBeingLeftDataSet.entityType;
         const datasetEntityObj = getDatasetEntityObj();
         console.log("datasetEntityObj when leaving" + pageBeingLeftID, datasetEntityObj);

@@ -379,7 +379,7 @@ const DatasetEntityStructurePage = () => {
             <Text mb="md">
               Please verify that the generated structure below is correct before proceeding.
             </Text>
-            <EntityHierarchyRenderer datasetEntityArray={datasetEntityArray} />
+            <EntityHierarchyRenderer allowEntityStructureEditing={false} />
           </Paper>
         </Stack>
       </GuidedModeSection>

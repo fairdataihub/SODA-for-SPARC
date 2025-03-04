@@ -24,10 +24,7 @@ const DatasetEntityManagementPage = () => {
             Entity Structure
           </Text>
 
-          <EntityHierarchyRenderer
-            datasetEntityArray={datasetEntityArray}
-            allowEntityStructureEditing={true}
-          />
+          <EntityHierarchyRenderer allowEntityStructureEditing={true} />
         </Paper>
       </GuidedModeSection>
     </GuidedModePage>
