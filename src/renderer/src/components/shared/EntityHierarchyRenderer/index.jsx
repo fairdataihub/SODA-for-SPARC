@@ -122,7 +122,7 @@ const HierarchyItem = ({
   );
 };
 
-const EntityHierarchyRenderer = ({ allowEntityStructureEditing }) => {
+const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelection }) => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
 

@@ -363,6 +363,14 @@ export const openPage = async (targetPageID) => {
         setSelectedEntities(selectedEntities);
         setDatasetEntityArray(datasetEntityArray);
       }
+      if (targetPageComponentType === "entity-file-mapping-page") {
+        const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
+        const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
+
+        setSelectedEntities(selectedEntities);
+        setDatasetEntityArray(datasetEntityArray);
+        setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["data"]);
+      }
     }
 
     if (targetPageID === "guided-select-starting-point-tab") {

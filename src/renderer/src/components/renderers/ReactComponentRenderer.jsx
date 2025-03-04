@@ -11,6 +11,7 @@ import PennsieveAgentCheckDisplay from "../backgroundServices/PennsieveAgentChec
 import DatasetEntityStructurePage from "../pages/DatasetEntityStructure";
 import DatasetEntityManagementPage from "../pages/DatasetEntityManagement";
 // import EntitySelectorPage from "../pages/EntitySelector";
+import DatasetEntityMetadata from "../pages/DatasetEntityMetadata";
 import DatasetEntityFileMapper from "../pages/DatasetEntityFileMapper";
 import EntityDataSelectorPage from "../pages/EntityDataSelector";
 import DataImporter from "../shared/DataImporter";
@@ -144,6 +145,21 @@ const componentTypeRenderers = {
       </SodaComponentWrapper>
     );
   }*/
+  "dataset-entity-metadata-page": (componentSlot) => {
+    const root = createRoot(componentSlot);
+    const props = {
+      pageName: componentSlot.getAttribute("data-page-name"),
+      entityType: componentSlot.getAttribute("data-entity-type"),
+      entityTypeStringSingular: componentSlot.getAttribute("data-entity-type-string-singular"),
+      entityTypeStringPlural: componentSlot.getAttribute("data-entity-type-string-plural"),
+    };
+
+    root.render(
+      <SodaComponentWrapper>
+        <DatasetEntityMetadata {...props} />
+      </SodaComponentWrapper>
+    );
+  },
   "entity-file-mapping-page": (componentSlot) => {
     const root = createRoot(componentSlot);
     root.render(

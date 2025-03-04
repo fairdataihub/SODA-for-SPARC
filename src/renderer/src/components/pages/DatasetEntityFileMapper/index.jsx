@@ -156,7 +156,7 @@ const DatasetEntityFileMapper = ({
 
       <GuidedModeSection>
         <Grid gutter="lg">
-          <Grid.Col span={4} style={{ position: "sticky", top: "20px" }}>
+          <Grid.Col span={5} style={{ position: "sticky", top: "20px" }}>
             <Paper shadow="sm" radius="md" p="md">
               <Text fw={600} mb="md">
                 Entity Hierarchy
@@ -165,7 +165,7 @@ const DatasetEntityFileMapper = ({
             </Paper>
           </Grid.Col>
 
-          <Grid.Col span={8}>
+          <Grid.Col span={7}>
             {activeEntity ? (
               <Paper shadow="sm" radius="md">
                 <DatasetTreeViewRenderer
