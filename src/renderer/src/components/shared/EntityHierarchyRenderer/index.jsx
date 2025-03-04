@@ -406,7 +406,7 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing }) => {
                     {/* Sample Sites */}
                     {allowEntityStructureEditing && showSampleSites && (
                       <HierarchyItem
-                        label={`Add site to ${sample.sampleId}`}
+                        label={`Add site(s) to ${sample.sampleId}`}
                         icon="add"
                         level={3}
                         parentEntityData={{ sample, subject }}
@@ -479,7 +479,7 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing }) => {
                 ))}
               {allowEntityStructureEditing && showSubjectSites && (
                 <HierarchyItem
-                  label={`Add site to ${subject.subjectId}`}
+                  label={`Add site(s) to ${subject.subjectId}`}
                   icon="add"
                   level={2}
                   parentEntityData={subject}
