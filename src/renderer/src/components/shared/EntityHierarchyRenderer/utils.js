@@ -18,7 +18,6 @@ export const guidedOpenEntityAdditionSwal = async ({ entityType, subjectId, samp
   console.log("subjectId", subjectId);
   console.log("sampleId", sampleId);
   // Get a list of the existing entities so we can check for duplicates
-  // const subjects = window.getExistingSubjectNames();
   let preExistingEntities;
   let entityNameSingular;
   let entityPrefix;
@@ -122,14 +121,60 @@ export const guidedOpenEntityAdditionSwal = async ({ entityType, subjectId, samp
       });
     }
   };
-  `${entityNameSingular} addition`;
+
+  // Generate a simpler title based on the entity type
+  const getSwalTitle = () => {
+    // Default case - no context
+    if (entityType === "subjects") {
+      return "Add Subject IDs";
+    }
+
+    // Simple titles for other entity types
+    if (entityType === "samples") {
+      return "Add Sample IDs";
+    }
+
+    if (entityType === "sites") {
+      return "Add Site IDs";
+    }
+
+    if (entityType === "performances") {
+      return "Add Performance IDs";
+    }
+
+    // Fallback
+    return `Add ${entityType} IDs`;
+  };
+
+  // Get help text that explains what IDs are used for - simplified for all entity types
+  const getHelpText = () => {
+    // Simple, concise help text for all entity types
+    if (entityType === "subjects") {
+      return "Enter a unique ID for each subject that data was collected from during your study.";
+    } else if (entityType === "samples") {
+      return `Enter a unique ID for each sample taken from subject ${subjectId}.`;
+    } else if (entityType === "sites") {
+      if (sampleId) {
+        return `Enter a unique ID for each recording site on sample ${sampleId}.`;
+      } else {
+        return `Enter a unique ID for each recording site on subject ${subjectId}.`;
+      }
+    } else if (entityType === "performances") {
+      if (sampleId) {
+        return `Enter a unique ID for each experimental session performed on sample ${sampleId}.`;
+      } else {
+        return `Enter a unique ID for each experimental session performed on subject ${subjectId}.`;
+      }
+    }
+
+    return "Enter unique identifiers for your dataset entities.";
+  };
+
   const additionConfirmed = await Swal.fire({
-    title: `my cool title`,
+    title: getSwalTitle(),
     html: `
       <p class="help-text">
-        Enter a unique ${entityNameSingular} ID and press enter or the
-        'Add ${entityNameSingular}' button for each ${entityNameSingular} in your dataset.
-        <br />
+        ${getHelpText()}
       </p>
       <div class="space-between w-100 align-flex-center">
         <p class="help-text m-0 mr-1 no-text-wrap">${entityPrefix}</p>
@@ -139,7 +184,7 @@ export const guidedOpenEntityAdditionSwal = async ({ entityType, subjectId, samp
           style="width: 180px;"
           id="guided-button-add-subject-in-swal"
         >
-          Add ${entityNameSingular}
+          Add ID
         </button>
       </div>
       <div id="entities-list" class="swal-file-list my-3"></div>
@@ -151,7 +196,7 @@ export const guidedOpenEntityAdditionSwal = async ({ entityType, subjectId, samp
     showCancelButton: true,
     showCloseButton: false,
     allowOutsideClick: false,
-    confirmButtonText: `Confirm`,
+    confirmButtonText: `Confirm IDs`,
     cancelButtonText: `Cancel`,
     didOpen: () => {
       // Render the initial subjects in the Swal
@@ -182,7 +227,9 @@ export const guidedOpenEntityAdditionSwal = async ({ entityType, subjectId, samp
     },
     preConfirm: () => {
       if (newEntities.length === 0) {
-        Swal.showValidationMessage(`Please add at least one ${entityNameSingular} or click Cancel`);
+        Swal.showValidationMessage(
+          `Please define at least one ${entityNameSingular} ID or click Cancel`
+        );
       }
     },
   });
@@ -276,10 +323,10 @@ export const guidedOpenEntityEditSwal = async ({ entityType, entityData, parentE
   let newEntityName;
 
   const entityEditConfirmed = await Swal.fire({
-    title: `Editing ${entityNameSingular} ${entityName}`,
+    title: `Change ${entityNameSingular} ID`,
     html: `
       <p class="help-text text-center">
-        Enter the new name for the ${entityNameSingular} below and press edit.
+        Enter a new identifier to replace "${entityName}".
         <br />
       </p>
       <div class="space-between w-100 align-flex-center">

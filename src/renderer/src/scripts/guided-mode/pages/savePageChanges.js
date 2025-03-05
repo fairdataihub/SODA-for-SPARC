@@ -3,6 +3,7 @@ import { getDatasetEntityObj } from "../../../stores/slices/datasetEntitySelecto
 import { startOrStopAnimationsInContainer } from "../lotties/lottie";
 import { savePageCurationPreparation } from "./curationPreparation/savePage";
 import { savePagePrepareMetadata } from "./prepareMetadata/savePage";
+import { guidedSkipPage, guidedUnSkipPage } from "./navigationUtils/pageSkipping";
 import useGlobalStore from "../../../stores/globalStore";
 
 while (!window.baseHtmlLoaded) {
@@ -103,6 +104,77 @@ export const savePageChanges = async (pageBeingLeftID) => {
 
         // Save the dataset entity object to the progress file
         window.sodaJSONObj["dataset-entity-obj"] = datasetEntityObj;
+      }
+
+      if (pageBeingLeftComponentType === "dataset-content-selector") {
+        const selectedEntities = useGlobalStore.getState()["selectedEntities"];
+        console.log("selectedEntities", selectedEntities);
+        if (selectedEntities.length === 0) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please select at least one option that applies to your dataset",
+          });
+          throw errorArray;
+        }
+        console.log("selectedEntities", selectedEntities);
+        window.sodaJSONObj["selected-entities"] = selectedEntities;
+        console.log("selectedEntities", selectedEntities);
+
+        if (!selectedEntities.includes("subjects") && !selectedEntities.includes("code")) {
+          errorArray.push({
+            type: "notyf",
+            message: "You must indicate that your dataset contains subjects and/or code",
+          });
+          throw errorArray;
+        }
+
+        if (selectedEntities.includes("subjects")) {
+          guidedUnSkipPage("guided-subjects-entity-addition-tab");
+          guidedUnSkipPage("guided-subjects-entity-selection-tab");
+          guidedUnSkipPage("guided-unstructured-data-import-tab");
+          guidedUnSkipPage("guided-create-subjects-metadata-tab");
+        } else {
+          guidedSkipPage("guided-subjects-entity-addition-tab");
+          guidedSkipPage("guided-subjects-entity-selection-tab");
+          guidedSkipPage("guided-unstructured-data-import-tab");
+          guidedSkipPage("guided-create-subjects-metadata-tab");
+        }
+
+        if (selectedEntities.includes("samples")) {
+          guidedUnSkipPage("guided-samples-entity-addition-tab");
+          guidedUnSkipPage("guided-samples-entity-selection-tab");
+          guidedUnSkipPage("guided-create-samples-metadata-tab");
+        } else {
+          guidedSkipPage("guided-samples-entity-addition-tab");
+          guidedSkipPage("guided-samples-entity-selection-tab");
+          guidedSkipPage("guided-create-samples-metadata-tab");
+        }
+
+        if (selectedEntities.includes("sites")) {
+          guidedUnSkipPage("guided-sites-entity-addition-tab");
+          guidedUnSkipPage("guided-sites-entity-selection-tab");
+          guidedUnSkipPage("guided-create-sites-metadata-tab");
+        } else {
+          guidedSkipPage("guided-sites-entity-addition-tab");
+          guidedSkipPage("guided-sites-entity-selection-tab");
+          guidedSkipPage("guided-create-sites-metadata-tab");
+        }
+
+        if (selectedEntities.includes("performances")) {
+          guidedUnSkipPage("guided-performances-entity-addition-tab");
+          guidedUnSkipPage("guided-performances-entity-selection-tab");
+          guidedUnSkipPage("guided-create-performances-metadata-tab");
+        } else {
+          guidedSkipPage("guided-performances-entity-addition-tab");
+          guidedSkipPage("guided-performances-entity-selection-tab");
+          guidedSkipPage("guided-create-performances-metadata-tab");
+        }
+
+        if (selectedEntities.includes("code")) {
+          guidedUnSkipPage("guided-code-folder-tab");
+        } else {
+          guidedSkipPage("guided-code-folder-tab");
+        }
       }
       if (pageBeingLeftComponentType === "dataset-entity-id-generation-page") {
         const speciesList = useGlobalStore.getState().speciesList;

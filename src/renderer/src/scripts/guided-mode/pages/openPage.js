@@ -346,6 +346,12 @@ export const openPage = async (targetPageID) => {
         setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["data"]);
       }
 
+      if (targetPageComponentType === "dataset-content-selector") {
+        const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
+        console.log("Selected entities", selectedEntities);
+        setSelectedEntities(selectedEntities);
+      }
+
       if (targetPageComponentType === "dataset-entity-id-generation-page") {
         const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
         const speciesList = window.sodaJSONObj["species-list"] || [];
@@ -363,6 +369,16 @@ export const openPage = async (targetPageID) => {
         setSelectedEntities(selectedEntities);
         setDatasetEntityArray(datasetEntityArray);
       }
+
+      if (targetPageComponentType === "dataset-entity-metadata-page") {
+        const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
+        const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
+        console.log("Selected entities", selectedEntities);
+        console.log("Dataset entity array", datasetEntityArray);
+        setSelectedEntities(selectedEntities);
+        setDatasetEntityArray(datasetEntityArray);
+      }
+
       if (targetPageComponentType === "entity-file-mapping-page") {
         const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
         const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];

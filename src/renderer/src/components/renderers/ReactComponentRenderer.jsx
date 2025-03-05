@@ -10,12 +10,12 @@ import SingleColumnTable from "../tables/singleColumn";
 import PennsieveAgentCheckDisplay from "../backgroundServices/PennsieveAgentCheckDisplay";
 import DatasetEntityStructurePage from "../pages/DatasetEntityStructure";
 import DatasetEntityManagementPage from "../pages/DatasetEntityManagement";
+import DatasetContentSelector from "../pages/DatasetContentSelector";
 // import EntitySelectorPage from "../pages/EntitySelector";
 import DatasetEntityMetadata from "../pages/DatasetEntityMetadata";
 import DatasetEntityFileMapper from "../pages/DatasetEntityFileMapper";
 import EntityDataSelectorPage from "../pages/EntityDataSelector";
 import DataImporter from "../shared/DataImporter";
-import DatasetContentSelector from "../shared/DatasetContentSelector";
 import { Divider } from "@mantine/core";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
@@ -106,14 +106,7 @@ const componentTypeRenderers = {
       </SodaComponentWrapper>
     );
   },
-  "dataset-content-selector": (componentSlot) => {
-    const root = createRoot(componentSlot);
-    root.render(
-      <SodaComponentWrapper>
-        <DatasetContentSelector />
-      </SodaComponentWrapper>
-    );
-  },
+
   "data-importer": (componentSlot) => {
     const root = createRoot(componentSlot);
     const props = {
@@ -182,6 +175,14 @@ const componentTypeRenderers = {
     root.render(
       <SodaComponentWrapper>
         <EntityDataSelectorPage {...props} />
+      </SodaComponentWrapper>
+    );
+  },
+  "dataset-content-selector": (componentSlot) => {
+    const root = createRoot(componentSlot);
+    root.render(
+      <SodaComponentWrapper>
+        <DatasetContentSelector />
       </SodaComponentWrapper>
     );
   },
