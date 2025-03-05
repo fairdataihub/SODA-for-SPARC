@@ -135,11 +135,11 @@ const renderEntityList = (entityType, activeEntity, datasetEntityObj) => {
 
 const getInstructionalTextByEntityType = (entityType) => {
   const instructionalText = {
-    Code: "Select all folders and files that contain scripts, computational models, analysis pipelines, or other software used for data processing or analysis.",
+    Code: "Select the files that contain scripts, computational models, analysis pipelines, or other software used for data processing or analysis below.",
     "Experimental data":
-      "Select all folders and files containing data collected from experiments or analysis.",
+      "Select the files containing data collected from experiments or analysis below.",
     Other:
-      "Select all folders and files that do not contain experimental data or code, such as protocols, notes, or supplementary materials.",
+      "Select the files that do not contain experimental data or code, such as protocols, notes, or supplementary materials below.",
   };
 
   return instructionalText[entityType] || `Select the files that contain data for ${entityType}`;

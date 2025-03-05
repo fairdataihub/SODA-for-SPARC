@@ -19,6 +19,7 @@ import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import { toggleEntitySelection } from "../../../stores/slices/datasetContentSelectorSlice";
 import { IconSearch } from "@tabler/icons-react";
+import SodaGreenPaper from "../../utils/ui/SodaGreenPaper";
 
 const contentOptionsMap = {
   subjects: {
@@ -127,75 +128,79 @@ const DatasetContentSelector = () => {
           determine the optimal workflow to organize your dataset.
         </Text>
       </GuidedModeSection>
-      <Stack spacing="xs">
-        {Object.entries(contentOptionsMap).map(([key, option]) => {
-          const isDisabled = option.dependsOn?.some((dep) => !selectedEntities.includes(dep));
-          const isSelected = selectedEntities.includes(key) && !isDisabled;
+      <Paper shadow="sm" radius="md" p="sm" withBorder mb="md">
+        <Stack spacing="xs">
+          {Object.entries(contentOptionsMap).map(([key, option]) => {
+            const isDisabled = option.dependsOn?.some((dep) => !selectedEntities.includes(dep));
+            const isSelected = selectedEntities.includes(key) && !isDisabled;
 
-          return (
-            <Tooltip
-              key={key}
-              label={
-                isDisabled ? option.dependsOnNotSatiatedMessage || "This option is disabled" : null
-              }
-              disabled={!isDisabled}
-              zIndex={2999}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  padding: "6px 10px",
-                  borderRadius: "6px",
-                  transition: "background 0.2s",
-                  cursor: isDisabled ? "not-allowed" : null,
-                  opacity: isDisabled ? 0.6 : 1,
-                }}
+            return (
+              <Tooltip
+                key={key}
+                label={
+                  isDisabled
+                    ? option.dependsOnNotSatiatedMessage || "This option is disabled"
+                    : null
+                }
+                disabled={!isDisabled}
+                zIndex={2999}
               >
-                <Group position="apart" align="center" ml={option.ml}>
-                  <Group>
-                    <Checkbox
-                      checked={isSelected}
-                      disabled={isDisabled}
-                      onClick={() => !isDisabled && handleEntitySelection(key)}
-                    />
-                    <Text size="md" fw={600}>
-                      {option.label}
-                    </Text>
-                  </Group>
-                  {option.description && (
-                    <Tooltip
-                      disabled={isDisabled}
-                      label={expanded[key] ? "Hide description" : "Show description"}
-                      zIndex={2999}
-                    >
-                      <ActionIcon
-                        size="sm"
-                        variant="transparent"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleExpanded(key);
-                        }}
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    padding: "6px 10px",
+                    borderRadius: "6px",
+                    transition: "background 0.2s",
+                    cursor: isDisabled ? "not-allowed" : null,
+                    opacity: isDisabled ? 0.6 : 1,
+                  }}
+                >
+                  <Group position="apart" align="center" ml={option.ml}>
+                    <Group>
+                      <Checkbox
+                        checked={isSelected}
+                        disabled={isDisabled}
+                        onClick={() => !isDisabled && handleEntitySelection(key)}
+                      />
+                      <Text size="md" fw={600}>
+                        {option.label}
+                      </Text>
+                    </Group>
+                    {option.description && (
+                      <Tooltip
+                        disabled={isDisabled}
+                        label={expanded[key] ? "Hide description" : "Show description"}
+                        zIndex={2999}
                       >
-                        {expanded[key] ? (
-                          <IconChevronUp size={16} />
-                        ) : (
-                          <IconChevronDown size={16} />
-                        )}
-                      </ActionIcon>
-                    </Tooltip>
+                        <ActionIcon
+                          size="sm"
+                          variant="transparent"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleExpanded(key);
+                          }}
+                        >
+                          {expanded[key] ? (
+                            <IconChevronUp size={16} />
+                          ) : (
+                            <IconChevronDown size={16} />
+                          )}
+                        </ActionIcon>
+                      </Tooltip>
+                    )}
+                  </Group>
+                  {expanded[key] && (
+                    <SodaGreenPaper mt="sm" ml="sm">
+                      <Text>{option.description}</Text>
+                    </SodaGreenPaper>
                   )}
-                </Group>
-                {expanded[key] && (
-                  <SodaGreenPaper mt="sm" ml="sm">
-                    <Text>{option.description}</Text>
-                  </SodaGreenPaper>
-                )}
-              </div>
-            </Tooltip>
-          );
-        })}
-      </Stack>
+                </div>
+              </Tooltip>
+            );
+          })}
+        </Stack>
+      </Paper>
     </GuidedModePage>
   );
 };

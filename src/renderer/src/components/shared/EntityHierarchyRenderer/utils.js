@@ -131,14 +131,27 @@ export const guidedOpenEntityAdditionSwal = async ({ entityType, subjectId, samp
 
     // Simple titles for other entity types
     if (entityType === "samples") {
-      return "Add Sample IDs";
+      return `Add Sample IDs for Subject ${subjectId}`;
     }
 
     if (entityType === "sites") {
+      if (sampleId) {
+        return `Add Site IDs for Sample ${sampleId}`;
+      }
+      if (subjectId) {
+        return `Add Site IDs for Subject ${subjectId}`;
+      }
+
       return "Add Site IDs";
     }
 
     if (entityType === "performances") {
+      if (sampleId) {
+        return `Add Performance IDs for Sample ${sampleId}`;
+      }
+      if (subjectId) {
+        return `Add Performance IDs for Subject ${subjectId}`;
+      }
       return "Add Performance IDs";
     }
 
@@ -155,15 +168,15 @@ export const guidedOpenEntityAdditionSwal = async ({ entityType, subjectId, samp
       return `Enter a unique ID for each sample taken from subject ${subjectId}.`;
     } else if (entityType === "sites") {
       if (sampleId) {
-        return `Enter a unique ID for each recording site on sample ${sampleId}.`;
+        return `Enter a unique ID for each site data was extracted from for sample ${sampleId}.`;
       } else {
-        return `Enter a unique ID for each recording site on subject ${subjectId}.`;
+        return `Enter a unique ID for each site data was extracted from for subject ${subjectId}.`;
       }
     } else if (entityType === "performances") {
       if (sampleId) {
-        return `Enter a unique ID for each experimental session performed on sample ${sampleId}.`;
+        return `Enter a unique ID for each protocol performance performed on sample ${sampleId}.`;
       } else {
-        return `Enter a unique ID for each experimental session performed on subject ${subjectId}.`;
+        return `Enter a unique ID for each protocol performance performed on subject ${subjectId}.`;
       }
     }
 
@@ -175,16 +188,19 @@ export const guidedOpenEntityAdditionSwal = async ({ entityType, subjectId, samp
     html: `
       <p class="help-text">
         ${getHelpText()}
+        <br />
+        <br />
+        To add a new ${entityNameSingular} ID, enter the ID in the input field below and press enter or click the "Add ${entityNameSingular} ID" button. Once you have added all the ${entityNameSingular} IDs, click "Confirm IDs" to save them.
       </p>
-      <div class="space-between w-100 align-flex-center">
+      <div class="space-between w-100 align-flex-center mb-lg">
         <p class="help-text m-0 mr-1 no-text-wrap">${entityPrefix}</p>
         <input id='input-entity-addition' class='guided--input' type='text' name='guided-subject-id' placeholder='Enter ${entityNameSingular} ID and press enter'/>
         <button
           class="ui positive button soda-green-background ml-1"
-          style="width: 180px;"
+          style="width: 190px;"
           id="guided-button-add-subject-in-swal"
         >
-          Add ID
+          Add ${entityNameSingular} ID
         </button>
       </div>
       <div id="entities-list" class="swal-file-list my-3"></div>

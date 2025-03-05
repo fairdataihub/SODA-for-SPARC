@@ -224,21 +224,6 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
     }
   };
 
-  const getBadgeColor = () => {
-    switch (entityType) {
-      case "subject":
-        return "blue";
-      case "sample":
-        return "green";
-      case "site":
-        return "red";
-      case "performance":
-        return "grape";
-      default:
-        return "gray";
-    }
-  };
-
   // Render the appropriate form fields based on entity type
   const renderEntitySpecificFields = () => {
     switch (entityType) {
@@ -376,45 +361,26 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
             {getEntityIcon()}
             <Title order={4}>{getTitleForEntity()}</Title>
           </Group>
-          <Badge color={getBadgeColor()}>{entityType}</Badge>
         </Group>
 
         <Divider my="xs" />
 
         {/* Entity-specific form fields */}
         {renderEntitySpecificFields()}
-
-        {/* Notes field for all entity types */}
-        <Textarea
-          label="Notes"
-          description="Additional information about this entity"
-          placeholder="Enter any additional notes here"
-          minRows={3}
-          value={getMetadataValue("notes")}
-          onChange={(e) => handleChange("notes", e.target.value)}
-        />
       </Stack>
     </Paper>
   );
 };
 
-const DatasetEntityMetadata = ({
-  pageName = "Dataset Entity Metadata",
-  entityType,
-  entityTypeStringSingular,
-  entityTypeStringPlural,
-}) => {
-  const activeEntity = useGlobalStore((state) => state.activeEntity);
+const DatasetEntityMetadata = () => {
   const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
-  const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
-
   return (
-    <GuidedModePage pageHeader={pageName}>
+    <GuidedModePage pageHeader={"Dataset entity metadata"}>
       <GuidedModeSection>
         <Stack>
           <Text>
-            Enter metadata for your dataset entities. First, select an entity from the hierarchy on
-            the left, then fill out the metadata form for that entity.
+            The SDS requires you to provide metadata for each entity in your dataset. Use the
+            interface below to provide it.
           </Text>
         </Stack>
       </GuidedModeSection>
@@ -423,8 +389,8 @@ const DatasetEntityMetadata = ({
         <Grid gutter="lg">
           <Grid.Col span={4} style={{ position: "sticky", top: "20px" }}>
             <Paper shadow="sm" radius="md" p="sm" withBorder mb="md">
-              <Text fw={600} mb="md">
-                Entity Hierarchy
+              <Text size="lg" fw={500} mb="md">
+                Select an Entity
               </Text>
               <EntityHierarchyRenderer
                 allowEntityStructureEditing={false}

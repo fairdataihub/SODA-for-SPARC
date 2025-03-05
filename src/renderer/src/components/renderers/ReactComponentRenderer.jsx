@@ -140,16 +140,10 @@ const componentTypeRenderers = {
   }*/
   "dataset-entity-metadata-page": (componentSlot) => {
     const root = createRoot(componentSlot);
-    const props = {
-      pageName: componentSlot.getAttribute("data-page-name"),
-      entityType: componentSlot.getAttribute("data-entity-type"),
-      entityTypeStringSingular: componentSlot.getAttribute("data-entity-type-string-singular"),
-      entityTypeStringPlural: componentSlot.getAttribute("data-entity-type-string-plural"),
-    };
 
     root.render(
       <SodaComponentWrapper>
-        <DatasetEntityMetadata {...props} />
+        <DatasetEntityMetadata />
       </SodaComponentWrapper>
     );
   },

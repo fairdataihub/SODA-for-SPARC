@@ -4,14 +4,10 @@ import { Paper, Group, Text, Divider, Box } from "@mantine/core";
 const EntityListContainer = ({
   title, // The title displayed at the top
   children, // The content inside the scrollable box
-  shadow = "lg", // Shadow for the Paper component
-  padding = "md", // Padding for the Paper component
-  radius = "md", // Border radius for the Paper component
-  withBorder = true, // Whether the Paper component has a border
 }) => {
   return (
-    <Paper shadow={shadow} p={padding} radius={radius} withBorder={withBorder}>
-      <Text size="lg" weight={500}>
+    <Paper padding="md" shadow="sm" radius="md" p="sm" flex={1} w="100%" withBorder>
+      <Text size="lg" fw={500}>
         {title}
       </Text>
       <Divider my="xs" />

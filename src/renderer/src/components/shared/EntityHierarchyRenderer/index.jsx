@@ -367,7 +367,7 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
               p="md"
             >
               <Text c="dimmed" ta="center">
-                Use the button above to add subjects.
+                No subjects have been added yet
               </Text>
             </Box>
           ) : (
