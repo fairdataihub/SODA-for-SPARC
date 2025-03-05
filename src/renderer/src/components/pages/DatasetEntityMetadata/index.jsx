@@ -41,7 +41,10 @@ const DatasetEntityMetadata = ({
               <Text fw={600} mb="md">
                 Entity Hierarchy
               </Text>
-              <EntityHierarchyRenderer allowEntityStructureEditing={false} />
+              <EntityHierarchyRenderer
+                allowEntityStructureEditing={false}
+                allowEntitySelection={true}
+              />
             </Paper>
           </Grid.Col>
 

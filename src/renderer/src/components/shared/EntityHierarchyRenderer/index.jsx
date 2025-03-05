@@ -8,7 +8,7 @@ import {
   IconPlus,
   IconTrash,
 } from "@tabler/icons-react";
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useState } from "react";
 import {
   addSubject,
   deleteSubject,
@@ -58,12 +58,14 @@ const HierarchyItem = ({
   children,
   level = 1,
   allowEntityStructureEditing = false,
+  allowEntitySelection = false,
   entityData = null,
   entityType = null,
   parentEntityData = null,
   onAdd = null,
   onEdit = null,
   onDelete = null,
+  onSelect = null,
 }) => {
   const marginLeft = (level - 1) * 8;
   const isAddButton = icon === "add";
@@ -83,12 +85,21 @@ const HierarchyItem = ({
     onDelete && onDelete(entityData, parentEntityData);
   };
 
+  const handleSelect = (e) => {
+    e.stopPropagation();
+    if (allowEntitySelection && !isAddButton && onSelect) {
+      onSelect(entityData, entityType, parentEntityData);
+    }
+  };
+
   return (
     <Box ml={`${marginLeft}px`} style={{ borderLeft: "2px solid #ccc" }} py="3px">
       <Flex
         align="center"
-        onClick={isAddButton ? handleAdd : undefined}
-        style={isAddButton ? { cursor: "pointer" } : {}}
+        onClick={isAddButton ? handleAdd : handleSelect}
+        style={{
+          cursor: isAddButton || (allowEntitySelection && !isAddButton) ? "pointer" : "default",
+        }}
       >
         <Box bg="#ccc" h="2px" w="10px" />
         {getEntityIcon(isAddButton ? "add" : icon)}
@@ -125,6 +136,11 @@ const HierarchyItem = ({
 const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelection }) => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
+
+  // Simple entity selection handler that just logs the selection
+  const handleEntitySelect = useCallback((entityData, entityType, parentEntityData) => {
+    console.log("Entity selected:", { entityData, entityType, parentEntityData });
+  }, []);
 
   // Define all entity operations within the component
 
@@ -357,7 +373,14 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
               p="sm"
             >
               {/* Subject Header */}
-              <Flex align="center" gap="xs">
+              <Flex
+                align="center"
+                gap="xs"
+                onClick={() => allowEntitySelection && handleEntitySelect(subject, "subject", null)}
+                style={{
+                  cursor: allowEntitySelection ? "pointer" : "default",
+                }}
+              >
                 <IconUser size={15} />
                 <Text fw={600}>{subject.subjectId}</Text>
                 {allowEntityStructureEditing && (
@@ -366,13 +389,19 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                       color="blue"
                       size={18}
                       style={{ marginLeft: "4px", opacity: 0.6, cursor: "pointer" }}
-                      onClick={() => handleEditSubject(subject)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEditSubject(subject);
+                      }}
                     />
                     <IconTrash
                       color="red"
                       size={16}
                       style={{ opacity: 0.6, cursor: "pointer" }}
-                      onClick={() => handleDeleteSubject(subject)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteSubject(subject);
+                      }}
                     />
                   </>
                 )}
@@ -397,11 +426,13 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                     label={sample.sampleId}
                     level={2}
                     allowEntityStructureEditing={allowEntityStructureEditing}
+                    allowEntitySelection={allowEntitySelection}
                     entityData={sample}
                     entityType="sample"
                     parentEntityData={subject}
                     onEdit={() => handleEditSample(sample, subject)}
                     onDelete={() => handleDeleteSample(sample, subject)}
+                    onSelect={handleEntitySelect}
                   >
                     {/* Sample Sites */}
                     {allowEntityStructureEditing && showSampleSites && (
@@ -421,11 +452,13 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                           label={site.siteId}
                           level={3}
                           allowEntityStructureEditing={allowEntityStructureEditing}
+                          allowEntitySelection={allowEntitySelection}
                           entityData={site}
                           entityType="site"
                           parentEntityData={{ sample, subject }}
                           onEdit={() => handleEditSampleSite(site, { sample, subject })}
                           onDelete={() => handleDeleteSampleSite(site, { sample, subject })}
+                          onSelect={handleEntitySelect}
                         />
                       ))}
 
@@ -447,6 +480,7 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                           label={performance.performanceId}
                           level={3}
                           allowEntityStructureEditing={allowEntityStructureEditing}
+                          allowEntitySelection={allowEntitySelection}
                           entityData={performance}
                           entityType="performance"
                           parentEntityData={{ sample, subject }}
@@ -456,6 +490,7 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                           onDelete={() =>
                             handleDeleteSamplePerformance(performance, { sample, subject })
                           }
+                          onSelect={handleEntitySelect}
                         />
                       ))}
                   </HierarchyItem>
@@ -470,11 +505,13 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                     label={site.siteId}
                     level={2}
                     allowEntityStructureEditing={allowEntityStructureEditing}
+                    allowEntitySelection={allowEntitySelection}
                     entityData={site}
                     entityType="site"
                     parentEntityData={subject}
                     onEdit={() => handleEditSubjectSite(site, subject)}
                     onDelete={() => handleDeleteSubjectSite(site, subject)}
+                    onSelect={handleEntitySelect}
                   />
                 ))}
               {allowEntityStructureEditing && showSubjectSites && (
@@ -503,11 +540,13 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                     label={performance.performanceId}
                     level={2}
                     allowEntityStructureEditing={allowEntityStructureEditing}
+                    allowEntitySelection={allowEntitySelection}
                     entityData={performance}
                     entityType="performance"
                     parentEntityData={subject}
                     onEdit={() => handleEditSubjectPerformance(performance, subject)}
                     onDelete={() => handleDeleteSubjectPerformance(performance, subject)}
+                    onSelect={handleEntitySelect}
                   />
                 ))}
             </Box>
