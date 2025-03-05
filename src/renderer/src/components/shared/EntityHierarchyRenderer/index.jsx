@@ -27,6 +27,7 @@ import {
 } from "../../../stores/slices/datasetEntityStructureSlice";
 import useGlobalStore from "../../../stores/globalStore";
 import { guidedOpenEntityAdditionSwal, guidedOpenEntityEditSwal } from "./utils";
+import { setSelectedHierarchyEntity } from "../../../stores/slices/datasetContentSelectorSlice";
 
 // Utility for getting the appropriate icon component
 const getEntityIcon = (iconType) => {
@@ -100,6 +101,15 @@ const HierarchyItem = ({
         style={{
           cursor: isAddButton || (allowEntitySelection && !isAddButton) ? "pointer" : "default",
         }}
+        sx={
+          allowEntitySelection && !isAddButton
+            ? {
+                "&:hover": {
+                  backgroundColor: "rgba(0, 0, 0, 0.03)",
+                },
+              }
+            : undefined
+        }
       >
         <Box bg="#ccc" h="2px" w="10px" />
         {getEntityIcon(isAddButton ? "add" : icon)}
@@ -140,6 +150,7 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
   // Simple entity selection handler that just logs the selection
   const handleEntitySelect = useCallback((entityData, entityType, parentEntityData) => {
     console.log("Entity selected:", { entityData, entityType, parentEntityData });
+    setSelectedHierarchyEntity({ entityData, entityType, parentEntityData });
   }, []);
 
   // Define all entity operations within the component
@@ -323,8 +334,6 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
   // We can check if we should show empty state after all hooks are called
   const shouldShowEmptyState = !datasetEntityArray?.length;
 
-  console.log("Should show empty state: ", shouldShowEmptyState);
-
   return (
     <ScrollArea h={650} type="auto">
       <Stack gap="xs">
@@ -380,6 +389,15 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                 style={{
                   cursor: allowEntitySelection ? "pointer" : "default",
                 }}
+                sx={
+                  allowEntitySelection
+                    ? {
+                        "&:hover": {
+                          backgroundColor: "rgba(0, 0, 0, 0.03)",
+                        },
+                      }
+                    : undefined
+                }
               >
                 <IconUser size={15} />
                 <Text fw={600}>{subject.subjectId}</Text>

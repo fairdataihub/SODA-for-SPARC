@@ -20,8 +20,10 @@ const DatasetEntityMetadata = ({
   entityTypeStringPlural,
 }) => {
   const activeEntity = useGlobalStore((state) => state.activeEntity);
+  const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
   const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
 
+  console.log("selectedHierarchyEntity", selectedHierarchyEntity);
   return (
     <GuidedModePage pageHeader={pageName}>
       <GuidedModeSection>

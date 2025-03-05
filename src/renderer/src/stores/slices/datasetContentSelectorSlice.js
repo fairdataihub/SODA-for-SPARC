@@ -2,6 +2,7 @@ import useGlobalStore from "../globalStore";
 
 export const datasetContentSelectorSlice = (set) => ({
   selectedEntities: [],
+  selectedHierarchyEntity: null,
 });
 
 export const getSelectedEntities = (state) => state.selectedEntities;
@@ -27,5 +28,11 @@ export const toggleEntitySelection = (entity) => {
       ...state,
       selectedEntities: updatedSelectedEntities,
     };
+  });
+};
+
+export const setSelectedHierarchyEntity = (entityObj) => {
+  useGlobalStore.setState({
+    selectedHierarchyEntity: entityObj,
   });
 };
