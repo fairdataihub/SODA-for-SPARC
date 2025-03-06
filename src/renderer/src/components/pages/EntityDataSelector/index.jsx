@@ -194,6 +194,9 @@ const EntityDataSelectorPage = ({
 
   const itemCount = countItemsInDatasetStructure(datasetStructureJSONObj) - 1; // Subtract 1 to exclude the root folder
   const countItemsSelected = countSelectedItemsByEntityType(entityType);
+  console.log("itemCount", itemCount);
+  console.log("countItemsSelected", countItemsSelected);
+  console.log("Percentage of items selected:" + countItemsSelected / itemCount);
 
   return (
     <GuidedModePage pageHeader={pageName}>
@@ -223,22 +226,7 @@ const EntityDataSelectorPage = ({
             <Text size="sm" c="gray">
               Progress: {countItemsSelected} of {itemCount} files categorized
             </Text>
-            <Progress.Root size="xl">
-              {Object.keys(datasetEntityObj[entityType]).map((entity) => {
-                const entityItemsCount = datasetEntityObj[entityType][entity].length || 0;
-                const progressValue = (entityItemsCount / itemCount) * 100;
-
-                return (
-                  <Progress.Section
-                    value={progressValue}
-                    color={getProgressSectionColorByEntityType(entity)}
-                    key={entity}
-                  >
-                    <Progress.Label>{entity}</Progress.Label>
-                  </Progress.Section>
-                );
-              })}
-            </Progress.Root>
+            <Progress color="green" size="xl" value={100 * (countItemsSelected / itemCount)} />
           </Paper>
         </GuidedModeSection>
       )}

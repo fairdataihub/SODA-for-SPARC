@@ -379,8 +379,8 @@ const DatasetEntityMetadata = () => {
       <GuidedModeSection>
         <Stack>
           <Text>
-            The SDS requires you to provide metadata for each entity in your dataset. Use the
-            interface below to provide it.
+            Provide metadata for each entity in your dataset by selecting entities on the left and
+            entering their metadata in the form on the right.
           </Text>
         </Stack>
       </GuidedModeSection>
