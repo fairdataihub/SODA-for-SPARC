@@ -32,9 +32,6 @@ const PerformanceIdManagement = () => {
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [performanceCount, setPerformanceCount] = useState(1);
   const [performanceForms, setPerformanceForms] = useState([]);
-  const [useSameProtocol, setUseSameProtocol] = useState(true);
-  console.log("performanceForms", performanceForms);
-  console.log("performanceforms[0]", performanceForms[0]);
 
   const isPerformanceIdValid = window.evaluateStringAgainstSdsRequirements?.(
     newEntityName,
@@ -51,14 +48,13 @@ const PerformanceIdManagement = () => {
       const existingForm = performanceForms[index] || {};
       return {
         id: index + 1,
-        protocolUrl: useSameProtocol ? "" : existingForm.protocolUrl || "",
         dateRange: existingForm.dateRange || [null, null],
         startTime: existingForm.startTime || "",
         endTime: existingForm.endTime || "",
       };
     });
     setPerformanceForms(updatedForms);
-  }, [performanceCount, useSameProtocol]);
+  }, [performanceCount]);
 
   const updatePerformanceForm = (index, field, value) => {
     const updatedForms = [...performanceForms];
@@ -89,7 +85,7 @@ const PerformanceIdManagement = () => {
 
         // Create entity data from this form's fields
         const entityData = {
-          protocolUrl: useSameProtocol ? protocolUrl.trim() : form.protocolUrl.trim(),
+          protocolUrl: protocolUrl.trim(),
           startDate: form.dateRange?.[0] ? form.dateRange[0].toISOString().split("T")[0] : null,
           endDate: form.dateRange?.[1] ? form.dateRange[1].toISOString().split("T")[0] : null,
           startTime: form.startTime,
@@ -121,7 +117,6 @@ const PerformanceIdManagement = () => {
       setProtocolUrl("");
       setPerformanceForms([]);
       setPerformanceCount(1);
-      setUseSameProtocol(true);
       setIsFormVisible(false);
     }
   };
@@ -134,7 +129,6 @@ const PerformanceIdManagement = () => {
       setProtocolUrl("");
       setPerformanceForms([]);
       setPerformanceCount(1);
-      setUseSameProtocol(true);
     }
   };
 
@@ -177,9 +171,12 @@ const PerformanceIdManagement = () => {
   };
 
   return (
-    <GuidedModePage pageHeader="Performance ID Management">
+    <GuidedModePage pageHeader="Performance IDs">
       <GuidedModeSection>
-        <Text>Every performance in your dataset must be assigned a unique performance ID.</Text>
+        <Text>
+          Provide information about the performances of experimental protocol in the interface
+          below.
+        </Text>
       </GuidedModeSection>
       <GuidedModeSection>
         <Box
@@ -196,17 +193,18 @@ const PerformanceIdManagement = () => {
           <Flex align="center" gap="xs">
             <IconPlus size={15} color="#1c7ed6" />
             <Text fw={500} c="#1c7ed6">
-              Add performance
+              Add performances
             </Text>
           </Flex>
         </Box>
 
         <Collapse in={isFormVisible}>
-          <Paper p="md" shadow="xs" mb="md">
+          <Paper withBorder p="md" radius="sm">
             <Stack spacing="md">
               <TextInput
-                label="Performance type"
-                placeholder="Enter performance type (e.g. histology)"
+                label="Performance Type"
+                description="Enter the type of procedure or measurement performed (e.g., histology, imaging, electrophysiology)"
+                placeholder="Enter performance type (e.g., mri, histology, electrophysiology)"
                 value={newEntityName}
                 onChange={(event) => setNewEntityName(event.currentTarget.value)}
                 error={
@@ -214,43 +212,32 @@ const PerformanceIdManagement = () => {
                     ? `Performance IDs can only contain letters, numbers, and hyphens.`
                     : null
                 }
-                required
               />
               <NumberInput
-                label="How many times was performed"
-                description={`Will generate ${performanceCount} unique performance ID${
+                label="Number of Performances"
+                description={`Specify how many times this procedure was performed. Will generate ${performanceCount} unique performance ID${
                   performanceCount > 1 ? "s" : ""
-                } with individual metadata`}
+                }.`}
                 value={performanceCount}
                 onChange={setPerformanceCount}
                 min={1}
                 max={10}
               />
 
-              <Group align="flex-end">
-                <Checkbox
-                  checked={useSameProtocol}
-                  onChange={(event) => setUseSameProtocol(event.currentTarget.checked)}
-                  label="Use the same protocol for all performances"
-                />
-              </Group>
-
-              {useSameProtocol && (
-                <TextInput
-                  label="Protocol URL or DOI (applied to all performances)"
-                  placeholder="Enter protocol URL or DOI"
-                  value={protocolUrl}
-                  onChange={(event) => setProtocolUrl(event.currentTarget.value)}
-                />
-              )}
+              <TextInput
+                label="Protocol URL or DOI"
+                description="Link to the protocol documentation that describes the methods used for all performances"
+                placeholder="Enter protocol URL or DOI (e.g., doi:10.1000/xyz123 or https://protocol.io/...)"
+                value={protocolUrl}
+                onChange={(event) => setProtocolUrl(event.currentTarget.value)}
+              />
 
               {performanceCount > 1 && (
                 <Box py="xs">
                   <Text c="dimmed" size="sm">
-                    For each performance below, provide specific details like{" "}
-                    {!useSameProtocol && "protocol URL, "}
-                    start date and end date. Each performance will be assigned its own unique ID
-                    following the pattern: <b>perf-{newEntityName || "type"}-#</b>
+                    For each performance below, provide specific details like date and time. Each
+                    performance will be assigned its own unique ID following the pattern:{" "}
+                    <b>perf-{newEntityName || "type"}-#</b>
                   </Text>
                 </Box>
               )}
@@ -266,17 +253,6 @@ const PerformanceIdManagement = () => {
                       : ""}
                   </Text>
                   <Stack>
-                    {!useSameProtocol && (
-                      <TextInput
-                        label="Protocol URL or DOI"
-                        placeholder="Enter protocol URL or DOI"
-                        value={form.protocolUrl}
-                        onChange={(e) =>
-                          updatePerformanceForm(index, "protocolUrl", e.currentTarget.value)
-                        }
-                      />
-                    )}
-
                     <Group grow align="center">
                       <DatePicker
                         type="range"
