@@ -17,7 +17,7 @@ import {
   NumberInput,
   Checkbox,
 } from "@mantine/core";
-import { DatePicker, TimeInput } from "@mantine/dates";
+import { DatePicker, TimeInput, DateTimePicker } from "@mantine/dates";
 import useGlobalStore from "../../../stores/globalStore";
 import {
   addEntityToEntityList,
@@ -48,9 +48,8 @@ const PerformanceIdManagement = () => {
       const existingForm = performanceForms[index] || {};
       return {
         id: index + 1,
-        dateRange: existingForm.dateRange || [null, null],
-        startTime: existingForm.startTime || "",
-        endTime: existingForm.endTime || "",
+        startDateTime: existingForm.startDateTime || null,
+        endDateTime: existingForm.endDateTime || null,
       };
     });
     setPerformanceForms(updatedForms);
@@ -86,10 +85,8 @@ const PerformanceIdManagement = () => {
         // Create entity data from this form's fields
         const entityData = {
           protocolUrl: protocolUrl.trim(),
-          startDate: form.dateRange?.[0] ? form.dateRange[0].toISOString().split("T")[0] : null,
-          endDate: form.dateRange?.[1] ? form.dateRange[1].toISOString().split("T")[0] : null,
-          startTime: form.startTime,
-          endTime: form.endTime,
+          startDateTime: form.startDateTime ? form.startDateTime.toISOString() : null,
+          endDateTime: form.endDateTime ? form.endDateTime.toISOString() : null,
         };
 
         // Add entity with additional data
@@ -132,50 +129,11 @@ const PerformanceIdManagement = () => {
     }
   };
 
-  const renderEntityList = (width) => {
-    return entityList.length > 0 ? (
-      <Box w={width}>
-        {naturalSort(entityList).map((entityName) => (
-          <Group
-            key={entityName}
-            justify="space-between"
-            py={4}
-            style={{ borderBottom: "1px solid #eaeaea" }}
-          >
-            <Text>{entityName}</Text>
-            <ActionIcon
-              color="red"
-              onClick={() => {
-                removeEntityFromEntityList("performances", entityName);
-              }}
-            >
-              <IconTrash size={16} />
-            </ActionIcon>
-          </Group>
-        ))}
-      </Box>
-    ) : (
-      <Box
-        style={{
-          border: "1px solid #ddd",
-          borderRadius: "8px",
-          backgroundColor: "#f9f9f9",
-        }}
-        p="md"
-      >
-        <Text c="dimmed" ta="center">
-          No performances have been added yet
-        </Text>
-      </Box>
-    );
-  };
-
   return (
     <GuidedModePage pageHeader="Performance IDs">
       <GuidedModeSection>
         <Text>
-          Provide information about the performances of experimental protocol in the interface
-          below.
+          Provide information for each performance of experimental protocol in the interface below.
         </Text>
       </GuidedModeSection>
       <GuidedModeSection>
@@ -185,7 +143,6 @@ const PerformanceIdManagement = () => {
             borderRadius: "8px",
             backgroundColor: "#f0f9ff",
             cursor: "pointer",
-            marginBottom: "20px",
           }}
           p="sm"
           onClick={toggleFormVisibility}
@@ -226,26 +183,15 @@ const PerformanceIdManagement = () => {
 
               <TextInput
                 label="Protocol URL or DOI"
-                description="Link to the protocol documentation that describes the methods used for all performances"
+                description="Link to the protocol documentation that describes the methods used for this performance type."
                 placeholder="Enter protocol URL or DOI (e.g., doi:10.1000/xyz123 or https://protocol.io/...)"
                 value={protocolUrl}
                 onChange={(event) => setProtocolUrl(event.currentTarget.value)}
               />
 
-              {performanceCount > 1 && (
-                <Box py="xs">
-                  <Text c="dimmed" size="sm">
-                    For each performance below, provide specific details like date and time. Each
-                    performance will be assigned its own unique ID following the pattern:{" "}
-                    <b>perf-{newEntityName || "type"}-#</b>
-                  </Text>
-                </Box>
-              )}
-
               {performanceForms.map((form, index) => (
                 <Paper key={index} withBorder p="md" radius="sm">
-                  <Text fw={500} mb="md">
-                    Performance {index + 1}:{" "}
+                  <Text size="lg" fw={500} mb="md">
                     {newEntityName
                       ? performanceCount > 1
                         ? `perf-${newEntityName}-${index + 1}`
@@ -253,34 +199,25 @@ const PerformanceIdManagement = () => {
                       : ""}
                   </Text>
                   <Stack>
-                    <Group grow align="center">
-                      <DatePicker
-                        type="range"
-                        label="Performance Date Range"
-                        placeholder="Select start and end dates"
-                        value={form.dateRange}
-                        onChange={(value) => updatePerformanceForm(index, "dateRange", value)}
-                        allowSingleDateInRange
+                    <Group grow align="flex-start">
+                      <DateTimePicker
+                        label="Start Date & Time"
+                        description="Enter the date and time when the performance started."
+                        placeholder="Select start date and time"
+                        value={form.startDateTime}
+                        onChange={(value) => updatePerformanceForm(index, "startDateTime", value)}
                         clearable
+                        w={500} // Add width of 500px
                       />
-                      <Stack spacing="xs" justify="center">
-                        <TimeInput
-                          label="Start Time"
-                          placeholder="Enter start time"
-                          value={form.startTime}
-                          onChange={(e) =>
-                            updatePerformanceForm(index, "startTime", e.currentTarget.value)
-                          }
-                        />
-                        <TimeInput
-                          label="End Time"
-                          placeholder="Enter end time"
-                          value={form.endTime}
-                          onChange={(e) =>
-                            updatePerformanceForm(index, "endTime", e.currentTarget.value)
-                          }
-                        />
-                      </Stack>
+                      <DateTimePicker
+                        label="End Date & Time"
+                        description="Enter the date and time when the performance ended."
+                        placeholder="Select end date and time"
+                        value={form.endDateTime}
+                        onChange={(value) => updatePerformanceForm(index, "endDateTime", value)}
+                        clearable
+                        w={500} // Add width of 500px
+                      />
                     </Group>
                   </Stack>
                 </Paper>
@@ -294,16 +231,55 @@ const PerformanceIdManagement = () => {
                   onClick={handleAddEntity}
                   disabled={!newEntityName || !isPerformanceIdValid}
                 >
-                  Add
+                  {performanceCount > 1 ? "Add Performances" : "Add Performance"}
                 </Button>
               </Group>
             </Stack>
           </Paper>
         </Collapse>
 
-        <EntityListContainer title={`Performance IDs (${entityList.length})`}>
-          {renderEntityList()}
-        </EntityListContainer>
+        {entityList.length > 0 ? (
+          <Stack gap="xs">
+            {naturalSort(entityList).map((entityName) => (
+              <Box
+                key={entityName}
+                style={{
+                  border: "1px solid #ddd",
+                  borderRadius: "8px",
+                  backgroundColor: "#f9f9f9",
+                }}
+                p="sm"
+              >
+                <Flex align="center" gap="xs">
+                  <IconClipboard size={15} />
+                  <Text fw={600}>{entityName}</Text>
+                  <ActionIcon
+                    color="red"
+                    variant="subtle"
+                    onClick={() => {
+                      removeEntityFromEntityList("performances", entityName);
+                    }}
+                  >
+                    <IconTrash size={16} />
+                  </ActionIcon>
+                </Flex>
+              </Box>
+            ))}
+          </Stack>
+        ) : (
+          <Box
+            style={{
+              border: "1px solid #ddd",
+              borderRadius: "8px",
+              backgroundColor: "#f9f9f9",
+            }}
+            p="md"
+          >
+            <Text c="dimmed" ta="center">
+              No performances have been added yet
+            </Text>
+          </Box>
+        )}
       </GuidedModeSection>
     </GuidedModePage>
   );

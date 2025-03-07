@@ -2,6 +2,10 @@
   z-index: 1001 !important;
 }
 
+.mantine-Popover-dropdown[data-dates-dropdown="true"] {
+  width: 400px !important;
+}
+
 .mantine-Menu-dropdown {
   z-index: 1001 !important;
 }
