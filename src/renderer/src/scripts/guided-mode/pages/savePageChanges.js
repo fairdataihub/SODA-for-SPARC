@@ -77,7 +77,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
     // Handle page exit logic for pages that are controlled by React components
     if (pageBeingLeftDataSet.componentType) {
       const pageBeingLeftComponentType = pageBeingLeftDataSet.componentType;
-      if (pageBeingLeftComponentType === "entity-management-page") {
+      if (pageBeingLeftComponentType === "performance-id-management-page") {
         const entityType = pageBeingLeftDataSet.entityType;
         const entityTypeSingular = pageBeingLeftDataSet.entityTypeSingular;
         const datasetEntityObj = getDatasetEntityObj();
