@@ -37,6 +37,10 @@ from docx import Document
 from flask import abort 
 from constants import PENNSIEVE_URL
 
+
+
+
+
 from manifest import update_existing_pennsieve_manifest_files, create_high_lvl_manifest_files_existing_ps_starting_point, recursive_item_path_create
 
 from namespaces import NamespaceEnum, get_namespace_logger
@@ -140,52 +144,6 @@ def extract_milestone_info(datalist):
     return milestone
 
 
-### Create submission file
-def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, val_arr):
-
-    font_submission = Font(name="Calibri", size=14, bold=False)
-
-    source = join(TEMPLATE_PATH, "submission.xlsx")
-
-    destination = join(METADATA_UPLOAD_BF_PATH, "submission.xlsx") if upload_boolean else filepath
-
-    try:
-        shutil.copyfile(source, destination)
-    except FileNotFoundError as e:
-        raise e
-
-    # write to excel file
-    wb = load_workbook(destination)
-    ws1 = wb["Sheet1"]
-    for column, arr in zip(excel_columns(start_index=2), val_arr):
-        ws1[column + "2"] = arr["consortiumDataStandard"]
-        ws1[column + "3"] = arr["fundingConsortium"]
-        ws1[column + "4"] = arr["award"]
-        ws1[column + "5"] = arr["milestone"]
-        ws1[column + "6"] = arr["date"]
-
-        ws1[column + "2"].font = font_submission
-        ws1[column + "3"].font = font_submission
-        ws1[column + "4"].font = font_submission
-        ws1[column + "5"].font = font_submission
-        ws1[column + "6"].font = font_submission
-
-    rename_headers(ws1, len(val_arr), 2)
-
-    wb.save(destination)
-
-    wb.close()
-
-    # calculate the size of the metadata file
-    size = getsize(destination)
-
-    
-
-    ## if generating directly on Pennsieve, then call upload function and then delete the destination path
-    if upload_boolean:
-        upload_metadata_file("submission.xlsx", bfaccount, bfdataset, destination, True)
-
-    return {"size": size}
 
 
 # this function saves and uploads the README/CHANGES to Pennsieve, just when users choose to generate onto Pennsieve
@@ -267,39 +225,8 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
         os.remove(file_path)
 
 
-def excel_columns(start_index=0):
-    """
-    NOTE: does not support more than 699 contributors/links
-    """
-    single_letter = list(ascii_uppercase[start_index:])
-    two_letter = [a + b for a, b in itertools.product(ascii_uppercase, ascii_uppercase)]
-    return single_letter + two_letter
 
-def rename_headers(workbook, max_len, start_index):
-    """
-    Rename header columns if values exceed 3. Change Additional Values to Value 4, 5,...
-    Adds styling to the column headers as well.
-    """
 
-    columns_list = excel_columns(start_index=start_index)
-    if max_len >= start_index:
-        workbook[columns_list[0] + "1"] = "Value"
-        for i, column in zip(range(2, max_len + 1), columns_list[1:]):
-
-            workbook[column + "1"] = f"Value {str(i)}"
-            cell = workbook[column + "1"]
-
-            blueFill = PatternFill(
-                start_color="9CC2E5", end_color="9CC2E5", fill_type="solid"
-            )
-
-            font = Font(bold=True)
-            cell.fill = blueFill
-            cell.font = font
-
-    else:
-        delete_range = len(columns_list) - max_len
-        workbook.delete_cols(4 + max_len, delete_range)
 
 
 def grayout_subheaders(workbook, max_len, start_index):

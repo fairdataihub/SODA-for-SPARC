@@ -28,6 +28,38 @@ while (!window.baseHtmlLoaded) {
  */
 $("#guided-next-button").on("click", async function () {
   console.log("Next button clicked");
+
+  // make a dummy request to the  POST prepare_metadata/submission endpoint
+  let dummySodaObj = {
+    dataset_metadata: {
+      submission_metadata: {
+        consortium_data_standard: "SPARC Consortium",
+        funding_consortium: "SPARC",
+        award_number: "OT2OD025340",
+        milestone_achieved: ["Data Collection", "Data Analysis"],
+        milestone_completion_date: "2021-01-01",
+      },
+    },
+  };
+  const homeDirectory = await window.electron.ipcRenderer.invoke("get-app-path", "home");
+  let filePath = window.path.join(
+    homeDirectory,
+    "SODA",
+    "Guided-Progress",
+    "dummy_submission_metadata.xlsx"
+  );
+  let uploadBoolean = false;
+  try {
+    await client.post("/prepare_metadata/submission_file", {
+      soda: dummySodaObj,
+      filepath: filePath,
+      upload_boolean: uploadBoolean,
+    });
+  } catch (error) {
+    clientError(error);
+    return;
+  }
+
   //Get the ID of the current page to handle actions on page leave (next button pressed)
   window.pageBeingLeftID = window.CURRENT_PAGE.id;
 

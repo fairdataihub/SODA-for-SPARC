@@ -1,5 +1,4 @@
 from prepareMetadata import (
-    save_submission_file,
     save_ds_description_file,
     upload_code_description_metadata,
     extract_milestone_info,
@@ -24,9 +23,10 @@ from flask_restx import Resource, reqparse, fields
 from flask_restx.inputs import boolean
 from errorHandlers import notBadRequestException
 from utils import metadata_string_to_list
+from pysoda.core.metadata.submission import create_excel
+
 
 api = get_namespace(NamespaceEnum.PREPARE_METADATA)
-
 
 
 
@@ -46,29 +46,29 @@ model_get_submission_file_response = api.model('getSubmissionFileResponse', {
 class SaveSubmissionFile(Resource):
     parser_save_submission_file = reqparse.RequestParser(bundle_errors=True)
     parser_save_submission_file.add_argument('upload_boolean', type=boolean, help='Boolean to indicate whether to upload the file to the Bionimbus server', location="json", required=True)
-    parser_save_submission_file.add_argument('selected_account', type=str, help='Pennsieve account name', location="args", required=True)
-    parser_save_submission_file.add_argument('selected_dataset', type=str, help='Pennsieve dataset name', location="args", required=True)
+    # parser_save_submission_file.add_argument('selected_account', type=str, help='Pennsieve account name', location="args", required=True)
+    # parser_save_submission_file.add_argument('selected_dataset', type=str, help='Pennsieve dataset name', location="args", required=True)
     parser_save_submission_file.add_argument('filepath', type=str, help='Path to the file to be uploaded', location="json")
-    parser_save_submission_file.add_argument('submission_file_rows', type=list, help='List of objects that contain the consortium data standard, funding consortium, award number, milestone(s), and date properties with appropriate values.', location="json", required=True)
+    # parser_save_submission_file.add_argument('soda', type=dict, help='SODA object with submission details filled out', location="json", required=True)
 
-    @api.expect(parser_save_submission_file)
+    # @api.expect(parser_save_submission_file)
     @api.response(200, 'OK', model_save_submission_file_response)
     @api.doc(description='Save a submission file locally or in a dataset stored on the Pennsieve account of the current user.', responses={500: "Internal Server Error", 400: "Bad Request", 403: "Forbidden"})
     def post(self):
-        data = self.parser_save_submission_file.parse_args()
+        data = request.get_json()
 
         upload_boolean = data.get('upload_boolean')
-        bfaccount = data.get('selected_account')
-        bfdataset = data.get('selected_dataset')
+        # bfaccount = data.get('selected_account')
+        # bfdataset = data.get('selected_dataset')
         filepath = data.get('filepath')
-        json_str = data.get("submission_file_rows")
+        soda = data.get("soda")
 
 
         if not upload_boolean and filepath is None:
             api.abort(400, "Please provide a destination in which to save your Submission file.")
 
         try:
-            return save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_str)
+            return create_excel(soda, upload_boolean, filepath)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))
