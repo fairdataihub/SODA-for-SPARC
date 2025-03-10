@@ -171,6 +171,9 @@ const updateEntityMetadata = (entityData, entityType, parentEntityData, metadata
 
 // Component for entity metadata form
 const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
+  // Get the dataset entity array from the store
+  const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
+
   // Handle the case where no entity is selected
   if (!selectedHierarchyEntity) {
     return (
@@ -182,34 +185,131 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
     );
   }
 
-  const { entityData, entityType, parentEntityData } = selectedHierarchyEntity;
+  // Find the actual entity data in the datasetEntityArray based on the flattened entity info
+  const getEntityData = () => {
+    const { entityType, entityId, parentId, parentType, grandParentId, grandParentType } =
+      selectedHierarchyEntity;
+
+    // For subject entities
+    if (entityType === "subject") {
+      return datasetEntityArray.find((subject) => subject.subjectId === entityId);
+    }
+
+    // Find parent subject (needed for all other entity types)
+    const parentSubjectId = grandParentId || parentId;
+    const subject = datasetEntityArray.find((subject) => subject.subjectId === parentSubjectId);
+    if (!subject) return null;
+
+    // For sample entities
+    if (entityType === "sample") {
+      return subject.samples?.find((sample) => sample.sampleId === entityId) || null;
+    }
+
+    // For site entities
+    if (entityType === "site") {
+      if (parentType === "sample") {
+        const sample = subject.samples?.find((sample) => sample.sampleId === parentId);
+        return sample?.sites?.find((site) => site.siteId === entityId) || null;
+      } else {
+        return subject.subjectSites?.find((site) => site.siteId === entityId) || null;
+      }
+    }
+
+    // For performance entities
+    if (entityType === "performance") {
+      if (parentType === "sample") {
+        const sample = subject.samples?.find((sample) => sample.sampleId === parentId);
+        return sample?.performances?.find((perf) => perf.performanceId === entityId) || null;
+      } else {
+        return subject.subjectPerformances?.find((perf) => perf.performanceId === entityId) || null;
+      }
+    }
+
+    return null;
+  };
+
+  const entityData = getEntityData();
+  console.log("Fetched entity data:", entityData);
 
   // Generate the appropriate title based on entity type
   const getTitleForEntity = () => {
+    const { entityType, entityId, parentId, grandParentId } = selectedHierarchyEntity;
+
+    // Handle each entity type
     switch (entityType) {
       case "subject":
-        return `Subject: ${entityData.subjectId}`;
+        return `Subject: ${entityId}`;
+
       case "sample":
-        return `Sample: ${entityData.sampleId}`;
+        return `Sample: ${entityId}${parentId ? ` (from subject ${parentId})` : ""}`;
+
       case "site":
-        return `Site: ${entityData.siteId}`;
+        if (grandParentId) {
+          // Site belongs to a sample
+          return `Site: ${entityId}${parentId ? ` (from sample ${parentId})` : ""}`;
+        } else {
+          // Site belongs to a subject
+          return `Site: ${entityId}${parentId ? ` (from subject ${parentId})` : ""}`;
+        }
+
       case "performance":
-        return `Performance: ${entityData.performanceId}`;
+        if (grandParentId) {
+          // Performance belongs to a sample
+          return `Performance: ${entityId}${parentId ? ` (from sample ${parentId})` : ""}`;
+        } else {
+          // Performance belongs to a subject
+          return `Performance: ${entityId}${parentId ? ` (from subject ${parentId})` : ""}`;
+        }
+
       default:
-        return "Unknown Entity";
+        return entityId ? `Unknown entity: ${entityId}` : "Unknown entity";
     }
   };
 
   const getMetadataValue = (key) => {
-    return entityData[key] || "";
+    // First check if entity data exists
+    if (!entityData) return "";
+
+    // Then check if metadata object exists
+    if (!entityData.metadata) return entityData[key] || "";
+
+    // Try to get from metadata
+    return entityData.metadata[key] || entityData[key] || "";
   };
 
   const handleChange = (field, value) => {
-    const metadataUpdates = { [field]: value };
-    updateEntityMetadata(entityData, entityType, parentEntityData, metadataUpdates);
+    // If no entity data, we can't update anything
+    if (!entityData) return;
+
+    const { entityType, entityId, parentId, parentType, grandParentId } = selectedHierarchyEntity;
+
+    // Clone the current datasetEntityArray to avoid direct state mutation
+    const updatedDatasetEntityArray = [...datasetEntityArray];
+
+    // For subject entities
+    if (entityType === "subject") {
+      const subjectIndex = updatedDatasetEntityArray.findIndex((s) => s.subjectId === entityId);
+      if (subjectIndex !== -1) {
+        // Ensure metadata object exists
+        if (!updatedDatasetEntityArray[subjectIndex].metadata) {
+          updatedDatasetEntityArray[subjectIndex].metadata = {};
+        }
+
+        // Update the metadata
+        updatedDatasetEntityArray[subjectIndex].metadata[field] = value;
+      }
+    }
+    // Handle other entity types similarly
+    // ... code for other entity types ...
+
+    // Update the store
+    useGlobalStore.setState({ datasetEntityArray: updatedDatasetEntityArray });
   };
 
   const getEntityIcon = () => {
+    // Add reference to selectedHierarchyEntity to access entityType
+    const { entityType } = selectedHierarchyEntity;
+
     switch (entityType) {
       case "subject":
         return <IconUser size={20} />;
@@ -226,7 +326,16 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
 
   // Render the appropriate form fields based on entity type
   const renderEntitySpecificFields = () => {
-    switch (entityType) {
+    // Only render if we have entity data
+    if (!entityData) {
+      return (
+        <Box p="md" bg="gray.0">
+          <Text c="dimmed">Error: Could not find entity data</Text>
+        </Box>
+      );
+    }
+
+    switch (selectedHierarchyEntity.entityType) {
       case "subject":
         return (
           <Stack spacing="md">
@@ -366,7 +475,11 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
         <Divider my="xs" />
 
         {/* Entity-specific form fields */}
-        {renderEntitySpecificFields()}
+        {entityData ? (
+          renderEntitySpecificFields()
+        ) : (
+          <Text c="dimmed">Unable to find data for this entity</Text>
+        )}
       </Stack>
     </Paper>
   );
@@ -375,7 +488,7 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
 const DatasetEntityMetadata = () => {
   const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
   return (
-    <GuidedModePage pageHeader={"Dataset entity metadata"}>
+    <GuidedModePage pageHeader="Dataset entity metadata">
       <GuidedModeSection>
         <Stack>
           <Text>

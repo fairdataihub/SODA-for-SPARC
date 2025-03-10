@@ -147,10 +147,36 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
 
-  // Simple entity selection handler that just logs the selection
+  // Simple entity selection handler with flattened structure
   const handleEntitySelect = useCallback((entityData, entityType, parentEntityData) => {
     console.log("Entity selected:", { entityData, entityType, parentEntityData });
-    setSelectedHierarchyEntity({ entityData, entityType, parentEntityData });
+
+    // Create a flattened entity object structure
+    const flattenedEntity = {
+      entityType,
+      entityId: entityData[`${entityType}Id`], // Extract ID based on entity type (subjectId, sampleId, etc)
+    };
+
+    // Add parent information if available
+    if (parentEntityData) {
+      if (entityType === "sample" || entityType === "site" || entityType === "performance") {
+        // For entities with a subject parent
+        if (parentEntityData.subjectId) {
+          flattenedEntity.parentType = "subject";
+          flattenedEntity.parentId = parentEntityData.subjectId;
+        }
+
+        // For entities with a sample parent
+        if (parentEntityData.sample) {
+          flattenedEntity.parentType = "sample";
+          flattenedEntity.parentId = parentEntityData.sample.sampleId;
+          flattenedEntity.grandParentType = "subject";
+          flattenedEntity.grandParentId = parentEntityData.subject.subjectId;
+        }
+      }
+    }
+
+    setSelectedHierarchyEntity(flattenedEntity);
   }, []);
 
   // Define all entity operations within the component

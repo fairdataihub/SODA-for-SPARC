@@ -31,6 +31,16 @@ export const toggleEntitySelection = (entity) => {
   });
 };
 
+/**
+ * Sets the currently selected hierarchy entity using a flat structure
+ * @param {Object} entityObj - The flattened entity object
+ * @param {string} entityObj.entityType - Type of entity (subject, sample, site, performance)
+ * @param {string} entityObj.entityId - ID of the entity
+ * @param {string} [entityObj.parentType] - Type of parent entity, if applicable
+ * @param {string} [entityObj.parentId] - ID of parent entity, if applicable
+ * @param {string} [entityObj.grandParentType] - Type of grandparent entity, if applicable
+ * @param {string} [entityObj.grandParentId] - ID of grandparent entity, if applicable
+ */
 export const setSelectedHierarchyEntity = (entityObj) => {
   useGlobalStore.setState({
     selectedHierarchyEntity: entityObj,
