@@ -1,4 +1,14 @@
-import { Stack, Text, Box, Flex, ScrollArea, ActionIcon, Group } from "@mantine/core";
+import {
+  Stack,
+  Text,
+  Box,
+  Flex,
+  ScrollArea,
+  ActionIcon,
+  Group,
+  TextInput,
+  Button,
+} from "@mantine/core";
 import {
   IconUser,
   IconFlask,
@@ -7,7 +17,10 @@ import {
   IconEdit,
   IconPlus,
   IconTrash,
+  IconX,
+  IconCheck,
 } from "@tabler/icons-react";
+
 import { useMemo, useCallback, useState } from "react";
 import {
   addSubject,
@@ -24,9 +37,13 @@ import {
   modifySampleSiteId,
   deletePerformanceFromSample,
   modifySamplePerformanceId,
+  addSampleToSubject,
+  addPerformanceToSubject,
+  addSiteToSample,
+  addPerformanceToSample,
 } from "../../../stores/slices/datasetEntityStructureSlice";
 import useGlobalStore from "../../../stores/globalStore";
-import { guidedOpenEntityAdditionSwal, guidedOpenEntityEditSwal } from "./utils";
+import { guidedOpenEntityEditSwal } from "./utils";
 import { setSelectedHierarchyEntity } from "../../../stores/slices/datasetContentSelectorSlice";
 
 // Utility for getting the appropriate icon component
@@ -52,6 +69,76 @@ const getEntityIcon = (iconType) => {
   }
 };
 
+// Inline form for adding new entities
+const InlineEntityAdditionForm = ({ entityType, parentEntityData, onCancel, onSubmit }) => {
+  const [entityId, setEntityId] = useState("");
+  const [protocolLink, setProtocolLink] = useState("");
+  const [error, setError] = useState("");
+
+  const handleSubmit = () => {
+    if (!entityId.trim()) {
+      setError("Please enter an ID");
+      return;
+    }
+
+    onSubmit({ entityId: entityId.trim(), protocolLink: protocolLink.trim() });
+    setEntityId("");
+    setProtocolLink("");
+    setError("");
+  };
+
+  const getEntityTypeName = () => {
+    switch (entityType) {
+      case "subjects":
+        return "Subject";
+      case "samples":
+        return "Sample";
+      case "sites":
+        return "Site";
+      case "performances":
+        return "Performance";
+      default:
+        return "Entity";
+    }
+  };
+
+  return (
+    <Box p="xs" bg="#f0f8ff" style={{ border: "1px solid #c5d9e8", borderRadius: "4px" }}>
+      <Stack gap="xs">
+        <Text size="sm" fw={500}>{`Add ${getEntityTypeName()}`}</Text>
+        <TextInput
+          placeholder={`Enter ${getEntityTypeName()} ID`}
+          value={entityId}
+          onChange={(e) => setEntityId(e.target.value)}
+          error={error}
+          size="xs"
+          data-autofocus
+        />
+        <TextInput
+          placeholder="Protocol link (optional)"
+          value={protocolLink}
+          onChange={(e) => setProtocolLink(e.target.value)}
+          size="xs"
+        />
+        <Group position="right" spacing="xs">
+          <Button
+            size="xs"
+            variant="subtle"
+            color="gray"
+            leftIcon={<IconX size={14} />}
+            onClick={onCancel}
+          >
+            Cancel
+          </Button>
+          <Button size="xs" leftIcon={<IconCheck size={14} />} onClick={handleSubmit}>
+            Add
+          </Button>
+        </Group>
+      </Stack>
+    </Box>
+  );
+};
+
 // Component for rendering nested hierarchy items
 const HierarchyItem = ({
   icon,
@@ -67,6 +154,10 @@ const HierarchyItem = ({
   onEdit = null,
   onDelete = null,
   onSelect = null,
+  isAddingEntity = false,
+  onCancelAdd = null,
+  onSubmitAdd = null,
+  addEntityType = null,
 }) => {
   const marginLeft = (level - 1) * 8;
   const isAddButton = icon === "add";
@@ -138,6 +229,18 @@ const HierarchyItem = ({
           </>
         )}
       </Flex>
+
+      {isAddingEntity && (
+        <Box ml={10} mt={5}>
+          <InlineEntityAdditionForm
+            entityType={addEntityType}
+            parentEntityData={parentEntityData}
+            onCancel={onCancelAdd}
+            onSubmit={onSubmitAdd}
+          />
+        </Box>
+      )}
+
       {children && <Stack gap="0px">{children}</Stack>}
     </Box>
   );
@@ -147,18 +250,45 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
 
+  // State to track which entity is being added
+  const [addingEntityState, setAddingEntityState] = useState({
+    isAdding: false,
+    entityType: null,
+    parentEntityData: null,
+  });
+
+  // Helper to cancel entity addition
+  const handleCancelAddEntity = useCallback(() => {
+    setAddingEntityState({
+      isAdding: false,
+      entityType: null,
+      parentEntityData: null,
+    });
+  }, []);
+
   // Simple entity selection handler that just logs the selection
   const handleEntitySelect = useCallback((entityData, entityType, parentEntityData) => {
     console.log("Entity selected:", { entityData, entityType, parentEntityData });
     setSelectedHierarchyEntity({ entityData, entityType, parentEntityData });
   }, []);
 
-  // Define all entity operations within the component
-
   // Subject operations
   const handleAddSubjects = useCallback(() => {
-    return guidedOpenEntityAdditionSwal({ entityType: "subjects" });
+    setAddingEntityState({
+      isAdding: true,
+      entityType: "subjects",
+      parentEntityData: null,
+    });
   }, []);
+
+  const handleSubmitAddSubjects = useCallback(
+    ({ entityId, protocolLink }) => {
+      // Pass entityId directly as a string
+      addSubject(entityId, protocolLink);
+      handleCancelAddEntity();
+    },
+    [handleCancelAddEntity]
+  );
 
   const handleEditSubject = useCallback((subject) => {
     return guidedOpenEntityEditSwal("subject", subject);
@@ -170,9 +300,21 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
 
   // Sample operations
   const handleAddSample = useCallback((subject) => {
-    console.log(`Add sample to subject: ${subject.subjectId}`);
-    return guidedOpenEntityAdditionSwal({ entityType: "samples", subjectId: subject.subjectId });
+    setAddingEntityState({
+      isAdding: true,
+      entityType: "samples",
+      parentEntityData: subject,
+    });
   }, []);
+
+  const handleSubmitAddSample = useCallback(
+    ({ entityId, protocolLink }) => {
+      const { parentEntityData: subject } = addingEntityState;
+      addSampleToSubject(subject.subjectId, entityId, protocolLink);
+      handleCancelAddEntity();
+    },
+    [addingEntityState, handleCancelAddEntity]
+  );
 
   const handleEditSample = useCallback(async (sample, subject) => {
     console.log(`Edit sample ${sample.sampleId} of subject ${subject.subjectId}`);
@@ -194,12 +336,21 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
 
   // Subject site operations
   const handleAddSubjectSite = useCallback((subject) => {
-    console.log(`Add site to subject: ${subject.subjectId}`);
-    return guidedOpenEntityAdditionSwal({
+    setAddingEntityState({
+      isAdding: true,
       entityType: "sites",
-      subjectId: subject.subjectId,
+      parentEntityData: subject,
     });
   }, []);
+
+  const handleSubmitAddSubjectSite = useCallback(
+    ({ entityId, protocolLink }) => {
+      const { parentEntityData: subject } = addingEntityState;
+      addSiteToSubject(subject.subjectId, entityId, protocolLink);
+      handleCancelAddEntity();
+    },
+    [addingEntityState, handleCancelAddEntity]
+  );
 
   const handleEditSubjectSite = useCallback(async (site, subject) => {
     console.log(`Edit site ${site.siteId} of subject ${subject.subjectId}`);
@@ -221,9 +372,21 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
 
   // Subject performance operations
   const handleAddSubjectPerformance = useCallback((subject) => {
-    console.log(`Add performance to subject: ${subject.subjectId}`);
-    guidedOpenEntityAdditionSwal({ entityType: "performances", subjectId: subject.subjectId });
+    setAddingEntityState({
+      isAdding: true,
+      entityType: "performances",
+      parentEntityData: subject,
+    });
   }, []);
+
+  const handleSubmitAddSubjectPerformance = useCallback(
+    ({ entityId, protocolLink }) => {
+      const { parentEntityData: subject } = addingEntityState;
+      addPerformanceToSubject(subject.subjectId, entityId, protocolLink);
+      handleCancelAddEntity();
+    },
+    [addingEntityState, handleCancelAddEntity]
+  );
 
   const handleEditSubjectPerformance = useCallback(async (performance, subject) => {
     console.log(`Edit performance ${performance.performanceId} of subject ${subject.subjectId}`);
@@ -247,13 +410,23 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
 
   // Sample site operations
   const handleAddSampleSite = useCallback(({ sample, subject }) => {
-    console.log(`Add site to sample ${sample.sampleId} of subject ${subject.subjectId}`);
-    guidedOpenEntityAdditionSwal({
+    setAddingEntityState({
+      isAdding: true,
       entityType: "sites",
-      subjectId: subject.subjectId,
-      sampleId: sample.sampleId,
+      parentEntityData: { sample, subject },
     });
   }, []);
+
+  const handleSubmitAddSampleSite = useCallback(
+    ({ entityId, protocolLink }) => {
+      const {
+        parentEntityData: { sample, subject },
+      } = addingEntityState;
+      addSiteToSample(subject.subjectId, sample.sampleId, entityId, protocolLink);
+      handleCancelAddEntity();
+    },
+    [addingEntityState, handleCancelAddEntity]
+  );
 
   const handleEditSampleSite = useCallback(async (site, { sample, subject }) => {
     console.log(
@@ -279,13 +452,23 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
 
   // Sample performance operations
   const handleAddSamplePerformance = useCallback(({ sample, subject }) => {
-    console.log(`Add performance to sample ${sample.sampleId} of subject ${subject.subjectId}`);
-    guidedOpenEntityAdditionSwal({
+    setAddingEntityState({
+      isAdding: true,
       entityType: "performances",
-      subjectId: subject.subjectId,
-      sampleId: sample.sampleId,
+      parentEntityData: { sample, subject },
     });
   }, []);
+
+  const handleSubmitAddSamplePerformance = useCallback(
+    ({ entityId, protocolLink }) => {
+      const {
+        parentEntityData: { sample, subject },
+      } = addingEntityState;
+      addPerformanceToSample(subject.subjectId, sample.sampleId, entityId, protocolLink);
+      handleCancelAddEntity();
+    },
+    [addingEntityState, handleCancelAddEntity]
+  );
 
   const handleEditSamplePerformance = useCallback(async (performance, { sample, subject }) => {
     console.log(
@@ -312,6 +495,63 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
       performance.performanceId
     );
   }, []);
+
+  // Check if a specific entity is currently being added
+  const isAddingEntity = (entityType, parentData) => {
+    if (!addingEntityState.isAdding) return false;
+    if (addingEntityState.entityType !== entityType) return false;
+
+    // For top-level subjects
+    if (entityType === "subjects" && !parentData) return true;
+
+    // For other entity types, compare parent data
+    if (parentData && addingEntityState.parentEntityData) {
+      if (entityType === "samples" || entityType === "sites" || entityType === "performances") {
+        if (addingEntityState.parentEntityData.subjectId === parentData.subjectId) return true;
+      }
+
+      // For sample's sites or performances
+      if (parentData.sample && addingEntityState.parentEntityData.sample) {
+        return (
+          addingEntityState.parentEntityData.sample.sampleId === parentData.sample.sampleId &&
+          addingEntityState.parentEntityData.subject.subjectId === parentData.subject.subjectId
+        );
+      }
+    }
+
+    return false;
+  };
+
+  // Choose the submit function based on entity type
+  const getSubmitFunction = useCallback(
+    (entityType) => {
+      switch (entityType) {
+        case "subjects":
+          return handleSubmitAddSubjects;
+        case "samples":
+          return handleSubmitAddSample;
+        case "sites":
+          return addingEntityState.parentEntityData.sample
+            ? handleSubmitAddSampleSite
+            : handleSubmitAddSubjectSite;
+        case "performances":
+          return addingEntityState.parentEntityData.sample
+            ? handleSubmitAddSamplePerformance
+            : handleSubmitAddSubjectPerformance;
+        default:
+          return () => {};
+      }
+    },
+    [
+      addingEntityState,
+      handleSubmitAddSubjects,
+      handleSubmitAddSample,
+      handleSubmitAddSubjectSite,
+      handleSubmitAddSampleSite,
+      handleSubmitAddSubjectPerformance,
+      handleSubmitAddSamplePerformance,
+    ]
+  );
 
   // Memoize derived values to avoid recalculation
   const {
@@ -342,17 +582,26 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
             border: "1px solid #ddd",
             borderRadius: "8px",
             backgroundColor: "#f0f9ff",
-            cursor: "pointer",
+            cursor: isAddingEntity("subjects", null) ? "default" : "pointer",
           }}
           p="sm"
-          onClick={handleAddSubjects}
+          onClick={isAddingEntity("subjects", null) ? undefined : handleAddSubjects}
         >
-          <Flex align="center" gap="xs">
-            <IconPlus size={15} color="#1c7ed6" />
-            <Text fw={500} c="#1c7ed6">
-              Add Subjects
-            </Text>
-          </Flex>
+          {isAddingEntity("subjects", null) ? (
+            <InlineEntityAdditionForm
+              entityType="subjects"
+              parentEntityData={null}
+              onCancel={handleCancelAddEntity}
+              onSubmit={handleSubmitAddSubjects}
+            />
+          ) : (
+            <Flex align="center" gap="xs">
+              <IconPlus size={15} color="#1c7ed6" />
+              <Text fw={500} c="#1c7ed6">
+                Add Subjects
+              </Text>
+            </Flex>
+          )}
         </Box>
       )}
       <ScrollArea h={650} type="auto">
@@ -434,6 +683,10 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                     level={2}
                     parentEntityData={subject}
                     onAdd={handleAddSample}
+                    isAddingEntity={isAddingEntity("samples", subject)}
+                    onCancelAdd={handleCancelAddEntity}
+                    onSubmitAdd={getSubmitFunction("samples")}
+                    addEntityType="samples"
                   />
                 )}
 
@@ -462,6 +715,10 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                           level={3}
                           parentEntityData={{ sample, subject }}
                           onAdd={handleAddSampleSite}
+                          isAddingEntity={isAddingEntity("sites", { sample, subject })}
+                          onCancelAdd={handleCancelAddEntity}
+                          onSubmitAdd={getSubmitFunction("sites")}
+                          addEntityType="sites"
                         />
                       )}
                       {showSampleSites &&
@@ -489,6 +746,10 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                           level={3}
                           parentEntityData={{ sample, subject }}
                           onAdd={handleAddSamplePerformance}
+                          isAddingEntity={isAddingEntity("performances", { sample, subject })}
+                          onCancelAdd={handleCancelAddEntity}
+                          onSubmitAdd={getSubmitFunction("performances")}
+                          addEntityType="performances"
                         />
                       )}
                       {/* Sample Performances */}
@@ -541,6 +802,10 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                     level={2}
                     parentEntityData={subject}
                     onAdd={handleAddSubjectSite}
+                    isAddingEntity={isAddingEntity("sites", subject)}
+                    onCancelAdd={handleCancelAddEntity}
+                    onSubmitAdd={getSubmitFunction("sites")}
+                    addEntityType="sites"
                   />
                 )}
                 {allowEntityStructureEditing && showSubjectPerformances && (
@@ -550,6 +815,10 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                     level={2}
                     parentEntityData={subject}
                     onAdd={handleAddSubjectPerformance}
+                    isAddingEntity={isAddingEntity("performances", subject)}
+                    onCancelAdd={handleCancelAddEntity}
+                    onSubmitAdd={getSubmitFunction("performances")}
+                    addEntityType="performances"
                   />
                 )}
                 {showSubjectPerformances &&

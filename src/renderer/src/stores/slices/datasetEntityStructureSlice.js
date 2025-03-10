@@ -19,27 +19,25 @@ export const setDatasetEntityArray = (datasetEntityArray) => {
 };
 
 // Subject management functions
-export const addSubject = (subjectId) => {
-  const { datasetEntityArray } = useGlobalStore.getState();
+export const addSubject = (subjectId, protocolLink = "") => {
+  useGlobalStore.setState((state) => {
+    const updatedEntities = [...state.datasetEntityArray];
 
-  // Ensure subject ID starts with "sub-"
-  const normalizedSubjectId = subjectId.trim().startsWith("sub-")
-    ? subjectId.trim()
-    : `sub-${subjectId.trim()}`;
+    // Add the new subject with protocol link in metadata
+    const newSubject = {
+      subjectId,
+      samples: [],
+      subjectSites: [],
+      subjectPerformances: [],
+      metadata: {
+        protocolLink,
+      },
+    };
 
-  const newSubject = {
-    subjectId: normalizedSubjectId,
-    metadata: {},
-    samples: [],
-    subjectSites: [],
-    subjectPerformances: [],
-  };
+    updatedEntities.push(newSubject);
 
-  const updatedDatasetEntityArray = [...datasetEntityArray, newSubject];
-  useGlobalStore.setState({
-    datasetEntityArray: updatedDatasetEntityArray,
+    return { datasetEntityArray: updatedEntities };
   });
-  return newSubject;
 };
 
 export const deleteSubject = (subjectId) => {
@@ -74,28 +72,28 @@ export const getExistingSubjectIds = () => {
 };
 
 // Sample management functions
-export const addSampleToSubject = (subjectId, sampleId) => {
-  const { datasetEntityArray } = useGlobalStore.getState();
-  const updatedDatasetEntityArray = datasetEntityArray.map((subject) => {
-    if (subject.subjectId === subjectId) {
-      const samples = subject.samples || [];
-      return {
-        ...subject,
-        samples: [
-          ...samples,
-          {
-            sampleId,
-            metadata: {},
-            sites: [],
-            performances: [],
-          },
-        ],
+export const addSampleToSubject = (subjectId, sampleId, protocolLink = "") => {
+  useGlobalStore.setState((state) => {
+    const updatedEntities = [...state.datasetEntityArray];
+    const subjectIndex = updatedEntities.findIndex((subject) => subject.subjectId === subjectId);
+
+    if (subjectIndex >= 0) {
+      const newSample = {
+        sampleId,
+        sites: [],
+        performances: [],
+        metadata: {
+          protocolLink,
+        },
       };
+
+      // Add the sample if it doesn't exist already
+      if (!updatedEntities[subjectIndex].samples.some((sample) => sample.sampleId === sampleId)) {
+        updatedEntities[subjectIndex].samples.push(newSample);
+      }
     }
-    return subject;
-  });
-  useGlobalStore.setState({
-    datasetEntityArray: updatedDatasetEntityArray,
+
+    return { datasetEntityArray: updatedEntities };
   });
 };
 
@@ -146,7 +144,7 @@ export const modifySampleId = (subjectId, oldSampleId, newSampleId) => {
 };
 
 // Subject site management functions
-export const addSiteToSubject = (subjectId, siteId) => {
+export const addSiteToSubject = (subjectId, siteId, protocolLink = "") => {
   const { datasetEntityArray } = useGlobalStore.getState();
   const updatedDatasetEntityArray = datasetEntityArray.map((subject) => {
     if (subject.subjectId === subjectId) {
@@ -157,7 +155,9 @@ export const addSiteToSubject = (subjectId, siteId) => {
           ...subjectSites,
           {
             siteId,
-            metadata: {},
+            metadata: {
+              protocolLink,
+            },
           },
         ],
       };
@@ -193,7 +193,7 @@ export const getExistingPerformanceIds = () => {
 };
 
 // Subject performance management functions
-export const addPerformanceToSubject = (subjectId, performanceId) => {
+export const addPerformanceToSubject = (subjectId, performanceId, protocolLink = "") => {
   console.log(`Adding performance ${performanceId} to subject ${subjectId}`);
   const { datasetEntityArray } = useGlobalStore.getState();
   console.log("datasetEntityArray", datasetEntityArray);
@@ -206,7 +206,9 @@ export const addPerformanceToSubject = (subjectId, performanceId) => {
           ...subjectPerformances,
           {
             performanceId,
-            metadata: {},
+            metadata: {
+              protocolLink,
+            },
           },
         ],
       };
@@ -220,7 +222,7 @@ export const addPerformanceToSubject = (subjectId, performanceId) => {
   console.log("updatedDatasetEntityArray", useGlobalStore.getState().datasetEntityArray);
 };
 
-export const addPerformanceToSample = (subjectId, sampleId, performanceId) => {
+export const addPerformanceToSample = (subjectId, sampleId, performanceId, protocolLink = "") => {
   console.log(`Adding performance ${performanceId} to sample ${sampleId} of subject ${subjectId}`);
   const { datasetEntityArray } = useGlobalStore.getState();
   console.log("Before update:", JSON.stringify(datasetEntityArray, null, 2));
@@ -234,7 +236,15 @@ export const addPerformanceToSample = (subjectId, sampleId, performanceId) => {
             const performances = sample.performances || [];
             return {
               ...sample,
-              performances: [...performances, { performanceId, metadata: {} }],
+              performances: [
+                ...performances,
+                {
+                  performanceId,
+                  metadata: {
+                    protocolLink,
+                  },
+                },
+              ],
             };
           }
           return sample;
@@ -280,7 +290,7 @@ export const getExistingSiteIds = () => {
 };
 
 // Sample site management functions
-export const addSiteToSample = (subjectId, sampleId, siteId) => {
+export const addSiteToSample = (subjectId, sampleId, siteId, protocolLink = "") => {
   const { datasetEntityArray } = useGlobalStore.getState();
   const updatedDatasetEntityArray = datasetEntityArray.map((subject) => {
     if (subject.subjectId === subjectId && subject.samples) {
@@ -291,7 +301,15 @@ export const addSiteToSample = (subjectId, sampleId, siteId) => {
             const sites = sample.sites || [];
             return {
               ...sample,
-              sites: [...sites, { siteId, metadata: {} }],
+              sites: [
+                ...sites,
+                {
+                  siteId,
+                  metadata: {
+                    protocolLink,
+                  },
+                },
+              ],
             };
           }
           return sample;
