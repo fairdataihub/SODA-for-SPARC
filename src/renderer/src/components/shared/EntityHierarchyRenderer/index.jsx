@@ -52,7 +52,7 @@ const getEntityIcon = (iconType) => {
   }
 };
 
-// Component for rendering nested hierarchy items
+// Simplified HierarchyItem that doesn't pass entityType anymore
 const HierarchyItem = ({
   icon,
   label,
@@ -60,16 +60,13 @@ const HierarchyItem = ({
   level = 1,
   allowEntityStructureEditing = false,
   allowEntitySelection = false,
-  entityData = null,
-  entityType = null,
-  parentEntityData = null,
+  entityData = null, // Contains all needed data including parent references
+  parentEntityData = null, // Only needed for edit/delete operations
   onAdd = null,
   onEdit = null,
   onDelete = null,
   onSelect = null,
 }) => {
-  console.log("entityType", entityType);
-  console.log("entityData", entityData);
   const marginLeft = (level - 1) * 8;
   const isAddButton = icon === "add";
 
@@ -91,7 +88,8 @@ const HierarchyItem = ({
   const handleSelect = (e) => {
     e.stopPropagation();
     if (allowEntitySelection && !isAddButton && onSelect) {
-      onSelect(entityData, entityType, parentEntityData);
+      // Just pass the raw entity data which already includes parent references
+      onSelect(entityData);
     }
   };
 
@@ -145,40 +143,31 @@ const HierarchyItem = ({
   );
 };
 
+// Find subject by ID helper (to demonstrate how to lookup parents if needed)
+const findSubjectById = (datasetEntityArray, subjectId) => {
+  return datasetEntityArray.find((subject) => subject.id === subjectId);
+};
+
+// Example of how to handle operations with parent data from entity
+const handleEditUsingParentReference = (entityData) => {
+  // Get parent references from the entity itself
+  const { parentSubject, parentSample } = entityData;
+
+  // Find the actual parent entity objects if needed
+  const subject = findSubjectById(datasetEntityArray, parentSubject);
+
+  // Now you can perform operations using the parent entity
+  modifySampleId(subject.id, entityData.id, newId);
+};
+
 const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelection }) => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
 
-  // Simple entity selection handler with flattened structure
-  const handleEntitySelect = useCallback((entityData, entityType, parentEntityData) => {
-    console.log("Entity selected:", { entityData, entityType, parentEntityData });
-
-    // Create a flattened entity object structure with simplified parent references
-    const flattenedEntity = {
-      entityType,
-      entityId: entityData.id,
-    };
-
-    // Add parent subject ID reference
-    if (entityData.parentSubject) {
-      flattenedEntity.parentSubjectId = entityData.parentSubject;
-    } else if (parentEntityData && parentEntityData.id && entityType !== "subject") {
-      // If parent is directly available as a subject
-      flattenedEntity.parentSubjectId = parentEntityData.id;
-    } else if (parentEntityData && parentEntityData.subject && parentEntityData.subject.id) {
-      // If parent is part of a subject-sample hierarchy
-      flattenedEntity.parentSubjectId = parentEntityData.subject.id;
-    }
-
-    // Add parent sample ID reference if applicable
-    if (entityData.parentSample) {
-      flattenedEntity.parentSampleId = entityData.parentSample;
-    } else if (parentEntityData && parentEntityData.sample && parentEntityData.sample.id) {
-      // If parent contains sample info
-      flattenedEntity.parentSampleId = parentEntityData.sample.id;
-    }
-
-    setSelectedHierarchyEntity(flattenedEntity);
+  // Ultra-simple entity selection handler that just passes the raw entity data
+  const handleEntitySelect = useCallback((entityData) => {
+    console.log("Selected entity data:", entityData);
+    setSelectedHierarchyEntity(entityData);
   }, []);
 
   // Define all entity operations within the component
@@ -403,9 +392,7 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                 <Flex
                   align="center"
                   gap="xs"
-                  onClick={() =>
-                    allowEntitySelection && handleEntitySelect(subject, "subject", null)
-                  }
+                  onClick={() => allowEntitySelection && handleEntitySelect(subject)}
                   style={{
                     cursor: allowEntitySelection ? "pointer" : "default",
                   }}
@@ -466,8 +453,7 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                       allowEntityStructureEditing={allowEntityStructureEditing}
                       allowEntitySelection={allowEntitySelection}
                       entityData={sample}
-                      entityType="sample"
-                      parentEntityData={subject}
+                      parentEntityData={subject} // Keep this for edit/delete operations
                       onEdit={() => handleEditSample(sample, subject)}
                       onDelete={() => handleDeleteSample(sample, subject)}
                       onSelect={handleEntitySelect}
@@ -492,8 +478,7 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                             allowEntityStructureEditing={allowEntityStructureEditing}
                             allowEntitySelection={allowEntitySelection}
                             entityData={site}
-                            entityType="site"
-                            parentEntityData={{ sample, subject }}
+                            parentEntityData={{ sample, subject }} // Keep for edit/delete operations
                             onEdit={() => handleEditSampleSite(site, { sample, subject })}
                             onDelete={() => handleDeleteSampleSite(site, { sample, subject })}
                             onSelect={handleEntitySelect}
@@ -520,7 +505,6 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                             allowEntityStructureEditing={allowEntityStructureEditing}
                             allowEntitySelection={allowEntitySelection}
                             entityData={performance}
-                            entityType="performance"
                             parentEntityData={{ sample, subject }}
                             onEdit={() =>
                               handleEditSamplePerformance(performance, { sample, subject })
@@ -545,7 +529,6 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                       allowEntityStructureEditing={allowEntityStructureEditing}
                       allowEntitySelection={allowEntitySelection}
                       entityData={site}
-                      entityType="site"
                       parentEntityData={subject}
                       onEdit={() => handleEditSubjectSite(site, subject)}
                       onDelete={() => handleDeleteSubjectSite(site, subject)}
@@ -580,7 +563,6 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                       allowEntityStructureEditing={allowEntityStructureEditing}
                       allowEntitySelection={allowEntitySelection}
                       entityData={performance}
-                      entityType="performance"
                       parentEntityData={subject}
                       onEdit={() => handleEditSubjectPerformance(performance, subject)}
                       onDelete={() => handleDeleteSubjectPerformance(performance, subject)}

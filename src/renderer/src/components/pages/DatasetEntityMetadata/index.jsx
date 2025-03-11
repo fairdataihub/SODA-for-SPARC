@@ -52,60 +52,51 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
 
   console.log("Selected entity:", selectedHierarchyEntity);
 
-  // Get entity data using our helper function
-  const entityData = getEntityDataFromSelection(selectedHierarchyEntity);
-  console.log("Fetched entity data:", entityData);
-
-  // Generate the appropriate title based on entity type with simplified parent references
+  // Generate the appropriate title based on entity type
   const getTitleForEntity = () => {
-    const { entityType, entityId, parentSubjectId, parentSampleId } = selectedHierarchyEntity;
+    const { id, type, parentSubject, parentSample } = selectedHierarchyEntity;
 
-    // Handle each entity type
-    switch (entityType) {
+    switch (type) {
       case "subject":
-        return `Subject: ${entityId}`;
-
+        return `Subject: ${id}`;
       case "sample":
-        return `Sample: ${entityId}${parentSubjectId ? ` (from subject ${parentSubjectId})` : ""}`;
-
+        return `Sample: ${id}${parentSubject ? ` (from subject ${parentSubject})` : ""}`;
       case "site":
-        if (parentSampleId) {
-          // Site belongs to a sample
-          return `Site: ${entityId} (from sample ${parentSampleId})`;
-        } else {
-          // Site belongs to a subject
-          return `Site: ${entityId} (from subject ${parentSubjectId})`;
+        if (parentSample) {
+          return `Site: ${id} (from sample ${parentSample})`;
+        } else if (parentSubject) {
+          return `Site: ${id} (from subject ${parentSubject})`;
         }
-
+        return `Site: ${id}`;
       case "performance":
-        if (parentSampleId) {
-          // Performance belongs to a sample
-          return `Performance: ${entityId} (from sample ${parentSampleId})`;
-        } else {
-          // Performance belongs to a subject
-          return `Performance: ${entityId} (from subject ${parentSubjectId})`;
+        if (parentSample) {
+          return `Performance: ${id} (from sample ${parentSample})`;
+        } else if (parentSubject) {
+          return `Performance: ${id} (from subject ${parentSubject})`;
         }
-
+        return `Performance: ${id}`;
       default:
-        return entityId ? `Unknown entity: ${entityId}` : "Unknown entity";
+        return `Unknown entity: ${id}`;
     }
   };
 
-  // Get metadata value using our helper function
+  // Get metadata value directly from the entity
   const getMetadataValue = (key) => {
-    return getEntityMetadataValue(selectedHierarchyEntity, key, "");
+    if (selectedHierarchyEntity.metadata && selectedHierarchyEntity.metadata[key] !== undefined) {
+      return selectedHierarchyEntity.metadata[key];
+    }
+    return "";
   };
 
-  // Handle metadata changes using our helper function
+  // Handle metadata changes
   const handleChange = (field, value) => {
     updateEntityMetadata(selectedHierarchyEntity, { [field]: value });
   };
 
   const getEntityIcon = () => {
-    // Add reference to selectedHierarchyEntity to access entityType
-    const { entityType } = selectedHierarchyEntity;
+    const { type } = selectedHierarchyEntity;
 
-    switch (entityType) {
+    switch (type) {
       case "subject":
         return <IconUser size={20} />;
       case "sample":
@@ -121,16 +112,11 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
 
   // Render the appropriate form fields based on entity type
   const renderEntitySpecificFields = () => {
-    // Only render if we have entity data
-    if (!entityData) {
-      return (
-        <Box p="md" bg="gray.0">
-          <Text c="dimmed">Error: Could not find entity data</Text>
-        </Box>
-      );
-    }
+    const { type, id } = selectedHierarchyEntity;
+    console.log("Rendering form for entity:", selectedHierarchyEntity);
+    console.log("Entity id:", id);
 
-    switch (selectedHierarchyEntity.entityType) {
+    switch (type) {
       case "subject":
         return (
           <Stack spacing="md">
@@ -251,7 +237,7 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
       default:
         return (
           <Box p="md" bg="gray.0">
-            <Text c="dimmed">Unknown entity type: {entityType}</Text>
+            <Text c="dimmed">Unknown entity type: {type}</Text>
           </Box>
         );
     }
@@ -270,11 +256,7 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
         <Divider my="xs" />
 
         {/* Entity-specific form fields */}
-        {entityData ? (
-          renderEntitySpecificFields()
-        ) : (
-          <Text c="dimmed">Unable to find data for this entity</Text>
-        )}
+        {renderEntitySpecificFields()}
       </Stack>
     </Paper>
   );

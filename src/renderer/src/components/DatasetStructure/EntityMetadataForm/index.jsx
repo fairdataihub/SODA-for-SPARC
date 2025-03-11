@@ -3,12 +3,12 @@ import { Box, Title, Text } from "@mantine/core";
 import useGlobalStore from "../../../stores/globalStore";
 import { getEntityMetadataValue } from "../../../stores/slices/datasetEntityStructureSlice";
 
-// This function needs to work with the flattened entity structure with explicit parent references
+// This function needs to work with the simplified parent references
 const getTitleForEntity = (selectedEntity) => {
   // First, check if there's a selected entity at all
   if (!selectedEntity) return "No entity selected";
 
-  const { entityType, entityId, parentSubject, parentSample } = selectedEntity;
+  const { entityType, entityId, parentSubjectId, parentSampleId } = selectedEntity;
 
   // Handle each entity type
   switch (entityType) {
@@ -16,24 +16,24 @@ const getTitleForEntity = (selectedEntity) => {
       return `Subject: ${entityId}`;
 
     case "sample":
-      return `Sample: ${entityId}${parentSubject ? ` (from subject ${parentSubject})` : ""}`;
+      return `Sample: ${entityId}${parentSubjectId ? ` (from subject ${parentSubjectId})` : ""}`;
 
     case "site":
-      if (parentSample) {
+      if (parentSampleId) {
         // Site belongs to a sample
-        return `Site: ${entityId}${parentSample ? ` (from sample ${parentSample})` : ""}`;
+        return `Site: ${entityId} (from sample ${parentSampleId})`;
       } else {
         // Site belongs to a subject
-        return `Site: ${entityId}${parentSubject ? ` (from subject ${parentSubject})` : ""}`;
+        return `Site: ${entityId} (from subject ${parentSubjectId})`;
       }
 
     case "performance":
-      if (parentSample) {
+      if (parentSampleId) {
         // Performance belongs to a sample
-        return `Performance: ${entityId}${parentSample ? ` (from sample ${parentSample})` : ""}`;
+        return `Performance: ${entityId} (from sample ${parentSampleId})`;
       } else {
         // Performance belongs to a subject
-        return `Performance: ${entityId}${parentSubject ? ` (from subject ${parentSubject})` : ""}`;
+        return `Performance: ${entityId} (from subject ${parentSubjectId})`;
       }
 
     default:
