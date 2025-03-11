@@ -68,6 +68,8 @@ const HierarchyItem = ({
   onDelete = null,
   onSelect = null,
 }) => {
+  console.log("entityType", entityType);
+  console.log("entityData", entityData);
   const marginLeft = (level - 1) * 8;
   const isAddButton = icon === "add";
 
@@ -151,29 +153,29 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
   const handleEntitySelect = useCallback((entityData, entityType, parentEntityData) => {
     console.log("Entity selected:", { entityData, entityType, parentEntityData });
 
-    // Create a flattened entity object structure
+    // Create a flattened entity object structure with simplified parent references
     const flattenedEntity = {
       entityType,
-      entityId: entityData[`${entityType}Id`], // Extract ID based on entity type (subjectId, sampleId, etc)
+      entityId: entityData.id,
     };
 
-    // Add parent information if available
-    if (parentEntityData) {
-      if (entityType === "sample" || entityType === "site" || entityType === "performance") {
-        // For entities with a subject parent
-        if (parentEntityData.subjectId) {
-          flattenedEntity.parentType = "subject";
-          flattenedEntity.parentId = parentEntityData.subjectId;
-        }
+    // Add parent subject ID reference
+    if (entityData.parentSubject) {
+      flattenedEntity.parentSubjectId = entityData.parentSubject;
+    } else if (parentEntityData && parentEntityData.id && entityType !== "subject") {
+      // If parent is directly available as a subject
+      flattenedEntity.parentSubjectId = parentEntityData.id;
+    } else if (parentEntityData && parentEntityData.subject && parentEntityData.subject.id) {
+      // If parent is part of a subject-sample hierarchy
+      flattenedEntity.parentSubjectId = parentEntityData.subject.id;
+    }
 
-        // For entities with a sample parent
-        if (parentEntityData.sample) {
-          flattenedEntity.parentType = "sample";
-          flattenedEntity.parentId = parentEntityData.sample.sampleId;
-          flattenedEntity.grandParentType = "subject";
-          flattenedEntity.grandParentId = parentEntityData.subject.subjectId;
-        }
-      }
+    // Add parent sample ID reference if applicable
+    if (entityData.parentSample) {
+      flattenedEntity.parentSampleId = entityData.parentSample;
+    } else if (parentEntityData && parentEntityData.sample && parentEntityData.sample.id) {
+      // If parent contains sample info
+      flattenedEntity.parentSampleId = parentEntityData.sample.id;
     }
 
     setSelectedHierarchyEntity(flattenedEntity);
@@ -191,17 +193,17 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
   }, []);
 
   const handleDeleteSubject = useCallback((subject) => {
-    return deleteSubject(subject.subjectId);
+    return deleteSubject(subject.id);
   }, []);
 
   // Sample operations
   const handleAddSample = useCallback((subject) => {
-    console.log(`Add sample to subject: ${subject.subjectId}`);
-    return guidedOpenEntityAdditionSwal({ entityType: "samples", subjectId: subject.subjectId });
+    console.log(`Add sample to subject: ${subject.id}`);
+    return guidedOpenEntityAdditionSwal({ entityType: "samples", subjectId: subject.id });
   }, []);
 
   const handleEditSample = useCallback(async (sample, subject) => {
-    console.log(`Edit sample ${sample.sampleId} of subject ${subject.subjectId}`);
+    console.log(`Edit sample ${sample.id} of subject ${subject.id}`);
     const result = await guidedOpenEntityEditSwal({
       entityType: "sample",
       entityData: sample,
@@ -209,26 +211,26 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
     });
 
     if (result) {
-      modifySampleId(subject.subjectId, result.oldName, result.newName);
+      modifySampleId(subject.id, result.oldName, result.newName);
     }
   }, []);
 
   const handleDeleteSample = useCallback((sample, subject) => {
-    console.log(`Delete sample ${sample.sampleId} from subject ${subject.subjectId}`);
-    return deleteSampleFromSubject(subject.subjectId, sample.sampleId);
+    console.log(`Delete sample ${sample.id} from subject ${subject.id}`);
+    return deleteSampleFromSubject(subject.id, sample.id);
   }, []);
 
   // Subject site operations
   const handleAddSubjectSite = useCallback((subject) => {
-    console.log(`Add site to subject: ${subject.subjectId}`);
+    console.log(`Add site to subject: ${subject.id}`);
     return guidedOpenEntityAdditionSwal({
       entityType: "sites",
-      subjectId: subject.subjectId,
+      subjectId: subject.id,
     });
   }, []);
 
   const handleEditSubjectSite = useCallback(async (site, subject) => {
-    console.log(`Edit site ${site.siteId} of subject ${subject.subjectId}`);
+    console.log(`Edit site ${site.id} of subject ${subject.id}`);
     const result = await guidedOpenEntityEditSwal({
       entityType: "site",
       entityData: site,
@@ -236,23 +238,23 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
     });
 
     if (result) {
-      modifySubjectSiteId(subject.subjectId, result.oldName, result.newName);
+      modifySubjectSiteId(subject.id, result.oldName, result.newName);
     }
   }, []);
 
   const handleDeleteSubjectSite = useCallback((site, subject) => {
-    console.log(`Delete site ${site.siteId} from subject ${subject.subjectId}`);
-    return deleteSiteFromSubject(subject.subjectId, site.siteId);
+    console.log(`Delete site ${site.id} from subject ${subject.id}`);
+    return deleteSiteFromSubject(subject.id, site.id);
   }, []);
 
   // Subject performance operations
   const handleAddSubjectPerformance = useCallback((subject) => {
-    console.log(`Add performance to subject: ${subject.subjectId}`);
-    guidedOpenEntityAdditionSwal({ entityType: "performances", subjectId: subject.subjectId });
+    console.log(`Add performance to subject: ${subject.id}`);
+    guidedOpenEntityAdditionSwal({ entityType: "performances", subjectId: subject.id });
   }, []);
 
   const handleEditSubjectPerformance = useCallback(async (performance, subject) => {
-    console.log(`Edit performance ${performance.performanceId} of subject ${subject.subjectId}`);
+    console.log(`Edit performance ${performance.id} of subject ${subject.id}`);
     const result = await guidedOpenEntityEditSwal({
       entityType: "performance",
       entityData: performance,
@@ -260,31 +262,27 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
     });
 
     if (result) {
-      modifySubjectPerformanceId(subject.subjectId, result.oldName, result.newName);
+      modifySubjectPerformanceId(subject.id, result.oldName, result.newName);
     }
   }, []);
 
   const handleDeleteSubjectPerformance = useCallback((performance, subject) => {
-    console.log(
-      `Delete performance ${performance.performanceId} from subject ${subject.subjectId}`
-    );
-    return deletePerformanceFromSubject(subject.subjectId, performance.performanceId);
+    console.log(`Delete performance ${performance.id} from subject ${subject.id}`);
+    return deletePerformanceFromSubject(subject.id, performance.id);
   }, []);
 
   // Sample site operations
   const handleAddSampleSite = useCallback(({ sample, subject }) => {
-    console.log(`Add site to sample ${sample.sampleId} of subject ${subject.subjectId}`);
+    console.log(`Add site to sample ${sample.id} of subject ${subject.id}`);
     guidedOpenEntityAdditionSwal({
       entityType: "sites",
-      subjectId: subject.subjectId,
-      sampleId: sample.sampleId,
+      subjectId: subject.id,
+      sampleId: sample.id,
     });
   }, []);
 
   const handleEditSampleSite = useCallback(async (site, { sample, subject }) => {
-    console.log(
-      `Edit site ${site.siteId} of sample ${sample.sampleId} of subject ${subject.subjectId}`
-    );
+    console.log(`Edit site ${site.id} of sample ${sample.id} of subject ${subject.id}`);
     const result = await guidedOpenEntityEditSwal({
       entityType: "site",
       entityData: site,
@@ -292,30 +290,28 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
     });
 
     if (result) {
-      modifySampleSiteId(subject.subjectId, sample.sampleId, result.oldName, result.newName);
+      modifySampleSiteId(subject.id, sample.id, result.oldName, result.newName);
     }
   }, []);
 
   const handleDeleteSampleSite = useCallback((site, { sample, subject }) => {
-    console.log(
-      `Delete site ${site.siteId} from sample ${sample.sampleId} of subject ${subject.subjectId}`
-    );
-    return deleteSiteFromSample(subject.subjectId, sample.sampleId, site.siteId);
+    console.log(`Delete site ${site.id} from sample ${sample.id} of subject ${subject.id}`);
+    return deleteSiteFromSample(subject.id, sample.id, site.id);
   }, []);
 
   // Sample performance operations
   const handleAddSamplePerformance = useCallback(({ sample, subject }) => {
-    console.log(`Add performance to sample ${sample.sampleId} of subject ${subject.subjectId}`);
+    console.log(`Add performance to sample ${sample.id} of subject ${subject.id}`);
     guidedOpenEntityAdditionSwal({
       entityType: "performances",
-      subjectId: subject.subjectId,
-      sampleId: sample.sampleId,
+      subjectId: subject.id,
+      sampleId: sample.id,
     });
   }, []);
 
   const handleEditSamplePerformance = useCallback(async (performance, { sample, subject }) => {
     console.log(
-      `Edit performance ${performance.performanceId} of sample ${sample.sampleId} of subject ${subject.subjectId}`
+      `Edit performance ${performance.id} of sample ${sample.id} of subject ${subject.id}`
     );
     const result = await guidedOpenEntityEditSwal({
       entityType: "performance",
@@ -324,19 +320,15 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
     });
 
     if (result) {
-      modifySamplePerformanceId(subject.subjectId, sample.sampleId, result.oldName, result.newName);
+      modifySamplePerformanceId(subject.id, sample.id, result.oldName, result.newName);
     }
   }, []);
 
   const handleDeleteSamplePerformance = useCallback((performance, { sample, subject }) => {
     console.log(
-      `Delete performance ${performance.performanceId} from sample ${sample.sampleId} of subject ${subject.subjectId}`
+      `Delete performance ${performance.id} from sample ${sample.id} of subject ${subject.id}`
     );
-    return deletePerformanceFromSample(
-      subject.subjectId,
-      sample.sampleId,
-      performance.performanceId
-    );
+    return deletePerformanceFromSample(subject.id, sample.id, performance.id);
   }, []);
 
   // Memoize derived values to avoid recalculation
@@ -399,7 +391,7 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
           ) : (
             datasetEntityArray.map((subject) => (
               <Box
-                key={subject.subjectId}
+                key={subject.id}
                 style={{
                   border: "1px solid #ddd",
                   borderRadius: "8px",
@@ -428,7 +420,7 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                   }
                 >
                   <IconUser size={15} />
-                  <Text fw={600}>{subject.subjectId}</Text>
+                  <Text fw={600}>{subject.id}</Text>
                   {allowEntityStructureEditing && (
                     <>
                       <IconEdit
@@ -455,7 +447,7 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
 
                 {allowEntityStructureEditing && showSamples && (
                   <HierarchyItem
-                    label={`Add sample(s) to ${subject.subjectId}`}
+                    label={`Add sample(s) to ${subject.id}`}
                     icon="add"
                     level={2}
                     parentEntityData={subject}
@@ -467,9 +459,9 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                 {showSamples &&
                   subject.samples?.map((sample) => (
                     <HierarchyItem
-                      key={sample.sampleId}
+                      key={sample.id}
                       icon="sample"
-                      label={sample.sampleId}
+                      label={sample.id}
                       level={2}
                       allowEntityStructureEditing={allowEntityStructureEditing}
                       allowEntitySelection={allowEntitySelection}
@@ -483,7 +475,7 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                       {/* Sample Sites */}
                       {allowEntityStructureEditing && showSampleSites && (
                         <HierarchyItem
-                          label={`Add site(s) to ${sample.sampleId}`}
+                          label={`Add site(s) to ${sample.id}`}
                           icon="add"
                           level={3}
                           parentEntityData={{ sample, subject }}
@@ -493,9 +485,9 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                       {showSampleSites &&
                         sample.sites?.map((site) => (
                           <HierarchyItem
-                            key={site.siteId}
+                            key={site.id}
                             icon="site"
-                            label={site.siteId}
+                            label={site.id}
                             level={3}
                             allowEntityStructureEditing={allowEntityStructureEditing}
                             allowEntitySelection={allowEntitySelection}
@@ -510,7 +502,7 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
 
                       {allowEntityStructureEditing && showSamplePerformances && (
                         <HierarchyItem
-                          label={`Add performance(s) to ${sample.sampleId}`}
+                          label={`Add performance(s) to ${sample.id}`}
                           icon="add"
                           level={3}
                           parentEntityData={{ sample, subject }}
@@ -521,9 +513,9 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                       {showSamplePerformances &&
                         sample.performances?.map((performance) => (
                           <HierarchyItem
-                            key={performance.performanceId}
+                            key={performance.id}
                             icon="performance"
-                            label={performance.performanceId}
+                            label={performance.id}
                             level={3}
                             allowEntityStructureEditing={allowEntityStructureEditing}
                             allowEntitySelection={allowEntitySelection}
@@ -546,9 +538,9 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                 {showSubjectSites &&
                   subject.subjectSites?.map((site) => (
                     <HierarchyItem
-                      key={site.siteId}
+                      key={site.id}
                       icon="site"
-                      label={site.siteId}
+                      label={site.id}
                       level={2}
                       allowEntityStructureEditing={allowEntityStructureEditing}
                       allowEntitySelection={allowEntitySelection}
@@ -562,7 +554,7 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                   ))}
                 {allowEntityStructureEditing && showSubjectSites && (
                   <HierarchyItem
-                    label={`Add site(s) to ${subject.subjectId}`}
+                    label={`Add site(s) to ${subject.id}`}
                     icon="add"
                     level={2}
                     parentEntityData={subject}
@@ -571,7 +563,7 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                 )}
                 {allowEntityStructureEditing && showSubjectPerformances && (
                   <HierarchyItem
-                    label={`Add performance(s) to ${subject.subjectId}`}
+                    label={`Add performance(s) to ${subject.id}`}
                     icon="add"
                     level={2}
                     parentEntityData={subject}
@@ -581,9 +573,9 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                 {showSubjectPerformances &&
                   subject.subjectPerformances?.map((performance) => (
                     <HierarchyItem
-                      key={performance.performanceId}
+                      key={performance.id}
                       icon="performance"
-                      label={performance.performanceId}
+                      label={performance.id}
                       level={2}
                       allowEntityStructureEditing={allowEntityStructureEditing}
                       allowEntitySelection={allowEntitySelection}

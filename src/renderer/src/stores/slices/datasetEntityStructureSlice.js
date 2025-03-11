@@ -1,4 +1,4 @@
-import { use } from "react";
+import { produce } from "immer";
 import useGlobalStore from "../globalStore";
 
 export const datasetEntityStructureSlice = (set) => ({
@@ -20,460 +20,482 @@ export const setDatasetEntityArray = (datasetEntityArray) => {
 
 // Subject management functions
 export const addSubject = (subjectId) => {
-  const { datasetEntityArray } = useGlobalStore.getState();
-
   // Ensure subject ID starts with "sub-"
   const normalizedSubjectId = subjectId.trim().startsWith("sub-")
     ? subjectId.trim()
     : `sub-${subjectId.trim()}`;
 
-  const newSubject = {
-    subjectId: normalizedSubjectId,
-    metadata: {},
-    samples: [],
-    subjectSites: [],
-    subjectPerformances: [],
-  };
-
-  const updatedDatasetEntityArray = [...datasetEntityArray, newSubject];
-  useGlobalStore.setState({
-    datasetEntityArray: updatedDatasetEntityArray,
-  });
-  return newSubject;
+  useGlobalStore.setState(
+    produce((state) => {
+      state.datasetEntityArray.push({
+        id: normalizedSubjectId, // Changed from subjectId to id
+        type: "subject", // Add type field to identify entity type
+        metadata: {},
+        samples: [],
+        subjectSites: [],
+        subjectPerformances: [],
+      });
+    })
+  );
 };
 
 export const deleteSubject = (subjectId) => {
-  const { datasetEntityArray } = useGlobalStore.getState();
-  const updatedDatasetEntityArray = datasetEntityArray.filter(
-    (subject) => subject.subjectId !== subjectId
+  useGlobalStore.setState(
+    produce((state) => {
+      state.datasetEntityArray = state.datasetEntityArray.filter(
+        (subject) => subject.id !== subjectId // Changed from subjectId to id
+      );
+    })
   );
-  useGlobalStore.setState({
-    datasetEntityArray: updatedDatasetEntityArray,
-  });
 };
 
 export const modifySubjectId = (oldSubjectId, newSubjectId) => {
-  const { datasetEntityArray } = useGlobalStore.getState();
-  const updatedDatasetEntityArray = datasetEntityArray.map((subject) => {
-    if (subject.subjectId === oldSubjectId) {
-      return {
-        ...subject,
-        subjectId: newSubjectId,
-      };
-    }
-    return subject;
-  });
-  useGlobalStore.setState({
-    datasetEntityArray: updatedDatasetEntityArray,
-  });
+  useGlobalStore.setState(
+    produce((state) => {
+      const subject = state.datasetEntityArray.find((s) => s.id === oldSubjectId); // Changed from subjectId to id
+      if (subject) {
+        subject.id = newSubjectId; // Changed from subjectId to id
+      }
+    })
+  );
 };
 
 export const getExistingSubjectIds = () => {
   const { datasetEntityArray } = useGlobalStore.getState();
-  return datasetEntityArray.map((subject) => subject.subjectId);
+  return datasetEntityArray.map((subject) => subject.id); // Changed from subjectId to id
 };
 
 // Sample management functions
 export const addSampleToSubject = (subjectId, sampleId) => {
-  const { datasetEntityArray } = useGlobalStore.getState();
-  const updatedDatasetEntityArray = datasetEntityArray.map((subject) => {
-    if (subject.subjectId === subjectId) {
-      const samples = subject.samples || [];
-      return {
-        ...subject,
-        samples: [
-          ...samples,
-          {
-            sampleId,
-            metadata: {},
-            sites: [],
-            performances: [],
-          },
-        ],
-      };
-    }
-    return subject;
-  });
-  useGlobalStore.setState({
-    datasetEntityArray: updatedDatasetEntityArray,
-  });
+  useGlobalStore.setState(
+    produce((state) => {
+      const subject = state.datasetEntityArray.find((s) => s.id === subjectId); // Changed from subjectId to id
+      if (subject) {
+        if (!subject.samples) subject.samples = [];
+        subject.samples.push({
+          id: sampleId, // Changed from sampleId to id
+          type: "sample", // Add type field to identify entity type
+          parentSubject: subject.id, // Add explicit reference to parent subject
+          metadata: {},
+          sites: [],
+          performances: [],
+        });
+      }
+    })
+  );
 };
 
 export const deleteSampleFromSubject = (subjectId, sampleId) => {
-  const { datasetEntityArray } = useGlobalStore.getState();
-  const updatedDatasetEntityArray = datasetEntityArray.map((subject) => {
-    if (subject.subjectId === subjectId && subject.samples) {
-      return {
-        ...subject,
-        samples: subject.samples.filter((sample) => sample.sampleId !== sampleId),
-      };
-    }
-    return subject;
-  });
-  useGlobalStore.setState({
-    datasetEntityArray: updatedDatasetEntityArray,
-  });
+  useGlobalStore.setState(
+    produce((state) => {
+      const subject = state.datasetEntityArray.find((s) => s.id === subjectId); // Changed from subjectId to id
+      if (subject && subject.samples) {
+        subject.samples = subject.samples.filter((sample) => sample.id !== sampleId); // Changed from sampleId to id
+      }
+    })
+  );
 };
 
 export const getExistingSampleIds = () => {
   const { datasetEntityArray } = useGlobalStore.getState();
-  return datasetEntityArray.flatMap((subject) => subject.samples.map((sample) => sample.sampleId));
+  return datasetEntityArray.flatMap((subject) => subject.samples.map((sample) => sample.id)); // Changed from sampleId to id
 };
 
-// Additional sample management functions
 export const modifySampleId = (subjectId, oldSampleId, newSampleId) => {
-  const { datasetEntityArray } = useGlobalStore.getState();
-  const updatedDatasetEntityArray = datasetEntityArray.map((subject) => {
-    if (subject.subjectId === subjectId) {
-      return {
-        ...subject,
-        samples: subject.samples.map((sample) => {
-          if (sample.sampleId === oldSampleId) {
-            return {
-              ...sample,
-              sampleId: newSampleId,
-            };
-          }
-          return sample;
-        }),
-      };
-    }
-    return subject;
-  });
-  useGlobalStore.setState({
-    datasetEntityArray: updatedDatasetEntityArray,
-  });
+  useGlobalStore.setState(
+    produce((state) => {
+      const subject = state.datasetEntityArray.find((s) => s.id === subjectId); // Changed from subjectId to id
+      if (subject) {
+        const sample = subject.samples.find((s) => s.id === oldSampleId); // Changed from sampleId to id
+        if (sample) {
+          sample.id = newSampleId; // Changed from sampleId to id
+        }
+      }
+    })
+  );
 };
 
 // Subject site management functions
 export const addSiteToSubject = (subjectId, siteId) => {
-  const { datasetEntityArray } = useGlobalStore.getState();
-  const updatedDatasetEntityArray = datasetEntityArray.map((subject) => {
-    if (subject.subjectId === subjectId) {
-      const subjectSites = subject.subjectSites || [];
-      return {
-        ...subject,
-        subjectSites: [
-          ...subjectSites,
-          {
-            siteId,
-            metadata: {},
-          },
-        ],
-      };
-    }
-    return subject;
-  });
-  useGlobalStore.setState({
-    datasetEntityArray: updatedDatasetEntityArray,
-  });
+  useGlobalStore.setState(
+    produce((state) => {
+      const subject = state.datasetEntityArray.find((s) => s.id === subjectId); // Changed from subjectId to id
+      if (subject) {
+        if (!subject.subjectSites) subject.subjectSites = [];
+        subject.subjectSites.push({
+          id: siteId, // Changed from siteId to id
+          type: "site", // Add type field to identify entity type
+          parentSubject: subject.id, // Add explicit reference to parent subject
+          metadata: {},
+        });
+      }
+    })
+  );
 };
 
 export const deleteSiteFromSubject = (subjectId, siteId) => {
-  const { datasetEntityArray } = useGlobalStore.getState();
-  const updatedDatasetEntityArray = datasetEntityArray.map((subject) => {
-    if (subject.subjectId === subjectId && subject.subjectSites) {
-      return {
-        ...subject,
-        subjectSites: subject.subjectSites.filter((site) => site.siteId !== siteId),
-      };
-    }
-    return subject;
-  });
-  useGlobalStore.setState({
-    datasetEntityArray: updatedDatasetEntityArray,
-  });
+  useGlobalStore.setState(
+    produce((state) => {
+      const subject = state.datasetEntityArray.find((s) => s.id === subjectId); // Changed from subjectId to id
+      if (subject && subject.subjectSites) {
+        subject.subjectSites = subject.subjectSites.filter((site) => site.id !== siteId); // Changed from siteId to id
+      }
+    })
+  );
 };
 
 export const getExistingPerformanceIds = () => {
   const { datasetEntityArray } = useGlobalStore.getState();
-  return datasetEntityArray.flatMap((subject) =>
-    subject.subjectPerformances.map((perf) => perf.performanceId)
+  return datasetEntityArray.flatMap(
+    (subject) => subject.subjectPerformances.map((perf) => perf.id) // Changed from performanceId to id
   );
 };
 
 // Subject performance management functions
 export const addPerformanceToSubject = (subjectId, performanceId) => {
-  console.log(`Adding performance ${performanceId} to subject ${subjectId}`);
-  const { datasetEntityArray } = useGlobalStore.getState();
-  console.log("datasetEntityArray", datasetEntityArray);
-  const updatedDatasetEntityArray = datasetEntityArray.map((subject) => {
-    if (subject.subjectId === subjectId) {
-      const subjectPerformances = subject.subjectPerformances || [];
-      return {
-        ...subject,
-        subjectPerformances: [
-          ...subjectPerformances,
-          {
-            performanceId,
-            metadata: {},
-          },
-        ],
-      };
-    }
-    return subject;
-  });
-  useGlobalStore.setState({
-    datasetEntityArray: updatedDatasetEntityArray,
-  });
-  // log the updated datasetEntityArray
-  console.log("updatedDatasetEntityArray", useGlobalStore.getState().datasetEntityArray);
+  useGlobalStore.setState(
+    produce((state) => {
+      const subject = state.datasetEntityArray.find((s) => s.id === subjectId); // Changed from subjectId to id
+      if (subject) {
+        if (!subject.subjectPerformances) subject.subjectPerformances = [];
+        subject.subjectPerformances.push({
+          id: performanceId, // Changed from performanceId to id
+          type: "performance", // Add type field to identify entity type
+          parentSubject: subject.id, // Add explicit reference to parent subject
+          metadata: {},
+        });
+      }
+    })
+  );
 };
 
 export const addPerformanceToSample = (subjectId, sampleId, performanceId) => {
-  console.log(`Adding performance ${performanceId} to sample ${sampleId} of subject ${subjectId}`);
-  const { datasetEntityArray } = useGlobalStore.getState();
-  console.log("Before update:", JSON.stringify(datasetEntityArray, null, 2));
-
-  const updatedDatasetEntityArray = datasetEntityArray.map((subject) => {
-    if (subject.subjectId === subjectId && subject.samples) {
-      return {
-        ...subject,
-        samples: subject.samples.map((sample) => {
-          if (sample.sampleId === sampleId) {
-            const performances = sample.performances || [];
-            return {
-              ...sample,
-              performances: [...performances, { performanceId, metadata: {} }],
-            };
-          }
-          return sample;
-        }),
-      };
-    }
-    return subject;
-  });
-
-  useGlobalStore.setState({
-    datasetEntityArray: updatedDatasetEntityArray,
-  });
-
-  console.log(
-    "After update:",
-    JSON.stringify(useGlobalStore.getState().datasetEntityArray, null, 2)
+  useGlobalStore.setState(
+    produce((state) => {
+      const subject = state.datasetEntityArray.find((s) => s.id === subjectId); // Changed from subjectId to id
+      if (subject && subject.samples) {
+        const sample = subject.samples.find((s) => s.id === sampleId); // Changed from sampleId to id
+        if (sample) {
+          if (!sample.performances) sample.performances = [];
+          sample.performances.push({
+            id: performanceId, // Changed from performanceId to id
+            type: "performance", // Add type field to identify entity type
+            parentSubject: subject.id, // Add explicit reference to top-level subject
+            parentSample: sample.id, // Add explicit reference to parent sample
+            metadata: {},
+          });
+        }
+      }
+    })
   );
 };
 
 export const deletePerformanceFromSubject = (subjectId, performanceId) => {
-  const { datasetEntityArray } = useGlobalStore.getState();
-  const updatedDatasetEntityArray = datasetEntityArray.map((subject) => {
-    if (subject.subjectId === subjectId && subject.subjectPerformances) {
-      return {
-        ...subject,
-        subjectPerformances: subject.subjectPerformances.filter(
-          (perf) => perf.performanceId !== performanceId
-        ),
-      };
-    }
-    return subject;
-  });
-  useGlobalStore.setState({
-    datasetEntityArray: updatedDatasetEntityArray,
-  });
+  useGlobalStore.setState(
+    produce((state) => {
+      const subject = state.datasetEntityArray.find((s) => s.id === subjectId); // Changed from subjectId to id
+      if (subject && subject.subjectPerformances) {
+        subject.subjectPerformances = subject.subjectPerformances.filter(
+          (perf) => perf.id !== performanceId // Changed from performanceId to id
+        );
+      }
+    })
+  );
 };
 
 export const getExistingSiteIds = () => {
   const { datasetEntityArray } = useGlobalStore.getState();
-  return datasetEntityArray.flatMap((subject) =>
-    subject.samples.flatMap((sample) => sample.sites.map((site) => site.siteId))
+  return datasetEntityArray.flatMap(
+    (subject) => subject.samples.flatMap((sample) => sample.sites.map((site) => site.id)) // Changed from siteId to id
   );
 };
 
 // Sample site management functions
 export const addSiteToSample = (subjectId, sampleId, siteId) => {
-  const { datasetEntityArray } = useGlobalStore.getState();
-  const updatedDatasetEntityArray = datasetEntityArray.map((subject) => {
-    if (subject.subjectId === subjectId && subject.samples) {
-      return {
-        ...subject,
-        samples: subject.samples.map((sample) => {
-          if (sample.sampleId === sampleId) {
-            const sites = sample.sites || [];
-            return {
-              ...sample,
-              sites: [...sites, { siteId, metadata: {} }],
-            };
-          }
-          return sample;
-        }),
-      };
-    }
-    return subject;
-  });
-  useGlobalStore.setState({
-    datasetEntityArray: updatedDatasetEntityArray,
-  });
+  useGlobalStore.setState(
+    produce((state) => {
+      const subject = state.datasetEntityArray.find((s) => s.id === subjectId); // Changed from subjectId to id
+      if (subject && subject.samples) {
+        const sample = subject.samples.find((s) => s.id === sampleId); // Changed from sampleId to id
+        if (sample) {
+          if (!sample.sites) sample.sites = [];
+          sample.sites.push({
+            id: siteId, // Changed from siteId to id
+            type: "site", // Add type field to identify entity type
+            parentSubject: subject.id, // Add explicit reference to top-level subject
+            parentSample: sample.id, // Add explicit reference to parent sample
+            metadata: {},
+          });
+        }
+      }
+    })
+  );
 };
 
 export const deleteSiteFromSample = (subjectId, sampleId, siteId) => {
-  const { datasetEntityArray } = useGlobalStore.getState();
-  const updatedDatasetEntityArray = datasetEntityArray.map((subject) => {
-    if (subject.subjectId === subjectId && subject.samples) {
-      return {
-        ...subject,
-        samples: subject.samples.map((sample) => {
-          if (sample.sampleId === sampleId && sample.sites) {
-            return {
-              ...sample,
-              sites: sample.sites.filter((site) => site.siteId !== siteId),
-            };
-          }
-          return sample;
-        }),
-      };
-    }
-    return subject;
-  });
-  useGlobalStore.setState({
-    datasetEntityArray: updatedDatasetEntityArray,
-  });
+  useGlobalStore.setState(
+    produce((state) => {
+      const subject = state.datasetEntityArray.find((s) => s.id === subjectId); // Changed from subjectId to id
+      if (subject && subject.samples) {
+        const sample = subject.samples.find((s) => s.id === sampleId); // Changed from sampleId to id
+        if (sample && sample.sites) {
+          sample.sites = sample.sites.filter((site) => site.id !== siteId); // Changed from siteId to id
+        }
+      }
+    })
+  );
 };
 
 export const deletePerformanceFromSample = (subjectId, sampleId, performanceId) => {
-  const { datasetEntityArray } = useGlobalStore.getState();
-  const updatedDatasetEntityArray = datasetEntityArray.map((subject) => {
-    if (subject.subjectId === subjectId && subject.samples) {
-      return {
-        ...subject,
-        samples: subject.samples.map((sample) => {
-          if (sample.sampleId === sampleId && sample.performances) {
-            return {
-              ...sample,
-              performances: sample.performances.filter(
-                (perf) => perf.performanceId !== performanceId
-              ),
-            };
-          }
-          return sample;
-        }),
-      };
-    }
-    return subject;
-  });
-  useGlobalStore.setState({
-    datasetEntityArray: updatedDatasetEntityArray,
-  });
+  useGlobalStore.setState(
+    produce((state) => {
+      const subject = state.datasetEntityArray.find((s) => s.id === subjectId); // Changed from subjectId to id
+      if (subject && subject.samples) {
+        const sample = subject.samples.find((s) => s.id === sampleId); // Changed from sampleId to id
+        if (sample && sample.performances) {
+          sample.performances = sample.performances.filter(
+            (perf) => perf.id !== performanceId // Changed from performanceId to id
+          );
+        }
+      }
+    })
+  );
 };
 
-// Subject performance management - missing functions
+// Subject performance management functions
 export const modifySubjectPerformanceId = (subjectId, oldPerformanceId, newPerformanceId) => {
-  const { datasetEntityArray } = useGlobalStore.getState();
-  const updatedDatasetEntityArray = datasetEntityArray.map((subject) => {
-    if (subject.subjectId === subjectId) {
-      return {
-        ...subject,
-        subjectPerformances: subject.subjectPerformances.map((performance) => {
-          if (performance.performanceId === oldPerformanceId) {
-            return {
-              ...performance,
-              performanceId: newPerformanceId,
-            };
-          }
-          return performance;
-        }),
-      };
-    }
-    return subject;
-  });
-  useGlobalStore.setState({
-    datasetEntityArray: updatedDatasetEntityArray,
-  });
+  useGlobalStore.setState(
+    produce((state) => {
+      const subject = state.datasetEntityArray.find((s) => s.id === subjectId); // Changed from subjectId to id
+      if (subject && subject.subjectPerformances) {
+        const performance = subject.subjectPerformances.find(
+          (p) => p.id === oldPerformanceId // Changed from performanceId to id
+        );
+        if (performance) {
+          performance.id = newPerformanceId; // Changed from performanceId to id
+        }
+      }
+    })
+  );
 };
 
-// Sample performance management - missing functions
+// Sample performance management functions
 export const modifySamplePerformanceId = (
   subjectId,
   sampleId,
   oldPerformanceId,
   newPerformanceId
 ) => {
-  const { datasetEntityArray } = useGlobalStore.getState();
-  const updatedDatasetEntityArray = datasetEntityArray.map((subject) => {
-    if (subject.subjectId === subjectId) {
-      return {
-        ...subject,
-        samples: subject.samples.map((sample) => {
-          if (sample.sampleId === sampleId) {
-            return {
-              ...sample,
-              performances: sample.performances.map((performance) => {
-                if (performance.performanceId === oldPerformanceId) {
-                  return {
-                    ...performance,
-                    performanceId: newPerformanceId,
-                  };
-                }
-                return performance;
-              }),
-            };
+  useGlobalStore.setState(
+    produce((state) => {
+      const subject = state.datasetEntityArray.find((s) => s.id === subjectId); // Changed from subjectId to id
+      if (subject && subject.samples) {
+        const sample = subject.samples.find((s) => s.id === sampleId); // Changed from sampleId to id
+        if (sample && sample.performances) {
+          const performance = sample.performances.find((p) => p.id === oldPerformanceId); // Changed from performanceId to id
+          if (performance) {
+            performance.id = newPerformanceId; // Changed from performanceId to id
           }
-          return sample;
-        }),
-      };
-    }
-    return subject;
-  });
-  useGlobalStore.setState({
-    datasetEntityArray: updatedDatasetEntityArray,
-  });
+        }
+      }
+    })
+  );
 };
 
-// Subject site management - missing functions
+// Subject site management functions
 export const modifySubjectSiteId = (subjectId, oldSiteId, newSiteId) => {
-  const { datasetEntityArray } = useGlobalStore.getState();
-  const updatedDatasetEntityArray = datasetEntityArray.map((subject) => {
-    if (subject.subjectId === subjectId) {
-      return {
-        ...subject,
-        subjectSites: subject.subjectSites.map((site) => {
-          if (site.siteId === oldSiteId) {
-            return {
-              ...site,
-              siteId: newSiteId,
-            };
-          }
-          return site;
-        }),
-      };
-    }
-    return subject;
-  });
-  useGlobalStore.setState({
-    datasetEntityArray: updatedDatasetEntityArray,
-  });
+  useGlobalStore.setState(
+    produce((state) => {
+      const subject = state.datasetEntityArray.find((s) => s.id === subjectId); // Changed from subjectId to id
+      if (subject && subject.subjectSites) {
+        const site = subject.subjectSites.find((site) => site.id === oldSiteId); // Changed from siteId to id
+        if (site) {
+          site.id = newSiteId; // Changed from siteId to id
+        }
+      }
+    })
+  );
 };
 
-// Sample site management - missing functions
+// Sample site management functions
 export const modifySampleSiteId = (subjectId, sampleId, oldSiteId, newSiteId) => {
-  const { datasetEntityArray } = useGlobalStore.getState();
-  const updatedDatasetEntityArray = datasetEntityArray.map((subject) => {
-    if (subject.subjectId === subjectId) {
-      return {
-        ...subject,
-        samples: subject.samples.map((sample) => {
-          if (sample.sampleId === sampleId) {
-            return {
-              ...sample,
-              sites: sample.sites.map((site) => {
-                if (site.siteId === oldSiteId) {
-                  return {
-                    ...site,
-                    siteId: newSiteId,
-                  };
-                }
-                return site;
-              }),
-            };
+  useGlobalStore.setState(
+    produce((state) => {
+      const subject = state.datasetEntityArray.find((s) => s.id === subjectId); // Changed from subjectId to id
+      if (subject && subject.samples) {
+        const sample = subject.samples.find((s) => s.id === sampleId); // Changed from sampleId to id
+        if (sample && sample.sites) {
+          const site = sample.sites.find((site) => site.id === oldSiteId); // Changed from siteId to id
+          if (site) {
+            site.id = newSiteId; // Changed from siteId to id
           }
-          return sample;
-        }),
-      };
+        }
+      }
+    })
+  );
+};
+
+// Helper functions for entity metadata access and updates
+/**
+ * Gets entity data for a selected hierarchy entity
+ * @param {Object} selectedEntity - The flattened selected entity object
+ * @returns {Object|null} The complete entity data object or null if not found
+ */
+export const getEntityDataFromSelection = (selectedEntity) => {
+  if (!selectedEntity) return null;
+
+  const { entityType, entityId, parentId, parentType, grandParentId } = selectedEntity;
+  const { datasetEntityArray } = useGlobalStore.getState();
+
+  // For subject entities
+  if (entityType === "subject") {
+    return datasetEntityArray.find((subject) => subject.id === entityId) || null; // Changed from subjectId to id
+  }
+
+  // Find parent subject (needed for all other entity types)
+  const parentSubjectId = grandParentId || parentId;
+  const subject = datasetEntityArray.find((subject) => subject.id === parentSubjectId); // Changed from subjectId to id
+  if (!subject) return null;
+
+  // For sample entities
+  if (entityType === "sample") {
+    return subject.samples?.find((sample) => sample.id === entityId) || null; // Changed from sampleId to id
+  }
+
+  // For site entities
+  if (entityType === "site") {
+    if (parentType === "sample") {
+      const sample = subject.samples?.find((sample) => sample.id === parentId); // Changed from sampleId to id
+      return sample?.sites?.find((site) => site.id === entityId) || null; // Changed from siteId to id
+    } else {
+      return subject.subjectSites?.find((site) => site.id === entityId) || null; // Changed from siteId to id
     }
-    return subject;
-  });
-  useGlobalStore.setState({
-    datasetEntityArray: updatedDatasetEntityArray,
-  });
+  }
+
+  // For performance entities
+  if (entityType === "performance") {
+    if (parentType === "sample") {
+      const sample = subject.samples?.find((sample) => sample.id === parentId); // Changed from sampleId to id
+      return sample?.performances?.find((perf) => perf.id === entityId) || null; // Changed from performanceId to id
+    } else {
+      return subject.subjectPerformances?.find((perf) => perf.id === entityId) || null; // Changed from performanceId to id
+    }
+  }
+
+  return null;
+};
+
+/**
+ * Updates metadata for an entity
+ * @param {Object} selectedEntity - The flattened selected entity object
+ * @param {Object} metadataUpdates - Object containing metadata updates
+ * @returns {boolean} Success status of the update
+ */
+export const updateEntityMetadata = (selectedEntity, metadataUpdates) => {
+  if (!selectedEntity) return false;
+
+  const { entityType, entityId, parentId, parentType, grandParentId } = selectedEntity;
+
+  useGlobalStore.setState(
+    produce((state) => {
+      // For subject entities
+      if (entityType === "subject") {
+        const subject = state.datasetEntityArray.find((s) => s.id === entityId); // Changed from subjectId to id
+        if (subject) {
+          if (!subject.metadata) subject.metadata = {};
+          Object.assign(subject.metadata, metadataUpdates);
+          return true;
+        }
+      }
+
+      // All other entity types need the parent subject
+      const subjectId = grandParentId || parentId;
+      const subject = state.datasetEntityArray.find((s) => s.id === subjectId); // Changed from subjectId to id
+      if (!subject) return false;
+
+      // For sample entities
+      if (entityType === "sample") {
+        const sample = subject.samples?.find((s) => s.id === entityId); // Changed from sampleId to id
+        if (sample) {
+          if (!sample.metadata) sample.metadata = {};
+          Object.assign(sample.metadata, metadataUpdates);
+          return true;
+        }
+      }
+
+      // For site entities
+      if (entityType === "site") {
+        // Sample site
+        if (parentType === "sample") {
+          const sample = subject.samples?.find((s) => s.id === parentId); // Changed from sampleId to id
+          if (sample) {
+            const site = sample.sites?.find((site) => site.id === entityId); // Changed from siteId to id
+            if (site) {
+              if (!site.metadata) site.metadata = {};
+              Object.assign(site.metadata, metadataUpdates);
+              return true;
+            }
+          }
+        }
+        // Subject site
+        else {
+          const site = subject.subjectSites?.find((site) => site.id === entityId); // Changed from siteId to id
+          if (site) {
+            if (!site.metadata) site.metadata = {};
+            Object.assign(site.metadata, metadataUpdates);
+            return true;
+          }
+        }
+      }
+
+      // For performance entities
+      if (entityType === "performance") {
+        // Sample performance
+        if (parentType === "sample") {
+          const sample = subject.samples?.find((s) => s.id === parentId); // Changed from sampleId to id
+          if (sample) {
+            const perf = sample.performances?.find((p) => p.id === entityId); // Changed from performanceId to id
+            if (perf) {
+              if (!perf.metadata) perf.metadata = {};
+              Object.assign(perf.metadata, metadataUpdates);
+              return true;
+            }
+          }
+        }
+        // Subject performance
+        else {
+          const perf = subject.subjectPerformances?.find((p) => p.id === entityId); // Changed from performanceId to id
+          if (perf) {
+            if (!perf.metadata) perf.metadata = {};
+            Object.assign(perf.metadata, metadataUpdates);
+            return true;
+          }
+        }
+      }
+
+      return false;
+    })
+  );
+
+  return true;
+};
+
+/**
+ * Gets metadata value for an entity
+ * @param {Object} selectedEntity - The flattened selected entity object
+ * @param {string} key - The metadata key to retrieve
+ * @param {*} defaultValue - Default value if metadata doesn't exist
+ * @returns {*} The metadata value or default value
+ */
+export const getEntityMetadataValue = (selectedEntity, key, defaultValue = "") => {
+  if (!selectedEntity) return defaultValue;
+
+  const entityData = getEntityDataFromSelection(selectedEntity);
+  if (!entityData) return defaultValue;
+
+  if (!entityData.metadata) return entityData[key] || defaultValue;
+
+  return entityData.metadata[key] || entityData[key] || defaultValue;
 };
 
 export const getDatasetEntityArray = () => {

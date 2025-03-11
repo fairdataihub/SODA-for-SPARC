@@ -256,15 +256,15 @@ export const guidedOpenEntityAdditionSwal = async ({ entityType, subjectId, samp
     // reverse newEntities array
     newEntities.reverse();
     if (entityType === "subjects") {
-      for (const subjectId of newEntities) {
-        console.log("Adding subject", subjectId);
-        addSubject(subjectId);
+      for (const entityId of newEntities) {
+        console.log("Adding subject", entityId);
+        addSubject(entityId);
       }
     }
 
     if (entityType === "samples") {
-      for (const sampleId of newEntities) {
-        addSampleToSubject(subjectId, sampleId);
+      for (const entityId of newEntities) {
+        addSampleToSubject(subjectId, entityId);
       }
     }
 
@@ -272,15 +272,15 @@ export const guidedOpenEntityAdditionSwal = async ({ entityType, subjectId, samp
       console.log("subjectId", subjectId);
       console.log("sampleId", sampleId);
       if (sampleId) {
-        for (const performanceId of newEntities) {
-          console.log("Adding performance", performanceId);
+        for (const entityId of newEntities) {
+          console.log("Adding performance", entityId);
           console.log("subjectId", subjectId);
           console.log("sampleId", sampleId);
-          addPerformanceToSample(subjectId, sampleId, performanceId);
+          addPerformanceToSample(subjectId, sampleId, entityId);
         }
       } else {
-        for (const performanceId of newEntities) {
-          addPerformanceToSubject(subjectId, performanceId);
+        for (const entityId of newEntities) {
+          addPerformanceToSubject(subjectId, entityId);
         }
       }
     }
@@ -290,15 +290,15 @@ export const guidedOpenEntityAdditionSwal = async ({ entityType, subjectId, samp
       console.log("subjectId", subjectId);
       console.log("sampleId", sampleId);
       if (sampleId) {
-        for (const siteId of newEntities) {
-          console.log("Adding site", siteId);
+        for (const entityId of newEntities) {
+          console.log("Adding site", entityId);
           console.log("subjectId", subjectId);
           console.log("sampleId", sampleId);
-          addSiteToSample(subjectId, sampleId, siteId);
+          addSiteToSample(subjectId, sampleId, entityId);
         }
       } else {
-        for (const siteId of newEntities) {
-          addSiteToSubject(subjectId, siteId);
+        for (const entityId of newEntities) {
+          addSiteToSubject(subjectId, entityId);
         }
       }
     }
@@ -312,22 +312,22 @@ export const guidedOpenEntityEditSwal = async ({ entityType, entityData, parentE
   let entityName = "";
 
   if (entityType === "subject") {
-    entityName = entityData.subjectId;
+    entityName = entityData.id;
     preExistingEntities = getExistingSubjectIds();
     entityNameSingular = "subject";
     entityPrefix = "sub-";
   } else if (entityType === "sample") {
-    entityName = entityData.sampleId;
+    entityName = entityData.id;
     preExistingEntities = getExistingSampleIds();
     entityNameSingular = "sample";
     entityPrefix = "sam-";
   } else if (entityType === "performance") {
-    entityName = entityData.performanceId;
+    entityName = entityData.id;
     preExistingEntities = getExistingPerformanceIds();
     entityNameSingular = "performance";
     entityPrefix = "perf-";
   } else if (entityType === "site") {
-    entityName = entityData.siteId;
+    entityName = entityData.id;
     preExistingEntities = getExistingSiteIds();
     entityNameSingular = "site";
     entityPrefix = "site-";
