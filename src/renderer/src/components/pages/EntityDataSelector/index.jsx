@@ -164,6 +164,8 @@ const EntityDataSelectorPage = ({
   const activeEntity = useGlobalStore((state) => state.activeEntity);
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
   const datasetStructureJSONObj = useGlobalStore((state) => state.datasetStructureJSONObj);
+  console.log("EntityDataSelectorPage");
+  console.log("activeEntity", activeEntity);
 
   const countItemsInDatasetStructure = (datasetStructure) => {
     if (!datasetStructure) return 0;

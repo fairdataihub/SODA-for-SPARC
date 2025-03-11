@@ -18,7 +18,7 @@ import {
 } from "../../../stores/slices/datasetEntityStructureSlice.js";
 import { setSelectedEntities } from "../../../stores/slices/datasetContentSelectorSlice.js";
 import { setDatasetEntityObj } from "../../../stores/slices/datasetEntitySelectorSlice.js";
-
+import { setSelectedHierarchyEntity } from "../../../stores/slices/datasetContentSelectorSlice.js";
 import { guidedSetNavLoadingState } from "./navigationUtils/pageLoading.js";
 import Swal from "sweetalert2";
 import { userErrorMessage } from "../../others/http-error-handler/error-handler.js";
@@ -294,11 +294,8 @@ export const openPage = async (targetPageID) => {
 
       if (targetPageComponentType === "entity-management-page") {
         // Set the dataset entity object to the saved dataset entity object from the JSON
-
         const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
-
         setDatasetEntityObj(savedDatasetEntityObj);
-
         setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["data"]);
       }
 
@@ -345,10 +342,22 @@ export const openPage = async (targetPageID) => {
 
         setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["data"]);
       }
+      if (targetPageComponentType === "entity-file-mapping-page") {
+        /* ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** */
+
+        setSelectedHierarchyEntity(null);
+
+        const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
+        const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
+        console.log("Selected entities", selectedEntities);
+        console.log("Dataset entity array", datasetEntityArray);
+        setSelectedEntities(selectedEntities);
+        setDatasetEntityArray(datasetEntityArray);
+        setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["data"]);
+      }
 
       if (targetPageComponentType === "dataset-content-selector") {
         const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
-        console.log("Selected entities", selectedEntities);
         setSelectedEntities(selectedEntities);
       }
 
@@ -364,8 +373,7 @@ export const openPage = async (targetPageID) => {
       if (targetPageComponentType === "dataset-entity-id-management-page") {
         const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
         const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
-        console.log("Selected entities", selectedEntities);
-        console.log("Dataset entity array", datasetEntityArray);
+
         setSelectedEntities(selectedEntities);
         setDatasetEntityArray(datasetEntityArray);
       }
@@ -373,19 +381,9 @@ export const openPage = async (targetPageID) => {
       if (targetPageComponentType === "dataset-entity-metadata-page") {
         const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
         const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
-        console.log("Selected entities", selectedEntities);
-        console.log("Dataset entity array", datasetEntityArray);
-        setSelectedEntities(selectedEntities);
-        setDatasetEntityArray(datasetEntityArray);
-      }
-
-      if (targetPageComponentType === "entity-file-mapping-page") {
-        const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
-        const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
 
         setSelectedEntities(selectedEntities);
         setDatasetEntityArray(datasetEntityArray);
-        setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["data"]);
       }
     }
 

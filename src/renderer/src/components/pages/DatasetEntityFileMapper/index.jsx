@@ -81,6 +81,8 @@ const DatasetEntityFileMapper = ({
   entityTypeStringSingular,
   entityTypeStringPlural,
 }) => {
+  const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
+
   const activeEntity = useGlobalStore((state) => state.activeEntity);
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
   const datasetStructureJSONObj = useGlobalStore((state) => state.datasetStructureJSONObj);
@@ -169,7 +171,7 @@ const DatasetEntityFileMapper = ({
           </Grid.Col>
 
           <Grid.Col span={8}>
-            {activeEntity ? (
+            {selectedHierarchyEntity ? (
               <Paper shadow="sm" radius="md">
                 <DatasetTreeViewRenderer
                   itemSelectInstructions={getInstructionalTextByEntityType(entityType)}
