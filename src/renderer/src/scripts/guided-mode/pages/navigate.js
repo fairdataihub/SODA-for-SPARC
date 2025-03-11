@@ -37,7 +37,7 @@ $("#guided-next-button").on("click", async function () {
         funding_consortium: "SPARC",
         award_number: "OT2OD025340",
         milestone_achieved: ["Data Collection", "Data Analysis"],
-        milestone_completion_date: "2021-01-01",
+        milestone_completion_date: ["2021-01-01"],
       },
     },
   };

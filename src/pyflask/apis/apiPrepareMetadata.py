@@ -24,6 +24,8 @@ from flask_restx.inputs import boolean
 from errorHandlers import notBadRequestException
 from utils import metadata_string_to_list
 from pysoda.core.metadata.submission import create_excel
+from pysoda.utils import validation_error_message
+from jsonschema import ValidationError
 
 
 api = get_namespace(NamespaceEnum.PREPARE_METADATA)
@@ -58,8 +60,6 @@ class SaveSubmissionFile(Resource):
         data = request.get_json()
 
         upload_boolean = data.get('upload_boolean')
-        # bfaccount = data.get('selected_account')
-        # bfdataset = data.get('selected_dataset')
         filepath = data.get('filepath')
         soda = data.get("soda")
 
@@ -70,6 +70,11 @@ class SaveSubmissionFile(Resource):
         try:
             return create_excel(soda, upload_boolean, filepath)
         except Exception as e:
+            if isinstance(e, ValidationError):
+                # Extract properties from the ValidationError
+                validation_err_msg = validation_error_message(e)
+                # Return the ValidationError as JSON
+                api.abort(400, validation_err_msg)
             if notBadRequestException(e):
                 api.abort(500, str(e))
             raise e
