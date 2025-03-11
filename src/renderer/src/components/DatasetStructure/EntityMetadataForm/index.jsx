@@ -1,7 +1,6 @@
 import React from "react";
 import { Box, Title, Text } from "@mantine/core";
 import useGlobalStore from "../../../stores/globalStore";
-import { getEntityMetadataValue } from "../../../stores/slices/datasetEntityStructureSlice";
 
 // This function needs to work with the simplified parent references
 const getTitleForEntity = (selectedEntity) => {
@@ -55,10 +54,7 @@ const EntityMetadataForm = () => {
           {/* Your form fields would go here */}
           <Text>Entity ID: {selectedHierarchyEntity.entityId}</Text>
           {/* Example of using metadata value */}
-          <Text>
-            Experimental Group:{" "}
-            {getEntityMetadataValue(selectedHierarchyEntity, "experimentalGroup", "N/A")}
-          </Text>
+          <Text>Experimental Group: </Text>
         </Box>
       )}
     </Box>

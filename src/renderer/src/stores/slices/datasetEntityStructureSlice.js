@@ -480,24 +480,6 @@ export const updateEntityMetadata = (selectedEntity, metadataUpdates) => {
   return true;
 };
 
-/**
- * Gets metadata value for an entity
- * @param {Object} selectedEntity - The flattened selected entity object
- * @param {string} key - The metadata key to retrieve
- * @param {*} defaultValue - Default value if metadata doesn't exist
- * @returns {*} The metadata value or default value
- */
-export const getEntityMetadataValue = (selectedEntity, key, defaultValue = "") => {
-  if (!selectedEntity) return defaultValue;
-
-  const entityData = getEntityDataFromSelection(selectedEntity);
-  if (!entityData) return defaultValue;
-
-  if (!entityData.metadata) return entityData[key] || defaultValue;
-
-  return entityData.metadata[key] || entityData[key] || defaultValue;
-};
-
 export const getDatasetEntityArray = () => {
   return useGlobalStore.getState().datasetEntityArray;
 };
