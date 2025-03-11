@@ -335,99 +335,215 @@ export const modifySampleSiteId = (subjectId, sampleId, oldSiteId, newSiteId) =>
   );
 };
 
+// Helper functions for entity metadata access and updates
+/**
+ * Gets entity data for a selected hierarchy entity
+ * @param {Object} selectedEntity - The flattened selected entity object
+ * @returns {Object|null} The complete entity data object or null if not found
+ */
+export const getEntityDataFromSelection = (selectedEntity) => {
+  if (!selectedEntity) return null;
+
+  const { entityType, entityId, parentId, parentType, grandParentId } = selectedEntity;
+  const { datasetEntityArray } = useGlobalStore.getState();
+
+  // For subject entities
+  if (entityType === "subject") {
+    return datasetEntityArray.find((subject) => subject.id === entityId) || null; // Changed from subjectId to id
+  }
+
+  // Find parent subject (needed for all other entity types)
+  const parentSubjectId = grandParentId || parentId;
+  const subject = datasetEntityArray.find((subject) => subject.id === parentSubjectId); // Changed from subjectId to id
+  if (!subject) return null;
+
+  // For sample entities
+  if (entityType === "sample") {
+    return subject.samples?.find((sample) => sample.id === entityId) || null; // Changed from sampleId to id
+  }
+
+  // For site entities
+  if (entityType === "site") {
+    if (parentType === "sample") {
+      const sample = subject.samples?.find((sample) => sample.id === parentId); // Changed from sampleId to id
+      return sample?.sites?.find((site) => site.id === entityId) || null; // Changed from siteId to id
+    } else {
+      return subject.subjectSites?.find((site) => site.id === entityId) || null; // Changed from siteId to id
+    }
+  }
+
+  // For performance entities
+  if (entityType === "performance") {
+    if (parentType === "sample") {
+      const sample = subject.samples?.find((sample) => sample.id === parentId); // Changed from sampleId to id
+      return sample?.performances?.find((perf) => perf.id === entityId) || null; // Changed from performanceId to id
+    } else {
+      return subject.subjectPerformances?.find((perf) => perf.id === entityId) || null; // Changed from performanceId to id
+    }
+  }
+
+  return null;
+};
+
 /**
  * Updates metadata for an entity
- * @param {Object} selectedEntity - The flattened selected entity object
+ * @param {Object} selectedEntity - The selected entity object
  * @param {Object} metadataUpdates - Object containing metadata updates
  * @returns {boolean} Success status of the update
  */
 export const updateEntityMetadata = (selectedEntity, metadataUpdates) => {
   if (!selectedEntity) return false;
 
-  const { entityType, entityId, parentId, parentType, grandParentId } = selectedEntity;
+  console.log("Updating metadata for entity:", selectedEntity);
+  console.log("Metadata updates:", metadataUpdates);
 
-  useGlobalStore.setState(
-    produce((state) => {
-      // For subject entities
-      if (entityType === "subject") {
-        const subject = state.datasetEntityArray.find((s) => s.id === entityId); // Changed from subjectId to id
-        if (subject) {
-          if (!subject.metadata) subject.metadata = {};
-          Object.assign(subject.metadata, metadataUpdates);
-          return true;
-        }
+  // Get the correct property names from the selectedEntity
+  const type = selectedEntity.type; // Only use .type
+  const id = selectedEntity.id;
+  const parentSubject = selectedEntity.parentSubject;
+  const parentSample = selectedEntity.parentSample;
+
+  // Force a new reference by creating a fresh copy of the entire datasetEntityArray
+  const currentArray = useGlobalStore.getState().datasetEntityArray;
+  let newArray = JSON.parse(JSON.stringify(currentArray));
+  let updated = false;
+
+  // For subject entities
+  if (type === "subject") {
+    const subjectIndex = newArray.findIndex((s) => s.id === id);
+    if (subjectIndex >= 0) {
+      if (!newArray[subjectIndex].metadata) {
+        newArray[subjectIndex].metadata = {};
       }
+      newArray[subjectIndex].metadata = {
+        ...newArray[subjectIndex].metadata,
+        ...metadataUpdates,
+      };
+      updated = true;
+    }
+  } else {
+    // Find parent subject for all other entity types
+    const subjectIndex = newArray.findIndex((s) => s.id === parentSubject);
 
-      // All other entity types need the parent subject
-      const subjectId = grandParentId || parentId;
-      const subject = state.datasetEntityArray.find((s) => s.id === subjectId); // Changed from subjectId to id
-      if (!subject) return false;
+    if (subjectIndex >= 0) {
+      const subject = newArray[subjectIndex];
 
       // For sample entities
-      if (entityType === "sample") {
-        const sample = subject.samples?.find((s) => s.id === entityId); // Changed from sampleId to id
-        if (sample) {
-          if (!sample.metadata) sample.metadata = {};
-          Object.assign(sample.metadata, metadataUpdates);
-          return true;
+      if (type === "sample") {
+        const sampleIndex = subject.samples?.findIndex((s) => s.id === id);
+        if (sampleIndex >= 0) {
+          if (!subject.samples[sampleIndex].metadata) {
+            subject.samples[sampleIndex].metadata = {};
+          }
+          subject.samples[sampleIndex].metadata = {
+            ...subject.samples[sampleIndex].metadata,
+            ...metadataUpdates,
+          };
+          updated = true;
         }
       }
 
       // For site entities
-      if (entityType === "site") {
+      else if (type === "site") {
         // Sample site
-        if (parentType === "sample") {
-          const sample = subject.samples?.find((s) => s.id === parentId); // Changed from sampleId to id
-          if (sample) {
-            const site = sample.sites?.find((site) => site.id === entityId); // Changed from siteId to id
-            if (site) {
-              if (!site.metadata) site.metadata = {};
-              Object.assign(site.metadata, metadataUpdates);
-              return true;
+        if (parentSample) {
+          const sampleIndex = subject.samples?.findIndex((s) => s.id === parentSample);
+          if (sampleIndex >= 0 && subject.samples[sampleIndex].sites) {
+            const siteIndex = subject.samples[sampleIndex].sites.findIndex((s) => s.id === id);
+            if (siteIndex >= 0) {
+              if (!subject.samples[sampleIndex].sites[siteIndex].metadata) {
+                subject.samples[sampleIndex].sites[siteIndex].metadata = {};
+              }
+              subject.samples[sampleIndex].sites[siteIndex].metadata = {
+                ...subject.samples[sampleIndex].sites[siteIndex].metadata,
+                ...metadataUpdates,
+              };
+              updated = true;
             }
           }
         }
         // Subject site
         else {
-          const site = subject.subjectSites?.find((site) => site.id === entityId); // Changed from siteId to id
-          if (site) {
-            if (!site.metadata) site.metadata = {};
-            Object.assign(site.metadata, metadataUpdates);
-            return true;
+          const siteIndex = subject.subjectSites?.findIndex((s) => s.id === id);
+          if (siteIndex >= 0) {
+            if (!subject.subjectSites[siteIndex].metadata) {
+              subject.subjectSites[siteIndex].metadata = {};
+            }
+            subject.subjectSites[siteIndex].metadata = {
+              ...subject.subjectSites[siteIndex].metadata,
+              ...metadataUpdates,
+            };
+            updated = true;
           }
         }
       }
 
       // For performance entities
-      if (entityType === "performance") {
+      else if (type === "performance") {
         // Sample performance
-        if (parentType === "sample") {
-          const sample = subject.samples?.find((s) => s.id === parentId); // Changed from sampleId to id
-          if (sample) {
-            const perf = sample.performances?.find((p) => p.id === entityId); // Changed from performanceId to id
-            if (perf) {
-              if (!perf.metadata) perf.metadata = {};
-              Object.assign(perf.metadata, metadataUpdates);
-              return true;
+        if (parentSample) {
+          const sampleIndex = subject.samples?.findIndex((s) => s.id === parentSample);
+          if (sampleIndex >= 0 && subject.samples[sampleIndex].performances) {
+            const perfIndex = subject.samples[sampleIndex].performances.findIndex(
+              (p) => p.id === id
+            );
+            if (perfIndex >= 0) {
+              if (!subject.samples[sampleIndex].performances[perfIndex].metadata) {
+                subject.samples[sampleIndex].performances[perfIndex].metadata = {};
+              }
+              subject.samples[sampleIndex].performances[perfIndex].metadata = {
+                ...subject.samples[sampleIndex].performances[perfIndex].metadata,
+                ...metadataUpdates,
+              };
+              updated = true;
             }
           }
         }
         // Subject performance
         else {
-          const perf = subject.subjectPerformances?.find((p) => p.id === entityId); // Changed from performanceId to id
-          if (perf) {
-            if (!perf.metadata) perf.metadata = {};
-            Object.assign(perf.metadata, metadataUpdates);
-            return true;
+          const perfIndex = subject.subjectPerformances?.findIndex((p) => p.id === id);
+          if (perfIndex >= 0) {
+            if (!subject.subjectPerformances[perfIndex].metadata) {
+              subject.subjectPerformances[perfIndex].metadata = {};
+            }
+            subject.subjectPerformances[perfIndex].metadata = {
+              ...subject.subjectPerformances[perfIndex].metadata,
+              ...metadataUpdates,
+            };
+            updated = true;
           }
         }
       }
+    }
+  }
 
-      return false;
-    })
-  );
+  if (updated) {
+    // Update the entire array in one go to ensure reference change
+    useGlobalStore.setState({ datasetEntityArray: newArray });
+    console.log("Updated datasetEntityArray with new metadata");
+    return true;
+  }
 
-  return true;
+  console.log("No matching entity found for update");
+  return false;
+};
+
+/**
+ * Gets metadata value for an entity
+ * @param {Object} selectedEntity - The flattened selected entity object
+ * @param {string} key - The metadata key to retrieve
+ * @param {*} defaultValue - Default value if metadata doesn't exist
+ * @returns {*} The metadata value or default value
+ */
+export const getEntityMetadataValue = (selectedEntity, key, defaultValue = "") => {
+  if (!selectedEntity) return defaultValue;
+
+  const entityData = getEntityDataFromSelection(selectedEntity);
+  if (!entityData) return defaultValue;
+
+  if (!entityData.metadata) return entityData[key] || defaultValue;
+
+  return entityData.metadata[key] || entityData[key] || defaultValue;
 };
 
 export const getDatasetEntityArray = () => {

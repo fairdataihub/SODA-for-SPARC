@@ -31,7 +31,11 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import useGlobalStore from "../../../stores/globalStore";
 import EntityHierarchyRenderer from "../../shared/EntityHierarchyRenderer";
-import { updateEntityMetadata } from "../../../stores/slices/datasetEntityStructureSlice";
+import {
+  getEntityDataFromSelection,
+  updateEntityMetadata,
+  getEntityMetadataValue,
+} from "../../../stores/slices/datasetEntityStructureSlice";
 
 // Component for entity metadata form
 const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
@@ -76,8 +80,17 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
     }
   };
 
+  // Get metadata value directly from the entity
+  const getMetadataValue = (key) => {
+    if (selectedHierarchyEntity.metadata && selectedHierarchyEntity.metadata[key] !== undefined) {
+      return selectedHierarchyEntity.metadata[key];
+    }
+    return "";
+  };
+
   // Handle metadata changes
   const handleChange = (field, value) => {
+    console.log("selectedHierarchyEntity:", selectedHierarchyEntity);
     updateEntityMetadata(selectedHierarchyEntity, { [field]: value });
   };
 
@@ -100,10 +113,9 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
 
   // Render the appropriate form fields based on entity type
   const renderEntitySpecificFields = () => {
-    const { type, id, metadata } = selectedHierarchyEntity;
+    const { type, id } = selectedHierarchyEntity;
     console.log("Rendering form for entity:", selectedHierarchyEntity);
     console.log("Entity id:", id);
-    console.log("Entity metadata:", metadata);
 
     switch (type) {
       case "subject":
@@ -113,7 +125,7 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
               label="Experimental Group"
               description="The experimental group this entity belongs to"
               placeholder="e.g., Control, Treatment A"
-              value={metadata?.experimentalGroup || ""}
+              value={getMetadataValue("experimentalGroup")}
               onChange={(e) => handleChange("experimentalGroup", e.target.value)}
             />
             <Select
@@ -125,14 +137,14 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
                 { value: "female", label: "Female" },
                 { value: "unknown", label: "Unknown" },
               ]}
-              value={metadata?.sex || ""}
+              value={getMetadataValue("sex")}
               onChange={(value) => handleChange("sex", value)}
             />
             <TextInput
               label="Age"
               description="Subject's age"
               placeholder="e.g., 12 weeks"
-              value={metadata?.age || ""}
+              value={getMetadataValue("age")}
               onChange={(e) => handleChange("age", e.target.value)}
             />
             <NumberInput
@@ -140,7 +152,7 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
               description="Subject's weight"
               placeholder="e.g., 250"
               suffix=" g"
-              value={metadata?.weight || ""}
+              value={getMetadataValue("weight")}
               onChange={(value) => handleChange("weight", value)}
             />
           </Stack>
@@ -152,21 +164,21 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
               label="Experimental Group"
               description="The experimental group this sample belongs to"
               placeholder="e.g., Control, Treatment A"
-              value={metadata?.experimentalGroup || ""}
+              value={getMetadataValue("experimentalGroup")}
               onChange={(e) => handleChange("experimentalGroup", e.target.value)}
             />
             <TextInput
               label="Sample Type"
               description="The type of biological sample"
               placeholder="e.g., Blood, Tissue"
-              value={metadata?.sampleType || ""}
+              value={getMetadataValue("sampleType")}
               onChange={(e) => handleChange("sampleType", e.target.value)}
             />
             <TextInput
               label="Anatomical Location"
               description="The anatomical location this sample was taken from"
               placeholder="e.g., Dorsal root ganglion"
-              value={metadata?.anatomicalLocation || ""}
+              value={getMetadataValue("anatomicalLocation")}
               onChange={(e) => handleChange("anatomicalLocation", e.target.value)}
             />
           </Stack>
@@ -178,21 +190,21 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
               label="Experimental Group"
               description="The experimental group this site belongs to"
               placeholder="e.g., Control, Treatment A"
-              value={metadata?.experimentalGroup || ""}
+              value={getMetadataValue("experimentalGroup")}
               onChange={(e) => handleChange("experimentalGroup", e.target.value)}
             />
             <TextInput
               label="Anatomical Location"
               description="The anatomical location of this site"
               placeholder="e.g., Dorsal root ganglion"
-              value={metadata?.anatomicalLocation || ""}
+              value={getMetadataValue("anatomicalLocation")}
               onChange={(e) => handleChange("anatomicalLocation", e.target.value)}
             />
             <TextInput
               label="Coordinates"
               description="Stereotaxic or other coordinates"
               placeholder="e.g., X:1.2, Y:3.4, Z:5.6"
-              value={metadata?.coordinates || ""}
+              value={getMetadataValue("coordinates")}
               onChange={(e) => handleChange("coordinates", e.target.value)}
             />
           </Stack>
@@ -204,21 +216,21 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
               label="Experimental Group"
               description="The experimental group this performance belongs to"
               placeholder="e.g., Control, Treatment A"
-              value={metadata?.experimentalGroup || ""}
+              value={getMetadataValue("experimentalGroup")}
               onChange={(e) => handleChange("experimentalGroup", e.target.value)}
             />
             <TextInput
               label="Equipment"
               description="Equipment used for this recording/performance"
               placeholder="e.g., Multichannel electrode array"
-              value={metadata?.equipment || ""}
+              value={getMetadataValue("equipment")}
               onChange={(e) => handleChange("equipment", e.target.value)}
             />
             <TextInput
               label="Date"
               description="Date of the recording/performance"
               placeholder="YYYY-MM-DD"
-              value={metadata?.date || ""}
+              value={getMetadataValue("date")}
               onChange={(e) => handleChange("date", e.target.value)}
             />
           </Stack>
