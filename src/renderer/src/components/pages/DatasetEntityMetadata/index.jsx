@@ -31,10 +31,7 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import useGlobalStore from "../../../stores/globalStore";
 import EntityHierarchyRenderer from "../../shared/EntityHierarchyRenderer";
-import {
-  getEntityDataFromSelection,
-  updateEntityMetadata,
-} from "../../../stores/slices/datasetEntityStructureSlice";
+import { updateEntityMetadata } from "../../../stores/slices/datasetEntityStructureSlice";
 
 // Component for entity metadata form
 const EntityMetadataForm = ({ selectedHierarchyEntity }) => {

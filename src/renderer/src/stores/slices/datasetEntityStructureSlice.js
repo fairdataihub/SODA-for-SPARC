@@ -335,56 +335,6 @@ export const modifySampleSiteId = (subjectId, sampleId, oldSiteId, newSiteId) =>
   );
 };
 
-// Helper functions for entity metadata access and updates
-/**
- * Gets entity data for a selected hierarchy entity
- * @param {Object} selectedEntity - The flattened selected entity object
- * @returns {Object|null} The complete entity data object or null if not found
- */
-export const getEntityDataFromSelection = (selectedEntity) => {
-  if (!selectedEntity) return null;
-
-  const { entityType, entityId, parentId, parentType, grandParentId } = selectedEntity;
-  const { datasetEntityArray } = useGlobalStore.getState();
-
-  // For subject entities
-  if (entityType === "subject") {
-    return datasetEntityArray.find((subject) => subject.id === entityId) || null; // Changed from subjectId to id
-  }
-
-  // Find parent subject (needed for all other entity types)
-  const parentSubjectId = grandParentId || parentId;
-  const subject = datasetEntityArray.find((subject) => subject.id === parentSubjectId); // Changed from subjectId to id
-  if (!subject) return null;
-
-  // For sample entities
-  if (entityType === "sample") {
-    return subject.samples?.find((sample) => sample.id === entityId) || null; // Changed from sampleId to id
-  }
-
-  // For site entities
-  if (entityType === "site") {
-    if (parentType === "sample") {
-      const sample = subject.samples?.find((sample) => sample.id === parentId); // Changed from sampleId to id
-      return sample?.sites?.find((site) => site.id === entityId) || null; // Changed from siteId to id
-    } else {
-      return subject.subjectSites?.find((site) => site.id === entityId) || null; // Changed from siteId to id
-    }
-  }
-
-  // For performance entities
-  if (entityType === "performance") {
-    if (parentType === "sample") {
-      const sample = subject.samples?.find((sample) => sample.id === parentId); // Changed from sampleId to id
-      return sample?.performances?.find((perf) => perf.id === entityId) || null; // Changed from performanceId to id
-    } else {
-      return subject.subjectPerformances?.find((perf) => perf.id === entityId) || null; // Changed from performanceId to id
-    }
-  }
-
-  return null;
-};
-
 /**
  * Updates metadata for an entity
  * @param {Object} selectedEntity - The flattened selected entity object
