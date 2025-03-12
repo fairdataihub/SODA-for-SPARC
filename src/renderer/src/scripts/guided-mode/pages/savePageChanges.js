@@ -853,3 +853,27 @@ export const savePageChanges = async (pageBeingLeftID) => {
 
   guidedSetNavLoadingState(false);
 };
+
+/**
+ * Save entity file mapping changes to the SODA JSON object
+ */
+export const saveEntityFileMappingChanges = () => {
+  // Get the current datasetEntityObj from the store
+  const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
+
+  // Save the entire datasetEntityObj to window.sodaJSONObj
+  window.sodaJSONObj["dataset-entity-obj"] = datasetEntityObj;
+
+  // If you need to do any reverse conversion (map to array) for backwards compatibility, do it here:
+  // const compatDatasetEntityObj = { ...datasetEntityObj };
+  // if (compatDatasetEntityObj["entity-to-file-mapping"]) {
+  //   Object.keys(compatDatasetEntityObj["entity-to-file-mapping"]).forEach(entityId => {
+  //     const entityFileMap = compatDatasetEntityObj["entity-to-file-mapping"][entityId];
+  //     compatDatasetEntityObj["entity-to-file-mapping"][entityId] = Object.keys(entityFileMap);
+  //   });
+  // }
+  // window.sodaJSONObj["dataset-entity-obj-compat"] = compatDatasetEntityObj;
+
+  console.log("Entity file mapping saved:", datasetEntityObj);
+  return true;
+};
