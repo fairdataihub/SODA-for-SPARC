@@ -78,8 +78,8 @@ const FileItem = ({ name, content, onFileClick, isFileSelected, allowStructureEd
   const contextMenuItemData = useGlobalStore((state) => state.contextMenuItemData);
   const contextMenuIsOpened = useGlobalStore((state) => state.contextMenuIsOpened);
 
-  // Determine file selection status (true, false, or null)
-  const fileIsSelected = isFileSelected ? isFileSelected(name, content) : null;
+  // Determine file selection status (true or false only, no null)
+  const fileIsSelected = isFileSelected ? isFileSelected(name, content) : false;
 
   const handleFileContextMenuOpen = (e) => {
     e.preventDefault();
@@ -100,7 +100,6 @@ const FileItem = ({ name, content, onFileClick, isFileSelected, allowStructureEd
 
   const getFileColor = () => {
     if (fileIsSelected) return "var(--color-transparent-soda-green)";
-    if (fileIsSelected === false) return "#DCDCDC";
     if (isHoveredOrSelected) return "rgba(0, 0, 0, 0.05)";
     return undefined;
   };
@@ -121,12 +120,11 @@ const FileItem = ({ name, content, onFileClick, isFileSelected, allowStructureEd
         <Tooltip label="Select this file" zIndex={2999}>
           <Checkbox
             readOnly
-            checked={fileIsSelected !== null}
+            checked={fileIsSelected}
             onClick={(e) => {
               e.stopPropagation(); // Prevent any other click events
               onFileClick?.(name, content, fileIsSelected);
             }}
-            disabled={fileIsSelected === false}
           />
         </Tooltip>
       )}
@@ -202,11 +200,8 @@ const FolderItem = ({
 
   const folderIsPassThrough = content.passThrough;
 
-  // Check if the folder is selected
-  // True means the folder is selected
-  // False return means the folder should be grayed out
-  // Null means the folder should be normal
-  const folderIsSelected = isFolderSelected ? isFolderSelected(name, content) : null;
+  // Check if the folder is selected - simplified to just true/false
+  const folderIsSelected = isFolderSelected ? isFolderSelected(name, content) : false;
 
   const folderRelativePathEqualsContextMenuItemRelativePath =
     contextMenuIsOpened && contextMenuItemData?.relativePath === content.relativePath;
@@ -214,7 +209,6 @@ const FolderItem = ({
   // Helper function for determining background color
   const getBackgroundColor = () => {
     if (folderIsSelected) return "var(--color-transparent-soda-green)";
-    if (folderIsSelected === false) return "#DCDCDC";
 
     if (
       hovered ||
@@ -254,9 +248,8 @@ const FolderItem = ({
               <Tooltip label={folderClickHoverText || "Select this folder"} zIndex={2999}>
                 <Checkbox
                   readOnly
-                  checked={folderIsSelected !== null}
+                  checked={folderIsSelected}
                   onClick={() => onFolderClick?.(name, content, folderIsSelected)}
-                  disabled={folderIsSelected === false}
                 />
               </Tooltip>
             )}
@@ -387,6 +380,13 @@ const DatasetTreeViewRenderer = ({
     );
   }
 
+  const handleFileItemClick = (fileName, fileContents) => {
+    console.log("Internal file click", fileName); // Add this debug line
+    const isSelected = fileActions["is-file-selected"](fileName, fileContents);
+    // Make sure this next line is actually being called:
+    fileActions["on-file-click"](fileName, fileContents, isSelected);
+  };
+
   return (
     <Paper padding="md" shadow="sm" radius="md" p="sm" flex={1} w="100%" withBorder>
       {itemSelectInstructions && (
@@ -439,7 +439,7 @@ const DatasetTreeViewRenderer = ({
                   key={fileName}
                   name={fileName}
                   content={renderDatasetStructureJSONObj.files[fileName]}
-                  onFileClick={fileActions?.["on-file-click"]}
+                  onFileClick={handleFileItemClick}
                   isFileSelected={fileActions?.["is-file-selected"]}
                   allowStructureEditing={allowStructureEditing}
                 />

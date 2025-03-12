@@ -347,12 +347,25 @@ const removeFromOtherEntities = (entityEntries, targetEntityName, entityRelative
   });
 }; // Added missing closing brace
 
-export const checkIfRelativePathBelongsToEntity = (entityId, relativePath) => {
-  console.log("Checking if relative path belongs to entity", { entityId, relativePath });
+// Update this function to include entityType parameter
+export const checkIfRelativePathBelongsToEntity = (entityId, relativePath, entityType) => {
+  console.log("Checking if relative path belongs to entity", {
+    entityId,
+    relativePath,
+    entityType,
+  });
   const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
-  const entityType = "entity-to-file-mapping";
-  console.log("datasetEntityObj?.[entityType]", datasetEntityObj?.[entityType]);
-  return null;
+
+  // Use provided entityType or default to "entity-to-file-mapping"
+  const typeToCheck = entityType || "entity-to-file-mapping";
+
+  console.log("datasetEntityObj?.[typeToCheck]", datasetEntityObj?.[typeToCheck]);
+  console.log(
+    "datasetEntityObj?.[typeToCheck]?.[entityId]",
+    datasetEntityObj?.[typeToCheck]?.[entityId]
+  );
+
+  return Boolean(datasetEntityObj?.[typeToCheck]?.[entityId]?.[relativePath]);
 };
 
 // Get the number of files associated with a specific entity

@@ -29,6 +29,7 @@ import {
   setActiveEntity,
   modifyDatasetEntityForRelativeFilePath,
   getEntityForRelativePath,
+  checkIfRelativePathBelongsToEntity,
 } from "../../../stores/slices/datasetEntitySelectorSlice";
 import { naturalSort } from "../../shared/utils/util-functions";
 
@@ -266,26 +267,28 @@ const EntityDataSelectorPage = ({
                       );
                     },
                     "is-folder-selected": (folderName, folderContents) => {
-                      const entity = getEntityForRelativePath(
-                        datasetEntityObj,
-                        entityType,
-                        folderContents.relativePath
+                      // Pass entityType to the function
+                      return (
+                        checkIfRelativePathBelongsToEntity(
+                          activeEntity,
+                          folderContents.relativePath,
+                          entityType
+                        ) || false
                       );
-                      if (!entity) return null;
-                      return entity === activeEntity;
                     },
                   }}
                   fileActions={{
-                    "on-file-click": (fileName, fileContents) =>
+                    "on-file-click": (fileName, fileContents, fileIsSelected) =>
                       handleFileClick(entityType, activeEntity, datasetEntityObj, fileContents),
                     "is-file-selected": (fileName, fileContents) => {
-                      const entity = getEntityForRelativePath(
-                        datasetEntityObj,
-                        entityType,
-                        fileContents.relativePath
+                      // Pass entityType to the function
+                      return (
+                        checkIfRelativePathBelongsToEntity(
+                          activeEntity,
+                          fileContents.relativePath,
+                          entityType
+                        ) || false
                       );
-                      if (!entity) return null;
-                      return entity === activeEntity;
                     },
                   }}
                 />

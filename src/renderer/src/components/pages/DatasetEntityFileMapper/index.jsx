@@ -123,7 +123,8 @@ const DatasetEntityFileMapper = () => {
                     "is-folder-selected": (folderName, folderContents) => {
                       return checkIfRelativePathBelongsToEntity(
                         selectedHierarchyEntity.id,
-                        folderContents.relativePath
+                        folderContents.relativePath,
+                        entityType
                       );
                     },
                   }}
@@ -133,7 +134,8 @@ const DatasetEntityFileMapper = () => {
                     "is-file-selected": (fileName, fileContents) => {
                       return checkIfRelativePathBelongsToEntity(
                         selectedHierarchyEntity.id,
-                        fileContents.relativePath
+                        fileContents.relativePath,
+                        entityType
                       );
                     },
                   }}
