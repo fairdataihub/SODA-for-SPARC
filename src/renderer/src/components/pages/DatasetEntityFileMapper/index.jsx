@@ -10,15 +10,18 @@ import {
   setActiveEntity,
   modifyDatasetEntityForRelativeFilePath,
   getEntityForRelativePath,
+  checkIfRelativePathBelongsToEntity,
 } from "../../../stores/slices/datasetEntitySelectorSlice";
-import { externallySetSearchFilterValue } from "../../../stores/slices/datasetTreeViewSlice";
 
-const handleEntityClick = (entity) => setActiveEntity(entity);
-
-const handleFileClick = (entityType, activeEntity, datasetEntityObj, fileContents) => {
+const handleFileClick = (selectedHierarchyEntity, fileContents, fileIsSelected) => {
+  console.log("handleFileClick");
+  const entityId = selectedHierarchyEntity.id;
+  console.log("entityId", entityId);
+  console.log("fileContents", fileContents);
+  console.log("fileIsSelected", fileIsSelected);
   modifyDatasetEntityForRelativeFilePath(
-    entityType,
-    activeEntity,
+    "entity-to-file-mapping",
+    entityId,
     fileContents.relativePath,
     "toggle"
   );
@@ -34,19 +37,24 @@ const handleFolderClick = (
   const action = folderWasSelectedBeforeClick ? "remove" : "add";
 
   modifyDatasetEntityForRelativeFilePath(
-    entityType,
+    "entity-to-file-mapping",
     activeEntity,
     folderContents.relativePath,
     action
   );
 
   Object.values(folderContents.files).forEach((file) => {
-    modifyDatasetEntityForRelativeFilePath(entityType, activeEntity, file.relativePath, action);
+    modifyDatasetEntityForRelativeFilePath(
+      "entity-to-file-mapping",
+      activeEntity,
+      file.relativePath,
+      action
+    );
   });
 
   Object.values(folderContents.folders).forEach((subFolder) => {
     handleFolderClick(
-      entityType,
+      "entity-to-file-mapping",
       activeEntity,
       datasetEntityObj,
       subFolder,
@@ -66,60 +74,13 @@ const getInstructionalTextByEntityType = (entityType) => {
   return instructionalText[entityType] || instructionalText.default;
 };
 
-const getProgressSectionColorByEntityType = (entityType) => {
-  const colorMap = {
-    subject: "blue",
-    sample: "green",
-    collection: "orange",
-  };
-  return colorMap[entityType] || "cyan";
-};
-
-const DatasetEntityFileMapper = ({
-  pageName = "Dataset Entity File Mapper",
-  entityType,
-  entityTypeStringSingular,
-  entityTypeStringPlural,
-}) => {
+const DatasetEntityFileMapper = () => {
+  const entityType = null;
   const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
-
   const activeEntity = useGlobalStore((state) => state.activeEntity);
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
-  const datasetStructureJSONObj = useGlobalStore((state) => state.datasetStructureJSONObj);
-
-  const countItemsInDatasetStructure = (datasetStructure) => {
-    if (!datasetStructure) return 0;
-    let totalItems = 0;
-    const keys = Object.keys(datasetStructure);
-
-    for (const key of keys) {
-      if (key === "files") {
-        totalItems += Object.keys(datasetStructure[key]).length;
-      }
-      if (key === "folders") {
-        const folders = Object.keys(datasetStructure[key]);
-        totalItems += folders.length;
-        for (const folder of folders) {
-          totalItems += countItemsInDatasetStructure(datasetStructure[key][folder]);
-        }
-      }
-    }
-    return totalItems;
-  };
-
-  const countSelectedItemsByEntityType = (entityType) => {
-    if (!datasetEntityObj?.[entityType]) return 0;
-    return Object.values(datasetEntityObj[entityType]).reduce(
-      (acc, entity) => acc + entity.length,
-      0
-    );
-  };
-
-  const itemCount = countItemsInDatasetStructure(datasetStructureJSONObj) - 1; // Subtract 1 to exclude the root folder
-  const countItemsSelected = countSelectedItemsByEntityType(entityType);
-
   return (
-    <GuidedModePage pageHeader={pageName}>
+    <GuidedModePage pageHeader={"Dataset Entity File Mapper"}>
       <GuidedModeSection>
         <Stack>
           <Text>
@@ -129,32 +90,6 @@ const DatasetEntityFileMapper = ({
           </Text>
         </Stack>
       </GuidedModeSection>
-
-      {datasetEntityObj?.[entityType] && (
-        <GuidedModeSection>
-          <Paper p="xs" shadow="sm">
-            <Text size="sm" c="gray">
-              Progress: {countItemsSelected} of {itemCount} files mapped
-            </Text>
-            <Progress.Root size="xl">
-              {Object.keys(datasetEntityObj[entityType]).map((entity) => {
-                const entityItemsCount = datasetEntityObj[entityType][entity].length || 0;
-                const progressValue = (entityItemsCount / itemCount) * 100;
-
-                return (
-                  <Progress.Section
-                    value={progressValue}
-                    color={getProgressSectionColorByEntityType(entityType)}
-                    key={entity}
-                  >
-                    <Progress.Label>{entity}</Progress.Label>
-                  </Progress.Section>
-                );
-              })}
-            </Progress.Root>
-          </Paper>
-        </GuidedModeSection>
-      )}
 
       <GuidedModeSection>
         <Grid gutter="lg">
@@ -178,7 +113,7 @@ const DatasetEntityFileMapper = ({
                   folderActions={{
                     "on-folder-click": (folderName, folderContents, folderIsSelected) => {
                       handleFolderClick(
-                        entityType,
+                        "entity-to-file-mapping",
                         activeEntity,
                         datasetEntityObj,
                         folderContents,
@@ -188,7 +123,7 @@ const DatasetEntityFileMapper = ({
                     "is-folder-selected": (folderName, folderContents) => {
                       const entity = getEntityForRelativePath(
                         datasetEntityObj,
-                        entityType,
+                        "entity-to-file-mapping",
                         folderContents.relativePath
                       );
                       if (!entity) return null;
@@ -196,16 +131,15 @@ const DatasetEntityFileMapper = ({
                     },
                   }}
                   fileActions={{
-                    "on-file-click": (fileName, fileContents) =>
-                      handleFileClick(entityType, activeEntity, datasetEntityObj, fileContents),
+                    "on-file-click": (fileName, fileContents, fileIsSelected) =>
+                      handleFileClick(selectedHierarchyEntity, fileContents, fileIsSelected),
                     "is-file-selected": (fileName, fileContents) => {
-                      const entity = getEntityForRelativePath(
-                        datasetEntityObj,
-                        entityType,
+                      const entityId = selectedHierarchyEntity.id;
+                      const fileIsSelected = checkIfRelativePathBelongsToEntity(
+                        entityId,
                         fileContents.relativePath
                       );
-                      if (!entity) return null;
-                      return entity === activeEntity;
+                      return fileIsSelected;
                     },
                   }}
                 />

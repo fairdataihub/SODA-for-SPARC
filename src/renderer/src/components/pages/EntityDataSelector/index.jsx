@@ -44,6 +44,10 @@ const handleFileClick = (entityType, activeEntity, datasetEntityObj, fileContent
     fileContents.relativePath,
     "toggle"
   );
+  console.log("entityType", entityType);
+  console.log("activeEntity", activeEntity);
+  console.log("datasetEntityObj", datasetEntityObj);
+  console.log("fileContents", fileContents);
 };
 
 const handleFolderClick = (
@@ -164,8 +168,6 @@ const EntityDataSelectorPage = ({
   const activeEntity = useGlobalStore((state) => state.activeEntity);
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
   const datasetStructureJSONObj = useGlobalStore((state) => state.datasetStructureJSONObj);
-  console.log("EntityDataSelectorPage");
-  console.log("activeEntity", activeEntity);
 
   const countItemsInDatasetStructure = (datasetStructure) => {
     if (!datasetStructure) return 0;

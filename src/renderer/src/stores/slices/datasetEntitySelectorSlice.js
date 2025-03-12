@@ -406,6 +406,14 @@ export const getEntityForRelativePath = (datasetEntityObj, entityType, relativeP
   return Object.keys(entities).find((entityName) => entities[entityName]?.includes(relativePath));
 };
 
+export const checkIfRelativePathBelongsToEntity = (entityId, relativePath) => {
+  console.log("Checking if relative path belongs to entity", { entityId, relativePath });
+  const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
+  const entityType = "entity-to-file-mapping";
+  console.log("datasetEntityObj?.[entityType]", datasetEntityObj?.[entityType]);
+  return datasetEntityObj?.[entityType]?.[entityId]?.includes(relativePath) || false;
+};
+
 // Get the number of files associated with a specific entity
 export const getNumberFilesForEntity = (entityName) => {
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
