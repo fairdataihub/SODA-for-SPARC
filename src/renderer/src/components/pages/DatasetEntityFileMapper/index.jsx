@@ -13,7 +13,12 @@ import {
   checkIfRelativePathBelongsToEntity,
 } from "../../../stores/slices/datasetEntitySelectorSlice";
 
-const handleFileClick = (selectedHierarchyEntity, fileContents, fileIsSelected) => {
+const handleFileClick = (
+  selectedHierarchyEntity,
+  fileContents,
+  fileIsSelected,
+  mutuallyExclusive // Remove default value - require explicit parameter
+) => {
   console.log("handleFileClick");
   const entityId = selectedHierarchyEntity.id;
   console.log("entityId", entityId);
@@ -23,7 +28,8 @@ const handleFileClick = (selectedHierarchyEntity, fileContents, fileIsSelected) 
     "entity-to-file-mapping",
     entityId,
     fileContents.relativePath,
-    "toggle"
+    "toggle",
+    mutuallyExclusive
   );
 };
 
@@ -32,7 +38,8 @@ const handleFolderClick = (
   activeEntity,
   datasetEntityObj,
   folderContents,
-  folderWasSelectedBeforeClick
+  folderWasSelectedBeforeClick,
+  mutuallyExclusive // Remove default value - require explicit parameter
 ) => {
   const action = folderWasSelectedBeforeClick ? "remove" : "add";
 
@@ -40,12 +47,19 @@ const handleFolderClick = (
     entityType,
     activeEntity,
     folderContents.relativePath,
-    action
+    action,
+    mutuallyExclusive
   );
 
   // Process all files in the folder
   Object.values(folderContents.files).forEach((file) => {
-    modifyDatasetEntityForRelativeFilePath(entityType, activeEntity, file.relativePath, action);
+    modifyDatasetEntityForRelativeFilePath(
+      entityType,
+      activeEntity,
+      file.relativePath,
+      action,
+      mutuallyExclusive
+    );
   });
 
   // Recursively process subfolders
@@ -55,7 +69,8 @@ const handleFolderClick = (
       activeEntity,
       datasetEntityObj,
       subFolder,
-      folderWasSelectedBeforeClick
+      folderWasSelectedBeforeClick,
+      mutuallyExclusive
     );
   });
 };
@@ -110,14 +125,21 @@ const DatasetEntityFileMapper = () => {
                   itemSelectInstructions={getInstructionalTextByEntityType(
                     selectedHierarchyEntity.type
                   )}
+                  mutuallyExclusiveSelection={false}
                   folderActions={{
-                    "on-folder-click": (folderName, folderContents, folderIsSelected) => {
+                    "on-folder-click": (
+                      folderName,
+                      folderContents,
+                      folderIsSelected,
+                      mutuallyExclusive
+                    ) => {
                       handleFolderClick(
                         entityType,
                         selectedHierarchyEntity.id,
                         datasetEntityObj,
                         folderContents,
-                        folderIsSelected
+                        folderIsSelected,
+                        mutuallyExclusive
                       );
                     },
                     "is-folder-selected": (folderName, folderContents) => {
@@ -129,8 +151,13 @@ const DatasetEntityFileMapper = () => {
                     },
                   }}
                   fileActions={{
-                    "on-file-click": (fileName, fileContents, fileIsSelected) =>
-                      handleFileClick(selectedHierarchyEntity, fileContents, fileIsSelected),
+                    "on-file-click": (fileName, fileContents, fileIsSelected, mutuallyExclusive) =>
+                      handleFileClick(
+                        selectedHierarchyEntity,
+                        fileContents,
+                        fileIsSelected,
+                        mutuallyExclusive
+                      ),
                     "is-file-selected": (fileName, fileContents) => {
                       return checkIfRelativePathBelongsToEntity(
                         selectedHierarchyEntity.id,
@@ -139,6 +166,7 @@ const DatasetEntityFileMapper = () => {
                       );
                     },
                   }}
+                  entityType={entityType}
                 />
               </Paper>
             ) : (

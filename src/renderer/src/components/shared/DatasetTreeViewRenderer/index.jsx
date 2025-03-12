@@ -45,6 +45,56 @@ import {
 import { useDebouncedValue } from "@mantine/hooks";
 import { naturalSort } from "../utils/util-functions";
 
+const getAssociatedEntities = (relativePath, currentEntityType) => {
+  console.log("getAssociatedEntities", relativePath, currentEntityType);
+  const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
+  if (!datasetEntityObj) return [];
+
+  const entityTypes = currentEntityType ? [currentEntityType] : Object.keys(datasetEntityObj);
+
+  return entityTypes.flatMap((entityType) =>
+    Object.entries(datasetEntityObj[entityType] || {})
+      .filter(([, paths]) => paths?.[relativePath])
+      .map(([entityId]) => ({ entityId, entityType }))
+  );
+};
+// Get badge color based on entity type
+const getBadgeColor = (entityId, entityType) => {
+  console.log("getBadgeColor", entityId, entityType);
+  if (entityId.startsWith("sub-")) return "blue";
+  if (entityId.startsWith("sam-")) return "green";
+  if (entityId.startsWith("site-")) return "orange";
+  if (entityId.startsWith("perf-")) return "red";
+
+  // Entity type based colors
+  if (entityType === "Code") return "indigo";
+  if (entityType === "Experimental data") return "teal";
+  if (entityType === "Other") return "gray";
+
+  return "violet"; // Default
+};
+
+// Format entity ID for display (remove prefixes, limit length)
+const formatEntityId = (entityId) => {
+  // Remove common prefixes
+  let displayText = entityId;
+  const prefixes = ["sub-", "sam-", "site-", "perf-"];
+
+  for (const prefix of prefixes) {
+    if (displayText.startsWith(prefix)) {
+      displayText = displayText.substring(prefix.length);
+      break;
+    }
+  }
+
+  // Limit length if needed
+  if (displayText.length > 10) {
+    displayText = displayText.substring(0, 8) + "...";
+  }
+
+  return displayText;
+};
+
 const ICON_SETTINGS = {
   folderColor: "#ADD8E6",
   folderSize: 16,
@@ -73,10 +123,20 @@ const getIconForFile = (fileName) => {
   return fileIcons[fileExtension] || <IconFile size={ICON_SETTINGS.fileSize} />;
 };
 
-const FileItem = ({ name, content, onFileClick, isFileSelected, allowStructureEditing }) => {
+const FileItem = ({
+  name,
+  content,
+  onFileClick,
+  isFileSelected,
+  allowStructureEditing,
+  entityType,
+}) => {
   const { hovered, ref } = useHover();
   const contextMenuItemData = useGlobalStore((state) => state.contextMenuItemData);
   const contextMenuIsOpened = useGlobalStore((state) => state.contextMenuIsOpened);
+
+  // Get associated entities for this file, filtering by entityType
+  const associations = getAssociatedEntities(content.relativePath, entityType);
 
   // Determine file selection status (true or false only, no null)
   const fileIsSelected = isFileSelected ? isFileSelected(name, content) : false;
@@ -114,6 +174,7 @@ const FileItem = ({ name, content, onFileClick, isFileSelected, allowStructureEd
       ml="sm"
       pl="xs"
       py="1px"
+      style={{ flexWrap: "nowrap" }}
     >
       {/* Checkbox for selection appears first */}
       {onFileClick && (
@@ -136,20 +197,44 @@ const FileItem = ({ name, content, onFileClick, isFileSelected, allowStructureEd
           borderRadius: "4px",
           cursor: "default",
           transition: "background-color 0.2s ease-in-out",
+          flexGrow: 1,
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
         }}
       >
         {name}
       </Text>
-      {/*{content.relativePath.includes("mouse-1") && (
-        <Badge color="blue" variant="light" size="sm">
-          sub-mouse-1
-        </Badge>
+
+      {/* Entity badges */}
+      {associations.length > 0 && (
+        <Group gap="xs" wrap="nowrap" style={{ marginLeft: "auto", overflow: "hidden" }}>
+          {associations.slice(0, 3).map((assoc, index) => (
+            <Tooltip
+              key={index}
+              label={`${assoc.entityId} (${assoc.entityType})`}
+              position="top"
+              withArrow
+            >
+              <Badge
+                color={getBadgeColor(assoc.entityId, assoc.entityType)}
+                variant="light"
+                size="xs"
+                style={{ whiteSpace: "nowrap" }}
+              >
+                {formatEntityId(assoc.entityId)}
+              </Badge>
+            </Tooltip>
+          ))}
+          {associations.length > 3 && (
+            <Tooltip label={`${associations.length - 3} more entities`} position="top" withArrow>
+              <Badge color="gray" variant="outline" size="xs">
+                +{associations.length - 3}
+              </Badge>
+            </Tooltip>
+          )}
+        </Group>
       )}
-      {content.relativePath.includes("Tissue_1") && (
-        <Badge color="red" variant="light" size="sm">
-          sam-tissue-1
-        </Badge>
-      )}*/}
     </Group>
   );
 };
@@ -164,6 +249,7 @@ const FolderItem = ({
   isFileSelected,
   allowStructureEditing,
   folderClickHoverText,
+  entityType,
 }) => {
   const contextMenuItemData = useGlobalStore((state) => state.contextMenuItemData);
   const contextMenuIsOpened = useGlobalStore((state) => state.contextMenuIsOpened);
@@ -171,6 +257,9 @@ const FolderItem = ({
 
   const [isOpen, setIsOpen] = useState(false);
   const { hovered, ref } = useHover();
+
+  // Get associated entities for this folder, filtering by entityType
+  const associations = getAssociatedEntities(content.relativePath, entityType);
 
   useEffect(() => {
     if (datasetStructureSearchFilter) setIsOpen(true);
@@ -228,6 +317,7 @@ const FolderItem = ({
         ref={ref}
         bg={getBackgroundColor()}
         py="1px"
+        style={{ flexWrap: "nowrap" }}
       >
         {folderIsEmpty || !isOpen ? (
           <IconFolder
@@ -263,21 +353,49 @@ const FolderItem = ({
             borderRadius: "4px",
             cursor: "pointer",
             transition: "background-color 0.2s ease-in-out",
+            flexGrow: 1,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
           }}
           c={folderIsEmpty ? "gray" : folderIsPassThrough ? "silver" : "black"}
         >
           {name}
         </Text>
-        {/*{content.relativePath.includes("mouse-1") && (
-        <Badge color="blue" variant="light" size="sm">
-          sub-mouse-1
-        </Badge>
-      )}
-      {content.relativePath.includes("Tissue_1") && (
-        <Badge color="red" variant="light" size="sm">
-          sam-tissue-1
-        </Badge>
-      )}*/}
+
+        {/* Entity badges */}
+        {associations.length > 0 && (
+          <Group
+            gap="xs"
+            wrap="nowrap"
+            style={{ marginLeft: "auto", marginRight: 10, overflow: "hidden" }}
+          >
+            {associations.slice(0, 3).map((assoc, index) => (
+              <Tooltip
+                key={index}
+                label={`${assoc.entityId} (${assoc.entityType})`}
+                position="top"
+                withArrow
+              >
+                <Badge
+                  color={getBadgeColor(assoc.entityId, assoc.entityType)}
+                  variant="light"
+                  size="xs"
+                  style={{ whiteSpace: "nowrap" }}
+                >
+                  {formatEntityId(assoc.entityId)}
+                </Badge>
+              </Tooltip>
+            ))}
+            {associations.length > 3 && (
+              <Tooltip label={`${associations.length - 3} more entities`} position="top" withArrow>
+                <Badge color="gray" variant="outline" size="xs">
+                  +{associations.length - 3}
+                </Badge>
+              </Tooltip>
+            )}
+          </Group>
+        )}
       </Group>
       <Collapse in={isOpen}>
         {naturalSort(Object.keys(content?.folders || {})).map((folderName) => (
@@ -292,6 +410,7 @@ const FolderItem = ({
             isFileSelected={isFileSelected}
             allowStructureEditing={allowStructureEditing}
             folderClickHoverText={folderClickHoverText}
+            entityType={entityType}
           />
         ))}
         {naturalSort(Object.keys(content?.files || {})).map((fileName) => (
@@ -302,6 +421,7 @@ const FolderItem = ({
             onFileClick={onFileClick}
             isFileSelected={isFileSelected}
             allowStructureEditing={allowStructureEditing}
+            entityType={entityType}
           />
         ))}
       </Collapse>
@@ -315,7 +435,11 @@ const DatasetTreeViewRenderer = ({
   allowStructureEditing,
   itemSelectInstructions,
   hideSearchBar,
+  mutuallyExclusiveSelection,
+  entityType,
 }) => {
+  console.log("DatasetTreeViewRenderer entityType:", entityType);
+
   const renderDatasetStructureJSONObj = useGlobalStore(
     (state) => state.renderDatasetStructureJSONObj
   );
@@ -383,8 +507,8 @@ const DatasetTreeViewRenderer = ({
   const handleFileItemClick = (fileName, fileContents) => {
     console.log("Internal file click", fileName); // Add this debug line
     const isSelected = fileActions["is-file-selected"](fileName, fileContents);
-    // Make sure this next line is actually being called:
-    fileActions["on-file-click"](fileName, fileContents, isSelected);
+    // Now pass mutuallyExclusiveSelection as the last parameter
+    fileActions["on-file-click"](fileName, fileContents, isSelected, mutuallyExclusiveSelection);
   };
 
   return (
@@ -392,7 +516,7 @@ const DatasetTreeViewRenderer = ({
       {itemSelectInstructions && (
         <Stack gap="xs">
           <Text size="lg" fw={500}>
-            Select files
+            Select files {entityType ? `(${entityType})` : ""}:
           </Text>
           <Text>{itemSelectInstructions}</Text>
         </Stack>
@@ -430,6 +554,7 @@ const DatasetTreeViewRenderer = ({
                   isFolderSelected={folderActions?.["is-folder-selected"]}
                   isFileSelected={fileActions?.["is-file-selected"]}
                   allowStructureEditing={allowStructureEditing}
+                  entityType={entityType} // Pass to FolderItem
                 />
               )
             )}
@@ -442,6 +567,7 @@ const DatasetTreeViewRenderer = ({
                   onFileClick={handleFileItemClick}
                   isFileSelected={fileActions?.["is-file-selected"]}
                   allowStructureEditing={allowStructureEditing}
+                  entityType={entityType} // Pass to FileItem
                 />
               )
             )}

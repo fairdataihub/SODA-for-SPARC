@@ -10,15 +10,6 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       window.sodaJSONObj["subject-related-folders-and-files"]
     );
   }
-  if (pageBeingLeftID === "guided-manifest-sample-entity-selector-tab") {
-    window.sodaJSONObj["sample-related-folders-and-files"] = getEntityObjForEntityType(
-      "sample-related-folders-and-files"
-    );
-    console.log(
-      "sample-related-folders-and-files",
-      window.sodaJSONObj["sample-related-folders-and-files"]
-    );
-  }
   if (pageBeingLeftID === "guided-manifest-performance-entity-selector-tab") {
     window.sodaJSONObj["performance-related-folders-and-files"] = getEntityObjForEntityType(
       "performance-related-folders-and-files"

@@ -254,7 +254,6 @@ export const savePageChanges = async (pageBeingLeftID) => {
     //       throw errorArray;
     //     }
     //     //Unskip the sample file annotation page
-    //     guidedUnSkipPage(`guided-manifest-sample-entity-selector-tab`);
 
     //     //Unskip the samples metadata page
     //     guidedUnSkipPage(`guided-create-samples-metadata-tab`);
@@ -271,7 +270,6 @@ export const savePageChanges = async (pageBeingLeftID) => {
     //     }
 
     //     //Skip the sample data organization pages
-    //     guidedSkipPage(`guided-manifest-sample-entity-selector-tab`);
     //     //Skip the samples metadata page
     //     guidedSkipPage(`guided-create-samples-metadata-tab`);
     //   }

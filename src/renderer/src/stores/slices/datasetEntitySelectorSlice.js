@@ -270,12 +270,13 @@ export const getDatasetEntityObj = () => {
   return useGlobalStore.getState().datasetEntityObj;
 };
 
-// Modify an entity's relative file path based on the specified action
+// Remove default value to require explicit parameter
 export const modifyDatasetEntityForRelativeFilePath = (
   entityType,
   entityName,
   entityRelativePath,
-  action
+  action,
+  mutuallyExclusive
 ) => {
   if (!entityType || !entityName || !entityRelativePath) {
     console.error("Missing parameters for modification", {
@@ -309,21 +310,27 @@ export const modifyDatasetEntityForRelativeFilePath = (
             delete targetEntity[entityRelativePath];
           } else {
             targetEntity[entityRelativePath] = true;
+            // Only remove from other entities if mutuallyExclusive is true
+            if (mutuallyExclusive) {
+              removeFromOtherEntities(
+                state.datasetEntityObj[entityType],
+                entityName,
+                entityRelativePath
+              );
+            }
+          }
+          break;
+
+        case "add":
+          targetEntity[entityRelativePath] = true;
+          // Only remove from other entities if mutuallyExclusive is true
+          if (mutuallyExclusive) {
             removeFromOtherEntities(
               state.datasetEntityObj[entityType],
               entityName,
               entityRelativePath
             );
           }
-          break;
-
-        case "add":
-          targetEntity[entityRelativePath] = true;
-          removeFromOtherEntities(
-            state.datasetEntityObj[entityType],
-            entityName,
-            entityRelativePath
-          );
           break;
 
         case "remove":
@@ -354,6 +361,9 @@ export const checkIfRelativePathBelongsToEntity = (entityId, relativePath, entit
     relativePath,
     entityType,
   });
+  console.log("entityId", entityId);
+  console.log("relativePath", relativePath);
+  console.log("entityType", entityType);
   const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
 
   // Use provided entityType or default to "entity-to-file-mapping"

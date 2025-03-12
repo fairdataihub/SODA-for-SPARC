@@ -362,34 +362,6 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     renderManifestCards();
   }
 
-  if (targetPageID === "guided-manifest-subject-entity-selector-tab") {
-    setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
-    setEntityType("subject-related-folders-and-files");
-    setEntityListForEntityType(
-      "subject-related-folders-and-files",
-      window.sodaJSONObj["subject-related-folders-and-files"] || {}
-    );
-    setActiveEntity(null);
-  }
-  if (targetPageID === "guided-manifest-sample-entity-selector-tab") {
-    setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
-    setEntityType("sample-related-folders-and-files");
-    setEntityListForEntityType(
-      "sample-related-folders-and-files",
-      window.sodaJSONObj["sample-related-folders-and-files"] || {}
-    );
-    setActiveEntity(null);
-  }
-  if (targetPageID === "guided-manifest-performance-entity-selector-tab") {
-    setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["primary"]);
-    setEntityType("performance-related-folders-and-files");
-    setEntityListForEntityType(
-      "performance-related-folders-and-files",
-      window.sodaJSONObj["performance-related-folders-and-files"] || {}
-    );
-    setActiveEntity(null);
-  }
-
   if (targetPageID === "guided-create-submission-metadata-tab") {
     if (pageNeedsUpdateFromPennsieve(targetPageID)) {
       // Show the loading page while the page's data is being fetched from Pennsieve

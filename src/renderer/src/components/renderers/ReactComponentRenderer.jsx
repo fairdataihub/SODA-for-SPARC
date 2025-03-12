@@ -11,7 +11,6 @@ import PennsieveAgentCheckDisplay from "../backgroundServices/PennsieveAgentChec
 import DatasetEntityStructurePage from "../pages/DatasetEntityStructure";
 import DatasetEntityManagementPage from "../pages/DatasetEntityManagement";
 import DatasetContentSelector from "../pages/DatasetContentSelector";
-// import EntitySelectorPage from "../pages/EntitySelector";
 import DatasetEntityMetadata from "../pages/DatasetEntityMetadata";
 import DatasetEntityFileMapper from "../pages/DatasetEntityFileMapper";
 import EntityDataSelectorPage from "../pages/EntityDataSelector";
@@ -121,23 +120,7 @@ const componentTypeRenderers = {
       </SodaComponentWrapper>
     );
   },
-  /* OLD PAGE WHERE YOU WRITE OUT INDIVIDUAL ENTITY IDS
-  "entity-management-page": (componentSlot) => {
-    const root = createRoot(componentSlot);
-    const props = {
-      pageName: componentSlot.getAttribute("data-page-name"),
-      entityType: componentSlot.getAttribute("data-entity-type"),
-      entityTypeStringSingular: componentSlot.getAttribute("data-entity-type-string-singular"),
-      entityTypeStringPlural: componentSlot.getAttribute("data-entity-type-string-plural"),
-      entityTypePrefix: componentSlot.getAttribute("data-entity-type-prefix"),
-    };
 
-    root.render(
-      <SodaComponentWrapper>
-        <EntitySelectorPage {...props} />
-      </SodaComponentWrapper>
-    );
-  }*/
   "dataset-entity-metadata-page": (componentSlot) => {
     const root = createRoot(componentSlot);
 
@@ -163,7 +146,6 @@ const componentTypeRenderers = {
       entityType: componentSlot.getAttribute("data-entity-type"),
       entityTypeStringSingular: componentSlot.getAttribute("data-entity-type-string-singular"),
       entityTypeStringPlural: componentSlot.getAttribute("data-entity-type-string-plural"),
-      entityTypePrefix: componentSlot.getAttribute("data-entity-type-prefix"),
     };
 
     root.render(

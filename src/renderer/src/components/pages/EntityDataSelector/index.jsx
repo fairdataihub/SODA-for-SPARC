@@ -37,12 +37,19 @@ const ENTITY_PREFIXES = ["sub-", "sam-", "perf-"];
 
 const handleEntityClick = (entity) => setActiveEntity(entity);
 
-const handleFileClick = (entityType, activeEntity, datasetEntityObj, fileContents) => {
+const handleFileClick = (
+  entityType,
+  activeEntity,
+  datasetEntityObj,
+  fileContents,
+  mutuallyExclusive
+) => {
   modifyDatasetEntityForRelativeFilePath(
     entityType,
     activeEntity,
     fileContents.relativePath,
-    "toggle"
+    "toggle",
+    mutuallyExclusive
   );
   console.log("entityType", entityType);
   console.log("activeEntity", activeEntity);
@@ -55,7 +62,8 @@ const handleFolderClick = (
   activeEntity,
   datasetEntityObj,
   folderContents,
-  folderWasSelectedBeforeClick
+  folderWasSelectedBeforeClick,
+  mutuallyExclusive = true
 ) => {
   const action = folderWasSelectedBeforeClick ? "remove" : "add";
 
@@ -63,11 +71,18 @@ const handleFolderClick = (
     entityType,
     activeEntity,
     folderContents.relativePath,
-    action
+    action,
+    mutuallyExclusive
   );
 
   Object.values(folderContents.files).forEach((file) => {
-    modifyDatasetEntityForRelativeFilePath(entityType, activeEntity, file.relativePath, action);
+    modifyDatasetEntityForRelativeFilePath(
+      entityType,
+      activeEntity,
+      file.relativePath,
+      action,
+      mutuallyExclusive
+    );
   });
 
   Object.values(folderContents.folders).forEach((subFolder) => {
@@ -76,7 +91,8 @@ const handleFolderClick = (
       activeEntity,
       datasetEntityObj,
       subFolder,
-      folderWasSelectedBeforeClick
+      folderWasSelectedBeforeClick,
+      mutuallyExclusive
     );
   });
 };
@@ -166,9 +182,9 @@ const EntityDataSelectorPage = ({
   entityType,
   entityTypeStringSingular,
   entityTypeStringPlural,
-  entityTypePrefix,
 }) => {
   const activeEntity = useGlobalStore((state) => state.activeEntity);
+  console.log("activeEntity", activeEntity);
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
   const datasetStructureJSONObj = useGlobalStore((state) => state.datasetStructureJSONObj);
 
@@ -256,14 +272,21 @@ const EntityDataSelectorPage = ({
               <Paper shadow="sm" radius="md">
                 <DatasetTreeViewRenderer
                   itemSelectInstructions={getInstructionalTextByEntityType(activeEntity)}
+                  mutuallyExclusiveSelection={true}
                   folderActions={{
-                    "on-folder-click": (folderName, folderContents, folderIsSelected) => {
+                    "on-folder-click": (
+                      folderName,
+                      folderContents,
+                      folderIsSelected,
+                      mutuallyExclusive
+                    ) => {
                       handleFolderClick(
                         entityType,
                         activeEntity,
                         datasetEntityObj,
                         folderContents,
-                        folderIsSelected
+                        folderIsSelected,
+                        mutuallyExclusive
                       );
                     },
                     "is-folder-selected": (folderName, folderContents) => {
@@ -278,8 +301,14 @@ const EntityDataSelectorPage = ({
                     },
                   }}
                   fileActions={{
-                    "on-file-click": (fileName, fileContents, fileIsSelected) =>
-                      handleFileClick(entityType, activeEntity, datasetEntityObj, fileContents),
+                    "on-file-click": (fileName, fileContents, fileIsSelected, mutuallyExclusive) =>
+                      handleFileClick(
+                        entityType,
+                        activeEntity,
+                        datasetEntityObj,
+                        fileContents,
+                        mutuallyExclusive
+                      ),
                     "is-file-selected": (fileName, fileContents) => {
                       // Pass entityType to the function
                       return (
@@ -291,6 +320,7 @@ const EntityDataSelectorPage = ({
                       );
                     },
                   }}
+                  entityType={entityType}
                 />
               </Paper>
             ) : (
