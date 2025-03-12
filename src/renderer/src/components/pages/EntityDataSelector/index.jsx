@@ -29,7 +29,6 @@ import {
   setActiveEntity,
   modifyDatasetEntityForRelativeFilePath,
   getEntityForRelativePath,
-  autoSelectDatasetFoldersAndFilesForEnteredEntityIds,
 } from "../../../stores/slices/datasetEntitySelectorSlice";
 import { naturalSort } from "../../shared/utils/util-functions";
 
@@ -85,7 +84,10 @@ const renderEntityList = (entityType, activeEntity, datasetEntityObj) => {
   if (!datasetEntityObj?.[entityType]) return null;
 
   return naturalSort(Object.keys(datasetEntityObj[entityType])).map((entity) => {
-    const entityItemsCount = datasetEntityObj[entityType][entity].length || 0;
+    // Calculate file count using Object.keys().length for the map structure
+    const entityItemsCount = datasetEntityObj[entityType][entity]
+      ? Object.keys(datasetEntityObj[entityType][entity]).length
+      : 0;
     const isActive = entity === activeEntity;
 
     // Check if search icon should be shown for specific entities
@@ -190,10 +192,16 @@ const EntityDataSelectorPage = ({
   };
   const countSelectedItemsByEntityType = (entityType) => {
     if (!datasetEntityObj?.[entityType]) return 0;
-    return Object.values(datasetEntityObj[entityType]).reduce(
-      (acc, entity) => acc + entity.length,
-      0
-    );
+
+    // Count total files across all entities using the map structure
+    let totalCount = 0;
+    const allEntities = Object.values(datasetEntityObj[entityType] || {});
+
+    allEntities.forEach((entityFiles) => {
+      totalCount += Object.keys(entityFiles).length;
+    });
+
+    return totalCount;
   };
 
   const itemCount = countItemsInDatasetStructure(datasetStructureJSONObj) - 1; // Subtract 1 to exclude the root folder

@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import { IconSearch } from "@tabler/icons-react";
@@ -37,24 +37,21 @@ const handleFolderClick = (
   const action = folderWasSelectedBeforeClick ? "remove" : "add";
 
   modifyDatasetEntityForRelativeFilePath(
-    "entity-to-file-mapping",
+    entityType,
     activeEntity,
     folderContents.relativePath,
     action
   );
 
+  // Process all files in the folder
   Object.values(folderContents.files).forEach((file) => {
-    modifyDatasetEntityForRelativeFilePath(
-      "entity-to-file-mapping",
-      activeEntity,
-      file.relativePath,
-      action
-    );
+    modifyDatasetEntityForRelativeFilePath(entityType, activeEntity, file.relativePath, action);
   });
 
+  // Recursively process subfolders
   Object.values(folderContents.folders).forEach((subFolder) => {
     handleFolderClick(
-      "entity-to-file-mapping",
+      entityType,
       activeEntity,
       datasetEntityObj,
       subFolder,
@@ -75,10 +72,11 @@ const getInstructionalTextByEntityType = (entityType) => {
 };
 
 const DatasetEntityFileMapper = () => {
-  const entityType = null;
+  const entityType = "entity-to-file-mapping";
   const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
-  const activeEntity = useGlobalStore((state) => state.activeEntity);
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
+  const datasetStructureJSONObj = useGlobalStore((state) => state.datasetStructureJSONObj);
+
   return (
     <GuidedModePage pageHeader={"Dataset Entity File Mapper"}>
       <GuidedModeSection>
@@ -109,37 +107,34 @@ const DatasetEntityFileMapper = () => {
             {selectedHierarchyEntity ? (
               <Paper shadow="sm" radius="md">
                 <DatasetTreeViewRenderer
-                  itemSelectInstructions={getInstructionalTextByEntityType(entityType)}
+                  itemSelectInstructions={getInstructionalTextByEntityType(
+                    selectedHierarchyEntity.type
+                  )}
                   folderActions={{
                     "on-folder-click": (folderName, folderContents, folderIsSelected) => {
                       handleFolderClick(
-                        "entity-to-file-mapping",
-                        activeEntity,
+                        entityType,
+                        selectedHierarchyEntity.id,
                         datasetEntityObj,
                         folderContents,
                         folderIsSelected
                       );
                     },
                     "is-folder-selected": (folderName, folderContents) => {
-                      const entity = getEntityForRelativePath(
-                        datasetEntityObj,
-                        "entity-to-file-mapping",
+                      return checkIfRelativePathBelongsToEntity(
+                        selectedHierarchyEntity.id,
                         folderContents.relativePath
                       );
-                      if (!entity) return null;
-                      return entity === activeEntity;
                     },
                   }}
                   fileActions={{
                     "on-file-click": (fileName, fileContents, fileIsSelected) =>
                       handleFileClick(selectedHierarchyEntity, fileContents, fileIsSelected),
                     "is-file-selected": (fileName, fileContents) => {
-                      const entityId = selectedHierarchyEntity.id;
-                      const fileIsSelected = checkIfRelativePathBelongsToEntity(
-                        entityId,
+                      return checkIfRelativePathBelongsToEntity(
+                        selectedHierarchyEntity.id,
                         fileContents.relativePath
                       );
-                      return fileIsSelected;
                     },
                   }}
                 />

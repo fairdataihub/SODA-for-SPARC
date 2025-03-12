@@ -343,40 +343,14 @@ export const openPage = async (targetPageID) => {
         setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["data"]);
       }
       if (targetPageComponentType === "entity-file-mapping-page") {
+        /* ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** */
+
         setSelectedHierarchyEntity(null);
-
-        // Load the saved datasetEntityObj from sodaJSONObj
-        const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
-
-        // Make sure the entity-to-file-mapping structure is properly initialized as a map/object
-        if (savedDatasetEntityObj["entity-to-file-mapping"]) {
-          // Convert any array-based mappings to object/map format
-          Object.keys(savedDatasetEntityObj["entity-to-file-mapping"]).forEach((entityId) => {
-            const entityFiles = savedDatasetEntityObj["entity-to-file-mapping"][entityId];
-
-            // Check if the entity files are still in array format
-            if (Array.isArray(entityFiles)) {
-              // Convert array to object/map structure
-              savedDatasetEntityObj["entity-to-file-mapping"][entityId] = entityFiles.reduce(
-                (acc, path) => {
-                  acc[path] = true;
-                  return acc;
-                },
-                {}
-              );
-            }
-          });
-        } else {
-          // Initialize empty entity-to-file-mapping if it doesn't exist
-          savedDatasetEntityObj["entity-to-file-mapping"] = {};
-        }
-
-        // Set the updated datasetEntityObj in the store
-        setDatasetEntityObj(savedDatasetEntityObj);
 
         const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
         const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
-
+        console.log("Selected entities", selectedEntities);
+        console.log("Dataset entity array", datasetEntityArray);
         setSelectedEntities(selectedEntities);
         setDatasetEntityArray(datasetEntityArray);
         setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["data"]);

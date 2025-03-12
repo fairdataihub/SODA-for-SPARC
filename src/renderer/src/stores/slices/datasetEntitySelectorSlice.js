@@ -1,6 +1,4 @@
 import useGlobalStore from "../globalStore";
-import { filterStructure, addRelativePaths } from "./datasetTreeViewSlice";
-import { swalFileListDoubleAction } from "../../scripts/utils/swal-utils";
 import { produce } from "immer";
 
 // Slice initialization for the entity selector state
@@ -238,73 +236,6 @@ export const setEntityListForEntityType = (entityType, entityListObj) => {
   );
 };
 
-export const autoSelectDatasetFoldersAndFilesForEnteredEntityIds = async (
-  datasetStructure,
-  entityType,
-  entityTypeStringSingular
-) => {
-  console.log("Starting auto-selection process", { datasetStructure, entityType });
-
-  // Deep copy the dataset structure to ensure original data remains untouched
-  const structureCopy = JSON.parse(JSON.stringify(datasetStructure));
-
-  // Retrieve the dataset entity object and extract the relevant entity list
-  const datasetEntityObj = getDatasetEntityObj();
-  const entityList = Object.keys(datasetEntityObj[entityType] || {});
-
-  // Collect matching paths for each entity ID
-  const additions = entityList.reduce((acc, entityID) => {
-    console.log("Searching entityID" + entityID);
-
-    // Extract everything after the first dash
-    const entityName = entityID.substring(entityID.indexOf("-") + 1);
-
-    console.log("Searching entityName" + entityName);
-
-    const matchingPaths = [];
-    findMatchingRelativePaths(structureCopy, entityName, matchingPaths);
-
-    console.log("Entity processing", { entityID, entityName, matchingPaths });
-
-    if (matchingPaths.length > 0) {
-      acc[entityID] = matchingPaths;
-    }
-
-    return acc;
-  }, {});
-
-  // Create a list of confirmation items
-  const confirmationItems = Object.entries(additions).flatMap(([entityID, paths]) =>
-    paths.map((path) => `${entityID} - ${path}`)
-  );
-
-  console.log("confirmationItems", confirmationItems);
-  if (confirmationItems.length > 0) {
-    // Display confirmation dialog with SweetAlert
-    const autoSelectDetectedEntityItems = await swalFileListDoubleAction(
-      confirmationItems,
-      `SODA detected ${confirmationItems.length} folders and files that match the ${entityTypeStringSingular} IDs entered`,
-      ``,
-      "Auto-associate detected folders and files",
-      "Do not auto-associate",
-      "Would you like SODA to auto-associate these folders and files with the entered IDs?"
-    );
-
-    if (autoSelectDetectedEntityItems) {
-      // Apply the additions
-      Object.entries(additions).forEach(([entityID, paths]) => {
-        paths.forEach((relativePath) => {
-          modifyDatasetEntityForRelativeFilePath(entityType, entityID, relativePath, "add");
-          console.log("Added path to dataset entity", { entityType, entityID, relativePath });
-        });
-      });
-      console.log("All additions confirmed and applied.");
-    } else {
-      console.log("Additions were canceled by the user.");
-    }
-  }
-};
-
 // Helper function to recursively traverse the dataset structure and collect matching paths
 const findMatchingRelativePaths = (obj, entityTypeLowerCased, matchingPaths) => {
   // Check files for matches
@@ -357,33 +288,51 @@ export const modifyDatasetEntityForRelativeFilePath = (
 
   useGlobalStore.setState(
     produce((state) => {
-      const entityEntries = state.datasetEntityObj[entityType] || {};
-      const targetEntity = entityEntries[entityName] || [];
+      // Ensure the entityType object exists
+      if (!state.datasetEntityObj) {
+        state.datasetEntityObj = {};
+      }
+
+      if (!state.datasetEntityObj[entityType]) {
+        state.datasetEntityObj[entityType] = {};
+      }
+
+      if (!state.datasetEntityObj[entityType][entityName]) {
+        state.datasetEntityObj[entityType][entityName] = {};
+      }
+
+      const targetEntity = state.datasetEntityObj[entityType][entityName];
 
       switch (action) {
         case "toggle":
-          entityEntries[entityName] = targetEntity.includes(entityRelativePath)
-            ? targetEntity.filter((path) => path !== entityRelativePath)
-            : [...targetEntity, entityRelativePath];
-          removeFromOtherEntities(entityEntries, entityName, entityRelativePath);
-          break;
-
-        case "add":
-          if (!targetEntity.includes(entityRelativePath)) {
-            entityEntries[entityName] = [...targetEntity, entityRelativePath];
-            removeFromOtherEntities(entityEntries, entityName, entityRelativePath);
+          if (targetEntity[entityRelativePath]) {
+            delete targetEntity[entityRelativePath];
+          } else {
+            targetEntity[entityRelativePath] = true;
+            removeFromOtherEntities(
+              state.datasetEntityObj[entityType],
+              entityName,
+              entityRelativePath
+            );
           }
           break;
 
+        case "add":
+          targetEntity[entityRelativePath] = true;
+          removeFromOtherEntities(
+            state.datasetEntityObj[entityType],
+            entityName,
+            entityRelativePath
+          );
+          break;
+
         case "remove":
-          entityEntries[entityName] = targetEntity.filter((path) => path !== entityRelativePath);
+          delete targetEntity[entityRelativePath];
           break;
 
         default:
           console.error(`Unsupported action: ${action}`);
       }
-
-      state.datasetEntityObj[entityType] = entityEntries;
     })
   );
 };
@@ -392,26 +341,18 @@ export const modifyDatasetEntityForRelativeFilePath = (
 const removeFromOtherEntities = (entityEntries, targetEntityName, entityRelativePath) => {
   // Remove the file path from all other entities
   Object.keys(entityEntries).forEach((entity) => {
-    if (entity !== targetEntityName) {
-      entityEntries[entity] = entityEntries[entity].filter((path) => path !== entityRelativePath);
+    if (entity !== targetEntityName && entityEntries[entity]) {
+      delete entityEntries[entity][entityRelativePath];
     }
   });
-};
-
-// Get the entity associated with a specific file path
-export const getEntityForRelativePath = (datasetEntityObj, entityType, relativePath) => {
-  const entities = datasetEntityObj?.[entityType];
-  if (!entities) return null;
-
-  return Object.keys(entities).find((entityName) => entities[entityName]?.includes(relativePath));
-};
+}; // Added missing closing brace
 
 export const checkIfRelativePathBelongsToEntity = (entityId, relativePath) => {
   console.log("Checking if relative path belongs to entity", { entityId, relativePath });
-  const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
+  const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
   const entityType = "entity-to-file-mapping";
   console.log("datasetEntityObj?.[entityType]", datasetEntityObj?.[entityType]);
-  return datasetEntityObj?.[entityType]?.[entityId]?.includes(relativePath) || false;
+  return null;
 };
 
 // Get the number of files associated with a specific entity
@@ -419,4 +360,15 @@ export const getNumberFilesForEntity = (entityName) => {
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
   const entityType = useGlobalStore((state) => state.entityType);
   return datasetEntityObj?.[entityType]?.[entityName]?.length || 0;
+};
+
+// Get the entity associated with a specific file path
+export const getEntityForRelativePath = (datasetEntityObj, entityType, relativePath) => {
+  const entities = datasetEntityObj?.[entityType];
+  if (!entities) return null;
+
+  // Find the entity that has this file path in its map
+  return Object.keys(entities).find((entityName) => {
+    return Boolean(entities[entityName]?.[relativePath]);
+  });
 };
