@@ -44,6 +44,14 @@ const handleFileClick = (
   fileContents,
   mutuallyExclusive
 ) => {
+  // Simple file click handler with no special cases
+  console.log("File click handler:", {
+    entityType,
+    activeEntity,
+    relativePath: fileContents.relativePath,
+    mutuallyExclusive,
+  });
+
   modifyDatasetEntityForRelativeFilePath(
     entityType,
     activeEntity,
@@ -51,10 +59,6 @@ const handleFileClick = (
     "toggle",
     mutuallyExclusive
   );
-  console.log("entityType", entityType);
-  console.log("activeEntity", activeEntity);
-  console.log("datasetEntityObj", datasetEntityObj);
-  console.log("fileContents", fileContents);
 };
 
 const handleFolderClick = (
@@ -65,8 +69,18 @@ const handleFolderClick = (
   folderWasSelectedBeforeClick,
   mutuallyExclusive = true
 ) => {
+  // Simple folder click handler with no special cases
+  console.log("Folder click handler:", {
+    entityType,
+    activeEntity,
+    relativePath: folderContents.relativePath,
+    folderWasSelectedBeforeClick,
+    mutuallyExclusive,
+  });
+
   const action = folderWasSelectedBeforeClick ? "remove" : "add";
 
+  // Process the folder itself
   modifyDatasetEntityForRelativeFilePath(
     entityType,
     activeEntity,
@@ -75,7 +89,8 @@ const handleFolderClick = (
     mutuallyExclusive
   );
 
-  Object.values(folderContents.files).forEach((file) => {
+  // Process all files in the folder
+  Object.values(folderContents.files || {}).forEach((file) => {
     modifyDatasetEntityForRelativeFilePath(
       entityType,
       activeEntity,
@@ -85,7 +100,8 @@ const handleFolderClick = (
     );
   });
 
-  Object.values(folderContents.folders).forEach((subFolder) => {
+  // Process all subfolders recursively
+  Object.values(folderContents.folders || {}).forEach((subFolder) => {
     handleFolderClick(
       entityType,
       activeEntity,
@@ -290,7 +306,6 @@ const EntityDataSelectorPage = ({
                       );
                     },
                     "is-folder-selected": (folderName, folderContents) => {
-                      // Pass entityType to the function
                       return (
                         checkIfRelativePathBelongsToEntity(
                           activeEntity,
@@ -310,7 +325,6 @@ const EntityDataSelectorPage = ({
                         mutuallyExclusive
                       ),
                     "is-file-selected": (fileName, fileContents) => {
-                      // Pass entityType to the function
                       return (
                         checkIfRelativePathBelongsToEntity(
                           activeEntity,
