@@ -89,6 +89,7 @@ const HierarchyItem = ({
     e.stopPropagation();
     if (allowEntitySelection && !isAddButton && onSelect) {
       // Just pass the raw entity data which already includes parent references
+      console.log("entityData", entityData);
       onSelect(entityData);
     }
   };
@@ -146,18 +147,6 @@ const HierarchyItem = ({
 // Find subject by ID helper (to demonstrate how to lookup parents if needed)
 const findSubjectById = (datasetEntityArray, subjectId) => {
   return datasetEntityArray.find((subject) => subject.id === subjectId);
-};
-
-// Example of how to handle operations with parent data from entity
-const handleEditUsingParentReference = (entityData) => {
-  // Get parent references from the entity itself
-  const { parentSubject, parentSample } = entityData;
-
-  // Find the actual parent entity objects if needed
-  const subject = findSubjectById(datasetEntityArray, parentSubject);
-
-  // Now you can perform operations using the parent entity
-  modifySampleId(subject.id, entityData.id, newId);
 };
 
 const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelection }) => {

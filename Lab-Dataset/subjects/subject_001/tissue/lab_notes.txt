@@ -1,0 +1,11 @@
+Lab Notes - Tissue Sample
+Subject: subject_001
+Date: 2023-01-15
+Collected by: J. Smith
+
+Processing Notes:
+- Sample centrifuged at 3000 rpm for 10 minutes
+- Stored at -80°C (Freezer #2)
+- Quality check: Passed
+
+Observations: Sample appears normal with no visible contamination

@@ -1,0 +1,4 @@
+Session started: 9:15 AM
+Session ended: 10:32 AM
+Instrument: Acme Analyzer 3000
+Operator: J. Smith

@@ -90,7 +90,6 @@ const DatasetEntityFileMapper = () => {
   const entityType = "entity-to-file-mapping";
   const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
-  const datasetStructureJSONObj = useGlobalStore((state) => state.datasetStructureJSONObj);
 
   return (
     <GuidedModePage pageHeader={"Dataset Entity File Mapper"}>
