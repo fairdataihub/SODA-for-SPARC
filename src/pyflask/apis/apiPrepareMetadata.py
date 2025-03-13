@@ -1,5 +1,4 @@
 from prepareMetadata import (
-    save_ds_description_file,
     upload_code_description_metadata,
     extract_milestone_info,
     import_sparc_award,
@@ -23,7 +22,8 @@ from flask_restx import Resource, reqparse, fields
 from flask_restx.inputs import boolean
 from errorHandlers import notBadRequestException
 from utils import metadata_string_to_list
-from pysoda.core.metadata.submission import create_excel
+from pysoda.core.metadata import submission
+from pysoda.core.metadata import dataset_description
 from pysoda.utils import validation_error_message
 from jsonschema import ValidationError
 
@@ -68,7 +68,7 @@ class SaveSubmissionFile(Resource):
             api.abort(400, "Please provide a destination in which to save your Submission file.")
 
         try:
-            return create_excel(soda, upload_boolean, filepath)
+            return submission.create_excel(soda, upload_boolean, filepath)
         except Exception as e:
             if isinstance(e, ValidationError):
                 # Extract properties from the ValidationError
@@ -213,41 +213,35 @@ class DatasetDescriptionFile(Resource):
 
 
     parser_dataset_description_file = reqparse.RequestParser(bundle_errors=True)
-    parser_dataset_description_file.add_argument('dataset_str', type=dict, required=True, location="json")
     parser_dataset_description_file.add_argument('filepath', type=str, location="json")
     parser_dataset_description_file.add_argument('upload_boolean', type=boolean, required=True, location="args")
     parser_dataset_description_file.add_argument('selected_account', type=str, location="json")
     parser_dataset_description_file.add_argument('selected_dataset', type=str, location="json")
-    parser_dataset_description_file.add_argument('study_str', type=dict, required=True, location="json")
-    parser_dataset_description_file.add_argument('contributor_str', type=dict, required=True, location="json")
-    parser_dataset_description_file.add_argument('related_info_str', type=list, required=True, location="json")
 
 
-    @api.expect(parser_dataset_description_file)
+    # @api.expect(parser_dataset_description_file)
     @api.marshal_with(model_save_ds_description_file_response, 200, False)
     @api.doc(description='Save the dataset description file to the user\'s machine. A separate route exists for saving to Pennsieve.', responses={500: "Internal Server Error", 400: "Bad Request", 403: "Forbidden"})
     def post(self):
-        data = self.parser_dataset_description_file.parse_args()
-
-
-        dataset_str = data.get('dataset_str')
+        data = request.get_json()
         filepath = data.get('filepath')
         upload_boolean = data.get('upload_boolean')
-        selected_account = data.get('selected_account')
-        selected_dataset = data.get('selected_dataset')
-        study_str = data.get('study_str')
-        contributor_str = data.get('contributor_str')
-        related_info_str = data.get('related_info_str')
+        soda = data.get('soda')
 
-        if upload_boolean and not selected_account and not selected_dataset:
-            api.abort(400, "Error:  To save a dataset description file on Pennsieve provide a dataset and pennsieve account.")
+        # if upload_boolean and not selected_account and not selected_dataset:
+        #     api.abort(400, "Error:  To save a dataset description file on Pennsieve provide a dataset and pennsieve account.")
 
         if not upload_boolean and not filepath:
             api.abort(400, "Error:  To save a dataset description file on the user\'s machine provide a filepath.")
 
         try:
-            return save_ds_description_file(upload_boolean, selected_account, selected_dataset, filepath, dataset_str, study_str, contributor_str, related_info_str)
+            return dataset_description.create_excel(upload_boolean, soda, filepath)
         except Exception as e:
+            if isinstance(e, ValidationError):
+                # Extract properties from the ValidationError
+                validation_err_msg = validation_error_message(e)
+                # Return the ValidationError as JSON
+                api.abort(400, validation_err_msg)
             if notBadRequestException(e):
                 api.abort(500, str(e))
             raise e

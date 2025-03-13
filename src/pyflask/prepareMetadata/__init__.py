@@ -1,5 +1,4 @@
 from .prepare_metadata import (
-    save_ds_description_file,
     upload_code_description_metadata,
     extract_milestone_info,
     import_sparc_award,
