@@ -10,7 +10,6 @@ from prepareMetadata import (
     load_existing_submission_file,
     import_ps_metadata_file,
     import_ps_RC,
-    upload_RC_file,
     delete_manifest_dummy_folders,
     set_template_path, 
     import_ps_manifest_file,
@@ -24,6 +23,7 @@ from errorHandlers import notBadRequestException
 from utils import metadata_string_to_list
 from pysoda.core.metadata import submission
 from pysoda.core.metadata import dataset_description
+from pysoda.core.metadata import readme_changes
 from pysoda.utils import validation_error_message
 from jsonschema import ValidationError
 
@@ -149,15 +149,13 @@ class RCFile(Resource):
     @api.marshal_with(model_upload_RC_file_response, 200, False)
     @api.doc(description='Create a readme or changes file on the given dataset for the given Pennsieve account.', responses={500: "Internal Server Error", 400: "Bad Request", 403: "Forbidden"})
     def post(self):
-        data = self.parser_create_RC_file.parse_args()
+        data = request.get_json()
 
         file_type = data.get('file_type')
-        bfaccount = data.get('selected_account')
-        bfdataset = data.get('selected_dataset')
-        text = data.get('text')
+        soda = data.get("soda")
 
         try:
-            return upload_RC_file(text, file_type, bfaccount, bfdataset)
+            return readme_changes.create_excel(soda, file_type)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))

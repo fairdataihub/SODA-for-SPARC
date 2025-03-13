@@ -146,19 +146,7 @@ def extract_milestone_info(datalist):
 
 
 
-# this function saves and uploads the README/CHANGES to Pennsieve, just when users choose to generate onto Pennsieve
-## (not used for generating locally)
-def upload_RC_file(text_string, file_type, bfaccount, bfdataset):
-    file_path = join(METADATA_UPLOAD_BF_PATH, file_type)
 
-    with open(file_path, "w") as f:
-        f.write(text_string)
-
-    size = getsize(file_path)
-
-    upload_metadata_file(file_type, bfaccount, bfdataset, file_path, True)
-
-    return { "size": size, "filepath": file_path }
 
 
 def subscriber_metadata(ps, events_dict):
