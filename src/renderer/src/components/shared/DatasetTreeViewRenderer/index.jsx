@@ -51,12 +51,19 @@ const getAssociatedEntities = (relativePath, currentEntityType) => {
   if (!datasetEntityObj) return [];
 
   const entityTypes = currentEntityType ? [currentEntityType] : Object.keys(datasetEntityObj);
+  const associatedEntities = [];
 
-  return entityTypes.flatMap((entityType) =>
-    Object.entries(datasetEntityObj[entityType] || {})
-      .filter(([, paths]) => paths?.[relativePath])
-      .map(([entityId]) => ({ entityId, entityType }))
-  );
+  for (const entityType of entityTypes) {
+    const entities = datasetEntityObj[entityType] || {};
+    for (const [entityId, paths] of Object.entries(entities)) {
+      console.log("entityId", entityId);
+      if (paths?.[relativePath]) {
+        associatedEntities.push({ entityId, entityType });
+      }
+    }
+  }
+
+  return associatedEntities;
 };
 // Get badge color based on entity type
 const getBadgeColor = (entityId, entityType) => {
@@ -137,6 +144,7 @@ const FileItem = ({
 
   // Get associated entities for this file, filtering by entityType
   const associations = getAssociatedEntities(content.relativePath, entityType);
+  console.log("FileItem associations", associations);
 
   // Determine file selection status (true or false only, no null)
   const fileIsSelected = isFileSelected ? isFileSelected(name, content) : false;

@@ -549,3 +549,37 @@ export const getEntityMetadataValue = (selectedEntity, key, defaultValue = "") =
 export const getDatasetEntityArray = () => {
   return useGlobalStore.getState().datasetEntityArray;
 };
+
+export const getAllEntityIds = () => {
+  const { datasetEntityArray } = useGlobalStore.getState();
+
+  return datasetEntityArray.flatMap((subject) => {
+    // Start with subject ID
+    const ids = [subject.id];
+
+    // Add all sample IDs from this subject
+    if (subject.samples) {
+      ids.push(...subject.samples.map((sample) => sample.id));
+
+      // Add all sample sites and performances
+      subject.samples.forEach((sample) => {
+        if (sample.sites) {
+          ids.push(...sample.sites.map((site) => site.id));
+        }
+        if (sample.performances) {
+          ids.push(...sample.performances.map((perf) => perf.id));
+        }
+      });
+    }
+
+    // Add subject-level sites and performances
+    if (subject.subjectSites) {
+      ids.push(...subject.subjectSites.map((site) => site.id));
+    }
+    if (subject.subjectPerformances) {
+      ids.push(...subject.subjectPerformances.map((perf) => perf.id));
+    }
+
+    return ids;
+  });
+};

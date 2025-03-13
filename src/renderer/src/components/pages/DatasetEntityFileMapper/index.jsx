@@ -89,6 +89,8 @@ const getInstructionalTextByEntityType = (entityType) => {
 const DatasetEntityFileMapper = () => {
   const entityType = "entity-to-file-mapping";
   const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
+  const selectedEntityId = selectedHierarchyEntity ? selectedHierarchyEntity.id : null;
+  console.log("selectedEntityId", selectedEntityId);
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
 
   return (
@@ -134,7 +136,7 @@ const DatasetEntityFileMapper = () => {
                     ) => {
                       handleFolderClick(
                         entityType,
-                        selectedHierarchyEntity.id,
+                        selectedEntityId,
                         datasetEntityObj,
                         folderContents,
                         folderIsSelected,
@@ -143,7 +145,7 @@ const DatasetEntityFileMapper = () => {
                     },
                     "is-folder-selected": (folderName, folderContents) => {
                       return checkIfRelativePathBelongsToEntity(
-                        selectedHierarchyEntity.id,
+                        selectedEntityId,
                         folderContents.relativePath,
                         entityType
                       );
@@ -159,7 +161,7 @@ const DatasetEntityFileMapper = () => {
                       ),
                     "is-file-selected": (fileName, fileContents) => {
                       return checkIfRelativePathBelongsToEntity(
-                        selectedHierarchyEntity.id,
+                        selectedEntityId,
                         fileContents.relativePath,
                         entityType
                       );

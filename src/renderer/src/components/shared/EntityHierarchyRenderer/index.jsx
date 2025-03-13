@@ -24,6 +24,7 @@ import {
   modifySampleSiteId,
   deletePerformanceFromSample,
   modifySamplePerformanceId,
+  getAllEntityIds,
 } from "../../../stores/slices/datasetEntityStructureSlice";
 import useGlobalStore from "../../../stores/globalStore";
 import { guidedOpenEntityAdditionSwal, guidedOpenEntityEditSwal } from "./utils";
@@ -144,17 +145,15 @@ const HierarchyItem = ({
   );
 };
 
-// Find subject by ID helper (to demonstrate how to lookup parents if needed)
-const findSubjectById = (datasetEntityArray, subjectId) => {
-  return datasetEntityArray.find((subject) => subject.id === subjectId);
-};
-
 const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelection }) => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
+  const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
+  const selectedEntityId = selectedHierarchyEntity ? selectedHierarchyEntity.id : null;
 
   // Ultra-simple entity selection handler that just passes the raw entity data
   const handleEntitySelect = useCallback((entityData) => {
+    console.log("getAllEntityIds", getAllEntityIds());
     console.log("Selected entity data:", entityData);
     setSelectedHierarchyEntity(entityData);
   }, []);
@@ -384,6 +383,10 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                   onClick={() => allowEntitySelection && handleEntitySelect(subject)}
                   style={{
                     cursor: allowEntitySelection ? "pointer" : "default",
+                    border:
+                      allowEntitySelection && selectedEntityId === subject.id
+                        ? "1px solid #1c7ed6"
+                        : "none",
                   }}
                   sx={
                     allowEntitySelection
