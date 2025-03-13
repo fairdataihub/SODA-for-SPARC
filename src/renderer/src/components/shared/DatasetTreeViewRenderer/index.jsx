@@ -62,23 +62,23 @@ const getAssociatedEntities = (relativePath, currentEntityType) => {
       }
     }
   }
-
+  if (associatedEntities.length > 0) {
+    console.log("associatedEntities:", associatedEntities);
+  }
   return associatedEntities;
 };
 // Get badge color based on entity type
-const getBadgeColor = (entityId, entityType) => {
-  console.log("getBadgeColor", entityId, entityType);
+const getBadgeColor = (entityId) => {
   if (entityId.startsWith("sub-")) return "blue";
   if (entityId.startsWith("sam-")) return "green";
   if (entityId.startsWith("site-")) return "orange";
   if (entityId.startsWith("perf-")) return "red";
+  console.log("eid:", entityId);
 
   // Entity type based colors
-  if (entityType === "Code") return "indigo";
-  if (entityType === "Experimental data") return "teal";
-  if (entityType === "Other") return "gray";
-
-  return "violet"; // Default
+  if (entityId === "Code") return "indigo";
+  if (entityId === "Experimental data") return "teal";
+  if (entityId === "Other") return "gray";
 };
 
 // Format entity ID for display (remove prefixes, limit length)
@@ -225,7 +225,7 @@ const FileItem = ({
               withArrow
             >
               <Badge
-                color={getBadgeColor(assoc.entityId, assoc.entityType)}
+                color={getBadgeColor(assoc.entityId)}
                 variant="light"
                 size="xs"
                 style={{ whiteSpace: "nowrap" }}
@@ -386,7 +386,7 @@ const FolderItem = ({
                 withArrow
               >
                 <Badge
-                  color={getBadgeColor(assoc.entityId, assoc.entityType)}
+                  color={getBadgeColor(assoc.entityId)}
                   variant="light"
                   size="xs"
                   style={{ whiteSpace: "nowrap" }}

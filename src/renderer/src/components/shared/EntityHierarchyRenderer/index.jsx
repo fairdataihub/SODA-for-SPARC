@@ -67,9 +67,17 @@ const HierarchyItem = ({
   onEdit = null,
   onDelete = null,
   onSelect = null,
+  isSampleParent = false,
 }) => {
+  const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
+  console.log("selectedHierarchyEntity::", selectedHierarchyEntity);
+  const selectedEntityId = selectedHierarchyEntity ? selectedHierarchyEntity.id : null;
+  const selectedEntityParentSubjectId = selectedHierarchyEntity?.parentSubject;
+  const selectedEntityParentSampleId = selectedHierarchyEntity?.parentSample;
+  console.log("selectedEntityId", selectedEntityId);
   const marginLeft = (level - 1) * 8;
   const isAddButton = icon === "add";
+  const horizontalHierarchyLineWidth = 10;
 
   const handleAdd = (e) => {
     e.stopPropagation();
@@ -101,19 +109,20 @@ const HierarchyItem = ({
         align="center"
         onClick={isAddButton ? handleAdd : handleSelect}
         style={{
-          cursor: isAddButton || (allowEntitySelection && !isAddButton) ? "pointer" : "default",
+          cursor: isAddButton || allowEntitySelection ? "pointer" : "default",
+          backgroundColor:
+            (allowEntitySelection && selectedEntityId === entityData.id) || isSampleParent
+              ? "#f0f0f0"
+              : "",
         }}
-        sx={
-          allowEntitySelection && !isAddButton
-            ? {
-                "&:hover": {
-                  backgroundColor: "rgba(0, 0, 0, 0.03)",
-                },
-              }
-            : undefined
-        }
+        ml={`${horizontalHierarchyLineWidth}px`}
       >
-        <Box bg="#ccc" h="2px" w="10px" />
+        <Box
+          bg="#ccc"
+          h="2px"
+          w={`${horizontalHierarchyLineWidth}px`}
+          ml={`${horizontalHierarchyLineWidth * -1}px`}
+        />
         {getEntityIcon(isAddButton ? "add" : icon)}
         <Text
           ml="4px"
@@ -150,6 +159,8 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
   const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
   const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
   const selectedEntityId = selectedHierarchyEntity ? selectedHierarchyEntity.id : null;
+  const selectedEntityParentSubjectId = selectedHierarchyEntity?.parentSubject;
+  const selectedEntityParentSampleId = selectedHierarchyEntity?.parentSample;
 
   // Ultra-simple entity selection handler that just passes the raw entity data
   const handleEntitySelect = useCallback((entityData) => {
@@ -387,16 +398,8 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                       allowEntitySelection && selectedEntityId === subject.id
                         ? "1px solid #1c7ed6"
                         : "none",
+                    backgroundColor: selectedEntityParentSubjectId === subject.id ? "#f0f0f0" : "",
                   }}
-                  sx={
-                    allowEntitySelection
-                      ? {
-                          "&:hover": {
-                            backgroundColor: "rgba(0, 0, 0, 0.03)",
-                          },
-                        }
-                      : undefined
-                  }
                 >
                   <IconUser size={15} />
                   <Text fw={600}>{subject.id}</Text>
@@ -449,6 +452,7 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                       onEdit={() => handleEditSample(sample, subject)}
                       onDelete={() => handleDeleteSample(sample, subject)}
                       onSelect={handleEntitySelect}
+                      isSampleParent={sample.id === selectedEntityParentSampleId}
                     >
                       {/* Sample Sites */}
                       {allowEntityStructureEditing && showSampleSites && (

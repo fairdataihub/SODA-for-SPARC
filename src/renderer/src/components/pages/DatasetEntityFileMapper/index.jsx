@@ -6,6 +6,8 @@ import { Text, Grid, Stack, Group, Button, Paper, Progress, Box, Tooltip } from 
 import useGlobalStore from "../../../stores/globalStore";
 import DatasetTreeViewRenderer from "../../shared/DatasetTreeViewRenderer";
 import EntityHierarchyRenderer from "../../shared/EntityHierarchyRenderer";
+import SelectedHierarchyEntityPreviewer from "../../shared/SelectedHierarchyEntityPreviewer";
+
 import {
   setActiveEntity,
   modifyDatasetEntityForRelativeFilePath,
@@ -89,6 +91,7 @@ const getInstructionalTextByEntityType = (entityType) => {
 const DatasetEntityFileMapper = () => {
   const entityType = "entity-to-file-mapping";
   const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
+  console.log("selectedHierarchyEntity", selectedHierarchyEntity);
   const selectedEntityId = selectedHierarchyEntity ? selectedHierarchyEntity.id : null;
   console.log("selectedEntityId", selectedEntityId);
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
@@ -109,9 +112,14 @@ const DatasetEntityFileMapper = () => {
         <Grid gutter="lg">
           <Grid.Col span={4} style={{ position: "sticky", top: "20px" }}>
             <Paper shadow="sm" radius="md" p="sm" withBorder mb="md">
-              <Text size="lg" fw={500} mb="md">
-                Entity Hierarchy
-              </Text>
+              {selectedHierarchyEntity ? (
+                <SelectedHierarchyEntityPreviewer />
+              ) : (
+                <Text size="lg" fw={500} mb="md">
+                  Select an Entity
+                </Text>
+              )}
+
               <EntityHierarchyRenderer
                 allowEntityStructureEditing={false}
                 allowEntitySelection={true}
