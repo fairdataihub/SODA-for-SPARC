@@ -9,7 +9,7 @@ const DatasetEntityManagementPage = () => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
 
   return (
-    <GuidedModePage pageHeader="Dataset Entity IDs">
+    <GuidedModePage pageHeader="Description of Entities">
       <GuidedModeSection>
         <Text>
           The SPARC Data Structure requires you to assign IDs to the different entities you
@@ -22,7 +22,6 @@ const DatasetEntityManagementPage = () => {
           each subject an ID, you can assign IDs to the data you collected from each subject.
         </Text>
       </GuidedModeSection>
-
       <GuidedModeSection>
         <Paper withBorder shadow="sm" p="md" mb="sm">
           <Text ta="center" size="lg" fw={700} mb="sm">
