@@ -88,7 +88,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
             type: "notyf",
             message: `Please add at least one ${entityTypeSingular} to continue`,
           });
-          throw errorArray;
+          // throw errorArray;
         }
         // Save the dataset entity object to the progress file
         window.sodaJSONObj["dataset-entity-obj"] = datasetEntityObj;

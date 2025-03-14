@@ -130,7 +130,7 @@ const PerformanceIdManagement = () => {
   };
 
   return (
-    <GuidedModePage pageHeader="Performance IDs">
+    <GuidedModePage pageHeader="Description of Performances">
       <GuidedModeSection>
         <Text>
           Provide information for each performance of experimental protocol in the interface below.
