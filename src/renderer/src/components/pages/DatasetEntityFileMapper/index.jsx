@@ -11,8 +11,8 @@ import SelectedHierarchyEntityPreviewer from "../../shared/SelectedHierarchyEnti
 import {
   setActiveEntity,
   modifyDatasetEntityForRelativeFilePath,
-  getEntityForRelativePath,
   checkIfRelativePathBelongsToEntity,
+  areAllFilesInFolderSelectedForEntity,
 } from "../../../stores/slices/datasetEntitySelectorSlice";
 
 const handleFileClick = (
@@ -45,13 +45,8 @@ const handleFolderClick = (
 ) => {
   const action = folderWasSelectedBeforeClick ? "remove" : "add";
 
-  modifyDatasetEntityForRelativeFilePath(
-    entityType,
-    activeEntity,
-    folderContents.relativePath,
-    action,
-    mutuallyExclusive
-  );
+  // IMPORTANT: We only map individual files to entities, never the folder paths themselves.
+  // This ensures the entity mapping only contains actual files, not folders.
 
   // Process all files in the folder
   Object.values(folderContents.files).forEach((file) => {
@@ -64,7 +59,7 @@ const handleFolderClick = (
     );
   });
 
-  // Recursively process subfolders
+  // Recursively process subfolders (only their contained files)
   Object.values(folderContents.folders).forEach((subFolder) => {
     handleFolderClick(
       entityType,
@@ -152,9 +147,10 @@ const DatasetEntityFileMapper = () => {
                       );
                     },
                     "is-folder-selected": (folderName, folderContents) => {
-                      return checkIfRelativePathBelongsToEntity(
+                      // Use the imported function from store
+                      return areAllFilesInFolderSelectedForEntity(
                         selectedEntityId,
-                        folderContents.relativePath,
+                        folderContents,
                         entityType
                       );
                     },

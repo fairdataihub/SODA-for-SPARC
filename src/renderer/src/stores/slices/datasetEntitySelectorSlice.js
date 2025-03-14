@@ -378,20 +378,84 @@ export const checkIfRelativePathBelongsToEntity = (entityId, relativePath, entit
   return Boolean(datasetEntityObj?.[typeToCheck]?.[entityId]?.[relativePath]);
 };
 
-// Get the number of files associated with a specific entity
-export const getNumberFilesForEntity = (entityName) => {
-  const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
-  const entityType = useGlobalStore((state) => state.entityType);
-  return datasetEntityObj?.[entityType]?.[entityName]?.length || 0;
+/**
+ * Recursively checks if a folder and all its contents belong to a specific entity
+ * @param {string} entityId - The entity ID to check for
+ * @param {object} folderContents - The folder contents object with structure {files, folders, relativePath}
+ * @param {string} entityType - The type of entity (e.g., "Code", "Experimental data")
+ * @returns {boolean} - True if the folder or all its contents belong to the entity
+ */
+export const checkIfFolderBelongsToEntity = (entityId, folderContents, entityType) => {
+  const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
+  if (!datasetEntityObj || !entityType || !datasetEntityObj[entityType] || !entityId) {
+    return false;
+  }
+
+  console.log("folderContents", folderContents);
+
+  // First check: If the folder itself is directly associated with the entity
+  const folderPath = folderContents.relativePath;
+  if (datasetEntityObj[entityType][entityId]?.[folderPath]) {
+    return true;
+  }
+
+  // Check if the folder has any content
+  const hasFiles = folderContents.files && Object.keys(folderContents.files).length > 0;
+  const hasFolders = folderContents.folders && Object.keys(folderContents.folders).length > 0;
+
+  if (!hasFiles && !hasFolders) {
+    return false; // Empty folder, not associated
+  }
+
+  // Check all files in this folder
+  if (hasFiles) {
+    const allFiles = Object.values(folderContents.files);
+    // If any file is not associated with the entity, the folder doesn't fully belong
+    for (const file of allFiles) {
+      if (!datasetEntityObj[entityType][entityId]?.[file.relativePath]) {
+        return false;
+      }
+    }
+  }
+
+  // Check all subfolders recursively
+  if (hasFolders) {
+    const allSubfolders = Object.values(folderContents.folders);
+    for (const subfolder of allSubfolders) {
+      if (!checkIfFolderBelongsToEntity(entityId, subfolder, entityType)) {
+        return false;
+      }
+    }
+  }
+
+  // If we got here, all files and subfolders are associated with the entity
+  return true;
 };
 
-// Get the entity associated with a specific file path
-export const getEntityForRelativePath = (datasetEntityObj, entityType, relativePath) => {
-  const entities = datasetEntityObj?.[entityType];
-  if (!entities) return null;
+// Add this new function as a separate top-level export
+export const areAllFilesInFolderSelectedForEntity = (entityId, folderContents, entityType) => {
+  // Check if the store is available
+  const state = useGlobalStore.getState();
+  if (!state || !state.datasetEntityObj) {
+    return false;
+  }
 
-  // Find the entity that has this file path in its map
-  return Object.keys(entities).find((entityName) => {
-    return Boolean(entities[entityName]?.[relativePath]);
-  });
+  // Check all files in this folder
+  const allFiles = Object.values(folderContents.files);
+  for (const file of allFiles) {
+    if (!checkIfRelativePathBelongsToEntity(entityId, file.relativePath, entityType)) {
+      return false; // Found a file that's not selected
+    }
+  }
+
+  // Recursively check all subfolders
+  const allSubfolders = Object.values(folderContents.folders);
+  for (const subfolder of allSubfolders) {
+    if (!areAllFilesInFolderSelectedForEntity(entityId, subfolder, entityType)) {
+      return false; // Found a subfolder with unselected files
+    }
+  }
+
+  // If we got here, all files in this folder and subfolders are selected
+  return true;
 };

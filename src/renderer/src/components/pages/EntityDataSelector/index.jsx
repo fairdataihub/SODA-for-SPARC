@@ -28,8 +28,8 @@ import { externallySetSearchFilterValue } from "../../../stores/slices/datasetTr
 import {
   setActiveEntity,
   modifyDatasetEntityForRelativeFilePath,
-  getEntityForRelativePath,
   checkIfRelativePathBelongsToEntity,
+  checkIfFolderBelongsToEntity,
 } from "../../../stores/slices/datasetEntitySelectorSlice";
 import { naturalSort } from "../../shared/utils/util-functions";
 
@@ -80,15 +80,7 @@ const handleFolderClick = (
 
   const action = folderWasSelectedBeforeClick ? "remove" : "add";
 
-  // Process the folder itself
-  modifyDatasetEntityForRelativeFilePath(
-    entityType,
-    activeEntity,
-    folderContents.relativePath,
-    action,
-    mutuallyExclusive
-  );
-
+  // Skip processing the folder itself - only process files
   // Process all files in the folder
   Object.values(folderContents.files || {}).forEach((file) => {
     modifyDatasetEntityForRelativeFilePath(
@@ -309,12 +301,11 @@ const EntityDataSelectorPage = ({
                       );
                     },
                     "is-folder-selected": (folderName, folderContents) => {
+                      // Only check if all file contents belong to the entity
+                      // Don't check if the folder itself is selected
                       return (
-                        checkIfRelativePathBelongsToEntity(
-                          activeEntity,
-                          folderContents.relativePath,
-                          entityType
-                        ) || false
+                        checkIfFolderBelongsToEntity(activeEntity, folderContents, entityType) ||
+                        false
                       );
                     },
                   }}
