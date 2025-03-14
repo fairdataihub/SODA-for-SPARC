@@ -3988,6 +3988,8 @@ const mergeLocalAndRemoteDatasetStructure = async (
 
   const traverseAndMergeDatasetJsonObjects = async (datasetStructureToMerge, recursedFilePath) => {
     const currentNestedPathArray = window.getGlobalPathFromString(recursedFilePath);
+    console.log("window.datasetStructureJSONObj", window.datasetStructureJSONObj);
+    console.log("currentNestedPathArray", currentNestedPathArray);
     const existingDatasetJsonAtPath = window.getRecursivePath(
       currentNestedPathArray.slice(1),
       window.datasetStructureJSONObj

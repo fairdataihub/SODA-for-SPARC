@@ -426,7 +426,7 @@ export const openPage = async (targetPageID) => {
     //     }
 
     if (targetPageID === "guided-unstructured-data-import-tab") {
-      guidedUpdateFolderStructureUI("data/");
+      guidedUpdateFolderStructureUI("unstructured-data/");
     }
 
     //     if (targetPageID === "guided-denote-derivative-data-tab") {
