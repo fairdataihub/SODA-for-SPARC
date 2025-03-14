@@ -69,15 +69,15 @@ const getAssociatedEntities = (relativePath, currentEntityType) => {
 };
 // Get badge color based on entity type
 const getBadgeColor = (entityId) => {
-  if (entityId.startsWith("sub-")) return "blue";
+  if (entityId.startsWith("sub-")) return "indigo";
   if (entityId.startsWith("sam-")) return "green";
   if (entityId.startsWith("site-")) return "orange";
   if (entityId.startsWith("perf-")) return "red";
   console.log("eid:", entityId);
 
   // Entity type based colors
-  if (entityId === "Code") return "indigo";
-  if (entityId === "Experimental data") return "teal";
+  if (entityId === "Code") return "blue";
+  if (entityId === "Experimental data") return "green";
   if (entityId === "Other") return "gray";
 };
 

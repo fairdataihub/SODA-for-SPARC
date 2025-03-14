@@ -166,8 +166,8 @@ export const addEntityToEntityList = (entityType, entityName) => {
       }
 
       if (!state.datasetEntityObj[entityType][entityName]) {
-        state.datasetEntityObj[entityType][entityName] = []; // Initialize the entity list where folder and file paths will be added
-      }
+        state.datasetEntityObj[entityType][entityName] = {};
+      } // Initialize the entity list where folder and file paths will be added
     })
   );
 };

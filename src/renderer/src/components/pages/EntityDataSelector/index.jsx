@@ -204,26 +204,28 @@ const EntityDataSelectorPage = ({
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
   const datasetStructureJSONObj = useGlobalStore((state) => state.datasetStructureJSONObj);
 
-  const countItemsInDatasetStructure = (datasetStructure) => {
+  const countFilesInDatasetStructure = (datasetStructure) => {
     if (!datasetStructure) return 0;
-    let totalItems = 0;
+    let totalFiles = 0;
     const keys = Object.keys(datasetStructure);
 
     for (const key of keys) {
       if (key === "files") {
-        totalItems += Object.keys(datasetStructure[key]).length;
+        // Count only files
+        totalFiles += Object.keys(datasetStructure[key]).length;
       }
       if (key === "folders") {
         const folders = Object.keys(datasetStructure[key]);
-        totalItems += folders.length;
+        // Don't count folders themselves, only recurse into them
         for (const folder of folders) {
-          totalItems += countItemsInDatasetStructure(datasetStructure[key][folder]);
+          totalFiles += countFilesInDatasetStructure(datasetStructure[key][folder]);
         }
       }
     }
-    return totalItems;
+    return totalFiles;
   };
-  const countSelectedItemsByEntityType = (entityType) => {
+
+  const countSelectedFilesByEntityType = (entityType) => {
     if (!datasetEntityObj?.[entityType]) return 0;
 
     // Count total files across all entities using the map structure
@@ -231,14 +233,15 @@ const EntityDataSelectorPage = ({
     const allEntities = Object.values(datasetEntityObj[entityType] || {});
 
     allEntities.forEach((entityFiles) => {
+      // Each entry in entityFiles is a file path, so this is already counting only files
       totalCount += Object.keys(entityFiles).length;
     });
 
     return totalCount;
   };
 
-  const itemCount = countItemsInDatasetStructure(datasetStructureJSONObj) - 1; // Subtract 1 to exclude the root folder
-  const countItemsSelected = countSelectedItemsByEntityType(entityType);
+  const itemCount = countFilesInDatasetStructure(datasetStructureJSONObj);
+  const countItemsSelected = countSelectedFilesByEntityType(entityType);
   console.log("itemCount", itemCount);
   console.log("countItemsSelected", countItemsSelected);
   console.log("Percentage of items selected:" + countItemsSelected / itemCount);
