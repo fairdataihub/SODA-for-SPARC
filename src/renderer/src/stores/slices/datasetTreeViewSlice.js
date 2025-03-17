@@ -95,30 +95,74 @@ export const filterStructure = (structure, searchFilter) => {
 
 // Updates the dataset search filter and modifies the rendered structure
 export const setDatasetStructureSearchFilter = (searchFilter) => {
-  // Set the loading state for the rendered structure
-  useGlobalStore.setState({
-    datasetStructureSearchFilter: searchFilter,
-    renderDatasetStructureJSONObjIsLoading: true,
-  });
+  try {
+    console.log("Setting dataset search filter:", searchFilter);
 
-  const globalStore = useGlobalStore.getState();
+    // Set the loading state for the rendered structure
+    useGlobalStore.setState({
+      datasetStructureSearchFilter: searchFilter || "",
+      renderDatasetStructureJSONObjIsLoading: true,
+    });
 
-  const originalStructure = globalStore.datasetStructureJSONObj;
-  let structureToFilter = traverseStructureByPath(originalStructure, globalStore.pathToRender);
-  structureToFilter = JSON.parse(JSON.stringify(structureToFilter)); // Avoid proxy-related issues
+    const globalStore = useGlobalStore.getState();
 
-  const filteredStructure = filterStructure(structureToFilter, searchFilter);
+    const originalStructure = globalStore.datasetStructureJSONObj;
+    if (!originalStructure) {
+      console.warn("Original structure is null or undefined");
+      useGlobalStore.setState({
+        renderDatasetStructureJSONObj: null,
+        renderDatasetStructureJSONObjIsLoading: false,
+      });
+      return;
+    }
 
-  useGlobalStore.setState({
-    renderDatasetStructureJSONObj: filteredStructure,
-    renderDatasetStructureJSONObjIsLoading: false,
-  });
+    let structureToFilter = traverseStructureByPath(originalStructure, globalStore.pathToRender);
+
+    if (!structureToFilter) {
+      console.warn("Structure to filter is null or undefined");
+      useGlobalStore.setState({
+        renderDatasetStructureJSONObj: null,
+        renderDatasetStructureJSONObjIsLoading: false,
+      });
+      return;
+    }
+
+    // Create a deep copy to avoid proxy-related issues, but safely
+    try {
+      structureToFilter = JSON.parse(JSON.stringify(structureToFilter));
+    } catch (error) {
+      console.error("Error creating deep copy of structure:", error);
+      // Continue with original reference if parsing fails
+    }
+
+    const filteredStructure = filterStructure(structureToFilter, searchFilter);
+
+    useGlobalStore.setState({
+      renderDatasetStructureJSONObj: filteredStructure,
+      renderDatasetStructureJSONObjIsLoading: false,
+    });
+  } catch (error) {
+    console.error("Error in setDatasetStructureSearchFilter:", error);
+    // Reset to safe values in case of error
+    useGlobalStore.setState({
+      renderDatasetStructureJSONObj: null,
+      renderDatasetStructureJSONObjIsLoading: false,
+    });
+  }
 };
 
 export const externallySetSearchFilterValue = (searchFilterValue) => {
-  useGlobalStore.setState({
-    externallySetSearchFilterValue: searchFilterValue,
-  });
+  try {
+    console.log("Externally setting search filter value:", searchFilterValue);
+    useGlobalStore.setState({
+      externallySetSearchFilterValue: searchFilterValue || "",
+    });
+  } catch (error) {
+    console.error("Error in externallySetSearchFilterValue:", error);
+    useGlobalStore.setState({
+      externallySetSearchFilterValue: "",
+    });
+  }
 };
 
 export const addRelativePaths = (obj, currentPath = []) => {
@@ -141,37 +185,70 @@ export const addRelativePaths = (obj, currentPath = []) => {
 
 // Set the dataset structure and prepare it for rendering
 export const setTreeViewDatasetStructure = (datasetStructure, pathToRender) => {
-  pathToRender = pathToRender ? pathToRender : useGlobalStore.getState().pathToRender;
-  // Recursively adds relative paths to folders and files in the dataset structure
+  try {
+    console.log("Setting tree view dataset structure");
+    pathToRender = pathToRender ? pathToRender : useGlobalStore.getState().pathToRender;
 
-  // Ensure immutability of the updated structure
-  const updatedStructure = JSON.parse(JSON.stringify(datasetStructure)); // Avoid direct mutation
-  addRelativePaths(updatedStructure); // Add relative paths to the structure
+    if (!datasetStructure) {
+      console.warn("Dataset structure is null or undefined");
+      return;
+    }
 
-  // Traverse to the folder structure to be rendered and add relative paths
-  const renderStructureRef = traverseStructureByPath(updatedStructure, pathToRender);
-  addRelativePaths(renderStructureRef, pathToRender);
+    // Ensure immutability of the updated structure
+    let updatedStructure;
+    try {
+      updatedStructure = JSON.parse(JSON.stringify(datasetStructure)); // Avoid direct mutation
+    } catch (error) {
+      console.error("Error creating deep copy of dataset structure:", error);
+      updatedStructure = datasetStructure; // Fall back to original if stringify fails
+    }
 
-  // Add relative path to the window dataset structure
-  addRelativePaths(window.datasetStructureJSONObj, []);
+    // Add relative paths to the structure
+    addRelativePaths(updatedStructure);
 
-  // Update global store safely
-  useGlobalStore.setState({
-    datasetStructureJSONObj: updatedStructure,
-    pathToRender,
-    renderDatasetStructureJSONObj: renderStructureRef,
-  });
+    // Traverse to the folder structure to be rendered and add relative paths
+    const renderStructureRef = traverseStructureByPath(updatedStructure, pathToRender);
+    if (renderStructureRef) {
+      addRelativePaths(renderStructureRef, pathToRender);
+    }
+
+    // Add relative path to the window dataset structure
+    if (window.datasetStructureJSONObj) {
+      addRelativePaths(window.datasetStructureJSONObj, []);
+    }
+
+    // Update global store safely
+    useGlobalStore.setState({
+      datasetStructureJSONObj: updatedStructure,
+      pathToRender,
+      renderDatasetStructureJSONObj: renderStructureRef || { folders: {}, files: {} },
+    });
+  } catch (error) {
+    console.error("Error in setTreeViewDatasetStructure:", error);
+  }
 };
 
 // Opens the context menu
 export const openContextMenu = (itemPosition, itemType, itemName, itemContent) => {
-  useGlobalStore.setState({
-    contextMenuIsOpened: true,
-    contextMenuPosition: itemPosition,
-    contextMenuItemName: itemName,
-    contextMenuItemType: itemType,
-    contextMenuItemData: JSON.parse(JSON.stringify(itemContent)),
-  });
+  try {
+    let safeItemContent;
+    try {
+      safeItemContent = JSON.parse(JSON.stringify(itemContent));
+    } catch (error) {
+      console.error("Error stringifying context menu item content:", error);
+      safeItemContent = {}; // Fallback to empty object if serialization fails
+    }
+
+    useGlobalStore.setState({
+      contextMenuIsOpened: true,
+      contextMenuPosition: itemPosition,
+      contextMenuItemName: itemName,
+      contextMenuItemType: itemType,
+      contextMenuItemData: safeItemContent,
+    });
+  } catch (error) {
+    console.error("Error in openContextMenu:", error);
+  }
 };
 
 // Closes the context menu
@@ -183,16 +260,21 @@ export const closeContextMenu = () => {
 
 // Retrieves folder structure by path
 export const getFolderStructureJsonByPath = (path) => {
-  const globalStore = useGlobalStore.getState();
-  const pathArray = typeof path === "string" ? path.split("/").filter(Boolean) : path;
-  let structure = globalStore.datasetStructureJSONObj;
+  try {
+    const globalStore = useGlobalStore.getState();
+    const pathArray = typeof path === "string" ? path.split("/").filter(Boolean) : path;
+    let structure = globalStore.datasetStructureJSONObj;
 
-  pathArray.forEach((folder) => {
-    structure = structure?.folders?.[folder];
-    if (!structure) throw new Error(`Folder "${folder}" does not exist`);
-  });
+    pathArray.forEach((folder) => {
+      structure = structure?.folders?.[folder];
+      if (!structure) throw new Error(`Folder "${folder}" does not exist`);
+    });
 
-  return JSON.parse(JSON.stringify(structure)); // Avoid proxy-related issues
+    return JSON.parse(JSON.stringify(structure)); // Avoid proxy-related issues
+  } catch (error) {
+    console.error("Error in getFolderStructureJsonByPath:", error);
+    return { folders: {}, files: {} }; // Return empty structure on error
+  }
 };
 
 // Folder move operations
@@ -203,44 +285,48 @@ export const setFolderMoveMode = (moveMode) => {
 };
 
 export const moveFolderToNewLocation = (targetRelativePath) => {
-  const globalStore = useGlobalStore.getState();
-  const { contextMenuItemName, contextMenuItemType, contextMenuItemData } = globalStore;
+  try {
+    const globalStore = useGlobalStore.getState();
+    const { contextMenuItemName, contextMenuItemType, contextMenuItemData } = globalStore;
 
-  console.log("contextMenuItemName:", contextMenuItemName); // Debug log
-  console.log("contextMenuItemType:", contextMenuItemType); // Debug log
-  console.log("contextMenuItemData:", contextMenuItemData); // Debug log
+    console.log("contextMenuItemName:", contextMenuItemName); // Debug log
+    console.log("contextMenuItemType:", contextMenuItemType); // Debug log
+    console.log("contextMenuItemData:", contextMenuItemData); // Debug log
 
-  if (!contextMenuItemName || !contextMenuItemData) {
-    throw new Error("Missing contextMenuItemName or contextMenuItemData.");
+    if (!contextMenuItemName || !contextMenuItemData) {
+      throw new Error("Missing contextMenuItemName or contextMenuItemData.");
+    }
+
+    // Get the stringified JSON object of the target folder (where we will be moving the folder)
+    const targetFolder = getFolderStructureJsonByPath(targetRelativePath);
+
+    if (!targetFolder) {
+      throw new Error(`Target folder at path "${targetRelativePath}" not found.`);
+    }
+
+    const originalStructure = globalStore.datasetStructureJSONObj;
+    const folderToDeletePathSegments = contextMenuItemData.relativePath.split("/").filter(Boolean);
+    console.log("folderToDeletePathSegments:", folderToDeletePathSegments);
+    const parentFolder = traverseStructureByPath(
+      originalStructure,
+      folderToDeletePathSegments.slice(0, -1)
+    );
+
+    if (!parentFolder || !parentFolder.folders[contextMenuItemName]) {
+      throw new Error(`Folder "${contextMenuItemName}" not found in the original location.`);
+    }
+
+    useGlobalStore.setState(
+      produce((state) => {
+        delete parentFolder.folders[contextMenuItemName];
+        targetFolder.folders[contextMenuItemName] = contextMenuItemData;
+        targetFolder.folders[contextMenuItemName].relativePath =
+          `${targetRelativePath}/${contextMenuItemName}`;
+
+        setTreeViewDatasetStructure(state.datasetStructureJSONObj, globalStore.pathToRender);
+      })
+    );
+  } catch (error) {
+    console.error("Error in moveFolderToNewLocation:", error);
   }
-
-  // Get the stringified JSON object of the target folder (where we will be moving the folder)
-  const targetFolder = getFolderStructureJsonByPath(targetRelativePath);
-
-  if (!targetFolder) {
-    throw new Error(`Target folder at path "${targetRelativePath}" not found.`);
-  }
-
-  const originalStructure = globalStore.datasetStructureJSONObj;
-  const folderToDeletePathSegments = contextMenuItemData.relativePath.split("/").filter(Boolean);
-  console.log("folderToDeletePathSegments:", folderToDeletePathSegments);
-  const parentFolder = traverseStructureByPath(
-    originalStructure,
-    folderToDeletePathSegments.slice(0, -1)
-  );
-
-  if (!parentFolder || !parentFolder.folders[contextMenuItemName]) {
-    throw new Error(`Folder "${contextMenuItemName}" not found in the original location.`);
-  }
-
-  useGlobalStore.setState(
-    produce((state) => {
-      delete parentFolder.folders[contextMenuItemName];
-      targetFolder.folders[contextMenuItemName] = contextMenuItemData;
-      targetFolder.folders[contextMenuItemName].relativePath =
-        `${targetRelativePath}/${contextMenuItemName}`;
-
-      setTreeViewDatasetStructure(state.datasetStructureJSONObj, globalStore.pathToRender);
-    })
-  );
 };

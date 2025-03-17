@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import {
@@ -40,11 +40,41 @@ import {
 
 // Component for entity metadata form
 const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
+  // Subscribe to datasetEntityArray changes for re-rendering
+  const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
+
+  // Get the current entity data with all its metadata
+  const currentEntityData = useMemo(() => {
+    if (!selectedHierarchyEntity) return null;
+
+    const { id, type, parentSubject } = selectedHierarchyEntity;
+
+    if (type === "subject") {
+      return datasetEntityArray.find((s) => s.id === id);
+    } else if (type === "sample") {
+      const subject = datasetEntityArray.find((s) => s.id === parentSubject);
+      return subject?.samples?.find((s) => s.id === id);
+    }
+    // Handle other entity types...
+
+    return null;
+  }, [selectedHierarchyEntity, datasetEntityArray]);
+
+  // Function to get metadata value, now using the subscribed data
+  const getMetadataValue = useCallback(
+    (key) => {
+      return currentEntityData?.metadata && currentEntityData.metadata[key] !== undefined
+        ? currentEntityData.metadata[key]
+        : "";
+    },
+    [currentEntityData]
+  );
+
   // Handle the case where no entity is selected
   if (!selectedHierarchyEntity) {
     return (
       <Box p="xl">
-        <Text size="xl" c="gray" align="center">
+        <Text size="xl" c="gray">
           Select an entity from the hierarchy on the left to edit its metadata.
         </Text>
       </Box>
@@ -61,7 +91,7 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
       case "subject":
         return `Subject: ${id}`;
       case "sample":
-        return `Sample: ${id}${parentSubject ? ` (from subject ${parentSubject})` : ""}`;
+        return `Sample: ${id}${parentSubject ? ` (frm subject ${parentSubject})` : ""}`;
       case "site":
         if (parentSample) {
           return `Site: ${id} (from sample ${parentSample})`;
@@ -81,18 +111,11 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
     }
   };
 
-  // Get metadata value directly from the entity
-  const getMetadataValue = (key) => {
-    if (selectedHierarchyEntity.metadata && selectedHierarchyEntity.metadata[key] !== undefined) {
-      return selectedHierarchyEntity.metadata[key];
-    }
-    return "";
-  };
-
-  // Handle metadata changes
+  // Enhanced change handler that forces proper updates
   const handleChange = (field, value) => {
-    console.log("selectedHierarchyEntity:", selectedHierarchyEntity);
+    console.log("Changing field:", field, "to value:", value);
     updateEntityMetadata(selectedHierarchyEntity, { [field]: value });
+    // No need for the force update, React will re-render due to our subscription
   };
 
   const getEntityIcon = () => {
@@ -124,7 +147,7 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
           <Stack spacing="md">
             <TextInput
               label="Experimental Group"
-              description="The experimental group this entity belongs to"
+              description="The experimental group subject entity belongs to"
               placeholder="e.g., Control, Treatment A"
               value={getMetadataValue("experimentalGroup")}
               onChange={(e) => handleChange("experimentalGroup", e.target.value)}
