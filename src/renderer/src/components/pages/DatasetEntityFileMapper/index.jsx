@@ -92,7 +92,7 @@ const DatasetEntityFileMapper = () => {
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
 
   return (
-    <GuidedModePage pageHeader={"Dataset Entity File Mapper"}>
+    <GuidedModePage pageHeader={"Dataset entity file association"}>
       <GuidedModeSection>
         <Stack>
           <Text>

@@ -13,13 +13,11 @@ const SelectedHierarchyEntityPreviewer = () => {
   }
 
   return (
-    <Box>
-      <Paper p="md" withBorder>
-        <Text weight={500} mb="xs">
-          Selected Entity Details:
-        </Text>
-        <Code block>{JSON.stringify(selectedHierarchyEntity, null, 2)}</Code>
-      </Paper>
+    <Box my="md">
+      <Text fw={600} mb="xs">
+        Selected Entity Details:
+      </Text>
+      <Code block>{JSON.stringify(selectedHierarchyEntity, null, 2)}</Code>
     </Box>
   );
 };

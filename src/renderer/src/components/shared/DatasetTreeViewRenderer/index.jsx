@@ -81,9 +81,10 @@ const getBadgeColor = (entityId) => {
   if (entityId === "Other") return "gray";
 };
 
-// Format entity ID for display (remove prefixes, limit length)
+// Format entity ID for display by removing standard prefixes and managing length
+// to ensure badges remain readable while showing meaningful information
 const formatEntityId = (entityId) => {
-  // Remove common prefixes
+  // Strip common prefixes for cleaner display
   let displayText = entityId;
   const prefixes = ["sub-", "sam-", "site-", "perf-"];
 
@@ -94,9 +95,10 @@ const formatEntityId = (entityId) => {
     }
   }
 
-  // Limit length if needed
-  if (displayText.length > 10) {
-    displayText = displayText.substring(0, 8) + "...";
+  // Limit very long entity names to maintain UI layout
+  // Show enough characters to be identifiable but prevent overflow
+  if (displayText.length > 20) {
+    displayText = displayText.substring(0, 18) + "...";
   }
 
   return displayText;
@@ -130,6 +132,7 @@ const getIconForFile = (fileName) => {
   return fileIcons[fileExtension] || <IconFile size={ICON_SETTINGS.fileSize} />;
 };
 
+// File item component - represents a single file in the dataset tree
 const FileItem = ({
   name,
   content,
@@ -214,7 +217,7 @@ const FileItem = ({
         {name}
       </Text>
 
-      {/* Entity badges */}
+      {/* Entity association badges - show which entities this file belongs to */}
       {associations.length > 0 && (
         <Group gap="xs" wrap="nowrap" style={{ marginLeft: "auto", overflow: "hidden" }}>
           {associations.slice(0, 3).map((assoc, index) => (
@@ -228,12 +231,18 @@ const FileItem = ({
                 color={getBadgeColor(assoc.entityId)}
                 variant="light"
                 size="xs"
-                style={{ whiteSpace: "nowrap" }}
+                style={{
+                  whiteSpace: "nowrap",
+                  maxWidth: "100px", // Prevent oversized badges from disrupting layout
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
               >
                 {formatEntityId(assoc.entityId)}
               </Badge>
             </Tooltip>
           ))}
+          {/* "More" indicator for when a file has many associations */}
           {associations.length > 3 && (
             <Tooltip label={`${associations.length - 3} more entities`} position="top" withArrow>
               <Badge color="gray" variant="outline" size="xs">
@@ -247,6 +256,34 @@ const FileItem = ({
   );
 };
 
+// Recursively collects all file objects within a folder structure
+// Used to determine collective selection state for folder checkboxes
+const collectAllFilesRecursively = (content) => {
+  if (!content) return [];
+
+  let allFiles = [];
+
+  // Add files in current folder
+  if (content.files) {
+    Object.keys(content.files).forEach((fileName) => {
+      allFiles.push({
+        name: fileName,
+        content: content.files[fileName],
+      });
+    });
+  }
+
+  // Recursively collect files from subfolders
+  if (content.folders) {
+    Object.keys(content.folders).forEach((folderName) => {
+      const subfolderFiles = collectAllFilesRecursively(content.folders[folderName]);
+      allFiles = [...allFiles, ...subfolderFiles];
+    });
+  }
+
+  return allFiles;
+};
+
 const FolderItem = ({
   name,
   content,
@@ -256,6 +293,7 @@ const FolderItem = ({
   isFolderSelected,
   isFileSelected,
   allowStructureEditing,
+  allowFolderSelection,
   folderClickHoverText,
   entityType,
 }) => {
@@ -296,6 +334,52 @@ const FolderItem = ({
   if (folderIsEmpty) return null; // Don't render empty folders
 
   const folderIsPassThrough = content.passThrough;
+
+  // Determines if all files in this folder and its subfolders are selected
+  // Used to drive the folder checkbox state (checked, unchecked)
+  const areAllFilesSelected = () => {
+    if (!isFileSelected || typeof isFileSelected !== "function") return false;
+
+    const allFiles = collectAllFilesRecursively(content);
+    if (allFiles.length === 0) return false;
+
+    // Diagnostic information to help trace selection states
+    const totalFiles = allFiles.length;
+    const selectedFiles = allFiles.filter((file) => isFileSelected(file.name, file.content));
+    const selectedCount = selectedFiles.length;
+
+    console.debug(
+      `Folder ${name} selection: ${selectedCount}/${totalFiles} files selected`,
+      `(includes ${Object.keys(content.folders || {}).length} subfolders)`
+    );
+
+    // Only return true if ALL files are selected (complete folder selection)
+    return selectedCount === totalFiles;
+  };
+
+  // Calculate if folder checkbox should be checked
+  const folderCheckboxStatus = areAllFilesSelected();
+
+  // Handler for when folder checkbox is clicked
+  const handleFolderCheckboxClick = () => {
+    if (!onFileClick || !isFileSelected || typeof isFileSelected !== "function") return;
+
+    const allFiles = collectAllFilesRecursively(content);
+    const currentlyAllSelected = areAllFilesSelected();
+
+    // Toggle all files to the opposite of current state
+    allFiles.forEach((file) => {
+      try {
+        const fileIsSelected = isFileSelected(file.name, file.content);
+        // Only toggle if needed (all selected -> deselect all, or not all selected -> select all)
+        if (currentlyAllSelected === fileIsSelected) {
+          onFileClick(file.name, file.content, fileIsSelected);
+        }
+      } catch (err) {
+        console.error("Error checking file selection status:", err);
+      }
+    });
+  };
 
   // Check if the folder is selected - simplified to just true/false
   const folderIsSelected = isFolderSelected ? isFolderSelected(name, content) : false;
@@ -340,18 +424,17 @@ const FolderItem = ({
             onClick={toggleFolder}
           />
         )}
-        {!folderIsPassThrough && (
-          <>
-            {onFolderClick && (
-              <Tooltip label={folderClickHoverText || "Select this folder"} zIndex={2999}>
-                <Checkbox
-                  readOnly
-                  checked={folderIsSelected}
-                  onClick={() => onFolderClick?.(name, content, folderIsSelected)}
-                />
-              </Tooltip>
-            )}
-          </>
+        {!folderIsPassThrough && onFileClick && typeof isFileSelected === "function" && (
+          <Tooltip label="Select all files in this folder" zIndex={2999}>
+            <Checkbox
+              readOnly
+              checked={folderCheckboxStatus}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleFolderCheckboxClick();
+              }}
+            />
+          </Tooltip>
         )}
         <Text
           size="md"
@@ -371,7 +454,7 @@ const FolderItem = ({
           {name}
         </Text>
 
-        {/* Entity badges */}
+        {/* Entity association badges for folder */}
         {associations.length > 0 && (
           <Group
             gap="xs"
@@ -389,7 +472,12 @@ const FolderItem = ({
                   color={getBadgeColor(assoc.entityId)}
                   variant="light"
                   size="xs"
-                  style={{ whiteSpace: "nowrap" }}
+                  style={{
+                    whiteSpace: "nowrap",
+                    maxWidth: "100px", // Constrain badge width for layout consistency
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
                 >
                   {formatEntityId(assoc.entityId)}
                 </Badge>
@@ -417,6 +505,7 @@ const FolderItem = ({
             isFolderSelected={isFolderSelected}
             isFileSelected={isFileSelected}
             allowStructureEditing={allowStructureEditing}
+            allowFolderSelection={allowFolderSelection}
             folderClickHoverText={folderClickHoverText}
             entityType={entityType}
           />
@@ -437,6 +526,7 @@ const FolderItem = ({
   );
 };
 
+// Main component - renders the entire dataset tree structure
 const DatasetTreeViewRenderer = ({
   folderActions,
   fileActions,
@@ -445,6 +535,7 @@ const DatasetTreeViewRenderer = ({
   hideSearchBar,
   mutuallyExclusiveSelection,
   entityType,
+  allowFolderSelection = false, // Add new prop with default false
 }) => {
   console.log("DatasetTreeViewRenderer entityType:", entityType);
 
@@ -514,9 +605,11 @@ const DatasetTreeViewRenderer = ({
 
   const handleFileItemClick = (fileName, fileContents) => {
     console.log("Internal file click", fileName); // Add this debug line
-    const isSelected = fileActions["is-file-selected"](fileName, fileContents);
-    // Now pass mutuallyExclusiveSelection as the last parameter
-    fileActions["on-file-click"](fileName, fileContents, isSelected, mutuallyExclusiveSelection);
+    if (fileActions && typeof fileActions["is-file-selected"] === "function") {
+      const isSelected = fileActions["is-file-selected"](fileName, fileContents);
+      // Pass the mutuallyExclusiveSelection parameter
+      fileActions["on-file-click"](fileName, fileContents, isSelected, mutuallyExclusiveSelection);
+    }
   };
 
   return (
@@ -524,7 +617,7 @@ const DatasetTreeViewRenderer = ({
       {itemSelectInstructions && (
         <Stack gap="xs">
           <Text size="lg" fw={500}>
-            Select files {entityType ? `(${entityType})` : ""}:
+            Select files
           </Text>
           <Text>{itemSelectInstructions}</Text>
         </Stack>
@@ -552,8 +645,8 @@ const DatasetTreeViewRenderer = ({
                   key={folderName}
                   name={folderName}
                   content={renderDatasetStructureJSONObj.folders[folderName]}
-                  onFolderClick={folderActions?.["on-folder-click"]}
-                  onFileClick={fileActions?.["on-file-click"]}
+                  onFolderClick={allowFolderSelection ? folderActions?.["on-folder-click"] : null}
+                  onFileClick={fileActions?.["on-file-click"] ? handleFileItemClick : null}
                   folderClickHoverText={
                     folderActions?.["folder-click-hover-text"] ||
                     "Select this folder and its contents"
@@ -562,7 +655,8 @@ const DatasetTreeViewRenderer = ({
                   isFolderSelected={folderActions?.["is-folder-selected"]}
                   isFileSelected={fileActions?.["is-file-selected"]}
                   allowStructureEditing={allowStructureEditing}
-                  entityType={entityType} // Pass to FolderItem
+                  allowFolderSelection={allowFolderSelection}
+                  entityType={entityType}
                 />
               )
             )}

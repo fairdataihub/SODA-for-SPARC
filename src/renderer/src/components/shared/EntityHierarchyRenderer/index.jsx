@@ -111,9 +111,11 @@ const HierarchyItem = ({
         style={{
           cursor: isAddButton || allowEntitySelection ? "pointer" : "default",
           backgroundColor:
-            (allowEntitySelection && selectedEntityId === entityData.id) || isSampleParent
-              ? "#f0f0f0"
-              : "",
+            allowEntitySelection && selectedEntityId === entityData?.id
+              ? "#bbdefb" // More vibrant blue that's clearly visible
+              : isSampleParent
+                ? "#f0f0f0" // Keep the existing gray for parent items
+                : "",
         }}
         ml={`${horizontalHierarchyLineWidth}px`}
       >
@@ -361,7 +363,7 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
           </Flex>
         </Box>
       )}
-      <ScrollArea h={650} type="auto">
+      <ScrollArea mah={650} type="auto">
         <Stack gap="xs">
           {shouldShowEmptyState ? (
             <Box
@@ -394,11 +396,13 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                   onClick={() => allowEntitySelection && handleEntitySelect(subject)}
                   style={{
                     cursor: allowEntitySelection ? "pointer" : "default",
-                    border:
+
+                    backgroundColor:
                       allowEntitySelection && selectedEntityId === subject.id
-                        ? "1px solid #1c7ed6"
-                        : "none",
-                    backgroundColor: selectedEntityParentSubjectId === subject.id ? "#f0f0f0" : "",
+                        ? "#bbdefb" // Update the subject selection color to match
+                        : selectedEntityParentSubjectId === subject.id
+                          ? "#f0f0f0"
+                          : "",
                   }}
                 >
                   <IconUser size={15} />
