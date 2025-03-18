@@ -76,7 +76,9 @@ export const addSampleToSubject = (subjectId, sampleId) => {
           id: sampleId, // Changed from sampleId to id
           type: "sample", // Add type field to identify entity type
           parentSubject: subject.id, // Add explicit reference to parent subject
-          metadata: {},
+          metadata: {
+            "subject ID": subject.id, // Add subject ID to sample metadata
+          },
           sites: [],
           performances: [],
         });
@@ -126,7 +128,7 @@ export const addSiteToSubject = (subjectId, siteId) => {
           id: siteId, // Changed from siteId to id
           type: "site", // Add type field to identify entity type
           parentSubject: subject.id, // Add explicit reference to parent subject
-          metadata: {},
+          metadata: { "specimen id": subjectId },
         });
       }
     })
@@ -224,7 +226,9 @@ export const addSiteToSample = (subjectId, sampleId, siteId) => {
             type: "site", // Add type field to identify entity type
             parentSubject: subject.id, // Add explicit reference to top-level subject
             parentSample: sample.id, // Add explicit reference to parent sample
-            metadata: {},
+            metadata: {
+              "specimen id": `${subjectId} ${sampleId}`, // Add combined subject/sample ID to site metadata
+            },
           });
         }
       }

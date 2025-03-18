@@ -83,34 +83,6 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
 
   console.log("Selected entity:", selectedHierarchyEntity);
 
-  // Generate the appropriate title based on entity type
-  const getTitleForEntity = () => {
-    const { id, type, parentSubject, parentSample } = selectedHierarchyEntity;
-
-    switch (type) {
-      case "subject":
-        return `Subject: ${id}`;
-      case "sample":
-        return `Sample: ${id}${parentSubject ? ` (frm subject ${parentSubject})` : ""}`;
-      case "site":
-        if (parentSample) {
-          return `Site: ${id} (from sample ${parentSample})`;
-        } else if (parentSubject) {
-          return `Site: ${id} (from subject ${parentSubject})`;
-        }
-        return `Site: ${id}`;
-      case "performance":
-        if (parentSample) {
-          return `Performance: ${id} (from sample ${parentSample})`;
-        } else if (parentSubject) {
-          return `Performance: ${id} (from subject ${parentSubject})`;
-        }
-        return `Performance: ${id}`;
-      default:
-        return `Unknown entity: ${id}`;
-    }
-  };
-
   // Enhanced change handler that forces proper updates
   const handleChange = (field, value) => {
     console.log("Changing field:", field, "to value:", value);
@@ -146,8 +118,8 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
         return (
           <Stack spacing="md">
             <TextInput
-              label="Experimental Group"
-              description="The experimental group subject entity belongs to"
+              label="Subject Experimental Group"
+              description="The experimental group this subject belongs to"
               placeholder="e.g., Control, Treatment A"
               value={getMetadataValue("experimentalGroup")}
               onChange={(e) => handleChange("experimentalGroup", e.target.value)}
@@ -194,22 +166,55 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
               label="Sex"
               description="Subject's biological sex"
               placeholder="Select sex"
-              data={[
-                { value: "male", label: "Male" },
-                { value: "female", label: "Female" },
-                { value: "unknown", label: "Unknown" },
-              ]}
+              data={["Male", "Female", "Unknown"]}
               value={getMetadataValue("sex")}
               onChange={(value) => handleChange("sex", value)}
             />
             <Select
-              label="Sex"
-              description="Subject's biological sex"
-              placeholder="Select sex"
+              label="Age category"
+              description="The age category of the subject at the time of the experiment"
+              placeholder="Select age category"
               data={[
-                { value: "male", label: "Male" },
-                { value: "female", label: "Female" },
-                { value: "unknown", label: "Unknown" },
+                "zygote stage",
+                "cleavage stage",
+                "2 cell stage",
+                "4 cell stage",
+                "8 cell stage",
+                "blastula stage",
+                "gastrula stage",
+                "neurula stage",
+                "pharyngula stage",
+                "organogenesis stage",
+                "late embryonic stage",
+                "embryo stage",
+                "perinatal stage",
+                "neonate stage",
+                "infant stage",
+                "nursing stage",
+                "juvenile stage",
+                "sexually immature stage",
+                "post-juvenile adult stage",
+                "prime adult stage",
+                "late adult stage",
+                "death stage",
+                "nauplius stage",
+                "trochophore stage",
+                "veliger stage",
+                "zoea stage",
+                "larval stage (25)",
+                "pupal stage",
+                "copepodite stage 1",
+                "copepodite stage 2",
+                "copepodite stage 3",
+                "copepodite stage 4",
+                "copepodite stage 5",
+                "copepodite stage 6",
+                "copepodite stage",
+                "crustacean post-larval stage (1)",
+                "glaucothoe stage",
+                "cysticercus stage",
+                "post-embryonic stage",
+                "fully formed stage",
               ]}
               value={getMetadataValue("sex")}
               onChange={(value) => handleChange("sex", value)}
@@ -220,18 +225,27 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
         return (
           <Stack spacing="md">
             <TextInput
-              label="Experimental Group"
+              label="Sample Experimental Group"
               description="The experimental group this sample belongs to"
               placeholder="e.g., Control, Treatment A"
               value={getMetadataValue("experimentalGroup")}
               onChange={(e) => handleChange("experimentalGroup", e.target.value)}
             />
-            <TextInput
+            <Select
               label="Sample Type"
-              description="The type of biological sample"
-              placeholder="e.g., Blood, Tissue"
+              placeholder="Select sample type"
+              data={[
+                "Tissue",
+                "Whole Organ",
+                "Primary Cell",
+                "Immortalized Cell Line",
+                "In Vitro Differentiated Cell",
+                "Induced Pluripotent Stem Cell",
+                "Stem Cell",
+                "Other",
+              ]}
               value={getMetadataValue("sampleType")}
-              onChange={(e) => handleChange("sampleType", e.target.value)}
+              onChange={(value) => handleChange("sampleType", value)}
             />
             <TextInput
               label="Anatomical Location"
@@ -246,22 +260,20 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
         return (
           <Stack spacing="md">
             <TextInput
-              label="Experimental Group"
-              description="The experimental group this site belongs to"
-              placeholder="e.g., Control, Treatment A"
-              value={getMetadataValue("experimentalGroup")}
-              onChange={(e) => handleChange("experimentalGroup", e.target.value)}
+              label="Site type"
+              placeholder="e.g., Recording site, Injection site"
+              value={getMetadataValue("siteType")}
+              onChange={(e) => handleChange("siteType", e.target.value)}
             />
             <TextInput
-              label="Anatomical Location"
-              description="The anatomical location of this site"
-              placeholder="e.g., Dorsal root ganglion"
-              value={getMetadataValue("anatomicalLocation")}
-              onChange={(e) => handleChange("anatomicalLocation", e.target.value)}
+              label="Laboratory Internal ID"
+              placeholder="e.g., 12345"
+              value={getMetadataValue("laboratory-internal-id")}
+              onChange={(e) => handleChange("laboratory-internal-id", e.target.value)}
             />
             <TextInput
               label="Coordinates"
-              description="Stereotaxic or other coordinates"
+              description="point, line, volume, etc."
               placeholder="e.g., X:1.2, Y:3.4, Z:5.6"
               value={getMetadataValue("coordinates")}
               onChange={(e) => handleChange("coordinates", e.target.value)}
@@ -309,11 +321,11 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
         <Group position="apart">
           <Group>
             {getEntityIcon()}
-            <Title order={4}>{getTitleForEntity()}</Title>
+            <Title order={4}>{selectedHierarchyEntity.id}</Title>
           </Group>
         </Group>
 
-        <Divider my="xs" />
+        <Divider />
 
         {/* Entity-specific form fields */}
         {renderEntitySpecificFields()}
@@ -339,13 +351,9 @@ const DatasetEntityMetadata = () => {
         <Grid gutter="lg">
           <Grid.Col span={4} style={{ position: "sticky", top: "20px" }}>
             <Paper shadow="sm" radius="md" p="sm" withBorder mb="md">
-              {selectedHierarchyEntity ? (
-                <SelectedHierarchyEntityPreviewer />
-              ) : (
-                <Text size="lg" fw={500} mb="md">
-                  Select an Entity
-                </Text>
-              )}
+              <Text size="lg" fw={500} mb="md">
+                Select an Entity
+              </Text>
               <EntityHierarchyRenderer
                 allowEntityStructureEditing={false}
                 allowEntitySelection={true}
