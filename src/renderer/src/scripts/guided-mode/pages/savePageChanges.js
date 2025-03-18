@@ -106,6 +106,13 @@ export const savePageChanges = async (pageBeingLeftID) => {
         window.sodaJSONObj["dataset-entity-obj"] = datasetEntityObj;
       }
 
+      if (pageBeingLeftComponentType === "entity-file-mapping-page") {
+        const datasetEntityObj = getDatasetEntityObj();
+        console.log("datasetEntityObj when leaving" + pageBeingLeftID, datasetEntityObj);
+        // Save the dataset entity object to the progress file
+        window.sodaJSONObj["dataset-entity-obj"] = datasetEntityObj;
+      }
+
       if (pageBeingLeftComponentType === "dataset-content-selector") {
         const selectedEntities = useGlobalStore.getState()["selectedEntities"];
         console.log("selectedEntities", selectedEntities);
@@ -212,6 +219,12 @@ export const savePageChanges = async (pageBeingLeftID) => {
           "datasetEntityArray when leaving" + pageBeingLeftID,
           window.sodaJSONObj["dataset-entity-array"]
         );
+      }
+      if (pageBeingLeftComponentType === "dataset-entity-metadata-page") {
+        const datasetEntityArray = useGlobalStore.getState().datasetEntityArray;
+
+        // Save the dataset entity object to the progress file
+        window.sodaJSONObj["dataset-entity-array"] = datasetEntityArray;
       }
     }
 

@@ -152,6 +152,44 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
               value={getMetadataValue("experimentalGroup")}
               onChange={(e) => handleChange("experimentalGroup", e.target.value)}
             />
+
+            <Group grow justify="space-between">
+              <Box>
+                <Text size="sm" fw={500} mb={3}>
+                  Age Value
+                </Text>
+                <Text size="xs" c="dimmed" mb={5}>
+                  Numeric age value
+                </Text>
+                <NumberInput
+                  placeholder="e.g., 12"
+                  value={getMetadataValue("ageValue")}
+                  onChange={(value) => handleChange("ageValue", value)}
+                  min={0}
+                />
+              </Box>
+
+              <Box>
+                <Text size="sm" fw={500} mb={3}>
+                  Age Unit
+                </Text>
+                <Text size="xs" c="dimmed" mb={5}>
+                  Time unit for age
+                </Text>
+                <Select
+                  placeholder="Select unit"
+                  data={[
+                    { value: "hours", label: "Hours" },
+                    { value: "days", label: "Days" },
+                    { value: "weeks", label: "Weeks" },
+                    { value: "months", label: "Months" },
+                    { value: "years", label: "Years" },
+                  ]}
+                  value={getMetadataValue("ageUnit")}
+                  onChange={(value) => handleChange("ageUnit", value)}
+                />
+              </Box>
+            </Group>
             <Select
               label="Sex"
               description="Subject's biological sex"
@@ -164,20 +202,17 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
               value={getMetadataValue("sex")}
               onChange={(value) => handleChange("sex", value)}
             />
-            <TextInput
-              label="Age"
-              description="Subject's age"
-              placeholder="e.g., 12 weeks"
-              value={getMetadataValue("age")}
-              onChange={(e) => handleChange("age", e.target.value)}
-            />
-            <NumberInput
-              label="Weight"
-              description="Subject's weight"
-              placeholder="e.g., 250"
-              suffix=" g"
-              value={getMetadataValue("weight")}
-              onChange={(value) => handleChange("weight", value)}
+            <Select
+              label="Sex"
+              description="Subject's biological sex"
+              placeholder="Select sex"
+              data={[
+                { value: "male", label: "Male" },
+                { value: "female", label: "Female" },
+                { value: "unknown", label: "Unknown" },
+              ]}
+              value={getMetadataValue("sex")}
+              onChange={(value) => handleChange("sex", value)}
             />
           </Stack>
         );
