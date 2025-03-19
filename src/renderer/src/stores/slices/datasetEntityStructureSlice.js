@@ -30,7 +30,9 @@ export const addSubject = (subjectId) => {
       state.datasetEntityArray.push({
         id: normalizedSubjectId, // Changed from subjectId to id
         type: "subject", // Add type field to identify entity type
-        metadata: {},
+        metadata: {
+          "subject id": normalizedSubjectId,
+        },
         samples: [],
         subjectSites: [],
         subjectPerformances: [],
@@ -71,13 +73,13 @@ export const addSampleToSubject = (subjectId, sampleId) => {
     produce((state) => {
       const subject = state.datasetEntityArray.find((s) => s.id === subjectId); // Changed from subjectId to id
       if (subject) {
-        if (!subject.samples) subject.samples = [];
         subject.samples.push({
           id: sampleId, // Changed from sampleId to id
           type: "sample", // Add type field to identify entity type
-          parentSubject: subject.id, // Add explicit reference to parent subject
+          parentSubject: subjectId, // Add explicit reference to parent subject
           metadata: {
-            "subject ID": subject.id, // Add subject ID to sample metadata
+            "subject id": subjectId,
+            "sample id": sampleId,
           },
           sites: [],
           performances: [],
@@ -128,7 +130,10 @@ export const addSiteToSubject = (subjectId, siteId) => {
           id: siteId, // Changed from siteId to id
           type: "site", // Add type field to identify entity type
           parentSubject: subject.id, // Add explicit reference to parent subject
-          metadata: { "specimen id": subjectId },
+          metadata: {
+            "site id": siteId,
+            "specimen id": subjectId,
+          },
         });
       }
     })
@@ -227,6 +232,7 @@ export const addSiteToSample = (subjectId, sampleId, siteId) => {
             parentSubject: subject.id, // Add explicit reference to top-level subject
             parentSample: sample.id, // Add explicit reference to parent sample
             metadata: {
+              "site id": siteId,
               "specimen id": `${subjectId} ${sampleId}`, // Add combined subject/sample ID to site metadata
             },
           });

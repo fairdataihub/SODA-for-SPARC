@@ -121,8 +121,8 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
               label="Subject Experimental Group"
               description="The experimental group this subject belongs to"
               placeholder="e.g., Control, Treatment A"
-              value={getMetadataValue("experimentalGroup")}
-              onChange={(e) => handleChange("experimentalGroup", e.target.value)}
+              value={getMetadataValue("experimental group")}
+              onChange={(e) => handleChange("experimental group", e.target.value)}
             />
 
             <Group grow justify="space-between">
@@ -216,8 +216,8 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
                 "post-embryonic stage",
                 "fully formed stage",
               ]}
-              value={getMetadataValue("sex")}
-              onChange={(value) => handleChange("sex", value)}
+              value={getMetadataValue("age category")}
+              onChange={(value) => handleChange("age category", value)}
             />
           </Stack>
         );
@@ -228,8 +228,8 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
               label="Sample Experimental Group"
               description="The experimental group this sample belongs to"
               placeholder="e.g., Control, Treatment A"
-              value={getMetadataValue("experimentalGroup")}
-              onChange={(e) => handleChange("experimentalGroup", e.target.value)}
+              value={getMetadataValue("experimental group")}
+              onChange={(e) => handleChange("experimental group", e.target.value)}
             />
             <Select
               label="Sample Type"
@@ -244,8 +244,8 @@ const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
                 "Stem Cell",
                 "Other",
               ]}
-              value={getMetadataValue("sampleType")}
-              onChange={(value) => handleChange("sampleType", value)}
+              value={getMetadataValue("sample type")}
+              onChange={(value) => handleChange("sample type", value)}
             />
             <TextInput
               label="Anatomical Location"
