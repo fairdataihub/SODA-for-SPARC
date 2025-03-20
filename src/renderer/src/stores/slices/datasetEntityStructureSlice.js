@@ -651,3 +651,19 @@ export const setActiveFormType = (formType) => {
     activeFormType: formType,
   });
 };
+
+export const setEntityBeingAddedParentSubject = (subjectId) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      state.entityBeingAddedParentSubject = subjectId;
+    })
+  );
+};
+
+export const setEntityBeingAddedParentSample = (sampleId) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      state.entityBeingAddedParentSample = sampleId;
+    })
+  );
+};

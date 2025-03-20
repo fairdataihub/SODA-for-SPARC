@@ -26,6 +26,8 @@ import {
   modifySamplePerformanceId,
   getAllEntityIds,
   setActiveFormType,
+  setEntityBeingAddedParentSubject,
+  setEntityBeingAddedParentSample,
 } from "../../../stores/slices/datasetEntityStructureSlice";
 import useGlobalStore from "../../../stores/globalStore";
 import { guidedOpenEntityAdditionSwal, guidedOpenEntityEditSwal } from "./utils";
@@ -180,18 +182,18 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
     setActiveFormType("subject"); // Set the active form type to subject
   }, []);
 
+  const handleAddSampleButtonClick = useCallback((subject) => {
+    setSelectedHierarchyEntity(null); // Reset selected entity when adding new subjects
+    setEntityBeingAddedParentSubject(subject.id);
+    setActiveFormType("sample"); // Set the active form type to subject
+  }, []);
+
   const handleEditSubject = useCallback((subject) => {
     return guidedOpenEntityEditSwal("subject", subject);
   }, []);
 
   const handleDeleteSubject = useCallback((subject) => {
     return deleteSubject(subject.id);
-  }, []);
-
-  // Sample operations
-  const handleAddSample = useCallback((subject) => {
-    console.log(`Add sample to subject: ${subject.id}`);
-    return guidedOpenEntityAdditionSwal({ entityType: "samples", subjectId: subject.id });
   }, []);
 
   const handleEditSample = useCallback(async (sample, subject) => {
@@ -214,7 +216,7 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
 
   // Subject site operations
   const handleAddSubjectSite = useCallback((subject) => {
-    console.log(`Add site to subject: ${subject.id}`);
+    console.log(`Add site `);
     return guidedOpenEntityAdditionSwal({
       entityType: "sites",
       subjectId: subject.id,
@@ -435,11 +437,11 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
 
                 {allowEntityStructureEditing && showSamples && (
                   <HierarchyItem
-                    label={`Add sample(s) to ${subject.id}`}
+                    label={`Add sample`}
                     icon="add"
                     level={2}
                     parentEntityData={subject}
-                    onAdd={handleAddSample}
+                    onAdd={handleAddSampleButtonClick}
                   />
                 )}
 
@@ -463,7 +465,7 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                       {/* Sample Sites */}
                       {allowEntityStructureEditing && showSampleSites && (
                         <HierarchyItem
-                          label={`Add site(s) to ${sample.id}`}
+                          label={`Add site`}
                           icon="add"
                           level={3}
                           parentEntityData={{ sample, subject }}
@@ -539,7 +541,7 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                   ))}
                 {allowEntityStructureEditing && showSubjectSites && (
                   <HierarchyItem
-                    label={`Add site(s) to ${subject.id}`}
+                    label={`Add site`}
                     icon="add"
                     level={2}
                     parentEntityData={subject}

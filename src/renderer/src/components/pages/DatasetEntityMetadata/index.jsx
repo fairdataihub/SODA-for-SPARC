@@ -151,6 +151,10 @@ const EntityMetadataForm = () => {
           },
         });
       }
+      if (activeFormType === "sample") {
+        console.log("Adding new sample with metadata:", temporaryEntityMetadata.sample);
+        addSampleToSubject();
+      }
     }
   };
 
@@ -177,6 +181,12 @@ const EntityMetadataForm = () => {
   const renderEntitySpecificFields = () => {
     // Use activeFormType if selectedHierarchyEntity is null
     const entityType = selectedHierarchyEntity?.type || activeFormType;
+    const entityBeingAddedParentSubject = useGlobalStore(
+      (state) => state.entityBeingAddedParentSubject
+    );
+    const setEntityBeingAddedParentSample = useGlobalStore(
+      (state) => state.setEntityBeingAddedParentSample
+    );
 
     switch (entityType) {
       case "subject":
@@ -299,6 +309,20 @@ const EntityMetadataForm = () => {
         return (
           <Stack spacing="md">
             <TextInput
+              label="Subject this sample belongs to"
+              disabled
+              value={entityBeingAddedParentSubject}
+            />
+            <TextInput
+              label="Sample Identifier"
+              leftSection={<Text>sam-</Text>}
+              leftSectionWidth={50}
+              description="The sample identifier"
+              placeholder="Enter sample ID without the 'sam-' prefix"
+              value={getMetadataValue("sample id")}
+              onChange={(e) => handleChange("sample id", e.target.value)}
+            />
+            <TextInput
               label="Sample Experimental Group"
               description="The experimental group this sample belongs to"
               placeholder="e.g., Control, Treatment A"
@@ -406,10 +430,8 @@ const EntityMetadataForm = () => {
 
         <Divider />
 
-        {/* Entity-specific form fields */}
         {renderEntitySpecificFields()}
 
-        {/* Action buttons */}
         <Group position="right" mt="md">
           <Button
             variant="outline"
@@ -430,7 +452,6 @@ const EntityMetadataForm = () => {
 };
 
 const DatasetEntityMetadata = () => {
-  const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
   return (
     <GuidedModePage pageHeader="Dataset entity metadata">
       <GuidedModeSection>
