@@ -101,24 +101,6 @@ export const removeSite = (subjectID, sampleID, siteID) => {
   );
 };
 
-export const addSubjectToEntityStructure = (subjectID) => {
-  useGlobalStore.setState(
-    produce((state) => {
-      if (!state.entityStructureObj) {
-        state.entityStructureObj = {};
-      }
-
-      if (!state.entityStructureObj["subjects"]) {
-        state.entityStructureObj["subjects"] = {};
-      }
-
-      if (!state.entityStructureObj["subjects"][subjectID]) {
-        state.entityStructureObj["subjects"][subjectID] = [];
-      }
-    })
-  );
-};
-
 export const removeSubjectFromEntityStructure = (subjectID) => {
   useGlobalStore.setState(
     produce((state) => {

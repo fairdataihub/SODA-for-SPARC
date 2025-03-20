@@ -9,6 +9,7 @@ import {
   IconPin,
   IconClipboard,
   IconCheck,
+  IconX,
 } from "@tabler/icons-react";
 import {
   Text,
@@ -36,43 +37,55 @@ import {
   getEntityDataFromSelection,
   updateEntityMetadata,
   getEntityMetadataValue,
+  setActiveFormType,
 } from "../../../stores/slices/datasetEntityStructureSlice";
+import { setSelectedHierarchyEntity } from "../../../stores/slices/datasetContentSelectorSlice";
+import { addSubject } from "../../../stores/slices/datasetEntityStructureSlice";
 
 // Component for entity metadata form
 const EntityMetadataForm = () => {
-  // Subscribe to datasetEntityArray changes for re-rendering
-  const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
+  // Subscribe to necessary states, including the _lastMetadataUpdate trigger
   const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
+  const activeFormType = useGlobalStore((state) => state.activeFormType);
+  const temporaryEntityMetadata = useGlobalStore((state) => state.temporaryEntityMetadata || {});
+  const lastMetadataUpdate = useGlobalStore((state) => state._lastMetadataUpdate); // Subscribe to force updates
 
-  // Get the current entity data with all its metadata
-  const currentEntityData = useMemo(() => {
-    if (!selectedHierarchyEntity) return null;
+  console.log(
+    "Rendering EntityMetadataForm with selectedHierarchyEntity:",
+    selectedHierarchyEntity
+  );
+  console.log("Last metadata update:", lastMetadataUpdate);
 
-    const { id, type, parentSubject } = selectedHierarchyEntity;
-
-    if (type === "subject") {
-      return datasetEntityArray.find((s) => s.id === id);
-    } else if (type === "sample") {
-      const subject = datasetEntityArray.find((s) => s.id === parentSubject);
-      return subject?.samples?.find((s) => s.id === id);
-    }
-    // Handle other entity types...
-
-    return null;
-  }, [selectedHierarchyEntity, datasetEntityArray]);
-
-  // Function to get metadata value, now using the subscribed data
+  // Define getMetadataValue hook regardless of conditions
   const getMetadataValue = useCallback(
     (key) => {
-      return currentEntityData?.metadata && currentEntityData.metadata[key] !== undefined
-        ? currentEntityData.metadata[key]
-        : "";
+      // For edit mode - get from the selected entity
+      if (
+        selectedHierarchyEntity?.metadata &&
+        selectedHierarchyEntity.metadata[key] !== undefined
+      ) {
+        console.log(`Getting metadata ${key} from entity:`, selectedHierarchyEntity.metadata[key]);
+        return selectedHierarchyEntity.metadata[key];
+      }
+
+      // For creation mode - get from temporary metadata
+      const entityType = selectedHierarchyEntity?.type || activeFormType;
+      if (temporaryEntityMetadata[entityType]?.[key] !== undefined) {
+        console.log(
+          `Getting metadata ${key} from temporary store:`,
+          temporaryEntityMetadata[entityType][key]
+        );
+        return temporaryEntityMetadata[entityType][key];
+      }
+
+      console.log(`No value found for metadata ${key}, returning empty string`);
+      return "";
     },
-    [currentEntityData]
+    [selectedHierarchyEntity, activeFormType, temporaryEntityMetadata, lastMetadataUpdate]
   );
 
-  // Handle the case where no entity is selected
-  if (!selectedHierarchyEntity) {
+  // Now it's safe to return early for the empty state after all hooks are defined
+  if (!selectedHierarchyEntity && !activeFormType) {
     return (
       <Box p="xl">
         <Text size="xl" c="gray">
@@ -82,19 +95,71 @@ const EntityMetadataForm = () => {
     );
   }
 
-  console.log("Selected entity:", selectedHierarchyEntity);
-
-  // Enhanced change handler that forces proper updates
+  // Enhanced change handler with improved logging
   const handleChange = (field, value) => {
-    console.log("Changing field:", field, "to value:", value);
-    updateEntityMetadata(selectedHierarchyEntity, { [field]: value });
-    // No need for the force update, React will re-render due to our subscription
+    console.log(
+      `Changing field ${field} to value ${value} for`,
+      selectedHierarchyEntity ? `entity ${selectedHierarchyEntity.id}` : `new ${activeFormType}`
+    );
+
+    if (selectedHierarchyEntity) {
+      // Edit mode - update the existing entity
+      updateEntityMetadata(selectedHierarchyEntity, { [field]: value });
+    } else {
+      // Create mode - update temporary metadata
+      updateEntityMetadata(null, { [field]: value }, activeFormType);
+    }
   };
 
-  const getEntityIcon = () => {
-    const { type } = selectedHierarchyEntity;
+  // Cancel handler - reset states and return to entity selection view
+  const handleCancel = () => {
+    // If we're in edit mode, just clear selection to return to entity list
+    if (selectedHierarchyEntity) {
+      setSelectedHierarchyEntity(null); // Clear selection to return to entity list
+    } else if (activeFormType) {
+      setActiveFormType(null); // Clear the active form type
+      // If we're adding a new entity, clear the form type
+      useGlobalStore.setState({
+        temporaryEntityMetadata: {
+          subject: {},
+          sample: {},
+          site: {},
+          performance: {},
+        },
+      });
+    }
+  };
 
-    switch (type) {
+  // Save handler - process the form data to add/update an entity
+  const handleSave = () => {
+    if (selectedHierarchyEntity) {
+      // For existing entities, we've already been updating as we go
+      // Just need to clear the selection to return to the list view
+      console.log("Saved changes to entity:", selectedHierarchyEntity.id);
+      setSelectedHierarchyEntity(null); // Clear selection to return to entity list
+    } else {
+      if (activeFormType === "subject") {
+        console.log("Adding new subject with metadata:", temporaryEntityMetadata.subject);
+        addSubject(temporaryEntityMetadata.subject["subject id"], temporaryEntityMetadata.subject);
+        // Reset temporary metadata after adding
+        useGlobalStore.setState({
+          temporaryEntityMetadata: {
+            subject: {},
+            sample: {},
+            site: {},
+            performance: {},
+          },
+        });
+      }
+    }
+  };
+
+  // Get the appropriate icon - use activeFormType instead of selectedHierarchyEntity.type
+  const getEntityIcon = () => {
+    // Determine which type to use - either from selected entity or active form type
+    const entityType = selectedHierarchyEntity?.type || activeFormType;
+
+    switch (entityType) {
       case "subject":
         return <IconUser size={20} />;
       case "sample":
@@ -110,14 +175,22 @@ const EntityMetadataForm = () => {
 
   // Render the appropriate form fields based on entity type
   const renderEntitySpecificFields = () => {
-    const { type, id } = selectedHierarchyEntity;
-    console.log("Rendering form for entity:", selectedHierarchyEntity);
-    console.log("Entity id:", id);
+    // Use activeFormType if selectedHierarchyEntity is null
+    const entityType = selectedHierarchyEntity?.type || activeFormType;
 
-    switch (type) {
+    switch (entityType) {
       case "subject":
         return (
           <Stack spacing="md">
+            <TextInput
+              label="Subject Identifier"
+              leftSection={<Text>sub-</Text>}
+              leftSectionWidth={50}
+              description="The subject identifier"
+              placeholder="Enter subject ID without the 'sub-' prefix"
+              value={getMetadataValue("subject id")}
+              onChange={(e) => handleChange("subject id", e.target.value)}
+            />
             <TextInput
               label="Subject Experimental Group"
               description="The experimental group this subject belongs to"
@@ -310,19 +383,24 @@ const EntityMetadataForm = () => {
       default:
         return (
           <Box p="md" bg="gray.0">
-            <Text c="dimmed">Unknown entity type: {type}</Text>
+            <Text c="dimmed">Unknown entity type: {entityType}</Text>
           </Box>
         );
     }
   };
 
+  // Update rendering to ensure we always show current values
   return (
     <Paper shadow="sm" radius="md" p="md" withBorder mb="md">
       <Stack spacing="lg">
         <Group position="apart">
           <Group>
             {getEntityIcon()}
-            <Title order={4}>{selectedHierarchyEntity.id}</Title>
+            <Title order={4}>
+              {selectedHierarchyEntity
+                ? `Edit ${selectedHierarchyEntity.type}: ${selectedHierarchyEntity.id}`
+                : `Add new ${activeFormType}`}
+            </Title>
           </Group>
         </Group>
 
@@ -330,6 +408,22 @@ const EntityMetadataForm = () => {
 
         {/* Entity-specific form fields */}
         {renderEntitySpecificFields()}
+
+        {/* Action buttons */}
+        <Group position="right" mt="md">
+          <Button
+            variant="outline"
+            color="gray"
+            onClick={handleCancel}
+            leftIcon={<IconX size={16} />}
+          >
+            Cancel
+          </Button>
+
+          <Button color="blue" onClick={handleSave} leftIcon={<IconDeviceFloppy size={16} />}>
+            {selectedHierarchyEntity ? "Save Changes" : "Add Entity"}
+          </Button>
+        </Group>
       </Stack>
     </Paper>
   );

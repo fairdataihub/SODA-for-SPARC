@@ -25,6 +25,7 @@ import {
   deletePerformanceFromSample,
   modifySamplePerformanceId,
   getAllEntityIds,
+  setActiveFormType,
 } from "../../../stores/slices/datasetEntityStructureSlice";
 import useGlobalStore from "../../../stores/globalStore";
 import { guidedOpenEntityAdditionSwal, guidedOpenEntityEditSwal } from "./utils";
@@ -174,8 +175,9 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
   // Define all entity operations within the component
 
   // Subject operations
-  const handleAddSubjects = useCallback(() => {
-    return guidedOpenEntityAdditionSwal({ entityType: "subjects" });
+  const handleAddSubjectButtonClick = useCallback(() => {
+    setSelectedHierarchyEntity(null); // Reset selected entity when adding new subjects
+    setActiveFormType("subject"); // Set the active form type to subject
   }, []);
 
   const handleEditSubject = useCallback((subject) => {
@@ -353,7 +355,7 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
             cursor: "pointer",
           }}
           p="sm"
-          onClick={handleAddSubjects}
+          onClick={handleAddSubjectButtonClick}
         >
           <Flex align="center" gap="xs">
             <IconPlus size={15} color="#1c7ed6" />

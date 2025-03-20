@@ -89,7 +89,7 @@ const EntityForm = () => {
   console.log("Selected entity:", selectedHierarchyEntity);
   console.log("Is edit mode:", isEditMode);
 
-  // Enhanced change handler that only updates entity metadata in edit mode
+  // Enhanced change handler that handles both edit mode and new entity mode
   const handleChange = (field, value) => {
     console.log("Changing field:", field, "to value:", value);
 
@@ -99,9 +99,12 @@ const EntityForm = () => {
       [field]: value,
     }));
 
-    // Only update entity metadata directly if we're in edit mode
+    // If we're in edit mode, update the entity metadata directly
     if (isEditMode && selectedHierarchyEntity) {
       updateEntityMetadata(selectedHierarchyEntity, { [field]: value });
+    } else {
+      // We're creating a new entity, update the temporary metadata
+      updateEntityMetadata(null, { [field]: value }, activeEntityFormType);
     }
   };
 
@@ -137,11 +140,11 @@ const EntityForm = () => {
           case "sample":
             if (parentInfo && parentInfo.parentSubject) {
               console.log(`Adding sample ${id} to subject ${parentInfo.parentSubject}`);
-              // Pass all metadata together when creating the sample
+              // Pass the metadata directly when creating
               addSampleToSubject(parentInfo.parentSubject, id, metadata);
               console.log(`Sample ${id} added to subject ${parentInfo.parentSubject} successfully`);
             } else {
-              // Enhanced error message with more context
+              // Error handling for missing parent info
               const errorMsg = `Cannot add sample: Missing parent subject ID. (Temp: ${JSON.stringify(
                 temporaryEntityMetadata
               )}, Local: ${JSON.stringify(localParentInfo)})`;
@@ -200,6 +203,7 @@ const EntityForm = () => {
     setLocalParentInfo(null);
     setSelectedHierarchyEntity(null);
     setActiveEntityFormType(null);
+    clearAllTemporaryEntityMetadata(); // Clear temporary entity metadata
   };
 
   // Handle form cancel

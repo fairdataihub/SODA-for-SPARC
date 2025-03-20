@@ -1,9 +1,18 @@
 import { produce } from "immer";
 import useGlobalStore from "../globalStore";
 
+// Update the initial slice to include temporary metadata state
 export const datasetEntityStructureSlice = (set) => ({
   speciesList: [],
   datasetEntityArray: [],
+  activeFormType: null,
+  // New field to store temporary metadata for entities being created
+  temporaryEntityMetadata: {
+    subject: {},
+    sample: {},
+    site: {},
+    performance: {},
+  },
 });
 
 export const setSpeciesList = (speciesList) => {
@@ -19,7 +28,9 @@ export const setDatasetEntityArray = (datasetEntityArray) => {
 };
 
 // Subject management functions
-export const addSubject = (subjectId) => {
+export const addSubject = (subjectId, subjectMetadata) => {
+  console.log("subject id", subjectId);
+  console.log("subject metadata", subjectMetadata);
   // Ensure subject ID starts with "sub-"
   const normalizedSubjectId = subjectId.trim().startsWith("sub-")
     ? subjectId.trim()
@@ -396,63 +407,185 @@ export const getEntityDataFromSelection = (selectedEntity) => {
 };
 
 /**
- * Updates metadata for a specific entity in the global store
- * @param {Object} entity - The entity object to update
+ * Updates metadata for a specific entity in the global store or temporary store for new entities
+ * @param {Object|null} entity - The entity object to update or null for new entity
  * @param {Object} metadataChanges - Object containing the metadata key/value pairs to update
+ * @param {string} [entityType] - The type of entity, required when entity is null
  */
-export const updateEntityMetadata = (entity, metadataChanges) => {
-  if (!entity || !entity.id || !entity.type) {
-    console.error("Invalid entity provided to updateEntityMetadata", entity);
+export const updateEntityMetadata = (entity, metadataChanges, entityType = null) => {
+  // Check if we're updating an existing entity or a new one
+  const updatingExistingEntity = entity && entity.id && entity.type;
+
+  // If updating a new entity, entityType must be provided
+  if (!updatingExistingEntity && !entityType) {
+    console.error("When updating a new entity, entityType must be provided");
     return;
   }
 
-  console.log("Updating metadata for entity:", entity.id, "Changes:", metadataChanges);
+  // Determine the type to use
+  const typeToUse = updatingExistingEntity ? entity.type : entityType;
 
+  if (updatingExistingEntity) {
+    console.log("Updating metadata for existing entity:", entity.id, "Changes:", metadataChanges);
+
+    // Get current state for logging
+    const beforeState = useGlobalStore.getState().datasetEntityArray;
+    console.log("Before update state:", JSON.stringify(beforeState));
+
+    useGlobalStore.setState(
+      produce((state) => {
+        // Find the entity in the array
+        const entityArray = state.datasetEntityArray;
+        if (!entityArray || !Array.isArray(entityArray)) {
+          console.error("Entity array not found in state");
+          return;
+        }
+
+        // Find entity based on its type and ID
+        if (entity.type === "subject") {
+          // Find subject by ID
+          const subjectIndex = entityArray.findIndex((s) => s.id === entity.id);
+          console.log(`Finding subject with id ${entity.id}, index: ${subjectIndex}`);
+
+          if (subjectIndex === -1) {
+            console.error(`Subject with ID ${entity.id} not found in array`);
+            return;
+          }
+
+          // Make sure metadata object exists
+          if (!entityArray[subjectIndex].metadata) {
+            entityArray[subjectIndex].metadata = {};
+          }
+
+          // Apply each metadata change
+          Object.entries(metadataChanges).forEach(([key, value]) => {
+            console.log(`Setting ${key}=${value} on subject ${entity.id}`);
+            entityArray[subjectIndex].metadata[key] = value;
+          });
+
+          console.log(`Updated subject metadata:`, entityArray[subjectIndex].metadata);
+        } else if (entity.type === "sample") {
+          // Find parent subject
+          const parentSubjectId = entity.parentSubject;
+          const subject = entityArray.find((s) => s.id === parentSubjectId);
+
+          if (!subject) {
+            console.error(`Parent subject ${parentSubjectId} not found for sample ${entity.id}`);
+            return;
+          }
+
+          // Find sample in subject's samples array
+          const sampleIndex = subject.samples?.findIndex((s) => s.id === entity.id);
+          if (sampleIndex === -1 || sampleIndex === undefined) {
+            console.error(`Sample ${entity.id} not found in subject ${parentSubjectId}`);
+            return;
+          }
+
+          // Ensure metadata object exists
+          if (!subject.samples[sampleIndex].metadata) {
+            subject.samples[sampleIndex].metadata = {};
+          }
+
+          // Apply changes
+          Object.entries(metadataChanges).forEach(([key, value]) => {
+            console.log(`Setting ${key}=${value} on sample ${entity.id}`);
+            subject.samples[sampleIndex].metadata[key] = value;
+          });
+
+          console.log(`Updated sample metadata:`, subject.samples[sampleIndex].metadata);
+        }
+        // Similar handling for site and performance entities
+        else if (entity.type === "site") {
+          // Handle site entity updates
+          // ...implement similar to subject and sample...
+        } else if (entity.type === "performance") {
+          // Handle performance entity updates
+          // ...implement similar to subject and sample...
+        }
+      })
+    );
+
+    // Log state after update for debugging
+    const afterState = useGlobalStore.getState().datasetEntityArray;
+    console.log("After update state:", JSON.stringify(afterState));
+
+    // Force component update by triggering a small state change
+    // This ensures components re-render when metadata changes
+    useGlobalStore.setState(
+      produce((state) => {
+        state._lastMetadataUpdate = Date.now();
+      })
+    );
+  } else {
+    // Updating temporary metadata for a new entity
+    console.log(
+      "Updating temporary metadata for new entity of type:",
+      typeToUse,
+      "Changes:",
+      metadataChanges
+    );
+
+    useGlobalStore.setState(
+      produce((state) => {
+        // Ensure temporary metadata exists
+        if (!state.temporaryEntityMetadata) {
+          state.temporaryEntityMetadata = {
+            subject: {},
+            sample: {},
+            site: {},
+            performance: {},
+          };
+        }
+
+        if (!state.temporaryEntityMetadata[typeToUse]) {
+          state.temporaryEntityMetadata[typeToUse] = {};
+        }
+
+        // Apply metadata changes
+        Object.entries(metadataChanges).forEach(([key, value]) => {
+          state.temporaryEntityMetadata[typeToUse][key] = value;
+        });
+      })
+    );
+  }
+};
+
+/**
+ * Gets the temporary metadata for a specific entity type
+ * @param {string} entityType - The type of entity (subject, sample, site, performance)
+ * @returns {Object} The temporary metadata for the entity type
+ */
+export const getTemporaryEntityMetadata = (entityType) => {
+  const state = useGlobalStore.getState();
+  return state.temporaryEntityMetadata?.[entityType] || {};
+};
+
+/**
+ * Clears temporary metadata for a specific entity type
+ * @param {string} entityType - The type of entity (subject, sample, site, performance)
+ */
+export const clearTemporaryEntityMetadata = (entityType) => {
   useGlobalStore.setState(
     produce((state) => {
-      // Find the entity in the array
-      const entityArray = state.datasetEntityArray;
-      if (!entityArray || !Array.isArray(entityArray)) return;
-
-      // Handle different entity types
-      if (entity.type === "subject") {
-        // Find the subject directly in the array
-        const subjectIndex = entityArray.findIndex((s) => s.id === entity.id);
-        if (subjectIndex === -1) return;
-
-        // Initialize metadata object if it doesn't exist
-        if (!entityArray[subjectIndex].metadata) {
-          entityArray[subjectIndex].metadata = {};
-        }
-
-        // Apply each metadata change
-        Object.entries(metadataChanges).forEach(([key, value]) => {
-          entityArray[subjectIndex].metadata[key] = value;
-        });
-      } else if (entity.type === "sample") {
-        // Find the parent subject
-        const subjectIndex = entityArray.findIndex((s) => s.id === entity.parentSubject);
-        if (subjectIndex === -1) return;
-
-        // Find the sample in the subject
-        const sample = entityArray[subjectIndex].samples?.find((s) => s.id === entity.id);
-        if (!sample) return;
-
-        // Initialize metadata object if it doesn't exist
-        if (!sample.metadata) {
-          sample.metadata = {};
-        }
-
-        // Apply each metadata change
-        Object.entries(metadataChanges).forEach(([key, value]) => {
-          sample.metadata[key] = value;
-        });
+      if (state.temporaryEntityMetadata && state.temporaryEntityMetadata[entityType]) {
+        state.temporaryEntityMetadata[entityType] = {};
       }
-      // Similar handling for site and performance entities
-      else if (entity.type === "site" || entity.type === "performance") {
-        // Implementation details based on your data structure
-        // ...handle site and performance entities similarly...
-      }
+    })
+  );
+};
+
+/**
+ * Clears all temporary metadata
+ */
+export const clearAllTemporaryEntityMetadata = () => {
+  useGlobalStore.setState(
+    produce((state) => {
+      state.temporaryEntityMetadata = {
+        subject: {},
+        sample: {},
+        site: {},
+        performance: {},
+      };
     })
   );
 };
@@ -506,9 +639,15 @@ export const getAllEntityIds = () => {
       ids.push(...subject.subjectSites.map((site) => site.id));
     }
     if (subject.subjectPerformances) {
-      ids.push(...subject.subjectPerformances.map((perf) => perf.id));
+      ids.push(...subject.subjectPerformances.map((perf) => subject.id));
     }
 
     return ids;
+  });
+};
+
+export const setActiveFormType = (formType) => {
+  useGlobalStore.setState({
+    activeFormType: formType,
   });
 };
