@@ -40,15 +40,20 @@ import {
   setActiveFormType,
 } from "../../../stores/slices/datasetEntityStructureSlice";
 import { setSelectedHierarchyEntity } from "../../../stores/slices/datasetContentSelectorSlice";
-import { addSubject } from "../../../stores/slices/datasetEntityStructureSlice";
+import { addSubject, addSampleToSubject } from "../../../stores/slices/datasetEntityStructureSlice";
 
 // Component for entity metadata form
 const EntityMetadataForm = () => {
-  // Subscribe to necessary states, including the _lastMetadataUpdate trigger
   const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
   const activeFormType = useGlobalStore((state) => state.activeFormType);
   const temporaryEntityMetadata = useGlobalStore((state) => state.temporaryEntityMetadata || {});
-  const lastMetadataUpdate = useGlobalStore((state) => state._lastMetadataUpdate); // Subscribe to force updates
+  const lastMetadataUpdate = useGlobalStore((state) => state._lastMetadataUpdate);
+  const entityBeingAddedParentSubject = useGlobalStore(
+    (state) => state.entityBeingAddedParentSubject
+  );
+  const setEntityBeingAddedParentSample = useGlobalStore(
+    (state) => state.setEntityBeingAddedParentSample
+  );
 
   console.log(
     "Rendering EntityMetadataForm with selectedHierarchyEntity:",
@@ -153,7 +158,20 @@ const EntityMetadataForm = () => {
       }
       if (activeFormType === "sample") {
         console.log("Adding new sample with metadata:", temporaryEntityMetadata.sample);
-        addSampleToSubject();
+        addSampleToSubject(
+          entityBeingAddedParentSubject,
+          temporaryEntityMetadata.sample["sample id"],
+          temporaryEntityMetadata.sample
+        );
+        // Reset temporary metadata after adding
+        useGlobalStore.setState({
+          temporaryEntityMetadata: {
+            subject: {},
+            sample: {},
+            site: {},
+            performance: {},
+          },
+        });
       }
     }
   };
@@ -181,12 +199,6 @@ const EntityMetadataForm = () => {
   const renderEntitySpecificFields = () => {
     // Use activeFormType if selectedHierarchyEntity is null
     const entityType = selectedHierarchyEntity?.type || activeFormType;
-    const entityBeingAddedParentSubject = useGlobalStore(
-      (state) => state.entityBeingAddedParentSubject
-    );
-    const setEntityBeingAddedParentSample = useGlobalStore(
-      (state) => state.setEntityBeingAddedParentSample
-    );
 
     switch (entityType) {
       case "subject":

@@ -79,7 +79,7 @@ export const getExistingSubjectIds = () => {
 };
 
 // Sample management functions
-export const addSampleToSubject = (subjectId, sampleId) => {
+export const addSampleToSubject = (subjectId, sampleId, sampleMetadata) => {
   useGlobalStore.setState(
     produce((state) => {
       const subject = state.datasetEntityArray.find((s) => s.id === subjectId); // Changed from subjectId to id
