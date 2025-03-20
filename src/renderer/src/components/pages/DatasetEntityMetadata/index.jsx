@@ -39,9 +39,10 @@ import {
 } from "../../../stores/slices/datasetEntityStructureSlice";
 
 // Component for entity metadata form
-const EntityMetadataForm = ({ selectedHierarchyEntity }) => {
+const EntityMetadataForm = () => {
   // Subscribe to datasetEntityArray changes for re-rendering
   const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
+  const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
 
   // Get the current entity data with all its metadata
   const currentEntityData = useMemo(() => {
@@ -355,14 +356,14 @@ const DatasetEntityMetadata = () => {
                 Select an Entity
               </Text>
               <EntityHierarchyRenderer
-                allowEntityStructureEditing={false}
+                allowEntityStructureEditing={true}
                 allowEntitySelection={true}
               />
             </Paper>
           </Grid.Col>
 
           <Grid.Col span={8}>
-            <EntityMetadataForm selectedHierarchyEntity={selectedHierarchyEntity} />
+            <EntityMetadataForm />
           </Grid.Col>
         </Grid>
       </GuidedModeSection>

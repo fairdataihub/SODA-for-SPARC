@@ -358,7 +358,7 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
           <Flex align="center" gap="xs">
             <IconPlus size={15} color="#1c7ed6" />
             <Text fw={500} c="#1c7ed6">
-              Add Subjects
+              Add Subject
             </Text>
           </Flex>
         </Box>
