@@ -469,7 +469,7 @@ const EntityMetadataForm = () => {
           </Button>
 
           <Button color="blue" onClick={handleSave} leftIcon={<IconDeviceFloppy size={16} />}>
-            {selectedHierarchyEntity ? "Save Changes" : "Add Entity"}
+            {selectedHierarchyEntity ? "Save Changes" : `Add ${activeFormType}`}
           </Button>
         </Group>
       </Stack>

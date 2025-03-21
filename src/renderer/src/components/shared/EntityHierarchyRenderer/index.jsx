@@ -174,34 +174,34 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
     setSelectedHierarchyEntity(entityData);
   }, []);
 
-  // Define all entity operations within the component
+  // Define all entity operations within the component, organized by entity type and operation type (add, edit, delete)
 
-  // Subject operations
+  // ----- SUBJECT OPERATIONS -----
+  // Add operations
   const handleAddSubjectButtonClick = useCallback(() => {
-    setSelectedHierarchyEntity(null); // Reset selected entity when adding new subjects
-    setActiveFormType("subject"); // Set the active form type to subject
+    setSelectedHierarchyEntity(null);
+    setActiveFormType("subject");
   }, []);
 
-  const handleAddSampleButtonClick = useCallback((subject) => {
-    setSelectedHierarchyEntity(null); // Reset selected entity when adding new subjects
-    setEntityBeingAddedParentSubject(subject.id);
-    setActiveFormType("sample"); // Set the active form type to subject
-  }, []);
-
-  const handleAddSubjectSiteButtonClick = useCallback((subject) => {
-    setSelectedHierarchyEntity(null); // Reset selected entity when adding new subjects
-    setEntityBeingAddedParentSubject(subject.id);
-    setActiveFormType("site"); // Set the active form type to subject
-  }, []);
-
+  // Edit operations
   const handleEditSubject = useCallback((subject) => {
     return guidedOpenEntityEditSwal("subject", subject);
   }, []);
 
+  // Delete operations
   const handleDeleteSubject = useCallback((subject) => {
     return deleteSubject(subject.id);
   }, []);
 
+  // ----- SAMPLE OPERATIONS -----
+  // Add operations
+  const handleAddSampleButtonClick = useCallback((subject) => {
+    setSelectedHierarchyEntity(null);
+    setEntityBeingAddedParentSubject(subject.id);
+    setActiveFormType("sample");
+  }, []);
+
+  // Edit operations
   const handleEditSample = useCallback(async (sample, subject) => {
     console.log(`Edit sample ${sample.id} of subject ${subject.id}`);
     const result = await guidedOpenEntityEditSwal({
@@ -215,13 +215,21 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
     }
   }, []);
 
+  // Delete operations
   const handleDeleteSample = useCallback((sample, subject) => {
     console.log(`Delete sample ${sample.id} from subject ${subject.id}`);
     return deleteSampleFromSubject(subject.id, sample.id);
   }, []);
 
-  // Subject site operations
+  // ----- SUBJECT SITE OPERATIONS -----
+  // Add operations
+  const handleAddSubjectSiteButtonClick = useCallback((subject) => {
+    setSelectedHierarchyEntity(null);
+    setEntityBeingAddedParentSubject(subject.id);
+    setActiveFormType("site");
+  }, []);
 
+  // Edit operations
   const handleEditSubjectSite = useCallback(async (site, subject) => {
     console.log(`Edit site ${site.id} of subject ${subject.id}`);
     const result = await guidedOpenEntityEditSwal({
@@ -235,45 +243,23 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
     }
   }, []);
 
+  // Delete operations
   const handleDeleteSubjectSite = useCallback((site, subject) => {
     console.log(`Delete site ${site.id} from subject ${subject.id}`);
     return deleteSiteFromSubject(subject.id, site.id);
   }, []);
 
-  // Subject performance operations
-  const handleAddSubjectPerformance = useCallback((subject) => {
-    console.log(`Add performance to subject: ${subject.id}`);
-    guidedOpenEntityAdditionSwal({ entityType: "performances", subjectId: subject.id });
-  }, []);
-
-  const handleEditSubjectPerformance = useCallback(async (performance, subject) => {
-    console.log(`Edit performance ${performance.id} of subject ${subject.id}`);
-    const result = await guidedOpenEntityEditSwal({
-      entityType: "performance",
-      entityData: performance,
-      parentEntityData: subject,
-    });
-
-    if (result) {
-      modifySubjectPerformanceId(subject.id, result.oldName, result.newName);
-    }
-  }, []);
-
-  const handleDeleteSubjectPerformance = useCallback((performance, subject) => {
-    console.log(`Delete performance ${performance.id} from subject ${subject.id}`);
-    return deletePerformanceFromSubject(subject.id, performance.id);
-  }, []);
-
-  // Sample site operations
-  const handleAddSampleSite = useCallback(({ sample, subject }) => {
+  // ----- SAMPLE SITE OPERATIONS -----
+  // Add operations
+  const handleAddSampleSiteButtonClick = useCallback(({ sample, subject }) => {
     console.log(`Add site to sample ${sample.id} of subject ${subject.id}`);
-    guidedOpenEntityAdditionSwal({
-      entityType: "sites",
-      subjectId: subject.id,
-      sampleId: sample.id,
-    });
+    setSelectedHierarchyEntity(null);
+    setEntityBeingAddedParentSample(sample.id);
+    setEntityBeingAddedParentSubject(subject.id);
+    setActiveFormType("site");
   }, []);
 
+  // Edit operations
   const handleEditSampleSite = useCallback(async (site, { sample, subject }) => {
     console.log(`Edit site ${site.id} of sample ${sample.id} of subject ${subject.id}`);
     const result = await guidedOpenEntityEditSwal({
@@ -287,12 +273,41 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
     }
   }, []);
 
+  // Delete operations
   const handleDeleteSampleSite = useCallback((site, { sample, subject }) => {
     console.log(`Delete site ${site.id} from sample ${sample.id} of subject ${subject.id}`);
     return deleteSiteFromSample(subject.id, sample.id, site.id);
   }, []);
 
-  // Sample performance operations
+  // ----- SUBJECT PERFORMANCE OPERATIONS -----
+  // Add operations
+  const handleAddSubjectPerformance = useCallback((subject) => {
+    console.log(`Add performance to subject: ${subject.id}`);
+    guidedOpenEntityAdditionSwal({ entityType: "performances", subjectId: subject.id });
+  }, []);
+
+  // Edit operations
+  const handleEditSubjectPerformance = useCallback(async (performance, subject) => {
+    console.log(`Edit performance ${performance.id} of subject ${subject.id}`);
+    const result = await guidedOpenEntityEditSwal({
+      entityType: "performance",
+      entityData: performance,
+      parentEntityData: subject,
+    });
+
+    if (result) {
+      modifySubjectPerformanceId(subject.id, result.oldName, result.newName);
+    }
+  }, []);
+
+  // Delete operations
+  const handleDeleteSubjectPerformance = useCallback((performance, subject) => {
+    console.log(`Delete performance ${performance.id} from subject ${subject.id}`);
+    return deletePerformanceFromSubject(subject.id, performance.id);
+  }, []);
+
+  // ----- SAMPLE PERFORMANCE OPERATIONS -----
+  // Add operations
   const handleAddSamplePerformance = useCallback(({ sample, subject }) => {
     console.log(`Add performance to sample ${sample.id} of subject ${subject.id}`);
     guidedOpenEntityAdditionSwal({
@@ -302,6 +317,7 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
     });
   }, []);
 
+  // Edit operations
   const handleEditSamplePerformance = useCallback(async (performance, { sample, subject }) => {
     console.log(
       `Edit performance ${performance.id} of sample ${sample.id} of subject ${subject.id}`
@@ -317,6 +333,7 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
     }
   }, []);
 
+  // Delete operations
   const handleDeleteSamplePerformance = useCallback((performance, { sample, subject }) => {
     console.log(
       `Delete performance ${performance.id} from sample ${sample.id} of subject ${subject.id}`
@@ -468,7 +485,7 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                           icon="add"
                           level={3}
                           parentEntityData={{ sample, subject }}
-                          onAdd={handleAddSampleSite}
+                          onAdd={handleAddSampleSiteButtonClick}
                         />
                       )}
                       {showSampleSites &&
