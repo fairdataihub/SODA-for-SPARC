@@ -188,6 +188,12 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
     setActiveFormType("sample"); // Set the active form type to subject
   }, []);
 
+  const handleAddSubjectSiteButtonClick = useCallback((subject) => {
+    setSelectedHierarchyEntity(null); // Reset selected entity when adding new subjects
+    setEntityBeingAddedParentSubject(subject.id);
+    setActiveFormType("site"); // Set the active form type to subject
+  }, []);
+
   const handleEditSubject = useCallback((subject) => {
     return guidedOpenEntityEditSwal("subject", subject);
   }, []);
@@ -215,13 +221,6 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
   }, []);
 
   // Subject site operations
-  const handleAddSubjectSite = useCallback((subject) => {
-    console.log(`Add site `);
-    return guidedOpenEntityAdditionSwal({
-      entityType: "sites",
-      subjectId: subject.id,
-    });
-  }, []);
 
   const handleEditSubjectSite = useCallback(async (site, subject) => {
     console.log(`Edit site ${site.id} of subject ${subject.id}`);
@@ -545,7 +544,7 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                     icon="add"
                     level={2}
                     parentEntityData={subject}
-                    onAdd={handleAddSubjectSite}
+                    onAdd={handleAddSubjectSiteButtonClick}
                   />
                 )}
                 {allowEntityStructureEditing && showSubjectPerformances && (

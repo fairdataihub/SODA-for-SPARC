@@ -369,6 +369,20 @@ const EntityMetadataForm = () => {
       case "site":
         return (
           <Stack spacing="md">
+            {entityBeingAddedParentSubject && (
+              <TextInput
+                label="Subject this sample belongs to"
+                disabled
+                value={entityBeingAddedParentSubject}
+              />
+            )}
+            {setEntityBeingAddedParentSample && (
+              <TextInput
+                label="Sample this site belongs to"
+                disabled
+                value={setEntityBeingAddedParentSample}
+              />
+            )}
             <TextInput
               label="Site type"
               placeholder="e.g., Recording site, Injection site"
