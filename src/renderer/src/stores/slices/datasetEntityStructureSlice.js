@@ -1,13 +1,12 @@
 import { produce } from "immer";
 import useGlobalStore from "../globalStore";
 
-// Update the initial slice to include temporary metadata state
 export const datasetEntityStructureSlice = (set) => ({
   speciesList: [],
   datasetEntityArray: [],
-  activeFormType: null,
-  // New field to store temporary metadata for entities being created
+  activeFormType: null, // Add this line for form type tracking
   temporaryEntityMetadata: {
+    // Add storage for temporary metadata
     subject: {},
     sample: {},
     site: {},
@@ -28,9 +27,7 @@ export const setDatasetEntityArray = (datasetEntityArray) => {
 };
 
 // Subject management functions
-export const addSubject = (subjectId, subjectMetadata) => {
-  console.log("subject id", subjectId);
-  console.log("subject metadata", subjectMetadata);
+export const addSubject = (subjectId) => {
   // Ensure subject ID starts with "sub-"
   const normalizedSubjectId = subjectId.trim().startsWith("sub-")
     ? subjectId.trim()
@@ -79,7 +76,7 @@ export const getExistingSubjectIds = () => {
 };
 
 // Sample management functions
-export const addSampleToSubject = (subjectId, sampleId, sampleMetadata) => {
+export const addSampleToSubject = (subjectId, sampleId) => {
   useGlobalStore.setState(
     produce((state) => {
       const subject = state.datasetEntityArray.find((s) => s.id === subjectId); // Changed from subjectId to id
@@ -407,164 +404,160 @@ export const getEntityDataFromSelection = (selectedEntity) => {
 };
 
 /**
- * Updates metadata for a specific entity in the global store or temporary store for new entities
- * @param {Object|null} entity - The entity object to update or null for new entity
+ * Updates metadata for an existing entity
+ * @param {Object} entity - The entity object to update
  * @param {Object} metadataChanges - Object containing the metadata key/value pairs to update
- * @param {string} [entityType] - The type of entity, required when entity is null
  */
-export const updateEntityMetadata = (entity, metadataChanges, entityType = null) => {
-  // Check if we're updating an existing entity or a new one
-  const updatingExistingEntity = entity && entity.id && entity.type;
-
-  // If updating a new entity, entityType must be provided
-  if (!updatingExistingEntity && !entityType) {
-    console.error("When updating a new entity, entityType must be provided");
+export const updateExistingEntityMetadata = (entity, metadataChanges) => {
+  if (!entity || !entity.id || !entity.type) {
+    console.error("Invalid entity provided to updateExistingEntityMetadata", entity);
     return;
   }
 
-  // Determine the type to use
-  const typeToUse = updatingExistingEntity ? entity.type : entityType;
+  console.log("Updating metadata for entity:", entity.id, "Changes:", metadataChanges);
 
-  if (updatingExistingEntity) {
-    console.log("Updating metadata for existing entity:", entity.id, "Changes:", metadataChanges);
+  useGlobalStore.setState(
+    produce((state) => {
+      let updatedEntity = null;
 
-    // Get current state for logging
-    const beforeState = useGlobalStore.getState().datasetEntityArray;
-    console.log("Before update state:", JSON.stringify(beforeState));
-
-    useGlobalStore.setState(
-      produce((state) => {
-        // Find the entity in the array
-        const entityArray = state.datasetEntityArray;
-        if (!entityArray || !Array.isArray(entityArray)) {
-          console.error("Entity array not found in state");
+      if (entity.type === "subject") {
+        // Find subject by ID in the array
+        const subject = state.datasetEntityArray.find((s) => s.id === entity.id);
+        if (!subject) {
+          console.error(`Subject with ID ${entity.id} not found in array`);
           return;
         }
 
-        // Find entity based on its type and ID
-        if (entity.type === "subject") {
-          // Find subject by ID
-          const subjectIndex = entityArray.findIndex((s) => s.id === entity.id);
-          console.log(`Finding subject with id ${entity.id}, index: ${subjectIndex}`);
+        // Ensure metadata object exists
+        if (!subject.metadata) subject.metadata = {};
 
-          if (subjectIndex === -1) {
-            console.error(`Subject with ID ${entity.id} not found in array`);
-            return;
-          }
-
-          // Make sure metadata object exists
-          if (!entityArray[subjectIndex].metadata) {
-            entityArray[subjectIndex].metadata = {};
-          }
-
-          // Apply each metadata change
-          Object.entries(metadataChanges).forEach(([key, value]) => {
-            console.log(`Setting ${key}=${value} on subject ${entity.id}`);
-            entityArray[subjectIndex].metadata[key] = value;
-          });
-
-          console.log(`Updated subject metadata:`, entityArray[subjectIndex].metadata);
-        } else if (entity.type === "sample") {
-          // Find parent subject
-          const parentSubjectId = entity.parentSubject;
-          const subject = entityArray.find((s) => s.id === parentSubjectId);
-
-          if (!subject) {
-            console.error(`Parent subject ${parentSubjectId} not found for sample ${entity.id}`);
-            return;
-          }
-
-          // Find sample in subject's samples array
-          const sampleIndex = subject.samples?.findIndex((s) => s.id === entity.id);
-          if (sampleIndex === -1 || sampleIndex === undefined) {
-            console.error(`Sample ${entity.id} not found in subject ${parentSubjectId}`);
-            return;
-          }
-
-          // Ensure metadata object exists
-          if (!subject.samples[sampleIndex].metadata) {
-            subject.samples[sampleIndex].metadata = {};
-          }
-
-          // Apply changes
-          Object.entries(metadataChanges).forEach(([key, value]) => {
-            console.log(`Setting ${key}=${value} on sample ${entity.id}`);
-            subject.samples[sampleIndex].metadata[key] = value;
-          });
-
-          console.log(`Updated sample metadata:`, subject.samples[sampleIndex].metadata);
-        }
-        // Similar handling for site and performance entities
-        else if (entity.type === "site") {
-          // Handle site entity updates
-          // ...implement similar to subject and sample...
-        } else if (entity.type === "performance") {
-          // Handle performance entity updates
-          // ...implement similar to subject and sample...
-        }
-      })
-    );
-
-    // Log state after update for debugging
-    const afterState = useGlobalStore.getState().datasetEntityArray;
-    console.log("After update state:", JSON.stringify(afterState));
-
-    // Force component update by triggering a small state change
-    // This ensures components re-render when metadata changes
-    useGlobalStore.setState(
-      produce((state) => {
-        state._lastMetadataUpdate = Date.now();
-      })
-    );
-  } else {
-    // Updating temporary metadata for a new entity
-    console.log(
-      "Updating temporary metadata for new entity of type:",
-      typeToUse,
-      "Changes:",
-      metadataChanges
-    );
-
-    useGlobalStore.setState(
-      produce((state) => {
-        // Ensure temporary metadata exists
-        if (!state.temporaryEntityMetadata) {
-          state.temporaryEntityMetadata = {
-            subject: {},
-            sample: {},
-            site: {},
-            performance: {},
-          };
-        }
-
-        if (!state.temporaryEntityMetadata[typeToUse]) {
-          state.temporaryEntityMetadata[typeToUse] = {};
-        }
-
-        // Apply metadata changes
+        // Apply changes directly
         Object.entries(metadataChanges).forEach(([key, value]) => {
-          state.temporaryEntityMetadata[typeToUse][key] = value;
+          subject.metadata[key] = value;
+
+          // Update ID at top level if needed
+          if (key === "subject id") {
+            subject.id = value.startsWith("sub-") ? value : `sub-${value}`;
+          }
         });
-      })
-    );
-  }
+
+        // Keep track of the updated entity
+        updatedEntity = subject;
+      } else if (entity.type === "sample") {
+        // Handle sample metadata updates
+        // Find the parent subject
+        const subject = state.datasetEntityArray.find((s) => s.id === entity.parentSubject);
+        if (!subject) return;
+
+        // Find the sample
+        const sample = subject.samples?.find((s) => s.id === entity.id);
+        if (!sample) return;
+
+        // Ensure metadata exists
+        if (!sample.metadata) sample.metadata = {};
+
+        // Apply changes
+        Object.entries(metadataChanges).forEach(([key, value]) => {
+          sample.metadata[key] = value;
+
+          // Handle ID updates if needed
+          if (key === "sample id") {
+            sample.id = value.startsWith("sam-") ? value : `sam-${value}`;
+          }
+        });
+      }
+
+      // If this is the currently selected entity, update our reference to it
+      if (state.selectedHierarchyEntity && state.selectedHierarchyEntity.id === entity.id) {
+        state.selectedHierarchyEntity = updatedEntity || state.selectedHierarchyEntity;
+      }
+    })
+  );
 };
 
 /**
- * Gets the temporary metadata for a specific entity type
+ * Updates temporary metadata for a new entity being created
  * @param {string} entityType - The type of entity (subject, sample, site, performance)
- * @returns {Object} The temporary metadata for the entity type
+ * @param {Object} metadataChanges - Object containing the metadata key/value pairs to update
  */
-export const getTemporaryEntityMetadata = (entityType) => {
-  const state = useGlobalStore.getState();
-  return state.temporaryEntityMetadata?.[entityType] || {};
+export const updateTemporaryMetadata = (entityType, metadataChanges) => {
+  console.log("Updating temporary metadata for", entityType, "Changes:", metadataChanges);
+
+  useGlobalStore.setState(
+    produce((state) => {
+      // Ensure the temporary metadata object structure exists
+      if (!state.temporaryEntityMetadata) {
+        state.temporaryEntityMetadata = {
+          subject: {},
+          sample: {},
+          site: {},
+          performance: {},
+        };
+      }
+
+      if (!state.temporaryEntityMetadata[entityType]) {
+        state.temporaryEntityMetadata[entityType] = {};
+      }
+
+      // Apply the changes to temporary metadata
+      Object.entries(metadataChanges).forEach(([key, value]) => {
+        state.temporaryEntityMetadata[entityType][key] = value;
+      });
+    })
+  );
+};
+
+/**
+ * Gets metadata value from either an entity or temporary metadata
+ * @param {Object|null} entity - The entity object or null for temporary metadata
+ * @param {string} key - The metadata key to retrieve
+ * @param {string} entityType - Required when entity is null to get from temporary metadata
+ * @param {*} defaultValue - Default value if metadata doesn't exist
+ * @returns {*} The metadata value or default value
+ */
+export const getEntityMetadataValue = (entity, key, entityType = null, defaultValue = "") => {
+  // For existing entities
+  if (entity) {
+    // First check if metadata object exists and has the key
+    if (entity.metadata && key in entity.metadata) {
+      return entity.metadata[key];
+    }
+
+    // Then check if the entity itself has the key (top-level property)
+    if (key in entity) {
+      return entity[key];
+    }
+
+    // Special ID handling
+    if (key === "subject id" && entity.type === "subject") {
+      return entity.id.startsWith("sub-") ? entity.id.substring(4) : entity.id;
+    }
+
+    if (key === "sample id" && entity.type === "sample") {
+      return entity.id.startsWith("sam-") ? entity.id.substring(4) : entity.id;
+    }
+
+    return defaultValue;
+  }
+
+  // For new entities (using temporary metadata)
+  if (entityType) {
+    const state = useGlobalStore.getState();
+    const tempMeta = state.temporaryEntityMetadata?.[entityType];
+
+    if (tempMeta && key in tempMeta) {
+      return tempMeta[key];
+    }
+  }
+
+  return defaultValue;
 };
 
 /**
  * Clears temporary metadata for a specific entity type
  * @param {string} entityType - The type of entity (subject, sample, site, performance)
  */
-export const clearTemporaryEntityMetadata = (entityType) => {
+export const clearTemporaryMetadata = (entityType) => {
   useGlobalStore.setState(
     produce((state) => {
       if (state.temporaryEntityMetadata && state.temporaryEntityMetadata[entityType]) {
@@ -577,7 +570,7 @@ export const clearTemporaryEntityMetadata = (entityType) => {
 /**
  * Clears all temporary metadata
  */
-export const clearAllTemporaryEntityMetadata = () => {
+export const clearAllTemporaryMetadata = () => {
   useGlobalStore.setState(
     produce((state) => {
       state.temporaryEntityMetadata = {
@@ -588,24 +581,6 @@ export const clearAllTemporaryEntityMetadata = () => {
       };
     })
   );
-};
-
-/**
- * Gets metadata value for an entity
- * @param {Object} selectedEntity - The flattened selected entity object
- * @param {string} key - The metadata key to retrieve
- * @param {*} defaultValue - Default value if metadata doesn't exist
- * @returns {*} The metadata value or default value
- */
-export const getEntityMetadataValue = (selectedEntity, key, defaultValue = "") => {
-  if (!selectedEntity) return defaultValue;
-
-  const entityData = getEntityDataFromSelection(selectedEntity);
-  if (!entityData) return defaultValue;
-
-  if (!entityData.metadata) return entityData[key] || defaultValue;
-
-  return entityData.metadata[key] || entityData[key] || defaultValue;
 };
 
 export const getDatasetEntityArray = () => {
@@ -639,19 +614,21 @@ export const getAllEntityIds = () => {
       ids.push(...subject.subjectSites.map((site) => site.id));
     }
     if (subject.subjectPerformances) {
-      ids.push(...subject.subjectPerformances.map((perf) => subject.id));
+      ids.push(...subject.subjectPerformances.map((perf) => perf.id));
     }
 
     return ids;
   });
 };
 
+// Add the missing function that was referenced in index.jsx
 export const setActiveFormType = (formType) => {
   useGlobalStore.setState({
     activeFormType: formType,
   });
 };
 
+// Add these missing functions as well
 export const setEntityBeingAddedParentSubject = (subjectId) => {
   useGlobalStore.setState(
     produce((state) => {

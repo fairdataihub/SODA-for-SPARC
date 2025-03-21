@@ -34,59 +34,48 @@ import useGlobalStore from "../../../stores/globalStore";
 import EntityHierarchyRenderer from "../../shared/EntityHierarchyRenderer";
 import SelectedHierarchyEntityPreviewer from "../../shared/SelectedHierarchyEntityPreviewer";
 import {
-  getEntityDataFromSelection,
-  updateEntityMetadata,
-  getEntityMetadataValue,
+  updateExistingEntityMetadata,
+  getEntityMetadataValue, // Now using the correct function name directly
+  updateTemporaryMetadata,
+  clearTemporaryMetadata,
   setActiveFormType,
 } from "../../../stores/slices/datasetEntityStructureSlice";
 import { setSelectedHierarchyEntity } from "../../../stores/slices/datasetContentSelectorSlice";
 import { addSubject, addSampleToSubject } from "../../../stores/slices/datasetEntityStructureSlice";
+import { shallow } from "zustand/shallow";
 
 // Component for entity metadata form
 const EntityMetadataForm = () => {
+  // Subscribe to each piece of state individually for more granular control
   const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
   const activeFormType = useGlobalStore((state) => state.activeFormType);
   const temporaryEntityMetadata = useGlobalStore((state) => state.temporaryEntityMetadata || {});
-  const lastMetadataUpdate = useGlobalStore((state) => state._lastMetadataUpdate);
   const entityBeingAddedParentSubject = useGlobalStore(
     (state) => state.entityBeingAddedParentSubject
   );
-  const setEntityBeingAddedParentSample = useGlobalStore(
-    (state) => state.setEntityBeingAddedParentSample
+  const entityBeingAddedParentSample = useGlobalStore(
+    (state) => state.entityBeingAddedParentSample
   );
+  const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
 
   console.log(
     "Rendering EntityMetadataForm with selectedHierarchyEntity:",
     selectedHierarchyEntity
   );
-  console.log("Last metadata update:", lastMetadataUpdate);
 
-  // Define getMetadataValue hook regardless of conditions
+  // Define getMetadataValue hook with improved dependencies
   const getMetadataValue = useCallback(
     (key) => {
-      // For edit mode - get from the selected entity
-      if (
-        selectedHierarchyEntity?.metadata &&
-        selectedHierarchyEntity.metadata[key] !== undefined
-      ) {
-        console.log(`Getting metadata ${key} from entity:`, selectedHierarchyEntity.metadata[key]);
-        return selectedHierarchyEntity.metadata[key];
+      if (selectedHierarchyEntity) {
+        // Existing entity - get from the entity
+        return getEntityMetadataValue(selectedHierarchyEntity, key);
+      } else if (activeFormType) {
+        // New entity - get from temporary metadata
+        return getEntityMetadataValue(null, key, activeFormType);
       }
-
-      // For creation mode - get from temporary metadata
-      const entityType = selectedHierarchyEntity?.type || activeFormType;
-      if (temporaryEntityMetadata[entityType]?.[key] !== undefined) {
-        console.log(
-          `Getting metadata ${key} from temporary store:`,
-          temporaryEntityMetadata[entityType][key]
-        );
-        return temporaryEntityMetadata[entityType][key];
-      }
-
-      console.log(`No value found for metadata ${key}, returning empty string`);
       return "";
     },
-    [selectedHierarchyEntity, activeFormType, temporaryEntityMetadata, lastMetadataUpdate]
+    [selectedHierarchyEntity, activeFormType]
   );
 
   // Now it's safe to return early for the empty state after all hooks are defined
@@ -100,79 +89,48 @@ const EntityMetadataForm = () => {
     );
   }
 
-  // Enhanced change handler with improved logging
+  // Enhanced change handler with proper value type handling and separate paths for temporary vs. existing metadata
   const handleChange = (field, value) => {
-    console.log(
-      `Changing field ${field} to value ${value} for`,
-      selectedHierarchyEntity ? `entity ${selectedHierarchyEntity.id}` : `new ${activeFormType}`
-    );
-
     if (selectedHierarchyEntity) {
       // Edit mode - update the existing entity
-      updateEntityMetadata(selectedHierarchyEntity, { [field]: value });
+      updateExistingEntityMetadata(selectedHierarchyEntity, { [field]: value });
     } else {
       // Create mode - update temporary metadata
-      updateEntityMetadata(null, { [field]: value }, activeFormType);
+      updateTemporaryMetadata(activeFormType, { [field]: value });
     }
   };
 
   // Cancel handler - reset states and return to entity selection view
   const handleCancel = () => {
-    // If we're in edit mode, just clear selection to return to entity list
     if (selectedHierarchyEntity) {
       setSelectedHierarchyEntity(null); // Clear selection to return to entity list
     } else if (activeFormType) {
+      clearTemporaryMetadata(activeFormType); // Clear temporary metadata
       setActiveFormType(null); // Clear the active form type
-      // If we're adding a new entity, clear the form type
-      useGlobalStore.setState({
-        temporaryEntityMetadata: {
-          subject: {},
-          sample: {},
-          site: {},
-          performance: {},
-        },
-      });
     }
   };
 
   // Save handler - process the form data to add/update an entity
   const handleSave = () => {
     if (selectedHierarchyEntity) {
-      // For existing entities, we've already been updating as we go
-      // Just need to clear the selection to return to the list view
+      // For existing entities, just clear the selection to return to the list view
       console.log("Saved changes to entity:", selectedHierarchyEntity.id);
-      setSelectedHierarchyEntity(null); // Clear selection to return to entity list
+      setSelectedHierarchyEntity(null);
     } else {
+      // For new entities, create the entity with the temporary metadata
       if (activeFormType === "subject") {
-        console.log("Adding new subject with metadata:", temporaryEntityMetadata.subject);
-        addSubject(temporaryEntityMetadata.subject["subject id"], temporaryEntityMetadata.subject);
-        // Reset temporary metadata after adding
-        useGlobalStore.setState({
-          temporaryEntityMetadata: {
-            subject: {},
-            sample: {},
-            site: {},
-            performance: {},
-          },
-        });
+        const tempMetadata = useGlobalStore.getState().temporaryEntityMetadata?.subject || {};
+        console.log("Adding new subject with metadata:", tempMetadata);
+        addSubject(tempMetadata["subject id"], tempMetadata);
+        clearTemporaryMetadata("subject");
+      } else if (activeFormType === "sample") {
+        const tempMetadata = useGlobalStore.getState().temporaryEntityMetadata?.sample || {};
+        console.log("Adding new sample with metadata:", tempMetadata);
+        addSampleToSubject(entityBeingAddedParentSubject, tempMetadata["sample id"], tempMetadata);
+        clearTemporaryMetadata("sample");
       }
-      if (activeFormType === "sample") {
-        console.log("Adding new sample with metadata:", temporaryEntityMetadata.sample);
-        addSampleToSubject(
-          entityBeingAddedParentSubject,
-          temporaryEntityMetadata.sample["sample id"],
-          temporaryEntityMetadata.sample
-        );
-        // Reset temporary metadata after adding
-        useGlobalStore.setState({
-          temporaryEntityMetadata: {
-            subject: {},
-            sample: {},
-            site: {},
-            performance: {},
-          },
-        });
-      }
+      // Reset activeFormType to return to entity selection view
+      setActiveFormType(null);
     }
   };
 
@@ -234,6 +192,7 @@ const EntityMetadataForm = () => {
                   value={getMetadataValue("ageValue")}
                   onChange={(value) => handleChange("ageValue", value)}
                   min={0}
+                  defaultValue={0}
                 />
               </Box>
 
@@ -255,6 +214,7 @@ const EntityMetadataForm = () => {
                   ]}
                   value={getMetadataValue("ageUnit")}
                   onChange={(value) => handleChange("ageUnit", value)}
+                  defaultValue={"Select unit"}
                 />
               </Box>
             </Group>
@@ -376,11 +336,11 @@ const EntityMetadataForm = () => {
                 value={entityBeingAddedParentSubject}
               />
             )}
-            {setEntityBeingAddedParentSample && (
+            {entityBeingAddedParentSample && (
               <TextInput
                 label="Sample this site belongs to"
                 disabled
-                value={setEntityBeingAddedParentSample}
+                value={entityBeingAddedParentSample}
               />
             )}
             <TextInput
