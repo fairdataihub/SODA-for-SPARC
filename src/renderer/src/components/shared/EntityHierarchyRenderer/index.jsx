@@ -77,7 +77,6 @@ const HierarchyItem = ({
   const selectedEntityId = selectedHierarchyEntity ? selectedHierarchyEntity.id : null;
   const selectedEntityParentSubjectId = selectedHierarchyEntity?.parentSubject;
   const selectedEntityParentSampleId = selectedHierarchyEntity?.parentSample;
-  console.log("selectedEntityId", selectedEntityId);
   const marginLeft = (level - 1) * 8;
   const isAddButton = icon === "add";
   const horizontalHierarchyLineWidth = 10;
@@ -110,6 +109,7 @@ const HierarchyItem = ({
     <Box ml={`${marginLeft}px`} style={{ borderLeft: "2px solid #ccc" }} py="3px">
       <Flex
         align="center"
+        justify="space-between"
         onClick={isAddButton ? handleAdd : handleSelect}
         style={{
           cursor: isAddButton || allowEntitySelection ? "pointer" : "default",
@@ -122,23 +122,25 @@ const HierarchyItem = ({
         }}
         ml={`${horizontalHierarchyLineWidth}px`}
       >
-        <Box
-          bg="#ccc"
-          h="2px"
-          w={`${horizontalHierarchyLineWidth}px`}
-          ml={`${horizontalHierarchyLineWidth * -1}px`}
-        />
-        {getEntityIcon(isAddButton ? "add" : icon)}
-        <Text
-          ml="4px"
-          fw={isAddButton ? 400 : 500}
-          size={isAddButton ? "xs" : undefined}
-          c={isAddButton ? "dimmed" : undefined}
-        >
-          {label}
-        </Text>
+        <Group gap={0} justify="flex-start">
+          <Box
+            bg="#ccc"
+            h="2px"
+            w={`${horizontalHierarchyLineWidth}px`}
+            ml={`${horizontalHierarchyLineWidth * -1}px`}
+          />
+          {getEntityIcon(isAddButton ? "add" : icon)}
+          <Text
+            ml="4px"
+            fw={isAddButton ? 400 : 500}
+            size={isAddButton ? "xs" : undefined}
+            c={isAddButton ? "dimmed" : undefined}
+          >
+            {label}
+          </Text>
+        </Group>
         {!isAddButton && allowEntityStructureEditing && (
-          <>
+          <Group gap="3px">
             <IconEdit
               color="blue"
               size={18}
@@ -151,7 +153,7 @@ const HierarchyItem = ({
               style={{ opacity: 0.6, cursor: "pointer" }}
               onClick={handleDelete}
             />
-          </>
+          </Group>
         )}
       </Flex>
       {children && <Stack gap="0px">{children}</Stack>}

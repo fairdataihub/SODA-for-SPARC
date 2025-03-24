@@ -33,6 +33,10 @@ export const addSubject = (subjectId) => {
     ? subjectId.trim()
     : `sub-${subjectId.trim()}`;
 
+  if (!normalizedSubjectId) {
+    throw new Error("Subject ID cannot be empty");
+  }
+
   useGlobalStore.setState(
     produce((state) => {
       state.datasetEntityArray.push({
@@ -77,17 +81,25 @@ export const getExistingSubjectIds = () => {
 
 // Sample management functions
 export const addSampleToSubject = (subjectId, sampleId) => {
+  const normalizedSampleId = sampleId.trim().startsWith("sam-")
+    ? sampleId.trim()
+    : `sam-${sampleId.trim()}`;
+
+  if (!normalizedSampleId) {
+    throw new Error("Sample ID cannot be empty");
+  }
+
   useGlobalStore.setState(
     produce((state) => {
       const subject = state.datasetEntityArray.find((s) => s.id === subjectId); // Changed from subjectId to id
       if (subject) {
         subject.samples.push({
-          id: sampleId, // Changed from sampleId to id
+          id: normalizedSampleId,
           type: "sample", // Add type field to identify entity type
           parentSubject: subjectId, // Add explicit reference to parent subject
           metadata: {
             "subject id": subjectId,
-            "sample id": sampleId,
+            "sample id": normalizedSampleId,
           },
           sites: [],
           performances: [],
@@ -405,6 +417,10 @@ export const getEntityDataFromSelection = (selectedEntity) => {
 
 /**
  * Updates metadata for an existing entity
+ *
+ * Applies metadata changes to an existing entity in the dataset structure.
+ * Handles special cases like updating IDs and ensures proper reference updates.
+ *
  * @param {Object} entity - The entity object to update
  * @param {Object} metadataChanges - Object containing the metadata key/value pairs to update
  */
@@ -477,6 +493,10 @@ export const updateExistingEntityMetadata = (entity, metadataChanges) => {
 
 /**
  * Updates temporary metadata for a new entity being created
+ *
+ * Stores metadata entries in a temporary location until the entity is actually created.
+ * This separates the concerns of editing existing entities vs. creating new ones.
+ *
  * @param {string} entityType - The type of entity (subject, sample, site, performance)
  * @param {Object} metadataChanges - Object containing the metadata key/value pairs to update
  */
@@ -509,6 +529,11 @@ export const updateTemporaryMetadata = (entityType, metadataChanges) => {
 
 /**
  * Gets metadata value from either an entity or temporary metadata
+ *
+ * Single access point for metadata that handles both existing entities and
+ * temporary metadata for entities being created. Includes special handling
+ * for ID fields with prefixes like "sub-" or "sam-".
+ *
  * @param {Object|null} entity - The entity object or null for temporary metadata
  * @param {string} key - The metadata key to retrieve
  * @param {string} entityType - Required when entity is null to get from temporary metadata
@@ -555,6 +580,9 @@ export const getEntityMetadataValue = (entity, key, entityType = null, defaultVa
 
 /**
  * Clears temporary metadata for a specific entity type
+ *
+ * Used after entity creation is complete or canceled to clean up state.
+ *
  * @param {string} entityType - The type of entity (subject, sample, site, performance)
  */
 export const clearTemporaryMetadata = (entityType) => {

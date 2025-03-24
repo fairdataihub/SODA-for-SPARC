@@ -113,15 +113,30 @@ const EntityMetadataForm = () => {
   // Save handler - process the form data to add/update an entity
   const handleSave = () => {
     if (selectedHierarchyEntity) {
-      // For existing entities, just clear the selection to return to the list view
-      console.log("Saved changes to entity:", selectedHierarchyEntity.id);
+      if (activeFormType === "subject") {
+        // Make sure the subject ID is not changed
+        const newSubjectId = getMetadataValue("subject id");
+        console.log("newSubjectId:", newSubjectId);
+      }
       setSelectedHierarchyEntity(null);
     } else {
       // For new entities, create the entity with the temporary metadata
       if (activeFormType === "subject") {
         const tempMetadata = useGlobalStore.getState().temporaryEntityMetadata?.subject || {};
-        console.log("Adding new subject with metadata:", tempMetadata);
-        addSubject(tempMetadata["subject id"], tempMetadata);
+        if (!tempMetadata["subject id"]) {
+          window.notyf.open({
+            duration: "4000",
+            type: "error",
+            message: "You must assign this subject an ID.",
+          });
+          return;
+        }
+        try {
+          addSubject(tempMetadata["subject id"], tempMetadata);
+        } catch (error) {
+          window.notyf.open({ duration: "4000", type: "error", message: error.message });
+          return;
+        }
         clearTemporaryMetadata("subject");
       } else if (activeFormType === "sample") {
         const tempMetadata = useGlobalStore.getState().temporaryEntityMetadata?.sample || {};
@@ -164,7 +179,7 @@ const EntityMetadataForm = () => {
           <Stack spacing="md">
             <TextInput
               label="Subject Identifier"
-              leftSection={<Text>sub-</Text>}
+              leftSection={<Text c="dimmed">sub-</Text>}
               leftSectionWidth={50}
               description="The subject identifier"
               placeholder="Enter subject ID without the 'sub-' prefix"
@@ -287,7 +302,7 @@ const EntityMetadataForm = () => {
             />
             <TextInput
               label="Sample Identifier"
-              leftSection={<Text>sam-</Text>}
+              leftSection={<Text c="dimmed">sam-</Text>}
               leftSectionWidth={50}
               description="The sample identifier"
               placeholder="Enter sample ID without the 'sam-' prefix"
