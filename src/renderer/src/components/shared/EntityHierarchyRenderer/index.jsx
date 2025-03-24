@@ -409,9 +409,9 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                 }}
                 p="sm"
               >
-                {/* Subject Header */}
                 <Flex
                   align="center"
+                  justify="space-between"
                   gap="xs"
                   onClick={() => allowEntitySelection && handleEntitySelect(subject)}
                   style={{
@@ -425,10 +425,12 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                           : "",
                   }}
                 >
-                  <IconUser size={15} />
-                  <Text fw={600}>{subject.id}</Text>
+                  <Group gap="xs">
+                    <IconUser size={15} />
+                    <Text fw={600}>{subject.id}</Text>
+                  </Group>
                   {allowEntityStructureEditing && (
-                    <>
+                    <Group gap="3px">
                       <IconEdit
                         color="blue"
                         size={18}
@@ -447,7 +449,7 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
                           handleDeleteSubject(subject);
                         }}
                       />
-                    </>
+                    </Group>
                   )}
                 </Flex>
 
