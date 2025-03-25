@@ -27,7 +27,7 @@ export const setDatasetEntityArray = (datasetEntityArray) => {
 };
 
 // Subject management functions
-export const addSubject = (subjectId) => {
+export const addSubject = (subjectId, metadata = {}) => {
   // Ensure subject ID starts with "sub-"
   const normalizedSubjectId = subjectId.trim().startsWith("sub-")
     ? subjectId.trim()
@@ -37,18 +37,27 @@ export const addSubject = (subjectId) => {
     throw new Error("Subject ID cannot be empty");
   }
 
+  // Log the metadata being passed in
+  console.log("Adding subject with metadata:", metadata);
+
   useGlobalStore.setState(
     produce((state) => {
+      // Create merged metadata object with ID guaranteed
+      const mergedMetadata = {
+        ...metadata,
+        "subject id": normalizedSubjectId, // Ensure ID is always set correctly
+      };
+
       state.datasetEntityArray.push({
-        id: normalizedSubjectId, // Changed from subjectId to id
-        type: "subject", // Add type field to identify entity type
-        metadata: {
-          "subject id": normalizedSubjectId,
-        },
+        id: normalizedSubjectId,
+        type: "subject",
+        metadata: mergedMetadata, // Use the merged metadata object
         samples: [],
         subjectSites: [],
         subjectPerformances: [],
       });
+
+      console.log("Subject added successfully with metadata:", mergedMetadata);
     })
   );
 };
@@ -80,7 +89,7 @@ export const getExistingSubjectIds = () => {
 };
 
 // Sample management functions
-export const addSampleToSubject = (subjectId, sampleId) => {
+export const addSampleToSubject = (subjectId, sampleId, metadata = {}) => {
   const normalizedSampleId = sampleId.trim().startsWith("sam-")
     ? sampleId.trim()
     : `sam-${sampleId.trim()}`;
@@ -89,21 +98,29 @@ export const addSampleToSubject = (subjectId, sampleId) => {
     throw new Error("Sample ID cannot be empty");
   }
 
+  console.log("Adding sample with metadata:", metadata);
+
   useGlobalStore.setState(
     produce((state) => {
-      const subject = state.datasetEntityArray.find((s) => s.id === subjectId); // Changed from subjectId to id
+      const subject = state.datasetEntityArray.find((s) => s.id === subjectId);
       if (subject) {
+        // Create merged metadata object for the sample
+        const mergedMetadata = {
+          ...metadata,
+          "subject id": subjectId,
+          "sample id": normalizedSampleId,
+        };
+
         subject.samples.push({
           id: normalizedSampleId,
-          type: "sample", // Add type field to identify entity type
-          parentSubject: subjectId, // Add explicit reference to parent subject
-          metadata: {
-            "subject id": subjectId,
-            "sample id": normalizedSampleId,
-          },
+          type: "sample",
+          parentSubject: subjectId,
+          metadata: mergedMetadata, // Use the merged metadata
           sites: [],
           performances: [],
         });
+
+        console.log("Sample added successfully with metadata:", mergedMetadata);
       }
     })
   );
@@ -463,11 +480,19 @@ export const updateExistingEntityMetadata = (entity, metadataChanges) => {
         // Handle sample metadata updates
         // Find the parent subject
         const subject = state.datasetEntityArray.find((s) => s.id === entity.parentSubject);
-        if (!subject) return;
+        if (!subject) {
+          console.error(
+            `Parent subject with ID ${entity.parentSubject} not found for sample ${entity.id}`
+          );
+          return;
+        }
 
         // Find the sample
         const sample = subject.samples?.find((s) => s.id === entity.id);
-        if (!sample) return;
+        if (!sample) {
+          console.error(`Sample with ID ${entity.id} not found in subject ${subject.id}`);
+          return;
+        }
 
         // Ensure metadata exists
         if (!sample.metadata) sample.metadata = {};
@@ -475,17 +500,62 @@ export const updateExistingEntityMetadata = (entity, metadataChanges) => {
         // Apply changes
         Object.entries(metadataChanges).forEach(([key, value]) => {
           sample.metadata[key] = value;
+          console.log(`Updated sample metadata: ${key} = ${value}`);
 
           // Handle ID updates if needed
           if (key === "sample id") {
             sample.id = value.startsWith("sam-") ? value : `sam-${value}`;
           }
         });
+
+        // Set updatedEntity to the sample we just modified
+        updatedEntity = sample;
+        console.log("Updated sample entity:", updatedEntity);
+      } else if (entity.type === "site") {
+        // Similar pattern for sites
+        const subject = state.datasetEntityArray.find(
+          (s) =>
+            s.id === entity.parentSubject || s.subjectSites?.some((site) => site.id === entity.id)
+        );
+
+        if (!subject) return;
+
+        let site = null;
+
+        // Check if it's a direct subject site
+        if (subject.subjectSites) {
+          site = subject.subjectSites.find((s) => s.id === entity.id);
+        }
+
+        // If not found as a subject site, look in samples
+        if (!site && entity.parentSample) {
+          const sample = subject.samples?.find((s) => s.id === entity.parentSample);
+          if (sample && sample.sites) {
+            site = sample.sites.find((s) => s.id === entity.id);
+          }
+        }
+
+        if (!site) return;
+
+        // Ensure metadata exists
+        if (!site.metadata) site.metadata = {};
+
+        // Apply changes
+        Object.entries(metadataChanges).forEach(([key, value]) => {
+          site.metadata[key] = value;
+
+          if (key === "site id") {
+            site.id = value.startsWith("site-") ? value : `site-${value}`;
+          }
+        });
+
+        updatedEntity = site;
       }
 
       // If this is the currently selected entity, update our reference to it
       if (state.selectedHierarchyEntity && state.selectedHierarchyEntity.id === entity.id) {
         state.selectedHierarchyEntity = updatedEntity || state.selectedHierarchyEntity;
+        console.log("Updated selectedHierarchyEntity reference:", state.selectedHierarchyEntity);
       }
     })
   );

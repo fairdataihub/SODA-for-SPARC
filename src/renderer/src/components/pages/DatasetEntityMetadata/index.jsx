@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useRef, useEffect } from "react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import {
@@ -46,6 +46,9 @@ import { shallow } from "zustand/shallow";
 
 // Component for entity metadata form
 const EntityMetadataForm = () => {
+  // Cache of previous values to prevent redundant updates
+  const previousValueRef = useRef({});
+
   // Subscribe to each piece of state individually for more granular control
   const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
   const activeFormType = useGlobalStore((state) => state.activeFormType);
@@ -63,20 +66,111 @@ const EntityMetadataForm = () => {
     selectedHierarchyEntity
   );
 
+  // Simple mapping of entity types to their prefixes
+  const entityPrefixes = {
+    subject: "sub-",
+    sample: "sam-",
+    site: "site-",
+    performance: "perf-",
+  };
+
   // Define getMetadataValue hook with improved dependencies
   const getMetadataValue = useCallback(
     (key) => {
+      let value = "";
+
       if (selectedHierarchyEntity) {
         // Existing entity - get from the entity
-        return getEntityMetadataValue(selectedHierarchyEntity, key);
+        value = getEntityMetadataValue(selectedHierarchyEntity, key);
+        console.log(`Getting metadata for key "${key}" from existing entity:`, value);
       } else if (activeFormType) {
         // New entity - get from temporary metadata
-        return getEntityMetadataValue(null, key, activeFormType);
+        value = getEntityMetadataValue(null, key, activeFormType);
+        console.log(`Getting metadata for key "${key}" from temporary entity:`, value);
       }
-      return "";
+
+      // Strip prefixes from ID fields when displaying in the form
+      if (selectedHierarchyEntity && value && key.endsWith(" id")) {
+        const entityType = selectedHierarchyEntity.type;
+        const prefix = entityPrefixes[entityType];
+
+        if (prefix && value.startsWith(prefix)) {
+          const strippedValue = value.substring(prefix.length);
+          console.log(`Stripping prefix "${prefix}" from ${value} -> ${strippedValue}`);
+          return strippedValue;
+        }
+      }
+
+      return value;
     },
     [selectedHierarchyEntity, activeFormType]
   );
+
+  // Super simple change handler - for all fields
+  const handleChange = (field, value) => {
+    console.log(`------------------------------------`);
+    console.log(`handleChange called for field: "${field}", value: "${value}"`);
+    console.log(
+      `selectedHierarchyEntity before update:`,
+      JSON.stringify(selectedHierarchyEntity?.metadata)
+    );
+
+    // Get the entity type we're working with
+    const entityType = selectedHierarchyEntity?.type || activeFormType;
+    console.log(`Entity type: ${entityType}`);
+
+    // Special handling for ID fields to ensure proper prefix
+    let finalValue = value;
+
+    if (field.endsWith(" id")) {
+      const prefix = entityPrefixes[entityType];
+
+      // Add prefix if not already present
+      if (prefix && !value.startsWith(prefix)) {
+        finalValue = `${prefix}${value}`;
+        console.log(`Adding prefix "${prefix}" -> "${finalValue}"`);
+      } else {
+        console.log(`Value already has prefix or no prefix needed: "${finalValue}"`);
+      }
+
+      // For existing entities, check if this is actually a change
+      if (selectedHierarchyEntity) {
+        // Create a unique key for this specific field/entity
+        const cacheKey = `${selectedHierarchyEntity.id}-${field}`;
+
+        // If we already processed this exact value, skip the update
+        if (previousValueRef.current[cacheKey] === finalValue) {
+          console.log(
+            `Skipping redundant update! Previous: "${previousValueRef.current[cacheKey]}", Current: "${finalValue}"`
+          );
+          return;
+        }
+
+        // Cache the new value for future comparisons
+        previousValueRef.current[cacheKey] = finalValue;
+        console.log(`Caching value "${finalValue}" for key "${cacheKey}"`);
+      }
+    }
+
+    // Actually update the metadata based on if we're editing or creating
+    if (selectedHierarchyEntity) {
+      console.log(`Updating existing ${entityType} with ID ${selectedHierarchyEntity.id}`);
+      console.log(`Field: "${field}", Value: "${finalValue}"`);
+      updateExistingEntityMetadata(selectedHierarchyEntity, { [field]: finalValue });
+
+      // Add a small delay and check the entity state again to verify update
+      setTimeout(() => {
+        const currentState = useGlobalStore.getState();
+        const updatedEntity = currentState.selectedHierarchyEntity;
+        console.log(`Entity metadata after update:`, JSON.stringify(updatedEntity?.metadata));
+      }, 100);
+    } else {
+      console.log(`Updating temporary ${activeFormType} metadata`);
+      console.log(`Field: "${field}", Value: "${finalValue}"`);
+      updateTemporaryMetadata(activeFormType, { [field]: finalValue });
+    }
+    console.log(`------------------------------------`);
+  };
 
   // Now it's safe to return early for the empty state after all hooks are defined
   if (!selectedHierarchyEntity && !activeFormType) {
@@ -88,17 +182,6 @@ const EntityMetadataForm = () => {
       </Box>
     );
   }
-
-  // Enhanced change handler with proper value type handling and separate paths for temporary vs. existing metadata
-  const handleChange = (field, value) => {
-    if (selectedHierarchyEntity) {
-      // Edit mode - update the existing entity
-      updateExistingEntityMetadata(selectedHierarchyEntity, { [field]: value });
-    } else {
-      // Create mode - update temporary metadata
-      updateTemporaryMetadata(activeFormType, { [field]: value });
-    }
-  };
 
   // Cancel handler - reset states and return to entity selection view
   const handleCancel = () => {
@@ -123,6 +206,8 @@ const EntityMetadataForm = () => {
       // For new entities, create the entity with the temporary metadata
       if (activeFormType === "subject") {
         const tempMetadata = useGlobalStore.getState().temporaryEntityMetadata?.subject || {};
+        console.log("Creating new subject with temporary metadata:", tempMetadata);
+
         if (!tempMetadata["subject id"]) {
           window.notyf.open({
             duration: "4000",
@@ -132,6 +217,7 @@ const EntityMetadataForm = () => {
           return;
         }
         try {
+          // Pass the full metadata object to addSubject
           addSubject(tempMetadata["subject id"], tempMetadata);
         } catch (error) {
           window.notyf.open({ duration: "4000", type: "error", message: error.message });
@@ -179,10 +265,8 @@ const EntityMetadataForm = () => {
           <Stack spacing="md">
             <TextInput
               label="Subject Identifier"
-              leftSection={<Text c="dimmed">sub-</Text>}
-              leftSectionWidth={50}
-              description="The subject identifier"
-              placeholder="Enter subject ID without the 'sub-' prefix"
+              description="The subject identifier (prefix 'sub-' will be added automatically)"
+              placeholder="Enter subject ID without 'sub-'"
               value={getMetadataValue("subject id")}
               onChange={(e) => handleChange("subject id", e.target.value)}
             />
@@ -302,13 +386,12 @@ const EntityMetadataForm = () => {
             />
             <TextInput
               label="Sample Identifier"
-              leftSection={<Text c="dimmed">sam-</Text>}
-              leftSectionWidth={50}
-              description="The sample identifier"
-              placeholder="Enter sample ID without the 'sam-' prefix"
+              description="The sample identifier (prefix 'sam-' will be added automatically)"
+              placeholder="Enter sample ID without 'sam-'"
               value={getMetadataValue("sample id")}
               onChange={(e) => handleChange("sample id", e.target.value)}
             />
+
             <TextInput
               label="Sample Experimental Group"
               description="The experimental group this sample belongs to"
@@ -346,7 +429,7 @@ const EntityMetadataForm = () => {
           <Stack spacing="md">
             {entityBeingAddedParentSubject && (
               <TextInput
-                label="Subject this sample belongs to"
+                label="Subject this site belongs to"
                 disabled
                 value={entityBeingAddedParentSubject}
               />
@@ -358,6 +441,13 @@ const EntityMetadataForm = () => {
                 value={entityBeingAddedParentSample}
               />
             )}
+            <TextInput
+              label="Site Identifier"
+              description="The site identifier (prefix 'site-' will be added automatically)"
+              placeholder="Enter site ID without 'site-'"
+              value={getMetadataValue("site id")}
+              onChange={(e) => handleChange("site id", e.target.value)}
+            />
             <TextInput
               label="Site type"
               placeholder="e.g., Recording site, Injection site"
@@ -382,6 +472,13 @@ const EntityMetadataForm = () => {
       case "performance":
         return (
           <Stack spacing="md">
+            <TextInput
+              label="Performance Identifier"
+              description="The performance identifier (prefix 'perf-' will be added automatically)"
+              placeholder="Enter performance ID without 'perf-'"
+              value={getMetadataValue("performance id")}
+              onChange={(e) => handleChange("performance id", e.target.value)}
+            />
             <TextInput
               label="Experimental Group"
               description="The experimental group this performance belongs to"
