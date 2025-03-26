@@ -105,7 +105,7 @@ const DatasetEntityFileMapper = () => {
         <Grid gutter="lg">
           <Grid.Col span={4} style={{ position: "sticky", top: "20px" }}>
             <Paper shadow="sm" radius="md" p="sm" withBorder mb="md">
-              <Text size="lg" weight={500}>
+              <Text size="lg" fw={500} mb="sm">
                 Select an entity
               </Text>
               <EntityHierarchyRenderer

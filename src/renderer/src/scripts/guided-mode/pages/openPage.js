@@ -17,6 +17,7 @@ import {
 import {
   setSpeciesList,
   setDatasetEntityArray,
+  setActiveFormType,
 } from "../../../stores/slices/datasetEntityStructureSlice.js";
 import { setSelectedEntities } from "../../../stores/slices/datasetContentSelectorSlice.js";
 import { setDatasetEntityObj } from "../../../stores/slices/datasetEntitySelectorSlice.js";
@@ -397,6 +398,7 @@ export const openPage = async (targetPageID) => {
 
         setSelectedEntities(selectedEntities);
         setDatasetEntityArray(datasetEntityArray);
+        setActiveFormType(null);
       }
     }
 

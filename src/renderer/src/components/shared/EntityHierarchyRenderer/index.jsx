@@ -8,7 +8,7 @@ import {
   IconPlus,
   IconTrash,
 } from "@tabler/icons-react";
-import { useMemo, useCallback, useState } from "react";
+import { useMemo, useCallback, useState, memo } from "react";
 import {
   addSubject,
   deleteSubject,
@@ -33,7 +33,8 @@ import useGlobalStore from "../../../stores/globalStore";
 import { guidedOpenEntityAdditionSwal, guidedOpenEntityEditSwal } from "./utils";
 import { setSelectedHierarchyEntity } from "../../../stores/slices/datasetContentSelectorSlice";
 
-// Utility for getting the appropriate icon component
+// Returns the appropriate icon component based on entity type
+// Used for visual differentiation between different entity types
 const getEntityIcon = (iconType) => {
   const iconSize = 15;
   switch (iconType) {
@@ -56,111 +57,125 @@ const getEntityIcon = (iconType) => {
   }
 };
 
-// Simplified HierarchyItem that doesn't pass entityType anymore
-const HierarchyItem = ({
-  icon,
-  label,
-  children,
-  level = 1,
-  allowEntityStructureEditing = false,
-  allowEntitySelection = false,
-  entityData = null, // Contains all needed data including parent references
-  parentEntityData = null, // Only needed for edit/delete operations
-  onAdd = null,
-  onEdit = null,
-  onDelete = null,
-  onSelect = null,
-  isSampleParent = false,
-}) => {
-  const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
-  console.log("selectedHierarchyEntity::", selectedHierarchyEntity);
-  const selectedEntityId = selectedHierarchyEntity ? selectedHierarchyEntity.id : null;
-  const selectedEntityParentSubjectId = selectedHierarchyEntity?.parentSubject;
-  const selectedEntityParentSampleId = selectedHierarchyEntity?.parentSample;
-  const marginLeft = (level - 1) * 8;
-  const isAddButton = icon === "add";
-  const horizontalHierarchyLineWidth = 10;
+// Memoize the hierarchy item component to prevent unnecessary re-renders
+const HierarchyItem = memo(
+  ({
+    icon,
+    label,
+    children,
+    level = 1,
+    allowEntityStructureEditing = false,
+    allowEntitySelection = false,
+    entityData = null, // Contains all needed data including parent references
+    parentEntityData = null, // Only needed for edit/delete operations
+    onAdd = null,
+    onEdit = null,
+    onDelete = null,
+    onSelect = null,
+    isSampleParent = false,
+  }) => {
+    const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
+    console.log("selectedHierarchyEntity::", selectedHierarchyEntity);
+    const selectedEntityId = selectedHierarchyEntity ? selectedHierarchyEntity.id : null;
+    const selectedEntityParentSubjectId = selectedHierarchyEntity?.parentSubject;
+    const selectedEntityParentSampleId = selectedHierarchyEntity?.parentSample;
+    const marginLeft = (level - 1) * 8;
+    const isAddButton = icon === "add";
+    const horizontalHierarchyLineWidth = 10;
 
-  const handleAdd = (e) => {
-    e.stopPropagation();
-    onAdd && onAdd(parentEntityData);
-  };
+    // Event handler for add button clicks
+    // Stops propagation to prevent parent handlers from firing
+    const handleAdd = (e) => {
+      e.stopPropagation();
+      onAdd && onAdd(parentEntityData);
+    };
 
-  const handleEdit = (e) => {
-    e.stopPropagation();
-    onEdit && onEdit(entityData, parentEntityData);
-  };
+    // Event handler for edit button clicks
+    // Stops propagation to prevent parent handlers from firing
+    const handleEdit = (e) => {
+      e.stopPropagation();
+      onEdit && onEdit(entityData, parentEntityData);
+    };
 
-  const handleDelete = (e) => {
-    e.stopPropagation();
-    onDelete && onDelete(entityData, parentEntityData);
-  };
+    // Event handler for delete button clicks
+    // Stops propagation to prevent parent handlers from firing
+    const handleDelete = (e) => {
+      e.stopPropagation();
+      onDelete && onDelete(entityData, parentEntityData);
+    };
 
-  const handleSelect = (e) => {
-    e.stopPropagation();
-    if (allowEntitySelection && !isAddButton && onSelect) {
-      // Just pass the raw entity data which already includes parent references
-      console.log("entityData", entityData);
-      onSelect(entityData);
-    }
-  };
+    // Event handler for item selection
+    // Only triggers if selection is allowed and this isn't an add button
+    const handleSelect = (e) => {
+      e.stopPropagation();
+      if (allowEntitySelection && !isAddButton && onSelect) {
+        // Just pass the raw entity data which already includes parent references
+        console.log("entityData", entityData);
+        onSelect(entityData);
+      }
+    };
 
-  return (
-    <Box ml={`${marginLeft}px`} style={{ borderLeft: "2px solid #ccc" }} py="3px">
-      <Flex
-        align="center"
-        justify="space-between"
-        onClick={isAddButton ? handleAdd : handleSelect}
-        style={{
-          cursor: isAddButton || allowEntitySelection ? "pointer" : "default",
-          backgroundColor:
-            allowEntitySelection && selectedEntityId === entityData?.id
-              ? "#bbdefb" // More vibrant blue that's clearly visible
-              : isSampleParent
-                ? "#f0f0f0" // Keep the existing gray for parent items
-                : "",
-        }}
-        ml={`${horizontalHierarchyLineWidth}px`}
-      >
-        <Group gap={0} justify="flex-start">
-          <Box
-            bg="#ccc"
-            h="2px"
-            w={`${horizontalHierarchyLineWidth}px`}
-            ml={`${horizontalHierarchyLineWidth * -1}px`}
-          />
-          {getEntityIcon(isAddButton ? "add" : icon)}
-          <Text
-            ml="4px"
-            fw={isAddButton ? 400 : 500}
-            size={isAddButton ? "xs" : undefined}
-            c={isAddButton ? "dimmed" : undefined}
-          >
-            {label}
-          </Text>
-        </Group>
-        {!isAddButton && allowEntityStructureEditing && (
-          <Group gap="3px">
-            <IconEdit
-              color="blue"
-              size={18}
-              style={{ marginLeft: "4px", opacity: 0.6, cursor: "pointer" }}
-              onClick={handleEdit}
+    // Render the hierarchy item with horizontal line connectors and proper indentation
+    // Visual structure: [line]--[icon][label] [edit/delete buttons]
+    return (
+      <Box ml={`${marginLeft}px`} style={{ borderLeft: "2px solid #ccc" }} py="3px">
+        <Flex
+          align="center"
+          justify="space-between"
+          onClick={isAddButton ? handleAdd : handleSelect}
+          style={{
+            cursor: isAddButton || allowEntitySelection ? "pointer" : "default",
+            backgroundColor:
+              allowEntitySelection && selectedEntityId === entityData?.id
+                ? "#bbdefb" // More vibrant blue that's clearly visible
+                : isSampleParent
+                  ? "#f0f0f0" // Keep the existing gray for parent items
+                  : "",
+          }}
+          ml={`${horizontalHierarchyLineWidth}px`}
+        >
+          <Group gap={0} justify="flex-start">
+            <Box
+              bg="#ccc"
+              h="2px"
+              w={`${horizontalHierarchyLineWidth}px`}
+              ml={`${horizontalHierarchyLineWidth * -1}px`}
             />
-            <IconTrash
-              color="red"
-              size={16}
-              style={{ opacity: 0.6, cursor: "pointer" }}
-              onClick={handleDelete}
-            />
+            {getEntityIcon(isAddButton ? "add" : icon)}
+            <Text
+              ml="4px"
+              fw={isAddButton ? 400 : 500}
+              size={isAddButton ? "xs" : undefined}
+              c={isAddButton ? "dimmed" : undefined}
+            >
+              {label}
+            </Text>
           </Group>
-        )}
-      </Flex>
-      {children && <Stack gap="0px">{children}</Stack>}
-    </Box>
-  );
-};
+          {!isAddButton && allowEntityStructureEditing && (
+            <Group gap="3px">
+              <IconEdit
+                color="blue"
+                size={18}
+                style={{ marginLeft: "4px", opacity: 0.6, cursor: "pointer" }}
+                onClick={handleEdit}
+              />
+              <IconTrash
+                color="red"
+                size={16}
+                style={{ opacity: 0.6, cursor: "pointer" }}
+                onClick={handleDelete}
+              />
+            </Group>
+          )}
+        </Flex>
+        {children && <Stack gap="0px">{children}</Stack>}
+      </Box>
+    );
+  }
+);
 
+// Main component that renders the entire entity hierarchy tree
+// Supports entity selection, editing, and provides actions for all entity types
 const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelection }) => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
@@ -169,28 +184,26 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
   const selectedEntityParentSubjectId = selectedHierarchyEntity?.parentSubject;
   const selectedEntityParentSampleId = selectedHierarchyEntity?.parentSample;
 
-  // Ultra-simple entity selection handler that just passes the raw entity data
+  // Memoize the entity select handler to prevent recreation on each render
   const handleEntitySelect = useCallback((entityData) => {
     console.log("getAllEntityIds", getAllEntityIds());
     console.log("Selected entity data:", entityData);
     setSelectedHierarchyEntity(entityData);
   }, []);
 
-  // Define all entity operations within the component, organized by entity type and operation type (add, edit, delete)
-
   // ----- SUBJECT OPERATIONS -----
-  // Add operations
+  // Opens the subject creation form
   const handleAddSubjectButtonClick = useCallback(() => {
     setSelectedHierarchyEntity(null);
     setActiveFormType("subject");
   }, []);
 
-  // Edit operations
+  // Opens dialog to edit an existing subject
   const handleEditSubject = useCallback((subject) => {
     return guidedOpenEntityEditSwal("subject", subject);
   }, []);
 
-  // Delete operations
+  // Removes a subject from the dataset
   const handleDeleteSubject = useCallback((subject) => {
     return deleteSubject(subject.id);
   }, []);
@@ -343,7 +356,8 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
     return deletePerformanceFromSample(subject.id, sample.id, performance.id);
   }, []);
 
-  // Memoize derived values to avoid recalculation
+  // Calculate which entity types should be displayed based on selected entities
+  // This controls visibility of samples, sites, and performances in the hierarchy
   const {
     showSamples,
     showSubjectSites,
@@ -361,9 +375,7 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
     [selectedEntities]
   );
 
-  // We can check if we should show empty state after all hooks are called
-  const shouldShowEmptyState = !datasetEntityArray?.length;
-
+  // Main component render - displays the full entity hierarchy with appropriate controls
   return (
     <Stack gap="xs">
       {allowEntityStructureEditing && (
@@ -385,9 +397,9 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
           </Flex>
         </Box>
       )}
-      <ScrollArea mah={650} type="auto">
+      <ScrollArea h={650} type="auto">
         <Stack gap="xs">
-          {shouldShowEmptyState ? (
+          {!datasetEntityArray?.length ? (
             <Box
               style={{
                 border: "1px solid #ddd",
@@ -397,7 +409,7 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
               p="md"
             >
               <Text c="dimmed" ta="center">
-                No subjects have been added yet
+                No subjects to display
               </Text>
             </Box>
           ) : (

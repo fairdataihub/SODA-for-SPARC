@@ -157,12 +157,24 @@ const EntityMetadataForm = () => {
     }
   };
 
+  if (datasetEntityArray.length === 0 && !activeFormType) {
+    return (
+      <Box mx="md">
+        <Text size="lg" c="gray">
+          Click the "Add Subject" button to the left to begin structuring and adding metadata to
+          your dataset's entities.
+        </Text>
+      </Box>
+    );
+  }
+
   // Show a message when no entity is selected or being created
   if (!selectedHierarchyEntity && !activeFormType) {
     return (
-      <Box p="xl">
-        <Text size="xl" c="gray">
-          Select an entity from the hierarchy on the left to edit its metadata.
+      <Box mx="md">
+        <Text size="lg" c="gray">
+          Select an entity from the hierarchy on the left to edit its metadata or click "Add
+          Subject" to add another subject.
         </Text>
       </Box>
     );
