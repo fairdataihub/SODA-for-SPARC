@@ -157,21 +157,38 @@ export const modifySampleId = (subjectId, oldSampleId, newSampleId) => {
 };
 
 // Subject site management functions
-export const addSiteToSubject = (subjectId, siteId) => {
+export const addSiteToSubject = (subjectId, siteId, metadata = {}) => {
+  const normalizedSiteId = siteId.trim().startsWith("site-")
+    ? siteId.trim()
+    : `site-${siteId.trim()}`;
+
+  if (!normalizedSiteId) {
+    throw new Error("Site ID cannot be empty");
+  }
+
+  console.log("Adding site to subject with metadata:", metadata);
+
   useGlobalStore.setState(
     produce((state) => {
-      const subject = state.datasetEntityArray.find((s) => s.id === subjectId); // Changed from subjectId to id
+      const subject = state.datasetEntityArray.find((s) => s.id === subjectId);
       if (subject) {
         if (!subject.subjectSites) subject.subjectSites = [];
+
+        // Create merged metadata object for the site
+        const mergedMetadata = {
+          ...metadata,
+          "site id": normalizedSiteId,
+          "subject id": subjectId,
+        };
+
         subject.subjectSites.push({
-          id: siteId, // Changed from siteId to id
-          type: "site", // Add type field to identify entity type
-          parentSubject: subject.id, // Add explicit reference to parent subject
-          metadata: {
-            "site id": siteId,
-            "specimen id": subjectId,
-          },
+          id: normalizedSiteId,
+          type: "site",
+          parentSubject: subject.id,
+          metadata: mergedMetadata,
         });
+
+        console.log("Site added to subject successfully with metadata:", mergedMetadata);
       }
     })
   );
@@ -255,24 +272,42 @@ export const getExistingSiteIds = () => {
 };
 
 // Sample site management functions
-export const addSiteToSample = (subjectId, sampleId, siteId) => {
+export const addSiteToSample = (subjectId, sampleId, siteId, metadata = {}) => {
+  const normalizedSiteId = siteId.trim().startsWith("site-")
+    ? siteId.trim()
+    : `site-${siteId.trim()}`;
+
+  if (!normalizedSiteId) {
+    throw new Error("Site ID cannot be empty");
+  }
+
+  console.log("Adding site to sample with metadata:", metadata);
+
   useGlobalStore.setState(
     produce((state) => {
-      const subject = state.datasetEntityArray.find((s) => s.id === subjectId); // Changed from subjectId to id
+      const subject = state.datasetEntityArray.find((s) => s.id === subjectId);
       if (subject && subject.samples) {
-        const sample = subject.samples.find((s) => s.id === sampleId); // Changed from sampleId to id
+        const sample = subject.samples.find((s) => s.id === sampleId);
         if (sample) {
           if (!sample.sites) sample.sites = [];
+
+          // Create merged metadata object for the site
+          const mergedMetadata = {
+            ...metadata,
+            "site id": normalizedSiteId,
+            "subject id": subjectId,
+            "sample id": sampleId,
+          };
+
           sample.sites.push({
-            id: siteId, // Changed from siteId to id
-            type: "site", // Add type field to identify entity type
-            parentSubject: subject.id, // Add explicit reference to top-level subject
-            parentSample: sample.id, // Add explicit reference to parent sample
-            metadata: {
-              "site id": siteId,
-              "specimen id": `${subjectId} ${sampleId}`, // Add combined subject/sample ID to site metadata
-            },
+            id: normalizedSiteId,
+            type: "site",
+            parentSubject: subject.id,
+            parentSample: sample.id,
+            metadata: mergedMetadata,
           });
+
+          console.log("Site added to sample successfully with metadata:", mergedMetadata);
         }
       }
     })
@@ -512,44 +547,82 @@ export const updateExistingEntityMetadata = (entity, metadataChanges) => {
         updatedEntity = sample;
         console.log("Updated sample entity:", updatedEntity);
       } else if (entity.type === "site") {
-        // Similar pattern for sites
-        const subject = state.datasetEntityArray.find(
-          (s) =>
-            s.id === entity.parentSubject || s.subjectSites?.some((site) => site.id === entity.id)
-        );
+        console.log("Updating site entity:", entity.id);
+        console.log("Site entity data:", entity);
 
-        if (!subject) return;
+        // Find the parent subject
+        let subject = null;
+        let sample = null;
 
-        let site = null;
-
-        // Check if it's a direct subject site
-        if (subject.subjectSites) {
-          site = subject.subjectSites.find((s) => s.id === entity.id);
+        if (entity.parentSubject) {
+          subject = state.datasetEntityArray.find((s) => s.id === entity.parentSubject);
+          console.log("Found parent subject:", subject?.id);
         }
 
-        // If not found as a subject site, look in samples
-        if (!site && entity.parentSample) {
-          const sample = subject.samples?.find((s) => s.id === entity.parentSample);
-          if (sample && sample.sites) {
-            site = sample.sites.find((s) => s.id === entity.id);
-          }
+        if (!subject) {
+          console.error(`Parent subject not found for site ${entity.id}`);
+          return;
         }
 
-        if (!site) return;
+        // Check if site belongs to a sample or directly to the subject
+        if (entity.parentSample) {
+          // Site belongs to a sample
+          sample = subject.samples?.find((s) => s.id === entity.parentSample);
+          console.log("Found parent sample:", sample?.id);
 
-        // Ensure metadata exists
-        if (!site.metadata) site.metadata = {};
-
-        // Apply changes
-        Object.entries(metadataChanges).forEach(([key, value]) => {
-          site.metadata[key] = value;
-
-          if (key === "site id") {
-            site.id = value.startsWith("site-") ? value : `site-${value}`;
+          if (!sample) {
+            console.error(
+              `Parent sample ${entity.parentSample} not found in subject ${subject.id}`
+            );
+            return;
           }
-        });
 
-        updatedEntity = site;
+          // Find the site within the sample
+          const site = sample.sites?.find((s) => s.id === entity.id);
+          if (!site) {
+            console.error(`Site ${entity.id} not found in sample ${sample.id}`);
+            return;
+          }
+
+          // Ensure metadata exists
+          if (!site.metadata) site.metadata = {};
+
+          // Apply changes
+          Object.entries(metadataChanges).forEach(([key, value]) => {
+            site.metadata[key] = value;
+            console.log(`Updated site metadata: ${key} = ${value}`);
+
+            if (key === "site id") {
+              site.id = value.startsWith("site-") ? value : `site-${value}`;
+            }
+          });
+
+          updatedEntity = site;
+        } else {
+          // Site belongs directly to the subject
+          const site = subject.subjectSites?.find((s) => s.id === entity.id);
+          if (!site) {
+            console.error(`Site ${entity.id} not found in subject's direct sites`);
+            return;
+          }
+
+          // Ensure metadata exists
+          if (!site.metadata) site.metadata = {};
+
+          // Apply changes
+          Object.entries(metadataChanges).forEach(([key, value]) => {
+            site.metadata[key] = value;
+            console.log(`Updated subject site metadata: ${key} = ${value}`);
+
+            if (key === "site id") {
+              site.id = value.startsWith("site-") ? value : `site-${value}`;
+            }
+          });
+
+          updatedEntity = site;
+        }
+
+        console.log("Updated site entity:", updatedEntity);
       }
 
       // If this is the currently selected entity, update our reference to it

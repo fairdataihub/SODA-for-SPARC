@@ -35,21 +35,31 @@ import EntityHierarchyRenderer from "../../shared/EntityHierarchyRenderer";
 import SelectedHierarchyEntityPreviewer from "../../shared/SelectedHierarchyEntityPreviewer";
 import {
   updateExistingEntityMetadata,
-  getEntityMetadataValue, // Now using the correct function name directly
+  getEntityMetadataValue,
   updateTemporaryMetadata,
   clearTemporaryMetadata,
   setActiveFormType,
 } from "../../../stores/slices/datasetEntityStructureSlice";
 import { setSelectedHierarchyEntity } from "../../../stores/slices/datasetContentSelectorSlice";
-import { addSubject, addSampleToSubject } from "../../../stores/slices/datasetEntityStructureSlice";
+import {
+  addSubject,
+  addSampleToSubject,
+  addSiteToSubject,
+  addSiteToSample,
+} from "../../../stores/slices/datasetEntityStructureSlice";
 import { shallow } from "zustand/shallow";
 
-// Component for entity metadata form
+/**
+ * EntityMetadataForm Component
+ *
+ * Provides a form interface for creating and editing dataset entities (subjects, samples, sites, performances).
+ * Handles form field rendering, value retrieval, ID prefix management, and entity persistence.
+ */
 const EntityMetadataForm = () => {
-  // Cache of previous values to prevent redundant updates
+  // Cache to prevent redundant updates
   const previousValueRef = useRef({});
 
-  // Subscribe to each piece of state individually for more granular control
+  // Subscribe to global store state with individual selectors for optimal re-renders
   const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
   const activeFormType = useGlobalStore((state) => state.activeFormType);
   const temporaryEntityMetadata = useGlobalStore((state) => state.temporaryEntityMetadata || {});
@@ -61,12 +71,7 @@ const EntityMetadataForm = () => {
   );
   const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
 
-  console.log(
-    "Rendering EntityMetadataForm with selectedHierarchyEntity:",
-    selectedHierarchyEntity
-  );
-
-  // Simple mapping of entity types to their prefixes
+  // Define standard prefixes for entity IDs
   const entityPrefixes = {
     subject: "sub-",
     sample: "sam-",
@@ -74,30 +79,33 @@ const EntityMetadataForm = () => {
     performance: "perf-",
   };
 
-  // Define getMetadataValue hook with improved dependencies
+  /**
+   * Retrieves formatted metadata value for display in the form
+   * Handles special cases like ID prefixes (removing prefixes for edit fields)
+   *
+   * @param {string} key - Metadata field key to retrieve
+   * @returns {string} Formatted value for display
+   */
   const getMetadataValue = useCallback(
     (key) => {
       let value = "";
 
+      // Source value from appropriate location based on context
       if (selectedHierarchyEntity) {
-        // Existing entity - get from the entity
+        // Get from existing entity
         value = getEntityMetadataValue(selectedHierarchyEntity, key);
-        console.log(`Getting metadata for key "${key}" from existing entity:`, value);
       } else if (activeFormType) {
-        // New entity - get from temporary metadata
+        // Get from temporary storage for new entities
         value = getEntityMetadataValue(null, key, activeFormType);
-        console.log(`Getting metadata for key "${key}" from temporary entity:`, value);
       }
 
-      // Strip prefixes from ID fields when displaying in the form
+      // Special handling: Strip prefixes from ID fields for display
       if (selectedHierarchyEntity && value && key.endsWith(" id")) {
         const entityType = selectedHierarchyEntity.type;
         const prefix = entityPrefixes[entityType];
 
         if (prefix && value.startsWith(prefix)) {
-          const strippedValue = value.substring(prefix.length);
-          console.log(`Stripping prefix "${prefix}" from ${value} -> ${strippedValue}`);
-          return strippedValue;
+          return value.substring(prefix.length);
         }
       }
 
@@ -106,73 +114,51 @@ const EntityMetadataForm = () => {
     [selectedHierarchyEntity, activeFormType]
   );
 
-  // Super simple change handler - for all fields
+  /**
+   * Processes field value changes and updates the appropriate state
+   * Handles ID prefix formatting and prevents redundant updates
+   *
+   * @param {string} field - The field name being changed
+   * @param {string} value - The new field value
+   */
   const handleChange = (field, value) => {
-    console.log(`------------------------------------`);
-    console.log(`handleChange called for field: "${field}", value: "${value}"`);
-    console.log(
-      `selectedHierarchyEntity before update:`,
-      JSON.stringify(selectedHierarchyEntity?.metadata)
-    );
-
-    // Get the entity type we're working with
     const entityType = selectedHierarchyEntity?.type || activeFormType;
-    console.log(`Entity type: ${entityType}`);
-
-    // Special handling for ID fields to ensure proper prefix
     let finalValue = value;
 
+    // Apply special handling for ID fields
     if (field.endsWith(" id")) {
       const prefix = entityPrefixes[entityType];
 
-      // Add prefix if not already present
+      // Ensure correct prefix format
       if (prefix && !value.startsWith(prefix)) {
         finalValue = `${prefix}${value}`;
-        console.log(`Adding prefix "${prefix}" -> "${finalValue}"`);
-      } else {
-        console.log(`Value already has prefix or no prefix needed: "${finalValue}"`);
       }
 
-      // For existing entities, check if this is actually a change
+      // Prevent redundant updates by checking against previous values
       if (selectedHierarchyEntity) {
-        // Create a unique key for this specific field/entity
         const cacheKey = `${selectedHierarchyEntity.id}-${field}`;
 
-        // If we already processed this exact value, skip the update
+        // Skip if this exact update was already processed
         if (previousValueRef.current[cacheKey] === finalValue) {
-          console.log(
-            `Skipping redundant update! Previous: "${previousValueRef.current[cacheKey]}", Current: "${finalValue}"`
-          );
           return;
         }
 
-        // Cache the new value for future comparisons
+        // Cache this value for future comparison
         previousValueRef.current[cacheKey] = finalValue;
-        console.log(`Caching value "${finalValue}" for key "${cacheKey}"`);
       }
     }
 
-    // Actually update the metadata based on if we're editing or creating
+    // Update the appropriate state based on context
     if (selectedHierarchyEntity) {
-      console.log(`Updating existing ${entityType} with ID ${selectedHierarchyEntity.id}`);
-      console.log(`Field: "${field}", Value: "${finalValue}"`);
+      // Update existing entity
       updateExistingEntityMetadata(selectedHierarchyEntity, { [field]: finalValue });
-
-      // Add a small delay and check the entity state again to verify update
-      setTimeout(() => {
-        const currentState = useGlobalStore.getState();
-        const updatedEntity = currentState.selectedHierarchyEntity;
-        console.log(`Entity metadata after update:`, JSON.stringify(updatedEntity?.metadata));
-      }, 100);
     } else {
-      console.log(`Updating temporary ${activeFormType} metadata`);
-      console.log(`Field: "${field}", Value: "${finalValue}"`);
+      // Update temporary storage for new entity
       updateTemporaryMetadata(activeFormType, { [field]: finalValue });
     }
-    console.log(`------------------------------------`);
   };
 
-  // Now it's safe to return early for the empty state after all hooks are defined
+  // Show a message when no entity is selected or being created
   if (!selectedHierarchyEntity && !activeFormType) {
     return (
       <Box p="xl">
@@ -183,31 +169,34 @@ const EntityMetadataForm = () => {
     );
   }
 
-  // Cancel handler - reset states and return to entity selection view
+  /**
+   * Cancels current editing/creation and returns to entity selection view
+   * Clears temporary data when creating new entities
+   */
   const handleCancel = () => {
     if (selectedHierarchyEntity) {
-      setSelectedHierarchyEntity(null); // Clear selection to return to entity list
+      setSelectedHierarchyEntity(null);
     } else if (activeFormType) {
-      clearTemporaryMetadata(activeFormType); // Clear temporary metadata
-      setActiveFormType(null); // Clear the active form type
+      clearTemporaryMetadata(activeFormType);
+      setActiveFormType(null);
     }
   };
 
-  // Save handler - process the form data to add/update an entity
+  /**
+   * Handles saving entity data
+   * Creates new entities or completes editing of existing ones
+   */
   const handleSave = () => {
     if (selectedHierarchyEntity) {
-      if (activeFormType === "subject") {
-        // Make sure the subject ID is not changed
-        const newSubjectId = getMetadataValue("subject id");
-        console.log("newSubjectId:", newSubjectId);
-      }
+      // Complete editing existing entity
       setSelectedHierarchyEntity(null);
     } else {
-      // For new entities, create the entity with the temporary metadata
+      // Create appropriate entity type from temporary data
       if (activeFormType === "subject") {
+        // Create subject entity
         const tempMetadata = useGlobalStore.getState().temporaryEntityMetadata?.subject || {};
-        console.log("Creating new subject with temporary metadata:", tempMetadata);
 
+        // Validate required fields
         if (!tempMetadata["subject id"]) {
           window.notyf.open({
             duration: "4000",
@@ -216,28 +205,66 @@ const EntityMetadataForm = () => {
           });
           return;
         }
+
         try {
-          // Pass the full metadata object to addSubject
           addSubject(tempMetadata["subject id"], tempMetadata);
         } catch (error) {
           window.notyf.open({ duration: "4000", type: "error", message: error.message });
           return;
         }
+
         clearTemporaryMetadata("subject");
       } else if (activeFormType === "sample") {
+        // Create sample entity
         const tempMetadata = useGlobalStore.getState().temporaryEntityMetadata?.sample || {};
-        console.log("Adding new sample with metadata:", tempMetadata);
         addSampleToSubject(entityBeingAddedParentSubject, tempMetadata["sample id"], tempMetadata);
         clearTemporaryMetadata("sample");
+      } else if (activeFormType === "site") {
+        // Create site entity
+        const tempMetadata = useGlobalStore.getState().temporaryEntityMetadata?.site || {};
+
+        // Validate required fields
+        if (!tempMetadata["site id"]) {
+          window.notyf.open({
+            duration: "4000",
+            type: "error",
+            message: "You must assign this site an ID.",
+          });
+          return;
+        }
+
+        try {
+          // Create site on either subject or sample based on context
+          if (entityBeingAddedParentSample) {
+            // Site belongs to sample
+            addSiteToSample(
+              entityBeingAddedParentSubject,
+              entityBeingAddedParentSample,
+              tempMetadata["site id"],
+              tempMetadata
+            );
+          } else if (entityBeingAddedParentSubject) {
+            // Site belongs directly to subject
+            addSiteToSubject(entityBeingAddedParentSubject, tempMetadata["site id"], tempMetadata);
+          }
+        } catch (error) {
+          window.notyf.open({ duration: "4000", type: "error", message: error.message });
+          return;
+        }
+
+        clearTemporaryMetadata("site");
       }
-      // Reset activeFormType to return to entity selection view
+
+      // Return to entity selection view
       setActiveFormType(null);
     }
   };
 
-  // Get the appropriate icon - use activeFormType instead of selectedHierarchyEntity.type
+  /**
+   * Returns the appropriate icon component for the current entity type
+   * @returns {JSX.Element} Icon component for entity type
+   */
   const getEntityIcon = () => {
-    // Determine which type to use - either from selected entity or active form type
     const entityType = selectedHierarchyEntity?.type || activeFormType;
 
     switch (entityType) {
@@ -254,9 +281,13 @@ const EntityMetadataForm = () => {
     }
   };
 
-  // Render the appropriate form fields based on entity type
+  /**
+   * Renders form fields specific to the current entity type
+   * Builds the appropriate input controls based on entity schema
+   *
+   * @returns {JSX.Element} Form fields for the current entity
+   */
   const renderEntitySpecificFields = () => {
-    // Use activeFormType if selectedHierarchyEntity is null
     const entityType = selectedHierarchyEntity?.type || activeFormType;
 
     switch (entityType) {
@@ -427,20 +458,45 @@ const EntityMetadataForm = () => {
       case "site":
         return (
           <Stack spacing="md">
-            {entityBeingAddedParentSubject && (
-              <TextInput
-                label="Subject this site belongs to"
-                disabled
-                value={entityBeingAddedParentSubject}
-              />
+            {/* Display parent information based on what's available */}
+            {selectedHierarchyEntity ? (
+              // When editing an existing site
+              <>
+                {selectedHierarchyEntity.parentSubject && (
+                  <TextInput
+                    label="Subject this site belongs to"
+                    disabled
+                    value={selectedHierarchyEntity.parentSubject}
+                  />
+                )}
+                {selectedHierarchyEntity.parentSample && (
+                  <TextInput
+                    label="Sample this site belongs to"
+                    disabled
+                    value={selectedHierarchyEntity.parentSample}
+                  />
+                )}
+              </>
+            ) : (
+              // When creating a new site
+              <>
+                {entityBeingAddedParentSubject && (
+                  <TextInput
+                    label="Subject this site belongs to"
+                    disabled
+                    value={entityBeingAddedParentSubject}
+                  />
+                )}
+                {entityBeingAddedParentSample && (
+                  <TextInput
+                    label="Sample this site belongs to"
+                    disabled
+                    value={entityBeingAddedParentSample}
+                  />
+                )}
+              </>
             )}
-            {entityBeingAddedParentSample && (
-              <TextInput
-                label="Sample this site belongs to"
-                disabled
-                value={entityBeingAddedParentSample}
-              />
-            )}
+
             <TextInput
               label="Site Identifier"
               description="The site identifier (prefix 'site-' will be added automatically)"
@@ -511,10 +567,11 @@ const EntityMetadataForm = () => {
     }
   };
 
-  // Update rendering to ensure we always show current values
+  // Main component render
   return (
     <Paper shadow="sm" radius="md" p="md" withBorder mb="md">
       <Stack spacing="lg">
+        {/* Header section with entity type and title */}
         <Group position="apart">
           <Group>
             {getEntityIcon()}
@@ -528,8 +585,10 @@ const EntityMetadataForm = () => {
 
         <Divider />
 
+        {/* Dynamic form fields based on entity type */}
         {renderEntitySpecificFields()}
 
+        {/* Action buttons */}
         <Group position="right" mt="md">
           <Button
             variant="outline"
@@ -549,6 +608,12 @@ const EntityMetadataForm = () => {
   );
 };
 
+/**
+ * DatasetEntityMetadata Page Component
+ *
+ * Main page for dataset entity metadata management.
+ * Provides entity selection and metadata editing interface.
+ */
 const DatasetEntityMetadata = () => {
   return (
     <GuidedModePage pageHeader="Dataset entity metadata">
@@ -563,6 +628,7 @@ const DatasetEntityMetadata = () => {
 
       <GuidedModeSection>
         <Grid gutter="lg">
+          {/* Entity selection panel */}
           <Grid.Col span={4} style={{ position: "sticky", top: "20px" }}>
             <Paper shadow="sm" radius="md" p="sm" withBorder mb="md">
               <Text size="lg" fw={500} mb="md">
@@ -575,6 +641,7 @@ const DatasetEntityMetadata = () => {
             </Paper>
           </Grid.Col>
 
+          {/* Metadata editing form */}
           <Grid.Col span={8}>
             <EntityMetadataForm />
           </Grid.Col>

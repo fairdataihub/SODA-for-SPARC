@@ -313,12 +313,6 @@ export const openPage = async (targetPageID) => {
         if (pageEntityType === "categorized-data") {
           const bucketTypes = ["Code", "Experimental data", "Other"];
 
-          for (const bucketType of Object.keys(savedDatasetEntityObj?.["categorized-data"] || {})) {
-            if (!bucketTypes.includes(bucketType)) {
-              removeEntityFromEntityList("categorized-data", bucketType);
-            }
-          }
-
           for (const bucketType of bucketTypes) {
             addEntityToEntityList("categorized-data", bucketType);
           }
