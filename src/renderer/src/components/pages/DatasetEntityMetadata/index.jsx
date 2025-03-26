@@ -32,7 +32,6 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import useGlobalStore from "../../../stores/globalStore";
 import EntityHierarchyRenderer from "../../shared/EntityHierarchyRenderer";
-import SelectedHierarchyEntityPreviewer from "../../shared/SelectedHierarchyEntityPreviewer";
 import {
   updateExistingEntityMetadata,
   getEntityMetadataValue,
@@ -631,9 +630,6 @@ const DatasetEntityMetadata = () => {
           {/* Entity selection panel */}
           <Grid.Col span={4} style={{ position: "sticky", top: "20px" }}>
             <Paper shadow="sm" radius="md" p="sm" withBorder mb="md">
-              <Text size="lg" fw={500} mb="md">
-                Select an Entity
-              </Text>
               <EntityHierarchyRenderer
                 allowEntityStructureEditing={true}
                 allowEntitySelection={true}

@@ -3,13 +3,11 @@ import { Box, Text, Paper, Stack } from "@mantine/core";
 
 const SelectedHierarchyEntityPreviewer = () => {
   const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
+  console.log("selectedHierarchyEntity", selectedHierarchyEntity);
 
   if (!selectedHierarchyEntity) {
-    return (
-      <Paper p="md" withBorder>
-        <Text c="dimmed">No entity selected</Text>
-      </Paper>
-    );
+    console.log("No selectedHierarchyEntity found");
+    return null;
   }
 
   const entityType = selectedHierarchyEntity.type; // Either "subject", "sample", "site", or "performance"
@@ -46,7 +44,7 @@ const SelectedHierarchyEntityPreviewer = () => {
   const uppercaseFirstLetter = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
   return (
-    <Box my="xs">
+    <Box>
       <Paper p="md" withBorder>
         {hasRelevantFields ? (
           <Stack gap={3}>

@@ -6,7 +6,6 @@ import { Text, Grid, Stack, Group, Button, Paper, Progress, Box, Tooltip } from 
 import useGlobalStore from "../../../stores/globalStore";
 import DatasetTreeViewRenderer from "../../shared/DatasetTreeViewRenderer";
 import EntityHierarchyRenderer from "../../shared/EntityHierarchyRenderer";
-import SelectedHierarchyEntityPreviewer from "../../shared/SelectedHierarchyEntityPreviewer";
 
 import {
   setActiveEntity,
@@ -74,9 +73,10 @@ const handleFolderClick = (
 
 const getInstructionalTextByEntityType = (entityType) => {
   const instructionalText = {
-    subject: "Select all folders and files that belong to this subject.",
-    sample: "Select all folders and files that belong to this sample.",
-    collection: "Select all folders and files that belong to this collection.",
+    subject: "Select all files that belong to the subject with the following attributes:",
+    sample: "Select all files that belong to the sample with the following attributes:",
+    site: "Select all files that belong to the site with the following attributes:",
+    collection: "Select and files that belong to the collection with the following attributes:",
     default: "Select the files that should be associated with this entity.",
   };
 
@@ -86,9 +86,7 @@ const getInstructionalTextByEntityType = (entityType) => {
 const DatasetEntityFileMapper = () => {
   const entityType = "entity-to-file-mapping";
   const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
-  console.log("selectedHierarchyEntity", selectedHierarchyEntity);
   const selectedEntityId = selectedHierarchyEntity ? selectedHierarchyEntity.id : null;
-  console.log("selectedEntityId", selectedEntityId);
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
 
   return (
@@ -107,14 +105,9 @@ const DatasetEntityFileMapper = () => {
         <Grid gutter="lg">
           <Grid.Col span={4} style={{ position: "sticky", top: "20px" }}>
             <Paper shadow="sm" radius="md" p="sm" withBorder mb="md">
-              {selectedHierarchyEntity ? (
-                <SelectedHierarchyEntityPreviewer />
-              ) : (
-                <Text size="lg" fw={500} mb="md">
-                  Select an Entity
-                </Text>
-              )}
-
+              <Text size="lg" weight={500}>
+                Select an entity
+              </Text>
               <EntityHierarchyRenderer
                 allowEntityStructureEditing={false}
                 allowEntitySelection={true}
