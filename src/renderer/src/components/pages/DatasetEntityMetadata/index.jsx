@@ -296,8 +296,8 @@ const EntityMetadataForm = () => {
           <Stack spacing="md">
             <TextInput
               label="Subject Identifier"
-              description="The subject identifier (prefix 'sub-' will be added automatically)"
-              placeholder="Enter subject ID without 'sub-'"
+              description="Enter a unique identifier for this subject."
+              placeholder="Enter subject ID"
               value={getMetadataValue("subject id")}
               onChange={(e) => handleChange("subject id", e.target.value)}
             />
@@ -417,8 +417,8 @@ const EntityMetadataForm = () => {
             />
             <TextInput
               label="Sample Identifier"
-              description="The sample identifier (prefix 'sam-' will be added automatically)"
-              placeholder="Enter sample ID without 'sam-'"
+              description="Enter a unique identifier for this biological sample."
+              placeholder="Enter sample ID"
               value={getMetadataValue("sample id")}
               onChange={(e) => handleChange("sample id", e.target.value)}
             />
@@ -499,8 +499,8 @@ const EntityMetadataForm = () => {
 
             <TextInput
               label="Site Identifier"
-              description="The site identifier (prefix 'site-' will be added automatically)"
-              placeholder="Enter site ID without 'site-'"
+              description="Enter a unique identifier for this site."
+              placeholder="Enter site ID"
               value={getMetadataValue("site id")}
               onChange={(e) => handleChange("site id", e.target.value)}
             />
@@ -530,8 +530,8 @@ const EntityMetadataForm = () => {
           <Stack spacing="md">
             <TextInput
               label="Performance Identifier"
-              description="The performance identifier (prefix 'perf-' will be added automatically)"
-              placeholder="Enter performance ID without 'perf-'"
+              description="Enter a unique identifier for this experimental session."
+              placeholder="Enter performance ID"
               value={getMetadataValue("performance id")}
               onChange={(e) => handleChange("performance id", e.target.value)}
             />
@@ -577,7 +577,7 @@ const EntityMetadataForm = () => {
             {getEntityIcon()}
             <Title order={4}>
               {selectedHierarchyEntity
-                ? `Edit ${selectedHierarchyEntity.type}: ${selectedHierarchyEntity.id}`
+                ? `Editing ${selectedHierarchyEntity.type}: ${selectedHierarchyEntity.id}`
                 : `Add new ${activeFormType}`}
             </Title>
           </Group>

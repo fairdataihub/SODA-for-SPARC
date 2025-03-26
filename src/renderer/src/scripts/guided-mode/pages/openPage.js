@@ -231,6 +231,9 @@ export const openPage = async (targetPageID) => {
     // Reset the zustand store search filter value
     externallySetSearchFilterValue("");
 
+    // clear the entity filter when navigating to a new page
+    clearEntityFilter();
+
     if (
       targetPageID === "guided-dataset-generation-tab" ||
       targetPageID === "guided-dataset-dissemination-tab"
@@ -316,22 +319,9 @@ export const openPage = async (targetPageID) => {
             addEntityToEntityList("categorized-data", bucketType);
           }
 
-          // Check if there are any existing file associations for the categorized data
-          const hasExistingAssociations =
-            savedDatasetEntityObj &&
-            savedDatasetEntityObj["categorized-data"] &&
-            Object.entries(savedDatasetEntityObj["categorized-data"]).some(
-              ([entityName, files]) => Object.keys(files || {}).length > 0
-            );
-
           // Clear any existing filter before potentially setting a new one
           // This ensures we don't have stale filters when navigating between pages
           clearEntityFilter();
-
-          console.log("Has existing associations:", hasExistingAssociations);
-
-          // Note: The component will auto-apply the filter based on the most populated entity
-          // No need to manually set it here, just ensure the data is loaded
         }
 
         console.log("savedDatasetEntityObj", savedDatasetEntityObj);
