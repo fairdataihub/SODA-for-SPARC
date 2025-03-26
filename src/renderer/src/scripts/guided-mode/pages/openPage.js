@@ -7,6 +7,8 @@ import {
 import {
   externallySetSearchFilterValue,
   setTreeViewDatasetStructure,
+  clearEntityFilter, // Add this import
+  setEntityFilter, // Add this import
 } from "../../../stores/slices/datasetTreeViewSlice.js";
 import {
   addEntityToEntityList,
@@ -301,15 +303,12 @@ export const openPage = async (targetPageID) => {
 
       if (targetPageComponentType === "data-categorization-page") {
         const pageEntityType = targetPageDataset.entityType;
-
         const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
 
         setActiveEntity(null);
-
         setDatasetEntityObj(savedDatasetEntityObj);
 
         // Make any adjustments to the dataset entity object before setting it in the zustand store
-
         if (pageEntityType === "categorized-data") {
           const bucketTypes = ["Code", "Experimental data", "Other"];
 
@@ -317,34 +316,64 @@ export const openPage = async (targetPageID) => {
             addEntityToEntityList("categorized-data", bucketType);
           }
 
-          console.log("datasetEntityObj", useGlobalStore.getState().datasetEntityObj);
-        }
+          // Check if there are any existing file associations for the categorized data
+          const hasExistingAssociations =
+            savedDatasetEntityObj &&
+            savedDatasetEntityObj["categorized-data"] &&
+            Object.entries(savedDatasetEntityObj["categorized-data"]).some(
+              ([entityName, files]) => Object.keys(files || {}).length > 0
+            );
 
-        if (pageEntityType === "subjects") {
-          console.log("Wip");
+          // Clear any existing filter before potentially setting a new one
+          // This ensures we don't have stale filters when navigating between pages
+          clearEntityFilter();
+
+          console.log("Has existing associations:", hasExistingAssociations);
+
+          // Note: The component will auto-apply the filter based on the most populated entity
+          // No need to manually set it here, just ensure the data is loaded
         }
 
         console.log("savedDatasetEntityObj", savedDatasetEntityObj);
-
         console.log("pageEntityType", pageEntityType);
-
-        console.log(
-          "savedDatasetEntityObj when opening data-categorization-page",
-
-          savedDatasetEntityObj
-        );
 
         setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["unstructured-data"]);
       }
+
       if (targetPageComponentType === "entity-file-mapping-page") {
         /* ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** */
-
         setSelectedHierarchyEntity(null);
 
         const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
         const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
+        const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
+
         console.log("Selected entities", selectedEntities);
         console.log("Dataset entity array", datasetEntityArray);
+
+        // Make sure the datasetEntityObj is set before applying filters
+        setDatasetEntityObj(savedDatasetEntityObj);
+
+        // First clear any existing filter
+        clearEntityFilter();
+
+        // Check if there are files in the Experimental data bucket
+        const hasExperimentalData =
+          savedDatasetEntityObj &&
+          savedDatasetEntityObj["categorized-data"] &&
+          savedDatasetEntityObj["categorized-data"]["Experimental data"] &&
+          Object.keys(savedDatasetEntityObj["categorized-data"]["Experimental data"] || {}).length >
+            0;
+
+        // If experimental data exists, apply the filter
+        if (hasExperimentalData) {
+          console.log("Auto-filtering for Experimental data");
+          // Apply the filter for experimental data
+          setEntityFilter("categorized-data", "Experimental data", true);
+        } else {
+          console.log("No experimental data found to filter");
+        }
+
         setSelectedEntities(selectedEntities);
         setDatasetEntityArray(datasetEntityArray);
         setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["unstructured-data"]);

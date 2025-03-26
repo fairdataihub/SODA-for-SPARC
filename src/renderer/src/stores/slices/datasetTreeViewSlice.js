@@ -3,18 +3,22 @@ import { produce } from "immer";
 
 // Initial state for managing dataset structure and filters
 const initialState = {
-  datasetStructureJSONObj: null,
-  datasetStructureJSONObjHistory: [],
-  datasetstructureJSONObjHistoryIndex: -1,
-  renderDatasetStructureJSONObj: null,
-  renderDatasetStructureJSONObjIsLoading: false,
-  datasetStructureSearchFilter: "",
-  pathToRender: [],
-  contextMenuIsOpened: false,
-  contextMenuPosition: { x: 0, y: 0 },
-  contextMenuItemName: null,
-  contextMenuItemType: null,
-  contextMenuItemData: null,
+  datasetStructureJSONObj: null, // The main dataset structure object
+  datasetStructureJSONObjHistory: [], // History of dataset structure changes
+  datasetstructureJSONObjHistoryIndex: -1, // Index for undo/redo functionality
+  renderDatasetStructureJSONObj: null, // The dataset structure currently being rendered
+  renderDatasetStructureJSONObjIsLoading: false, // Loading state for rendering
+  datasetStructureSearchFilter: "", // Current search filter for the dataset structure
+  pathToRender: [], // Path to the folder currently being rendered
+  contextMenuIsOpened: false, // Whether the context menu is open
+  contextMenuPosition: { x: 0, y: 0 }, // Position of the context menu
+  contextMenuItemName: null, // Name of the item for the context menu
+  contextMenuItemType: null, // Type of the item for the context menu
+  contextMenuItemData: null, // Data associated with the context menu item
+  externallySetSearchFilterValue: "", // Search filter value set externally
+  entityFilterActive: false, // Flag to indicate if entity filtering is active
+  entityFilterType: null, // Type of entity to filter by (e.g., "categorized-data", "subjects")
+  entityFilterName: null, // Name of entity to filter by (e.g., "Code", "sub-001")
   externallySetSearchFilterValue: "",
 };
 
@@ -32,56 +36,125 @@ const traverseStructureByPath = (structure, pathToRender) => {
   return structureRef;
 };
 
+// Sets the loading state for rendering the dataset structure
 export const setRenderDatasetStructureJSONObjIsLoading = (isLoading) => {
   useGlobalStore.setState({
     renderDatasetStructureJSONObjIsLoading: isLoading,
   });
 };
 
-const pruneFolder = (folder, searchFilter) => {
+// Prunes the folder structure based on the search filter and optional entity filter
+const pruneFolder = (folder, searchFilter, entityFilterConfig = null) => {
+  if (!folder) return null;
+
+  console.log("Pruning folder:", folder.relativePath);
+  console.log("Entity filter config:", entityFilterConfig);
+
   const lowerCaseSearchFilter = searchFilter.toLowerCase();
-  const folderMatches = folder.relativePath.toLowerCase().includes(lowerCaseSearchFilter);
+  const folderMatches =
+    folder.relativePath && folder.relativePath.toLowerCase().includes(lowerCaseSearchFilter);
 
-  // Prune files
+  // Check if any files match the search filter
   const files = folder.files || {};
-  const hasMatchingFiles =
-    Object.keys(files).filter((key) =>
-      files[key].relativePath.toLowerCase().includes(lowerCaseSearchFilter)
-    ).length > 0;
+  let matchingFiles = {};
 
-  if (folderMatches || hasMatchingFiles) {
+  // Filter files by search term AND entity filter if active
+  Object.keys(files).forEach((key) => {
+    const file = files[key];
+    const filePathMatches =
+      file.relativePath && file.relativePath.toLowerCase().includes(lowerCaseSearchFilter);
+
+    // Apply combined filtering:
+    // 1. File matches search filter (or no search filter)
+    // 2. File is associated with the selected entity (if entity filter is active)
+    const matchesSearch = !lowerCaseSearchFilter || filePathMatches;
+
+    if (entityFilterConfig && entityFilterConfig.active) {
+      const { entityType, entityName } = entityFilterConfig;
+
+      const isAssociated = checkIfFileAssociatedWithEntity(
+        file.relativePath,
+        entityType,
+        entityName
+      );
+      console.log(`File ${file.relativePath} association with ${entityName}: ${isAssociated}`);
+
+      if (matchesSearch && isAssociated) {
+        matchingFiles[key] = file;
+      }
+    } else if (matchesSearch) {
+      matchingFiles[key] = file;
+    }
+  });
+
+  const hasMatchingFiles = Object.keys(matchingFiles).length > 0;
+  console.log(
+    `Folder ${folder.relativePath} has ${Object.keys(matchingFiles).length} matching files`
+  );
+
+  // Recursively prune subfolders first to determine if any contain matches
+  const subfolders = folder.folders || {};
+  const prunedSubfolders = {};
+
+  let hasMatchingSubfolders = false;
+
+  Object.entries(subfolders).forEach(([key, subfolder]) => {
+    const prunedSubfolder = pruneFolder(subfolder, searchFilter, entityFilterConfig);
+    if (prunedSubfolder !== null) {
+      prunedSubfolders[key] = prunedSubfolder;
+      hasMatchingSubfolders = true;
+    }
+  });
+
+  // Keep this folder if:
+  // 1. It directly matches the search filter, OR
+  // 2. It has files that match both search and entity filter, OR
+  // 3. It has subfolders that contain matching content
+  if (folderMatches || hasMatchingFiles || hasMatchingSubfolders) {
     return {
       ...folder,
-      passThrough: false,
-      files,
+      passThrough: !folderMatches && !hasMatchingFiles, // Mark as pass-through if kept only for subfolders
+      folders: prunedSubfolders,
+      files: matchingFiles,
     };
   }
 
-  // Prune subfolders
-  const subfolders = folder.folders || {};
-  const prunedSubfolders = Object.fromEntries(
-    Object.entries(subfolders)
-      .map(([key, subfolder]) => [key, pruneFolder(subfolder, lowerCaseSearchFilter)])
-      .filter(([_, subfolder]) => subfolder !== null)
-  );
-
-  if (Object.keys(prunedSubfolders).length === 0) {
-    console.log("Folder did not match search filter and has no subfolders or files:", folder); // Debug log
-    console.log("Search filter:", lowerCaseSearchFilter); // Debug log
-    return null;
-  }
-
-  return {
-    ...folder,
-    passThrough: true,
-    folders: prunedSubfolders,
-    files,
-  };
+  // If we get here, this folder and all its contents don't match the criteria
+  console.log(`Pruning out folder ${folder.relativePath} - no matches`);
+  return null;
 };
 
-// Entry point to filter the folder structure based on the search filter
+// Check if a file is associated with a specific entity - enhance logging
+const checkIfFileAssociatedWithEntity = (filePath, entityType, entityName) => {
+  const globalStore = useGlobalStore.getState();
+  const datasetEntityObj = globalStore.datasetEntityObj;
+
+  // Check if the entity type and entity name exist in the datasetEntityObj
+  if (
+    datasetEntityObj &&
+    datasetEntityObj[entityType] &&
+    datasetEntityObj[entityType][entityName]
+  ) {
+    // Check if the file path is associated with this entity
+    const isAssociated = Boolean(datasetEntityObj[entityType][entityName][filePath]);
+
+    // Add debug logging to help identify issues
+    if (!isAssociated) {
+      console.log(`File ${filePath} is NOT associated with ${entityType}/${entityName}`);
+      // Log the first few entries to help debug
+      const entries = Object.keys(datasetEntityObj[entityType][entityName]).slice(0, 5);
+      console.log(`Sample entries in ${entityType}/${entityName}:`, entries);
+    }
+
+    return isAssociated;
+  }
+
+  return false;
+};
+
+// Filters the dataset structure based on the search filter
 export const filterStructure = (structure, searchFilter) => {
-  if (!searchFilter) return structure; // If no filter, return the structure as is
+  if (!searchFilter) return structure; // Return the original structure if no filter is applied
   console.log("Filter structure called on structure: ", JSON.stringify(structure, null, 2)); // Debug log
   console.log("Search filter:", searchFilter); // Debug log
   console.time("Filter Structure"); // Debug log
@@ -98,7 +171,6 @@ export const setDatasetStructureSearchFilter = (searchFilter) => {
   try {
     console.log("Setting dataset search filter:", searchFilter);
 
-    // Set the loading state for the rendered structure
     useGlobalStore.setState({
       datasetStructureSearchFilter: searchFilter || "",
       renderDatasetStructureJSONObjIsLoading: true,
@@ -135,7 +207,18 @@ export const setDatasetStructureSearchFilter = (searchFilter) => {
       // Continue with original reference if parsing fails
     }
 
-    const filteredStructure = filterStructure(structureToFilter, searchFilter);
+    // Always create entity filter config if entity filtering is active
+    const entityFilterConfig = globalStore.entityFilterActive
+      ? {
+          active: true,
+          entityType: globalStore.entityFilterType,
+          entityName: globalStore.entityFilterName,
+        }
+      : null;
+
+    // Pass entity filter config to pruneFolder function
+    // This centralizes all filtering logic in one place
+    const filteredStructure = pruneFolder(structureToFilter, searchFilter, entityFilterConfig);
 
     useGlobalStore.setState({
       renderDatasetStructureJSONObj: filteredStructure,
@@ -329,4 +412,29 @@ export const moveFolderToNewLocation = (targetRelativePath) => {
   } catch (error) {
     console.error("Error in moveFolderToNewLocation:", error);
   }
+};
+
+// Set entity filter to show only files associated with a specific entity
+export const setEntityFilter = (entityType, entityName, active = true) => {
+  console.log(`Setting entity filter: ${entityType} - ${entityName}, active: ${active}`);
+
+  // Clear the render structure first to avoid flash of unfiltered content
+  useGlobalStore.setState({
+    renderDatasetStructureJSONObjIsLoading: true,
+    entityFilterActive: active,
+    entityFilterType: entityType,
+    entityFilterName: entityName,
+  });
+
+  // Re-apply the current search filter to update the view with the entity filter
+  setTimeout(() => {
+    const currentSearchFilter = useGlobalStore.getState().datasetStructureSearchFilter;
+    setDatasetStructureSearchFilter(currentSearchFilter);
+  }, 0);
+};
+
+// Clear the entity filter
+export const clearEntityFilter = () => {
+  console.log("Clearing entity filter");
+  setEntityFilter(null, null, false);
 };

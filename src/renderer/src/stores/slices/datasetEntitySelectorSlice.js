@@ -223,9 +223,7 @@ export const checkIfRelativePathBelongsToEntity = (entityId, relativePath, entit
     relativePath,
     entityType,
   });
-  console.log("entityId", entityId);
-  console.log("relativePath", relativePath);
-  console.log("entityType", entityType);
+
   const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
 
   // Use provided entityType or default to "entity-to-file-mapping"

@@ -84,6 +84,7 @@ const getBadgeColor = (entityId) => {
 // Format entity ID for display by removing standard prefixes and managing length
 // to ensure badges remain readable while showing meaningful information
 const formatEntityId = (entityId) => {
+  console.log("formatEntityId", entityId);
   // Strip common prefixes for cleaner display
   let displayText = entityId;
   const prefixes = ["sub-", "sam-", "site-", "perf-"];
@@ -100,7 +101,7 @@ const formatEntityId = (entityId) => {
   if (displayText.length > 20) {
     displayText = displayText.substring(0, 18) + "...";
   }
-
+  console.log("displayText", displayText);
   return displayText;
 };
 
