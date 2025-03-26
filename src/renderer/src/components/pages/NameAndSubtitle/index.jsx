@@ -13,7 +13,7 @@ const NameAndSubtitlePage = () => {
   const guidedDatasetName = useGlobalStore((state) => state.guidedDatasetName);
   const guidedDatasetSubtitle = useGlobalStore((state) => state.guidedDatasetSubtitle);
   return (
-    <GuidedModePage pageHeader="Dataset name and subtitle">
+    <GuidedModePage pageHeader="Dataset name and brief description">
       <GuidedModeSection>
         <TextInput
           label="Dataset Name:"
