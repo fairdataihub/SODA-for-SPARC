@@ -77,7 +77,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
     // Handle page exit logic for pages that are controlled by React components
     if (pageBeingLeftDataSet.componentType) {
       const pageBeingLeftComponentType = pageBeingLeftDataSet.componentType;
-      if (pageBeingLeftComponentType === "entity-management-page") {
+      if (pageBeingLeftComponentType === "performance-id-management-page") {
         const entityType = pageBeingLeftDataSet.entityType;
         const entityTypeSingular = pageBeingLeftDataSet.entityTypeSingular;
         const datasetEntityObj = getDatasetEntityObj();
@@ -88,7 +88,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
             type: "notyf",
             message: `Please add at least one ${entityTypeSingular} to continue`,
           });
-          throw errorArray;
+          // throw errorArray;
         }
         // Save the dataset entity object to the progress file
         window.sodaJSONObj["dataset-entity-obj"] = datasetEntityObj;

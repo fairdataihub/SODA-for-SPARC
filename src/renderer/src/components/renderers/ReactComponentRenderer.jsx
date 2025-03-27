@@ -9,8 +9,8 @@ import GenericButton from "../buttons/Generic";
 import SingleColumnTable from "../tables/singleColumn";
 import PennsieveAgentCheckDisplay from "../backgroundServices/PennsieveAgentCheckDisplay";
 import DatasetEntityStructurePage from "../pages/DatasetEntityStructure";
-import DatasetEntityManagementPage from "../pages/DatasetEntityManagement";
 import DatasetContentSelector from "../pages/DatasetContentSelector";
+import PerformanceIdManagementPage from "../pages/PerformanceIdManagement";
 import DatasetEntityMetadata from "../pages/DatasetEntityMetadata";
 import DatasetEntityFileMapper from "../pages/DatasetEntityFileMapper";
 import EntityDataSelectorPage from "../pages/EntityDataSelector";
@@ -120,7 +120,22 @@ const componentTypeRenderers = {
       </SodaComponentWrapper>
     );
   },
+  "performance-id-management-page": (componentSlot) => {
+    const root = createRoot(componentSlot);
+    const props = {
+      pageName: componentSlot.getAttribute("data-page-name"),
+      entityType: componentSlot.getAttribute("data-entity-type"),
+      entityTypeStringSingular: componentSlot.getAttribute("data-entity-type-string-singular"),
+      entityTypeStringPlural: componentSlot.getAttribute("data-entity-type-string-plural"),
+      entityTypePrefix: componentSlot.getAttribute("data-entity-type-prefix"),
+    };
 
+    root.render(
+      <SodaComponentWrapper>
+        <PerformanceIdManagementPage {...props} />
+      </SodaComponentWrapper>
+    );
+  },
   "dataset-entity-metadata-page": (componentSlot) => {
     const root = createRoot(componentSlot);
 
@@ -170,15 +185,7 @@ const componentTypeRenderers = {
       </SodaComponentWrapper>
     );
   },
-  "dataset-entity-id-management-page": (componentSlot) => {
-    const root = createRoot(componentSlot);
-    root.render(
-      <SodaComponentWrapper>
-        <DatasetEntityManagementPage />
-      </SodaComponentWrapper>
-    );
-  },
-  "dataset-entity-management-page": (componentSlot) => {
+  "dataset-performance-id-management-page": (componentSlot) => {
     const root = createRoot(componentSlot);
     root.render(
       <SodaComponentWrapper>

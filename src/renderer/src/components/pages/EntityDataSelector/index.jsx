@@ -1,29 +1,10 @@
-import { useMemo } from "react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import EntityListContainer from "../../containers/EntityListContainer";
 import { IconSearch } from "@tabler/icons-react";
-import {
-  TextInput,
-  Textarea,
-  ActionIcon,
-  Text,
-  Grid,
-  Tabs,
-  Stack,
-  Group,
-  Button,
-  ScrollArea,
-  Paper,
-  Divider,
-  Tooltip,
-  Box,
-  Progress,
-} from "@mantine/core";
-import { IconWand } from "@tabler/icons-react";
+import { Text, Grid, Stack, Group, Paper, Tooltip, Box, Progress } from "@mantine/core";
 import useGlobalStore from "../../../stores/globalStore";
 import DatasetTreeViewRenderer from "../../shared/DatasetTreeViewRenderer";
-import InstructionalTextSection from "../../common/InstructionalTextSection";
 import { externallySetSearchFilterValue } from "../../../stores/slices/datasetTreeViewSlice";
 import {
   setActiveEntity,

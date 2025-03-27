@@ -298,7 +298,7 @@ export const openPage = async (targetPageID) => {
 
       console.log("targetPageDataset", targetPageDataset);
 
-      if (targetPageComponentType === "entity-management-page") {
+      if (targetPageComponentType === "performance-id-management-page") {
         // Set the dataset entity object to the saved dataset entity object from the JSON
         const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
         setDatasetEntityObj(savedDatasetEntityObj);
