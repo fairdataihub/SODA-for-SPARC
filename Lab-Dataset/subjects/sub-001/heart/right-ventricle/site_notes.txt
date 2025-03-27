@@ -1,0 +1,9 @@
+Site: right-ventricle
+Subject: sub-001
+Date: 2023-06-15
+Researcher: Dr. M. Cardio
+
+Site-specific Notes:
+- Right ventricular measurements focused on free wall
+- Tissue appears healthy with good perfusion
+- Contractile function normal

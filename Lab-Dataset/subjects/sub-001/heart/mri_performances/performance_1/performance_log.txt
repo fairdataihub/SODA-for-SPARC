@@ -1,0 +1,25 @@
+MRI Performance Log #1
+----------------
+Subject ID: sub-001
+Target: Heart - whole heart
+Date: 2023-06-15
+Researcher: Dr. R. Imaging
+
+Protocol: Cardiac MRI Protocol v3.1
+Performance ID: perf-mri1-001
+
+Sequence: T1-weighted
+Start Time: 9:30
+End Time: 10:45
+
+Parameters:
+- Tesla: 3T
+- TR: 1191 ms
+- TE: 39 ms
+- Slice Thickness: 2.0 mm
+- FOV: 256 x 256 mm
+
+Notes:
+- T1-weighted sequence completed successfully
+- Motion artifacts minimal
+- whole heart clearly visualized

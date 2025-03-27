@@ -1,5 +1,0 @@
-# Raw Blood data - Run 1
-Sample ID: subject_002
-Date: 3/12/2025
-Values: 47.07, 56.44, 52.93, 14.27, 57.40
-Notes: Standard collection protocol followed

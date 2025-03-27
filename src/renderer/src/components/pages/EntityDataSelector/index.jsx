@@ -246,7 +246,7 @@ const EntityDataSelectorPage = ({
       <GuidedModeSection>
         <Grid gutter="lg">
           <Grid.Col span={4} style={{ position: "sticky", top: "20px" }}>
-            <EntityListContainer title={entityTypeStringPlural}>
+            <EntityListContainer title={`Select a ${entityTypeStringSingular}`}>
               {renderEntityList(entityType, activeEntity, datasetEntityObj)}
             </EntityListContainer>
           </Grid.Col>
@@ -305,7 +305,7 @@ const EntityDataSelectorPage = ({
                 />
               </Paper>
             ) : (
-              <Box p="xl">
+              <Box p="sm">
                 <Text size="xl" c="gray">
                   Select an item from the {entityTypeStringSingular} list on the left to map files
                   to it.

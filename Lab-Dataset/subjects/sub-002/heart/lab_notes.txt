@@ -1,0 +1,11 @@
+Lab Notes - Heart Sample
+Subject: sub-002
+Date: 2023-07-10
+Collected by: J. Smith
+
+Processing Notes:
+- Sample extracted under sterile conditions
+- Stored at -80°C (Freezer #2)
+- Quality check: Passed
+
+Observations: Sample appears normal with no visible contamination

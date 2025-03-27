@@ -1,0 +1,4 @@
+Site ID: site-right-ventricle-1
+Related Subject: sub-001
+Anatomical Location: Right Ventricle
+Coordinates: X:30, Y:15, Z:10 (relative to pulmonary valve)

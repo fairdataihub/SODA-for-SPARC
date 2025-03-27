@@ -1,0 +1,7 @@
+# Raw Heart-left-ventricle data - Run 1
+Sample ID: sub-002
+Date: 3/27/2025
+Values: 58.06, 50.03, 11.54, 30.79, 26.03
+Notes: Standard collection protocol followed
+Site: left-ventricle
+Measurement focus: Wall thickness

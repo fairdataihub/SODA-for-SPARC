@@ -1,0 +1,25 @@
+MRI Performance Log #2
+----------------
+Subject ID: sub-002
+Target: Heart - whole heart
+Date: 2023-07-10
+Researcher: Dr. R. Imaging
+
+Protocol: Cardiac MRI Protocol v3.1
+Performance ID: perf-mri2-002
+
+Sequence: T2-weighted
+Start Time: 10:30
+End Time: 11:45
+
+Parameters:
+- Tesla: 3T
+- TR: 1081 ms
+- TE: 45 ms
+- Slice Thickness: 1.2 mm
+- FOV: 256 x 256 mm
+
+Notes:
+- T2-weighted sequence completed successfully
+- Motion artifacts minimal
+- whole heart clearly visualized

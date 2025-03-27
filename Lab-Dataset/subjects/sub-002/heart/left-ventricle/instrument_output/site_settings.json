@@ -1,0 +1,5 @@
+{
+  "site": "left-ventricle",
+  "gain": 4,
+  "filter": "high-pass"
+}

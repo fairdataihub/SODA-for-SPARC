@@ -1,5 +1,0 @@
-Microscopy Session: 3/12/2025
-Sample: subject_003-Tissue
-Magnification: 40x
-Staining: H&E
-Findings: Normal tissue architecture observed

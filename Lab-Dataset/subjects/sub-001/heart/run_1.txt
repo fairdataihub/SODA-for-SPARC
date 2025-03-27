@@ -1,0 +1,5 @@
+# Raw heart data - Run 1
+Sample ID: sub-001
+Date: 3/27/2025
+Values: 38.77, 23.49, 38.95, 41.31, 52.00
+Notes: Standard collection protocol followed

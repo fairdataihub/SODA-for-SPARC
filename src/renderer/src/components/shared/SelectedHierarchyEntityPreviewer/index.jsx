@@ -5,7 +5,7 @@ const SelectedHierarchyEntityPreviewer = () => {
   const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
   console.log("selectedHierarchyEntity", selectedHierarchyEntity);
   if (!selectedHierarchyEntity) {
-    return <Text>asdf</Text>;
+    return null;
   }
 
   const entityType = selectedHierarchyEntity.type; // Either "subject", "sample", "site", or "performance"

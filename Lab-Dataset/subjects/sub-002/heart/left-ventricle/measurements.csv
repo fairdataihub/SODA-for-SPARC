@@ -1,0 +1,5 @@
+Time,Position,Measurement,Value
+1,left-ventricle,Thickness,11.22 mm
+2,left-ventricle,Flow Rate,94.31 ml/min
+3,left-ventricle,Pressure,83.76 mmHg
+4,left-ventricle,Temperature,36.63 °C

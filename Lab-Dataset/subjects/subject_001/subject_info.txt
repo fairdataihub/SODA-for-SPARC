@@ -1,4 +1,0 @@
-Subject ID: subject_001
-Collection Date: 2023-01-15
-Experimenter: J. Smith
-Project: EXAMPLE-2023-A

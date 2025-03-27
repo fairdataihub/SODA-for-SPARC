@@ -1,0 +1,5 @@
+{
+  "site": "right-ventricle",
+  "gain": 2,
+  "filter": "band-pass"
+}
