@@ -15,7 +15,7 @@ const DropDownNote = ({ dropDownIcon, dropDownButtonText, dropDownNote }) => {
     <Stack gap="xs">
       <Button variant="subtle" justify="left" onClick={toggleOpen} className={classes.button}>
         {dropDownIcon && dropDownIcons[dropDownIcon]}
-        <Text td="underline" className={classes.dropDownButtonText} sx={{ mx: 6 }}>
+        <Text td="underline" className={classes.dropDownButtonText} sx={{ mx: 6 }} size="sm">
           {dropDownButtonText}
         </Text>
         {isOpen ? (
