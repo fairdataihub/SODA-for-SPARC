@@ -235,6 +235,8 @@ export const openPage = async (targetPageID) => {
     // clear the entity filter when navigating to a new page
     clearEntityFilter();
 
+    setSelectedHierarchyEntity(null);
+
     if (
       targetPageID === "guided-dataset-generation-tab" ||
       targetPageID === "guided-dataset-dissemination-tab"

@@ -7,7 +7,7 @@ on:
       - main
       - staging
       - pre-staging
-      - ut-demo
+      - sds3-demo
 
 jobs:
   deploy-on-mac:

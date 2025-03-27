@@ -29,7 +29,6 @@ import {
   NumberInput,
   Notification,
 } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
 import useGlobalStore from "../../../stores/globalStore";
 import EntityHierarchyRenderer from "../../shared/EntityHierarchyRenderer";
 import {
