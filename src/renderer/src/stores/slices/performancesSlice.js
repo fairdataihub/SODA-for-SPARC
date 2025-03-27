@@ -7,7 +7,6 @@ export const performancesSlice = (set) => ({
 
   // Form field values
   performanceId: "",
-  performanceType: "",
   protocolUrl: "",
   startDateTime: null,
   endDateTime: null,
@@ -25,7 +24,6 @@ export const setPerformanceFormVisible = (IsPerformanceFormVisible) => {
       // Reset form fields when closing the form
       if (!IsPerformanceFormVisible) {
         state.performanceId = "";
-        state.performanceType = "";
         state.protocolUrl = "";
         state.startDateTime = null;
         state.endDateTime = null;
@@ -39,15 +37,6 @@ export const setPerformanceId = (value) => {
   useGlobalStore.setState(
     produce((state) => {
       state.performanceId = value;
-    })
-  );
-};
-
-// Update performance type
-export const setPerformanceType = (value) => {
-  useGlobalStore.setState(
-    produce((state) => {
-      state.performanceType = value;
     })
   );
 };
@@ -79,12 +68,27 @@ export const setEndDateTime = (value) => {
   );
 };
 
+export const deletePerformance = (performanceId) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      state.performanceList = state.performanceList.filter(
+        (performance) => performance.performanceId !== performanceId
+      );
+    })
+  );
+};
+
 // Add performance to the dataset
 export const addPerformance = () => {
   const state = useGlobalStore.getState();
 
   // Get values from state
-  const performanceId = state.performanceId;
+  let performanceId = state.performanceId;
+  // perpend "perf-" to the performance if it doesn't start with "perf-"
+  if (!performanceId.startsWith("perf-")) {
+    performanceId = `perf-${performanceId}`;
+  }
+
   const protocolUrl = state.protocolUrl;
   const startDateTime = state.startDateTime;
   const endDateTime = state.endDateTime;
@@ -110,4 +114,12 @@ export const addPerformance = () => {
 
   // Close form after adding
   setPerformanceFormVisible(false);
+};
+
+export const setPerformanceList = (performanceList) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      state.performanceList = performanceList;
+    })
+  );
 };

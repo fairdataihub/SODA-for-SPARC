@@ -10,6 +10,7 @@ import { datasetTreeViewSlice } from "./slices/datasetTreeViewSlice";
 import { datasetContentSelectorSlice } from "./slices/datasetContentSelectorSlice";
 import { datasetEntityStructureSlice } from "./slices/datasetEntityStructureSlice";
 import { performancesSlice } from "./slices/performancesSlice";
+import { modalitiesSlice } from "./slices/modalitiesSlice";
 
 const useGlobalStore = create(
   immer((set, ...a) => ({
@@ -23,6 +24,7 @@ const useGlobalStore = create(
     ...datasetContentSelectorSlice(set, ...a),
     ...datasetEntityStructureSlice(set, ...a),
     ...performancesSlice(set, ...a),
+    ...modalitiesSlice(set, ...a),
   }))
 );
 

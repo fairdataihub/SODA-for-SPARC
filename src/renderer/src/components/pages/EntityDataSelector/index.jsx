@@ -157,20 +157,12 @@ const getInstructionalTextByEntityType = (entityType) => {
   return instructionalText[entityType] || `Select the files that contain data for ${entityType}`;
 };
 
-const getProgressSectionColorByEntityType = (entityType) => {
-  const colorMap = {
-    Code: "red",
-    "Experimental data": "cyan",
-    Other: "gray",
-  };
-  return colorMap[entityType] || "cyan";
-};
-
 const EntityDataSelectorPage = ({
   pageName,
   entityType,
   entityTypeStringSingular,
   entityTypeStringPlural,
+  showProgress = false,
 }) => {
   const activeEntity = useGlobalStore((state) => state.activeEntity);
   console.log("activeEntity", activeEntity);
@@ -241,7 +233,7 @@ const EntityDataSelectorPage = ({
           </Stack>
         )}
       </GuidedModeSection>
-      {datasetEntityObj?.[entityType] && (
+      {datasetEntityObj?.[entityType] && showProgress && (
         <GuidedModeSection>
           <Paper p="xs" shadow="sm">
             <Text size="sm" c="gray">

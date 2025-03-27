@@ -11,6 +11,7 @@ import PennsieveAgentCheckDisplay from "../backgroundServices/PennsieveAgentChec
 import DatasetEntityStructurePage from "../pages/DatasetEntityStructure";
 import DatasetContentSelector from "../pages/DatasetContentSelector";
 import PerformanceIdManagementPage from "../pages/PerformanceIdManagement";
+import ModalitySelectionPage from "../pages/ModalitySelection";
 import DatasetEntityMetadata from "../pages/DatasetEntityMetadata";
 import DatasetEntityFileMapper from "../pages/DatasetEntityFileMapper";
 import EntityDataSelectorPage from "../pages/EntityDataSelector";
@@ -161,11 +162,21 @@ const componentTypeRenderers = {
       entityType: componentSlot.getAttribute("data-entity-type"),
       entityTypeStringSingular: componentSlot.getAttribute("data-entity-type-string-singular"),
       entityTypeStringPlural: componentSlot.getAttribute("data-entity-type-string-plural"),
+      showProgress: componentSlot.getAttribute("data-show-progress") || false,
     };
 
     root.render(
       <SodaComponentWrapper>
         <EntityDataSelectorPage {...props} />
+      </SodaComponentWrapper>
+    );
+  },
+  "modality-selection-page": (componentSlot) => {
+    const root = createRoot(componentSlot);
+
+    root.render(
+      <SodaComponentWrapper>
+        <ModalitySelectionPage />
       </SodaComponentWrapper>
     );
   },

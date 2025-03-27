@@ -29,6 +29,8 @@ import { getNonSkippedGuidedModePages } from "./navigationUtils/pageSkipping.js"
 import { startOrStopAnimationsInContainer } from "../lotties/lottie.js";
 import { renderSideBar } from "./sidebar.js";
 import useGlobalStore from "../../../stores/globalStore.js";
+import { setPerformanceList } from "../../../stores/slices/performancesSlice.js";
+import { setSelectedModalities } from "../../../stores/slices/modalitiesSlice.js";
 
 // Function that handles the visibility of the back button
 const handleBackButtonVisibility = (targetPageID) => {
@@ -301,10 +303,12 @@ export const openPage = async (targetPageID) => {
       console.log("targetPageDataset", targetPageDataset);
 
       if (targetPageComponentType === "performance-id-management-page") {
-        // Set the dataset entity object to the saved dataset entity object from the JSON
-        const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
-        setDatasetEntityObj(savedDatasetEntityObj);
-        setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["unstructured-data"]);
+        setPerformanceList(window.sodaJSONObj["performance-list"] || []);
+      }
+
+      if (targetPageComponentType === "modality-selection-page") {
+        const modalities = window.sodaJSONObj["selected-modalities"] || [];
+        setSelectedModalities(modalities);
       }
 
       if (targetPageComponentType === "data-categorization-page") {
@@ -325,6 +329,21 @@ export const openPage = async (targetPageID) => {
           // Clear any existing filter before potentially setting a new one
           // This ensures we don't have stale filters when navigating between pages
           clearEntityFilter();
+        }
+
+        if (pageEntityType === "performances") {
+          const performanceList = window.sodaJSONObj["performance-list"] || [];
+          for (const performance of performanceList) {
+            addEntityToEntityList("performances", performance.performanceId);
+          }
+          setEntityFilter("categorized-data", "Experimental data", true);
+        }
+
+        if (pageEntityType === "modalities") {
+          const modalities = window.sodaJSONObj["selected-modalities"] || [];
+          for (const modality of modalities) {
+            addEntityToEntityList("modalities", modality);
+          }
         }
 
         console.log("savedDatasetEntityObj", savedDatasetEntityObj);

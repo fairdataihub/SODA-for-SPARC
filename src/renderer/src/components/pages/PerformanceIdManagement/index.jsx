@@ -1,7 +1,14 @@
 import { useState } from "react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
-import { IconPlus, IconTrash, IconClipboard, IconDeviceFloppy, IconX } from "@tabler/icons-react";
+import {
+  IconPlus,
+  IconTrash,
+  IconClipboard,
+  IconDeviceFloppy,
+  IconX,
+  IconEdit,
+} from "@tabler/icons-react";
 import {
   TextInput,
   Text,
@@ -23,11 +30,11 @@ import { DateTimePicker } from "@mantine/dates";
 import {
   setPerformanceFormVisible,
   setPerformanceId,
-  setPerformanceType,
   setProtocolUrl,
   setStartDateTime,
   setEndDateTime,
   addPerformance,
+  deletePerformance,
 } from "../../../stores/slices/performancesSlice";
 
 // Performance metadata form component with store-based state
@@ -39,12 +46,6 @@ const PerformanceMetadataForm = () => {
   const startDateTime = useGlobalStore((state) => state.startDateTime);
   const endDateTime = useGlobalStore((state) => state.endDateTime);
 
-  // Validation for performance ID/type
-  const isPerformanceIdValid = window.evaluateStringAgainstSdsRequirements?.(
-    performanceType,
-    "string-adheres-to-identifier-conventions"
-  );
-
   return (
     <Stack spacing="md">
       <TextInput
@@ -53,23 +54,6 @@ const PerformanceMetadataForm = () => {
         placeholder="Enter performance ID (e.g., performance-1, performance-2)"
         value={performanceId}
         onChange={(event) => setPerformanceId(event.currentTarget.value)}
-        error={
-          performanceId && !isPerformanceIdValid
-            ? `Performance IDs can only contain letters, numbers, and hyphens.`
-            : null
-        }
-      />
-      <TextInput
-        label="Performance Type"
-        description="Enter the type of procedure or measurement performed (e.g., histology, imaging, electrophysiology)"
-        placeholder="Enter performance type (e.g., mri, histology)"
-        value={performanceType}
-        onChange={(event) => setPerformanceType(event.currentTarget.value)}
-        error={
-          performanceType && !isPerformanceIdValid
-            ? `Performance IDs can only contain letters, numbers, and hyphens.`
-            : null
-        }
       />
 
       <TextInput
@@ -161,10 +145,32 @@ const PerformanceIdManagement = () => {
                     p="sm"
                   >
                     {performanceList.map((performance) => (
-                      <Group gap="xs">
-                        <IconClipboard size={15} />
-                        <Text fw={600}>{performance.performanceId}</Text>
-                      </Group>
+                      <Flex
+                        align="center"
+                        justify="space-between"
+                        gap="xs"
+                        style={{
+                          cursor: "pointer",
+                        }}
+                      >
+                        <Group gap="xs">
+                          <IconClipboard size={15} />
+                          <Text fw={600}>{performance.performanceId}</Text>
+                        </Group>
+                        <Group gap="3px">
+                          <IconEdit
+                            color="blue"
+                            size={18}
+                            style={{ marginLeft: "4px", opacity: 0.6, cursor: "pointer" }}
+                          />
+                          <IconTrash
+                            color="red"
+                            size={16}
+                            style={{ opacity: 0.6, cursor: "pointer" }}
+                            onClick={() => deletePerformance(performance.performanceId)}
+                          />
+                        </Group>
+                      </Flex>
                     ))}
                   </Box>
                 ) : (

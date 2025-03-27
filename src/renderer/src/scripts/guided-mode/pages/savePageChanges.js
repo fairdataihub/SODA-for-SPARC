@@ -78,20 +78,29 @@ export const savePageChanges = async (pageBeingLeftID) => {
     if (pageBeingLeftDataSet.componentType) {
       const pageBeingLeftComponentType = pageBeingLeftDataSet.componentType;
       if (pageBeingLeftComponentType === "performance-id-management-page") {
-        const entityType = pageBeingLeftDataSet.entityType;
-        const entityTypeSingular = pageBeingLeftDataSet.entityTypeSingular;
-        const datasetEntityObj = getDatasetEntityObj();
-        console.log("datasetEntityObj when leaving" + pageBeingLeftID, datasetEntityObj);
-        console.log("pageBeingLeftDataSet.entityType", entityType);
-        if (!datasetEntityObj?.[entityType]) {
+        const performanceList = useGlobalStore.getState()["performanceList"];
+        if (performanceList.length === 0) {
           errorArray.push({
             type: "notyf",
-            message: `Please add at least one ${entityTypeSingular} to continue`,
+            message: "Please add at least one performance",
           });
-          // throw errorArray;
+          throw errorArray;
         }
-        // Save the dataset entity object to the progress file
-        window.sodaJSONObj["dataset-entity-obj"] = datasetEntityObj;
+        console.log("performanceList", performanceList);
+        window.sodaJSONObj["performance-list"] = performanceList;
+      }
+
+      if (pageBeingLeftComponentType === "modality-selection-page") {
+        const selectedModalities = useGlobalStore.getState()["selectedModalities"];
+        console.log("selectedModalities", selectedModalities);
+        if (selectedModalities.length === 0) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please select at least one modality",
+          });
+          throw errorArray;
+        }
+        window.sodaJSONObj["selected-modalities"] = selectedModalities;
       }
 
       if (pageBeingLeftComponentType === "data-categorization-page") {
