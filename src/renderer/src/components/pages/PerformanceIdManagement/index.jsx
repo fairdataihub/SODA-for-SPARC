@@ -20,17 +20,26 @@ import {
 import useGlobalStore from "../../../stores/globalStore";
 import { DateTimePicker } from "@mantine/dates";
 
-import { setPerformanceFormVisible } from "../../../stores/slices/performancesSlice";
+import {
+  setPerformanceFormVisible,
+  setPerformanceId,
+  setPerformanceType,
+  setProtocolUrl,
+  setStartDateTime,
+  setEndDateTime,
+  addPerformance,
+} from "../../../stores/slices/performancesSlice";
 
-// Performance metadata form component
+// Performance metadata form component with store-based state
 const PerformanceMetadataForm = () => {
-  const [performanceId, setPerformanceId] = useState("");
-  const [performanceType, setPerformanceType] = useState("");
-  const [protocolUrl, setProtocolUrl] = useState("");
-  const [startDateTime, setStartDateTime] = useState(null);
-  const [endDateTime, setEndDateTime] = useState(null);
+  // Get form values from the global store
+  const performanceId = useGlobalStore((state) => state.performanceId);
+  const performanceType = useGlobalStore((state) => state.performanceType);
+  const protocolUrl = useGlobalStore((state) => state.protocolUrl);
+  const startDateTime = useGlobalStore((state) => state.startDateTime);
+  const endDateTime = useGlobalStore((state) => state.endDateTime);
 
-  // Validation for performance ID
+  // Validation for performance ID/type
   const isPerformanceIdValid = window.evaluateStringAgainstSdsRequirements?.(
     performanceType,
     "string-adheres-to-identifier-conventions"
@@ -45,7 +54,7 @@ const PerformanceMetadataForm = () => {
         value={performanceId}
         onChange={(event) => setPerformanceId(event.currentTarget.value)}
         error={
-          performanceType && !isPerformanceIdValid
+          performanceId && !isPerformanceIdValid
             ? `Performance IDs can only contain letters, numbers, and hyphens.`
             : null
         }
@@ -95,22 +104,19 @@ const PerformanceMetadataForm = () => {
 
 const PerformanceIdManagement = () => {
   const IsPerformanceFormVisible = useGlobalStore((state) => state.IsPerformanceFormVisible);
+  const performanceId = useGlobalStore((state) => state.performanceId);
+  const performanceList = useGlobalStore((state) => state.performanceList);
 
-  // Handlers for form actions
-  const handleCancel = () => {
-    setPerformanceFormVisible(false);
-  };
-
-  const handleAddPerformance = () => {
-    // Implement your add performance logic here
-    console.log("Adding performance");
-    // For now just close the form
-    setPerformanceFormVisible(false);
-  };
+  // Validation for add button
+  const isPerformanceIdValid = window.evaluateStringAgainstSdsRequirements?.(
+    performanceId,
+    "string-adheres-to-identifier-conventions"
+  );
 
   return (
     <GuidedModePage pageHeader="Description of Performances">
       <GuidedModeSection>
+        {/* Fix the malformed Text component */}
         <Text mb="md">
           Provide information for each performance of experimental protocol in the interface below.
         </Text>
@@ -136,9 +142,7 @@ const PerformanceIdManagement = () => {
                     cursor: "pointer",
                   }}
                   p="sm"
-                  onClick={() => {
-                    setPerformanceFormVisible(true);
-                  }}
+                  onClick={() => setPerformanceFormVisible(true)}
                 >
                   <Flex align="center" gap="xs">
                     <IconPlus size={15} color="#1c7ed6" />
@@ -147,18 +151,36 @@ const PerformanceIdManagement = () => {
                     </Text>
                   </Flex>
                 </Box>
-                <Box
-                  style={{
-                    border: "1px solid #ddd",
-                    borderRadius: "8px",
-                    backgroundColor: "#f9f9f9",
-                  }}
-                  p="md"
-                >
-                  <Text c="dimmed" ta="center">
-                    No performances to display
-                  </Text>
-                </Box>
+                {performanceList.length > 0 ? (
+                  <Box
+                    style={{
+                      border: "1px solid #ddd",
+                      borderRadius: "8px",
+                      backgroundColor: "#f9f9f9",
+                    }}
+                    p="sm"
+                  >
+                    {performanceList.map((performance) => (
+                      <Group gap="xs">
+                        <IconClipboard size={15} />
+                        <Text fw={600}>{performance.performanceId}</Text>
+                      </Group>
+                    ))}
+                  </Box>
+                ) : (
+                  <Box
+                    style={{
+                      border: "1px solid #ddd",
+                      borderRadius: "8px",
+                      backgroundColor: "#f9f9f9",
+                    }}
+                    p="md"
+                  >
+                    <Text c="dimmed" ta="center">
+                      No performances to display
+                    </Text>
+                  </Box>
+                )}
               </Stack>
             </Paper>
           </Grid.Col>
@@ -186,7 +208,7 @@ const PerformanceIdManagement = () => {
                     <Button
                       variant="outline"
                       color="gray"
-                      onClick={handleCancel}
+                      onClick={() => setPerformanceFormVisible(false)}
                       leftIcon={<IconX size={16} />}
                     >
                       Cancel
@@ -194,8 +216,9 @@ const PerformanceIdManagement = () => {
 
                     <Button
                       color="blue"
-                      onClick={handleAddPerformance}
+                      onClick={addPerformance}
                       leftIcon={<IconDeviceFloppy size={16} />}
+                      disabled={!performanceId || !isPerformanceIdValid}
                     >
                       Add Performance
                     </Button>
@@ -203,20 +226,12 @@ const PerformanceIdManagement = () => {
                 </Stack>
               </Paper>
             ) : (
-              <Paper shadow="sm" radius="md" p="md" withBorder mb="md">
-                <Stack gap="md" align="center" justify="center" h={400}>
-                  <IconClipboard size={48} color="#adb5bd" />
-                  <Text c="dimmed" ta="center">
-                    Select a performance from the list or add a new one
-                  </Text>
-                  <Button
-                    leftIcon={<IconPlus size={14} />}
-                    onClick={() => setPerformanceFormVisible(true)}
-                  >
-                    Add Performance
-                  </Button>
-                </Stack>
-              </Paper>
+              <Box mx="md">
+                <Text size="lg" c="gray">
+                  Select a performance from the left to edit its metadata or click "Add Performance"
+                  to add a new performance.
+                </Text>
+              </Box>
             )}
           </Grid.Col>
         </Grid>
