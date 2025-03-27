@@ -41,19 +41,27 @@ import {
 const PerformanceMetadataForm = () => {
   // Get form values from the global store
   const performanceId = useGlobalStore((state) => state.performanceId);
-  const performanceType = useGlobalStore((state) => state.performanceType);
   const protocolUrl = useGlobalStore((state) => state.protocolUrl);
   const startDateTime = useGlobalStore((state) => state.startDateTime);
   const endDateTime = useGlobalStore((state) => state.endDateTime);
+
+  // Show the user what the full ID will be
+  const fullPerformanceId = performanceId ? `perf-${performanceId}` : "";
 
   return (
     <Stack spacing="md">
       <TextInput
         label="Performance ID"
-        description="Unique identifier for the performance of the experimental protocol."
-        placeholder="Enter performance ID (e.g., performance-1, performance-2)"
+        description="Enter a unique identifier for this performance."
+        placeholder="Enter performance ID (e.g., mri01)"
         value={performanceId}
         onChange={(event) => setPerformanceId(event.currentTarget.value)}
+        leftSection={
+          <Text size="sm" c="dimmed" mx="sm">
+            perf-
+          </Text>
+        }
+        leftSectionWidth={50}
       />
 
       <TextInput
@@ -146,6 +154,7 @@ const PerformanceIdManagement = () => {
                   >
                     {performanceList.map((performance) => (
                       <Flex
+                        key={performance.performanceId}
                         align="center"
                         justify="space-between"
                         gap="xs"

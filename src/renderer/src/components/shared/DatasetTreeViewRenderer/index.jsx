@@ -578,19 +578,7 @@ const DatasetTreeViewRenderer = ({
 
   if (renderObjIsEmpty) {
     return (
-      <Paper
-        padding="md"
-        shadow="sm"
-        radius="md"
-        mih={80}
-        p="sm"
-        flex={1}
-        w="100%"
-        withBorder
-        style={{
-          boxShadow: "inset 0px 0px 8px rgba(187, 222, 251, 0.9)",
-        }}
-      >
+      <Paper padding="md" shadow="sm" radius="md" mih={80} p="sm" flex={1} w="100%" withBorder>
         {itemSelectInstructions && (
           <SodaGreenPaper>
             <Text>{itemSelectInstructions}</Text>
@@ -628,18 +616,7 @@ const DatasetTreeViewRenderer = ({
   };
 
   return (
-    <Paper
-      padding="md"
-      shadow="sm"
-      radius="md"
-      p="sm"
-      flex={1}
-      w="100%"
-      withBorder
-      style={{
-        boxShadow: "inset 0px 0px 8px rgba(187, 222, 251, 0.9)",
-      }}
-    >
+    <Paper padding="md" shadow="sm" radius="md" p="sm" flex={1} w="100%" withBorder>
       {itemSelectInstructions && (
         <Stack gap="xs">
           <Text size="lg" fw={500}>

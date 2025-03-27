@@ -123,6 +123,7 @@ const EntityMetadataForm = () => {
     const entityType = selectedHierarchyEntity?.type || activeFormType;
     let finalValue = value;
 
+    /*
     // Apply special handling for ID fields
     if (field.endsWith(" id")) {
       const prefix = entityPrefixes[entityType];
@@ -144,7 +145,7 @@ const EntityMetadataForm = () => {
         // Cache this value for future comparison
         previousValueRef.current[cacheKey] = finalValue;
       }
-    }
+    }*/
 
     // Update the appropriate state based on context
     if (selectedHierarchyEntity) {
@@ -310,6 +311,12 @@ const EntityMetadataForm = () => {
               placeholder="Enter subject ID"
               value={getMetadataValue("subject id")}
               onChange={(e) => handleChange("subject id", e.target.value)}
+              leftSection={
+                <Text size="sm" c="dimmed" mx="sm">
+                  {entityPrefixes["subject"]}
+                </Text>
+              }
+              leftSectionWidth={50}
             />
             <TextInput
               label="Subject Experimental Group"
@@ -431,6 +438,12 @@ const EntityMetadataForm = () => {
               placeholder="Enter sample ID"
               value={getMetadataValue("sample id")}
               onChange={(e) => handleChange("sample id", e.target.value)}
+              leftSection={
+                <Text size="sm" c="dimmed" mx="sm">
+                  {entityPrefixes["sample"]}
+                </Text>
+              }
+              leftSectionWidth={50}
             />
 
             <TextInput
@@ -513,6 +526,12 @@ const EntityMetadataForm = () => {
               placeholder="Enter site ID"
               value={getMetadataValue("site id")}
               onChange={(e) => handleChange("site id", e.target.value)}
+              leftSection={
+                <Text size="sm" c="dimmed" mx="sm">
+                  {entityPrefixes["site"]}
+                </Text>
+              }
+              leftSectionWidth={50}
             />
             <TextInput
               label="Site type"

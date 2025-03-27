@@ -1,38 +1,33 @@
 import useGlobalStore from "../../../stores/globalStore";
-import { Box, Text, Paper, Stack, Group, Badge } from "@mantine/core";
+import { Box, Text, Paper, Stack } from "@mantine/core";
 
 const SelectedHierarchyEntityPreviewer = () => {
   const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
-
+  console.log("selectedHierarchyEntity", selectedHierarchyEntity);
   if (!selectedHierarchyEntity) {
-    return null;
+    return <Text>asdf</Text>;
   }
 
   const entityType = selectedHierarchyEntity.type; // Either "subject", "sample", "site", or "performance"
   const entityMetadata = selectedHierarchyEntity.metadata || {};
 
-  // Map entity types to colors
-  const entityTypeColors = {
-    subject: "blue",
-    sample: "green",
-    site: "red",
-    performance: "violet",
-  };
-
   const differentiableEntityFields = {
     subject: ["subject id", "experimental group", "sex", "age category"],
     sample: ["sample id", "subject id", "experimental group", "sample type"],
     site: ["site id"],
-    performance: ["performance id"],
+    performance: ["performanceId"],
   };
 
   // Get relevant field values from metadata only
   const getRelevantFieldsFromMetadata = () => {
     if (!entityType || !differentiableEntityFields[entityType]) {
+      // If no entity type or unknown type, return empty object
       return {};
     }
 
     const relevantFields = {};
+
+    // Only look in metadata for the fields
     differentiableEntityFields[entityType].forEach((fieldName) => {
       if (entityMetadata && entityMetadata[fieldName] !== undefined) {
         relevantFields[fieldName] = entityMetadata[fieldName];
@@ -44,35 +39,27 @@ const SelectedHierarchyEntityPreviewer = () => {
 
   const relevantFields = getRelevantFieldsFromMetadata();
   const hasRelevantFields = Object.keys(relevantFields).length > 0;
-  const formatFieldName = (str) =>
-    str
-      .split(" ")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
+  const uppercaseFirstLetter = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
   return (
-    <Paper p="sm">
-      <Stack gap="sm">
+    <Box>
+      <Paper p="md" withBorder>
         {hasRelevantFields ? (
-          <Box>
+          <Stack gap={3}>
             {Object.entries(relevantFields).map(([key, value]) => (
-              <Group key={key} py="xs" position="apart" style={{ borderBottom: "1px solid #eee" }}>
-                <Text fw={500} size="sm" c="dimmed">
-                  {formatFieldName(key)}:
+              <Box key={key}>
+                <Text fw={600} td="underline">
+                  {uppercaseFirstLetter(key)}:
                 </Text>
-                <Text size="sm">{typeof value === "object" ? JSON.stringify(value) : value}</Text>
-              </Group>
+                <Text>{typeof value === "object" ? JSON.stringify(value) : value}</Text>
+              </Box>
             ))}
-          </Box>
+          </Stack>
         ) : (
-          <Box py="sm">
-            <Text c="dimmed" size="sm" ta="center">
-              No metadata available
-            </Text>
-          </Box>
+          <Text c="dimmed">No relevant metadata found for this entity type</Text>
         )}
-      </Stack>
-    </Paper>
+      </Paper>
+    </Box>
   );
 };
 
