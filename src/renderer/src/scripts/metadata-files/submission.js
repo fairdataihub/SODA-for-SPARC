@@ -125,7 +125,7 @@ window.openSubmissionMultiStepSwal = async (curationMode, sparcAward, milestoneR
         ? Swal.showValidationMessage("Please select at least one milestone")
         : (milestoneData = checkedMilestoneData);
     },
-    curentProgress: 0,
+    currentProgressStep: 0,
   });
 
   await Queue.fire({
