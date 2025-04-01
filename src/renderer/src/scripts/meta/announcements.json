@@ -1,4 +1,11 @@
 {
+  "15.3.1": {
+    "announcements": {
+      "bug-fixes": [
+      ],
+      "features": ["Pennsieve Agent updates are optional in some cases."]
+    }
+  },
   "15.3.0": {
     "announcements": {
       "bug-fixes": [],
