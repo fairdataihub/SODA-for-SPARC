@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Bug Fixes:
 
 - Fixed an uncommon issue where subjects and samples were not being saved in the Prepare Dataset Step-by-Step progress file if the user did not move to the next page before exiting.
+- SODA will notify users if it is determined that a network setting may be preventing communication to the Pennsieve platform.
+- The `Prepare Dataset Step-by-Step` feature allows users to resume curating a dataset even when that dataset saved files that have since been deleted from the computer.
 
 ## v15.2.3 - 2024-11-20
 
