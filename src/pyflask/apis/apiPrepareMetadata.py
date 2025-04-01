@@ -1,11 +1,8 @@
 from prepareMetadata import (
-    upload_code_description_metadata,
     extract_milestone_info,
     import_sparc_award,
     import_milestone,
-    save_subjects_file,
     convert_subjects_samples_file_to_df,
-    save_samples_file,
     load_existing_DD_file,
     load_existing_submission_file,
     import_ps_metadata_file,
@@ -24,6 +21,9 @@ from utils import metadata_string_to_list
 from pysoda.core.metadata import submission
 from pysoda.core.metadata import dataset_description
 from pysoda.core.metadata import readme_changes
+from pysoda.core.metadata import code_description
+from pysoda.core.metadata import subjects
+from pysoda.core.metadata import samples
 from pysoda.utils import validation_error_message
 from jsonschema import ValidationError
 
@@ -257,19 +257,23 @@ class CodeDescriptionFile(Resource):
     parser_upload_code_description_file.add_argument('selected_account', type=str, help='Pennsieve account to save the code_description file to', location="json", required=True)
     parser_upload_code_description_file.add_argument('selected_dataset', type=str, help='Pennsieve dataset to save the code_description file to', location="json", required=True)
 
-    @api.expect(parser_upload_code_description_file)
+    # @api.expect(parser_upload_code_description_file)
     @api.doc(description='Upload the code_description file on the user\'s machine directly to Pennsieve', responses={500: "Internal Server Error", 400: "Bad Request"})
     
     def post(self):
-        data = self.parser_upload_code_description_file.parse_args()
+        data = request.get_json()
 
         filepath = data.get('filepath')
-        selected_account = data.get('selected_account')
-        selected_dataset = data.get('selected_dataset')
+        soda = data.get('soda')
 
         try:
-            return upload_code_description_metadata(filepath, selected_account, selected_dataset)
+            return code_description.create_excel(soda, filepath)
         except Exception as e:
+            if isinstance(e, ValidationError):
+                # Extract properties from the ValidationError
+                validation_err_msg = validation_error_message(e)
+                # Return the ValidationError as JSON
+                api.abort(400, validation_err_msg)
             if notBadRequestException(e):
                 api.abort(500, str(e))
             raise e
@@ -289,27 +293,30 @@ class SubjectsFile(Resource):
     parser_save_subjects_file.add_argument('selected_dataset', type=str, help='Pennsieve dataset to save the subjects file to.', location="json", required=False)
     parser_save_subjects_file.add_argument('subjects_header_row', type=list, help='List of subjects to save.', location="json", required=True)
 
-    @api.expect(parser_save_subjects_file)
+    # @api.expect(parser_save_subjects_file)
     @api.doc(description='Save the subjects file to the user\'s machine or to Pennsieve.', responses={500: "Internal Server Error", 400: "Bad Request", 403: "Forbidden"})
     def post(self):
-        data = self.parser_save_subjects_file.parse_args()
+        data = request.get_json()
 
         filepath = data.get('filepath')
         upload_boolean = data.get('upload_boolean')
-        selected_account = data.get('selected_account')
-        selected_dataset = data.get('selected_dataset')
-        subjects_str = data.get('subjects_header_row')
+        soda = data.get("soda")
 
-        if upload_boolean and not selected_account and not selected_dataset:
-            api.abort(400, "To save a subjects file on Pennsieve provide a dataset and pennsieve account.")
+        # if upload_boolean and not selected_account and not selected_dataset:
+        #     api.abort(400, "To save a subjects file on Pennsieve provide a dataset and pennsieve account.")
 
         if not upload_boolean and not filepath:
             api.abort(400, "To save a subjects file on the user\'s machine provide a filepath.")
 
 
         try:
-            return save_subjects_file(upload_boolean, selected_account, selected_dataset, filepath, subjects_str)
+            return subjects.create_excel(soda, upload_boolean, filepath )
         except Exception as e:
+            if isinstance(e, ValidationError):
+                # Extract properties from the ValidationError
+                validation_err_msg = validation_error_message(e)
+                # Return the ValidationError as JSON
+                api.abort(400, validation_err_msg)
             if notBadRequestException(e):
                 api.abort(500, str(e))
             raise e
@@ -369,28 +376,32 @@ class SamplesFile(Resource):
     parser_save_samples_file.add_argument('selected_dataset', type=str, help='Pennsieve dataset to save the samples file to.', location="json", required=False)
     parser_save_samples_file.add_argument('samples_str', type=list, help='List of samples to save.', location="json", required=True)
 
-    @api.expect(parser_save_samples_file)
+    # @api.expect(parser_save_samples_file)
     @api.doc(description='Save the samples file to the user\'s machine or to Pennsieve.', responses={500: "Internal Server Error", 400: "Bad Request", 403: "Forbidden"})
     @api.marshal_with(model_save_samples_result, 200, False)
     def post(self):
-        data = self.parser_save_samples_file.parse_args()
+        data = request.get_json()
 
         filepath = data.get('filepath')
         upload_boolean = data.get('upload_boolean')
-        selected_account = data.get('selected_account')
-        selected_dataset = data.get('selected_dataset')
-        samples_str = data.get('samples_str')
+        soda = data.get("soda")
 
-        if upload_boolean and not selected_account and not selected_dataset:
-            api.abort(400, "Error:  To save a samples file on Pennsieve provide a dataset and pennsieve account.")
+
+        # if upload_boolean and not selected_account and not selected_dataset:
+        #     api.abort(400, "Error:  To save a samples file on Pennsieve provide a dataset and pennsieve account.")
         
         if not upload_boolean and not filepath:
             api.abort(400, "Error:  To save a samples file on the user\'s machine provide a filepath.")
 
         
         try:
-            return save_samples_file(upload_boolean, selected_account, selected_dataset, filepath, samples_str)
+            return samples.create_excel(soda, upload_boolean, filepath)
         except Exception as e:
+            if isinstance(e, ValidationError):
+                # Extract properties from the ValidationError
+                validation_err_msg = validation_error_message(e)
+                # Return the ValidationError as JSON
+                api.abort(400, validation_err_msg)
             if notBadRequestException(e):
                 api.abort(500, str(e))
             raise e
