@@ -32,12 +32,40 @@ $("#guided-next-button").on("click", async function () {
   // make a dummy request to the  POST prepare_metadata/submission endpoint
   let dummySodaObj = {
     dataset_metadata: {
-      submission_metadata: {
-        consortium_data_standard: "SPARC Consortium",
-        funding_consortium: "SPARC",
-        award_number: "OT2OD025340",
-        milestone_achieved: ["Data Collection", "Data Analysis"],
-        milestone_completion_date: ["2021-01-01"],
+      dataset_description: {
+        "dataset_information": {
+          "title": "dummy title",
+          "description": "dummy description",
+          "type": "computational",
+          "number of subjects": "1", 
+          "number of samples": "1",
+          "keywords": ["tummy", "scholar"]
+        },
+        "study_information": {
+          "study purpose": "Dummy purpose",
+          "study data collection": "dummy collection",
+          "study primary conclusion": "dummy conclusion",
+          "study collection title": "title dummy",
+          "study organ system": ["whosman"],
+          "study approach": ["one approach"],
+          "study technique": ["wwww", "wwww"]
+        },
+        "contributor_information": [{
+          "contributor_orcid_id": "https://orcid.org/0000-0000-0000-0001",
+          "contributor_affiliation": "dummy affiliation",
+          "contributor_name": "dummy name",
+          "contributor_role": "dummy role"
+        }],
+        "basic_information": {
+          "funding": ["dummy funding", "cheese"],
+          "acknowledgment": "dummy ack",
+        },
+        "related_information": [{
+          "identifier": "https://google.com",
+          "identifier_type": "URL",
+          "relation_type": "ISProtocolFor",
+          "identifier_description": "Does protocol stuff"
+        }]
       },
     },
   };
@@ -50,7 +78,7 @@ $("#guided-next-button").on("click", async function () {
   );
   let uploadBoolean = false;
   try {
-    await client.post("/prepare_metadata/submission_file", {
+    await client.post("/prepare_metadata/dataset_description_file", {
       soda: dummySodaObj,
       filepath: filePath,
       upload_boolean: uploadBoolean,
