@@ -33,39 +33,43 @@ $("#guided-next-button").on("click", async function () {
   let dummySodaObj = {
     dataset_metadata: {
       dataset_description: {
-        "dataset_information": {
-          "title": "dummy title",
-          "description": "dummy description",
-          "type": "computational",
-          "number of subjects": "1", 
+        dataset_information: {
+          title: "dummy title",
+          description: "dummy description",
+          type: "computational",
+          "number of subjects": "1",
           "number of samples": "1",
-          "keywords": ["tummy", "scholar"]
+          keywords: ["tummy", "scholar"],
         },
-        "study_information": {
+        study_information: {
           "study purpose": "Dummy purpose",
           "study data collection": "dummy collection",
           "study primary conclusion": "dummy conclusion",
           "study collection title": "title dummy",
           "study organ system": ["whosman"],
           "study approach": ["one approach"],
-          "study technique": ["wwww", "wwww"]
+          "study technique": ["wwww", "wwww"],
         },
-        "contributor_information": [{
-          "contributor_orcid_id": "https://orcid.org/0000-0000-0000-0001",
-          "contributor_affiliation": "dummy affiliation",
-          "contributor_name": "dummy name",
-          "contributor_role": "dummy role"
-        }],
-        "basic_information": {
-          "funding": ["dummy funding", "cheese"],
-          "acknowledgment": "dummy ack",
+        contributor_information: [
+          {
+            contributor_orcid_id: "https://orcid.org/0000-0000-0000-0001",
+            contributor_affiliation: "dummy affiliation",
+            contributor_name: "dummy name",
+            contributor_role: "dummy role",
+          },
+        ],
+        basic_information: {
+          funding: ["dummy funding", "cheese"],
+          acknowledgment: "dummy ack",
         },
-        "related_information": [{
-          "identifier": "https://google.com",
-          "identifier_type": "URL",
-          "relation_type": "ISProtocolFor",
-          "identifier_description": "Does protocol stuff"
-        }]
+        related_information: [
+          {
+            identifier: "https://google.com",
+            identifier_type: "URL",
+            relation_type: "ISProtocolFor",
+            identifier_description: "Does protocol stuff",
+          },
+        ],
       },
     },
   };
