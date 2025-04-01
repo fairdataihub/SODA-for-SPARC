@@ -218,7 +218,9 @@ const PennsieveAgentCheckDisplay = () => {
             style={{ width: "100%" }}
           >
             <Text mt="sm" mb="sm">
-              You currently have Pennsieve Agent v{usersPennsieveAgentVersion} installed. We recommend that you install Pennsieve Agent v{latestPennsieveAgentVersion} before continuing.
+              You currently have Pennsieve Agent v{usersPennsieveAgentVersion} installed. We
+              recommend that you install Pennsieve Agent v{latestPennsieveAgentVersion} before
+              continuing.
             </Text>
             <ExternalLink
               href={pennsieveAgentDownloadURL}
