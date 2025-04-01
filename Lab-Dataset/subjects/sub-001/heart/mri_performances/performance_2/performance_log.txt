@@ -14,9 +14,9 @@ End Time: 11:45
 
 Parameters:
 - Tesla: 3T
-- TR: 1232 ms
-- TE: 43 ms
-- Slice Thickness: 1.7 mm
+- TR: 1199 ms
+- TE: 41 ms
+- Slice Thickness: 1.0 mm
 - FOV: 256 x 256 mm
 
 Notes:

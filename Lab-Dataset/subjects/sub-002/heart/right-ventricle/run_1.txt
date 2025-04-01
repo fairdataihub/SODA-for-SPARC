@@ -1,7 +1,7 @@
 # Raw Heart-right-ventricle data - Run 1
 Sample ID: sub-002
-Date: 3/27/2025
-Values: 24.99, 48.52, 51.09, 51.67, 19.83
+Date: 4/1/2025
+Values: 42.08, 59.09, 22.96, 21.89, 29.77
 Notes: Standard collection protocol followed
 Site: right-ventricle
 Measurement focus: Electrical activity

@@ -2,12 +2,12 @@ Analysis Results
 ----------------
 Sample Type: Heart
 Site: left-ventricle
-Date: 3/27/2025
+Date: 4/1/2025
 
 Summary Statistics:
-- Mean value: 74.00
-- Standard deviation: 3.87
-- Range: 32.17 - 119.08
+- Mean value: 80.70
+- Standard deviation: 5.92
+- Range: 32.58 - 111.92
 
 Notes:
 - Analysis completed using standard protocol

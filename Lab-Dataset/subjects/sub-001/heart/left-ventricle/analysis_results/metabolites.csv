@@ -1,6 +1,6 @@
 Metabolite,Concentration (mM),Detection Method
-Glucose,6.87,Spectroscopy
-Lactate,0.97,Enzymatic assay
-ATP,2.35,Luminescence
-Creatine,5.44,Mass spectrometry
-Glutamate,2.71,HPLC
+Glucose,4.40,Spectroscopy
+Lactate,0.79,Enzymatic assay
+ATP,2.40,Luminescence
+Creatine,5.42,Mass spectrometry
+Glutamate,1.43,HPLC

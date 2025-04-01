@@ -1,5 +1,5 @@
 # Raw heart data - Run 1
 Sample ID: sub-002
-Date: 3/27/2025
-Values: 43.95, 15.46, 41.87, 27.18, 23.00
+Date: 4/1/2025
+Values: 13.98, 24.95, 43.52, 24.29, 12.78
 Notes: Standard collection protocol followed

@@ -2,12 +2,12 @@ Analysis Results
 ----------------
 Sample Type: Heart
 Site: right-ventricle
-Date: 3/27/2025
+Date: 4/1/2025
 
 Summary Statistics:
-- Mean value: 75.28
-- Standard deviation: 4.37
-- Range: 33.60 - 111.09
+- Mean value: 71.08
+- Standard deviation: 5.52
+- Range: 35.97 - 117.05
 
 Notes:
 - Analysis completed using standard protocol
