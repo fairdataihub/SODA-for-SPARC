@@ -79,6 +79,11 @@ import {
   setPennsieveAgentCheckInProgress,
   setPostPennsieveAgentCheckAction,
 } from "../../stores/slices/backgroundServicesSlice";
+import {
+  clientBlockedByExternalFirewall,
+  blockedMessage,
+  hostFirewallMessage,
+} from "../check-firewall/checkFirewall";
 
 // add jquery to the window object
 window.$ = jQuery;
@@ -421,13 +426,20 @@ const startupServerAndApiCheck = async () => {
   Swal.fire({
     icon: "info",
     title: `Initializing SODA's background services<br /><br />This may take several minutes...`,
-    heightAuto: true,
+    heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     confirmButtonText: "Restart now",
     allowOutsideClick: false,
     allowEscapeKey: false,
+    showClass: {
+      popup: "animate__animated animate__zoomIn animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
     didOpen: () => Swal.showLoading(),
   });
+
   await window.wait(3000);
 
   for (let i = 0; i < totalNumberOfRetries; i++) {
@@ -462,6 +474,24 @@ const startupServerAndApiCheck = async () => {
     { value: 1 }
   );
 
+  let serverIsLive = await window.server.serverIsLive();
+  if (serverIsLive) {
+    // notify the user that there may be a firewall issue preventing the client from connecting to the server
+    Swal.close();
+    await Swal.fire({
+      icon: "info",
+      title: "Potential Network Issues",
+      html: hostFirewallMessage,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Restart SODA To Try Again",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      width: 900,
+    });
+    await window.electron.ipcRenderer.invoke("relaunch-soda");
+  }
+
   Swal.close();
   await Swal.fire({
     icon: "error",
@@ -479,6 +509,7 @@ const startupServerAndApiCheck = async () => {
 // Check app version on current app and display in the side bar
 // Also check the core systems to make sure they are all operational
 const initializeSODARenderer = async () => {
+  // TODO: Add check for internal firewall that blocks us from talking to the server here (detect-firewall)
   // check that the server is live and the api versions match
   // If this fails after the allotted time, the app will restart
   await startupServerAndApiCheck();
@@ -489,10 +520,11 @@ const initializeSODARenderer = async () => {
 
   //Refresh the Pennsieve account list if the user has connected their Pennsieve account in the past
   if (hasConnectedAccountWithPennsieve()) {
-    try {
-      // window.updateBfAccountList();
-    } catch (error) {
-      clientError(error);
+    // check for external firewall interference (aspirational in that may not be foolproof)
+    const pennsieveURL = "https://api.pennsieve.io/discover/datasets";
+    const blocked = await clientBlockedByExternalFirewall(pennsieveURL);
+    if (blocked) {
+      swalShowInfo("Potential Network Issue Detected", blockedMessage);
     }
   }
 
@@ -619,9 +651,9 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
       const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
       setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
       setPennsieveAgentOutOfDate(usersPennsieveAgentVersion, latestPennsieveAgentVersion);
-      abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+      // abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
 
-      return false;
+      // return false;
     }
 
     // If we get to this point, it means all the background services are operational
@@ -4291,7 +4323,7 @@ const replaceProblematicFoldersWithSDSCompliantNames = (datasetStructure) => {
     // If the folder name is not valid, replace it with a valid name and then recurse through the
     // renamed folder to check for any other problematic folders
     if (!folderNameIsValid) {
-      const newFolderName = folderKey.replace(sparcFolderAndFileRegex, "-");
+      const newFolderName = folderKey.replace(invalidSparcFolderAndFileNameRegexReplacer, "-");
       const newFolderObj = { ...datasetStructure["folders"][folderKey] };
       if (!newFolderObj["action"].includes("renamed")) {
         newFolderObj["action"].push("renamed");
@@ -4315,7 +4347,7 @@ window.replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
       "folder-and-file-name-is-valid"
     );
     if (!fileNameIsValid) {
-      const newFileName = fileKey.replace(sparcFolderAndFileRegex, "-");
+      const newFileName = fileKey.replace(invalidSparcFolderAndFileNameRegexReplacer, "-");
       const newFileObj = { ...datasetStructure["files"][fileKey] };
       if (!newFileObj["action"].includes("renamed")) {
         newFileObj["action"].push("renamed");
@@ -4357,13 +4389,14 @@ const namesOfForbiddenFiles = {
   "Thumbs.db": true,
 };
 
-const sparcFolderAndFileRegex = /[\+&\%#]/;
+const invalidSparcFolderAndFileNameRegexMatcher = /[\+&\%#]/;
+const invalidSparcFolderAndFileNameRegexReplacer = /[\+&\%#]/g;
 const identifierConventionsRegex = /^[a-zA-Z0-9-_]+$/;
 const forbiddenCharacters = /[@#$%^&*()+=\/\\|"'~;:<>{}\[\]?]/;
 
 window.evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
   const testCases = {
-    "folder-and-file-name-is-valid": !sparcFolderAndFileRegex.test(stringToTest), // returns true if the string is valid
+    "folder-and-file-name-is-valid": !invalidSparcFolderAndFileNameRegexMatcher.test(stringToTest), // returns true if the string is valid
     "file-is-hidden": stringToTest.startsWith("."), // returns true if the string is hidden
     "file-is-in-forbidden-files-list": namesOfForbiddenFiles?.[stringToTest], // returns true if the string is in the forbidden files list
     "string-adheres-to-identifier-conventions": identifierConventionsRegex.test(stringToTest), // returns true if the string adheres to the identifier conventions
@@ -4396,9 +4429,9 @@ const showFileImportLoadingSweetAlert = (delayBeforeShowingSweetAlert) => {
           <div></div>
         </div>
       `,
-      width: 800,
+      width: 900,
       heightAuto: false,
-      width: 800,
+      width: 900,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       allowOutsideClick: false,

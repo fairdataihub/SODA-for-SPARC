@@ -19,7 +19,7 @@ win:
   extraResources:
     - from: ./file_templates
       to: ./file_templates
-    - from: ./pyflaskdist/app.exe
+    - from: ./pyflaskdist/app
   asar: true
   target:
     - nsis
@@ -31,7 +31,6 @@ nsis:
 mac:
   icon: "app-icon/png/icon.png"
   entitlementsInherit: ./entitlements.mac.inherit.plist
-  notarize: true
   extraResources:
     - from: ./pyflaskdist/app
     - from: ./file_templates

@@ -5,6 +5,27 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v.15.3.1 - 2025-04-01
+
+## Feature Additions:
+
+- Pennsieve Agent updates are now optional in some cases.
+
+## v15.3.0 - 2024-12-26
+
+## Feature Additions:
+
+- Pennsieve guest users can use the Prepare Datset Step-by-Step to edit their Pennsieve datasets.
+- SODA's server starts faster on Mac computers.
+- SODA will notify users if it is determined that a network setting may be preventing communication to the Pennsieve platform.
+- The `Prepare Dataset Step-by-Step` feature allows users to resume curating a dataset even when that dataset saved files that have since been deleted from the computer.
+
+## Bug Fixes:
+
+- Fixed an uncommon issue where subjects and samples were not being saved in the Prepare Dataset Step-by-Step progress file if the user did not move to the next page before exiting.
+- SODA will notify users if it is determined that a network setting may be preventing communication to the Pennsieve platform.
+- The `Prepare Dataset Step-by-Step` feature allows users to resume curating a dataset even when that dataset saved files that have since been deleted from the computer.
+
 ## v15.2.3 - 2024-11-20
 
 ## Bug Fixes:

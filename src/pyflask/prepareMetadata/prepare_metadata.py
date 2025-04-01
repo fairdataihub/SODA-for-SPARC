@@ -214,6 +214,7 @@ def subscriber_metadata(ps, events_dict):
             ps.unsubscribe(10)
 
 def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_after_upload):
+    global namespace_logger
     # check that the Pennsieve dataset is valid
     selected_dataset_id = get_dataset_id(bfdataset)
 
@@ -237,12 +238,12 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
             r.raise_for_status()
     try:
         ps = connect_pennsieve_client(bfaccount)
-        authenticate_user_with_client(ps, bfaccount)
         # create a new manifest for the metadata file
         ps.use_dataset(selected_dataset_id)
         manifest = ps.manifest.create(file_path)
         m_id = manifest.manifest_id
     except Exception as e:
+        namespace_logger.info(e)
         error_message = "Could not create manifest file for this dataset"
         abort(500, error_message)
     
