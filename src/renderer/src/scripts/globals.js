@@ -1352,8 +1352,6 @@ var dropdownEventID = "";
 window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
   // if users edit current account
   if (dropdown === "bf") {
-    console.log("Calling opendropdown here?");
-
     await window.addBfAccount(ev, false);
   } else if (dropdown === "dataset") {
     dropdownEventID = ev?.id ?? "";
@@ -2185,6 +2183,29 @@ const get_api_key = (login, password, key_name) => {
       resolve(["failed", userErrorMessage(error)]);
     }
   });
+};
+
+window.isWorkspaceGuest = async () => {
+  let userInfo = await api.getUserInformation();
+  let currentWorkspace = userInfo["preferredOrganization"];
+
+  let orgResponse;
+  try {
+    orgResponse = await client.get(`user/organizations`, {
+      params: {
+        selected_account: window.defaultBfAccount,
+      },
+    });
+  } catch (error) {
+    clientError(error);
+    console.error("Error fetching organizations", error);
+    // TODO: Handle error here
+  }
+  // get the current workspace by matching the id
+  let currentWorkspaceObj = orgResponse.data.organizations.filter(
+    (org) => org.organization.id === currentWorkspace
+  )[0];
+  return currentWorkspaceObj.isGuest;
 };
 
 export {

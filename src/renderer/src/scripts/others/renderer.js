@@ -487,7 +487,7 @@ const startupServerAndApiCheck = async () => {
       confirmButtonText: "Restart SODA To Try Again",
       allowOutsideClick: false,
       allowEscapeKey: false,
-      width: 800,
+      width: 900,
     });
     await window.electron.ipcRenderer.invoke("relaunch-soda");
   }
@@ -651,9 +651,9 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
       const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
       setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
       setPennsieveAgentOutOfDate(usersPennsieveAgentVersion, latestPennsieveAgentVersion);
-      abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+      // abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
 
-      return false;
+      // return false;
     }
 
     // If we get to this point, it means all the background services are operational
@@ -4323,7 +4323,7 @@ const replaceProblematicFoldersWithSDSCompliantNames = (datasetStructure) => {
     // If the folder name is not valid, replace it with a valid name and then recurse through the
     // renamed folder to check for any other problematic folders
     if (!folderNameIsValid) {
-      const newFolderName = folderKey.replace(sparcFolderAndFileRegex, "-");
+      const newFolderName = folderKey.replace(invalidSparcFolderAndFileNameRegexReplacer, "-");
       const newFolderObj = { ...datasetStructure["folders"][folderKey] };
       if (!newFolderObj["action"].includes("renamed")) {
         newFolderObj["action"].push("renamed");
@@ -4347,7 +4347,7 @@ window.replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
       "folder-and-file-name-is-valid"
     );
     if (!fileNameIsValid) {
-      const newFileName = fileKey.replace(sparcFolderAndFileRegex, "-");
+      const newFileName = fileKey.replace(invalidSparcFolderAndFileNameRegexReplacer, "-");
       const newFileObj = { ...datasetStructure["files"][fileKey] };
       if (!newFileObj["action"].includes("renamed")) {
         newFileObj["action"].push("renamed");
@@ -4389,13 +4389,14 @@ const namesOfForbiddenFiles = {
   "Thumbs.db": true,
 };
 
-const sparcFolderAndFileRegex = /[\+&\%#]/;
+const invalidSparcFolderAndFileNameRegexMatcher = /[\+&\%#]/;
+const invalidSparcFolderAndFileNameRegexReplacer = /[\+&\%#]/g;
 const identifierConventionsRegex = /^[a-zA-Z0-9-_]+$/;
 const forbiddenCharacters = /[@#$%^&*()+=\/\\|"'~;:<>{}\[\]?]/;
 
 window.evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
   const testCases = {
-    "folder-and-file-name-is-valid": !sparcFolderAndFileRegex.test(stringToTest), // returns true if the string is valid
+    "folder-and-file-name-is-valid": !invalidSparcFolderAndFileNameRegexMatcher.test(stringToTest), // returns true if the string is valid
     "file-is-hidden": stringToTest.startsWith("."), // returns true if the string is hidden
     "file-is-in-forbidden-files-list": namesOfForbiddenFiles?.[stringToTest], // returns true if the string is in the forbidden files list
     "string-adheres-to-identifier-conventions": identifierConventionsRegex.test(stringToTest), // returns true if the string adheres to the identifier conventions
@@ -4428,9 +4429,9 @@ const showFileImportLoadingSweetAlert = (delayBeforeShowingSweetAlert) => {
           <div></div>
         </div>
       `,
-      width: 800,
+      width: 900,
       heightAuto: false,
-      width: 800,
+      width: 900,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       allowOutsideClick: false,

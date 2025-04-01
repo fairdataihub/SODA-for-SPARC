@@ -1,4 +1,10 @@
 {
+  "15.3.1": {
+    "announcements": {
+      "bug-fixes": [],
+      "features": ["Enhance flexibility in updating the Pennsieve Agent."]
+    }
+  },
   "15.3.0": {
     "announcements": {
       "bug-fixes": [],

@@ -1157,13 +1157,16 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     # START
     start = timer()
 
-    # check that the Pennsieve dataset is valid
-    try:
-        bf_dataset_name = soda_json_structure["bf-dataset-selected"]["dataset-name"]
-    except Exception as e:
-        raise e
+    if "digital-metadata" in soda_json_structure and "pennsieve-dataset-id" in soda_json_structure["digital-metadata"]:
+        selected_dataset_id = soda_json_structure["digital-metadata"]["pennsieve-dataset-id"]
+    else:
+        # check that the Pennsieve dataset is valid
+        try:
+            bf_dataset_name = soda_json_structure["bf-dataset-selected"]["dataset-name"]
+        except Exception as e:
+            raise e
 
-    selected_dataset_id = get_dataset_id(bf_dataset_name)
+        selected_dataset_id = get_dataset_id(bf_dataset_name)
 
     # check that the user has permission to edit this dataset
     try:
