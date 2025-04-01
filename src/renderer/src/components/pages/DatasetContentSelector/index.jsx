@@ -47,9 +47,9 @@ const contentOptionsMap = {
     label: "I collected data from distinct physical sites on subjects.",
     description:
       "Select this option if the sites where data was collected correspond to specific locations or regions within the subjects, such as different anatomical regions or organs.",
-    dependsOn: ["subjects", "samples", "sites"],
+    dependsOn: ["subjects", "sites"],
     dependsOnNotSatiatedMessage:
-      "You must indicate that you collected data from subjects, samples, and sites first.",
+      "You must indicate that you collected data from subjects and sites first.",
     ml: 20,
   },
   "sample-sites": {
@@ -62,30 +62,12 @@ const contentOptionsMap = {
     ml: 20,
   },
   performances: {
-    label: "I collected data from multiple performances of the same protocol.",
+    label: "I collected data from multiple performances of protocols on subjects.",
     description:
-      "Select this option if you repeated the same protocol or procedure multiple times (such as running repeated tests or experiments) and collected data from each repetition.",
+      "Select this option if you performed protocols or procedures on subjects (such as behavioral tests, imaging sessions, or other experiments) and collected data from these performances.",
     dependsOn: ["subjects"],
     dependsOnNotSatiatedMessage: "You must indicate that you collected data from subjects first.",
     ml: 10,
-  },
-  "subject-performances": {
-    label: "The protocol performances were run on the subjects.",
-    description:
-      "Select this if tasks, tests, or procedures were performed directly on subjects (e.g., humans or animals) and data was collected during these sessions.",
-    dependsOn: ["subjects", "samples", "performances"],
-    dependsOnNotSatiatedMessage:
-      "You must indicate that you collected data from subjects, samples, and performances first.",
-    ml: 20,
-  },
-  "sample-performances": {
-    label: "The protocol performances were run on the samples.",
-    description:
-      "Select this if tasks, tests, or procedures were performed directly on samples (e.g., tissues or blood) and data was collected during these sessions.",
-    dependsOn: ["subjects", "samples", "performances"],
-    dependsOnNotSatiatedMessage:
-      "You must indicate that you collected data from subjects, samples, and performances first.",
-    ml: 20,
   },
   code: {
     label: "I used code to generate or analyze the collected data",
