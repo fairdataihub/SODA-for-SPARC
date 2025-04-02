@@ -71,7 +71,7 @@
   ],
   "codeRepository": "https://github.com/fairdataihub/SODA-for-SPARC",
   "dateCreated": "2021-10-08",
-  "dateModified": "2025-04-01",
+  "dateModified": "2025-04-02",
   "datePublished": "2024-10-11",
   "description": "Simplifying data curation for researchers funded by the NIH SPARC initiative",
   "developmentStatus": "active",
@@ -79,7 +79,16 @@
   "funding": "OT2OD030213",
   "isPartOf": "https://fairdataihub.org/",
   "issueTracker": "https://github.com/fairdataihub/SODA-for-SPARC/issues",
-  "keywords": ["SPARC", "FAIR", "data", "curation", "mac", "sparc-dataset", "ubuntu", "windows"],
+  "keywords": [
+    "SPARC",
+    "FAIR",
+    "data",
+    "curation",
+    "mac",
+    "sparc-dataset",
+    "ubuntu",
+    "windows"
+  ],
   "license": "https://spdx.org/licenses/MIT",
   "operatingSystem": [
     "Windows 10",
@@ -88,9 +97,14 @@
     "Windows 11",
     "Ubuntu"
   ],
-  "programmingLanguage": ["JavaScript", "HTML", "Python", "CSS"],
+  "programmingLanguage": [
+    "JavaScript",
+    "HTML",
+    "Python",
+    "CSS"
+  ],
   "referencePublication": "https://doi.org/10.1101/2021.02.10.430563",
   "schema:releaseNotes": "## Feature additions:\n\n- Pennsieve Agent does not need to be at latest version to upload a dataset.",
-  "version": "15.3.2",
+  "version": "15.3.1",
   "type": "SoftwareSourceCode"
 }
