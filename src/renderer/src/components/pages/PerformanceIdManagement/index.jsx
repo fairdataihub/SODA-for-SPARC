@@ -34,7 +34,10 @@ import {
   setStartDateTime,
   setEndDateTime,
   addPerformance,
+  updatePerformance,
   deletePerformance,
+  setIsEditMode,
+  setOriginalPerformanceId,
 } from "../../../stores/slices/performancesSlice";
 
 // Performance metadata form component with store-based state
@@ -97,18 +100,51 @@ const PerformanceMetadataForm = () => {
 const PerformanceIdManagement = () => {
   const IsPerformanceFormVisible = useGlobalStore((state) => state.IsPerformanceFormVisible);
   const performanceId = useGlobalStore((state) => state.performanceId);
+  const protocolUrl = useGlobalStore((state) => state.protocolUrl);
+  const startDateTime = useGlobalStore((state) => state.startDateTime);
+  const endDateTime = useGlobalStore((state) => state.endDateTime);
   const performanceList = useGlobalStore((state) => state.performanceList);
+  const isEditMode = useGlobalStore((state) => state.isEditMode);
+  const originalPerformanceId = useGlobalStore((state) => state.originalPerformanceId);
 
-  // Validation for add button
+  // Validation for add/update button
   const isPerformanceIdValid = window.evaluateStringAgainstSdsRequirements?.(
     performanceId,
     "string-adheres-to-identifier-conventions"
   );
 
+  // Function to handle selecting a performance for editing
+  const selectPerformanceForEdit = (performance) => {
+    setIsEditMode(true);
+    setOriginalPerformanceId(performance.performanceId);
+    setPerformanceId(performance.performanceId.replace("perf-", ""));
+    setProtocolUrl(performance.protocolUrl || "");
+    setStartDateTime(performance.startDateTime ? new Date(performance.startDateTime) : null);
+    setEndDateTime(performance.endDateTime ? new Date(performance.endDateTime) : null);
+    setPerformanceFormVisible(true);
+  };
+
+  // Function to start adding a new performance
+  const startAddingPerformance = () => {
+    setIsEditMode(false);
+    setOriginalPerformanceId("");
+    setPerformanceId("");
+    setProtocolUrl("");
+    setStartDateTime(null);
+    setEndDateTime(null);
+    setPerformanceFormVisible(true);
+  };
+
+  // Function to cancel editing or adding
+  const cancelForm = () => {
+    setIsEditMode(false);
+    setOriginalPerformanceId("");
+    setPerformanceFormVisible(false);
+  };
+
   return (
     <GuidedModePage pageHeader="Description of Performances">
       <GuidedModeSection>
-        {/* Fix the malformed Text component */}
         <Text mb="md">
           Provide information for each performance of experimental protocol in the interface below.
         </Text>
@@ -134,7 +170,7 @@ const PerformanceIdManagement = () => {
                     cursor: "pointer",
                   }}
                   p="sm"
-                  onClick={() => setPerformanceFormVisible(true)}
+                  onClick={startAddingPerformance}
                 >
                   <Flex align="center" gap="xs">
                     <IconPlus size={15} color="#1c7ed6" />
@@ -160,9 +196,22 @@ const PerformanceIdManagement = () => {
                         gap="xs"
                         style={{
                           cursor: "pointer",
+                          padding: "4px",
+                          borderRadius: "4px",
+                          backgroundColor:
+                            isEditMode && originalPerformanceId === performance.performanceId
+                              ? "#e6f7ff"
+                              : "transparent",
+                          "&:hover": {
+                            backgroundColor: "#f0f0f0",
+                          },
                         }}
                       >
-                        <Group gap="xs">
+                        <Group
+                          gap="xs"
+                          onClick={() => selectPerformanceForEdit(performance)}
+                          style={{ flex: 1 }}
+                        >
                           <IconClipboard size={15} />
                           <Text fw={600}>{performance.performanceId}</Text>
                         </Group>
@@ -171,12 +220,19 @@ const PerformanceIdManagement = () => {
                             color="blue"
                             size={18}
                             style={{ marginLeft: "4px", opacity: 0.6, cursor: "pointer" }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              selectPerformanceForEdit(performance);
+                            }}
                           />
                           <IconTrash
                             color="red"
                             size={16}
                             style={{ opacity: 0.6, cursor: "pointer" }}
-                            onClick={() => deletePerformance(performance.performanceId)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deletePerformance(performance.performanceId);
+                            }}
                           />
                         </Group>
                       </Flex>
@@ -209,7 +265,9 @@ const PerformanceIdManagement = () => {
                   <Group position="apart">
                     <Group>
                       <IconClipboard size={20} color="#ae3ec9" />
-                      <Title order={4}>Add new performance</Title>
+                      <Title order={4}>
+                        {isEditMode ? "Edit performance" : "Add new performance"}
+                      </Title>
                     </Group>
                   </Group>
 
@@ -223,7 +281,7 @@ const PerformanceIdManagement = () => {
                     <Button
                       variant="outline"
                       color="gray"
-                      onClick={() => setPerformanceFormVisible(false)}
+                      onClick={cancelForm}
                       leftIcon={<IconX size={16} />}
                     >
                       Cancel
@@ -231,11 +289,11 @@ const PerformanceIdManagement = () => {
 
                     <Button
                       color="blue"
-                      onClick={addPerformance}
+                      onClick={isEditMode ? updatePerformance : addPerformance}
                       leftIcon={<IconDeviceFloppy size={16} />}
                       disabled={!performanceId || !isPerformanceIdValid}
                     >
-                      Add Performance
+                      {isEditMode ? "Update Performance" : "Add Performance"}
                     </Button>
                   </Group>
                 </Stack>
