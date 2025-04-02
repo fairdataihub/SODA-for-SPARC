@@ -658,7 +658,7 @@ const DatasetEntityMetadata = () => {
       <GuidedModeSection>
         <Grid gutter="lg">
           {/* Entity selection panel */}
-          <Grid.Col span={4} style={{ position: "sticky", top: "20px" }}>
+          <Grid.Col span={5} style={{ position: "sticky", top: "20px" }}>
             <Paper shadow="sm" radius="md" p="sm" withBorder mb="md">
               <EntityHierarchyRenderer
                 allowEntityStructureEditing={true}
@@ -668,7 +668,7 @@ const DatasetEntityMetadata = () => {
           </Grid.Col>
 
           {/* Metadata editing form */}
-          <Grid.Col span={8}>
+          <Grid.Col span={7}>
             <EntityMetadataForm />
           </Grid.Col>
         </Grid>
