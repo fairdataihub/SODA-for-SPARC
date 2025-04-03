@@ -415,13 +415,13 @@ export const moveFolderToNewLocation = (targetRelativePath) => {
 };
 
 // Set entity filter to show only files associated with a specific entity
-export const setEntityFilter = (entityType, entityName, active = true) => {
-  console.log(`Setting entity filter: ${entityType} - ${entityName}, active: ${active}`);
+export const setEntityFilter = (entityType, entityName) => {
+  console.log(`Setting entity filter: ${entityType} - ${entityName}`);
 
   // Clear the render structure first to avoid flash of unfiltered content
   useGlobalStore.setState({
     renderDatasetStructureJSONObjIsLoading: true,
-    entityFilterActive: active,
+    entityFilterActive: true,
     entityFilterType: entityType,
     entityFilterName: entityName,
   });

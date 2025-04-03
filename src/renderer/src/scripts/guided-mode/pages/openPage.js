@@ -239,6 +239,10 @@ export const openPage = async (targetPageID) => {
 
     setSelectedHierarchyEntity(null);
 
+    // Synchronize state between the SODA JSON object and the zustand store
+    setSelectedEntities(window.sodaJSONObj["selected-entities"] || []);
+    setPerformanceList(window.sodaJSONObj["performance-list"] || []);
+
     if (
       targetPageID === "guided-dataset-generation-tab" ||
       targetPageID === "guided-dataset-dissemination-tab"
@@ -302,10 +306,6 @@ export const openPage = async (targetPageID) => {
 
       console.log("targetPageDataset", targetPageDataset);
 
-      if (targetPageComponentType === "performance-id-management-page") {
-        setPerformanceList(window.sodaJSONObj["performance-list"] || []);
-      }
-
       if (targetPageComponentType === "modality-selection-page") {
         const modalities = window.sodaJSONObj["selected-modalities"] || [];
         setSelectedModalities(modalities);
@@ -336,7 +336,7 @@ export const openPage = async (targetPageID) => {
           for (const performance of performanceList) {
             addEntityToEntityList("performances", performance.performanceId);
           }
-          setEntityFilter("categorized-data", "Experimental data", true);
+          setEntityFilter("categorized-data", "Experimental data");
         }
 
         if (pageEntityType === "modalities") {
@@ -381,7 +381,7 @@ export const openPage = async (targetPageID) => {
         if (hasExperimentalData) {
           console.log("Auto-filtering for Experimental data");
           // Apply the filter for experimental data
-          setEntityFilter("categorized-data", "Experimental data", true);
+          setEntityFilter("categorized-data", "Experimental data");
         } else {
           console.log("No experimental data found to filter");
         }
@@ -389,11 +389,6 @@ export const openPage = async (targetPageID) => {
         setSelectedEntities(selectedEntities);
         setDatasetEntityArray(datasetEntityArray);
         setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["unstructured-data"]);
-      }
-
-      if (targetPageComponentType === "dataset-content-selector") {
-        const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
-        setSelectedEntities(selectedEntities);
       }
 
       if (targetPageComponentType === "dataset-entity-id-generation-page") {
