@@ -17,9 +17,11 @@ const initialState = {
   contextMenuItemData: null, // Data associated with the context menu item
   externallySetSearchFilterValue: "", // Search filter value set externally
   entityFilterActive: false, // Flag to indicate if entity filtering is active
-  entityFilterType: null, // Type of entity to filter by (e.g., "categorized-data", "subjects")
-  entityFilterName: null, // Name of entity to filter by (e.g., "Code", "sub-001")
-  externallySetSearchFilterValue: "",
+  entityFilters: {
+    // Complex entity filter configuration
+    include: [], // Array of {type, names} objects for inclusion
+    exclude: [], // Array of {type, names} objects for exclusion
+  },
 };
 
 // Create the dataset tree view slice for global state
@@ -41,6 +43,77 @@ export const setRenderDatasetStructureJSONObjIsLoading = (isLoading) => {
   useGlobalStore.setState({
     renderDatasetStructureJSONObjIsLoading: isLoading,
   });
+};
+
+// Check if a file passes the entity filter criteria based on the complex filter configuration
+const checkIfFilePassesEntityFilter = (filePath, entityFilters) => {
+  const globalStore = useGlobalStore.getState();
+  const datasetEntityObj = globalStore.datasetEntityObj;
+
+  if (!datasetEntityObj) {
+    console.log("Dataset entity object not found");
+    return false;
+  }
+
+  // If both include and exclude lists are empty, don't filter (show everything)
+  if (entityFilters.include.length === 0 && entityFilters.exclude.length === 0) {
+    return true;
+  }
+
+  // Check exclusions first - if file is associated with ANY excluded entity, reject it
+  for (const filter of entityFilters.exclude) {
+    const { type, names } = filter;
+    if (!type || !names || !Array.isArray(names) || names.length === 0) continue;
+
+    // Skip if entity type doesn't exist in datasetEntityObj
+    if (!datasetEntityObj[type]) {
+      console.log(`Entity type ${type} not found in datasetEntityObj`);
+      continue;
+    }
+
+    // Check each entity name in the exclusion list
+    for (const entityName of names) {
+      if (entityName && datasetEntityObj[type][entityName]) {
+        const isAssociated = Boolean(datasetEntityObj[type][entityName][filePath]);
+        if (isAssociated) {
+          console.log(`File ${filePath} is EXCLUDED by ${type}/${entityName}`);
+          return false; // File is associated with an excluded entity, so don't show it
+        }
+      }
+    }
+  }
+
+  // If there's no include list, we only needed to pass the exclude check
+  if (entityFilters.include.length === 0) {
+    return true;
+  }
+
+  // Check inclusions - must match AT LEAST ONE inclusion filter set
+  for (const filter of entityFilters.include) {
+    const { type, names } = filter;
+    if (!type || !names || !Array.isArray(names) || names.length === 0) continue;
+
+    // Skip if entity type doesn't exist in datasetEntityObj
+    if (!datasetEntityObj[type]) {
+      console.log(`Entity type ${type} not found in datasetEntityObj`);
+      continue;
+    }
+
+    // Check each entity name in the inclusion list
+    for (const entityName of names) {
+      if (entityName && datasetEntityObj[type][entityName]) {
+        const isAssociated = Boolean(datasetEntityObj[type][entityName][filePath]);
+        if (isAssociated) {
+          console.log(`File ${filePath} is INCLUDED by ${type}/${entityName}`);
+          return true; // File is associated with an included entity, so show it
+        }
+      }
+    }
+  }
+
+  // If we get here, the file didn't match any include entity
+  console.log(`File ${filePath} did not match any included entities`);
+  return false;
 };
 
 // Prunes the folder structure based on the search filter and optional entity filter
@@ -66,20 +139,20 @@ const pruneFolder = (folder, searchFilter, entityFilterConfig = null) => {
 
     // Apply combined filtering:
     // 1. File matches search filter (or no search filter)
-    // 2. File is associated with the selected entity (if entity filter is active)
+    // 2. File passes the entity filter criteria (if entity filter is active)
     const matchesSearch = !lowerCaseSearchFilter || filePathMatches;
 
     if (entityFilterConfig && entityFilterConfig.active) {
-      const { entityType, entityName } = entityFilterConfig;
-
-      const isAssociated = checkIfFileAssociatedWithEntity(
+      // Use the new entity filter checking function with the complex filter config
+      const passesEntityFilter = checkIfFilePassesEntityFilter(
         file.relativePath,
-        entityType,
-        entityName
+        entityFilterConfig.filters
       );
-      console.log(`File ${file.relativePath} association with ${entityName}: ${isAssociated}`);
 
-      if (matchesSearch && isAssociated) {
+      // Log filtering results for debugging
+      console.log(`File ${file.relativePath} filtering result: ${passesEntityFilter}`);
+
+      if (matchesSearch && passesEntityFilter) {
         matchingFiles[key] = file;
       }
     } else if (matchesSearch) {
@@ -122,34 +195,6 @@ const pruneFolder = (folder, searchFilter, entityFilterConfig = null) => {
   // If we get here, this folder and all its contents don't match the criteria
   console.log(`Pruning out folder ${folder.relativePath} - no matches`);
   return null;
-};
-
-// Check if a file is associated with a specific entity - enhance logging
-const checkIfFileAssociatedWithEntity = (filePath, entityType, entityName) => {
-  const globalStore = useGlobalStore.getState();
-  const datasetEntityObj = globalStore.datasetEntityObj;
-
-  // Check if the entity type and entity name exist in the datasetEntityObj
-  if (
-    datasetEntityObj &&
-    datasetEntityObj[entityType] &&
-    datasetEntityObj[entityType][entityName]
-  ) {
-    // Check if the file path is associated with this entity
-    const isAssociated = Boolean(datasetEntityObj[entityType][entityName][filePath]);
-
-    // Add debug logging to help identify issues
-    if (!isAssociated) {
-      console.log(`File ${filePath} is NOT associated with ${entityType}/${entityName}`);
-      // Log the first few entries to help debug
-      const entries = Object.keys(datasetEntityObj[entityType][entityName]).slice(0, 5);
-      console.log(`Sample entries in ${entityType}/${entityName}:`, entries);
-    }
-
-    return isAssociated;
-  }
-
-  return false;
 };
 
 // Filters the dataset structure based on the search filter
@@ -211,13 +256,11 @@ export const setDatasetStructureSearchFilter = (searchFilter) => {
     const entityFilterConfig = globalStore.entityFilterActive
       ? {
           active: true,
-          entityType: globalStore.entityFilterType,
-          entityName: globalStore.entityFilterName,
+          filters: globalStore.entityFilters,
         }
       : null;
 
     // Pass entity filter config to pruneFolder function
-    // This centralizes all filtering logic in one place
     const filteredStructure = pruneFolder(structureToFilter, searchFilter, entityFilterConfig);
 
     useGlobalStore.setState({
@@ -414,16 +457,57 @@ export const moveFolderToNewLocation = (targetRelativePath) => {
   }
 };
 
-// Set entity filter to show only files associated with a specific entity
-export const setEntityFilter = (entityType, entityName) => {
-  console.log(`Setting entity filter: ${entityType} - ${entityName}`);
+/**
+ * Set entity filter with multi-type include/exclude capabilities using direct parameters
+ *
+ * @param {Array} include - Array of {type, names} objects for inclusion
+ * @param {Array} exclude - Array of {type, names} objects for exclusion
+ *
+ * Example:
+ * setEntityFilter(
+ *   [
+ *     { type: 'subjects', names: ['sub-001', 'sub-002'] },
+ *     { type: 'samples', names: ['sample-A'] }
+ *   ],
+ *   [
+ *     { type: 'categorized-data', names: ['Code'] }
+ *   ]
+ * );
+ */
+export const setEntityFilter = (include = [], exclude = []) => {
+  // Validate and normalize each filter entry
+  const normalizeFilters = (filters) => {
+    return Array.isArray(filters)
+      ? filters
+          .map((filter) => ({
+            type: filter.type || null,
+            names: Array.isArray(filter.names) ? filter.names.filter(Boolean) : [],
+          }))
+          .filter((filter) => filter.type && filter.names.length > 0)
+      : [];
+  };
 
-  // Clear the render structure first to avoid flash of unfiltered content
+  // Normalize both include and exclude arrays
+  const normalizedInclude = normalizeFilters(include);
+  const normalizedExclude = normalizeFilters(exclude);
+
+  // Create the entityFilters object
+  const entityFilters = {
+    include: normalizedInclude,
+    exclude: normalizedExclude,
+  };
+
+  // Log what we're filtering
+  console.log("Setting entity filters:", JSON.stringify(entityFilters, null, 2));
+
+  // Only activate filter if we have valid filters
+  const isFilterActive = normalizedInclude.length > 0 || normalizedExclude.length > 0;
+
+  // Update state
   useGlobalStore.setState({
     renderDatasetStructureJSONObjIsLoading: true,
-    entityFilterActive: true,
-    entityFilterType: entityType,
-    entityFilterName: entityName,
+    entityFilterActive: isFilterActive,
+    entityFilters: entityFilters,
   });
 
   // Re-apply the current search filter to update the view with the entity filter
@@ -433,8 +517,28 @@ export const setEntityFilter = (entityType, entityName) => {
   }, 0);
 };
 
+// For backward compatibility - filter by a single entity type
+export const setSimpleEntityFilter = (entityType, includeNames = [], excludeNames = []) => {
+  // Convert to the new format for direct parameters
+  const includeFilter = includeNames.length > 0 ? [{ type: entityType, names: includeNames }] : [];
+  const excludeFilter = excludeNames.length > 0 ? [{ type: entityType, names: excludeNames }] : [];
+
+  setEntityFilter(includeFilter, excludeFilter);
+};
+
 // Clear the entity filter
 export const clearEntityFilter = () => {
   console.log("Clearing entity filter");
-  setEntityFilter(null, null, false);
+
+  useGlobalStore.setState({
+    renderDatasetStructureJSONObjIsLoading: true,
+    entityFilterActive: false,
+    entityFilters: { include: [], exclude: [] },
+  });
+
+  // Re-apply the current search filter without entity filtering
+  setTimeout(() => {
+    const currentSearchFilter = useGlobalStore.getState().datasetStructureSearchFilter;
+    setDatasetStructureSearchFilter(currentSearchFilter);
+  }, 0);
 };

@@ -336,7 +336,7 @@ export const openPage = async (targetPageID) => {
           for (const performance of performanceList) {
             addEntityToEntityList("performances", performance.performanceId);
           }
-          setEntityFilter("categorized-data", "Experimental data");
+          setEntityFilter([{ type: "categorized-data", names: ["Experimental data"] }], []);
         }
 
         if (pageEntityType === "modalities") {
@@ -371,17 +371,14 @@ export const openPage = async (targetPageID) => {
 
         // Check if there are files in the Experimental data bucket
         const hasExperimentalData =
-          savedDatasetEntityObj &&
-          savedDatasetEntityObj["categorized-data"] &&
-          savedDatasetEntityObj["categorized-data"]["Experimental data"] &&
-          Object.keys(savedDatasetEntityObj["categorized-data"]["Experimental data"] || {}).length >
-            0;
+          !!savedDatasetEntityObj?.["categorized-data"]?.["Experimental data"] &&
+          Object.keys(savedDatasetEntityObj["categorized-data"]["Experimental data"]).length > 0;
 
         // If experimental data exists, apply the filter
         if (hasExperimentalData) {
           console.log("Auto-filtering for Experimental data");
           // Apply the filter for experimental data
-          setEntityFilter("categorized-data", "Experimental data");
+          setEntityFilter([{ type: "categorized-data", names: ["Experimental data"] }], []);
         } else {
           console.log("No experimental data found to filter");
         }
