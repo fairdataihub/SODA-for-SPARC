@@ -1,14 +1,12 @@
 from flask_restx import Resource, fields, reqparse
 from namespaces import NamespaceEnum, get_namespace
 from flask import request
-import traceback
 from os.path import (
     expanduser,
     join,
 )
 
-from curate import (
-    create_folder_level_manifest,
+from pysoda.core.dataset_generation import (
     check_empty_files_folders,
     main_curate_function,
     main_curate_function_progress,
