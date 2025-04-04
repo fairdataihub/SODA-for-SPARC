@@ -8,7 +8,6 @@ import DatasetTreeViewRenderer from "../shared/DatasetTreeViewRenderer";
 import GenericButton from "../buttons/Generic";
 import SingleColumnTable from "../tables/singleColumn";
 import PennsieveAgentCheckDisplay from "../backgroundServices/PennsieveAgentCheckDisplay";
-import DatasetEntityStructurePage from "../pages/DatasetEntityStructure";
 import DatasetContentSelector from "../pages/DatasetContentSelector";
 import PerformanceIdManagementPage from "../pages/PerformanceIdManagement";
 import ModalitySelectionPage from "../pages/ModalitySelection";
@@ -188,14 +187,7 @@ const componentTypeRenderers = {
       </SodaComponentWrapper>
     );
   },
-  "dataset-entity-id-generation-page": (componentSlot) => {
-    const root = createRoot(componentSlot);
-    root.render(
-      <SodaComponentWrapper>
-        <DatasetEntityStructurePage />
-      </SodaComponentWrapper>
-    );
-  },
+
   "dataset-performance-id-management-page": (componentSlot) => {
     const root = createRoot(componentSlot);
     root.render(

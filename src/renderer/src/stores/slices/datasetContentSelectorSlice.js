@@ -7,10 +7,17 @@ export const datasetContentSelectorSlice = (set, get) => ({
   selectedHierarchyEntity: null,
 });
 
-// Selectors
-export const getSelectedEntities = (state) => state.selectedEntities;
-export const getDeSelectedEntities = (state) => state.deSelectedEntities;
-export const getSelectedHierarchyEntity = (state) => state.selectedHierarchyEntity;
+export const setSelectedEntities = (selectedEntities) => {
+  useGlobalStore.setState({ selectedEntities });
+};
+
+export const setDeSelectedEntities = (deSelectedEntities) => {
+  useGlobalStore.setState({ deSelectedEntities });
+};
+
+export const setSelectedHierarchyEntity = (entityObj) => {
+  useGlobalStore.setState({ selectedHierarchyEntity: entityObj });
+};
 
 // Actions
 export const setEntitySelection = (entityId, isSelected) => {
@@ -89,12 +96,4 @@ export const removeEntityAndDependents = (entityId) => {
   });
 
   return allToRemove;
-};
-
-export const setSelectedEntities = (selectedEntities) => {
-  useGlobalStore.setState({ selectedEntities });
-};
-
-export const setSelectedHierarchyEntity = (entityObj) => {
-  useGlobalStore.setState({ selectedHierarchyEntity: entityObj });
 };

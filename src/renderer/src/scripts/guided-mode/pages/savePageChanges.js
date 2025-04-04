@@ -134,6 +134,9 @@ export const savePageChanges = async (pageBeingLeftID) => {
         }
         console.log("selectedEntities", selectedEntities);
         window.sodaJSONObj["selected-entities"] = selectedEntities;
+        const deSelectedEntities = useGlobalStore.getState()["deSelectedEntities"];
+        console.log("deSelectedEntities", deSelectedEntities);
+        window.sodaJSONObj["deSelected-entities"] = deSelectedEntities;
         console.log("selectedEntities", selectedEntities);
 
         if (!selectedEntities.includes("subjects") && !selectedEntities.includes("code")) {
@@ -192,43 +195,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
           guidedSkipPage("guided-code-folder-tab");
         }
       }
-      if (pageBeingLeftComponentType === "dataset-entity-id-generation-page") {
-        const speciesList = useGlobalStore.getState().speciesList;
-        const datasetEntityArray = useGlobalStore.getState().datasetEntityArray;
 
-        // Save the dataset entity object to the progress file
-        window.sodaJSONObj["species-list"] = speciesList;
-        window.sodaJSONObj["dataset-entity-array"] = datasetEntityArray;
-
-        console.log(
-          "speciesList when leaving" + pageBeingLeftID,
-          window.sodaJSONObj["species-list"]
-        );
-
-        console.log(
-          "datasetEntityArray when leaving" + pageBeingLeftID,
-          window.sodaJSONObj["dataset-entity-array"]
-        );
-      }
-      if (pageBeingLeftComponentType === "dataset-entity-id-management-page") {
-        ("dataset-entity-id-management-page");
-        const speciesList = useGlobalStore.getState().speciesList;
-        const datasetEntityArray = useGlobalStore.getState().datasetEntityArray;
-
-        // Save the dataset entity object to the progress file
-        window.sodaJSONObj["species-list"] = speciesList;
-        window.sodaJSONObj["dataset-entity-array"] = datasetEntityArray;
-
-        console.log(
-          "speciesList when leaving" + pageBeingLeftID,
-          window.sodaJSONObj["species-list"]
-        );
-
-        console.log(
-          "datasetEntityArray when leaving" + pageBeingLeftID,
-          window.sodaJSONObj["dataset-entity-array"]
-        );
-      }
       if (pageBeingLeftComponentType === "dataset-entity-metadata-page") {
         const datasetEntityArray = useGlobalStore.getState().datasetEntityArray;
 

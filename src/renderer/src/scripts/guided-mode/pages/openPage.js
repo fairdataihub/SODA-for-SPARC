@@ -19,7 +19,10 @@ import {
   setDatasetEntityArray,
   setActiveFormType,
 } from "../../../stores/slices/datasetEntityStructureSlice.js";
-import { setSelectedEntities } from "../../../stores/slices/datasetContentSelectorSlice.js";
+import {
+  setSelectedEntities,
+  setDeSelectedEntities,
+} from "../../../stores/slices/datasetContentSelectorSlice.js";
 import { setDatasetEntityObj } from "../../../stores/slices/datasetEntitySelectorSlice.js";
 import { setSelectedHierarchyEntity } from "../../../stores/slices/datasetContentSelectorSlice.js";
 import { guidedSetNavLoadingState } from "./navigationUtils/pageLoading.js";
@@ -241,6 +244,7 @@ export const openPage = async (targetPageID) => {
 
     // Synchronize state between the SODA JSON object and the zustand store
     setSelectedEntities(window.sodaJSONObj["selected-entities"] || []);
+    setDeSelectedEntities(window.sodaJSONObj["deSelected-entities"] || []);
     setPerformanceList(window.sodaJSONObj["performance-list"] || []);
 
     if (
@@ -352,7 +356,6 @@ export const openPage = async (targetPageID) => {
         /* ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** */
         setSelectedHierarchyEntity(null);
 
-        const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
         const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
         const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
 
@@ -376,33 +379,13 @@ export const openPage = async (targetPageID) => {
           console.log("No experimental data found to filter");
         }
 
-        setSelectedEntities(selectedEntities);
         setDatasetEntityArray(datasetEntityArray);
         setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["unstructured-data"]);
       }
 
-      if (targetPageComponentType === "dataset-entity-id-generation-page") {
-        const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
-        const speciesList = window.sodaJSONObj["species-list"] || [];
-        const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
-        setSelectedEntities(selectedEntities);
-        setSpeciesList(speciesList);
-        setDatasetEntityArray(datasetEntityArray);
-      }
-
-      if (targetPageComponentType === "dataset-entity-id-management-page") {
-        const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
-        const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
-
-        setSelectedEntities(selectedEntities);
-        setDatasetEntityArray(datasetEntityArray);
-      }
-
       if (targetPageComponentType === "dataset-entity-metadata-page") {
-        const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
         const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
 
-        setSelectedEntities(selectedEntities);
         setDatasetEntityArray(datasetEntityArray);
         setActiveFormType(null);
       }
