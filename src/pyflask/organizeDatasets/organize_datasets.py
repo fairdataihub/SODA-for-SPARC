@@ -735,7 +735,7 @@ def create_soda_json_object_backend(
                     if "extra_columns" in manifest_object:
                         dataset_structure["files"][entry] = {
                             "path": item_path,
-                            "type": "local",
+                            "location": "local",
                             "action": ["existing"],
                             "description": manifest_object["description"],
                             "additional-metadata": manifest_object["additional-metadata"],
@@ -744,7 +744,7 @@ def create_soda_json_object_backend(
                     else:
                         dataset_structure["files"][entry] = {
                             "path": item_path,
-                            "type": "local",
+                            "location": "local",
                             "action": ["existing"],
                             "description": manifest_object["description"],
                             "additional-metadata": manifest_object["additional-metadata"],
@@ -759,7 +759,7 @@ def create_soda_json_object_backend(
                         "folders": {},
                         "files": {},
                         "path": item_path,
-                        "type": "local",
+                        "location": "local",
                         "action": ["existing"],
                         "original-name": entry,
                     }
@@ -779,7 +779,7 @@ def create_soda_json_object_backend(
                         "folders": {},
                         "files": {},
                         "path": item_path,
-                        "type": "local",
+                        "location": "local",
                         "action": ["existing"],
                     }
 
@@ -824,7 +824,7 @@ def create_soda_json_object_backend(
                 create_soda_json_progress += 1
                 soda_json_structure["metadata-files"][entry] = {
                     "path": item_path,
-                    "type": "local",
+                    "location": "local",
                     "action": ["existing"],
                 }
             # do file work here
@@ -839,7 +839,7 @@ def create_soda_json_object_backend(
                     "folders": {},
                     "files": {},
                     "path": item_path,
-                    "type": "local",
+                    "location": "local",
                     "action": ["existing"],
                     "original-basename": item_path[(item_path.rfind("/") + 1) :],
                 }
@@ -849,7 +849,7 @@ def create_soda_json_object_backend(
                         "folders": {},
                         "files": {},
                         "path": item_path,
-                        "type": "local",
+                        "location": "local",
                         "action": ["existing"],
                     }
             soda_json_structure["starting-point"][entry] = {"path": ""}

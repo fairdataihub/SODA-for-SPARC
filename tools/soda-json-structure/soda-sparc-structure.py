@@ -60,11 +60,11 @@ Notes:
 
 
 soda_json_structure = {
-    "bf-account-selected": {
+    "ps-account-selected": {
         "account-name": "bhavesh-Windows-work",
     },
     
-    "bf-dataset-selected": {
+    "ps-dataset-selected": {
         "dataset-name": "bigdata",
     },
     

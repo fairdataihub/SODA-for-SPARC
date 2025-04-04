@@ -59,7 +59,7 @@ export const renderProtocolsTable = () => {
     .map((protocol) => {
       return generateProtocolField(
         protocol["link"],
-        protocol["type"],
+        protocol["location"],
         protocol["description"],
         protocol["isFair"]
       );

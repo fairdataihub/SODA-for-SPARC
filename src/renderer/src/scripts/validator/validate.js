@@ -148,10 +148,10 @@ const validateLocalDataset = async () => {
 
   // setup the sodaJSONObj for the import endpoint
   let localSodaJsonObject = {
-    "bf-account-selected": {
+    "ps-account-selected": {
       "account-name": {},
     },
-    "bf-dataset-selected": {
+    "ps-dataset-selected": {
       "dataset-name": {},
     },
     "dataset-structure": {},
@@ -159,7 +159,7 @@ const validateLocalDataset = async () => {
     "manifest-files": {},
     "generate-dataset": {},
     "starting-point": {
-      type: "local",
+      location: "local",
       "local-path": datasetPath,
     },
   };
@@ -413,10 +413,10 @@ const validatePennsieveDatasetStandAlone = async () => {
 
   // create a local SODA JSON object to pass to the import endpoint
   let localSodaJSONObj = {
-    "bf-account-selected": {
+    "ps-account-selected": {
       "account-name": {},
     },
-    "bf-dataset-selected": {
+    "ps-dataset-selected": {
       "dataset-name": {},
     },
     "dataset-structure": {},
@@ -424,12 +424,12 @@ const validatePennsieveDatasetStandAlone = async () => {
     "manifest-files": {},
     "generate-dataset": {},
     "starting-point": {
-      type: "bf",
+      type: "ps",
     },
   };
 
-  localSodaJSONObj["bf-account-selected"]["account-name"] = $("#current-bf-account").text();
-  localSodaJSONObj["bf-dataset-selected"]["dataset-name"] = $("#bf_dataset_load_validator").text();
+  localSodaJSONObj["ps-account-selected"]["account-name"] = $("#current-bf-account").text();
+  localSodaJSONObj["ps-dataset-selected"]["dataset-name"] = $("#bf_dataset_load_validator").text();
 
   // import the dataset from Pennsieve
   let datasetPopulationResponse;

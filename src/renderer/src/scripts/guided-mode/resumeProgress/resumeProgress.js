@@ -71,7 +71,7 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
 
     if (!datasetHasAlreadyBeenSuccessfullyUploaded) {
       // If the dataset is being edited on Pensieve, check to make sure the folders and files are still the same.
-      if (datasetResumeJsonObj["starting-point"]?.["type"] === "bf") {
+      if (datasetResumeJsonObj["starting-point"]?.["origin"] === "ps") {
         // Check to make sure the dataset is not locked
         const datasetIsLocked = await api.isDatasetLocked(
           datasetResumeJsonObj["digital-metadata"]["pennsieve-dataset-id"]
@@ -293,7 +293,7 @@ const patchPreviousGuidedModeVersions = async () => {
 
   // If the user started a dataset after version 10.0.4, skip CHANGES metadata pages
   if (!window.sodaJSONObj["skipped-pages"].includes("guided-create-changes-metadata-tab")) {
-    if (window.sodaJSONObj["starting-point"]["type"] === "new") {
+    if (window.sodaJSONObj["starting-point"]["origin"] === "new") {
       window.sodaJSONObj["skipped-pages"].push("guided-create-changes-metadata-tab");
     }
   }
@@ -301,7 +301,7 @@ const patchPreviousGuidedModeVersions = async () => {
   // If the the last time the user worked on the dataset was before v11.0.0, skip the changes page unless
   // the dataset has already been published.
   if (window.sodaJSONObj["last-version-of-soda-used"] <= "11.0.0") {
-    if (window.sodaJSONObj["starting-point"]["type"] === "bf") {
+    if (window.sodaJSONObj["starting-point"]["origin"] === "ps") {
       const datasetsPennsieveID = window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
 
       // Skip/unSkip the changes metadata page based on publishing status
@@ -324,7 +324,7 @@ const patchPreviousGuidedModeVersions = async () => {
     }
   }
 
-  if (window.sodaJSONObj?.["starting-point"]?.["type"] === "bf") {
+  if (window.sodaJSONObj?.["starting-point"]?.["origin"] === "ps") {
     if (!window.sodaJSONObj?.["digital-metadata"]?.["dataset-workspace"]) {
       // Skip the log in page since we no longer need it
       guidedSkipPage("guided-pennsieve-intro-tab");

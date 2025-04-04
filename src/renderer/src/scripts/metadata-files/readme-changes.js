@@ -13,7 +13,7 @@ while (!window.baseHtmlLoaded) {
 // event listeners for changes open dropdown prompts
 document.querySelectorAll(".changes-change-current-account").forEach((element) => {
   element.addEventListener("click", function () {
-    window.openDropdownPrompt(null, "bf");
+    window.openDropdownPrompt(null, "ps");
   });
 });
 
@@ -26,7 +26,7 @@ document.querySelectorAll(".changes-change-current-ds").forEach((element) => {
 // event listeners for readme open dropdown prompts
 document.querySelectorAll(".readme-change-current-account").forEach((element) => {
   element.addEventListener("click", function () {
-    window.openDropdownPrompt(null, "bf");
+    window.openDropdownPrompt(null, "ps");
   });
 });
 

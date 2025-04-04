@@ -722,7 +722,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
         let metadata_import = await client.get(`/prepare_metadata/import_metadata_file`, {
           params: {
             selected_account: window.defaultBfAccount,
-            selected_dataset: window.sodaJSONObj["bf-dataset-selected"]["dataset-name"],
+            selected_dataset: window.sodaJSONObj["ps-dataset-selected"]["dataset-name"],
             file_type: "dataset_description.xlsx",
           },
         });

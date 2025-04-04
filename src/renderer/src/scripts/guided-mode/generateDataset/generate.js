@@ -1251,14 +1251,14 @@ const guidedUploadDatasetToPennsieve = async () => {
   let dataset_name;
   let dataset_destination;
 
-  if (window.sodaJSONObj["generate-dataset"]["destination"] == "bf") {
+  if (window.sodaJSONObj["generate-dataset"]["destination"] == "ps") {
     //Replace files and folders since guided mode always uploads to an existing Pennsieve dataset
     window.sodaJSONObj["generate-dataset"]["if-existing"] = "merge";
     window.sodaJSONObj["generate-dataset"]["if-existing-files"] = "skip";
     dataset_name = window.sodaJSONObj["digital-metadata"]["name"];
-    window.sodaJSONObj["bf-dataset-selected"] = {};
-    window.sodaJSONObj["bf-dataset-selected"]["dataset-name"] = dataset_name;
-    window.sodaJSONObj["bf-account-selected"]["account-name"] = window.defaultBfAccount;
+    window.sodaJSONObj["ps-dataset-selected"] = {};
+    window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = dataset_name;
+    window.sodaJSONObj["ps-account-selected"]["account-name"] = window.defaultBfAccount;
     dataset_destination = "Pennsieve";
   }
 

@@ -217,7 +217,7 @@ const handleStartCuration = async () => {
   }
 
   if (startingNewCuration) {
-    window.sodaJSONObj["starting-point"]["type"] = "new";
+    window.sodaJSONObj["starting-point"]["origin"] = "new";
     window.sodaJSONObj["generate-dataset"]["generate-option"] = "new";
 
     // Skip the changes metadata tab as new datasets do not have changes metadata
@@ -298,9 +298,9 @@ const handleStartCuration = async () => {
     }
 
     //Pull the dataset folders and files from Pennsieve\
-    window.sodaJSONObj["bf-dataset-selected"] = {};
-    window.sodaJSONObj["bf-dataset-selected"]["dataset-name"] = selectedPennsieveDataset;
-    window.sodaJSONObj["bf-account-selected"]["account-name"] = window.defaultBfAccount;
+    window.sodaJSONObj["ps-dataset-selected"] = {};
+    window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = selectedPennsieveDataset;
+    window.sodaJSONObj["ps-account-selected"]["account-name"] = window.defaultBfAccount;
     const importProgressCircle = document.querySelector(
       "#guided_loading_pennsieve_dataset-organize"
     );
@@ -534,7 +534,7 @@ const handleStartCuration = async () => {
     });
 
     // Set the json options for resuming a pennsieve dataset from Pennsieve
-    window.sodaJSONObj["starting-point"]["type"] = "bf";
+    window.sodaJSONObj["starting-point"]["origin"] = "ps";
     window.sodaJSONObj["generate-dataset"]["generate-option"] = "existing-bf";
     window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] = selectedPennsieveDatasetID;
     window.sodaJSONObj["digital-metadata"]["name"] = selectedPennsieveDataset;

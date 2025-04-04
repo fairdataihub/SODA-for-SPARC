@@ -75,7 +75,7 @@ class ManifestBuilder:
         """
         destination, generate_option, _, _ = self._get_generate_dataset_keys(soda_json_structure)
 
-        return destination == "bf" and generate_option == "new" and "bf-dataset-selected" in soda_json_structure
+        return destination == "bf" and generate_option == "new" and "ps-dataset-selected" in soda_json_structure
 
     def _creating_new_pennsieve_dataset(self, soda_json_structure):
         """
@@ -84,7 +84,7 @@ class ManifestBuilder:
         """
         destination, generate_option, _, _ = self._get_generate_dataset_keys(soda_json_structure)
 
-        return destination == "bf" and generate_option == "new" and "bf-dataset-selected" not in soda_json_structure
+        return destination == "bf" and generate_option == "new" and "ps-dataset-selected" not in soda_json_structure
 
 
     def _creating_new_local_dataset(self, soda_json_structure):

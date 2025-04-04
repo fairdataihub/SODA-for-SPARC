@@ -93,7 +93,7 @@ const guidedLockSideBar = (boolShowNavBar) => {
 };
 
 const hideAndShowElementsDependingOnStartType = (pageElement) => {
-  const startingFromPennsieve = window.sodaJSONObj?.["starting-point"]?.["type"] === "bf";
+  const startingFromPennsieve = window.sodaJSONObj?.["starting-point"]?.["origin"] === "ps";
   const textToShowWhenStartingFromPennsieve = pageElement.querySelectorAll(
     ".showWhenStartingFromPennsieve"
   );
@@ -860,7 +860,7 @@ export const openPage = async (targetPageID) => {
     //         // (We don't display this feature when starting from Pennsieve because we don't currently have the ability
     //         // to copy a dataset from Pennsieve to the user's local system)
     //         const createCopySection = document.getElementById("guided-section-create-local-dataset-copy");
-    //         if (window.sodaJSONObj["starting-point"]["type"] === "new") {
+    //         if (window.sodaJSONObj["starting-point"]["origin"] === "new") {
     //             createCopySection.classList.remove("hidden");
     //         } else {
     //             createCopySection.classList.add("hidden");
@@ -873,8 +873,8 @@ export const openPage = async (targetPageID) => {
     //         // Show the loading page while the page's data is being fetched from Pennsieve
     //         setPageLoadingState(true);
 
-    //         const currentAccount = window.sodaJSONObj["bf-account-selected"]["account-name"];
-    //         const currentDataset = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+    //         const currentAccount = window.sodaJSONObj["ps-account-selected"]["account-name"];
+    //         const currentDataset = window.sodaJSONObj["ps-dataset-selected"]["dataset-name"];
 
     //         const pennsieveDatasetID = window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
 

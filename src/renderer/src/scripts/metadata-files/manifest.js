@@ -21,7 +21,7 @@ let openedEdit = false;
 // opendropdown event listeners
 document.querySelectorAll(".manifest-change-current-account").forEach((element) => {
   element.addEventListener("click", () => {
-    window.openDropdownPrompt(null, "bf");
+    window.openDropdownPrompt(null, "ps");
   });
 });
 
@@ -744,7 +744,7 @@ window.convertJSONToXlsx = async (jsondata, excelfile) => {
 
 const determineStandaloneManifestGeneratorOrigin = () => {
   const selectedCardCreateManifest = $('input[name="generate-manifest-1"]:checked').prop("id");
-  return selectedCardCreateManifest === "generate-manifest-from-Penn" ? "bf" : "local";
+  return selectedCardCreateManifest === "generate-manifest-from-Penn" ? "ps" : "local";
 };
 
 var localDatasetFolderPath = "";
@@ -779,9 +779,9 @@ window.generateManifestPrecheck = async (manifestEditBoolean, ev) => {
   window.datasetStructureJSONObj = { folders: {}, files: {} };
   window.sodaJSONObj["metadata-files"] = {};
 
-  if (type === "bf") {
+  if (type === "ps") {
     titleTerm = "on Pennsieve";
-  } else if (type != "bf" && !pennsievePreview) {
+  } else if (type != "ps" && !pennsievePreview) {
     continueProgressValidateDataset = validateSPARCdataset();
 
     if (!continueProgressValidateDataset) {
@@ -912,7 +912,7 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
         Destinations.LOCAL
       );
 
-      window.sodaJSONObj["starting-point"]["type"] = "local";
+      window.sodaJSONObj["starting-point"]["origin"] = "local";
       // if the manifest is going to be recreated post edits
       if (manifestEditBoolean) {
         localDatasetFolderPath = $("#input-manifest-local-folder-dataset").attr("placeholder");
@@ -922,8 +922,8 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
       window.populate_existing_folders(window.datasetStructureJSONObj);
       window.populate_existing_metadata(window.sodaJSONObj);
       window.sodaJSONObj["manifest-files"] = { destination: "generate-dataset" };
-      window.sodaJSONObj["bf-account-selected"] = {};
-      window.sodaJSONObj["bf-dataset-selected"] = {};
+      window.sodaJSONObj["ps-account-selected"] = {};
+      window.sodaJSONObj["ps-dataset-selected"] = {};
       window.sodaJSONObj["generate-dataset"] = {};
       // check for empty folders/sub-folders
       let continueProgressEmptyFolder = await checkEmptySubFolders(
@@ -1017,8 +1017,8 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
     if (manifestEditBoolean) {
       generateAfterEdits();
     } else {
-      window.sodaJSONObj["bf-account-selected"] = { "account-name": window.defaultBfAccount };
-      window.sodaJSONObj["bf-dataset-selected"] = { "dataset-name": window.defaultBfDataset };
+      window.sodaJSONObj["ps-account-selected"] = { "account-name": window.defaultBfAccount };
+      window.sodaJSONObj["ps-dataset-selected"] = { "dataset-name": window.defaultBfDataset };
       extractBFDatasetForManifestFile(false, window.defaultBfAccount, window.defaultBfDataset, ev);
     }
   }
@@ -1027,12 +1027,12 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
 const generateManifestHelper = async () => {
   updateJSONStructureManifestGenerate();
   // now call the upload function including generating the manifest file(s)
-  if (window.sodaJSONObj["starting-point"]["type"] === "local") {
-    window.sodaJSONObj["starting-point"]["type"] = "new";
+  if (window.sodaJSONObj["starting-point"]["origin"] === "local") {
+    window.sodaJSONObj["starting-point"]["origin"] = "new";
   }
   let dataset_destination = "";
 
-  if ("bf-dataset-selected" in window.sodaJSONObj) {
+  if ("ps-dataset-selected" in window.sodaJSONObj) {
     dataset_destination = "Pennsieve";
   } else if ("generate-dataset" in window.sodaJSONObj) {
     if ("destination" in window.sodaJSONObj["generate-dataset"]) {
@@ -1040,7 +1040,7 @@ const generateManifestHelper = async () => {
       if (destination == "local") {
         dataset_destination = "Local";
       }
-      if (destination == "bf") {
+      if (destination == "ps") {
         dataset_destination = "Pennsieve";
       }
     }
@@ -1131,10 +1131,10 @@ const recursive_remove_deleted_files = (dataset_folder) => {
 };
 
 const updateJSONStructureManifestGenerate = () => {
-  let starting_point = window.sodaJSONObj["starting-point"]["type"];
-  if (starting_point == "bf") {
+  let starting_point = window.sodaJSONObj["starting-point"]["origin"];
+  if (starting_point == "ps") {
     window.sodaJSONObj["generate-dataset"] = {
-      destination: "bf",
+      destination: "ps",
       "generate-option": "existing-bf",
     };
   }
@@ -1149,13 +1149,13 @@ const updateJSONStructureManifestGenerate = () => {
       "generate-option": "new",
     };
     // delete bf account and dataset keys
-    if ("bf-account-selected" in window.sodaJSONObj) {
-      delete window.sodaJSONObj["bf-account-selected"];
+    if ("ps-account-selected" in window.sodaJSONObj) {
+      delete window.sodaJSONObj["ps-account-selected"];
     }
-    if ("bf-dataset-selected" in window.sodaJSONObj) {
-      delete window.sodaJSONObj["bf-dataset-selected"];
+    if ("ps-dataset-selected" in window.sodaJSONObj) {
+      delete window.sodaJSONObj["ps-dataset-selected"];
     }
-    window.sodaJSONObj["starting-point"]["type"] = "new";
+    window.sodaJSONObj["starting-point"]["origin"] = "new";
   }
 };
 
@@ -1472,7 +1472,7 @@ const extractBFDatasetForManifestFile = async (editBoolean, bfaccount, bfdataset
 
     $("#bf_dataset_create_manifest").text("None");
     $("#div-check-bf-create-manifest").hide();
-    window.sodaJSONObj["bf-dataset-selected"]["dataset-name"] = "";
+    window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = "";
     return;
   } else {
     window.sodaJSONObj = result[1]["soda_object"];
@@ -1483,10 +1483,10 @@ const extractBFDatasetForManifestFile = async (editBoolean, bfaccount, bfdataset
     }
     window.sodaJSONObj["manifest-files"] = { destination: "generate-dataset" };
     window.sodaJSONObj["generate-dataset"] = {
-      destination: "bf",
+      destination: "ps",
       "generate-option": "existing-bf",
     };
-    window.sodaJSONObj["starting-point"] = { type: "bf" };
+    window.sodaJSONObj["starting-point"] = { origin: "ps" };
 
     window.populate_existing_folders(window.datasetStructureJSONObj);
     window.populate_existing_metadata(window.sodaJSONObj);
@@ -1807,7 +1807,7 @@ window.generateManifestFolderLocallyForEdit = async (ev) => {
   //Function called by Confirm button in Prepare Metadata -> Manifest
   let type = "local";
   if ($('input[name="generate-manifest-1"]:checked').prop("id") === "generate-manifest-from-Penn") {
-    type = "bf";
+    type = "ps";
   }
 
   // setup question 5 for local or pennsieve generation
@@ -1863,14 +1863,14 @@ window.generateManifestFolderLocallyForEdit = async (ev) => {
     }
 
     window.sodaJSONObj["starting-point"]["local-path"] = localDatasetFolderPath;
-    window.sodaJSONObj["starting-point"]["type"] = "local";
+    window.sodaJSONObj["starting-point"]["origin"] = "local";
     await window.create_json_object("", window.sodaJSONObj, localDatasetFolderPath);
     window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
     window.populate_existing_folders(window.datasetStructureJSONObj);
     window.populate_existing_metadata(window.sodaJSONObj);
     window.sodaJSONObj["manifest-files"] = { destination: "generate-dataset" };
-    window.sodaJSONObj["bf-account-selected"] = {};
-    window.sodaJSONObj["bf-dataset-selected"] = {};
+    window.sodaJSONObj["ps-account-selected"] = {};
+    window.sodaJSONObj["ps-dataset-selected"] = {};
     window.sodaJSONObj["generate-dataset"] = {};
     continueProgressEmptyFolder = await checkEmptySubFolders(
       window.sodaJSONObj["dataset-structure"]
@@ -1904,8 +1904,8 @@ window.generateManifestFolderLocallyForEdit = async (ev) => {
     }
   } else {
     // Case 2: bf dataset
-    window.sodaJSONObj["bf-account-selected"] = { "account-name": window.defaultBfAccount };
-    window.sodaJSONObj["bf-dataset-selected"] = { "dataset-name": window.defaultBfDataset };
+    window.sodaJSONObj["ps-account-selected"] = { "account-name": window.defaultBfAccount };
+    window.sodaJSONObj["ps-dataset-selected"] = { "dataset-name": window.defaultBfDataset };
     extractBFDatasetForManifestFile(true, window.defaultBfAccount, window.defaultBfDataset, ev);
   }
 };
@@ -2275,23 +2275,23 @@ const generateAfterEdits = async () => {
   let dir = window.path.join(window.homeDirectory, "SODA", "manifest_files");
   // set up window.sodaJSONObject
   window.sodaJSONObj = {
-    "bf-account-selected": {},
-    "bf-dataset-selected": {},
+    "ps-account-selected": {},
+    "ps-dataset-selected": {},
     "dataset-structure": {},
     "metadata-files": {},
     "generate-dataset": {},
     "starting-point": {},
   };
   window.sodaJSONObj["starting-point"]["local-path"] = dir;
-  window.sodaJSONObj["starting-point"]["type"] = "local";
+  window.sodaJSONObj["starting-point"]["origin"] = "local";
   window.create_json_object_include_manifest("", window.sodaJSONObj, dir);
   window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
   window.populate_existing_folders(window.datasetStructureJSONObj);
   window.populate_existing_metadata(window.sodaJSONObj);
-  window.sodaJSONObj["bf-account-selected"] = { "account-name": window.defaultBfAccount };
-  window.sodaJSONObj["bf-dataset-selected"] = { "dataset-name": window.defaultBfDataset };
+  window.sodaJSONObj["ps-account-selected"] = { "account-name": window.defaultBfAccount };
+  window.sodaJSONObj["ps-dataset-selected"] = { "dataset-name": window.defaultBfDataset };
   window.sodaJSONObj["generate-dataset"] = {
-    destination: "bf",
+    destination: "ps",
     "if-existing": "merge",
     "if-existing-files": "replace",
     "generate-option": "new",

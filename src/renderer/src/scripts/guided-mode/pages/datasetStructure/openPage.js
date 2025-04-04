@@ -8,7 +8,7 @@ export const openPageDatasetStructure = async (targetPageID) => {
     // indicated that they will be adding subjects, and the user is not starting from Pennsieve
     if (
       window.getExistingSubjectNames().length === 0 &&
-      window.sodaJSONObj["starting-point"]["type"] != "bf" &&
+      window.sodaJSONObj["starting-point"]["origin"] != "ps" &&
       window.sodaJSONObj["button-config"]["dataset-contains-subjects"] === "yes"
     ) {
       guidedUnSkipPage("guided-subject-structure-spreadsheet-importation-tab");

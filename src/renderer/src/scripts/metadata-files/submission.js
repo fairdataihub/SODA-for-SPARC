@@ -33,7 +33,7 @@ window.sparcFundingConsortiums = [
 // event listeners for opendropdown prompt
 document.querySelectorAll(".submission-change-current-account").forEach((element) => {
   element.addEventListener("click", function () {
-    window.openDropdownPrompt(null, "bf");
+    window.openDropdownPrompt(null, "ps");
   });
 });
 
@@ -1199,7 +1199,7 @@ window.checkBFImportSubmission = async () => {
     });
     let res = import_metadata.data;
 
-    loadSubmissionFileToUI(res, "bf");
+    loadSubmissionFileToUI(res, "ps");
   } catch (error) {
     clientError(error);
     Swal.fire({

@@ -117,7 +117,7 @@ const guidedResetLocalGenerationUI = () => {
 };
 
 const folderImportedFromPennsieve = (folderJSONPath) => {
-  return folderJSONPath.type === "bf";
+  return folderJSONPath.type === "ps";
 };
 
 const guidedModifyPennsieveFolder = (folderJSONPath, action) => {
@@ -190,7 +190,7 @@ window.guidedSetCurationTeamUI = () => {
 
 // Function used to reserve a DOI for the current dataset and account
 window.guidedReserveAndSaveDOI = async () => {
-  let dataset = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+  let dataset = window.sodaJSONObj["ps-dataset-selected"]["dataset-name"];
   $("#curate-button-reserve-doi").addClass("loading");
   $("#curate-button-reserve-doi").disabled = true;
 
@@ -548,7 +548,7 @@ document
 
       // if the user performed move, rename, delete on files in an imported dataset we need to perform those actions before creating the validation report;
       // rationale for this can be found in the function definition
-      if (sodaJSONObjCopy["starting-point"]["type"] === "bf") {
+      if (sodaJSONObjCopy["starting-point"]["origin"] === "ps") {
         await api.performUserActions(sodaJSONObjCopy);
       }
 
@@ -4754,8 +4754,8 @@ window.electron.ipcRenderer.on(
       };
       // Remove unnecessary key from sodaJSONObjCopy since we don't need to
       // check if the account details are valid during local generation
-      delete sodaJSONObjCopy["bf-account-selected"];
-      delete sodaJSONObjCopy["bf-dataset-selected"];
+      delete sodaJSONObjCopy["ps-account-selected"];
+      delete sodaJSONObjCopy["ps-dataset-selected"];
 
       updateDatasetUploadProgressTable("local", {
         "Current action": `Preparing dataset for local generation`,

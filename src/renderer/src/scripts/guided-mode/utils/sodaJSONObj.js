@@ -69,10 +69,10 @@ export const guidedCreateSodaJSONObj = () => {
 
   window.sodaJSONObj["guided-options"] = {};
   window.sodaJSONObj["cuartion-mode"] = "guided";
-  window.sodaJSONObj["bf-account-selected"] = {};
+  window.sodaJSONObj["ps-account-selected"] = {};
   window.sodaJSONObj["dataset-structure"] = { files: {}, folders: {} };
   window.sodaJSONObj["generate-dataset"] = {};
-  window.sodaJSONObj["generate-dataset"]["destination"] = "bf";
+  window.sodaJSONObj["generate-dataset"]["destination"] = "ps";
   window.sodaJSONObj["guided-manifest-file-data"] = {};
   window.sodaJSONObj["starting-point"] = {};
   window.sodaJSONObj["dataset-metadata"] = {};

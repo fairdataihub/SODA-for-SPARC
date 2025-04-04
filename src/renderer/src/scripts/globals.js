@@ -1351,7 +1351,7 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
 var dropdownEventID = "";
 window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
   // if users edit current account
-  if (dropdown === "bf") {
+  if (dropdown === "ps") {
     console.log("Calling opendropdown here?");
 
     await window.addBfAccount(ev, false);
@@ -1438,7 +1438,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           },
         }).then(async (result) => {
           if (result.isConfirmed) {
-            await window.openDropdownPrompt(ev, "bf");
+            await window.openDropdownPrompt(ev, "ps");
             $(".ui.active.green.inline.loader.small").css("display", "none");
             $(".svg-change-current-account.dataset").css("display", "block");
           } else {
@@ -1850,7 +1850,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       });
 
       if (result) {
-        await window.openDropdownPrompt(this, "bf");
+        await window.openDropdownPrompt(this, "ps");
         $(".ui.active.green.inline.loader.small").css("display", "none");
         $(".svg-change-current-account.dataset").css("display", "block");
         return;
