@@ -1,184 +1,165 @@
 import { useState, useCallback } from "react";
-import {
-  Text,
-  Grid,
-  Stack,
-  Group,
-  Button,
-  Paper,
-  Progress,
-  Box,
-  Tooltip,
-  Checkbox,
-  ActionIcon,
-} from "@mantine/core";
+import { Text, Stack, Group, Paper, Tooltip, ActionIcon, Radio } from "@mantine/core";
 import { IconChevronDown, IconChevronUp } from "@tabler/icons-react";
-import FullWidthContainer from "../../containers/FullWidthContainer";
 import useGlobalStore from "../../../stores/globalStore";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import { toggleEntitySelection } from "../../../stores/slices/datasetContentSelectorSlice";
-import { IconSearch } from "@tabler/icons-react";
 import SodaGreenPaper from "../../utils/ui/SodaGreenPaper";
 
-const contentOptionsMap = {
+// Export this so it can be used by the slice
+export const contentOptionsMap = {
   subjects: {
-    label: "I collected data from subjects",
-    description: "Subjects are humans, animals, or other biological specimens.",
+    label: "Did your research involve human or animal subjects?",
+    description:
+      "Select this option if you gathered data directly from living organisms such as human participants, laboratory animals, or other biological subjects. Examples include medical patients, experimental animals, behavioral study participants, etc.",
     ml: 0,
   },
   samples: {
-    label: "I collected samples from my subjects",
+    label: "Did you collect biological or physical samples from your subjects?",
     description:
-      "Samples are biological or physical specimens like tissue or blood taken from subjects",
+      "Select this option if you obtained physical specimens such as tissue, blood, urine, or other biological materials from your human or animal subjects. This applies when you collected actual samples, not just measurements or observations.",
     dependsOn: ["subjects"],
-    dependsOnNotSatiatedMessage: "You must indicate that you collected data from subjects first.",
     ml: 10,
   },
   sites: {
-    label: "I collected data from multiple distinct physical sites.",
+    label:
+      "Did you collect data from specific anatomical locations that need to be tracked separately?",
     description:
-      "Select this option if you collected data from multiple brain regions, different sections of a tissue sample, or distinct parts of an organ.",
+      "Select this option if you gathered data from different specific locations (e.g., brain regions, tissue sections, organ areas) within your subjects or samples, AND these locations need separate metadata. Examples include: recordings from multiple brain areas, measurements from different parts of an organ, or microscopy of different regions within a tissue sample.",
     dependsOn: ["subjects"],
-    dependsOnNotSatiatedMessage: "You must indicate that you collected data from subjects first.",
     ml: 10,
   },
-  "subject-sites": {
-    label: "I collected data from distinct physical sites on subjects.",
-    description:
-      "Select this option if the sites where data was collected correspond to specific locations or regions within the subjects, such as different anatomical regions or organs.",
-    dependsOn: ["subjects", "sites"],
-    dependsOnNotSatiatedMessage:
-      "You must indicate that you collected data from subjects and sites first.",
-    ml: 20,
-  },
-  "sample-sites": {
-    label: "I collected data from distinct physical sites on samples.",
-    description:
-      "Select this option if the sites where data was collected correspond to specific regions within the samples, such as different sections of tissue or other biological materials.",
-    dependsOn: ["subjects", "samples", "sites"],
-    dependsOnNotSatiatedMessage:
-      "You must indicate that you collected data from subjects, samples, and sites first.",
-    ml: 20,
-  },
   performances: {
-    label: "I collected data from multiple performances of protocols on subjects.",
+    label: "Did you collect data from subjects across multiple sessions or time points?",
     description:
-      "Select this option if you performed protocols or procedures on subjects (such as behavioral tests, imaging sessions, or other experiments) and collected data from these performances.",
+      "Select this option if you performed procedures on the same subjects at different times or under different conditions. Examples include: follow-up measurements, varied stimulation parameters, different behavioral tests, sequential imaging sessions, or any case where you need to track which protocol or time point generated specific data.",
     dependsOn: ["subjects"],
-    dependsOnNotSatiatedMessage: "You must indicate that you collected data from subjects first.",
     ml: 10,
   },
   code: {
-    label: "I used code to generate or analyze the collected data",
+    label: "Did you use software code to generate or analyze your data?",
     description:
-      "Code includes scripts, computational models, analysis pipelines, or other software used to generate, process, or analyze the data.",
+      "Select this option if your research involved computational tools, scripts, or analysis pipelines that were important for generating or analyzing your data. This includes custom code, analysis scripts, and simulation software relevant to understanding your results.",
     ml: 0,
   },
 };
 
 const DatasetContentSelector = () => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
-  console.log("selectedEntities", selectedEntities);
+  const deSelectedEntities = useGlobalStore((state) => state.deSelectedEntities);
   const [expanded, setExpanded] = useState({});
 
   const toggleExpanded = (key) => {
     setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const handleEntitySelection = useCallback(
-    (value) => {
-      const isSelected = selectedEntities.includes(value);
+  const handleEntitySelection = useCallback((key, answer) => {
+    const { selectedEntities, deSelectedEntities } = useGlobalStore.getState();
 
-      if (isSelected) {
-        Object.entries(contentOptionsMap).forEach(([key, option]) => {
-          if (option.dependsOn?.includes(value) && selectedEntities.includes(key)) {
-            toggleEntitySelection(key);
-          }
-        });
-      }
+    if (answer === "yes") {
+      // If yes is selected, add to selectedEntities and remove from deSelectedEntities
+      useGlobalStore.setState({
+        selectedEntities: selectedEntities.includes(key)
+          ? selectedEntities
+          : [...selectedEntities, key],
+        deSelectedEntities: deSelectedEntities.filter((id) => id !== key),
+      });
+    } else if (answer === "no") {
+      // If no is selected, add to deSelectedEntities and remove from selectedEntities
+      useGlobalStore.setState({
+        deSelectedEntities: deSelectedEntities.includes(key)
+          ? deSelectedEntities
+          : [...deSelectedEntities, key],
+        selectedEntities: selectedEntities.filter((id) => id !== key),
+      });
+    }
+  }, []);
 
-      toggleEntitySelection(value);
-    },
-    [selectedEntities]
-  );
+  const visibleQuestions = Object.entries(contentOptionsMap).filter(([key, option]) => {
+    if (
+      option.dependsOn?.includes("subjects") &&
+      (deSelectedEntities.includes("subjects") || !selectedEntities.includes("subjects"))
+    ) {
+      return false;
+    }
+    return true;
+  });
+
   return (
     <GuidedModePage pageHeader="Dataset content">
       <GuidedModeSection>
         <Text>
-          Check the boxes that apply to the data collected during your study in order to help SODA
+          Answer the following questions about the data collected during your study to help SODA
           determine the optimal workflow to organize your dataset.
         </Text>
       </GuidedModeSection>
       <Paper shadow="sm" radius="md" p="sm" withBorder mb="md">
-        <Stack spacing="xs">
-          {Object.entries(contentOptionsMap).map(([key, option]) => {
-            const isDisabled = option.dependsOn?.some((dep) => !selectedEntities.includes(dep));
-            const isSelected = selectedEntities.includes(key) && !isDisabled;
+        <Stack spacing="xl">
+          {visibleQuestions.map(([key, option]) => {
+            let radioValue;
+            if (selectedEntities.includes(key)) {
+              radioValue = "yes";
+            } else if (deSelectedEntities.includes(key)) {
+              radioValue = "no";
+            } else {
+              radioValue = null;
+            }
 
             return (
-              <Tooltip
+              <div
                 key={key}
-                label={
-                  isDisabled
-                    ? option.dependsOnNotSatiatedMessage || "This option is disabled"
-                    : null
-                }
-                disabled={!isDisabled}
-                zIndex={2999}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  padding: "6px 10px",
+                  borderRadius: "6px",
+                }}
               >
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    padding: "6px 10px",
-                    borderRadius: "6px",
-                    transition: "background 0.2s",
-                    cursor: isDisabled ? "not-allowed" : null,
-                    opacity: isDisabled ? 0.6 : 1,
-                  }}
-                >
-                  <Group position="apart" align="center" ml={option.ml}>
-                    <Group>
-                      <Checkbox
-                        checked={isSelected}
-                        disabled={isDisabled}
-                        onClick={() => !isDisabled && handleEntitySelection(key)}
-                      />
-                      <Text size="md" fw={600}>
-                        {option.label}
-                      </Text>
-                    </Group>
-                    {option.description && (
-                      <Tooltip
-                        disabled={isDisabled}
-                        label={expanded[key] ? "Hide description" : "Show description"}
-                        zIndex={2999}
+                <Group position="apart" align="center" ml={option.ml}>
+                  <Text size="md" fw={600}>
+                    {option.label}
+                  </Text>
+
+                  {option.description && (
+                    <Tooltip
+                      label={expanded[key] ? "Hide description" : "Show description"}
+                      zIndex={2999}
+                    >
+                      <ActionIcon
+                        size="sm"
+                        variant="transparent"
+                        onClick={() => toggleExpanded(key)}
                       >
-                        <ActionIcon
-                          size="sm"
-                          variant="transparent"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleExpanded(key);
-                          }}
-                        >
-                          {expanded[key] ? (
-                            <IconChevronUp size={16} />
-                          ) : (
-                            <IconChevronDown size={16} />
-                          )}
-                        </ActionIcon>
-                      </Tooltip>
-                    )}
-                  </Group>
-                  {expanded[key] && (
-                    <SodaGreenPaper mt="sm" ml="sm">
-                      <Text>{option.description}</Text>
-                    </SodaGreenPaper>
+                        {expanded[key] ? (
+                          <IconChevronUp size={16} />
+                        ) : (
+                          <IconChevronDown size={16} />
+                        )}
+                      </ActionIcon>
+                    </Tooltip>
                   )}
-                </div>
-              </Tooltip>
+                </Group>
+
+                {expanded[key] && (
+                  <SodaGreenPaper mt="sm" mb="sm" ml={option.ml}>
+                    <Text>{option.description}</Text>
+                  </SodaGreenPaper>
+                )}
+
+                <Radio.Group
+                  value={radioValue}
+                  onChange={(value) => handleEntitySelection(key, value)}
+                  ml={option.ml + 10}
+                  mt={expanded[key] ? 0 : "sm"}
+                  name={`radio-group-${key}`}
+                >
+                  <Group spacing="md">
+                    <Radio value="yes" label="Yes" />
+                    <Radio value="no" label="No" />
+                  </Group>
+                </Radio.Group>
+              </div>
             );
           })}
         </Stack>
