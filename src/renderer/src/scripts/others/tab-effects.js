@@ -1599,7 +1599,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
       "manifest-files": {},
       "generate-dataset": {},
       "starting-point": {
-        "origin": "ps",
+        origin: "ps",
       },
     };
 
@@ -1888,7 +1888,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
       "manifest-files": {},
       "generate-dataset": {},
       "starting-point": {
-        "origin": "local",
+        origin: "local",
         "local-path": "",
       },
     };

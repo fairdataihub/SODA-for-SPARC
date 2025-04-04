@@ -3966,7 +3966,8 @@ window.deleteFilesByRelativePath = (arrayOfRelativePaths) => {
     const parentFolder = window.getRecursivePath(currentPathArray, window.datasetStructureJSONObj);
     console.log("parentFolder", parentFolder);
 
-    const fileToDeleteIsFromPennsieve = parentFolder["files"][fileNameToDelete]?.["location"] === "ps";
+    const fileToDeleteIsFromPennsieve =
+      parentFolder["files"][fileNameToDelete]?.["location"] === "ps";
 
     if (fileToDeleteIsFromPennsieve) {
       parentFolder["files"][fileNameToDelete]["action"].push("deleted");
