@@ -325,10 +325,6 @@ export const openPage = async (targetPageID) => {
           for (const bucketType of bucketTypes) {
             addEntityToEntityList("categorized-data", bucketType);
           }
-
-          // Clear any existing filter before potentially setting a new one
-          // This ensures we don't have stale filters when navigating between pages
-          clearEntityFilter();
         }
 
         if (pageEntityType === "performances") {
@@ -365,9 +361,6 @@ export const openPage = async (targetPageID) => {
 
         // Make sure the datasetEntityObj is set before applying filters
         setDatasetEntityObj(savedDatasetEntityObj);
-
-        // First clear any existing filter
-        clearEntityFilter();
 
         // Check if there are files in the Experimental data bucket
         const hasExperimentalData =
