@@ -367,10 +367,10 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
   } = useMemo(
     () => ({
       showSamples: selectedEntities?.includes("samples") || false,
-      showSubjectSites: selectedEntities?.includes("subject-sites") || false,
-      showSampleSites: selectedEntities?.includes("sample-sites") || false,
-      showSubjectPerformances: selectedEntities?.includes("subject-performances") || false,
-      showSamplePerformances: selectedEntities?.includes("sample-performances") || false,
+      showSubjectSites: selectedEntities?.includes("sites") || false,
+      showSampleSites: selectedEntities?.includes("sites") || false,
+      showSubjectPerformances: selectedEntities?.includes("performances") || false,
+      showSamplePerformances: selectedEntities?.includes("performances") || false,
     }),
     [selectedEntities]
   );
