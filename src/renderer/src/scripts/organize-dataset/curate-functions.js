@@ -2553,6 +2553,8 @@ window.ffmCreateManifest = async (sodaJson) => {
     delete window.sodaCopy["manifest-files"]["destination"];
   }
 
+  console.log(window.sodaCopy)
+
   try {
     // used for imported local datasets and pennsieve datasets
     // filters out deleted files/folders before creating manifest data again
@@ -2563,9 +2565,12 @@ window.ffmCreateManifest = async (sodaJson) => {
     );
     let response = cleanJson.data.soda_json_structure;
     window.sodaCopy = response;
+    console.log(window.sodaCopy)
   } catch (e) {
     clientError(e);
   }
+
+
 
   //manifest will still include pennsieve or locally imported files
   // deleted to prevent from showing up as manifest card
@@ -2585,44 +2590,44 @@ window.ffmCreateManifest = async (sodaJson) => {
 
     // loop through each of the high level folders and create excel sheet in case no edits are made
     // will be auto generated and ready for upload
-    const manifestRes = res.data;
+    const manifestFileData = res.data;
     let newManifestData = {};
-    for (const [highLevelFolderName, manifestFileData] of Object.entries(manifestRes)) {
-      if (manifestFileData.length > 1) {
-        const manifestHeader = manifestFileData.shift();
-        newManifestData[highLevelFolderName] = {
-          headers: manifestHeader,
-          data: manifestFileData,
-        };
-        // Will create an excel sheet of the manifest files in case they receive no edits
-        let jsonManifest = {};
-        let manifestFolder = window.path.join(homeDirectory, "SODA", "manifest_files");
-        let localFolderPath = window.path.join(manifestFolder, highLevelFolderName);
-        let selectedManifestFilePath = window.path.join(localFolderPath, "manifest.xlsx");
-        // create manifest folders if they don't exist
-        if (!window.fs.existsSync(manifestFolder)) {
-          window.fs.mkdirSync(manifestFolder);
-        }
-        if (!window.fs.existsSync(localFolderPath)) {
-          window.fs.mkdirSync(localFolderPath);
-          window.fs.closeSync(window.fs.openSync(selectedManifestFilePath, "w"));
-        }
-        if (!window.fs.existsSync(selectedManifestFilePath)) {
-        } else {
-          jsonManifest = await window.electron.ipcRenderer.invoke("excelToJsonSheet1Options", {
-            sourceFile: selectedManifestFilePath,
-            columnToKey: {
-              "*": "{{columnHeader}}",
-            },
-          });
-        }
-        // If file doesn't exist then that means it didn't get imported properly
 
-        let sortedJSON = window.processManifestInfo(manifestHeader, manifestFileData);
-        jsonManifest = JSON.stringify(sortedJSON);
-        window.convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
+    if (manifestFileData.length > 1) {
+      const manifestHeader = manifestFileData.shift();
+      newManifestData["primary"] = {
+        headers: manifestHeader,
+        data: manifestFileData,
+      };
+      // Will create an excel sheet of the manifest files in case they receive no edits
+      let jsonManifest = {};
+      let manifestFolder = window.path.join(homeDirectory, "SODA", "manifest_files");
+      let localFolderPath = window.path.join(manifestFolder, "primary");
+      let selectedManifestFilePath = window.path.join(localFolderPath, "manifest.xlsx");
+      // create manifest folders if they don't exist
+      if (!window.fs.existsSync(manifestFolder)) {
+        window.fs.mkdirSync(manifestFolder);
       }
+      if (!window.fs.existsSync(localFolderPath)) {
+        window.fs.mkdirSync(localFolderPath);
+        window.fs.closeSync(window.fs.openSync(selectedManifestFilePath, "w"));
+      }
+      if (!window.fs.existsSync(selectedManifestFilePath)) {
+      } else {
+        jsonManifest = await window.electron.ipcRenderer.invoke("excelToJsonSheet1Options", {
+          sourceFile: selectedManifestFilePath,
+          columnToKey: {
+            "*": "{{columnHeader}}",
+          },
+        });
+      }
+      // If file doesn't exist then that means it didn't get imported properly
+
+      let sortedJSON = window.processManifestInfo(manifestHeader, manifestFileData);
+      jsonManifest = JSON.stringify(sortedJSON);
+      window.convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
     }
+  
 
     // Check if manifest data is different from what exists already (if previous data exists)
     const existingManifestData = window.sodaCopy["manifest-files"];

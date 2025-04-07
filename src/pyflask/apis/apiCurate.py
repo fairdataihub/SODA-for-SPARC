@@ -97,6 +97,8 @@ class Curation(Resource):
         soda_json_structure = data["soda_json_structure"]
         api.logger.info("/clean-dataset POST request")
 
+        api.logger.info("SODA JSON structure: ", soda_json_structure)
+
         try:
             return clean_json_structure(soda_json_structure)
         except Exception as e:
@@ -269,13 +271,13 @@ class GenerateManifestLocally(Resource):
 
 @api.route('/generate_manifest_file_data')
 class GenerateManifestData(Resource):
-    parser = reqparse.RequestParser()
-    parser.add_argument('dataset_structure_obj', type=dict, required=True, help='dataset structure used to generate manifest files for each high level folder', location='json')
+    # parser = reqparse.RequestParser()
+    # parser.add_argument('dataset_structure_obj', type=dict, required=True, help='dataset structure used to generate manifest files for each high level folder', location='json')
     @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request'}, description="Generate Manifest Data for each of the high level folders. Returns an array of arrays to be inserted into jspreadsheet.")
-    @api.expect(parser)
+    # @api.expect(parser)
     def post(self):
 
-        data = self.parser.parse_args()
+        data = request.get_json( )
         dataset_structure_obj = data.get("dataset_structure_obj")
         try:
             return generate_manifest_file_data(dataset_structure_obj)
