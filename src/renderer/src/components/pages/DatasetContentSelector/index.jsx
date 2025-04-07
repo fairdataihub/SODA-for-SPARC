@@ -4,11 +4,8 @@ import { IconChevronDown, IconChevronUp } from "@tabler/icons-react";
 import useGlobalStore from "../../../stores/globalStore";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
-import { toggleEntitySelection } from "../../../stores/slices/datasetContentSelectorSlice";
 import SodaGreenPaper from "../../utils/ui/SodaGreenPaper";
-
-// Export this so it can be used by the slice
-export const contentOptionsMap = {
+const contentOptionsMap = {
   subjects: {
     label: "Did your research involve human or animal subjects?",
     description:
@@ -30,6 +27,7 @@ export const contentOptionsMap = {
     dependsOn: ["subjects"],
     ml: 10,
   },
+
   performances: {
     label: "Did you collect data from subjects across multiple sessions or time points?",
     description:
@@ -95,7 +93,7 @@ const DatasetContentSelector = () => {
         </Text>
       </GuidedModeSection>
       <Paper shadow="sm" radius="md" p="sm" withBorder mb="md">
-        <Stack spacing="xl">
+        <Stack gap="md">
           {visibleQuestions.map(([key, option]) => {
             let radioValue;
             if (selectedEntities.includes(key)) {
@@ -116,7 +114,7 @@ const DatasetContentSelector = () => {
                   borderRadius: "6px",
                 }}
               >
-                <Group position="apart" align="center" ml={option.ml}>
+                <Group position="apart" align="center">
                   <Text size="md" fw={600}>
                     {option.label}
                   </Text>
@@ -142,7 +140,7 @@ const DatasetContentSelector = () => {
                 </Group>
 
                 {expanded[key] && (
-                  <SodaGreenPaper mt="sm" mb="sm" ml={option.ml}>
+                  <SodaGreenPaper mt="sm" mb="sm">
                     <Text>{option.description}</Text>
                   </SodaGreenPaper>
                 )}
@@ -150,7 +148,6 @@ const DatasetContentSelector = () => {
                 <Radio.Group
                   value={radioValue}
                   onChange={(value) => handleEntitySelection(key, value)}
-                  ml={option.ml + 10}
                   mt={expanded[key] ? 0 : "sm"}
                   name={`radio-group-${key}`}
                 >
