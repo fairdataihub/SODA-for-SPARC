@@ -596,7 +596,7 @@ window.handleLocalDatasetImport = async (path) => {
 };
 
 window.importLocalDataset = async (folderPath) => {
-  print("Local thangs happenong here")
+  print("Local thangs happenong here");
   // Reset the sodaJSONObj
   window.sodaJSONObj = {
     "ps-account-selected": {},
