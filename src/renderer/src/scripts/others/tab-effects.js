@@ -555,10 +555,8 @@ window.nextPrev = async (pageIndex) => {
     (window.sodaJSONObj["starting-point"]["origin"] === "new" ||
       window.sodaJSONObj["starting-point"]["origin"] === "local")
   ) {
-
-    // read the excel file stored at ~/SODA/primary/manifest_files and store it into the soda json obj 
+    // read the excel file stored at ~/SODA/primary/manifest_files and store it into the soda json obj
     await readManifestFileAndStoreInSodaJSON();
-
 
     $(parentTabs[window.currentTab]).removeClass("tab-active");
     window.currentTab = window.currentTab + pageIndex;
@@ -659,11 +657,8 @@ const fixStepIndicator = (pageIndex) => {
   }
 };
 
-
-
 async function readManifestFileAndStoreInSodaJSON() {
   try {
-    
     // Define the path to the manifest file
     const manifestFilePath = path.join(
       window.homeDirectory,
@@ -681,12 +676,11 @@ async function readManifestFileAndStoreInSodaJSON() {
 
     // Read the manifest file
     let jsonManifest = await window.electron.ipcRenderer.invoke("excelToJsonSheet1Options", {
-        sourceFile: manifestFilePath,
-        columnToKey: {
-          "*": "{{columnHeader}}",
-        }
-    })
-
+      sourceFile: manifestFilePath,
+      columnToKey: {
+        "*": "{{columnHeader}}",
+      },
+    });
 
     // Extract headers and data
     const headers = jsonManifest[0]; // First row as headers
@@ -697,7 +691,7 @@ async function readManifestFileAndStoreInSodaJSON() {
       window.sodaJSONObj["dataset-metadata"] = {};
     }
 
-    if(!window.sodaJSONObj["dataset-metadata"]["manifest_files"]){
+    if (!window.sodaJSONObj["dataset-metadata"]["manifest_files"]) {
       window.sodaJSONObj["dataset-metadata"]["manifest_files"] = {};
     }
 
