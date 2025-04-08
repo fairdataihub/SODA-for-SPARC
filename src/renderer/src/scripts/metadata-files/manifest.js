@@ -2348,7 +2348,7 @@ window.readManifestFileAndStoreInSodaJSON = async () => {
       window.sodaJSONObj["dataset_metadata"] = {};
     }
 
-    if(!window.sodaJSONObj["dataset_metadata"]["manifest_files"]){
+    if (!window.sodaJSONObj["dataset_metadata"]["manifest_files"]) {
       window.sodaJSONObj["dataset_metadata"]["manifest_files"] = {};
     }
 
