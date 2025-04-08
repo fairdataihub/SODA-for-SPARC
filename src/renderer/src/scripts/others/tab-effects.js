@@ -559,7 +559,6 @@ window.nextPrev = async (pageIndex) => {
     // read the excel file stored at ~/SODA/primary/manifest_files and store it into the soda json obj 
     await window.readManifestFileAndStoreInSodaJSON();
 
-
     $(parentTabs[window.currentTab]).removeClass("tab-active");
     window.currentTab = window.currentTab + pageIndex;
     $("#Question-generate-dataset").show();
