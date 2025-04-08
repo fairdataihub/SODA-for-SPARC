@@ -2541,6 +2541,7 @@ window.ffOpenManifestEditSwal = async (highlevelFolderName) => {
 
 // Function takes in original sodaJSONObj and creates a copy of it to modify to manifest edits
 // Manifest edits will create
+// TODO: Update SDS 3.0
 window.ffmCreateManifest = async (sodaJson) => {
   await new Promise((r) => setTimeout(r, 0));
   //create a copy of the sodajson object
