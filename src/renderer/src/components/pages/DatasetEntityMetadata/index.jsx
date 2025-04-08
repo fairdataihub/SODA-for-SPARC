@@ -31,6 +31,7 @@ import {
   Textarea,
   NumberInput,
   Notification,
+  Accordion,
 } from "@mantine/core";
 import { Dropzone } from "@mantine/dropzone";
 import useGlobalStore from "../../../stores/globalStore";
@@ -665,8 +666,13 @@ const DatasetEntityMetadata = () => {
       <GuidedModeSection>
         <Stack>
           <Text>
-            Provide metadata for each entity in your dataset by selecting entities on the left and
-            entering their metadata in the form on the right.
+            Add metadata for your subjects, samples, and other dataset entities using the form on
+            the right. Select entities from the tree view to edit them, or use the "Add" buttons to
+            create new ones.
+          </Text>
+          <Text>
+            <strong>Bulk import:</strong> For datasets with many subjects or samples, you can bulk
+            import from Excel spreadsheets using the tools below.
           </Text>
         </Stack>
       </GuidedModeSection>
@@ -674,106 +680,186 @@ const DatasetEntityMetadata = () => {
       {/* Conditionally render the import section */}
       {showImportSection && (
         <GuidedModeSection>
-          <SodaPaper>
-            <Stack>
-              <Title order={4}>Import Metadata from Excel Files</Title>
-              <Text>
-                If you already have subject or sample metadata in Excel files, you can import them
-                by dragging and dropping the files below. This will create entity records with
-                appropriate IDs and metadata fields.
-              </Text>
-
-              <Group grow align="flex-start">
-                {/* Subject Import Dropzone - only show if subjects are in the dataset */}
-                {datasetContainsSubjects && (
-                  <SodaPaper>
-                    <Text fw={600} mb="xs">
-                      Import Subject Metadata
-                    </Text>
-                    <Dropzone
-                      onDrop={(files) => console.log("Dropped subjects file:", files)}
-                      onReject={(files) => console.log("Rejected subjects file:", files)}
-                      maxSize={3 * 1024 ** 2} // 3MB
-                      accept={[
-                        "application/vnd.ms-excel",
-                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                      ]}
-                      h={120}
-                    >
-                      <Stack align="center" spacing="xs" style={{ pointerEvents: "none" }}>
-                        <Dropzone.Accept>
-                          <IconCheck size={24} color="green" />
-                        </Dropzone.Accept>
-                        <Dropzone.Reject>
-                          <IconAlertCircle size={24} color="red" />
-                        </Dropzone.Reject>
-                        <Dropzone.Idle>
-                          <IconFileSpreadsheet size={24} color="blue" />
-                        </Dropzone.Idle>
-                        <Text size="sm" ta="center">
-                          Drag & drop your subjects Excel file or click to select
-                        </Text>
-                        <Text size="xs" c="dimmed" ta="center">
-                          Excel files with subject IDs, age, sex and other metadata
-                        </Text>
+          <Accordion
+            variant="contained"
+            multiple={true}
+            defaultValue={datasetContainsSubjects ? ["subjects"] : []}
+          >
+            {/* Subject Import Accordion Item */}
+            {datasetContainsSubjects && (
+              <Accordion.Item value="subjects">
+                <Accordion.Control icon={<IconUser size={20} />}>
+                  Bulk Import Subject Data from Excel
+                </Accordion.Control>
+                <Accordion.Panel>
+                  <Grid>
+                    {/* Step 1: Fill out Template */}
+                    <Grid.Col span={6}>
+                      <Stack spacing="sm">
+                        <Box>
+                          <Text fw={600} mb={5}>
+                            Step 1: Prepare your subjects.xlsx file
+                          </Text>
+                          <Text size="sm">
+                            Fill out the spreadsheet with your subject IDs, age, sex, and
+                            experimental groups.
+                            <br />
+                            <br />
+                            Need the template? Click below to download it.
+                          </Text>
+                        </Box>
+                        <Box mt="md" style={{ display: "flex", justifyContent: "center" }}>
+                          <Button leftIcon={<IconUpload size={16} />} variant="light">
+                            Get subjects.xlsx Template
+                          </Button>
+                        </Box>
                       </Stack>
-                    </Dropzone>
-                  </SodaPaper>
-                )}
+                    </Grid.Col>
 
-                {/* Sample Import Dropzone - only show if samples are in the dataset */}
-                {datasetContainsSamples && (
-                  <SodaPaper>
-                    <Text fw={600} mb="xs">
-                      Import Sample Metadata
-                    </Text>
-                    <Dropzone
-                      onDrop={(files) => console.log("Dropped samples file:", files)}
-                      onReject={(files) => console.log("Rejected samples file:", files)}
-                      maxSize={3 * 1024 ** 2} // 3MB
-                      accept={[
-                        "application/vnd.ms-excel",
-                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                      ]}
-                      h={120}
-                    >
-                      <Stack align="center" spacing="xs" style={{ pointerEvents: "none" }}>
-                        <Dropzone.Accept>
-                          <IconCheck size={24} color="green" />
-                        </Dropzone.Accept>
-                        <Dropzone.Reject>
-                          <IconAlertCircle size={24} color="red" />
-                        </Dropzone.Reject>
-                        <Dropzone.Idle>
-                          <IconFileSpreadsheet size={24} color="blue" />
-                        </Dropzone.Idle>
-                        <Text size="sm" ta="center">
-                          Drag & drop your samples Excel file or click to select
-                        </Text>
-                        <Text size="xs" c="dimmed" ta="center">
-                          Excel files with sample IDs and related metadata
-                        </Text>
+                    {/* Step 2: Upload Filled Template */}
+                    <Grid.Col span={6}>
+                      <Stack spacing="sm">
+                        <Box>
+                          <Text fw={600} mb={5}>
+                            Step 2: Upload your completed file
+                          </Text>
+                          <Text size="sm">
+                            Once you've filled in your subject data, drop the file here to create
+                            all your subjects at once.
+                          </Text>
+                        </Box>
+                        <Dropzone
+                          onDrop={(files) => console.log("Dropped subjects file:", files)}
+                          onReject={(files) => console.log("Rejected subjects file:", files)}
+                          maxSize={3 * 1024 ** 2} // 3MB
+                          accept={[
+                            "application/vnd.ms-excel",
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                          ]}
+                          h={120}
+                        >
+                          <Stack align="center" spacing="xs" style={{ pointerEvents: "none" }}>
+                            <Dropzone.Accept>
+                              <IconCheck size={24} color="green" />
+                            </Dropzone.Accept>
+                            <Dropzone.Reject>
+                              <IconAlertCircle size={24} color="red" />
+                            </Dropzone.Reject>
+                            <Dropzone.Idle>
+                              <IconFileSpreadsheet size={24} color="blue" />
+                            </Dropzone.Idle>
+                            <Text size="sm" ta="center">
+                              Drop your subjects.xlsx file here
+                            </Text>
+                            <Text size="xs" c="dimmed" ta="center">
+                              Or click to browse your files
+                            </Text>
+                          </Stack>
+                        </Dropzone>
                       </Stack>
-                    </Dropzone>
-                  </SodaPaper>
-                )}
-              </Group>
+                    </Grid.Col>
+                  </Grid>
+                </Accordion.Panel>
+              </Accordion.Item>
+            )}
 
-              <Group position="right">
-                <Button variant="outline" color="blue" leftIcon={<IconUpload size={16} />}>
-                  Download Template Files
-                </Button>
-              </Group>
-            </Stack>
-          </SodaPaper>
+            {/* Sample Import Accordion Item */}
+            {datasetContainsSamples && (
+              <Accordion.Item value="samples">
+                <Accordion.Control icon={<IconFlask size={20} color="#74b816" />}>
+                  Bulk Import Sample Data from Excel
+                </Accordion.Control>
+                <Accordion.Panel>
+                  <Grid>
+                    {/* Step 1: Fill out Template */}
+                    <Grid.Col span={6}>
+                      <Stack spacing="sm">
+                        <Box>
+                          <Text fw={600} mb={5}>
+                            Step 1: Prepare your samples.xlsx file
+                          </Text>
+                          <Text size="sm">
+                            Fill out the spreadsheet with your sample IDs, parent subjects, and
+                            sample types.
+                            <br />
+                            <br />
+                            Need the template? Click below to download it.
+                          </Text>
+                        </Box>
+                        <Box mt="md" style={{ display: "flex", justifyContent: "center" }}>
+                          <Button leftIcon={<IconUpload size={16} />} variant="light">
+                            Get samples.xlsx Template
+                          </Button>
+                        </Box>
+                      </Stack>
+                    </Grid.Col>
+
+                    {/* Step 2: Upload Filled Template */}
+                    <Grid.Col span={6}>
+                      <Stack spacing="sm">
+                        <Box>
+                          <Text fw={600} mb={5}>
+                            Step 2: Upload your completed file
+                          </Text>
+                          <Text size="sm">
+                            Once you've filled in your sample data, drop the file here to create all
+                            your samples at once.
+                          </Text>
+                        </Box>
+                        <Dropzone
+                          onDrop={(files) => console.log("Dropped samples file:", files)}
+                          onReject={(files) => console.log("Rejected samples file:", files)}
+                          maxSize={3 * 1024 ** 2} // 3MB
+                          accept={[
+                            "application/vnd.ms-excel",
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                          ]}
+                          h={120}
+                        >
+                          <Stack align="center" spacing="xs" style={{ pointerEvents: "none" }}>
+                            <Dropzone.Accept>
+                              <IconCheck size={24} color="green" />
+                            </Dropzone.Accept>
+                            <Dropzone.Reject>
+                              <IconAlertCircle size={24} color="red" />
+                            </Dropzone.Reject>
+                            <Dropzone.Idle>
+                              <IconFileSpreadsheet size={24} color="blue" />
+                            </Dropzone.Idle>
+                            <Text size="sm" ta="center">
+                              Drop your samples.xlsx file here
+                            </Text>
+                            <Text size="xs" c="dimmed" ta="center">
+                              Or click to browse your files
+                            </Text>
+                          </Stack>
+                        </Dropzone>
+                      </Stack>
+                    </Grid.Col>
+                  </Grid>
+                </Accordion.Panel>
+              </Accordion.Item>
+            )}
+          </Accordion>
         </GuidedModeSection>
       )}
 
       <GuidedModeSection>
+        <Text fw={600} size="lg" mb="md">
+          Entity Metadata Editor
+        </Text>
         <Grid gutter="lg">
           {/* Entity selection panel */}
           <Grid.Col span={5} style={{ position: "sticky", top: "20px" }}>
             <SodaPaper>
+              <Box mb="xs">
+                <Text fw={500} size="md">
+                  Entity Hierarchy
+                </Text>
+                <Text size="sm" c="dimmed">
+                  Select an entity to edit or use the buttons to add new entities
+                </Text>
+              </Box>
               <EntityHierarchyRenderer
                 allowEntityStructureEditing={true}
                 allowEntitySelection={true}
