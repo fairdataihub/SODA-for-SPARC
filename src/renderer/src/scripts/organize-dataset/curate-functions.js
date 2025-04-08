@@ -2554,7 +2554,7 @@ window.ffmCreateManifest = async (sodaJson) => {
     delete window.sodaCopy["manifest-files"]["destination"];
   }
 
-  console.log(window.sodaCopy)
+  console.log(window.sodaCopy);
 
   try {
     // used for imported local datasets and pennsieve datasets
@@ -2566,12 +2566,10 @@ window.ffmCreateManifest = async (sodaJson) => {
     );
     let response = cleanJson.data.soda_json_structure;
     window.sodaCopy = response;
-    console.log(window.sodaCopy)
+    console.log(window.sodaCopy);
   } catch (e) {
     clientError(e);
   }
-
-
 
   //manifest will still include pennsieve or locally imported files
   // deleted to prevent from showing up as manifest card
@@ -2628,7 +2626,6 @@ window.ffmCreateManifest = async (sodaJson) => {
       jsonManifest = JSON.stringify(sortedJSON);
       window.convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
     }
-  
 
     // Check if manifest data is different from what exists already (if previous data exists)
     const existingManifestData = window.sodaCopy["manifest-files"];
