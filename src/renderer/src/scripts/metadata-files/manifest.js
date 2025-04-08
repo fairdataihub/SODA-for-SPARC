@@ -2314,10 +2314,8 @@ const generateAfterEdits = async () => {
   initiate_generate_manifest_bf();
 };
 
-
 window.readManifestFileAndStoreInSodaJSON = async () => {
   try {
-    
     // Define the path to the manifest file
     const manifestFilePath = path.join(
       window.homeDirectory,
@@ -2335,12 +2333,11 @@ window.readManifestFileAndStoreInSodaJSON = async () => {
 
     // Read the manifest file
     let jsonManifest = await window.electron.ipcRenderer.invoke("excelToJsonSheet1Options", {
-        sourceFile: manifestFilePath,
-        columnToKey: {
-          "*": "{{columnHeader}}",
-        }
-    })
-
+      sourceFile: manifestFilePath,
+      columnToKey: {
+        "*": "{{columnHeader}}",
+      },
+    });
 
     // Extract headers and data
     const headers = jsonManifest[0]; // First row as headers
@@ -2351,7 +2348,7 @@ window.readManifestFileAndStoreInSodaJSON = async () => {
       window.sodaJSONObj["dataset-metadata"] = {};
     }
 
-    if(!window.sodaJSONObj["dataset-metadata"]["manifest_files"]){
+    if (!window.sodaJSONObj["dataset-metadata"]["manifest_files"]) {
       window.sodaJSONObj["dataset-metadata"]["manifest_files"] = {};
     }
 
@@ -2364,9 +2361,7 @@ window.readManifestFileAndStoreInSodaJSON = async () => {
   } catch (error) {
     console.error("Error reading or processing the manifest file:", error);
   }
-}
-
-
+};
 
 document.querySelector("#btn-pull-ds-manifest").addEventListener("click", () => {
   document.querySelector("#div-check-bf-create-manifest").style.visibility = "hidden";

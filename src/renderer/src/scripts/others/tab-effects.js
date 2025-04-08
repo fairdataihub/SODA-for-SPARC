@@ -555,8 +555,7 @@ window.nextPrev = async (pageIndex) => {
     (window.sodaJSONObj["starting-point"]["origin"] === "new" ||
       window.sodaJSONObj["starting-point"]["origin"] === "local")
   ) {
-
-    // read the excel file stored at ~/SODA/primary/manifest_files and store it into the soda json obj 
+    // read the excel file stored at ~/SODA/primary/manifest_files and store it into the soda json obj
     await window.readManifestFileAndStoreInSodaJSON();
 
     $(parentTabs[window.currentTab]).removeClass("tab-active");
@@ -657,7 +656,6 @@ const fixStepIndicator = (pageIndex) => {
     progressSteps[pageIndex].className += " is-current";
   }
 };
-
 
 const fixStepDone = (pageIndex) => {
   let progressSteps = document.getElementsByClassName("vertical-progress-bar-step");
