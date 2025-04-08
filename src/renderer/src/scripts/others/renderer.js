@@ -5897,23 +5897,6 @@ const initiate_generate = async (e) => {
     document.getElementById("sidebarCollapse").click();
   }
 
-  if ($("#generate-manifest-curate")[0].checked && !window.hasFiles) {
-    window.sodaJSONObj["manifest-files"]["auto-generated"] = true;
-  } else {
-    delete window.sodaJSONObj["manifest-files"];
-  }
-
-  if ("manifest-files" in window.sodaJSONObj) {
-    if (
-      "auto-generated" in window.sodaJSONObj["manifest-files"] &&
-      window.sodaJSONObj["manifest-files"]["auto-generated"] === true
-    ) {
-      window.delete_imported_manifest();
-    } else if (window.sodaJSONObj["manifest-files"]["destination"] === "generate-dataset") {
-      window.delete_imported_manifest();
-    }
-  }
-
   let dataset_destination = "";
   let dataset_name = "";
 
@@ -6517,15 +6500,15 @@ const determineDatasetDestination = () => {
       } else {
         // replacing files in an existing local dataset
         if (window.sodaJSONObj["generate-dataset"]["dataset-name"]) {
-          return [window.sodaJSONObj["generate-dataset"]["dataset-name"], "Local"];
+          return [window.sodaJSONObj["generate-dataset"]["dataset-name"], "local"];
         } else {
           // creating a new dataset from an existing local dataset
-          return [document.querySelector("#inputNewNameDataset-upload-dataset").value, "Local"];
+          return [document.querySelector("#inputNewNameDataset-upload-dataset").value, "local"];
         }
       }
     }
   } else {
-    return [document.querySelector("#inputNewNameDataset-upload-dataset").value, "Local"];
+    return [document.querySelector("#inputNewNameDataset-upload-dataset").value, "local"];
   }
 };
 
@@ -6592,7 +6575,7 @@ window.electron.ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
             //get the value of data-code-metadata-file-type from dragDropContainer
             const metadataFileType = dragDropContainer.dataset.codeMetadataFileType;
             //save the path of the metadata file to the json object
-            sodaJSONObj["dataset-metadata"]["code-metadata"][metadataFileType] = mypath[0];
+            sodaJSONObj["dataset_metadata"]["code-metadata"][metadataFileType] = mypath[0];
 
             const lottieContainer = dragDropContainer.querySelector(
               ".code-metadata-lottie-container"

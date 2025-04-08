@@ -190,9 +190,9 @@ export const savePageChanges = async (pageBeingLeftID) => {
     //     .classList.contains("selected");
 
     //   if (userSelectedDatasetIsReJoinFunded) {
-    //     window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] =
+    //     window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["consortium-data-standard"] =
     //       "HEAL";
-    //     window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
+    //     window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["funding-consortium"] =
     //       "REJOIN-HEAL";
     //   }
     // }
@@ -386,8 +386,8 @@ export const savePageChanges = async (pageBeingLeftID) => {
 
     //     if (buttonNoComputationalModelingData.classList.contains("selected")) {
     //       //If the user had imported a code description file, remove it
-    //       if (window.sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"]) {
-    //         delete window.sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"];
+    //       if (window.sodaJSONObj["dataset_metadata"]["code-metadata"]["code_description"]) {
+    //         delete window.sodaJSONObj["dataset_metadata"]["code-metadata"]["code_description"];
     //       }
     //     }
     //   }
@@ -437,8 +437,8 @@ export const savePageChanges = async (pageBeingLeftID) => {
 
     //     if (buttonKeepCodeDescription.classList.contains("selected")) {
     //       //If the user had imported a code description file, remove it
-    //       if (window.sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"]) {
-    //         delete window.sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"];
+    //       if (window.sodaJSONObj["dataset_metadata"]["code-metadata"]["code_description"]) {
+    //         delete window.sodaJSONObj["dataset_metadata"]["code-metadata"]["code_description"];
     //       }
     //     }
     //   }
@@ -559,17 +559,17 @@ export const savePageChanges = async (pageBeingLeftID) => {
     //   }
 
     //   // save the award string to JSONObj to be shared with other award inputs
-    //   window.sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = award;
+    //   window.sodaJSONObj["dataset_metadata"]["shared-metadata"]["sparc-award"] = award;
     //   //Save the data and milestones to the window.sodaJSONObj
-    //   window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] = milestones;
-    //   window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] =
+    //   window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["milestones"] = milestones;
+    //   window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["completion-date"] =
     //     completionDate;
     // }
 
     // if (pageBeingLeftID === "guided-contributors-tab") {
     //   // Make sure the user has added at least one contributor
     //   const contributors =
-    //     window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+    //     window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"];
     //   if (contributors.length === 0) {
     //     errorArray.push({
     //       type: "notyf",
@@ -608,7 +608,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
 
     //   if (buttonYesUserHasProtocols.classList.contains("selected")) {
     //     const protocols =
-    //       window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
+    //       window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"];
 
     //     if (protocols.length === 0) {
     //       errorArray.push({
@@ -630,7 +630,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
     //   }
 
     //   if (buttonNoDelayProtocolEntry.classList.contains("selected")) {
-    //     window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = [];
+    //     window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"] = [];
     //   }
     // }
 
@@ -659,7 +659,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
     //     throw errorArray;
     //   } else {
     //     const readMe = readMeTextArea.value.trim();
-    //     window.sodaJSONObj["dataset-metadata"]["README"] = readMe;
+    //     window.sodaJSONObj["dataset_metadata"]["README"] = readMe;
     //   }
     // }
 
@@ -673,7 +673,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
     //     throw errorArray;
     //   } else {
     //     const changes = changesTextArea.value.trim();
-    //     window.sodaJSONObj["dataset-metadata"]["CHANGES"] = changes;
+    //     window.sodaJSONObj["dataset_metadata"]["CHANGES"] = changes;
     //   }
     // }
     // if (pageBeingLeftID === "guided-create-local-copy-tab") {

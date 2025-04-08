@@ -53,7 +53,7 @@ export const openPageCurationPreparation = async (targetPageID) => {
 
         if (window.sparcFundingConsortiums.includes(pennsieveFundingConsortium)) {
           // Pre-set the funding consortium so it is set in the dropdown
-          window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
+          window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["funding-consortium"] =
             pennsieveFundingConsortium;
         }
       } catch (error) {
@@ -64,7 +64,7 @@ export const openPageCurationPreparation = async (targetPageID) => {
 
     // Set the funding consortium dropdown to the saved value (deafult is empty string before a user selects a value)
     const savedFundingConsortium =
-      window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"];
+      window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["funding-consortium"];
     setDropdownState("guided-select-sparc-funding-consortium", savedFundingConsortium);
   }
 

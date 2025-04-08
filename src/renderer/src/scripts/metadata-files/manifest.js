@@ -2347,15 +2347,15 @@ window.readManifestFileAndStoreInSodaJSON = async () => {
     const data = jsonManifest.slice(1); // Remaining rows as data
 
     // Store in sodaJSONObj
-    if (!window.sodaJSONObj["dataset-metadata"]) {
-      window.sodaJSONObj["dataset-metadata"] = {};
+    if (!window.sodaJSONObj["dataset_metadata"]) {
+      window.sodaJSONObj["dataset_metadata"] = {};
     }
 
-    if(!window.sodaJSONObj["dataset-metadata"]["manifest_files"]){
-      window.sodaJSONObj["dataset-metadata"]["manifest_files"] = {};
+    if(!window.sodaJSONObj["dataset_metadata"]["manifest_files"]){
+      window.sodaJSONObj["dataset_metadata"]["manifest_files"] = {};
     }
 
-    window.sodaJSONObj["dataset-metadata"]["manifest_files"] = {
+    window.sodaJSONObj["dataset_metadata"]["manifest_files"] = {
       headers: headers,
       data: data,
     };

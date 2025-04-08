@@ -405,11 +405,11 @@ export const openPagePrepareMetadata = async (targetPageID) => {
 
         const submissionData = submissionMetadataRes.data;
 
-        window.sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] =
+        window.sodaJSONObj["dataset_metadata"]["shared-metadata"]["sparc-award"] =
           submissionData["Award number"];
-        window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] =
+        window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["milestones"] =
           submissionData["Milestone achieved"];
-        window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] =
+        window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["completion-date"] =
           submissionData["Milestone completion date"];
 
         window.sodaJSONObj["pages-fetched-from-pennsieve"].push(targetPageID);
@@ -445,16 +445,16 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     );
 
     //Update the UI if their respective keys exist in the window.sodaJSONObj
-    const sparcAward = window.sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
+    const sparcAward = window.sodaJSONObj["dataset_metadata"]["shared-metadata"]["sparc-award"];
     if (sparcAward) {
       sparcAwardInputManual.value = sparcAward;
     }
-    const milestones = window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
+    const milestones = window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["milestones"];
     if (milestones) {
       window.guidedSubmissionTagsTagifyManual.addTags(milestones);
     }
     const completionDate =
-      window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"];
+      window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["completion-date"];
 
     if (completionDate && completionDate != "") {
       completionDateInputManual.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
@@ -463,7 +463,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     }
 
     const setFundingConsortium =
-      window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"];
+      window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["funding-consortium"];
 
     const topLevelDDDInstructionsText = document.getElementById(
       "guided-submission-metadata-ddd-import-instructions"
@@ -623,7 +623,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
           },
         });
         let readme_text = readme_import.data.text;
-        window.sodaJSONObj["dataset-metadata"]["README"] = readme_text;
+        window.sodaJSONObj["dataset_metadata"]["README"] = readme_text;
         window.sodaJSONObj["pages-fetched-from-pennsieve"].push(
           "guided-create-readme-metadata-tab"
         );
@@ -640,7 +640,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     }
     const readMeTextArea = document.getElementById("guided-textarea-create-readme");
 
-    const readMe = window.sodaJSONObj["dataset-metadata"]["README"];
+    const readMe = window.sodaJSONObj["dataset_metadata"]["README"];
 
     if (readMe) {
       readMeTextArea.value = readMe;
@@ -683,7 +683,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     }
 
     const codeDescriptionPath =
-      window.sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"];
+      window.sodaJSONObj["dataset_metadata"]["code-metadata"]["code_description"];
 
     const codeDescriptionLottieContainer = document.getElementById(
       "code-description-lottie-container"
@@ -736,7 +736,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
           // If more than 1 keyword is found, add store them to be loaded into the UI
           // Otherwise, use the tags on Pennsieve
           if (studyKeywords.length != 0) {
-            window.sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"][
+            window.sodaJSONObj["dataset_metadata"]["description-metadata"]["dataset-information"][
               "keywords"
             ] = studyKeywords;
           }
@@ -757,7 +757,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
           studyInformationObject[studyInformationKey] = studyInformationValue;
         }
 
-        window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"] =
+        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"] =
           studyInformationObject;
 
         // guidedLoadDescriptionStudyDesign
@@ -768,7 +768,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
             .slice(1)
             .filter((acknowledgement) => acknowledgement !== "");
 
-          window.sodaJSONObj["dataset-metadata"]["description-metadata"][
+          window.sodaJSONObj["dataset_metadata"]["description-metadata"][
             "contributor-information"
           ] = {
             funding: studyFunding,
@@ -800,7 +800,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
           if (currentAddtionalLinks.includes(additionalLinkLink)) {
             window.deleteAdditionalLink(additionalLinkLink);
           }
-          window.sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"].push({
+          window.sodaJSONObj["dataset_metadata"]["description-metadata"]["additional-links"].push({
             link: additionalLinkLink,
             relation: additionalLinkRelation,
             description: additionalLinkDescription,
@@ -823,7 +823,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
       }
       // If the dataset keywords were not set from the imported metadata, try to get them from the Pennsieve tags
       const keywordsDerivedFromDescriptionMetadata =
-        window.sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"]?.[
+        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["dataset-information"]?.[
           "keywords"
         ];
       if (!keywordsDerivedFromDescriptionMetadata) {
@@ -834,7 +834,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
           });
           const { tags } = tagsReq.data;
           if (tags.length > 0) {
-            window.sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"][
+            window.sodaJSONObj["dataset_metadata"]["description-metadata"]["dataset-information"][
               "keywords"
             ] = tags;
           }
@@ -846,15 +846,15 @@ export const openPagePrepareMetadata = async (targetPageID) => {
 
       // If the study information was not set from the imported metadata, try to extract it from the Pennsieve dataset description
       const studyPurpose =
-        window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
+        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"]?.[
           "study purpose"
         ];
       const studyDataCollection =
-        window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
+        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"]?.[
           "study data collection"
         ];
       const studyPrimaryConclusion =
-        window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
+        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"]?.[
           "study primary conclusion"
         ];
 
@@ -865,17 +865,17 @@ export const openPagePrepareMetadata = async (targetPageID) => {
           );
           const parsedDescription = createParsedReadme(pennsieveDatasetDescription);
           if (parsedDescription["Study Purpose"]) {
-            window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"][
+            window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"][
               "study purpose"
             ] = parsedDescription["Study Purpose"].replace(/\r?\n|\r/g, "").trim();
           }
           if (parsedDescription["Data Collection"]) {
-            window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"][
+            window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"][
               "study data collection"
             ] = parsedDescription["Data Collection"].replace(/\r?\n|\r/g, "").trim();
           }
           if (parsedDescription["Primary Conclusion"]) {
-            window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"][
+            window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"][
               "study primary conclusion"
             ] = parsedDescription["Primary Conclusion"].replace(/\r?\n|\r/g, "").trim();
           }
@@ -890,7 +890,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
       // Reset the keywords tags and add the stored ones if they exist in the JSON
       guidedDatasetKeywordsTagify.removeAllTags();
       const datasetKeyWords =
-        window.sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"]?.[
+        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["dataset-information"]?.[
           "keywords"
         ];
       if (datasetKeyWords) {
@@ -919,7 +919,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
       // Set the inputs if their respective keys exist in the JSON
       // (if not, the input will remain blank)
       const studyPurpose =
-        window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
+        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"]?.[
           "study purpose"
         ];
       if (studyPurpose) {
@@ -927,7 +927,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
       }
 
       const studyDataCollection =
-        window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
+        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"]?.[
           "study data collection"
         ];
       if (studyDataCollection) {
@@ -935,7 +935,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
       }
 
       const studyPrimaryConclusion =
-        window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
+        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"]?.[
           "study primary conclusion"
         ];
       if (studyPrimaryConclusion) {
@@ -943,7 +943,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
       }
 
       const studyCollectionTitle =
-        window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
+        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"]?.[
           "study collection title"
         ];
       if (studyCollectionTitle) {
@@ -951,7 +951,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
       }
 
       const studyOrganSystems =
-        window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
+        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"]?.[
           "study organ system"
         ];
       if (studyOrganSystems) {
@@ -959,7 +959,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
       }
 
       const studyApproach =
-        window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
+        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"]?.[
           "study approach"
         ];
       if (studyApproach) {
@@ -967,7 +967,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
       }
 
       const studyTechniques =
-        window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
+        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"]?.[
           "study technique"
         ];
       if (studyTechniques) {
@@ -979,7 +979,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     const guidedLoadDescriptionContributorInformation = () => {
       const acknowledgementsInput = document.getElementById("guided-ds-acknowledgements");
       const contributorInformationMetadata =
-        window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributor-information"];
+        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributor-information"];
 
       guidedOtherFundingsourcesTagify.removeAllTags();
 
@@ -998,7 +998,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     const otherFundingLabel = document.getElementById("SPARC-award-other-funding-label");
 
     if (datasetIsSparcFunded()) {
-      otherFundingLabel.innerHTML = ` besides the SPARC Award: ${window.sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"]}`;
+      otherFundingLabel.innerHTML = ` besides the SPARC Award: ${window.sodaJSONObj["dataset_metadata"]["shared-metadata"]["sparc-award"]}`;
     } else {
       otherFundingLabel.innerHTML = "";
     }
@@ -1006,7 +1006,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
 };
 
 const getContributorFullNames = () => {
-  return window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"].map(
+  return window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"].map(
     (contributor) => {
       return contributor.conName;
     }
@@ -1014,7 +1014,7 @@ const getContributorFullNames = () => {
 };
 
 const getGuidedAdditionalLinks = () => {
-  return window.sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"].map(
+  return window.sodaJSONObj["dataset_metadata"]["description-metadata"]["additional-links"].map(
     (link) => link.link
   );
 };

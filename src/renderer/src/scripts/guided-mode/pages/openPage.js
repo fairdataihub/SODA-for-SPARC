@@ -755,7 +755,7 @@ export const openPage = async (targetPageID) => {
     //         document.getElementById("guided-bootbox-subject-id").value = "";
 
     //         //Add protocol titles to the protocol dropdown
-    //         const protocols = window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
+    //         const protocols = window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"];
 
     //         // Hide the subjects protocol section if no protocols have been attached to the dataset
     //         const subjectsProtocolContainer = document.getElementById(
@@ -832,7 +832,7 @@ export const openPage = async (targetPageID) => {
 
     //         // Hide the samples protocol section if no protocols have been attached to the dataset
     //         const samplesProtocolContainer = document.getElementById("guided-container-samples-protocol");
-    //         window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"].length > 0
+    //         window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"].length > 0
     //             ? samplesProtocolContainer.classList.remove("hidden")
     //             : samplesProtocolContainer.classList.add("hidden");
     //     }
@@ -840,7 +840,7 @@ export const openPage = async (targetPageID) => {
     //     if (targetPageID === "guided-create-changes-metadata-tab") {
     //         const changesTextArea = document.getElementById("guided-textarea-create-changes");
 
-    //         const changes = window.sodaJSONObj["dataset-metadata"]["CHANGES"];
+    //         const changes = window.sodaJSONObj["dataset_metadata"]["CHANGES"];
 
     //         if (changes) {
     //             changesTextArea.value = changes;

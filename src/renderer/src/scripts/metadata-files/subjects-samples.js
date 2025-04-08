@@ -1112,7 +1112,7 @@ window.populateForms = (subjectID, type, curationMode) => {
             // Handle protocol URL or DOI field in guided mode
             const previouslySavedProtocolURL = infoJson[i];
             const protocols =
-              window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
+              window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"];
 
             for (const protocol of protocols) {
               if (protocol.link === previouslySavedProtocolURL) {
@@ -1215,7 +1215,7 @@ window.populateFormsSamples = (subjectID, sampleID, type, curationMode) => {
             protocolURLDropdown.value = "";
 
             const protocols =
-              window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
+              window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"];
             for (const protocol of protocols) {
               if (protocol.link === previouslySavedProtocolURL) {
                 protocolTitleDropdown.value = protocol.description;

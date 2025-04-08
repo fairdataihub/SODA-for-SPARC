@@ -383,7 +383,7 @@ window.openDDDImport = async (curationMode) => {
       1
     );
     if (curationMode === "guided") {
-      window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"] = filepath[0];
+      window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["filepath"] = filepath[0];
       let swal_content = document.getElementsByClassName("swal2-content")[0];
       let DDLottie = document.getElementById("swal-data-deliverable");
 

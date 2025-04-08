@@ -956,7 +956,7 @@ window.dropHandler = async (
               //get the value of data-code-metadata-file-type from dragDropContainer
               const metadataFileType = dragDropContainer.dataset.codeMetadataFileType;
               //save the path of the metadata file to the json object
-              window.sodaJSONObj["dataset-metadata"]["code-metadata"][metadataFileType] = file.path;
+              window.sodaJSONObj["dataset_metadata"]["code-metadata"][metadataFileType] = file.path;
               const lottieContainer = dragDropContainer.querySelector(
                 ".code-metadata-lottie-container"
               );

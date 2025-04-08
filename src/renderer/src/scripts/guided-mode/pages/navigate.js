@@ -543,10 +543,10 @@ const handleStartCuration = async () => {
       selectedPennsieveDatasetID
     );
     if (changesCheckRes.shouldShow === true) {
-      window.sodaJSONObj["dataset-metadata"]["CHANGES"] = changesCheckRes.changesMetadata;
+      window.sodaJSONObj["dataset_metadata"]["CHANGES"] = changesCheckRes.changesMetadata;
       guidedUnSkipPage("guided-create-changes-metadata-tab");
     } else {
-      window.sodaJSONObj["dataset-metadata"]["CHANGES"] = "";
+      window.sodaJSONObj["dataset_metadata"]["CHANGES"] = "";
       guidedSkipPage("guided-create-changes-metadata-tab");
     }
 
@@ -903,7 +903,7 @@ const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
     window.sodaJSONObj["button-config"]["dataset-contains-samples"] = "yes";
   }
 
-  return window.sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"];
+  return window.sodaJSONObj["dataset_metadata"]["pool-subject-sample-structure"];
 };
 
 const guidedCheckHighLevelFoldersForImproperFiles = (datasetStructure) => {
