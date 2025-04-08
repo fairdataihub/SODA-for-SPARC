@@ -10,6 +10,9 @@ import {
   IconClipboard,
   IconCheck,
   IconX,
+  IconUpload,
+  IconFileSpreadsheet,
+  IconAlertCircle,
 } from "@tabler/icons-react";
 import {
   Text,
@@ -29,6 +32,7 @@ import {
   NumberInput,
   Notification,
 } from "@mantine/core";
+import { Dropzone } from "@mantine/dropzone";
 import useGlobalStore from "../../../stores/globalStore";
 import EntityHierarchyRenderer from "../../shared/EntityHierarchyRenderer";
 import {
@@ -45,7 +49,8 @@ import {
   addSiteToSubject,
   addSiteToSample,
 } from "../../../stores/slices/datasetEntityStructureSlice";
-import { shallow } from "zustand/shallow";
+import SodaPaper from "../../utils/ui/SodaPaper";
+import SodaGreenPaper from "../../utils/ui/SodaGreenPaper";
 
 /**
  * EntityMetadataForm Component
@@ -68,6 +73,9 @@ const EntityMetadataForm = () => {
     (state) => state.entityBeingAddedParentSample
   );
   const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
+  const selectedEntities = useGlobalStore((state) => state.selectedEntities);
+  const datasetContainsSubjects = selectedEntities && selectedEntities.includes("subjects");
+  const datasetContainsSamples = selectedEntities && selectedEntities.includes("samples");
 
   // Define standard prefixes for entity IDs
   const entityPrefixes = {
@@ -598,7 +606,7 @@ const EntityMetadataForm = () => {
 
   // Main component render
   return (
-    <Paper shadow="sm" radius="md" p="md" withBorder mb="md">
+    <SodaPaper>
       <Stack spacing="lg">
         {/* Header section with entity type and title */}
         <Group position="apart">
@@ -633,7 +641,7 @@ const EntityMetadataForm = () => {
           </Button>
         </Group>
       </Stack>
-    </Paper>
+    </SodaPaper>
   );
 };
 
@@ -644,6 +652,14 @@ const EntityMetadataForm = () => {
  * Provides entity selection and metadata editing interface.
  */
 const DatasetEntityMetadata = () => {
+  // Access selected entities to determine what to show
+  const selectedEntities = useGlobalStore((state) => state.selectedEntities);
+  const datasetContainsSubjects = selectedEntities?.includes("subjects");
+  const datasetContainsSamples = selectedEntities?.includes("samples");
+
+  // Only show import section if we have subjects or samples
+  const showImportSection = datasetContainsSubjects || datasetContainsSamples;
+
   return (
     <GuidedModePage pageHeader="Dataset entity metadata">
       <GuidedModeSection>
@@ -655,16 +671,114 @@ const DatasetEntityMetadata = () => {
         </Stack>
       </GuidedModeSection>
 
+      {/* Conditionally render the import section */}
+      {showImportSection && (
+        <GuidedModeSection>
+          <SodaPaper>
+            <Stack>
+              <Title order={4}>Import Metadata from Excel Files</Title>
+              <Text>
+                If you already have subject or sample metadata in Excel files, you can import them
+                by dragging and dropping the files below. This will create entity records with
+                appropriate IDs and metadata fields.
+              </Text>
+
+              <Group grow align="flex-start">
+                {/* Subject Import Dropzone - only show if subjects are in the dataset */}
+                {datasetContainsSubjects && (
+                  <SodaPaper>
+                    <Text fw={600} mb="xs">
+                      Import Subject Metadata
+                    </Text>
+                    <Dropzone
+                      onDrop={(files) => console.log("Dropped subjects file:", files)}
+                      onReject={(files) => console.log("Rejected subjects file:", files)}
+                      maxSize={3 * 1024 ** 2} // 3MB
+                      accept={[
+                        "application/vnd.ms-excel",
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                      ]}
+                      h={120}
+                    >
+                      <Stack align="center" spacing="xs" style={{ pointerEvents: "none" }}>
+                        <Dropzone.Accept>
+                          <IconCheck size={24} color="green" />
+                        </Dropzone.Accept>
+                        <Dropzone.Reject>
+                          <IconAlertCircle size={24} color="red" />
+                        </Dropzone.Reject>
+                        <Dropzone.Idle>
+                          <IconFileSpreadsheet size={24} color="blue" />
+                        </Dropzone.Idle>
+                        <Text size="sm" ta="center">
+                          Drag & drop your subjects Excel file or click to select
+                        </Text>
+                        <Text size="xs" c="dimmed" ta="center">
+                          Excel files with subject IDs, age, sex and other metadata
+                        </Text>
+                      </Stack>
+                    </Dropzone>
+                  </SodaPaper>
+                )}
+
+                {/* Sample Import Dropzone - only show if samples are in the dataset */}
+                {datasetContainsSamples && (
+                  <SodaPaper>
+                    <Text fw={600} mb="xs">
+                      Import Sample Metadata
+                    </Text>
+                    <Dropzone
+                      onDrop={(files) => console.log("Dropped samples file:", files)}
+                      onReject={(files) => console.log("Rejected samples file:", files)}
+                      maxSize={3 * 1024 ** 2} // 3MB
+                      accept={[
+                        "application/vnd.ms-excel",
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                      ]}
+                      h={120}
+                    >
+                      <Stack align="center" spacing="xs" style={{ pointerEvents: "none" }}>
+                        <Dropzone.Accept>
+                          <IconCheck size={24} color="green" />
+                        </Dropzone.Accept>
+                        <Dropzone.Reject>
+                          <IconAlertCircle size={24} color="red" />
+                        </Dropzone.Reject>
+                        <Dropzone.Idle>
+                          <IconFileSpreadsheet size={24} color="blue" />
+                        </Dropzone.Idle>
+                        <Text size="sm" ta="center">
+                          Drag & drop your samples Excel file or click to select
+                        </Text>
+                        <Text size="xs" c="dimmed" ta="center">
+                          Excel files with sample IDs and related metadata
+                        </Text>
+                      </Stack>
+                    </Dropzone>
+                  </SodaPaper>
+                )}
+              </Group>
+
+              <Group position="right">
+                <Button variant="outline" color="blue" leftIcon={<IconUpload size={16} />}>
+                  Download Template Files
+                </Button>
+              </Group>
+            </Stack>
+          </SodaPaper>
+        </GuidedModeSection>
+      )}
+
       <GuidedModeSection>
         <Grid gutter="lg">
           {/* Entity selection panel */}
           <Grid.Col span={5} style={{ position: "sticky", top: "20px" }}>
-            <Paper shadow="sm" radius="md" p="sm" withBorder mb="md">
+            <SodaPaper>
               <EntityHierarchyRenderer
                 allowEntityStructureEditing={true}
                 allowEntitySelection={true}
               />
-            </Paper>
+            </SodaPaper>
           </Grid.Col>
 
           {/* Metadata editing form */}
