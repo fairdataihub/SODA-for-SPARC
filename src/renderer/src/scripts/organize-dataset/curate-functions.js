@@ -2564,7 +2564,7 @@ window.ffmCreateManifest = async (sodaJson) => {
       { soda_json_structure: window.sodaCopy },
       { timeout: 0 }
     );
-    let response = cleanJson.data.soda_json_structure;
+    let response = cleanJson.data.soda;
     window.sodaCopy = response;
     console.log(window.sodaCopy);
   } catch (e) {
