@@ -359,9 +359,6 @@ export const openPage = async (targetPageID) => {
         const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
         const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
 
-        console.log("Selected entities", selectedEntities);
-        console.log("Dataset entity array", datasetEntityArray);
-
         // Make sure the datasetEntityObj is set before applying filters
         setDatasetEntityObj(savedDatasetEntityObj);
 

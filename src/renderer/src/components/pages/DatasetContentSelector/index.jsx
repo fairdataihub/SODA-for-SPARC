@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { Text, Stack, Group, Paper, Tooltip, ActionIcon, Radio } from "@mantine/core";
+import { Text, Stack, Group, Paper, Tooltip, ActionIcon, Radio, Box } from "@mantine/core";
 import { IconChevronDown, IconChevronUp } from "@tabler/icons-react";
 import useGlobalStore from "../../../stores/globalStore";
 import GuidedModePage from "../../containers/GuidedModePage";
@@ -10,13 +10,13 @@ const contentOptionsMap = {
   subjects: {
     label: "Did your research involve human or animal subjects?",
     description:
-      "Select this option if you gathered data directly from living organisms such as human participants, laboratory animals, or other biological subjects. Examples include medical patients, experimental animals, behavioral study participants, etc.",
+      "Select yes if you gathered data directly from living organisms such as human participants, laboratory animals, or other biological subjects. Examples include medical patients, experimental animals, behavioral study participants, etc.",
     ml: 0,
   },
   samples: {
     label: "Did you collect biological or physical samples from your subjects?",
     description:
-      "Select this option if you obtained physical specimens such as tissue, blood, urine, or other biological materials from your human or animal subjects. This applies when you collected actual samples, not just measurements or observations.",
+      "Select yes if you obtained physical specimens such as tissue, blood, urine, or other biological materials from your human or animal subjects. This applies when you collected actual samples, not just measurements or observations.",
     dependsOn: ["subjects"],
     ml: 10,
   },
@@ -24,7 +24,7 @@ const contentOptionsMap = {
     label:
       "Did you collect data from specific anatomical locations that need to be tracked separately?",
     description:
-      "Select this option if you gathered data from different specific locations (e.g., brain regions, tissue sections, organ areas) within your subjects or samples, AND these locations need separate metadata. Examples include: recordings from multiple brain areas, measurements from different parts of an organ, or microscopy of different regions within a tissue sample.",
+      "Select yes if you gathered data from different specific locations (e.g., brain regions, tissue sections, organ areas) within your subjects or samples, AND these locations need separate metadata. Examples include: recordings from multiple brain areas, measurements from different parts of an organ, or microscopy of different regions within a tissue sample.",
     dependsOn: ["subjects"],
     ml: 10,
   },
@@ -32,14 +32,14 @@ const contentOptionsMap = {
   performances: {
     label: "Did you collect data from subjects across multiple sessions or time points?",
     description:
-      "Select this option if you performed procedures on the same subjects at different times or under different conditions. Examples include: follow-up measurements, varied stimulation parameters, different behavioral tests, sequential imaging sessions, or any case where you need to track which protocol or time point generated specific data.",
+      "Select yes if you performed procedures on the same subjects at different times or under different conditions. Examples include: follow-up measurements, varied stimulation parameters, different behavioral tests, sequential imaging sessions, or any case where you need to track which protocol or time point generated specific data.",
     dependsOn: ["subjects"],
     ml: 10,
   },
   code: {
     label: "Did you use software code to generate or analyze your data?",
     description:
-      "Select this option if your research involved computational tools, scripts, or analysis pipelines that were important for generating or analyzing your data. This includes custom code, analysis scripts, and simulation software relevant to understanding your results.",
+      "Select yes if your research involved computational tools, scripts, or analysis pipelines that were important for generating or analyzing your data. This includes custom code, analysis scripts, and simulation software relevant to understanding your results.",
     ml: 0,
   },
 };
@@ -141,9 +141,11 @@ const DatasetContentSelector = () => {
                 </Group>
 
                 {expanded[key] && (
-                  <SodaGreenPaper mt="sm" mb="sm">
-                    <Text>{option.description}</Text>
-                  </SodaGreenPaper>
+                  <Box mb="md">
+                    <SodaGreenPaper mt="sm" mb="sm">
+                      <Text>{option.description}</Text>
+                    </SodaGreenPaper>
+                  </Box>
                 )}
 
                 <Radio.Group

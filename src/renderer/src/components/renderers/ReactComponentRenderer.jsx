@@ -147,9 +147,12 @@ const componentTypeRenderers = {
   },
   "entity-file-mapping-page": (componentSlot) => {
     const root = createRoot(componentSlot);
+    const props = {
+      entityType: componentSlot.getAttribute("data-entity-type"),
+    };
     root.render(
       <SodaComponentWrapper>
-        <DatasetEntityFileMapper />
+        <DatasetEntityFileMapper {...props} />
       </SodaComponentWrapper>
     );
   },

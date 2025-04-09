@@ -176,7 +176,11 @@ const HierarchyItem = memo(
 
 // Main component that renders the entire entity hierarchy tree
 // Supports entity selection, editing, and provides actions for all entity types
-const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelection }) => {
+const EntityHierarchyRenderer = ({
+  allowEntityStructureEditing,
+  allowEntitySelection,
+  onlyRenderEntityType,
+}) => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
   const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
@@ -374,6 +378,12 @@ const EntityHierarchyRenderer = ({ allowEntityStructureEditing, allowEntitySelec
     }),
     [selectedEntities]
   );
+
+  if (onlyRenderEntityType) {
+    // Filter the datasetEntityArray to only include the specified entity type
+    //const entitiesToRender = getEntitiesArrayByType(onlyRenderEntityType);
+    return <div>onlyRenderEntityType</div>;
+  }
 
   // Main component render - displays the full entity hierarchy with appropriate controls
   return (

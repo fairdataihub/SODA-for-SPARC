@@ -83,8 +83,8 @@ const getInstructionalTextByEntityType = (entityType) => {
   return instructionalText[entityType] || instructionalText.default;
 };
 
-const DatasetEntityFileMapper = () => {
-  const entityType = "entity-to-file-mapping";
+const DatasetEntityFileMapper = ({ entityType }) => {
+  console.log("DatasetEntityFileMapper", entityType);
   const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
   const selectedEntityId = selectedHierarchyEntity ? selectedHierarchyEntity.id : null;
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
@@ -111,6 +111,7 @@ const DatasetEntityFileMapper = () => {
               <EntityHierarchyRenderer
                 allowEntityStructureEditing={false}
                 allowEntitySelection={true}
+                onlyRenderEntityType={entityType}
               />
             </Paper>
           </Grid.Col>
@@ -131,7 +132,7 @@ const DatasetEntityFileMapper = () => {
                       mutuallyExclusive
                     ) => {
                       handleFolderClick(
-                        entityType,
+                        "entity-to-file-mapping",
                         selectedEntityId,
                         datasetEntityObj,
                         folderContents,
@@ -144,7 +145,7 @@ const DatasetEntityFileMapper = () => {
                       return areAllFilesInFolderSelectedForEntity(
                         selectedEntityId,
                         folderContents,
-                        entityType
+                        "entity-to-file-mapping"
                       );
                     },
                   }}
@@ -160,11 +161,11 @@ const DatasetEntityFileMapper = () => {
                       return checkIfRelativePathBelongsToEntity(
                         selectedEntityId,
                         fileContents.relativePath,
-                        entityType
+                        "entity-to-file-mapping"
                       );
                     },
                   }}
-                  entityType={entityType}
+                  entityType="entity-to-file-mapping"
                 />
               </Paper>
             ) : (

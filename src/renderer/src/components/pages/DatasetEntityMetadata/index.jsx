@@ -33,7 +33,7 @@ import {
   Notification,
   Accordion,
 } from "@mantine/core";
-import { Dropzone } from "@mantine/dropzone";
+import { Dropzone, MIME_TYPES } from "@mantine/dropzone";
 import useGlobalStore from "../../../stores/globalStore";
 import EntityHierarchyRenderer from "../../shared/EntityHierarchyRenderer";
 import {
@@ -781,24 +781,26 @@ const DatasetEntityMetadata = () => {
     <GuidedModePage pageHeader="Dataset entity metadata">
       <GuidedModeSection>
         <Stack>
-          <Text>The SDS requires that you provide metadata for each entity in your dataset:</Text>
+          <Text>
+            The SDS requires that you provide metadata for the following entities in your dataset:
+          </Text>
           <Stack spacing="xs">
             {selectedEntities?.includes("subjects") && (
               <Text>
-                <strong>Subjects:</strong> An unique identifier and metadata such as age and sex for
+                <strong>Subjects:</strong> A unique identifier and metadata such as age and sex for
                 each participant in your study.
               </Text>
             )}
             {selectedEntities?.includes("samples") && (
               <Text>
-                <strong>Samples:</strong> An unique identifier and metadata such as sample type and
+                <strong>Samples:</strong> A unique identifier and metadata such as sample type and
                 anatomical location it was extracted from for each sample that was collected from
                 your subjects.
               </Text>
             )}
             {selectedEntities?.includes("sites") && (
               <Text>
-                <strong>Sites:</strong> An unique identifier and metadata such as coordinates and
+                <strong>Sites:</strong> A unique identifier and metadata such as coordinates and
                 site type for each anatomical location data was collected from.
               </Text>
             )}
@@ -869,12 +871,7 @@ const DatasetEntityMetadata = () => {
                           onDrop={handleSubjectFileImport}
                           onReject={handleFileRejection}
                           maxSize={5 * 1024 * 1024} // 5MB
-                          accept={{
-                            "application/vnd.ms-excel": [".xls"],
-                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
-                              ".xlsx",
-                            ],
-                          }}
+                          accept={[MIME_TYPES.xlsx, MIME_TYPES.xls]}
                           h={120}
                         >
                           <Stack align="center" spacing="xs" style={{ pointerEvents: "none" }}>
@@ -918,11 +915,8 @@ const DatasetEntityMetadata = () => {
                             Step 1: Prepare your samples.xlsx file
                           </Text>
                           <Text size="sm">
-                            Fill out the spreadsheet with your sample IDs, parent subjects, and
-                            sample types.
-                            <br />
-                            <br />
-                            Need the template? Click below to download it.
+                            Download and fill out the spreadsheet with your sample IDs and any other
+                            metadata relating to your samples.
                           </Text>
                         </Box>
                         <Box mt="md" style={{ display: "flex", justifyContent: "center" }}>
@@ -934,7 +928,7 @@ const DatasetEntityMetadata = () => {
                               handleDownloadSamplesTemplate();
                             }}
                           >
-                            Get samples.xlsx Template
+                            Download samples.xlsx file
                           </Button>
                         </Box>
                       </Stack>
@@ -956,12 +950,7 @@ const DatasetEntityMetadata = () => {
                           onDrop={handleSampleFileImport}
                           onReject={handleFileRejection}
                           maxSize={5 * 1024 * 1024} // 5MB
-                          accept={{
-                            "application/vnd.ms-excel": [".xls"],
-                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
-                              ".xlsx",
-                            ],
-                          }}
+                          accept={[MIME_TYPES.xlsx, MIME_TYPES.xls]}
                           h={120}
                         >
                           <Stack align="center" spacing="xs" style={{ pointerEvents: "none" }}>
