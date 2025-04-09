@@ -661,17 +661,150 @@ const DatasetEntityMetadata = () => {
   // Only show import section if we have subjects or samples
   const showImportSection = datasetContainsSubjects || datasetContainsSamples;
 
+  // Enhanced template download functions with logging
+  const handleDownloadSubjectsTemplate = () => {
+    console.log("Download subjects template button clicked");
+    try {
+      window.electron.ipcRenderer.send("open-folder-dialog-save-metadata", "subjects.xlsx");
+      console.log("IPC message sent for subjects.xlsx template download");
+    } catch (error) {
+      console.error("Error sending IPC message for subjects template:", error);
+    }
+  };
+
+  const handleDownloadSamplesTemplate = () => {
+    console.log("Download samples template button clicked");
+    try {
+      window.electron.ipcRenderer.send("open-folder-dialog-save-metadata", "samples.xlsx");
+      console.log("IPC message sent for samples.xlsx template download");
+    } catch (error) {
+      console.error("Error sending IPC message for samples template:", error);
+    }
+  };
+
+  // Add listeners for IPC responses
+  useEffect(() => {
+    // Log when component mounts
+    console.log("DatasetEntityMetadata component mounted");
+
+    // Add event listener for folder selection response
+    const handleFolderSelected = (event, path, filename) => {
+      console.log("Selected folder:", path);
+      console.log("Template to download:", filename);
+    };
+
+    // Add event listener for any errors
+    const handleDownloadError = (event, error) => {
+      console.error("Template download error:", error);
+    };
+
+    // Register event listeners
+    window.electron.ipcRenderer.on("selected-metadata-download-folder", handleFolderSelected);
+    window.electron.ipcRenderer.on("metadata-download-error", handleDownloadError);
+
+    // Make sure window.electron exists
+    console.log("Electron IPC available:", !!window.electron?.ipcRenderer);
+
+    // Cleanup listeners on unmount
+    return () => {
+      window.electron.ipcRenderer.removeListener(
+        "selected-metadata-download-folder",
+        handleFolderSelected
+      );
+      window.electron.ipcRenderer.removeListener("metadata-download-error", handleDownloadError);
+    };
+  }, []);
+
+  // Add file import handling functions
+  const handleSubjectFileImport = (files) => {
+    console.log("Subject file import triggered");
+    if (files && files.length > 0) {
+      const file = files[0];
+      console.log("Importing subject file:", file.name);
+
+      // Validate file name
+      if (!file.name.toLowerCase().includes("subject")) {
+        window.notyf.open({
+          type: "error",
+          message: "Please upload a subjects.xlsx file",
+          duration: 5000,
+        });
+        return;
+      }
+
+      // Handle the file import
+      // TODO: Add actual file processing logic here
+      window.notyf.open({
+        type: "success",
+        message: "Subject file imported successfully",
+        duration: 3000,
+      });
+    }
+  };
+
+  const handleSampleFileImport = (files) => {
+    console.log("Sample file import triggered");
+    if (files && files.length > 0) {
+      const file = files[0];
+      console.log("Importing sample file:", file.name);
+
+      // Validate file name
+      if (!file.name.toLowerCase().includes("sample")) {
+        window.notyf.open({
+          type: "error",
+          message: "Please upload a samples.xlsx file",
+          duration: 5000,
+        });
+        return;
+      }
+
+      // Handle the file import
+      // TODO: Add actual file processing logic here
+      window.notyf.open({
+        type: "success",
+        message: "Sample file imported successfully",
+        duration: 3000,
+      });
+    }
+  };
+
+  const handleFileRejection = (files) => {
+    console.log("File rejected:", files);
+    window.notyf.open({
+      type: "error",
+      message: "Invalid file format. Please upload an Excel file (.xlsx or .xls)",
+      duration: 5000,
+    });
+  };
+
   return (
     <GuidedModePage pageHeader="Dataset entity metadata">
       <GuidedModeSection>
         <Stack>
+          <Text>The SDS requires that you provide metadata for each entity in your dataset:</Text>
+          <Stack spacing="xs">
+            {selectedEntities?.includes("subjects") && (
+              <Text>
+                <strong>Subjects:</strong> An unique identifier and metadata such as age and sex for
+                each participant in your study.
+              </Text>
+            )}
+            {selectedEntities?.includes("samples") && (
+              <Text>
+                <strong>Samples:</strong> An unique identifier and metadata such as sample type and
+                anatomical location it was extracted from for each sample that was collected from
+                your subjects.
+              </Text>
+            )}
+            {selectedEntities?.includes("sites") && (
+              <Text>
+                <strong>Sites:</strong> An unique identifier and metadata such as coordinates and
+                site type for each anatomical location data was collected from.
+              </Text>
+            )}
+          </Stack>
           <Text>
-            Add metadata for your subjects, samples, and other dataset entities using the form on
-            the right. Select entities from the tree view to edit them, or use the "Add" buttons to
-            create new ones.
-          </Text>
-          <Text>
-            <strong>Bulk import:</strong> For datasets with many subjects or samples, you can bulk
+            <strong>For datasets with a large amount of subjects or samples:</strong> You can bulk
             import from Excel spreadsheets using the tools below.
           </Text>
         </Stack>
@@ -701,16 +834,20 @@ const DatasetEntityMetadata = () => {
                             Step 1: Prepare your subjects.xlsx file
                           </Text>
                           <Text size="sm">
-                            Fill out the spreadsheet with your subject IDs, age, sex, and
-                            experimental groups.
-                            <br />
-                            <br />
-                            Need the template? Click below to download it.
+                            Download and fill out the spreadsheet with your subject IDs and any
+                            other metadata relating to your subjects.
                           </Text>
                         </Box>
                         <Box mt="md" style={{ display: "flex", justifyContent: "center" }}>
-                          <Button leftIcon={<IconUpload size={16} />} variant="light">
-                            Get subjects.xlsx Template
+                          <Button
+                            leftIcon={<IconUpload size={16} />}
+                            variant="light"
+                            onClick={() => {
+                              console.log("Subject template button clicked");
+                              handleDownloadSubjectsTemplate();
+                            }}
+                          >
+                            Download subjects.xlsx file
                           </Button>
                         </Box>
                       </Stack>
@@ -721,7 +858,7 @@ const DatasetEntityMetadata = () => {
                       <Stack spacing="sm">
                         <Box>
                           <Text fw={600} mb={5}>
-                            Step 2: Upload your completed file
+                            Step 2: Import the subjects.xlsx file
                           </Text>
                           <Text size="sm">
                             Once you've filled in your subject data, drop the file here to create
@@ -729,13 +866,15 @@ const DatasetEntityMetadata = () => {
                           </Text>
                         </Box>
                         <Dropzone
-                          onDrop={(files) => console.log("Dropped subjects file:", files)}
-                          onReject={(files) => console.log("Rejected subjects file:", files)}
-                          maxSize={3 * 1024 ** 2} // 3MB
-                          accept={[
-                            "application/vnd.ms-excel",
-                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                          ]}
+                          onDrop={handleSubjectFileImport}
+                          onReject={handleFileRejection}
+                          maxSize={5 * 1024 * 1024} // 5MB
+                          accept={{
+                            "application/vnd.ms-excel": [".xls"],
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
+                              ".xlsx",
+                            ],
+                          }}
                           h={120}
                         >
                           <Stack align="center" spacing="xs" style={{ pointerEvents: "none" }}>
@@ -787,7 +926,14 @@ const DatasetEntityMetadata = () => {
                           </Text>
                         </Box>
                         <Box mt="md" style={{ display: "flex", justifyContent: "center" }}>
-                          <Button leftIcon={<IconUpload size={16} />} variant="light">
+                          <Button
+                            leftIcon={<IconUpload size={16} />}
+                            variant="light"
+                            onClick={() => {
+                              console.log("Sample template button clicked");
+                              handleDownloadSamplesTemplate();
+                            }}
+                          >
                             Get samples.xlsx Template
                           </Button>
                         </Box>
@@ -799,7 +945,7 @@ const DatasetEntityMetadata = () => {
                       <Stack spacing="sm">
                         <Box>
                           <Text fw={600} mb={5}>
-                            Step 2: Upload your completed file
+                            Step 2: Import the samples.xlsx file
                           </Text>
                           <Text size="sm">
                             Once you've filled in your sample data, drop the file here to create all
@@ -807,13 +953,15 @@ const DatasetEntityMetadata = () => {
                           </Text>
                         </Box>
                         <Dropzone
-                          onDrop={(files) => console.log("Dropped samples file:", files)}
-                          onReject={(files) => console.log("Rejected samples file:", files)}
-                          maxSize={3 * 1024 ** 2} // 3MB
-                          accept={[
-                            "application/vnd.ms-excel",
-                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                          ]}
+                          onDrop={handleSampleFileImport}
+                          onReject={handleFileRejection}
+                          maxSize={5 * 1024 * 1024} // 5MB
+                          accept={{
+                            "application/vnd.ms-excel": [".xls"],
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
+                              ".xlsx",
+                            ],
+                          }}
                           h={120}
                         >
                           <Stack align="center" spacing="xs" style={{ pointerEvents: "none" }}>

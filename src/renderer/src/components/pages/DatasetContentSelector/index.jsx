@@ -5,6 +5,7 @@ import useGlobalStore from "../../../stores/globalStore";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import SodaGreenPaper from "../../utils/ui/SodaGreenPaper";
+
 const contentOptionsMap = {
   subjects: {
     label: "Did your research involve human or animal subjects?",

@@ -115,6 +115,9 @@ const downloadTemplates = async (templateItem, destinationFolder) => {
       templateItem
     );
 
+    // Fix: Define destinationPath before using it
+    let destinationPath = window.path.join(destinationFolder, templateItem);
+
     if (window.fs.existsSync(destinationPath)) {
       let emessage = "File '" + templateItem + "' already exists in " + destinationFolder;
       Swal.fire({
