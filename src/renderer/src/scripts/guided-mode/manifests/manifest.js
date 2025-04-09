@@ -25,7 +25,7 @@ export const guidedCreateManifestFilesAndAddToDatasetStructure = async () => {
     window.datasetStructureJSONObj["folders"][highLevelFolder]["files"]["manifest.xlsx"] = {
       action: ["new"],
       path: manifestPath,
-      type: "local",
+      location: "local",
     };
   }
 

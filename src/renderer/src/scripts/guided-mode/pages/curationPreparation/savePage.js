@@ -60,7 +60,7 @@ export const savePageCurationPreparation = async (pageBeingLeftID) => {
     // If the user selected that the dataset is SPARC funded, unskip the submission metadata page
     if (userSelectedDatasetIsSparcFunded) {
       // Set the consortium data standard value in the JSON
-      window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] =
+      window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["consortium-data-standard"] =
         "SPARC";
       const selectedFuncingSourceFromDropdown =
         useGlobalStore.getState()["dropDownState"]["guided-select-sparc-funding-consortium"]
@@ -75,15 +75,15 @@ export const savePageCurationPreparation = async (pageBeingLeftID) => {
         throw errorArray;
       } else {
         // Set the funding consortium value in the JSON
-        window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
+        window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["funding-consortium"] =
           selectedFuncingSourceFromDropdown;
       }
     }
 
     if (userSelectedDatasetIsReJoinFunded) {
-      window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] =
+      window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["consortium-data-standard"] =
         "HEAL";
-      window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
+      window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["funding-consortium"] =
         "REJOIN-HEAL";
     }
 
@@ -113,18 +113,18 @@ export const savePageCurationPreparation = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
-      window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] =
+      window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["consortium-data-standard"] =
         "";
-      window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
+      window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["funding-consortium"] =
         "EXTERNAL";
     }
 
     const setConsortiumDataStandard =
-      window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"];
+      window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["consortium-data-standard"];
     // If the set consortium data standard is SPARC, unskip the SPARC specific metadata pages
     if (setConsortiumDataStandard === "SPARC") {
       const setFundingConsortium =
-        window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"];
+        window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["funding-consortium"];
       if (setFundingConsortium === "SPARC") {
         // If the funding consortium is SPARC, unskip the protocols page
         guidedUnSkipPage("guided-protocols-tab");
@@ -138,9 +138,9 @@ export const savePageCurationPreparation = async (pageBeingLeftID) => {
       guidedSkipPage("guided-create-submission-metadata-tab");
       guidedSkipPage("guided-protocols-tab");
       // Manually set the SPARC award number to "EXTERNAL" for non-SPARC funded datasets (case for all non-SPARC funded datasets)
-      window.sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = "";
-      window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] = [""];
-      window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] = "";
+      window.sodaJSONObj["dataset_metadata"]["shared-metadata"]["sparc-award"] = "";
+      window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["milestones"] = [""];
+      window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["completion-date"] = "";
     }
   }
 

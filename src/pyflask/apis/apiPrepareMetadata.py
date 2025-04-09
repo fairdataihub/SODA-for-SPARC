@@ -1,18 +1,12 @@
 from prepareMetadata import (
-    save_submission_file,
-    save_ds_description_file,
-    upload_code_description_metadata,
     extract_milestone_info,
     import_sparc_award,
     import_milestone,
-    save_subjects_file,
     convert_subjects_samples_file_to_df,
-    save_samples_file,
     load_existing_DD_file,
     load_existing_submission_file,
     import_ps_metadata_file,
     import_ps_RC,
-    upload_RC_file,
     delete_manifest_dummy_folders,
     set_template_path, 
     import_ps_manifest_file,
@@ -24,9 +18,17 @@ from flask_restx import Resource, reqparse, fields
 from flask_restx.inputs import boolean
 from errorHandlers import notBadRequestException
 from utils import metadata_string_to_list
+from pysoda.core.metadata import submission
+from pysoda.core.metadata import dataset_description
+from pysoda.core.metadata import readme_changes
+from pysoda.core.metadata import code_description
+from pysoda.core.metadata import subjects
+from pysoda.core.metadata import samples
+from pysoda.utils import validation_error_message
+from jsonschema import ValidationError
+
 
 api = get_namespace(NamespaceEnum.PREPARE_METADATA)
-
 
 
 
@@ -46,30 +48,33 @@ model_get_submission_file_response = api.model('getSubmissionFileResponse', {
 class SaveSubmissionFile(Resource):
     parser_save_submission_file = reqparse.RequestParser(bundle_errors=True)
     parser_save_submission_file.add_argument('upload_boolean', type=boolean, help='Boolean to indicate whether to upload the file to the Bionimbus server', location="json", required=True)
-    parser_save_submission_file.add_argument('selected_account', type=str, help='Pennsieve account name', location="args", required=True)
-    parser_save_submission_file.add_argument('selected_dataset', type=str, help='Pennsieve dataset name', location="args", required=True)
+    # parser_save_submission_file.add_argument('selected_account', type=str, help='Pennsieve account name', location="args", required=True)
+    # parser_save_submission_file.add_argument('selected_dataset', type=str, help='Pennsieve dataset name', location="args", required=True)
     parser_save_submission_file.add_argument('filepath', type=str, help='Path to the file to be uploaded', location="json")
-    parser_save_submission_file.add_argument('submission_file_rows', type=list, help='List of objects that contain the consortium data standard, funding consortium, award number, milestone(s), and date properties with appropriate values.', location="json", required=True)
+    # parser_save_submission_file.add_argument('soda', type=dict, help='SODA object with submission details filled out', location="json", required=True)
 
-    @api.expect(parser_save_submission_file)
+    # @api.expect(parser_save_submission_file)
     @api.response(200, 'OK', model_save_submission_file_response)
     @api.doc(description='Save a submission file locally or in a dataset stored on the Pennsieve account of the current user.', responses={500: "Internal Server Error", 400: "Bad Request", 403: "Forbidden"})
     def post(self):
-        data = self.parser_save_submission_file.parse_args()
+        data = request.get_json()
 
         upload_boolean = data.get('upload_boolean')
-        bfaccount = data.get('selected_account')
-        bfdataset = data.get('selected_dataset')
         filepath = data.get('filepath')
-        json_str = data.get("submission_file_rows")
+        soda = data.get("soda")
 
 
         if not upload_boolean and filepath is None:
             api.abort(400, "Please provide a destination in which to save your Submission file.")
 
         try:
-            return save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_str)
+            return submission.create_excel(soda, upload_boolean, filepath)
         except Exception as e:
+            if isinstance(e, ValidationError):
+                # Extract properties from the ValidationError
+                validation_err_msg = validation_error_message(e)
+                # Return the ValidationError as JSON
+                api.abort(400, validation_err_msg)
             if notBadRequestException(e):
                 api.abort(500, str(e))
             raise e
@@ -144,15 +149,13 @@ class RCFile(Resource):
     @api.marshal_with(model_upload_RC_file_response, 200, False)
     @api.doc(description='Create a readme or changes file on the given dataset for the given Pennsieve account.', responses={500: "Internal Server Error", 400: "Bad Request", 403: "Forbidden"})
     def post(self):
-        data = self.parser_create_RC_file.parse_args()
+        data = request.get_json()
 
         file_type = data.get('file_type')
-        bfaccount = data.get('selected_account')
-        bfdataset = data.get('selected_dataset')
-        text = data.get('text')
+        soda = data.get("soda")
 
         try:
-            return upload_RC_file(text, file_type, bfaccount, bfdataset)
+            return readme_changes.create_excel(soda, file_type)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))
@@ -208,41 +211,35 @@ class DatasetDescriptionFile(Resource):
 
 
     parser_dataset_description_file = reqparse.RequestParser(bundle_errors=True)
-    parser_dataset_description_file.add_argument('dataset_str', type=dict, required=True, location="json")
     parser_dataset_description_file.add_argument('filepath', type=str, location="json")
     parser_dataset_description_file.add_argument('upload_boolean', type=boolean, required=True, location="args")
     parser_dataset_description_file.add_argument('selected_account', type=str, location="json")
     parser_dataset_description_file.add_argument('selected_dataset', type=str, location="json")
-    parser_dataset_description_file.add_argument('study_str', type=dict, required=True, location="json")
-    parser_dataset_description_file.add_argument('contributor_str', type=dict, required=True, location="json")
-    parser_dataset_description_file.add_argument('related_info_str', type=list, required=True, location="json")
 
 
-    @api.expect(parser_dataset_description_file)
+    # @api.expect(parser_dataset_description_file)
     @api.marshal_with(model_save_ds_description_file_response, 200, False)
     @api.doc(description='Save the dataset description file to the user\'s machine. A separate route exists for saving to Pennsieve.', responses={500: "Internal Server Error", 400: "Bad Request", 403: "Forbidden"})
     def post(self):
-        data = self.parser_dataset_description_file.parse_args()
-
-
-        dataset_str = data.get('dataset_str')
+        data = request.get_json()
         filepath = data.get('filepath')
         upload_boolean = data.get('upload_boolean')
-        selected_account = data.get('selected_account')
-        selected_dataset = data.get('selected_dataset')
-        study_str = data.get('study_str')
-        contributor_str = data.get('contributor_str')
-        related_info_str = data.get('related_info_str')
+        soda = data.get('soda')
 
-        if upload_boolean and not selected_account and not selected_dataset:
-            api.abort(400, "Error:  To save a dataset description file on Pennsieve provide a dataset and pennsieve account.")
+        # if upload_boolean and not selected_account and not selected_dataset:
+        #     api.abort(400, "Error:  To save a dataset description file on Pennsieve provide a dataset and pennsieve account.")
 
         if not upload_boolean and not filepath:
             api.abort(400, "Error:  To save a dataset description file on the user\'s machine provide a filepath.")
 
         try:
-            return save_ds_description_file(upload_boolean, selected_account, selected_dataset, filepath, dataset_str, study_str, contributor_str, related_info_str)
+            return dataset_description.create_excel(upload_boolean, soda, filepath)
         except Exception as e:
+            if isinstance(e, ValidationError):
+                # Extract properties from the ValidationError
+                validation_err_msg = validation_error_message(e)
+                # Return the ValidationError as JSON
+                api.abort(400, validation_err_msg)
             if notBadRequestException(e):
                 api.abort(500, str(e))
             raise e
@@ -260,19 +257,23 @@ class CodeDescriptionFile(Resource):
     parser_upload_code_description_file.add_argument('selected_account', type=str, help='Pennsieve account to save the code_description file to', location="json", required=True)
     parser_upload_code_description_file.add_argument('selected_dataset', type=str, help='Pennsieve dataset to save the code_description file to', location="json", required=True)
 
-    @api.expect(parser_upload_code_description_file)
+    # @api.expect(parser_upload_code_description_file)
     @api.doc(description='Upload the code_description file on the user\'s machine directly to Pennsieve', responses={500: "Internal Server Error", 400: "Bad Request"})
     
     def post(self):
-        data = self.parser_upload_code_description_file.parse_args()
+        data = request.get_json()
 
         filepath = data.get('filepath')
-        selected_account = data.get('selected_account')
-        selected_dataset = data.get('selected_dataset')
+        soda = data.get('soda')
 
         try:
-            return upload_code_description_metadata(filepath, selected_account, selected_dataset)
+            return code_description.create_excel(soda, filepath)
         except Exception as e:
+            if isinstance(e, ValidationError):
+                # Extract properties from the ValidationError
+                validation_err_msg = validation_error_message(e)
+                # Return the ValidationError as JSON
+                api.abort(400, validation_err_msg)
             if notBadRequestException(e):
                 api.abort(500, str(e))
             raise e
@@ -292,27 +293,30 @@ class SubjectsFile(Resource):
     parser_save_subjects_file.add_argument('selected_dataset', type=str, help='Pennsieve dataset to save the subjects file to.', location="json", required=False)
     parser_save_subjects_file.add_argument('subjects_header_row', type=list, help='List of subjects to save.', location="json", required=True)
 
-    @api.expect(parser_save_subjects_file)
+    # @api.expect(parser_save_subjects_file)
     @api.doc(description='Save the subjects file to the user\'s machine or to Pennsieve.', responses={500: "Internal Server Error", 400: "Bad Request", 403: "Forbidden"})
     def post(self):
-        data = self.parser_save_subjects_file.parse_args()
+        data = request.get_json()
 
         filepath = data.get('filepath')
         upload_boolean = data.get('upload_boolean')
-        selected_account = data.get('selected_account')
-        selected_dataset = data.get('selected_dataset')
-        subjects_str = data.get('subjects_header_row')
+        soda = data.get("soda")
 
-        if upload_boolean and not selected_account and not selected_dataset:
-            api.abort(400, "To save a subjects file on Pennsieve provide a dataset and pennsieve account.")
+        # if upload_boolean and not selected_account and not selected_dataset:
+        #     api.abort(400, "To save a subjects file on Pennsieve provide a dataset and pennsieve account.")
 
         if not upload_boolean and not filepath:
             api.abort(400, "To save a subjects file on the user\'s machine provide a filepath.")
 
 
         try:
-            return save_subjects_file(upload_boolean, selected_account, selected_dataset, filepath, subjects_str)
+            return subjects.create_excel(soda, upload_boolean, filepath )
         except Exception as e:
+            if isinstance(e, ValidationError):
+                # Extract properties from the ValidationError
+                validation_err_msg = validation_error_message(e)
+                # Return the ValidationError as JSON
+                api.abort(400, validation_err_msg)
             if notBadRequestException(e):
                 api.abort(500, str(e))
             raise e
@@ -372,28 +376,32 @@ class SamplesFile(Resource):
     parser_save_samples_file.add_argument('selected_dataset', type=str, help='Pennsieve dataset to save the samples file to.', location="json", required=False)
     parser_save_samples_file.add_argument('samples_str', type=list, help='List of samples to save.', location="json", required=True)
 
-    @api.expect(parser_save_samples_file)
+    # @api.expect(parser_save_samples_file)
     @api.doc(description='Save the samples file to the user\'s machine or to Pennsieve.', responses={500: "Internal Server Error", 400: "Bad Request", 403: "Forbidden"})
     @api.marshal_with(model_save_samples_result, 200, False)
     def post(self):
-        data = self.parser_save_samples_file.parse_args()
+        data = request.get_json()
 
         filepath = data.get('filepath')
         upload_boolean = data.get('upload_boolean')
-        selected_account = data.get('selected_account')
-        selected_dataset = data.get('selected_dataset')
-        samples_str = data.get('samples_str')
+        soda = data.get("soda")
 
-        if upload_boolean and not selected_account and not selected_dataset:
-            api.abort(400, "Error:  To save a samples file on Pennsieve provide a dataset and pennsieve account.")
+
+        # if upload_boolean and not selected_account and not selected_dataset:
+        #     api.abort(400, "Error:  To save a samples file on Pennsieve provide a dataset and pennsieve account.")
         
         if not upload_boolean and not filepath:
             api.abort(400, "Error:  To save a samples file on the user\'s machine provide a filepath.")
 
         
         try:
-            return save_samples_file(upload_boolean, selected_account, selected_dataset, filepath, samples_str)
+            return samples.create_excel(soda, upload_boolean, filepath)
         except Exception as e:
+            if isinstance(e, ValidationError):
+                # Extract properties from the ValidationError
+                validation_err_msg = validation_error_message(e)
+                # Return the ValidationError as JSON
+                api.abort(400, validation_err_msg)
             if notBadRequestException(e):
                 api.abort(500, str(e))
             raise e

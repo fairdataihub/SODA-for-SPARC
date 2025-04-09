@@ -15,7 +15,7 @@ export const pageNeedsUpdateFromPennsieve = (pageID) => {
   // Note: window.sodaJSONObj["pages-fetched-from-pennsieve"] gets the page id added to it when the page is fetched from Pennsieve to prevent duplicate page fetches
   // 3. window.sodaJSONObj["completed-tabs"] does not include the pageID (The page has not been saved yet)
   return (
-    window.sodaJSONObj["starting-point"]["type"] === "bf" &&
+    window.sodaJSONObj["starting-point"]["origin"] === "ps" &&
     !window.sodaJSONObj["pages-fetched-from-pennsieve"].includes(pageID) &&
     !window.sodaJSONObj["completed-tabs"].includes(pageID)
   );

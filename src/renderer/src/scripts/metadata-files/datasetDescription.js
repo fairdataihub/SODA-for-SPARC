@@ -17,7 +17,7 @@ while (!window.baseHtmlLoaded) {
 // opendropdown event listeners
 document.querySelectorAll(".dd-change-current-account").forEach((element) => {
   element.addEventListener("click", function () {
-    window.openDropdownPrompt(null, "bf");
+    window.openDropdownPrompt(null, "ps");
   });
 });
 
@@ -962,7 +962,7 @@ window.checkBFImportDD = async () => {
       },
     });
     let res = metadata_import.data;
-    loadDDFileToUI(res, "bf");
+    loadDDFileToUI(res, "ps");
 
     // log the import action success to analytics
     window.logMetadataForAnalytics(

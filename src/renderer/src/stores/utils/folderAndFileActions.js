@@ -30,7 +30,7 @@ export const deleteFoldersByRelativePath = (arrayOfRelativePaths) => {
   for (const relativePathToDelete of arrayOfRelativePaths) {
     const { parentFolder, itemName, itemObject } = getItemAtPath(relativePathToDelete, "folder");
 
-    if (itemObject?.["type"] === "bf") {
+    if (itemObject?.["location"] === "ps") {
       // Mark folders from Pennsieve for deletion instead of directly deleting them.
       parentFolder["folders"][itemName]["action"].push("deleted");
     } else {
@@ -47,7 +47,7 @@ export const deleteFilesByRelativePath = (arrayOfRelativePaths) => {
   for (const relativePathToDelete of arrayOfRelativePaths) {
     const { parentFolder, itemName, itemObject } = getItemAtPath(relativePathToDelete, "file");
 
-    if (itemObject?.["type"] === "bf") {
+    if (itemObject?.["location"] === "ps") {
       // Mark files from Pennsieve for deletion instead of directly deleting them.
       parentFolder["files"][itemName]["action"].push("deleted");
     } else {

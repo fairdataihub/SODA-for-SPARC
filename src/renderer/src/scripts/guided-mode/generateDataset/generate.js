@@ -835,18 +835,18 @@ const guidedGenerateSamplesMetadata = async (destination) => {
 const guidedGenerateSubmissionMetadata = async (destination) => {
   // Build the submission metadata array
   const guidedMilestones =
-    window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
+    window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["milestones"];
   const submissionMetadataArray = [];
   submissionMetadataArray.push({
     fundingConsortium:
-      window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"],
+      window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["funding-consortium"],
     consortiumDataStandard:
-      window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"],
-    award: window.sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"],
-    date: window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] || "N/A",
+      window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["consortium-data-standard"],
+    award: window.sodaJSONObj["dataset_metadata"]["shared-metadata"]["sparc-award"],
+    date: window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["completion-date"] || "N/A",
     milestone: guidedMilestones[0] || "N/A",
   });
-  if (window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"].length > 1) {
+  if (window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["milestones"].length > 1) {
     for (let i = 1; i < guidedMilestones.length; i++) {
       submissionMetadataArray.push({
         fundingConsortium: "",
@@ -925,9 +925,9 @@ const guidedGenerateSubmissionMetadata = async (destination) => {
 
 const guidedGenerateDatasetDescriptionMetadata = async (destination) => {
   const guidedDatasetInformation =
-    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"];
+    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["dataset-information"];
   const guidedStudyInformation =
-    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"];
+    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"];
 
   const guidedContributorInformation = guidedGetContributorInformation();
   const datasetLinks = guidedGetDatasetLinks();
@@ -1014,7 +1014,7 @@ const guidedGenerateDatasetDescriptionMetadata = async (destination) => {
 };
 
 const guidedGenerateReadmeMetadata = async (destination) => {
-  const guidedReadMeMetadata = window.sodaJSONObj["dataset-metadata"]["README"];
+  const guidedReadMeMetadata = window.sodaJSONObj["dataset_metadata"]["README"];
 
   const generationDestination = destination === "Pennsieve" ? "Pennsieve" : "local";
 
@@ -1090,7 +1090,7 @@ const guidedGenerateChangesMetadata = async (destination) => {
   if (pageIsSkipped("guided-create-changes-metadata-tab")) {
     return;
   }
-  const guidedChangesMetadata = window.sodaJSONObj["dataset-metadata"]["CHANGES"];
+  const guidedChangesMetadata = window.sodaJSONObj["dataset_metadata"]["CHANGES"];
 
   const generationDestination = destination === "Pennsieve" ? "Pennsieve" : "local";
 
@@ -1166,7 +1166,7 @@ const guidedGenerateCodeDescriptionMetadata = async (destination) => {
     return;
   }
   const codeDescriptionFilePath =
-    window.sodaJSONObj["dataset-metadata"]?.["code-metadata"]?.["code_description"];
+    window.sodaJSONObj["dataset_metadata"]?.["code-metadata"]?.["code_description"];
   if (!codeDescriptionFilePath) {
     return;
   }
@@ -1251,14 +1251,14 @@ const guidedUploadDatasetToPennsieve = async () => {
   let dataset_name;
   let dataset_destination;
 
-  if (window.sodaJSONObj["generate-dataset"]["destination"] == "bf") {
+  if (window.sodaJSONObj["generate-dataset"]["destination"] == "ps") {
     //Replace files and folders since guided mode always uploads to an existing Pennsieve dataset
     window.sodaJSONObj["generate-dataset"]["if-existing"] = "merge";
     window.sodaJSONObj["generate-dataset"]["if-existing-files"] = "skip";
     dataset_name = window.sodaJSONObj["digital-metadata"]["name"];
-    window.sodaJSONObj["bf-dataset-selected"] = {};
-    window.sodaJSONObj["bf-dataset-selected"]["dataset-name"] = dataset_name;
-    window.sodaJSONObj["bf-account-selected"]["account-name"] = window.defaultBfAccount;
+    window.sodaJSONObj["ps-dataset-selected"] = {};
+    window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = dataset_name;
+    window.sodaJSONObj["ps-account-selected"]["account-name"] = window.defaultBfAccount;
     dataset_destination = "Pennsieve";
   }
 
@@ -2123,9 +2123,9 @@ const guidedCreateEventDataPrepareMetadata = (destination, value) => {
 
 const guidedGetContributorInformation = () => {
   let guidedContributorInformation = {
-    ...window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributor-information"],
+    ...window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributor-information"],
   };
-  const guidedSparcAward = window.sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
+  const guidedSparcAward = window.sodaJSONObj["dataset_metadata"]["shared-metadata"]["sparc-award"];
   if (datasetIsSparcFunded()) {
     // Move the SPARC award to the front of the funding array
     guidedContributorInformation["funding"] = guidedContributorInformation["funding"].filter(
@@ -2134,7 +2134,7 @@ const guidedGetContributorInformation = () => {
     guidedContributorInformation["funding"].unshift(guidedSparcAward);
   }
 
-  const guidedContributorsArray = window.sodaJSONObj["dataset-metadata"]["description-metadata"][
+  const guidedContributorsArray = window.sodaJSONObj["dataset_metadata"]["description-metadata"][
     "contributors"
   ].map((contributor) => {
     return {
@@ -2153,7 +2153,7 @@ const guidedGetContributorInformation = () => {
 
 const guidedGetDatasetLinks = () => {
   return [
-    ...window.sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"],
-    ...window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"],
+    ...window.sodaJSONObj["dataset_metadata"]["description-metadata"]["additional-links"],
+    ...window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"],
   ];
 };

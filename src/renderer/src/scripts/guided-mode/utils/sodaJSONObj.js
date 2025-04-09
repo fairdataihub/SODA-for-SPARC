@@ -49,7 +49,7 @@ export const guidedGetDatasetName = (sodaJSON) => {
 // Returns a boolean that indicates whether or not the user selected that the dataset is SPARC funded
 export const datasetIsSparcFunded = () => {
   return (
-    window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] === "SPARC"
+    window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["funding-consortium"] === "SPARC"
   );
 };
 
@@ -69,32 +69,32 @@ export const guidedCreateSodaJSONObj = () => {
 
   window.sodaJSONObj["guided-options"] = {};
   window.sodaJSONObj["cuartion-mode"] = "guided";
-  window.sodaJSONObj["bf-account-selected"] = {};
+  window.sodaJSONObj["ps-account-selected"] = {};
   window.sodaJSONObj["dataset-structure"] = { files: {}, folders: {} };
   window.sodaJSONObj["generate-dataset"] = {};
-  window.sodaJSONObj["generate-dataset"]["destination"] = "bf";
+  window.sodaJSONObj["generate-dataset"]["destination"] = "ps";
   window.sodaJSONObj["guided-manifest-file-data"] = {};
   window.sodaJSONObj["starting-point"] = {};
-  window.sodaJSONObj["dataset-metadata"] = {};
-  window.sodaJSONObj["dataset-metadata"]["shared-metadata"] = {};
-  window.sodaJSONObj["dataset-metadata"]["protocol-data"] = [];
-  window.sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"] = {};
-  window.sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"] = {};
-  window.sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["subjects"] = {};
-  window.sodaJSONObj["dataset-metadata"]["subject-metadata"] = {};
-  window.sodaJSONObj["dataset-metadata"]["sample-metadata"] = {};
-  window.sodaJSONObj["dataset-metadata"]["submission-metadata"] = {};
-  window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] = "";
-  window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] = "";
-  window.sodaJSONObj["dataset-metadata"]["description-metadata"] = {};
-  window.sodaJSONObj["dataset-metadata"]["code-metadata"] = {};
-  window.sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"] = [];
-  window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] = [];
-  window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = [];
-  window.sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"] = {};
-  window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"] = {};
-  window.sodaJSONObj["dataset-metadata"]["README"] = "";
-  window.sodaJSONObj["dataset-metadata"]["CHANGES"] = "";
+  window.sodaJSONObj["dataset_metadata"] = {};
+  window.sodaJSONObj["dataset_metadata"]["shared-metadata"] = {};
+  window.sodaJSONObj["dataset_metadata"]["protocol-data"] = [];
+  window.sodaJSONObj["dataset_metadata"]["pool-subject-sample-structure"] = {};
+  window.sodaJSONObj["dataset_metadata"]["pool-subject-sample-structure"]["pools"] = {};
+  window.sodaJSONObj["dataset_metadata"]["pool-subject-sample-structure"]["subjects"] = {};
+  window.sodaJSONObj["dataset_metadata"]["subject-metadata"] = {};
+  window.sodaJSONObj["dataset_metadata"]["sample-metadata"] = {};
+  window.sodaJSONObj["dataset_metadata"]["submission-metadata"] = {};
+  window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["consortium-data-standard"] = "";
+  window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["funding-consortium"] = "";
+  window.sodaJSONObj["dataset_metadata"]["description-metadata"] = {};
+  window.sodaJSONObj["dataset_metadata"]["code-metadata"] = {};
+  window.sodaJSONObj["dataset_metadata"]["description-metadata"]["additional-links"] = [];
+  window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"] = [];
+  window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"] = [];
+  window.sodaJSONObj["dataset_metadata"]["description-metadata"]["dataset-information"] = {};
+  window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"] = {};
+  window.sodaJSONObj["dataset_metadata"]["README"] = "";
+  window.sodaJSONObj["dataset_metadata"]["CHANGES"] = "";
   window.sodaJSONObj["digital-metadata"] = {};
   window.sodaJSONObj["previously-uploaded-data"] = {};
   window.sodaJSONObj["digital-metadata"]["description"] = {};
@@ -113,7 +113,7 @@ export const guidedCreateSodaJSONObj = () => {
 
 export const attachGuidedMethodsToSodaJSONObj = () => {
   window.sodaJSONObj.addPool = function (poolName, throwErrorIfPoolExists = true) {
-    if (this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName]) {
+    if (this["dataset_metadata"]["pool-subject-sample-structure"]["pools"][poolName]) {
       if (throwErrorIfPoolExists) {
         throw new Error("Pool names must be unique.");
       } else {
@@ -121,13 +121,13 @@ export const attachGuidedMethodsToSodaJSONObj = () => {
       }
     }
 
-    this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName] = {};
+    this["dataset_metadata"]["pool-subject-sample-structure"]["pools"][poolName] = {};
   };
   window.sodaJSONObj.addSubject = function (subjectName, throwErrorIfSubjectExists = true) {
     //check if subject with the same name already exists
     if (
-      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][subjectName] ||
-      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName]
+      this["dataset_metadata"]["pool-subject-sample-structure"]["pools"][subjectName] ||
+      this["dataset_metadata"]["pool-subject-sample-structure"]["subjects"][subjectName]
     ) {
       if (throwErrorIfSubjectExists) {
         throw new Error("Subject names must be unique.");
@@ -135,7 +135,7 @@ export const attachGuidedMethodsToSodaJSONObj = () => {
         return;
       }
     }
-    this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName] = {};
+    this["dataset_metadata"]["pool-subject-sample-structure"]["subjects"][subjectName] = {};
   };
   window.sodaJSONObj.addSampleToSubject = function (
     sampleName,
@@ -159,11 +159,11 @@ export const attachGuidedMethodsToSodaJSONObj = () => {
     }
 
     if (subjectPoolName) {
-      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][subjectPoolName][
+      this["dataset_metadata"]["pool-subject-sample-structure"]["pools"][subjectPoolName][
         subjectName
       ][sampleName] = {};
     } else {
-      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName][
+      this["dataset_metadata"]["pool-subject-sample-structure"]["subjects"][subjectName][
         sampleName
       ] = {};
     }
@@ -172,7 +172,7 @@ export const attachGuidedMethodsToSodaJSONObj = () => {
   window.sodaJSONObj.renamePool = function (prevPoolName, newPoolName) {
     //check if name already exists
     if (prevPoolName != newPoolName) {
-      if (this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][newPoolName]) {
+      if (this["dataset_metadata"]["pool-subject-sample-structure"]["pools"][newPoolName]) {
         throw new Error("Pool names must be unique.");
       }
 
@@ -199,9 +199,9 @@ export const attachGuidedMethodsToSodaJSONObj = () => {
       }
 
       //Rename the pool in the pool-subject-sample-structure
-      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][newPoolName] =
-        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][prevPoolName];
-      delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][prevPoolName];
+      this["dataset_metadata"]["pool-subject-sample-structure"]["pools"][newPoolName] =
+        this["dataset_metadata"]["pool-subject-sample-structure"]["pools"][prevPoolName];
+      delete this["dataset_metadata"]["pool-subject-sample-structure"]["pools"][prevPoolName];
 
       //Rename the pool in the window.subjectsTableData
       for (const subjectDataArray of window.subjectsTableData.slice(1)) {
@@ -259,13 +259,13 @@ export const attachGuidedMethodsToSodaJSONObj = () => {
             }
           }
           //Update the pool-sub-sam structure to reflect the subject name change
-          this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][subject.poolName][
+          this["dataset_metadata"]["pool-subject-sample-structure"]["pools"][subject.poolName][
             newSubjectName
           ] =
-            this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][subject.poolName][
+            this["dataset_metadata"]["pool-subject-sample-structure"]["pools"][subject.poolName][
               prevSubjectName
             ];
-          delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+          delete this["dataset_metadata"]["pool-subject-sample-structure"]["pools"][
             subject.poolName
           ][prevSubjectName];
         } else {
@@ -294,9 +294,9 @@ export const attachGuidedMethodsToSodaJSONObj = () => {
           }
 
           //Update the pool-sub-sam structure to reflect the subject name change
-          this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][newSubjectName] =
-            this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][prevSubjectName];
-          delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+          this["dataset_metadata"]["pool-subject-sample-structure"]["subjects"][newSubjectName] =
+            this["dataset_metadata"]["pool-subject-sample-structure"]["subjects"][prevSubjectName];
+          delete this["dataset_metadata"]["pool-subject-sample-structure"]["subjects"][
             prevSubjectName
           ];
         }
@@ -360,13 +360,13 @@ export const attachGuidedMethodsToSodaJSONObj = () => {
             }
 
             //Update the pool-sub-sam structure to reflect the sample name change
-            this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][sample.poolName][
+            this["dataset_metadata"]["pool-subject-sample-structure"]["pools"][sample.poolName][
               sample.subjectName
             ][newSampleName] =
-              this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][sample.poolName][
+              this["dataset_metadata"]["pool-subject-sample-structure"]["pools"][sample.poolName][
                 sample.subjectName
               ][prevSampleName];
-            delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+            delete this["dataset_metadata"]["pool-subject-sample-structure"]["pools"][
               sample.poolName
             ][sample.subjectName][prevSampleName];
           } else {
@@ -393,13 +393,13 @@ export const attachGuidedMethodsToSodaJSONObj = () => {
               }
             }
 
-            this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+            this["dataset_metadata"]["pool-subject-sample-structure"]["subjects"][
               sample.subjectName
             ][newSampleName] =
-              this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+              this["dataset_metadata"]["pool-subject-sample-structure"]["subjects"][
                 sample.subjectName
               ][prevSampleName];
-            delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+            delete this["dataset_metadata"]["pool-subject-sample-structure"]["subjects"][
               sample.subjectName
             ][prevSampleName];
           }
@@ -416,7 +416,7 @@ export const attachGuidedMethodsToSodaJSONObj = () => {
   };
   window.sodaJSONObj.deletePool = function (poolName) {
     //empty the subjects in the pool back into subjects
-    let pool = this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName];
+    let pool = this["dataset_metadata"]["pool-subject-sample-structure"]["pools"][poolName];
 
     //Loop through the subjects and remove their folders from the pool in the dataset structure
     //this handles moving the subject folders back to the root of the high level folder
@@ -439,7 +439,7 @@ export const attachGuidedMethodsToSodaJSONObj = () => {
     }
 
     //delete the pool after copying the subjects back into subjects
-    delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName];
+    delete this["dataset_metadata"]["pool-subject-sample-structure"]["pools"][poolName];
   };
   window.sodaJSONObj.deleteSubject = async function (subjectName) {
     const [subjectsInPools, subjectsOutsidePools] = this.getAllSubjects();
@@ -483,7 +483,7 @@ export const attachGuidedMethodsToSodaJSONObj = () => {
             }
           }
 
-          delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+          delete this["dataset_metadata"]["pool-subject-sample-structure"]["pools"][
             subject.poolName
           ][subjectName];
         } else {
@@ -519,7 +519,7 @@ export const attachGuidedMethodsToSodaJSONObj = () => {
               }
             }
           }
-          delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName];
+          delete this["dataset_metadata"]["pool-subject-sample-structure"]["subjects"][subjectName];
         }
         // delete the subject's samples
         for (const sample of subject.samples) {
@@ -577,7 +577,7 @@ export const attachGuidedMethodsToSodaJSONObj = () => {
           }
 
           // Remove the sample from the guided structure
-          delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+          delete this["dataset_metadata"]["pool-subject-sample-structure"]["pools"][
             sample.poolName
           ][sample.subjectName][sampleName];
         } else {
@@ -614,7 +614,7 @@ export const attachGuidedMethodsToSodaJSONObj = () => {
           }
 
           // Remove the sample from the guided structure
-          delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+          delete this["dataset_metadata"]["pool-subject-sample-structure"]["subjects"][
             sample.subjectName
           ][sampleName];
         }
@@ -665,9 +665,9 @@ export const attachGuidedMethodsToSodaJSONObj = () => {
       }
     }
 
-    this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName][subjectName] =
-      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName];
-    delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName];
+    this["dataset_metadata"]["pool-subject-sample-structure"]["pools"][poolName][subjectName] =
+      this["dataset_metadata"]["pool-subject-sample-structure"]["subjects"][subjectName];
+    delete this["dataset_metadata"]["pool-subject-sample-structure"]["subjects"][subjectName];
   };
   window.sodaJSONObj.moveSubjectOutOfPool = function (subjectName, poolName) {
     //Copy the subject folders from the pool into the root of the high level folder
@@ -710,18 +710,18 @@ export const attachGuidedMethodsToSodaJSONObj = () => {
     }
 
     //Remove the subject from the pool in the guided structures
-    this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName] =
-      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName][subjectName];
-    delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName][
+    this["dataset_metadata"]["pool-subject-sample-structure"]["subjects"][subjectName] =
+      this["dataset_metadata"]["pool-subject-sample-structure"]["pools"][poolName][subjectName];
+    delete this["dataset_metadata"]["pool-subject-sample-structure"]["pools"][poolName][
       subjectName
     ];
   };
   window.sodaJSONObj.getPools = function () {
-    return this["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
+    return this["dataset_metadata"]["pool-subject-sample-structure"]["pools"];
   };
   window.sodaJSONObj.getPoolSubjects = function (poolName) {
     return Object.keys(
-      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName]
+      this["dataset_metadata"]["pool-subject-sample-structure"]["pools"][poolName]
     );
   };
   window.sodaJSONObj.getAllSamplesFromSubjects = function () {
@@ -730,7 +730,7 @@ export const attachGuidedMethodsToSodaJSONObj = () => {
 
     //get all the samples in subjects in pools
     for (const [poolName, poolData] of Object.entries(
-      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"]
+      this["dataset_metadata"]["pool-subject-sample-structure"]["pools"]
     )) {
       for (const [subjectName, subjectData] of Object.entries(poolData)) {
         for (const sampleName of Object.keys(subjectData)) {
@@ -745,7 +745,7 @@ export const attachGuidedMethodsToSodaJSONObj = () => {
 
     //get all the samples in subjects not in pools
     for (const [subjectName, subjectData] of Object.entries(
-      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
+      this["dataset_metadata"]["pool-subject-sample-structure"]["subjects"]
     )) {
       for (const sampleName of Object.keys(subjectData)) {
         samplesOutsidePools.push({
@@ -761,7 +761,7 @@ export const attachGuidedMethodsToSodaJSONObj = () => {
     let subjectsOutsidePools = [];
 
     for (const [poolName, pool] of Object.entries(
-      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"]
+      this["dataset_metadata"]["pool-subject-sample-structure"]["pools"]
     )) {
       for (const [subjectName, subjectData] of Object.entries(pool)) {
         subjectsInPools.push({
@@ -773,7 +773,7 @@ export const attachGuidedMethodsToSodaJSONObj = () => {
     }
 
     for (const [subjectName, subjectData] of Object.entries(
-      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
+      this["dataset_metadata"]["pool-subject-sample-structure"]["subjects"]
     )) {
       subjectsOutsidePools.push({
         subjectName: subjectName,
@@ -784,11 +784,11 @@ export const attachGuidedMethodsToSodaJSONObj = () => {
   };
   window.sodaJSONObj.getSubjectsOutsidePools = function () {
     let subjectsNotInPools = Object.keys(
-      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
+      this["dataset_metadata"]["pool-subject-sample-structure"]["subjects"]
     );
     return subjectsNotInPools;
   };
   window.sodaJSONObj.getSubjectsInPools = function () {
-    return this["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
+    return this["dataset_metadata"]["pool-subject-sample-structure"]["pools"];
   };
 };

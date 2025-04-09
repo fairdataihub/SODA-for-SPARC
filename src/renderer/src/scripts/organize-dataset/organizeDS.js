@@ -213,8 +213,8 @@ window.delFolder = (ev, organizeCurrentLocation, uiItem, singleUIItem, inputGlob
               type = "folders";
             }
             if (
-              myPath[type][itemToDelete]["type"] === "bf" ||
-              (myPath[type][itemToDelete]["type"] === "local" &&
+              myPath[type][itemToDelete]["location"] === "ps" ||
+              (myPath[type][itemToDelete]["location"] === "local" &&
                 myPath[type][itemToDelete]["action"].includes("existing"))
             ) {
               if (type === "folders") {
@@ -269,8 +269,8 @@ window.delFolder = (ev, organizeCurrentLocation, uiItem, singleUIItem, inputGlob
           var myPath = window.getRecursivePath(filtered.slice(1), inputGlobal);
           // update Json object with new folder created
           if (
-            myPath[type][itemToDelete]["type"] === "bf" ||
-            (myPath[type][itemToDelete]["type"] === "local" &&
+            myPath[type][itemToDelete]["location"] === "ps" ||
+            (myPath[type][itemToDelete]["location"] === "local" &&
               myPath[type][itemToDelete]["action"].includes("existing"))
           ) {
             if (type === "folders") {
@@ -1030,7 +1030,7 @@ window.loadDetailsContextMenu = (fileName, filePath, textareaID1, textareaID2, p
   let path_label = document.querySelector(
     "#organize-dataset-tab > div > div > div > div.div-display-details.file > div:nth-child(2) > label"
   );
-  if (filePath["files"][fileName]["type"] === "bf") {
+  if (filePath["files"][fileName]["location"] === "ps") {
     path_label.innerHTML = "<b>Pennsieve path:<br></b>";
     bf_path = "";
     filePath["files"][fileName]["bfpath"].forEach((item) => (bf_path += item + "/"));

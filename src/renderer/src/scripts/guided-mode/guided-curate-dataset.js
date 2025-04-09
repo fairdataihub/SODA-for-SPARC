@@ -117,7 +117,7 @@ const guidedResetLocalGenerationUI = () => {
 };
 
 const folderImportedFromPennsieve = (folderJSONPath) => {
-  return folderJSONPath.type === "bf";
+  return folderJSONPath.type === "ps";
 };
 
 const guidedModifyPennsieveFolder = (folderJSONPath, action) => {
@@ -190,7 +190,7 @@ window.guidedSetCurationTeamUI = () => {
 
 // Function used to reserve a DOI for the current dataset and account
 window.guidedReserveAndSaveDOI = async () => {
-  let dataset = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+  let dataset = window.sodaJSONObj["ps-dataset-selected"]["dataset-name"];
   $("#curate-button-reserve-doi").addClass("loading");
   $("#curate-button-reserve-doi").disabled = true;
 
@@ -548,7 +548,7 @@ document
 
       // if the user performed move, rename, delete on files in an imported dataset we need to perform those actions before creating the validation report;
       // rationale for this can be found in the function definition
-      if (sodaJSONObjCopy["starting-point"]["type"] === "bf") {
+      if (sodaJSONObjCopy["starting-point"]["origin"] === "ps") {
         await api.performUserActions(sodaJSONObjCopy);
       }
 
@@ -1254,9 +1254,9 @@ const handleValidationTableUi = (errors) => {
 window.deleteContributor = (clickedDelContribuButton, contributorOrcid) => {
   const contributorField = clickedDelContribuButton.parentElement.parentElement;
   const contributorsBeforeDelete =
-    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"];
 
-  window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] =
+  window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"] =
     contributorsBeforeDelete.filter((contributor) => {
       return contributor.conID !== contributorOrcid;
     });
@@ -1573,12 +1573,12 @@ const guidedGetPageToReturnTo = async () => {
 
 window.deleteAdditionalLink = (linkName) => {
   const additionalLinks =
-    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"];
+    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["additional-links"];
   //filter additional links to remove the one to be deleted
   const filteredAdditionalLinks = additionalLinks.filter((link) => {
     return link.link != linkName;
   });
-  window.sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"] =
+  window.sodaJSONObj["dataset_metadata"]["description-metadata"]["additional-links"] =
     filteredAdditionalLinks;
   //update the UI
   renderAdditionalLinksTable();
@@ -1614,7 +1614,7 @@ window.removeContributorField = (contributorDeleteButton) => {
   const { contributorFirstName, contributorLastName } = contributorField.dataset;
 
   const contributorsBeforeDelete =
-    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"];
   //If the contributor has data-first-name and data-last-name, then it is a contributor that
   //already been added. Delete it from the contributors array.
   if (contributorFirstName && contributorLastName) {
@@ -1626,7 +1626,7 @@ window.removeContributorField = (contributorDeleteButton) => {
       );
     });
 
-    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] =
+    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"] =
       filteredContributors;
   }
 
@@ -1634,7 +1634,7 @@ window.removeContributorField = (contributorDeleteButton) => {
 };
 
 const getExistingContributorORCiDs = () => {
-  return window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"].map(
+  return window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"].map(
     (contributor) => {
       return contributor.conID;
     }
@@ -2221,7 +2221,7 @@ window.contributorDataIsValid = (contributorObj) => {
 
 const getContributorMarkedAsPrincipalInvestigator = () => {
   const contributors =
-    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"];
   const PrincipalInvestigator = contributors.find((contributor) =>
     contributor["conRole"].includes("PrincipalInvestigator")
   );
@@ -2235,7 +2235,7 @@ const getContributorMarkedAsPrincipalInvestigator = () => {
 
 const switchOrderOfContributors = (draggedOrcid, targetOrcid) => {
   const contributors =
-    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"];
   const draggedContributorIndex = contributors.findIndex(
     (contributor) => contributor["conID"] === draggedOrcid
   );
@@ -2254,7 +2254,7 @@ const switchOrderOfContributors = (draggedOrcid, targetOrcid) => {
     contributors.splice(targetContributorIndex, 0, contributors[draggedContributorIndex]);
     contributors.splice(draggedContributorIndex + 1, 1);
   }
-  window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] = contributors;
+  window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"] = contributors;
 };
 
 // Constants used for drag and drop functionality for contributors
@@ -2285,7 +2285,7 @@ window.handleContributorDrop = (event) => {
 const renderAdditionalLinksTable = () => {
   const additionalLinksTableBody = document.getElementById("additional-links-table-body");
   const additionalLinkData =
-    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"];
+    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["additional-links"];
   if (additionalLinkData.length != 0) {
     const additionalLinkElements = additionalLinkData
       .map((link) => {
@@ -2414,7 +2414,7 @@ const openAddAdditionLinkSwal = async () => {
     }
     const description = values[2];
     //add link to jsonObj
-    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"].push({
+    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["additional-links"].push({
       link: link,
       relation: relation,
       description: description,
@@ -2475,7 +2475,7 @@ const openModifySampleMetadataPage = (sampleMetadataID, samplesSubjectID) => {
  `;
 
   //Add protocol titles to the protocol dropdown
-  const protocols = window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
+  const protocols = window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"];
   document.getElementById("guided-bootbox-sample-protocol-title").innerHTML = `
     <option value="">No protocols associated with this sample</option>
     ${protocols
@@ -3010,7 +3010,7 @@ const getSubjectsPool = (subjectName) => {
 
 const getExistingPoolNames = () => {
   return Object.keys(
-    window.sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"]
+    window.sodaJSONObj["dataset_metadata"]["pool-subject-sample-structure"]["pools"]
   );
 };
 
@@ -4737,8 +4737,8 @@ window.electron.ipcRenderer.on(
       };
       // Remove unnecessary key from sodaJSONObjCopy since we don't need to
       // check if the account details are valid during local generation
-      delete sodaJSONObjCopy["bf-account-selected"];
-      delete sodaJSONObjCopy["bf-dataset-selected"];
+      delete sodaJSONObjCopy["ps-account-selected"];
+      delete sodaJSONObjCopy["ps-dataset-selected"];
 
       updateDatasetUploadProgressTable("local", {
         "Current action": `Preparing dataset for local generation`,
@@ -5308,7 +5308,7 @@ const guidedSaveDescriptionDatasetInformation = () => {
   //Combine sample data from samples in and out of pools
   const numSamples = [...samplesInPools, ...samplesOutsidePools].length;
 
-  window.sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"] = {
+  window.sodaJSONObj["dataset_metadata"]["description-metadata"]["dataset-information"] = {
     name: title,
     description: subtitle,
     type: studyType,
@@ -5365,7 +5365,7 @@ const guidedSaveDescriptionStudyInformation = () => {
   studyCollectionTitle = studyCollectionTitleInput.value.trim();
 
   //After validation, add the study information to the JSON object
-  window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"] = {
+  window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"] = {
     "study organ system": studyOrganSystemTags,
     "study approach": studyApproachTags,
     "study technique": studyTechniqueTags,
@@ -5389,7 +5389,7 @@ const guidedSaveDescriptionContributorInformation = () => {
   // Get tags from other funding tagify
   const otherFunding = window.getTagsFromTagifyElement(guidedOtherFundingsourcesTagify);
 
-  window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributor-information"] = {
+  window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributor-information"] = {
     funding: otherFunding,
     acknowledgment: acknowledgements,
   };
@@ -5424,5 +5424,5 @@ const doTheHack = async () => {
 // (always set to false when making production builds)
 const continueHackGm = true;
 if (continueHackGm) {
-  doTheHack();
+  // doTheHack();
 }

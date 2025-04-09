@@ -12,8 +12,8 @@ export const addGuidedProtocol = (link, description, type) => {
   const isFair = protocolObjIsFair(link, description);
 
   //add the new protocol to the JSONObj
-  window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = [
-    ...window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"],
+  window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"] = [
+    ...window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"],
     {
       link: link,
       type: type,
@@ -26,7 +26,7 @@ export const addGuidedProtocol = (link, description, type) => {
 
 const getGuidedProtocolLinks = () => {
   try {
-    return window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"].map(
+    return window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"].map(
       (protocol) => protocol.link
     );
   } catch (error) {
@@ -40,7 +40,7 @@ const protocolObjIsFair = (protocolLink, protocoldescription) => {
 };
 
 export const renderProtocolsTable = () => {
-  const protocols = window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
+  const protocols = window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"];
 
   const protocolsContainer = document.getElementById("protocols-container");
 
@@ -59,7 +59,7 @@ export const renderProtocolsTable = () => {
     .map((protocol) => {
       return generateProtocolField(
         protocol["link"],
-        protocol["type"],
+        protocol["location"],
         protocol["description"],
         protocol["isFair"]
       );
@@ -175,22 +175,22 @@ window.openProtocolSwal = async (protocolElement) => {
 
 window.guidedDeleteProtocol = (protocolElement) => {
   const linkToDelete = protocolElement.dataset.protocolUrl;
-  window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = window.sodaJSONObj[
-    "dataset-metadata"
+  window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"] = window.sodaJSONObj[
+    "dataset_metadata"
   ]["description-metadata"]["protocols"].filter((protocol) => protocol.link !== linkToDelete);
   renderProtocolsTable();
 };
 
 const editGuidedProtocol = (oldLink, newLink, description, type) => {
   const currentProtocolLinks =
-    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
+    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"];
   //find the index of the protocol to be edited
   const protocolIndex = currentProtocolLinks.findIndex((protocol) => protocol.link === oldLink);
 
   const isFair = protocolObjIsFair(newLink, description);
 
   //replace the protocol at the index with the new protocol
-  window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"][protocolIndex] = {
+  window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"][protocolIndex] = {
     link: newLink,
     type: type,
     relation: "IsProtocolFor",
