@@ -555,13 +555,15 @@ window.nextPrev = async (pageIndex) => {
     (window.sodaJSONObj["starting-point"]["origin"] === "new" ||
       window.sodaJSONObj["starting-point"]["origin"] === "local")
   ) {
-
     // read the excel file stored at ~/SODA/primary/manifest_files and store it into the soda json obj
-    if($("#generate-manifest-curate")[0].checked) {
+    if ($("#generate-manifest-curate")[0].checked) {
       await window.readManifestFileAndStoreInSodaJSON();
     } else {
       // remove the manifest file from the soda json obj
-      if ("dataset_metadata" in window.sodaJSONObj && "manifest_files" in window.sodaJSONObj["dataset_metadata"]) {
+      if (
+        "dataset_metadata" in window.sodaJSONObj &&
+        "manifest_files" in window.sodaJSONObj["dataset_metadata"]
+      ) {
         delete window.sodaJSONObj["dataset_metadata"]["manifest_files"];
       }
     }
