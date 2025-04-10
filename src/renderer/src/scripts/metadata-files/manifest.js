@@ -2331,17 +2331,9 @@ window.readManifestFileAndStoreInSodaJSON = async () => {
       return;
     }
 
-    // Read the manifest file
-    let jsonManifest = await window.electron.ipcRenderer.invoke("excelToJsonSheet1Options", {
-      sourceFile: manifestFilePath,
-      columnToKey: {
-        "*": "{{columnHeader}}",
-      },
-    });
+    // TODO: Erro rhandling
+    let manifestData = await api.loadManifestToJSON(manifestFilePath)
 
-    // Extract headers and data
-    const headers = jsonManifest[0]; // First row as headers
-    const data = jsonManifest.slice(1); // Remaining rows as data
 
     // Store in sodaJSONObj
     if (!window.sodaJSONObj["dataset_metadata"]) {
@@ -2352,10 +2344,7 @@ window.readManifestFileAndStoreInSodaJSON = async () => {
       window.sodaJSONObj["dataset_metadata"]["manifest_files"] = {};
     }
 
-    window.sodaJSONObj["dataset_metadata"]["manifest_files"] = {
-      headers: headers,
-      data: data,
-    };
+    window.sodaJSONObj["dataset_metadata"]["manifest_files"] = manifestData;
 
     console.log("Manifest file successfully read and stored in sodaJSONObj.");
   } catch (error) {
