@@ -5,6 +5,7 @@ import { savePageCurationPreparation } from "./curationPreparation/savePage";
 import { savePagePrepareMetadata } from "./prepareMetadata/savePage";
 import { guidedSkipPage, guidedUnSkipPage } from "./navigationUtils/pageSkipping";
 import useGlobalStore from "../../../stores/globalStore";
+import { contentOptionsMap } from "../../../components/pages/DatasetContentSelector";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -124,20 +125,55 @@ export const savePageChanges = async (pageBeingLeftID) => {
 
       if (pageBeingLeftComponentType === "dataset-content-selector") {
         const selectedEntities = useGlobalStore.getState()["selectedEntities"];
-        console.log("selectedEntities", selectedEntities);
+        const deSelectedEntities = useGlobalStore.getState()["deSelectedEntities"];
+
+        // Check if any selections were made
         if (selectedEntities.length === 0) {
           errorArray.push({
             type: "notyf",
-            message: "Please select at least one option that applies to your dataset",
+            message:
+              "Please select 'Yes' for at least one dataset content option before continuing.",
           });
           throw errorArray;
         }
-        console.log("selectedEntities", selectedEntities);
+
+        // If subjects is selected, verify all questions were answered
+        if (selectedEntities.includes("subjects")) {
+          // Check if all questions have been answered
+          for (const entity of Object.keys(contentOptionsMap)) {
+            if (!selectedEntities.includes(entity) && !deSelectedEntities.includes(entity)) {
+              errorArray.push({
+                type: "notyf",
+                message:
+                  "Please answer all questions (select Yes or No for each option) before continuing.",
+              });
+              throw errorArray;
+            }
+          }
+        } else {
+          // If subjects is not selected, it must be explicitly marked as No
+          if (!deSelectedEntities.includes("subjects")) {
+            errorArray.push({
+              type: "notyf",
+              message: "Please answer the question about subjects (select Yes or No).",
+            });
+            throw errorArray;
+          }
+
+          // If subjects is No, code must be Yes
+          if (!selectedEntities.includes("code")) {
+            errorArray.push({
+              type: "notyf",
+              message:
+                "Your dataset must contain either subjects or code. Please select 'Yes' for at least one of these options.",
+            });
+            throw errorArray;
+          }
+        }
+
+        // Store selections
         window.sodaJSONObj["selected-entities"] = selectedEntities;
-        const deSelectedEntities = useGlobalStore.getState()["deSelectedEntities"];
-        console.log("deSelectedEntities", deSelectedEntities);
         window.sodaJSONObj["deSelected-entities"] = deSelectedEntities;
-        console.log("selectedEntities", selectedEntities);
 
         if (!selectedEntities.includes("subjects") && !selectedEntities.includes("code")) {
           errorArray.push({
