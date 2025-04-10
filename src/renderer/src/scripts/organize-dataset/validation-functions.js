@@ -15,15 +15,15 @@ window.validateOrganizedDataset = async () => {
   let datasetOrigin = "";
   let datasetDestination = "";
 
-  if (window.sodaJSONObj["starting-point"]["type"] == "bf") {
+  if (window.sodaJSONObj["starting-point"]["origin"] == "ps") {
     datasetOrigin = "Pennsieve";
   }
 
-  if (window.sodaJSONObj["starting-point"]["type"] == "local") {
+  if (window.sodaJSONObj["starting-point"]["origin"] == "local") {
     datasetOrigin = "Local";
   }
 
-  if (window.sodaJSONObj["starting-point"]["type"] == "new") {
+  if (window.sodaJSONObj["starting-point"]["origin"] == "new") {
     datasetOrigin = "New";
   }
 
@@ -77,7 +77,7 @@ window.validateOrganizedDataset = async () => {
 
   // if the user performed move, rename, delete on files in an imported dataset we need to perform those actions before creating the validation report;
   // rationale for this can be found in the function definition
-  if (sodaJSONObjCopy["starting-point"]["type"] === "bf") {
+  if (sodaJSONObjCopy["starting-point"]["origin"] === "ps") {
     await api.performUserActions(sodaJSONObjCopy);
   }
 
@@ -104,7 +104,7 @@ window.validateOrganizedDataset = async () => {
     try {
       // TOOD: Handle the replacements if-existing case as this will change the amount of validation work to be done + therefore the actual amt
       packageTypeCounts = await api.getNumberOfPackagesInDataset(
-        sodaJSONObjCopy["bf-dataset-selected"]["dataset-name"]
+        sodaJSONObjCopy["ps-dataset-selected"]["dataset-name"]
       );
     } catch (err) {
       clientError(err);

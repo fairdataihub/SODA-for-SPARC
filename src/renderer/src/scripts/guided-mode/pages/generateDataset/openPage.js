@@ -10,7 +10,7 @@ export const openGenerateDatasetPage = async (targetPageID) => {
     const reviewGenerateButtionTextElement = document.getElementById("review-generate-button-text");
     if (
       window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] &&
-      !window.sodaJSONObj["starting-point"]["type"] === "bf"
+      !window.sodaJSONObj["starting-point"]["origin"] === "ps"
     ) {
       const generateButtonText = "Resume Pennsieve upload in progress";
       generateOrRetryDatasetUploadButton.innerHTML = generateButtonText;

@@ -71,7 +71,7 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
 
     if (!datasetHasAlreadyBeenSuccessfullyUploaded) {
       // If the dataset is being edited on Pensieve, check to make sure the folders and files are still the same.
-      if (datasetResumeJsonObj["starting-point"]?.["type"] === "bf") {
+      if (datasetResumeJsonObj["starting-point"]?.["origin"] === "ps") {
         // Check to make sure the dataset is not locked
         const datasetIsLocked = await api.isDatasetLocked(
           datasetResumeJsonObj["digital-metadata"]["pennsieve-dataset-id"]
@@ -237,14 +237,14 @@ const patchPreviousGuidedModeVersions = async () => {
     window.sodaJSONObj["previously-uploaded-data"] = {};
   }
 
-  if (!window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"]) {
-    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] = [];
+  if (!window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"]) {
+    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"] = [];
   }
 
   const contributors =
-    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"];
   if (contributors) {
-    for (const contributor of window.sodaJSONObj["dataset-metadata"]["description-metadata"][
+    for (const contributor of window.sodaJSONObj["dataset_metadata"]["description-metadata"][
       "contributors"
     ]) {
       //if contributor is in old format (string), convert to new format (array)
@@ -269,16 +269,16 @@ const patchPreviousGuidedModeVersions = async () => {
     window.sodaJSONObj["skipped-pages"] = [];
   }
 
-  if (!window.sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"]) {
-    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"] = {};
+  if (!window.sodaJSONObj["dataset_metadata"]["description-metadata"]["dataset-information"]) {
+    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["dataset-information"] = {};
   }
 
-  if (!window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]) {
-    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"] = {};
+  if (!window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"]) {
+    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"] = {};
   }
 
-  if (!window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"]) {
-    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = [];
+  if (!window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"]) {
+    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"] = [];
   }
 
   // If the user was on the airtable award page (does not exist anymore), send them to the create submission metadata page
@@ -293,7 +293,7 @@ const patchPreviousGuidedModeVersions = async () => {
 
   // If the user started a dataset after version 10.0.4, skip CHANGES metadata pages
   if (!window.sodaJSONObj["skipped-pages"].includes("guided-create-changes-metadata-tab")) {
-    if (window.sodaJSONObj["starting-point"]["type"] === "new") {
+    if (window.sodaJSONObj["starting-point"]["origin"] === "new") {
       window.sodaJSONObj["skipped-pages"].push("guided-create-changes-metadata-tab");
     }
   }
@@ -301,17 +301,17 @@ const patchPreviousGuidedModeVersions = async () => {
   // If the the last time the user worked on the dataset was before v11.0.0, skip the changes page unless
   // the dataset has already been published.
   if (window.sodaJSONObj["last-version-of-soda-used"] <= "11.0.0") {
-    if (window.sodaJSONObj["starting-point"]["type"] === "bf") {
+    if (window.sodaJSONObj["starting-point"]["origin"] === "ps") {
       const datasetsPennsieveID = window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
 
       // Skip/unSkip the changes metadata page based on publishing status
       // (if the changes file already exists, then still show it)
       const changesCheckRes = await checkIfChangesMetadataPageShouldBeShown(datasetsPennsieveID);
       if (changesCheckRes.shouldShow === true) {
-        window.sodaJSONObj["dataset-metadata"]["CHANGES"] = changesCheckRes.changesMetadata;
+        window.sodaJSONObj["dataset_metadata"]["CHANGES"] = changesCheckRes.changesMetadata;
         guidedUnSkipPage("guided-create-changes-metadata-tab");
       } else {
-        window.sodaJSONObj["dataset-metadata"]["CHANGES"] = "";
+        window.sodaJSONObj["dataset_metadata"]["CHANGES"] = "";
         guidedSkipPage("guided-create-changes-metadata-tab");
       }
 
@@ -324,7 +324,7 @@ const patchPreviousGuidedModeVersions = async () => {
     }
   }
 
-  if (window.sodaJSONObj?.["starting-point"]?.["type"] === "bf") {
+  if (window.sodaJSONObj?.["starting-point"]?.["origin"] === "ps") {
     if (!window.sodaJSONObj?.["digital-metadata"]?.["dataset-workspace"]) {
       // Skip the log in page since we no longer need it
       guidedSkipPage("guided-pennsieve-intro-tab");
@@ -345,19 +345,19 @@ const patchPreviousGuidedModeVersions = async () => {
   }
 
   // Change the award number variable from sparc-award to award-number
-  if (window.sodaJSONObj?.["dataset-metadata"]?.["shared-metadata"]?.["sparc-award"]) {
-    window.sodaJSONObj["dataset-metadata"]["shared-metadata"]["award-number"] =
-      window.sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
+  if (window.sodaJSONObj?.["dataset_metadata"]?.["shared-metadata"]?.["sparc-award"]) {
+    window.sodaJSONObj["dataset_metadata"]["shared-metadata"]["award-number"] =
+      window.sodaJSONObj["dataset_metadata"]["shared-metadata"]["sparc-award"];
   }
   // If the consortium data standard is not defined, set it to an empty string
   if (
-    !window.sodaJSONObj["dataset-metadata"]["submission-metadata"]?.["consortium-data-standard"]
+    !window.sodaJSONObj["dataset_metadata"]["submission-metadata"]?.["consortium-data-standard"]
   ) {
-    window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] = "";
+    window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["consortium-data-standard"] = "";
   }
   // If the funding consortium is not defined, set it to an empty string
-  if (!window.sodaJSONObj["dataset-metadata"]["submission-metadata"]?.["funding-consortium"]) {
-    window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] = "";
+  if (!window.sodaJSONObj["dataset_metadata"]["submission-metadata"]?.["funding-consortium"]) {
+    window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["funding-consortium"] = "";
   }
 
   if (!window.sodaJSONObj["digital-metadata"]?.["license"]) {

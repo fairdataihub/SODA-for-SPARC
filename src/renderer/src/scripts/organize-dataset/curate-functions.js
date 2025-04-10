@@ -33,7 +33,7 @@ window.nonAllowedCharacters = '<>:",;[]{}^`~@/|?*$=!%&+#\\';
 document
   .querySelector("#Question-getting-started-BF-account .change-current-account")
   .addEventListener("click", function () {
-    window.openDropdownPrompt(this, "bf");
+    window.openDropdownPrompt(this, "ps");
   });
 
 document
@@ -151,14 +151,14 @@ window.uploadDatasetDropHandler = async (ev) => {
 
     if (isDirectory) {
       window.sodaJSONObj = {
-        "bf-account-selected": {},
-        "bf-dataset-selected": {},
+        "ps-account-selected": {},
+        "ps-dataset-selected": {},
         "dataset-structure": {},
         "metadata-files": {},
         "manifest-files": {},
         "generate-dataset": {},
         "starting-point": {
-          type: "local",
+          location: "local",
           "local-path": "",
         },
       };
@@ -220,7 +220,7 @@ const getFilesAndFolders = async (directoryPath) => {
         files[item] = {
           path: itemPath,
           action: ["new"],
-          type: "local",
+          location: "local",
         };
       } else if (stats.isDirectory) {
         folders.push(itemPath);
@@ -347,7 +347,7 @@ window.addManifestDetailsToDatasetStructure = async (
                 "additional-metadata": String(additionalMetadata),
                 description: String(description),
                 timestamp: String(timestamp),
-                type: "local",
+                location: "local",
                 extension: metadata.extension,
                 path: metadata.path,
                 extension: metadata.extension,
@@ -448,7 +448,7 @@ window.addManifestDetailsToDatasetStructure = async (
                 "additional-metadata": String(additionalMetadata),
                 description: String(description),
                 timestamp: String(timestamp),
-                type: "local",
+                location: "local",
                 extension: metadata.extension,
                 path: metadata.path,
                 extension: metadata.extension,
@@ -596,16 +596,17 @@ window.handleLocalDatasetImport = async (path) => {
 };
 
 window.importLocalDataset = async (folderPath) => {
+  print("Local thangs happenong here");
   // Reset the sodaJSONObj
   window.sodaJSONObj = {
-    "bf-account-selected": {},
-    "bf-dataset-selected": {},
+    "ps-account-selected": {},
+    "ps-dataset-selected": {},
     "dataset-structure": {},
     "metadata-files": {},
     "manifest-files": {},
     "generate-dataset": {},
     "starting-point": {
-      type: "local",
+      origin: "local",
       "local-path": "",
     },
   };
@@ -856,7 +857,7 @@ document.getElementById("change-account-btn").addEventListener("click", async fu
   // If the user changes the account, show the dropdown prompt
   document.getElementById("confirm-account-workspace").classList.add("soda-green-border");
   document.getElementById("confirm-account-workspace").classList.remove("soda-green-background");
-  await window.openDropdownPrompt(this, "bf");
+  await window.openDropdownPrompt(this, "ps");
   document.getElementById("change-account-btn").classList.add("basic");
   document.getElementById("change-account-btn").classList.remove("selected");
 });
@@ -955,7 +956,7 @@ window.dropHandler = async (
               //get the value of data-code-metadata-file-type from dragDropContainer
               const metadataFileType = dragDropContainer.dataset.codeMetadataFileType;
               //save the path of the metadata file to the json object
-              window.sodaJSONObj["dataset-metadata"]["code-metadata"][metadataFileType] = file.path;
+              window.sodaJSONObj["dataset_metadata"]["code-metadata"][metadataFileType] = file.path;
               const lottieContainer = dragDropContainer.querySelector(
                 ".code-metadata-lottie-container"
               );
@@ -1090,15 +1091,15 @@ const importGenerateDatasetStep = async () => {
       $("#btn-confirm-local-destination").click();
       $("#inputNewNameDataset").val(window.sodaJSONObj["generate-dataset"]["dataset-name"]);
       $("#btn-confirm-new-dataset-name").click();
-    } else if (window.sodaJSONObj["generate-dataset"]["destination"] === "bf") {
+    } else if (window.sodaJSONObj["generate-dataset"]["destination"] === "ps") {
       $("#generate-upload-BF").prop("checked", true);
       $($("#generate-upload-BF").parents()[2]).click();
       // Step 2: if generate on bf, choose bf account
       if (
-        "bf-account-selected" in window.sodaJSONObj &&
-        window.sodaJSONObj["bf-account-selected"]["account-name"] !== ""
+        "ps-account-selected" in window.sodaJSONObj &&
+        window.sodaJSONObj["ps-account-selected"]["account-name"] !== ""
       ) {
-        let bfAccountSelected = window.sodaJSONObj["bf-account-selected"]["account-name"];
+        let bfAccountSelected = window.sodaJSONObj["ps-account-selected"]["account-name"];
         if (bfAccountSelected != window.defaultBfDataset) {
           return;
         }
@@ -1121,12 +1122,12 @@ const importGenerateDatasetStep = async () => {
         $("#btn-bf-account").trigger("click");
         // Step 3: choose to generate on an existing or new dataset
         if (
-          "bf-dataset-selected" in window.sodaJSONObj &&
-          window.sodaJSONObj["bf-dataset-selected"]["dataset-name"] !== ""
+          "ps-dataset-selected" in window.sodaJSONObj &&
+          window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] !== ""
         ) {
           $("#generate-BF-dataset-options-existing").prop("checked", true);
           $($("#generate-BF-dataset-options-existing").parents()[2]).click();
-          let bfDatasetSelected = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+          let bfDatasetSelected = window.sodaJSONObj["ps-dataset-selected"]["dataset-name"];
           setTimeout(() => {
             let valid_dataset = false;
             for (const index in window.datasetList) {
@@ -2540,6 +2541,7 @@ window.ffOpenManifestEditSwal = async (highlevelFolderName) => {
 
 // Function takes in original sodaJSONObj and creates a copy of it to modify to manifest edits
 // Manifest edits will create
+// TODO: Update SDS 3.0
 window.ffmCreateManifest = async (sodaJson) => {
   await new Promise((r) => setTimeout(r, 0));
   //create a copy of the sodajson object
@@ -2552,6 +2554,8 @@ window.ffmCreateManifest = async (sodaJson) => {
     delete window.sodaCopy["manifest-files"]["destination"];
   }
 
+  console.log(window.sodaCopy);
+
   try {
     // used for imported local datasets and pennsieve datasets
     // filters out deleted files/folders before creating manifest data again
@@ -2560,8 +2564,9 @@ window.ffmCreateManifest = async (sodaJson) => {
       { soda_json_structure: window.sodaCopy },
       { timeout: 0 }
     );
-    let response = cleanJson.data.soda_json_structure;
+    let response = cleanJson.data.soda;
     window.sodaCopy = response;
+    console.log(window.sodaCopy);
   } catch (e) {
     clientError(e);
   }
@@ -2584,43 +2589,42 @@ window.ffmCreateManifest = async (sodaJson) => {
 
     // loop through each of the high level folders and create excel sheet in case no edits are made
     // will be auto generated and ready for upload
-    const manifestRes = res.data;
+    const manifestFileData = res.data;
     let newManifestData = {};
-    for (const [highLevelFolderName, manifestFileData] of Object.entries(manifestRes)) {
-      if (manifestFileData.length > 1) {
-        const manifestHeader = manifestFileData.shift();
-        newManifestData[highLevelFolderName] = {
-          headers: manifestHeader,
-          data: manifestFileData,
-        };
-        // Will create an excel sheet of the manifest files in case they receive no edits
-        let jsonManifest = {};
-        let manifestFolder = window.path.join(homeDirectory, "SODA", "manifest_files");
-        let localFolderPath = window.path.join(manifestFolder, highLevelFolderName);
-        let selectedManifestFilePath = window.path.join(localFolderPath, "manifest.xlsx");
-        // create manifest folders if they don't exist
-        if (!window.fs.existsSync(manifestFolder)) {
-          window.fs.mkdirSync(manifestFolder);
-        }
-        if (!window.fs.existsSync(localFolderPath)) {
-          window.fs.mkdirSync(localFolderPath);
-          window.fs.closeSync(window.fs.openSync(selectedManifestFilePath, "w"));
-        }
-        if (!window.fs.existsSync(selectedManifestFilePath)) {
-        } else {
-          jsonManifest = await window.electron.ipcRenderer.invoke("excelToJsonSheet1Options", {
-            sourceFile: selectedManifestFilePath,
-            columnToKey: {
-              "*": "{{columnHeader}}",
-            },
-          });
-        }
-        // If file doesn't exist then that means it didn't get imported properly
 
-        let sortedJSON = window.processManifestInfo(manifestHeader, manifestFileData);
-        jsonManifest = JSON.stringify(sortedJSON);
-        window.convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
+    if (manifestFileData.length > 1) {
+      const manifestHeader = manifestFileData.shift();
+      newManifestData["primary"] = {
+        headers: manifestHeader,
+        data: manifestFileData,
+      };
+      // Will create an excel sheet of the manifest files in case they receive no edits
+      let jsonManifest = {};
+      let manifestFolder = window.path.join(homeDirectory, "SODA", "manifest_files");
+      let localFolderPath = window.path.join(manifestFolder, "primary");
+      let selectedManifestFilePath = window.path.join(localFolderPath, "manifest.xlsx");
+      // create manifest folders if they don't exist
+      if (!window.fs.existsSync(manifestFolder)) {
+        window.fs.mkdirSync(manifestFolder);
       }
+      if (!window.fs.existsSync(localFolderPath)) {
+        window.fs.mkdirSync(localFolderPath);
+        window.fs.closeSync(window.fs.openSync(selectedManifestFilePath, "w"));
+      }
+      if (!window.fs.existsSync(selectedManifestFilePath)) {
+      } else {
+        jsonManifest = await window.electron.ipcRenderer.invoke("excelToJsonSheet1Options", {
+          sourceFile: selectedManifestFilePath,
+          columnToKey: {
+            "*": "{{columnHeader}}",
+          },
+        });
+      }
+      // If file doesn't exist then that means it didn't get imported properly
+
+      let sortedJSON = window.processManifestInfo(manifestHeader, manifestFileData);
+      jsonManifest = JSON.stringify(sortedJSON);
+      window.convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
     }
 
     // Check if manifest data is different from what exists already (if previous data exists)

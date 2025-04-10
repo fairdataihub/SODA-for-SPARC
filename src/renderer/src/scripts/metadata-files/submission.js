@@ -33,7 +33,7 @@ window.sparcFundingConsortiums = [
 // event listeners for opendropdown prompt
 document.querySelectorAll(".submission-change-current-account").forEach((element) => {
   element.addEventListener("click", function () {
-    window.openDropdownPrompt(null, "bf");
+    window.openDropdownPrompt(null, "ps");
   });
 });
 
@@ -383,7 +383,7 @@ window.openDDDImport = async (curationMode) => {
       1
     );
     if (curationMode === "guided") {
-      window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"] = filepath[0];
+      window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["filepath"] = filepath[0];
       let swal_content = document.getElementsByClassName("swal2-content")[0];
       let DDLottie = document.getElementById("swal-data-deliverable");
 
@@ -1199,7 +1199,7 @@ window.checkBFImportSubmission = async () => {
     });
     let res = import_metadata.data;
 
-    loadSubmissionFileToUI(res, "bf");
+    loadSubmissionFileToUI(res, "ps");
   } catch (error) {
     clientError(error);
     Swal.fire({

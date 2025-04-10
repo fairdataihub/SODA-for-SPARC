@@ -369,18 +369,18 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
         "Unable to get information about the latest Pennsieve Agent release",
         emessage
       );
-      abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+      // abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
 
-      return false;
+      // return false;
     }
 
     if (usersPennsieveAgentVersion !== latestPennsieveAgentVersion) {
       const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
       setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
       setPennsieveAgentOutOfDate(usersPennsieveAgentVersion, latestPennsieveAgentVersion);
-      abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+      // abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
 
-      return false;
+      // return false;
     }
 
     // If we get to this point, it means all the background services are operational
@@ -2427,8 +2427,8 @@ window.submitReviewDataset = async (embargoReleaseDate, curationMode) => {
   let currentDataset = window.defaultBfDataset;
 
   if (curationMode === "guided") {
-    currentAccount = window.sodaJSONObj["bf-account-selected"]["account-name"];
-    currentDataset = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+    currentAccount = window.sodaJSONObj["ps-account-selected"]["account-name"];
+    currentDataset = window.sodaJSONObj["ps-dataset-selected"]["dataset-name"];
   } else {
     $("#pre-publishing-continue-btn").removeClass("loading");
     $("#pre-publishing-continue-btn").disabled = false;
@@ -2647,8 +2647,8 @@ const withdrawReviewDataset = async (curationMode) => {
     .replace(/^\s+|\s+$/g, "");
 
   if (curationMode == "guided") {
-    currentAccount = window.sodaJSONObj["bf-account-selected"]["account-name"];
-    currentDataset = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+    currentAccount = window.sodaJSONObj["ps-account-selected"]["account-name"];
+    currentDataset = window.sodaJSONObj["ps-dataset-selected"]["dataset-name"];
   }
 
   try {
@@ -3001,8 +3001,8 @@ window.showPublishingStatus = async (callback, curationMode = "") => {
 
     if (curationMode === "guided") {
       curationModeID = "guided--";
-      currentAccount = window.sodaJSONObj["bf-account-selected"]["account-name"];
-      currentDataset = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+      currentAccount = window.sodaJSONObj["ps-account-selected"]["account-name"];
+      currentDataset = window.sodaJSONObj["ps-dataset-selected"]["dataset-name"];
     }
 
     if (currentDataset === "None") {
@@ -3727,7 +3727,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
           // Add the folder to the JSON structure
           currentStructure["folders"][folderName] = {
             path: pathToExplore,
-            type: "local",
+            location: "local",
             files: {},
             folders: {},
             action: ["new"],
@@ -3795,7 +3795,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
           // Add the file to the current structure
           currentStructure["files"][fileName] = {
             path: pathToExplore,
-            type: "local",
+            location: "local",
             description: "",
             "additional-metadata": "",
             action: ["new"],
@@ -3939,7 +3939,7 @@ window.deleteFoldersByRelativePath = (arrayOfRelativePaths) => {
     const parentFolder = window.getRecursivePath(currentPathArray, window.datasetStructureJSONObj);
 
     const folderToDeleteIsFromPennsieve =
-      parentFolder["folders"][folderToDeleteName]?.["type"] === "bf";
+      parentFolder["folders"][folderToDeleteName]?.["location"] === "ps";
     console.log("folderToDeleteIsFromPennsieve", folderToDeleteIsFromPennsieve);
     if (folderToDeleteIsFromPennsieve) {
       parentFolder["folders"][folderToDeleteName]["action"].push("deleted");
@@ -3966,7 +3966,8 @@ window.deleteFilesByRelativePath = (arrayOfRelativePaths) => {
     const parentFolder = window.getRecursivePath(currentPathArray, window.datasetStructureJSONObj);
     console.log("parentFolder", parentFolder);
 
-    const fileToDeleteIsFromPennsieve = parentFolder["files"][fileNameToDelete]?.["type"] === "bf";
+    const fileToDeleteIsFromPennsieve =
+      parentFolder["files"][fileNameToDelete]?.["location"] === "ps";
 
     if (fileToDeleteIsFromPennsieve) {
       parentFolder["files"][fileNameToDelete]["action"].push("deleted");
@@ -4071,14 +4072,14 @@ const mergeLocalAndRemoteDatasetStructure = async (
         );
 
         const fileTypeOfObjectToOverwrite =
-          folderContainingFileToOverwrite["files"][file.fileName]?.["type"];
+          folderContainingFileToOverwrite["files"][file.fileName]?.["location"];
 
         // overwrite the existing file with the new file
         folderContainingFileToOverwrite["files"][file.fileName] = file.fileObject;
 
         // if the file being overwritten was from Pennsieve, add the "updated" action to the file
         if (
-          fileTypeOfObjectToOverwrite === "bf" &&
+          fileTypeOfObjectToOverwrite === "ps" &&
           !folderContainingFileToOverwrite["files"][file.fileName]["action"].includes("updated")
         ) {
           folderContainingFileToOverwrite["files"][file.fileName]["action"].push("updated");
@@ -5077,7 +5078,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
         }
       }
 
-      if (sortedObj["folders"][item]["type"] == "bf") {
+      if (sortedObj["folders"][item]["location"] == "ps") {
         cloud_item = " pennsieve_folder";
         if (deleted_folder) {
           cloud_item = " pennsieve_folder_deleted";
@@ -5085,7 +5086,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
       }
 
       if (
-        sortedObj["folders"][item]["type"] == "local" &&
+        sortedObj["folders"][item]["location"] == "local" &&
         sortedObj["folders"][item]["action"].includes("existing")
       ) {
         cloud_item = " local_folder";
@@ -5154,7 +5155,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
         } else {
           var extension = "other";
         }
-        if (sortedObj["files"][item]["type"] == "bf") {
+        if (sortedObj["files"][item]["location"] == "ps") {
           if (sortedObj["files"][item]["action"].includes("deleted")) {
             let original_file_name = item.substring(0, item.lastIndexOf("-"));
             extension = original_file_name.split(".").pop();
@@ -5201,7 +5202,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
         }
       }
 
-      if (sortedObj["files"][item]["type"] == "bf") {
+      if (sortedObj["files"][item]["location"] == "ps") {
         cloud_item = " pennsieve_file";
         if (deleted_file) {
           cloud_item = " pennsieve_file_deleted";
@@ -5209,7 +5210,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
       }
 
       if (
-        sortedObj["files"][item]["type"] == "local" &&
+        sortedObj["files"][item]["location"] == "local" &&
         sortedObj["files"][item]["action"].includes("existing")
       ) {
         cloud_item = " local_file";
@@ -5218,7 +5219,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
         }
       }
       if (
-        sortedObj["files"][item]["type"] == "local" &&
+        sortedObj["files"][item]["location"] == "local" &&
         sortedObj["files"][item]["action"].includes("updated")
       ) {
         cloud_item = " update-file";
@@ -5595,10 +5596,10 @@ document.getElementById("button-generate-validate").addEventListener("click", fu
   //   document.getElementById("start-over-btn").style.display = "inline-block";
   //   window.showParentTab(window.currentTab, 1);
   //   if (
-  //     window.sodaJSONObj["starting-point"]["type"] == "new" &&
+  //     window.sodaJSONObj["starting-point"]["origin"] == "new" &&
   //     "local-path" in window.sodaJSONObj["starting-point"]
   //   ) {
-  //     window.sodaJSONObj["starting-point"]["type"] = "local";
+  //     window.sodaJSONObj["starting-point"]["origin"] = "local";bf-account
   //   }
   // }, window.delayAnimation);
 });
@@ -5623,8 +5624,8 @@ const generateProgressBar = document.getElementById("progress-bar-new-curate");
 var progressStatus = document.getElementById("para-new-curate-progress-bar-status");
 
 window.setSodaJSONStartingPoint = () => {
-  if (window.sodaJSONObj["starting-point"]["type"] === "local") {
-    window.sodaJSONObj["starting-point"]["type"] = "new";
+  if (window.sodaJSONObj["starting-point"]["origin"] === "local") {
+    window.sodaJSONObj["starting-point"]["origin"] = "new";
   }
 };
 
@@ -5632,8 +5633,8 @@ const setDatasetNameAndDestination = (sodaJSONObj) => {
   let dataset_name = "";
   let dataset_destination = "";
 
-  if ("bf-dataset-selected" in sodaJSONObj) {
-    dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+  if ("ps-dataset-selected" in sodaJSONObj) {
+    dataset_name = sodaJSONObj["ps-dataset-selected"]["dataset-name"];
     dataset_destination = "Pennsieve";
   } else if ("generate-dataset" in sodaJSONObj) {
     if ("destination" in sodaJSONObj["generate-dataset"]) {
@@ -5642,7 +5643,7 @@ const setDatasetNameAndDestination = (sodaJSONObj) => {
         dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
         dataset_destination = "Local";
       }
-      if (destination == "bf") {
+      if (destination == "ps") {
         dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
         dataset_destination = "Pennsieve";
       }
@@ -5898,23 +5899,6 @@ const initiate_generate = async (e) => {
     document.getElementById("sidebarCollapse").click();
   }
 
-  if ($("#generate-manifest-curate")[0].checked && !window.hasFiles) {
-    window.sodaJSONObj["manifest-files"]["auto-generated"] = true;
-  } else {
-    delete window.sodaJSONObj["manifest-files"];
-  }
-
-  if ("manifest-files" in window.sodaJSONObj) {
-    if (
-      "auto-generated" in window.sodaJSONObj["manifest-files"] &&
-      window.sodaJSONObj["manifest-files"]["auto-generated"] === true
-    ) {
-      window.delete_imported_manifest();
-    } else if (window.sodaJSONObj["manifest-files"]["destination"] === "generate-dataset") {
-      window.delete_imported_manifest();
-    }
-  }
-
   let dataset_destination = "";
   let dataset_name = "";
 
@@ -5929,7 +5913,7 @@ const initiate_generate = async (e) => {
   dataset_name = nameDestinationPair[0];
   dataset_destination = nameDestinationPair[1];
 
-  if (dataset_destination == "Pennsieve" || dataset_destination == "bf") {
+  if (dataset_destination == "Pennsieve" || dataset_destination == "ps") {
     // create a dataset upload session
     datasetUploadSession.startSession();
   }
@@ -5982,7 +5966,7 @@ const initiate_generate = async (e) => {
       // get the correct value for files and file size for analytics
       let fileValueToLog = 0;
       let fileSizeValueToLog = 0;
-      if (dataset_destination == "bf" || dataset_destination == "Pennsieve") {
+      if (dataset_destination == "ps" || dataset_destination == "Pennsieve") {
         // log the difference again to Google Analytics
         let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
         let differenceInBytes = main_total_generate_dataset_size - bytesOnPreviousLogPage;
@@ -6084,7 +6068,7 @@ const initiate_generate = async (e) => {
       );
 
       // log the file and file size values to analytics for the amount that we managed to upload before we failed
-      if (dataset_destination == "bf" || dataset_destination == "Pennsieve") {
+      if (dataset_destination == "ps" || dataset_destination == "Pennsieve") {
         // log the difference again to Google Analytics
         let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
         let differenceInBytes = uploadedBytes - bytesOnPreviousLogPage;
@@ -6430,7 +6414,7 @@ const initiate_generate = async (e) => {
     }
 
     // if doing a pennsieve upload log as we go ( as well as at the end in failure or success case )
-    if (dataset_destination == "Pennsieve" || dataset_destination == "bf") {
+    if (dataset_destination == "Pennsieve" || dataset_destination == "ps") {
       logProgressToAnalytics(total_files_uploaded, main_generated_dataset_size);
     }
   }
@@ -6504,10 +6488,10 @@ const determineDatasetDestination = () => {
   if (window.sodaJSONObj["generate-dataset"]) {
     if (window.sodaJSONObj["generate-dataset"]["destination"]) {
       let destination = window.sodaJSONObj["generate-dataset"]["destination"];
-      if (destination === "bf" || destination === "Pennsieve") {
+      if (destination === "ps" || destination === "Pennsieve") {
         // updating an existing dataset on Pennsieve
-        if (window.sodaJSONObj["bf-dataset-selected"]) {
-          return [window.sodaJSONObj["bf-dataset-selected"]["dataset-name"], "Pennsieve"];
+        if (window.sodaJSONObj["ps-dataset-selected"]) {
+          return [window.sodaJSONObj["ps-dataset-selected"]["dataset-name"], "Pennsieve"];
         } else {
           return [
             // get dataset name,
@@ -6518,15 +6502,15 @@ const determineDatasetDestination = () => {
       } else {
         // replacing files in an existing local dataset
         if (window.sodaJSONObj["generate-dataset"]["dataset-name"]) {
-          return [window.sodaJSONObj["generate-dataset"]["dataset-name"], "Local"];
+          return [window.sodaJSONObj["generate-dataset"]["dataset-name"], "local"];
         } else {
           // creating a new dataset from an existing local dataset
-          return [document.querySelector("#inputNewNameDataset-upload-dataset").value, "Local"];
+          return [document.querySelector("#inputNewNameDataset-upload-dataset").value, "local"];
         }
       }
     }
   } else {
-    return [document.querySelector("#inputNewNameDataset-upload-dataset").value, "Local"];
+    return [document.querySelector("#inputNewNameDataset-upload-dataset").value, "local"];
   }
 };
 
@@ -6593,7 +6577,7 @@ window.electron.ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
             //get the value of data-code-metadata-file-type from dragDropContainer
             const metadataFileType = dragDropContainer.dataset.codeMetadataFileType;
             //save the path of the metadata file to the json object
-            sodaJSONObj["dataset-metadata"]["code-metadata"][metadataFileType] = mypath[0];
+            sodaJSONObj["dataset_metadata"]["code-metadata"][metadataFileType] = mypath[0];
 
             const lottieContainer = dragDropContainer.querySelector(
               ".code-metadata-lottie-container"

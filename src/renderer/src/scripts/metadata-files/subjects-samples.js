@@ -13,7 +13,7 @@ while (!window.baseHtmlLoaded) {
 // event listeners for open dropdown prompt
 document.querySelectorAll(".subjects-change-current-account").forEach((element) => {
   element.addEventListener("click", function () {
-    window.openDropdownPrompt(null, "bf");
+    window.openDropdownPrompt(null, "ps");
   });
 });
 
@@ -25,7 +25,7 @@ document.querySelectorAll(".subjects-change-current-ds").forEach((element) => {
 
 document.querySelectorAll(".samples-change-current-account").forEach((element) => {
   element.addEventListener("click", function () {
-    window.openDropdownPrompt(null, "bf");
+    window.openDropdownPrompt(null, "ps");
   });
 });
 
@@ -1112,7 +1112,7 @@ window.populateForms = (subjectID, type, curationMode) => {
             // Handle protocol URL or DOI field in guided mode
             const previouslySavedProtocolURL = infoJson[i];
             const protocols =
-              window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
+              window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"];
 
             for (const protocol of protocols) {
               if (protocol.link === previouslySavedProtocolURL) {
@@ -1215,7 +1215,7 @@ window.populateFormsSamples = (subjectID, sampleID, type, curationMode) => {
             protocolURLDropdown.value = "";
 
             const protocols =
-              window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
+              window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"];
             for (const protocol of protocols) {
               if (protocol.link === previouslySavedProtocolURL) {
                 protocolTitleDropdown.value = protocol.description;
@@ -2488,7 +2488,7 @@ window.checkBFImportSubjects = async () => {
       Destinations.PENNSIEVE
     );
     window.subjectsTableData = res;
-    window.loadDataFrametoUI("bf");
+    window.loadDataFrametoUI("ps");
   } catch (error) {
     clientError(error);
     Swal.fire({
@@ -2554,7 +2554,7 @@ window.checkBFImportSamples = async () => {
       Destinations.PENNSIEVE
     );
     window.samplesTableData = res;
-    window.loadDataFrametoUISamples("bf");
+    window.loadDataFrametoUISamples("ps");
   } catch (error) {
     clientError(error);
     Swal.fire({

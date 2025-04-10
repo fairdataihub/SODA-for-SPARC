@@ -31,7 +31,7 @@ document.getElementById("guided-generate-dataset-button").addEventListener("clic
   }
 
   if (currentWorkspace != datasetWorkspace) {
-    if (window.sodaJSONObj?.["starting-point"]?.["type"] === "bf") {
+    if (window.sodaJSONObj?.["starting-point"]?.["origin"] === "ps") {
       Swal.fire({
         width: 700,
         icon: "info",

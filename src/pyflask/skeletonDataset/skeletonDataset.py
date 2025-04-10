@@ -50,7 +50,7 @@ def get_manifests(soda_json_structure):
           if os.path.exists(manifest_location):
             df = pd.read_excel(manifest_location)
             manifests[high_lvl_folder] = df.to_json()
-    elif "starting-point" in soda_json_structure and "type" in soda_json_structure["starting-point"] and soda_json_structure["starting-point"]["type"] == "local":
+    elif "starting-point" in soda_json_structure and "type" in soda_json_structure["starting-point"] and soda_json_structure["starting-point"]["origin"] == "local":
         # we are dealing with a dataset that was imported from a local path and did not have manifest files auto-generated
         # check if there are any manifest files in their dataset  to validate off of 
         # if there are, add them to the manifests dict
@@ -62,12 +62,12 @@ def get_manifests(soda_json_structure):
                   df = pd.read_excel(starting_point_dict[key]["path"])
                   # convert to json
                   manifests[key] = df.to_json()
-    elif "starting-point" in soda_json_structure and "type" in soda_json_structure["starting-point"] and soda_json_structure["starting-point"]["type"] == "bf":
+    elif "starting-point" in soda_json_structure and "type" in soda_json_structure["starting-point"] and soda_json_structure["starting-point"]["origin"] == "bf":
       # check if the user has manifest files in their dataset's primary folders
       # if they do, add them to the manifests dict
 
       # get the dataset name
-      dataset_name = soda_json_structure["bf-dataset-selected"]["dataset-name"]
+      dataset_name = soda_json_structure["ps-dataset-selected"]["dataset-name"]
       
       selected_dataset_id = get_dataset_id(dataset_name)
       
@@ -118,7 +118,7 @@ def get_metadata_files_json(soda_json_structure):
     if "metadata-files" in soda_json_structure:
         for metadata_file_name, props in soda_json_structure["metadata-files"].items():
             if props["type"] == "bf": 
-                selected_dataset = soda_json_structure["bf-dataset-selected"]["dataset-name"]
+                selected_dataset = soda_json_structure["ps-dataset-selected"]["dataset-name"]
                 # TODO: Update the import xlsx funcs to use the new func that avoids SSL errors
                 import_ps_metadata_files_skeleton(selected_dataset, metadata_files)
             else:

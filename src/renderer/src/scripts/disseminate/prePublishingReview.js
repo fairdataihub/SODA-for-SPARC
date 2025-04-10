@@ -259,7 +259,7 @@ window.showPrePublishingStatus = async (inPrePublishing = false, curationMode = 
     // This is done to ensure the right element ID is called
     // Guided mode elements have 'guided--' prepended to their ID
     curationModeID = "guided--";
-    currentDataset = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+    currentDataset = window.sodaJSONObj["ps-dataset-selected"]["dataset-name"];
   }
 
   // wait until a value has been loaded into the status field
@@ -516,7 +516,7 @@ window.createPrepublishingChecklist = async (curationMode) => {
   let curationModeID = "";
   let currentDataset = window.defaultBfAccount;
   if (curationMode === "guided") {
-    currentDataset = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+    currentDataset = window.sodaJSONObj["ps-dataset-selected"]["dataset-name"];
     curationModeID = "guided--";
   }
 
@@ -573,8 +573,8 @@ window.beginPrepublishingFlow = async (curationMode) => {
   let embargoDetails;
   if (curationMode === "guided") {
     curationModeID = "guided--";
-    currentAccount = window.sodaJSONObj["bf-account-selected"]["account-name"];
-    currentDataset = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+    currentAccount = window.sodaJSONObj["ps-account-selected"]["account-name"];
+    currentDataset = window.sodaJSONObj["ps-dataset-selected"]["dataset-name"];
     let get_publishing_status = await client.get(
       `/disseminate_datasets/datasets/${currentDataset}/publishing_status`,
       {

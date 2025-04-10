@@ -20,7 +20,7 @@ export const addContributor = (
       .map((name) => name.trim());
   }
 
-  window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"].push({
+  window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"].push({
     contributorFirstName: contributorFirstName,
     contributorLastName: contributorLastName,
     conName: contributorFullName,
@@ -49,7 +49,7 @@ export const renderDatasetDescriptionContributorsTable = () => {
   let contributorsTableHTML;
 
   const contributors =
-    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"];
 
   if (contributors.length === 0) {
     contributorsTableHTML = `
@@ -74,7 +74,7 @@ export const renderDatasetDescriptionContributorsTable = () => {
 
 export const getContributorByOrcid = (orcid) => {
   const contributors =
-    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"];
   const contributor = contributors.find((contributor) => {
     return contributor.conID == orcid;
   });

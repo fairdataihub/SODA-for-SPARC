@@ -183,7 +183,7 @@ export const guidedShowTreePreview = (new_dataset_name, targetElementId) => {
   const dsJsonObjCopy = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
 
   //Add the code_description metadata file to the preview if the code_description path has been declared
-  if (window.sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"]) {
+  if (window.sodaJSONObj["dataset_metadata"]["code-metadata"]["code_description"]) {
     dsJsonObjCopy["files"]["code_description.xlsx"] = {
       action: ["new"],
       path: "",
@@ -215,7 +215,7 @@ export const guidedShowTreePreview = (new_dataset_name, targetElementId) => {
   }
 
   //Add the Readme file to the preview if it exists in JSON
-  if (window.sodaJSONObj["dataset-metadata"]["README"]) {
+  if (window.sodaJSONObj["dataset_metadata"]["README"]) {
     dsJsonObjCopy["files"]["README.txt"] = {
       action: ["new"],
       path: "",

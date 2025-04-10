@@ -33,7 +33,7 @@ document.querySelectorAll(".ds-dd:not(.organization)").forEach((dropdownElement)
 
 document.querySelectorAll(".md-change-current-account").forEach((dropdownElement) => {
   dropdownElement.addEventListener("click", function () {
-    window.openDropdownPrompt(this, "bf");
+    window.openDropdownPrompt(this, "ps");
   });
 });
 

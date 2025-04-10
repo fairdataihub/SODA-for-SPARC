@@ -28,6 +28,70 @@ while (!window.baseHtmlLoaded) {
  */
 $("#guided-next-button").on("click", async function () {
   console.log("Next button clicked");
+
+  // make a dummy request to the  POST prepare_metadata/submission endpoint
+  let dummySodaObj = {
+    dataset_metadata: {
+      dataset_description: {
+        dataset_information: {
+          title: "dummy title",
+          description: "dummy description",
+          type: "computational",
+          "number of subjects": "1",
+          "number of samples": "1",
+          keywords: ["tummy", "scholar"],
+        },
+        study_information: {
+          "study purpose": "Dummy purpose",
+          "study data collection": "dummy collection",
+          "study primary conclusion": "dummy conclusion",
+          "study collection title": "title dummy",
+          "study organ system": ["whosman"],
+          "study approach": ["one approach"],
+          "study technique": ["wwww", "wwww"],
+        },
+        contributor_information: [
+          {
+            contributor_orcid_id: "https://orcid.org/0000-0000-0000-0001",
+            contributor_affiliation: "dummy affiliation",
+            contributor_name: "dummy name",
+            contributor_role: "dummy role",
+          },
+        ],
+        basic_information: {
+          funding: ["dummy funding", "cheese"],
+          acknowledgment: "dummy ack",
+        },
+        related_information: [
+          {
+            identifier: "https://google.com",
+            identifier_type: "URL",
+            relation_type: "ISProtocolFor",
+            identifier_description: "Does protocol stuff",
+          },
+        ],
+      },
+    },
+  };
+  const homeDirectory = await window.electron.ipcRenderer.invoke("get-app-path", "home");
+  let filePath = window.path.join(
+    homeDirectory,
+    "SODA",
+    "Guided-Progress",
+    "dummy_submission_metadata.xlsx"
+  );
+  let uploadBoolean = false;
+  try {
+    await client.post("/prepare_metadata/dataset_description_file", {
+      soda: dummySodaObj,
+      filepath: filePath,
+      upload_boolean: uploadBoolean,
+    });
+  } catch (error) {
+    clientError(error);
+    return;
+  }
+
   //Get the ID of the current page to handle actions on page leave (next button pressed)
   window.pageBeingLeftID = window.CURRENT_PAGE.id;
 
@@ -159,7 +223,7 @@ const handleStartCuration = async () => {
   }
 
   if (startingNewCuration) {
-    window.sodaJSONObj["starting-point"]["type"] = "new";
+    window.sodaJSONObj["starting-point"]["origin"] = "new";
     window.sodaJSONObj["generate-dataset"]["generate-option"] = "new";
 
     // Skip the changes metadata tab as new datasets do not have changes metadata
@@ -240,9 +304,9 @@ const handleStartCuration = async () => {
     }
 
     //Pull the dataset folders and files from Pennsieve\
-    window.sodaJSONObj["bf-dataset-selected"] = {};
-    window.sodaJSONObj["bf-dataset-selected"]["dataset-name"] = selectedPennsieveDataset;
-    window.sodaJSONObj["bf-account-selected"]["account-name"] = window.defaultBfAccount;
+    window.sodaJSONObj["ps-dataset-selected"] = {};
+    window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = selectedPennsieveDataset;
+    window.sodaJSONObj["ps-account-selected"]["account-name"] = window.defaultBfAccount;
     const importProgressCircle = document.querySelector(
       "#guided_loading_pennsieve_dataset-organize"
     );
@@ -476,7 +540,7 @@ const handleStartCuration = async () => {
     });
 
     // Set the json options for resuming a pennsieve dataset from Pennsieve
-    window.sodaJSONObj["starting-point"]["type"] = "bf";
+    window.sodaJSONObj["starting-point"]["origin"] = "ps";
     window.sodaJSONObj["generate-dataset"]["generate-option"] = "existing-bf";
     window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] = selectedPennsieveDatasetID;
     window.sodaJSONObj["digital-metadata"]["name"] = selectedPennsieveDataset;
@@ -485,10 +549,10 @@ const handleStartCuration = async () => {
       selectedPennsieveDatasetID
     );
     if (changesCheckRes.shouldShow === true) {
-      window.sodaJSONObj["dataset-metadata"]["CHANGES"] = changesCheckRes.changesMetadata;
+      window.sodaJSONObj["dataset_metadata"]["CHANGES"] = changesCheckRes.changesMetadata;
       guidedUnSkipPage("guided-create-changes-metadata-tab");
     } else {
-      window.sodaJSONObj["dataset-metadata"]["CHANGES"] = "";
+      window.sodaJSONObj["dataset_metadata"]["CHANGES"] = "";
       guidedSkipPage("guided-create-changes-metadata-tab");
     }
 
@@ -845,7 +909,7 @@ const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
     window.sodaJSONObj["button-config"]["dataset-contains-samples"] = "yes";
   }
 
-  return window.sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"];
+  return window.sodaJSONObj["dataset_metadata"]["pool-subject-sample-structure"];
 };
 
 const guidedCheckHighLevelFoldersForImproperFiles = (datasetStructure) => {

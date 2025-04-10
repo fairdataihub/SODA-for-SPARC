@@ -154,7 +154,7 @@ const generateProgressCardElement = (progressFileJSONObj) => {
     progressFileJSONObj["previously-uploaded-data"] &&
     Object.keys(progressFileJSONObj["previously-uploaded-data"]).length > 0;
 
-  const datasetStartingPoint = progressFileJSONObj?.["starting-point"]?.["type"];
+  const datasetStartingPoint = progressFileJSONObj?.["starting-point"]?.["origin"];
 
   let workspaceUserNeedsToSwitchTo = false;
   const datasetWorkspace = progressFileJSONObj?.["digital-metadata"]?.["dataset-workspace"];
