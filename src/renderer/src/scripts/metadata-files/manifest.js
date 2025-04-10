@@ -2332,8 +2332,7 @@ window.readManifestFileAndStoreInSodaJSON = async () => {
     }
 
     // TODO: Erro rhandling
-    let manifestData = await api.loadManifestToJSON(manifestFilePath)
-
+    let manifestData = await api.loadManifestToJSON(manifestFilePath);
 
     // Store in sodaJSONObj
     if (!window.sodaJSONObj["dataset_metadata"]) {
