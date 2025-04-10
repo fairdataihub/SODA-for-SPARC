@@ -29,69 +29,6 @@ while (!window.baseHtmlLoaded) {
 $("#guided-next-button").on("click", async function () {
   console.log("Next button clicked");
 
-  // make a dummy request to the  POST prepare_metadata/submission endpoint
-  let dummySodaObj = {
-    dataset_metadata: {
-      dataset_description: {
-        dataset_information: {
-          title: "dummy title",
-          description: "dummy description",
-          type: "computational",
-          "number of subjects": "1",
-          "number of samples": "1",
-          keywords: ["tummy", "scholar"],
-        },
-        study_information: {
-          "study purpose": "Dummy purpose",
-          "study data collection": "dummy collection",
-          "study primary conclusion": "dummy conclusion",
-          "study collection title": "title dummy",
-          "study organ system": ["whosman"],
-          "study approach": ["one approach"],
-          "study technique": ["wwww", "wwww"],
-        },
-        contributor_information: [
-          {
-            contributor_orcid_id: "https://orcid.org/0000-0000-0000-0001",
-            contributor_affiliation: "dummy affiliation",
-            contributor_name: "dummy name",
-            contributor_role: "dummy role",
-          },
-        ],
-        basic_information: {
-          funding: ["dummy funding", "cheese"],
-          acknowledgment: "dummy ack",
-        },
-        related_information: [
-          {
-            identifier: "https://google.com",
-            identifier_type: "URL",
-            relation_type: "ISProtocolFor",
-            identifier_description: "Does protocol stuff",
-          },
-        ],
-      },
-    },
-  };
-  const homeDirectory = await window.electron.ipcRenderer.invoke("get-app-path", "home");
-  let filePath = window.path.join(
-    homeDirectory,
-    "SODA",
-    "Guided-Progress",
-    "dummy_submission_metadata.xlsx"
-  );
-  let uploadBoolean = false;
-  try {
-    await client.post("/prepare_metadata/dataset_description_file", {
-      soda: dummySodaObj,
-      filepath: filePath,
-      upload_boolean: uploadBoolean,
-    });
-  } catch (error) {
-    clientError(error);
-    return;
-  }
-
   //Get the ID of the current page to handle actions on page leave (next button pressed)
   window.pageBeingLeftID = window.CURRENT_PAGE.id;
 
