@@ -242,6 +242,23 @@ export const savePageChanges = async (pageBeingLeftID) => {
 
     await savePageCurationPreparation(pageBeingLeftID);
     await savePagePrepareMetadata(pageBeingLeftID);
+
+    if (pageBeingLeftID === "guided-entity-addition-method-selection-tab") {
+      const userSelectedAddEntitiesFromSpreadsheet = document
+        .getElementById("guided-button-add-entities-via-spreadsheet")
+        .classList.contains("selected");
+      const userSelectedAddEntitiesManually = document
+        .getElementById("guided-button-add-entities-manually")
+        .classList.contains("selected");
+
+      if (!userSelectedAddEntitiesFromSpreadsheet && !userSelectedAddEntitiesManually) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please indicate how you would like to add your entity IDs",
+        });
+        throw errorArray;
+      }
+    }
     // if (pageBeingLeftID === "guided-subjects-addition-tab") {
     //   if (window.getExistingSubjectNames().length === 0) {
     //     errorArray.push({

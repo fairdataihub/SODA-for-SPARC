@@ -15,6 +15,7 @@ import DatasetEntityMetadata from "../pages/DatasetEntityMetadata";
 import DatasetEntityFileMapper from "../pages/DatasetEntityFileMapper";
 import EntityDataSelectorPage from "../pages/EntityDataSelector";
 import DataImporter from "../shared/DataImporter";
+import Icon from "../shared/Icon";
 import { Divider } from "@mantine/core";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
@@ -204,6 +205,15 @@ const componentTypeRenderers = {
     root.render(
       <SodaComponentWrapper>
         <Divider my="xl" />
+      </SodaComponentWrapper>
+    );
+  },
+  icon: (componentSlot) => {
+    const root = createRoot(componentSlot);
+    const iconType = componentSlot.getAttribute("data-icon-type");
+    root.render(
+      <SodaComponentWrapper>
+        <Icon iconType={iconType} />
       </SodaComponentWrapper>
     );
   },

@@ -822,6 +822,57 @@
           class="guided--page"
           data-component-type="dataset-content-selector"
         ></div>
+        <div
+          id="guided-entity-addition-method-selection-tab"
+          data-page-name="Choose entity addition method"
+          class="guided--page"
+        >
+          <div class="guided--section">
+            <label class="guided--form-label centered mb-4"
+              >Select the task you would like to perform below:
+            </label>
+
+            <div class="guided--radio-button-container mt-4">
+              <button
+                class="guided--radio-button tile-button"
+                id="guided-button-add-entities-via-spreadsheet"
+                data-next-element="guided-section-start-new-curation"
+                data-button-config-value="entity-addition-method"
+                data-button-config-value-state="spreadsheet"
+              >
+                <div class="tile-button-icon">
+                  <div data-component-type="icon" data-icon-type="spreadsheet-import"></div>
+                </div>
+                <div class="tile-button-text">
+                  <h2>Import entities via a spreadsheet</h2>
+                </div>
+              </button>
+              <button
+                class="guided--radio-button tile-button"
+                id="guided-button-add-entities-manually"
+                data-next-element="guided-section-start-new-curation"
+                data-button-config-value="entity-addition-method"
+                data-button-config-value-state="manual"
+              >
+                <div class="tile-button-icon">
+                  <div data-component-type="icon" data-icon-type="keyboard"></div>
+                </div>
+                <div class="tile-button-text">
+                  <h2>Enter entity within the SODA UI</h2>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div
+          id="guided-dataset-entity-metadata-tab"
+          data-page-name="Dataset entity metadata"
+          class="guided--page"
+          data-component-type="dataset-entity-metadata-page"
+          data-entity-type="subjects"
+          data-entity-type-string-singular="subject"
+          data-entity-type-string-plural="subjects"
+        ></div>
 
         <div
           id="data-categorization-tab"
@@ -845,15 +896,7 @@
           data-entity-type-string-plural="performances"
           data-entity-type-prefix="perf-"
         ></div>
-        <div
-          id="guided-subjects-metadata-tab"
-          data-page-name="Dataset entity metadata"
-          class="guided--page"
-          data-component-type="dataset-entity-metadata-page"
-          data-entity-type="subjects"
-          data-entity-type-string-singular="subject"
-          data-entity-type-string-plural="subjects"
-        ></div>
+
         <div
           id="guided-entity-selection-tab"
           data-page-name="Dataset entity file association"

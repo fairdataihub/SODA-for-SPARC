@@ -318,13 +318,17 @@ export const openPage = async (targetPageID) => {
       if (targetPageComponentType === "data-categorization-page") {
         const pageEntityType = targetPageDataset.entityType;
         const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
+        const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
 
         setActiveEntity(null);
         setDatasetEntityObj(savedDatasetEntityObj);
 
         // Make any adjustments to the dataset entity object before setting it in the zustand store
         if (pageEntityType === "categorized-data") {
-          const bucketTypes = ["Code", "Experimental data", "Other"];
+          const bucketTypes = ["Experimental data", "Other"];
+          if (selectedEntities.includes("code")) {
+            bucketTypes.push("Code");
+          }
 
           for (const bucketType of bucketTypes) {
             addEntityToEntityList("categorized-data", bucketType);
