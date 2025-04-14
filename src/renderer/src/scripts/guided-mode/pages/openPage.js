@@ -384,7 +384,7 @@ export const openPage = async (targetPageID) => {
         setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["unstructured-data"]);
       }
 
-      if (targetPageComponentType === "dataset-entity-metadata-page") {
+      if (targetPageComponentType === "dataset-entity-manual-addition-page") {
         const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
 
         setDatasetEntityArray(datasetEntityArray);

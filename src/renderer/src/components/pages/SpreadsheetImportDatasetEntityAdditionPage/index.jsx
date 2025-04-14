@@ -35,7 +35,6 @@ import {
 } from "@mantine/core";
 import { Dropzone, MIME_TYPES } from "@mantine/dropzone";
 import useGlobalStore from "../../../stores/globalStore";
-import EntityHierarchyRenderer from "../../shared/EntityHierarchyRenderer";
 import {
   updateExistingEntityMetadata,
   getEntityMetadataValue,
@@ -647,12 +646,12 @@ const EntityMetadataForm = () => {
 };
 
 /**
- * DatasetEntityMetadata Page Component
+ * SpreadsheetImportDatasetEntityAdditionPage Page Component
  *
  * Main page for dataset entity metadata management.
  * Provides entity selection and metadata editing interface.
  */
-const DatasetEntityMetadata = () => {
+const SpreadsheetImportDatasetEntityAdditionPage = () => {
   // Access selected entities to determine what to show
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const datasetContainsSubjects = selectedEntities?.includes("subjects");
@@ -685,7 +684,7 @@ const DatasetEntityMetadata = () => {
   // Add listeners for IPC responses
   useEffect(() => {
     // Log when component mounts
-    console.log("DatasetEntityMetadata component mounted");
+    console.log("ManualDatasetEntityAdditionPage component mounted");
 
     // Add event listener for folder selection response
     const handleFolderSelected = (event, path, filename) => {
@@ -980,38 +979,8 @@ const DatasetEntityMetadata = () => {
           </Accordion>
         </GuidedModeSection>
       )}
-
-      <GuidedModeSection>
-        <Text fw={600} size="lg" mb="md">
-          Entity Metadata Editor
-        </Text>
-        <Grid gutter="lg">
-          {/* Entity selection panel */}
-          <Grid.Col span={5} style={{ position: "sticky", top: "20px" }}>
-            <SodaPaper>
-              <Box mb="xs">
-                <Text fw={500} size="md">
-                  Entity Hierarchy
-                </Text>
-                <Text size="sm" c="dimmed">
-                  Select an entity to edit or use the buttons to add new entities
-                </Text>
-              </Box>
-              <EntityHierarchyRenderer
-                allowEntityStructureEditing={true}
-                allowEntitySelection={true}
-              />
-            </SodaPaper>
-          </Grid.Col>
-
-          {/* Metadata editing form */}
-          <Grid.Col span={7}>
-            <EntityMetadataForm />
-          </Grid.Col>
-        </Grid>
-      </GuidedModeSection>
     </GuidedModePage>
   );
 };
 
-export default DatasetEntityMetadata;
+export default SpreadsheetImportDatasetEntityAdditionPage;

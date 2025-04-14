@@ -11,7 +11,8 @@ import PennsieveAgentCheckDisplay from "../backgroundServices/PennsieveAgentChec
 import DatasetContentSelector from "../pages/DatasetContentSelector";
 import PerformanceIdManagementPage from "../pages/PerformanceIdManagement";
 import ModalitySelectionPage from "../pages/ModalitySelection";
-import DatasetEntityMetadata from "../pages/DatasetEntityMetadata";
+import ManualDatasetEntityAdditionPage from "../pages/ManualDatasetEntityAdditionPage";
+import SpreadsheetImportDatasetEntityAdditionPage from "../pages/SpreadsheetImportDatasetEntityAdditionPage";
 import DatasetEntityFileMapper from "../pages/DatasetEntityFileMapper";
 import EntityDataSelectorPage from "../pages/EntityDataSelector";
 import DataImporter from "../shared/DataImporter";
@@ -137,12 +138,21 @@ const componentTypeRenderers = {
       </SodaComponentWrapper>
     );
   },
-  "dataset-entity-metadata-page": (componentSlot) => {
+  "dataset-entity-manual-addition-page": (componentSlot) => {
     const root = createRoot(componentSlot);
 
     root.render(
       <SodaComponentWrapper>
-        <DatasetEntityMetadata />
+        <ManualDatasetEntityAdditionPage />
+      </SodaComponentWrapper>
+    );
+  },
+  "dataset-entity-spreadsheet-import-page": (componentSlot) => {
+    const root = createRoot(componentSlot);
+
+    root.render(
+      <SodaComponentWrapper>
+        <SpreadsheetImportDatasetEntityAdditionPage />
       </SodaComponentWrapper>
     );
   },

@@ -232,7 +232,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
         }
       }
 
-      if (pageBeingLeftComponentType === "dataset-entity-metadata-page") {
+      if (pageBeingLeftComponentType === "dataset-entity-manual-addition-page") {
         const datasetEntityArray = useGlobalStore.getState().datasetEntityArray;
 
         // Save the dataset entity object to the progress file
@@ -257,6 +257,16 @@ export const savePageChanges = async (pageBeingLeftID) => {
           message: "Please indicate how you would like to add your entity IDs",
         });
         throw errorArray;
+      }
+
+      if (userSelectedAddEntitiesFromSpreadsheet) {
+        guidedSkipPage("guided-manual-dataset-entity-and-metadata-tab");
+        guidedUnSkipPage("guided-spreadsheet-import-dataset-entity-and-metadata-tab");
+      }
+
+      if (userSelectedAddEntitiesManually) {
+        guidedSkipPage("guided-spreadsheet-import-dataset-entity-and-metadata-tab");
+        guidedUnSkipPage("guided-manual-dataset-entity-and-metadata-tab");
       }
     }
     // if (pageBeingLeftID === "guided-subjects-addition-tab") {
