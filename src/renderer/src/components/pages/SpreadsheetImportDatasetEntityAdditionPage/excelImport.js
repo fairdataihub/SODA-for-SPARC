@@ -1,175 +1,294 @@
 import * as XLSX from "xlsx";
-import { addSubject, addSampleToSubject } from "../../../stores/slices/datasetEntityStructureSlice";
+import {
+  addSubject,
+  addSampleToSubject,
+  addSiteToSubject,
+  addSiteToSample,
+  addPerformanceToSubject,
+  addPerformanceToSample,
+} from "../../../stores/slices/datasetEntityStructureSlice";
 
 /**
- * Read an Excel file and return the data as JSON
- * @param {File} file - The Excel file to read
- * @returns {Promise<Array>} The data from the first sheet as an array of objects
+ * Read an Excel file and convert to JSON data
  */
 export const readExcelFile = (file) => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-
     reader.onload = (e) => {
       try {
         const data = e.target.result;
         const workbook = XLSX.read(data, { type: "array" });
         const firstSheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[firstSheetName];
-        const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
-
-        resolve(jsonData);
+        resolve(XLSX.utils.sheet_to_json(worksheet, { defval: "" }));
       } catch (error) {
         reject(new Error(`Failed to read Excel file: ${error.message}`));
       }
     };
-
-    reader.onerror = () => {
-      reject(new Error("Failed to read file"));
-    };
-
+    reader.onerror = () => reject(new Error("Failed to read file"));
     reader.readAsArrayBuffer(file);
   });
 };
 
 /**
- * Import subject data from an Excel file and create subject entities
- * @param {File} file - The Excel file containing subject data
- * @returns {Promise<{success: boolean, message: string, imported: number}>} Result of the import
+ * Entity type configurations - using the four main entity types
  */
-export const importSubjectsFromExcel = async (file) => {
-  try {
-    const subjects = await readExcelFile(file);
-    console.log("Subjects data:", subjects); // Debugging line to check the data structure
-    if (!subjects || subjects.length === 0) {
-      return { success: false, message: "No subject data found in the file", imported: 0 };
-    }
+export const entityConfigs = {
+  subjects: {
+    idField: "subject id",
+    prefix: "sub-",
+    requiredFields: ["subject id"],
+    formatEntity: (item, id) => ({
+      id,
+      type: "subject",
+      metadata: { ...item, "subject id": id },
+    }),
+    saveEntity: (entity) => addSubject(entity.id, entity.metadata),
+    formatDisplayId: (entity) => entity.id,
+    templateFileName: "subjects.xlsx",
+  },
 
-    // Validate required fields
-    const missingIdSubjects = subjects.filter((subject) => !subject["subject id"]);
-    if (missingIdSubjects.length > 0) {
-      return {
-        success: false,
-        message: `${missingIdSubjects.length} subjects are missing IDs`,
-        imported: 0,
-      };
-    }
-
-    // Import subjects
-    let importedCount = 0;
-    let errors = [];
-
-    for (const subject of subjects) {
-      try {
-        // Add prefix if missing
-        let subjectId = subject["subject id"];
-        if (!subjectId.startsWith("sub-")) {
-          subjectId = `sub-${subjectId}`;
-        }
-
-        // Create a metadata object with all fields
-        const metadata = { ...subject };
-        metadata["subject id"] = subjectId;
-
-        // Add subject
-        addSubject(subjectId, metadata);
-        importedCount++;
-      } catch (error) {
-        errors.push(`Failed to import subject ${subject["subject id"]}: ${error.message}`);
+  samples: {
+    idField: "sample id",
+    prefix: "sam-",
+    requiredFields: ["sample id", "subject id"],
+    formatEntity: (item, id) => {
+      let subjectId = item["subject id"];
+      if (!subjectId.startsWith("sub-")) {
+        subjectId = `sub-${subjectId}`;
       }
-    }
-
-    if (errors.length > 0) {
-      console.error("Errors during subject import:", errors);
       return {
-        success: importedCount > 0,
-        message: `Imported ${importedCount} subjects with ${errors.length} errors`,
-        imported: importedCount,
-        errors,
+        id,
+        type: "sample",
+        parentSubject: subjectId,
+        metadata: { ...item, "sample id": id, "subject id": subjectId },
       };
+    },
+    saveEntity: (entity) => addSampleToSubject(entity.parentSubject, entity.id, entity.metadata),
+    formatDisplayId: (entity) => `${entity.id} (Subject: ${entity.parentSubject})`,
+    templateFileName: "samples.xlsx",
+  },
+
+  sites: {
+    idField: "site id",
+    prefix: "site-",
+    requiredFields: ["site id", "subject id"],
+    optionalFields: ["sample id"],
+    formatEntity: (item, id) => {
+      // Format parent IDs
+      let subjectId = item["subject id"];
+      if (!subjectId.startsWith("sub-")) {
+        subjectId = `sub-${subjectId}`;
+      }
+
+      // Create base entity with subject parent
+      const entity = {
+        id,
+        type: "site",
+        parentSubject: subjectId,
+        metadata: { ...item, "site id": id, "subject id": subjectId },
+      };
+
+      // Add sample parent if it exists
+      if (item["sample id"]) {
+        let sampleId = item["sample id"];
+        if (!sampleId.startsWith("sam-")) {
+          sampleId = `sam-${sampleId}`;
+        }
+        entity.parentSample = sampleId;
+        entity.metadata["sample id"] = sampleId;
+      }
+
+      return entity;
+    },
+    saveEntity: (entity) => {
+      if (entity.parentSample) {
+        // Site belongs to a sample
+        addSiteToSample(entity.parentSubject, entity.parentSample, entity.id, entity.metadata);
+      } else {
+        // Site belongs directly to a subject
+        addSiteToSubject(entity.parentSubject, entity.id, entity.metadata);
+      }
+    },
+    formatDisplayId: (entity) => {
+      if (entity.parentSample) {
+        return `${entity.id} (Sample: ${entity.parentSample}, Subject: ${entity.parentSubject})`;
+      }
+      return `${entity.id} (Subject: ${entity.parentSubject})`;
+    },
+    templateFileName: "sites.xlsx",
+  },
+
+  performances: {
+    idField: "performance id",
+    prefix: "perf-",
+    requiredFields: ["performance id", "subject id"],
+    optionalFields: ["sample id"],
+    formatEntity: (item, id) => {
+      // Format parent IDs
+      let subjectId = item["subject id"];
+      if (!subjectId.startsWith("sub-")) {
+        subjectId = `sub-${subjectId}`;
+      }
+
+      // Create base entity with subject parent
+      const entity = {
+        id,
+        type: "performance",
+        parentSubject: subjectId,
+        metadata: { ...item, "performance id": id, "subject id": subjectId },
+      };
+
+      // Add sample parent if it exists
+      if (item["sample id"]) {
+        let sampleId = item["sample id"];
+        if (!sampleId.startsWith("sam-")) {
+          sampleId = `sam-${sampleId}`;
+        }
+        entity.parentSample = sampleId;
+        entity.metadata["sample id"] = sampleId;
+      }
+
+      return entity;
+    },
+    saveEntity: (entity) => {
+      if (entity.parentSample) {
+        // Performance belongs to a sample
+        addPerformanceToSample(
+          entity.parentSubject,
+          entity.parentSample,
+          entity.id,
+          entity.metadata
+        );
+      } else {
+        // Performance belongs directly to a subject
+        addPerformanceToSubject(entity.parentSubject, entity.id, entity.metadata);
+      }
+    },
+    formatDisplayId: (entity) => {
+      if (entity.parentSample) {
+        return `${entity.id} (Sample: ${entity.parentSample}, Subject: ${entity.parentSubject})`;
+      }
+      return `${entity.id} (Subject: ${entity.parentSubject})`;
+    },
+    templateFileName: "performances.xlsx",
+  },
+};
+
+/**
+ * Process entities from Excel file with validation
+ */
+export const processEntityData = (rawData, entityType) => {
+  const config = entityConfigs[entityType];
+  if (!config) {
+    return {
+      success: false,
+      message: `Unknown entity type: ${entityType}`,
+      entities: [],
+    };
+  }
+
+  const { idField, prefix, requiredFields } = config;
+
+  // Check if data exists
+  if (!rawData || rawData.length === 0) {
+    return {
+      success: false,
+      message: `No ${entityType} data found in the file`,
+      entities: [],
+    };
+  }
+
+  // Validate required fields
+  const missingFieldItems = rawData.filter((item) => requiredFields.some((field) => !item[field]));
+
+  if (missingFieldItems.length > 0) {
+    return {
+      success: false,
+      message: `${missingFieldItems.length} entries are missing required fields`,
+      entities: [],
+    };
+  }
+
+  // Format the entities using the config's format function
+  const entities = rawData.map((item) => {
+    // Add prefix if missing
+    let id = item[idField];
+    if (!id.startsWith(prefix)) {
+      id = `${prefix}${id}`;
     }
 
+    return config.formatEntity(item, id);
+  });
+
+  return {
+    success: true,
+    message: `Found ${entities.length} valid ${entityType}`,
+    entities,
+  };
+};
+
+/**
+ * Generic function to import entities from Excel
+ */
+export const importEntitiesFromExcel = async (file, entityType) => {
+  if (!entityConfigs[entityType]) {
     return {
-      success: true,
-      message: `Successfully imported ${importedCount} subjects`,
-      imported: importedCount,
+      success: false,
+      message: `Unsupported entity type: ${entityType}`,
+      entities: [],
     };
+  }
+
+  try {
+    // Read the data
+    const rawData = await readExcelFile(file);
+
+    // Process and validate data
+    const processResult = processEntityData(rawData, entityType);
+
+    return processResult;
   } catch (error) {
-    console.error("Failed to import subjects:", error);
-    return { success: false, message: `Failed to import subjects: ${error.message}`, imported: 0 };
+    console.error(`Error processing ${entityType} data:`, error);
+    return {
+      success: false,
+      message: `Failed to process ${entityType}: ${error.message}`,
+      entities: [],
+    };
   }
 };
 
 /**
- * Import sample data from an Excel file and create sample entities
- * @param {File} file - The Excel file containing sample data
- * @returns {Promise<{success: boolean, message: string, imported: number}>} Result of the import
+ * Save entities to the data store
  */
-export const importSamplesFromExcel = async (file) => {
-  try {
-    const samples = await readExcelFile(file);
-    if (!samples || samples.length === 0) {
-      return { success: false, message: "No sample data found in the file", imported: 0 };
-    }
-
-    // Validate required fields
-    const missingSamples = samples.filter(
-      (sample) => !sample["sample id"] || !sample["subject id"]
-    );
-    if (missingSamples.length > 0) {
-      return {
-        success: false,
-        message: `${missingSamples.length} samples are missing required fields (sample id or subject id)`,
-        imported: 0,
-      };
-    }
-
-    // Import samples
-    let importedCount = 0;
-    let errors = [];
-
-    for (const sample of samples) {
-      try {
-        // Add prefix if missing to both sample and subject IDs
-        let sampleId = sample["sample id"];
-        if (!sampleId.startsWith("sam-")) {
-          sampleId = `sam-${sampleId}`;
-        }
-
-        let subjectId = sample["subject id"];
-        if (!subjectId.startsWith("sub-")) {
-          subjectId = `sub-${subjectId}`;
-        }
-
-        // Create a metadata object with all fields
-        const metadata = { ...sample };
-        metadata["sample id"] = sampleId;
-
-        // Add sample to subject
-        addSampleToSubject(subjectId, sampleId, metadata);
-        importedCount++;
-      } catch (error) {
-        errors.push(`Failed to import sample ${sample["sample id"]}: ${error.message}`);
-      }
-    }
-
-    if (errors.length > 0) {
-      console.error("Errors during sample import:", errors);
-      return {
-        success: importedCount > 0,
-        message: `Imported ${importedCount} samples with ${errors.length} errors`,
-        imported: importedCount,
-        errors,
-      };
-    }
-
+export const saveEntities = (entities, entityType) => {
+  const config = entityConfigs[entityType];
+  if (!config) {
     return {
-      success: true,
-      message: `Successfully imported ${importedCount} samples`,
-      imported: importedCount,
+      success: false,
+      message: `Unknown entity type: ${entityType}`,
+      imported: 0,
     };
-  } catch (error) {
-    console.error("Failed to import samples:", error);
-    return { success: false, message: `Failed to import samples: ${error.message}`, imported: 0 };
   }
+
+  let importedCount = 0;
+  const errors = [];
+
+  for (const entity of entities) {
+    try {
+      config.saveEntity(entity);
+      importedCount++;
+    } catch (error) {
+      errors.push(`Failed to import ${entity.id}: ${error.message}`);
+    }
+  }
+
+  return {
+    success: importedCount > 0,
+    message: errors.length
+      ? `Imported ${importedCount} ${entityType} with ${errors.length} errors`
+      : `Successfully imported ${importedCount} ${entityType}`,
+    imported: importedCount,
+    errors: errors.length ? errors : undefined,
+  };
 };

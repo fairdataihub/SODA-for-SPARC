@@ -28,8 +28,9 @@ import {
 } from "@mantine/core";
 import { Dropzone, MIME_TYPES } from "@mantine/dropzone";
 import useGlobalStore from "../../../stores/globalStore";
-import { importSubjectsFromExcel, importSamplesFromExcel } from "./excelImport";
+import { importEntitiesFromExcel, entityConfigs, saveEntities } from "./excelImport";
 import { setActiveImportStep } from "../../../stores/slices/datasetEntityStructureSlice";
+import { swalFileListDoubleAction } from "../../../scripts/utils/swal-utils";
 
 const SpreadsheetImportDatasetEntityAdditionPage = () => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
@@ -44,77 +45,81 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
   const datasetContainsSites = selectedEntities?.includes("sites");
   const datasetContainsPerformances = selectedEntities?.includes("performances");
 
-  const handleDownloadTemplate = (templateName) => {
+  /**
+   * Generic entity import handler
+   * @param {File[]} files - Dropped files
+   * @param {string} entityType - Type of entity to import (e.g., 'subjects', 'samples')
+   */
+  const handleEntityFileImport = async (files, entityType) => {
+    if (!files?.length) return;
+
+    const config = entityConfigs[entityType];
+    if (!config) {
+      window.notyf.error(`Unsupported entity type: ${entityType}`);
+      return;
+    }
+
     try {
-      window.electron.ipcRenderer.send("open-folder-dialog-save-metadata", `${templateName}.xlsx`);
+      // Step 1: Process file and get formatted entities
+      const result = await importEntitiesFromExcel(files[0], entityType);
+
+      if (!result.success) {
+        window.notyf.error(result.message);
+        return;
+      }
+
+      // Step 2: Show confirmation with processed entities
+      const entityList = result.entities.map((entity) => config.formatDisplayId(entity));
+
+      const confirmed = await swalFileListDoubleAction(
+        entityList,
+        `Confirm ${entityType.charAt(0).toUpperCase() + entityType.slice(1)} Import`,
+        `The following ${entityList.length} ${entityType} will be imported:`,
+        "Import",
+        "Cancel"
+      );
+
+      if (!confirmed) {
+        window.notyf.info(`${entityType} import cancelled`);
+        return;
+      }
+
+      // Step 3: Save the entities to the data store
+      const saveResult = saveEntities(result.entities, entityType);
+      setImportResults((prev) => ({ ...prev, [entityType]: saveResult }));
+
+      if (saveResult.success) {
+        window.notyf.success(saveResult.message);
+
+        // Automatic navigation to next step (if applicable)
+        // This is specific to subjects & samples
+        if (entityType === "subjects" && datasetContainsSamples) {
+          setActiveImportStep(1);
+        }
+      } else {
+        window.notyf.error(saveResult.message);
+      }
     } catch (error) {
-      console.error(`Error sending IPC message for ${templateName} template:`, error);
+      window.notyf.error(`Error importing ${entityType}: ${error.message}`);
     }
   };
 
-  const handleSubjectFileImport = async (files) => {
-    if (files && files.length > 0) {
-      const file = files[0];
+  // Update the handlers to use the generic function
+  const handleSubjectFileImport = (files) => handleEntityFileImport(files, "subjects");
+  const handleSampleFileImport = (files) => handleEntityFileImport(files, "samples");
 
-      try {
-        const result = await importSubjectsFromExcel(file);
-        setImportResults((prev) => ({ ...prev, subjects: result }));
-
-        if (result.success) {
-          window.notyf.open({
-            type: "success",
-            message: result.message,
-            duration: 5000,
-          });
-
-          if (datasetContainsSamples) {
-            setActiveImportStep(1);
-          }
-        } else {
-          window.notyf.open({
-            type: "error",
-            message: result.message,
-            duration: 5000,
-          });
-        }
-      } catch (error) {
-        window.notyf.open({
-          type: "error",
-          message: `Error importing subjects: ${error.message}`,
-          duration: 5000,
-        });
-      }
+  // Download template
+  const handleDownloadTemplate = (entityType) => {
+    const config = entityConfigs[entityType];
+    if (!config) {
+      console.error(`No template available for entity type: ${entityType}`);
+      return;
     }
-  };
 
-  const handleSampleFileImport = async (files) => {
-    if (files && files.length > 0) {
-      const file = files[0];
-
-      try {
-        const result = await importSamplesFromExcel(file);
-        setImportResults((prev) => ({ ...prev, samples: result }));
-
-        if (result.success) {
-          window.notyf.open({
-            type: "success",
-            message: result.message,
-            duration: 5000,
-          });
-        } else {
-          window.notyf.open({
-            type: "error",
-            message: result.message,
-            duration: 5000,
-          });
-        }
-      } catch (error) {
-        window.notyf.open({
-          type: "error",
-          message: `Error importing samples: ${error.message}`,
-          duration: 5000,
-        });
-      }
+    try {
+      window.electron.ipcRenderer.send("open-folder-dialog-save-metadata", config.templateFileName);
+    } catch (error) {
+      console.error(`Error sending IPC message for ${entityType} template:`, error);
     }
   };
 
