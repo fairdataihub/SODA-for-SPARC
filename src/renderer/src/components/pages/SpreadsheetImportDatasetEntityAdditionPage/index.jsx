@@ -4,12 +4,13 @@ import GuidedModeSection from "../../containers/GuidedModeSection";
 import {
   IconUser,
   IconFlask,
-  IconUpload,
   IconFileSpreadsheet,
   IconAlertCircle,
   IconCheck,
   IconArrowRight,
   IconDownload,
+  IconUpload,
+  IconCircleArrowRight,
 } from "@tabler/icons-react";
 import {
   Text,
@@ -23,17 +24,16 @@ import {
   Divider,
   Stepper,
   List,
+  Card,
 } from "@mantine/core";
 import { Dropzone, MIME_TYPES } from "@mantine/dropzone";
 import useGlobalStore from "../../../stores/globalStore";
-import {
-  importSubjectsFromExcel,
-  importSamplesFromExcel,
-} from "../../../services/excelImportService";
+import { importSubjectsFromExcel, importSamplesFromExcel } from "./excelImport";
+import { setActiveImportStep } from "../../../stores/slices/datasetEntityStructureSlice";
 
 const SpreadsheetImportDatasetEntityAdditionPage = () => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
-  const [activeStep, setActiveStep] = useState(0);
+  const activeStep = useGlobalStore((state) => state.activeImportStep);
   const [importResults, setImportResults] = useState({
     subjects: null,
     samples: null,
@@ -41,8 +41,9 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
 
   const datasetContainsSubjects = selectedEntities?.includes("subjects");
   const datasetContainsSamples = selectedEntities?.includes("samples");
+  const datasetContainsSites = selectedEntities?.includes("sites");
+  const datasetContainsPerformances = selectedEntities?.includes("performances");
 
-  // Handle template downloads with error logging
   const handleDownloadTemplate = (templateName) => {
     try {
       window.electron.ipcRenderer.send("open-folder-dialog-save-metadata", `${templateName}.xlsx`);
@@ -51,7 +52,6 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
     }
   };
 
-  // File import handlers
   const handleSubjectFileImport = async (files) => {
     if (files && files.length > 0) {
       const file = files[0];
@@ -67,9 +67,8 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
             duration: 5000,
           });
 
-          // If samples are next, proceed to that step
           if (datasetContainsSamples) {
-            setActiveStep(1);
+            setActiveImportStep(1);
           }
         } else {
           window.notyf.open({
@@ -127,7 +126,6 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
     });
   };
 
-  // Register IPC event listeners
   useEffect(() => {
     const handleFolderSelected = (event, path, filename) => {
       console.log("Selected folder:", path);
@@ -150,7 +148,6 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
     };
   }, []);
 
-  // Build steps array based on selected entities
   const steps = [];
   if (datasetContainsSubjects) {
     steps.push({ title: "Import Subjects", icon: <IconUser size={18} /> });
@@ -162,7 +159,12 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
   return (
     <GuidedModePage pageHeader="Import Dataset Entities from Excel">
       <GuidedModeSection>
-        <Stepper active={activeStep} onStepClick={setActiveStep} breakpoint="sm">
+        <Stepper
+          active={activeStep}
+          onStepClick={(index) => setActiveImportStep(index)}
+          breakpoint="sm"
+          mb="lg"
+        >
           {steps.map((step, index) => (
             <Stepper.Step
               key={index}
@@ -170,82 +172,119 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
               icon={step.icon}
               completedIcon={<IconCheck size={18} />}
             >
-              <Paper shadow="xs" p="md" withBorder>
-                <Stack spacing="lg">
+              <Paper shadow="xs" p="xl" withBorder>
+                <Stack spacing="xl">
                   {index === 0 && datasetContainsSubjects && (
-                    <Stack spacing="md">
-                      <Title order={4}>Import Subjects</Title>
+                    <Stack spacing="lg">
+                      <Title order={4} mb={0}>
+                        Import Subjects
+                      </Title>
                       <Divider />
 
-                      <Grid>
+                      <Grid gutter={32}>
                         <Grid.Col span={6}>
-                          <Stack spacing="md">
-                            <List type="ordered" spacing="xs">
-                              <List.Item>Download the template spreadsheet</List.Item>
-                              <List.Item>Fill in your subject data</List.Item>
-                              <List.Item>Upload the completed file</List.Item>
-                            </List>
+                          <Card shadow="sm" p="md" radius="md" withBorder>
+                            <Card.Section withBorder inheritPadding py="xs" bg="blue.0">
+                              <Group position="apart">
+                                <Text fw={600}>Step 1: Download Template</Text>
+                                <IconDownload size={18} color="blue" />
+                              </Group>
+                            </Card.Section>
+
+                            <Box mt="md" mb="lg">
+                              <List type="ordered" spacing="sm" withPadding>
+                                <List.Item>Download the subjects template spreadsheet</List.Item>
+                                <List.Item>Fill in your subject IDs and metadata</List.Item>
+                                <List.Item>Save the file when complete</List.Item>
+                              </List>
+                            </Box>
 
                             <Button
+                              fullWidth
                               leftIcon={<IconDownload size={16} />}
                               variant="light"
                               onClick={() => handleDownloadTemplate("subjects")}
                             >
-                              Download subjects.xlsx template
+                              Download subjects.xlsx
                             </Button>
-                          </Stack>
+                          </Card>
                         </Grid.Col>
 
                         <Grid.Col span={6}>
-                          <Stack spacing="md">
-                            <Dropzone
-                              onDrop={handleSubjectFileImport}
-                              onReject={handleFileRejection}
-                              maxSize={5 * 1024 * 1024} // 5MB
-                              accept={[MIME_TYPES.xlsx, MIME_TYPES.xls]}
-                              h={120}
-                            >
-                              <Stack align="center" spacing="xs" style={{ pointerEvents: "none" }}>
-                                <Dropzone.Accept>
-                                  <IconCheck size={24} color="green" />
-                                </Dropzone.Accept>
-                                <Dropzone.Reject>
-                                  <IconAlertCircle size={24} color="red" />
-                                </Dropzone.Reject>
-                                <Dropzone.Idle>
-                                  <IconFileSpreadsheet size={24} color="blue" />
-                                </Dropzone.Idle>
-                                <Text size="sm" ta="center">
-                                  Drop your subjects.xlsx file here
-                                </Text>
-                                <Text size="xs" c="dimmed" ta="center">
-                                  Or click to browse your files
-                                </Text>
-                              </Stack>
-                            </Dropzone>
+                          <Card shadow="sm" p="md" radius="md" withBorder>
+                            <Card.Section withBorder inheritPadding py="xs" bg="green.0">
+                              <Group position="apart">
+                                <Text fw={600}>Step 2: Import Completed File</Text>
+                                <IconUpload size={18} color="green" />
+                              </Group>
+                            </Card.Section>
 
-                            {importResults.subjects && (
-                              <Box mt="md">
-                                <Text fw={500} c={importResults.subjects.success ? "green" : "red"}>
-                                  {importResults.subjects.message}
-                                </Text>
-                                {importResults.subjects.imported > 0 && (
-                                  <Text size="sm">
-                                    Successfully imported {importResults.subjects.imported}{" "}
-                                    subjects.
+                            <Box mt="md">
+                              <Dropzone
+                                onDrop={handleSubjectFileImport}
+                                onReject={handleFileRejection}
+                                maxSize={5 * 1024 * 1024}
+                                accept={[MIME_TYPES.xlsx, MIME_TYPES.xls]}
+                                h={140}
+                                mt="md"
+                              >
+                                <Stack
+                                  align="center"
+                                  spacing="sm"
+                                  style={{ pointerEvents: "none" }}
+                                >
+                                  <Dropzone.Accept>
+                                    <IconCheck size={32} color="green" />
+                                  </Dropzone.Accept>
+                                  <Dropzone.Reject>
+                                    <IconAlertCircle size={32} color="red" />
+                                  </Dropzone.Reject>
+                                  <Dropzone.Idle>
+                                    <IconFileSpreadsheet size={32} color="blue" />
+                                  </Dropzone.Idle>
+                                  <Text size="md" ta="center" fw={500}>
+                                    Drop your subjects.xlsx file here
                                   </Text>
-                                )}
-                              </Box>
-                            )}
-                          </Stack>
+                                  <Text size="xs" c="dimmed" ta="center">
+                                    Or click to browse your files
+                                  </Text>
+                                </Stack>
+                              </Dropzone>
+
+                              {importResults.subjects && (
+                                <Box
+                                  mt="md"
+                                  p="xs"
+                                  bg={importResults.subjects.success ? "green.0" : "red.0"}
+                                  style={{ borderRadius: "4px" }}
+                                >
+                                  <Text
+                                    fw={500}
+                                    c={importResults.subjects.success ? "green.8" : "red.8"}
+                                  >
+                                    {importResults.subjects.message}
+                                  </Text>
+                                  {importResults.subjects.imported > 0 && (
+                                    <Text
+                                      size="sm"
+                                      c={importResults.subjects.success ? "green.8" : "red.8"}
+                                    >
+                                      Successfully imported {importResults.subjects.imported}{" "}
+                                      subjects.
+                                    </Text>
+                                  )}
+                                </Box>
+                              )}
+                            </Box>
+                          </Card>
                         </Grid.Col>
                       </Grid>
 
                       {datasetContainsSamples && (
                         <Group position="right" mt="md">
                           <Button
-                            rightIcon={<IconArrowRight size={16} />}
-                            onClick={() => setActiveStep(1)}
+                            rightIcon={<IconCircleArrowRight size={16} />}
+                            onClick={() => setActiveImportStep(1)}
                             disabled={!importResults.subjects?.success}
                           >
                             Continue to Samples
@@ -256,76 +295,114 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
                   )}
 
                   {datasetContainsSamples && index === (datasetContainsSubjects ? 1 : 0) && (
-                    <Stack spacing="md">
-                      <Title order={4}>Import Samples</Title>
+                    <Stack spacing="lg">
+                      <Title order={4} mb={0}>
+                        Import Samples
+                      </Title>
                       <Divider />
 
-                      <Grid>
+                      <Grid gutter={32}>
                         <Grid.Col span={6}>
-                          <Stack spacing="md">
-                            <List type="ordered" spacing="xs">
-                              <List.Item>Download the template spreadsheet</List.Item>
-                              <List.Item>Fill in your sample data</List.Item>
-                              <List.Item>Upload the completed file</List.Item>
-                            </List>
+                          <Card shadow="sm" p="md" radius="md" withBorder>
+                            <Card.Section withBorder inheritPadding py="xs" bg="blue.0">
+                              <Group position="apart">
+                                <Text fw={600}>Step 1: Download Template</Text>
+                                <IconDownload size={18} color="blue" />
+                              </Group>
+                            </Card.Section>
+
+                            <Box mt="md" mb="lg">
+                              <List type="ordered" spacing="sm" withPadding>
+                                <List.Item>Download the samples template spreadsheet</List.Item>
+                                <List.Item>Fill in your sample IDs and metadata</List.Item>
+                                <List.Item>Save the file when complete</List.Item>
+                              </List>
+                            </Box>
 
                             <Button
+                              fullWidth
                               leftIcon={<IconDownload size={16} />}
                               variant="light"
                               onClick={() => handleDownloadTemplate("samples")}
                             >
-                              Download samples.xlsx template
+                              Download samples.xlsx
                             </Button>
-                          </Stack>
+                          </Card>
                         </Grid.Col>
 
                         <Grid.Col span={6}>
-                          <Stack spacing="md">
-                            <Dropzone
-                              onDrop={handleSampleFileImport}
-                              onReject={handleFileRejection}
-                              maxSize={5 * 1024 * 1024} // 5MB
-                              accept={[MIME_TYPES.xlsx, MIME_TYPES.xls]}
-                              h={120}
-                            >
-                              <Stack align="center" spacing="xs" style={{ pointerEvents: "none" }}>
-                                <Dropzone.Accept>
-                                  <IconCheck size={24} color="green" />
-                                </Dropzone.Accept>
-                                <Dropzone.Reject>
-                                  <IconAlertCircle size={24} color="red" />
-                                </Dropzone.Reject>
-                                <Dropzone.Idle>
-                                  <IconFileSpreadsheet size={24} color="green" />
-                                </Dropzone.Idle>
-                                <Text size="sm" ta="center">
-                                  Drop your samples.xlsx file here
-                                </Text>
-                                <Text size="xs" c="dimmed" ta="center">
-                                  Or click to browse your files
-                                </Text>
-                              </Stack>
-                            </Dropzone>
+                          <Card shadow="sm" p="md" radius="md" withBorder>
+                            <Card.Section withBorder inheritPadding py="xs" bg="green.0">
+                              <Group position="apart">
+                                <Text fw={600}>Step 2: Import Completed File</Text>
+                                <IconUpload size={18} color="green" />
+                              </Group>
+                            </Card.Section>
 
-                            {importResults.samples && (
-                              <Box mt="md">
-                                <Text fw={500} c={importResults.samples.success ? "green" : "red"}>
-                                  {importResults.samples.message}
-                                </Text>
-                                {importResults.samples.imported > 0 && (
-                                  <Text size="sm">
-                                    Successfully imported {importResults.samples.imported} samples.
+                            <Box mt="md">
+                              <Dropzone
+                                onDrop={handleSampleFileImport}
+                                onReject={handleFileRejection}
+                                maxSize={5 * 1024 * 1024}
+                                accept={[MIME_TYPES.xlsx, MIME_TYPES.xls]}
+                                h={140}
+                                mt="md"
+                              >
+                                <Stack
+                                  align="center"
+                                  spacing="sm"
+                                  style={{ pointerEvents: "none" }}
+                                >
+                                  <Dropzone.Accept>
+                                    <IconCheck size={32} color="green" />
+                                  </Dropzone.Accept>
+                                  <Dropzone.Reject>
+                                    <IconAlertCircle size={32} color="red" />
+                                  </Dropzone.Reject>
+                                  <Dropzone.Idle>
+                                    <IconFileSpreadsheet size={32} color="green" />
+                                  </Dropzone.Idle>
+                                  <Text size="md" ta="center" fw={500}>
+                                    Drop your samples.xlsx file here
                                   </Text>
-                                )}
-                              </Box>
-                            )}
-                          </Stack>
+                                  <Text size="xs" c="dimmed" ta="center">
+                                    Or click to browse your files
+                                  </Text>
+                                </Stack>
+                              </Dropzone>
+
+                              {importResults.samples && (
+                                <Box
+                                  mt="md"
+                                  p="xs"
+                                  bg={importResults.samples.success ? "green.0" : "red.0"}
+                                  style={{ borderRadius: "4px" }}
+                                >
+                                  <Text
+                                    fw={500}
+                                    c={importResults.samples.success ? "green.8" : "red.8"}
+                                  >
+                                    {importResults.samples.message}
+                                  </Text>
+                                  {importResults.samples.imported > 0 && (
+                                    <Text
+                                      size="sm"
+                                      c={importResults.samples.success ? "green.8" : "red.8"}
+                                    >
+                                      Successfully imported {importResults.samples.imported}{" "}
+                                      samples.
+                                    </Text>
+                                  )}
+                                </Box>
+                              )}
+                            </Box>
+                          </Card>
                         </Grid.Col>
                       </Grid>
 
                       {datasetContainsSubjects && (
-                        <Group position="left" mt="md">
-                          <Button variant="outline" onClick={() => setActiveStep(0)}>
+                        <Group position="apart" mt="md">
+                          <Button variant="outline" onClick={() => setActiveImportStep(0)}>
                             Back to Subjects
                           </Button>
                         </Group>

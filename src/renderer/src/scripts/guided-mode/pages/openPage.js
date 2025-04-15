@@ -15,9 +15,9 @@ import {
   setActiveEntity,
 } from "../../../stores/slices/datasetEntitySelectorSlice.js";
 import {
-  setSpeciesList,
   setDatasetEntityArray,
   setActiveFormType,
+  setActiveImportStep,
 } from "../../../stores/slices/datasetEntityStructureSlice.js";
 import {
   setSelectedEntities,
@@ -384,7 +384,14 @@ export const openPage = async (targetPageID) => {
         setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["unstructured-data"]);
       }
 
-      if (targetPageComponentType === "dataset-entity-manual-addition-page") {
+      if (
+        targetPageComponentType === "dataset-entity-manual-addition-page" ||
+        targetPageComponentType === "dataset-entity-spreadsheet-import-page"
+      ) {
+        if (targetPageComponentType === "dataset-entity-spreadsheet-import-page") {
+          setActiveImportStep(0);
+        }
+
         const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
 
         setDatasetEntityArray(datasetEntityArray);

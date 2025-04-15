@@ -232,7 +232,10 @@ export const savePageChanges = async (pageBeingLeftID) => {
         }
       }
 
-      if (pageBeingLeftComponentType === "dataset-entity-manual-addition-page") {
+      if (
+        pageBeingLeftComponentType === "dataset-entity-manual-addition-page" ||
+        pageBeingLeftComponentType === "dataset-entity-spreadsheet-import-page"
+      ) {
         const datasetEntityArray = useGlobalStore.getState().datasetEntityArray;
 
         // Save the dataset entity object to the progress file
