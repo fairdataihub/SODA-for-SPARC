@@ -541,7 +541,7 @@ const handleStartCuration = async () => {
 
     // Set the json options for resuming a pennsieve dataset from Pennsieve
     window.sodaJSONObj["starting-point"]["origin"] = "ps";
-    window.sodaJSONObj["generate-dataset"]["generate-option"] = "existing-bf";
+    window.sodaJSONObj["generate-dataset"]["generate-option"] = "existing-ps";
     window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] = selectedPennsieveDatasetID;
     window.sodaJSONObj["digital-metadata"]["name"] = selectedPennsieveDataset;
 

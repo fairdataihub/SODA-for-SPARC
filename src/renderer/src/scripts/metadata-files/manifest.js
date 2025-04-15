@@ -1135,7 +1135,7 @@ const updateJSONStructureManifestGenerate = () => {
   if (starting_point == "ps") {
     window.sodaJSONObj["generate-dataset"] = {
       destination: "ps",
-      "generate-option": "existing-bf",
+      "generate-option": "existing-ps",
     };
   }
   if (starting_point == "local") {
@@ -1484,7 +1484,7 @@ const extractBFDatasetForManifestFile = async (editBoolean, bfaccount, bfdataset
     window.sodaJSONObj["manifest-files"] = { destination: "generate-dataset" };
     window.sodaJSONObj["generate-dataset"] = {
       destination: "ps",
-      "generate-option": "existing-bf",
+      "generate-option": "existing-ps",
     };
     window.sodaJSONObj["starting-point"] = { origin: "ps" };
 
