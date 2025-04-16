@@ -170,8 +170,8 @@ const EntityMetadataForm = () => {
     return (
       <Box mx="md">
         <Text size="lg" c="gray">
-          Click the "Add Subject" button to the left to begin structuring and adding metadata to
-          your dataset's entities.
+          Click the "Add Subject" button to the left to begin structuring and your dataset's
+          entities.
         </Text>
       </Box>
     );
@@ -182,8 +182,8 @@ const EntityMetadataForm = () => {
     return (
       <Box mx="md">
         <Text size="lg" c="gray">
-          Select an entity from the hierarchy on the left to edit its metadata or click "Add
-          Subject" to add another subject.
+          Select an entity from the hierarchy on the left to edit its metadata or click an entity
+          addition button to describe a new entity.
         </Text>
       </Box>
     );
@@ -663,27 +663,17 @@ const ManualDatasetEntityAdditionPage = () => {
       <GuidedModeSection>
         <Stack>
           <Text>
-            The SDS requires that you provide metadata for the following entities in your dataset:
+            Use the interface below to describe the structure of the data that was collected during
+            your study.
           </Text>
         </Stack>
       </GuidedModeSection>
 
       <GuidedModeSection>
-        <Text fw={600} size="lg" mb="md">
-          Entity Metadata Editor
-        </Text>
         <Grid gutter="lg">
           {/* Entity selection panel */}
           <Grid.Col span={5} style={{ position: "sticky", top: "20px" }}>
             <SodaPaper>
-              <Box mb="xs">
-                <Text fw={500} size="md">
-                  Entity Hierarchy
-                </Text>
-                <Text size="sm" c="dimmed">
-                  Select an entity to edit or use the buttons to add new entities
-                </Text>
-              </Box>
               <EntityHierarchyRenderer
                 allowEntityStructureEditing={true}
                 allowEntitySelection={true}

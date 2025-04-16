@@ -78,7 +78,7 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
       const confirmed = await swalFileListDoubleAction(
         entityList,
         `Confirm ${entityType.charAt(0).toUpperCase() + entityType.slice(1)} Import`,
-        `The following ${entityList.length} ${entityType} will be imported:`,
+        `The following ${entityList.length} ${entityType} were detected in your spreadsheet and will be imported into SODA:`,
         "Import",
         "Cancel"
       );
@@ -147,15 +147,17 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
   // Entity type config for display options with dependencies
   const entityTypeConfig = {
     subjects: {
-      title: "Import Subjects",
+      title: "Subject ID designation",
+      singularString: "subject",
       icon: <IconUser size={24} />,
       color: "blue",
-      description: "Import subject IDs and metadata from an Excel file",
+      description: "Assign unique IDs to each subject in your dataset using the template below.",
       dependsOn: [], // No dependencies - can always be imported first
       sequence: 1,
     },
     samples: {
       title: "Import Samples",
+      singularString: "sample",
       icon: <IconFlask size={24} />,
       color: "green",
       description: "Import sample IDs and metadata from an Excel file",
@@ -164,6 +166,7 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
     },
     sites: {
       title: "Import Sites",
+      singularString: "site",
       icon: <IconMapPin size={24} />,
       color: "orange",
       description: "Import site IDs and metadata from an Excel file",
@@ -191,11 +194,11 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
   };
 
   return (
-    <GuidedModePage pageHeader="Import Dataset Entities from Excel">
+    <GuidedModePage pageHeader="Designate entity IDs using spreadsheets">
       <GuidedModeSection>
         <Text mb="xl">
-          Import your dataset entities using Excel spreadsheets. Complete each step when it appears
-          to unlock the next step.
+          Follow the instructions below to import the IDs and metadata for the entities in your
+          dataset using spreadsheets.
         </Text>
 
         {/* Entity Import Sections - only show those whose dependencies are met */}
@@ -203,37 +206,18 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
           .filter((type) => entityTypes[type] && shouldShowEntityType(type))
           .sort((a, b) => entityTypeConfig[a].sequence - entityTypeConfig[b].sequence)
           .map((entityType) => (
-            <Paper
-              key={entityType}
-              shadow="xs"
-              p="lg"
-              radius="md"
-              withBorder
-              mb="xl"
-              sx={(theme) => ({
-                borderColor: importResults[entityType]?.success
-                  ? entityTypeConfig[entityType].color
-                  : undefined,
-                borderWidth: importResults[entityType]?.success ? 2 : undefined,
-                background: importResults[entityType]?.success
-                  ? `linear-gradient(to right, ${entityTypeConfig[entityType].color}.0, white)`
-                  : undefined,
-              })}
-            >
+            <Paper key={entityType} shadow="xs" p="lg" radius="md" withBorder mb="xl">
               <Stack>
-                <Group mb="xs" position="apart">
-                  <Group>
-                    {entityTypeConfig[entityType].icon}
-                    <Title order={3}>{entityTypeConfig[entityType].title}</Title>
-                  </Group>
-                </Group>
-
-                <Text mb="md">{entityTypeConfig[entityType].description}</Text>
+                <Text size="lg" fw={600}>
+                  {entityTypeConfig[entityType].title}
+                </Text>
+                {!importResults[entityType]?.success && (
+                  <Text>{entityTypeConfig[entityType].description}</Text>
+                )}
                 <Divider />
-
                 {!importResults[entityType]?.success ? (
                   // Show normal import UI for entities that can be imported
-                  <Grid gutter={32} mt="md">
+                  <Grid gutter={32} mt="sm">
                     {/* Download Template Card */}
                     <Grid.Col span={6}>
                       <Card shadow="sm" p="md" radius="md" withBorder>
@@ -244,16 +228,19 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
                           bg={`${entityTypeConfig[entityType].color}.0`}
                         >
                           <Group position="apart">
-                            <Text fw={600}>Step 1: Download Template</Text>
-                            <IconDownload size={18} color={entityTypeConfig[entityType].color} />
+                            <Text fw={600}>Step 1: Fill out the {entityType} template</Text>
                           </Group>
                         </Card.Section>
 
-                        <Box mt="md" mb="lg">
+                        <Box mt="md" mb="lg" h={130}>
                           <List type="ordered" spacing="sm" withPadding>
-                            <List.Item>Download the {entityType} template</List.Item>
-                            <List.Item>Fill in your {entityType} IDs and metadata</List.Item>
-                            <List.Item>Save the file when complete</List.Item>
+                            <List.Item>Download the {entityType}.xlsx template</List.Item>
+                            <List.Item>
+                              Assign every {entityTypeConfig[entityType].singularString} a unique ID
+                              in the {entityTypeConfig[entityType].singularString} ID column in the
+                              spreadsheet.
+                            </List.Item>
+                            <List.Item>Save the file and continue to step 2.</List.Item>
                           </List>
                         </Box>
 
@@ -280,12 +267,11 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
                           bg={`${entityTypeConfig[entityType].color}.0`}
                         >
                           <Group position="apart">
-                            <Text fw={600}>Step 2: Import Completed File</Text>
-                            <IconUpload size={18} color={entityTypeConfig[entityType].color} />
+                            <Text fw={600}>Step 2: Import Completed {entityType}.xlsx File</Text>
                           </Group>
                         </Card.Section>
 
-                        <Box mt="md">
+                        <Box mt="md" h={185}>
                           <Dropzone
                             onDrop={(files) => handleEntityFileImport(files, entityType)}
                             onReject={handleFileRejection}
@@ -311,7 +297,7 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
                                 Drop your {entityType}.xlsx file here
                               </Text>
                               <Text size="xs" c="dimmed" ta="center">
-                                Or click to browse your files
+                                Or click to import from your computer
                               </Text>
                             </Stack>
                           </Dropzone>

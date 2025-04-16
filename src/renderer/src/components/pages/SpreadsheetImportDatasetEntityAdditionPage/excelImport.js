@@ -63,7 +63,7 @@ export const entityConfigs = {
       };
     },
     saveEntity: (entity) => addSampleToSubject(entity.parentSubject, entity.id, entity.metadata),
-    formatDisplayId: (entity) => `${entity.id} (Subject: ${entity.parentSubject})`,
+    formatDisplayId: (entity) => `${entity.id}`,
     templateFileName: "samples.xlsx",
   },
 

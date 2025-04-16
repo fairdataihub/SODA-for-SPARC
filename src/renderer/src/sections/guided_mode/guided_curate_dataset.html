@@ -822,17 +822,40 @@
           class="guided--page"
           data-component-type="dataset-content-selector"
         ></div>
+
+        <div
+          id="data-categorization-tab"
+          data-page-name="Data Categorization"
+          class="guided--page"
+          data-component-type="data-categorization-page"
+          data-entity-type="categorized-data"
+          data-entity-type-string-singular="Data category"
+          data-entity-type-string-plural="Select category"
+          data-entity-type-prefix=""
+          data-show-progress="true"
+        ></div>
         <div
           id="guided-entity-addition-method-selection-tab"
           data-page-name="Entity addition method"
           class="guided--page"
         >
           <div class="guided--section">
-            <label class="guided--form-label centered mb-4"
-              >Select the task you would like to perform below:
-            </label>
+            <h1 class="text-sub-step-title">Entity addition method</h1>
+            <p class="help-text">
+              In order to get a better understanding of your experimental setup, you will be
+              required to assign IDs to every entity in your dataset (e.g. subjects and samples).
+              You can either enter these IDs manually in the SODA UI or import them from a
+              spreadsheet. <br /><br /><b>Note:</b> For datasets with a large number of entities,
+              importing from a spreadsheet is recommended to avoid having to write them out
+              manually.
+            </p>
+          </div>
 
-            <div class="guided--radio-button-container mt-4">
+          <div class="guided--section">
+            <label class="guided--form-label centered"
+              >How would you like to assign IDs to the entities in your dataset?
+            </label>
+            <div class="guided--radio-button-container">
               <button
                 class="guided--radio-button tile-button"
                 id="guided-button-add-entities-via-spreadsheet"
@@ -844,7 +867,7 @@
                   <div data-component-type="icon" data-icon-type="spreadsheet-import"></div>
                 </div>
                 <div class="tile-button-text">
-                  <h2>Import entities via a spreadsheet</h2>
+                  <h2>Import entity IDs using a spreadsheet</h2>
                 </div>
               </button>
               <button
@@ -858,7 +881,7 @@
                   <div data-component-type="icon" data-icon-type="keyboard"></div>
                 </div>
                 <div class="tile-button-text">
-                  <h2>Enter entity within the SODA UI</h2>
+                  <h2>Enter entity IDs manually in the SODA UI</h2>
                 </div>
               </button>
             </div>
@@ -872,23 +895,9 @@
         ></div>
         <div
           id="guided-spreadsheet-import-dataset-entity-and-metadata-tab"
-          data-page-name="Import entities from spreadsheet"
+          data-page-name="Designate entity IDs using spreadsheets"
           class="guided--page"
           data-component-type="dataset-entity-spreadsheet-import-page"
-        >
-          asdf
-        </div>
-
-        <div
-          id="data-categorization-tab"
-          data-page-name="Data Categorization"
-          class="guided--page"
-          data-component-type="data-categorization-page"
-          data-entity-type="categorized-data"
-          data-entity-type-string-singular="Data category"
-          data-entity-type-string-plural="Select category"
-          data-entity-type-prefix=""
-          data-show-progress="true"
         ></div>
 
         <div
@@ -902,33 +911,6 @@
           data-entity-type-prefix="perf-"
         ></div>
 
-        <div
-          id="guided-entity-selection-tab"
-          data-page-name="Dataset entity file association"
-          class="guided--page"
-          data-component-type="entity-file-mapping-page"
-        ></div>
-        <div
-          id="guided-sites-entity-selection-tab"
-          data-page-name="Sites file association"
-          class="guided--page"
-          data-component-type="entity-file-mapping-page"
-          data-entity-type="sites"
-        ></div>
-        <div
-          id="guided-samples-entity-selection-tab"
-          data-page-name="Samples file association"
-          class="guided--page"
-          data-component-type="entity-file-mapping-page"
-          data-entity-type="samples"
-        ></div>
-        <div
-          id="guided-subjects-entity-selection-tab"
-          data-page-name="Subjects file association"
-          class="guided--page"
-          data-component-type="entity-file-mapping-page"
-          data-entity-type="subjects"
-        ></div>
         <div
           id="guided-sites-selection-tab"
           data-page-name="Sites data selection"

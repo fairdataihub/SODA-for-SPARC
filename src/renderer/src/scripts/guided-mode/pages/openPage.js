@@ -356,10 +356,23 @@ export const openPage = async (targetPageID) => {
 
         if (pageEntityType === "subjects") {
           const subjects = getExistingSubjectIds();
+          const samples = getExistingSampleIds();
           for (const subject of subjects) {
             addEntityToEntityList("subjects", subject);
           }
-          setEntityFilter([{ type: "categorized-data", names: ["Experimental data"] }], []);
+          // Exclude all of the samples from the subject filter
+          // Exclude all samples with a single filter
+          const sampleFilter = [
+            {
+              type: "samples",
+              names: samples, // Pass the entire array of sample IDs
+            },
+          ];
+
+          setEntityFilter(
+            [{ type: "categorized-data", names: ["Experimental data"] }],
+            sampleFilter
+          );
         }
 
         if (pageEntityType === "performances") {
@@ -429,6 +442,15 @@ export const openPage = async (targetPageID) => {
       );
 
       importProgressCircle.classList.add("hidden");
+    }
+
+    if (targetPageID === "guided-entity-addition-method-selection-tab") {
+      const datasetHasSamples = (window.sodaJSONObj["selected-entities"] || []).includes("samples");
+      if (datasetHasSamples) {
+        // document.getElementById("and-samples-span").classList.remove("hidden");
+      } else {
+        // document.getElementById("and-samples-span").classList.add("hidden");
+      }
     }
 
     await openPageCurationPreparation(targetPageID);
