@@ -17,6 +17,9 @@ import {
 import {
   setDatasetEntityArray,
   setActiveFormType,
+  getExistingSubjectIds,
+  getExistingSampleIds,
+  getExistingSiteIds,
 } from "../../../stores/slices/datasetEntityStructureSlice.js";
 import {
   setSelectedEntities,
@@ -332,6 +335,31 @@ export const openPage = async (targetPageID) => {
           for (const bucketType of bucketTypes) {
             addEntityToEntityList("categorized-data", bucketType);
           }
+        }
+
+        if (pageEntityType === "sites") {
+          const sites = getExistingSiteIds();
+          console.log("Found sites", sites);
+          for (const site of sites) {
+            addEntityToEntityList("sites", site);
+          }
+          setEntityFilter([{ type: "categorized-data", names: ["Experimental data"] }], []);
+        }
+
+        if (pageEntityType === "samples") {
+          const samples = getExistingSampleIds();
+          for (const sample of samples) {
+            addEntityToEntityList("samples", sample);
+          }
+          setEntityFilter([{ type: "categorized-data", names: ["Experimental data"] }], []);
+        }
+
+        if (pageEntityType === "subjects") {
+          const subjects = getExistingSubjectIds();
+          for (const subject of subjects) {
+            addEntityToEntityList("subjects", subject);
+          }
+          setEntityFilter([{ type: "categorized-data", names: ["Experimental data"] }], []);
         }
 
         if (pageEntityType === "performances") {

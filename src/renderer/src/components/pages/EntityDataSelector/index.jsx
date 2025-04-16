@@ -90,12 +90,7 @@ const renderEntityList = (entityType, activeEntity, datasetEntityObj) => {
   if (!datasetEntityObj?.[entityType]) return null;
 
   return naturalSort(Object.keys(datasetEntityObj[entityType])).map((entity) => {
-    // Calculate file count using Object.keys().length for the map structure
-    const entityItemsCount = datasetEntityObj[entityType][entity]
-      ? Object.keys(datasetEntityObj[entityType][entity]).length
-      : 0;
     const isActive = entity === activeEntity;
-
     // Check if search icon should be shown for specific entities
     const showSearchIcon = ENTITY_PREFIXES.some((prefix) => entity.startsWith(prefix));
 
@@ -305,7 +300,7 @@ const EntityDataSelectorPage = ({
                 />
               </Paper>
             ) : (
-              <Box p="sm">
+              <Box>
                 <Text size="xl" c="gray">
                   Select an item from the {entityTypeStringSingular} list on the left to map files
                   to it.

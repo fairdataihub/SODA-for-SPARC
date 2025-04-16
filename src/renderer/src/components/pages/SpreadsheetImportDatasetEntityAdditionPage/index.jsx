@@ -192,9 +192,6 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
 
   return (
     <GuidedModePage pageHeader="Import Dataset Entities from Excel">
-      <GuidedModeSection>{getExistingSubjectIds().length > 0 && <text>hi</text>}</GuidedModeSection>
-      <GuidedModeSection>{getExistingSampleIds().length > 0 && <text>hi</text>}</GuidedModeSection>
-      <GuidedModeSection>{getExistingSiteIds().length > 0 && <text>hi</text>}</GuidedModeSection>
       <GuidedModeSection>
         <Text mb="xl">
           Import your dataset entities using Excel spreadsheets. Complete each step when it appears
@@ -345,8 +342,8 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
                         <Group spacing="xs">
                           <Button
                             compact
-                            variant="subtle"
-                            color="red"
+                            variant="light"
+                            color="blue"
                             onClick={() =>
                               swalConfirmAction(
                                 "warning",
@@ -361,7 +358,7 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
                               })
                             }
                           >
-                            Replace
+                            Re-import {entityType}
                           </Button>
                         </Group>
                       </Group>

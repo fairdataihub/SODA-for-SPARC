@@ -379,12 +379,6 @@ const EntityHierarchyRenderer = ({
     [selectedEntities]
   );
 
-  if (onlyRenderEntityType) {
-    // Filter the datasetEntityArray to only include the specified entity type
-    //const entitiesToRender = getEntitiesArrayByType(onlyRenderEntityType);
-    return <div>onlyRenderEntityType</div>;
-  }
-
   // Main component render - displays the full entity hierarchy with appropriate controls
   return (
     <Stack gap="xs">
