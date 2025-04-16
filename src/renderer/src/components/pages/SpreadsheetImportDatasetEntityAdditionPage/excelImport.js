@@ -4,8 +4,7 @@ import {
   addSampleToSubject,
   addSiteToSubject,
   addSiteToSample,
-  addPerformanceToSubject,
-  addPerformanceToSample,
+  normalizeEntityId,
 } from "../../../stores/slices/datasetEntityStructureSlice";
 
 /**
@@ -31,7 +30,7 @@ export const readExcelFile = (file) => {
 };
 
 /**
- * Entity type configurations - using the four main entity types
+ * Entity type configurations - using the three main entity types
  */
 export const entityConfigs = {
   subjects: {
@@ -53,10 +52,9 @@ export const entityConfigs = {
     prefix: "sam-",
     requiredFields: ["sample id", "subject id"],
     formatEntity: (item, id) => {
-      let subjectId = item["subject id"];
-      if (!subjectId.startsWith("sub-")) {
-        subjectId = `sub-${subjectId}`;
-      }
+      // Normalize the subject ID using the imported function
+      const subjectId = normalizeEntityId("sub-", item["subject id"]);
+
       return {
         id,
         type: "sample",
@@ -75,11 +73,8 @@ export const entityConfigs = {
     requiredFields: ["site id", "subject id"],
     optionalFields: ["sample id"],
     formatEntity: (item, id) => {
-      // Format parent IDs
-      let subjectId = item["subject id"];
-      if (!subjectId.startsWith("sub-")) {
-        subjectId = `sub-${subjectId}`;
-      }
+      // Normalize parent IDs consistently using the imported function
+      const subjectId = normalizeEntityId("sub-", item["subject id"]);
 
       // Create base entity with subject parent
       const entity = {
@@ -91,10 +86,7 @@ export const entityConfigs = {
 
       // Add sample parent if it exists
       if (item["sample id"]) {
-        let sampleId = item["sample id"];
-        if (!sampleId.startsWith("sam-")) {
-          sampleId = `sam-${sampleId}`;
-        }
+        const sampleId = normalizeEntityId("sam-", item["sample id"]);
         entity.parentSample = sampleId;
         entity.metadata["sample id"] = sampleId;
       }
@@ -117,61 +109,6 @@ export const entityConfigs = {
       return `${entity.id} (Subject: ${entity.parentSubject})`;
     },
     templateFileName: "sites.xlsx",
-  },
-
-  performances: {
-    idField: "performance id",
-    prefix: "perf-",
-    requiredFields: ["performance id", "subject id"],
-    optionalFields: ["sample id"],
-    formatEntity: (item, id) => {
-      // Format parent IDs
-      let subjectId = item["subject id"];
-      if (!subjectId.startsWith("sub-")) {
-        subjectId = `sub-${subjectId}`;
-      }
-
-      // Create base entity with subject parent
-      const entity = {
-        id,
-        type: "performance",
-        parentSubject: subjectId,
-        metadata: { ...item, "performance id": id, "subject id": subjectId },
-      };
-
-      // Add sample parent if it exists
-      if (item["sample id"]) {
-        let sampleId = item["sample id"];
-        if (!sampleId.startsWith("sam-")) {
-          sampleId = `sam-${sampleId}`;
-        }
-        entity.parentSample = sampleId;
-        entity.metadata["sample id"] = sampleId;
-      }
-
-      return entity;
-    },
-    saveEntity: (entity) => {
-      if (entity.parentSample) {
-        // Performance belongs to a sample
-        addPerformanceToSample(
-          entity.parentSubject,
-          entity.parentSample,
-          entity.id,
-          entity.metadata
-        );
-      } else {
-        // Performance belongs directly to a subject
-        addPerformanceToSubject(entity.parentSubject, entity.id, entity.metadata);
-      }
-    },
-    formatDisplayId: (entity) => {
-      if (entity.parentSample) {
-        return `${entity.id} (Sample: ${entity.parentSample}, Subject: ${entity.parentSubject})`;
-      }
-      return `${entity.id} (Subject: ${entity.parentSubject})`;
-    },
-    templateFileName: "performances.xlsx",
   },
 };
 
@@ -210,15 +147,18 @@ export const processEntityData = (rawData, entityType) => {
     };
   }
 
-  // Format the entities using the config's format function
+  // Format the entities using the config's format function and normalized IDs
   const entities = rawData.map((item) => {
-    // Add prefix if missing
-    let id = item[idField];
-    if (!id.startsWith(prefix)) {
-      id = `${prefix}${id}`;
+    // Get the original ID and normalize it
+    const originalId = item[idField];
+    const normalizedId = normalizeEntityId(prefix, originalId);
+
+    // For debugging - log if there's a potential issue with normalization
+    if (normalizedId && normalizedId.toLowerCase().includes(prefix.toLowerCase().repeat(2))) {
+      console.warn(`Potential ID normalization issue: ${originalId} -> ${normalizedId}`);
     }
 
-    return config.formatEntity(item, id);
+    return config.formatEntity(item, normalizedId);
   });
 
   return {
@@ -273,11 +213,13 @@ export const saveEntities = (entities, entityType) => {
 
   let importedCount = 0;
   const errors = [];
+  const savedEntities = [];
 
   for (const entity of entities) {
     try {
       config.saveEntity(entity);
       importedCount++;
+      savedEntities.push(entity);
     } catch (error) {
       errors.push(`Failed to import ${entity.id}: ${error.message}`);
     }
@@ -290,5 +232,6 @@ export const saveEntities = (entities, entityType) => {
       : `Successfully imported ${importedCount} ${entityType}`,
     imported: importedCount,
     errors: errors.length ? errors : undefined,
+    entities: savedEntities,
   };
 };

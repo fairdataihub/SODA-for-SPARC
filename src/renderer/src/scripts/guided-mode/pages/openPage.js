@@ -17,7 +17,6 @@ import {
 import {
   setDatasetEntityArray,
   setActiveFormType,
-  setActiveImportStep,
 } from "../../../stores/slices/datasetEntityStructureSlice.js";
 import {
   setSelectedEntities,
@@ -388,10 +387,6 @@ export const openPage = async (targetPageID) => {
         targetPageComponentType === "dataset-entity-manual-addition-page" ||
         targetPageComponentType === "dataset-entity-spreadsheet-import-page"
       ) {
-        if (targetPageComponentType === "dataset-entity-spreadsheet-import-page") {
-          setActiveImportStep(0);
-        }
-
         const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
 
         setDatasetEntityArray(datasetEntityArray);

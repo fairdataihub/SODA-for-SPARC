@@ -4,13 +4,12 @@ import GuidedModeSection from "../../containers/GuidedModeSection";
 import {
   IconUser,
   IconFlask,
+  IconMapPin,
   IconFileSpreadsheet,
   IconAlertCircle,
   IconCheck,
-  IconArrowRight,
   IconDownload,
   IconUpload,
-  IconCircleArrowRight,
 } from "@tabler/icons-react";
 import {
   Text,
@@ -22,33 +21,38 @@ import {
   Box,
   Title,
   Divider,
-  Stepper,
   List,
   Card,
 } from "@mantine/core";
 import { Dropzone, MIME_TYPES } from "@mantine/dropzone";
 import useGlobalStore from "../../../stores/globalStore";
 import { importEntitiesFromExcel, entityConfigs, saveEntities } from "./excelImport";
-import { setActiveImportStep } from "../../../stores/slices/datasetEntityStructureSlice";
-import { swalFileListDoubleAction } from "../../../scripts/utils/swal-utils";
+import { swalFileListDoubleAction, swalConfirmAction } from "../../../scripts/utils/swal-utils";
+import {
+  getExistingSubjectIds,
+  getExistingSampleIds,
+  getExistingSiteIds,
+} from "../../../stores/slices/datasetEntityStructureSlice";
+import { normalizeEntityId } from "../../../stores/slices/datasetEntityStructureSlice";
+import { get } from "jquery";
 
 const SpreadsheetImportDatasetEntityAdditionPage = () => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
-  const activeStep = useGlobalStore((state) => state.activeImportStep);
   const [importResults, setImportResults] = useState({
     subjects: null,
     samples: null,
+    sites: null,
   });
 
-  const datasetContainsSubjects = selectedEntities?.includes("subjects");
-  const datasetContainsSamples = selectedEntities?.includes("samples");
-  const datasetContainsSites = selectedEntities?.includes("sites");
-  const datasetContainsPerformances = selectedEntities?.includes("performances");
+  // Check which entity types are enabled for this dataset
+  const entityTypes = {
+    subjects: selectedEntities?.includes("subjects"),
+    samples: selectedEntities?.includes("samples"),
+    sites: selectedEntities?.includes("sites"),
+  };
 
   /**
    * Generic entity import handler
-   * @param {File[]} files - Dropped files
-   * @param {string} entityType - Type of entity to import (e.g., 'subjects', 'samples')
    */
   const handleEntityFileImport = async (files, entityType) => {
     if (!files?.length) return;
@@ -60,7 +64,7 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
     }
 
     try {
-      // Step 1: Process file and get formatted entities
+      // Process file and get formatted entities
       const result = await importEntitiesFromExcel(files[0], entityType);
 
       if (!result.success) {
@@ -68,7 +72,7 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
         return;
       }
 
-      // Step 2: Show confirmation with processed entities
+      // Show confirmation with processed entities
       const entityList = result.entities.map((entity) => config.formatDisplayId(entity));
 
       const confirmed = await swalFileListDoubleAction(
@@ -84,18 +88,12 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
         return;
       }
 
-      // Step 3: Save the entities to the data store
+      // Save the entities to the data store
       const saveResult = saveEntities(result.entities, entityType);
       setImportResults((prev) => ({ ...prev, [entityType]: saveResult }));
 
       if (saveResult.success) {
         window.notyf.success(saveResult.message);
-
-        // Automatic navigation to next step (if applicable)
-        // This is specific to subjects & samples
-        if (entityType === "subjects" && datasetContainsSamples) {
-          setActiveImportStep(1);
-        }
       } else {
         window.notyf.error(saveResult.message);
       }
@@ -103,10 +101,6 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
       window.notyf.error(`Error importing ${entityType}: ${error.message}`);
     }
   };
-
-  // Update the handlers to use the generic function
-  const handleSubjectFileImport = (files) => handleEntityFileImport(files, "subjects");
-  const handleSampleFileImport = (files) => handleEntityFileImport(files, "samples");
 
   // Download template
   const handleDownloadTemplate = (entityType) => {
@@ -123,15 +117,12 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
     }
   };
 
-  const handleFileRejection = (files) => {
-    window.notyf.open({
-      type: "error",
-      message: "Invalid file format. Please upload an Excel file (.xlsx or .xls)",
-      duration: 5000,
-    });
+  const handleFileRejection = () => {
+    window.notyf.error("Invalid file format. Please upload an Excel file (.xlsx or .xls)");
   };
 
   useEffect(() => {
+    // Bind IPC event listeners for template downloads
     const handleFolderSelected = (event, path, filename) => {
       console.log("Selected folder:", path);
       console.log("Template to download:", filename);
@@ -153,272 +144,233 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
     };
   }, []);
 
-  const steps = [];
-  if (datasetContainsSubjects) {
-    steps.push({ title: "Import Subjects", icon: <IconUser size={18} /> });
-  }
-  if (datasetContainsSamples) {
-    steps.push({ title: "Import Samples", icon: <IconFlask size={18} color="#74b816" /> });
-  }
+  // Entity type config for display options with dependencies
+  const entityTypeConfig = {
+    subjects: {
+      title: "Import Subjects",
+      icon: <IconUser size={24} />,
+      color: "blue",
+      description: "Import subject IDs and metadata from an Excel file",
+      dependsOn: [], // No dependencies - can always be imported first
+      sequence: 1,
+    },
+    samples: {
+      title: "Import Samples",
+      icon: <IconFlask size={24} />,
+      color: "green",
+      description: "Import sample IDs and metadata from an Excel file",
+      dependsOn: ["subjects"], // Depends on subjects being imported first
+      sequence: 2,
+    },
+    sites: {
+      title: "Import Sites",
+      icon: <IconMapPin size={24} />,
+      color: "orange",
+      description: "Import site IDs and metadata from an Excel file",
+      dependsOn: ["subjects", "samples"], // Depends on both subjects and samples
+      sequence: 3,
+    },
+  };
+
+  // Enhanced dependency check that considers if an entity type should be shown
+  const shouldShowEntityType = (entityType) => {
+    const dependencies = entityTypeConfig[entityType].dependsOn;
+
+    // If no dependencies, always show
+    if (!dependencies || dependencies.length === 0) return true;
+
+    // For each dependency, check if it's been successfully imported
+    for (const dep of dependencies) {
+      // If dependency isn't successfully imported, don't show this entity type
+      if (!(importResults[dep]?.success && importResults[dep]?.imported > 0)) {
+        return false;
+      }
+    }
+
+    return true; // All dependencies are met
+  };
 
   return (
     <GuidedModePage pageHeader="Import Dataset Entities from Excel">
+      <GuidedModeSection>{getExistingSubjectIds().length > 0 && <text>hi</text>}</GuidedModeSection>
+      <GuidedModeSection>{getExistingSampleIds().length > 0 && <text>hi</text>}</GuidedModeSection>
+      <GuidedModeSection>{getExistingSiteIds().length > 0 && <text>hi</text>}</GuidedModeSection>
       <GuidedModeSection>
-        <Stepper
-          active={activeStep}
-          onStepClick={(index) => setActiveImportStep(index)}
-          breakpoint="sm"
-          mb="lg"
-        >
-          {steps.map((step, index) => (
-            <Stepper.Step
-              key={index}
-              label={step.title}
-              icon={step.icon}
-              completedIcon={<IconCheck size={18} />}
+        <Text mb="xl">
+          Import your dataset entities using Excel spreadsheets. Complete each step when it appears
+          to unlock the next step.
+        </Text>
+
+        {/* Entity Import Sections - only show those whose dependencies are met */}
+        {Object.keys(entityTypes)
+          .filter((type) => entityTypes[type] && shouldShowEntityType(type))
+          .sort((a, b) => entityTypeConfig[a].sequence - entityTypeConfig[b].sequence)
+          .map((entityType) => (
+            <Paper
+              key={entityType}
+              shadow="xs"
+              p="lg"
+              radius="md"
+              withBorder
+              mb="xl"
+              sx={(theme) => ({
+                borderColor: importResults[entityType]?.success
+                  ? entityTypeConfig[entityType].color
+                  : undefined,
+                borderWidth: importResults[entityType]?.success ? 2 : undefined,
+                background: importResults[entityType]?.success
+                  ? `linear-gradient(to right, ${entityTypeConfig[entityType].color}.0, white)`
+                  : undefined,
+              })}
             >
-              <Paper shadow="xs" p="xl" withBorder>
-                <Stack spacing="xl">
-                  {index === 0 && datasetContainsSubjects && (
-                    <Stack spacing="lg">
-                      <Title order={4} mb={0}>
-                        Import Subjects
-                      </Title>
-                      <Divider />
+              <Stack>
+                <Group mb="xs" position="apart">
+                  <Group>
+                    {entityTypeConfig[entityType].icon}
+                    <Title order={3}>{entityTypeConfig[entityType].title}</Title>
+                  </Group>
+                </Group>
 
-                      <Grid gutter={32}>
-                        <Grid.Col span={6}>
-                          <Card shadow="sm" p="md" radius="md" withBorder>
-                            <Card.Section withBorder inheritPadding py="xs" bg="blue.0">
-                              <Group position="apart">
-                                <Text fw={600}>Step 1: Download Template</Text>
-                                <IconDownload size={18} color="blue" />
-                              </Group>
-                            </Card.Section>
+                <Text mb="md">{entityTypeConfig[entityType].description}</Text>
+                <Divider />
 
-                            <Box mt="md" mb="lg">
-                              <List type="ordered" spacing="sm" withPadding>
-                                <List.Item>Download the subjects template spreadsheet</List.Item>
-                                <List.Item>Fill in your subject IDs and metadata</List.Item>
-                                <List.Item>Save the file when complete</List.Item>
-                              </List>
-                            </Box>
+                {!importResults[entityType]?.success ? (
+                  // Show normal import UI for entities that can be imported
+                  <Grid gutter={32} mt="md">
+                    {/* Download Template Card */}
+                    <Grid.Col span={6}>
+                      <Card shadow="sm" p="md" radius="md" withBorder>
+                        <Card.Section
+                          withBorder
+                          inheritPadding
+                          py="xs"
+                          bg={`${entityTypeConfig[entityType].color}.0`}
+                        >
+                          <Group position="apart">
+                            <Text fw={600}>Step 1: Download Template</Text>
+                            <IconDownload size={18} color={entityTypeConfig[entityType].color} />
+                          </Group>
+                        </Card.Section>
 
-                            <Button
-                              fullWidth
-                              leftIcon={<IconDownload size={16} />}
-                              variant="light"
-                              onClick={() => handleDownloadTemplate("subjects")}
-                            >
-                              Download subjects.xlsx
-                            </Button>
-                          </Card>
-                        </Grid.Col>
+                        <Box mt="md" mb="lg">
+                          <List type="ordered" spacing="sm" withPadding>
+                            <List.Item>Download the {entityType} template</List.Item>
+                            <List.Item>Fill in your {entityType} IDs and metadata</List.Item>
+                            <List.Item>Save the file when complete</List.Item>
+                          </List>
+                        </Box>
 
-                        <Grid.Col span={6}>
-                          <Card shadow="sm" p="md" radius="md" withBorder>
-                            <Card.Section withBorder inheritPadding py="xs" bg="green.0">
-                              <Group position="apart">
-                                <Text fw={600}>Step 2: Import Completed File</Text>
-                                <IconUpload size={18} color="green" />
-                              </Group>
-                            </Card.Section>
+                        <Button
+                          fullWidth
+                          leftIcon={<IconDownload size={16} />}
+                          variant="light"
+                          color={entityTypeConfig[entityType].color}
+                          onClick={() => handleDownloadTemplate(entityType)}
+                        >
+                          Download{" "}
+                          {entityConfigs[entityType]?.templateFileName || `${entityType}.xlsx`}
+                        </Button>
+                      </Card>
+                    </Grid.Col>
 
-                            <Box mt="md">
-                              <Dropzone
-                                onDrop={handleSubjectFileImport}
-                                onReject={handleFileRejection}
-                                maxSize={5 * 1024 * 1024}
-                                accept={[MIME_TYPES.xlsx, MIME_TYPES.xls]}
-                                h={140}
-                                mt="md"
-                              >
-                                <Stack
-                                  align="center"
-                                  spacing="sm"
-                                  style={{ pointerEvents: "none" }}
-                                >
-                                  <Dropzone.Accept>
-                                    <IconCheck size={32} color="green" />
-                                  </Dropzone.Accept>
-                                  <Dropzone.Reject>
-                                    <IconAlertCircle size={32} color="red" />
-                                  </Dropzone.Reject>
-                                  <Dropzone.Idle>
-                                    <IconFileSpreadsheet size={32} color="blue" />
-                                  </Dropzone.Idle>
-                                  <Text size="md" ta="center" fw={500}>
-                                    Drop your subjects.xlsx file here
-                                  </Text>
-                                  <Text size="xs" c="dimmed" ta="center">
-                                    Or click to browse your files
-                                  </Text>
-                                </Stack>
-                              </Dropzone>
+                    {/* Import File Card */}
+                    <Grid.Col span={6}>
+                      <Card shadow="sm" p="md" radius="md" withBorder>
+                        <Card.Section
+                          withBorder
+                          inheritPadding
+                          py="xs"
+                          bg={`${entityTypeConfig[entityType].color}.0`}
+                        >
+                          <Group position="apart">
+                            <Text fw={600}>Step 2: Import Completed File</Text>
+                            <IconUpload size={18} color={entityTypeConfig[entityType].color} />
+                          </Group>
+                        </Card.Section>
 
-                              {importResults.subjects && (
-                                <Box
-                                  mt="md"
-                                  p="xs"
-                                  bg={importResults.subjects.success ? "green.0" : "red.0"}
-                                  style={{ borderRadius: "4px" }}
-                                >
-                                  <Text
-                                    fw={500}
-                                    c={importResults.subjects.success ? "green.8" : "red.8"}
-                                  >
-                                    {importResults.subjects.message}
-                                  </Text>
-                                  {importResults.subjects.imported > 0 && (
-                                    <Text
-                                      size="sm"
-                                      c={importResults.subjects.success ? "green.8" : "red.8"}
-                                    >
-                                      Successfully imported {importResults.subjects.imported}{" "}
-                                      subjects.
-                                    </Text>
-                                  )}
-                                </Box>
-                              )}
-                            </Box>
-                          </Card>
-                        </Grid.Col>
-                      </Grid>
-
-                      {datasetContainsSamples && (
-                        <Group position="right" mt="md">
-                          <Button
-                            rightIcon={<IconCircleArrowRight size={16} />}
-                            onClick={() => setActiveImportStep(1)}
-                            disabled={!importResults.subjects?.success}
+                        <Box mt="md">
+                          <Dropzone
+                            onDrop={(files) => handleEntityFileImport(files, entityType)}
+                            onReject={handleFileRejection}
+                            maxSize={5 * 1024 * 1024}
+                            accept={[MIME_TYPES.xlsx, MIME_TYPES.xls]}
+                            h={140}
+                            mt="md"
                           >
-                            Continue to Samples
+                            <Stack align="center" spacing="sm" style={{ pointerEvents: "none" }}>
+                              <Dropzone.Accept>
+                                <IconCheck size={32} color={entityTypeConfig[entityType].color} />
+                              </Dropzone.Accept>
+                              <Dropzone.Reject>
+                                <IconAlertCircle size={32} color="red" />
+                              </Dropzone.Reject>
+                              <Dropzone.Idle>
+                                <IconFileSpreadsheet
+                                  size={32}
+                                  color={entityTypeConfig[entityType].color}
+                                />
+                              </Dropzone.Idle>
+                              <Text size="md" ta="center" fw={500}>
+                                Drop your {entityType}.xlsx file here
+                              </Text>
+                              <Text size="xs" c="dimmed" ta="center">
+                                Or click to browse your files
+                              </Text>
+                            </Stack>
+                          </Dropzone>
+
+                          {importResults[entityType] && !importResults[entityType].success && (
+                            <Box mt="md" p="xs" bg="red.0" style={{ borderRadius: "4px" }}>
+                              <Text fw={500} c="red.8">
+                                {importResults[entityType].message}
+                              </Text>
+                            </Box>
+                          )}
+                        </Box>
+                      </Card>
+                    </Grid.Col>
+                  </Grid>
+                ) : (
+                  // Simplified success UI
+                  <Box mt="md">
+                    <Paper p="md" radius="md" withBorder bg="green.0">
+                      <Group position="apart" align="center">
+                        <Group spacing="md">
+                          <IconCheck size={20} color="green" />
+                          <Text fw={600}>
+                            {importResults[entityType].imported} {entityType} imported successfully
+                          </Text>
+                        </Group>
+
+                        <Group spacing="xs">
+                          <Button
+                            compact
+                            variant="subtle"
+                            color="red"
+                            onClick={() =>
+                              swalConfirmAction(
+                                "warning",
+                                "Replace imported data?",
+                                `This will remove the existing ${importResults[entityType].imported} ${entityType} and let you import new ones.`,
+                                "Replace",
+                                "Cancel"
+                              ).then((confirmed) => {
+                                if (confirmed) {
+                                  setImportResults((prev) => ({ ...prev, [entityType]: null }));
+                                }
+                              })
+                            }
+                          >
+                            Replace
                           </Button>
                         </Group>
-                      )}
-                    </Stack>
-                  )}
-
-                  {datasetContainsSamples && index === (datasetContainsSubjects ? 1 : 0) && (
-                    <Stack spacing="lg">
-                      <Title order={4} mb={0}>
-                        Import Samples
-                      </Title>
-                      <Divider />
-
-                      <Grid gutter={32}>
-                        <Grid.Col span={6}>
-                          <Card shadow="sm" p="md" radius="md" withBorder>
-                            <Card.Section withBorder inheritPadding py="xs" bg="blue.0">
-                              <Group position="apart">
-                                <Text fw={600}>Step 1: Download Template</Text>
-                                <IconDownload size={18} color="blue" />
-                              </Group>
-                            </Card.Section>
-
-                            <Box mt="md" mb="lg">
-                              <List type="ordered" spacing="sm" withPadding>
-                                <List.Item>Download the samples template spreadsheet</List.Item>
-                                <List.Item>Fill in your sample IDs and metadata</List.Item>
-                                <List.Item>Save the file when complete</List.Item>
-                              </List>
-                            </Box>
-
-                            <Button
-                              fullWidth
-                              leftIcon={<IconDownload size={16} />}
-                              variant="light"
-                              onClick={() => handleDownloadTemplate("samples")}
-                            >
-                              Download samples.xlsx
-                            </Button>
-                          </Card>
-                        </Grid.Col>
-
-                        <Grid.Col span={6}>
-                          <Card shadow="sm" p="md" radius="md" withBorder>
-                            <Card.Section withBorder inheritPadding py="xs" bg="green.0">
-                              <Group position="apart">
-                                <Text fw={600}>Step 2: Import Completed File</Text>
-                                <IconUpload size={18} color="green" />
-                              </Group>
-                            </Card.Section>
-
-                            <Box mt="md">
-                              <Dropzone
-                                onDrop={handleSampleFileImport}
-                                onReject={handleFileRejection}
-                                maxSize={5 * 1024 * 1024}
-                                accept={[MIME_TYPES.xlsx, MIME_TYPES.xls]}
-                                h={140}
-                                mt="md"
-                              >
-                                <Stack
-                                  align="center"
-                                  spacing="sm"
-                                  style={{ pointerEvents: "none" }}
-                                >
-                                  <Dropzone.Accept>
-                                    <IconCheck size={32} color="green" />
-                                  </Dropzone.Accept>
-                                  <Dropzone.Reject>
-                                    <IconAlertCircle size={32} color="red" />
-                                  </Dropzone.Reject>
-                                  <Dropzone.Idle>
-                                    <IconFileSpreadsheet size={32} color="green" />
-                                  </Dropzone.Idle>
-                                  <Text size="md" ta="center" fw={500}>
-                                    Drop your samples.xlsx file here
-                                  </Text>
-                                  <Text size="xs" c="dimmed" ta="center">
-                                    Or click to browse your files
-                                  </Text>
-                                </Stack>
-                              </Dropzone>
-
-                              {importResults.samples && (
-                                <Box
-                                  mt="md"
-                                  p="xs"
-                                  bg={importResults.samples.success ? "green.0" : "red.0"}
-                                  style={{ borderRadius: "4px" }}
-                                >
-                                  <Text
-                                    fw={500}
-                                    c={importResults.samples.success ? "green.8" : "red.8"}
-                                  >
-                                    {importResults.samples.message}
-                                  </Text>
-                                  {importResults.samples.imported > 0 && (
-                                    <Text
-                                      size="sm"
-                                      c={importResults.samples.success ? "green.8" : "red.8"}
-                                    >
-                                      Successfully imported {importResults.samples.imported}{" "}
-                                      samples.
-                                    </Text>
-                                  )}
-                                </Box>
-                              )}
-                            </Box>
-                          </Card>
-                        </Grid.Col>
-                      </Grid>
-
-                      {datasetContainsSubjects && (
-                        <Group position="apart" mt="md">
-                          <Button variant="outline" onClick={() => setActiveImportStep(0)}>
-                            Back to Subjects
-                          </Button>
-                        </Group>
-                      )}
-                    </Stack>
-                  )}
-                </Stack>
-              </Paper>
-            </Stepper.Step>
+                      </Group>
+                    </Paper>
+                  </Box>
+                )}
+              </Stack>
+            </Paper>
           ))}
-        </Stepper>
       </GuidedModeSection>
     </GuidedModePage>
   );

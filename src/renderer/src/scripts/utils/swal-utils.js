@@ -109,6 +109,34 @@ export const swalFileListSingleAction = async (fileList, title, helpText, postAc
   });
 };
 
+export const swalFileListDisplayOnly = async (fileList, title, helpText) => {
+  await Swal.fire({
+    title: title,
+    html: `
+      ${helpText ? `<p class="text-left">${helpText}</p>` : ""}
+      <div class="swal-file-list">
+        ${fileList
+          .map(
+            (file) => `<div class="swal-file-row"><span class="swal-file-text">${file}</span></div>`
+          )
+          .join("")}
+      </div>
+    `,
+    width: 800,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showCancelButton: false,
+    showCloseButton: false,
+    showConfirmButton: true,
+    confirmButtonText: "OK",
+    customClass: {
+      confirmButton: "swal-confirm-button",
+    },
+  });
+};
+
 export const swalFileListDoubleAction = async (
   fileList,
   title,
