@@ -117,8 +117,6 @@ export const guidedPennsieveDatasetUpload = async () => {
 
     await guidedCreateManifestFilesAndAddToDatasetStructure();
 
-    // 
-
     //Upload the dataset files
     await guidedUploadDatasetToPennsieve();
   } catch (error) {
@@ -709,16 +707,19 @@ const guidedGenerateSubjectsMetadata = async (destination) => {
     guidedUploadStatusIcon(`guided-subjects-metadata-pennsieve-genration-status`, "loading");
   }
 
+  // TODO: SDS3 normalize so that we only use one way of storing dataset name and account name
+  window.sodaJSONObj["dataset_metadata"]["subjects"] = window.subjectsTableData;
+  if(!window.sodaJSONObj["ps-account-selected"]) window.sodaJSONObj["ps-account-selected"] = {}
+  window.sodaJSONObj["ps-account-selected"]["account-name"] = window.defaultBfAccount;
+  window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = guidedGetDatasetName(window.sodaJSONObj);
+
   try {
     // Generate the subjects metadata file
     await client.post(
       `/prepare_metadata/subjects_file`,
       {
         filepath: generationDestination === "Pennsieve" ? "" : destination,
-        selected_account: window.defaultBfAccount,
-        selected_dataset:
-          generationDestination === "Pennsieve" ? guidedGetDatasetName(window.sodaJSONObj) : "",
-        subjects_header_row: window.subjectsTableData,
+        soda: window.sodaJSONObj,
       },
       {
         params: {
@@ -784,15 +785,17 @@ const guidedGenerateSamplesMetadata = async (destination) => {
     guidedUploadStatusIcon("guided-samples-metadata-pennsieve-genration-status", "loading");
   }
 
+  if(!window.sodaJSONObj["ps-account-selected"]) window.sodaJSONObj["ps-account-selected"] = {}
+  window.sodaJSONObj["ps-account-selected"]["account-name"] = window.defaultBfAccount;
+  window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = guidedGetDatasetName(window.sodaJSONObj);
+  window.sodaJSONObj["dataset_metadata"]["samples"] = window.samplesTableData;
+
   try {
     await client.post(
       `/prepare_metadata/samples_file`,
       {
         filepath: generationDestination === "Pennsieve" ? "" : destination,
-        selected_account: window.defaultBfAccount,
-        selected_dataset:
-          generationDestination === "Pennsieve" ? guidedGetDatasetName(window.sodaJSONObj) : "",
-        samples_str: window.samplesTableData,
+        soda: window.sodaJSONObj,
       },
       {
         params: {
@@ -874,19 +877,18 @@ const guidedGenerateSubmissionMetadata = async (destination) => {
     guidedUploadStatusIcon("guided-submission-metadata-pennsieve-genration-status", "loading");
   }
 
+  if(!window.sodaJSONObj["ps-account-selected"]) window.sodaJSONObj["ps-account-selected"] = {}
+  window.sodaJSONObj["ps-account-selected"]["account-name"] = window.defaultBfAccount;
+  window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = guidedGetDatasetName(window.sodaJSONObj);
+  window.sodaJSONObj["dataset_metadata"]["submission"] = submissionMetadataArray;
+
   try {
     await client.post(
       `/prepare_metadata/submission_file`,
       {
-        submission_file_rows: submissionMetadataArray,
+        soda: window.sodaJSONObj,
         filepath: generationDestination === "Pennsieve" ? "" : destination,
         upload_boolean: generationDestination === "Pennsieve",
-      },
-      {
-        params: {
-          selected_account: window.defaultBfAccount,
-          selected_dataset: guidedGetDatasetName(window.sodaJSONObj),
-        },
       }
     );
     // Update UI for successful generation (Pennsieve) and send success event
@@ -951,17 +953,25 @@ const guidedGenerateDatasetDescriptionMetadata = async (destination) => {
     );
   }
 
+  if(!window.sodaJSONObj["ps-account-selected"]) window.sodaJSONObj["ps-account-selected"] = {}
+  window.sodaJSONObj["ps-account-selected"]["account-name"] = window.defaultBfAccount;
+  window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = guidedGetDatasetName(window.sodaJSONObj);
+
+  // TODO: SDS3 has more fields and not all of the existing fields align with that either now. Fix this before release.
+  window.sodaJSONObj["dataset_metadata"]["dataset_description"] = {
+    "study_information": guidedStudyInformation,
+    "contributor_information": guidedContributorInformation,
+    "basic_information": guidedDatasetInformation,
+    "related_information": datasetLinks,
+  }
+
   try {
     await client.post(
       `/prepare_metadata/dataset_description_file`,
       {
-        selected_account: window.defaultBfAccount,
-        selected_dataset: guidedGetDatasetName(window.sodaJSONObj),
+        soda: window.sodaJSONObj,
         filepath: generationDestination === "Pennsieve" ? "" : destination,
-        dataset_str: guidedDatasetInformation,
-        study_str: guidedStudyInformation,
-        contributor_str: guidedContributorInformation,
-        related_info_str: datasetLinks,
+        soda: window.sodaJSONObj,
       },
       {
         params: {
@@ -1032,18 +1042,20 @@ const guidedGenerateReadmeMetadata = async (destination) => {
     guidedUploadStatusIcon("guided-readme-metadata-pennsieve-genration-status", "loading");
   }
 
+  window.sodaJSONObj["ps-account-selected"]["account-name"] = window.defaultBfAccount;
+  window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = guidedGetDatasetName(window.sodaJSONObj);
+  window.sodaJSONObj["dataset_metadata"]["README"] = guidedReadMeMetadata;
+
   try {
     if (generationDestination === "Pennsieve") {
       await client.post(
         `/prepare_metadata/readme_changes_file`,
         {
-          text: guidedReadMeMetadata,
+          soda: window.sodaJSONObj,
         },
         {
           params: {
-            file_type: "README.txt",
-            selected_account: window.defaultBfAccount,
-            selected_dataset: guidedGetDatasetName(window.sodaJSONObj),
+            file_type: "README.txt"
           },
         }
       );
@@ -1108,18 +1120,20 @@ const guidedGenerateChangesMetadata = async (destination) => {
     guidedUploadStatusIcon("guided-changes-metadata-pennsieve-genration-status", "loading");
   }
 
+  window.sodaJSONObj["ps-account-selected"]["account-name"] = window.defaultBfAccount;
+  window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = guidedGetDatasetName(window.sodaJSONObj);
+  window.sodaJSONObj["dataset_metadata"]["CHANGES"] = guidedChangesMetadata;
+
   try {
     if (generationDestination === "Pennsieve") {
       await client.post(
         `/prepare_metadata/readme_changes_file`,
         {
-          text: guidedChangesMetadata,
+          soda: window.sodaJSONObj,
         },
         {
           params: {
-            file_type: "CHANGES.txt",
-            selected_account: window.defaultBfAccount,
-            selected_dataset: guidedGetDatasetName(window.sodaJSONObj),
+            file_type: "CHANGES.txt"
           },
         }
       );
