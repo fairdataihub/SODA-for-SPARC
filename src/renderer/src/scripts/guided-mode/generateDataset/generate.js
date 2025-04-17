@@ -117,7 +117,7 @@ export const guidedPennsieveDatasetUpload = async () => {
 
     await guidedCreateManifestFilesAndAddToDatasetStructure();
 
-    // 
+    //
 
     //Upload the dataset files
     await guidedUploadDatasetToPennsieve();
@@ -1274,7 +1274,6 @@ const guidedUploadDatasetToPennsieve = async () => {
   // and we do not want to upload it again
   let datasetUploadObj = JSON.parse(JSON.stringify(window.sodaJSONObj));
   delete datasetUploadObj["dataset_metadata"];
-
 
   guidedSetNavLoadingState(true);
   client
