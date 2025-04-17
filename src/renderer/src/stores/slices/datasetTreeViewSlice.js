@@ -60,27 +60,59 @@ const checkIfFilePassesEntityFilter = (filePath, entityFilters) => {
     return true;
   }
 
+  // Log exclusion filter details at the start of processing
+  if (entityFilters.exclude.length > 0) {
+    console.group(`🔍 Checking exclusions for file: ${filePath}`);
+    console.log(`Total exclusion filters: ${entityFilters.exclude.length}`);
+
+    entityFilters.exclude.forEach((filter, idx) => {
+      console.log(
+        `Exclusion filter #${idx + 1}: Type=${filter.type}, Names=${filter.names?.length || 0}`
+      );
+    });
+  }
+
   // Check exclusions first - if file is associated with ANY excluded entity, reject it
   for (const filter of entityFilters.exclude) {
     const { type, names } = filter;
-    if (!type || !names || !Array.isArray(names) || names.length === 0) continue;
+    if (!type || !names || !Array.isArray(names) || names.length === 0) {
+      console.log(`⚠️ Skipping invalid exclusion filter: ${JSON.stringify(filter)}`);
+      continue;
+    }
 
     // Skip if entity type doesn't exist in datasetEntityObj
     if (!datasetEntityObj[type]) {
-      console.log(`Entity type ${type} not found in datasetEntityObj`);
+      console.log(`⚠️ Entity type "${type}" not found in datasetEntityObj`);
       continue;
     }
+
+    console.log(`Checking ${names.length} exclusions of type "${type}"`);
 
     // Check each entity name in the exclusion list
     for (const entityName of names) {
       if (entityName && datasetEntityObj[type][entityName]) {
         const isAssociated = Boolean(datasetEntityObj[type][entityName][filePath]);
         if (isAssociated) {
-          console.log(`File ${filePath} is EXCLUDED by ${type}/${entityName}`);
+          console.log(
+            `❌ EXCLUDED: File "${filePath}" is associated with excluded ${type}/${entityName}`
+          );
+          if (entityFilters.exclude.length > 0) {
+            console.groupEnd();
+          }
           return false; // File is associated with an excluded entity, so don't show it
+        } else {
+          console.log(`✓ File "${filePath}" not associated with excluded ${type}/${entityName}`);
         }
+      } else {
+        console.log(`⚠️ Entity ${type}/${entityName} not found or is empty`);
       }
     }
+  }
+
+  // Close the exclusion check group if we opened one
+  if (entityFilters.exclude.length > 0) {
+    console.log("✅ File passed all exclusion checks");
+    console.groupEnd();
   }
 
   // If there's no include list, we only needed to pass the exclude check
@@ -116,59 +148,44 @@ const checkIfFilePassesEntityFilter = (filePath, entityFilters) => {
   return false;
 };
 
-// Prunes the folder structure based on the search filter and optional entity filter
-const pruneFolder = (folder, searchFilter, entityFilterConfig = null) => {
-  if (!folder) return null;
+// Helper function to filter files based on search term and entity filters
+const filterFiles = (files, searchFilter, entityFilterConfig) => {
+  if (!files || Object.keys(files).length === 0) return {};
 
-  console.log("Pruning folder:", folder.relativePath);
-  console.log("Entity filter config:", entityFilterConfig);
-
+  const matchingFiles = {};
   const lowerCaseSearchFilter = searchFilter.toLowerCase();
-  const folderMatches =
-    folder.relativePath && folder.relativePath.toLowerCase().includes(lowerCaseSearchFilter);
+  const isSearchActive = lowerCaseSearchFilter.length > 0;
+  const isEntityFilterActive = entityFilterConfig?.active;
 
-  // Check if any files match the search filter
-  const files = folder.files || {};
-  let matchingFiles = {};
+  Object.entries(files).forEach(([key, file]) => {
+    // Skip search check if no search filter is active
+    const matchesSearch =
+      !isSearchActive ||
+      (file.relativePath && file.relativePath.toLowerCase().includes(lowerCaseSearchFilter));
 
-  // Filter files by search term AND entity filter if active
-  Object.keys(files).forEach((key) => {
-    const file = files[key];
-    const filePathMatches =
-      file.relativePath && file.relativePath.toLowerCase().includes(lowerCaseSearchFilter);
-
-    // Apply combined filtering:
-    // 1. File matches search filter (or no search filter)
-    // 2. File passes the entity filter criteria (if entity filter is active)
-    const matchesSearch = !lowerCaseSearchFilter || filePathMatches;
-
-    if (entityFilterConfig && entityFilterConfig.active) {
-      // Use the new entity filter checking function with the complex filter config
-      const passesEntityFilter = checkIfFilePassesEntityFilter(
-        file.relativePath,
-        entityFilterConfig.filters
-      );
-
-      // Log filtering results for debugging
-      console.log(`File ${file.relativePath} filtering result: ${passesEntityFilter}`);
-
-      if (matchesSearch && passesEntityFilter) {
+    if (matchesSearch) {
+      console.log("isEntityFilterActive:", isEntityFilterActive); // Debug log
+      if (isEntityFilterActive) {
+        // Only check entity filters if search passed and entity filtering is active
+        if (checkIfFilePassesEntityFilter(file.relativePath, entityFilterConfig.filters)) {
+          matchingFiles[key] = file;
+        }
+      } else {
         matchingFiles[key] = file;
       }
-    } else if (matchesSearch) {
-      matchingFiles[key] = file;
     }
   });
 
-  const hasMatchingFiles = Object.keys(matchingFiles).length > 0;
-  console.log(
-    `Folder ${folder.relativePath} has ${Object.keys(matchingFiles).length} matching files`
-  );
+  return matchingFiles;
+};
 
-  // Recursively prune subfolders first to determine if any contain matches
-  const subfolders = folder.folders || {};
+// Helper function to process subfolders recursively
+const processSubfolders = (subfolders, searchFilter, entityFilterConfig) => {
+  if (!subfolders || Object.keys(subfolders).length === 0) {
+    return { prunedSubfolders: {}, hasMatchingSubfolders: false };
+  }
+
   const prunedSubfolders = {};
-
   let hasMatchingSubfolders = false;
 
   Object.entries(subfolders).forEach(([key, subfolder]) => {
@@ -179,21 +196,54 @@ const pruneFolder = (folder, searchFilter, entityFilterConfig = null) => {
     }
   });
 
-  // Keep this folder if:
-  // 1. It directly matches the search filter, OR
-  // 2. It has files that match both search and entity filter, OR
-  // 3. It has subfolders that contain matching content
-  if (folderMatches || hasMatchingFiles || hasMatchingSubfolders) {
+  return { prunedSubfolders, hasMatchingSubfolders };
+};
+
+// Prunes the folder structure based on the search filter and optional entity filter
+const pruneFolder = (folder, searchFilter, entityFilterConfig = null) => {
+  if (!folder) return null;
+
+  // Get lowercase filter once to reuse
+  const lowerCaseSearchFilter = searchFilter.toLowerCase();
+  const isSearchActive = lowerCaseSearchFilter.length > 0;
+
+  // Quick path - if no active filtering, return the folder as-is
+  if (!isSearchActive && !entityFilterConfig?.active) {
+    return folder;
+  }
+
+  // Check if folder name matches the search filter
+  const folderMatches =
+    !isSearchActive ||
+    (folder.relativePath && folder.relativePath.toLowerCase().includes(lowerCaseSearchFilter));
+
+  if (!folderMatches) {
+    console.log("Folder does not match search filter:", folder.relativePath); // Debug log
+    return null; // Skip this folder if it doesn't match the search filter
+  }
+
+  // Filter files that match criteria
+  const matchingFiles = filterFiles(folder.files, searchFilter, entityFilterConfig);
+  const hasMatchingFiles = Object.keys(matchingFiles).length > 0;
+
+  // Process subfolders recursively
+  const { prunedSubfolders, hasMatchingSubfolders } = processSubfolders(
+    folder.folders,
+    searchFilter,
+    entityFilterConfig
+  );
+
+  // Keep this folder if it matches any criteria
+  if (hasMatchingFiles || hasMatchingSubfolders) {
     return {
       ...folder,
-      passThrough: !folderMatches && !hasMatchingFiles, // Mark as pass-through if kept only for subfolders
+      passThrough: !folderMatches && !hasMatchingFiles,
       folders: prunedSubfolders,
       files: matchingFiles,
     };
   }
 
-  // If we get here, this folder and all its contents don't match the criteria
-  console.log(`Pruning out folder ${folder.relativePath} - no matches`);
+  // No matches in this folder branch
   return null;
 };
 
@@ -470,11 +520,26 @@ export const setEntityFilter = (include = [], exclude = []) => {
     exclude,
   };
 
-  // Log what we're filtering
-  console.log("Setting entity filters:", JSON.stringify(entityFilters, null, 2));
+  // Enhanced logging for exclusions
+  console.group("📋 Setting entity filters");
+  console.log("Include filters:", JSON.stringify(include, null, 2));
+
+  // More detailed logging for exclusions
+  if (exclude.length > 0) {
+    console.group("🚫 Exclusion filters:");
+    exclude.forEach((filter, index) => {
+      console.log(`Filter #${index + 1}: Type=${filter.type}`);
+      console.log(`  Names (${filter.names?.length || 0}):`, filter.names);
+    });
+    console.groupEnd();
+  } else {
+    console.log("No exclusion filters set");
+  }
 
   // Only activate filter if we have valid filters
   const isFilterActive = include.length > 0 || exclude.length > 0;
+  console.log(`Filter active: ${isFilterActive}`);
+  console.groupEnd();
 
   // Update state
   useGlobalStore.setState({
