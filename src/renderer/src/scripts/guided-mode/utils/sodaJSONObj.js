@@ -55,7 +55,7 @@ export const datasetIsSparcFunded = () => {
 
 export const guidedGetDatasetOrigin = (sodaJSON) => {
   let datasetOrigin = sodaJSON?.["generate-dataset"]?.["generate-option"];
-  if (datasetOrigin === "existing-bf") {
+  if (datasetOrigin === "existing-ps") {
     // Dataset origin is from Pennsieve
     return "Pennsieve";
   }

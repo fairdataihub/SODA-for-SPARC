@@ -2963,7 +2963,7 @@ const updateJSONStructureBfDestination = () => {
   } else {
     window.sodaJSONObj["generate-dataset"] = {
       destination: "ps",
-      "generate-option": "existing-bf",
+      "generate-option": "existing-ps",
     };
 
     if (window.sodaJSONObj["ps-dataset-selected"]) {

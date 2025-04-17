@@ -488,6 +488,13 @@ const deleteFilesFromDataset = async (datasetId, packages) => {
   return response.data;
 };
 
+const loadManifestToJSON = async (manifestPath) => {
+  const response = await client.get(
+    `prepare_metadata/manifest?path_to_manifest_file=${manifestPath}`
+  );
+  return response.data;
+};
+
 const api = {
   getUserInformation,
   getDataset,
@@ -525,6 +532,7 @@ const api = {
   getPennsieveUploadManifestFiles,
   getLocalRemoteComparisonResults,
   deleteFilesFromDataset,
+  loadManifestToJSON,
 };
 
 export default api;
