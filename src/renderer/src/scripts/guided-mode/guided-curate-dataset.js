@@ -27,11 +27,7 @@ import {
   swalShowInfo,
 } from "../utils/swal-utils";
 
-
-import {
-  getDatasetEntityObj,
-} from "../../stores/slices/datasetEntitySelectorSlice";
-
+import { getDatasetEntityObj } from "../../stores/slices/datasetEntitySelectorSlice";
 
 import "bootstrap-select";
 import Cropper from "cropperjs";

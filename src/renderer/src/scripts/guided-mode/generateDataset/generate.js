@@ -709,9 +709,11 @@ const guidedGenerateSubjectsMetadata = async (destination) => {
 
   // TODO: SDS3 normalize so that we only use one way of storing dataset name and account name
   window.sodaJSONObj["dataset_metadata"]["subjects"] = window.subjectsTableData;
-  if(!window.sodaJSONObj["ps-account-selected"]) window.sodaJSONObj["ps-account-selected"] = {}
+  if (!window.sodaJSONObj["ps-account-selected"]) window.sodaJSONObj["ps-account-selected"] = {};
   window.sodaJSONObj["ps-account-selected"]["account-name"] = window.defaultBfAccount;
-  window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = guidedGetDatasetName(window.sodaJSONObj);
+  window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = guidedGetDatasetName(
+    window.sodaJSONObj
+  );
 
   try {
     // Generate the subjects metadata file
@@ -785,9 +787,11 @@ const guidedGenerateSamplesMetadata = async (destination) => {
     guidedUploadStatusIcon("guided-samples-metadata-pennsieve-genration-status", "loading");
   }
 
-  if(!window.sodaJSONObj["ps-account-selected"]) window.sodaJSONObj["ps-account-selected"] = {}
+  if (!window.sodaJSONObj["ps-account-selected"]) window.sodaJSONObj["ps-account-selected"] = {};
   window.sodaJSONObj["ps-account-selected"]["account-name"] = window.defaultBfAccount;
-  window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = guidedGetDatasetName(window.sodaJSONObj);
+  window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = guidedGetDatasetName(
+    window.sodaJSONObj
+  );
   window.sodaJSONObj["dataset_metadata"]["samples"] = window.samplesTableData;
 
   try {
@@ -877,20 +881,19 @@ const guidedGenerateSubmissionMetadata = async (destination) => {
     guidedUploadStatusIcon("guided-submission-metadata-pennsieve-genration-status", "loading");
   }
 
-  if(!window.sodaJSONObj["ps-account-selected"]) window.sodaJSONObj["ps-account-selected"] = {}
+  if (!window.sodaJSONObj["ps-account-selected"]) window.sodaJSONObj["ps-account-selected"] = {};
   window.sodaJSONObj["ps-account-selected"]["account-name"] = window.defaultBfAccount;
-  window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = guidedGetDatasetName(window.sodaJSONObj);
+  window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = guidedGetDatasetName(
+    window.sodaJSONObj
+  );
   window.sodaJSONObj["dataset_metadata"]["submission"] = submissionMetadataArray;
 
   try {
-    await client.post(
-      `/prepare_metadata/submission_file`,
-      {
-        soda: window.sodaJSONObj,
-        filepath: generationDestination === "Pennsieve" ? "" : destination,
-        upload_boolean: generationDestination === "Pennsieve",
-      }
-    );
+    await client.post(`/prepare_metadata/submission_file`, {
+      soda: window.sodaJSONObj,
+      filepath: generationDestination === "Pennsieve" ? "" : destination,
+      upload_boolean: generationDestination === "Pennsieve",
+    });
     // Update UI for successful generation (Pennsieve) and send success event
     if (generationDestination === "Pennsieve") {
       guidedUploadStatusIcon("guided-submission-metadata-pennsieve-genration-status", "success");
@@ -953,17 +956,19 @@ const guidedGenerateDatasetDescriptionMetadata = async (destination) => {
     );
   }
 
-  if(!window.sodaJSONObj["ps-account-selected"]) window.sodaJSONObj["ps-account-selected"] = {}
+  if (!window.sodaJSONObj["ps-account-selected"]) window.sodaJSONObj["ps-account-selected"] = {};
   window.sodaJSONObj["ps-account-selected"]["account-name"] = window.defaultBfAccount;
-  window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = guidedGetDatasetName(window.sodaJSONObj);
+  window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = guidedGetDatasetName(
+    window.sodaJSONObj
+  );
 
   // TODO: SDS3 has more fields and not all of the existing fields align with that either now. Fix this before release.
   window.sodaJSONObj["dataset_metadata"]["dataset_description"] = {
-    "study_information": guidedStudyInformation,
-    "contributor_information": guidedContributorInformation,
-    "basic_information": guidedDatasetInformation,
-    "related_information": datasetLinks,
-  }
+    study_information: guidedStudyInformation,
+    contributor_information: guidedContributorInformation,
+    basic_information: guidedDatasetInformation,
+    related_information: datasetLinks,
+  };
 
   try {
     await client.post(
@@ -1043,7 +1048,9 @@ const guidedGenerateReadmeMetadata = async (destination) => {
   }
 
   window.sodaJSONObj["ps-account-selected"]["account-name"] = window.defaultBfAccount;
-  window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = guidedGetDatasetName(window.sodaJSONObj);
+  window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = guidedGetDatasetName(
+    window.sodaJSONObj
+  );
   window.sodaJSONObj["dataset_metadata"]["README"] = guidedReadMeMetadata;
 
   try {
@@ -1055,7 +1062,7 @@ const guidedGenerateReadmeMetadata = async (destination) => {
         },
         {
           params: {
-            file_type: "README.txt"
+            file_type: "README.txt",
           },
         }
       );
@@ -1121,7 +1128,9 @@ const guidedGenerateChangesMetadata = async (destination) => {
   }
 
   window.sodaJSONObj["ps-account-selected"]["account-name"] = window.defaultBfAccount;
-  window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = guidedGetDatasetName(window.sodaJSONObj);
+  window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = guidedGetDatasetName(
+    window.sodaJSONObj
+  );
   window.sodaJSONObj["dataset_metadata"]["CHANGES"] = guidedChangesMetadata;
 
   try {
@@ -1133,7 +1142,7 @@ const guidedGenerateChangesMetadata = async (destination) => {
         },
         {
           params: {
-            file_type: "CHANGES.txt"
+            file_type: "CHANGES.txt",
           },
         }
       );
