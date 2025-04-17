@@ -117,6 +117,8 @@ export const guidedPennsieveDatasetUpload = async () => {
 
     await guidedCreateManifestFilesAndAddToDatasetStructure();
 
+    // 
+
     //Upload the dataset files
     await guidedUploadDatasetToPennsieve();
   } catch (error) {
@@ -1267,12 +1269,19 @@ const guidedUploadDatasetToPennsieve = async () => {
     // create a dataset upload session
     datasetUploadSession.startSession();
   }
+
+  // create a copy of the window.sodaJSONobj that does not have the dataset_metadata key as it has already been uploaded
+  // and we do not want to upload it again
+  let datasetUploadObj = JSON.parse(JSON.stringify(window.sodaJSONObj));
+  delete datasetUploadObj["dataset_metadata"];
+
+
   guidedSetNavLoadingState(true);
   client
     .post(
       `/curate_datasets/curation`,
       {
-        soda_json_structure: window.sodaJSONObj,
+        soda_json_structure: datasetUploadObj,
         resume: !!window.retryGuidedMode,
       },
       { timeout: 0 }
