@@ -458,56 +458,29 @@ export const moveFolderToNewLocation = (targetRelativePath) => {
 };
 
 /**
- * Set entity filter with multi-type include/exclude capabilities using direct parameters
+ * Set entity filter with multi-type include/exclude capabilities
  *
  * @param {Array} include - Array of {type, names} objects for inclusion
  * @param {Array} exclude - Array of {type, names} objects for exclusion
- *
- * Example:
- * setEntityFilter(
- *   [
- *     { type: 'subjects', names: ['sub-001', 'sub-002'] },
- *     { type: 'samples', names: ['sample-A'] }
- *   ],
- *   [
- *     { type: 'categorized-data', names: ['Code'] }
- *   ]
- * );
  */
 export const setEntityFilter = (include = [], exclude = []) => {
-  // Validate and normalize each filter entry
-  const normalizeFilters = (filters) => {
-    return Array.isArray(filters)
-      ? filters
-          .map((filter) => ({
-            type: filter.type || null,
-            names: Array.isArray(filter.names) ? filter.names.filter(Boolean) : [],
-          }))
-          .filter((filter) => filter.type && filter.names.length > 0)
-      : [];
-  };
-
-  // Normalize both include and exclude arrays
-  const normalizedInclude = normalizeFilters(include);
-  const normalizedExclude = normalizeFilters(exclude);
-
-  // Create the entityFilters object
+  // Create the entityFilters object directly
   const entityFilters = {
-    include: normalizedInclude,
-    exclude: normalizedExclude,
+    include,
+    exclude,
   };
 
   // Log what we're filtering
   console.log("Setting entity filters:", JSON.stringify(entityFilters, null, 2));
 
   // Only activate filter if we have valid filters
-  const isFilterActive = normalizedInclude.length > 0 || normalizedExclude.length > 0;
+  const isFilterActive = include.length > 0 || exclude.length > 0;
 
   // Update state
   useGlobalStore.setState({
     renderDatasetStructureJSONObjIsLoading: true,
     entityFilterActive: isFilterActive,
-    entityFilters: entityFilters,
+    entityFilters,
   });
 
   // Re-apply the current search filter to update the view with the entity filter
