@@ -17,6 +17,9 @@ from pysoda.core.dataset_generation import (
     check_server_access_to_files,
 )
 
+from pysoda.utils import validation_error_message
+from jsonschema import ValidationError
+
 from manifest import create_high_level_manifest_files_existing_local_starting_point
 from errorHandlers.notBadRequestException import notBadRequestException
 userpath = expanduser("~")
@@ -151,6 +154,11 @@ class Curation(Resource):
             return main_curate_function(soda_json_structure, resume)
         except Exception as e:
             api.logger.exception(e)
+            if isinstance(e, ValidationError):
+                # Extract properties from the ValidationError
+                validation_err_msg = validation_error_message(e)
+                # Return the ValidationError as JSON
+                api.abort(400, validation_err_msg)
             if notBadRequestException(e):
                 # general exception that was unexpected and caused by our code
                 api.abort(500, str(e))

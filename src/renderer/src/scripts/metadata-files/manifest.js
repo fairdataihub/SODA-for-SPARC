@@ -1135,7 +1135,7 @@ const updateJSONStructureManifestGenerate = () => {
   if (starting_point == "ps") {
     window.sodaJSONObj["generate-dataset"] = {
       destination: "ps",
-      "generate-option": "existing-bf",
+      "generate-option": "existing-ps",
     };
   }
   if (starting_point == "local") {
@@ -1484,7 +1484,7 @@ const extractBFDatasetForManifestFile = async (editBoolean, bfaccount, bfdataset
     window.sodaJSONObj["manifest-files"] = { destination: "generate-dataset" };
     window.sodaJSONObj["generate-dataset"] = {
       destination: "ps",
-      "generate-option": "existing-bf",
+      "generate-option": "existing-ps",
     };
     window.sodaJSONObj["starting-point"] = { origin: "ps" };
 
@@ -2331,17 +2331,8 @@ window.readManifestFileAndStoreInSodaJSON = async () => {
       return;
     }
 
-    // Read the manifest file
-    let jsonManifest = await window.electron.ipcRenderer.invoke("excelToJsonSheet1Options", {
-      sourceFile: manifestFilePath,
-      columnToKey: {
-        "*": "{{columnHeader}}",
-      },
-    });
-
-    // Extract headers and data
-    const headers = jsonManifest[0]; // First row as headers
-    const data = jsonManifest.slice(1); // Remaining rows as data
+    // TODO: Erro rhandling
+    let manifestData = await api.loadManifestToJSON(manifestFilePath);
 
     // Store in sodaJSONObj
     if (!window.sodaJSONObj["dataset_metadata"]) {
@@ -2352,10 +2343,7 @@ window.readManifestFileAndStoreInSodaJSON = async () => {
       window.sodaJSONObj["dataset_metadata"]["manifest_files"] = {};
     }
 
-    window.sodaJSONObj["dataset_metadata"]["manifest_files"] = {
-      headers: headers,
-      data: data,
-    };
+    window.sodaJSONObj["dataset_metadata"]["manifest_files"] = manifestData;
 
     console.log("Manifest file successfully read and stored in sodaJSONObj.");
   } catch (error) {

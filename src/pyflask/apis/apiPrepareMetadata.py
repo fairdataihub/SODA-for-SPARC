@@ -12,6 +12,9 @@ from prepareMetadata import (
     import_ps_manifest_file,
     manifest_creation_progress
 )
+from pysoda.core.metadata import (
+    load_existing_manifest_file
+)
 from flask import request
 from namespaces import NamespaceEnum, get_namespace
 from flask_restx import Resource, reqparse, fields
@@ -625,3 +628,23 @@ class GetManifestFilesPennsieveProgress(Resource):
                 return manifest_creation_progress()
             except Exception as e:
                 api.abort(500, str(e))
+
+
+@api.route('/manifest')
+class GetLocalManifestFile(Resource):
+
+    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request'},
+             description="Get the local manifest file. This is used to get the manifest file that was created by the client.")
+    def get(self):
+
+        path_to_manifest_file = request.args.get('path_to_manifest_file')
+
+        if not path_to_manifest_file:
+            api.abort(400, "Error:  To get a local manifest file provide a filepath.")
+
+        try:
+            return load_existing_manifest_file(path_to_manifest_file)
+        except Exception as e:
+            if notBadRequestException(e):
+                api.abort(500, str(e))
+            raise e
