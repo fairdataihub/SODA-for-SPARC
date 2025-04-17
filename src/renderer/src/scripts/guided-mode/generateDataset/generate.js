@@ -1289,7 +1289,6 @@ const guidedUploadDatasetToPennsieve = async () => {
   let datasetUploadObj = JSON.parse(JSON.stringify(window.sodaJSONObj));
   delete datasetUploadObj["dataset_metadata"];
 
-
   guidedSetNavLoadingState(true);
   client
     .post(
