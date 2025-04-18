@@ -962,12 +962,61 @@ const guidedGenerateDatasetDescriptionMetadata = async (destination) => {
     window.sodaJSONObj
   );
 
+  let basic_information = {
+    "title": guidedDatasetInformation["title"],
+    "description": guidedDatasetInformation["description"],
+    "keywords": guidedDatasetInformation["keywords"],
+    "subtitle": guidedDatasetInformation["subtitle"] || "",
+    "license": guidedDatasetInformation["license"] || "",
+    "funding": guidedDatasetInformation["funding"] || [],
+    "acknowledgments": guidedDatasetInformation["acknowledgments"] || [],
+  }
+
+  let funding_information = {
+    "funding_consortium": guidedDatasetInformation["funding-consortium"] || [],
+    "funding_agency": guidedDatasetInformation["funding-agency"] || [],
+    "award_number": guidedDatasetInformation["funding"] || [],
+  }
+
+  let study_information = {
+    "study_purpose": guidedStudyInformation["study-purpose"] || "",
+    "study_data_collection": guidedStudyInformation["study-data-collection"] || "",
+    "study_primary_conclusion": guidedStudyInformation["study-primary-conclusion"] || "",
+    "study_organ_system": guidedStudyInformation["study-organ-system"] || [],
+    "study_approach": guidedStudyInformation["study-approach"] || [],
+    "study_technique": guidedStudyInformation["study-technique"] || [],
+    "study_collection_title": guidedStudyInformation["study-collection-title"] || "",
+  }
+
+  let participant_information = {
+    "number_of_subjects": guidedStudyInformation["number-of-subjects"] || "",
+    "number_of_samples": guidedStudyInformation["number-of-samples"] || "",
+    "number_of_sites": guidedStudyInformation["number-of-sites"] || "",
+    "number_of_performances": guidedStudyInformation["number-of-performances"] || "",
+  }
+
+  let data_dictionary_information = {
+    "data_dictionary": guidedDatasetInformation["data-dictionary"] || [],
+    "data_dictionary_description": guidedDatasetInformation["data-dictionary-description"] || "",
+    "data_dictionary_type": guidedDatasetInformation["data-dictionary-link"] || "",
+  }
+
+
   // TODO: SDS3 has more fields and not all of the existing fields align with that either now. Fix this before release.
+  // REMAINING: datasetLinks and contributrorInformation key names
   window.sodaJSONObj["dataset_metadata"]["dataset_description"] = {
-    study_information: guidedStudyInformation,
+    type: guidedDatasetInformation["type"],
+    standards_information: {
+      "data_standard": "SDS",
+      "data_standard_version": "3.0.1",
+    },
+    study_information: study_information,
     contributor_information: guidedContributorInformation,
-    basic_information: guidedDatasetInformation,
+    basic_information: basic_information,
     related_information: datasetLinks,
+    funding_information: funding_information,
+    participant_information: participant_information,
+    data_dictionary_information: data_dictionary_information,
   };
 
   try {
