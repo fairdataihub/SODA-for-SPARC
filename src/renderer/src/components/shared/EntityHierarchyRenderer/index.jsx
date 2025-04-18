@@ -75,7 +75,6 @@ const HierarchyItem = memo(
     isSampleParent = false,
   }) => {
     const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
-    console.log("selectedHierarchyEntity::", selectedHierarchyEntity);
     const selectedEntityId = selectedHierarchyEntity ? selectedHierarchyEntity.id : null;
     const selectedEntityParentSubjectId = selectedHierarchyEntity?.parentSubject;
     const selectedEntityParentSampleId = selectedHierarchyEntity?.parentSample;
@@ -110,7 +109,6 @@ const HierarchyItem = memo(
       e.stopPropagation();
       if (allowEntitySelection && !isAddButton && onSelect) {
         // Just pass the raw entity data which already includes parent references
-        console.log("entityData", entityData);
         onSelect(entityData);
       }
     };
@@ -190,8 +188,6 @@ const EntityHierarchyRenderer = ({
 
   // Memoize the entity select handler to prevent recreation on each render
   const handleEntitySelect = useCallback((entityData) => {
-    console.log("getAllEntityIds", getAllEntityIds());
-    console.log("Selected entity data:", entityData);
     setSelectedHierarchyEntity(entityData);
   }, []);
 
@@ -222,7 +218,6 @@ const EntityHierarchyRenderer = ({
 
   // Edit operations
   const handleEditSample = useCallback(async (sample, subject) => {
-    console.log(`Edit sample ${sample.id} of subject ${subject.id}`);
     const result = await guidedOpenEntityEditSwal({
       entityType: "sample",
       entityData: sample,
@@ -236,7 +231,6 @@ const EntityHierarchyRenderer = ({
 
   // Delete operations
   const handleDeleteSample = useCallback((sample, subject) => {
-    console.log(`Delete sample ${sample.id} from subject ${subject.id}`);
     return deleteSampleFromSubject(subject.id, sample.id);
   }, []);
 
@@ -250,7 +244,6 @@ const EntityHierarchyRenderer = ({
 
   // Edit operations
   const handleEditSubjectSite = useCallback(async (site, subject) => {
-    console.log(`Edit site ${site.id} of subject ${subject.id}`);
     const result = await guidedOpenEntityEditSwal({
       entityType: "site",
       entityData: site,
@@ -264,14 +257,12 @@ const EntityHierarchyRenderer = ({
 
   // Delete operations
   const handleDeleteSubjectSite = useCallback((site, subject) => {
-    console.log(`Delete site ${site.id} from subject ${subject.id}`);
     return deleteSiteFromSubject(subject.id, site.id);
   }, []);
 
   // ----- SAMPLE SITE OPERATIONS -----
   // Add operations
   const handleAddSampleSiteButtonClick = useCallback(({ sample, subject }) => {
-    console.log(`Add site to sample ${sample.id} of subject ${subject.id}`);
     setSelectedHierarchyEntity(null);
     setEntityBeingAddedParentSample(sample.id);
     setEntityBeingAddedParentSubject(subject.id);
@@ -280,7 +271,6 @@ const EntityHierarchyRenderer = ({
 
   // Edit operations
   const handleEditSampleSite = useCallback(async (site, { sample, subject }) => {
-    console.log(`Edit site ${site.id} of sample ${sample.id} of subject ${subject.id}`);
     const result = await guidedOpenEntityEditSwal({
       entityType: "site",
       entityData: site,
@@ -294,20 +284,17 @@ const EntityHierarchyRenderer = ({
 
   // Delete operations
   const handleDeleteSampleSite = useCallback((site, { sample, subject }) => {
-    console.log(`Delete site ${site.id} from sample ${sample.id} of subject ${subject.id}`);
     return deleteSiteFromSample(subject.id, sample.id, site.id);
   }, []);
 
   // ----- SUBJECT PERFORMANCE OPERATIONS -----
   // Add operations
   const handleAddSubjectPerformance = useCallback((subject) => {
-    console.log(`Add performance to subject: ${subject.id}`);
     guidedOpenEntityAdditionSwal({ entityType: "performances", subjectId: subject.id });
   }, []);
 
   // Edit operations
   const handleEditSubjectPerformance = useCallback(async (performance, subject) => {
-    console.log(`Edit performance ${performance.id} of subject ${subject.id}`);
     const result = await guidedOpenEntityEditSwal({
       entityType: "performance",
       entityData: performance,
@@ -321,14 +308,12 @@ const EntityHierarchyRenderer = ({
 
   // Delete operations
   const handleDeleteSubjectPerformance = useCallback((performance, subject) => {
-    console.log(`Delete performance ${performance.id} from subject ${subject.id}`);
     return deletePerformanceFromSubject(subject.id, performance.id);
   }, []);
 
   // ----- SAMPLE PERFORMANCE OPERATIONS -----
   // Add operations
   const handleAddSamplePerformance = useCallback(({ sample, subject }) => {
-    console.log(`Add performance to sample ${sample.id} of subject ${subject.id}`);
     guidedOpenEntityAdditionSwal({
       entityType: "performances",
       subjectId: subject.id,
@@ -338,9 +323,6 @@ const EntityHierarchyRenderer = ({
 
   // Edit operations
   const handleEditSamplePerformance = useCallback(async (performance, { sample, subject }) => {
-    console.log(
-      `Edit performance ${performance.id} of sample ${sample.id} of subject ${subject.id}`
-    );
     const result = await guidedOpenEntityEditSwal({
       entityType: "performance",
       entityData: performance,
@@ -354,9 +336,6 @@ const EntityHierarchyRenderer = ({
 
   // Delete operations
   const handleDeleteSamplePerformance = useCallback((performance, { sample, subject }) => {
-    console.log(
-      `Delete performance ${performance.id} from sample ${sample.id} of subject ${subject.id}`
-    );
     return deletePerformanceFromSample(subject.id, sample.id, performance.id);
   }, []);
 

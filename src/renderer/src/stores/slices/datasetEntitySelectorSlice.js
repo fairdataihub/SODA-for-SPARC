@@ -1,5 +1,12 @@
 import useGlobalStore from "../globalStore";
 import { produce } from "immer";
+import {
+  getExistingSubjectIds,
+  getExistingSampleIds,
+  getExistingSiteIds,
+  getExistingPerformanceIds,
+} from "./datasetEntityStructureSlice";
+import { setEntityFilter } from "./datasetTreeViewSlice";
 
 // Slice initialization for the entity selector state
 export const datasetEntitySelectorSlice = (set) => ({
@@ -13,10 +20,6 @@ export const datasetEntitySelectorSlice = (set) => ({
 
 // Add an entity to the specified entity type's list
 export const addEntityToEntityList = (entityType, entityName) => {
-  console.log("datasetEntityObj: ", useGlobalStore.getState().datasetEntityObj);
-  console.log("Adding entity: ", entityName);
-  console.log("Entity type: ", entityType);
-  console.log("Active entity: ", useGlobalStore.getState().activeEntity);
   useGlobalStore.setState(
     produce((state) => {
       if (!state.datasetEntityObj) {
@@ -56,8 +59,6 @@ export const setEntityListUsingArray = (entityType, entityArray) => {
 export const removeEntityFromEntityList = (entityType, entityName) => {
   useGlobalStore.setState(
     produce((state) => {
-      console.log("Removing entity: ", entityName);
-
       delete state.datasetEntityObj?.[entityType]?.[entityName];
     })
   );
@@ -70,10 +71,63 @@ export const getEntityObjForEntityType = (entityType) => {
 
 // Set the currently active entity
 export const setActiveEntity = (activeEntity) => {
+  // combine existing entity IDs and see if the entity being set is an entity
+  const existingSubjectIds = getExistingSubjectIds();
+  const existingSampleIds = getExistingSampleIds();
+  const existingSiteIds = getExistingSiteIds();
+  const existingPerformanceIds = getExistingPerformanceIds();
+  const combinedEntityIds = [
+    ...existingSubjectIds,
+    ...existingSampleIds,
+    ...existingSiteIds,
+    ...existingPerformanceIds,
+  ].map((id) => id.toLowerCase());
   useGlobalStore.setState((state) => ({
     ...state,
     activeEntity,
   }));
+
+  if (combinedEntityIds.includes(activeEntity)) {
+    const subjectsFilter = [
+      {
+        type: "subjects",
+        names: existingSubjectIds.filter(
+          (subject) => subject.toLowerCase() === activeEntity.toLowerCase()
+        ),
+      },
+    ];
+    const samplesFilter = [
+      {
+        type: "samples",
+        names: samples.filter((sample) => sample.toLowerCase() === activeEntity.toLowerCase()),
+      },
+    ];
+    const sitesFilter = [
+      {
+        type: "sites",
+        names: sites.filter((site) => site.toLowerCase() === activeEntity.toLowerCase()),
+      },
+    ];
+    const performancesFilter = [
+      {
+        type: "performances",
+        names: performances.filter(
+          (performance) => performance.toLowerCase() === activeEntity.toLowerCase()
+        ),
+      },
+    ];
+    const combinedFilters = [
+      ...subjectsFilter,
+      ...samplesFilter,
+      ...sitesFilter,
+      ...performancesFilter,
+    ];
+    console.log("Setting entity filter: ", combinedFilters);
+    setEntityFilter(
+      [{ type: "categorized-data", names: ["Experimental data"] }],
+      combinedFilters // Pass the combined filter
+    );
+  }
 };
 
 // Set the current entity type
@@ -106,7 +160,6 @@ const findMatchingRelativePaths = (obj, entityTypeLowerCased, matchingPaths) => 
     const fileRelativePath = file.relativePath.toLowerCase();
 
     if (file.relativePath.toLowerCase().includes(entityTypeLowerCased)) {
-      console.log("Found matching file: ", file.relativePath);
       matchingPaths.push(file.relativePath);
     }
   }
@@ -141,11 +194,6 @@ export const modifyDatasetEntityForRelativeFilePath = (
   mutuallyExclusive
 ) => {
   if (!entityType || !entityName || !entityRelativePath) {
-    console.error("Missing parameters for modification", {
-      entityType,
-      entityName,
-      entityRelativePath,
-    });
     return;
   }
 
@@ -218,22 +266,10 @@ const removeFromOtherEntities = (entityEntries, targetEntityName, entityRelative
 
 // Update this function to include entityType parameter
 export const checkIfRelativePathBelongsToEntity = (entityId, relativePath, entityType) => {
-  console.log("Checking if relative path belongs to entity", {
-    entityId,
-    relativePath,
-    entityType,
-  });
-
   const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
 
   // Use provided entityType or default to "entity-to-file-mapping"
   const typeToCheck = entityType || "entity-to-file-mapping";
-
-  console.log("datasetEntityObj?.[typeToCheck]", datasetEntityObj?.[typeToCheck]);
-  console.log(
-    "datasetEntityObj?.[typeToCheck]?.[entityId]",
-    datasetEntityObj?.[typeToCheck]?.[entityId]
-  );
 
   return Boolean(datasetEntityObj?.[typeToCheck]?.[entityId]?.[relativePath]);
 };
@@ -250,8 +286,6 @@ export const checkIfFolderBelongsToEntity = (entityId, folderContents, entityTyp
   if (!datasetEntityObj || !entityType || !datasetEntityObj[entityType] || !entityId) {
     return false;
   }
-
-  console.log("folderContents", folderContents);
 
   // First check: If the folder itself is directly associated with the entity
   const folderPath = folderContents.relativePath;

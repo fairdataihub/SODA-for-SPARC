@@ -25,14 +25,6 @@ const handleFileClick = (
   fileContents,
   mutuallyExclusive
 ) => {
-  // Simple file click handler with no special cases
-  console.log("File click handler:", {
-    entityType,
-    activeEntity,
-    relativePath: fileContents.relativePath,
-    mutuallyExclusive,
-  });
-
   modifyDatasetEntityForRelativeFilePath(
     entityType,
     activeEntity,
@@ -51,13 +43,6 @@ const handleFolderClick = (
   mutuallyExclusive = true
 ) => {
   // Simple folder click handler with no special cases
-  console.log("Folder click handler:", {
-    entityType,
-    activeEntity,
-    relativePath: folderContents.relativePath,
-    folderWasSelectedBeforeClick,
-    mutuallyExclusive,
-  });
 
   const action = folderWasSelectedBeforeClick ? "remove" : "add";
 
@@ -91,8 +76,6 @@ const renderEntityList = (entityType, activeEntity, datasetEntityObj) => {
 
   return naturalSort(Object.keys(datasetEntityObj[entityType])).map((entity) => {
     const isActive = entity === activeEntity;
-    // Check if search icon should be shown for specific entities
-    const showSearchIcon = ENTITY_PREFIXES.some((prefix) => entity.startsWith(prefix));
 
     return (
       <Box
@@ -113,27 +96,6 @@ const renderEntityList = (entityType, activeEntity, datasetEntityObj) => {
       >
         <Group justify="space-between" align="center">
           <Text size="sm">{entity}</Text>
-          <Group spacing="xs" align="center">
-            {/*<Text size="xs" fw={200}>
-              {entityItemsCount}
-            </Text>*/}
-
-            {showSearchIcon && (
-              <Tooltip label="Search dataset for this entity" zIndex={2999}>
-                <IconSearch
-                  size={14}
-                  onClick={(event) => {
-                    event.stopPropagation(); // Prevent triggering parent `onClick` event
-                    if (entity !== activeEntity) {
-                      handleEntityClick(entity);
-                    }
-                    const entityName = entity.substring(entity.indexOf("-") + 1);
-                    externallySetSearchFilterValue(entityName);
-                  }}
-                />
-              </Tooltip>
-            )}
-          </Group>
         </Group>
       </Box>
     );
@@ -160,7 +122,6 @@ const EntityDataSelectorPage = ({
   showProgress = false,
 }) => {
   const activeEntity = useGlobalStore((state) => state.activeEntity);
-  console.log("activeEntity", activeEntity);
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
   const datasetStructureJSONObj = useGlobalStore((state) => state.datasetStructureJSONObj);
 
@@ -202,9 +163,6 @@ const EntityDataSelectorPage = ({
 
   const itemCount = countFilesInDatasetStructure(datasetStructureJSONObj);
   const countItemsSelected = countSelectedFilesByEntityType(entityType);
-  console.log("itemCount", itemCount);
-  console.log("countItemsSelected", countItemsSelected);
-  console.log("Percentage of items selected:" + countItemsSelected / itemCount);
 
   return (
     <GuidedModePage pageHeader={pageName}>

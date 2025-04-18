@@ -584,8 +584,6 @@ ipcMain.on("open-folders-organize-datasets-dialog", async (event, args) => {
     throw new Error("The 'importRelativePath' property is required but was not provided.");
   }
 
-  console.log("args.importRelativePath:", args.importRelativePath);
-
   let mainWindow = BrowserWindow.getFocusedWindow();
 
   const importRelativePath = args.importRelativePath;
