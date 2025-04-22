@@ -307,11 +307,7 @@ $(document).ready(async function () {
       }
 
       // TODO: Check if this is needed everytime
-      var localFolderPath = window.path.join(
-        window.homeDirectory,
-        ".pysoda",
-        "manifest_file"
-      );
+      var localFolderPath = window.path.join(window.homeDirectory, ".pysoda", "manifest_file");
       var selectedManifestFilePath = window.path.join(localFolderPath, "manifest.xlsx");
       if (window.fs.existsSync(selectedManifestFilePath)) {
         let jsonManifest = await window.electron.ipcRenderer.invoke("excelToJsonSheet1Options", {
@@ -320,7 +316,6 @@ $(document).ready(async function () {
             "*": "{{columnHeader}}",
           },
         });
-
       }
 
       window.sodaCopy = window.sodaJSONObj;
@@ -403,13 +398,12 @@ $(document).ready(async function () {
           jsonManifest = JSON.stringify(sortedJSON);
           window.convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
         }
-        
 
         // Check if dataset is local or pennsieve
         // If local then we need to read the excel file and create a json object
         let highLvlFolderNames = [];
         if (localDataSetImport && !fileOpenedOnce?.[parentFolderName]) {
-          console.log("Doing this stuff")
+          console.log("Doing this stuff");
           // get the paths of the manifest files that were imported locally
           let manifestPaths = [];
           for (const [highLevelFolderName, folderData] of Object.entries(
@@ -553,11 +547,7 @@ $(document).ready(async function () {
             const savedHeaders = result[0];
             const savedData = result[1];
             let jsonManifest = {};
-            let localFolderPath = window.path.join(
-              homeDirectory,
-              ".pysoda",
-              "manifest_file"
-            );
+            let localFolderPath = window.path.join(homeDirectory, ".pysoda", "manifest_file");
             let selectedManifestFilePath = window.path.join(localFolderPath, "manifest.xlsx");
 
             if (!window.fs.existsSync(localFolderPath)) {
