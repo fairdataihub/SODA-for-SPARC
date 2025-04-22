@@ -86,7 +86,12 @@ export const setActiveEntity = (activeEntity) => {
     ...state,
     activeEntity,
   }));
-
+  console.log("Setting active entity: ", activeEntity);
+  console.log("Combined entity IDs: ", combinedEntityIds);
+  console.log(
+    "combinedEntityIds.includes(activeEntity): ",
+    combinedEntityIds.includes(activeEntity)
+  );
   if (combinedEntityIds.includes(activeEntity)) {
     const subjectsFilter = [
       {
@@ -99,19 +104,21 @@ export const setActiveEntity = (activeEntity) => {
     const samplesFilter = [
       {
         type: "samples",
-        names: samples.filter((sample) => sample.toLowerCase() === activeEntity.toLowerCase()),
+        names: existingSampleIds.filter(
+          (sample) => sample.toLowerCase() === activeEntity.toLowerCase()
+        ),
       },
     ];
     const sitesFilter = [
       {
         type: "sites",
-        names: sites.filter((site) => site.toLowerCase() === activeEntity.toLowerCase()),
+        names: existingSiteIds.filter((site) => site.toLowerCase() === activeEntity.toLowerCase()),
       },
     ];
     const performancesFilter = [
       {
         type: "performances",
-        names: performances.filter(
+        names: existingPerformanceIds.filter(
           (performance) => performance.toLowerCase() === activeEntity.toLowerCase()
         ),
       },
