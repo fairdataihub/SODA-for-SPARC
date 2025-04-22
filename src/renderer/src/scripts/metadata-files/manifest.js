@@ -309,9 +309,8 @@ $(document).ready(async function () {
       // TODO: Check if this is needed everytime
       var localFolderPath = window.path.join(
         window.homeDirectory,
-        "SODA",
-        "manifest_files",
-        parentFolderName
+        ".pysoda",
+        "manifest_file"
       );
       var selectedManifestFilePath = window.path.join(localFolderPath, "manifest.xlsx");
       if (window.fs.existsSync(selectedManifestFilePath)) {
@@ -321,6 +320,7 @@ $(document).ready(async function () {
             "*": "{{columnHeader}}",
           },
         });
+
       }
 
       window.sodaCopy = window.sodaJSONObj;
@@ -339,7 +339,7 @@ $(document).ready(async function () {
           { timeout: 0 }
         );
 
-        let response = cleanJson.data.soda_json_structure;
+        let response = cleanJson.data.soda;
 
         window.sodaCopy = response;
       } catch (e) {
@@ -365,50 +365,51 @@ $(document).ready(async function () {
 
         // loop through each of the high level folders and create excel sheet in case no edits are made
         // will be auto generated and ready for upload
-        const manifestRes = res.data;
+        const manifestFileData = res.data;
         let newManifestData = {};
 
         // Format response for
-        for (const [highLevelFolderName, manifestFileData] of Object.entries(manifestRes)) {
-          if (manifestFileData.length > 1) {
-            const manifestHeader = manifestFileData.shift();
-            newManifestData[highLevelFolderName] = {
-              headers: manifestHeader,
-              data: manifestFileData,
-            };
-            // Will create an excel sheet of the manifest files in case they receive no edits
-            let jsonManifest = {};
-            let manifestFolder = window.path.join(homeDirectory, "SODA", "manifest_files");
-            let localFolderPath = window.path.join(manifestFolder, highLevelFolderName);
-            let selectedManifestFilePath = window.path.join(localFolderPath, "manifest.xlsx");
-            // create manifest folders if they don't exist
-            if (!window.fs.existsSync(manifestFolder)) {
-              window.fs.mkdirSync(manifestFolder);
-            }
-            if (!window.fs.existsSync(localFolderPath)) {
-              window.fs.mkdirSync(localFolderPath);
-              window.fs.closeSync(window.fs.openSync(selectedManifestFilePath, "w"));
-            }
-            if (!window.fs.existsSync(selectedManifestFilePath)) {
-            } else {
-              jsonManifest = await window.electron.ipcRenderer.invoke("excelToJsonSheet1Options", {
-                sourceFile: selectedManifestFilePath,
-                columnToKey: {
-                  "*": "{{columnHeader}}",
-                },
-              });
-            }
-            // If file doesn't exist then that means it didn't get imported properly
-            let sortedJSON = window.processManifestInfo(manifestHeader, manifestFileData);
-            jsonManifest = JSON.stringify(sortedJSON);
-            window.convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
+        if (manifestFileData.length > 1) {
+          const manifestHeader = manifestFileData.shift();
+          newManifestData = {
+            headers: manifestHeader,
+            data: manifestFileData,
+          };
+          // Will create an excel sheet of the manifest files in case they receive no edits
+          let jsonManifest = {};
+          let manifestFolder = window.path.join(homeDirectory, ".pysoda", "manifest_file");
+          let selectedManifestFilePath = window.path.join(manifestFolder, "manifest.xlsx");
+          // create manifest folders if they don't exist
+          if (!window.fs.existsSync(manifestFolder)) {
+            window.fs.mkdirSync(manifestFolder);
           }
+          if (!window.fs.existsSync(localFolderPath)) {
+            window.fs.mkdirSync(localFolderPath);
+            window.fs.closeSync(window.fs.openSync(selectedManifestFilePath, "w"));
+          }
+          if (!window.fs.existsSync(selectedManifestFilePath)) {
+          } else {
+            jsonManifest = await window.electron.ipcRenderer.invoke("excelToJsonSheet1Options", {
+              sourceFile: selectedManifestFilePath,
+              columnToKey: {
+                "*": "{{columnHeader}}",
+              },
+            });
+
+            console.log("Makes: ", jsonManifest);
+          }
+          // If file doesn't exist then that means it didn't get imported properly
+          let sortedJSON = window.processManifestInfo(manifestHeader, manifestFileData);
+          jsonManifest = JSON.stringify(sortedJSON);
+          window.convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
         }
+        
 
         // Check if dataset is local or pennsieve
         // If local then we need to read the excel file and create a json object
         let highLvlFolderNames = [];
         if (localDataSetImport && !fileOpenedOnce?.[parentFolderName]) {
+          console.log("Doing this stuff")
           // get the paths of the manifest files that were imported locally
           let manifestPaths = [];
           for (const [highLevelFolderName, folderData] of Object.entries(
@@ -530,7 +531,8 @@ $(document).ready(async function () {
       //Create child window here
       // const existingManifestData = window.sodaJSONObj["guided-manifest-file-data"][highLevelFolderName];
       //send manifest data to main.js to then send to child window
-      const existingManifestData = window.sodaCopy["manifest-files"]?.[parentFolderName];
+      const existingManifestData = window.sodaCopy["manifest-files"]?.["data"];
+      console.log("Existing manifest data: ", existingManifestData);
       Swal.close();
       // TODO: Lock all other manifest buttons
       window.electron.ipcRenderer.invoke("spreadsheet", existingManifestData);
@@ -553,9 +555,8 @@ $(document).ready(async function () {
             let jsonManifest = {};
             let localFolderPath = window.path.join(
               homeDirectory,
-              "SODA",
-              "manifest_files",
-              parentFolderName
+              ".pysoda",
+              "manifest_file"
             );
             let selectedManifestFilePath = window.path.join(localFolderPath, "manifest.xlsx");
 
@@ -1914,7 +1915,7 @@ const createManifestLocally = async (type, editBoolean, originalDataset) => {
   var generatePath = "";
   window.sodaJSONObj["manifest-files"]["local-destination"] = window.path.join(
     homeDirectory,
-    "SODA"
+    ".pysoda"
   );
 
   if (type === "local") {
