@@ -13,6 +13,7 @@ import {
 } from "@mantine/core";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
+import GuidedRadioButton from "../../buttons/GuidedRadioButton";
 
 import {
   toggleModalitySelection,
@@ -22,6 +23,9 @@ import {
 const ModalitySelectionPage = () => {
   return (
     <GuidedModePage pageHeader="Modalities Selection">
+      <GuidedModeSection>
+        <GuidedRadioButton />
+      </GuidedModeSection>
       <GuidedModeSection>
         <Text>Select all modalities used to acquire data in this dataset.</Text>
       </GuidedModeSection>
