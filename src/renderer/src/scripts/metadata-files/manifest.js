@@ -1447,6 +1447,8 @@ const extractBFDatasetForManifestFile = async (editBoolean, bfaccount, bfdataset
     result = [false, userErrorMessage(err)];
   }
 
+  console.log("Imported dataset is: ", result)
+
   if (!result[0]) {
     Swal.fire({
       icon: "error",
