@@ -18,12 +18,8 @@ import {
   addSiteToSubject,
   deleteSiteFromSubject,
   modifySubjectSiteId,
-  deletePerformanceFromSubject,
-  modifySubjectPerformanceId,
   deleteSiteFromSample,
   modifySampleSiteId,
-  deletePerformanceFromSample,
-  modifySamplePerformanceId,
   getAllEntityIds,
   setActiveFormType,
   setEntityBeingAddedParentSubject,
@@ -44,8 +40,6 @@ const getEntityIcon = (iconType) => {
       return <IconFlask size={iconSize} color="#74b816" />;
     case "site":
       return <IconPin size={iconSize} color="red" />;
-    case "performance":
-      return <IconClipboard size={iconSize} />;
     case "add":
       return (
         <ActionIcon variant="light" color="blue" radius="xl" size="sm">
@@ -287,73 +281,13 @@ const EntityHierarchyRenderer = ({
     return deleteSiteFromSample(subject.id, sample.id, site.id);
   }, []);
 
-  // ----- SUBJECT PERFORMANCE OPERATIONS -----
-  // Add operations
-  const handleAddSubjectPerformance = useCallback((subject) => {
-    guidedOpenEntityAdditionSwal({ entityType: "performances", subjectId: subject.id });
-  }, []);
-
-  // Edit operations
-  const handleEditSubjectPerformance = useCallback(async (performance, subject) => {
-    const result = await guidedOpenEntityEditSwal({
-      entityType: "performance",
-      entityData: performance,
-      parentEntityData: subject,
-    });
-
-    if (result) {
-      modifySubjectPerformanceId(subject.id, result.oldName, result.newName);
-    }
-  }, []);
-
-  // Delete operations
-  const handleDeleteSubjectPerformance = useCallback((performance, subject) => {
-    return deletePerformanceFromSubject(subject.id, performance.id);
-  }, []);
-
-  // ----- SAMPLE PERFORMANCE OPERATIONS -----
-  // Add operations
-  const handleAddSamplePerformance = useCallback(({ sample, subject }) => {
-    guidedOpenEntityAdditionSwal({
-      entityType: "performances",
-      subjectId: subject.id,
-      sampleId: sample.id,
-    });
-  }, []);
-
-  // Edit operations
-  const handleEditSamplePerformance = useCallback(async (performance, { sample, subject }) => {
-    const result = await guidedOpenEntityEditSwal({
-      entityType: "performance",
-      entityData: performance,
-      parentEntityData: { sample, subject },
-    });
-
-    if (result) {
-      modifySamplePerformanceId(subject.id, sample.id, result.oldName, result.newName);
-    }
-  }, []);
-
-  // Delete operations
-  const handleDeleteSamplePerformance = useCallback((performance, { sample, subject }) => {
-    return deletePerformanceFromSample(subject.id, sample.id, performance.id);
-  }, []);
-
   // Calculate which entity types should be displayed based on selected entities
-  // This controls visibility of samples, sites, and performances in the hierarchy
-  const {
-    showSamples,
-    showSubjectSites,
-    showSampleSites,
-    showSubjectPerformances,
-    showSamplePerformances,
-  } = useMemo(
+  // This controls visibility of samples, and sites in the hierarchy
+  const { showSamples, showSubjectSites, showSampleSites } = useMemo(
     () => ({
       showSamples: selectedEntities?.includes("samples") || false,
       showSubjectSites: selectedEntities?.includes("sites") || false,
       showSampleSites: selectedEntities?.includes("sites") || false,
-      showSubjectPerformances: selectedEntities?.includes("performances") || false,
-      showSamplePerformances: selectedEntities?.includes("performances") || false,
     }),
     [selectedEntities]
   );
@@ -503,37 +437,6 @@ const EntityHierarchyRenderer = ({
                             onSelect={handleEntitySelect}
                           />
                         ))}
-
-                      {allowEntityStructureEditing && showSamplePerformances && (
-                        <HierarchyItem
-                          label={`Add performance(s) to ${sample.id}`}
-                          icon="add"
-                          level={3}
-                          parentEntityData={{ sample, subject }}
-                          onAdd={handleAddSamplePerformance}
-                        />
-                      )}
-                      {/* Sample Performances */}
-                      {showSamplePerformances &&
-                        sample.performances?.map((performance) => (
-                          <HierarchyItem
-                            key={performance.id}
-                            icon="performance"
-                            label={performance.id}
-                            level={3}
-                            allowEntityStructureEditing={allowEntityStructureEditing}
-                            allowEntitySelection={allowEntitySelection}
-                            entityData={performance}
-                            parentEntityData={{ sample, subject }}
-                            onEdit={() =>
-                              handleEditSamplePerformance(performance, { sample, subject })
-                            }
-                            onDelete={() =>
-                              handleDeleteSamplePerformance(performance, { sample, subject })
-                            }
-                            onSelect={handleEntitySelect}
-                          />
-                        ))}
                     </HierarchyItem>
                   ))}
 
@@ -563,31 +466,6 @@ const EntityHierarchyRenderer = ({
                     onAdd={handleAddSubjectSiteButtonClick}
                   />
                 )}
-                {allowEntityStructureEditing && showSubjectPerformances && (
-                  <HierarchyItem
-                    label={`Add performance(s) to ${subject.id}`}
-                    icon="add"
-                    level={2}
-                    parentEntityData={subject}
-                    onAdd={handleAddSubjectPerformance}
-                  />
-                )}
-                {showSubjectPerformances &&
-                  subject.subjectPerformances?.map((performance) => (
-                    <HierarchyItem
-                      key={performance.id}
-                      icon="performance"
-                      label={performance.id}
-                      level={2}
-                      allowEntityStructureEditing={allowEntityStructureEditing}
-                      allowEntitySelection={allowEntitySelection}
-                      entityData={performance}
-                      parentEntityData={subject}
-                      onEdit={() => handleEditSubjectPerformance(performance, subject)}
-                      onDelete={() => handleDeleteSubjectPerformance(performance, subject)}
-                      onSelect={handleEntitySelect}
-                    />
-                  ))}
               </Box>
             ))
           )}
