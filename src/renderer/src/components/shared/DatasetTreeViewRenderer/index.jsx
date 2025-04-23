@@ -96,7 +96,6 @@ const formatEntityId = (entityId) => {
   if (displayText.length > 20) {
     displayText = displayText.substring(0, 18) + "...";
   }
-  console.log("displayText", displayText);
   return displayText;
 };
 

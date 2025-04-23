@@ -95,11 +95,9 @@ export const savePageChanges = async (pageBeingLeftID) => {
         const selectedModalities = useGlobalStore.getState()["selectedModalities"];
         console.log("selectedModalities", selectedModalities);
         if (selectedModalities.length === 0) {
-          errorArray.push({
-            type: "notyf",
-            message: "Please select at least one modality",
-          });
-          throw errorArray;
+          guidedSkipPage("guided-modalities-data-selection-tab");
+        } else {
+          guidedUnSkipPage("guided-modalities-data-selection-tab");
         }
         window.sodaJSONObj["selected-modalities"] = selectedModalities;
       }
