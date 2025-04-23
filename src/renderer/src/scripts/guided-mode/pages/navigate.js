@@ -26,9 +26,7 @@ while (!window.baseHtmlLoaded) {
  * @description Navigate to the next page in the active prepare datasets step-by-step workflow. Navigating to the next page saves the
  * current page's progress if the page is valid.
  */
-$("#guided-next-button").on("click", async function () {
-  console.log("Next button clicked");
-
+export const handleNextButtonClick = async () => {
   //Get the ID of the current page to handle actions on page leave (next button pressed)
   window.pageBeingLeftID = window.CURRENT_PAGE.id;
 
@@ -88,13 +86,13 @@ $("#guided-next-button").on("click", async function () {
       });
     }
   }
-});
+};
 
 /**
  * @description Navigate to the previous page in the active prepare datasets step-by-step workflow.Navigating
  * to the previous page saves the current page's progress if the page is valid.
  */
-$("#guided-back-button").on("click", async () => {
+export const handleBackButtonClick = async () => {
   window.pageBeingLeftID = window.CURRENT_PAGE.id;
 
   try {
@@ -116,8 +114,13 @@ $("#guided-back-button").on("click", async () => {
 
   // open the target page
   await openPage(targetPageID);
-});
+};
 
+const nextButton = document.getElementById("guided-next-button");
+nextButton.addEventListener("click", handleNextButtonClick);
+
+const backButton = document.getElementById("guided-back-button");
+backButton.addEventListener("click", handleBackButtonClick);
 // Save and exit button click handlers
 document.getElementById("guided-button-save-and-exit").addEventListener("click", async () => {
   await guidedSaveAndExit();
