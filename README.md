@@ -88,6 +88,7 @@ SODA is distributed under the MIT License. See [LICENSE](https://github.com/fair
 We use Kombucha Analytics to collect anonymous usage data.
 
 This data helps us:
+
 - Improve SODA’s features and usability
 - Identify bugs and crashes
 - Fulfill our reporting requirements to the SPARC program
