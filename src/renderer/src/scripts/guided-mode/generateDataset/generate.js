@@ -707,16 +707,21 @@ const guidedGenerateSubjectsMetadata = async (destination) => {
     guidedUploadStatusIcon(`guided-subjects-metadata-pennsieve-genration-status`, "loading");
   }
 
+  // TODO: SDS3 normalize so that we only use one way of storing dataset name and account name
+  window.sodaJSONObj["dataset_metadata"]["subjects"] = window.subjectsTableData;
+  if (!window.sodaJSONObj["ps-account-selected"]) window.sodaJSONObj["ps-account-selected"] = {};
+  window.sodaJSONObj["ps-account-selected"]["account-name"] = window.defaultBfAccount;
+  window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = guidedGetDatasetName(
+    window.sodaJSONObj
+  );
+
   try {
     // Generate the subjects metadata file
     await client.post(
       `/prepare_metadata/subjects_file`,
       {
         filepath: generationDestination === "Pennsieve" ? "" : destination,
-        selected_account: window.defaultBfAccount,
-        selected_dataset:
-          generationDestination === "Pennsieve" ? guidedGetDatasetName(window.sodaJSONObj) : "",
-        subjects_header_row: window.subjectsTableData,
+        soda: window.sodaJSONObj,
       },
       {
         params: {
@@ -782,15 +787,19 @@ const guidedGenerateSamplesMetadata = async (destination) => {
     guidedUploadStatusIcon("guided-samples-metadata-pennsieve-genration-status", "loading");
   }
 
+  if (!window.sodaJSONObj["ps-account-selected"]) window.sodaJSONObj["ps-account-selected"] = {};
+  window.sodaJSONObj["ps-account-selected"]["account-name"] = window.defaultBfAccount;
+  window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = guidedGetDatasetName(
+    window.sodaJSONObj
+  );
+  window.sodaJSONObj["dataset_metadata"]["samples"] = window.samplesTableData;
+
   try {
     await client.post(
       `/prepare_metadata/samples_file`,
       {
         filepath: generationDestination === "Pennsieve" ? "" : destination,
-        selected_account: window.defaultBfAccount,
-        selected_dataset:
-          generationDestination === "Pennsieve" ? guidedGetDatasetName(window.sodaJSONObj) : "",
-        samples_str: window.samplesTableData,
+        soda: window.sodaJSONObj,
       },
       {
         params: {
@@ -872,21 +881,19 @@ const guidedGenerateSubmissionMetadata = async (destination) => {
     guidedUploadStatusIcon("guided-submission-metadata-pennsieve-genration-status", "loading");
   }
 
+  if (!window.sodaJSONObj["ps-account-selected"]) window.sodaJSONObj["ps-account-selected"] = {};
+  window.sodaJSONObj["ps-account-selected"]["account-name"] = window.defaultBfAccount;
+  window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = guidedGetDatasetName(
+    window.sodaJSONObj
+  );
+  window.sodaJSONObj["dataset_metadata"]["submission"] = submissionMetadataArray;
+
   try {
-    await client.post(
-      `/prepare_metadata/submission_file`,
-      {
-        submission_file_rows: submissionMetadataArray,
-        filepath: generationDestination === "Pennsieve" ? "" : destination,
-        upload_boolean: generationDestination === "Pennsieve",
-      },
-      {
-        params: {
-          selected_account: window.defaultBfAccount,
-          selected_dataset: guidedGetDatasetName(window.sodaJSONObj),
-        },
-      }
-    );
+    await client.post(`/prepare_metadata/submission_file`, {
+      soda: window.sodaJSONObj,
+      filepath: generationDestination === "Pennsieve" ? "" : destination,
+      upload_boolean: generationDestination === "Pennsieve",
+    });
     // Update UI for successful generation (Pennsieve) and send success event
     if (generationDestination === "Pennsieve") {
       guidedUploadStatusIcon("guided-submission-metadata-pennsieve-genration-status", "success");
@@ -949,17 +956,75 @@ const guidedGenerateDatasetDescriptionMetadata = async (destination) => {
     );
   }
 
+  if (!window.sodaJSONObj["ps-account-selected"]) window.sodaJSONObj["ps-account-selected"] = {};
+  window.sodaJSONObj["ps-account-selected"]["account-name"] = window.defaultBfAccount;
+  window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = guidedGetDatasetName(
+    window.sodaJSONObj
+  );
+
+  let basic_information = {
+    title: guidedDatasetInformation["title"],
+    description: guidedDatasetInformation["description"],
+    keywords: guidedDatasetInformation["keywords"],
+    subtitle: guidedDatasetInformation["subtitle"] || "",
+    license: guidedDatasetInformation["license"] || "",
+    funding: guidedDatasetInformation["funding"] || [],
+    acknowledgments: guidedDatasetInformation["acknowledgments"] || [],
+  };
+
+  let funding_information = {
+    funding_consortium: guidedDatasetInformation["funding-consortium"] || [],
+    funding_agency: guidedDatasetInformation["funding-agency"] || [],
+    award_number: guidedDatasetInformation["funding"] || [],
+  };
+
+  let study_information = {
+    study_purpose: guidedStudyInformation["study-purpose"] || "",
+    study_data_collection: guidedStudyInformation["study-data-collection"] || "",
+    study_primary_conclusion: guidedStudyInformation["study-primary-conclusion"] || "",
+    study_organ_system: guidedStudyInformation["study-organ-system"] || [],
+    study_approach: guidedStudyInformation["study-approach"] || [],
+    study_technique: guidedStudyInformation["study-technique"] || [],
+    study_collection_title: guidedStudyInformation["study-collection-title"] || "",
+  };
+
+  let participant_information = {
+    number_of_subjects: guidedStudyInformation["number-of-subjects"] || "",
+    number_of_samples: guidedStudyInformation["number-of-samples"] || "",
+    number_of_sites: guidedStudyInformation["number-of-sites"] || "",
+    number_of_performances: guidedStudyInformation["number-of-performances"] || "",
+  };
+
+  let data_dictionary_information = {
+    data_dictionary: guidedDatasetInformation["data-dictionary"] || [],
+    data_dictionary_description: guidedDatasetInformation["data-dictionary-description"] || "",
+    data_dictionary_type: guidedDatasetInformation["data-dictionary-link"] || "",
+  };
+
+  // TODO: SDS3 has more fields and not all of the existing fields align with that either now. Fix this before release.
+  // REMAINING: datasetLinks and contributrorInformation key names
+  window.sodaJSONObj["dataset_metadata"]["dataset_description"] = {
+    type: guidedDatasetInformation["type"],
+    standards_information: {
+      data_standard: "SDS",
+      data_standard_version: "3.0.1",
+    },
+    study_information: study_information,
+    contributor_information: guidedContributorInformation,
+    basic_information: basic_information,
+    related_information: datasetLinks,
+    funding_information: funding_information,
+    participant_information: participant_information,
+    data_dictionary_information: data_dictionary_information,
+  };
+
   try {
     await client.post(
       `/prepare_metadata/dataset_description_file`,
       {
-        selected_account: window.defaultBfAccount,
-        selected_dataset: guidedGetDatasetName(window.sodaJSONObj),
+        soda: window.sodaJSONObj,
         filepath: generationDestination === "Pennsieve" ? "" : destination,
-        dataset_str: guidedDatasetInformation,
-        study_str: guidedStudyInformation,
-        contributor_str: guidedContributorInformation,
-        related_info_str: datasetLinks,
+        soda: window.sodaJSONObj,
       },
       {
         params: {
@@ -1030,18 +1095,22 @@ const guidedGenerateReadmeMetadata = async (destination) => {
     guidedUploadStatusIcon("guided-readme-metadata-pennsieve-genration-status", "loading");
   }
 
+  window.sodaJSONObj["ps-account-selected"]["account-name"] = window.defaultBfAccount;
+  window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = guidedGetDatasetName(
+    window.sodaJSONObj
+  );
+  window.sodaJSONObj["dataset_metadata"]["README"] = guidedReadMeMetadata;
+
   try {
     if (generationDestination === "Pennsieve") {
       await client.post(
         `/prepare_metadata/readme_changes_file`,
         {
-          text: guidedReadMeMetadata,
+          soda: window.sodaJSONObj,
         },
         {
           params: {
             file_type: "README.txt",
-            selected_account: window.defaultBfAccount,
-            selected_dataset: guidedGetDatasetName(window.sodaJSONObj),
           },
         }
       );
@@ -1106,18 +1175,22 @@ const guidedGenerateChangesMetadata = async (destination) => {
     guidedUploadStatusIcon("guided-changes-metadata-pennsieve-genration-status", "loading");
   }
 
+  window.sodaJSONObj["ps-account-selected"]["account-name"] = window.defaultBfAccount;
+  window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = guidedGetDatasetName(
+    window.sodaJSONObj
+  );
+  window.sodaJSONObj["dataset_metadata"]["CHANGES"] = guidedChangesMetadata;
+
   try {
     if (generationDestination === "Pennsieve") {
       await client.post(
         `/prepare_metadata/readme_changes_file`,
         {
-          text: guidedChangesMetadata,
+          soda: window.sodaJSONObj,
         },
         {
           params: {
             file_type: "CHANGES.txt",
-            selected_account: window.defaultBfAccount,
-            selected_dataset: guidedGetDatasetName(window.sodaJSONObj),
           },
         }
       );
@@ -1267,12 +1340,18 @@ const guidedUploadDatasetToPennsieve = async () => {
     // create a dataset upload session
     datasetUploadSession.startSession();
   }
+
+  // create a copy of the window.sodaJSONobj that does not have the dataset_metadata key as it has already been uploaded
+  // and we do not want to upload it again
+  let datasetUploadObj = JSON.parse(JSON.stringify(window.sodaJSONObj));
+  delete datasetUploadObj["dataset_metadata"];
+
   guidedSetNavLoadingState(true);
   client
     .post(
       `/curate_datasets/curation`,
       {
-        soda_json_structure: window.sodaJSONObj,
+        soda_json_structure: datasetUploadObj,
         resume: !!window.retryGuidedMode,
       },
       { timeout: 0 }

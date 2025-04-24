@@ -5,6 +5,8 @@ from organizeDatasets import (
     monitor_pennsieve_json_progress,
 )
 
+from pysoda.core.dataset_importing import import_pennsieve_dataset
+
 from namespaces import NamespaceEnum, get_namespace
 from flask_restx import Resource, fields, reqparse
 from errorHandlers import notBadRequestException

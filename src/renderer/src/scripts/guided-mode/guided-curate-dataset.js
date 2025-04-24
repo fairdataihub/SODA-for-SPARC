@@ -17,6 +17,7 @@ import Swal from "sweetalert2";
 import Tagify from "@yaireo/tagify/dist/tagify.esm.js";
 import { v4 as uuid } from "uuid";
 import client from "../client";
+import { guidedPennsieveDatasetUpload } from "./generateDataset/generate";
 
 import {
   swalConfirmAction,
@@ -26,32 +27,7 @@ import {
   swalShowInfo,
 } from "../utils/swal-utils";
 
-// Import state management stores
-import useGlobalStore from "../../stores/globalStore";
-import { setDropdownState } from "../../stores/slices/dropDownSlice";
-import {
-  setGuidedDatasetName,
-  setGuidedDatasetSubtitle,
-} from "../../stores/slices/guidedModeSlice";
-import {
-  setEntityType,
-  getEntityObjForEntityType,
-  setEntityListForEntityType,
-  setActiveEntity,
-  getDatasetEntityObj,
-  setDatasetEntityObj,
-  addEntityToEntityList,
-  removeEntityFromEntityList,
-} from "../../stores/slices/datasetEntitySelectorSlice";
-import {
-  setTreeViewDatasetStructure,
-  externallySetSearchFilterValue,
-} from "../../stores/slices/datasetTreeViewSlice";
-import { setSelectedEntities } from "../../stores/slices/datasetContentSelectorSlice";
-import {
-  getDatasetEntityArray,
-  setDatasetEntityArray,
-} from "../../stores/slices/datasetEntityStructureSlice";
+import { getDatasetEntityObj } from "../../stores/slices/datasetEntitySelectorSlice";
 
 import "bootstrap-select";
 import Cropper from "cropperjs";
@@ -5424,5 +5400,5 @@ const doTheHack = async () => {
 // (always set to false when making production builds)
 const continueHackGm = true;
 if (continueHackGm) {
-  doTheHack();
+  // doTheHack();
 }

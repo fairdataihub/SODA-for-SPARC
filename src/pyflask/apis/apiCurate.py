@@ -95,7 +95,7 @@ class Curation(Resource):
         data = request.get_json()
 
         if "soda_json_structure" not in data:
-            api.abort(400, "Missing parameter: soda_json_structure")
+            api.abort(400, "Missing parameter: soda")
 
         soda_json_structure = data["soda_json_structure"]
         api.logger.info("/clean-dataset POST request")
