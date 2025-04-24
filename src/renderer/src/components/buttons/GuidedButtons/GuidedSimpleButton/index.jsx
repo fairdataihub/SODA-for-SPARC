@@ -9,6 +9,7 @@
  * @param {string} props.configValueState State value (e.g., "yes", "no")
  * @param {string} props.buttonType Button type/style (e.g., "positive", "negative", default is "")
  */
+
 const GuidedSimpleButton = ({
   id,
   nextElementId,
@@ -18,6 +19,7 @@ const GuidedSimpleButton = ({
   buttonType = "",
 }) => {
   const buttonClass = `ui ${buttonType} basic button guided--radio-button`;
+
   return (
     <button
       className={buttonClass}

@@ -15,9 +15,8 @@ import {
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import GuidedSimpleButton from "../../buttons/GuidedButtons/GuidedSimpleButton";
-import SodaPaper from "../../utils/ui/SodaPaper";
 import NavigationButton from "../../buttons/Navigation";
-import { handleNextButtonClick } from "../../../scripts/guided-mode/pages/navigate";
+
 import {
   toggleModalitySelection,
   modalityIsSelected,
@@ -26,32 +25,38 @@ import {
 const ModalitySelectionPage = () => {
   return (
     <GuidedModePage pageHeader="Modalities Selection">
-      <label class="guided--form-label centered">
-        Does your dataset include data from different modalities?{" "}
-      </label>
-      <Center>
-        <div className="guided--radio-button-container">
-          <GuidedSimpleButton
-            id="modality-selection-yes"
-            nextElementId="dataset-selection"
-            buttonText="Yes"
-            configValue="yes"
-            configValueState="yes"
-            buttonType="positive"
-          />
-          <GuidedSimpleButton
-            id="modality-selection-no"
-            nextElementId="no-modalities"
-            buttonText="No"
-            configValue="no"
-            configValueState="no"
-            buttonType="negative"
-          />
-        </div>
-      </Center>
+      <GuidedModeSection>
+        <label class="guided--form-label centered">
+          Does your dataset include data collected from multiple modalities, such as imaging,
+          recordings, or behavioral data?
+        </label>
+
+        <Center>
+          <div className="guided--radio-button-container">
+            <GuidedSimpleButton
+              id="modality-selection-yes"
+              nextElementId="dataset-selection"
+              buttonText="Yes"
+              configValue="yes"
+              configValueState="yes"
+              buttonType="positive"
+            />
+            <GuidedSimpleButton
+              id="modality-selection-no"
+              nextElementId="no-modalities"
+              buttonText="No"
+              configValue="no"
+              configValueState="no"
+              buttonType="negative"
+            />
+          </div>
+        </Center>
+      </GuidedModeSection>
       {/* Section that appears when user selects "Yes" */}
+
       <GuidedModeSection sectionId="dataset-selection">
         <Text>Select all modalities used to acquire data in this dataset.</Text>
+
         <Paper shadow="sm" radius="md" p="sm" withBorder mb="md">
           <Stack>
             <Checkbox
@@ -59,11 +64,13 @@ const ModalitySelectionPage = () => {
               checked={modalityIsSelected("Electrophysiology")}
               onChange={() => toggleModalitySelection("Electrophysiology")}
             />
+
             <Checkbox
               label="Imaging"
               checked={modalityIsSelected("Imaging")}
               onChange={() => toggleModalitySelection("Imaging")}
             />
+
             <Checkbox
               label="Behavioral"
               checked={modalityIsSelected("Behavioral")}
@@ -72,7 +79,9 @@ const ModalitySelectionPage = () => {
           </Stack>
         </Paper>
       </GuidedModeSection>
+
       {/* New section that appears when user selects "No" */}
+
       <GuidedModeSection sectionId="no-modalities">
         <Center mt="xl">
           <NavigationButton

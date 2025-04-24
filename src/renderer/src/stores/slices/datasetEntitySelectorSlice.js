@@ -97,7 +97,7 @@ export const setActiveEntity = (activeEntity) => {
       {
         type: "subjects",
         names: existingSubjectIds.filter(
-          (subject) => subject.toLowerCase() === activeEntity.toLowerCase()
+          (subject) => subject.toLowerCase() != activeEntity.toLowerCase()
         ),
       },
     ];
@@ -105,21 +105,21 @@ export const setActiveEntity = (activeEntity) => {
       {
         type: "samples",
         names: existingSampleIds.filter(
-          (sample) => sample.toLowerCase() === activeEntity.toLowerCase()
+          (sample) => sample.toLowerCase() != activeEntity.toLowerCase()
         ),
       },
     ];
     const sitesFilter = [
       {
         type: "sites",
-        names: existingSiteIds.filter((site) => site.toLowerCase() === activeEntity.toLowerCase()),
+        names: existingSiteIds.filter((site) => site.toLowerCase() != activeEntity.toLowerCase()),
       },
     ];
     const performancesFilter = [
       {
         type: "performances",
         names: existingPerformanceIds.filter(
-          (performance) => performance.toLowerCase() === activeEntity.toLowerCase()
+          (performance) => performance.toLowerCase() != activeEntity.toLowerCase()
         ),
       },
     ];
@@ -130,10 +130,7 @@ export const setActiveEntity = (activeEntity) => {
       ...performancesFilter,
     ];
     console.log("Setting entity filter: ", combinedFilters);
-    setEntityFilter(
-      [{ type: "categorized-data", names: ["Experimental data"] }],
-      combinedFilters // Pass the combined filter
-    );
+    setEntityFilter([{ type: "categorized-data", names: ["Experimental data"] }], combinedFilters);
   }
 };
 

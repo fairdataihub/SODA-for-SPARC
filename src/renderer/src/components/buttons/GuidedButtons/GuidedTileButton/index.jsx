@@ -9,6 +9,7 @@ import { IconMoodAngry } from "@tabler/icons-react";
  * @param {string} props.buttonText Heading text to display
  * @param {React.ReactNode} props.icon Icon component or SVG to display
  */
+
 const GuidedTileButton = ({ id, nextElementId, buttonText, icon }) => {
   // Default icon if none provided
   const defaultIcon = <IconMoodAngry size={50} color="var(--color-light-green)" />;

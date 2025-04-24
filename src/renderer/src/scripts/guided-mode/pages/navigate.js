@@ -17,7 +17,7 @@ import { existingDataset, modifyDataset } from "../../../assets/lotties/lotties"
 import Swal from "sweetalert2";
 import { clientError } from "../../others/http-error-handler/error-handler";
 import client from "../../client";
-console.log("hi there from navigate.js");
+
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
@@ -25,8 +25,7 @@ while (!window.baseHtmlLoaded) {
  * @description Navigate to the next page in the active prepare datasets step-by-step workflow.
  */
 export const handleNextButtonClick = async () => {
-  console.log("Next button clicked");
-
+  //Get the ID of the current page to handle actions on page leave (next button pressed)
   window.pageBeingLeftID = window.CURRENT_PAGE.id;
 
   if (window.pageBeingLeftID === "guided-dataset-generation-tab") {
@@ -106,7 +105,6 @@ nextButton.addEventListener("click", handleNextButtonClick);
 
 const backButton = document.getElementById("guided-back-button");
 backButton.addEventListener("click", handleBackButtonClick);
-
 // Save and exit button click handlers
 document.getElementById("guided-button-save-and-exit").addEventListener("click", async () => {
   await guidedSaveAndExit();
