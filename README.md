@@ -29,7 +29,7 @@
    <i> By SPARC investigators, for SPARC investigators </i>
     <br />
     <br />
-    <a href="https://docs.sodaforsparc.io/"><strong>Explore our documentation »</strong></a>
+    <a href="https://docs.sodaforsparc.io/"><strong>Learn how SODA helps you make your data FAIR — check out our documentation.</strong></a>
     <br />
     <br />
     <a href="https://github.com/fairdataihub/SODA-for-SPARC/issues">Report Issue</a>
@@ -57,15 +57,28 @@ All our releases are also accessible in the [releases tab](https://github.com/fa
 
 ## Documentation
 
-See the [our dedicated webpage](https://docs.sodaforsparc.io/) for the full documentation, including details about each features and how to use them.
+See our [dedicated webpage](https://docs.sodaforsparc.io/) for the full documentation, including details about each feature and how to use them.
 
 ## Issues and Feedback
 
-To report any issues with the software, suggest improvements, or request a new feature, please open a new issue via the [Issues tab](https://github.com/fairdataihub/SODA-for-SPARC/issues). Provide adequate information (operating system, steps leading to error, screenshots) so we can help you efficiently. Alternatively, you could also use [our feedback form](https://docs.google.com/forms/d/e/1FAIpQLSfyUw2_NI1-2tlAr8oB5_JcJ_yjTB-zUDt9skfGjNU9qjITwg/viewform?ts=5e433bea). The feedback form is also accessible directly in the user interface of SODA.
+If you encounter a bug, need help, or have a feature request, please open a new issue via the [Issues tab](https://github.com/fairdataihub/SODA-for-SPARC/issues). When reporting, include helpful details such as:
+
+- Your operating system
+- Steps to reproduce the issue
+- Screenshots or logs (if available)
+
+Alternatively, you can share feedback through [our quick feedback form](https://docs.google.com/forms/d/e/1FAIpQLSfyUw2_NI1-2tlAr8oB5_JcJ_yjTB-zUDt9skfGjNU9qjITwg/viewform?ts=5e433bea). This is also accessible from within the SODA user interface.
+
 
 ## Contributing
 
-If you want to contribute, modify SODA to better suit your needs, or compile it for an operating system not mentioned above, please follow the instructions provided in the [developer section](https://docs.sodaforsparc.io/docs/developer-documentation/project-setup) of our documentation.
+If you're interested in contributing directly to the project or modifying SODA to better suit your needs:
+
+- Follow our setup instructions in the [Developer Documentation](https://docs.sodaforsparc.io/docs/developer-documentation/project-setup)
+- Feel free to fork the repo, make changes, and submit a pull request
+- Use the Issues tab to discuss ideas, ask questions, or find items to work on
+
+Whether you're a user or developer, your contributions help improve SODA for the entire SPARC community. Thanks for being part of it!
 
 ## License
 
@@ -73,7 +86,7 @@ SODA is distributed under the MIT License. See [LICENSE](https://github.com/fair
 
 ## Privacy Policy
 
-SODA uses Kombucha Analytics for tracking. Tracking is anonymous and no identifying personal information is collected. Tracking is implemented as part of our agreement with the SPARC program to report usage statistics for SODA. Tracking is also used to identify errors and subsequently improve user experience. To learn more about what is tracked and how we use Kombucha Analytics within SODA, please read our [Privacy Policy](https://github.com/fairdataihub/SODA-for-SPARC/wiki/Privacy-Policy).
+SODA uses Kombucha Analytics to collect only anonymous usage data to help us improve the software and meet reporting requirements from the SPARC program. To learn more about what SODA collects and how we use Kombucha Analytics within SODA, please read our [Privacy Policy](https://github.com/fairdataihub/SODA-for-SPARC/wiki/Privacy-Policy).
 
 ## Acknowledgements
 
