@@ -69,7 +69,6 @@ If you encounter a bug, need help, or have a feature request, please open a new 
 
 Alternatively, you can share feedback through [our quick feedback form](https://docs.google.com/forms/d/e/1FAIpQLSfyUw2_NI1-2tlAr8oB5_JcJ_yjTB-zUDt9skfGjNU9qjITwg/viewform?ts=5e433bea). This is also accessible from within the SODA user interface.
 
-
 ## Contributing
 
 If you're interested in contributing directly to the project or modifying SODA to better suit your needs:
