@@ -642,6 +642,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: fit-content;
 }
 
 .guided--radio-button {

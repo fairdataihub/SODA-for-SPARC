@@ -20,11 +20,8 @@ const handleFileClick = (
   fileIsSelected,
   mutuallyExclusive // Remove default value - require explicit parameter
 ) => {
-  console.log("handleFileClick");
   const entityId = selectedHierarchyEntity.id;
-  console.log("entityId", entityId);
-  console.log("fileContents", fileContents);
-  console.log("fileIsSelected", fileIsSelected);
+
   modifyDatasetEntityForRelativeFilePath(
     "entity-to-file-mapping",
     entityId,
@@ -84,7 +81,6 @@ const getInstructionalTextByEntityType = (entityType) => {
 };
 
 const DatasetEntityFileMapper = ({ entityType }) => {
-  console.log("DatasetEntityFileMapper", entityType);
   const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
   const selectedEntityId = selectedHierarchyEntity ? selectedHierarchyEntity.id : null;
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);

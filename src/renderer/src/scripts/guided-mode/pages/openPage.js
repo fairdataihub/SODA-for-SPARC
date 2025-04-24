@@ -357,6 +357,7 @@ export const openPage = async (targetPageID) => {
         if (pageEntityType === "subjects") {
           const subjects = getExistingSubjectIds();
           const samples = getExistingSampleIds();
+          const sites = getExistingSiteIds();
           for (const subject of subjects) {
             addEntityToEntityList("subjects", subject);
           }
@@ -368,11 +369,18 @@ export const openPage = async (targetPageID) => {
               names: samples, // Pass the entire array of sample IDs
             },
           ];
+          const siteFilter = [
+            {
+              type: "sites",
+              names: sites,
+            },
+          ];
+          const combinedFilter = [...sampleFilter, ...siteFilter];
 
-          setEntityFilter(
+          /* setEntityFilter(
             [{ type: "categorized-data", names: ["Experimental data"] }],
-            sampleFilter
-          );
+            combinedFilter // Pass the combined filter
+          ); */
         }
 
         if (pageEntityType === "performances") {

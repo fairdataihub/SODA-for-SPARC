@@ -47,7 +47,6 @@ import { naturalSort } from "../utils/util-functions";
 import SelectedHierarchyEntityPreviewer from "../SelectedHierarchyEntityPreviewer";
 
 const getAssociatedEntities = (relativePath, currentEntityType) => {
-  console.log("getAssociatedEntities", relativePath, currentEntityType);
   const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
   if (!datasetEntityObj) return [];
 
@@ -57,15 +56,12 @@ const getAssociatedEntities = (relativePath, currentEntityType) => {
   for (const entityType of entityTypes) {
     const entities = datasetEntityObj[entityType] || {};
     for (const [entityId, paths] of Object.entries(entities)) {
-      console.log("entityId", entityId);
       if (paths?.[relativePath]) {
         associatedEntities.push({ entityId, entityType });
       }
     }
   }
-  if (associatedEntities.length > 0) {
-    console.log("associatedEntities:", associatedEntities);
-  }
+
   return associatedEntities;
 };
 // Get badge color based on entity type
@@ -74,7 +70,6 @@ const getBadgeColor = (entityId) => {
   if (entityId.startsWith("sam-")) return "green";
   if (entityId.startsWith("site-")) return "orange";
   if (entityId.startsWith("perf-")) return "red";
-  console.log("eid:", entityId);
 
   // Entity type based colors
   if (entityId === "Code") return "blue";
@@ -85,7 +80,6 @@ const getBadgeColor = (entityId) => {
 // Format entity ID for display by removing standard prefixes and managing length
 // to ensure badges remain readable while showing meaningful information
 const formatEntityId = (entityId) => {
-  console.log("formatEntityId", entityId);
   // Strip common prefixes for cleaner display
   let displayText = entityId;
   const prefixes = ["sub-", "sam-", "site-", "perf-"];
@@ -102,7 +96,6 @@ const formatEntityId = (entityId) => {
   if (displayText.length > 20) {
     displayText = displayText.substring(0, 18) + "...";
   }
-  console.log("displayText", displayText);
   return displayText;
 };
 
@@ -149,7 +142,6 @@ const FileItem = ({
 
   // Get associated entities for this file, filtering by entityType
   const associations = getAssociatedEntities(content.relativePath, entityType);
-  console.log("FileItem associations", associations);
 
   // Determine file selection status (true or false only, no null)
   const fileIsSelected = isFileSelected ? isFileSelected(name, content) : false;
@@ -350,11 +342,6 @@ const FolderItem = ({
     const selectedFiles = allFiles.filter((file) => isFileSelected(file.name, file.content));
     const selectedCount = selectedFiles.length;
 
-    console.debug(
-      `Folder ${name} selection: ${selectedCount}/${totalFiles} files selected`,
-      `(includes ${Object.keys(content.folders || {}).length} subfolders)`
-    );
-
     // Only return true if ALL files are selected (complete folder selection)
     return selectedCount === totalFiles;
   };
@@ -539,8 +526,6 @@ const DatasetTreeViewRenderer = ({
   entityType,
   allowFolderSelection = false, // Add new prop with default false
 }) => {
-  console.log("DatasetTreeViewRenderer entityType:", entityType);
-
   const renderDatasetStructureJSONObj = useGlobalStore(
     (state) => state.renderDatasetStructureJSONObj
   );
@@ -607,7 +592,6 @@ const DatasetTreeViewRenderer = ({
   }
 
   const handleFileItemClick = (fileName, fileContents) => {
-    console.log("Internal file click", fileName); // Add this debug line
     if (fileActions && typeof fileActions["is-file-selected"] === "function") {
       const isSelected = fileActions["is-file-selected"](fileName, fileContents);
       // Pass the mutuallyExclusiveSelection parameter

@@ -17,19 +17,16 @@ import { existingDataset, modifyDataset } from "../../../assets/lotties/lotties"
 import Swal from "sweetalert2";
 import { clientError } from "../../others/http-error-handler/error-handler";
 import client from "../../client";
-
+console.log("hi there from navigate.js");
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
-
 /**
- * @description Navigate to the next page in the active prepare datasets step-by-step workflow. Navigating to the next page saves the
- * current page's progress if the page is valid.
+ * @description Navigate to the next page in the active prepare datasets step-by-step workflow.
  */
-$("#guided-next-button").on("click", async function () {
+export const handleNextButtonClick = async () => {
   console.log("Next button clicked");
 
-  //Get the ID of the current page to handle actions on page leave (next button pressed)
   window.pageBeingLeftID = window.CURRENT_PAGE.id;
 
   if (window.pageBeingLeftID === "guided-dataset-generation-tab") {
@@ -43,40 +40,31 @@ $("#guided-next-button").on("click", async function () {
     await savePageChanges(window.pageBeingLeftID);
     console.log("Past save changes");
 
-    if (pageBeingLeftID === "guided-select-starting-point-tab") {
-      await handleStartCuration(window.pageBeingLeftID);
-    }
-
-    //Mark page as completed in JSONObj so we know what pages to load when loading local saves
-    //(if it hasn't already been marked complete)
     if (!window.sodaJSONObj["completed-tabs"].includes(window.pageBeingLeftID)) {
       window.sodaJSONObj["completed-tabs"].push(window.pageBeingLeftID);
     }
 
-    //NAVIGATE TO NEXT PAGE + CHANGE ACTIVE TAB/SET ACTIVE PROGRESSION TAB
-    //if more tabs in parent tab, go to next tab and update capsule
-    let targetPage = getNextPageNotSkipped(window.CURRENT_PAGE.id);
-    let targetPageID = targetPage.id;
+    const targetPage = getNextPageNotSkipped(window.CURRENT_PAGE.id);
+    const targetPageID = targetPage.id;
 
     await openPage(targetPageID);
   } catch (error) {
     window.log.error(error);
     if (Array.isArray(error)) {
-      error.map((error) => {
-        // get the total number of words in error.message
-        if (error.type === "notyf") {
+      error.forEach((err) => {
+        if (err.type === "notyf") {
           window.notyf.open({
             duration: "7000",
             type: "error",
-            message: error.message,
+            message: err.message,
           });
         }
 
-        if (error.type === "swal") {
+        if (err.type === "swal") {
           Swal.fire({
             icon: "error",
-            title: error.title,
-            html: error.message,
+            title: err.title,
+            html: err.message,
             width: 600,
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
@@ -88,13 +76,12 @@ $("#guided-next-button").on("click", async function () {
       });
     }
   }
-});
+};
 
 /**
- * @description Navigate to the previous page in the active prepare datasets step-by-step workflow.Navigating
- * to the previous page saves the current page's progress if the page is valid.
+ * @description Navigate to the previous page in the workflow.
  */
-$("#guided-back-button").on("click", async () => {
+export const handleBackButtonClick = async () => {
   window.pageBeingLeftID = window.CURRENT_PAGE.id;
 
   try {
@@ -102,21 +89,23 @@ $("#guided-back-button").on("click", async () => {
   } catch (error) {
     console.error("Error saving page changes during back button click", error);
   }
+
   const targetPage = getPrevPageNotSkipped(window.pageBeingLeftID);
 
-  // If the target page when clicking the back button does not exist, then we are on the first not skipped page.
-  // In this case, we want to save and exit guided mode.
   if (!targetPage) {
     await guidedSaveAndExit();
     return;
   }
 
-  // Get the id of the target page
   const targetPageID = targetPage.id;
-
-  // open the target page
   await openPage(targetPageID);
-});
+};
+
+const nextButton = document.getElementById("guided-next-button");
+nextButton.addEventListener("click", handleNextButtonClick);
+
+const backButton = document.getElementById("guided-back-button");
+backButton.addEventListener("click", handleBackButtonClick);
 
 // Save and exit button click handlers
 document.getElementById("guided-button-save-and-exit").addEventListener("click", async () => {
