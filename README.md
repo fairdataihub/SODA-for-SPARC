@@ -40,18 +40,13 @@
 
 ## About
 
-SODA (Software to Organize Data Automatically) for SPARC is an open-source and free cross-platform desktop software intended to facilitate the data organization and submission process for [SPARC](https://commonfund.nih.gov/sparc) investigators according to the [FAIR SPARC data curation guidelines](https://sparc.science/help/7k8nEPuw3FjOq2HuS8OVsd#top). The idea for a computer software that assists researchers in curating and sharing their data originated during the SPARC Hackathon in December 2018, where it won the Public's Choice Award, before receiving support from the National Institutes of Health (NIH) for further development. SODA for SPARC is designed such that users can accomplish all the requirements to submit a SPARC dataset rapidly through a single interface. Moreover, requirements have been broken down into easy-to-perform steps and automation has been integrated to reduce users' effort to a bare minimum during each step, often to just a few clicks.
+SODA (Software to Organize Data Automatically) for SPARC is an open-source and free cross-platform desktop software intended to facilitate the data organization and submission process for [SPARC](https://commonfund.nih.gov/sparc) investigators according to the [FAIR SPARC data curation guidelines](https://sparc.science/help/7k8nEPuw3FjOq2HuS8OVsd#top). The idea for a computer software that assists researchers in curating and sharing their data originated during the SPARC Hackathon in December 2018, where it won the Public's Choice Award, before receiving support from the National Institutes of Health (NIH) for further development. SODA for SPARC is designed such that users can accomplish all the requirements to submit a SPARC dataset rapidly through a single interface. The submission process is broken down into simple steps, with automation integrated throughout — often reducing tasks to just a few clicks.
 
-## By the Numbers
-
-- 🧠 **35 TB** of biomedical data organized and made FAIR with SODA, then uploaded to [Pennsieve](https://www.pennsieve.io)
-- 📈 **21 SPARC datasets** curated with SODA have been published on [SPARC.Science](https://sparc.science) since **June 2024**
+<h2 align="center">📊 By the Numbers</h2>
 
 <p align="center">
-  <img src="./docs/SODA-HOMEPAGE.png" alt="interface" width="600">
-  <br/>
-  <i> A screenshot of the user interface of SODA. </i>
-  </img>
+  🧠 <strong>35 TB</strong> of biomedical data made FAIR and uploaded to <a href="https://www.pennsieve.io">Pennsieve</a><br/>
+  📈 <strong>21 SPARC datasets</strong> curated with SODA have been published on <a href="https://sparc.science">SPARC.Science</a> since <strong>June 2024</strong>
 </p>
 
 ## Downloading SODA
@@ -90,7 +85,14 @@ SODA is distributed under the MIT License. See [LICENSE](https://github.com/fair
 
 ## Privacy Policy
 
-SODA uses Kombucha Analytics to collect only anonymous usage data to help us improve the software and meet reporting requirements from the SPARC program. To learn more about what SODA collects and how we use Kombucha Analytics within SODA, please read our [Privacy Policy](https://github.com/fairdataihub/SODA-for-SPARC/wiki/Privacy-Policy).
+We use Kombucha Analytics to collect anonymous usage data.
+
+This data helps us:
+- Improve SODA’s features and usability
+- Identify bugs and crashes
+- Fulfill our reporting requirements to the SPARC program
+
+To learn more about what SODA collects and how we use Kombucha Analytics within SODA, please read our [Privacy Policy](https://github.com/fairdataihub/SODA-for-SPARC/wiki/Privacy-Policy).
 
 ## Acknowledgements
 
