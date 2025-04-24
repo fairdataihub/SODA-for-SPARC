@@ -28,7 +28,8 @@ const ModalitySelectionPage = () => {
     <GuidedModePage pageHeader="Modalities Selection">
       <GuidedModeSection>
         <label class="guided--form-label centered">
-          Does your dataset include data from different modalities?{" "}
+          Does your dataset include data collected from multiple modalities, such as imaging,
+          recordings, or behavioral data?
         </label>
 
         <Center>
