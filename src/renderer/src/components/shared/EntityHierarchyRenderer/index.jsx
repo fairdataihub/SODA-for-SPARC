@@ -439,33 +439,6 @@ const EntityHierarchyRenderer = ({
                         ))}
                     </HierarchyItem>
                   ))}
-
-                {/* Subject Sites */}
-                {showSubjectSites &&
-                  subject.subjectSites?.map((site) => (
-                    <HierarchyItem
-                      key={site.id}
-                      icon="site"
-                      label={site.id}
-                      level={2}
-                      allowEntityStructureEditing={allowEntityStructureEditing}
-                      allowEntitySelection={allowEntitySelection}
-                      entityData={site}
-                      parentEntityData={subject}
-                      onEdit={() => handleEditSubjectSite(site, subject)}
-                      onDelete={() => handleDeleteSubjectSite(site, subject)}
-                      onSelect={handleEntitySelect}
-                    />
-                  ))}
-                {allowEntityStructureEditing && showSubjectSites && (
-                  <HierarchyItem
-                    label={`Add site`}
-                    icon="add"
-                    level={2}
-                    parentEntityData={subject}
-                    onAdd={handleAddSubjectSiteButtonClick}
-                  />
-                )}
               </Box>
             ))
           )}

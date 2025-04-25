@@ -209,118 +209,16 @@ export const getExistingSamples = () => {
 export const getExistingSiteIds = () => {
   const { datasetEntityArray } = useGlobalStore.getState();
 
-  // Get all site IDs from subjects and samples
+  // Get all site IDs from samples
   const allSiteIds = datasetEntityArray.flatMap((subject) => {
-    // Get subject site IDs
-    const subjectSiteIds = subject.subjectSites?.map((site) => site.id) || [];
-
     // Get sample site IDs
     const sampleSiteIds =
       subject.samples?.flatMap((sample) => sample.sites?.map((site) => site.id) || []) || [];
 
-    return [...subjectSiteIds, ...sampleSiteIds];
+    return sampleSiteIds;
   });
 
   return allSiteIds;
-};
-
-/**
- * Gets detailed information about all sites in the dataset
- * @returns {Array} Array of objects with site details including parent information
- */
-export const getExistingSites = () => {
-  const { datasetEntityArray } = useGlobalStore.getState();
-
-  // Sites directly under subjects
-  const subjectSites = datasetEntityArray.flatMap((subject) => {
-    return (
-      subject.subjectSites?.map((site) => ({
-        id: site.id,
-        type: "site",
-        parentType: "subject",
-        parentSubject: subject.id,
-        parentSubjectMetadata: subject.metadata,
-        metadata: site.metadata,
-        hasParentSample: false,
-      })) || []
-    );
-  });
-
-  // Sites under samples
-  const sampleSites = datasetEntityArray.flatMap((subject) => {
-    return (
-      subject.samples?.flatMap((sample) => {
-        return (
-          sample.sites?.map((site) => ({
-            id: site.id,
-            type: "site",
-            parentType: "sample",
-            parentSubject: subject.id,
-            parentSubjectMetadata: subject.metadata,
-            parentSample: sample.id,
-            parentSampleMetadata: sample.metadata,
-            metadata: site.metadata,
-            hasParentSample: true,
-          })) || []
-        );
-      }) || []
-    );
-  });
-
-  // Combine both types of sites
-  return [...subjectSites, ...sampleSites];
-};
-
-/**
- * Gets sites that belong to a specific parent (subject or sample)
- * @param {string} parentId - The ID of the parent entity
- * @param {string} parentType - The type of the parent entity ("subject" or "sample")
- * @returns {Array} Array of site objects that belong to the specified parent
- */
-export const getSitesByParent = (parentId, parentType = "subject") => {
-  const { datasetEntityArray } = useGlobalStore.getState();
-
-  // If parent is a subject, get sites directly under it and under its samples
-  if (parentType === "subject") {
-    const subject = datasetEntityArray.find((s) => s.id === parentId);
-    if (!subject) return [];
-
-    const directSites =
-      subject.subjectSites?.map((site) => ({
-        ...site,
-        parentType: "subject",
-      })) || [];
-
-    const sampleSites =
-      subject.samples?.flatMap(
-        (sample) =>
-          sample.sites?.map((site) => ({
-            ...site,
-            parentType: "sample",
-            parentSample: sample.id,
-          })) || []
-      ) || [];
-
-    return [...directSites, ...sampleSites];
-  }
-
-  // If parent is a sample, find the sample and get its sites
-  if (parentType === "sample") {
-    for (const subject of datasetEntityArray) {
-      const sample = subject.samples?.find((s) => s.id === parentId);
-      if (sample) {
-        return (
-          sample.sites?.map((site) => ({
-            ...site,
-            parentType: "sample",
-            parentSubject: subject.id,
-          })) || []
-        );
-      }
-    }
-  }
-
-  return [];
 };
 
 export const modifySampleId = (subjectId, oldSampleId, newSampleId) => {

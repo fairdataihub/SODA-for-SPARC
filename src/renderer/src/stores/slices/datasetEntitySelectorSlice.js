@@ -72,6 +72,53 @@ export const getEntityObjForEntityType = (entityType) => {
 // Set the currently active entity
 export const setActiveEntity = (activeEntity) => {
   // combine existing entity IDs and see if the entity being set is an entity
+  // Check to see if the activeEntity is a site entity
+
+  if (!activeEntity) {
+    console.error("Active entity is null or undefined");
+    return;
+  }
+
+  useGlobalStore.setState((state) => ({
+    ...state,
+    activeEntity,
+  }));
+
+  if (activeEntity.startsWith("site-") || activeEntity.startsWith("perf-")) {
+    setEntityFilter([{ type: "categorized-data", names: ["Experimental data"] }], []);
+  }
+
+  if (activeEntity.startsWith("sam-")) {
+    const existingSiteIds = getExistingSiteIds();
+    const siteFilter = [
+      {
+        type: "sites",
+        names: existingSiteIds,
+      },
+    ];
+    setEntityFilter([{ type: "categorized-data", names: ["Experimental data"] }], siteFilter);
+  }
+
+  if (activeEntity.startsWith("sub-")) {
+    const existingSiteIds = getExistingSiteIds();
+    const existingSampleIds = getExistingSampleIds();
+    const siteFilter = [
+      {
+        type: "sites",
+        names: existingSiteIds,
+      },
+    ];
+    const sampleFilter = [
+      {
+        type: "samples",
+        names: existingSampleIds,
+      },
+    ];
+    const combinedFilter = [...siteFilter, ...sampleFilter];
+    console.log("Setting entity filter: ", combinedFilter);
+    setEntityFilter([{ type: "categorized-data", names: ["Experimental data"] }], combinedFilter);
+  }
+
   const existingSubjectIds = getExistingSubjectIds();
   const existingSampleIds = getExistingSampleIds();
   const existingSiteIds = getExistingSiteIds();
