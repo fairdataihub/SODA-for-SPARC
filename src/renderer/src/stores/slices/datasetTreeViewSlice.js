@@ -120,9 +120,6 @@ const checkIfFilePassesEntityFilter = (filePath, entityFilters) => {
 const pruneFolder = (folder, searchFilter, entityFilterConfig = null) => {
   if (!folder) return null;
 
-  console.log("Pruning folder:", folder.relativePath);
-  console.log("Entity filter config:", entityFilterConfig);
-
   const lowerCaseSearchFilter = searchFilter.toLowerCase();
   const folderMatches =
     folder.relativePath && folder.relativePath.toLowerCase().includes(lowerCaseSearchFilter);

@@ -57,7 +57,11 @@ const DataImporter = ({ dataType, relativeFolderPathToImportDataInto }) => {
           </Text>
         </Group>
       </Dropzone>
-      <DatasetTreeViewRenderer allowStructureEditing={true} hideSearchBar={true} />
+      <DatasetTreeViewRenderer
+        allowStructureEditing={true}
+        hideSearchBar={true}
+        entityType={null}
+      />
     </FullWidthContainer>
   );
 };

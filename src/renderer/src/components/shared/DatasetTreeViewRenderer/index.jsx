@@ -50,7 +50,12 @@ const getAssociatedEntities = (relativePath, currentEntityType) => {
   const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
   if (!datasetEntityObj) return [];
 
-  const entityTypes = currentEntityType ? [currentEntityType] : Object.keys(datasetEntityObj);
+  if (!currentEntityType) {
+    return [];
+  }
+  console.log("currentEntityType", currentEntityType);
+
+  const entityTypes = [currentEntityType];
   const associatedEntities = [];
 
   for (const entityType of entityTypes) {

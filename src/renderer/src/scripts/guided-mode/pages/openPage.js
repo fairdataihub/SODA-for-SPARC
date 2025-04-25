@@ -1052,6 +1052,8 @@ export const openPage = async (targetPageID) => {
     //     await guidedSaveProgress();
   } catch (error) {
     const eMessage = userErrorMessage(error);
+    console.error(error);
+    console.error(eMessage);
     Swal.fire({
       icon: "error",
       title: `Error opening the ${targetPageName} page`,

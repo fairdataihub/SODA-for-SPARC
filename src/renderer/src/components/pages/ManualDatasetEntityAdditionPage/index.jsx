@@ -33,7 +33,6 @@ import {
   Notification,
   Accordion,
 } from "@mantine/core";
-import { Dropzone, MIME_TYPES } from "@mantine/dropzone";
 import useGlobalStore from "../../../stores/globalStore";
 import EntityHierarchyRenderer from "../../shared/EntityHierarchyRenderer";
 import {
@@ -653,11 +652,6 @@ const EntityMetadataForm = () => {
  * Provides entity selection and metadata editing interface.
  */
 const ManualDatasetEntityAdditionPage = () => {
-  // Access selected entities to determine what to show
-  const selectedEntities = useGlobalStore((state) => state.selectedEntities);
-  const datasetContainsSubjects = selectedEntities?.includes("subjects");
-  const datasetContainsSamples = selectedEntities?.includes("samples");
-
   return (
     <GuidedModePage pageHeader="Dataset entity metadata">
       <GuidedModeSection>
