@@ -27,7 +27,7 @@ def handlePysodaErrors(e, api):
     if isinstance(e, PennsieveActionNoPermission):
         # Handle OSError separately
         api.logger.info("Error message details: ", str(e))
-        api.abort(400, str(e))
+        api.abort(403, str(e))
     if isinstance(e, PennsieveAgentError):
         # Handle OSError separately
         api.logger.info("Error message details: ", str(e))
@@ -59,7 +59,7 @@ def handlePysodaErrors(e, api):
     if isinstance(e, PennsieveDatasetCannotBeFound):
         # Handle OSError separately
         api.logger.info("Error message details: ", str(e))
-        api.abort(400, str(e))
+        api.abort(404, str(e))
     if isinstance(e, PennsieveUploadException):
         # Handle OSError separately
         api.logger.info("Error message details: ", str(e))
