@@ -224,17 +224,21 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     };
     delete sodaCopy["generate-dataset"];
 
-    const response = (
-      await client.post(
-        "/curate_datasets/clean-dataset",
-        { soda_json_structure: sodaCopy },
-        { timeout: 0 }
-      )
-    ).data.soda_json_structure;
+    const response = await client.post(
+      "/curate_datasets/clean-dataset",
+      { soda_json_structure: sodaCopy },
+      { timeout: 0 }
+    );
+
+    const responseData = response.data.soda;
+    console.log("keys in responseData: ", Object.keys(responseData));
+
+    console.log("Response from clean-dataset: ", response);
+    console.log("Response data" + JSON.stringify(response, null, 2));
     const manifestRes = (
       await client.post(
         "/curate_datasets/generate_manifest_file_data",
-        { dataset_structure_obj: response["dataset-structure"] },
+        { dataset_structure_obj: responseData["dataset-structure"] },
         { timeout: 0 }
       )
     ).data;
@@ -291,36 +295,48 @@ export const openPagePrepareMetadata = async (targetPageID) => {
         const path = row[0]; // Path is in the first column
         let entityList = [];
 
-        // Check for subjects
-        for (const [entity, paths] of Object.entries(datasetEntityObj.subjects || {})) {
-          if (paths.includes(path)) {
+        console.log("datasetEntityObj subjects: ", Object.keys(datasetEntityObj?.subjects));
+        // Loop through subjects and check for matches
+        for (const [entity, paths] of Object.entries(datasetEntityObj?.subjects || {})) {
+          if (paths?.[path]) {
             console.log("Subject found: ", entity);
             entityList.push(entity);
-            break; // Stop checking subjects after the first match
+            break; // One match is enough
           }
         }
 
-        // Check for samples
-        for (const [entity, paths] of Object.entries(datasetEntityObj.samples || {})) {
-          if (paths.includes(path)) {
+        // Do the same for samples
+        console.log("datasetEntityObj samples: ", Object.keys(datasetEntityObj?.samples));
+        for (const [entity, paths] of Object.entries(datasetEntityObj?.samples || {})) {
+          if (paths?.[path]) {
             entityList.push(entity);
-            break; // Stop checking samples after the first match
+            break;
           }
         }
 
-        // Check for performances
-        for (const [entity, paths] of Object.entries(datasetEntityObj.performances || {})) {
-          if (paths.includes(path)) {
+        // And sites
+        console.log("datasetEntityObj sites: ", Object.keys(datasetEntityObj?.sites));
+        for (const [entity, paths] of Object.entries(datasetEntityObj?.sites || {})) {
+          if (paths?.[path]) {
             entityList.push(entity);
-            break; // Stop checking performances after the first match
+            break;
           }
         }
 
-        // Update the entity column (index from headers)
+        // And performances too
+        console.log("datasetEntityObj performances: ", Object.keys(datasetEntityObj?.performances));
+        for (const [entity, paths] of Object.entries(datasetEntityObj?.performances || {})) {
+          if (paths?.[path]) {
+            entityList.push(entity);
+            break;
+          }
+        }
+
+        // Update the entity column
         row[entityColumnIndex] = entityList.join(" ");
       });
 
-      return manifestDataRows; // Return updated data
+      return manifestDataRows;
     };
 
     const updateModalitiesColumn = (manifestDataRows, datasetEntityObj) => {
@@ -331,18 +347,18 @@ export const openPagePrepareMetadata = async (targetPageID) => {
         const path = row[0]; // Path is in the first column
         let modalitiesList = [];
 
-        // Check for modalities
-        for (const [modality, paths] of Object.entries(datasetEntityObj.modalities || {})) {
-          if (paths.includes(path)) {
+        // Check all modalities
+        for (const [modality, paths] of Object.entries(datasetEntityObj?.modalities || {})) {
+          if (paths?.[path]) {
             modalitiesList.push(modality);
           }
         }
 
-        // Update the modalities column (index from headers)
+        // Update the modalities column
         row[modalitiesColumnIndex] = modalitiesList.join(" ");
       });
 
-      return manifestDataRows; // Return updated data
+      return manifestDataRows;
     };
 
     // Apply the function

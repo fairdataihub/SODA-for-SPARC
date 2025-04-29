@@ -74,7 +74,7 @@ export const guidedCreateSodaJSONObj = () => {
   window.sodaJSONObj["generate-dataset"] = {};
   window.sodaJSONObj["generate-dataset"]["destination"] = "ps";
   window.sodaJSONObj["guided-manifest-file-data"] = {};
-  window.sodaJSONObj["starting-point"] = {};
+  window.sodaJSONObj["starting-point"] = { origin: "new" };
   window.sodaJSONObj["dataset_metadata"] = {};
   window.sodaJSONObj["dataset_metadata"]["shared-metadata"] = {};
   window.sodaJSONObj["dataset_metadata"]["protocol-data"] = [];

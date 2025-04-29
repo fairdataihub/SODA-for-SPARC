@@ -202,6 +202,7 @@ const generateProgressCardElement = (progressFileJSONObj) => {
     let buttonText;
     let buttonClass;
 
+    console.log("datasetStartingPoint", datasetStartingPoint);
     if (boolAlreadyUploadedToPennsieve) {
       buttonText = "Share with the curation team";
       buttonClass = "guided--progress-button-share";

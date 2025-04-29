@@ -25,7 +25,7 @@ export const contentOptionsMap = {
       "Did you collect data from specific anatomical locations that need to be tracked separately?",
     description:
       "Select yes if you gathered data from different specific locations (e.g., brain regions, tissue sections, organ areas) within your subjects or samples, AND these locations need separate metadata. Examples include: recordings from multiple brain areas, measurements from different parts of an organ, or microscopy of different regions within a tissue sample.",
-    dependsOn: ["subjects"],
+    dependsOn: ["subjects", "samples"],
     ml: 10,
   },
 
@@ -76,13 +76,16 @@ const DatasetContentSelector = () => {
   }, []);
 
   const visibleQuestions = Object.entries(contentOptionsMap).filter(([key, option]) => {
-    if (
-      option.dependsOn?.includes("subjects") &&
-      (deSelectedEntities.includes("subjects") || !selectedEntities.includes("subjects"))
-    ) {
-      return false;
+    // If this option has dependencies
+    if (option.dependsOn && option.dependsOn.length > 0) {
+      // Check ALL dependencies - must have ALL dependencies selected to show the question
+      for (const dependency of option.dependsOn) {
+        if (deSelectedEntities.includes(dependency) || !selectedEntities.includes(dependency)) {
+          return false; // Hide the question if any dependency is not satisfied
+        }
+      }
     }
-    return true;
+    return true; // Show the question if all dependencies are satisfied or it has no dependencies
   });
 
   return (

@@ -53,7 +53,6 @@ const getAssociatedEntities = (relativePath, currentEntityType) => {
   if (!currentEntityType) {
     return [];
   }
-  console.log("currentEntityType", currentEntityType);
 
   const entityTypes = [currentEntityType];
   const associatedEntities = [];
