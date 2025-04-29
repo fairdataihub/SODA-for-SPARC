@@ -31,13 +31,13 @@ window.nonAllowedCharacters = '<>:",;[]{}^`~@/|?*$=!%&+#\\';
 
 // Event listeners for opening the dropdown prompt
 document
-  .querySelector("#Question-getting-started-BF-account .change-current-account")
+  .querySelector("#Question-getting-started-ps-account .change-current-account")
   .addEventListener("click", function () {
     window.openDropdownPrompt(this, "ps");
   });
 
 document
-  .querySelector("#Question-generate-dataset-BF-dataset .change-current-account")
+  .querySelector("#Question-generate-dataset-ps-dataset .change-current-account")
   .addEventListener("click", function () {
     window.openDropdownPrompt(this, "dataset", false);
   });
@@ -730,7 +730,7 @@ document
   });
 
 document.getElementById("dataset-upload-new-dataset").addEventListener("click", async function () {
-  const dsName = document.getElementById("current-bf-dataset-generate").innerText;
+  const dsName = document.getElementById("current-ps-dataset-generate").innerText;
   const existingCardChecked = document
     .getElementById("dataset-upload-existing-dataset")
     .classList.contains("checked");
@@ -749,7 +749,7 @@ document.getElementById("dataset-upload-new-dataset").addEventListener("click", 
     $("#inputNewNameDataset-upload-dataset").val("");
 
     // reset the dataset name input field
-    document.getElementById("current-bf-dataset-generate").textContent = "None";
+    document.getElementById("current-ps-dataset-generate").textContent = "None";
 
     // TODO: REset sodaJSONObj here too
     // Remove checked state from all checkbox cards (input field inside the cards)
@@ -1092,9 +1092,9 @@ const importGenerateDatasetStep = async () => {
       $("#inputNewNameDataset").val(window.sodaJSONObj["generate-dataset"]["dataset-name"]);
       $("#btn-confirm-new-dataset-name").click();
     } else if (window.sodaJSONObj["generate-dataset"]["destination"] === "ps") {
-      $("#generate-upload-BF").prop("checked", true);
-      $($("#generate-upload-BF").parents()[2]).click();
-      // Step 2: if generate on bf, choose bf account
+      $("#generate-upload-ps").prop("checked", true);
+      $($("#generate-upload-ps").parents()[2]).click();
+      // Step 2: if generate on ps, choose ps account
       if (
         "ps-account-selected" in window.sodaJSONObj &&
         window.sodaJSONObj["ps-account-selected"]["account-name"] !== ""
@@ -1103,7 +1103,7 @@ const importGenerateDatasetStep = async () => {
         if (bfAccountSelected != window.defaultBfDataset) {
           return;
         }
-        $("#current-bf-account-generate").text(bfAccountSelected);
+        $("#current-ps-account-generate").text(bfAccountSelected);
         $("#para-account-detail-curate").html("");
 
         try {
@@ -1119,14 +1119,14 @@ const importGenerateDatasetStep = async () => {
           showHideDropdownButtons("account", "hide");
         }
 
-        $("#btn-bf-account").trigger("click");
+        $("#btn-ps-account").trigger("click");
         // Step 3: choose to generate on an existing or new dataset
         if (
           "ps-dataset-selected" in window.sodaJSONObj &&
           window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] !== ""
         ) {
-          $("#generate-BF-dataset-options-existing").prop("checked", true);
-          $($("#generate-BF-dataset-options-existing").parents()[2]).click();
+          $("#generate-ps-dataset-options-existing").prop("checked", true);
+          $($("#generate-ps-dataset-options-existing").parents()[2]).click();
           let bfDatasetSelected = window.sodaJSONObj["ps-dataset-selected"]["dataset-name"];
           setTimeout(() => {
             let valid_dataset = false;
@@ -1138,8 +1138,8 @@ const importGenerateDatasetStep = async () => {
             if (valid_dataset == false) {
               return;
             }
-            $("#current-bf-dataset-generate").text(bfDatasetSelected);
-            $("#button-confirm-bf-dataset").click();
+            $("#current-ps-dataset-generate").text(bfDatasetSelected);
+            $("#button-confirm-ps-dataset").click();
             // Step 4: Handle existing files and folders
             if ("if-existing" in window.sodaJSONObj["generate-dataset"]) {
               let existingFolderOption = window.sodaJSONObj["generate-dataset"]["if-existing"];
@@ -1153,8 +1153,8 @@ const importGenerateDatasetStep = async () => {
             }
           }, 3000);
         } else {
-          $("#generate-BF-dataset-options-new").prop("checked", true);
-          $($("#generate-BF-dataset-options-new").parents()[2]).click();
+          $("#generate-ps-dataset-options-new").prop("checked", true);
+          $($("#generate-ps-dataset-options-new").parents()[2]).click();
           $("#inputNewNameDataset").val(sodaJSONObj["generate-dataset"]["dataset-name"]);
           $("#inputNewNameDataset").keyup();
         }
@@ -1454,15 +1454,15 @@ $("#select-permission-list-2").change((e) => {
   // updateDatasetList(window.defaultBfDataset);
   $("#div-filter-datasets-progress-2").css("display", "block");
 
-  $("#bf-dataset-select-header").css("display", "none");
+  $("#ps-dataset-select-header").css("display", "none");
   $("#curatebfdatasetlist").selectpicker("hide");
   $("#curatebfdatasetlist").selectpicker("refresh");
   $(".selectpicker").selectpicker("hide");
   $(".selectpicker").selectpicker("refresh");
-  $("#bf-dataset-select-div").hide();
+  $("#ps-dataset-select-div").hide();
 
   // var datasetPermission = $("#select-permission-list-2").val();
-  var bfacct = $("#current-bf-account").text();
+  var bfacct = $("#current-ps-account").text();
 
   if (bfacct === "None") {
     $("#para-filter-datasets-status-2").html(
@@ -1470,12 +1470,12 @@ $("#select-permission-list-2").change((e) => {
     );
     $(datasetPermissionDiv).find("#div-filter-datasets-progress-2").css("display", "none");
 
-    //$("#bf-dataset-select-header").css("display", "block")
+    //$("#ps-dataset-select-header").css("display", "block")
     $("#curatebfdatasetlist").selectpicker("show");
     $("#curatebfdatasetlist").selectpicker("refresh");
     $(".selectpicker").selectpicker("show");
     $(".selectpicker").selectpicker("refresh");
-    $("#bf-dataset-select-div").show();
+    $("#ps-dataset-select-div").show();
   } else {
     $("#curatebfdatasetlist").selectpicker("render");
     updateDatasetList(bfacct);

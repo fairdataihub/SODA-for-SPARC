@@ -14,8 +14,8 @@ const addAccountOptions = () => {
     "Disconnect Your Pennsieve Account",
     "Test Connection With Pennsieve",
   ]);
-  // add a subscriber that listens for changes in the bf-account-span class
-  $(".bf-account-span").on("DOMSubtreeModified", function () {
+  // add a subscriber that listens for changes in the ps-account-span class
+  $(".ps-account-span").on("DOMSubtreeModified", function () {
     if ($(this).text() === "None") {
       removeRows("account-options-table");
       addRows("account-options-table", [
@@ -77,12 +77,12 @@ window.disconnectPennsieveAccount = async (profileKey) => {
 
   // update the account cards so that all their values are None
   // reset the dataset field values
-  $("#current-bf-dataset").text("None");
-  $("#current-bf-dataset-generate").text("None");
-  $(".bf-dataset-span").html("None");
-  $("#para-continue-bf-dataset-getting-started").text("");
-  $(".bf-account-span").text("None");
-  $(".bf-organization-span").text("None");
+  $("#current-ps-dataset").text("None");
+  $("#current-ps-dataset-generate").text("None");
+  $(".ps-dataset-span").html("None");
+  $("#para-continue-ps-dataset-getting-started").text("");
+  $(".ps-account-span").text("None");
+  $(".ps-organization-span").text("None");
 
   await swalShowSuccess("Success", "Your Pennsieve account has been disconnected.");
 };

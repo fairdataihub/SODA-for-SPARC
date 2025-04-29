@@ -113,11 +113,11 @@ const determineSwalSuccessMessage = (addEditButton) => {
 };
 
 // illegal character name warning for new dataset names
-$("#bf-new-dataset-name").on("keyup", () => {
+$("#ps-new-dataset-name").on("keyup", () => {
   // Clear success lottie
   $("#dataset-created-success-lottie").empty();
   $("#dataset-success-container").addClass("hidden");
-  let newName = $("#bf-new-dataset-name").val().trim();
+  let newName = $("#ps-new-dataset-name").val().trim();
 
   if (newName !== "") {
     if (window.check_forbidden_characters_ps(newName)) {
@@ -129,17 +129,17 @@ $("#bf-new-dataset-name").on("keyup", () => {
         heightAuto: false,
       });
 
-      $("#button-create-bf-new-dataset").hide();
+      $("#button-create-ps-new-dataset").hide();
     } else {
-      $("#button-create-bf-new-dataset").show();
+      $("#button-create-ps-new-dataset").show();
     }
   } else {
-    $("#button-create-bf-new-dataset").hide();
+    $("#button-create-ps-new-dataset").hide();
   }
 });
 
-$("#bf-rename-dataset-name").on("keyup", () => {
-  let newName = $("#bf-rename-dataset-name").val().trim();
+$("#ps-rename-dataset-name").on("keyup", () => {
+  let newName = $("#ps-rename-dataset-name").val().trim();
 
   if (newName !== "") {
     if (window.check_forbidden_characters_ps(newName)) {
@@ -160,15 +160,15 @@ $("#bf-rename-dataset-name").on("keyup", () => {
   }
 });
 
-// Add new dataset folder (empty) on bf //
-$("#button-create-bf-new-dataset").click(async () => {
+// Add new dataset folder (empty) on ps //
+$("#button-create-ps-new-dataset").click(async () => {
   setTimeout(async () => {
     let selectedbfaccount = window.defaultBfAccount;
-    let bfNewDatasetName = $("#bf-new-dataset-name").val();
+    let bfNewDatasetName = $("#ps-new-dataset-name").val();
 
     window.log.info(`Creating a new dataset with the name: ${bfNewDatasetName}`);
 
-    $("#button-create-bf-new-dataset").prop("disabled", true);
+    $("#button-create-ps-new-dataset").prop("disabled", true);
 
     Swal.fire({
       title: `Creating a new dataset named: ${bfNewDatasetName}`,
@@ -225,7 +225,7 @@ $("#button-create-bf-new-dataset").click(async () => {
 
       window.log.info(`Created dataset successfully`);
 
-      $("#button-create-bf-new-dataset").hide();
+      $("#button-create-ps-new-dataset").hide();
 
       window.defaultBfDataset = bfNewDatasetName;
       window.defaultBfDatasetId = res;
@@ -241,7 +241,7 @@ $("#button-create-bf-new-dataset").click(async () => {
       window.refreshDatasetList();
       window.currentDatasetPermission.innerHTML = "";
       window.currentAddEditDatasetPermission.innerHTML = "";
-      $("#button-create-bf-new-dataset").prop("disabled", false);
+      $("#button-create-ps-new-dataset").prop("disabled", false);
 
       window.addNewDatasetToList(bfNewDatasetName);
       window.electron.ipcRenderer.send(
@@ -271,13 +271,13 @@ $("#button-create-bf-new-dataset").click(async () => {
       window.datasetList = await api.getDatasetsForAccount();
       window.log.info(`Requested list of datasets successfully`);
 
-      $(".bf-dataset-span").html(bfNewDatasetName);
+      $(".ps-dataset-span").html(bfNewDatasetName);
 
       window.refreshDatasetList();
       updateDatasetList();
 
       $(".confirm-button").click();
-      $("#bf-new-dataset-name").val("");
+      $("#ps-new-dataset-name").val("");
     } catch (error) {
       clientError(error);
       let emessage = userErrorMessage(error);
@@ -291,7 +291,7 @@ $("#button-create-bf-new-dataset").click(async () => {
         icon: "error",
       });
 
-      $("#button-create-bf-new-dataset").prop("disabled", false);
+      $("#button-create-ps-new-dataset").prop("disabled", false);
 
       window.electron.ipcRenderer.send(
         "track-kombucha",
@@ -324,7 +324,7 @@ $("#button-rename-dataset").on("click", async () => {
   setTimeout(async function () {
     var selectedbfaccount = window.defaultBfAccount;
     var currentDatasetName = window.defaultBfDataset;
-    var renamedDatasetName = $("#bf-rename-dataset-name").val();
+    var renamedDatasetName = $("#ps-rename-dataset-name").val();
 
     Swal.fire({
       title: `Renaming dataset ${currentDatasetName} to ${renamedDatasetName}`,
@@ -407,9 +407,9 @@ $("#button-rename-dataset").on("click", async () => {
 
       window.log.info("Dataset rename success");
       window.defaultBfDataset = renamedDatasetName;
-      $(".bf-dataset-span").html(renamedDatasetName);
+      $(".ps-dataset-span").html(renamedDatasetName);
       window.refreshDatasetList();
-      $("#bf-rename-dataset-name").val(renamedDatasetName);
+      $("#ps-rename-dataset-name").val(renamedDatasetName);
       Swal.fire({
         title: `Renamed dataset ${currentDatasetName} to ${renamedDatasetName}`,
         icon: "success",
@@ -919,7 +919,7 @@ window.countCharacters = (textelement, pelement) => {
   return textEntered.length;
 };
 
-window.bfDatasetSubtitle = document.querySelector("#bf-dataset-subtitle");
+window.bfDatasetSubtitle = document.querySelector("#ps-dataset-subtitle");
 window.bfDatasetSubtitle.addEventListener("keyup", function () {
   window.countCharacters(window.bfDatasetSubtitle, window.bfDatasetSubtitleCharCount);
 });
@@ -943,7 +943,7 @@ $("#button-add-subtitle").click(async () => {
 
     let selectedBfAccount = window.defaultBfAccount;
     let selectedBfDataset = window.defaultBfDataset;
-    let inputSubtitle = $("#bf-dataset-subtitle").val().trim();
+    let inputSubtitle = $("#ps-dataset-subtitle").val().trim();
 
     window.log.info("Adding subtitle to dataset");
     window.log.info(inputSubtitle);
@@ -974,7 +974,7 @@ $("#button-add-subtitle").click(async () => {
         backdrop: "rgba(0,0,0, 0.4)",
       }).then(
         //check if subtitle text is empty and set Add/Edit button appropriately
-        $("#bf-dataset-subtitle").val()
+        $("#ps-dataset-subtitle").val()
           ? $("#button-add-subtitle").html("Edit subtitle")
           : $("#button-add-subtitle").html("Add subtitle")
       );
@@ -1048,7 +1048,7 @@ window.showCurrentSubtitle = async () => {
   }
 
   if (selectedBfDataset === "Select dataset") {
-    $("#bf-dataset-subtitle").val("");
+    $("#ps-dataset-subtitle").val("");
     return;
   }
 
@@ -1065,7 +1065,7 @@ window.showCurrentSubtitle = async () => {
       window.AnalyticsGranularity.ACTION,
       ["Get Subtitle"]
     );
-    $("#bf-dataset-subtitle").val(subtitle);
+    $("#ps-dataset-subtitle").val(subtitle);
     $("#ds-description").val(subtitle);
     let result = window.countCharacters(
       window.bfDatasetSubtitle,
@@ -2957,7 +2957,7 @@ $("#button-submit-dataset").click(async () => {
 
   progressClone.style =
     "position: absolute; width: 100%; bottom: 0px; padding: 15px; color: black;";
-  cloneMeter.setAttribute("id", "clone-progress-bar-upload-bf");
+  cloneMeter.setAttribute("id", "clone-progress-bar-upload-ps");
   cloneMeter.className = "nav-status-bar";
   cloneStatus.setAttribute("id", "clone-para-progress-bar-status");
   cloneStatus.style = "overflow-x: hidden; margin-bottom: 3px; margin-top: 5px;";
@@ -3281,7 +3281,7 @@ $("body").on("change", "input[type=radio][name=dataset_status_radio]", function 
 // Change dataset status option change
 $("#bf_list_dataset_status").on("change", async () => {
   $(window.bfCurrentDatasetStatusProgress).css("visibility", "visible");
-  $("#bf-dataset-status-spinner").css("display", "block");
+  $("#ps-dataset-status-spinner").css("display", "block");
 
   window.selectOptionColor(window.bfListDatasetStatus);
 
@@ -3321,7 +3321,7 @@ $("#bf_list_dataset_status").on("change", async () => {
     );
 
     $(window.bfCurrentDatasetStatusProgress).css("visibility", "hidden");
-    $("#bf-dataset-status-spinner").css("display", "none");
+    $("#ps-dataset-status-spinner").css("display", "none");
 
     Swal.fire({
       title: res,
@@ -3365,7 +3365,7 @@ $("#bf_list_dataset_status").on("change", async () => {
       });
 
       $(window.bfCurrentDatasetStatusProgress).css("visibility", "hidden");
-      $("#bf-dataset-status-spinner").css("display", "none");
+      $("#ps-dataset-status-spinner").css("display", "none");
     }
 
     window.showCurrentDatasetStatus(showErrorDatasetStatus);
@@ -3382,7 +3382,7 @@ window.showCurrentDatasetStatus = async (callback) => {
 
   if (selectedBfDataset === "Select dataset") {
     $(window.bfCurrentDatasetStatusProgress).css("visibility", "hidden");
-    $("#bf-dataset-status-spinner").css("display", "none");
+    $("#ps-dataset-status-spinner").css("display", "none");
 
     window.removeOptions(window.bfListDatasetStatus);
     removeRadioOptions("dataset_status_ul");
@@ -3434,7 +3434,7 @@ window.showCurrentDatasetStatus = async (callback) => {
     window.selectOptionColor(window.bfListDatasetStatus);
 
     $(window.bfCurrentDatasetStatusProgress).css("visibility", "hidden");
-    $("#bf-dataset-status-spinner").css("display", "none");
+    $("#ps-dataset-status-spinner").css("display", "none");
 
     if (callback !== undefined) {
       callback();
@@ -3458,6 +3458,6 @@ window.showCurrentDatasetStatus = async (callback) => {
     );
 
     $(window.bfCurrentDatasetStatusProgress).css("visibility", "hidden");
-    $("#bf-dataset-status-spinner").css("display", "none");
+    $("#ps-dataset-status-spinner").css("display", "none");
   }
 };

@@ -67,7 +67,7 @@ metadatapath = join(userpath, "SODA", "SODA_metadata")
 
 total_bytes_uploaded = {}
 
-bf = ""
+ps = ""
 myds = ""
 initial_bfdataset_size = 0
 upload_directly_to_bf = 0
@@ -190,7 +190,7 @@ def bf_add_account_api_key(keyname, key, secret):
         with open(configpath, "w") as configfile:
             config.write(configfile)
 
-        return {"message": f"Successfully added account {str(bf)}"}
+        return {"message": f"Successfully added account {str(ps)}"}
 
     except Exception as e:
         bf_delete_account(formatted_key_name)
@@ -530,7 +530,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     global uploaded_file_size
     global submitprintstatus
     global start_time_bf_upload
-    global bf
+    global ps
     global myds
     global start_submit
     global initial_bfdataset_size_submit

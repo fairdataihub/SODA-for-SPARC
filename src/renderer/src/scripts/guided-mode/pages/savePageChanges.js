@@ -643,7 +643,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
     //     throw errorArray;
     //   }
 
-    //   window.sodaJSONObj["last-confirmed-bf-account-details"] = window.defaultBfAccount;
+    //   window.sodaJSONObj["last-confirmed-ps-account-details"] = window.defaultBfAccount;
     //   window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"] = userSelectedWorkSpace;
     // }
 

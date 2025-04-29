@@ -414,8 +414,8 @@ def import_ps_metadata_file(file_type, ui_fields, bfdataset):
                 return load_existing_submission_file(url, item_id, get_access_token())
 
             elif file_type == "dataset_description.xlsx":
-                # bf is the old signifier for pennsieve
-                return load_existing_DD_file("bf", url, item_id, get_access_token())
+                # ps is the old signifier for pennsieve
+                return load_existing_DD_file("ps", url, item_id, get_access_token())
 
             elif file_type == "subjects.xlsx":
                 return convert_subjects_samples_file_to_df("subjects", url, ui_fields, item_id, get_access_token())
@@ -529,8 +529,8 @@ def load_existing_DD_file(import_type, filepath, item_id=None, token=None):
     # open given workbook
     # and store in excel object
 
-     # bf is the old signifier for pennsieve
-    if import_type == "bf":
+     # ps is the old signifier for pennsieve
+    if import_type == "ps":
         try:
             DD_df = load_metadata_to_dataframe(item_id, "excel", token, column_check, 0)
         except Exception as e:

@@ -1080,13 +1080,13 @@ input::-webkit-calendar-picker-indicator {
   display: none;
 }
 
-.form-container-input-bf:focus {
+.form-container-input-ps:focus {
   background-color: #fffafa;
   /* border-left: 2px solid #c0c0c0; */
   border-radius: 0;
 }
 
-.form-container-input-bf:disabled {
+.form-container-input-ps:disabled {
   background-color: #e5e5e5 !important;
 }
 
@@ -1134,8 +1134,8 @@ input::-webkit-calendar-picker-indicator {
   color: orange;
 }
 
-/* BF Add account */
-.form-container-input-bf {
+/* ps Add account */
+.form-container-input-ps {
   float: right;
   font-weight: 400;
   background-clip: padding-box;
@@ -1149,7 +1149,7 @@ input::-webkit-calendar-picker-indicator {
   padding: 4px 6px;
 }
 
-.form-container-input-bf disabled {
+.form-container-input-ps disabled {
   background: #f5f5f5;
 }
 

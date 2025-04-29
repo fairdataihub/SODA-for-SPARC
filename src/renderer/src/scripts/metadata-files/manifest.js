@@ -113,12 +113,12 @@ $(document).ready(async function () {
 
   $("#bf_dataset_create_manifest").on("DOMSubtreeModified", () => {
     if ($("#bf_dataset_create_manifest").text().trim() !== "None") {
-      $("#div-check-bf-create-manifest").css("display", "flex");
+      $("#div-check-ps-create-manifest").css("display", "flex");
       document.querySelector("#btn-confirm-dataset-manifest-page").classList.remove("hidden");
 
-      $($("#div-check-bf-create-manifest").children()[0]).show();
+      $($("#div-check-ps-create-manifest").children()[0]).show();
     } else {
-      $("#div-check-bf-create-manifest").css("display", "none");
+      $("#div-check-ps-create-manifest").css("display", "none");
     }
     $("#Question-prepare-manifest-3").nextAll().removeClass("show").removeClass("prev");
   });
@@ -1015,7 +1015,7 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
       await initiate_generate_manifest_local(manifestEditBoolean, localDatasetFolderPath);
     }
   } else {
-    // Case 2: bf dataset
+    // Case 2: ps dataset
     if (manifestEditBoolean) {
       generateAfterEdits();
     } else {
@@ -1150,7 +1150,7 @@ const updateJSONStructureManifestGenerate = () => {
       "if-existing-files": "replace",
       "generate-option": "new",
     };
-    // delete bf account and dataset keys
+    // delete ps account and dataset keys
     if ("ps-account-selected" in window.sodaJSONObj) {
       delete window.sodaJSONObj["ps-account-selected"];
     }
@@ -1475,7 +1475,7 @@ const extractBFDatasetForManifestFile = async (editBoolean, bfaccount, bfdataset
     );
 
     $("#bf_dataset_create_manifest").text("None");
-    $("#div-check-bf-create-manifest").hide();
+    $("#div-check-ps-create-manifest").hide();
     window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = "";
     return;
   } else {
@@ -1907,7 +1907,7 @@ window.generateManifestFolderLocallyForEdit = async (ev) => {
       document.getElementById("confirm-local-manifest-folder-adv-feature").classList.add("hidden");
     }
   } else {
-    // Case 2: bf dataset
+    // Case 2: ps dataset
     window.sodaJSONObj["ps-account-selected"] = { "account-name": window.defaultBfAccount };
     window.sodaJSONObj["ps-dataset-selected"] = { "dataset-name": window.defaultBfDataset };
     extractBFDatasetForManifestFile(true, window.defaultBfAccount, window.defaultBfDataset, ev);
@@ -2356,14 +2356,14 @@ window.readManifestFileAndStoreInSodaJSON = async () => {
 };
 
 document.querySelector("#btn-pull-ds-manifest").addEventListener("click", () => {
-  document.querySelector("#div-check-bf-create-manifest").style.visibility = "hidden";
+  document.querySelector("#div-check-ps-create-manifest").style.visibility = "hidden";
 
   let section = document.querySelector("#manifest-gen-on-pennsieve-section");
   section.style.display = "flex";
   section.querySelector("div").style.display = "flex";
 });
 
-document.querySelector("#div-check-bf-create-manifest").addEventListener("click", () => {
+document.querySelector("#div-check-ps-create-manifest").addEventListener("click", () => {
   // show the continue button
   document.querySelector("#btn-continue-pennsieve-question-6").style.display = "flex";
 
