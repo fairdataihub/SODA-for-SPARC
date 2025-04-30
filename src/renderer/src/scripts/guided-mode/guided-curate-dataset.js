@@ -1483,7 +1483,7 @@ const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
     return false;
   }
   // If the user has changed their Pennsieve account, they need to confirm their new Pennsieve account and workspace
-  if (window.sodaJSONObj?.["last-confirmed-bf-account-details"] !== window.defaultBfAccount) {
+  if (window.sodaJSONObj?.["last-confirmed-ps-account-details"] !== window.defaultBfAccount) {
     if (window.sodaJSONObj["button-config"]?.["pennsieve-account-has-been-confirmed"]) {
       delete window.sodaJSONObj["button-config"]["pennsieve-account-has-been-confirmed"];
     }

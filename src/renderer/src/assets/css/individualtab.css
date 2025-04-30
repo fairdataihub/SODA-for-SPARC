@@ -1085,9 +1085,9 @@
   float: left;
 }
 
-.card-right.bf-account-span,
-.card-right.bf-account-details-span,
-.card-right.bf-dataset-span,
+.card-right.ps-account-span,
+.card-right.ps-account-details-span,
+.card-right.ps-dataset-span,
 .card-right.current-permissions {
   width: auto;
   margin-left: 5px;
@@ -1095,11 +1095,11 @@
   padding-left: 5px;
 }
 
-.card-container.manage-dataset .card-right.bf-dataset-span {
+.card-container.manage-dataset .card-right.ps-dataset-span {
   width: fit-content;
 }
 
-.card-container.organize-dataset .card-right.bf-dataset-span {
+.card-container.organize-dataset .card-right.ps-dataset-span {
   width: fit-content;
 }
 
@@ -1325,7 +1325,7 @@
   color: #000;
 }
 
-.tagify.form-container-input-bf {
+.tagify.form-container-input-ps {
   overflow-x: hidden;
 }
 

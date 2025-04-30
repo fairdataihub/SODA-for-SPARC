@@ -214,13 +214,13 @@ const fill_info_details = () => {
   $(".card-container.generate-preview").remove();
   addCardDetail(
     "Pennsieve account",
-    $("#current-bf-account").text(),
+    $("#current-ps-account").text(),
     1,
-    "Question-generate-dataset-BF-account",
+    "Question-generate-dataset-ps-account",
     true
   );
-  let workspace = $("#bf-organization-curate-first-question").text();
-  addCardDetail("Pennsieve workspace", workspace, 1, "Question-generate-dataset-BF-account", true);
+  let workspace = $("#ps-organization-curate-first-question").text();
+  addCardDetail("Pennsieve workspace", workspace, 1, "Question-generate-dataset-ps-account", true);
   addCardDetail(
     "Pennsieve dataset name",
     $("#inputNewNameDataset-upload-dataset").val().trim(),
@@ -279,7 +279,7 @@ const fill_info_details = () => {
 // pulse_animation => whether to pulse the element
 window.traverse_back = (amount, element = "", pulse_animation = false) => {
   if (element === "Question-generate-dataset-existing-folders-options") {
-    $("#button-confirm-bf-dataset").click();
+    $("#button-confirm-ps-dataset").click();
     $("nextBtn").prop("disabled", true);
   }
   for (i = 0; i < amount; i++) {
@@ -597,7 +597,7 @@ window.nextPrev = async (pageIndex) => {
   ) {
     // if moving backwards fron the validate step
     $(parentTabs[window.currentTab]).removeClass("tab-active");
-    // skip step 6 ( options irrelevant for existing bf/pennsieve workflow)
+    // skip step 6 ( options irrelevant for existing ps/pennsieve workflow)
     window.currentTab = window.currentTab - 2;
     window.showParentTab(window.currentTab, pageIndex);
     $("#nextBtn").prop("disabled", false);
@@ -893,37 +893,37 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
 
   // if buttons: Confirm account were hidden, show them again here
   // under Step 6
-  if (ev.getAttribute("data-next") === "Question-generate-dataset-BF-account") {
-    let temp = $(".bf-account-span")
+  if (ev.getAttribute("data-next") === "Question-generate-dataset-ps-account") {
+    let temp = $(".ps-account-span")
       .html()
       .replace(/^\s+|\s+$/g, "");
     if (temp == "None" || temp == "") {
-      $("#div-bf-account-btns").css("display", "none");
-      $("#btn-bf-account").hide();
+      $("#div-ps-account-btns").css("display", "none");
+      $("#btn-ps-account").hide();
     } else {
-      $("#div-bf-account-btns").css("display", "flex");
-      $("#btn-bf-account").show();
+      $("#div-ps-account-btns").css("display", "flex");
+      $("#btn-ps-account").show();
       $("#" + ev.getAttribute("data-next") + " button").show();
     }
   }
   // under Step 1
-  if (ev.getAttribute("data-next") === "Question-getting-started-BF-account") {
-    let temp = $(".bf-account-span")
+  if (ev.getAttribute("data-next") === "Question-getting-started-ps-account") {
+    let temp = $(".ps-account-span")
       .html()
       .replace(/^\s+|\s+$/g, "");
     if (temp == "None" || temp == "") {
-      $("#div-bf-account-btns-getting-started").css("display", "none");
-      $("#div-bf-account-btns-getting-started button").hide();
+      $("#div-ps-account-btns-getting-started").css("display", "none");
+      $("#div-ps-account-btns-getting-started button").hide();
     } else {
-      $("#div-bf-account-btns-getting-started").css("display", "flex");
-      $("#div-bf-account-btns-getting-started button").show();
+      $("#div-ps-account-btns-getting-started").css("display", "flex");
+      $("#div-ps-account-btns-getting-started button").show();
     }
   }
 
   // If Confirm dataset btn was hidden, show it again here
   // under Step 6
   let step6 = document.getElementById("generate-dataset-tab");
-  if (ev.getAttribute("data-next") === "Question-generate-dataset-BF-dataset") {
+  if (ev.getAttribute("data-next") === "Question-generate-dataset-ps-dataset") {
     // $("#nextBtn").prop("disabled", true);
     if (step6.classList.contains("tab-active")) {
       $("#nextBtn").prop("disabled", true);
@@ -932,16 +932,16 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
     // hide the para para-continue-empty-ds-selected
     $("#para-continue-empty-ds-selected").hide();
 
-    if ($("#current-bf-dataset-generate").text() !== "None") {
-      $($("#button-confirm-bf-dataset").parents()[0]).css("display", "flex");
-      $("#button-confirm-bf-dataset").show();
+    if ($("#current-ps-dataset-generate").text() !== "None") {
+      $($("#button-confirm-ps-dataset").parents()[0]).css("display", "flex");
+      $("#button-confirm-ps-dataset").show();
     }
   }
   // under Step 1
-  if (ev.getAttribute("data-next") === "Question-getting-started-BF-dataset") {
-    if ($("#current-bf-dataset").text() !== "None") {
-      $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css("display", "flex");
-      $("#button-confirm-bf-dataset-getting-started").show();
+  if (ev.getAttribute("data-next") === "Question-getting-started-ps-dataset") {
+    if ($("#current-ps-dataset").text() !== "None") {
+      $($("#button-confirm-ps-dataset-getting-started").parents()[0]).css("display", "flex");
+      $("#button-confirm-ps-dataset-getting-started").show();
     }
   }
   if (ev.getAttribute("data-next") === "Question-generate-dataset-choose-ds-name") {
@@ -1015,12 +1015,12 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
         $("#nextBtn").prop("disabled", false);
         $("#para-continue-prepare-new-getting-started").text("Please continue below.");
       }, 600);
-    } else if ($("#existing-bf").is(":checked")) {
+    } else if ($("#existing-ps").is(":checked")) {
       $("#nextBtn").prop("disabled", true);
       // this window.exitCurate function gets called in the beginning here
-      // in case users have existing, non-empty SODA object structure due to previous progress option was selected prior to this "existing-bf" option
-      $("#Question-getting-started-existing-BF-account").show();
-      $("#Question-getting-started-existing-BF-account").children().show();
+      // in case users have existing, non-empty SODA object structure due to previous progress option was selected prior to this "existing-ps" option
+      $("#Question-getting-started-existing-ps-account").show();
+      $("#Question-getting-started-existing-ps-account").children().show();
       if (window.sodaJSONObj["dataset-structure"] != {}) {
         reset_ui();
         $("#nextBtn").prop("disabled", false);
@@ -1597,8 +1597,8 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
     category: either getting-started or generate-dataset (currently only these 2 have multiple sub questions)
   */
 
-  if (currentDiv === "Question-getting-started-BF-dataset") {
-    let selectedDataset = $("#current-bf-dataset").text();
+  if (currentDiv === "Question-getting-started-ps-dataset") {
+    let selectedDataset = $("#current-ps-dataset").text();
     $("#nextBtn").prop("disabled", true);
     window.sodaJSONObj = {
       "ps-account-selected": {
@@ -1620,12 +1620,12 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
     window.sodaJSONObj["ps-account-selected"]["account-name"] = window.defaultBfAccount;
     window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = selectedDataset;
 
-    $("#para-continue-bf-dataset-getting-started").text("");
+    $("#para-continue-ps-dataset-getting-started").text("");
     $("body").addClass("waiting");
-    $("#button-confirm-bf-dataset-getting-started").prop("disabled", true);
-    $("#bf-dataset-spinner").show();
-    $("#bf-dataset-spinner").children().show();
-    $("#bf-dataset-spinner").css("visibility", "visible");
+    $("#button-confirm-ps-dataset-getting-started").prop("disabled", true);
+    $("#ps-dataset-spinner").show();
+    $("#ps-dataset-spinner").children().show();
+    $("#ps-dataset-spinner").css("visibility", "visible");
 
     // Check if dataset is locked before trying to import
     const isDatasetLocked = await api.isDatasetLocked(selectedDataset);
@@ -1648,13 +1648,13 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
       });
 
       $("#nextBtn").prop("disabled", true);
-      $("#para-continue-bf-dataset-getting-started").text("");
+      $("#para-continue-ps-dataset-getting-started").text("");
       $("body").removeClass("waiting");
       showHideDropdownButtons("dataset", "hide");
-      $("#current-bf-dataset").text("None");
+      $("#current-ps-dataset").text("None");
       $(datasetPermissionDiv).find("#curatebfdatasetlist").val("Select dataset").trigger("change");
       window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = "";
-      $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
+      $("#button-confirm-ps-dataset-getting-started").prop("disabled", false);
       $("body").removeClass("waiting");
 
       // log the event to analytics
@@ -1691,14 +1691,14 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
         backdrop: "rgba(0,0,0, 0.4)",
       });
       $("#nextBtn").prop("disabled", true);
-      $("#para-continue-bf-dataset-getting-started").text("");
+      $("#para-continue-ps-dataset-getting-started").text("");
       $("body").removeClass("waiting");
-      // $("#bf-dataset-spinner").css("visibility", "hidden");
+      // $("#ps-dataset-spinner").css("visibility", "hidden");
       showHideDropdownButtons("dataset", "hide");
-      $("#current-bf-dataset").text("None");
+      $("#current-ps-dataset").text("None");
       $(datasetPermissionDiv).find("#curatebfdatasetlist").val("Select dataset").trigger("change");
       window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = "";
-      $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
+      $("#button-confirm-ps-dataset-getting-started").prop("disabled", false);
       $("body").removeClass("waiting");
 
       // log the error to analytics
@@ -1751,7 +1751,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
           window.populate_existing_folders(window.datasetStructureJSONObj);
           window.populate_existing_metadata(window.sodaJSONObj);
           $("#nextBtn").prop("disabled", false);
-          $("#para-continue-bf-dataset-getting-started").text("Please continue below.");
+          $("#para-continue-ps-dataset-getting-started").text("Please continue below.");
           showHideDropdownButtons("dataset", "show");
           // log the successful Pennsieve import to analytics- no matter if the user decided to cancel
           window.logCurationForAnalytics(
@@ -1777,7 +1777,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
       window.populate_existing_folders(window.datasetStructureJSONObj);
       window.populate_existing_metadata(window.sodaJSONObj);
       $("#nextBtn").prop("disabled", false);
-      $("#para-continue-bf-dataset-getting-started").text("Please continue below.");
+      $("#para-continue-ps-dataset-getting-started").text("Please continue below.");
       showHideDropdownButtons("dataset", "show");
 
       window.logCurationForAnalytics(
@@ -1791,8 +1791,8 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
     }
 
     $("body").removeClass("waiting");
-    $("#bf-dataset-spinner").css("visibility", "hidden");
-    $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
+    $("#ps-dataset-spinner").css("visibility", "hidden");
+    $("#button-confirm-ps-dataset-getting-started").prop("disabled", false);
     $("#dataset-loaded-message").show();
 
     // clear the validation table results
@@ -1800,7 +1800,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
     window.clearValidationResults(validationErrorsTable);
     // hide the table
     document.querySelector("#organize--table-validation-errors").style.visibility = "hidden";
-    // $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
+    // $("#button-confirm-ps-dataset-getting-started").prop("disabled", false);
   }
 
   // first, handle target or the next div to show
@@ -1828,13 +1828,13 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
       $("#para-continue-empty-ds-selected").show();
 
       // hide the confirm button
-      $("#button-confirm-bf-dataset").hide();
+      $("#button-confirm-ps-dataset").hide();
 
       return;
     }
 
     // hide the confirm button
-    $("#button-confirm-bf-dataset").hide();
+    $("#button-confirm-ps-dataset").hide();
 
     $("#Question-generate-dataset-existing-folders-options").show();
     $("#Question-generate-dataset-existing-folders-options").removeClass("hidden");
@@ -1850,12 +1850,12 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
   }
 
   // if buttons: Add account and Confirm account were hidden, show them again here
-  if (ev.getAttribute("data-next") === "Question-generate-dataset-BF-account") {
+  if (ev.getAttribute("data-next") === "Question-generate-dataset-ps-account") {
     $("#" + ev.getAttribute("data-next") + " button").show();
   }
 
-  if (ev.getAttribute("data-next") === "Question-generate-dataset-BF-workspace") {
-    document.getElementById("btn-bf-workspace").style.display = "block";
+  if (ev.getAttribute("data-next") === "Question-generate-dataset-ps-workspace") {
+    document.getElementById("btn-ps-workspace").style.display = "block";
   }
 
   document.getElementById(currentDiv).classList.add("prev");
@@ -1880,7 +1880,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
 
   if (
     ev.getAttribute("data-next") === "Question-getting-started-final" &&
-    $("#existing-bf").is(":checked")
+    $("#existing-ps").is(":checked")
   ) {
     $("#nextBtn").prop("disabled", true);
     if (window.sodaJSONObj["dataset-structure"] != {}) {
@@ -2172,11 +2172,11 @@ window.transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, catego
     }
   }
 
-  if (ev.getAttribute("data-next") === "div-rename-bf-dataset") {
+  if (ev.getAttribute("data-next") === "div-rename-ps-dataset") {
     let dataset_name = $(
       "#rename_dataset_BF_account_tab .change-current-account.ds-dd.dataset-name h5"
     ).text();
-    $("#bf-rename-dataset-name").val(dataset_name);
+    $("#ps-rename-dataset-name").val(dataset_name);
   }
 
   // first, handle target or the next div to show
@@ -2257,7 +2257,7 @@ window.transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, catego
     }, delay);
   } else {
     if (
-      $(".bf-dataset-span")
+      $(".ps-dataset-span")
         .html()
         .replace(/^\s+|\s+$/g, "") !== "None"
     ) {
@@ -2321,10 +2321,10 @@ async function switchMetadataRCQuestion(metadataRCFileType) {
       $(`#existing-${metadataRCFileType}-file-destination`).attr("placeholder", "Browse here");
       $(`#textarea-create-${metadataRCFileType}`).val("");
       if ($(`#bf_dataset_load_${metadataRCFileType}`).text().trim() !== "None") {
-        $($(`#div-check-bf-import-${metadataRCFileType}`).children()[0]).show();
-        $(`#div-check-bf-import-${metadataRCFileType}`).css("display", "flex");
+        $($(`#div-check-ps-import-${metadataRCFileType}`).children()[0]).show();
+        $(`#div-check-ps-import-${metadataRCFileType}`).css("display", "flex");
       } else {
-        $(`#div-check-bf-import-${metadataRCFileType}`).hide();
+        $(`#div-check-ps-import-${metadataRCFileType}`).hide();
       }
       $(`#button-generate-${metadataRCFileType}`).css("display", "flex");
     }
@@ -2377,10 +2377,10 @@ async function switchMetadataSubSamQuestions(metadataSubSamFile) {
         }
       }
       if ($(`#bf_dataset_load_${metadataSubSamFile}`).text().trim() !== "None") {
-        $($(`#div-check-bf-import-${metadataSubSamFile}`).children()[0]).show();
-        $(`#div-check-bf-import-${metadataSubSamFile}`).css("display", "flex");
+        $($(`#div-check-ps-import-${metadataSubSamFile}`).children()[0]).show();
+        $(`#div-check-ps-import-${metadataSubSamFile}`).css("display", "flex");
       } else {
-        $(`#div-check-bf-import-${metadataSubSamFile}`).hide();
+        $(`#div-check-ps-import-${metadataSubSamFile}`).hide();
       }
     }
     return continueProgress;
@@ -2405,8 +2405,8 @@ async function switchMetadataDDQuestion() {
     });
     if (continueProgressDD) {
       $("#existing-dd-file-destination").val("");
-      $("#div-check-bf-import-dd").css("display", "flex");
-      $($("#div-check-bf-import-dd").children()[0]).show();
+      $("#div-check-ps-import-dd").css("display", "flex");
+      $($("#div-check-ps-import-dd").children()[0]).show();
       window.resetDDFields();
     }
     return continueProgressDD;
@@ -2431,8 +2431,8 @@ async function switchMetadataSubmissionQuestion() {
     if (continueProgressSubmission) {
       $("#existing-submission-file-destination").val("");
       $("#existing-submission-file-destination").attr("placeholder", "Browse here");
-      $($("#div-check-bf-import-submission").children()[0]).show();
-      $("#div-check-bf-import-submission").css("display", "flex");
+      $($("#div-check-ps-import-submission").children()[0]).show();
+      $("#div-check-ps-import-submission").css("display", "flex");
       window.resetSubmissionFields();
     }
     return continueProgressSubmission;
@@ -2512,10 +2512,10 @@ const reset_ui = () => {
   });
   $(".div-file-import.pennsieve").css("display", "none");
 
-  $("#Question-getting-started-existing-BF-account").hide();
-  $("#Question-getting-started-existing-BF-account").children().hide();
-  $("#Question-getting-started-existing-BF-dataset").hide();
-  $("#Question-getting-started-existing-BF-dataset").children().hide();
+  $("#Question-getting-started-existing-ps-account").hide();
+  $("#Question-getting-started-existing-ps-account").children().hide();
+  $("#Question-getting-started-existing-ps-dataset").hide();
+  $("#Question-getting-started-existing-ps-dataset").children().hide();
   $("#nextBtn").prop("disabled", true);
 
   // clear the validation table results
@@ -2764,18 +2764,18 @@ const hidePrevDivs = (currentDiv, category) => {
         var childElements2 = $(`#${currentDiv}`).nextAll().find(".form-control");
 
         for (var child of childElements2) {
-          if (child.id === "inputNewNameDataset" || child.id === "bf-rename-dataset-name") {
-            if (child.id === "bf-rename-dataset-name") {
+          if (child.id === "inputNewNameDataset" || child.id === "ps-rename-dataset-name") {
+            if (child.id === "ps-rename-dataset-name") {
               if (
-                $(".bf-dataset-span")
+                $(".ps-dataset-span")
                   .html()
                   .replace(/^\s+|\s+$/g, "") == "None" ||
-                $(".bf-dataset-span")
+                $(".ps-dataset-span")
                   .html()
                   .replace(/^\s+|\s+$/g, "") == ""
               ) {
-                $("#bf-rename-dataset-name").val(
-                  `${$(".bf-dataset-span")
+                $("#ps-rename-dataset-name").val(
+                  `${$(".ps-dataset-span")
                     .html()
                     .replace(/^\s+|\s+$/g, "")}`
                 );
@@ -2968,18 +2968,18 @@ const updateJSONStructureBfDestination = () => {
 
     if (window.sodaJSONObj["ps-dataset-selected"]) {
       window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = $(
-        "#current-bf-dataset-generate"
+        "#current-ps-dataset-generate"
       ).text();
     } else {
       window.sodaJSONObj["ps-dataset-selected"] = {
-        "dataset-name": $("#current-bf-dataset-generate").text(),
+        "dataset-name": $("#current-ps-dataset-generate").text(),
       };
     }
 
     // folder selection options
-    // answer to Question if generate on BF, then: how to handle existing files and folders
+    // answer to Question if generate on ps, then: how to handle existing files and folders
     // The user selected to generate to an existing dataset on Pennsieve
-    // Set the generate option to existing-bf
+    // Set the generate option to existing-ps
     if ($('input[name="generate-5"]:checked').length > 0) {
       if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-duplicate") {
         window.sodaJSONObj["generate-dataset"]["if-existing"] = "create-duplicate";
@@ -3069,7 +3069,7 @@ window.resetCuration = () => {
 
   // set back Please continue para element
   $("#para-continue-prepare-new-getting-started").text("");
-  $("#para-continue-bf-dataset-getting-started").text("");
+  $("#para-continue-ps-dataset-getting-started").text("");
   $("#para-continue-location-dataset-getting-started").text("");
 
   // un-show all divs from Generate dataset step
@@ -3108,11 +3108,11 @@ window.resetCurationTabs = () => {
 
   // step 3
   document.getElementById("existing-dataset-upload").classList.add("hidden");
-  document.getElementById("current-bf-dataset-generate").innerText = "";
+  document.getElementById("current-ps-dataset-generate").innerText = "";
   document.getElementById("dataset-upload-existing-dataset").classList.remove("checked");
   document.getElementById("dataset-upload-new-dataset").classList.remove("checked");
   document.getElementById("inputNewNameDataset-upload-dataset").value = "";
-  document.getElementById("button-confirm-bf-dataset").parentNode.style.display = "flex";
+  document.getElementById("button-confirm-ps-dataset").parentNode.style.display = "flex";
   document.getElementsByName("generate-5").forEach((element) => {
     element.checked = false;
   });
@@ -3199,7 +3199,7 @@ window.wipeOutCurateProgress = () => {
     input.checked = false;
     input.classList.remove("checked");
   });
-  document.getElementById("current-bf-dataset-generate").textContent = "None";
+  document.getElementById("current-ps-dataset-generate").textContent = "None";
   // hide the existing folder/files options
   $("#Question-generate-dataset-existing-folders-options").addClass("hidden");
   $("#Question-generate-dataset-existing-files-options").addClass("hidden");
@@ -3244,7 +3244,7 @@ window.wipeOutCurateProgress = () => {
 
   // set back Please continue para element
   $("#para-continue-prepare-new-getting-started").text("");
-  $("#para-continue-bf-dataset-getting-started").text("");
+  $("#para-continue-ps-dataset-getting-started").text("");
   $("#para-continue-location-dataset-getting-started").text("");
 
   // un-show all divs from Generate dataset step
@@ -3261,9 +3261,9 @@ window.wipeOutCurateProgress = () => {
   $("#generate-manifest-curate").prop("checked", false);
 
   // reset dataset selection options
-  $("#current-bf-dataset").text("None"); // step 1
-  $("#current-bf-dataset-generate").text("None"); // step 6 for when merging a new dataset into an existing dataset
-  $("#button-confirm-bf-dataset").hide(); // hide step 6 confirm button until the user selects the dataset again
+  $("#current-ps-dataset").text("None"); // step 1
+  $("#current-ps-dataset-generate").text("None"); // step 6 for when merging a new dataset into an existing dataset
+  $("#button-confirm-ps-dataset").hide(); // hide step 6 confirm button until the user selects the dataset again
 
   // clear the validate-dataset-failed-table rows from the body
   $("#validate-dataset-failed-table tbody").empty();
@@ -3434,9 +3434,9 @@ $(document).ready(() => {
         "#rename_dataset_BF_account_tab .change-current-account.ds-dd.dataset-name h5"
       ).html();
       if (rename_dataset_name.trim() != "None" && rename_dataset_name != "") {
-        $("#bf-rename-dataset-name").val(rename_dataset_name);
+        $("#ps-rename-dataset-name").val(rename_dataset_name);
       } else {
-        $("#bf-rename-dataset-name").val("");
+        $("#ps-rename-dataset-name").val("");
       }
     }
 

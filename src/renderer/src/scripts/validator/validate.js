@@ -21,6 +21,8 @@ while (!window.baseHtmlLoaded) {
 window.createValidationReport = async (sodaJSONObj) => {
   const clientUUID = uuid();
 
+  console.log(sodaJSONObj);
+
   let manifestJSONResponse = await client.post(
     "/skeleton_dataset/manifest_json",
     {
@@ -155,8 +157,7 @@ const validateLocalDataset = async () => {
       "dataset-name": {},
     },
     "dataset-structure": {},
-    "metadata-files": {},
-    "manifest-files": {},
+    dataset_metadata: {},
     "generate-dataset": {},
     "starting-point": {
       location: "local",
@@ -420,15 +421,14 @@ const validatePennsieveDatasetStandAlone = async () => {
       "dataset-name": {},
     },
     "dataset-structure": {},
-    "metadata-files": {},
-    "manifest-files": {},
+    dataset_metadata: {},
     "generate-dataset": {},
     "starting-point": {
-      type: "ps",
+      origin: "ps",
     },
   };
 
-  localSodaJSONObj["ps-account-selected"]["account-name"] = $("#current-bf-account").text();
+  localSodaJSONObj["ps-account-selected"]["account-name"] = $("#current-ps-account").text();
   localSodaJSONObj["ps-dataset-selected"]["dataset-name"] = $("#bf_dataset_load_validator").text();
 
   // import the dataset from Pennsieve
@@ -992,7 +992,7 @@ const questionTwoDatasetSelectionObserver = new MutationObserver(() => {
       document.querySelector("#validate_dataset-question-3").style.display = "none";
     }
   } else {
-    $("#div-check-bf-import-validator").css("display", "none");
+    $("#div-check-ps-import-validator").css("display", "none");
   }
 });
 

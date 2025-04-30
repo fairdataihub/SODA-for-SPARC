@@ -269,11 +269,11 @@
 
                     <div style="margin: 15px 0">
                       <div class="option-card radio-button getting-started-1st-question"
-                        data-next="Question-getting-started-BF-account"
+                        data-next="Question-getting-started-ps-account"
                         onclick="window.transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
                         <div class="card-head">
                           <div class="folder-checkbox">
-                            <input class="folder-input-check" id="existing-bf" name="getting-started-1" type="radio" />
+                            <input class="folder-input-check" id="existing-ps" name="getting-started-1" type="radio" />
                             <label for="prepare-new"></label>
                           </div>
                         </div>
@@ -346,7 +346,7 @@
               </div>
             </div>
 
-            <div class="individual-question getting-started" id="Question-getting-started-BF-account" style="width: 800px;">
+            <div class="individual-question getting-started" id="Question-getting-started-ps-account" style="width: 800px;">
               <div class="ui form" style="width: 100%">
                 <div class="grouped fields">
                   <label style="font-size: 17px; color: var(--color-bg-plum); text-align: center">What is your Pennsieve
@@ -374,7 +374,7 @@
                           </h5>
                           <div class="change-current-account" style="width: 100%">
                             <span class="card-right prepare-metadata-current-account-span"
-                              style="margin-left: 72px !important" id="current-bf-account">None</span>
+                              style="margin-left: 72px !important" id="current-ps-account">None</span>
 
                             <svg class="svg-change-current-account bi bi-pencil-fill" xmlns="http://www.w3.org/2000/svg"
                               width="18" height="18" fill="#000" viewBox="0 0 16 16">
@@ -386,14 +386,14 @@
                       </div>
 
                       <div class="card-container prepare-metadata organize-dataset"
-                        id="bf-organization-curate-first-question-container">
+                        id="ps-organization-curate-first-question-container">
                         <div style="width: 100%; display: flex">
                           <h5 class="card-left" style="padding-right: 5px; width: 260px">
                             Current workspace:
                           </h5>
                           <div class="change-current-account ds-dd organization" style="width: 100%">
-                            <h5 class="card-right bf-organization-span prepare-metadata-organization-span"
-                              id="bf-organization-curate-first-question" style="margin-left: 16px !important">
+                            <h5 class="card-right ps-organization-span prepare-metadata-organization-span"
+                              id="ps-organization-curate-first-question" style="margin-left: 16px !important">
                               None
                             </h5>
 
@@ -409,15 +409,15 @@
                       </div>
                     </div>
                   </div>
-                  <div id="div-bf-account-btns-getting-started" style="
+                  <div id="div-ps-account-btns-getting-started" style="
                       display: none;
                       flex-direction: row;
                       justify-content: center;
                       margin: 10px auto;
                     ">
-                    <button id="btn-bf-account-getting-started" class="btn_animated"
-                      onclick="window.transitionSubQuestions(this, 'Question-getting-started-BF-account', 'getting-started-tab', 'delete', 'individual-question getting-started')"
-                      data-next="Question-getting-started-BF-dataset" style="
+                    <button id="btn-ps-account-getting-started" class="btn_animated"
+                      onclick="window.transitionSubQuestions(this, 'Question-getting-started-ps-account', 'getting-started-tab', 'delete', 'individual-question getting-started')"
+                      data-next="Question-getting-started-ps-dataset" style="
                         margin: 0 10px;
                         width: 110px;
                         border: none !important;
@@ -525,7 +525,7 @@
               style="margin-top: 5rem; display: flex; flex-direction: column;"
             >
               <!-- <div id="top-level-card-container--select-upload-dataset" class="top-level-card-container" style="margin-top: 1rem"></div> -->
-              <div class="individual-question generate-dataset test2 show" id="Question-generate-dataset-BF-dataset" style="width: 100%; margin: 0; align-self: center; display: flex !important">
+              <div class="individual-question generate-dataset test2 show" id="Question-generate-dataset-ps-dataset" style="width: 100%; margin: 0; align-self: center; display: flex !important">
                 <div class="ui form" style="width: 100%">
                   <div class="grouped fields">
                     <label style="font-size: 17px; color: var(--color-bg-plum)">Which existing Pennsieve dataset
@@ -553,7 +553,7 @@
                                 font-weight: 600;
                                 margin-left: 80px;
                                 font-size: 15px;
-                              " id="current-bf-dataset-generate">None</span>
+                              " id="current-ps-dataset-generate">None</span>
 
                             <svg class="svg-change-current-account dataset bi bi-pencil-fill" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" viewBox="0 0 16 16">
                               <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"></path>
@@ -593,19 +593,19 @@
                             <div id="div-filter-datasets-progress-2" class="ui active green inline loader" style="display: none; margin: 10px auto"></div>
                             <p id="para-filter-datasets-status-2" style="font-size: 14px; display: none">0 dataset(s) where you have all permissions were loaded successfully below.</p>
 
-                            <h5 style="text-align: left; color: rgb(0, 0, 0); display: block;" id="bf-dataset-select-header">
+                            <h5 style="text-align: left; color: rgb(0, 0, 0); display: block;" id="ps-dataset-select-header">
                               Select your dataset
                             </h5>
-                            <div class="search-select-box" id="bf-dataset-select-div">
+                            <div class="search-select-box" id="ps-dataset-select-div">
                               <div class="dropdown bootstrap-select w-100"><select class="w-100" id="curatebfdatasetlist" data-live-search="true" name="Pennsieve dataset" style="width: 450px; border-radius: 7px; padding: 8px" data-none-selected-text="Loading datasets...">
                               <option value="Select dataset">Search here...</option></select>
                             </div>
                             </div>
 
-                            <h5 style="text-align: left; color: #000; display: none" id="bf-organization-select-header">
+                            <h5 style="text-align: left; color: #000; display: none" id="ps-organization-select-header">
                               Select your workspace
                             </h5>
-                            <div class="search-select-box" id="bf-organization-select-div" style="display: none">
+                            <div class="search-select-box" id="ps-organization-select-div" style="display: none">
                               <select class="w-100" id="curatebforganizationlist" data-live-search="true"
                                 name="Pennsieve organization" style="width: 450px; border-radius: 7px; padding: 8px"
                                 data-none-selected-text="Loading workspace...">
@@ -625,7 +625,7 @@
                   justify-content: center;
                   margin: 10px auto;
                 ">
-                  <button id="button-confirm-bf-dataset" onclick="window.transitionSubQuestionsButton(this, 'Question-generate-dataset-BF-dataset', 'upload-destination-selection-tab', 'delete', 'individual-question generate-dataset')" data-next="Question-generate-dataset-existing-folders-options" style="
+                  <button id="button-confirm-ps-dataset" onclick="window.transitionSubQuestionsButton(this, 'Question-generate-dataset-ps-dataset', 'upload-destination-selection-tab', 'delete', 'individual-question generate-dataset')" data-next="Question-generate-dataset-existing-folders-options" style="
                       display: none;
                       border-radius: 4px;
                       height: 30px;

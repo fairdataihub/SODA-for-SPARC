@@ -757,7 +757,7 @@ window.sodaCopy = {};
 
 window.pathSubmitDataset = document.querySelector("#selected-local-dataset-submit");
 // const progressUploadBf = document.getElementById("div-progress-submit");
-window.progressBarUploadBf = document.getElementById("progress-bar-upload-bf");
+window.progressBarUploadBf = document.getElementById("progress-bar-upload-ps");
 window.datasetPermissionDiv = document.getElementById("div-permission-list-2");
 
 window.bfDatasetSubtitleCharCount = document.querySelector("#para-char-count-metadata");
@@ -783,7 +783,7 @@ const bfListTeams = document.querySelector("#bf_list_teams");
 
 //Pennsieve dataset status
 window.bfCurrentDatasetStatusProgress = document.querySelector(
-  "#div-bf-current-dataset-status-progress"
+  "#div-ps-current-dataset-status-progress"
 );
 window.bfListDatasetStatus = document.querySelector("#bf_list_dataset_status");
 
@@ -2061,14 +2061,14 @@ window.displaySIze = 1000;
 // //////////////////////////////////// Prepare dataset UI ////////////////////////////////////////////
 // /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/// Add all BF accounts to the dropdown list, and then choose by default one option ('global' account)
+/// Add all ps accounts to the dropdown list, and then choose by default one option ('global' account)
 window.curateDatasetDropdown = document.getElementById("curatebfdatasetlist");
 window.curateOrganizationDropdown = document.getElementById("curatebforganizationlist");
 
 // ///////////////////////////////END OF NEW CURATE UI CODE ADAPTATION ///////////////////////////////////////////////////
 
 const metadataDatasetlistChange = () => {
-  $("#bf-dataset-subtitle").val("");
+  $("#ps-dataset-subtitle").val("");
   $("#para-dataset-banner-image-status").html("");
   window.showCurrentSubtitle();
   window.showCurrentDescription();
@@ -2084,7 +2084,7 @@ const permissionDatasetlistChange = () => {
 
 const datasetStatusListChange = () => {
   $(window.bfCurrentDatasetStatusProgress).css("visibility", "visible");
-  $("#bf-dataset-status-spinner").css("display", "block");
+  $("#ps-dataset-status-spinner").css("display", "block");
   window.showCurrentDatasetStatus();
 };
 
@@ -2641,8 +2641,8 @@ const withdrawDatasetCheck = async (res, curationMode) => {
 const withdrawReviewDataset = async (curationMode) => {
   // bfWithdrawReviewDatasetBtn.disabled = true;
 
-  let currentAccount = $("#current-bf-account").text();
-  let currentDataset = $(".bf-dataset-span")
+  let currentAccount = $("#current-ps-account").text();
+  let currentDataset = $(".ps-dataset-span")
     .html()
     .replace(/^\s+|\s+$/g, "");
 
@@ -2962,10 +2962,10 @@ window.loadDefaultAccount = async () => {
 
     // remove the N:organization from the account name
 
-    $("#current-bf-account").text(userEmail);
-    $("#current-bf-account-generate").text(userEmail);
+    $("#current-ps-account").text(userEmail);
+    $("#current-ps-account-generate").text(userEmail);
     $("#create_empty_dataset_BF_account_span").text(userEmail);
-    $(".bf-account-span").text(userEmail);
+    $(".ps-account-span").text(userEmail);
 
     showHideDropdownButtons("account", "show");
     refreshBfUsersList();
@@ -2994,8 +2994,8 @@ const showPrePublishingPageElements = () => {
 window.showPublishingStatus = async (callback, curationMode = "") => {
   return new Promise(async function (resolve, reject) {
     let curationModeID = "";
-    let currentAccount = $("#current-bf-account").text();
-    let currentDataset = $(".bf-dataset-span")
+    let currentAccount = $("#current-ps-account").text();
+    let currentDataset = $(".ps-dataset-span")
       .html()
       .replace(/^\s+|\s+$/g, "");
 
@@ -5599,7 +5599,7 @@ document.getElementById("button-generate-validate").addEventListener("click", fu
   //     window.sodaJSONObj["starting-point"]["origin"] == "new" &&
   //     "local-path" in window.sodaJSONObj["starting-point"]
   //   ) {
-  //     window.sodaJSONObj["starting-point"]["origin"] = "local";bf-account
+  //     window.sodaJSONObj["starting-point"]["origin"] = "local";ps-account
   //   }
   // }, window.delayAnimation);
 });
@@ -6656,17 +6656,17 @@ window.showBFAddAccountSweetalert = async (ev) => {
                   })
                   .then(async (response) => {
                     let user_email = response.data.email;
-                    $("#current-bf-account").text(user_email);
-                    $("#current-bf-account-generate").text(user_email);
+                    $("#current-ps-account").text(user_email);
+                    $("#current-ps-account-generate").text(user_email);
                     $("#create_empty_dataset_BF_account_span").text(user_email);
-                    $(".bf-account-span").text(user_email);
-                    $("#current-bf-dataset").text("None");
-                    $("#current-bf-dataset-generate").text("None");
-                    $(".bf-dataset-span").html("None");
-                    $("#para-continue-bf-dataset-getting-started").text("");
+                    $(".ps-account-span").text(user_email);
+                    $("#current-ps-dataset").text("None");
+                    $("#current-ps-dataset-generate").text("None");
+                    $(".ps-dataset-span").html("None");
+                    $("#para-continue-ps-dataset-getting-started").text("");
                     // set the workspace field values to the user's current workspace
                     let org = response.data.organization;
-                    $(".bf-organization-span").text(org);
+                    $(".ps-organization-span").text(org);
                     showHideDropdownButtons("account", "show");
                     confirm_click_account_function();
                     window.updateBfAccountList();
@@ -6682,7 +6682,7 @@ window.showBFAddAccountSweetalert = async (ev) => {
                     }
 
                     // reset the selected dataset to None
-                    $(".bf-dataset-span").html("None");
+                    $(".ps-dataset-span").html("None");
                     // reset the current owner span in the manage dataset make pi owner of a dataset tab
                     $(".current-permissions").html("None");
 

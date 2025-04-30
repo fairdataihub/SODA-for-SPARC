@@ -97,7 +97,7 @@ window.validateOrganizedDataset = async () => {
   // check if the virutal files will be merged with a Pennsieve dataset
   if (
     $('input[name="generate-4"]:checked')[0] &&
-    $('input[name="generate-4"]:checked')[0].id === "generate-BF-dataset-options-existing"
+    $('input[name="generate-4"]:checked')[0].id === "generate-ps-dataset-options-existing"
   ) {
     // get the package count of the PS dataset in order to see if it exceeds the maximumn size
     let packageTypeCounts;

@@ -181,7 +181,7 @@ const generateProgressCardElement = (progressFileJSONObj) => {
             <button
               class="ui positive button guided--progress-button-login-to-pennsieve"
               data-reset-guided-mode-page="true"
-              onclick="window.openDropdownPrompt(this, 'bf')"
+              onclick="window.openDropdownPrompt(this, 'ps')"
             >
               Log in to Pennsieve to resume curation
             </button>

@@ -152,14 +152,14 @@ window.switchToCurrentWorkspace = async () => {
         },
       });
       // reset the dataset field values
-      $("#current-bf-dataset").text("None");
-      $("#current-bf-dataset-generate").text("None");
-      $(".bf-dataset-span").html("None");
-      $("#para-continue-bf-dataset-getting-started").text("");
+      $("#current-ps-dataset").text("None");
+      $("#current-ps-dataset-generate").text("None");
+      $(".ps-dataset-span").html("None");
+      $("#para-continue-ps-dataset-getting-started").text("");
 
       // set the workspace field values to the user's current workspace
       let org = bf_account_details_req.data.organization;
-      $(".bf-organization-span").text(org);
+      $(".ps-organization-span").text(org);
 
       showHideDropdownButtons("account", "show");
       confirm_click_account_function();
