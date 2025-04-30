@@ -90,6 +90,8 @@ METADATA_FILES_SPARC = [
         "code_description.xlsx",
         "inputs_metadata.xlsx",
         "outputs_metadata.xlsx",
+        "manifest.xlsx",
+        "manifest.csv"
     ]
 
 ### Internal functions
@@ -606,7 +608,7 @@ def create_soda_json_object_backend(
 
     dataset_folder = soda_json_structure["dataset-structure"] = {"folders": {}}
 
-    def recursive_structure_create(dataset_structure, folder_path, high_lvl_folder_name):
+    def recursive_structure_create(dataset_structure, folder_path, root_manifest):
         global create_soda_json_progress
         # going within high level folders
         # add manifest details if manifest exists
@@ -614,6 +616,13 @@ def create_soda_json_object_backend(
             "filename": "",
             "timestamp": "",
             "description": "",
+            "file type": "",
+            "entity": "",
+            "data modality": "",
+            "also in dataset": "",
+            "also in dataset path": "",
+            "data dictionary path": "",
+            "entity is transitive": "",
             "additional-metadata": "",
         }
 
@@ -628,110 +637,32 @@ def create_soda_json_object_backend(
             index_check = irregularFolders.index(folder_path)
             modified_name = replaced[os.path.basename(folder_path)]
             folder_path = irregularFolders[index_check]
+
+
         entries = os.listdir(folder_path)
         for entry in entries:
             gevent.sleep(0)
             item_path = os.path.normpath(os.path.join(folder_path, entry))
-
-            if os.path.isfile(item_path) is True:
-                # check manifest to add metadata
-                if entry[0:1] != ".":
-                    create_soda_json_progress += 1
+            if os.path.isfile(item_path):
+                # Check manifest to add metadata
                 if entry[0:1] != "." and entry[0:8] != "manifest":
-                    # no hidden files or manifest files included
-                    if high_lvl_folder_name in soda_json_structure["starting-point"]:
-                        if (
-                            soda_json_structure["starting-point"][high_lvl_folder_name]["path"]
-                            != ""
-                        ):
-                            # checks if there is a path to a manifest
-                            manifest_path = soda_json_structure["starting-point"][
-                                high_lvl_folder_name
-                            ]["path"]
-                            ext_index = manifest_path.rfind(".")
-                            extension = manifest_path[ext_index:]
-                            if extension == ".xlsx":
-                                for key in soda_json_structure["starting-point"][
-                                    high_lvl_folder_name
-                                ]["manifest"]:
-                                    extra_columns = False
-                                    if(len(key) > 5):
-                                        extra_columns = True
-                                        extra_columns_dict = dict(itertools.islice(key.items(), 5, len(key)))
-                                    # description metadata
-                                    if key["filename"] in item_path:
-                                        if key["description"] != "":
-                                            manifest_object["description"] = key[
-                                                "description"
-                                            ]
-                                        else:
-                                            manifest_object["description"] = ""
-                                    # additional metadata
-                                        if key["Additional Metadata"] != "":
-                                            manifest_object["additional-metadata"] = key[
-                                                "Additional Metadata"
-                                            ]
-                                        else:
-                                            manifest_object["additional-metadata"] = ""
+                    create_soda_json_progress += 1
+                    # Use the root manifest to find metadata for the file
+                    for row in root_manifest:
+                        extra_columns = False
+                        if len(row) > 11:
+                            extra_columns = True
+                            extra_columns_dict = dict(itertools.islice(row.items(), 5, len(row)))
 
-                                        if extra_columns:
-                                            manifest_object["extra_columns"] = extra_columns_dict
+                        if row["filename"] == entry:
+                            # Add description metadata
+                            manifest_object["description"] = row.get("description", "")
+                            # Add additional metadata
+                            manifest_object["additional-metadata"] = row.get("Additional Metadata", "")
+                            if extra_columns:
+                                manifest_object["extra_columns"] = extra_columns_dict
 
-                            elif extension == ".csv":
-                                for key in soda_json_structure["starting-point"][
-                                    folder_name
-                                ]["manifest"]:
-                                    extra_columns = False
-                                    if len(key) > 5:
-                                        extra_columns = True
-                                        extra_columns_dict = dict(itertools.islice(key.items(), 5, len(key)))
-
-                                    if (
-                                        soda_json_structure["starting-point"][
-                                            folder_name
-                                        ]["manifest"][key]["filename"]
-                                        == entry
-                                    ):
-                                        if (
-                                            soda_json_structure["starting-point"][
-                                                folder_name
-                                            ][key]["description"]
-                                            != None
-                                        ):
-                                            manifest_object[
-                                                "description"
-                                            ] = soda_json_structure["starting-point"][
-                                                folder_name
-                                            ][
-                                                key
-                                            ][
-                                                "description"
-                                            ]
-                                        else:
-                                            manifest_object["description"] = ""
-                                    if (
-                                        soda_json_structure["starting-point"][
-                                            folder_name
-                                        ]["manifest"][key]["Additional Metadata"]
-                                        != None
-                                    ):
-                                        manifest_object[
-                                            "additional-metadata"
-                                        ] = soda_json_structure["starting-point"][
-                                            folder_name
-                                        ][
-                                            "manifest"
-                                        ][
-                                            key
-                                        ][
-                                            "Additional Metadata"
-                                        ]
-                                    else:
-                                        manifest_object["additional-metadata"] = ""
-
-                                    if extra_columns:
-                                        manifest_object["extra_columns"] = extra_columns_dict
-                    # create json
+                    # Create JSON structure for the file
                     if "extra_columns" in manifest_object:
                         dataset_structure["files"][entry] = {
                             "path": item_path,
@@ -739,7 +670,7 @@ def create_soda_json_object_backend(
                             "action": ["existing"],
                             "description": manifest_object["description"],
                             "additional-metadata": manifest_object["additional-metadata"],
-                            "extra_columns": manifest_object["extra_columns"]
+                            "extra_columns": manifest_object["extra_columns"],
                         }
                     else:
                         dataset_structure["files"][entry] = {
@@ -772,7 +703,7 @@ def create_soda_json_object_backend(
                         recursive_structure_create(
                             dataset_structure["folders"][modified_name][folder],
                             updated_path,
-                            high_lvl_folder_name
+                            root_manifest
                         )
                 else:
                     dataset_structure["folders"][entry] = {
@@ -786,10 +717,31 @@ def create_soda_json_object_backend(
         for folder in dataset_structure["folders"]:
             updated_path = dataset_structure["folders"][folder]["path"]
             recursive_structure_create(
-                dataset_structure["folders"][folder], updated_path, high_lvl_folder_name
+                dataset_structure["folders"][folder], updated_path, root_manifest
             )
 
     # BEGIN
+
+    # Check for a single manifest file at the root of the dataset
+    root_manifest_csv = os.path.join(root_folder_path, "manifest.csv")
+    root_manifest_xlsx = os.path.join(root_folder_path, "manifest.xlsx")
+
+    soda_json_structure["starting-point"]["manifest"] = {}
+
+    if os.path.exists(root_manifest_csv):
+        csv_data = pd.read_csv(root_manifest_csv)
+        csv_data.fillna("", inplace=True)
+        json_format = csv_data.to_dict(orient="records")
+        soda_json_structure["starting-point"]["manifest"] = json_format
+        soda_json_structure["starting-point"]["path"] = root_manifest_csv
+    elif os.path.exists(root_manifest_xlsx):
+        excel_data = pd.read_excel(root_manifest_xlsx, sheet_name="Sheet1")
+        excel_data.fillna("", inplace=True)
+        json_format = excel_data.to_dict(orient="records")
+        soda_json_structure["starting-point"]["manifest"] = json_format
+        soda_json_structure["starting-point"]["path"] = root_manifest_xlsx
+
+
 
     # count the amount of items in folder
     create_soda_json_total_items = 0
@@ -816,13 +768,13 @@ def create_soda_json_object_backend(
     for entry in entries:
         # begin going through high level folders
         gevent.sleep(0)
-        item_path = root_folder_path + "/" + entry
+        item_path = os.path.normpath(os.path.join(root_folder_path, entry))
         # high level folder paths
         if os.path.isfile(item_path) is True:
             if entry[0:1] != "." and entry in METADATA_FILES_SPARC:
                 # is not a hidden folder
                 create_soda_json_progress += 1
-                soda_json_structure["metadata-files"][entry] = {
+                soda_json_structure["dataset_metadata"][entry] = {
                     "path": item_path,
                     "location": "local",
                     "action": ["existing"],
@@ -857,25 +809,7 @@ def create_soda_json_object_backend(
     for folder in dataset_folder["folders"]:
         # go through high level folders again
         high_lvl_path = root_folder_path + "/" + folder
-        temp_csv = high_lvl_path + "/manifest.csv"
-        temp_xlsx = high_lvl_path + "/manifest.xlsx"
-        if os.path.exists(temp_csv) == True:
-            temp_file_path_csv = root_folder_path + "/" + folder + "/" + "manifest.csv"
-            csv_data = pd.read_csv(temp_file_path_csv)
-            csv_data.fillna("", inplace=True)
-            json_format = csv_data.to_dict(orient="records")
-            soda_json_structure["starting-point"][folder]["path"] = temp_file_path_csv
-            soda_json_structure["starting-point"][folder]["manifest"] = json_format
-        if os.path.exists(temp_xlsx) == True:
-            temp_file_path_xlsx = (
-                root_folder_path + "/" + folder + "/" + "manifest.xlsx"
-            )
-            excel_data = pd.read_excel(temp_file_path_xlsx, sheet_name="Sheet1")
-            excel_data.fillna("", inplace=True)
-            json_format = excel_data.to_dict(orient="records")
-            soda_json_structure["starting-point"][folder]["path"] = temp_file_path_xlsx
-            soda_json_structure["starting-point"][folder]["manifest"] = json_format
-        recursive_structure_create(dataset_folder["folders"][folder], high_lvl_path, folder)
+        recursive_structure_create(dataset_folder["folders"][folder], high_lvl_path, soda_json_structure["starting-point"]["manifest"])
 
     create_soda_json_completed = 1
     return soda_json_structure
