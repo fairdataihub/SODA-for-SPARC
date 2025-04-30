@@ -21,7 +21,7 @@ while (!window.baseHtmlLoaded) {
 window.createValidationReport = async (sodaJSONObj) => {
   const clientUUID = uuid();
 
-  console.log(sodaJSONObj)
+  console.log(sodaJSONObj);
 
   let manifestJSONResponse = await client.post(
     "/skeleton_dataset/manifest_json",
@@ -157,7 +157,7 @@ const validateLocalDataset = async () => {
       "dataset-name": {},
     },
     "dataset-structure": {},
-    "dataset_metadata": {},
+    dataset_metadata: {},
     "generate-dataset": {},
     "starting-point": {
       location: "local",
@@ -421,7 +421,7 @@ const validatePennsieveDatasetStandAlone = async () => {
       "dataset-name": {},
     },
     "dataset-structure": {},
-    "dataset_metadata": {},
+    dataset_metadata: {},
     "generate-dataset": {},
     "starting-point": {
       origin: "ps",
