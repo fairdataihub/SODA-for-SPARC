@@ -42,11 +42,11 @@
 
 SODA (Software to Organize Data Automatically) for SPARC is an open-source and free cross-platform desktop software intended to facilitate the data organization and submission process for [SPARC](https://commonfund.nih.gov/sparc) investigators according to the [FAIR SPARC data curation guidelines](https://sparc.science/help/7k8nEPuw3FjOq2HuS8OVsd#top). The idea for a computer software that assists researchers in curating and sharing their data originated during the SPARC Hackathon in December 2018, where it won the Public's Choice Award, before receiving support from the National Institutes of Health (NIH) for further development. SODA for SPARC is designed such that users can accomplish all the requirements to submit a SPARC dataset rapidly through a single interface. The submission process is broken down into simple steps, with automation integrated throughout — often reducing tasks to just a few clicks.
 
-<h2 align="center">📊 By the Numbers</h2>
+<p style="font-size: large; align: left;">📊 By the Numbers</p>
 
-<p align="center">
-  🧠 <strong>35 TB</strong> of biomedical data made FAIR and uploaded to <a href="https://www.pennsieve.io">Pennsieve</a><br/>
-  📈 <strong>21 SPARC datasets</strong> curated with SODA have been published on <a href="https://sparc.science">SPARC.Science</a> since <strong>June 2024</strong>
+<p>
+  💡 At least <strong>35 TB</strong> of biomedical data curated and made FAIR - with much of it uploaded to <a href="https://www.pennsieve.io">Pennsieve</a> - since January 2021<br/>
+  📈 <strong>21 SPARC datasets</strong> curated and made FAIR with SODA have been published on <a href="https://sparc.science">SPARC.Science</a> since <strong>June 2024</strong>
 </p>
 
 ## Downloading SODA
@@ -71,11 +71,8 @@ Alternatively, you can share feedback through [our quick feedback form](https://
 
 ## Contributing
 
-If you're interested in contributing directly to the project or modifying SODA to better suit your needs:
-
-- Follow our setup instructions in the [Developer Documentation](https://docs.sodaforsparc.io/docs/developer-documentation/project-setup)
-- Feel free to fork the repo, make changes, and submit a pull request
-- Use the Issues tab to discuss ideas, ask questions, or find items to work on
+If you're interested in contributing directly to the project or modifying SODA to better suit your needs
+please refer to our contributing.md file [here](https://github.com/fairdataihub/SODA-for-SPARC/blob/staging/CONTRIBUTING.md).
 
 Whether you're a user or developer, your contributions help improve SODA for the entire SPARC community. Thanks for being part of it!
 
@@ -93,12 +90,12 @@ This data helps us:
 - Identify bugs and crashes
 - Fulfill our reporting requirements to the SPARC program
 
-To learn more about what SODA collects and how we use Kombucha Analytics within SODA, please read our [Privacy Policy](https://github.com/fairdataihub/SODA-for-SPARC/wiki/Privacy-Policy).
+To learn more about what SODA collects and how we use Kombucha Analytics within SODA, please read our [Privacy Policy](https://docs.sodaforsparc.io/docs/legal/privacypolicy).
 
 ## Acknowledgements
 
 - [NIH SPARC Initiative](https://commonfund.nih.gov/sparc)
-- [Blackfynn Team](https://www.blackfynn.com/)
+- [Pennsieve Team](https://discover.pennsieve.io/)
 - [SPARC Dataset Curation Team](https://github.com/SciCrunch/sparc-curation)
 - Our beta testers, including:
   - Natalia Biscola (Icahn School of Medicine at Mount Sinai)
