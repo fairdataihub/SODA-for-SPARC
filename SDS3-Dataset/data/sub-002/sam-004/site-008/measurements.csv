@@ -1,0 +1,5 @@
+Time,Position,Measurement,Value
+1,site-008,Temperature,38.61 °C
+2,site-008,pH,7.87
+3,site-008,Pressure,88.44 mmHg
+4,site-008,Flow Rate,63.30 ml/min

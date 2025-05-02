@@ -1,10 +1,10 @@
 import useGlobalStore from "../globalStore";
 import { produce } from "immer";
 import {
-  getExistingSubjectIds,
-  getExistingSampleIds,
-  getExistingSiteIds,
-  getExistingPerformanceIds,
+  getExistingSubjects,
+  getExistingSamples,
+  getExistingSites,
+  getExistingPerformancesR,
 } from "./datasetEntityStructureSlice";
 import { setEntityFilter } from "./datasetTreeViewSlice";
 
@@ -89,7 +89,8 @@ export const setActiveEntity = (activeEntity) => {
   }
 
   if (activeEntity.startsWith("sam-")) {
-    const existingSiteIds = getExistingSiteIds();
+    const existingSiteIds = getExistingSites().map((site) => site.id);
+    console.log("Existing sites: ", getExistingSites());
     const siteFilter = [
       {
         type: "sites",
@@ -100,8 +101,8 @@ export const setActiveEntity = (activeEntity) => {
   }
 
   if (activeEntity.startsWith("sub-")) {
-    const existingSiteIds = getExistingSiteIds();
-    const existingSampleIds = getExistingSampleIds();
+    const existingSiteIds = getExistingSites().map((site) => site.id);
+    const existingSampleIds = getExistingSamples().map((sample) => sample.id);
     const siteFilter = [
       {
         type: "sites",
@@ -119,10 +120,13 @@ export const setActiveEntity = (activeEntity) => {
     setEntityFilter([{ type: "categorized-data", names: ["Experimental data"] }], combinedFilter);
   }
 
-  const existingSubjectIds = getExistingSubjectIds();
-  const existingSampleIds = getExistingSampleIds();
-  const existingSiteIds = getExistingSiteIds();
-  const existingPerformanceIds = getExistingPerformanceIds();
+  const existingSubjectIds = getExistingSubjects().map((subject) => subject.id);
+  const existingSampleIds = getExistingSamples().map((sample) => sample.id);
+  const existingSiteIds = getExistingSites().map((site) => site.id);
+  const existingPerformanceIds = getExistingPerformancesR().map((performance) => performance.id);
+  console.log("Existing subject IDs: ", existingSubjectIds);
+  console.log("Existing sample IDs: ", existingSampleIds);
+  console.log("Existing site IDs: ", existingSiteIds);
   const combinedEntityIds = [
     ...existingSubjectIds,
     ...existingSampleIds,

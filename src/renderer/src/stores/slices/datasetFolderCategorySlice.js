@@ -2,7 +2,7 @@ import { produce } from "immer";
 
 const initialState = {
   unstructuredDataFolders: {}, // Maps folder paths to boolean (true if unstructured)
-  unstructuredDataParentPath: "dataset_root/unstructured-data", // Default path for unstructured data
+  unstructuredDataParentPath: "dataset_root/data", // Default path for unstructured data
   folderCategories: {}, // Custom categories for folders
 };
 

@@ -306,6 +306,43 @@ export const addRelativePaths = (obj, currentPath = []) => {
   }
 };
 
+export const deleteEmptyFoldersFromStructure = (structure) => {
+  // Base case: if structure is null or undefined, return null
+  if (!structure) {
+    console.log("Structure is null or undefined");
+    return null;
+  }
+
+  // Create defensive copies of folders and files objects
+  const folders = structure.folders || {};
+  const files = structure.files || {};
+
+  // Process each subfolder recursively
+  for (const folderName of Object.keys(folders)) {
+    const subfolder = deleteEmptyFoldersFromStructure(folders[folderName]);
+
+    // If subfolder is null or empty (no files and no non-empty subfolders), delete it
+    if (
+      !subfolder ||
+      ((!subfolder.files || Object.keys(subfolder.files).length === 0) &&
+        (!subfolder.folders || Object.keys(subfolder.folders).length === 0))
+    ) {
+      console.log(`Deleting empty folder: ${folderName}`);
+      delete folders[folderName];
+    } else {
+      // Update the folder with its cleaned version
+      folders[folderName] = subfolder;
+    }
+  }
+
+  // Return the cleaned structure (with potentially fewer empty folders)
+  return {
+    ...structure,
+    folders,
+    files,
+  };
+};
+
 // Set the dataset structure and prepare it for rendering
 export const setTreeViewDatasetStructure = (datasetStructure, pathToRender) => {
   try {
@@ -330,10 +367,14 @@ export const setTreeViewDatasetStructure = (datasetStructure, pathToRender) => {
     addRelativePaths(updatedStructure);
 
     // Traverse to the folder structure to be rendered and add relative paths
-    const renderStructureRef = traverseStructureByPath(updatedStructure, pathToRender);
+    let renderStructureRef = traverseStructureByPath(updatedStructure, pathToRender);
     if (renderStructureRef) {
       addRelativePaths(renderStructureRef, pathToRender);
     }
+    console.log("renderStructureRef:", renderStructureRef); // Debug log
+
+    // Remove empty folders from the structure
+    renderStructureRef = deleteEmptyFoldersFromStructure(renderStructureRef);
 
     // Add relative path to the window dataset structure
     if (window.datasetStructureJSONObj) {

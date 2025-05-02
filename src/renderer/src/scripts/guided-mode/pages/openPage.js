@@ -17,9 +17,9 @@ import {
 import {
   setDatasetEntityArray,
   setActiveFormType,
-  getExistingSubjectIds,
-  getExistingSampleIds,
-  getExistingSiteIds,
+  getExistingSubjects,
+  getExistingSamples,
+  getExistingSites,
 } from "../../../stores/slices/datasetEntityStructureSlice.js";
 import {
   setSelectedEntities,
@@ -338,7 +338,7 @@ export const openPage = async (targetPageID) => {
         }
 
         if (pageEntityType === "sites") {
-          const sites = getExistingSiteIds();
+          const sites = getExistingSites().map((site) => site.id);
           console.log("Found sites", sites);
           for (const site of sites) {
             addEntityToEntityList("sites", site);
@@ -347,7 +347,7 @@ export const openPage = async (targetPageID) => {
         }
 
         if (pageEntityType === "samples") {
-          const samples = getExistingSampleIds();
+          const samples = getExistingSamples().map((sample) => sample.id);
           for (const sample of samples) {
             addEntityToEntityList("samples", sample);
           }
@@ -355,9 +355,9 @@ export const openPage = async (targetPageID) => {
         }
 
         if (pageEntityType === "subjects") {
-          const subjects = getExistingSubjectIds();
-          const samples = getExistingSampleIds();
-          const sites = getExistingSiteIds();
+          const subjects = getExistingSubjects().map((subject) => subject.id);
+          const samples = getExistingSamples().map((sample) => sample.id);
+          const sites = getExistingSites().map((site) => site.id);
           for (const subject of subjects) {
             addEntityToEntityList("subjects", subject);
           }
@@ -401,7 +401,7 @@ export const openPage = async (targetPageID) => {
         console.log("savedDatasetEntityObj", savedDatasetEntityObj);
         console.log("pageEntityType", pageEntityType);
 
-        setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["unstructured-data"]);
+        setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["data"]);
       }
 
       if (targetPageComponentType === "entity-file-mapping-page") {
@@ -429,7 +429,7 @@ export const openPage = async (targetPageID) => {
         }
 
         setDatasetEntityArray(datasetEntityArray);
-        setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["unstructured-data"]);
+        setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["data"]);
       }
 
       if (
@@ -491,7 +491,7 @@ export const openPage = async (targetPageID) => {
     //     }
 
     if (targetPageID === "guided-unstructured-data-import-tab") {
-      guidedUpdateFolderStructureUI("unstructured-data/");
+      guidedUpdateFolderStructureUI("data/");
     }
 
     //     if (targetPageID === "guided-denote-derivative-data-tab") {

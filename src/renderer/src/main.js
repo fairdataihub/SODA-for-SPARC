@@ -7,6 +7,7 @@ import "./assets/demo-btns";
 import "./assets/nav";
 import "./scripts/client";
 import "./scripts/globals";
+import "./scripts/guided-mode/tagifies/tagifies";
 import "./scripts/guided-mode/buttons/radioButtons";
 import "./scripts/guided-mode/metadata/utils";
 import "./scripts/guided-mode/metadata/contributors";

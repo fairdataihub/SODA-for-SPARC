@@ -1,0 +1,6 @@
+Site ID: site-004
+Related Subject: sub-001
+Related Sample: sam-002
+Collection Date: 5/1/2025
+Anatomical Location: site-004
+Coordinates: X:8, Y:10, Z:17

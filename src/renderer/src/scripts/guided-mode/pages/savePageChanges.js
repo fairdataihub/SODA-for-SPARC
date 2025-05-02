@@ -7,8 +7,8 @@ import { guidedSkipPage, guidedUnSkipPage } from "./navigationUtils/pageSkipping
 import useGlobalStore from "../../../stores/globalStore";
 import { contentOptionsMap } from "../../../components/pages/DatasetContentSelector";
 import {
-  getExistingSampleIds,
-  getExistingSiteIds,
+  getExistingSamples,
+  getExistingSites,
 } from "../../../stores/slices/datasetEntityStructureSlice";
 
 while (!window.baseHtmlLoaded) {
@@ -268,7 +268,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
 
         // If the user said they had samples but did not add or import any, throw an error
         if (selectedEntities.includes("samples")) {
-          if (getExistingSampleIds().length === 0) {
+          if (getExistingSamples().length === 0) {
             errorArray.push({
               type: "notyf",
               message: "You must add at least one sample to your dataset before continuing",
@@ -278,7 +278,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
         }
 
         if (selectedEntities.includes("sites")) {
-          if (getExistingSiteIds().length === 0) {
+          if (getExistingSites().length === 0) {
             errorArray.push({
               type: "notyf",
               message: "You must add at least one site to your dataset before continuing",

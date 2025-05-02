@@ -124,9 +124,11 @@ export const modifySubjectId = (oldSubjectId, newSubjectId) => {
   );
 };
 
-export const getExistingSubjectIds = () => {
+export const getExistingSubjects = () => {
   const { datasetEntityArray } = useGlobalStore.getState();
-  return datasetEntityArray.map((subject) => subject.id); // Changed from subjectId to id
+
+  // Simply return the datasetEntityArray because it is essentially a list of subjects
+  return datasetEntityArray;
 };
 
 // Sample management functions
@@ -178,47 +180,23 @@ export const deleteSampleFromSubject = (subjectId, sampleId) => {
   );
 };
 
-export const getExistingSampleIds = () => {
-  const { datasetEntityArray } = useGlobalStore.getState();
-  return datasetEntityArray.flatMap((subject) => subject.samples.map((sample) => sample.id)); // Changed from sampleId to id
-};
-
-/**
- * Gets all sample information with their parent subject information
- * @returns {Array} Array of objects with sample details including parent subject info
- */
 export const getExistingSamples = () => {
   const { datasetEntityArray } = useGlobalStore.getState();
-
-  return datasetEntityArray.flatMap((subject) => {
-    return subject.samples.map((sample) => ({
-      id: sample.id,
-      type: "sample",
-      parentSubject: subject.id,
-      parentSubjectMetadata: subject.metadata,
-      metadata: sample.metadata,
-      sitesCount: sample.sites?.length || 0,
-    }));
-  });
+  return datasetEntityArray.flatMap((subject) => subject.samples);
 };
 
 /**
  * Gets all site IDs from the dataset regardless of whether they belong to subjects or samples
  * @returns {Array} Array of all site IDs in the dataset
  */
-export const getExistingSiteIds = () => {
-  const { datasetEntityArray } = useGlobalStore.getState();
-
-  // Get all site IDs from samples
-  const allSiteIds = datasetEntityArray.flatMap((subject) => {
-    // Get sample site IDs
-    const sampleSiteIds =
-      subject.samples?.flatMap((sample) => sample.sites?.map((site) => site.id) || []) || [];
-
-    return sampleSiteIds;
-  });
-
-  return allSiteIds;
+export const getExistingSites = () => {
+  // Get the list of samples from the dataset
+  const existingSamples = getExistingSamples();
+  console.log("Existing samples:", existingSamples);
+  // Flatten the samples and extract site IDs
+  const existingSites = existingSamples.flatMap((sample) => sample.sites || []);
+  console.log("Existing sites:", existingSites);
+  return existingSites;
 };
 
 export const modifySampleId = (subjectId, oldSampleId, newSampleId) => {
@@ -284,99 +262,15 @@ export const deleteSiteFromSubject = (subjectId, siteId) => {
   );
 };
 
-export const getExistingPerformanceIds = () => {
-  const { datasetEntityArray } = useGlobalStore.getState();
-  return datasetEntityArray.flatMap(
-    (subject) => subject.subjectPerformances.map((perf) => perf.id) // Changed from performanceId to id
+export const getExistingPerformancesR = () => {
+  // Get a list of existing subjects
+  const existingSubjects = getExistingSubjects();
+  // Flatten the subjects and extract performance IDs
+  const existingPerformances = existingSubjects.flatMap(
+    (subject) => subject.subjectPerformances || []
   );
-};
-
-// Subject performance management functions
-export const addPerformanceToSubject = (subjectId, performanceId, metadata = {}) => {
-  const normalizedPerformanceId = normalizeEntityId("perf-", performanceId);
-  const normalizedSubjectId = normalizeEntityId("sub-", subjectId);
-
-  if (!normalizedPerformanceId) {
-    throw new Error("Performance ID cannot be empty");
-  }
-
-  useGlobalStore.setState(
-    produce((state) => {
-      const subject = state.datasetEntityArray.find((s) => s.id === normalizedSubjectId);
-      if (subject) {
-        if (!subject.subjectPerformances) subject.subjectPerformances = [];
-
-        // Create merged metadata for the performance
-        const mergedMetadata = {
-          ...metadata,
-          "performance id": normalizedPerformanceId,
-          "subject id": normalizedSubjectId,
-        };
-
-        subject.subjectPerformances.push({
-          id: normalizedPerformanceId,
-          type: "performance",
-          parentSubject: subject.id,
-          metadata: mergedMetadata,
-        });
-
-        console.log("Performance added to subject successfully with metadata:", mergedMetadata);
-      }
-    })
-  );
-};
-
-export const addPerformanceToSample = (subjectId, sampleId, performanceId, metadata = {}) => {
-  const normalizedPerformanceId = normalizeEntityId("perf-", performanceId);
-  const normalizedSubjectId = normalizeEntityId("sub-", subjectId);
-  const normalizedSampleId = normalizeEntityId("sam-", sampleId);
-
-  if (!normalizedPerformanceId) {
-    throw new Error("Performance ID cannot be empty");
-  }
-
-  useGlobalStore.setState(
-    produce((state) => {
-      const subject = state.datasetEntityArray.find((s) => s.id === normalizedSubjectId);
-      if (subject && subject.samples) {
-        const sample = subject.samples.find((s) => s.id === normalizedSampleId);
-        if (sample) {
-          if (!sample.performances) sample.performances = [];
-
-          // Create merged metadata for the performance
-          const mergedMetadata = {
-            ...metadata,
-            "performance id": normalizedPerformanceId,
-            "subject id": normalizedSubjectId,
-            "sample id": normalizedSampleId,
-          };
-
-          sample.performances.push({
-            id: normalizedPerformanceId,
-            type: "performance",
-            parentSubject: subject.id,
-            parentSample: sample.id,
-            metadata: mergedMetadata,
-          });
-
-          console.log("Performance added to sample successfully with metadata:", mergedMetadata);
-        }
-      }
-    })
-  );
-};
-
-export const deletePerformanceFromSubject = (subjectId, performanceId) => {
-  useGlobalStore.setState(
-    produce((state) => {
-      const subject = state.datasetEntityArray.find((s) => s.id === subjectId); // Changed from subjectId to id
-      if (subject && subject.subjectPerformances) {
-        subject.subjectPerformances = subject.subjectPerformances.filter(
-          (perf) => perf.id !== performanceId // Changed from performanceId to id
-        );
-      }
-    })
-  );
+  console.log("Existing performances:", existingPerformances);
+  return existingPerformances;
 };
 
 // Sample site management functions

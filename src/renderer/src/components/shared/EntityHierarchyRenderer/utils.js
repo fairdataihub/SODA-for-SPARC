@@ -2,13 +2,11 @@ import Swal from "sweetalert2";
 import useGlobalStore from "../../../stores/globalStore";
 import {
   addSubject,
-  getExistingSubjectIds,
-  getExistingSampleIds,
-  getExistingPerformanceIds,
-  getExistingSiteIds,
+  getExistingSubjects,
+  getExistingSamples,
+  getExistingPerformancesR,
+  getExistingSites,
   addSampleToSubject,
-  addPerformanceToSubject,
-  addPerformanceToSample,
   addSiteToSample,
   addSiteToSubject,
 } from "../../../stores/slices/datasetEntityStructureSlice";
@@ -27,20 +25,20 @@ export const guidedOpenEntityAdditionSwal = async ({ entityType, subjectId, samp
 
   // case when adding subjects
   if (entityType === "subjects") {
-    preExistingEntities = getExistingSubjectIds();
+    preExistingEntities = getExistingSubjects().map((subject) => subject.id);
     entityNameSingular = "subject";
     entityPrefix = "sub-";
   }
 
   if (entityType === "samples") {
-    preExistingEntities = getExistingSampleIds();
+    preExistingEntities = getExistingSamples().map((sample) => sample.id);
     console.log("preExistingEntities", preExistingEntities);
     entityNameSingular = "sample";
     entityPrefix = "sam-";
   }
 
   if (entityType === "performances") {
-    preExistingEntities = getExistingPerformanceIds();
+    preExistingEntities = getExistingPerformancesR().map((performance) => performance.id);
     console.log("preExistingEntities", preExistingEntities);
     entityNameSingular = "performance";
     entityPrefix = "perf-";
@@ -48,7 +46,7 @@ export const guidedOpenEntityAdditionSwal = async ({ entityType, subjectId, samp
 
   // Add sites entity type
   if (entityType === "sites") {
-    preExistingEntities = getExistingSiteIds();
+    preExistingEntities = getExistingSites().map((site) => site.id);
     console.log("preExistingEntities", preExistingEntities);
     entityNameSingular = "site";
     entityPrefix = "site-";
@@ -268,23 +266,6 @@ export const guidedOpenEntityAdditionSwal = async ({ entityType, subjectId, samp
       }
     }
 
-    if (entityType === "performances") {
-      console.log("subjectId", subjectId);
-      console.log("sampleId", sampleId);
-      if (sampleId) {
-        for (const entityId of newEntities) {
-          console.log("Adding performance", entityId);
-          console.log("subjectId", subjectId);
-          console.log("sampleId", sampleId);
-          addPerformanceToSample(subjectId, sampleId, entityId);
-        }
-      } else {
-        for (const entityId of newEntities) {
-          addPerformanceToSubject(subjectId, entityId);
-        }
-      }
-    }
-
     // Add sites handling
     if (entityType === "sites") {
       console.log("subjectId", subjectId);
@@ -313,22 +294,22 @@ export const guidedOpenEntityEditSwal = async ({ entityType, entityData, parentE
 
   if (entityType === "subject") {
     entityName = entityData.id;
-    preExistingEntities = getExistingSubjectIds();
+    preExistingEntities = getExistingSubjects();
     entityNameSingular = "subject";
     entityPrefix = "sub-";
   } else if (entityType === "sample") {
     entityName = entityData.id;
-    preExistingEntities = getExistingSampleIds();
+    preExistingEntities = getExistingSamples();
     entityNameSingular = "sample";
     entityPrefix = "sam-";
   } else if (entityType === "performance") {
     entityName = entityData.id;
-    preExistingEntities = getExistingPerformanceIds();
+    preExistingEntities = getExistingPerformancesR();
     entityNameSingular = "performance";
     entityPrefix = "perf-";
   } else if (entityType === "site") {
     entityName = entityData.id;
-    preExistingEntities = getExistingSiteIds();
+    preExistingEntities = getExistingSites().map((site) => site.id);
     entityNameSingular = "site";
     entityPrefix = "site-";
   }

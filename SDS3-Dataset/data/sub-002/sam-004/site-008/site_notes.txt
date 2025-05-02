@@ -1,0 +1,10 @@
+Site: site-008
+Subject: sub-002
+Sample: sam-004
+Date: 2023-07-10
+Researcher: Dr. M. Researcher
+
+Site-specific Notes:
+- Measurements taken according to SOP-008
+- Site appears healthy and normal
+- Processing completed successfully

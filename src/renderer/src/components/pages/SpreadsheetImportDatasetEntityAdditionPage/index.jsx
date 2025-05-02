@@ -29,9 +29,9 @@ import useGlobalStore from "../../../stores/globalStore";
 import { importEntitiesFromExcel, entityConfigs, saveEntities } from "./excelImport";
 import { swalFileListDoubleAction, swalConfirmAction } from "../../../scripts/utils/swal-utils";
 import {
-  getExistingSubjectIds,
-  getExistingSampleIds,
-  getExistingSiteIds,
+  getExistingSubjects,
+  getExistingSamples,
+  getExistingSites,
 } from "../../../stores/slices/datasetEntityStructureSlice";
 import { normalizeEntityId } from "../../../stores/slices/datasetEntityStructureSlice";
 import { get } from "jquery";

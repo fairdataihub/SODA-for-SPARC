@@ -1,0 +1,5 @@
+# Raw sam-001 data - Run 2
+Sample ID: sub-001
+Date: 5/1/2025
+Values: 48.83, 54.96, 23.71, 51.96, 14.00
+Notes: Standard collection protocol followed

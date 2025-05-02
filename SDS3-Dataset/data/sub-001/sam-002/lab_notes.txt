@@ -1,0 +1,12 @@
+Lab Notes - sam-002 Sample
+Subject: sub-001
+Sample: sam-002
+Date: 2023-06-15
+Collected by: J. Smith
+
+Processing Notes:
+- Sample processed according to protocol
+- Stored at -80°C (Freezer #2)
+- Quality check: Passed
+
+Observations: Sample appears normal with no visible contamination

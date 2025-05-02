@@ -81,26 +81,14 @@ const getBadgeColor = (entityId) => {
   if (entityId === "Other") return "gray";
 };
 
-// Format entity ID for display by removing standard prefixes and managing length
-// to ensure badges remain readable while showing meaningful information
 const formatEntityId = (entityId) => {
-  // Strip common prefixes for cleaner display
   let displayText = entityId;
-  const prefixes = ["sub-", "sam-", "site-", "perf-"];
-
-  for (const prefix of prefixes) {
-    if (displayText.startsWith(prefix)) {
-      displayText = displayText.substring(prefix.length);
-      break;
-    }
-  }
 
   // Limit very long entity names to maintain UI layout
   // Show enough characters to be identifiable but prevent overflow
   if (displayText.length > 20) {
     displayText = displayText.substring(0, 18) + "...";
   }
-  console.log("displayText", displayText);
   return displayText;
 };
 
@@ -298,7 +286,6 @@ const FolderItem = ({
 }) => {
   const contextMenuItemData = useGlobalStore((state) => state.contextMenuItemData);
   const contextMenuIsOpened = useGlobalStore((state) => state.contextMenuIsOpened);
-  const contextMenuItemType = useGlobalStore((state) => state.contextMenuItemType);
 
   const [isOpen, setIsOpen] = useState(false);
   const { hovered, ref } = useHover();
@@ -329,6 +316,9 @@ const FolderItem = ({
   const folderIsEmpty =
     !content ||
     (Object.keys(content.folders).length === 0 && Object.keys(content.files).length === 0);
+  if (name === "left-ventricle") {
+    console.log("FolderItem", content);
+  }
 
   if (folderIsEmpty) return null; // Don't render empty folders
 

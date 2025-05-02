@@ -18,6 +18,7 @@ import Tagify from "@yaireo/tagify/dist/tagify.esm.js";
 import { v4 as uuid } from "uuid";
 import client from "../client";
 import { guidedPennsieveDatasetUpload } from "./generateDataset/generate";
+import { guidedDatasetKeywordsTagify } from "./tagifies/tagifies";
 
 import {
   swalConfirmAction,
@@ -317,14 +318,6 @@ for (const infoDropdown of Array.from(infoDropdowns)) {
     }
   });
 }
-
-//Initialize description tagify variables as null
-//to make them accessible to functions outside of $(document).ready
-let guidedDatasetKeywordsTagify = null;
-let guidedStudyTechniquesTagify = null;
-let guidedStudyApproachTagify = null;
-let guidedStudyOrganSystemsTagify = null;
-let guidedOtherFundingsourcesTagify = null;
 
 //main nav variables initialized to first page of guided mode
 window.CURRENT_PAGE;
@@ -2258,7 +2251,7 @@ window.handleContributorDrop = (event) => {
   renderDatasetDescriptionContributorsTable();
 };
 
-const renderAdditionalLinksTable = () => {
+export const renderAdditionalLinksTable = () => {
   const additionalLinksTableBody = document.getElementById("additional-links-table-body");
   const additionalLinkData =
     window.sodaJSONObj["dataset_metadata"]["description-metadata"]["additional-links"];
@@ -5052,52 +5045,6 @@ $("#guided-generate-changes-file").on("click", () => {
 // /**************************************/
 
 //tagify initializations
-const guidedOtherFundingSourcesInput = document.getElementById("guided-ds-other-funding");
-guidedOtherFundingsourcesTagify = new Tagify(guidedOtherFundingSourcesInput, { duplicates: false });
-window.createDragSort(guidedOtherFundingsourcesTagify);
-const guidedStudyOrganSystemsInput = document.getElementById("guided-ds-study-organ-system");
-guidedStudyOrganSystemsTagify = new Tagify(guidedStudyOrganSystemsInput, {
-  whitelist: [
-    "autonomic ganglion",
-    "brain",
-    "colon",
-    "heart",
-    "intestine",
-    "kidney",
-    "large intestine",
-    "liver",
-    "lower urinary tract",
-    "lung",
-    "nervous system",
-    "pancreas",
-    "peripheral nervous system",
-    "small intestine",
-    "spinal cord",
-    "spleen",
-    "stomach",
-    "sympathetic nervous system",
-    "urinary bladder",
-  ],
-  duplicates: false,
-  dropdown: { maxItems: Infinity, enabled: 0, closeOnSelect: true },
-});
-window.createDragSort(guidedStudyOrganSystemsTagify);
-
-const guidedDatasetKeyWordsInput = document.getElementById("guided-ds-dataset-keywords");
-guidedDatasetKeywordsTagify = new Tagify(guidedDatasetKeyWordsInput, {
-  duplicates: false,
-  maxTags: 5,
-});
-
-window.createDragSort(guidedDatasetKeywordsTagify);
-
-const guidedStudyApproachInput = document.getElementById("guided-ds-study-approach");
-guidedStudyApproachTagify = new Tagify(guidedStudyApproachInput, { duplicates: false });
-window.createDragSort(guidedStudyApproachTagify);
-
-const guidedStudyTechniquesInput = document.getElementById("guided-ds-study-technique");
-guidedStudyTechniquesTagify = new Tagify(guidedStudyTechniquesInput, { duplicates: false });
-window.createDragSort(guidedStudyTechniquesTagify);
 
 /// back button Curate
 $("#guided-button-back").on("click", function () {

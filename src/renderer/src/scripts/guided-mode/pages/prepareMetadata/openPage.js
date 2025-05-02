@@ -20,10 +20,19 @@ import {
   setEntityListForEntityType,
   setActiveEntity,
 } from "../../../../stores/slices/datasetEntitySelectorSlice";
+import {
+  guidedStudyOrganSystemsTagify,
+  guidedStudyApproachTagify,
+  guidedStudyTechniquesTagify,
+  guidedOtherFundingsourcesTagify,
+} from "../../tagifies/tagifies";
 import { dragDrop, successCheck } from "../../../../assets/lotties/lotties";
 import { renderProtocolsTable } from "../../metadata/protocols";
 import { swalFileListSingleAction, swalShowInfo } from "../../../utils/swal-utils";
+import { guidedDatasetKeywordsTagify } from "../../tagifies/tagifies";
 import lottie from "lottie-web";
+import { renderAdditionalLinksTable } from "../../guided-curate-dataset";
+import { datasetIsSparcFunded } from "../../utils/sodaJSONObj";
 
 export const openPagePrepareMetadata = async (targetPageID) => {
   if (targetPageID === "guided-banner-image-tab") {
@@ -295,7 +304,25 @@ export const openPagePrepareMetadata = async (targetPageID) => {
         const path = row[0]; // Path is in the first column
         let entityList = [];
 
-        console.log("datasetEntityObj subjects: ", Object.keys(datasetEntityObj?.subjects));
+        // And sites
+        console.log("datasetEntityObj sites: ", Object.keys(datasetEntityObj?.sites || {}));
+        for (const [entity, paths] of Object.entries(datasetEntityObj?.sites || {})) {
+          if (paths?.[path]) {
+            entityList.push(entity);
+            break;
+          }
+        }
+
+        // Do the same for samples
+        console.log("datasetEntityObj samples: ", Object.keys(datasetEntityObj?.samples || {}));
+        for (const [entity, paths] of Object.entries(datasetEntityObj?.samples || {})) {
+          if (paths?.[path]) {
+            entityList.push(entity);
+            break;
+          }
+        }
+
+        console.log("datasetEntityObj subjects: ", Object.keys(datasetEntityObj?.subjects || {}));
         // Loop through subjects and check for matches
         for (const [entity, paths] of Object.entries(datasetEntityObj?.subjects || {})) {
           if (paths?.[path]) {
@@ -305,26 +332,11 @@ export const openPagePrepareMetadata = async (targetPageID) => {
           }
         }
 
-        // Do the same for samples
-        console.log("datasetEntityObj samples: ", Object.keys(datasetEntityObj?.samples));
-        for (const [entity, paths] of Object.entries(datasetEntityObj?.samples || {})) {
-          if (paths?.[path]) {
-            entityList.push(entity);
-            break;
-          }
-        }
-
-        // And sites
-        console.log("datasetEntityObj sites: ", Object.keys(datasetEntityObj?.sites));
-        for (const [entity, paths] of Object.entries(datasetEntityObj?.sites || {})) {
-          if (paths?.[path]) {
-            entityList.push(entity);
-            break;
-          }
-        }
-
         // And performances too
-        console.log("datasetEntityObj performances: ", Object.keys(datasetEntityObj?.performances));
+        console.log(
+          "datasetEntityObj performances: ",
+          Object.keys(datasetEntityObj?.performances || {})
+        );
         for (const [entity, paths] of Object.entries(datasetEntityObj?.performances || {})) {
           if (paths?.[path]) {
             entityList.push(entity);
