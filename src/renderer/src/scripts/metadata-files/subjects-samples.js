@@ -2253,18 +2253,18 @@ $(document).ready(function () {
       $("#Question-prepare-subjects-3").removeClass("show");
     }
     if ($("#bf_dataset_load_subjects").text().trim() !== "None") {
-      $("#div-check-bf-import-subjects").css("display", "flex");
-      $($("#div-check-bf-import-subjects").children()[0]).show();
+      $("#div-check-ps-import-subjects").css("display", "flex");
+      $($("#div-check-ps-import-subjects").children()[0]).show();
     } else {
-      $("#div-check-bf-import-subjects").css("display", "none");
+      $("#div-check-ps-import-subjects").css("display", "none");
     }
   });
 
   $("#bf_dataset_generate_subjects").on("DOMSubtreeModified", function () {
     if ($("#bf_dataset_generate_subjects").text().trim() !== "None") {
-      $("#div-check-bf-generate-subjects").css("display", "flex");
+      $("#div-check-ps-generate-subjects").css("display", "flex");
     } else {
-      $("#div-check-bf-generate-subjects").css("display", "none");
+      $("#div-check-ps-generate-subjects").css("display", "none");
     }
   });
 
@@ -2276,17 +2276,17 @@ $(document).ready(function () {
       $("#Question-prepare-samples-3").removeClass("show");
     }
     if ($("#bf_dataset_load_samples").text().trim() !== "None") {
-      $("#div-check-bf-import-samples").css("display", "flex");
-      $($("#div-check-bf-import-samples").children()[0]).show();
+      $("#div-check-ps-import-samples").css("display", "flex");
+      $($("#div-check-ps-import-samples").children()[0]).show();
     } else {
-      $("#div-check-bf-import-samples").css("display", "none");
+      $("#div-check-ps-import-samples").css("display", "none");
     }
   });
   $("#bf_dataset_generate_samples").on("DOMSubtreeModified", function () {
     if ($("#bf_dataset_generate_samples").text().trim() !== "None") {
-      $("#div-check-bf-generate-samples").css("display", "flex");
+      $("#div-check-ps-generate-samples").css("display", "flex");
     } else {
-      $("#div-check-bf-generate-samples").css("display", "none");
+      $("#div-check-ps-generate-samples").css("display", "none");
     }
   });
 });
@@ -2601,10 +2601,10 @@ window.loadDataFrametoUI = (type) => {
     $($("#div-confirm-existing-subjects-import button")[0]).hide();
     $("#button-fake-confirm-existing-subjects-file-load").click();
   } else {
-    $("#div-check-bf-import-subjects").hide();
-    $($("#div-check-bf-import-subjects button")[0]).hide();
-    $("#button-fake-confirm-existing-bf-subjects-file-load").click();
-    $($("#button-fake-confirm-existing-bf-subjects-file-load").siblings()[0]).hide();
+    $("#div-check-ps-import-subjects").hide();
+    $($("#div-check-ps-import-subjects button")[0]).hide();
+    $("#button-fake-confirm-existing-ps-subjects-file-load").click();
+    $($("#button-fake-confirm-existing-ps-subjects-file-load").siblings()[0]).hide();
   }
 };
 
@@ -2633,10 +2633,10 @@ window.loadDataFrametoUISamples = (type) => {
     $($("#div-confirm-existing-samples-import button")[0]).hide();
     $("#button-fake-confirm-existing-samples-file-load").click();
   } else {
-    $("#div-check-bf-import-samples").hide();
-    $($("#div-check-bf-import-samples button")[0]).hide();
-    $("#button-fake-confirm-existing-bf-samples-file-load").click();
-    $($("#button-fake-confirm-existing-bf-samples-file-load").siblings()[0]).hide();
+    $("#div-check-ps-import-samples").hide();
+    $($("#div-check-ps-import-samples button")[0]).hide();
+    $("#button-fake-confirm-existing-ps-samples-file-load").click();
+    $($("#button-fake-confirm-existing-ps-samples-file-load").siblings()[0]).hide();
   }
 };
 

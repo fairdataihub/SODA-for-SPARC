@@ -236,10 +236,10 @@ document
 // observer for the selected dataset label in the dataset selection card in question 2
 const questionTwoDatasetSelectionObserver = new MutationObserver(() => {
   if ($("#bf_dataset_load_validator").text().trim() !== "None") {
-    $("#div-check-bf-import-validator").css("display", "flex");
-    $($("#div-check-bf-import-validator").children()[0]).show();
+    $("#div-check-ps-import-validator").css("display", "flex");
+    $($("#div-check-ps-import-validator").children()[0]).show();
   } else {
-    $("#div-check-bf-import-validator").css("display", "none");
+    $("#div-check-ps-import-validator").css("display", "none");
   }
 });
 

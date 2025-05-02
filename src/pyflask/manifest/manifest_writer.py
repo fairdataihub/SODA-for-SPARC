@@ -245,7 +245,7 @@ def create_high_lvl_manifest_files_existing_ps_starting_point(soda_json_structur
                 dict_folder_manifest["file type"].append(file_extension)
 
                 if "type" in folder["files"][item].keys():
-                    if folder["files"][item]["type"] == "bf":
+                    if folder["files"][item]["type"] == "ps":
                         dict_folder_manifest["timestamp"].append(
                             folder["files"][item]["timestamp"]
                         )
@@ -473,7 +473,7 @@ def create_high_level_manifest_files(soda_json_structure, manifest_path):
                 dict_folder_manifest["timestamp"].append(
                     lastmodtime.isoformat().replace(".", ",").replace("+00:00", "Z")
                 )
-            elif file_type == "bf":
+            elif file_type == "ps":
                 dict_folder_manifest["timestamp"].append(file["timestamp"])
             # description
             if "description" in file.keys():

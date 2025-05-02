@@ -49,7 +49,7 @@ export const startBackgroundServices = async () => {
     try {
       initializePennsieveAccountList();
     } catch (error) {
-      console.error("Error retrieving BF accounts: ", error);
+      console.error("Error retrieving ps accounts: ", error);
     }
 
     window.notyf.open({
@@ -402,13 +402,13 @@ const setDefaultPennsieveAccountUI = async () => {
 
       const { email, organization } = bfAccountDetailsRes.data;
 
-      $("#current-bf-account").text(email);
-      $("#current-bf-account-generate").text(email);
+      $("#current-ps-account").text(email);
+      $("#current-ps-account-generate").text(email);
       $("#create_empty_dataset_BF_account_span").text(email);
-      $(".bf-account-span").text(email);
-      $(".bf-organization-span").text(organization);
+      $(".ps-account-span").text(email);
+      $(".ps-organization-span").text(organization);
 
-      $("#div-bf-account-load-progress").hide();
+      $("#div-ps-account-load-progress").hide();
       showHideDropdownButtons("account", "show");
       window.refreshDatasetList();
       updateDatasetList();
@@ -417,15 +417,15 @@ const setDefaultPennsieveAccountUI = async () => {
       clientError(error);
 
       $("#para-account-detail-curate").text("None");
-      $("#current-bf-account").text("None");
-      $("#current-bf-account-generate").text("None");
+      $("#current-ps-account").text("None");
+      $("#current-ps-account-generate").text("None");
       $("#create_empty_dataset_BF_account_span").text("None");
-      $(".bf-account-span").text("None");
+      $(".ps-account-span").text("None");
       $("#para-account-detail-curate-generate").text("None");
       $("#para_create_empty_dataset_BF_account").text("None");
-      $(".bf-account-details-span").text("None");
+      $(".ps-account-details-span").text("None");
 
-      $("#div-bf-account-load-progress").hide();
+      $("#div-ps-account-load-progress").hide();
       showHideDropdownButtons("account", "hide");
     }
   } catch (error) {

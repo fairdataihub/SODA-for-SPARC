@@ -569,7 +569,7 @@ export const openPage = async (targetPageID) => {
     //                 element.classList.add("hidden");
     //             });
 
-    //             const pennsieveIntroText = document.getElementById("guided-pennsive-intro-bf-account");
+    //             const pennsieveIntroText = document.getElementById("guided-pennsive-intro-ps-account");
     //             // fetch the user's email and set that as the account field's value
     //             const userInformation = await api.getUserInformation();
     //             const userEmail = userInformation.email;

@@ -10,7 +10,7 @@ while (!window.baseHtmlLoaded) {
 // this function runs when the DOM is ready, i.e. when the document has been parsed
 $(document).ready(function () {
   //upload new collection tags or check if none
-  $("#button-bf-collection").on("click", async () => {
+  $("#button-ps-collection").on("click", async () => {
     setTimeout(async () => {
       let selectedDataset = window.defaultBfDataset;
       let newCollectionTags = [];

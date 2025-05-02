@@ -586,18 +586,18 @@ $(document).ready(function () {
       $("#Question-prepare-submission-2").removeClass("show");
     }
     if ($("#bf_dataset_load_submission").text().trim() !== "None") {
-      $("#div-check-bf-import-submission").css("display", "flex");
-      $($("#div-check-bf-import-submission").children()[0]).show();
+      $("#div-check-ps-import-submission").css("display", "flex");
+      $($("#div-check-ps-import-submission").children()[0]).show();
     } else {
-      $("#div-check-bf-import-submission").css("display", "none");
+      $("#div-check-ps-import-submission").css("display", "none");
     }
   });
 
   $("#bf_dataset_generate_submission").on("DOMSubtreeModified", function () {
     if ($("#bf_dataset_generate_submission").text().trim() !== "None") {
-      $("#div-check-bf-generate-submission").css("display", "flex");
+      $("#div-check-ps-generate-submission").css("display", "flex");
     } else {
-      $("#div-check-bf-generate-submission").css("display", "none");
+      $("#div-check-ps-generate-submission").css("display", "none");
     }
   });
 });
@@ -1165,9 +1165,9 @@ const loadSubmissionFileToUI = (data, type) => {
     $($("#div-confirm-existing-submission-import button")[0]).hide();
     $("#button-fake-confirm-existing-submission-file-load").click();
   } else {
-    $("#div-check-bf-import-submission").hide();
-    $($("#div-check-bf-import-submission button")[0]).hide();
-    $("#button-fake-confirm-existing-bf-submission-file-load").click();
+    $("#div-check-ps-import-submission").hide();
+    $($("#div-check-ps-import-submission button")[0]).hide();
+    $("#button-fake-confirm-existing-ps-submission-file-load").click();
   }
 };
 

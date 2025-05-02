@@ -38,7 +38,7 @@ class ManifestBuilderBase:
         destination = self.soda_json_structure["generate-dataset"]["destination"]
         generate_option = self.soda_json_structure["generate-dataset"]["generate-option"]
 
-        if generate_option == "existing-bf":
+        if generate_option == "existing-ps":
             return destination, generate_option, None, None
 
         if_existing = self.soda_json_structure["generate-dataset"]["if-existing"]
@@ -57,7 +57,7 @@ class ManifestBuilderBase:
         """
         destination, generate_option, _, _ = self._get_generate_dataset_keys(soda_json_structure)
 
-        return destination == "bf" and generate_option == "existing-bf"
+        return destination == "ps" and generate_option == "existing-ps"
 
     def _merging_into_existing_dataset(self, soda_json_structure):
         """
@@ -66,7 +66,7 @@ class ManifestBuilderBase:
         """
         destination, generate_option, _, _ = self._get_generate_dataset_keys(soda_json_structure)
 
-        return destination == "bf" and generate_option == "new" and "ps-dataset-selected" in soda_json_structure
+        return destination == "ps" and generate_option == "new" and "ps-dataset-selected" in soda_json_structure
 
     def _creating_new_pennsieve_dataset(self, soda_json_structure):
         """
@@ -75,7 +75,7 @@ class ManifestBuilderBase:
         """
         destination, generate_option, _, _ = self._get_generate_dataset_keys(soda_json_structure)
 
-        return destination == "bf" and generate_option == "new" and "ps-dataset-selected" not in soda_json_structure
+        return destination == "ps" and generate_option == "new" and "ps-dataset-selected" not in soda_json_structure
 
 
     def _creating_new_local_dataset(self, soda_json_structure):
