@@ -1,6 +1,8 @@
 import { guidedShowTreePreview } from "../../datasetStructureTreePreview/treePreview.js";
+import { guidedGetDatasetType } from "../../guided-curate-dataset.js";
 
 export const openGenerateDatasetPage = async (targetPageID) => {
+  console.log("openGenerateDatasetPage", targetPageID);
   if (targetPageID === "guided-dataset-generation-confirmation-tab") {
     //Set the inner text of the generate/retry pennsieve dataset button depending on
     //whether a dataset has bee uploaded from this progress file
@@ -89,6 +91,102 @@ export const openGenerateDatasetPage = async (targetPageID) => {
     document
       .getElementById("guided-mode-pre-generate-pennsieve-agent-check")
       .classList.add("hidden");
+  }
+  if (targetPageID === "guided-assign-license-tab") {
+    // Get the selected dataset type ("computational" or "experimental")
+    const datasetType = guidedGetDatasetType();
+    console.log("dtype", datasetType);
+
+    // Update the license select instructions based on the selected dataset type
+    const licenseSelectInstructions = document.getElementById("license-select-text");
+    if (datasetType === "computational") {
+      licenseSelectInstructions.innerHTML = `
+            Select a license for your computational dataset from the options below.
+          `;
+    }
+    if (datasetType === "experimental") {
+      licenseSelectInstructions.innerHTML = `
+            As per SPARC policy, all experimental datasets must be shared under the
+            <b>Creative Commons Attribution (CC-BY)</b> license.
+            <br />
+            <br />
+            Select the button below to consent to sharing your dataset under the Creative Commons Attribution license.
+          `;
+    }
+
+    const guidedLicenseOptions = [
+      {
+        licenseName: "Creative Commons Attribution",
+        licenseDescription:
+          "A permissive license commonly used for open data collections that allows others to use, modify, and distribute your work provided appropriate credit is given.",
+        datasetTypes: ["experimental"],
+      },
+      {
+        licenseName: "MIT",
+        licenseDescription:
+          "A permissive license that allows others to use, modify, and distribute your work provided they grant you credit.",
+        datasetTypes: ["computational"],
+      },
+      {
+        licenseName: "GNU General Public License v3.0",
+        licenseDescription:
+          "A copyleft license that allows others to use, modify, and distribute your work provided they grant you credit and distribute their modifications under the GNU GPL license as well.",
+        datasetTypes: ["computational"],
+      },
+    ];
+
+    // Get the license options that are applicable for the selected dataset type
+    const selectableLicenses = guidedLicenseOptions.filter((license) => {
+      return license.datasetTypes.includes(datasetType);
+    });
+
+    // Render the license radio buttons into their container
+    const licenseRadioButtonContainer = document.getElementById(
+      "guided-license-radio-button-container"
+    );
+    const licenseRadioButtonElements = selectableLicenses
+      .map((license) => {
+        return `
+            <button class="guided--simple-radio-button" data-value="${license.licenseName}">
+              <input type="radio" name="license" value="${license.licenseName}" style="margin-right: 5px; cursor: pointer; margin-top: 5px;" />
+              <div style=" display: flex; flex-direction: column; align-items: flex-start; flex-grow: 1;">
+                <p class="help-text mb-0"><b>${license.licenseName}</b></p>
+                <p class="guided--text-input-instructions text-left">${license.licenseDescription}</p>
+              </div>
+            </button>
+          `;
+      })
+      .join("\n");
+    licenseRadioButtonContainer.innerHTML = licenseRadioButtonElements;
+
+    // Add event listeners to the license radio buttons that add the selected class to the clicked button
+    // and deselects all other buttons
+    document.querySelectorAll(".guided--simple-radio-button").forEach((button) => {
+      button.addEventListener("click", () => {
+        // Remove selected class from all radio buttons
+        licenseRadioButtonContainer
+          .querySelectorAll(".guided--simple-radio-button")
+          .forEach((button) => {
+            button.classList.remove("selected");
+          });
+
+        // Add selected class to the clicked radio button
+        button.classList.add("selected");
+        // Click the radio button input
+        button.querySelector("input").click();
+      });
+    });
+
+    // If a license has already been selected, select the corresponding radio button (Only if the license is still selectable)
+    const selectedLicense = window.sodaJSONObj["digital-metadata"]["license"];
+    if (selectedLicense) {
+      const selectedLicenseRadioButton = licenseRadioButtonContainer.querySelector(
+        `[data-value="${selectedLicense}"]`
+      );
+      if (selectedLicenseRadioButton) {
+        selectedLicenseRadioButton.click();
+      }
+    }
   }
 
   if (targetPageID === "guided-dataset-generation-tab") {

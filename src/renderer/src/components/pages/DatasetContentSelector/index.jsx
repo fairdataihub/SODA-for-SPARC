@@ -42,6 +42,17 @@ export const contentOptionsMap = {
       "Select yes if your research involved computational tools, scripts, or analysis pipelines that were important for generating or analyzing your data. This includes custom code, analysis scripts, and simulation software relevant to understanding your results.",
     ml: 0,
   },
+  datasetType: {
+    label: "What type of dataset are you creating?",
+    description:
+      "Select the type of dataset you are creating. This helps SODA determine the best way to organize your data and metadata.",
+    ml: 0,
+    dependsOn: ["subjects", "code"],
+    radioButtonLabels: {
+      experimental: "Experimental dataset",
+      computational: "Computational dataset",
+    },
+  },
 };
 
 const DatasetContentSelector = () => {
@@ -108,6 +119,9 @@ const DatasetContentSelector = () => {
               radioValue = null;
             }
 
+            const yesLabel = option.radioButtonLabels?.yes || "Yes";
+            const noLabel = option.radioButtonLabels?.no || "No";
+
             return (
               <div
                 key={key}
@@ -158,8 +172,8 @@ const DatasetContentSelector = () => {
                   name={`radio-group-${key}`}
                 >
                   <Group spacing="md">
-                    <Radio value="yes" label="Yes" />
-                    <Radio value="no" label="No" />
+                    <Radio value="yes" label={yesLabel} />
+                    <Radio value="no" label={noLabel} />
                   </Group>
                 </Radio.Group>
               </div>

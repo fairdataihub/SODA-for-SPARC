@@ -43,7 +43,7 @@ window.returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
 };
 
-const guidedGetDatasetType = () => {
+export const guidedGetDatasetType = () => {
   // Returns the dataset type (e.g. "computational" or "experimental")
   return window.sodaJSONObj?.["dataset-type"];
 };
@@ -62,27 +62,6 @@ window.verifyProfile = async () => {
     return;
   }
 };
-
-const guidedLicenseOptions = [
-  {
-    licenseName: "Creative Commons Attribution",
-    licenseDescription:
-      "A permissive license commonly used for open data collections that allows others to use, modify, and distribute your work provided appropriate credit is given.",
-    datasetTypes: ["experimental"],
-  },
-  {
-    licenseName: "MIT",
-    licenseDescription:
-      "A permissive license that allows others to use, modify, and distribute your work provided they grant you credit.",
-    datasetTypes: ["computational"],
-  },
-  {
-    licenseName: "GNU General Public License v3.0",
-    licenseDescription:
-      "A copyleft license that allows others to use, modify, and distribute your work provided they grant you credit and distribute their modifications under the GNU GPL license as well.",
-    datasetTypes: ["computational"],
-  },
-];
 
 const guidedResetLocalGenerationUI = () => {
   // Hide the local dataset copy generation section that containst the table/generation progress
