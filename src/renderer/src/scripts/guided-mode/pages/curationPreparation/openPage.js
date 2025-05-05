@@ -1,4 +1,4 @@
-import { getGuidedDatasetName, getGuidedDatasetSubtitle } from "./model";
+import { getGuidedDatasetName, getGuidedDatasetSubtitle } from "./utils.js";
 // Import state management stores
 import {
   setGuidedDatasetName,
@@ -66,47 +66,5 @@ export const openPageCurationPreparation = async (targetPageID) => {
     const savedFundingConsortium =
       window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["funding-consortium"];
     setDropdownState("guided-select-sparc-funding-consortium", savedFundingConsortium);
-  }
-
-  if (targetPageID === "guided-name-subtitle-tab") {
-    // Get the dataset name and subtitle from the JSON obj
-    const datasetName = getGuidedDatasetName() || "";
-
-    // Set the zustand datasetName state value to the dataset name
-    setGuidedDatasetName(datasetName);
-
-    if (pageNeedsUpdateFromPennsieve("guided-name-subtitle-tab")) {
-      // Show the loading page while the page's data is being fetched from Pennsieve
-      setPageLoadingState(true);
-      try {
-        //Try to get the dataset name from Pennsieve
-        //If the request fails, the subtitle input will remain blank
-        const datasetSubtitle = await api.getDatasetSubtitle(
-          window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
-        );
-
-        // Save the subtitle to the JSON and add it to the input
-        window.sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitle;
-        setGuidedDatasetSubtitle(datasetSubtitle);
-
-        window.sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-name-subtitle-tab");
-      } catch (error) {
-        clientError(error);
-        const emessage = error.response.data.message;
-        // TODO: Test this refactor to callback
-        await guidedShowOptionalRetrySwal(
-          emessage,
-          "guided-name-subtitle-tab",
-          openPageCurationPreparation
-        );
-        // If the user chooses not to retry re-fetching the page data, mark the page as fetched
-        // so the the fetch does not occur again
-        window.sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-name-subtitle-tab");
-      }
-    } else {
-      //Update subtitle from JSON
-      const datasetSubtitle = getGuidedDatasetSubtitle();
-      setGuidedDatasetSubtitle(datasetSubtitle);
-    }
   }
 };

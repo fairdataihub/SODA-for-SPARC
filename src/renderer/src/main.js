@@ -19,7 +19,7 @@ import "./scripts/guided-mode/pages/openPage";
 import "./scripts/guided-mode/guided-curate-dataset";
 import "./scripts/guided-mode/pages/navigate";
 import ".//scripts/guided-mode/bannerImage/bannerImage";
-import "./scripts/guided-mode/pages/prepareMetadata/pageActions";
+import "./scripts/guided-mode/pages/prepareMetadata/utils";
 import "./scripts/guided-mode/generateDataset/generate";
 import "./scripts/guided-mode/resumeProgress/progressFile";
 import "./scripts/guided-mode/resumeProgress/resumeProgress";

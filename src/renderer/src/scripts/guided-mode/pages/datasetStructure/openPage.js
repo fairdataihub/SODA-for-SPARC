@@ -1,4 +1,9 @@
 import { guidedSkipPage, guidedUnSkipPage } from "../navigationUtils/pageSkipping";
+import { getGuidedDatasetName, getGuidedDatasetSubtitle } from "../curationPreparation/utils";
+import {
+  setGuidedDatasetName,
+  setGuidedDatasetSubtitle,
+} from "../../../../stores/slices/guidedModeSlice";
 
 export const openPageDatasetStructure = async (targetPageID) => {
   if (targetPageID === "guided-dataset-structure-intro-tab") {
@@ -15,5 +20,15 @@ export const openPageDatasetStructure = async (targetPageID) => {
     } else {
       guidedSkipPage("guided-subject-structure-spreadsheet-importation-tab");
     }
+  }
+  if (targetPageID === "guided-name-subtitle-tab") {
+    // Get the dataset name and subtitle from the JSON obj
+    const datasetName = getGuidedDatasetName() || "";
+
+    // Set the zustand datasetName state value to the dataset name
+    setGuidedDatasetName(datasetName);
+
+    const datasetSubtitle = getGuidedDatasetSubtitle();
+    setGuidedDatasetSubtitle(datasetSubtitle);
   }
 };
