@@ -1,6 +1,7 @@
-// Funding information (SDS3)
-// model
-// Subtitle and dataset name
+while (!window.baseHtmlLoaded) {
+  await new Promise((resolve) => setTimeout(resolve, 100));
+}
+
 export const getGuidedDatasetName = () => {
   return window.sodaJSONObj["digital-metadata"]["name"] || "";
 };

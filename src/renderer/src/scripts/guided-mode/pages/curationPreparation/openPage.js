@@ -13,58 +13,24 @@ import { setPageLoadingState } from "../navigationUtils/pageLoading.js";
 import { setSelectedEntities } from "../../../../stores/slices/datasetContentSelectorSlice.js";
 import client from "../../../client";
 
-// TODO: Place this inside of a SODAJSONObj accessing file/function that is imported across all guided mode files
-
-import { pageNeedsUpdateFromPennsieve } from "../../pennsieveUtils";
-
 export const openPageCurationPreparation = async (targetPageID) => {
-  console.log("Executing this thang now");
-  if (targetPageID === "guided-ask-if-submission-is-sparc-funded-tab") {
-    if (pageNeedsUpdateFromPennsieve(targetPageID)) {
-      setPageLoadingState(true);
-      try {
-        // Get the submission metadata from Pennsieve
-        const submissionMetadataRes = await client.get(`/prepare_metadata/import_metadata_file`, {
-          params: {
-            selected_account: window.defaultBfAccount,
-            selected_dataset: window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
-            file_type: "submission.xlsx",
-          },
-        });
-        const submissionData = submissionMetadataRes.data;
+  if (targetPageID === "guided-select-starting-point-tab") {
+    // Hide the pennsieve dataset import progress circle
+    const importProgressCircle = document.querySelector(
+      "#guided_loading_pennsieve_dataset-organize"
+    );
 
-        const pennsieveConsortiumDataStandard = submissionData["Consortium data standard"]
-          .trim()
-          .toUpperCase();
+    importProgressCircle.classList.add("hidden");
+  }
 
-        if (pennsieveConsortiumDataStandard === "SPARC") {
-          document.getElementById("guided-button-dataset-is-sparc-funded").click();
-        } else if (pennsieveConsortiumDataStandard === "HEAL") {
-          document.getElementById("guided-button-dataset-is-re-join-funded").click();
-        } else {
-          document.getElementById("guided-button-dataset-is-not-sparc-funded").click();
-          document.getElementById("guided-button-non-sparc-user-has-contacted-sparc").click();
-        }
+  if (targetPageID === "guided-name-subtitle-tab") {
+    // Get the dataset name and subtitle from the JSON obj
+    const datasetName = getGuidedDatasetName() || "";
 
-        // Set the funding consortium
-        const pennsieveFundingConsortium = submissionData["Funding consortium"]
-          .trim()
-          .toUpperCase();
+    // Set the zustand datasetName state value to the dataset name
+    setGuidedDatasetName(datasetName);
 
-        if (window.sparcFundingConsortiums.includes(pennsieveFundingConsortium)) {
-          // Pre-set the funding consortium so it is set in the dropdown
-          window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["funding-consortium"] =
-            pennsieveFundingConsortium;
-        }
-      } catch (error) {
-        const emessage = userErrorMessage(error);
-        console.error(emessage);
-      }
-    }
-
-    // Set the funding consortium dropdown to the saved value (deafult is empty string before a user selects a value)
-    const savedFundingConsortium =
-      window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["funding-consortium"];
-    setDropdownState("guided-select-sparc-funding-consortium", savedFundingConsortium);
+    const datasetSubtitle = getGuidedDatasetSubtitle();
+    setGuidedDatasetSubtitle(datasetSubtitle);
   }
 };

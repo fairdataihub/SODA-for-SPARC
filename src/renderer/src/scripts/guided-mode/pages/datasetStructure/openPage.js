@@ -4,7 +4,7 @@ import {
   setGuidedDatasetName,
   setGuidedDatasetSubtitle,
 } from "../../../../stores/slices/guidedModeSlice";
-
+import { guidedUpdateFolderStructureUI } from "./utils";
 export const openPageDatasetStructure = async (targetPageID) => {
   if (targetPageID === "guided-dataset-structure-intro-tab") {
     // Handle whether or not the spreadsheet importation page should be skipped
@@ -21,14 +21,26 @@ export const openPageDatasetStructure = async (targetPageID) => {
       guidedSkipPage("guided-subject-structure-spreadsheet-importation-tab");
     }
   }
-  if (targetPageID === "guided-name-subtitle-tab") {
-    // Get the dataset name and subtitle from the JSON obj
-    const datasetName = getGuidedDatasetName() || "";
 
-    // Set the zustand datasetName state value to the dataset name
-    setGuidedDatasetName(datasetName);
+  // Add handlers for other pages without componentType
+  if (targetPageID === "guided-unstructured-data-import-tab") {
+    guidedUpdateFolderStructureUI("data/");
+  }
+  if (targetPageID === "guided-entity-addition-method-selection-tab") {
+    // Logic for entity addition method selection page
+    console.log("Opening entity addition method selection page");
+    // Page-specific initialization code will go here
+  }
 
-    const datasetSubtitle = getGuidedDatasetSubtitle();
-    setGuidedDatasetSubtitle(datasetSubtitle);
+  if (targetPageID === "guided-manifest-file-generation-tab") {
+    // Logic for manifest file generation page
+    console.log("Opening manifest file generation page");
+    // Page-specific initialization code will go here
+  }
+
+  if (targetPageID === "dataset-structure-review-tab") {
+    // Logic for dataset structure review page
+    console.log("Opening dataset structure review page");
+    // Page-specific initialization code will go here
   }
 };

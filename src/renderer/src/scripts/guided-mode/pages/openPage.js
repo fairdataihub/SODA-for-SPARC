@@ -1,4 +1,5 @@
 import { openPageCurationPreparation } from "./curationPreparation/openPage.js";
+import { openPageDatasetStructure } from "./datasetStructure/openPage.js";
 import { openPagePrepareMetadata } from "./prepareMetadata/openPage.js";
 import { openGenerateDatasetPage } from "./generateDataset/openPage.js";
 import {
@@ -444,15 +445,6 @@ export const openPage = async (targetPageID) => {
       }
     }
 
-    if (targetPageID === "guided-select-starting-point-tab") {
-      // Hide the pennsieve dataset import progress circle
-      const importProgressCircle = document.querySelector(
-        "#guided_loading_pennsieve_dataset-organize"
-      );
-
-      importProgressCircle.classList.add("hidden");
-    }
-
     if (targetPageID === "guided-entity-addition-method-selection-tab") {
       const datasetHasSamples = (window.sodaJSONObj["selected-entities"] || []).includes("samples");
       if (datasetHasSamples) {
@@ -463,6 +455,7 @@ export const openPage = async (targetPageID) => {
     }
 
     await openPageCurationPreparation(targetPageID);
+    await openPageDatasetStructure(targetPageID);
     await openPagePrepareMetadata(targetPageID);
     await openGenerateDatasetPage(targetPageID);
 

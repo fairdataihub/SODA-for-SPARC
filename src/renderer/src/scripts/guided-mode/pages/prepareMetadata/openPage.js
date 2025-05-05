@@ -33,6 +33,7 @@ import { guidedDatasetKeywordsTagify } from "../../tagifies/tagifies";
 import lottie from "lottie-web";
 import { renderAdditionalLinksTable } from "../../guided-curate-dataset";
 import { datasetIsSparcFunded } from "../../utils/sodaJSONObj";
+import { setDropdownState } from "../../../../stores/slices/dropDownSlice";
 
 export const openPagePrepareMetadata = async (targetPageID) => {
   if (targetPageID === "guided-banner-image-tab") {
@@ -561,6 +562,13 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     }
 
     renderDatasetDescriptionContributorsTable();
+  }
+
+  if (targetPageID === "guided-ask-if-submission-is-sparc-funded-tab") {
+    // Set the funding consortium dropdown to the saved value (deafult is empty string before a user selects a value)
+    const savedFundingConsortium =
+      window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["funding-consortium"];
+    setDropdownState("guided-select-sparc-funding-consortium", savedFundingConsortium);
   }
 
   if (targetPageID === "guided-protocols-tab") {
