@@ -39,6 +39,10 @@ import useGlobalStore from "../../../stores/globalStore.js";
 import { setPerformanceList } from "../../../stores/slices/performancesSlice.js";
 import { setSelectedModalities } from "../../../stores/slices/modalitiesSlice.js";
 
+while (!window.baseHtmlLoaded) {
+  await new Promise((resolve) => setTimeout(resolve, 100));
+}
+
 // Function that handles the visibility of the back button
 const handleBackButtonVisibility = (targetPageID) => {
   if (
@@ -133,75 +137,6 @@ const setActiveProgressionTab = (targetPageID) => {
   let targetProgressionTabID = targetPageParentID.replace("parent-tab", "progression-tab");
   let targetProgressionTab = $(`#${targetProgressionTabID}`);
   targetProgressionTab.addClass("selected-tab");
-};
-//function that creates a new folder object
-const newEmptyFolderObj = () => {
-  console.log("newEmptyFolderObj");
-  return { folders: {}, files: {}, type: "virtual", action: ["new"] };
-};
-
-const getDatasetStructureJsonFolderContentsAtNestedArrayPath = (folderPathArray) => {
-  let currentFolder = window.datasetStructureJSONObj;
-  folderPathArray.forEach((folder) => {
-    console.log("currentFolder[folders'][folder]", currentFolder["folders"][folder]);
-    // Continue to recursively create folders if they don't exist
-    if (!currentFolder["folders"][folder]) {
-      currentFolder["folders"][folder] = newEmptyFolderObj();
-    }
-    currentFolder = currentFolder["folders"][folder];
-  });
-  return currentFolder;
-};
-const guidedUpdateFolderStructureUI = (folderPathSeperatedBySlashes) => {
-  console.log("Function called: guidedUpdateFolderStructureUI");
-  console.log("Input - folder path (separated by slashes):", folderPathSeperatedBySlashes);
-
-  const fileExplorer = document.getElementById("guided-file-explorer-elements");
-  console.log("File explorer element retrieved:", fileExplorer);
-
-  // Remove transition class to reset animation or styles
-  fileExplorer.classList.remove("file-explorer-transition");
-  console.log("Removed 'file-explorer-transition' class from file explorer.");
-
-  // Update the global path input value with the new path
-  $("#guided-input-global-path").val(`dataset_root/${folderPathSeperatedBySlashes}`);
-  console.log("Set global input path to:", `dataset_root/${folderPathSeperatedBySlashes}`);
-
-  window.organizeDSglobalPath = $("#guided-input-global-path")[0];
-
-  // Filter and format the path using the global path function
-  const filtered = window.getGlobalPath(window.organizeDSglobalPath);
-  console.log("Filtered path from getGlobalPath:", filtered);
-
-  window.organizeDSglobalPath.value = `${filtered.join("/")}/`;
-  console.log("Set window.organizeDSglobalPath.value to:", window.organizeDSglobalPath.value);
-
-  // Prepare the path array for nested JSON retrieval
-  const arrayPathToNestedJsonToRender = filtered.slice(1);
-  console.log("Path array for JSON content retrieval:", arrayPathToNestedJsonToRender);
-
-  // Retrieve content at the nested path in the dataset structure
-  const datasetContent = getDatasetStructureJsonFolderContentsAtNestedArrayPath(
-    arrayPathToNestedJsonToRender
-  );
-  console.log("Retrieved dataset content at nested path:", datasetContent);
-
-  // Update the UI with the files and folders retrieved
-  window.listItems(datasetContent, "#items", 500, true);
-  console.log("Called window.listItems to update the UI.");
-
-  // Set up click behavior for folder items in the list
-  window.getInFolder(
-    ".single-item",
-    "#items",
-    window.organizeDSglobalPath,
-    window.datasetStructureJSONObj
-  );
-  console.log("arrayPathToNestedJsonToRender:", arrayPathToNestedJsonToRender);
-
-  // Refresh the tree view to match the current folder structure
-  setTreeViewDatasetStructure(window.datasetStructureJSONObj, arrayPathToNestedJsonToRender);
-  console.log("Updated tree view structure based on current path.");
 };
 
 /**
@@ -445,15 +380,6 @@ export const openPage = async (targetPageID) => {
       }
     }
 
-    if (targetPageID === "guided-entity-addition-method-selection-tab") {
-      const datasetHasSamples = (window.sodaJSONObj["selected-entities"] || []).includes("samples");
-      if (datasetHasSamples) {
-        // document.getElementById("and-samples-span").classList.remove("hidden");
-      } else {
-        // document.getElementById("and-samples-span").classList.add("hidden");
-      }
-    }
-
     await openPageCurationPreparation(targetPageID);
     await openPageDatasetStructure(targetPageID);
     await openPagePrepareMetadata(targetPageID);
@@ -485,10 +411,6 @@ export const openPage = async (targetPageID) => {
     //         renderSamplesTable();
     //     }
 
-    if (targetPageID === "guided-unstructured-data-import-tab") {
-      guidedUpdateFolderStructureUI("data/");
-    }
-
     //     if (targetPageID === "guided-denote-derivative-data-tab") {
     //         // Set the folder structure as the primary folder since the user is
     //         // denoting data as derivative which will be moved to the derivative folder
@@ -510,23 +432,6 @@ export const openPage = async (targetPageID) => {
     //         guidedUpdateFolderStructureUI("aux/");
     //     }
 
-    //     if (targetPageID === "guided-dataset-structure-review-tab") {
-    //         setTreeViewDatasetStructure(window.datasetStructureJSONObj, []);
-    //         /*
-    //         // Remove empty guided high-level folders (primary, source, derivative)
-    //         guidedHighLevelFolders.forEach((folder) => {
-    //           const rootFolderPath = window.datasetStructureJSONObj?.folders?.[folder];
-    //           if (rootFolderPath && folderIsEmpty(rootFolderPath)) {
-    //             delete window.datasetStructureJSONObj?.folders?.[folder];
-    //           }
-    //         });
-
-    //         guidedShowTreePreview(
-    //           window.sodaJSONObj?.["digital-metadata"]?.name,
-    //           "guided-folder-structure-review"
-    //         );*/
-    //     }
-
     //     if (targetPageID === "guided-source-derivative-folders-and-files-selector-tab") {
     //         addEntityToEntityList("source-derivative-folders-and-files", "source");
     //         addEntityToEntityList("source-derivative-folders-and-files", "derivative");
@@ -544,46 +449,7 @@ export const openPage = async (targetPageID) => {
     //         renderSamplesTable();
     //     }
 
-    //     if (targetPageID === "guided-pennsieve-intro-tab") {
-    //         const elementsToShowWhenLoggedInToPennsieve =
-    //             document.querySelectorAll(".show-when-logged-in");
-    //         const elementsToShowWhenNotLoggedInToPennsieve =
-    //             document.querySelectorAll(".show-when-logged-out");
-    //         if (!window.defaultBfAccount) {
-    //             elementsToShowWhenLoggedInToPennsieve.forEach((element) => {
-    //                 element.classList.add("hidden");
-    //             });
-    //             elementsToShowWhenNotLoggedInToPennsieve.forEach((element) => {
-    //                 element.classList.remove("hidden");
-    //             });
-    //         } else {
-    //             elementsToShowWhenLoggedInToPennsieve.forEach((element) => {
-    //                 element.classList.remove("hidden");
-    //             });
-    //             elementsToShowWhenNotLoggedInToPennsieve.forEach((element) => {
-    //                 element.classList.add("hidden");
-    //             });
-
-    //             const pennsieveIntroText = document.getElementById("guided-pennsive-intro-ps-account");
-    //             // fetch the user's email and set that as the account field's value
-    //             const userInformation = await api.getUserInformation();
-    //             const userEmail = userInformation.email;
-    //             pennsieveIntroText.innerHTML = userEmail;
-
-    //             try {
-    //                 if (window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"]) {
-    //                     if (
-    //                         window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"] ===
-    //                         guidedGetCurrentUserWorkSpace()
-    //                     ) {
-    //                         document.getElementById("guided-confirm-pennsieve-organization-button").click();
-    //                     }
-    //                 }
-    //             } catch (error) {
-    //                 pennsieveIntroAccountDetailsText.innerHTML = "Error loading account details";
-    //             }
-    //         }
-    //     }
+    //
 
     //     if (targetPageID === "guided-designate-permissions-tab") {
     //         // Get the users that can be granted permissions

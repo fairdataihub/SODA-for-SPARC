@@ -13,6 +13,7 @@ import {
   checkIfFolderBelongsToEntity,
 } from "../../../stores/slices/datasetEntitySelectorSlice";
 import { naturalSort } from "../../shared/utils/util-functions";
+import { countFilesInDatasetStructure } from "../../../scripts/utils/datasetStructure";
 
 const ENTITY_PREFIXES = ["sub-", "sam-", "perf-"];
 
@@ -124,27 +125,6 @@ const EntityDataSelectorPage = ({
   const activeEntity = useGlobalStore((state) => state.activeEntity);
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
   const datasetStructureJSONObj = useGlobalStore((state) => state.datasetStructureJSONObj);
-
-  const countFilesInDatasetStructure = (datasetStructure) => {
-    if (!datasetStructure) return 0;
-    let totalFiles = 0;
-    const keys = Object.keys(datasetStructure);
-
-    for (const key of keys) {
-      if (key === "files") {
-        // Count only files
-        totalFiles += Object.keys(datasetStructure[key]).length;
-      }
-      if (key === "folders") {
-        const folders = Object.keys(datasetStructure[key]);
-        // Don't count folders themselves, only recurse into them
-        for (const folder of folders) {
-          totalFiles += countFilesInDatasetStructure(datasetStructure[key][folder]);
-        }
-      }
-    }
-    return totalFiles;
-  };
 
   const countSelectedFilesByEntityType = (entityType) => {
     if (!datasetEntityObj?.[entityType]) return 0;

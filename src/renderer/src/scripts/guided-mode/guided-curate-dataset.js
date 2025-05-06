@@ -35,6 +35,8 @@ import Cropper from "cropperjs";
 
 import "jstree";
 
+import { newEmptyFolderObj } from "../utils/datasetStructure";
+
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }

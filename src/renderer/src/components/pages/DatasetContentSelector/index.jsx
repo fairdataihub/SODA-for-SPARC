@@ -43,9 +43,10 @@ export const contentOptionsMap = {
     ml: 0,
   },
   datasetType: {
-    label: "What type of dataset are you creating?",
+    label:
+      "Is your dataset focused on the experimental or code/computational aspects of your research?",
     description:
-      "Select the type of dataset you are creating. This helps SODA determine the best way to organize your data and metadata.",
+      "Select experimental if your dataset is primarily about the experimental data collected from subjects.",
     ml: 0,
     dependsOn: ["subjects", "code"],
     radioButtonLabels: {

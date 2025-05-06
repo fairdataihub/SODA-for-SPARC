@@ -1,3 +1,5 @@
+import { newEmptyFolderObj } from "../../utils/datasetStructure";
+
 const guidedHighLevelFolders = ["primary", "source", "derivative"];
 
 const guidedWarnBeforeDeletingEntity = async (entityType, entityName) => {

@@ -1,4 +1,5 @@
 import { setTreeViewDatasetStructure } from "../../../../stores/slices/datasetTreeViewSlice";
+import { newEmptyFolderObj } from "../../../utils/datasetStructure";
 
 const getDatasetStructureJsonFolderContentsAtNestedArrayPath = (folderPathArray) => {
   let currentFolder = window.datasetStructureJSONObj;
