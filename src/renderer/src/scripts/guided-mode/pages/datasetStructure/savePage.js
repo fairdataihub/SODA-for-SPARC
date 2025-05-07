@@ -25,6 +25,9 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     const selectedEntities = useGlobalStore.getState()["selectedEntities"];
     const deSelectedEntities = useGlobalStore.getState()["deSelectedEntities"];
 
+    console.log("selectedEntities", selectedEntities);
+    console.log("deSelectedEntities", deSelectedEntities);
+
     // Check if any selections were made
     if (selectedEntities.length === 0) {
       errorArray.push({
@@ -147,6 +150,58 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       guidedUnSkipPage("guided-code-folder-tab");
     } else {
       guidedSkipPage("guided-code-folder-tab");
+    }
+  }
+
+  if (pageBeingLeftID === "data-categorization-tab") {
+    const datasetFileCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
+    const datasetEntityObj = useGlobalStore.getState()["datasetEntityObj"];
+    const categorizedData = datasetEntityObj?.["categorized-data"];
+    console.log("dataset file count", datasetFileCount);
+    console.log("datasetEntityObj", datasetEntityObj);
+    console.log("categorizedData", categorizedData);
+    let categorizedFileCount = 0;
+    if (categorizedData) {
+      categorizedFileCount = Object.keys(categorizedData).reduce((acc, key) => {
+        const files = categorizedData[key];
+        return acc + Object.keys(files).length;
+      }, 0);
+    }
+
+    if (categorizedFileCount === 0) {
+      errorArray.push({
+        type: "notyf",
+        message:
+          "Please categorize your data files before continuing. Follow the instructions at the top.",
+      });
+      throw errorArray;
+    }
+
+    const countOfFilesCategorizedAsCode = Object.keys(categorizedData["Code"]).length;
+    const countOfFilesCategorizedAsExperimental = Object.keys(
+      categorizedData["Experimental data"]
+    ).length;
+    const countOfFilesCategorizedAsOther = Object.keys(categorizedData["Other"]).length;
+
+    if (window.sodaJSONObj["selected-entities"].includes("code")) {
+      if (countOfFilesCategorizedAsCode === 0) {
+        errorArray.push({
+          type: "notyf",
+          message: "You must classify at least one file in your dataset as code on this step.",
+        });
+        throw errorArray;
+      }
+    }
+
+    if (window.sodaJSONObj["selected-entities"].includes("subjects")) {
+      if (countOfFilesCategorizedAsExperimental === 0) {
+        errorArray.push({
+          type: "notyf",
+          message:
+            "You must classify at least one file in your dataset as experimental data on this step.",
+        });
+        throw errorArray;
+      }
     }
   }
 };

@@ -46,12 +46,12 @@ export const contentOptionsMap = {
     label:
       "Is your dataset focused on the experimental or code/computational aspects of your research?",
     description:
-      "Select experimental if your dataset is primarily about the experimental data collected from subjects.",
+      "Select experimental if your dataset is primarily about the experimental data collected from subjects. Select computational if your dataset is primarily about the code or computational methods used to analyze or generate data.",
     ml: 0,
     dependsOn: ["subjects", "code"],
     radioButtonLabels: {
-      experimental: "Experimental dataset",
-      computational: "Computational dataset",
+      yesRadioBox: "Experimental dataset",
+      noRadioBox: "Computational dataset",
     },
   },
 };
@@ -120,8 +120,17 @@ const DatasetContentSelector = () => {
               radioValue = null;
             }
 
-            const yesLabel = option.radioButtonLabels?.yes || "Yes";
-            const noLabel = option.radioButtonLabels?.no || "No";
+            // Get the right labels based on the option
+            let yesLabel = "Yes";
+            let noLabel = "No";
+
+            // Check if radio button labels exist
+            if (option.radioButtonLabels) {
+              // Use the custom labels if they exist, otherwise use defaults
+              yesLabel =
+                option.radioButtonLabels.yesRadioBox || option.radioButtonLabels.yes || "Yes";
+              noLabel = option.radioButtonLabels.noRadioBox || option.radioButtonLabels.no || "No";
+            }
 
             return (
               <div

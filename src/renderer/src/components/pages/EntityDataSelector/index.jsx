@@ -124,6 +124,8 @@ const EntityDataSelectorPage = ({
 }) => {
   const activeEntity = useGlobalStore((state) => state.activeEntity);
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
+  console.log("activeEntity", activeEntity);
+  console.log("datasetEntityObj", datasetEntityObj);
   const datasetStructureJSONObj = useGlobalStore((state) => state.datasetStructureJSONObj);
 
   const countSelectedFilesByEntityType = (entityType) => {
