@@ -289,7 +289,6 @@ export const openPage = async (targetPageID) => {
           for (const site of sites) {
             addEntityToEntityList("sites", site);
           }
-          setEntityFilter([{ type: "categorized-data", names: ["Experimental data"] }], []);
         }
 
         if (pageEntityType === "samples") {
@@ -297,36 +296,13 @@ export const openPage = async (targetPageID) => {
           for (const sample of samples) {
             addEntityToEntityList("samples", sample);
           }
-          setEntityFilter([{ type: "categorized-data", names: ["Experimental data"] }], []);
         }
 
         if (pageEntityType === "subjects") {
           const subjects = getExistingSubjects().map((subject) => subject.id);
-          const samples = getExistingSamples().map((sample) => sample.id);
-          const sites = getExistingSites().map((site) => site.id);
           for (const subject of subjects) {
             addEntityToEntityList("subjects", subject);
           }
-          // Exclude all of the samples from the subject filter
-          // Exclude all samples with a single filter
-          const sampleFilter = [
-            {
-              type: "samples",
-              names: samples, // Pass the entire array of sample IDs
-            },
-          ];
-          const siteFilter = [
-            {
-              type: "sites",
-              names: sites,
-            },
-          ];
-          const combinedFilter = [...sampleFilter, ...siteFilter];
-
-          /* setEntityFilter(
-            [{ type: "categorized-data", names: ["Experimental data"] }],
-            combinedFilter // Pass the combined filter
-          ); */
         }
 
         if (pageEntityType === "performances") {

@@ -8,6 +8,7 @@ import { setTreeViewDatasetStructure } from "../../../../stores/slices/datasetTr
 import { guidedUpdateFolderStructureUI } from "./utils";
 import { renderManifestCards } from "../../manifests/manifest";
 import { swalFileListSingleAction } from "../../../utils/swal-utils";
+import { getEntityDataById } from "../../../../stores/slices/datasetEntityStructureSlice";
 import client from "../../../client";
 
 while (!window.baseHtmlLoaded) {
@@ -208,47 +209,41 @@ export const openPageDatasetStructure = async (targetPageID) => {
         const path = row[0]; // Path is in the first column
         let entityList = [];
 
-        // And sites
-        console.log("datasetEntityObj sites: ", Object.keys(datasetEntityObj?.sites || {}));
-        for (const [entity, paths] of Object.entries(datasetEntityObj?.sites || {})) {
-          if (paths?.[path]) {
-            entityList.push(entity);
-            break;
+        const entityTypes = ["sites", "samples", "subjects", "performances"];
+
+        for (const type of entityTypes) {
+          const entities = datasetEntityObj?.[type] || {};
+          console.log(`datasetEntityObj ${type}:`, Object.keys(entities));
+
+          for (const [entity, paths] of Object.entries(entities)) {
+            if (paths?.[path]) {
+              console.log(`Found ${type} entity: ${entity} in path: ${path}`);
+              const entityData = getEntityDataById(entity);
+              if (!entityData) {
+                console.error(`Entity data not found for ID: ${entity}`);
+                continue;
+              }
+              console.log("Entity dataz: ", entityData);
+
+              entityList.push(entityData.id);
+              if (entityData?.["metadata"]?.["sample id"]) {
+                const sampleId = entityData["metadata"]["sample id"];
+                console.log("foundz sample id", sampleId);
+                entityList.push(sampleId);
+              }
+
+              if (entityData?.["metadata"]?.["subject id"]) {
+                const subjectId = entityData["metadata"]["subject id"];
+                entityList.push(subjectId);
+              }
+
+              break; // One match is enough
+            }
           }
         }
+        // remove duplicates from entityList
+        entityList = [...new Set(entityList)];
 
-        // Do the same for samples
-        console.log("datasetEntityObj samples: ", Object.keys(datasetEntityObj?.samples || {}));
-        for (const [entity, paths] of Object.entries(datasetEntityObj?.samples || {})) {
-          if (paths?.[path]) {
-            entityList.push(entity);
-            break;
-          }
-        }
-
-        console.log("datasetEntityObj subjects: ", Object.keys(datasetEntityObj?.subjects || {}));
-        // Loop through subjects and check for matches
-        for (const [entity, paths] of Object.entries(datasetEntityObj?.subjects || {})) {
-          if (paths?.[path]) {
-            console.log("Subject found: ", entity);
-            entityList.push(entity);
-            break; // One match is enough
-          }
-        }
-
-        // And performances too
-        console.log(
-          "datasetEntityObj performances: ",
-          Object.keys(datasetEntityObj?.performances || {})
-        );
-        for (const [entity, paths] of Object.entries(datasetEntityObj?.performances || {})) {
-          if (paths?.[path]) {
-            entityList.push(entity);
-            break;
-          }
-        }
-
-        // Update the entity column
         row[entityColumnIndex] = entityList.join(" ");
       });
 

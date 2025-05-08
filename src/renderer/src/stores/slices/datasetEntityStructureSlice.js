@@ -69,6 +69,50 @@ export const normalizeEntityId = (entityPrefix, entityId) => {
   return entityPrefix + trimmedId;
 };
 
+export const getEntityDataById = (entityId) => {
+  console.log("Getting entity data for ID:", entityId);
+  const { datasetEntityArray } = useGlobalStore.getState();
+  console.log("Dataset entity array:", datasetEntityArray);
+  if (!entityId || !datasetEntityArray) {
+    return null;
+  }
+
+  if (entityId.startsWith("sub-")) {
+    return datasetEntityArray.find((subject) => subject.id === entityId);
+  }
+
+  if (entityId.startsWith("sam-")) {
+    for (const subject of datasetEntityArray) {
+      const sample = subject.samples.find((sample) => sample.id === entityId);
+      if (sample) {
+        return sample;
+      }
+    }
+  }
+  if (entityId.startsWith("site-")) {
+    // Look through all of the samples and find the site
+    for (const subject of datasetEntityArray) {
+      console.log("Checking Subject:", subject);
+      for (const sample of subject.samples) {
+        const site = sample.sites.find((site) => site.id === entityId);
+        if (site) {
+          return site;
+        }
+      }
+    }
+  }
+
+  if (entityId.startsWith("perf-")) {
+    const performanceList = useGlobalStore.getState()["performanceList"];
+    console.log("Performance List:", performanceList);
+    if (performanceList) {
+      return performanceList.find((performance) => performance.performanceId === entityId);
+    }
+  }
+
+  return null;
+};
+
 // Subject management functions
 export const addSubject = (subjectId, metadata = {}) => {
   // Use normalizeEntityId for consistency

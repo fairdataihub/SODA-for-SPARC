@@ -75,7 +75,10 @@ export const setActiveEntity = (activeEntity) => {
   // Check to see if the activeEntity is a site entity
 
   if (!activeEntity) {
-    console.error("Active entity is null or undefined");
+    useGlobalStore.setState((state) => ({
+      ...state,
+      activeEntity: null,
+    })); // Reset active entity if null
     return;
   }
 
@@ -118,70 +121,6 @@ export const setActiveEntity = (activeEntity) => {
     const combinedFilter = [...siteFilter, ...sampleFilter];
     console.log("Setting entity filter: ", combinedFilter);
     setEntityFilter([{ type: "categorized-data", names: ["Experimental data"] }], combinedFilter);
-  }
-
-  const existingSubjectIds = getExistingSubjects().map((subject) => subject.id);
-  const existingSampleIds = getExistingSamples().map((sample) => sample.id);
-  const existingSiteIds = getExistingSites().map((site) => site.id);
-  const existingPerformanceIds = getExistingPerformancesR().map((performance) => performance.id);
-  console.log("Existing subject IDs: ", existingSubjectIds);
-  console.log("Existing sample IDs: ", existingSampleIds);
-  console.log("Existing site IDs: ", existingSiteIds);
-  const combinedEntityIds = [
-    ...existingSubjectIds,
-    ...existingSampleIds,
-    ...existingSiteIds,
-    ...existingPerformanceIds,
-  ].map((id) => id.toLowerCase());
-  useGlobalStore.setState((state) => ({
-    ...state,
-    activeEntity,
-  }));
-  console.log("Setting active entity: ", activeEntity);
-  console.log("Combined entity IDs: ", combinedEntityIds);
-  console.log(
-    "combinedEntityIds.includes(activeEntity): ",
-    combinedEntityIds.includes(activeEntity)
-  );
-  if (combinedEntityIds.includes(activeEntity)) {
-    const subjectsFilter = [
-      {
-        type: "subjects",
-        names: existingSubjectIds.filter(
-          (subject) => subject.toLowerCase() != activeEntity.toLowerCase()
-        ),
-      },
-    ];
-    const samplesFilter = [
-      {
-        type: "samples",
-        names: existingSampleIds.filter(
-          (sample) => sample.toLowerCase() != activeEntity.toLowerCase()
-        ),
-      },
-    ];
-    const sitesFilter = [
-      {
-        type: "sites",
-        names: existingSiteIds.filter((site) => site.toLowerCase() != activeEntity.toLowerCase()),
-      },
-    ];
-    const performancesFilter = [
-      {
-        type: "performances",
-        names: existingPerformanceIds.filter(
-          (performance) => performance.toLowerCase() != activeEntity.toLowerCase()
-        ),
-      },
-    ];
-    const combinedFilters = [
-      ...subjectsFilter,
-      ...samplesFilter,
-      ...sitesFilter,
-      ...performancesFilter,
-    ];
-    console.log("Setting entity filter: ", combinedFilters);
-    setEntityFilter([{ type: "categorized-data", names: ["Experimental data"] }], combinedFilters);
   }
 };
 

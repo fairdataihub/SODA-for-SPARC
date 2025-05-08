@@ -112,7 +112,10 @@ const getInstructionalTextByEntityType = (entityType) => {
       "Select the files that do not contain experimental data or code, such as protocols, notes, or supplementary materials below.",
   };
 
-  return instructionalText[entityType] || `Select the files that contain data for ${entityType}`;
+  return (
+    instructionalText[entityType] ||
+    `Select the folders and files that contain data pertaining to the entity ${entityType}.`
+  );
 };
 
 const EntityDataSelectorPage = ({
@@ -124,9 +127,9 @@ const EntityDataSelectorPage = ({
 }) => {
   const activeEntity = useGlobalStore((state) => state.activeEntity);
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
-  console.log("activeEntity", activeEntity);
-  console.log("datasetEntityObj", datasetEntityObj);
-  const datasetStructureJSONObj = useGlobalStore((state) => state.datasetStructureJSONObj);
+  const renderDatasetStructureJSONObj = useGlobalStore(
+    (state) => state.renderDatasetStructureJSONObj
+  );
 
   const countSelectedFilesByEntityType = (entityType) => {
     if (!datasetEntityObj?.[entityType]) return 0;
@@ -143,7 +146,7 @@ const EntityDataSelectorPage = ({
     return totalCount;
   };
 
-  const itemCount = countFilesInDatasetStructure(datasetStructureJSONObj);
+  const itemCount = countFilesInDatasetStructure(renderDatasetStructureJSONObj);
   const countItemsSelected = countSelectedFilesByEntityType(entityType);
 
   return (

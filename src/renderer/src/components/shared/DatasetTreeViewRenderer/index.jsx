@@ -44,7 +44,7 @@ import {
 
 import { useDebouncedValue } from "@mantine/hooks";
 import { naturalSort } from "../utils/util-functions";
-import SelectedHierarchyEntityPreviewer from "../SelectedHierarchyEntityPreviewer";
+import SelectedEntityPreviewer from "../SelectedEntityPreviewer";
 
 const getAssociatedEntities = (relativePath, currentEntityType) => {
   const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
@@ -571,7 +571,7 @@ const DatasetTreeViewRenderer = ({
             <Text>{itemSelectInstructions}</Text>
           </SodaGreenPaper>
         )}
-        <SelectedHierarchyEntityPreviewer />
+        <SelectedEntityPreviewer />
         {!hideSearchBar && (
           <TextInput
             placeholder="Search files and folders..."
@@ -611,7 +611,7 @@ const DatasetTreeViewRenderer = ({
           <Text>{itemSelectInstructions}</Text>
         </Stack>
       )}
-      <SelectedHierarchyEntityPreviewer />
+      <SelectedEntityPreviewer />
       {!hideSearchBar && (
         <TextInput
           placeholder="Search files and folders..."
