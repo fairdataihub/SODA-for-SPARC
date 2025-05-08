@@ -244,6 +244,8 @@ export const openPage = async (targetPageID) => {
       guidedLockSideBar(true);
     }
 
+    setActiveEntity(null);
+
     if (targetPageDataset.componentType) {
       const targetPageComponentType = targetPageDataset.componentType;
 
@@ -259,7 +261,6 @@ export const openPage = async (targetPageID) => {
         const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
         const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
 
-        setActiveEntity(null);
         setDatasetEntityObj(savedDatasetEntityObj);
 
         // Make any adjustments to the dataset entity object before setting it in the zustand store

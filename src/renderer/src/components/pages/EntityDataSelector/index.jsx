@@ -149,24 +149,39 @@ const EntityDataSelectorPage = ({
   return (
     <GuidedModePage pageHeader={pageName}>
       <GuidedModeSection>
-        {entityType === "categorized-data" ? (
-          <Stack>
-            <Text>
-              The SDS requires data to be categorized into three categories: experimental, code, and
-              other (data that is not experimental or code). Use the interface below to classify
-              your data files.
-            </Text>
-          </Stack>
-        ) : (
-          <Stack>
-            <Text>
-              For each {entityTypeStringSingular} ID you entered on the previous page, associate the
-              relevant files from the dataset. To do this, select a {entityTypeStringSingular} ID
-              from the list on the left, then choose the corresponding folders and files from your
-              data on the right.
-            </Text>
-          </Stack>
-        )}
+        <Stack>
+          {(() => {
+            switch (entityType) {
+              case "categorized-data":
+                return (
+                  <Text>
+                    The SDS requires data to be categorized into three categories: experimental,
+                    code, and other (data that is not experimental or code). Use the interface below
+                    to classify your data files.
+                  </Text>
+                );
+              case "other-data":
+                return (
+                  <Text>
+                    The files you marked as "other" can now be classified into two categories:
+                    "Documentation", and "Protocol data". Use the interface below to classify your
+                    specify which files are documentation and which files are protocol data. Files
+                    not further classified on this page will not be included in your final dataset.
+                  </Text>
+                );
+
+              default:
+                return (
+                  <Text>
+                    For each {entityTypeStringSingular} ID you entered on the previous page,
+                    associate the relevant files from the dataset. To do this, select a{" "}
+                    {entityTypeStringSingular} ID from the list on the left, then choose the
+                    corresponding folders and files from your data on the right.
+                  </Text>
+                );
+            }
+          })()}
+        </Stack>
       </GuidedModeSection>
       {datasetEntityObj?.[entityType] && showProgress && (
         <GuidedModeSection>

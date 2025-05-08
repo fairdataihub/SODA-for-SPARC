@@ -42,18 +42,18 @@ export const contentOptionsMap = {
       "Select yes if your research involved computational tools, scripts, or analysis pipelines that were important for generating or analyzing your data. This includes custom code, analysis scripts, and simulation software relevant to understanding your results.",
     ml: 0,
   },
+  /*
   datasetType: {
-    label:
-      "Is your dataset focused on the experimental or code/computational aspects of your research?",
+    label: "What is the primary focus of your dataset?",
     description:
-      "Select experimental if your dataset is primarily about the experimental data collected from subjects. Select computational if your dataset is primarily about the code or computational methods used to analyze or generate data.",
+      "Choose 'Experimental' if your dataset centers on data collected from subjects. Choose 'Computational' if it focuses on code or computational methods used to analyze or generate data.",
     ml: 0,
     dependsOn: ["subjects", "code"],
     radioButtonLabels: {
-      yesRadioBox: "Experimental dataset",
-      noRadioBox: "Computational dataset",
+      yesRadioBox: "Experimental",
+      noRadioBox: "Computational",
     },
-  },
+  },*/
 };
 
 const DatasetContentSelector = () => {
