@@ -409,7 +409,14 @@ const FolderItem = ({
           />
         )}
         {!folderIsPassThrough && onFileClick && typeof isFileSelected === "function" && (
-          <Tooltip label="Select all files in this folder" zIndex={2999}>
+          <Tooltip
+            label={
+              folderCheckboxStatus
+                ? "Deselect all files in this folder"
+                : "Select all files in this folder"
+            }
+            zIndex={2999}
+          >
             <Checkbox
               readOnly
               checked={folderCheckboxStatus}

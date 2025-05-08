@@ -274,6 +274,14 @@ export const openPage = async (targetPageID) => {
           }
         }
 
+        if (pageEntityType === "other-data") {
+          const otherBucketTypes = ["Protocol data", "Documentation"];
+          for (const otherBucketType of otherBucketTypes) {
+            addEntityToEntityList("other-data", otherBucketType);
+          }
+          setEntityFilter([{ type: "categorized-data", names: ["Other"] }], []);
+        }
+
         if (pageEntityType === "sites") {
           const sites = getExistingSites().map((site) => site.id);
           console.log("Found sites", sites);

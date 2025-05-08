@@ -171,8 +171,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     if (categorizedFileCount === 0) {
       errorArray.push({
         type: "notyf",
-        message:
-          "Please categorize your data files before continuing. Follow the instructions at the top.",
+        message: "Please categorize your data files before continuing.",
       });
       throw errorArray;
     }
