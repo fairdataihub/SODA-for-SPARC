@@ -104,8 +104,8 @@ const DatasetContentSelector = () => {
     <GuidedModePage pageHeader="Dataset content">
       <GuidedModeSection>
         <Text>
-          Answer the following questions about the data collected during your study to help SODA
-          determine the optimal workflow to organize your dataset.
+          Answer the following questions about your data and study to help SODA determine the
+          optimal workflow to organize your dataset.
         </Text>
       </GuidedModeSection>
       <Paper shadow="sm" radius="md" p="sm" withBorder mb="md">

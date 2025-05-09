@@ -24,11 +24,15 @@ import {
 
 const ModalitySelectionPage = () => {
   return (
-    <GuidedModePage pageHeader="Modalities Selection">
+    <GuidedModePage pageHeader="Dataset modalities">
       <GuidedModeSection>
+        <Text>
+          The SPARC guidelines require that if your dataset includes data collected through multiple
+          modalities such as imaging, recordings, or behavioral data, the manifest file must
+          indicate which modality was used for the data that was collected.
+        </Text>
         <label class="guided--form-label centered">
-          Does your dataset include data collected from multiple modalities, such as imaging,
-          recordings, or behavioral data?
+          Does your dataset include data collected from multiple modalities?
         </label>
 
         <Center>

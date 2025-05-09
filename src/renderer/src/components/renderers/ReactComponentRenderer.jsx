@@ -16,6 +16,7 @@ import SpreadsheetImportDatasetEntityAdditionPage from "../pages/SpreadsheetImpo
 import DatasetEntityFileMapper from "../pages/DatasetEntityFileMapper";
 import EntityDataSelectorPage from "../pages/EntityDataSelector";
 import DataImporter from "../shared/DataImporter";
+import SubmissionMetadataForm from "../pages/SubmissionMetadataForm";
 import Icon from "../shared/Icon";
 import { Divider } from "@mantine/core";
 
@@ -190,6 +191,14 @@ const componentTypeRenderers = {
     root.render(
       <SodaComponentWrapper>
         <ModalitySelectionPage />
+      </SodaComponentWrapper>
+    );
+  },
+  "submission-metadata-form": (componentSlot) => {
+    const root = createRoot(componentSlot);
+    root.render(
+      <SodaComponentWrapper>
+        <SubmissionMetadataForm />
       </SodaComponentWrapper>
     );
   },

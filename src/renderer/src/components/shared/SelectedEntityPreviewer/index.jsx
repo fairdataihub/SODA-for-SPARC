@@ -4,12 +4,12 @@ import { getEntityDataById } from "../../../stores/slices/datasetEntityStructure
 const SelectedEntityPreviewer = () => {
   const activeEntity = useGlobalStore((state) => state.activeEntity);
   if (!activeEntity) {
-    return <Text>N1</Text>;
+    return null;
   }
   const activeEntityData = getEntityDataById(activeEntity);
   console.log("activeEntityData", activeEntityData);
   if (!activeEntityData) {
-    return <Text>N2</Text>;
+    return null;
   }
 
   const differentiableEntityFields = [
@@ -45,7 +45,7 @@ const SelectedEntityPreviewer = () => {
   const uppercaseFirstLetter = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
   if (!hasRelevantFields) {
-    return <Text>N3</Text>;
+    return null;
   }
 
   return (

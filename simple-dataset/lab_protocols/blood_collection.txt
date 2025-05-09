@@ -1,0 +1,7 @@
+Quick Protocol - Blood Collection
+
+1. Prepare subject according to lab SOP
+2. Collect blood sample using standard technique
+3. Process within 30 minutes of collection
+4. Label tubes with subject ID, date, and technician initials
+5. Store according to sample type requirements

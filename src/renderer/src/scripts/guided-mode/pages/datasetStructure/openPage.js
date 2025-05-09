@@ -272,9 +272,44 @@ export const openPageDatasetStructure = async (targetPageID) => {
       return manifestDataRows;
     };
 
+    const updateFileNameColumn = (manifestDataRows, datasetEntityObj) => {
+      const fileNameColumnIndex = newManifestData.headers.indexOf("file name");
+      console.log("fileNameColumnIndex", fileNameColumnIndex);
+
+      console.log("manifestDataRows", manifestDataRows);
+      console.log("datasetEntityObj", datasetEntityObj);
+      console.log("datasetEntityObj code", datasetEntityObj?.["categorized-data"]?.["Code"]);
+
+      const updateFilePathDataFolder = (path, newFolder) => {
+        // Find the first instance of data/ in the path and replace it with newFolder
+        const dataIndex = path.indexOf("data/");
+        if (dataIndex !== -1) {
+          const newPath = path.slice(0, dataIndex) + newFolder + path.slice(dataIndex + 5);
+          return newPath;
+        }
+        return path; // Return the original path if data/ is not found
+      };
+
+      manifestDataRows.forEach((row) => {
+        const path = row[0]; // Path is in the first column
+        console.log("path1", path);
+
+        if (datasetEntityObj?.["categorized-data"]?.["Code"]?.[path]) {
+          console.log("found code path", path);
+          const newPath = updateFilePathDataFolder(path, "code/");
+          console.log("newPath", newPath);
+          row[fileNameColumnIndex] = newPath;
+          console.log("row[fileNameColumnIndex]", row[fileNameColumnIndex]);
+        }
+      });
+
+      return manifestDataRows;
+    };
+
     // Apply the function
     updateEntityColumn(newManifestData.data, datasetEntityObj);
     updateModalitiesColumn(newManifestData.data, datasetEntityObj);
+    updateFileNameColumn(newManifestData.data, datasetEntityObj);
 
     console.log("After sort: ", newManifestData.data);
     window.sodaJSONObj["guided-manifest-file-data"] = window.sodaJSONObj[

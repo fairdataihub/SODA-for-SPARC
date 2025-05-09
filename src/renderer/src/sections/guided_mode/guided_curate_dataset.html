@@ -80,7 +80,8 @@
               color: rgba(0, 0, 0, 0.87);
             "
           >
-            SODA - your one stop tool for sharing data on sparc.science
+            SODA - your one stop tool for sharing FAIR Peripheral Nervous System related data and
+            models
           </h2>
           <h2 class="mt-2 mb-3" style="font-size: 16px">What would you like to do today?</h2>
           <div
@@ -94,7 +95,8 @@
                 <p class="wide-card-subtitle-text">
                   Use this option if your data is not currently organized as required for
                   publication on sparc.science. You will be guided through all the steps for
-                  achieving that before uploading the resulting dataset on Pennsieve.
+                  achieving that before optionally sharing the resulting dataset on the SPARC
+                  portal.
                 </p>
               </div>
               <div id="existing-dataset-lottie" class="wide-card-lottie-container"></div>
@@ -110,7 +112,7 @@
                 <p class="wide-card-subtitle-text">
                   Use this option if your data and metadata are already organized as required for
                   publication on sparc.science. You will be guided through uploading your dataset on
-                  Pennsieve.
+                  the SPARC portal.
                 </p>
               </div>
               <div
@@ -158,7 +160,7 @@
           data-page-name="Select starting point"
         >
           <div class="guided--section">
-            <h1 class="text-sub-step-title">End to End curation</h1>
+            <h1 class="text-sub-step-title">Prepare dataset step by step</h1>
           </div>
 
           <div class="guided--section">
@@ -194,7 +196,7 @@
                   </svg>
                 </div>
                 <div class="tile-button-text">
-                  <h2>Prepare and submit a new dataset</h2>
+                  <h2>Prepare and optionally share a new dataset</h2>
                 </div>
               </button>
 
@@ -948,6 +950,16 @@
           data-component-type="modality-selection-page"
         ></div>
         <div
+          id="guided-modalities-data-selection-tab"
+          data-page-name="Modalities data selection"
+          class="guided--page"
+          data-component-type="data-categorization-page"
+          data-entity-type="modalities"
+          data-entity-type-string-singular="modality"
+          data-entity-type-string-plural="modalities"
+          data-entity-type-prefix=""
+        ></div>
+        <div
           class="guided--page"
           id="guided-manifest-file-generation-tab"
           data-page-name="View/edit manifest file"
@@ -976,16 +988,6 @@
           data-page-name="Dataset structure review"
         ></div>
 
-        <div
-          id="guided-modalities-data-selection-tab"
-          data-page-name="Modalities data selection"
-          class="guided--page"
-          data-component-type="data-categorization-page"
-          data-entity-type="modalities"
-          data-entity-type-string-singular="modality"
-          data-entity-type-string-plural="modalities"
-          data-entity-type-prefix=""
-        ></div>
         <!--
         <div id="guided-protocol-folder-tab" class="guided--page" data-page-name="Protocols import">
           <div class="guided--section">
@@ -1100,6 +1102,12 @@
         ></div>
         
         -->
+        <div
+          class="guided--page"
+          id="guided-submission-metatdata-tab"
+          data-page-name="Submission metadata"
+          data-component-type="submission-metadata-form"
+        ></div>
 
         <div
           class="guided--page"
