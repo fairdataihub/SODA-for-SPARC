@@ -34,7 +34,6 @@ import {
   getExistingSites,
 } from "../../../stores/slices/datasetEntityStructureSlice";
 import { normalizeEntityId } from "../../../stores/slices/datasetEntityStructureSlice";
-import { get } from "jquery";
 
 const SpreadsheetImportDatasetEntityAdditionPage = () => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);

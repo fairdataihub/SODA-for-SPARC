@@ -4,8 +4,9 @@ import { produce } from "immer";
 export const dropDownSlice = (set) => ({
   dropDownState: {
     "guided-select-sparc-funding-consortium": {
-      label: "SPARC Funding Consortium",
+      label: "Funding Consortium:",
       placeholder: "Select a SPARC Funding Consortium",
+      description: "Select 'Other' if your funding consortium is not listed in the dropdown.",
       options: [
         "SPARC",
         "SPARC-2",
@@ -15,7 +16,15 @@ export const dropDownSlice = (set) => ({
         "HEAL",
         "HEAL-REJOIN",
         "HEAL-PRECISION",
+        "Other",
       ],
+      selectedValue: "",
+    },
+    "guided-select-funding-agency": {
+      label: "Funding agency:",
+      placeholder: "Select the agency that funded your research",
+      description: "Select 'Other' if your funding agency is not listed in the dropdown.",
+      options: ["NIH", "Other"],
       selectedValue: "",
     },
   },
