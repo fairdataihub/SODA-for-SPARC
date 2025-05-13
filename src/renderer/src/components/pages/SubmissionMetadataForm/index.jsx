@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import useGlobalStore from "../../../stores/globalStore";
-import { setAwardNumber } from "../../../stores/slices/guidedModeSlice";
+import { setAwardNumber, setMilestones } from "../../../stores/slices/datasetMetadataSlice";
 import {
   IconUser,
   IconFlask,
@@ -29,8 +29,7 @@ import {
   TextInput,
   Card,
   Divider,
-  PillsInput,
-  Pill,
+  TagsInput,
 } from "@mantine/core";
 import {
   setOtherFundingConsortium,
@@ -51,6 +50,7 @@ const SubmissionMetadataForm = () => {
   const otherFundingConsortium = useGlobalStore((state) => state.otherFundingConsortium);
   const otherFundingAgency = useGlobalStore((state) => state.otherFundingAgency);
   const awardNumber = useGlobalStore((state) => state.awardNumber);
+  const milestones = useGlobalStore((state) => state.milestones || []);
   const [selectedFile, setSelectedFile] = useState(null);
 
   // Function to handle file drop
@@ -61,6 +61,11 @@ const SubmissionMetadataForm = () => {
       // Here you would typically process the file, possibly extracting award number
       // and other metadata from it
     }
+  };
+
+  // Function to handle milestone tags changes
+  const handleMilestonesChange = (values) => {
+    setMilestones(values);
   };
 
   return (
@@ -165,19 +170,22 @@ const SubmissionMetadataForm = () => {
           placeholder="Enter award number"
           value={awardNumber}
           onChange={(event) => setAwardNumber(event.target.value)}
+          mt="md"
+          mb="md"
         />
         {fundingConsortiumDropdownState === "SPARC" && (
-          <PillsInput
-            label="Milestone(s) accomplished"
-            description="Enter the milestone(s) associated with this submission."
-          >
-            <Pill.Group>
-              <Pill>React</Pill>
-              <Pill>Vue</Pill>
-              <Pill>Svelte</Pill>
-              <PillsInput.Field placeholder="Enter tags" />
-            </Pill.Group>
-          </PillsInput>
+          <Box mt="md">
+            <TagsInput
+              label="Milestone(s) accomplished"
+              description="Enter the milestone(s) associated with this submission."
+              placeholder="Type and press Enter to add a milestone"
+              value={milestones}
+              onChange={handleMilestonesChange}
+              clearable
+              splitChars={[",", ";", " "]}
+              data={[]} // You can pre-populate with common milestones if needed
+            />
+          </Box>
         )}
       </GuidedModeSection>
     </GuidedModePage>

@@ -3,7 +3,6 @@ import { produce } from "immer";
 export const guidedModeSlice = (set) => ({
   guidedDatasetName: "",
   guidedDatasetSubtitle: "",
-  awardNumber: "",
 });
 
 export const setGuidedDatasetName = (datasetName) => {
@@ -18,14 +17,6 @@ export const setGuidedDatasetSubtitle = (datasetSubtitle) => {
   useGlobalStore.setState(
     produce((state) => {
       state.guidedDatasetSubtitle = datasetSubtitle;
-    })
-  );
-};
-
-export const setAwardNumber = (awardNumber) => {
-  useGlobalStore.setState(
-    produce((state) => {
-      state.awardNumber = awardNumber;
     })
   );
 };
