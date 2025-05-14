@@ -95,11 +95,12 @@ const SubmissionMetadataForm = () => {
   return (
     <GuidedModePage pageHeader="Funding and Submission Metadata">
       <GuidedModeSection>
-        <Text mb="xl">
-          Follow the instructions below to import the IDs and metadata for the entities in your
-          dataset using spreadsheets.
+        <Text>
+          Provide details about the institutions and funding sources associated with this dataset in
+          the interface below.
         </Text>
-
+      </GuidedModeSection>
+      <GuidedModeSection withBorder>
         <DropdownSelect id="guided-select-funding-agency" />
 
         {fundingAgencyDropdownState && (
@@ -109,7 +110,7 @@ const SubmissionMetadataForm = () => {
               <TextInput
                 label="Funding agency name:"
                 placeholder="Enter the name of the funding agency"
-                description="Please specify the name of your funding agency"
+                description="Please specify the name of your funding agency."
                 value={otherFundingAgency}
                 onChange={(event) => setOtherFundingAgency(event.target.value)}
                 required
@@ -124,19 +125,19 @@ const SubmissionMetadataForm = () => {
                   <Box mt="lg">
                     <Paper withBorder p="md" radius="md" bg="gray.0">
                       <Group position="center" mb="xs">
-                        <Title order={4}>SPARC Data Deliverables Document Import</Title>
+                        <Title order={5}>SPARC Data Deliverables Document Import</Title>
 
-                        <Text mb="md">
+                        <Text>
                           If you have your SPARC data deliverables document, import it below.
-                          Otherwise, fill out the inputs regarding your submission manually. You can
-                          find out more about the Data Deliverables document and how to obtain it{" "}
+                          Otherwise, fill out the inputs below regarding your Award Number and
+                          Milestone(s) manually. You can find out more about the Data Deliverables
+                          document and how to obtain it{" "}
                           <ExternalLink
                             href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-your-data-deliverables-document"
                             buttonText="here"
                             buttonType="anchor"
                           />
-                          . If you do not have a Data Deliverables document, please fill out the
-                          inputs below manually.
+                          .
                         </Text>
                       </Group>
 
@@ -179,7 +180,7 @@ const SubmissionMetadataForm = () => {
                           <Text size="lg" mt={10} ta="center">
                             {selectedFile
                               ? selectedFile.name
-                              : "Drag deliverables document here or click to select"}
+                              : "Drag deliverables document here or click here to import"}
                           </Text>
                         </Box>
                       </Dropzone>
@@ -208,13 +209,15 @@ const SubmissionMetadataForm = () => {
                 onChange={(event) => setOtherFundingConsortium(event.target.value)}
               />
             )}
-            <TextInput
-              label="Award number:"
-              description="The award number issued by the funding agency. Leave blank if not applicable."
-              placeholder="Enter award number"
-              value={awardNumber}
-              onChange={(event) => setAwardNumber(event.target.value)}
-            />
+            {fundingAgencyDropdownState && (
+              <TextInput
+                label="Award number:"
+                description="The award number issued by the funding agency. Leave blank if not applicable."
+                placeholder="Enter award number"
+                value={awardNumber}
+                onChange={(event) => setAwardNumber(event.target.value)}
+              />
+            )}
             {/* SPARC-specific milestone UI (only if NIH/SPARC is selected) */}
             {fundingAgencyDropdownState === "NIH" && fundingConsortiumDropdownState === "SPARC" && (
               <>
@@ -234,18 +237,9 @@ const SubmissionMetadataForm = () => {
                   label="Milestone completion date"
                   placeholder="MM/DD/YYYY"
                   valueFormat="MM/DD/YYYY"
-                  mt="md"
                   icon={<IconCalendar size={16} />}
                   clearable
-                  description="Date of milestone completion. Refer to your consortium for detailed information."
-                />
-                <Checkbox
-                  label="The milestone(s) accomplished are related to a pre-agreed milestone"
-                  mt="sm"
-                  checked={completionDateChecked}
-                  onChange={(event) => {
-                    toggleCompletionDateChecked(event.currentTarget.checked);
-                  }}
+                  description="Enter the completion date associated with the milestone(s). Leave blank if the completion date is not related to a pre-agreed milestone."
                 />
               </>
             )}

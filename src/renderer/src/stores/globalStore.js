@@ -12,6 +12,7 @@ import { datasetEntityStructureSlice } from "./slices/datasetEntityStructureSlic
 import { performancesSlice } from "./slices/performancesSlice";
 import { modalitiesSlice } from "./slices/modalitiesSlice";
 import { datasetMetadataSlice } from "./slices/datasetMetadataSlice";
+import { resourceMetadataSlice } from "./slices/resourceMetadataSlice";
 
 const useGlobalStore = create(
   immer((set, ...a) => ({
@@ -27,6 +28,7 @@ const useGlobalStore = create(
     ...performancesSlice(set, ...a),
     ...modalitiesSlice(set, ...a),
     ...datasetMetadataSlice(set, ...a),
+    ...resourceMetadataSlice(set, ...a),
   }))
 );
 
