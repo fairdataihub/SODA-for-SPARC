@@ -5,8 +5,9 @@ export const dropDownSlice = (set) => ({
   dropDownState: {
     "guided-select-sparc-funding-consortium": {
       label: "Funding Consortium:",
-      placeholder: "Select a SPARC Funding Consortium",
-      description: "Select 'Other' if your funding consortium is not listed in the dropdown.",
+      placeholder: "Select a NIH Funding Consortium",
+      description:
+        "Select the NIH Funding Consortium that funded the creation of this dataset or 'Other' if your funding consortium is not in the dropdown.",
       options: [
         "SPARC",
         "SPARC-2",
@@ -19,13 +20,16 @@ export const dropDownSlice = (set) => ({
         "Other",
       ],
       selectedValue: "",
+      required: true,
     },
     "guided-select-funding-agency": {
       label: "Funding agency:",
       placeholder: "Select the agency that funded your research",
-      description: "Select 'Other' if your funding agency is not listed in the dropdown.",
+      description:
+        "Select the agency that funded the creation of this dataset or 'Other' if your funding agency is not in the dropdown.",
       options: ["NIH", "Other"],
       selectedValue: "",
+      required: true,
     },
   },
 });

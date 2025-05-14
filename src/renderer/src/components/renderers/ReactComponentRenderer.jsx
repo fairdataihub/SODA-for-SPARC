@@ -10,6 +10,7 @@ import SingleColumnTable from "../tables/singleColumn";
 import PennsieveAgentCheckDisplay from "../backgroundServices/PennsieveAgentCheckDisplay";
 import DatasetContentSelector from "../pages/DatasetContentSelector";
 import PerformanceIdManagementPage from "../pages/PerformanceIdManagement";
+import ResourcesManagementPage from "../pages/ResourcesManagement";
 import ModalitySelectionPage from "../pages/ModalitySelection";
 import ManualDatasetEntityAdditionPage from "../pages/ManualDatasetEntityAdditionPage";
 import SpreadsheetImportDatasetEntityAdditionPage from "../pages/SpreadsheetImportDatasetEntityAdditionPage";
@@ -136,6 +137,14 @@ const componentTypeRenderers = {
     root.render(
       <SodaComponentWrapper>
         <PerformanceIdManagementPage {...props} />
+      </SodaComponentWrapper>
+    );
+  },
+  "resources-management-page": (componentSlot) => {
+    const root = createRoot(componentSlot);
+    root.render(
+      <SodaComponentWrapper>
+        <ResourcesManagementPage />
       </SodaComponentWrapper>
     );
   },

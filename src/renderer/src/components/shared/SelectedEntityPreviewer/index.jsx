@@ -56,7 +56,7 @@ const SelectedEntityPreviewer = () => {
       <Stack gap={3}>
         {Object.entries(relevantFields).map(([key, value]) => (
           <Group key={key}>
-            <Text fw={600} td="underline" miw={100}>
+            <Text fw={600} miw={100}>
               {uppercaseFirstLetter(key)}:
             </Text>
             <Text>{typeof value === "object" ? JSON.stringify(value) : value}</Text>

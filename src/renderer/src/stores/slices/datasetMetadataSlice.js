@@ -5,6 +5,8 @@ export const initialState = {
   otherFundingAgency: "",
   awardNumber: "",
   submissionMilestones: [],
+  completionDateChecked: false,
+  milestoneDate: null,
 };
 
 export const datasetMetadataSlice = (set) => ({
@@ -39,4 +41,16 @@ export const setMilestones = (milestones) => {
   useGlobalStore.setState((state) => ({
     milestones,
   }));
+};
+
+export const toggleCompletionDateChecked = () => {
+  useGlobalStore.setState((state) => ({
+    completionDateChecked: !state.completionDateChecked,
+  }));
+};
+
+export const setMilestoneDate = (date) => {
+  useGlobalStore.setState({
+    milestoneDate: date,
+  });
 };
