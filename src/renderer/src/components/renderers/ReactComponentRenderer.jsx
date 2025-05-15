@@ -12,7 +12,7 @@ import DatasetContentSelector from "../pages/DatasetContentSelector";
 import PerformanceIdManagementPage from "../pages/PerformanceIdManagement";
 import ResourcesManagementPage from "../pages/ResourcesManagement";
 import ModalitySelectionPage from "../pages/ModalitySelection";
-import ManualDatasetEntityAdditionPage from "../pages/ManualDatasetEntityAdditionPage";
+import EntityMetadataPage from "../pages/EntityMetadataPage";
 import SpreadsheetImportDatasetEntityAdditionPage from "../pages/SpreadsheetImportDatasetEntityAdditionPage";
 import DatasetEntityFileMapper from "../pages/DatasetEntityFileMapper";
 import EntityDataSelectorPage from "../pages/EntityDataSelector";
@@ -148,16 +148,19 @@ const componentTypeRenderers = {
       </SodaComponentWrapper>
     );
   },
-  "dataset-entity-manual-addition-page": (componentSlot) => {
+  "entity-metadata-page": (componentSlot) => {
     const root = createRoot(componentSlot);
+    const props = {
+      entityType: componentSlot.getAttribute("data-entity-type"),
+    };
 
     root.render(
       <SodaComponentWrapper>
-        <ManualDatasetEntityAdditionPage />
+        <EntityMetadataPage {...props} />
       </SodaComponentWrapper>
     );
   },
-  "dataset-entity-spreadsheet-import-page": (componentSlot) => {
+  "entity-spreadsheet-import-page": (componentSlot) => {
     const root = createRoot(componentSlot);
 
     root.render(

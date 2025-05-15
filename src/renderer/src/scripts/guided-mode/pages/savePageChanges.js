@@ -126,8 +126,8 @@ export const savePageChanges = async (pageBeingLeftID) => {
       }
 
       if (
-        pageBeingLeftComponentType === "dataset-entity-manual-addition-page" ||
-        pageBeingLeftComponentType === "dataset-entity-spreadsheet-import-page"
+        pageBeingLeftComponentType === "entity-metadata-page" ||
+        pageBeingLeftComponentType === "entity-spreadsheet-import-page"
       ) {
         const datasetEntityArray = useGlobalStore.getState().datasetEntityArray;
         if (datasetEntityArray.length === 0) {

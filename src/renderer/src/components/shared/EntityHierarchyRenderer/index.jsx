@@ -179,6 +179,7 @@ const EntityHierarchyRenderer = ({
   const selectedEntityId = selectedHierarchyEntity ? selectedHierarchyEntity.id : null;
   const selectedEntityParentSubjectId = selectedHierarchyEntity?.parentSubject;
   const selectedEntityParentSampleId = selectedHierarchyEntity?.parentSample;
+  console.log("onlyRenderEntityType", onlyRenderEntityType);
 
   // Memoize the entity select handler to prevent recreation on each render
   const handleEntitySelect = useCallback((entityData) => {
@@ -226,32 +227,6 @@ const EntityHierarchyRenderer = ({
   // Delete operations
   const handleDeleteSample = useCallback((sample, subject) => {
     return deleteSampleFromSubject(subject.id, sample.id);
-  }, []);
-
-  // ----- SUBJECT SITE OPERATIONS -----
-  // Add operations
-  const handleAddSubjectSiteButtonClick = useCallback((subject) => {
-    setSelectedHierarchyEntity(null);
-    setEntityBeingAddedParentSubject(subject.id);
-    setActiveFormType("site");
-  }, []);
-
-  // Edit operations
-  const handleEditSubjectSite = useCallback(async (site, subject) => {
-    const result = await guidedOpenEntityEditSwal({
-      entityType: "site",
-      entityData: site,
-      parentEntityData: subject,
-    });
-
-    if (result) {
-      modifySubjectSiteId(subject.id, result.oldName, result.newName);
-    }
-  }, []);
-
-  // Delete operations
-  const handleDeleteSubjectSite = useCallback((site, subject) => {
-    return deleteSiteFromSubject(subject.id, site.id);
   }, []);
 
   // ----- SAMPLE SITE OPERATIONS -----
@@ -316,131 +291,138 @@ const EntityHierarchyRenderer = ({
       )}
       <ScrollArea mah={650} type="auto">
         <Stack gap="xs">
-          {!datasetEntityArray?.length ? (
-            <Box
-              style={{
-                border: "1px solid #ddd",
-                borderRadius: "8px",
-                backgroundColor: "#f9f9f9",
-              }}
-              p="md"
-            >
-              <Text c="dimmed" ta="center">
-                No subjects to display
-              </Text>
-            </Box>
+          {onlyRenderEntityType ? (
+            <div>hi</div>
           ) : (
-            datasetEntityArray.map((subject) => (
-              <Box
-                key={subject.id}
-                style={{
-                  border: "1px solid #ddd",
-                  borderRadius: "8px",
-                  backgroundColor: "#f9f9f9",
-                }}
-                p="sm"
-              >
-                <Flex
-                  align="center"
-                  justify="space-between"
-                  gap="xs"
-                  onClick={() => allowEntitySelection && handleEntitySelect(subject)}
+            <>
+              {" "}
+              {!datasetEntityArray?.length ? (
+                <Box
                   style={{
-                    cursor: allowEntitySelection ? "pointer" : "default",
-
-                    backgroundColor:
-                      allowEntitySelection && selectedEntityId === subject.id
-                        ? "#bbdefb" // Update the subject selection color to match
-                        : selectedEntityParentSubjectId === subject.id
-                          ? "#f0f0f0"
-                          : "",
+                    border: "1px solid #ddd",
+                    borderRadius: "8px",
+                    backgroundColor: "#f9f9f9",
                   }}
+                  p="md"
                 >
-                  <Group gap="xs">
-                    <IconUser size={15} />
-                    <Text fw={600}>{subject.id}</Text>
-                  </Group>
-                  {allowEntityStructureEditing && (
-                    <Group gap="3px">
-                      <IconEdit
-                        color="blue"
-                        size={18}
-                        style={{ marginLeft: "4px", opacity: 0.6, cursor: "pointer" }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEditSubject(subject);
-                        }}
-                      />
-                      <IconTrash
-                        color="red"
-                        size={16}
-                        style={{ opacity: 0.6, cursor: "pointer" }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteSubject(subject);
-                        }}
-                      />
-                    </Group>
-                  )}
-                </Flex>
+                  <Text c="dimmed" ta="center">
+                    No subjects to display
+                  </Text>
+                </Box>
+              ) : (
+                datasetEntityArray.map((subject) => (
+                  <Box
+                    key={subject.id}
+                    style={{
+                      border: "1px solid #ddd",
+                      borderRadius: "8px",
+                      backgroundColor: "#f9f9f9",
+                    }}
+                    p="sm"
+                  >
+                    <Flex
+                      align="center"
+                      justify="space-between"
+                      gap="xs"
+                      onClick={() => allowEntitySelection && handleEntitySelect(subject)}
+                      style={{
+                        cursor: allowEntitySelection ? "pointer" : "default",
 
-                {allowEntityStructureEditing && showSamples && (
-                  <HierarchyItem
-                    label={`Add sample`}
-                    icon="add"
-                    level={2}
-                    parentEntityData={subject}
-                    onAdd={handleAddSampleButtonClick}
-                  />
-                )}
-
-                {/* Samples */}
-                {showSamples &&
-                  subject.samples?.map((sample) => (
-                    <HierarchyItem
-                      key={sample.id}
-                      icon="sample"
-                      label={sample.id}
-                      level={2}
-                      allowEntityStructureEditing={allowEntityStructureEditing}
-                      allowEntitySelection={allowEntitySelection}
-                      entityData={sample}
-                      parentEntityData={subject} // Keep this for edit/delete operations
-                      onEdit={() => handleEditSample(sample, subject)}
-                      onDelete={() => handleDeleteSample(sample, subject)}
-                      onSelect={handleEntitySelect}
-                      isSampleParent={sample.id === selectedEntityParentSampleId}
+                        backgroundColor:
+                          allowEntitySelection && selectedEntityId === subject.id
+                            ? "#bbdefb" // Update the subject selection color to match
+                            : selectedEntityParentSubjectId === subject.id
+                              ? "#f0f0f0"
+                              : "",
+                      }}
                     >
-                      {/* Sample Sites */}
-                      {allowEntityStructureEditing && showSampleSites && (
-                        <HierarchyItem
-                          label={`Add site`}
-                          icon="add"
-                          level={3}
-                          parentEntityData={{ sample, subject }}
-                          onAdd={handleAddSampleSiteButtonClick}
-                        />
-                      )}
-                      {showSampleSites &&
-                        sample.sites?.map((site) => (
-                          <HierarchyItem
-                            key={site.id}
-                            icon="site"
-                            label={site.id}
-                            level={3}
-                            allowEntityStructureEditing={allowEntityStructureEditing}
-                            allowEntitySelection={allowEntitySelection}
-                            entityData={site}
-                            parentEntityData={{ sample, subject }} // Keep for edit/delete operations
-                            onEdit={() => handleEditSampleSite(site, { sample, subject })}
-                            onDelete={() => handleDeleteSampleSite(site, { sample, subject })}
-                            onSelect={handleEntitySelect}
+                      <Group gap="xs">
+                        <IconUser size={15} />
+                        <Text fw={600}>{subject.id}</Text>
+                      </Group>
+                      {allowEntityStructureEditing && (
+                        <Group gap="3px">
+                          <IconEdit
+                            color="blue"
+                            size={18}
+                            style={{ marginLeft: "4px", opacity: 0.6, cursor: "pointer" }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEditSubject(subject);
+                            }}
                           />
-                        ))}
-                    </HierarchyItem>
-                  ))}
-              </Box>
-            ))
+                          <IconTrash
+                            color="red"
+                            size={16}
+                            style={{ opacity: 0.6, cursor: "pointer" }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteSubject(subject);
+                            }}
+                          />
+                        </Group>
+                      )}
+                    </Flex>
+
+                    {allowEntityStructureEditing && showSamples && (
+                      <HierarchyItem
+                        label={`Add sample`}
+                        icon="add"
+                        level={2}
+                        parentEntityData={subject}
+                        onAdd={handleAddSampleButtonClick}
+                      />
+                    )}
+
+                    {/* Samples */}
+                    {showSamples &&
+                      subject.samples?.map((sample) => (
+                        <HierarchyItem
+                          key={sample.id}
+                          icon="sample"
+                          label={sample.id}
+                          level={2}
+                          allowEntityStructureEditing={allowEntityStructureEditing}
+                          allowEntitySelection={allowEntitySelection}
+                          entityData={sample}
+                          parentEntityData={subject} // Keep this for edit/delete operations
+                          onEdit={() => handleEditSample(sample, subject)}
+                          onDelete={() => handleDeleteSample(sample, subject)}
+                          onSelect={handleEntitySelect}
+                          isSampleParent={sample.id === selectedEntityParentSampleId}
+                        >
+                          {/* Sample Sites */}
+                          {allowEntityStructureEditing && showSampleSites && (
+                            <HierarchyItem
+                              label={`Add site`}
+                              icon="add"
+                              level={3}
+                              parentEntityData={{ sample, subject }}
+                              onAdd={handleAddSampleSiteButtonClick}
+                            />
+                          )}
+                          {showSampleSites &&
+                            sample.sites?.map((site) => (
+                              <HierarchyItem
+                                key={site.id}
+                                icon="site"
+                                label={site.id}
+                                level={3}
+                                allowEntityStructureEditing={allowEntityStructureEditing}
+                                allowEntitySelection={allowEntitySelection}
+                                entityData={site}
+                                parentEntityData={{ sample, subject }} // Keep for edit/delete operations
+                                onEdit={() => handleEditSampleSite(site, { sample, subject })}
+                                onDelete={() => handleDeleteSampleSite(site, { sample, subject })}
+                                onSelect={handleEntitySelect}
+                              />
+                            ))}
+                        </HierarchyItem>
+                      ))}
+                  </Box>
+                ))
+              )}
+            </>
           )}
         </Stack>
       </ScrollArea>

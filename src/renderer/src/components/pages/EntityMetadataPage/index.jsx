@@ -646,12 +646,13 @@ const EntityMetadataForm = () => {
 };
 
 /**
- * ManualDatasetEntityAdditionPage Page Component
+ * EntityMetadataPage Page Component
  *
  * Main page for dataset entity metadata management.
  * Provides entity selection and metadata editing interface.
  */
-const ManualDatasetEntityAdditionPage = () => {
+const EntityMetadataPage = ({ entityType }) => {
+  console.log("entityType", entityType);
   return (
     <GuidedModePage pageHeader="Dataset entity metadata">
       <GuidedModeSection>
@@ -671,6 +672,7 @@ const ManualDatasetEntityAdditionPage = () => {
               <EntityHierarchyRenderer
                 allowEntityStructureEditing={true}
                 allowEntitySelection={true}
+                onlyRenderEntityType={entityType}
               />
             </SodaPaper>
           </Grid.Col>
@@ -685,4 +687,4 @@ const ManualDatasetEntityAdditionPage = () => {
   );
 };
 
-export default ManualDatasetEntityAdditionPage;
+export default EntityMetadataPage;
