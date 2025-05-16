@@ -15,6 +15,7 @@ import {
 import {
   addEntityToEntityList,
   setActiveEntity,
+  setShowFullMetadataFormFields,
 } from "../../../stores/slices/datasetEntitySelectorSlice.js";
 import {
   setDatasetEntityArray,
@@ -180,6 +181,7 @@ export const openPage = async (targetPageID) => {
     clearEntityFilter();
 
     setSelectedHierarchyEntity(null);
+    setActiveEntity(null);
 
     // Synchronize state between the SODA JSON object and the zustand store
     setSelectedEntities(window.sodaJSONObj["selected-entities"] || []);
@@ -243,8 +245,6 @@ export const openPage = async (targetPageID) => {
       });
       guidedLockSideBar(true);
     }
-
-    setActiveEntity(null);
 
     if (targetPageDataset.componentType) {
       const targetPageComponentType = targetPageDataset.componentType;
@@ -363,6 +363,14 @@ export const openPage = async (targetPageID) => {
         setDatasetEntityArray(datasetEntityArray);
         setActiveFormType(null);
       }
+    }
+
+    if (targetPageID === "guided-manual-dataset-entity-and-metadata-tab") {
+      // Make sure the entity metadata forms show only the key form fields
+      setShowFullMetadataFormFields(false);
+    } else {
+      // Show the full entity metadata forms for all other pages
+      setShowFullMetadataFormFields(true);
     }
 
     await openPageCurationPreparation(targetPageID);

@@ -33,6 +33,8 @@ import {
   Notification,
   Accordion,
 } from "@mantine/core";
+import { IconCalendar } from "@tabler/icons-react";
+import { DateInput } from "@mantine/dates";
 import useGlobalStore from "../../../stores/globalStore";
 import EntityHierarchyRenderer from "../../shared/EntityHierarchyRenderer";
 import {
@@ -74,8 +76,8 @@ const EntityMetadataForm = () => {
   );
   const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
-  const datasetContainsSubjects = selectedEntities && selectedEntities.includes("subjects");
-  const datasetContainsSamples = selectedEntities && selectedEntities.includes("samples");
+  const showFullMetadataFormFields = useGlobalStore((state) => state.showFullMetadataFormFields);
+  console.log("showFullMetadataFormFields", showFullMetadataFormFields);
 
   // Define standard prefixes for entity IDs
   const entityPrefixes = {
@@ -430,6 +432,104 @@ const EntityMetadataForm = () => {
               value={getMetadataValue("age category")}
               onChange={(value) => handleChange("age category", value)}
             />
+            {showFullMetadataFormFields && (
+              <>
+                <TextInput
+                  label="Laboratory internal id"
+                  description="The internal ID used by the laboratory for this subject"
+                  placeholder="e.g., Control, Treatment A"
+                  value={getMetadataValue("laboratory internal id")}
+                  onChange={(e) => handleChange("laboratory internal id", e.target.value)}
+                />
+                <DateInput
+                  value={
+                    getMetadataValue("date of birth")
+                      ? new Date(getMetadataValue("date of birth"))
+                      : null
+                  }
+                  onChange={(date) => handleChange("date of birth", date)}
+                  label="Date of Birth"
+                  placeholder="MM/DD/YYYY"
+                  valueFormat="MM/DD/YYYY"
+                  icon={<IconCalendar size={16} />}
+                  clearable
+                  description="The subject's date of birth, if known"
+                />
+
+                {/* Age Range Input */}
+                <Box>
+                  <Text size="sm" fw={500} mb={3}>
+                    Age Range
+                  </Text>
+                  <Text size="xs" c="dimmed" mb={5}>
+                    Specify the minimum and maximum age range for the subject
+                  </Text>
+                  <Group grow align="flex-start">
+                    <NumberInput
+                      label="Minimum"
+                      placeholder="Min age"
+                      value={getMetadataValue("ageRangeMin")}
+                      onChange={(value) => handleChange("ageRangeMin", value)}
+                      min={0}
+                    />
+
+                    <NumberInput
+                      label="Maximum"
+                      placeholder="Max age"
+                      value={getMetadataValue("ageRangeMax")}
+                      onChange={(value) => handleChange("ageRangeMax", value)}
+                      min={0}
+                    />
+
+                    <Select
+                      label="Select unit"
+                      placeholder="Select unit"
+                      data={[
+                        { value: "hours", label: "Hours" },
+                        { value: "days", label: "Days" },
+                        { value: "weeks", label: "Weeks" },
+                        { value: "months", label: "Months" },
+                        { value: "years", label: "Years" },
+                      ]}
+                      value={getMetadataValue("ageRangeUnit")}
+                      onChange={(value) => handleChange("ageRangeUnit", value)}
+                    />
+                  </Group>
+                </Box>
+
+                {/* Body Mass Input */}
+                <Box>
+                  <Text size="sm" fw={500} mb={3}>
+                    Body Mass
+                  </Text>
+                  <Text size="xs" c="dimmed" mb={5}>
+                    The subject's body mass measurement
+                  </Text>
+                  <Group grow>
+                    <NumberInput
+                      label="Mass value"
+                      placeholder="Enter mass"
+                      value={getMetadataValue("bodyMassValue")}
+                      onChange={(value) => handleChange("bodyMassValue", value)}
+                      min={0}
+                      precision={3}
+                    />
+                    <Select
+                      label="Mass unit"
+                      placeholder="Select unit"
+                      data={[
+                        { value: "mg", label: "milligrams (mg)" },
+                        { value: "g", label: "grams (g)" },
+                        { value: "kg", label: "kilograms (kg)" },
+                        { value: "lb", label: "pounds (lb)" },
+                      ]}
+                      value={getMetadataValue("bodyMassUnit")}
+                      onChange={(value) => handleChange("bodyMassUnit", value)}
+                    />
+                  </Group>
+                </Box>
+              </>
+            )}
           </Stack>
         );
       case "sample":

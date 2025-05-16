@@ -28,6 +28,12 @@ import {
 import useGlobalStore from "../../../stores/globalStore";
 import { guidedOpenEntityAdditionSwal, guidedOpenEntityEditSwal } from "./utils";
 import { setSelectedHierarchyEntity } from "../../../stores/slices/datasetContentSelectorSlice";
+import {
+  getExistingSubjects,
+  getExistingSamples,
+  getExistingSites,
+} from "../../../stores/slices/datasetEntityStructureSlice";
+import { naturalSort } from "../utils/util-functions";
 
 // Returns the appropriate icon component based on entity type
 // Used for visual differentiation between different entity types
@@ -70,8 +76,6 @@ const HierarchyItem = memo(
   }) => {
     const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
     const selectedEntityId = selectedHierarchyEntity ? selectedHierarchyEntity.id : null;
-    const selectedEntityParentSubjectId = selectedHierarchyEntity?.parentSubject;
-    const selectedEntityParentSampleId = selectedHierarchyEntity?.parentSample;
     const marginLeft = (level - 1) * 8;
     const isAddButton = icon === "add";
     const horizontalHierarchyLineWidth = 10;
@@ -167,7 +171,6 @@ const HierarchyItem = memo(
 );
 
 // Main component that renders the entire entity hierarchy tree
-// Supports entity selection, editing, and provides actions for all entity types
 const EntityHierarchyRenderer = ({
   allowEntityStructureEditing,
   allowEntitySelection,
@@ -179,7 +182,9 @@ const EntityHierarchyRenderer = ({
   const selectedEntityId = selectedHierarchyEntity ? selectedHierarchyEntity.id : null;
   const selectedEntityParentSubjectId = selectedHierarchyEntity?.parentSubject;
   const selectedEntityParentSampleId = selectedHierarchyEntity?.parentSample;
-  console.log("onlyRenderEntityType", onlyRenderEntityType);
+
+  const activeEntity = useGlobalStore((state) => state.activeEntity);
+  console.log("activeEntity", activeEntity);
 
   // Memoize the entity select handler to prevent recreation on each render
   const handleEntitySelect = useCallback((entityData) => {
@@ -187,31 +192,26 @@ const EntityHierarchyRenderer = ({
   }, []);
 
   // ----- SUBJECT OPERATIONS -----
-  // Opens the subject creation form
   const handleAddSubjectButtonClick = useCallback(() => {
     setSelectedHierarchyEntity(null);
     setActiveFormType("subject");
   }, []);
 
-  // Opens dialog to edit an existing subject
   const handleEditSubject = useCallback((subject) => {
     return guidedOpenEntityEditSwal("subject", subject);
   }, []);
 
-  // Removes a subject from the dataset
   const handleDeleteSubject = useCallback((subject) => {
     return deleteSubject(subject.id);
   }, []);
 
   // ----- SAMPLE OPERATIONS -----
-  // Add operations
   const handleAddSampleButtonClick = useCallback((subject) => {
     setSelectedHierarchyEntity(null);
     setEntityBeingAddedParentSubject(subject.id);
     setActiveFormType("sample");
   }, []);
 
-  // Edit operations
   const handleEditSample = useCallback(async (sample, subject) => {
     const result = await guidedOpenEntityEditSwal({
       entityType: "sample",
@@ -224,13 +224,11 @@ const EntityHierarchyRenderer = ({
     }
   }, []);
 
-  // Delete operations
   const handleDeleteSample = useCallback((sample, subject) => {
     return deleteSampleFromSubject(subject.id, sample.id);
   }, []);
 
   // ----- SAMPLE SITE OPERATIONS -----
-  // Add operations
   const handleAddSampleSiteButtonClick = useCallback(({ sample, subject }) => {
     setSelectedHierarchyEntity(null);
     setEntityBeingAddedParentSample(sample.id);
@@ -238,7 +236,6 @@ const EntityHierarchyRenderer = ({
     setActiveFormType("site");
   }, []);
 
-  // Edit operations
   const handleEditSampleSite = useCallback(async (site, { sample, subject }) => {
     const result = await guidedOpenEntityEditSwal({
       entityType: "site",
@@ -251,13 +248,11 @@ const EntityHierarchyRenderer = ({
     }
   }, []);
 
-  // Delete operations
   const handleDeleteSampleSite = useCallback((site, { sample, subject }) => {
     return deleteSiteFromSample(subject.id, sample.id, site.id);
   }, []);
 
   // Calculate which entity types should be displayed based on selected entities
-  // This controls visibility of samples, and sites in the hierarchy
   const { showSamples, showSubjectSites, showSampleSites } = useMemo(
     () => ({
       showSamples: selectedEntities?.includes("samples") || false,
@@ -267,7 +262,76 @@ const EntityHierarchyRenderer = ({
     [selectedEntities]
   );
 
-  // Main component render - displays the full entity hierarchy with appropriate controls
+  // Helper function to get entities by type
+  const getEntitiesToRender = () => {
+    if (!onlyRenderEntityType) return [];
+
+    if (onlyRenderEntityType === "subjects") {
+      return getExistingSubjects();
+    }
+    if (onlyRenderEntityType === "samples") {
+      return getExistingSamples();
+    }
+    if (onlyRenderEntityType === "sites") {
+      return getExistingSites();
+    }
+
+    console.error("Invalid entity type for rendering:", onlyRenderEntityType);
+    return [];
+  };
+
+  console.log("onlyRenderEntityType", onlyRenderEntityType);
+
+  // Get the specific entities to render if we're only showing one type
+  const entitiesToRender = onlyRenderEntityType ? getEntitiesToRender() : [];
+
+  // Fixed renderEntityList function - no hooks inside function
+  const renderEntityList = (entities) => {
+    return entities.map((entity) => (
+      <Box
+        key={entity.id}
+        onClick={() => handleEntitySelect(entity)}
+        p="xs"
+        style={{
+          width: "100%",
+          backgroundColor: entity.id === selectedEntityId ? "#e3f2fd" : "transparent",
+          color: entity.id === selectedEntityId ? "#0d47a1" : "#333",
+          border: "none",
+          borderLeft: `3px solid ${entity.id === selectedEntityId ? "#2196f3" : "transparent"}`,
+          cursor: "pointer",
+          transition: "background-color 0.2s ease, border-color 0.2s ease",
+          wordBreak: "break-word",
+          whiteSpace: "normal",
+        }}
+      >
+        <Text size="sm">{entity.id}</Text>
+      </Box>
+    ));
+  };
+
+  // EARLY RETURN: If we're only rendering a specific entity type
+  if (onlyRenderEntityType) {
+    return (
+      <Stack gap="xs">
+        <ScrollArea mah={650} type="auto">
+          {entitiesToRender.length > 0 ? (
+            <Stack gap="xs">{renderEntityList(entitiesToRender)}</Stack>
+          ) : (
+            <Box
+              style={{ border: "1px solid #ddd", borderRadius: "8px", backgroundColor: "#f9f9f9" }}
+              p="md"
+            >
+              <Text c="dimmed" ta="center">
+                No {onlyRenderEntityType} to display
+              </Text>
+            </Box>
+          )}
+        </ScrollArea>
+      </Stack>
+    );
+  }
+
+  // MAIN RETURN: Full hierarchical view with all entity types
   return (
     <Stack gap="xs">
       {allowEntityStructureEditing && (
@@ -291,138 +355,130 @@ const EntityHierarchyRenderer = ({
       )}
       <ScrollArea mah={650} type="auto">
         <Stack gap="xs">
-          {onlyRenderEntityType ? (
-            <div>hi</div>
+          {!datasetEntityArray?.length ? (
+            <Box
+              style={{
+                border: "1px solid #ddd",
+                borderRadius: "8px",
+                backgroundColor: "#f9f9f9",
+              }}
+              p="md"
+            >
+              <Text c="dimmed" ta="center">
+                No subjects to display
+              </Text>
+            </Box>
           ) : (
-            <>
-              {" "}
-              {!datasetEntityArray?.length ? (
-                <Box
+            datasetEntityArray.map((subject) => (
+              <Box
+                key={subject.id}
+                style={{
+                  border: "1px solid #ddd",
+                  borderRadius: "8px",
+                  backgroundColor: "#f9f9f9",
+                }}
+                p="sm"
+              >
+                <Flex
+                  align="center"
+                  justify="space-between"
+                  gap="xs"
+                  onClick={() => allowEntitySelection && handleEntitySelect(subject)}
                   style={{
-                    border: "1px solid #ddd",
-                    borderRadius: "8px",
-                    backgroundColor: "#f9f9f9",
+                    cursor: allowEntitySelection ? "pointer" : "default",
+                    backgroundColor:
+                      allowEntitySelection && selectedEntityId === subject.id
+                        ? "#bbdefb"
+                        : selectedEntityParentSubjectId === subject.id
+                          ? "#f0f0f0"
+                          : "",
                   }}
-                  p="md"
                 >
-                  <Text c="dimmed" ta="center">
-                    No subjects to display
-                  </Text>
-                </Box>
-              ) : (
-                datasetEntityArray.map((subject) => (
-                  <Box
-                    key={subject.id}
-                    style={{
-                      border: "1px solid #ddd",
-                      borderRadius: "8px",
-                      backgroundColor: "#f9f9f9",
-                    }}
-                    p="sm"
-                  >
-                    <Flex
-                      align="center"
-                      justify="space-between"
-                      gap="xs"
-                      onClick={() => allowEntitySelection && handleEntitySelect(subject)}
-                      style={{
-                        cursor: allowEntitySelection ? "pointer" : "default",
-
-                        backgroundColor:
-                          allowEntitySelection && selectedEntityId === subject.id
-                            ? "#bbdefb" // Update the subject selection color to match
-                            : selectedEntityParentSubjectId === subject.id
-                              ? "#f0f0f0"
-                              : "",
-                      }}
-                    >
-                      <Group gap="xs">
-                        <IconUser size={15} />
-                        <Text fw={600}>{subject.id}</Text>
-                      </Group>
-                      {allowEntityStructureEditing && (
-                        <Group gap="3px">
-                          <IconEdit
-                            color="blue"
-                            size={18}
-                            style={{ marginLeft: "4px", opacity: 0.6, cursor: "pointer" }}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleEditSubject(subject);
-                            }}
-                          />
-                          <IconTrash
-                            color="red"
-                            size={16}
-                            style={{ opacity: 0.6, cursor: "pointer" }}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteSubject(subject);
-                            }}
-                          />
-                        </Group>
-                      )}
-                    </Flex>
-
-                    {allowEntityStructureEditing && showSamples && (
-                      <HierarchyItem
-                        label={`Add sample`}
-                        icon="add"
-                        level={2}
-                        parentEntityData={subject}
-                        onAdd={handleAddSampleButtonClick}
+                  <Group gap="xs">
+                    <IconUser size={15} />
+                    <Text fw={600}>{subject.id}</Text>
+                  </Group>
+                  {allowEntityStructureEditing && (
+                    <Group gap="3px">
+                      <IconEdit
+                        color="blue"
+                        size={18}
+                        style={{ marginLeft: "4px", opacity: 0.6, cursor: "pointer" }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditSubject(subject);
+                        }}
                       />
-                    )}
+                      <IconTrash
+                        color="red"
+                        size={16}
+                        style={{ opacity: 0.6, cursor: "pointer" }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteSubject(subject);
+                        }}
+                      />
+                    </Group>
+                  )}
+                </Flex>
 
-                    {/* Samples */}
-                    {showSamples &&
-                      subject.samples?.map((sample) => (
+                {allowEntityStructureEditing && showSamples && (
+                  <HierarchyItem
+                    label={`Add sample`}
+                    icon="add"
+                    level={2}
+                    parentEntityData={subject}
+                    onAdd={handleAddSampleButtonClick}
+                  />
+                )}
+
+                {/* Samples */}
+                {showSamples &&
+                  subject.samples?.map((sample) => (
+                    <HierarchyItem
+                      key={sample.id}
+                      icon="sample"
+                      label={sample.id}
+                      level={2}
+                      allowEntityStructureEditing={allowEntityStructureEditing}
+                      allowEntitySelection={allowEntitySelection}
+                      entityData={sample}
+                      parentEntityData={subject}
+                      onEdit={() => handleEditSample(sample, subject)}
+                      onDelete={() => handleDeleteSample(sample, subject)}
+                      onSelect={handleEntitySelect}
+                      isSampleParent={sample.id === selectedEntityParentSampleId}
+                    >
+                      {/* Sample Sites */}
+                      {allowEntityStructureEditing && showSampleSites && (
                         <HierarchyItem
-                          key={sample.id}
-                          icon="sample"
-                          label={sample.id}
-                          level={2}
-                          allowEntityStructureEditing={allowEntityStructureEditing}
-                          allowEntitySelection={allowEntitySelection}
-                          entityData={sample}
-                          parentEntityData={subject} // Keep this for edit/delete operations
-                          onEdit={() => handleEditSample(sample, subject)}
-                          onDelete={() => handleDeleteSample(sample, subject)}
-                          onSelect={handleEntitySelect}
-                          isSampleParent={sample.id === selectedEntityParentSampleId}
-                        >
-                          {/* Sample Sites */}
-                          {allowEntityStructureEditing && showSampleSites && (
-                            <HierarchyItem
-                              label={`Add site`}
-                              icon="add"
-                              level={3}
-                              parentEntityData={{ sample, subject }}
-                              onAdd={handleAddSampleSiteButtonClick}
-                            />
-                          )}
-                          {showSampleSites &&
-                            sample.sites?.map((site) => (
-                              <HierarchyItem
-                                key={site.id}
-                                icon="site"
-                                label={site.id}
-                                level={3}
-                                allowEntityStructureEditing={allowEntityStructureEditing}
-                                allowEntitySelection={allowEntitySelection}
-                                entityData={site}
-                                parentEntityData={{ sample, subject }} // Keep for edit/delete operations
-                                onEdit={() => handleEditSampleSite(site, { sample, subject })}
-                                onDelete={() => handleDeleteSampleSite(site, { sample, subject })}
-                                onSelect={handleEntitySelect}
-                              />
-                            ))}
-                        </HierarchyItem>
-                      ))}
-                  </Box>
-                ))
-              )}
-            </>
+                          label={`Add site`}
+                          icon="add"
+                          level={3}
+                          parentEntityData={{ sample, subject }}
+                          onAdd={handleAddSampleSiteButtonClick}
+                        />
+                      )}
+                      {showSampleSites &&
+                        sample.sites?.map((site) => (
+                          <HierarchyItem
+                            key={site.id}
+                            icon="site"
+                            label={site.id}
+                            level={3}
+                            allowEntityStructureEditing={allowEntityStructureEditing}
+                            allowEntitySelection={allowEntitySelection}
+                            entityData={site}
+                            parentEntityData={{ sample, subject }}
+                            onEdit={() => handleEditSampleSite(site, { sample, subject })}
+                            onDelete={() => handleDeleteSampleSite(site, { sample, subject })}
+                            onSelect={handleEntitySelect}
+                          />
+                        ))}
+                    </HierarchyItem>
+                  ))}
+              </Box>
+            ))
           )}
         </Stack>
       </ScrollArea>

@@ -16,6 +16,7 @@ export const datasetEntitySelectorSlice = (set) => ({
   entityStructureObj: {
     subjects: {},
   }, // Example structure: { sub-01: { samples: { sam-01: { performances: [], sites: [] } } } }
+  showFullMetadataFormFields: false, // Flag to show full metadata form fields
 });
 
 // Add an entity to the specified entity type's list
@@ -67,6 +68,13 @@ export const removeEntityFromEntityList = (entityType, entityName) => {
 // Get the obj of entities for a specific entity type
 export const getEntityObjForEntityType = (entityType) => {
   return useGlobalStore.getState()?.datasetEntityObj?.[entityType] || {};
+};
+
+export const setShowFullMetadataFormFields = (showFullMetadataFormFields) => {
+  useGlobalStore.setState((state) => ({
+    ...state,
+    showFullMetadataFormFields,
+  }));
 };
 
 // Set the currently active entity
