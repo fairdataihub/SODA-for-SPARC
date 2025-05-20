@@ -716,6 +716,14 @@ const EntityMetadataForm = () => {
                   value={getMetadataValue("was derived from")}
                   onChange={(value) => handleChange("was derived from", value)}
                 />
+                {/* Also in dataset TextInput */}
+                <TextInput
+                  label="Also in dataset"
+                  description="Other datasets that include this sample"
+                  placeholder="e.g., dataset-1, dataset-2"
+                  value={getMetadataValue("also in dataset")}
+                  onChange={(e) => handleChange("also in dataset", e.target.value)}
+                />
               </>
             )}
           </Stack>
