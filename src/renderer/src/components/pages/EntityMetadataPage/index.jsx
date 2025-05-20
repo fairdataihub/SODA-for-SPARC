@@ -53,6 +53,7 @@ import {
 } from "../../../stores/slices/datasetEntityStructureSlice";
 import SodaPaper from "../../utils/ui/SodaPaper";
 import SodaGreenPaper from "../../utils/ui/SodaGreenPaper";
+import { getExistingSamples } from "../../../stores/slices/datasetEntityStructureSlice";
 
 /**
  * EntityMetadataForm Component
@@ -304,13 +305,7 @@ const EntityMetadataForm = () => {
               }
               leftSectionWidth={50}
             />
-            <TextInput
-              label="Pool ID"
-              description="Pool identifier for grouped subjects"
-              placeholder="e.g., pool-01"
-              value={getMetadataValue("pool id")}
-              onChange={(e) => handleChange("pool id", e.target.value)}
-            />
+
             <TextInput
               label="Subject Experimental Group"
               description="The experimental group this subject belongs to"
@@ -705,9 +700,24 @@ const EntityMetadataForm = () => {
               label="Anatomical Location"
               description="The anatomical location this sample was taken from"
               placeholder="e.g., Dorsal root ganglion"
-              value={getMetadataValue("anatomicalLocation")}
-              onChange={(e) => handleChange("anatomicalLocation", e.target.value)}
+              value={getMetadataValue("sample anatomical location")}
+              onChange={(e) => handleChange("sample anatomical location", e.target.value)}
             />
+            {showFullMetadataFormFields && (
+              <>
+                {/* was derived from Select */}
+                <Select
+                  label="Was derived from"
+                  description="The entity this sample was derived from"
+                  placeholder="Select entity"
+                  data={getExistingSamples()
+                    .map((sample) => sample.id)
+                    .filter((id) => id !== `sam-${getMetadataValue("sample id")}`)}
+                  value={getMetadataValue("was derived from")}
+                  onChange={(value) => handleChange("was derived from", value)}
+                />
+              </>
+            )}
           </Stack>
         );
       case "site":

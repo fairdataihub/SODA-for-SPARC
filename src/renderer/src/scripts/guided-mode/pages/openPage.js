@@ -39,6 +39,7 @@ import { renderSideBar } from "./sidebar.js";
 import useGlobalStore from "../../../stores/globalStore.js";
 import { setPerformanceList } from "../../../stores/slices/performancesSlice.js";
 import { setSelectedModalities } from "../../../stores/slices/modalitiesSlice.js";
+import { guidedSaveProgress } from "./savePageChanges.js";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -806,7 +807,7 @@ export const openPage = async (targetPageID) => {
 
     // Set the last opened page and save it
     window.sodaJSONObj["page-before-exit"] = targetPageID;
-    //     await guidedSaveProgress();
+    await guidedSaveProgress();
   } catch (error) {
     const eMessage = userErrorMessage(error);
     console.error(error);

@@ -13,6 +13,7 @@ import { openPage } from "../pages/openPage";
 import api from "../../others/api/api";
 import client from "../../client";
 import { clientError } from "../../others/http-error-handler/error-handler";
+import { swalShowInfo } from "../../utils/swal-utils";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -185,6 +186,7 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
 const guidedGetPageToReturnTo = async () => {
   // Set by openPage function
   const usersPageBeforeExit = window.sodaJSONObj["page-before-exit"];
+  console.log("usersPageBeforeExit", usersPageBeforeExit);
 
   //If the dataset was successfully uploaded, send the user to the share with curation team
   if (window.sodaJSONObj["previous-guided-upload-dataset-name"]) {
@@ -207,6 +209,10 @@ const guidedGetPageToReturnTo = async () => {
   }
 
   if (guidedCheckIfUserNeedsToReconfirmAccountDetails() === true) {
+    await swalShowInfo(
+      "Your Pennsieve account or workspace has changed since you last worked on this dataset.",
+      "Please confirm your Pennsieve account and workspace details."
+    );
     return "guided-pennsieve-intro-tab";
   }
 
@@ -373,11 +379,38 @@ const patchPreviousGuidedModeVersions = async () => {
 };
 
 const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
+  console.log("--- CHECKING ACCOUNT CONFIRMATION REQUIREMENTS ---");
+
+  // Check if guided-pennsieve-intro-tab is in completed tabs
   if (!window.sodaJSONObj["completed-tabs"].includes("guided-pennsieve-intro-tab")) {
+    console.log("User has not yet completed the Pennsieve intro tab, no reconfirmation needed");
     return false;
   }
-  // If the user has changed their Pennsieve account, they need to confirm their new Pennsieve account and workspace
+
+  // Log current and previously confirmed account details
+  console.log(`Current Pennsieve account: ${window.defaultBfAccount}`);
+  console.log(
+    `Last confirmed account: ${window.sodaJSONObj?.["last-confirmed-ps-account-details"]}`
+  );
+
+  // Check if the user has changed their Pennsieve account
   if (window.sodaJSONObj?.["last-confirmed-ps-account-details"] !== window.defaultBfAccount) {
+    console.log("RECONFIRMATION NEEDED: Pennsieve account changed");
+
+    // Log button config states
+    console.log(
+      "Clearing pennsieve-account-has-been-confirmed:",
+      window.sodaJSONObj["button-config"]?.["pennsieve-account-has-been-confirmed"]
+        ? "was set"
+        : "was not set"
+    );
+    console.log(
+      "Clearing organization-has-been-confirmed:",
+      window.sodaJSONObj["button-config"]?.["organization-has-been-confirmed"]
+        ? "was set"
+        : "was not set"
+    );
+
     if (window.sodaJSONObj["button-config"]?.["pennsieve-account-has-been-confirmed"]) {
       delete window.sodaJSONObj["button-config"]["pennsieve-account-has-been-confirmed"];
     }
@@ -386,16 +419,33 @@ const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
     }
     return true;
   }
-  // If the user has changed their Pennsieve workspace, they need to confirm their new workspace
-  if (
-    guidedGetCurrentUserWorkSpace() !=
-    window.sodaJSONObj?.["last-confirmed-pennsieve-workspace-details"]
-  ) {
+
+  // Log current and previously confirmed workspace details
+  const currentWorkspace = guidedGetCurrentUserWorkSpace();
+  console.log(`Current workspace: ${currentWorkspace}`);
+  console.log(
+    `Last confirmed workspace: ${window.sodaJSONObj?.["last-confirmed-pennsieve-workspace-details"]}`
+  );
+
+  // Check if the user has changed their Pennsieve workspace
+  if (currentWorkspace != window.sodaJSONObj?.["last-confirmed-pennsieve-workspace-details"]) {
+    console.log("RECONFIRMATION NEEDED: Workspace changed");
+
+    // Log button config state
+    console.log(
+      "Clearing organization-has-been-confirmed:",
+      window.sodaJSONObj["button-config"]?.["organization-has-been-confirmed"]
+        ? "was set"
+        : "was not set"
+    );
+
     if (window.sodaJSONObj["button-config"]?.["organization-has-been-confirmed"]) {
       delete window.sodaJSONObj["button-config"]["organization-has-been-confirmed"];
     }
     return true;
   }
-  // Return false if the user does not need to reconfirm their account details
+
+  // If no reconfirmation is needed, log that information
+  console.log("No reconfirmation needed");
   return false;
 };
