@@ -596,68 +596,6 @@ export const openPage = async (targetPageID) => {
     //         guidedResetUserTeamPermissionsDropdowns();
     //     }
 
-    //     if (targetPageID === "guided-create-subjects-metadata-tab") {
-    //         //remove custom fields that may have existed from a previous session
-    //         document.getElementById("guided-accordian-custom-fields").innerHTML = "";
-    //         document.getElementById("guided-bootbox-subject-id").value = "";
-
-    //         //Add protocol titles to the protocol dropdown
-    //         const protocols = window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"];
-
-    //         // Hide the subjects protocol section if no protocols have been attached to the dataset
-    //         const subjectsProtocolContainer = document.getElementById(
-    //             "guided-container-subjects-protocol"
-    //         );
-    //         protocols.length > 0
-    //             ? subjectsProtocolContainer.classList.remove("hidden")
-    //             : subjectsProtocolContainer.classList.add("hidden");
-
-    //         document.getElementById("guided-bootbox-subject-protocol-title").innerHTML = `
-    //         <option value="">No protocols associated with this sample</option>
-    //         ${protocols
-    //                 .map((protocol) => {
-    //                     return `
-    //               <option
-    //                 value="${protocol.description}"
-    //                 data-protocol-link="${protocol.link}"
-    //               >
-    //                 ${protocol.description}
-    //               </option>
-    //             `;
-    //                 })
-    //                 .join("\n")}))
-    //       `;
-
-    //         document.getElementById("guided-bootbox-subject-protocol-location").innerHTML = `
-    //       <option value="">No protocols associated with this sample</option>
-    //       ${protocols
-    //                 .map((protocol) => {
-    //                     return `
-    //             <option
-    //               value="${protocol.link}"
-    //               data-protocol-description="${protocol.description}"
-    //             >
-    //               ${protocol.link}
-    //             </option>
-    //           `;
-    //                 })
-    //                 .join("\n")}))
-    //     `;
-    //         await renderSubjectsMetadataAsideItems();
-    //         const subjectsMetadataBlackArrowLottieContainer = document.getElementById(
-    //             "subjects-metadata-black-arrow-lottie-container"
-    //         );
-    //         subjectsMetadataBlackArrowLottieContainer.innerHTML = "";
-    //         lottie.loadAnimation({
-    //             container: subjectsMetadataBlackArrowLottieContainer,
-    //             animationData: blackArrow,
-    //             renderer: "svg",
-    //             loop: true,
-    //             autoplay: true,
-    //         });
-    //         hideEleShowEle("guided-form-add-a-subject", "guided-form-add-a-subject-intro");
-    //     }
-
     //     if (targetPageID === "guided-create-samples-metadata-tab") {
     //         //remove custom fields that may have existed from a previous session
     //         document.getElementById("guided-accordian-custom-fields-samples").innerHTML = "";

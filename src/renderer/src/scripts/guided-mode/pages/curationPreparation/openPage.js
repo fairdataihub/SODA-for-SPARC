@@ -4,14 +4,6 @@ import {
   setGuidedDatasetName,
   setGuidedDatasetSubtitle,
 } from "../../../../stores/slices/guidedModeSlice";
-import { setDropdownState } from "../../../../stores/slices/dropDownSlice";
-import api from "../../../others/api/api";
-import { clientError } from "../../../others/http-error-handler/error-handler";
-import { guidedShowOptionalRetrySwal } from "../../swals/helperSwals";
-import { userErrorMessage } from "../../../others/http-error-handler/error-handler";
-import { setPageLoadingState } from "../navigationUtils/pageLoading.js";
-import { setSelectedEntities } from "../../../../stores/slices/datasetContentSelectorSlice.js";
-import client from "../../../client";
 
 export const openPageCurationPreparation = async (targetPageID) => {
   if (targetPageID === "guided-select-starting-point-tab") {

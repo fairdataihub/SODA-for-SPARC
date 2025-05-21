@@ -41,6 +41,8 @@ while (!window.baseHtmlLoaded) {
 }
 
 export const openPagePrepareMetadata = async (targetPageID) => {
+  console.log(`Opening prepare metadata page: ${targetPageID}`);
+
   if (targetPageID === "guided-banner-image-tab") {
     if (pageNeedsUpdateFromPennsieve("guided-banner-image-tab")) {
       // Show the loading page while the page's data is being fetched from Pennsieve
@@ -141,9 +143,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     }
   }
 
-  // Add handlers for other Pennsieve metadata pages
   if (targetPageID === "guided-pennsieve-metadata-intro-tab") {
-    // Logic for Pennsieve metadata intro page
     console.log("Opening Pennsieve metadata intro page");
     // Page-specific initialization code will go here
   }
@@ -189,142 +189,18 @@ export const openPagePrepareMetadata = async (targetPageID) => {
   }
 
   if (targetPageID === "guided-designate-permissions-tab") {
-    // Logic for Pennsieve user permissions page
     console.log("Opening Pennsieve user permissions page");
     // Page-specific initialization code will go here
   }
 
   if (targetPageID === "guided-assign-license-tab") {
-    // Logic for sharing license page
     console.log("Opening sharing license page");
     // Page-specific initialization code will go here
   }
 
   if (targetPageID === "guided-aux-folder-tab") {
-    // Logic for auxiliary data import page
     console.log("Opening auxiliary data import page");
     // Page-specific initialization code will go here
-  }
-
-  if (targetPageID === "guided-create-submission-metadata-tab") {
-    if (pageNeedsUpdateFromPennsieve(targetPageID)) {
-      // Show the loading page while the page's data is being fetched from Pennsieve
-      setPageLoadingState(true);
-      try {
-        const submissionMetadataRes = await client.get(`/prepare_metadata/import_metadata_file`, {
-          params: {
-            selected_account: window.defaultBfAccount,
-            selected_dataset: window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
-            file_type: "submission.xlsx",
-          },
-        });
-
-        const submissionData = submissionMetadataRes.data;
-
-        window.sodaJSONObj["dataset_metadata"]["shared-metadata"]["sparc-award"] =
-          submissionData["Award number"];
-        window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["milestones"] =
-          submissionData["Milestone achieved"];
-        window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["completion-date"] =
-          submissionData["Milestone completion date"];
-
-        window.sodaJSONObj["pages-fetched-from-pennsieve"].push(targetPageID);
-      } catch (error) {
-        clientError(error);
-        const emessage = error.response.data.message;
-        await guidedShowOptionalRetrySwal(emessage, targetPageID);
-        // If the user chooses not to retry re-fetching the page data, mark the page as fetched
-        // so the the fetch does not occur again
-        window.sodaJSONObj["pages-fetched-from-pennsieve"].push(targetPageID);
-      }
-    }
-
-    //Reset the manual submission metadata UI
-    const sparcAwardInputManual = document.getElementById("guided-submission-sparc-award-manual");
-    sparcAwardInputManual.value = "";
-    window.guidedSubmissionTagsTagifyManual.removeAllTags();
-    const completionDateInputManual = document.getElementById(
-      "guided-submission-completion-date-manual"
-    );
-    completionDateInputManual.innerHTML = `
-            <option value="">Select a completion date</option>
-            <option value="Enter my own date">Enter my own date</option>
-            <option value="N/A">N/A</option>
-          `;
-    completionDateInputManual.value = "";
-
-    const sectionThatAsksIfDataDeliverablesReady = document.getElementById(
-      "guided-section-user-has-data-deliverables-question"
-    );
-    const sectionSubmissionMetadataInputs = document.getElementById(
-      "guided-section-submission-metadata-inputs"
-    );
-
-    //Update the UI if their respective keys exist in the window.sodaJSONObj
-    const sparcAward = window.sodaJSONObj["dataset_metadata"]["shared-metadata"]["sparc-award"];
-    if (sparcAward) {
-      sparcAwardInputManual.value = sparcAward;
-    }
-    const milestones = window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["milestones"];
-    if (milestones) {
-      window.guidedSubmissionTagsTagifyManual.addTags(milestones);
-    }
-    const completionDate =
-      window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["completion-date"];
-
-    if (completionDate && completionDate != "") {
-      completionDateInputManual.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
-      //select the completion date that was added
-      completionDateInputManual.value = completionDate;
-    }
-
-    const setFundingConsortium =
-      window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["funding-consortium"];
-
-    const topLevelDDDInstructionsText = document.getElementById(
-      "guided-submission-metadata-ddd-import-instructions"
-    );
-    if (setFundingConsortium != "SPARC") {
-      topLevelDDDInstructionsText.classList.add("hidden");
-      // Hide the ddd import section since the submission is not SPARC funded
-      sectionThatAsksIfDataDeliverablesReady.classList.add("hidden");
-      // Show the submission metadata inputs section so the user can enter the metadata manually
-      sectionSubmissionMetadataInputs.classList.remove("hidden");
-
-      // Show the instructions for non-SPARC funded submissions
-      window.showElementsWithClass("guided-non-sparc-funding-consortium-instructions");
-    } else {
-      topLevelDDDInstructionsText.classList.remove("hidden");
-
-      // If the submission is SPARC, but they have already added their sparc award and milestones
-      // then hide the section that asks if they have data deliverables ready and show the
-      // submission metadata inputs section
-      if (sparcAward && milestones) {
-        sectionThatAsksIfDataDeliverablesReady.classList.add("hidden");
-        sectionSubmissionMetadataInputs.classList.remove("hidden");
-      } else {
-        // If the submission is SPARC and they have not added their sparc award and milestones
-        // then show the section that asks if they have data deliverables ready and hide the
-        // submission metadata inputs section
-        sectionThatAsksIfDataDeliverablesReady.classList.remove("hidden");
-        sectionSubmissionMetadataInputs.classList.add("hidden");
-        // Load the lottie animation where the user can drag and drop the data deliverable document
-        const dataDeliverableLottieContainer = document.getElementById(
-          "data-deliverable-lottie-container"
-        );
-        dataDeliverableLottieContainer.innerHTML = "";
-        lottie.loadAnimation({
-          container: dataDeliverableLottieContainer,
-          animationData: dragDrop,
-          renderer: "svg",
-          loop: true,
-          autoplay: true,
-        });
-      }
-
-      // Hide the instructions for non-SPARC funded submissions
-      window.hideElementsWithClass("guided-non-sparc-funding-consortium-instructions");
-    }
   }
 
   if (targetPageID === "guided-contributors-tab") {
@@ -377,13 +253,6 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     }
 
     renderDatasetDescriptionContributorsTable();
-  }
-
-  if (targetPageID === "guided-ask-if-submission-is-sparc-funded-tab") {
-    // Set the funding consortium dropdown to the saved value (deafult is empty string before a user selects a value)
-    const savedFundingConsortium =
-      window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["funding-consortium"];
-    setDropdownState("guided-select-sparc-funding-consortium", savedFundingConsortium);
   }
 
   if (targetPageID === "guided-protocols-tab") {
@@ -824,6 +693,62 @@ export const openPagePrepareMetadata = async (targetPageID) => {
       otherFundingLabel.innerHTML = ` besides the SPARC Award: ${window.sodaJSONObj["dataset_metadata"]["shared-metadata"]["sparc-award"]}`;
     } else {
       otherFundingLabel.innerHTML = "";
+    }
+  }
+
+  if (targetPageID === "guided-dataset-metadata-intro-tab") {
+    console.log("Opening dataset metadata intro page");
+    // Initialize any required components or state for the intro page
+  }
+
+  if (targetPageID === "guided-subjects-metadata-tab") {
+    console.log("Opening subjects metadata page");
+    // This has componentType "entity-metadata-page" which likely handles most of the page functionality
+    setEntityType("subjects");
+  }
+
+  if (targetPageID === "guided-create-subjects-metadata-tab") {
+    console.log("Opening subjects metadata creation page");
+    // Initialize any required components or state for the subjects metadata creation
+  }
+
+  if (targetPageID === "guided-samples-metadata-tab") {
+    console.log("Opening samples metadata page");
+    // This has componentType "entity-metadata-page" which likely handles most of the page functionality
+    setEntityType("samples");
+  }
+
+  if (targetPageID === "guided-create-samples-metadata-tab") {
+    console.log("Opening samples metadata creation page");
+    // Initialize any required components or state for the samples metadata creation
+  }
+
+  if (targetPageID === "guided-resources-entity-addition-tab") {
+    console.log("Opening experimental resources page");
+    // This has componentType "resources-management-page" which likely handles most of the page functionality
+  }
+
+  if (targetPageID === "guided-create-changes-metadata-tab") {
+    console.log("Opening CHANGES metadata page");
+
+    // Handle loading existing CHANGES content if available
+    const changesMetadata = window.sodaJSONObj["dataset_metadata"]["CHANGES"];
+    const changesTextArea = document.getElementById("guided-textarea-create-changes");
+
+    if (changesTextArea && changesMetadata) {
+      changesTextArea.value = changesMetadata;
+    } else if (changesTextArea) {
+      changesTextArea.value = "";
+    }
+  }
+
+  if (targetPageID === "guided-create-local-copy-tab") {
+    console.log("Opening complete dataset structure review page");
+    // Initialize the dataset structure review, possibly updating tree views or summaries
+
+    // Update tree view if that component is used here
+    if (window.datasetStructureJSONObj) {
+      setTreeViewDatasetStructure(window.datasetStructureJSONObj, []);
     }
   }
 };

@@ -7,8 +7,12 @@ import {
 } from "../../../guided-mode/pages/navigationUtils/pageSkipping";
 
 export const savePageDatasetStructure = async (pageBeingLeftID) => {
+  console.log(`Saving dataset structure page: ${pageBeingLeftID}`);
+
   const errorArray = [];
+
   if (pageBeingLeftID === "guided-unstructured-data-import-tab") {
+    console.log("Validating data import page");
     // Count the files imported into the dataset to make sure they imported something
     const datasetFileCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
     if (datasetFileCount === 0) {
@@ -22,6 +26,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
   }
 
   if (pageBeingLeftID === "guided-dataset-content-tab") {
+    console.log("Validating dataset content selections");
     const selectedEntities = useGlobalStore.getState()["selectedEntities"];
     const deSelectedEntities = useGlobalStore.getState()["deSelectedEntities"];
 
@@ -104,6 +109,9 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       throw errorArray;
     }
 
+    // Handle page skipping based on selections
+    console.log("Setting up page skipping based on content selections");
+
     if (selectedEntities.includes("subjects")) {
       guidedUnSkipPage("guided-subjects-entity-addition-tab");
       guidedUnSkipPage("guided-subjects-selection-tab");
@@ -154,12 +162,15 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
   }
 
   if (pageBeingLeftID === "data-categorization-tab") {
+    console.log("Validating data categorization page");
+
     const datasetFileCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
     const datasetEntityObj = useGlobalStore.getState()["datasetEntityObj"];
     const categorizedData = datasetEntityObj?.["categorized-data"];
     console.log("dataset file count", datasetFileCount);
     console.log("datasetEntityObj", datasetEntityObj);
     console.log("categorizedData", categorizedData);
+
     let categorizedFileCount = 0;
     if (categorizedData) {
       categorizedFileCount = Object.keys(categorizedData).reduce((acc, key) => {
@@ -176,11 +187,11 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       throw errorArray;
     }
 
-    const countOfFilesCategorizedAsCode = Object.keys(categorizedData["Code"]).length;
+    const countOfFilesCategorizedAsCode = Object.keys(categorizedData["Code"] || {}).length;
     const countOfFilesCategorizedAsExperimental = Object.keys(
-      categorizedData["Experimental data"]
+      categorizedData["Experimental data"] || {}
     ).length;
-    const countOfFilesCategorizedAsOther = Object.keys(categorizedData["Other"]).length;
+    const countOfFilesCategorizedAsOther = Object.keys(categorizedData["Other"] || {}).length;
 
     if (window.sodaJSONObj["selected-entities"].includes("code")) {
       if (countOfFilesCategorizedAsCode === 0) {
@@ -202,5 +213,73 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
         throw errorArray;
       }
     }
+  }
+
+  if (pageBeingLeftID === "other-data-categorization-tab") {
+    console.log("Validating other data categorization page");
+    // Add validation logic for other-data-categorization-tab if needed
+  }
+
+  if (pageBeingLeftID === "guided-entity-addition-method-selection-tab") {
+    console.log("Validating entity addition method selection page");
+    // Add validation logic for guided-entity-addition-method-selection-tab if needed
+  }
+
+  if (pageBeingLeftID === "guided-manual-dataset-entity-and-metadata-tab") {
+    console.log("Validating manual dataset entity and metadata page");
+    // Add validation logic for guided-manual-dataset-entity-and-metadata-tab if needed
+  }
+
+  if (pageBeingLeftID === "guided-spreadsheet-import-dataset-entity-and-metadata-tab") {
+    console.log("Validating spreadsheet import dataset entity and metadata page");
+    // Add validation logic for guided-spreadsheet-import-dataset-entity-and-metadata-tab if needed
+  }
+
+  if (pageBeingLeftID === "guided-sites-selection-tab") {
+    console.log("Validating sites selection page");
+    // Add validation logic for guided-sites-selection-tab if needed
+  }
+
+  if (pageBeingLeftID === "guided-samples-selection-tab") {
+    console.log("Validating samples selection page");
+    // Add validation logic for guided-samples-selection-tab if needed
+  }
+
+  if (pageBeingLeftID === "guided-subjects-selection-tab") {
+    console.log("Validating subjects selection page");
+    // Add validation logic for guided-subjects-selection-tab if needed
+  }
+
+  if (pageBeingLeftID === "guided-performances-entity-addition-tab") {
+    console.log("Validating performances entity addition page");
+    // Add validation logic for guided-performances-entity-addition-tab if needed
+  }
+
+  if (pageBeingLeftID === "guided-Performances-selection-tab") {
+    console.log("Validating performances selection page");
+    // Add validation logic for guided-Performances-selection-tab if needed
+  }
+
+  if (pageBeingLeftID === "guided-modalities-selection-tab") {
+    console.log("Validating modalities selection page");
+    // Add validation logic for guided-modalities-selection-tab if needed
+  }
+
+  if (pageBeingLeftID === "guided-modalities-data-selection-tab") {
+    console.log("Validating modalities data selection page");
+    // Add validation logic for guided-modalities-data-selection-tab if needed
+  }
+
+  if (pageBeingLeftID === "guided-manifest-file-generation-tab") {
+    console.log("Validating manifest file generation page");
+    // Add validation logic for guided-manifest-file-generation-tab if needed
+  }
+
+  if (
+    pageBeingLeftID === "dataset-structure-review-tab" ||
+    pageBeingLeftID === "guided-dataset-structure-review-tab"
+  ) {
+    console.log("Validating dataset structure review page");
+    // Add validation logic for dataset structure review page if needed
   }
 };

@@ -16,6 +16,8 @@ while (!window.baseHtmlLoaded) {
 }
 
 export const openPageDatasetStructure = async (targetPageID) => {
+  console.log(`Opening dataset structure page: ${targetPageID}`);
+
   if (targetPageID === "guided-dataset-structure-intro-tab") {
     // Handle whether or not the spreadsheet importation page should be skipped
     // Note: this is done here to centralize the logic for skipping the page
@@ -36,8 +38,69 @@ export const openPageDatasetStructure = async (targetPageID) => {
   if (targetPageID === "guided-unstructured-data-import-tab") {
     guidedUpdateFolderStructureUI("data/");
   }
+
   if (targetPageID === "guided-entity-addition-method-selection-tab") {
     console.log("Opening entity addition method selection page");
+  }
+
+  if (targetPageID === "guided-dataset-content-tab") {
+    console.log("Opening dataset content selector page");
+    // Component with type "dataset-content-selector" will handle most of the logic
+  }
+
+  if (targetPageID === "data-categorization-tab") {
+    console.log("Opening data categorization page");
+    // Component with type "data-categorization-page" will handle most of the logic
+  }
+
+  if (targetPageID === "other-data-categorization-tab") {
+    console.log("Opening other data categorization page");
+    // Component with type "data-categorization-page" will handle most of the logic
+  }
+
+  if (targetPageID === "guided-manual-dataset-entity-and-metadata-tab") {
+    console.log("Opening manual dataset entity and metadata page");
+    // Component with type "entity-metadata-page" will handle most of the logic
+  }
+
+  if (targetPageID === "guided-spreadsheet-import-dataset-entity-and-metadata-tab") {
+    console.log("Opening spreadsheet import dataset entity and metadata page");
+    // Component with type "entity-spreadsheet-import-page" will handle most of the logic
+  }
+
+  if (targetPageID === "guided-sites-selection-tab") {
+    console.log("Opening sites selection page");
+    // Component with type "data-categorization-page" will handle most of the logic
+  }
+
+  if (targetPageID === "guided-samples-selection-tab") {
+    console.log("Opening samples selection page");
+    // Component with type "data-categorization-page" will handle most of the logic
+  }
+
+  if (targetPageID === "guided-subjects-selection-tab") {
+    console.log("Opening subjects selection page");
+    // Component with type "data-categorization-page" will handle most of the logic
+  }
+
+  if (targetPageID === "guided-performances-entity-addition-tab") {
+    console.log("Opening performances entity addition page");
+    // Component with type "performance-id-management-page" will handle most of the logic
+  }
+
+  if (targetPageID === "guided-Performances-selection-tab") {
+    console.log("Opening performances selection page");
+    // Component with type "data-categorization-page" will handle most of the logic
+  }
+
+  if (targetPageID === "guided-modalities-selection-tab") {
+    console.log("Opening modalities selection page");
+    // Component with type "modality-selection-page" will handle most of the logic
+  }
+
+  if (targetPageID === "guided-modalities-data-selection-tab") {
+    console.log("Opening modalities data selection page");
+    // Component with type "data-categorization-page" will handle most of the logic
   }
 
   if (targetPageID === "guided-manifest-file-generation-tab") {
@@ -325,15 +388,7 @@ export const openPageDatasetStructure = async (targetPageID) => {
   }
 
   if (targetPageID === "guided-dataset-structure-review-tab") {
+    console.log("Opening dataset structure review page");
     setTreeViewDatasetStructure(window.datasetStructureJSONObj, []);
-    /*
-    // Remove empty guided high-level folders (primary, source, derivative)
-    guidedHighLevelFolders.forEach((folder) => {
-      const rootFolderPath = window.datasetStructureJSONObj?.folders?.[folder];
-      if (rootFolderPath && folderIsEmpty(rootFolderPath)) {
-        delete window.datasetStructureJSONObj?.folders?.[folder];
-      }
-    });
-    */
   }
 };
