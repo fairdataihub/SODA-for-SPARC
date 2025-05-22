@@ -336,12 +336,8 @@ export const openPageDatasetStructure = async (targetPageID) => {
     };
 
     const updateFileNameColumn = (manifestDataRows, datasetEntityObj) => {
-      const fileNameColumnIndex = newManifestData.headers.indexOf("file name");
+      const fileNameColumnIndex = newManifestData.headers.indexOf("filename");
       console.log("fileNameColumnIndex", fileNameColumnIndex);
-
-      console.log("manifestDataRows", manifestDataRows);
-      console.log("datasetEntityObj", datasetEntityObj);
-      console.log("datasetEntityObj code", datasetEntityObj?.["categorized-data"]?.["Code"]);
 
       const updateFilePathDataFolder = (path, newFolder) => {
         // Find the first instance of data/ in the path and replace it with newFolder
@@ -357,9 +353,24 @@ export const openPageDatasetStructure = async (targetPageID) => {
         const path = row[0]; // Path is in the first column
         console.log("path1", path);
 
-        if (datasetEntityObj?.["categorized-data"]?.["Code"]?.[path]) {
+        if (datasetEntityObj?.["high-level-folder-data-categorization"]?.["Code"]?.[path]) {
           console.log("found code path", path);
           const newPath = updateFilePathDataFolder(path, "code/");
+          console.log("newPath", newPath);
+          row[fileNameColumnIndex] = newPath;
+          console.log("row[fileNameColumnIndex]", row[fileNameColumnIndex]);
+        }
+        if (datasetEntityObj?.["other-data"]?.["Documentation"]?.[path]) {
+          console.log("found folder to move to documentation", path);
+          const newPath = updateFilePathDataFolder(path, "docs/");
+          console.log("newPath", newPath);
+          row[fileNameColumnIndex] = newPath;
+          console.log("row[fileNameColumnIndex]", row[fileNameColumnIndex]);
+        }
+
+        if (datasetEntityObj?.["other-data"]?.["Protocol data"]?.[path]) {
+          console.log("found folder to move to protocol", path);
+          const newPath = updateFilePathDataFolder(path, "protocol/");
           console.log("newPath", newPath);
           row[fileNameColumnIndex] = newPath;
           console.log("row[fileNameColumnIndex]", row[fileNameColumnIndex]);

@@ -96,7 +96,10 @@ export const setActiveEntity = (activeEntity) => {
   }));
 
   if (activeEntity.startsWith("site-") || activeEntity.startsWith("perf-")) {
-    setEntityFilter([{ type: "categorized-data", names: ["Experimental data"] }], []);
+    setEntityFilter(
+      [{ type: "high-level-folder-data-categorization", names: ["Experimental data"] }],
+      []
+    );
   }
 
   if (activeEntity.startsWith("sam-")) {
@@ -108,7 +111,10 @@ export const setActiveEntity = (activeEntity) => {
         names: existingSiteIds,
       },
     ];
-    setEntityFilter([{ type: "categorized-data", names: ["Experimental data"] }], siteFilter);
+    setEntityFilter(
+      [{ type: "high-level-folder-data-categorization", names: ["Experimental data"] }],
+      siteFilter
+    );
   }
 
   if (activeEntity.startsWith("sub-")) {
@@ -128,7 +134,10 @@ export const setActiveEntity = (activeEntity) => {
     ];
     const combinedFilter = [...siteFilter, ...sampleFilter];
     console.log("Setting entity filter: ", combinedFilter);
-    setEntityFilter([{ type: "categorized-data", names: ["Experimental data"] }], combinedFilter);
+    setEntityFilter(
+      [{ type: "high-level-folder-data-categorization", names: ["Experimental data"] }],
+      combinedFilter
+    );
   }
 };
 

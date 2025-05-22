@@ -265,14 +265,14 @@ export const openPage = async (targetPageID) => {
         setDatasetEntityObj(savedDatasetEntityObj);
 
         // Make any adjustments to the dataset entity object before setting it in the zustand store
-        if (pageEntityType === "categorized-data") {
+        if (pageEntityType === "high-level-folder-data-categorization") {
           const bucketTypes = ["Experimental data", "Other"];
           if (selectedEntities.includes("code")) {
             bucketTypes.push("Code");
           }
 
           for (const bucketType of bucketTypes) {
-            addEntityToEntityList("categorized-data", bucketType);
+            addEntityToEntityList("high-level-folder-data-categorization", bucketType);
           }
         }
 
@@ -281,7 +281,10 @@ export const openPage = async (targetPageID) => {
           for (const otherBucketType of otherBucketTypes) {
             addEntityToEntityList("other-data", otherBucketType);
           }
-          setEntityFilter([{ type: "categorized-data", names: ["Other"] }], []);
+          setEntityFilter(
+            [{ type: "high-level-folder-data-categorization", names: ["Other"] }],
+            []
+          );
         }
 
         if (pageEntityType === "sites") {
@@ -311,7 +314,10 @@ export const openPage = async (targetPageID) => {
           for (const performance of performanceList) {
             addEntityToEntityList("performances", performance.performanceId);
           }
-          setEntityFilter([{ type: "categorized-data", names: ["Experimental data"] }], []);
+          setEntityFilter(
+            [{ type: "high-level-folder-data-categorization", names: ["Experimental data"] }],
+            []
+          );
         }
 
         if (pageEntityType === "modalities") {
@@ -319,6 +325,10 @@ export const openPage = async (targetPageID) => {
           for (const modality of modalities) {
             addEntityToEntityList("modalities", modality);
           }
+          setEntityFilter(
+            [{ type: "high-level-folder-data-categorization", names: ["Experimental data"] }],
+            []
+          );
         }
 
         console.log("savedDatasetEntityObj", savedDatasetEntityObj);
@@ -339,14 +349,21 @@ export const openPage = async (targetPageID) => {
 
         // Check if there are files in the Experimental data bucket
         const hasExperimentalData =
-          !!savedDatasetEntityObj?.["categorized-data"]?.["Experimental data"] &&
-          Object.keys(savedDatasetEntityObj["categorized-data"]["Experimental data"]).length > 0;
+          !!savedDatasetEntityObj?.["high-level-folder-data-categorization"]?.[
+            "Experimental data"
+          ] &&
+          Object.keys(
+            savedDatasetEntityObj["high-level-folder-data-categorization"]["Experimental data"]
+          ).length > 0;
 
         // If experimental data exists, apply the filter
         if (hasExperimentalData) {
           console.log("Auto-filtering for Experimental data");
           // Apply the filter for experimental data
-          setEntityFilter([{ type: "categorized-data", names: ["Experimental data"] }], []);
+          setEntityFilter(
+            [{ type: "high-level-folder-data-categorization", names: ["Experimental data"] }],
+            []
+          );
         } else {
           console.log("No experimental data found to filter");
         }

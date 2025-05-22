@@ -155,7 +155,7 @@ const EntityDataSelectorPage = ({
         <Stack>
           {(() => {
             switch (entityType) {
-              case "categorized-data":
+              case "high-level-folder-data-categorization":
                 return (
                   <Text>
                     The SDS requires data to be categorized into three categories: experimental,

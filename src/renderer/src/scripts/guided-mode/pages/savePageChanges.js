@@ -5,6 +5,7 @@ import { savePageDatasetStructure } from "./datasetStructure/savePage";
 import { savePageCurationPreparation } from "./curationPreparation/savePage";
 import { savePagePrepareMetadata } from "./prepareMetadata/savePage";
 import { savePagePennsieveDetails } from "./pennsieveDetails/savePage";
+import { countFilesInDatasetStructure } from "../../utils/datasetStructure";
 import { guidedSkipPage, guidedUnSkipPage } from "./navigationUtils/pageSkipping";
 import useGlobalStore from "../../../stores/globalStore";
 import {
@@ -110,13 +111,95 @@ export const savePageChanges = async (pageBeingLeftID) => {
       if (pageBeingLeftComponentType === "data-categorization-page") {
         const entityType = pageBeingLeftDataSet.entityType;
         const datasetEntityObj = getDatasetEntityObj();
-        console.log("datasetEntityObj when leaving" + pageBeingLeftID, datasetEntityObj);
-        console.log("pageBeingLeftDataSet.entityType", entityType);
-        const entityItems = Object.keys(datasetEntityObj?.[entityType] || {});
-        console.log("entityItems", entityItems);
+
+        if (entityType === "high-level-folder-data-categorization") {
+          // Make sure all of the files were categorized into a high-level folder
+          const categorizedData = datasetEntityObj?.["high-level-folder-data-categorization"];
+          const categorizedFileCount = Object.keys(categorizedData).reduce((acc, key) => {
+            const files = categorizedData[key];
+            return acc + Object.keys(files).length;
+          }, 0);
+
+          // If the user has not categorized any files, throw an error
+          if (categorizedFileCount === 0) {
+            errorArray.push({
+              type: "notyf",
+              message: "Please categorize your data files before continuing.",
+            });
+            throw errorArray;
+          }
+
+          const datasetFileCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
+
+          // If the user has not categorized all of the files, throw an error
+          if (datasetFileCount !== categorizedFileCount) {
+            errorArray.push({
+              type: "notyf",
+              message: "You must categorize all of your data files before continuing.",
+            });
+            throw errorArray;
+          }
+
+          const countOfFilesClassifiedAsOther = Object.keys(categorizedData["Other"] || {}).length;
+          if (countOfFilesClassifiedAsOther > 0) {
+            guidedUnSkipPage("other-data-categorization-tab");
+          } else {
+            guidedSkipPage("other-data-categorization-tab");
+          }
+        }
 
         // Save the dataset entity object to the progress file
         window.sodaJSONObj["dataset-entity-obj"] = datasetEntityObj;
+        console.log("Validating data categorization page");
+
+        const datasetFileCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
+        const categorizedData = datasetEntityObj?.["high-level-folder-data-categorization"];
+        console.log("dataset file count", datasetFileCount);
+        console.log("datasetEntityObj", datasetEntityObj);
+        console.log("categorizedData", categorizedData);
+
+        let categorizedFileCount = 0;
+        if (categorizedData) {
+          categorizedFileCount = Object.keys(categorizedData).reduce((acc, key) => {
+            const files = categorizedData[key];
+            return acc + Object.keys(files).length;
+          }, 0);
+        }
+
+        if (categorizedFileCount === 0) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please categorize your data files before continuing.",
+          });
+          throw errorArray;
+        }
+
+        const countOfFilesCategorizedAsCode = Object.keys(categorizedData["Code"] || {}).length;
+        const countOfFilesCategorizedAsExperimental = Object.keys(
+          categorizedData["Experimental data"] || {}
+        ).length;
+        const countOfFilesCategorizedAsOther = Object.keys(categorizedData["Other"] || {}).length;
+
+        if (window.sodaJSONObj["selected-entities"].includes("code")) {
+          if (countOfFilesCategorizedAsCode === 0) {
+            errorArray.push({
+              type: "notyf",
+              message: "You must classify at least one file in your dataset as code on this step.",
+            });
+            throw errorArray;
+          }
+        }
+
+        if (window.sodaJSONObj["selected-entities"].includes("subjects")) {
+          if (countOfFilesCategorizedAsExperimental === 0) {
+            errorArray.push({
+              type: "notyf",
+              message:
+                "You must classify at least one file in your dataset as experimental data on this step.",
+            });
+            throw errorArray;
+          }
+        }
       }
 
       if (pageBeingLeftComponentType === "entity-file-mapping-page") {
@@ -538,31 +621,6 @@ export const savePageChanges = async (pageBeingLeftID) => {
     //     });
     //     throw errorArray;
     //   }
-    // }
-
-    // if (pageBeingLeftID === "guided-create-submission-metadata-tab") {
-    //   const award = document.getElementById("guided-submission-sparc-award-manual").value;
-    //   const milestones = window.getTagsFromTagifyElement(window.guidedSubmissionTagsTagifyManual);
-    //   const completionDate = document.getElementById(
-    //     "guided-submission-completion-date-manual"
-    //   ).value;
-
-    //   const fundingConsortiumIsSparc = datasetIsSparcFunded();
-
-    //   if (fundingConsortiumIsSparc && award === "") {
-    //     errorArray.push({
-    //       type: "notyf",
-    //       message: "Please add a SPARC award number to your submission metadata",
-    //     });
-    //     throw errorArray;
-    //   }
-
-    //   // save the award string to JSONObj to be shared with other award inputs
-    //   window.sodaJSONObj["dataset_metadata"]["shared-metadata"]["sparc-award"] = award;
-    //   //Save the data and milestones to the window.sodaJSONObj
-    //   window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["milestones"] = milestones;
-    //   window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["completion-date"] =
-    //     completionDate;
     // }
 
     // if (pageBeingLeftID === "guided-contributors-tab") {

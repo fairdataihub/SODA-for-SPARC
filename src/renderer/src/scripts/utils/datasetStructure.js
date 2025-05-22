@@ -1,3 +1,5 @@
+import useGlobalStore from "../../stores/globalStore";
+
 export const countFilesInDatasetStructure = (datasetStructure) => {
   if (!datasetStructure || typeof datasetStructure !== "object") return 0;
 
@@ -23,4 +25,20 @@ export const countFilesInDatasetStructure = (datasetStructure) => {
 export const newEmptyFolderObj = () => {
   console.log("newEmptyFolderObj");
   return { folders: {}, files: {}, type: "virtual", action: ["new"] };
+};
+
+export const countSelectedFilesByEntityType = (entityType) => {
+  const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
+  if (!datasetEntityObj?.[entityType]) return 0;
+
+  // Count total files across all entities using the map structure
+  let totalCount = 0;
+  const allEntities = Object.values(datasetEntityObj[entityType] || {});
+
+  allEntities.forEach((entityFiles) => {
+    // Each entry in entityFiles is a file path, so this is already counting only files
+    totalCount += Object.keys(entityFiles).length;
+  });
+
+  return totalCount;
 };

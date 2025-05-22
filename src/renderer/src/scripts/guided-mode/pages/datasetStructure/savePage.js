@@ -166,7 +166,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
 
     const datasetFileCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
     const datasetEntityObj = useGlobalStore.getState()["datasetEntityObj"];
-    const categorizedData = datasetEntityObj?.["categorized-data"];
+    const categorizedData = datasetEntityObj?.["high-level-folder-data-categorization"];
     console.log("dataset file count", datasetFileCount);
     console.log("datasetEntityObj", datasetEntityObj);
     console.log("categorizedData", categorizedData);

@@ -42,7 +42,6 @@ export const contentOptionsMap = {
       "Select yes if your research involved computational tools, scripts, or analysis pipelines that were important for generating or analyzing your data. This includes custom code, analysis scripts, and simulation software relevant to understanding your results.",
     ml: 0,
   },
-  /*
   datasetType: {
     label: "What is the primary focus of your dataset?",
     description:
@@ -53,7 +52,7 @@ export const contentOptionsMap = {
       yesRadioBox: "Experimental",
       noRadioBox: "Computational",
     },
-  },*/
+  },
 };
 
 const DatasetContentSelector = () => {
@@ -108,7 +107,7 @@ const DatasetContentSelector = () => {
           optimal workflow to organize your dataset.
         </Text>
       </GuidedModeSection>
-      <Paper shadow="sm" radius="md" p="sm" withBorder mb="md">
+      <GuidedModeSection withBorder>
         <Stack gap="md">
           {visibleQuestions.map(([key, option]) => {
             let radioValue;
@@ -190,7 +189,7 @@ const DatasetContentSelector = () => {
             );
           })}
         </Stack>
-      </Paper>
+      </GuidedModeSection>
     </GuidedModePage>
   );
 };
