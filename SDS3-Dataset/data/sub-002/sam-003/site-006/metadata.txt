@@ -1,6 +1,0 @@
-Site ID: site-006
-Related Subject: sub-002
-Related Sample: sam-003
-Collection Date: 5/1/2025
-Anatomical Location: site-006
-Coordinates: X:16, Y:46, Z:7

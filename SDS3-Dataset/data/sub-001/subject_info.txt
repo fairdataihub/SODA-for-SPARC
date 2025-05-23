@@ -1,4 +1,0 @@
-Subject ID: sub-001
-Collection Date: 2023-06-15
-Experimenter: J. Smith
-Project: SDS3-TEST-2023

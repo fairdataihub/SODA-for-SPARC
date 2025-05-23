@@ -54,6 +54,7 @@ import {
 import SodaPaper from "../../utils/ui/SodaPaper";
 import SodaGreenPaper from "../../utils/ui/SodaGreenPaper";
 import { getExistingSamples } from "../../../stores/slices/datasetEntityStructureSlice";
+import InstructionsTowardsLeftContainer from "../../utils/ui/InstructionsTowardsLeftContainer";
 
 /**
  * EntityMetadataForm Component
@@ -146,24 +147,24 @@ const EntityMetadataForm = () => {
 
   if (datasetEntityArray.length === 0 && !activeFormType) {
     return (
-      <Box mx="md">
-        <Text size="lg" c="gray">
+      <InstructionsTowardsLeftContainer>
+        <Text fw={400}>
           Click the "Add Subject" button to the left to begin structuring and your dataset's
           entities.
         </Text>
-      </Box>
+      </InstructionsTowardsLeftContainer>
     );
   }
 
   // Show a message when no entity is selected or being created
   if (!selectedHierarchyEntity && !activeFormType) {
     return (
-      <Box mx="md">
-        <Text size="lg" c="gray">
+      <InstructionsTowardsLeftContainer>
+        <Text fw={400}>
           Select an entity from the hierarchy on the left to edit its metadata or click an entity
           addition button to describe a new entity.
         </Text>
-      </Box>
+      </InstructionsTowardsLeftContainer>
     );
   }
 

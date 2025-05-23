@@ -248,7 +248,7 @@ const EntityDataSelectorPage = ({
               </Paper>
             ) : (
               <InstructionsTowardsLeftContainer>
-                <Text size="lg">
+                <Text fw={400}>
                   Select an item from the {entityTypeStringSingular} list on the left to map files
                   to it.
                 </Text>

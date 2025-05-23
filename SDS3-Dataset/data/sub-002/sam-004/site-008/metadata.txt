@@ -1,6 +1,0 @@
-Site ID: site-008
-Related Subject: sub-002
-Related Sample: sam-004
-Collection Date: 5/1/2025
-Anatomical Location: site-008
-Coordinates: X:26, Y:34, Z:18

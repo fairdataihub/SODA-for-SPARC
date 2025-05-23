@@ -39,6 +39,7 @@ import {
   setIsEditMode,
   setOriginalPerformanceId,
 } from "../../../stores/slices/performancesSlice";
+import InstructionsTowardsLeftContainer from "../../utils/ui/InstructionsTowardsLeftContainer";
 
 // Performance metadata form component with store-based state
 const PerformanceMetadataForm = () => {
@@ -299,12 +300,12 @@ const PerformanceIdManagement = () => {
                 </Stack>
               </Paper>
             ) : (
-              <Box mx="md">
-                <Text size="lg" c="gray">
+              <InstructionsTowardsLeftContainer>
+                <Text fw={400}>
                   Select a performance from the left to edit its metadata or click "Add Performance"
                   to add a new performance.
                 </Text>
-              </Box>
+              </InstructionsTowardsLeftContainer>
             )}
           </Grid.Col>
         </Grid>

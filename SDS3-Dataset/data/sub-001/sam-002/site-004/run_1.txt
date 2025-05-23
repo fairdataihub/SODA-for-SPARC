@@ -1,5 +1,0 @@
-# Raw site-004 data - Run 1
-Sample ID: sub-001
-Date: 5/1/2025
-Values: 17.60, 58.84, 39.35, 41.78, 29.27
-Notes: Standard collection protocol followed

@@ -3,6 +3,11 @@ const path = require("path");
 
 const rootDir = "SDS3-Dataset";
 
+// Configuration variables - adjust these to scale the dataset
+const numSubjects = 10; // Number of subjects to create
+const samplesPerSubject = 2; // Number of tissue samples per subject
+const regionsPerSample = 2; // Number of regions per sample
+
 // Delete directory recursively if it exists
 function deleteFolderRecursive(folderPath) {
   if (fs.existsSync(folderPath)) {
@@ -85,12 +90,17 @@ const siteMeasurementData = (siteId) =>
   `3,${siteId},Pressure,${(Math.random() * 40 + 80).toFixed(2)} mmHg\n` +
   `4,${siteId},Flow Rate,${(Math.random() * 100 + 50).toFixed(2)} ml/min\n`;
 
+// Generate the project readme dynamically based on configuration
 const projectReadme =
-  `# SDS3 Sample Dataset\n\n` +
-  `This directory contains research data following SDS3 structure with:\n\n` +
-  `- 2 subjects (sub-001, sub-002)\n` +
-  `- Each subject has 2 samples (sam-001, sam-002 for sub-001; sam-003, sam-004 for sub-002)\n` +
-  `- Each sample has 2 sites (total of 8 sites)\n\n` +
+  `# Sample Experimental Dataset\n\n` +
+  `This directory contains research data organized as follows:\n\n` +
+  `- ${numSubjects} subjects (Subject01${
+    numSubjects > 1 ? ` through Subject${numSubjects.toString().padStart(2, "0")}` : ""
+  })\n` +
+  `- Each subject has ${samplesPerSubject} tissue samples\n` +
+  `- Each sample has ${regionsPerSample} regions of interest (RegionA${
+    regionsPerSample > 1 ? ", RegionB" : ""
+  }${regionsPerSample > 2 ? ", etc." : ""})\n\n` +
   `This dataset is designed for testing folder/file annotation workflows in SODA for SPARC.`;
 
 // Additional content generators for code and protocols folders
@@ -101,7 +111,7 @@ import matplotlib.pyplot as plt
 
 def load_data(subject_id, sample_id, site_id):
     """Load data for a specific site"""
-    filepath = f"../data/{subject_id}/{sample_id}/{site_id}/measurements.csv"
+    filepath = f"../experiment/{subject_id}/{sample_id}/{site_id}/measurements.csv"
     return pd.read_csv(filepath)
 
 def analyze_site_data(df):
@@ -114,18 +124,27 @@ def analyze_site_data(df):
     return results
 
 if __name__ == "__main__":
-    # Example usage
-    subjects = ['sub-001', 'sub-002']
+    # Dynamic subject handling - adapts to however many subjects exist
+    import os
+    experiment_dir = "../experiment"
+    subjects = [d for d in os.listdir(experiment_dir) if d.startswith("Subject")]
     results = {}
     
-    for subject in subjects:
+    for subject in sorted(subjects):
         results[subject] = {}
-        for sample_num in range(1, 3):
-            sample_id = f"sam-{(2*(int(subject[-3:]) - 1) + sample_num):03d}"
+        subject_path = os.path.join(experiment_dir, subject)
+        
+        # Find all tissue samples for this subject
+        samples = [d for d in os.listdir(subject_path) if d.startswith("Tissue")]
+        
+        for sample_id in sorted(samples):
             results[subject][sample_id] = {}
+            sample_path = os.path.join(subject_path, sample_id)
             
-            for site_num in range(1, 3):
-                site_id = f"site-{(2*(int(sample_id[-3:]) - 1) + site_num):03d}"
+            # Find all regions for this sample
+            regions = [d for d in os.listdir(sample_path) if d.startswith("Region")]
+            
+            for site_id in sorted(regions):
                 try:
                     df = load_data(subject, sample_id, site_id)
                     results[subject][sample_id][site_id] = analyze_site_data(df)
@@ -142,7 +161,7 @@ if __name__ == "__main__":
                 print(f"    {site}: {metrics}")
 `;
 
-const rPlottingScript = `# R script for plotting SDS3 dataset results
+const rPlottingScript = `# R script for plotting dataset results
 library(ggplot2)
 library(dplyr)
 
@@ -150,23 +169,31 @@ library(dplyr)
 read_all_measurements <- function() {
   all_data <- data.frame()
   
-  for (i in 1:2) { # 2 subjects
-    subject_id <- sprintf("sub-%03d", i)
+  # Get all subjects from the experiment directory
+  experiment_dir <- "../experiment"
+  subjects <- list.dirs(experiment_dir, full.names = FALSE, recursive = FALSE)
+  subjects <- subjects[grep("^Subject", subjects)]
+  
+  for (subject in subjects) {
+    subject_path <- file.path(experiment_dir, subject)
     
-    for (j in 1:2) { # 2 samples per subject
-      sample_num <- 2*(i-1) + j
-      sample_id <- sprintf("sam-%03d", sample_num)
+    # Get all tissue samples for this subject
+    samples <- list.dirs(subject_path, full.names = FALSE, recursive = FALSE)
+    samples <- samples[grep("^Tissue", samples)]
+    
+    for (sample_id in samples) {
+      sample_path <- file.path(subject_path, sample_id)
       
-      for (k in 1:2) { # 2 sites per sample
-        site_num <- 2*(sample_num-1) + k
-        site_id <- sprintf("site-%03d", site_num)
-        
-        file_path <- paste0("../data/", subject_id, "/", sample_id, "/", 
-                           site_id, "/measurements.csv")
+      # Get all regions for this sample
+      regions <- list.dirs(sample_path, full.names = FALSE, recursive = FALSE)
+      regions <- regions[grep("^Region", regions)]
+      
+      for (site_id in regions) {
+        file_path <- file.path(sample_path, site_id, "measurements.csv")
         
         tryCatch({
           data <- read.csv(file_path)
-          data$Subject <- subject_id
+          data$Subject <- subject
           data$Sample <- sample_id
           data$Site <- site_id
           all_data <- rbind(all_data, data)
@@ -217,7 +244,7 @@ main()
 `;
 
 const pythonDataPreprocessing = `#!/usr/bin/env python3
-# Data preprocessing utilities for SDS3 dataset
+# Data preprocessing utilities for dataset
 
 import pandas as pd
 import numpy as np
@@ -242,21 +269,24 @@ def detect_outliers(df, threshold=2.5):
 
 def preprocess_all_sites():
     """Preprocess data for all sites in the dataset"""
-    data_dir = "../data"
+    data_dir = "../experiment"
+    # Dynamically process all subjects that exist
     for subject_dir in os.listdir(data_dir):
-        if not subject_dir.startswith("sub-"):
+        if not subject_dir.startswith("Subject"):
             continue
         
         subject_path = os.path.join(data_dir, subject_dir)
+        # Process all tissue samples
         for sample_dir in os.listdir(subject_path):
-            if not sample_dir.startswith("sam-"):
+            if not sample_dir.startswith("Tissue"):
                 continue
                 
             sample_path = os.path.join(subject_path, sample_dir)
+            # Process all regions
             for site_dir in os.listdir(sample_path):
-                if not site_dir.startswith("site-"):
+                if not site_dir.startswith("Region"):
                     continue
-                    
+                
                 site_path = os.path.join(sample_path, site_dir)
                 measurements_file = os.path.join(site_path, "measurements.csv")
                 
@@ -357,47 +387,39 @@ createDir(rootDir);
 
 // Project-level files
 createFile(`${rootDir}/README.md`, projectReadme);
-createFile(
-  `${rootDir}/dataset_description.xlsx`,
-  "Subject ID,Sample ID,Site ID,Collection Date\n" +
-    "sub-001,sam-001,site-001,2023-06-15\n" +
-    "sub-001,sam-001,site-002,2023-06-15\n" +
-    "sub-001,sam-002,site-003,2023-06-15\n" +
-    "sub-001,sam-002,site-004,2023-06-15\n" +
-    "sub-002,sam-003,site-005,2023-07-10\n" +
-    "sub-002,sam-003,site-006,2023-07-10\n" +
-    "sub-002,sam-004,site-007,2023-07-10\n" +
-    "sub-002,sam-004,site-008,2023-07-10"
-);
 
-// Create top-level directories
-createDir(`${rootDir}/data`);
-createDir(`${rootDir}/code`);
-createDir(`${rootDir}/protocols`);
+// Generate more collection dates if needed based on the number of subjects
+const collectionDates = [];
+const baseDate = new Date("2023-06-01");
+for (let i = 0; i < numSubjects; i++) {
+  const date = new Date(baseDate);
+  date.setDate(date.getDate() + i * 15); // add 15 days for each subject
+  collectionDates.push(date.toISOString().split("T")[0]); // format as YYYY-MM-DD
+}
 
-// Collection dates
-const collectionDates = ["2023-06-15", "2023-07-10"];
+// Generate dataset description content
+let datasetDescriptionContent = "Subject ID,Sample ID,Region,Collection Date\n";
 
-// Generate data for 2 subjects - now in the data folder
-for (let i = 1; i <= 2; i++) {
-  const subjectID = `sub-${i.toString().padStart(3, "0")}`;
+// Generate data structure for each subject
+for (let i = 1; i <= numSubjects; i++) {
+  const subjectID = `Subject${i.toString().padStart(2, "0")}`;
   const collectionDate = collectionDates[i - 1];
 
-  // Create subject directory inside data folder
-  createDir(`${rootDir}/data/${subjectID}`);
+  // Create subject directory inside experiment folder
+  createDir(`${rootDir}/experiment/${subjectID}`);
 
   // Subject overview file
   createFile(
-    `${rootDir}/data/${subjectID}/subject_info.txt`,
-    `Subject ID: ${subjectID}\nCollection Date: ${collectionDate}\nExperimenter: J. Smith\nProject: SDS3-TEST-2023`
+    `${rootDir}/experiment/${subjectID}/subject_info.txt`,
+    `Subject ID: ${subjectID}\nCollection Date: ${collectionDate}\nExperimenter: J. Smith\nProject: Experiment-2023`
   );
 
-  // Create 2 samples per subject
-  for (let j = 1; j <= 2; j++) {
-    // Calculate sample number (1-2 for sub-001, 3-4 for sub-002)
-    const sampleNum = (i - 1) * 2 + j;
-    const sampleID = `sam-${sampleNum.toString().padStart(3, "0")}`;
-    const sampleDir = `${rootDir}/data/${subjectID}/${sampleID}`;
+  // Create tissue samples for each subject
+  for (let j = 1; j <= samplesPerSubject; j++) {
+    // Calculate sample number for sequential tissue numbering across subjects
+    const sampleNum = (i - 1) * samplesPerSubject + j;
+    const sampleID = `Tissue${sampleNum.toString().padStart(2, "0")}`;
+    const sampleDir = `${rootDir}/experiment/${subjectID}/${sampleID}`;
 
     // Create sample directory
     createDir(sampleDir);
@@ -408,12 +430,14 @@ for (let i = 1; i <= 2; i++) {
     createFile(`${sampleDir}/run_1.txt`, sampleRawData(subjectID, sampleID, 1));
     createFile(`${sampleDir}/run_2.txt`, sampleRawData(subjectID, sampleID, 2));
 
-    // Create 2 sites per sample
-    for (let k = 1; k <= 2; k++) {
-      // Calculate site number (2 sites per sample)
-      const siteNum = (sampleNum - 1) * 2 + k;
-      const siteID = `site-${siteNum.toString().padStart(3, "0")}`;
+    // Create regions for each sample
+    for (let k = 0; k < regionsPerSample; k++) {
+      const region = String.fromCharCode(65 + k); // A, B, C, etc.
+      const siteID = `Region${region}`;
       const siteDir = `${sampleDir}/${siteID}`;
+
+      // Add to dataset description
+      datasetDescriptionContent += `${subjectID},${sampleID},${siteID},${collectionDate}\n`;
 
       // Create site directory
       createDir(siteDir);
@@ -450,15 +474,18 @@ for (let i = 1; i <= 2; i++) {
   }
 }
 
-// Create code directory with analysis scripts and utilities
-createDir(`${rootDir}/code/analysis_scripts`);
-createFile(`${rootDir}/code/analysis_scripts/analyze_data.py`, pythonAnalysisScript);
-createFile(`${rootDir}/code/analysis_scripts/plot_results.R`, rPlottingScript);
+// Update the dataset description with all entries
+createFile(`${rootDir}/dataset_description.xlsx`, datasetDescriptionContent);
 
-createDir(`${rootDir}/code/utilities`);
-createFile(`${rootDir}/code/utilities/data_preprocessing.py`, pythonDataPreprocessing);
+// Create scripts directory with analysis scripts and utilities
+createDir(`${rootDir}/scripts/analysis_scripts`);
+createFile(`${rootDir}/scripts/analysis_scripts/analyze_data.py`, pythonAnalysisScript);
+createFile(`${rootDir}/scripts/analysis_scripts/plot_results.R`, rPlottingScript);
+
+createDir(`${rootDir}/scripts/utilities`);
+createFile(`${rootDir}/scripts/utilities/data_preprocessing.py`, pythonDataPreprocessing);
 createFile(
-  `${rootDir}/code/utilities/README.md`,
+  `${rootDir}/scripts/utilities/README.md`,
   `# Data Processing Utilities\n\n` +
     `This directory contains utility scripts for processing and analyzing the SDS3 dataset.\n\n` +
     `## Contents\n` +
@@ -505,8 +532,14 @@ createFile(
 );
 
 console.log(
-  "SDS3 dataset structure created successfully with:\n" +
-    "- 2 subjects, each with 2 samples, and each sample with 2 sites (8 sites total)\n" +
-    "- Code directory with analysis scripts and utilities\n" +
-    "- Protocols directory with documentation for data collection and analysis"
+  `Experimental dataset structure created successfully with:\n` +
+    `- ${numSubjects} subjects\n` +
+    `- ${samplesPerSubject} tissue samples per subject (total: ${
+      numSubjects * samplesPerSubject
+    } tissue samples)\n` +
+    `- ${regionsPerSample} regions per sample (total: ${
+      numSubjects * samplesPerSubject * regionsPerSample
+    } regions)\n` +
+    `- Scripts directory with analysis scripts and utilities\n` +
+    `- Protocols directory with documentation for data collection and analysis`
 );
