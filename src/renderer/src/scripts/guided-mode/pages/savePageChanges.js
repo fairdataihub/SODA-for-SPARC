@@ -155,7 +155,11 @@ export const savePageChanges = async (pageBeingLeftID) => {
         const datasetFileCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
         const categorizedData = datasetEntityObj?.["high-level-folder-data-categorization"];
         console.log("dataset file count", datasetFileCount);
-        console.log("datasetEntityObj", datasetEntityObj);
+        console.log("datasetEntityObj2", JSON.stringify(datasetEntityObj, null, 2));
+        console.log(
+          "datasetStructureJSONObj",
+          JSON.stringify(window.datasetStructureJSONObj, null, 2)
+        );
         console.log("categorizedData", categorizedData);
 
         let categorizedFileCount = 0;
@@ -603,24 +607,6 @@ export const savePageChanges = async (pageBeingLeftID) => {
     //   }
     //   const selectedLicense = selectedLicenseButton.dataset.value;
     //   window.sodaJSONObj["digital-metadata"]["license"] = selectedLicense;
-    // }
-
-    // if (pageBeingLeftID === "guided-dataset-structure-review-tab") {
-    //   //if folders and files in datasetStruture json obj are empty, warn the user
-    //   if (
-    //     Object.keys(window.datasetStructureJSONObj["folders"]).length === 0 &&
-    //     Object.keys(window.datasetStructureJSONObj["files"]).length === 0
-    //   ) {
-    //     errorArray.push({
-    //       type: "swal",
-    //       message: `
-    //         You have not added any files or folders to your dataset structure.
-    //         <br/><br/>
-    //         Please add files and folders to your dataset structure before continuing.
-    //       `,
-    //     });
-    //     throw errorArray;
-    //   }
     // }
 
     // if (pageBeingLeftID === "guided-contributors-tab") {

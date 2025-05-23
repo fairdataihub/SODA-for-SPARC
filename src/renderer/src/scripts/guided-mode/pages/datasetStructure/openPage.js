@@ -9,6 +9,10 @@ import { guidedUpdateFolderStructureUI } from "./utils";
 import { renderManifestCards } from "../../manifests/manifest";
 import { swalFileListSingleAction } from "../../../utils/swal-utils";
 import { getEntityDataById } from "../../../../stores/slices/datasetEntityStructureSlice";
+import {
+  newEmptyFolderObj,
+  createStandardizedDatasetStructure,
+} from "../../../utils/datasetStructure";
 import client from "../../../client";
 
 while (!window.baseHtmlLoaded) {
@@ -398,8 +402,12 @@ export const openPageDatasetStructure = async (targetPageID) => {
     renderManifestCards();
   }
 
-  if (targetPageID === "guided-dataset-structure-review-tab") {
-    console.log("Opening dataset structure review page");
-    setTreeViewDatasetStructure(window.datasetStructureJSONObj, []);
+  if (targetPageID === "dataset-structure-review-tab") {
+    const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
+    const starndardizedDatasetStructure = createStandardizedDatasetStructure(
+      window.datasetStructureJSONObj,
+      datasetEntityObj
+    );
+    setTreeViewDatasetStructure(starndardizedDatasetStructure, []);
   }
 };

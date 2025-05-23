@@ -5,7 +5,7 @@ import { closeContextMenu, setFolderMoveMode } from "../../../stores/slices/data
 import {
   deleteFilesByRelativePath,
   deleteFoldersByRelativePath,
-} from "../../../stores/utils/folderAndFileActions";
+} from "../../../scripts/utils/datasetStructure";
 import { IconFolder, IconFile } from "@tabler/icons-react";
 
 const ICON_SETTINGS = {

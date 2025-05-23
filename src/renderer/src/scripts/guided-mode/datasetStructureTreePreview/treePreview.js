@@ -242,7 +242,7 @@ export const guidedShowTreePreview = (new_dataset_name, targetElementId) => {
   }
 
   //Add the submission metadata file to the preview if the submission metadata page has been completed
-  if (window.sodaJSONObj["completed-tabs"].includes("guided-submission-metadata-tab")) {
+  if (window.sodaJSONObj["completed-tabs"].includes("guided-submission-metatdata-tab")) {
     dsJsonObjCopy["files"]["submission.xlsx"] = {
       action: ["new"],
       path: "",
