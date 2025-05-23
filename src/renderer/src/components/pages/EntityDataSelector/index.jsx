@@ -13,7 +13,11 @@ import {
   checkIfFolderBelongsToEntity,
 } from "../../../stores/slices/datasetEntitySelectorSlice";
 import { naturalSort } from "../../shared/utils/util-functions";
-import { countFilesInDatasetStructure } from "../../../scripts/utils/datasetStructure";
+import {
+  countFilesInDatasetStructure,
+  countSelectedFilesByEntityType,
+} from "../../../scripts/utils/datasetStructure";
+import InstructionsTowardsLeftContainer from "../../utils/ui/InstructionsTowardsLeftContainer";
 
 const ENTITY_PREFIXES = ["sub-", "sam-", "perf-"];
 
@@ -131,21 +135,6 @@ const EntityDataSelectorPage = ({
     (state) => state.renderDatasetStructureJSONObj
   );
 
-  const countSelectedFilesByEntityType = (entityType) => {
-    if (!datasetEntityObj?.[entityType]) return 0;
-
-    // Count total files across all entities using the map structure
-    let totalCount = 0;
-    const allEntities = Object.values(datasetEntityObj[entityType] || {});
-
-    allEntities.forEach((entityFiles) => {
-      // Each entry in entityFiles is a file path, so this is already counting only files
-      totalCount += Object.keys(entityFiles).length;
-    });
-
-    return totalCount;
-  };
-
   const itemCount = countFilesInDatasetStructure(renderDatasetStructureJSONObj);
   const countItemsSelected = countSelectedFilesByEntityType(entityType);
 
@@ -258,12 +247,12 @@ const EntityDataSelectorPage = ({
                 />
               </Paper>
             ) : (
-              <Box>
-                <Text size="xl" c="gray">
+              <InstructionsTowardsLeftContainer>
+                <Text size="lg">
                   Select an item from the {entityTypeStringSingular} list on the left to map files
                   to it.
                 </Text>
-              </Box>
+              </InstructionsTowardsLeftContainer>
             )}
           </Grid.Col>
         </Grid>

@@ -707,20 +707,10 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     setEntityType("subjects");
   }
 
-  if (targetPageID === "guided-create-subjects-metadata-tab") {
-    console.log("Opening subjects metadata creation page");
-    // Initialize any required components or state for the subjects metadata creation
-  }
-
   if (targetPageID === "guided-samples-metadata-tab") {
     console.log("Opening samples metadata page");
     // This has componentType "entity-metadata-page" which likely handles most of the page functionality
     setEntityType("samples");
-  }
-
-  if (targetPageID === "guided-create-samples-metadata-tab") {
-    console.log("Opening samples metadata creation page");
-    // Initialize any required components or state for the samples metadata creation
   }
 
   if (targetPageID === "guided-resources-entity-addition-tab") {

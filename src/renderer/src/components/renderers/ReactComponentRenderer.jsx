@@ -105,7 +105,7 @@ const componentTypeRenderers = {
     };
     root.render(
       <SodaComponentWrapper>
-        <DatasetTreeViewRenderer />
+        <DatasetTreeViewRenderer hideSearchBar={true} entityType={null} />
       </SodaComponentWrapper>
     );
   },

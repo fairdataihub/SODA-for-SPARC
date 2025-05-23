@@ -55,6 +55,10 @@ const getNestedObjectAtPathArray = (pathArray) => {
 };
 
 const getItemAtPath = (relativePath, itemType) => {
+  if (itemType === "folder") {
+    console.log("hey");
+    console.log("relativePath", relativePath);
+  }
   // Split the relative path into segments and isolate the item name.
   const pathSegments = relativePath.split("/").filter((segment) => segment !== "");
   const itemName = pathSegments.pop();
@@ -163,12 +167,41 @@ export const moveFilesToTargetLocation = (arrayOfRelativePathsToMove, destionati
   setTreeViewDatasetStructure(window.datasetStructureJSONObj);
 };
 
+export const moveFileToTargetLocation = (relativePathToMove, destionationRelativeFolderPath) => {
+  console.log("moveFileToTargetLocation called");
+  console.log("relativePathToMove", relativePathToMove);
+  const {
+    parentFolder: destinationParentFolder,
+    itemName: destinationItemName,
+    itemObject: destinationItemObject,
+  } = getItemAtPath(destionationRelativeFolderPath, "folder");
+  console.log("destinationParentFolder", destinationParentFolder);
+  console.log("destinationItemName", destinationItemName);
+  console.log("destinationItemObject", destinationItemObject);
+
+  const { parentFolder, itemName, itemObject } = getItemAtPath(relativePathToMove, "file");
+
+  // Move the file to the destination folder.
+  destinationItemObject["files"][itemName] = itemObject;
+
+  // Remove the file from its original location.
+  delete parentFolder["files"][itemName];
+
+  // Update the tree view structure to reflect the changes.
+  setTreeViewDatasetStructure(window.datasetStructureJSONObj);
+};
+
 export const createStandardizedDatasetStructure = (datasetStructure, datasetEntityObj) => {
   console.log("createStandardizedDatasetStructure");
   console.log("datasetStructure", datasetStructure);
   console.log("datasetEntityObj", datasetEntityObj);
-  const foldersToMoveToCodeFolder =
-    datasetEntityObj?.["high-level-folder-data-categorization"]?.["Code"];
+  const foldersToMoveToCodeFolder = Object.keys(
+    datasetEntityObj?.["high-level-folder-data-categorization"]?.["Code"] || {}
+  );
   console.log("foldersToMoveToCodeFolder", foldersToMoveToCodeFolder);
-  return newEmptyFolderObj();
+  datasetStructure["folders"]["code"] = newEmptyFolderObj();
+  for (const folder of foldersToMoveToCodeFolder) {
+    moveFileToTargetLocation(folder, "code/");
+  }
+  return window.datasetStructureJSONObj;
 };

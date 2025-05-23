@@ -1,4 +1,4 @@
-import { Group, Text, rem } from "@mantine/core";
+import { Group, Text } from "@mantine/core";
 import { Dropzone } from "@mantine/dropzone";
 import { IconUpload, IconFile, IconX } from "@tabler/icons-react";
 import FullWidthContainer from "../../containers/FullWidthContainer";
@@ -39,22 +39,27 @@ const DataImporter = ({ dataType, relativeFolderPathToImportDataInto }) => {
         onDragOver={allowDrop}
         mb="lg"
       >
-        <Group justify="center" gap="xl" mih={120} style={{ pointerEvents: "none" }}>
+        <Group justify="center" gap="xl" mih={220} style={{ pointerEvents: "none" }}>
           <Dropzone.Accept>
-            <IconUpload style={iconStyle("blue")} stroke={1.5} />
+            <IconUpload size={52} color="var(--mantine-color-blue-6)" stroke={1.5} />
           </Dropzone.Accept>
           <Dropzone.Reject>
-            <IconX style={iconStyle("red")} stroke={1.5} />
+            <IconX size={52} color="var(--mantine-color-red-6)" stroke={1.5} />
           </Dropzone.Reject>
           <Dropzone.Idle>
-            <IconFile style={iconStyle("dimmed")} stroke={1.5} />
+            <IconFile size={52} color="var(--mantine-color-dimmed)" stroke={1.5} />
           </Dropzone.Idle>
 
-          <Text size="xl" inline>
-            {dataType
-              ? `Drag ${dataType} data here or click to import from your computer`
-              : "Drag and drop files or folders or click here to import from your computer"}
-          </Text>
+          <div>
+            <Text size="xl" inline>
+              {dataType
+                ? `Drag ${dataType} data here or click to import`
+                : "Drag and drop files or folders or click to import"}
+            </Text>
+            <Text size="sm" c="dimmed" inline mt={7}>
+              Import any files or folders from your computer to organize your dataset
+            </Text>
+          </div>
         </Group>
       </Dropzone>
       <DatasetTreeViewRenderer
@@ -65,12 +70,5 @@ const DataImporter = ({ dataType, relativeFolderPathToImportDataInto }) => {
     </FullWidthContainer>
   );
 };
-
-// Helper function to generate consistent icon styles
-const iconStyle = (color) => ({
-  width: rem(52),
-  height: rem(52),
-  color: `var(--mantine-color-${color}-6)`,
-});
 
 export default DataImporter;

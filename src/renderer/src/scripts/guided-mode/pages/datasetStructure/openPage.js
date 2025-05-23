@@ -404,10 +404,19 @@ export const openPageDatasetStructure = async (targetPageID) => {
 
   if (targetPageID === "dataset-structure-review-tab") {
     const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
+
+    // Create a deep copy of the dataset structure JSON object
+    const datasetStructureJSONObjCopy = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
+    console.log("datasetStructureJSONObjCopy", datasetStructureJSONObjCopy);
+
     const starndardizedDatasetStructure = createStandardizedDatasetStructure(
       window.datasetStructureJSONObj,
       datasetEntityObj
     );
     setTreeViewDatasetStructure(starndardizedDatasetStructure, []);
+
+    // Restore the original dataset structure
+    window.datasetStructureJSONObj = datasetStructureJSONObjCopy;
+    console.log("datasetStructureJSONObj restored", window.datasetStructureJSONObj);
   }
 };

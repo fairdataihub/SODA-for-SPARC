@@ -51,7 +51,7 @@ const SelectedEntityPreviewer = () => {
   return (
     <Paper px="md" pb="md" withBorder mt="xs">
       <Text fw={600} mb={5} mt="sm">
-        {activeEntity} Overview
+        Overview of {activeEntity}:
       </Text>
       <Stack gap={3}>
         {Object.entries(relevantFields).map(([key, value]) => (

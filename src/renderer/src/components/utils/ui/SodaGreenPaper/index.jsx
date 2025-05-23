@@ -3,7 +3,7 @@ import { Paper } from "@mantine/core";
 const SodaGreenPaper = ({ children, mt, ml }) => {
   return (
     <Paper
-      p="sm"
+      p="xs"
       mt={mt || "0px"}
       ml={ml || "0px"}
       shadow="sm"

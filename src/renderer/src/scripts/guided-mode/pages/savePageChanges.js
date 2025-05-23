@@ -426,60 +426,6 @@ export const savePageChanges = async (pageBeingLeftID) => {
     // if (pageBeingLeftID === "guided-docs-folder-tab") {
     // }
 
-    // if (pageBeingLeftID === "guided-create-subjects-metadata-tab") {
-    //   //Save the subject metadata from the subject currently being modified
-    //   window.addSubject("guided");
-
-    //   const subjectsAsideItemsCount = document.querySelectorAll(
-    //     ".subjects-metadata-aside-item"
-    //   ).length;
-    //   const subjectsInTableDataCount = window.subjectsTableData.length - 1;
-    //   if (subjectsAsideItemsCount !== subjectsInTableDataCount) {
-    //     let result = await Swal.fire({
-    //       heightAuto: false,
-    //       backdrop: "rgba(0,0,0,0.4)",
-    //       title: "Continue without adding subject metadata to all subjects?",
-    //       text: "In order for your dataset to be in compliance with SPARC's dataset structure, you must add subject metadata for all subjects.",
-    //       icon: "warning",
-    //       showCancelButton: true,
-    //       confirmButtonColor: "#3085d6",
-    //       cancelButtonColor: "#d33",
-    //       confirmButtonText: "Finish adding metadata to all subjects",
-    //       cancelButtonText: "Continue without adding metadata to all subjects",
-    //     });
-    //     if (result.isConfirmed) {
-    //       throw new Error("Returning to subject metadata addition page to complete all fields");
-    //     }
-    //   }
-    // }
-
-    // if (pageBeingLeftID === "guided-create-samples-metadata-tab") {
-    //   //Save the sample metadata from the sample currently being modified
-    //   window.addSample("guided");
-
-    //   const samplesAsideItemsCount = document.querySelectorAll(
-    //     ".samples-metadata-aside-item"
-    //   ).length;
-    //   const samplesInTableDataCount = window.samplesTableData.length - 1;
-    //   if (samplesAsideItemsCount !== samplesInTableDataCount) {
-    //     let result = await Swal.fire({
-    //       heightAuto: false,
-    //       backdrop: "rgba(0,0,0,0.4)",
-    //       title: "Continue without adding sample metadata to all samples?",
-    //       text: "In order for your dataset to be in compliance with SPARC's dataset structure, you must add sample metadata for all samples.",
-    //       icon: "warning",
-    //       showCancelButton: true,
-    //       confirmButtonColor: "#3085d6",
-    //       cancelButtonColor: "#d33",
-    //       confirmButtonText: "Finish adding metadata to all samples",
-    //       cancelButtonText: "Continue without adding metadata to all samples",
-    //     });
-    //     if (result.isConfirmed) {
-    //       throw new Error("Returning to sample metadata addition page to complete all fields");
-    //     }
-    //   }
-    // }
-
     // if (pageBeingLeftID === "guided-add-code-metadata-tab") {
     //   const startNewCodeDescYesNoContainer = document.getElementById(
     //     "guided-section-start-new-code-metadata-query"

@@ -116,22 +116,22 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       guidedUnSkipPage("guided-subjects-entity-addition-tab");
       guidedUnSkipPage("guided-subjects-selection-tab");
       guidedUnSkipPage("guided-unstructured-data-import-tab");
-      guidedUnSkipPage("guided-create-subjects-metadata-tab");
+      guidedUnSkipPage("guided-subjects-metadata-tab");
     } else {
       guidedSkipPage("guided-subjects-entity-addition-tab");
       guidedSkipPage("guided-subjects-selection-tab");
       guidedSkipPage("guided-unstructured-data-import-tab");
-      guidedSkipPage("guided-create-subjects-metadata-tab");
+      guidedSkipPage("guided-subjects-metadata-tab");
     }
 
     if (selectedEntities.includes("samples")) {
       guidedUnSkipPage("guided-samples-entity-addition-tab");
       guidedUnSkipPage("guided-samples-selection-tab");
-      guidedUnSkipPage("guided-create-samples-metadata-tab");
+      guidedUnSkipPage("guided-samples-metadata-tab");
     } else {
       guidedSkipPage("guided-samples-entity-addition-tab");
       guidedSkipPage("guided-samples-selection-tab");
-      guidedSkipPage("guided-create-samples-metadata-tab");
+      guidedSkipPage("guided-samples-metadata-tab");
     }
 
     if (selectedEntities.includes("sites")) {

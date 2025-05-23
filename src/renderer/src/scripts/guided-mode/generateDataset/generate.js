@@ -767,7 +767,7 @@ const guidedGenerateSubjectsMetadata = async (destination) => {
 
 const guidedGenerateSamplesMetadata = async (destination) => {
   // Early return if samples metadata table is empty or the tab is skipped
-  if (window.samplesTableData.length === 0 || pageIsSkipped("guided-create-samples-metadata-tab")) {
+  if (window.samplesTableData.length === 0 || pageIsSkipped("guided-samples-metadata-tab")) {
     return;
   }
 
