@@ -69,10 +69,8 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
         }
       }
 
-      // If the dataset contains subjects but no code, the dataset type must be experimental
-      if (!selectedEntities.includes("code")) {
-        window.sodaJSONObj["dataset-type"] = "experimental";
-      }
+      // If the dataset contains subjects, assume it is experimental by default
+      window.sodaJSONObj["dataset-type"] = "experimental";
     } else {
       // If subjects is not selected, it must be explicitly marked as No
       if (!deSelectedEntities.includes("subjects")) {
@@ -93,7 +91,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
-      // Code is selected and subjects is not, so the dataset type must be computational
+      // If subjects is not selected (only code), assume it is computational by default
       window.sodaJSONObj["dataset-type"] = "computational";
     }
 
