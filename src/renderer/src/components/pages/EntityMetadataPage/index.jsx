@@ -37,6 +37,7 @@ import { IconCalendar } from "@tabler/icons-react";
 import { DateInput } from "@mantine/dates";
 import useGlobalStore from "../../../stores/globalStore";
 import EntityHierarchyRenderer from "../../shared/EntityHierarchyRenderer";
+import EntityListContainer from "../../containers/EntityListContainer";
 import {
   updateExistingEntityMetadata,
   getEntityMetadataValue,
@@ -148,7 +149,7 @@ const EntityMetadataForm = () => {
   if (datasetEntityArray.length === 0 && !activeFormType) {
     return (
       <InstructionsTowardsLeftContainer>
-        <Text fw={400}>
+        <Text fw={500}>
           Click the "Add Subject" button to the left to begin structuring and your dataset's
           entities.
         </Text>
@@ -160,9 +161,10 @@ const EntityMetadataForm = () => {
   if (!selectedHierarchyEntity && !activeFormType) {
     return (
       <InstructionsTowardsLeftContainer>
-        <Text fw={400}>
-          Select an entity from the hierarchy on the left to edit its metadata or click an entity
-          addition button to describe a new entity.
+        <Text fw={500}>
+          {showFullMetadataFormFields
+            ? "Select a sample from the list on the left to edit its metadata."
+            : "Select an entity from the hierarchy on the left to edit its metadata or click an entity addition button to add a new entity."}
         </Text>
       </InstructionsTowardsLeftContainer>
     );
@@ -305,55 +307,7 @@ const EntityMetadataForm = () => {
                 </Text>
               }
               leftSectionWidth={50}
-            />
-
-            <TextInput
-              label="Subject Experimental Group"
-              description="The experimental group this subject belongs to"
-              placeholder="e.g., Control, Treatment A"
-              value={getMetadataValue("subject experimental group")}
-              onChange={(e) => handleChange("subject experimental group", e.target.value)}
-            />
-
-            <Group grow justify="space-between">
-              <Box>
-                <Text size="sm" fw={500} mb={3}>
-                  Age Value
-                </Text>
-                <Text size="xs" c="dimmed" mb={5}>
-                  Numeric age value
-                </Text>
-                <NumberInput
-                  placeholder="e.g., 12"
-                  value={getMetadataValue("age")}
-                  onChange={(value) => handleChange("age", value)}
-                  min={0}
-                  defaultValue={0}
-                />
-              </Box>
-
-              <Box>
-                <Text size="sm" fw={500} mb={3}>
-                  Age Unit
-                </Text>
-                <Text size="xs" c="dimmed" mb={5}>
-                  Time unit for age
-                </Text>
-                <Select
-                  placeholder="Select unit"
-                  data={[
-                    { value: "hours", label: "Hours" },
-                    { value: "days", label: "Days" },
-                    { value: "weeks", label: "Weeks" },
-                    { value: "months", label: "Months" },
-                    { value: "years", label: "Years" },
-                  ]}
-                  value={getMetadataValue("age unit")}
-                  onChange={(value) => handleChange("age unit", value)}
-                  defaultValue={"Select unit"}
-                />
-              </Box>
-            </Group>
+            />{" "}
             <Select
               label="Sex"
               description="Subject's biological sex"
@@ -362,29 +316,6 @@ const EntityMetadataForm = () => {
               value={getMetadataValue("sex")}
               onChange={(value) => handleChange("sex", value)}
             />
-            <TextInput
-              label="Species"
-              description="The species of the subject"
-              placeholder="e.g., Homo sapiens, Mus musculus"
-              value={getMetadataValue("species")}
-              onChange={(e) => handleChange("species", e.target.value)}
-            />
-            <Group grow>
-              <TextInput
-                label="Strain"
-                description="The strain of the subject"
-                placeholder="e.g., C57BL/6J"
-                value={getMetadataValue("strain")}
-                onChange={(e) => handleChange("strain", e.target.value)}
-              />
-              <TextInput
-                label="RRID for strain"
-                description="Research Resource Identifier for the strain"
-                placeholder="e.g., RRID:IMSR_JAX:000664"
-                value={getMetadataValue("RRID for strain")}
-                onChange={(e) => handleChange("RRID for strain", e.target.value)}
-              />
-            </Group>
             <Select
               label="Age category"
               description="The age category of the subject at the time of the experiment"
@@ -433,6 +364,73 @@ const EntityMetadataForm = () => {
               ]}
               value={getMetadataValue("age category")}
               onChange={(value) => handleChange("age category", value)}
+            />
+            <Group grow justify="space-between">
+              <Box>
+                <Text size="sm" fw={500} mb={3}>
+                  Age Value
+                </Text>
+                <Text size="xs" c="dimmed" mb={5}>
+                  Numeric age value
+                </Text>
+                <NumberInput
+                  placeholder="e.g., 12"
+                  value={getMetadataValue("age")}
+                  onChange={(value) => handleChange("age", value)}
+                  min={0}
+                  defaultValue={0}
+                />
+              </Box>
+
+              <Box>
+                <Text size="sm" fw={500} mb={3}>
+                  Age Unit
+                </Text>
+                <Text size="xs" c="dimmed" mb={5}>
+                  Time unit for age
+                </Text>
+                <Select
+                  placeholder="Select unit"
+                  data={[
+                    { value: "hours", label: "Hours" },
+                    { value: "days", label: "Days" },
+                    { value: "weeks", label: "Weeks" },
+                    { value: "months", label: "Months" },
+                    { value: "years", label: "Years" },
+                  ]}
+                  value={getMetadataValue("age unit")}
+                  onChange={(value) => handleChange("age unit", value)}
+                  defaultValue={"Select unit"}
+                />
+              </Box>
+            </Group>
+            <TextInput
+              label="Species"
+              description="The species of the subject"
+              placeholder="e.g., Homo sapiens, Mus musculus"
+              value={getMetadataValue("species")}
+              onChange={(e) => handleChange("species", e.target.value)}
+            />
+            <TextInput
+              label="Strain"
+              description="The strain of the subject"
+              placeholder="e.g., C57BL/6J"
+              value={getMetadataValue("strain")}
+              onChange={(e) => handleChange("strain", e.target.value)}
+            />
+            <TextInput
+              label="RRID for strain"
+              description="Research Resource Identifier for the strain"
+              placeholder="e.g., RRID:IMSR_JAX:000664"
+              value={getMetadataValue("RRID for strain")}
+              onChange={(e) => handleChange("RRID for strain", e.target.value)}
+            />
+            <TextInput
+              label="Subject Experimental Group"
+              description="The experimental group this subject belongs to"
+              placeholder="e.g., Control, Treatment A"
+              value={getMetadataValue("subject experimental group")}
+              onChange={(e) => handleChange("subject experimental group", e.target.value)}
             />
             {showFullMetadataFormFields && (
               <>
@@ -896,28 +894,30 @@ const EntityMetadataForm = () => {
  */
 const EntityMetadataPage = ({ entityType }) => {
   console.log("entityType", entityType);
+  const showFullMetadataFormFields = useGlobalStore((state) => state.showFullMetadataFormFields);
+
   return (
     <GuidedModePage pageHeader="Dataset entity metadata">
       <GuidedModeSection>
-        <Stack>
-          <Text>
-            Use the interface below to describe the structure of the data that was collected during
-            your study.
-          </Text>
-        </Stack>
+        <Text>
+          {showFullMetadataFormFields
+            ? `Tell us more about the ${entityType} you collected data from in the interface below. If your ${entityType} have
+            a lot of overlapping metadata, you can use the copy metadata button to copy metadata between ${entityType}.`
+            : "Use the interface below to describe the structure of the data that was collected during your study."}
+        </Text>
       </GuidedModeSection>
 
       <GuidedModeSection>
         <Grid gutter="lg">
           {/* Entity selection panel */}
           <Grid.Col span={5} style={{ position: "sticky", top: "20px" }}>
-            <SodaPaper>
+            <EntityListContainer title={`Select a ${entityType}`}>
               <EntityHierarchyRenderer
                 allowEntityStructureEditing={true}
                 allowEntitySelection={true}
                 onlyRenderEntityType={entityType}
               />
-            </SodaPaper>
+            </EntityListContainer>
           </Grid.Col>
 
           {/* Metadata editing form */}

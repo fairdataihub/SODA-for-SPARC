@@ -1,0 +1,12 @@
+Lab Notes - Tissue04 Sample
+Subject: Subject02
+Sample: Tissue04
+Date: 2023-06-16
+Collected by: J. Smith
+
+Processing Notes:
+- Sample processed according to protocol
+- Stored at -80°C (Freezer #2)
+- Quality check: Passed
+
+Observations: Sample appears normal with no visible contamination

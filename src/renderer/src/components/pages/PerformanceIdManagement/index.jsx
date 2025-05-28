@@ -301,7 +301,7 @@ const PerformanceIdManagement = () => {
               </Paper>
             ) : (
               <InstructionsTowardsLeftContainer>
-                <Text fw={400}>
+                <Text fw={500}>
                   Select a performance from the left to edit its metadata or click "Add Performance"
                   to add a new performance.
                 </Text>
