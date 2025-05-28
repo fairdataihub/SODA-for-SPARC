@@ -161,7 +161,7 @@ const EntityMetadataForm = () => {
   if (!selectedHierarchyEntity && !activeFormType) {
     return (
       <InstructionsTowardsLeftContainer>
-        <Text fw={500}>
+        <Text fw={500} c="dimmed">
           {showFullMetadataFormFields
             ? "Select a sample from the list on the left to edit its metadata."
             : "Select an entity from the hierarchy on the left to edit its metadata or click an entity addition button to add a new entity."}
