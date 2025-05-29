@@ -192,16 +192,52 @@ export const moveFileToTargetLocation = (relativePathToMove, destionationRelativ
 };
 
 export const createStandardizedDatasetStructure = (datasetStructure, datasetEntityObj) => {
-  console.log("createStandardizedDatasetStructure");
-  console.log("datasetStructure", datasetStructure);
-  console.log("datasetEntityObj", datasetEntityObj);
-  const foldersToMoveToCodeFolder = Object.keys(
-    datasetEntityObj?.["high-level-folder-data-categorization"]?.["Code"] || {}
-  );
-  console.log("foldersToMoveToCodeFolder", foldersToMoveToCodeFolder);
-  datasetStructure["folders"]["code"] = newEmptyFolderObj();
-  for (const folder of foldersToMoveToCodeFolder) {
-    moveFileToTargetLocation(folder, "code/");
+  // --- Step 1: Preserve the original global structure ---
+  // Many helper functions (e.g., moveFileToTargetLocation) mutate window.datasetStructureJSONObj directly.
+  // To avoid making permanent changes to the global structure, we create a deep copy of its original state.
+  const originalStructure = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
+
+  try {
+    console.log("createStandardizedDatasetStructure");
+    console.log("datasetStructure", datasetStructure);
+    console.log("datasetEntityObj", datasetEntityObj);
+
+    // --- Step 2: Determine which folders should be moved to the 'code/' folder ---
+    const codeFolderEntries = datasetEntityObj?.["high-level-folder-data-categorization"]?.["Code"];
+    const foldersToMove = codeFolderEntries ? Object.keys(codeFolderEntries) : [];
+
+    if (foldersToMove.length === 0) {
+      console.log("No folders to move to 'code' folder.");
+      return originalStructure;
+    }
+
+    console.log("foldersToMoveToCodeFolder", foldersToMove);
+
+    // --- Step 3: Ensure the target folder exists in the working structure ---
+    datasetStructure.folders = datasetStructure.folders || {};
+    datasetStructure.folders["code"] = newEmptyFolderObj();
+
+    // --- Step 4: Perform all folder-moving operations ---
+    // These methods modify window.datasetStructureJSONObj directly.
+    for (const folder of foldersToMove) {
+      moveFileToTargetLocation(folder, "code/");
+    }
+
+    // --- Step 5: Capture the modified structure before reverting changes ---
+    // At this point, window.datasetStructureJSONObj contains the "standardized" structure.
+    // We deep copy it to return as a standalone result.
+    const standardizedStructure = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
+
+    // --- Step 6: Revert any global changes to window.datasetStructureJSONObj ---
+    // This ensures the global structure is unaffected by this operation.
+    window.datasetStructureJSONObj = originalStructure;
+
+    return standardizedStructure;
+  } catch (error) {
+    console.error("Error while creating standardized dataset structure:", error);
+
+    // Always restore the global structure in case of failure.
+    window.datasetStructureJSONObj = originalStructure;
+    throw error;
   }
-  return window.datasetStructureJSONObj;
 };
