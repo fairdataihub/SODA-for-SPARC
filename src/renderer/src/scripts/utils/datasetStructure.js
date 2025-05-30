@@ -171,10 +171,23 @@ export const moveFileToTargetLocation = (relativePathToMove, destionationRelativ
   console.log("moveFileToTargetLocation called");
   console.log("relativePathToMove", relativePathToMove);
 
+  // Get the file's path segments and file name
+  const filePathSegments = relativePathToMove.split("/").filter(Boolean);
+  // Don't pop fileName here, use itemName from getItemAtPath
+  // Build the destination path: destination folder + file's subfolders (excluding the root folder of the file path)
+  // For example, if relativePathToMove is data/experiment/Subject01/Tissue02/RegionB/metadata.txt
+  // and destionationRelativeFolderPath is primary/,
+  // the destination should be primary/experiment/Subject01/Tissue02/RegionB/metadata.txt
+  // So, skip the first segment (e.g., 'data')
+  const subfolders = filePathSegments.slice(1, -1); // skip the root folder and file name
+  const destinationPathSegments = destionationRelativeFolderPath
+    .split("/")
+    .filter(Boolean)
+    .concat(subfolders);
+
   // Ensure the destination folder path exists, create if missing
-  const pathSegments = destionationRelativeFolderPath.split("/").filter(Boolean);
   let currentFolder = window.datasetStructureJSONObj;
-  for (const segment of pathSegments) {
+  for (const segment of destinationPathSegments) {
     if (!currentFolder.folders) currentFolder.folders = {};
     if (!currentFolder.folders[segment]) {
       currentFolder.folders[segment] = newEmptyFolderObj();
@@ -182,13 +195,11 @@ export const moveFileToTargetLocation = (relativePathToMove, destionationRelativ
     currentFolder = currentFolder.folders[segment];
   }
 
-  // Now get the destination folder object for file placement
-  const destinationItemObject = currentFolder;
-
+  // Now get the file object from the original location
   const { parentFolder, itemName, itemObject } = getItemAtPath(relativePathToMove, "file");
 
   // Move the file to the destination folder.
-  destinationItemObject["files"][itemName] = itemObject;
+  currentFolder["files"][itemName] = itemObject;
 
   // Remove the file from its original location.
   delete parentFolder["files"][itemName];
@@ -199,50 +210,49 @@ export const moveFileToTargetLocation = (relativePathToMove, destionationRelativ
 
 export const createStandardizedDatasetStructure = (datasetStructure, datasetEntityObj) => {
   // --- Step 1: Preserve the original global structure ---
-  // Many helper functions (e.g., moveFileToTargetLocation) mutate window.datasetStructureJSONObj directly.
-  // To avoid making permanent changes to the global structure, we create a deep copy of its original state.
   const originalStructure = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
+
+  // Helper to move files by mapping
+  const moveFilesByCategory = (categoryObj, destFolder) => {
+    if (!categoryObj) return;
+    const files = Object.keys(categoryObj);
+    for (const file of files) {
+      moveFileToTargetLocation(file, destFolder);
+    }
+  };
 
   try {
     console.log("createStandardizedDatasetStructure");
     console.log("datasetStructure", datasetStructure);
     console.log("datasetEntityObj", datasetEntityObj);
 
-    // --- Step 2: Determine which folders should be moved to the 'code/' folder ---
-    const codeFolderEntries = datasetEntityObj?.["high-level-folder-data-categorization"]?.["Code"];
-    const foldersToMove = codeFolderEntries ? Object.keys(codeFolderEntries) : [];
+    // --- Step 2: Move code files to 'code/' folder ---
+    moveFilesByCategory(
+      datasetEntityObj?.["high-level-folder-data-categorization"]?.["Code"],
+      "code/"
+    );
 
-    if (foldersToMove.length === 0) {
-      console.log("No folders to move to 'code' folder.");
-      return originalStructure;
-    }
+    // --- Step 3: Move experimental data into the primary folder ---
+    moveFilesByCategory(
+      datasetEntityObj?.["high-level-folder-data-categorization"]?.["Experimental data"],
+      "primary/"
+    );
 
-    console.log("foldersToMoveToCodeFolder", foldersToMove);
+    // --- Step 4: Move documentation files into the docs folder ---
+    moveFilesByCategory(datasetEntityObj?.["other-data"]?.["Documentation"], "docs/");
 
-    // --- Step 3: Ensure the target folder exists in the working structure ---
-    datasetStructure.folders = datasetStructure.folders || {};
-    datasetStructure.folders["test"] = newEmptyFolderObj();
+    // --- Step 5: Move protocol data files into the protocols folder ---
+    moveFilesByCategory(datasetEntityObj?.["other-data"]?.["Protocol data"], "protocols/");
 
-    // --- Step 4: Perform all folder-moving operations ---
-    // These methods modify window.datasetStructureJSONObj directly.
-    for (const folder of foldersToMove) {
-      moveFileToTargetLocation(folder, "a/b/c/");
-    }
-
-    // --- Step 5: Capture the modified structure before reverting changes ---
-    // At this point, window.datasetStructureJSONObj contains the "standardized" structure.
-    // We deep copy it to return as a standalone result.
+    // --- Step 6: Capture the modified structure before reverting changes ---
     const standardizedStructure = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
 
-    // --- Step 6: Revert any global changes to window.datasetStructureJSONObj ---
-    // This ensures the global structure is unaffected by this operation.
+    // --- Step 7: Revert any global changes to window.datasetStructureJSONObj ---
     window.datasetStructureJSONObj = originalStructure;
 
     return standardizedStructure;
   } catch (error) {
     console.error("Error while creating standardized dataset structure:", error);
-
-    // Always restore the global structure in case of failure.
     window.datasetStructureJSONObj = originalStructure;
     throw error;
   }

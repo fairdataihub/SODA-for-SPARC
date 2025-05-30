@@ -313,30 +313,29 @@ export const addRelativePaths = (obj, currentPath = []) => {
 export const deleteEmptyFoldersFromStructure = (structure) => {
   if (!structure) return null;
 
-  // Recursively delete empty folders
   const folders = structure.folders || {};
   const files = structure.files || {};
 
-  if (!folders && !files) {
-    console.log("No folders or files to delete");
-    return null; // No folders or files to delete
-  }
+  const newFolders = {};
 
-  // Filter out empty folders
-  Object.keys(folders).forEach((key) => {
-    const subfolder = deleteEmptyFoldersFromStructure(folders[key]);
+  Object.entries(folders).forEach(([key, value]) => {
+    const cleaned = deleteEmptyFoldersFromStructure(value);
     if (
-      !subfolder ||
-      (Object.keys(subfolder.folders).length === 0 && Object.keys(subfolder.files).length === 0)
+      cleaned &&
+      (Object.keys(cleaned.folders || {}).length > 0 || Object.keys(cleaned.files || {}).length > 0)
     ) {
-      delete folders[key];
-    } else {
-      folders[key] = subfolder;
+      newFolders[key] = cleaned;
     }
   });
 
-  // Return the modified structure
-  return { ...structure, folders, files };
+  const isEmpty = Object.keys(newFolders).length === 0 && Object.keys(files).length === 0;
+  if (isEmpty) return null;
+
+  return {
+    ...structure,
+    folders: newFolders,
+    files,
+  };
 };
 
 // Set the dataset structure and prepare it for rendering
