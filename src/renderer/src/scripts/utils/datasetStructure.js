@@ -170,14 +170,20 @@ export const moveFilesToTargetLocation = (arrayOfRelativePathsToMove, destionati
 export const moveFileToTargetLocation = (relativePathToMove, destionationRelativeFolderPath) => {
   console.log("moveFileToTargetLocation called");
   console.log("relativePathToMove", relativePathToMove);
-  const {
-    parentFolder: destinationParentFolder,
-    itemName: destinationItemName,
-    itemObject: destinationItemObject,
-  } = getItemAtPath(destionationRelativeFolderPath, "folder");
-  console.log("destinationParentFolder", destinationParentFolder);
-  console.log("destinationItemName", destinationItemName);
-  console.log("destinationItemObject", destinationItemObject);
+
+  // Ensure the destination folder path exists, create if missing
+  const pathSegments = destionationRelativeFolderPath.split("/").filter(Boolean);
+  let currentFolder = window.datasetStructureJSONObj;
+  for (const segment of pathSegments) {
+    if (!currentFolder.folders) currentFolder.folders = {};
+    if (!currentFolder.folders[segment]) {
+      currentFolder.folders[segment] = newEmptyFolderObj();
+    }
+    currentFolder = currentFolder.folders[segment];
+  }
+
+  // Now get the destination folder object for file placement
+  const destinationItemObject = currentFolder;
 
   const { parentFolder, itemName, itemObject } = getItemAtPath(relativePathToMove, "file");
 
@@ -215,12 +221,12 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
 
     // --- Step 3: Ensure the target folder exists in the working structure ---
     datasetStructure.folders = datasetStructure.folders || {};
-    datasetStructure.folders["code"] = newEmptyFolderObj();
+    datasetStructure.folders["test"] = newEmptyFolderObj();
 
     // --- Step 4: Perform all folder-moving operations ---
     // These methods modify window.datasetStructureJSONObj directly.
     for (const folder of foldersToMove) {
-      moveFileToTargetLocation(folder, "code/");
+      moveFileToTargetLocation(folder, "a/b/c/");
     }
 
     // --- Step 5: Capture the modified structure before reverting changes ---
