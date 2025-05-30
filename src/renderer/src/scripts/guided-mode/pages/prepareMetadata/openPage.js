@@ -33,8 +33,7 @@ import { guidedDatasetKeywordsTagify } from "../../tagifies/tagifies";
 import lottie from "lottie-web";
 import { renderAdditionalLinksTable } from "../../guided-curate-dataset";
 import { datasetIsSparcFunded } from "../../utils/sodaJSONObj";
-import { setDropdownState } from "../../../../stores/slices/dropDownSlice";
-
+import { createStandardizedDatasetStructure } from "../../../../scripts/utils/datasetStructure";
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
@@ -343,13 +342,36 @@ export const openPagePrepareMetadata = async (targetPageID) => {
   }
 
   if (targetPageID === "guided-create-local-copy-tab") {
-    console.log("Opening complete dataset structure review page");
-    // Initialize the dataset structure review, possibly updating tree views or summaries
+    const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
 
-    // Update tree view if that component is used here
-    if (window.datasetStructureJSONObj) {
-      setTreeViewDatasetStructure(window.datasetStructureJSONObj, []);
-    }
+    // Create a deep copy of the dataset structure JSON object
+    const datasetStructureJSONObjCopy = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
+    console.log("datasetStructureJSONObjCopy", datasetStructureJSONObjCopy);
+
+    const starndardizedDatasetStructure = createStandardizedDatasetStructure(
+      window.datasetStructureJSONObj,
+      datasetEntityObj
+    );
+    setTreeViewDatasetStructure(starndardizedDatasetStructure, []);
+
+    // Restore the original dataset structure
+    window.datasetStructureJSONObj = datasetStructureJSONObjCopy;
+    console.log("datasetStructureJSONObj restored", window.datasetStructureJSONObj);
+
+    const guidedResetLocalGenerationUI = () => {
+      // Hide the local dataset copy generation section that containst the table/generation progress
+      document
+        .getElementById("guided-section-local-generation-status-table")
+        .classList.add("hidden");
+      // Hide the local dataset generation success section
+      document
+        .getElementById("guided-section-post-local-generation-success")
+        .classList.add("hidden");
+      // Hide the local dataset generation retry section
+      document.getElementById("guided-section-retry-local-generation").classList.add("hidden");
+    };
+
+    guidedResetLocalGenerationUI();
   }
 };
 

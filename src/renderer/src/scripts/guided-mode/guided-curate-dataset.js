@@ -19,7 +19,7 @@ import { v4 as uuid } from "uuid";
 import client from "../client";
 import { guidedPennsieveDatasetUpload } from "./generateDataset/generate";
 import { guidedDatasetKeywordsTagify } from "./tagifies/tagifies";
-
+import { updateDatasetUploadProgressTable } from "./generateDataset/uploadProgressBar";
 import {
   swalConfirmAction,
   swalShowError,
@@ -27,6 +27,10 @@ import {
   swalFileListDoubleAction,
   swalShowInfo,
 } from "../utils/swal-utils";
+
+import { guidedCreateManifestFilesAndAddToDatasetStructure } from "./manifests/manifest";
+
+import { guidedGetDatasetName } from "./utils/sodaJSONObj";
 
 import { getDatasetEntityObj } from "../../stores/slices/datasetEntitySelectorSlice";
 
@@ -4243,7 +4247,7 @@ const countFilesInDatasetStructure = (datasetStructure) => {
   return totalFiles;
 };
 
-// Listen for the selected path for local dataset generation
+// Listen for the selected path for local dataset generation that starts the local dataset generation process
 window.electron.ipcRenderer.on(
   "selected-guided-local-dataset-generation-path",
   async (event, filePath) => {
@@ -4267,7 +4271,7 @@ window.electron.ipcRenderer.on(
       updateDatasetUploadProgressTable("local", {
         "Current action": `Checking available free space on disk`,
       });
-      unHideAndSmoothScrollToElement("guided-section-local-generation-status-table");
+      window.unHideAndSmoothScrollToElement("guided-section-local-generation-status-table");
 
       // Get available free memory on disk
       const freeMemoryInBytes = await window.electron.ipcRenderer.invoke("getDiskSpace", filePath);
@@ -4413,13 +4417,14 @@ window.electron.ipcRenderer.on(
       });
       unHideAndSmoothScrollToElement("guided-section-post-local-generation-success");
     } catch (error) {
+      console.error("Error during local dataset generation:", error);
       // Handle and log errors
       const errorMessage = userErrorMessage(error);
       console.error(errorMessage);
       guidedResetLocalGenerationUI();
       await swalShowError("Error generating dataset locally", errorMessage);
       // Show and scroll down to the local dataset generation retry button
-      unHideAndSmoothScrollToElement("guided-section-retry-local-generation");
+      window.unHideAndSmoothScrollToElement("guided-section-retry-local-generation");
     }
     guidedSetNavLoadingState(false); // Unlock the nav after local dataset generation is done
   }

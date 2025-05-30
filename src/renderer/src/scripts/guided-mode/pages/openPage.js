@@ -546,26 +546,6 @@ export const openPage = async (targetPageID) => {
     //         }
     //     }
 
-    //     if (targetPageID === "guided-create-local-copy-tab") {
-    //         // Show the dataset structure preview using jsTree
-    //         guidedShowTreePreview(
-    //             window.sodaJSONObj["digital-metadata"]["name"],
-    //             "guided-folder-and-metadata-structure-review"
-    //         );
-
-    //         // If the dataset was not started from Pennsieve, show the "Copy dataset" section
-    //         // (We don't display this feature when starting from Pennsieve because we don't currently have the ability
-    //         // to copy a dataset from Pennsieve to the user's local system)
-    //         const createCopySection = document.getElementById("guided-section-create-local-dataset-copy");
-    //         if (window.sodaJSONObj["starting-point"]["origin"] === "new") {
-    //             createCopySection.classList.remove("hidden");
-    //         } else {
-    //             createCopySection.classList.add("hidden");
-    //         }
-
-    //         guidedResetLocalGenerationUI();
-    //     }
-
     //     if (targetPageID === "guided-dataset-dissemination-tab") {
     //         // Show the loading page while the page's data is being fetched from Pennsieve
     //         setPageLoadingState(true);
