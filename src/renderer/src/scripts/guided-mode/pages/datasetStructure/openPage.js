@@ -184,15 +184,6 @@ export const openPageDatasetStructure = async (targetPageID) => {
 
     deleteEmptyFolders(window.datasetStructureJSONObj);
 
-    if (!Object.keys(window.datasetStructureJSONObj.folders).length) {
-      await swalShowInfo(
-        "No files or folders are currently imported into SODA",
-        "You will be returned to the beginning of the dataset structuring section to import your data."
-      );
-      await window.openPage("guided-dataset-structure-intro-tab");
-      return;
-    }
-
     document.getElementById("guided-container-manifest-file-cards").innerHTML = `
       <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
       Updating your dataset's manifest files...

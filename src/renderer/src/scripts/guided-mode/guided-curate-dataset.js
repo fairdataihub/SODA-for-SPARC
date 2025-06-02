@@ -4361,7 +4361,7 @@ window.electron.ipcRenderer.on(
             // Scroll the user down to the progress table if they haven't been scrolled down yet
             // (This only happens once)
             if (!userHasBeenScrolledToProgressTable) {
-              unHideAndSmoothScrollToElement("guided-section-local-generation-status-table");
+              window.unHideAndSmoothScrollToElement("guided-section-local-generation-status-table");
               userHasBeenScrolledToProgressTable = true;
             }
 
@@ -4415,7 +4415,7 @@ window.electron.ipcRenderer.on(
       updateDatasetUploadProgressTable("local", {
         Status: `Dataset successfully generated locally`,
       });
-      unHideAndSmoothScrollToElement("guided-section-post-local-generation-success");
+      window.unHideAndSmoothScrollToElement("guided-section-post-local-generation-success");
     } catch (error) {
       console.error("Error during local dataset generation:", error);
       // Handle and log errors

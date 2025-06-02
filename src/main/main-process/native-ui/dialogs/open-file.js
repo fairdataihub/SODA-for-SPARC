@@ -688,6 +688,10 @@ ipcMain.handle("open-manifest-preview-location", async () => {
 
 ipcMain.on("guided-select-local-dataset-generation-path", (event) => {
   const mainWindow = BrowserWindow.getFocusedWindow();
+  event.sender.send(
+    "selected-guided-local-dataset-generation-path",
+    `C:\Users\jacob\OneDrive\Desktop`
+  );
 
   // Get the path to the directory where the user wants to save the spreadsheet
   const spreadsheetPath = dialog.showOpenDialogSync(mainWindow, {
@@ -696,6 +700,7 @@ ipcMain.on("guided-select-local-dataset-generation-path", (event) => {
   });
 
   if (spreadsheetPath) {
+    console.log("Selected path for guided local dataset generation:", spreadsheetPath[0]);
     event.sender.send("selected-guided-local-dataset-generation-path", spreadsheetPath[0]);
   }
 });
