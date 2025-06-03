@@ -161,6 +161,10 @@ const FileItem = ({
     if (isHoveredOrSelected) return "rgba(0, 0, 0, 0.05)";
     return undefined;
   };
+  if (name === "manifest.xlsx") {
+    console.log("BAZINGA");
+    console.log("onFileClick", onFileClick);
+  }
 
   return (
     <Group
@@ -169,7 +173,6 @@ const FileItem = ({
       justify="flex-start"
       bg={getFileColor()}
       onContextMenu={handleFileContextMenuOpen}
-      ml="sm"
       pl="xs"
       py="1px"
       style={{ flexWrap: "nowrap" }}
@@ -656,7 +659,7 @@ const DatasetTreeViewRenderer = ({
                   key={fileName}
                   name={fileName}
                   content={renderDatasetStructureJSONObj.files[fileName]}
-                  onFileClick={handleFileItemClick}
+                  onFileClick={fileActions?.["on-file-click"] ? handleFileItemClick : null}
                   isFileSelected={fileActions?.["is-file-selected"]}
                   allowStructureEditing={allowStructureEditing}
                   entityType={entityType} // Pass to FileItem

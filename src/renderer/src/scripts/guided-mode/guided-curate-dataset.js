@@ -27,7 +27,10 @@ import {
   swalFileListDoubleAction,
   swalShowInfo,
 } from "../utils/swal-utils";
-
+import {
+  guidedGenerateSubjectsMetadata,
+  guidedGenerateSamplesMetadata,
+} from "./generateDataset/generate";
 import { guidedCreateManifestFilesAndAddToDatasetStructure } from "./manifests/manifest";
 
 import { guidedGetDatasetName } from "./utils/sodaJSONObj";
@@ -4258,6 +4261,7 @@ window.electron.ipcRenderer.on(
       const guidedDatasetName = guidedGetDatasetName(window.sodaJSONObj);
 
       const filePathToGenerateAt = window.path.join(filePath, guidedDatasetName);
+      console.log("filePathToGenerateAt", filePathToGenerateAt);
       if (window.fs.existsSync(filePathToGenerateAt)) {
         throw new Error(
           `

@@ -13,6 +13,12 @@ import {
   datasetIsSparcFunded,
   guidedGetDatasetOrigin,
 } from "../utils/sodaJSONObj";
+import {
+  getExistingSubjects,
+  getExistingSamples,
+  getExistingSites,
+} from "../../../stores/slices/datasetEntityStructureSlice";
+
 import datasetUploadSession from "../../analytics/upload-session-tracker";
 import { pageIsSkipped } from "../pages/navigationUtils/pageSkipping";
 import kombuchaEnums from "../../analytics/analytics-enums";
@@ -684,16 +690,17 @@ const guidedAddTeamPermissions = async (bfAccount, datasetName, teamPermissionsA
   await Promise.allSettled(promises);
 };
 
-const guidedGenerateSubjectsMetadata = async (destination) => {
+export const guidedGenerateSubjectsMetadata = async (destination) => {
+  // Get the list of existing subjects from the datasetEntityObj
+  const existingSubjects = getExistingSubjects();
+  console.log("Existing subjects:", existingSubjects);
   // Early return if subjects metadata table is empty or the tab is skipped
-  if (
-    window.subjectsTableData.length === 0 ||
-    pageIsSkipped("guided-create-subjects-metadata-tab")
-  ) {
+  if (existingSubjects.length === 0 || pageIsSkipped("guided-subjects-metadata-tab")) {
     return;
   }
 
   const generationDestination = destination === "Pennsieve" ? "Pennsieve" : "local";
+  console.log("Generation destination:", generationDestination);
 
   // Prepare UI elements for Pennsieve upload (if applicable)
   const subjectsMetadataGenerationText = document.getElementById(
@@ -765,7 +772,7 @@ const guidedGenerateSubjectsMetadata = async (destination) => {
   }
 };
 
-const guidedGenerateSamplesMetadata = async (destination) => {
+export const guidedGenerateSamplesMetadata = async (destination) => {
   // Early return if samples metadata table is empty or the tab is skipped
   if (window.samplesTableData.length === 0 || pageIsSkipped("guided-samples-metadata-tab")) {
     return;
@@ -841,7 +848,7 @@ const guidedGenerateSamplesMetadata = async (destination) => {
   }
 };
 
-const guidedGenerateSubmissionMetadata = async (destination) => {
+export const guidedGenerateSubmissionMetadata = async (destination) => {
   // Build the submission metadata array
   const guidedMilestones =
     window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["milestones"];
@@ -930,7 +937,7 @@ const guidedGenerateSubmissionMetadata = async (destination) => {
   }
 };
 
-const guidedGenerateDatasetDescriptionMetadata = async (destination) => {
+export const guidedGenerateDatasetDescriptionMetadata = async (destination) => {
   const guidedDatasetInformation =
     window.sodaJSONObj["dataset_metadata"]["description-metadata"]["dataset-information"];
   const guidedStudyInformation =
@@ -1078,7 +1085,7 @@ const guidedGenerateDatasetDescriptionMetadata = async (destination) => {
   }
 };
 
-const guidedGenerateReadmeMetadata = async (destination) => {
+export const guidedGenerateReadmeMetadata = async (destination) => {
   const guidedReadMeMetadata = window.sodaJSONObj["dataset_metadata"]["README"];
 
   const generationDestination = destination === "Pennsieve" ? "Pennsieve" : "local";
@@ -1154,7 +1161,7 @@ const guidedGenerateReadmeMetadata = async (destination) => {
     throw new Error(emessage); // Re-throw for further handling
   }
 };
-const guidedGenerateChangesMetadata = async (destination) => {
+export const guidedGenerateChangesMetadata = async (destination) => {
   // Early return if changes metadata table is empty or the tab is skipped
   if (pageIsSkipped("guided-create-changes-metadata-tab")) {
     return;
@@ -1234,7 +1241,7 @@ const guidedGenerateChangesMetadata = async (destination) => {
   }
 };
 
-const guidedGenerateCodeDescriptionMetadata = async (destination) => {
+export const guidedGenerateCodeDescriptionMetadata = async (destination) => {
   if (pageIsSkipped("guided-add-code-metadata-tab")) {
     return;
   }
