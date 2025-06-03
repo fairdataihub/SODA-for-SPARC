@@ -30,6 +30,7 @@ import {
 import {
   guidedGenerateSubjectsMetadata,
   guidedGenerateSamplesMetadata,
+  guidedPrepareDatasetStructureAndMetadataForUpload,
 } from "./generateDataset/generate";
 import { guidedCreateManifestFilesAndAddToDatasetStructure } from "./manifests/manifest";
 
@@ -4263,12 +4264,14 @@ window.electron.ipcRenderer.on(
       const filePathToGenerateAt = window.path.join(filePath, guidedDatasetName);
       console.log("filePathToGenerateAt", filePathToGenerateAt);
       if (window.fs.existsSync(filePathToGenerateAt)) {
+        // TEMP remove the folder at this path
+        /*
         throw new Error(
           `
             A folder named ${guidedDatasetName} already exists at the selected location.
             Please remove the folder at the selected location or choose a new location.
           `
-        );
+        );*/
       }
       // Reset and show the progress bar
       setGuidedProgressBarValue("local", 0);
@@ -4313,6 +4316,11 @@ window.electron.ipcRenderer.on(
       // check if the account details are valid during local generation
       delete sodaJSONObjCopy["ps-account-selected"];
       delete sodaJSONObjCopy["ps-dataset-selected"];
+
+      await guidedPrepareDatasetStructureAndMetadataForUpload(sodaJSONObjCopy);
+
+      // Add the dataset metadata json to the sodaJSONObjCopy
+      console.log("sodaJSONObjCopy['dataset_metadata']", sodaJSONObjCopy["dataset_metadata"]);
 
       updateDatasetUploadProgressTable("local", {
         "Current action": `Preparing dataset for local generation`,
@@ -4386,7 +4394,7 @@ window.electron.ipcRenderer.on(
       setGuidedProgressBarValue("local", 100);
       updateDatasetUploadProgressTable("local", { "Current action": `Generating metadata files` });
 
-      // Generate all dataset metadata files
+      /* TEMP DISABLED FOR NOW // Generate all dataset metadata files
       await guidedGenerateSubjectsMetadata(
         window.path.join(filePath, guidedDatasetName, "subjects.xlsx")
       );
@@ -4407,7 +4415,7 @@ window.electron.ipcRenderer.on(
       );
       await guidedGenerateCodeDescriptionMetadata(
         window.path.join(filePath, guidedDatasetName, "code_description.xlsx")
-      );
+      );*/
 
       // Save the location of the generated dataset to the sodaJSONObj
       window.sodaJSONObj["path-to-local-dataset-copy"] = window.path.join(

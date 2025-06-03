@@ -2243,3 +2243,25 @@ const guidedGetDatasetLinks = () => {
     ...window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"],
   ];
 };
+
+export const guidedPrepareDatasetStructureAndMetadataForUpload = async (sodaObj) => {
+  console.log("baz");
+  console.log("Preparing dataset structure and metadata for upload...");
+  console.log("sodaObj", sodaObj);
+  console.log("dataset-metadata", sodaObj["dataset_metadata"]);
+  // Prepare the subject metadata
+  const subjects = getExistingSubjects();
+  const subjectsMetadata = subjects.map((subject) => {
+    return subject.metadata;
+  });
+  console.log("subjectsMetadata", subjectsMetadata);
+  sodaObj["dataset_metadata"]["subjects_metadata"] = subjectsMetadata;
+
+  // Prepare the samples metadata
+  const samples = getExistingSamples();
+  const samplesMetadata = samples.map((sample) => {
+    return sample.metadata;
+  });
+  console.log("samplesMetadata", samplesMetadata);
+  sodaObj["dataset_metadata"]["samples_metadata"] = samplesMetadata;
+};

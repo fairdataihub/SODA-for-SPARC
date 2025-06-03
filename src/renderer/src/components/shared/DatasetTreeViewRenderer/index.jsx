@@ -161,10 +161,6 @@ const FileItem = ({
     if (isHoveredOrSelected) return "rgba(0, 0, 0, 0.05)";
     return undefined;
   };
-  if (name === "manifest.xlsx") {
-    console.log("BAZINGA");
-    console.log("onFileClick", onFileClick);
-  }
 
   return (
     <Group

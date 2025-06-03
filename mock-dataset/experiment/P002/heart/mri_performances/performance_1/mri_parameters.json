@@ -1,8 +1,0 @@
-{
-  "sequence": "T1-weighted",
-  "tesla": 3,
-  "repetitionTime": 907,
-  "echoTime": 30,
-  "flipAngle": 70,
-  "numberOfSlices": 37
-}

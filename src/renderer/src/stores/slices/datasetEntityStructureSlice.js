@@ -130,7 +130,7 @@ export const addSubject = (subjectId, metadata = {}) => {
       // Create merged metadata object with ID guaranteed
       const mergedMetadata = {
         ...metadata,
-        "subject id": normalizedSubjectId, // Ensure ID is always set correctly
+        subject_id: normalizedSubjectId, // Ensure ID is always set correctly
       };
 
       state.datasetEntityArray.push({
@@ -194,8 +194,8 @@ export const addSampleToSubject = (subjectId, sampleId, metadata = {}) => {
         // Create merged metadata object for the sample
         const mergedMetadata = {
           ...metadata,
-          "subject id": normalizedSubjectId,
-          "sample id": normalizedSampleId,
+          subject_id: normalizedSubjectId,
+          sample_id: normalizedSampleId,
         };
 
         subject.samples.push({
@@ -279,7 +279,7 @@ export const addSiteToSubject = (subjectId, siteId, metadata = {}) => {
         const mergedMetadata = {
           ...metadata,
           "site id": normalizedSiteId,
-          "subject id": normalizedSubjectId,
+          subject_id: normalizedSubjectId,
         };
 
         subject.subjectSites.push({
@@ -342,7 +342,7 @@ export const addSiteToSample = (subjectId, sampleId, siteId, metadata = {}) => {
           const mergedMetadata = {
             ...metadata,
             "site id": normalizedSiteId,
-            "subject id": normalizedSubjectId,
+            subject_id: normalizedSubjectId,
             "sample id": normalizedSampleId,
           };
 
@@ -551,7 +551,7 @@ export const updateExistingEntityMetadata = (entity, metadataChanges) => {
           subject.metadata[key] = value;
 
           // Update ID at top level if needed
-          if (key === "subject id") {
+          if (key === "subject_id") {
             subject.id = value.startsWith("sub-") ? value : `sub-${value}`;
           }
         });
@@ -744,7 +744,7 @@ export const getEntityMetadataValue = (entity, key, entityType = null, defaultVa
     }
 
     // Special ID handling
-    if (key === "subject id" && entity.type === "subject") {
+    if (key === "subject_id" && entity.type === "subject") {
       return entity.id.startsWith("sub-") ? entity.id.substring(4) : entity.id;
     }
 

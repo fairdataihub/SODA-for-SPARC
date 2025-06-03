@@ -198,7 +198,7 @@ const EntityMetadataForm = () => {
         const tempMetadata = useGlobalStore.getState().temporaryEntityMetadata?.subject || {};
 
         // Validate required fields
-        if (!tempMetadata["subject id"]) {
+        if (!tempMetadata["subject_id"]) {
           window.notyf.open({
             duration: "4000",
             type: "error",
@@ -208,7 +208,7 @@ const EntityMetadataForm = () => {
         }
 
         try {
-          addSubject(tempMetadata["subject id"], tempMetadata);
+          addSubject(tempMetadata["subject_id"], tempMetadata);
         } catch (error) {
           window.notyf.open({ duration: "4000", type: "error", message: error.message });
           return;
@@ -299,8 +299,8 @@ const EntityMetadataForm = () => {
               label="Subject Identifier"
               description="Enter a unique identifier for this subject."
               placeholder="Enter subject ID"
-              value={getMetadataValue("subject id")}
-              onChange={(e) => handleChange("subject id", e.target.value)}
+              value={getMetadataValue("subject_id")}
+              onChange={(e) => handleChange("subject_id", e.target.value)}
               leftSection={
                 <Text size="sm" c="dimmed" mx="sm">
                   {entityPrefixes["subject"]}

@@ -1,4 +1,0 @@
-Site ID: site-left-ventricle-2
-Related Subject: sub-002
-Anatomical Location: Left Ventricle
-Coordinates: X:25, Y:30, Z:15 (relative to apex)

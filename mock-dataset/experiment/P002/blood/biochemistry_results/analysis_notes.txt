@@ -1,6 +1,0 @@
-Analysis performed by: Lab Technician J. Doe
-Date: 2023-07-10
-Sample quality: Excellent
-Hemolysis: None
-Lipemia: None
-Additional notes: All values within normal reference ranges.
