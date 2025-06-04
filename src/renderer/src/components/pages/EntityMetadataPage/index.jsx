@@ -218,14 +218,14 @@ const EntityMetadataForm = () => {
       } else if (activeFormType === "sample") {
         // Create sample entity
         const tempMetadata = useGlobalStore.getState().temporaryEntityMetadata?.sample || {};
-        addSampleToSubject(entityBeingAddedParentSubject, tempMetadata["sample id"], tempMetadata);
+        addSampleToSubject(entityBeingAddedParentSubject, tempMetadata["sample_id"], tempMetadata);
         clearTemporaryMetadata("sample");
       } else if (activeFormType === "site") {
         // Create site entity
         const tempMetadata = useGlobalStore.getState().temporaryEntityMetadata?.site || {};
 
         // Validate required fields
-        if (!tempMetadata["site id"]) {
+        if (!tempMetadata["site_id"]) {
           window.notyf.open({
             duration: "4000",
             type: "error",
@@ -241,12 +241,12 @@ const EntityMetadataForm = () => {
             addSiteToSample(
               entityBeingAddedParentSubject,
               entityBeingAddedParentSample,
-              tempMetadata["site id"],
+              tempMetadata["site_id"],
               tempMetadata
             );
           } else if (entityBeingAddedParentSubject) {
             // Site belongs directly to subject
-            addSiteToSubject(entityBeingAddedParentSubject, tempMetadata["site id"], tempMetadata);
+            addSiteToSubject(entityBeingAddedParentSubject, tempMetadata["site_id"], tempMetadata);
           }
         } catch (error) {
           window.notyf.open({ duration: "4000", type: "error", message: error.message });
@@ -662,8 +662,8 @@ const EntityMetadataForm = () => {
               label="Sample Identifier"
               description="Enter a unique identifier for this biological sample."
               placeholder="Enter sample ID"
-              value={getMetadataValue("sample id")}
-              onChange={(e) => handleChange("sample id", e.target.value)}
+              value={getMetadataValue("sample_id")}
+              onChange={(e) => handleChange("sample_id", e.target.value)}
               leftSection={
                 <Text size="sm" c="dimmed" mx="sm">
                   {entityPrefixes["sample"]}
@@ -711,7 +711,7 @@ const EntityMetadataForm = () => {
                   placeholder="Select entity"
                   data={getExistingSamples()
                     .map((sample) => sample.id)
-                    .filter((id) => id !== `sam-${getMetadataValue("sample id")}`)}
+                    .filter((id) => id !== `sam-${getMetadataValue("sample_id")}`)}
                   value={getMetadataValue("was derived from")}
                   onChange={(value) => handleChange("was derived from", value)}
                 />
@@ -773,8 +773,8 @@ const EntityMetadataForm = () => {
               label="Site Identifier"
               description="Enter a unique identifier for this site."
               placeholder="Enter site ID"
-              value={getMetadataValue("site id")}
-              onChange={(e) => handleChange("site id", e.target.value)}
+              value={getMetadataValue("site_id")}
+              onChange={(e) => handleChange("site_id", e.target.value)}
               leftSection={
                 <Text size="sm" c="dimmed" mx="sm">
                   {entityPrefixes["site"]}

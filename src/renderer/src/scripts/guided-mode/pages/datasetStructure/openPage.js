@@ -284,9 +284,9 @@ export const openPageDatasetStructure = async (targetPageID) => {
               console.log("Entity dataz: ", entityData);
 
               entityList.push(entityData.id);
-              if (entityData?.["metadata"]?.["sample id"]) {
-                const sampleId = entityData["metadata"]["sample id"];
-                console.log("foundz sample id", sampleId);
+              if (entityData?.["metadata"]?.["sample_id"]) {
+                const sampleId = entityData["metadata"]["sample_id"];
+                console.log("found sample id", sampleId);
                 entityList.push(sampleId);
               }
 

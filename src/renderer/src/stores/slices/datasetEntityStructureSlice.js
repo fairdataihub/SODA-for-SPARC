@@ -278,7 +278,7 @@ export const addSiteToSubject = (subjectId, siteId, metadata = {}) => {
         // Create merged metadata object for the site
         const mergedMetadata = {
           ...metadata,
-          "site id": normalizedSiteId,
+          site_id: normalizedSiteId,
           subject_id: normalizedSubjectId,
         };
 
@@ -341,9 +341,9 @@ export const addSiteToSample = (subjectId, sampleId, siteId, metadata = {}) => {
           // Create merged metadata object for the site
           const mergedMetadata = {
             ...metadata,
-            "site id": normalizedSiteId,
+            site_id: normalizedSiteId,
             subject_id: normalizedSubjectId,
-            "sample id": normalizedSampleId,
+            sample_id: normalizedSampleId,
           };
 
           sample.sites.push({
@@ -639,7 +639,7 @@ export const updateExistingEntityMetadata = (entity, metadataChanges) => {
             site.metadata[key] = value;
             console.log(`Updated site metadata: ${key} = ${value}`);
 
-            if (key === "site id") {
+            if (key === "site_id") {
               site.id = value.startsWith("site-") ? value : `site-${value}`;
             }
           });
@@ -661,7 +661,7 @@ export const updateExistingEntityMetadata = (entity, metadataChanges) => {
             site.metadata[key] = value;
             console.log(`Updated subject site metadata: ${key} = ${value}`);
 
-            if (key === "site id") {
+            if (key === "site_id") {
               site.id = value.startsWith("site-") ? value : `site-${value}`;
             }
           });
