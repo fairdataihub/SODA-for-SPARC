@@ -32,13 +32,13 @@ const NameAndSubtitlePage = () => {
               The dataset name will be used for:
               <br />
               <List withPadding>
-                <List.Item>As a placeholder to save your progress and resume it</List.Item>
+                <List.Item>As a placeholder to save your progress and resume it.</List.Item>
                 <List.Item>
-                  The title of your dataset in the dataset_description metadata file
+                  The title of your dataset in the dataset_description metadata file.
                 </List.Item>
                 <List.Item>
-                  If you are publishing your dataset on the SPARC portal, the title of the dataset
-                  on the
+                  If you publish your dataset on the SPARC Portal, this name will be displayed as
+                  the dataset title on the
                   <ExternalLink
                     href="https://sparc.science/"
                     buttonText="SPARC Data Portal"
@@ -54,7 +54,8 @@ const NameAndSubtitlePage = () => {
       <GuidedModeSection>
         <Textarea
           label="Brief dataset description:"
-          placeholder="Enter a brief description of the dataset (255 characters max)"
+          placeholder="Summarize your dataset in a few sentences (255 characters max)"
+          required
           autosize
           minRows={5}
           value={guidedDatasetSubtitle}
@@ -73,20 +74,11 @@ const NameAndSubtitlePage = () => {
               <br />
               <List withPadding>
                 <List.Item>
-                  The description of your dataset in the dataset_description metadata file.
+                  Appears as the description in your dataset_description metadata file.
                 </List.Item>
                 <List.Item>
-                  If you are publishing your dataset on the SPARC portal, the description visible
-                  immediately under the title of your dataset once it is published on the
-                  <ExternalLink
-                    href="https://sparc.science/"
-                    buttonText="SPARC Data Portal"
-                    buttonType="anchor"
-                  />
-                  .
-                </List.Item>
-                <List.Item>
-                  If you are publishing your dataset on Pennsieve, the title of the dataset on the
+                  If you publish your dataset on the SPARC Portal, this description will be shown
+                  directly under the title on the
                   <ExternalLink
                     href="https://sparc.science/"
                     buttonText="SPARC Data Portal"
