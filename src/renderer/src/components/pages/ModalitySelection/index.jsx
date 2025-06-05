@@ -27,9 +27,9 @@ const ModalitySelectionPage = () => {
     <GuidedModePage pageHeader="Dataset modalities">
       <GuidedModeSection>
         <Text>
-          The SPARC guidelines require that if your dataset includes data collected through multiple
-          modalities such as imaging, recordings, or behavioral data, the manifest file must
-          indicate which modality was used for the data that was collected.
+          The SPARC data structure requires that if your dataset includes data collected through
+          multiple modalities such as imaging, recordings, or behavioral data, the manifest file
+          must indicate which modality was used for the data that was collected.
         </Text>
         <label class="guided--form-label centered">
           Does your dataset include data collected from multiple modalities?
@@ -64,21 +64,24 @@ const ModalitySelectionPage = () => {
         <Paper shadow="sm" radius="md" p="sm" withBorder mb="md">
           <Stack>
             <Checkbox
-              label="Electrophysiology"
-              checked={modalityIsSelected("Electrophysiology")}
-              onChange={() => toggleModalitySelection("Electrophysiology")}
+              label="Microscopy"
+              checked={modalityIsSelected("Microscopy")}
+              onChange={() => toggleModalitySelection("Microscopy")}
             />
-
             <Checkbox
-              label="Imaging"
-              checked={modalityIsSelected("Imaging")}
-              onChange={() => toggleModalitySelection("Imaging")}
+              label="Neuroimaging"
+              checked={modalityIsSelected("Neuroimaging")}
+              onChange={() => toggleModalitySelection("Neuroimaging")}
             />
-
             <Checkbox
-              label="Behavioral"
-              checked={modalityIsSelected("Behavioral")}
-              onChange={() => toggleModalitySelection("Behavioral")}
+              label="Tabular"
+              checked={modalityIsSelected("Tabular")}
+              onChange={() => toggleModalitySelection("Tabular")}
+            />
+            <Checkbox
+              label="Timeseries"
+              checked={modalityIsSelected("Timeseries")}
+              onChange={() => toggleModalitySelection("Timeseries")}
             />
           </Stack>
         </Paper>

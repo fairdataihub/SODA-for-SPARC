@@ -28,6 +28,7 @@ import {
   Badge,
 } from "@mantine/core";
 import useGlobalStore from "../../../stores/globalStore";
+import InstructionsTowardsLeftContainer from "../../utils/ui/InstructionsTowardsLeftContainer";
 
 import {
   setResourceFormVisible,
@@ -356,26 +357,13 @@ const ResourcesManagementPage = () => {
                 </Stack>
               </Paper>
             ) : (
-              <Box
-                style={{
-                  padding: "20px",
-                  backgroundColor: "#f9f9f9",
-                  borderRadius: "8px",
-                  border: "1px dashed #ddd",
-                }}
-              >
-                <Text size="lg" c="dimmed" ta="center" py="xl">
-                  Select a resource from the list to edit its details, or click "Add Resource" to
-                  add a new research resource.
+              <InstructionsTowardsLeftContainer>
+                <Text fw={500}>
+                  {!resourceList || resourceList.length === 0
+                    ? 'Click "Add Resource"  to begin adding a new resource.'
+                    : 'Choose a resource to view or edit, or click "Add Resource" to create a new one.'}
                 </Text>
-
-                {resourceList.length > 0 && (
-                  <Text size="sm" c="dimmed" ta="center">
-                    You have added {resourceList.length} research resource
-                    {resourceList.length > 1 ? "s" : ""} to your dataset.
-                  </Text>
-                )}
-              </Box>
+              </InstructionsTowardsLeftContainer>
             )}
           </Grid.Col>
         </Grid>

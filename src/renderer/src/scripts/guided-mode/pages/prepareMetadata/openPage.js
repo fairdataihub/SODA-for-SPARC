@@ -111,11 +111,6 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     // Page-specific initialization code will go here
   }
 
-  if (targetPageID === "guided-aux-folder-tab") {
-    console.log("Opening auxiliary data import page");
-    // Page-specific initialization code will go here
-  }
-
   if (targetPageID === "guided-contributors-tab") {
     renderDatasetDescriptionContributorsTable();
   }

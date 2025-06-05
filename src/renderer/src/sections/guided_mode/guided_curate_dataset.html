@@ -455,9 +455,9 @@
           <h1 class="text-sub-step-title">Dataset Structure Introduction</h1>
           <div class="guided--section">
             <p class="help-text">
-              The SPARC guidelines require all data in a dataset to be organized into structured
-              folders and accompanied by a manifest file that describes the contents. In the
-              following steps, you will import your dataset into SODA, be guided through the
+              The SPARC dataset structure (SDS) requires all data in a dataset to be organized into
+              structured folders and accompanied by a manifest file that describes the contents. In
+              the following steps, you will import your dataset into SODA, be guided through the
               organization process, and have a manifest file automatically generated for you.
             </p>
           </div>
@@ -838,8 +838,8 @@
               required to assign IDs to every entity in your dataset (e.g. subjects and samples).
               You can either enter these IDs manually in the SODA UI or import them from a
               spreadsheet. <br /><br /><b>Note:</b> For datasets with a large number of entities,
-              importing from a spreadsheet is recommended to avoid having to write them out
-              manually.
+              importing from a spreadsheet is recommended to avoid having to write out an entity ID
+              for each entity.
             </p>
           </div>
 
@@ -968,8 +968,8 @@
           <div class="guided--section">
             <h1 class="text-sub-step-title">Manifest file</h1>
             <p class="help-text">
-              The SPARC guidelines require all datasets to include a manifest file, which is an
-              excel file that contains information about all of the files in your dataset.
+              The SPARC dataset structure requires all datasets to include a manifest file, which is
+              an excel file that contains information about all of the files in your dataset.
             </p>
           </div>
           <div class="guided--section" id="guided-section-auto-generate-manifest-files">
@@ -1065,10 +1065,11 @@
           <h1 class="text-sub-step-title">Dataset Metadata Introduction</h1>
           <div class="guided--section">
             <p class="help-text">
-              The SPARC guidelines require several metadata files containing specific information to
-              be included in the dataset. Over the next steps, you will be asked to provide that
-              information which will then be used by SODA to automatically create the SPARC-required
-              metadata files when generating your dataset in the last step of this process.
+              The SPARC dataset structure requires several metadata files containing specific
+              information to be included in the dataset. Over the next steps, you will be asked to
+              provide that information which will then be used by SODA to automatically create the
+              SPARC-required metadata files when generating your dataset in the last step of this
+              process.
             </p>
           </div>
           <div class="guided--section">
@@ -1604,7 +1605,11 @@
               <b>Leave empty if blank.</b>
             </p>
             <label class="guided--form-label mt-xl">License:</label>
-            <div data-component-type="dropdown-select" id="guided-select-funding-agency"></div>
+            <div
+              data-component-type="dropdown-select"
+              id="guided-select-license"
+              class="w-100"
+            ></div>
           </div>
         </div>
         <div
@@ -2883,13 +2888,7 @@
             </div>
           </div>
         </div>
-        <div id="guided-assign-license-tab" class="guided--page" data-page-name="Sharing license">
-          <div class="guided--section"><h1 class="text-sub-step-title">Sharing license:</h1></div>
-          <div class="guided--section" id="guided-section-experimental-license-select">
-            <p class="help-text" id="license-select-text"></p>
-          </div>
-          <div class="guided--section" id="guided-license-radio-button-container"></div>
-        </div>
+
         <div
           id="guided-create-local-copy-tab"
           class="guided--page"
@@ -2898,9 +2897,10 @@
           <div class="guided--section">
             <h1 class="text-sub-step-title">Complete dataset structure review</h1>
             <p class="help-text">
-              The tree view displayed below shows the complete structure of your dataset and its
-              metadata as it will be generated on Pennsieve on the final step of the curation
-              process.
+              The SDS-compliant dataset tree view below shows the complete structure of your dataset
+              and its metadata. If you only need a local copy, click “Create local copy” to generate
+              it locally. If you are uploading the dataset to Pennsieve, you can optionally create a
+              local copy or proceed to the next step to begin the upload process.
             </p>
           </div>
           <div
@@ -2996,12 +2996,12 @@
           <h1 class="text-sub-step-title">Pennsieve metadata Introduction</h1>
           <div class="guided--section">
             <p class="help-text">
-              The SPARC guidelines require all datasets to be uploaded to Pennsieve, a cloud-based
-              solution for managing and sharing scientific datasets. As you proceed, you will be
-              guided through various steps, such as adding a banner image and selecting a license,
-              which facilitate the discovery and comprehension of your dataset by other users. Note
-              that some information will be automatically populated in Pennsieve based on the
-              details you provided earlier in the process.
+              The SPARC dataset structure requires all datasets to be uploaded to Pennsieve, a
+              cloud-based solution for managing and sharing scientific datasets. As you proceed, you
+              will be guided through various steps, such as adding a banner image and selecting a
+              license, which facilitate the discovery and comprehension of your dataset by other
+              users. Note that some information will be automatically populated in Pennsieve based
+              on the details you provided earlier in the process.
             </p>
           </div>
           <div class="guided--section">
@@ -3486,20 +3486,12 @@
           </div>
         </div>
 
-        <div id="guided-aux-folder-tab" class="guided--page" data-page-name="Auxiliary data import">
-          <div class="guided--section">
-            <h1 class="text-sub-step-title">Auxiliary data importation</h1>
-            <p class="help-text">
-              Import any files that may be needed as part of a publication process to support the
-              needs of a particular publication platform
-            </p>
+        <div id="guided-assign-license-tab" class="guided--page" data-page-name="Sharing license">
+          <div class="guided--section"><h1 class="text-sub-step-title">Sharing license:</h1></div>
+          <div class="guided--section" id="guided-section-experimental-license-select">
+            <p class="help-text" id="license-select-text"></p>
           </div>
-          <div
-            data-component-type="data-importer"
-            data-data-type="Auxiliary data"
-            data-relative-folder-path-to-import-data-into="aux/"
-            class="guided--section"
-          ></div>
+          <div class="guided--section" id="guided-license-radio-button-container"></div>
         </div>
       </div>
 

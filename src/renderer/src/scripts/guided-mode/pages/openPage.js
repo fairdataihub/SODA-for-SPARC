@@ -439,9 +439,6 @@ export const openPage = async (targetPageID) => {
     //     if (targetPageID === "guided-docs-folder-tab") {
     //         guidedUpdateFolderStructureUI("docs/");
     //     }
-    //     if (targetPageID === "guided-aux-folder-tab") {
-    //         guidedUpdateFolderStructureUI("aux/");
-    //     }
 
     //     if (targetPageID === "guided-source-derivative-folders-and-files-selector-tab") {
     //         addEntityToEntityList("source-derivative-folders-and-files", "source");

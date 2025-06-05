@@ -150,8 +150,7 @@ const EntityMetadataForm = () => {
     return (
       <InstructionsTowardsLeftContainer>
         <Text fw={500}>
-          Click the "Add Subject" button to the left to begin structuring and your dataset's
-          entities.
+          Click the "Add Subject" button to the left to begin structuring your dataset's entities.
         </Text>
       </InstructionsTowardsLeftContainer>
     );
@@ -911,7 +910,7 @@ const EntityMetadataPage = ({ entityType }) => {
         <Grid gutter="lg">
           {/* Entity selection panel */}
           <Grid.Col span={5} style={{ position: "sticky", top: "20px" }}>
-            <EntityListContainer title={`Select a ${entityType}`}>
+            <EntityListContainer title={entityType ? `Select a ${entityType}` : null}>
               <EntityHierarchyRenderer
                 allowEntityStructureEditing={true}
                 allowEntitySelection={true}

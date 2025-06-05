@@ -31,6 +31,21 @@ export const dropDownSlice = (set) => ({
       selectedValue: "",
       required: true,
     },
+    "guided-select-license": {
+      label: "",
+      placeholder: "Select a license for your dataset",
+      description:
+        "Select a license for your dataset or 'Other' if your license is not in the dropdown.",
+      options: [
+        "CC0 1.0 Universal (CC0 1.0)",
+        "CC BY 4.0 International (CC BY 4.0)",
+        "CC BY-NC 4.0 International (CC BY-NC 4.0)",
+        "SPARC Data Use Agreement",
+        "Other",
+      ],
+      selectedValue: "",
+      required: true,
+    },
   },
 });
 

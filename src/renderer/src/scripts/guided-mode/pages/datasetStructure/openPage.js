@@ -347,6 +347,15 @@ export const openPageDatasetStructure = async (targetPageID) => {
       manifestDataRows.forEach((row) => {
         const path = row[0]; // Path is in the first column
         console.log("path1", path);
+        if (
+          datasetEntityObj?.["high-level-folder-data-categorization"]?.["Experimental data"]?.[path]
+        ) {
+          console.log("found folder to move to primary", path);
+          const newPath = updateFilePathDataFolder(path, "primary/");
+          console.log("newPath", newPath);
+          row[fileNameColumnIndex] = newPath;
+          console.log("row[fileNameColumnIndex]", row[fileNameColumnIndex]);
+        }
 
         if (datasetEntityObj?.["high-level-folder-data-categorization"]?.["Code"]?.[path]) {
           console.log("found code path", path);
