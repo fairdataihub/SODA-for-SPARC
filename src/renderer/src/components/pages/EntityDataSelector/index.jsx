@@ -152,14 +152,6 @@ const EntityDataSelectorPage = ({
                     to classify your data files.
                   </Text>
                 );
-              case "other-data":
-                return (
-                  <Text>
-                    The files you marked as "other" can now be classified into two categories:
-                    "Documentation", and "Protocol data". Use the interface below to classify your
-                    specify which files are documentation and which files are protocol data.
-                  </Text>
-                );
 
               case "modalities":
                 return (

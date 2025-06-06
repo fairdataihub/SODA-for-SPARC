@@ -1704,7 +1704,7 @@ const validateSPARCdataset = () => {
   } else {
     Swal.fire({
       icon: "error",
-      html: `This folder does not seems to include any SPARC folders. Please select a folder that has a valid SPARC dataset structure.`,
+      html: `This folder does not seems to include any SPARC folders. Please select a folder that has a valid SPARC Dataset Structure.`,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showConfirmButton: true,

@@ -159,11 +159,6 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     }
   }
 
-  if (pageBeingLeftID === "other-data-categorization-tab") {
-    console.log("Validating other data categorization page");
-    // Add validation logic for other-data-categorization-tab if needed
-  }
-
   if (pageBeingLeftID === "guided-entity-addition-method-selection-tab") {
     console.log("Validating entity addition method selection page");
     // Add validation logic for guided-entity-addition-method-selection-tab if needed

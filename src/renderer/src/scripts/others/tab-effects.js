@@ -3390,7 +3390,7 @@ const description_text = {
   prepare_metadata_section:
     "This interface will help you in preparing the SPARC metadata files for your datasets",
   prepare_dataset_section:
-    "This interface will help you in organizing your datasets according to the SPARC Data Structure",
+    "This interface will help you in organizing your datasets according to the SPARC Dataset Structure",
   disseminate_dataset_section:
     "This interface will assist you in completing steps required once your datasets have been fully prepared",
 };

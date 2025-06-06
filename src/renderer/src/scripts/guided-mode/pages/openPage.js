@@ -266,7 +266,7 @@ export const openPage = async (targetPageID) => {
 
         // Make any adjustments to the dataset entity object before setting it in the zustand store
         if (pageEntityType === "high-level-folder-data-categorization") {
-          const bucketTypes = ["Experimental data", "Other"];
+          const bucketTypes = ["Experimental", "Protocol", "Documentation"];
           if (selectedEntities.includes("code")) {
             bucketTypes.push("Code");
           }
@@ -276,7 +276,7 @@ export const openPage = async (targetPageID) => {
           }
         }
 
-        if (pageEntityType === "other-data") {
+        /*if (pageEntityType === "other-data") {
           const otherBucketTypes = ["Protocol data", "Documentation"];
           for (const otherBucketType of otherBucketTypes) {
             addEntityToEntityList("other-data", otherBucketType);
@@ -285,7 +285,7 @@ export const openPage = async (targetPageID) => {
             [{ type: "high-level-folder-data-categorization", names: ["Other"] }],
             []
           );
-        }
+        }*/
 
         if (pageEntityType === "sites") {
           const sites = getExistingSites().map((site) => site.id);

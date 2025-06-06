@@ -24,37 +24,11 @@ const NameAndSubtitlePage = () => {
           value={guidedDatasetName}
           onChange={(event) => setGuidedDatasetName(event.target.value)}
         />
-        <DropDownNote
-          dropDownIcon="info"
-          dropDownButtonText="What is the dataset name used for?"
-          dropDownNote={
-            <Text>
-              The dataset name will be used for:
-              <br />
-              <List withPadding>
-                <List.Item>As a placeholder to save your progress and resume it.</List.Item>
-                <List.Item>
-                  The title of your dataset in the dataset_description metadata file.
-                </List.Item>
-                <List.Item>
-                  If you publish your dataset on the SPARC Portal, this name will be displayed as
-                  the dataset title on the
-                  <ExternalLink
-                    href="https://sparc.science/"
-                    buttonText="SPARC Data Portal"
-                    buttonType="anchor"
-                  />
-                  .
-                </List.Item>
-              </List>
-            </Text>
-          }
-        />
-      </GuidedModeSection>
-      <GuidedModeSection>
+
         <Textarea
           label="Brief dataset description:"
-          placeholder="Summarize your dataset in a few sentences (255 characters max)"
+          description="Summarize your dataset in a few sentences (255 characters max)."
+          placeholder="Enter dataset description"
           required
           autosize
           minRows={5}
@@ -65,31 +39,6 @@ const NameAndSubtitlePage = () => {
         <Text align="right" style={{ marginTop: "-35px", zIndex: "10", marginRight: "10px" }}>
           {255 - guidedDatasetSubtitle.length} characters remaining
         </Text>
-        <DropDownNote
-          dropDownIcon="info"
-          dropDownButtonText="What is the dataset description used for?"
-          dropDownNote={
-            <Text>
-              The description will be used for:
-              <br />
-              <List withPadding>
-                <List.Item>
-                  Appears as the description in your dataset_description metadata file.
-                </List.Item>
-                <List.Item>
-                  If you publish your dataset on the SPARC Portal, this description will be shown
-                  directly under the title on the
-                  <ExternalLink
-                    href="https://sparc.science/"
-                    buttonText="SPARC Data Portal"
-                    buttonType="anchor"
-                  />
-                  .
-                </List.Item>
-              </List>
-            </Text>
-          }
-        />
       </GuidedModeSection>
     </GuidedModePage>
   );

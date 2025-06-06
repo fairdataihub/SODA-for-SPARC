@@ -139,13 +139,6 @@ export const savePageChanges = async (pageBeingLeftID) => {
             });
             throw errorArray;
           }
-
-          const countOfFilesClassifiedAsOther = Object.keys(categorizedData["Other"] || {}).length;
-          if (countOfFilesClassifiedAsOther > 0) {
-            guidedUnSkipPage("other-data-categorization-tab");
-          } else {
-            guidedSkipPage("other-data-categorization-tab");
-          }
         }
 
         // Save the dataset entity object to the progress file

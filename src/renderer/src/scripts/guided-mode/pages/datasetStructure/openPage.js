@@ -57,11 +57,6 @@ export const openPageDatasetStructure = async (targetPageID) => {
     // Component with type "data-categorization-page" will handle most of the logic
   }
 
-  if (targetPageID === "other-data-categorization-tab") {
-    console.log("Opening other data categorization page");
-    // Component with type "data-categorization-page" will handle most of the logic
-  }
-
   if (targetPageID === "guided-manual-dataset-entity-and-metadata-tab") {
     console.log("Opening manual dataset entity and metadata page");
     // Component with type "entity-metadata-page" will handle most of the logic
@@ -360,21 +355,6 @@ export const openPageDatasetStructure = async (targetPageID) => {
         if (datasetEntityObj?.["high-level-folder-data-categorization"]?.["Code"]?.[path]) {
           console.log("found code path", path);
           const newPath = updateFilePathDataFolder(path, "code/");
-          console.log("newPath", newPath);
-          row[fileNameColumnIndex] = newPath;
-          console.log("row[fileNameColumnIndex]", row[fileNameColumnIndex]);
-        }
-        if (datasetEntityObj?.["other-data"]?.["Documentation"]?.[path]) {
-          console.log("found folder to move to documentation", path);
-          const newPath = updateFilePathDataFolder(path, "docs/");
-          console.log("newPath", newPath);
-          row[fileNameColumnIndex] = newPath;
-          console.log("row[fileNameColumnIndex]", row[fileNameColumnIndex]);
-        }
-
-        if (datasetEntityObj?.["other-data"]?.["Protocol data"]?.[path]) {
-          console.log("found folder to move to protocol", path);
-          const newPath = updateFilePathDataFolder(path, "protocol/");
           console.log("newPath", newPath);
           row[fileNameColumnIndex] = newPath;
           console.log("row[fileNameColumnIndex]", row[fileNameColumnIndex]);

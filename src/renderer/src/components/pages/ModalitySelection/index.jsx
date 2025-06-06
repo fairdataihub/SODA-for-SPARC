@@ -27,7 +27,7 @@ const ModalitySelectionPage = () => {
     <GuidedModePage pageHeader="Dataset modalities">
       <GuidedModeSection>
         <Text>
-          The SPARC data structure requires that if your dataset includes data collected through
+          The SPARC Dataset Structure requires that if your dataset includes data collected through
           multiple modalities such as imaging, recordings, or behavioral data, the manifest file
           must indicate which modality was used for the data that was collected.
         </Text>

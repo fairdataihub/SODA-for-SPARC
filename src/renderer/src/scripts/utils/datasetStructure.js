@@ -238,12 +238,6 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
       "primary/"
     );
 
-    // --- Step 4: Move documentation files into the docs folder ---
-    moveFilesByCategory(datasetEntityObj?.["other-data"]?.["Documentation"], "docs/");
-
-    // --- Step 5: Move protocol data files into the protocols folder ---
-    moveFilesByCategory(datasetEntityObj?.["other-data"]?.["Protocol data"], "protocols/");
-
     // --- Step 6: Capture the modified structure before reverting changes ---
     const standardizedStructure = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
 
