@@ -208,7 +208,6 @@ button[data-id="common-strain-rrid-dropdown"] {
 #pi_bootstrap_select_div > .dropdown.bootstrap-select {
   width: 550px;
 }
-#guided-pennsieve-dataset-resume-container > .dropdown.bootstrap-select,
 #guided_sparc_award_bootstrap_select_div > .dropdown.bootstrap-select,
 #guided_pi_bootstrap_select_div > .dropdown.bootstrap-select,
 #guided_permissions_select_div > .dropdown.bootstrap-select {

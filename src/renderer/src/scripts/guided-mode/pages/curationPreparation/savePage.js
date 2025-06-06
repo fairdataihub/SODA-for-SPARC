@@ -38,11 +38,7 @@ export const savePageCurationPreparation = async (pageBeingLeftID) => {
       .getElementById("guided-button-resume-progress-file")
       .classList.contains("selected");
 
-    const resumingPennsieveDataset = document
-      .getElementById("guided-button-resume-pennsieve-dataset")
-      .classList.contains("selected");
-
-    if (!startingNewCuration && !resumingExistingProgress && !resumingPennsieveDataset) {
+    if (!startingNewCuration && !resumingExistingProgress) {
       errorArray.push({
         type: "notyf",
         message: "Please select a dataset start location",
