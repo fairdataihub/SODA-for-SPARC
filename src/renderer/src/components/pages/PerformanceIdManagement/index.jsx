@@ -146,7 +146,7 @@ const PerformanceIdManagement = () => {
     <GuidedModePage pageHeader="Description of Performances">
       <GuidedModeSection>
         <Text mb="md">
-          Provide information for each performance of experimental protocol in the interface below.
+          Provide information for each performance of the experimental protocol below.
         </Text>
       </GuidedModeSection>
 

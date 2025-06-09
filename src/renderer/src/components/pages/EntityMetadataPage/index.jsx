@@ -56,7 +56,7 @@ import SodaPaper from "../../utils/ui/SodaPaper";
 import SodaGreenPaper from "../../utils/ui/SodaGreenPaper";
 import { getExistingSamples } from "../../../stores/slices/datasetEntityStructureSlice";
 import InstructionsTowardsLeftContainer from "../../utils/ui/InstructionsTowardsLeftContainer";
-
+import { OptionalFieldsNotice } from "./utils";
 /**
  * EntityMetadataForm Component
  *
@@ -308,6 +308,8 @@ const EntityMetadataForm = () => {
               }
               leftSectionWidth={50}
             />
+            <OptionalFieldsNotice />
+
             <Select
               label="Sex"
               description="Subject's biological sex"
@@ -434,6 +436,7 @@ const EntityMetadataForm = () => {
             />
             {showFullMetadataFormFields && (
               <>
+                <OptionalFieldsNotice />
                 <TextInput
                   label="Also in dataset"
                   description="Other datasets that include this subject"

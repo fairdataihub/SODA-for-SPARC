@@ -459,52 +459,6 @@ export const openPage = async (targetPageID) => {
 
     //
 
-    //     if (targetPageID === "guided-designate-permissions-tab") {
-    //         // Get the users that can be granted permissions
-    //         const usersReq = await client.get(
-    //             `manage_datasets/ps_get_users?selected_account=${window.defaultBfAccount}`
-    //         );
-    //         const usersThatCanBeGrantedPermissions = usersReq.data.users;
-
-    //         // Get the teams that can be granted permissions
-    //         // Note: This is in a try catch because guest accounts do not have access to the teams endpoint
-    //         // so the request will fail and teamsThatCanBeGrantedPermissions will remain an empty array
-    //         let teamsThatCanBeGrantedPermissions = [];
-    //         try {
-    //             const teamsReq = await client.get(
-    //                 `manage_datasets/ps_get_teams?selected_account=${window.defaultBfAccount}`
-    //             );
-    //             teamsThatCanBeGrantedPermissions = window.getSortedTeamStrings(teamsReq.data.teams);
-    //         } catch (error) {
-    //             clientError(error);
-    //         }
-
-    //         // Reset the dropdown with the new users and teams
-    //         guidedAddUsersAndTeamsToDropdown(
-    //             usersThatCanBeGrantedPermissions,
-    //             teamsThatCanBeGrantedPermissions
-    //         );
-
-    //         //If the PI owner is empty, set the PI owner to the user that is currently curating
-    //         if (Object.keys(window.sodaJSONObj["digital-metadata"]["pi-owner"]).length === 0) {
-    //             //Get the user information of the user that is currently curating
-    //             const user = await api.getUserInformation();
-
-    //             const loggedInUserString = `${user["firstName"]} ${user["lastName"]} (${user["email"]})`;
-    //             const loggedInUserUUID = user["id"];
-    //             const loggedInUserName = `${user["firstName"]} ${user["lastName"]}`;
-    //             const loggedInUserPiObj = {
-    //                 userString: loggedInUserString,
-    //                 UUID: loggedInUserUUID,
-    //                 name: loggedInUserName,
-    //             };
-    //             setGuidedDatasetPiOwner(loggedInUserPiObj);
-    //         }
-
-    //         renderPermissionsTable();
-    //         guidedResetUserTeamPermissionsDropdowns();
-    //     }
-
     //     if (targetPageID === "guided-create-samples-metadata-tab") {
     //         //remove custom fields that may have existed from a previous session
     //         document.getElementById("guided-accordian-custom-fields-samples").innerHTML = "";

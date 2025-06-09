@@ -154,12 +154,7 @@ const EntityDataSelectorPage = ({
                 );
 
               case "modalities":
-                return (
-                  <Text>
-                    For each modality you indicated your dataset contains, select the folders and
-                    files relevant to that modality.
-                  </Text>
-                );
+                return <Text>Select the folders and files that belong to each modality.</Text>;
 
               default:
                 return (

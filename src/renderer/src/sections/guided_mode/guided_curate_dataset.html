@@ -770,21 +770,13 @@
         <div
           class="guided--page"
           id="guided-manifest-file-generation-tab"
-          data-page-name="View/edit manifest file"
+          data-page-name="Manifest File Review"
         >
-          <div class="guided--section">
-            <h1 class="text-sub-step-title">Manifest file</h1>
-            <p class="help-text">
-              The SPARC Dataset Structure requires all datasets to include a manifest file, which is
-              an excel file that contains information about all of the files in your dataset.
-            </p>
-          </div>
           <div class="guided--section" id="guided-section-auto-generate-manifest-files">
-            <h2 class="text-sub-step-title">Preview/Edit manifest file</h2>
+            <h2 class="text-sub-step-title">Manifest File Review</h2>
             <p class="help-text">
-              Click on the manifest below to preview it or add additional metadata in a separate
-              page. Note that SODA will automatically include the "filename", "timestamp", and "file
-              type" in your manifest files. Click 'Save and Continue' to move on to the next step.
+              SODA has automatically generated a manifest file based on your data and entities you
+              provided in prior steps.
             </p>
 
             <div class="guided--section" id="guided-container-manifest-file-cards"></div>
@@ -3152,143 +3144,6 @@
                   </button>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          id="guided-designate-permissions-tab"
-          class="guided--page"
-          data-page-name="Pennsieve user permissions"
-        >
-          <div class="guided--section">
-            <h1 class="text-sub-step-title">Dataset permissions</h1>
-            <p class="help-text text-left">
-              Dataset permissions control who can view, edit, or manage your dataset on Pennsieve
-              before it is published. You can give permissions to your team members if you expect
-              them to modify your dataset before publication.
-            </p>
-
-            <div class="info-dropdown">
-              <p class="info-dropdown-text" data-dropdown-type="info">
-                Learn more about dataset Permissions on Pennsieve
-              </p>
-              <i class="fas fa-chevron-right" style="transform: rotate(0deg)"></i>
-            </div>
-            <div class="info-container" style="margin-bottom: 1.5rem">
-              <p class="help-text">Pennsieve has 3 levels of permissions for datasets:</p>
-              <ul class="help-text">
-                <li class="help-text text-left mb-2">
-                  <b>Viewer:</b> Give this permission to collaborators who only need to view your
-                  dataset.
-                </li>
-
-                <li class="help-text text-left mb-2">
-                  <b>Editor:</b> Give this permission to collaborators who only need to view your
-                  dataset and upload files to it.
-                </li>
-                <li class="help-text text-left mb-2">
-                  <b>Manager:</b> Give this permission to collaborators who need full editing access
-                  to your dataset (except publish the dataset).
-                </li>
-                <li class="help-text text-left mb-2">
-                  <b>Owner:</b> This permission is typically given to the Principal Investigator of
-                  the award. The owner can do everything with the dataset, including publish it.
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div class="guided--section" id="guided-section-add-additional-permissions">
-            <p class="help-text text-left mb-md">
-              Current permissions are listed in the table below. To add a permission, select the
-              Pennsieve user or team you would like to grant a permission to, select their role, and
-              press "Designate permission". To delete a permission, click the delete icon in the
-              table below.
-            </p>
-
-            <table class="ui celled striped table" style="margin-bottom: 10px; width: 800px">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th class="remove-left-border" style="width: 268px">Permission</th>
-                  <th class="center aligned remove-left-border" style="width: 30px">Delete</th>
-                </tr>
-              </thead>
-              <tbody id="permissions-table-body"></tbody>
-            </table>
-            <div class="guided--container-permissions mb-md" style="margin-top: 1rem">
-              <div style="flex-grow: 1">
-                <div
-                  class="field"
-                  style="
-                    display: flex;
-                    width: 100%;
-                    justify-content: center;
-                    align-items: center;
-                    flex-direction: column;
-                  "
-                >
-                  <div
-                    id="guided_permissions_select_div"
-                    style="
-                      display: flex;
-                      flex-direction: row;
-                      justify-content: space-around;
-                      width: 100%;
-                    "
-                  >
-                    <select
-                      class="selectpicker SODA-select-picker"
-                      data-live-search="true"
-                      id="guided_bf_list_users_and_teams"
-                    ></select>
-                  </div>
-                </div>
-              </div>
-              <select
-                class="my-dropdown"
-                style="width: 150px; margin: 0px 10px; cursor: pointer; height: 35px"
-                id="select-permission-list-users-and-teams"
-              >
-                <option value="Select role">Select role</option>
-                <option value="viewer">viewer</option>
-                <option value="manager">manager</option>
-                <option value="editor">editor</option></select
-              ><button
-                class="ui primary button"
-                id="guided-button-add-permission-user-or-team"
-                style="
-                  height: 35px;
-                  background-color: var(--color-light-green) !important;
-                  padding: 0.7em 1.3em;
-                  width: 195px;
-                  margin-right: 0px;
-                "
-              >
-                Designate permission
-              </button>
-            </div>
-            <div class="info-dropdown" style="margin-left: -1rem">
-              <p class="info-dropdown-text" data-dropdown-type="warning">
-                I don't see my team or team members
-              </p>
-              <i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="info-container" style="margin-left: -0.5rem">
-              <p class="help-text mb-0">
-                Users or teams must have a Pennsieve account and have access to the SPARC Consortium
-                organization before you can grant them dataset permissions. Instructions on how to
-                create a Pennsieve account and get access to the SPARC Consortium organization can
-                be found can be found
-                <a
-                  target="_blank"
-                  href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-a-pennsieve-account"
-                  >here</a
-                >.
-                <br />
-                <b>Note:</b> Users on guest accounts may not grant permissions to other teams.
-              </p>
             </div>
           </div>
         </div>

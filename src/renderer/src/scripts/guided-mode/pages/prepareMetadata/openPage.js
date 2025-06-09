@@ -101,11 +101,6 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     }
   }
 
-  if (targetPageID === "guided-designate-permissions-tab") {
-    console.log("Opening Pennsieve user permissions page");
-    // Page-specific initialization code will go here
-  }
-
   if (targetPageID === "guided-assign-license-tab") {
     console.log("Opening sharing license page");
     // Page-specific initialization code will go here
