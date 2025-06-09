@@ -147,9 +147,9 @@ const EntityDataSelectorPage = ({
               case "high-level-folder-data-categorization":
                 return (
                   <Text>
-                    The SDS requires data to be categorized into three categories: experimental,
-                    code, and other (data that is not experimental or code). Use the interface below
-                    to classify your data files.
+                    The SDS requires data to be organized into four categories: experimental, code,
+                    and other (data that is not experimental or code). Use the interface below to
+                    classify your data files.
                   </Text>
                 );
 

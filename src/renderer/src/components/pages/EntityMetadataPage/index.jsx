@@ -298,6 +298,7 @@ const EntityMetadataForm = () => {
               label="Subject Identifier"
               description="Enter a unique identifier for this subject."
               placeholder="Enter subject ID"
+              required
               value={getMetadataValue("subject_id")}
               onChange={(e) => handleChange("subject_id", e.target.value)}
               leftSection={
@@ -306,7 +307,7 @@ const EntityMetadataForm = () => {
                 </Text>
               }
               leftSectionWidth={50}
-            />{" "}
+            />
             <Select
               label="Sex"
               description="Subject's biological sex"
@@ -659,6 +660,7 @@ const EntityMetadataForm = () => {
             />
             <TextInput
               label="Sample Identifier"
+              required
               description="Enter a unique identifier for this biological sample."
               placeholder="Enter sample ID"
               value={getMetadataValue("sample_id")}
@@ -772,6 +774,7 @@ const EntityMetadataForm = () => {
               label="Site Identifier"
               description="Enter a unique identifier for this site."
               placeholder="Enter site ID"
+              required
               value={getMetadataValue("site_id")}
               onChange={(e) => handleChange("site_id", e.target.value)}
               leftSection={
@@ -807,6 +810,7 @@ const EntityMetadataForm = () => {
           <Stack spacing="md">
             <TextInput
               label="Performance Identifier"
+              required
               description="Enter a unique identifier for this experimental session."
               placeholder="Enter performance ID"
               value={getMetadataValue("performance id")}
@@ -902,7 +906,7 @@ const EntityMetadataPage = ({ entityType }) => {
           {showFullMetadataFormFields
             ? `Tell us more about the ${entityType} you collected data from in the interface below. If your ${entityType} have
             a lot of overlapping metadata, you can use the copy metadata button to copy metadata between ${entityType}.`
-            : "Use the interface below to describe the structure of the data that was collected during your study."}
+            : "Use the interface below to describe the entities in your experimental data."}
         </Text>
       </GuidedModeSection>
 

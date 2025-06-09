@@ -173,9 +173,8 @@ export const savePageChanges = async (pageBeingLeftID) => {
 
         const countOfFilesCategorizedAsCode = Object.keys(categorizedData["Code"] || {}).length;
         const countOfFilesCategorizedAsExperimental = Object.keys(
-          categorizedData["Experimental data"] || {}
+          categorizedData["Experimental"] || {}
         ).length;
-        const countOfFilesCategorizedAsOther = Object.keys(categorizedData["Other"] || {}).length;
 
         if (window.sodaJSONObj["selected-entities"].includes("code")) {
           if (countOfFilesCategorizedAsCode === 0) {
