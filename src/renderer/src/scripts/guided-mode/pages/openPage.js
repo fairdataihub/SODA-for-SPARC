@@ -1,7 +1,7 @@
 import { openPageCurationPreparation } from "./curationPreparation/openPage.js";
 import { openPageDatasetStructure } from "./datasetStructure/openPage.js";
 import { openPagePrepareMetadata } from "./prepareMetadata/openPage.js";
-import { openGenerateDatasetPage } from "./generateDataset/openPage.js";
+import { openPageGenerateDataset } from "./generateDataset/openPage.js";
 import {
   resetGuidedRadioButtons,
   updateGuidedRadioButtonsFromJSON,
@@ -394,7 +394,7 @@ export const openPage = async (targetPageID) => {
     await openPageCurationPreparation(targetPageID);
     await openPageDatasetStructure(targetPageID);
     await openPagePrepareMetadata(targetPageID);
-    await openGenerateDatasetPage(targetPageID);
+    await openPageGenerateDataset(targetPageID);
 
     if (targetPageID === "supporting-data-tab") {
       addEntityToEntityList("supporting-data", "Source data");
@@ -590,9 +590,9 @@ export const openPage = async (targetPageID) => {
     window.sodaJSONObj["page-before-exit"] = targetPageID;
     await guidedSaveProgress();
   } catch (error) {
+    console.error("Error opening page:", targetPageID);
+    console.error("Error: ", error);
     const eMessage = userErrorMessage(error);
-    console.error(error);
-    console.error(eMessage);
     Swal.fire({
       icon: "error",
       title: `Error opening the ${targetPageName} page`,

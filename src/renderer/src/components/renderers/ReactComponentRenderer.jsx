@@ -10,6 +10,7 @@ import SingleColumnTable from "../tables/singleColumn";
 import PennsieveAgentCheckDisplay from "../backgroundServices/PennsieveAgentCheckDisplay";
 import DatasetContentSelector from "../pages/DatasetContentSelector";
 import PerformanceIdManagementPage from "../pages/PerformanceIdManagement";
+import GenerateDatasetLocationSelectorPage from "../pages/GenerateDatasetLocationSelector";
 import ResourcesManagementPage from "../pages/ResourcesManagement";
 import ModalitySelectionPage from "../pages/ModalitySelection";
 import EntityMetadataPage from "../pages/EntityMetadataPage";
@@ -148,6 +149,7 @@ const componentTypeRenderers = {
       </SodaComponentWrapper>
     );
   },
+
   "entity-metadata-page": (componentSlot) => {
     const root = createRoot(componentSlot);
     const props = {
@@ -223,11 +225,11 @@ const componentTypeRenderers = {
     );
   },
 
-  "dataset-performance-id-management-page": (componentSlot) => {
+  "generate-dataset-location-selector-page": (componentSlot) => {
     const root = createRoot(componentSlot);
     root.render(
       <SodaComponentWrapper>
-        <DatasetEntityManagementPage />
+        <GenerateDatasetLocationSelectorPage />
       </SodaComponentWrapper>
     );
   },

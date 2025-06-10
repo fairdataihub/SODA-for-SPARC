@@ -1,8 +1,7 @@
 import { guidedShowTreePreview } from "../../datasetStructureTreePreview/treePreview.js";
 import { guidedGetDatasetType } from "../../guided-curate-dataset.js";
 
-export const openGenerateDatasetPage = async (targetPageID) => {
-  console.log("openGenerateDatasetPage", targetPageID);
+export const openPageGenerateDataset = async (targetPageID) => {
   if (targetPageID === "guided-dataset-generation-confirmation-tab") {
     //Set the inner text of the generate/retry pennsieve dataset button depending on
     //whether a dataset has bee uploaded from this progress file

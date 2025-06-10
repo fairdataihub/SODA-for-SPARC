@@ -788,8 +788,6 @@ window.handleGuidedModeOrgSwitch = async (buttonClicked) => {
   }
 };
 
-$("#guided-select-pennsieve-dataset-to-resume").selectpicker();
-
 let homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
 let guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
 

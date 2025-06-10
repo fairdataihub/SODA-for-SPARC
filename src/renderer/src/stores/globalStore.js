@@ -13,6 +13,7 @@ import { performancesSlice } from "./slices/performancesSlice";
 import { modalitiesSlice } from "./slices/modalitiesSlice";
 import { datasetMetadataSlice } from "./slices/datasetMetadataSlice";
 import { resourceMetadataSlice } from "./slices/resourceMetadataSlice";
+import { checkboxCardSlice } from "./slices/checkboxCardSlice";
 
 const useGlobalStore = create(
   immer((set, ...a) => ({
@@ -29,6 +30,7 @@ const useGlobalStore = create(
     ...modalitiesSlice(set, ...a),
     ...datasetMetadataSlice(set, ...a),
     ...resourceMetadataSlice(set, ...a),
+    ...checkboxCardSlice(set, ...a),
   }))
 );
 

@@ -436,7 +436,6 @@ const EntityMetadataForm = () => {
             />
             {showFullMetadataFormFields && (
               <>
-                <OptionalFieldsNotice />
                 <TextInput
                   label="Also in dataset"
                   description="Other datasets that include this subject"
@@ -675,6 +674,7 @@ const EntityMetadataForm = () => {
               }
               leftSectionWidth={50}
             />
+            <OptionalFieldsNotice />
 
             <TextInput
               label="Sample Experimental Group"
@@ -708,7 +708,6 @@ const EntityMetadataForm = () => {
             />
             {showFullMetadataFormFields && (
               <>
-                {/* was derived from Select */}
                 <Select
                   label="Was derived from"
                   description="The entity this sample was derived from"
@@ -787,6 +786,8 @@ const EntityMetadataForm = () => {
               }
               leftSectionWidth={50}
             />
+            <OptionalFieldsNotice />
+
             <TextInput
               label="Site type"
               placeholder="e.g., Recording site, Injection site"
@@ -805,40 +806,6 @@ const EntityMetadataForm = () => {
               placeholder="e.g., X:1.2, Y:3.4, Z:5.6"
               value={getMetadataValue("coordinates")}
               onChange={(e) => handleChange("coordinates", e.target.value)}
-            />
-          </Stack>
-        );
-      case "performance":
-        return (
-          <Stack spacing="md">
-            <TextInput
-              label="Performance Identifier"
-              required
-              description="Enter a unique identifier for this experimental session."
-              placeholder="Enter performance ID"
-              value={getMetadataValue("performance id")}
-              onChange={(e) => handleChange("performance id", e.target.value)}
-            />
-            <TextInput
-              label="Experimental Group"
-              description="The experimental group this performance belongs to"
-              placeholder="e.g., Control, Treatment A"
-              value={getMetadataValue("experimentalGroup")}
-              onChange={(e) => handleChange("experimentalGroup", e.target.value)}
-            />
-            <TextInput
-              label="Equipment"
-              description="Equipment used for this recording/performance"
-              placeholder="e.g., Multichannel electrode array"
-              value={getMetadataValue("equipment")}
-              onChange={(e) => handleChange("equipment", e.target.value)}
-            />
-            <TextInput
-              label="Date"
-              description="Date of the recording/performance"
-              placeholder="YYYY-MM-DD"
-              value={getMetadataValue("date")}
-              onChange={(e) => handleChange("date", e.target.value)}
             />
           </Stack>
         );

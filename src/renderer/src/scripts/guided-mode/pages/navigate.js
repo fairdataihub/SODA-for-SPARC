@@ -163,7 +163,7 @@ const handleStartCuration = async () => {
     throw errorArray;
   }
 
-  //Skip this page becausae we should not come back to it
+  //Skip this page because we should not come back to it
   guidedSkipPage("guided-select-starting-point-tab");
 };
 
