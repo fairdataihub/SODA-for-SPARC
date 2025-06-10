@@ -70,18 +70,6 @@ const SubmissionMetadataForm = () => {
   const milestones = useGlobalStore((state) => state.milestones || []);
   const milestoneDate = useGlobalStore((state) => state.milestoneDate || null);
 
-  const [selectedFile, setSelectedFile] = useState(null);
-
-  // Function to handle file drop
-  const handleDrop = (files) => {
-    if (files.length > 0) {
-      setSelectedFile(files[0]);
-      console.log("File selected:", files[0].name);
-      // Here you would typically process the file, possibly extracting award number
-      // and other metadata from it
-    }
-  };
-
   // Function to handle milestone tags changes
   const handleMilestonesChange = (values) => {
     setMilestones(values);
@@ -118,87 +106,7 @@ const SubmissionMetadataForm = () => {
             )}
             {/* Show consortium dropdown only if agency is NIH */}
             {fundingAgencyDropdownState === "NIH" && (
-              <>
-                <DropdownSelect id="guided-select-sparc-funding-consortium" />
-                {/* SPARC-specific UI */}
-                {fundingConsortiumDropdownState === "SPARC" && (
-                  <Box mt="lg">
-                    <Paper withBorder p="md" radius="md" bg="gray.0">
-                      <Group position="center" mb="xs">
-                        <Title order={5}>SPARC Data Deliverables Document Import</Title>
-
-                        <Text>
-                          If you have your SPARC data deliverables document, import it below.
-                          Otherwise, fill out the inputs below regarding your Award Number and
-                          Milestone(s) manually. You can find out more about the Data Deliverables
-                          document and how to obtain it{" "}
-                          <ExternalLink
-                            href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-your-data-deliverables-document"
-                            buttonText="here"
-                            buttonType="anchor"
-                          />
-                          .
-                        </Text>
-                      </Group>
-
-                      {/* Improved centered dropzone */}
-                      <Dropzone
-                        onDrop={handleDrop}
-                        maxSize={3 * 1024 ** 2}
-                        accept={[".xlsx", ".xls", ".csv"]}
-                        mt="md"
-                        mb="md"
-                        p="xl"
-                        sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
-                      >
-                        <Box
-                          sx={{
-                            width: "100%",
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            textAlign: "center",
-                          }}
-                        >
-                          <Dropzone.Accept>
-                            <IconFileImport
-                              size={40}
-                              stroke={1.5}
-                              color="var(--mantine-color-blue-6)"
-                            />
-                          </Dropzone.Accept>
-                          <Dropzone.Reject>
-                            <IconX size={40} stroke={1.5} color="var(--mantine-color-red-6)" />
-                          </Dropzone.Reject>
-                          <Dropzone.Idle>
-                            <Center>
-                              <IconFileSpreadsheet size={40} stroke={1.5} />
-                            </Center>
-                          </Dropzone.Idle>
-
-                          <Text size="lg" mt={10} ta="center">
-                            {selectedFile
-                              ? selectedFile.name
-                              : "Drag deliverables document here or click here to import"}
-                          </Text>
-                        </Box>
-                      </Dropzone>
-
-                      {/* Centered file selected notification */}
-                      {selectedFile && (
-                        <Group position="center" mt="md">
-                          <IconCheck size={18} color="green" />
-                          <Text size="sm">File selected: {selectedFile.name}</Text>
-                          <Button variant="light" size="xs" onClick={() => setSelectedFile(null)}>
-                            Remove
-                          </Button>
-                        </Group>
-                      )}
-                    </Paper>
-                  </Box>
-                )}
-              </>
+              <DropdownSelect id="guided-select-sparc-funding-consortium" />
             )}
             {showCustomConsortiumNameUI && (
               <TextInput

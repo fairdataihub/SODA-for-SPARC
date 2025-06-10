@@ -8,24 +8,16 @@ export const checkboxCardSlice = (set) => ({
   ...initialCheckboxState,
 });
 
-export const setCheckboxCardChecked = (key, checked) => {
+export const setCheckboxCardChecked = (key) => {
   useGlobalStore.setState((state) => {
-    state.checkboxes[key] = checked;
+    state.checkboxes[key] = true;
   });
 };
 
-export const toggleCheckboxCardChecked = (key) => {
+export const setCheckboxCardUnchecked = (key) => {
   useGlobalStore.setState((state) => {
-    state.checkboxes[key] = !state.checkboxes[key];
+    state.checkboxes[key] = false;
   });
-};
-
-export const isCheckboxCardChecked = (key) => {
-  return !!useGlobalStore.getState().checkboxes[key];
-};
-
-export const getAllCheckboxCardChecked = () => {
-  return { ...useGlobalStore.getState().checkboxes };
 };
 
 export const clearAllCheckboxCardChecked = () => {

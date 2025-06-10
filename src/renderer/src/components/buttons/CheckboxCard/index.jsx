@@ -1,22 +1,26 @@
-import React from "react";
-import { Checkbox, Text, UnstyledButton } from "@mantine/core";
-import classes from "./CheckboxCard.module.css";
+import useGlobalStore from "../../../stores/globalStore";
+import { Checkbox, Text, UnstyledButton, Stack } from "@mantine/core";
+import {
+  setCheckboxCardChecked,
+  setCheckboxCardUnchecked,
+} from "../../../stores/slices/checkboxCardSlice";
 
-// Import Tabler Icons you want to use
 import { IconSun, IconBuildingFactory, IconMountain, IconSnowflake } from "@tabler/icons-react";
 
 const dataMap = {
   "generate-dataset-locally": {
-    title: "Beach vacation",
-    description: "Sun and sea",
+    title: "Generate dataset locally",
+    description: "Create a local copy of your dataset on your computer",
     Icon: IconSun,
   },
-  city: { title: "City trips", description: "Sightseeing", Icon: IconBuildingFactory },
-  mountain: { title: "Hiking vacation", description: "Mountains", Icon: IconMountain },
-  winter: { title: "Winter vacation", description: "Snow and ice", Icon: IconSnowflake },
+  "generate-dataset-on-pennsieve": {
+    title: "Generate dataset on Pennsieve",
+    description: "Generate a dataset directly on the Pennsieve platform",
+    Icon: IconBuildingFactory,
+  },
 };
 
-const CheckboxCard = ({ id, checked, onChange, className, ...others }) => {
+const CheckboxCard = ({ id }) => {
   const data = dataMap[id];
 
   if (!data) {
@@ -24,33 +28,52 @@ const CheckboxCard = ({ id, checked, onChange, className, ...others }) => {
   }
 
   const { title, description, Icon } = data;
+  const checked = useGlobalStore((state) => !!state.checkboxes[id]);
+
+  const handleCardClick = () => {
+    if (checked) {
+      setCheckboxCardUnchecked(id);
+    } else {
+      setCheckboxCardChecked(id);
+    }
+  };
 
   return (
     <UnstyledButton
-      {...others}
-      onClick={() => onChange(!checked, id)}
-      data-checked={true}
-      className={`${classes.button} ${className || ""}`}
-      style={{ display: "flex", alignItems: "center" }} // Ensure horizontal alignment
+      onClick={handleCardClick}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        width: "300px",
+        padding: "var(--mantine-spacing-sm)",
+        border: checked
+          ? "1px solid var(--mantine-color-blue-6)"
+          : "1px solid var(--mantine-color-gray-3)",
+        background: checked ? "var(--mantine-color-blue-0)" : "transparent",
+      }}
     >
+      <Checkbox
+        checked={checked}
+        onChange={(e) => {
+          e.stopPropagation();
+          if (checked) {
+            setCheckboxCardUnchecked(id);
+          } else {
+            setCheckboxCardChecked(id);
+          }
+        }}
+        tabIndex={-1}
+        styles={{ input: { cursor: "pointer" } }}
+      />
       {Icon && <Icon size={40} style={{ marginRight: 16 }} />}
-
-      <div className={classes.body}>
-        <Text c="dimmed" size="xs" lh={1} mb={5}>
-          {description}
-        </Text>
+      <Stack>
         <Text fw={500} size="sm" lh={1}>
           {title}
         </Text>
-      </div>
-
-      <Checkbox
-        checked={true}
-        onChange={(e) => onChange(e.currentTarget.checked, id)}
-        tabIndex={-1}
-        styles={{ input: { cursor: "pointer" } }}
-        onClick={(e) => e.stopPropagation()}
-      />
+        <Text c="dimmed" size="xs" lh={1} mb={5}>
+          {description}
+        </Text>
+      </Stack>
     </UnstyledButton>
   );
 };
