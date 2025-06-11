@@ -294,7 +294,7 @@ const EntityMetadataForm = () => {
 
     switch (entityType) {
       case "subject":
-        console.log(datasetIsREJOINFunded())
+        console.log(datasetIsREJOINFunded());
         if (datasetIsREJOINFunded()) {
           console.log("REJOIN funded dataset detected, showing full metadata form fields");
           return (
@@ -494,7 +494,7 @@ const EntityMetadataForm = () => {
                 onChange={(e) => handleChange("subject experimental group", e.target.value)}
               />
             </Stack>
-          )
+          );
         } else {
           console.log("Standard dataset detected, showing basic metadata form fields");
           return (
