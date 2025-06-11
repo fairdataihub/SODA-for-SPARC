@@ -294,7 +294,7 @@ const EntityMetadataForm = () => {
 
     switch (entityType) {
       case "subject":
-        console.log(datasetIsREJOINFunded())
+        console.log(datasetIsREJOINFunded());
         if (datasetIsREJOINFunded()) {
           console.log("REJOIN funded dataset detected, showing full metadata form fields");
           return (
@@ -316,6 +316,7 @@ const EntityMetadataForm = () => {
               <OptionalFieldsNotice />
               <TextInput
                 label="Species"
+                required
                 description="The species of the subject"
                 placeholder="e.g., Homo sapiens, Mus musculus"
                 value={getMetadataValue("species")}
@@ -331,6 +332,7 @@ const EntityMetadataForm = () => {
 
               <Select
                 label="Sex"
+                required
                 description="Subject's biological sex"
                 placeholder="Select sex"
                 data={["Male", "Female", "Unknown"]}
@@ -459,14 +461,14 @@ const EntityMetadataForm = () => {
               </Box>
               <TextInput
                 label="Disease or Disorder"
-                description="Any known disease or disorder affecting the subject"
+                description="For clinical subjects that have been diagnosed with a disease or disorder"
                 placeholder="e.g., Diabetes"
                 value={getMetadataValue("disease or disorder")}
                 onChange={(e) => handleChange("disease or disorder", e.target.value)}
               />
               <TextInput
                 label="Disease Model"
-                description="The disease model used for this subject"
+                description="For experimental subjects in which a disease or disorder is induced - required if relevant"
                 placeholder="e.g., Alzheimer's model"
                 value={getMetadataValue("disease model")}
                 onChange={(e) => handleChange("disease model", e.target.value)}
@@ -474,7 +476,7 @@ const EntityMetadataForm = () => {
 
               <TextInput
                 label="Strain"
-                description="The strain of the subject"
+                description="The strain of the subject - required if relevant"
                 placeholder="e.g., C57BL/6J"
                 value={getMetadataValue("strain")}
                 onChange={(e) => handleChange("strain", e.target.value)}
@@ -488,13 +490,13 @@ const EntityMetadataForm = () => {
               />
               <TextInput
                 label="Subject Experimental Group"
-                description="The experimental group this subject belongs to"
+                description="The experimental group this subject belongs to - required if relevant"
                 placeholder="e.g., Control, Treatment A"
                 value={getMetadataValue("subject experimental group")}
                 onChange={(e) => handleChange("subject experimental group", e.target.value)}
               />
             </Stack>
-          )
+          );
         } else {
           console.log("Standard dataset detected, showing basic metadata form fields");
           return (
@@ -859,84 +861,169 @@ const EntityMetadataForm = () => {
             </Stack>
           );
         }
-      case "sample":
-        return (
-          <Stack spacing="md">
-            <TextInput
-              label="Subject this sample belongs to"
-              disabled
-              value={entityBeingAddedParentSubject}
-            />
-            <TextInput
-              label="Sample Identifier"
-              required
-              description="Enter a unique identifier for this biological sample."
-              placeholder="Enter sample ID"
-              value={getMetadataValue("sample_id")}
-              onChange={(e) => handleChange("sample_id", e.target.value)}
-              leftSection={
-                <Text size="sm" c="dimmed" mx="sm">
-                  {entityPrefixes["sample"]}
-                </Text>
-              }
-              leftSectionWidth={50}
-            />
 
-            <TextInput
-              label="Sample Experimental Group"
-              description="The experimental group this sample belongs to"
-              placeholder="e.g., Control, Treatment A"
-              value={getMetadataValue("experimental group")}
-              onChange={(e) => handleChange("experimental group", e.target.value)}
-            />
-            <Select
-              label="Sample Type"
-              placeholder="Select sample type"
-              data={[
-                "Tissue",
-                "Whole Organ",
-                "Primary Cell",
-                "Immortalized Cell Line",
-                "In Vitro Differentiated Cell",
-                "Induced Pluripotent Stem Cell",
-                "Stem Cell",
-                "Other",
-              ]}
-              value={getMetadataValue("sample type")}
-              onChange={(value) => handleChange("sample type", value)}
-            />
-            <TextInput
-              label="Anatomical Location"
-              description="The anatomical location this sample was taken from"
-              placeholder="e.g., Dorsal root ganglion"
-              value={getMetadataValue("sample anatomical location")}
-              onChange={(e) => handleChange("sample anatomical location", e.target.value)}
-            />
-            {showFullMetadataFormFields && (
-              <>
-                {/* was derived from Select */}
-                <Select
-                  label="Was derived from"
-                  description="The entity this sample was derived from"
-                  placeholder="Select entity"
-                  data={getExistingSamples()
-                    .map((sample) => sample.id)
-                    .filter((id) => id !== `sam-${getMetadataValue("sample_id")}`)}
-                  value={getMetadataValue("was derived from")}
-                  onChange={(value) => handleChange("was derived from", value)}
-                />
-                {/* Also in dataset TextInput */}
-                <TextInput
-                  label="Also in dataset"
-                  description="Other datasets that include this sample"
-                  placeholder="e.g., dataset-1, dataset-2"
-                  value={getMetadataValue("also in dataset")}
-                  onChange={(e) => handleChange("also in dataset", e.target.value)}
-                />
-              </>
-            )}
-          </Stack>
-        );
+      case "sample":
+        if (datasetIsREJOINFunded()) {
+          return (
+            <Stack spacing="md">
+              <TextInput
+                label="Sample Identifier"
+                required
+                description="Enter a unique identifier for this biological sample."
+                placeholder="Enter sample ID"
+                value={getMetadataValue("sample_id")}
+                onChange={(e) => handleChange("sample_id", e.target.value)}
+                leftSection={
+                  <Text size="sm" c="dimmed" mx="sm">
+                    {entityPrefixes["sample"]}
+                  </Text>
+                }
+                leftSectionWidth={50}
+              />
+              <Select
+                label="Was derived from"
+                description="The entity this sample was derived from"
+                placeholder="Select entity"
+                required
+                data={getExistingSamples()
+                  .map((sample) => sample.id)
+                  .filter((id) => id !== `sam-${getMetadataValue("sample_id")}`)}
+                value={getMetadataValue("was derived from")}
+                onChange={(value) => handleChange("was derived from", value)}
+              />
+              <TextInput
+                label="Pool ID"
+                description="The pool ID this sample belongs to"
+                placeholder="e.g., Pool-1"
+                value={getMetadataValue("pool id")}
+                onChange={(e) => handleChange("pool id", e.target.value)}
+              />
+              <Select
+                label="Sample Type"
+                required
+                placeholder="Select sample type"
+                data={[
+                  "Tissue",
+                  "Whole Organ",
+                  "Primary Cell",
+                  "Immortalized Cell Line",
+                  "In Vitro Differentiated Cell",
+                  "Induced Pluripotent Stem Cell",
+                  "Stem Cell",
+                  "Other",
+                ]}
+                value={getMetadataValue("sample type")}
+                onChange={(value) => handleChange("sample type", value)}
+              />
+              <TextInput
+                label="Sample Experimental Group"
+                description="The experimental group this sample belongs to - required if relevant"
+                placeholder="e.g., Control, Treatment A"
+                value={getMetadataValue("experimental group")}
+                onChange={(e) => handleChange("experimental group", e.target.value)}
+              />
+              <TextInput
+                label="Anatomical Location"
+                required
+                description="The anatomical location this sample was taken from"
+                placeholder="e.g., Dorsal root ganglion"
+                value={getMetadataValue("sample anatomical location")}
+                onChange={(e) => handleChange("sample anatomical location", e.target.value)}
+              />
+              <Select
+                label="Laterality"
+                description="The laterality of the sample"
+                placeholder="Select laterality"
+                data={["left", "right"]}
+                value={getMetadataValue("laterality")}
+                onChange={(value) => handleChange("laterality", value)}
+              />
+              <TextInput
+                label="Anatomical Orientation"
+                description="Orientation of tissue relative to cardinal anatomical planes"
+                value={getMetadataValue("anatomical orientation")}
+                onChange={(e) => handleChange("anatomical orientation", e.target.value)}
+              />
+            </Stack>
+          );
+        } else {
+          return (
+            <Stack spacing="md">
+              <TextInput
+                label="Subject this sample belongs to"
+                disabled
+                value={entityBeingAddedParentSubject}
+              />
+              <TextInput
+                label="Sample Identifier"
+                required
+                description="Enter a unique identifier for this biological sample."
+                placeholder="Enter sample ID"
+                value={getMetadataValue("sample_id")}
+                onChange={(e) => handleChange("sample_id", e.target.value)}
+                leftSection={
+                  <Text size="sm" c="dimmed" mx="sm">
+                    {entityPrefixes["sample"]}
+                  </Text>
+                }
+                leftSectionWidth={50}
+              />
+              <TextInput
+                label="Sample Experimental Group"
+                description="The experimental group this sample belongs to"
+                placeholder="e.g., Control, Treatment A"
+                value={getMetadataValue("experimental group")}
+                onChange={(e) => handleChange("experimental group", e.target.value)}
+              />
+              <Select
+                label="Sample Type"
+                placeholder="Select sample type"
+                data={[
+                  "Tissue",
+                  "Whole Organ",
+                  "Primary Cell",
+                  "Immortalized Cell Line",
+                  "In Vitro Differentiated Cell",
+                  "Induced Pluripotent Stem Cell",
+                  "Stem Cell",
+                  "Other",
+                ]}
+                value={getMetadataValue("sample type")}
+                onChange={(value) => handleChange("sample type", value)}
+              />
+              <TextInput
+                label="Anatomical Location"
+                description="The anatomical location this sample was taken from"
+                placeholder="e.g., Dorsal root ganglion"
+                value={getMetadataValue("sample anatomical location")}
+                onChange={(e) => handleChange("sample anatomical location", e.target.value)}
+              />
+              {showFullMetadataFormFields && (
+                <>
+                  {/* was derived from Select */}
+                  <Select
+                    label="Was derived from"
+                    description="The entity this sample was derived from"
+                    placeholder="Select entity"
+                    data={getExistingSamples()
+                      .map((sample) => sample.id)
+                      .filter((id) => id !== `sam-${getMetadataValue("sample_id")}`)}
+                    value={getMetadataValue("was derived from")}
+                    onChange={(value) => handleChange("was derived from", value)}
+                  />
+                  {/* Also in dataset TextInput */}
+                  <TextInput
+                    label="Also in dataset"
+                    description="Other datasets that include this sample"
+                    placeholder="e.g., dataset-1, dataset-2"
+                    value={getMetadataValue("also in dataset")}
+                    onChange={(e) => handleChange("also in dataset", e.target.value)}
+                  />
+                </>
+              )}
+            </Stack>
+          );
+        }
       case "site":
         return (
           <Stack spacing="md">
