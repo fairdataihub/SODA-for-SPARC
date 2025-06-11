@@ -57,6 +57,7 @@ import SodaGreenPaper from "../../utils/ui/SodaGreenPaper";
 import { getExistingSamples } from "../../../stores/slices/datasetEntityStructureSlice";
 import InstructionsTowardsLeftContainer from "../../utils/ui/InstructionsTowardsLeftContainer";
 import { OptionalFieldsNotice } from "./utils";
+import { datasetIsREJOINFunded } from "../../../../src/scripts/guided-mode/utils/sodaJSONObj";
 /**
  * EntityMetadataForm Component
  *
@@ -289,370 +290,575 @@ const EntityMetadataForm = () => {
    */
   const renderEntitySpecificFields = () => {
     const entityType = selectedHierarchyEntity?.type || activeFormType;
+    console.log("Rendering fields for entity type:", entityType);
 
     switch (entityType) {
       case "subject":
-        return (
-          <Stack spacing="md">
-            <TextInput
-              label="Subject Identifier"
-              description="Enter a unique identifier for this subject."
-              placeholder="Enter subject ID"
-              required
-              value={getMetadataValue("subject_id")}
-              onChange={(e) => handleChange("subject_id", e.target.value)}
-              leftSection={
-                <Text size="sm" c="dimmed" mx="sm">
-                  {entityPrefixes["subject"]}
-                </Text>
-              }
-              leftSectionWidth={50}
-            />
-            <OptionalFieldsNotice />
+        console.log(datasetIsREJOINFunded())
+        if (datasetIsREJOINFunded()) {
+          console.log("REJOIN funded dataset detected, showing full metadata form fields");
+          return (
+            <Stack spacing="md">
+              <TextInput
+                label="Subject Identifier"
+                description="Enter a unique identifier for this subject."
+                placeholder="Enter subject ID"
+                required
+                value={getMetadataValue("subject_id")}
+                onChange={(e) => handleChange("subject_id", e.target.value)}
+                leftSection={
+                  <Text size="sm" c="dimmed" mx="sm">
+                    {entityPrefixes["subject"]}
+                  </Text>
+                }
+                leftSectionWidth={50}
+              />
+              <OptionalFieldsNotice />
+              <TextInput
+                label="Species"
+                description="The species of the subject"
+                placeholder="e.g., Homo sapiens, Mus musculus"
+                value={getMetadataValue("species")}
+                onChange={(e) => handleChange("species", e.target.value)}
+              />
+              <TextInput
+                label="Supplier"
+                description="TBA"
+                placeholder="Enter a supplier for this subject"
+                value={getMetadataValue("supplier")}
+                onChange={(e) => handleChange("supplier", e.target.value)}
+              ></TextInput>
 
-            <Select
-              label="Sex"
-              description="Subject's biological sex"
-              placeholder="Select sex"
-              data={["Male", "Female", "Unknown"]}
-              value={getMetadataValue("sex")}
-              onChange={(value) => handleChange("sex", value)}
-            />
-            <Select
-              label="Age category"
-              description="The age category of the subject at the time of the experiment"
-              placeholder="Select age category"
-              data={[
-                "zygote stage",
-                "cleavage stage",
-                "2 cell stage",
-                "4 cell stage",
-                "8 cell stage",
-                "blastula stage",
-                "gastrula stage",
-                "neurula stage",
-                "pharyngula stage",
-                "organogenesis stage",
-                "late embryonic stage",
-                "embryo stage",
-                "perinatal stage",
-                "neonate stage",
-                "infant stage",
-                "nursing stage",
-                "juvenile stage",
-                "sexually immature stage",
-                "post-juvenile adult stage",
-                "prime adult stage",
-                "late adult stage",
-                "death stage",
-                "nauplius stage",
-                "trochophore stage",
-                "veliger stage",
-                "zoea stage",
-                "larval stage (25)",
-                "pupal stage",
-                "copepodite stage 1",
-                "copepodite stage 2",
-                "copepodite stage 3",
-                "copepodite stage 4",
-                "copepodite stage 5",
-                "copepodite stage 6",
-                "copepodite stage",
-                "crustacean post-larval stage (1)",
-                "glaucothoe stage",
-                "cysticercus stage",
-                "post-embryonic stage",
-                "fully formed stage",
-              ]}
-              value={getMetadataValue("age category")}
-              onChange={(value) => handleChange("age category", value)}
-            />
-            <Group grow justify="space-between">
-              <Box>
-                <Text size="sm" fw={500} mb={3}>
-                  Age Value
-                </Text>
-                <Text size="xs" c="dimmed" mb={5}>
-                  Numeric age value
-                </Text>
-                <NumberInput
-                  placeholder="e.g., 12"
-                  value={getMetadataValue("age")}
-                  onChange={(value) => handleChange("age", value)}
-                  min={0}
-                  defaultValue={0}
-                />
-              </Box>
+              <Select
+                label="Sex"
+                description="Subject's biological sex"
+                placeholder="Select sex"
+                data={["Male", "Female", "Unknown"]}
+                value={getMetadataValue("sex")}
+                onChange={(value) => handleChange("sex", value)}
+              />
 
-              <Box>
-                <Text size="sm" fw={500} mb={3}>
-                  Age Unit
-                </Text>
-                <Text size="xs" c="dimmed" mb={5}>
-                  Time unit for age
-                </Text>
-                <Select
-                  placeholder="Select unit"
-                  data={[
-                    { value: "hours", label: "Hours" },
-                    { value: "days", label: "Days" },
-                    { value: "weeks", label: "Weeks" },
-                    { value: "months", label: "Months" },
-                    { value: "years", label: "Years" },
-                  ]}
-                  value={getMetadataValue("age unit")}
-                  onChange={(value) => handleChange("age unit", value)}
-                  defaultValue={"Select unit"}
-                />
-              </Box>
-            </Group>
-            <TextInput
-              label="Species"
-              description="The species of the subject"
-              placeholder="e.g., Homo sapiens, Mus musculus"
-              value={getMetadataValue("species")}
-              onChange={(e) => handleChange("species", e.target.value)}
-            />
-            <TextInput
-              label="Strain"
-              description="The strain of the subject"
-              placeholder="e.g., C57BL/6J"
-              value={getMetadataValue("strain")}
-              onChange={(e) => handleChange("strain", e.target.value)}
-            />
-            <TextInput
-              label="RRID for strain"
-              description="Research Resource Identifier for the strain"
-              placeholder="e.g., RRID:IMSR_JAX:000664"
-              value={getMetadataValue("RRID for strain")}
-              onChange={(e) => handleChange("RRID for strain", e.target.value)}
-            />
-            <TextInput
-              label="Subject Experimental Group"
-              description="The experimental group this subject belongs to"
-              placeholder="e.g., Control, Treatment A"
-              value={getMetadataValue("subject experimental group")}
-              onChange={(e) => handleChange("subject experimental group", e.target.value)}
-            />
-            {showFullMetadataFormFields && (
-              <>
-                <OptionalFieldsNotice />
-                <TextInput
-                  label="Also in dataset"
-                  description="Other datasets that include this subject"
-                  placeholder="e.g., dataset-1, dataset-2"
-                  value={getMetadataValue("also in dataset")}
-                  onChange={(e) => handleChange("also in dataset", e.target.value)}
-                />
-                <TextInput
-                  label="Member of"
-                  description="Group memberships for this subject"
-                  placeholder="e.g., group-1, cohort-A"
-                  value={getMetadataValue("member of")}
-                  onChange={(e) => handleChange("member of", e.target.value)}
-                />
-                <Select
-                  label="Metadata only"
-                  description="Whether this subject has metadata only"
-                  placeholder="Select option"
-                  data={["yes", "no"]}
-                  value={getMetadataValue("metadata only")}
-                  onChange={(value) => handleChange("metadata only", value)}
-                />
-                <TextInput
-                  label="Laboratory internal id"
-                  description="The internal ID used by the laboratory for this subject"
-                  placeholder="e.g., LAB-123"
-                  value={getMetadataValue("laboratory internal id")}
-                  onChange={(e) => handleChange("laboratory internal id", e.target.value)}
-                />
-                <DateInput
-                  value={
-                    getMetadataValue("date of birth")
-                      ? new Date(getMetadataValue("date of birth"))
-                      : null
-                  }
-                  onChange={(date) => handleChange("date of birth", date)}
-                  label="Date of Birth"
-                  placeholder="MM/DD/YYYY"
-                  valueFormat="MM/DD/YYYY"
-                  icon={<IconCalendar size={16} />}
-                  clearable
-                  description="The subject's date of birth, if known"
-                />
-
-                {/* Age Range Input */}
+              <Select
+                label="Age category"
+                description="The age category of the subject at the time of the experiment"
+                placeholder="Select age category"
+                data={[
+                  "zygote stage",
+                  "cleavage stage",
+                  "2 cell stage",
+                  "4 cell stage",
+                  "8 cell stage",
+                  "blastula stage",
+                  "gastrula stage",
+                  "neurula stage",
+                  "pharyngula stage",
+                  "organogenesis stage",
+                  "late embryonic stage",
+                  "embryo stage",
+                  "perinatal stage",
+                  "neonate stage",
+                  "infant stage",
+                  "nursing stage",
+                  "juvenile stage",
+                  "sexually immature stage",
+                  "post-juvenile adult stage",
+                  "prime adult stage",
+                  "late adult stage",
+                  "death stage",
+                  "nauplius stage",
+                  "trochophore stage",
+                  "veliger stage",
+                  "zoea stage",
+                  "larval stage (25)",
+                  "pupal stage",
+                  "copepodite stage 1",
+                  "copepodite stage 2",
+                  "copepodite stage 3",
+                  "copepodite stage 4",
+                  "copepodite stage 5",
+                  "copepodite stage 6",
+                  "copepodite stage",
+                  "crustacean post-larval stage (1)",
+                  "glaucothoe stage",
+                  "cysticercus stage",
+                  "post-embryonic stage",
+                  "fully formed stage",
+                ]}
+                value={getMetadataValue("age category")}
+                onChange={(value) => handleChange("age category", value)}
+              />
+              <Group grow justify="space-between">
                 <Box>
                   <Text size="sm" fw={500} mb={3}>
-                    Age Range
+                    Age Value
                   </Text>
                   <Text size="xs" c="dimmed" mb={5}>
-                    Specify the minimum and maximum age range for the subject
+                    Numeric age value
                   </Text>
-                  <Group grow align="flex-start">
-                    <NumberInput
-                      label="Minimum"
-                      placeholder="Min age"
-                      value={getMetadataValue("age range (min)")}
-                      onChange={(value) => handleChange("age range (min)", value)}
-                      min={0}
-                    />
-
-                    <NumberInput
-                      label="Maximum"
-                      placeholder="Max age"
-                      value={getMetadataValue("age range (max)")}
-                      onChange={(value) => handleChange("age range (max)", value)}
-                      min={0}
-                    />
-
-                    <Select
-                      label="Select unit"
-                      placeholder="Select unit"
-                      data={[
-                        { value: "hours", label: "Hours" },
-                        { value: "days", label: "Days" },
-                        { value: "weeks", label: "Weeks" },
-                        { value: "months", label: "Months" },
-                        { value: "years", label: "Years" },
-                      ]}
-                      value={getMetadataValue("age range unit")}
-                      onChange={(value) => handleChange("age range unit", value)}
-                    />
-                  </Group>
+                  <NumberInput
+                    placeholder="e.g., 12"
+                    value={getMetadataValue("age")}
+                    onChange={(value) => handleChange("age", value)}
+                    min={0}
+                    defaultValue={0}
+                  />
                 </Box>
 
-                {/* Body Mass Input */}
                 <Box>
                   <Text size="sm" fw={500} mb={3}>
-                    Body Mass
+                    Age Unit
                   </Text>
                   <Text size="xs" c="dimmed" mb={5}>
-                    The subject's body mass measurement
+                    Time unit for age
                   </Text>
-                  <Group grow>
-                    <NumberInput
-                      label="Mass value"
-                      placeholder="Enter mass"
-                      value={getMetadataValue("body mass")}
-                      onChange={(value) => handleChange("body mass", value)}
-                      min={0}
-                      precision={3}
-                    />
-                    <Select
-                      label="Mass unit"
-                      placeholder="Select unit"
-                      data={[
-                        { value: "mg", label: "milligrams (mg)" },
-                        { value: "g", label: "grams (g)" },
-                        { value: "kg", label: "kilograms (kg)" },
-                        { value: "lb", label: "pounds (lb)" },
-                      ]}
-                      value={getMetadataValue("body mass unit")}
-                      onChange={(value) => handleChange("body mass unit", value)}
-                    />
-                  </Group>
+                  <Select
+                    placeholder="Select unit"
+                    data={[
+                      { value: "hours", label: "Hours" },
+                      { value: "days", label: "Days" },
+                      { value: "weeks", label: "Weeks" },
+                      { value: "months", label: "Months" },
+                      { value: "years", label: "Years" },
+                    ]}
+                    value={getMetadataValue("age unit")}
+                    onChange={(value) => handleChange("age unit", value)}
+                    defaultValue={"Select unit"}
+                  />
                 </Box>
-                {/* Genotype Input */}
-                <TextInput
-                  label="Genotype"
-                  description="The genetic background of the subject"
-                  placeholder="e.g., C57BL/6J"
-                  value={getMetadataValue("genotype")}
-                  onChange={(e) => handleChange("genotype", e.target.value)}
-                />
-                {/* Phenotype Input */}
-                <TextInput
-                  label="Phenotype"
-                  description="The observable characteristics of the subject"
-                  placeholder="e.g., Blue eyes"
-                  value={getMetadataValue("phenotype")}
-                  onChange={(e) => handleChange("phenotype", e.target.value)}
-                />
-                {/* Handedness Input */}
-                <Select
-                  label="Handedness"
-                  description="The subject's handedness (if applicable)"
-                  placeholder="Select handedness"
-                  data={["Right", "Left"]}
-                  value={getMetadataValue("handedness")}
-                  onChange={(value) => handleChange("handedness", value)}
-                />
-                {/* Reference Atlas Input */}
-                <TextInput
-                  label="Reference Atlas"
-                  description="The reference atlas used for this subject"
-                  placeholder="e.g., Allen Brain Atlas"
-                  value={getMetadataValue("reference atlas")}
-                  onChange={(e) => handleChange("reference atlas", e.target.value)}
-                />
-                {/* Experimental log file path Input */}
-                <TextInput
-                  label="Experimental Log File Path"
-                  description="Path to the experimental log file for this subject"
-                  placeholder="e.g., /path/to/log.txt"
-                  value={getMetadataValue("experimental log file path")}
-                  onChange={(e) => handleChange("experimental log file path", e.target.value)}
-                />
-                {/* Experiment Date Input */}
-                <DateInput
-                  value={
-                    getMetadataValue("experiment date")
-                      ? new Date(getMetadataValue("experiment date"))
-                      : null
-                  }
-                  onChange={(date) => handleChange("experiment date", date)}
-                  label="Experiment Date"
-                  placeholder="MM/DD/YYYY"
-                  valueFormat="MM/DD/YYYY"
-                  icon={<IconCalendar size={16} />}
-                  clearable
-                  description="Date of the experiment for this subject"
-                />
-                {/* Disease or disorder Input */}
-                <TextInput
-                  label="Disease or Disorder"
-                  description="Any known disease or disorder affecting the subject"
-                  placeholder="e.g., Diabetes"
-                  value={getMetadataValue("disease or disorder")}
-                  onChange={(e) => handleChange("disease or disorder", e.target.value)}
-                />
-                {/* Intervention Input */}
-                <TextInput
-                  label="Intervention"
-                  description="Any intervention applied to the subject"
-                  placeholder="e.g., Drug treatment"
-                  value={getMetadataValue("intervention")}
-                  onChange={(e) => handleChange("intervention", e.target.value)}
-                />
-                {/* Disease Model Input */}
-                <TextInput
-                  label="Disease Model"
-                  description="The disease model used for this subject"
-                  placeholder="e.g., Alzheimer's model"
-                  value={getMetadataValue("disease model")}
-                  onChange={(e) => handleChange("disease model", e.target.value)}
-                />
-                {/* Protocol Title Input */}
-                <TextInput
-                  label="Protocol Title"
-                  description="Title of the protocol used for this subject"
-                  placeholder="e.g., Protocol 1"
-                  value={getMetadataValue("protocol title")}
-                  onChange={(e) => handleChange("protocol title", e.target.value)}
-                />
-                {/* Protocol URL or DOI Input */}
-                <TextInput
-                  label="Protocol URL or DOI"
-                  description="URL or DOI of the protocol used for this subject"
-                  placeholder="e.g., https://doi.org/10.1234/abcd"
-                  value={getMetadataValue("protocol url or doi")}
-                  onChange={(e) => handleChange("protocol url or doi", e.target.value)}
-                />
-              </>
-            )}
-          </Stack>
-        );
+              </Group>
+
+              <Box>
+                <Text size="sm" fw={500} mb={3}>
+                  Body Mass
+                </Text>
+                <Text size="xs" c="dimmed" mb={5}>
+                  The subject's body mass measurement
+                </Text>
+                <Group grow>
+                  <NumberInput
+                    label="Mass value"
+                    placeholder="Enter mass"
+                    value={getMetadataValue("body mass")}
+                    onChange={(value) => handleChange("body mass", value)}
+                    min={0}
+                    precision={3}
+                  />
+                  <Select
+                    label="Mass unit"
+                    placeholder="Select unit"
+                    data={[
+                      { value: "mg", label: "milligrams (mg)" },
+                      { value: "g", label: "grams (g)" },
+                      { value: "kg", label: "kilograms (kg)" },
+                      { value: "lb", label: "pounds (lb)" },
+                    ]}
+                    value={getMetadataValue("body mass unit")}
+                    onChange={(value) => handleChange("body mass unit", value)}
+                  />
+                </Group>
+              </Box>
+              <TextInput
+                label="Disease or Disorder"
+                description="Any known disease or disorder affecting the subject"
+                placeholder="e.g., Diabetes"
+                value={getMetadataValue("disease or disorder")}
+                onChange={(e) => handleChange("disease or disorder", e.target.value)}
+              />
+              <TextInput
+                label="Disease Model"
+                description="The disease model used for this subject"
+                placeholder="e.g., Alzheimer's model"
+                value={getMetadataValue("disease model")}
+                onChange={(e) => handleChange("disease model", e.target.value)}
+              />
+
+              <TextInput
+                label="Strain"
+                description="The strain of the subject"
+                placeholder="e.g., C57BL/6J"
+                value={getMetadataValue("strain")}
+                onChange={(e) => handleChange("strain", e.target.value)}
+              />
+              <TextInput
+                label="RRID for strain"
+                description="Research Resource Identifier for the strain"
+                placeholder="e.g., RRID:IMSR_JAX:000664"
+                value={getMetadataValue("RRID for strain")}
+                onChange={(e) => handleChange("RRID for strain", e.target.value)}
+              />
+              <TextInput
+                label="Subject Experimental Group"
+                description="The experimental group this subject belongs to"
+                placeholder="e.g., Control, Treatment A"
+                value={getMetadataValue("subject experimental group")}
+                onChange={(e) => handleChange("subject experimental group", e.target.value)}
+              />
+            </Stack>
+          )
+        } else {
+          console.log("Standard dataset detected, showing basic metadata form fields");
+          return (
+            <Stack spacing="md">
+              <TextInput
+                label="Subject Identifier"
+                description="Enter a unique identifier for this subject."
+                placeholder="Enter subject ID"
+                required
+                value={getMetadataValue("subject_id")}
+                onChange={(e) => handleChange("subject_id", e.target.value)}
+                leftSection={
+                  <Text size="sm" c="dimmed" mx="sm">
+                    {entityPrefixes["subject"]}
+                  </Text>
+                }
+                leftSectionWidth={50}
+              />
+              <OptionalFieldsNotice />
+
+              <Select
+                label="Sex"
+                description="Subject's biological sex"
+                placeholder="Select sex"
+                data={["Male", "Female", "Unknown"]}
+                value={getMetadataValue("sex")}
+                onChange={(value) => handleChange("sex", value)}
+              />
+              <Select
+                label="Age category"
+                description="The age category of the subject at the time of the experiment"
+                placeholder="Select age category"
+                data={[
+                  "zygote stage",
+                  "cleavage stage",
+                  "2 cell stage",
+                  "4 cell stage",
+                  "8 cell stage",
+                  "blastula stage",
+                  "gastrula stage",
+                  "neurula stage",
+                  "pharyngula stage",
+                  "organogenesis stage",
+                  "late embryonic stage",
+                  "embryo stage",
+                  "perinatal stage",
+                  "neonate stage",
+                  "infant stage",
+                  "nursing stage",
+                  "juvenile stage",
+                  "sexually immature stage",
+                  "post-juvenile adult stage",
+                  "prime adult stage",
+                  "late adult stage",
+                  "death stage",
+                  "nauplius stage",
+                  "trochophore stage",
+                  "veliger stage",
+                  "zoea stage",
+                  "larval stage (25)",
+                  "pupal stage",
+                  "copepodite stage 1",
+                  "copepodite stage 2",
+                  "copepodite stage 3",
+                  "copepodite stage 4",
+                  "copepodite stage 5",
+                  "copepodite stage 6",
+                  "copepodite stage",
+                  "crustacean post-larval stage (1)",
+                  "glaucothoe stage",
+                  "cysticercus stage",
+                  "post-embryonic stage",
+                  "fully formed stage",
+                ]}
+                value={getMetadataValue("age category")}
+                onChange={(value) => handleChange("age category", value)}
+              />
+              <Group grow justify="space-between">
+                <Box>
+                  <Text size="sm" fw={500} mb={3}>
+                    Age Value
+                  </Text>
+                  <Text size="xs" c="dimmed" mb={5}>
+                    Numeric age value
+                  </Text>
+                  <NumberInput
+                    placeholder="e.g., 12"
+                    value={getMetadataValue("age")}
+                    onChange={(value) => handleChange("age", value)}
+                    min={0}
+                    defaultValue={0}
+                  />
+                </Box>
+
+                <Box>
+                  <Text size="sm" fw={500} mb={3}>
+                    Age Unit
+                  </Text>
+                  <Text size="xs" c="dimmed" mb={5}>
+                    Time unit for age
+                  </Text>
+                  <Select
+                    placeholder="Select unit"
+                    data={[
+                      { value: "hours", label: "Hours" },
+                      { value: "days", label: "Days" },
+                      { value: "weeks", label: "Weeks" },
+                      { value: "months", label: "Months" },
+                      { value: "years", label: "Years" },
+                    ]}
+                    value={getMetadataValue("age unit")}
+                    onChange={(value) => handleChange("age unit", value)}
+                    defaultValue={"Select unit"}
+                  />
+                </Box>
+              </Group>
+              <TextInput
+                label="Species"
+                description="The species of the subject"
+                placeholder="e.g., Homo sapiens, Mus musculus"
+                value={getMetadataValue("species")}
+                onChange={(e) => handleChange("species", e.target.value)}
+              />
+              <TextInput
+                label="Strain"
+                description="The strain of the subject"
+                placeholder="e.g., C57BL/6J"
+                value={getMetadataValue("strain")}
+                onChange={(e) => handleChange("strain", e.target.value)}
+              />
+              <TextInput
+                label="RRID for strain"
+                description="Research Resource Identifier for the strain"
+                placeholder="e.g., RRID:IMSR_JAX:000664"
+                value={getMetadataValue("RRID for strain")}
+                onChange={(e) => handleChange("RRID for strain", e.target.value)}
+              />
+              <TextInput
+                label="Subject Experimental Group"
+                description="The experimental group this subject belongs to"
+                placeholder="e.g., Control, Treatment A"
+                value={getMetadataValue("subject experimental group")}
+                onChange={(e) => handleChange("subject experimental group", e.target.value)}
+              />
+              {showFullMetadataFormFields && (
+                <>
+                  <OptionalFieldsNotice />
+                  <TextInput
+                    label="Also in dataset"
+                    description="Other datasets that include this subject"
+                    placeholder="e.g., dataset-1, dataset-2"
+                    value={getMetadataValue("also in dataset")}
+                    onChange={(e) => handleChange("also in dataset", e.target.value)}
+                  />
+                  <TextInput
+                    label="Member of"
+                    description="Group memberships for this subject"
+                    placeholder="e.g., group-1, cohort-A"
+                    value={getMetadataValue("member of")}
+                    onChange={(e) => handleChange("member of", e.target.value)}
+                  />
+                  <Select
+                    label="Metadata only"
+                    description="Whether this subject has metadata only"
+                    placeholder="Select option"
+                    data={["yes", "no"]}
+                    value={getMetadataValue("metadata only")}
+                    onChange={(value) => handleChange("metadata only", value)}
+                  />
+                  <TextInput
+                    label="Laboratory internal id"
+                    description="The internal ID used by the laboratory for this subject"
+                    placeholder="e.g., LAB-123"
+                    value={getMetadataValue("laboratory internal id")}
+                    onChange={(e) => handleChange("laboratory internal id", e.target.value)}
+                  />
+                  <DateInput
+                    value={
+                      getMetadataValue("date of birth")
+                        ? new Date(getMetadataValue("date of birth"))
+                        : null
+                    }
+                    onChange={(date) => handleChange("date of birth", date)}
+                    label="Date of Birth"
+                    placeholder="MM/DD/YYYY"
+                    valueFormat="MM/DD/YYYY"
+                    icon={<IconCalendar size={16} />}
+                    clearable
+                    description="The subject's date of birth, if known"
+                  />
+
+                  {/* Age Range Input */}
+                  <Box>
+                    <Text size="sm" fw={500} mb={3}>
+                      Age Range
+                    </Text>
+                    <Text size="xs" c="dimmed" mb={5}>
+                      Specify the minimum and maximum age range for the subject
+                    </Text>
+                    <Group grow align="flex-start">
+                      <NumberInput
+                        label="Minimum"
+                        placeholder="Min age"
+                        value={getMetadataValue("age range (min)")}
+                        onChange={(value) => handleChange("age range (min)", value)}
+                        min={0}
+                      />
+
+                      <NumberInput
+                        label="Maximum"
+                        placeholder="Max age"
+                        value={getMetadataValue("age range (max)")}
+                        onChange={(value) => handleChange("age range (max)", value)}
+                        min={0}
+                      />
+
+                      <Select
+                        label="Select unit"
+                        placeholder="Select unit"
+                        data={[
+                          { value: "hours", label: "Hours" },
+                          { value: "days", label: "Days" },
+                          { value: "weeks", label: "Weeks" },
+                          { value: "months", label: "Months" },
+                          { value: "years", label: "Years" },
+                        ]}
+                        value={getMetadataValue("age range unit")}
+                        onChange={(value) => handleChange("age range unit", value)}
+                      />
+                    </Group>
+                  </Box>
+
+                  {/* Body Mass Input */}
+                  <Box>
+                    <Text size="sm" fw={500} mb={3}>
+                      Body Mass
+                    </Text>
+                    <Text size="xs" c="dimmed" mb={5}>
+                      The subject's body mass measurement
+                    </Text>
+                    <Group grow>
+                      <NumberInput
+                        label="Mass value"
+                        placeholder="Enter mass"
+                        value={getMetadataValue("body mass")}
+                        onChange={(value) => handleChange("body mass", value)}
+                        min={0}
+                        precision={3}
+                      />
+                      <Select
+                        label="Mass unit"
+                        placeholder="Select unit"
+                        data={[
+                          { value: "mg", label: "milligrams (mg)" },
+                          { value: "g", label: "grams (g)" },
+                          { value: "kg", label: "kilograms (kg)" },
+                          { value: "lb", label: "pounds (lb)" },
+                        ]}
+                        value={getMetadataValue("body mass unit")}
+                        onChange={(value) => handleChange("body mass unit", value)}
+                      />
+                    </Group>
+                  </Box>
+                  {/* Genotype Input */}
+                  <TextInput
+                    label="Genotype"
+                    description="The genetic background of the subject"
+                    placeholder="e.g., C57BL/6J"
+                    value={getMetadataValue("genotype")}
+                    onChange={(e) => handleChange("genotype", e.target.value)}
+                  />
+                  {/* Phenotype Input */}
+                  <TextInput
+                    label="Phenotype"
+                    description="The observable characteristics of the subject"
+                    placeholder="e.g., Blue eyes"
+                    value={getMetadataValue("phenotype")}
+                    onChange={(e) => handleChange("phenotype", e.target.value)}
+                  />
+                  {/* Handedness Input */}
+                  <Select
+                    label="Handedness"
+                    description="The subject's handedness (if applicable)"
+                    placeholder="Select handedness"
+                    data={["Right", "Left"]}
+                    value={getMetadataValue("handedness")}
+                    onChange={(value) => handleChange("handedness", value)}
+                  />
+                  {/* Reference Atlas Input */}
+                  <TextInput
+                    label="Reference Atlas"
+                    description="The reference atlas used for this subject"
+                    placeholder="e.g., Allen Brain Atlas"
+                    value={getMetadataValue("reference atlas")}
+                    onChange={(e) => handleChange("reference atlas", e.target.value)}
+                  />
+                  {/* Experimental log file path Input */}
+                  <TextInput
+                    label="Experimental Log File Path"
+                    description="Path to the experimental log file for this subject"
+                    placeholder="e.g., /path/to/log.txt"
+                    value={getMetadataValue("experimental log file path")}
+                    onChange={(e) => handleChange("experimental log file path", e.target.value)}
+                  />
+                  {/* Experiment Date Input */}
+                  <DateInput
+                    value={
+                      getMetadataValue("experiment date")
+                        ? new Date(getMetadataValue("experiment date"))
+                        : null
+                    }
+                    onChange={(date) => handleChange("experiment date", date)}
+                    label="Experiment Date"
+                    placeholder="MM/DD/YYYY"
+                    valueFormat="MM/DD/YYYY"
+                    icon={<IconCalendar size={16} />}
+                    clearable
+                    description="Date of the experiment for this subject"
+                  />
+                  {/* Disease or disorder Input */}
+                  <TextInput
+                    label="Disease or Disorder"
+                    description="Any known disease or disorder affecting the subject"
+                    placeholder="e.g., Diabetes"
+                    value={getMetadataValue("disease or disorder")}
+                    onChange={(e) => handleChange("disease or disorder", e.target.value)}
+                  />
+                  {/* Intervention Input */}
+                  <TextInput
+                    label="Intervention"
+                    description="Any intervention applied to the subject"
+                    placeholder="e.g., Drug treatment"
+                    value={getMetadataValue("intervention")}
+                    onChange={(e) => handleChange("intervention", e.target.value)}
+                  />
+                  {/* Disease Model Input */}
+                  <TextInput
+                    label="Disease Model"
+                    description="The disease model used for this subject"
+                    placeholder="e.g., Alzheimer's model"
+                    value={getMetadataValue("disease model")}
+                    onChange={(e) => handleChange("disease model", e.target.value)}
+                  />
+                  {/* Protocol Title Input */}
+                  <TextInput
+                    label="Protocol Title"
+                    description="Title of the protocol used for this subject"
+                    placeholder="e.g., Protocol 1"
+                    value={getMetadataValue("protocol title")}
+                    onChange={(e) => handleChange("protocol title", e.target.value)}
+                  />
+                  {/* Protocol URL or DOI Input */}
+                  <TextInput
+                    label="Protocol URL or DOI"
+                    description="URL or DOI of the protocol used for this subject"
+                    placeholder="e.g., https://doi.org/10.1234/abcd"
+                    value={getMetadataValue("protocol url or doi")}
+                    onChange={(e) => handleChange("protocol url or doi", e.target.value)}
+                  />
+                </>
+              )}
+            </Stack>
+          );
+        }
       case "sample":
         return (
           <Stack spacing="md">

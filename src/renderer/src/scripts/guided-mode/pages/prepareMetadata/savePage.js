@@ -22,4 +22,9 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       window.sodaJSONObj["performance-related-folders-and-files"]
     );
   }
+  if(pageBeingLeftID === "guided-submission-metatdata-tab") {
+    // TODO: Dynamically grab funding-consortium from the page
+    window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["funding-consortium"] = "HEAL";
+    console.log("Saving submission metadata")
+  }
 };

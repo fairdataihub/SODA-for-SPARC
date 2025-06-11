@@ -55,6 +55,15 @@ export const datasetIsSparcFunded = () => {
   );
 };
 
+export const datasetIsREJOINFunded = () => {
+  console.log(
+    window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["funding-consortium"]
+  );
+  return (
+    window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["funding-consortium"].trim() === "HEAL"
+  )
+}
+
 export const guidedGetDatasetOrigin = (sodaJSON) => {
   let datasetOrigin = sodaJSON?.["generate-dataset"]?.["generate-option"];
   if (datasetOrigin === "existing-ps") {
