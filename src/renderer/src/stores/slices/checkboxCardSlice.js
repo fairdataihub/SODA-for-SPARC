@@ -25,3 +25,7 @@ export const clearAllCheckboxCardChecked = () => {
     state.checkboxes = {};
   });
 };
+
+export const isCheckboxCardChecked = (key) => {
+  return useGlobalStore.getState().checkboxes[key] || false;
+};

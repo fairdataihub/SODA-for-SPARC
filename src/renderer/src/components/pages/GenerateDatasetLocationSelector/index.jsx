@@ -1,28 +1,7 @@
-import {
-  Text,
-  Grid,
-  Stack,
-  Group,
-  Button,
-  Paper,
-  Box,
-  Tooltip,
-  Badge,
-  Title,
-  Divider,
-  TextInput,
-  Select,
-  Textarea,
-  NumberInput,
-  Notification,
-  Accordion,
-  Checkbox,
-} from "@mantine/core";
-import { useMemo, useCallback, useRef, useEffect } from "react";
+import { Text, Group } from "@mantine/core";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import CheckboxCard from "../../buttons/CheckboxCard";
-import { IconDeviceFloppy, IconCloudUpload } from "@tabler/icons-react";
 
 const GenerateDatasetLocationSelectorPage = () => {
   return (

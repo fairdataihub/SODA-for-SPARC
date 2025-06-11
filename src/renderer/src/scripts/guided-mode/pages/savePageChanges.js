@@ -5,6 +5,7 @@ import { savePageDatasetStructure } from "./datasetStructure/savePage";
 import { savePageCurationPreparation } from "./curationPreparation/savePage";
 import { savePagePrepareMetadata } from "./prepareMetadata/savePage";
 import { savePagePennsieveDetails } from "./pennsieveDetails/savePage";
+import { savePageGenerateDataset } from "./generateDataset/savePage";
 import { countFilesInDatasetStructure } from "../../utils/datasetStructure";
 import { guidedSkipPage, guidedUnSkipPage } from "./navigationUtils/pageSkipping";
 import useGlobalStore from "../../../stores/globalStore";
@@ -252,6 +253,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
     await savePageCurationPreparation(pageBeingLeftID);
     await savePagePrepareMetadata(pageBeingLeftID);
     await savePagePennsieveDetails(pageBeingLeftID);
+    await savePageGenerateDataset(pageBeingLeftID);
 
     if (pageBeingLeftID === "guided-entity-addition-method-selection-tab") {
       const userSelectedAddEntitiesFromSpreadsheet = document
