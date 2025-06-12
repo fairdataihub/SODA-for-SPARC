@@ -10,7 +10,7 @@ const GenerateDatasetLocationSelectorPage = () => {
         <Text mb="md">
           Check the box for all of the locations you would like to generate your dataset to.
         </Text>
-        <Group align="stretch" gap="md">
+        <Group align="stretch" gap="md" justify="center">
           <CheckboxCard id="generate-dataset-locally" />
           <CheckboxCard id="generate-dataset-on-pennsieve" />
         </Group>

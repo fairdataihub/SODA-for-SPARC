@@ -4,6 +4,9 @@ import {
   setCheckboxCardUnchecked,
   setCheckboxCardChecked,
 } from "../../../../stores/slices/checkboxCardSlice.js";
+import { getGuidedDatasetName, getGuidedDatasetSubtitle } from "../curationPreparation/utils.js";
+import { setSodaTextInputValue } from "../../../../stores/slices/sodaTextInputSlice.js";
+import { guidedShowBannerImagePreview } from "../../bannerImage/bannerImage";
 
 export const openPageGenerateDataset = async (targetPageID) => {
   if (targetPageID === "guided-dataset-generation-options-tab") {
@@ -12,24 +15,54 @@ export const openPageGenerateDataset = async (targetPageID) => {
       isChecked ? setCheckboxCardChecked(key) : setCheckboxCardUnchecked(key);
     });
   }
+
+  if (targetPageID === "guided-pennsieve-settings-tab") {
+    // Get the locally saved dataset name and subtitle to use as default values if they have not yet
+    // set a dataset name or subtitle for Pennsieve
+    const datasetName = getGuidedDatasetName();
+    const datasetSubtitle = getGuidedDatasetSubtitle();
+
+    const pennsieveDatasetName = window.sodaJSONObj["pennsieve-dataset-name"];
+    const pennsieveDatasetSubtitle = window.sodaJSONObj["pennsieve-dataset-subtitle"];
+
+    const datasetNameToSet = pennsieveDatasetName || datasetName;
+    const datasetSubtitleToSet = pennsieveDatasetSubtitle || datasetSubtitle;
+
+    setSodaTextInputValue("pennsieve-dataset-name", datasetNameToSet);
+    setSodaTextInputValue("pennsieve-dataset-description", datasetSubtitleToSet);
+
+    // Handle the banner image preview
+    if (window.sodaJSONObj["digital-metadata"]["banner-image-path"]) {
+      //added extra param to function to prevent modification of URL
+      guidedShowBannerImagePreview(
+        window.sodaJSONObj["digital-metadata"]["banner-image-path"],
+        true
+      );
+      document.querySelector("#guided--skip-banner-img-btn").style.display = "none";
+    } else {
+      //reset the banner image page
+      $("#guided-button-add-banner-image").html("Add banner image");
+      $("#guided-banner-image-preview-container").hide();
+    }
+  }
   if (targetPageID === "guided-dataset-generation-confirmation-tab") {
     //Set the inner text of the generate/retry pennsieve dataset button depending on
     //whether a dataset has bee uploaded from this progress file
     const generateOrRetryDatasetUploadButton = document.getElementById(
       "guided-generate-dataset-button"
     );
-    const reviewGenerateButtionTextElement = document.getElementById("review-generate-button-text");
+    const reviewGenerateButtonTextElement = document.getElementById("review-generate-button-text");
     if (
       window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] &&
       !window.sodaJSONObj["starting-point"]["origin"] === "ps"
     ) {
       const generateButtonText = "Resume Pennsieve upload in progress";
       generateOrRetryDatasetUploadButton.innerHTML = generateButtonText;
-      reviewGenerateButtionTextElement.innerHTML = generateButtonText;
+      reviewGenerateButtonTextElement.innerHTML = generateButtonText;
     } else {
       const generateButtonText = "Generate dataset on Pennsieve";
       generateOrRetryDatasetUploadButton.innerHTML = generateButtonText;
-      reviewGenerateButtionTextElement.innerHTML = generateButtonText;
+      reviewGenerateButtonTextElement.innerHTML = generateButtonText;
     }
 
     const datsetName = window.sodaJSONObj["digital-metadata"]["name"];

@@ -41,21 +41,6 @@ while (!window.baseHtmlLoaded) {
 export const openPagePrepareMetadata = async (targetPageID) => {
   console.log(`Opening prepare metadata page: ${targetPageID}`);
 
-  if (targetPageID === "guided-banner-image-tab") {
-    if (window.sodaJSONObj["digital-metadata"]["banner-image-path"]) {
-      //added extra param to function to prevent modification of URL
-      guidedShowBannerImagePreview(
-        window.sodaJSONObj["digital-metadata"]["banner-image-path"],
-        true
-      );
-      document.querySelector("#guided--skip-banner-img-btn").style.display = "none";
-    } else {
-      //reset the banner image page
-      $("#guided-button-add-banner-image").html("Add banner image");
-      $("#guided-banner-image-preview-container").hide();
-    }
-  }
-
   if (targetPageID === "guided-pennsieve-metadata-intro-tab") {
     console.log("Opening Pennsieve metadata intro page");
     // Page-specific initialization code will go here

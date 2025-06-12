@@ -6,13 +6,13 @@ import {
   setCheckboxCardUnchecked,
 } from "../../../stores/slices/checkboxCardSlice";
 
-import { IconSun, IconBuildingFactory, IconMountain, IconSnowflake } from "@tabler/icons-react";
+import { IconDeviceDesktop } from "@tabler/icons-react";
 
 const dataMap = {
   "generate-dataset-locally": {
     title: "Generate dataset locally",
     description: "Create a local copy of your dataset on your computer",
-    Icon: IconSun,
+    Icon: IconDeviceDesktop,
   },
   "generate-dataset-on-pennsieve": {
     title: "Generate dataset on Pennsieve",
@@ -48,7 +48,7 @@ const CheckboxCard = ({ id }) => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        width: "300px",
+        width: "270px",
         minHeight: "180px",
         padding: "var(--mantine-spacing-lg)",
         border: checked
@@ -93,7 +93,7 @@ const CheckboxCard = ({ id }) => {
         )
       )}
       <Stack align="center" gap={4} style={{ width: "100%" }}>
-        <Text fw={600} size="md" lh={1} align="center">
+        <Text fw={600} size="md" lh={1} align="center" mb="sm">
           {title}
         </Text>
         <Text c="dimmed" size="sm" lh={1.3} align="center">

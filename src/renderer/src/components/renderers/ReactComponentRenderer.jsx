@@ -20,6 +20,7 @@ import EntityDataSelectorPage from "../pages/EntityDataSelector";
 import DataImporter from "../shared/DataImporter";
 import SubmissionMetadataForm from "../pages/SubmissionMetadataForm";
 import Icon from "../shared/Icon";
+import SodaTextInput from "../common/SodaTextInput";
 import { Divider } from "@mantine/core";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
@@ -159,6 +160,22 @@ const componentTypeRenderers = {
     root.render(
       <SodaComponentWrapper>
         <EntityMetadataPage {...props} />
+      </SodaComponentWrapper>
+    );
+  },
+  "soda-text-input": (componentSlot) => {
+    const props = {
+      id: componentSlot.id,
+      label: componentSlot.getAttribute("data-label"),
+      placeholder: componentSlot.getAttribute("data-placeholder") || "",
+      textArea: componentSlot.getAttribute("data-text-area") === "true",
+      description: componentSlot.getAttribute("data-description") || "",
+    };
+    const root = createRoot(componentSlot);
+
+    root.render(
+      <SodaComponentWrapper>
+        <SodaTextInput {...props} />
       </SodaComponentWrapper>
     );
   },
