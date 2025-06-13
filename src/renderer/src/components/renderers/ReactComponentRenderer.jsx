@@ -3,6 +3,7 @@ import SodaComponentWrapper from "../utils/SodaComponentWrapper";
 import ExternalLink from "../buttons/ExternalLink";
 import NavigationButton from "../buttons/Navigation";
 import NameAndSubtitlePage from "../pages/NameAndSubtitle";
+import FundingAgencyAndConsortium from "../pages/FundingAgencyAndConsortium";
 import DropdownSelect from "../common/DropdownSelect";
 import DatasetTreeViewRenderer from "../shared/DatasetTreeViewRenderer";
 import GenericButton from "../buttons/Generic";
@@ -37,6 +38,7 @@ const componentTypeRenderers = {
   "guided-mode-page": (componentSlot) => {
     const pageIdToPageComponentMap = {
       "guided-name-subtitle-tab": <NameAndSubtitlePage />,
+      "guided-funding-agency-and-consortium-tab": <FundingAgencyAndConsortium />,
     };
     const pageComponent = pageIdToPageComponentMap[componentSlot.id];
     if (!pageComponent) {
