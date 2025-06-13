@@ -2266,13 +2266,10 @@ export const guidedPrepareDatasetStructureAndMetadataForUpload = async (sodaObj)
   sodaObj["dataset_metadata"]["samples_metadata"] = samplesMetadata;
 
   const sites = getExistingSites();
-  const sitesMetadata = sites.map((site) => {
-    return site.metadata;
-  });
-  // Go through the sitesMetadata and add the specimen_id by space seperating the subject_id and sample_id
-  sitesMetadata.forEach((site) => {
-    site.specimen_id = `${site.subject_id} ${site.sample_id}`;
-  });
+  const sitesMetadata = sites.map((site) => ({
+    ...site.metadata,
+    specimen_id: `${site.metadata.subject_id} ${site.metadata.sample_id}`,
+  }));
   console.log("sitesMetadata", sitesMetadata);
   sodaObj["dataset_metadata"]["sites_metadata"] = sitesMetadata;
 };

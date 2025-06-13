@@ -14,6 +14,20 @@ export const guidedSkipPage = (pageId) => {
   }
 };
 
+export const guidedSkipPageSet = (className) => {
+  const pages = document.querySelectorAll(`.${className}`);
+  for (const page of pages) {
+    guidedSkipPage(page.id);
+  }
+};
+
+export const guidedUnskipPageSet = (className) => {
+  const pages = document.querySelectorAll(`.${className}`);
+  for (const page of pages) {
+    guidedUnSkipPage(page.id);
+  }
+};
+
 export const guidedUnSkipPage = (pageId) => {
   const page = document.getElementById(pageId);
 

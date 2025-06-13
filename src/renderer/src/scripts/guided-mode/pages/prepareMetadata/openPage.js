@@ -10,7 +10,6 @@ import client from "../../../client";
 import api from "../../../others/api/api";
 import { clientError, userErrorMessage } from "../../../others/http-error-handler/error-handler";
 import { guidedShowOptionalRetrySwal } from "../../swals/helperSwals";
-import { guidedShowBannerImagePreview } from "../../bannerImage/bannerImage";
 import { createParsedReadme } from "../../../metadata-files/datasetDescription";
 import { renderManifestCards } from "../../manifests/manifest";
 import { setTreeViewDatasetStructure } from "../../../../stores/slices/datasetTreeViewSlice";
@@ -316,7 +315,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     }
   }
 
-  if (targetPageID === "guided-create-local-copy-tab") {
+  if (targetPageID === "guided-generate-dataset-locally") {
     const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
 
     // Create a deep copy of the dataset structure JSON object

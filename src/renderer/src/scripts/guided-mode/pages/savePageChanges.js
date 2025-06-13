@@ -659,7 +659,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
     //     window.sodaJSONObj["dataset_metadata"]["CHANGES"] = changes;
     //   }
     // }
-    // if (pageBeingLeftID === "guided-create-local-copy-tab") {
+    // if (pageBeingLeftID === "guided-generate-dataset-locally") {
     //   // If the user generated a local copy of the dataset, ask them if they would like to delete it
     //   if (window.fs.existsSync(window.sodaJSONObj["path-to-local-dataset-copy"])) {
     //     if (!window.sodaJSONObj["user-confirmed-to-keep-local-copy"]) {

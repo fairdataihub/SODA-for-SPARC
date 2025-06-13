@@ -396,17 +396,6 @@ export const openPage = async (targetPageID) => {
     await openPagePrepareMetadata(targetPageID);
     await openPageGenerateDataset(targetPageID);
 
-    if (targetPageID === "supporting-data-tab") {
-      addEntityToEntityList("supporting-data", "Source data");
-      addEntityToEntityList("supporting-data", "Derivative data");
-      addEntityToEntityList("supporting-data", "Code");
-      addEntityToEntityList("supporting-data", "Protocol data");
-      addEntityToEntityList("supporting-data", "Documentation");
-      addEntityToEntityList("supporting-data", "Auxiliary");
-      setActiveEntity(null);
-      // console.log("datasetEntityObj", useGlobalStore.getState().datasetEntityObj);
-    }
-
     //     if (targetPageID === "guided-subject-structure-spreadsheet-importation-tab") {
     //         const savedSpreadSheetPath = window.sodaJSONObj["dataset-structure-spreadsheet-path"];
     //         setUiBasedOnSavedDatasetStructurePath(savedSpreadSheetPath);
@@ -452,12 +441,6 @@ export const openPage = async (targetPageID) => {
     //         setActiveEntity(null);
     //         console.log("datasetEntityObj", useGlobalStore.getState().datasetEntityObj);
     //     }
-
-    //     if (targetPageID === "guided-samples-folder-tab") {
-    //         renderSamplesTable();
-    //     }
-
-    //
 
     //     if (targetPageID === "guided-create-samples-metadata-tab") {
     //         //remove custom fields that may have existed from a previous session

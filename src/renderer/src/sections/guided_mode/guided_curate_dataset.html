@@ -2676,14 +2676,13 @@
             </div>
           </div>
         </div>
-
         <div
-          id="guided-create-local-copy-tab"
+          id="guided-dataset-structure-review-tab"
           class="guided--page"
-          data-page-name="Complete dataset structure review"
+          data-page-name="Dataset Structure Review"
         >
           <div class="guided--section">
-            <h1 class="text-sub-step-title">Complete dataset structure review</h1>
+            <h1 class="text-sub-step-title">Dataset Structure Review</h1>
             <p class="help-text">
               The SDS-compliant dataset tree view below shows the complete structure of your dataset
               and its metadata. If you only need a local copy, click “Create local copy” to generate
@@ -2696,82 +2695,6 @@
             data-full-width="true"
             class="guided--section"
           ></div>
-          <div class="guided--section">
-            <div
-              id="guided-folder-and-metadata-structure-review"
-              style="display: block; margin-left: 0px; margin-right: 0px"
-            ></div>
-          </div>
-          <div class="guided--section" id="guided-section-create-local-dataset-copy">
-            <h2 class="text-sub-step-title">Create a local copy for review</h2>
-            <p class="help-text centered mb-1">
-              Would you like to create a local copy of the dataset for reviewing before continuing?
-            </p>
-            <div class="guided--radio-button-container">
-              <button
-                class="ui primary basic button button-starts-local-dataset-copy-generation"
-                style="margin: 5px 7px !important"
-              >
-                Create local copy
-              </button>
-              <button
-                class="ui primary basic button pass-button-click-to-next-button"
-                style="margin: 5px 7px !important"
-              >
-                Skip and continue
-              </button>
-            </div>
-          </div>
-          <div class="guided--section" id="guided-section-local-generation-status-table">
-            <table class="ui celled striped table mt-3" style="width: 100% !important">
-              <thead>
-                <tr>
-                  <th
-                    colspan="2"
-                    class="text-center guided--table-header"
-                    style="
-                      z-index: 2;
-                      height: 50px;
-                      position: sticky !important;
-                      top: -10px !important;
-                    "
-                  >
-                    <span>Local generation status</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody id="guided-tbody-local-generation-status">
-                <tr class="guided-tr-progress-bar">
-                  <td class="middle aligned" colspan="2">
-                    <progress
-                      class="progresstrack"
-                      id="guided-progress-bar-local-generation"
-                      style="width: 100%"
-                      max="100"
-                      value="0"
-                    ></progress>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="guided--section" id="guided-section-post-local-generation-success">
-            <h2 class="guided--text-user-directions">
-              Click "<span class="next-button-span"></span>" after the local dataset copy has been
-              reviewed.
-            </h2>
-          </div>
-          <div class="guided--section" id="guided-section-retry-local-generation">
-            <p class="help-text">
-              Click the button below to retry the local dataset copy generation.
-            </p>
-            <button
-              class="ui positive button soda-green-background button-starts-local-dataset-copy-generation"
-              style="width: 350px !important"
-            >
-              Retry local dataset copy generation
-            </button>
-          </div>
         </div>
       </div>
       <!--
@@ -2805,129 +2728,7 @@
           </div>
         </div>
 
-        <div id="guided-pennsieve-intro-tab" class="guided--page" data-page-name="Pennsieve log in">
-          <div class="guided--section">
-            <h1 class="text-sub-step-title">Pennsieve metadata</h1>
-            <p class="help-text">
-              All SPARC datasets must be uploaded on
-              <a href="https://app.pennsieve.io" target="_blank">Pennsieve</a>, a free, open source
-              data management platform supported by the SPARC program. Over the next steps, you will
-              be prompted to add metadata to Pennsieve such as a banner image, description, license,
-              etc. and SODA will automatically add the metadata to your Pennsieve dataset when your
-              dataset is generated during the last step of this process. This information will be
-              shown on the landing page of your dataset when it is publised on sparc.science.
-            </p>
-          </div>
-
-          <div class="guided--section show-when-logged-out" id="guided-select-pennsieve-account">
-            <h2 class="text-sub-step-title">First, connect your Pennsieve account with SODA</h2>
-            <button
-              class="ui positive button mt-md"
-              data-reset-guided-mode-page="true"
-              onclick="window.openDropdownPrompt(this, 'ps')"
-              style="background-color: var(--color-light-green) !important; width: 200px !important"
-            >
-              Log in to Pennsieve
-            </button>
-          </div>
-
-          <div class="guided--section show-when-logged-in" id="guided-confirm-pennsieve-account">
-            <div class="guided--input-container">
-              <h2 class="text-sub-step-title">
-                Is this the Pennsieve account you would like to work with?
-              </h2>
-              <div class="guided--container-data-display mt-sm" style="width: 100%">
-                <div class="guided--card-dataset-info">
-                  <div class="guided--dataset-description-container">
-                    <h5 class="guided--dataset-description">Current account:</h5>
-                  </div>
-                  <div
-                    class="guided--dataset-content-container"
-                    onclick="window.openDropdownPrompt(this, 'ps')"
-                  >
-                    <h5 id="guided-pennsive-intro-ps-account" class="guided--dataset-content"></h5>
-                    <i class="far fa-edit jump-back" style="color: #000"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="guided--radio-button-container mb-sm" style="margin-top: 1rem">
-              <button
-                class="ui positive basic button guided--radio-button"
-                id="guided-confirm-pennsieve-account-button"
-                style="width: 247px"
-                data-next-element="guided-section-select-organization"
-                data-button-config-value="pennsieve-account-has-been-confirmed"
-                data-button-config-value-state="yes"
-              >
-                Yes, this is the account
-              </button>
-              <button
-                class="ui negative basic button guided--radio-button"
-                data-prevent-radio-handler="true"
-                data-reset-guided-mode-page="true"
-                onclick="window.openDropdownPrompt(this, 'ps')"
-                style="width: 247px"
-              >
-                No, connect another account
-              </button>
-            </div>
-          </div>
-
-          <div class="guided--section show-when-logged-in" id="guided-section-select-organization">
-            <div class="guided--input-container">
-              <h2 class="text-sub-step-title">
-                Is this the Pennsieve workspace you want to upload your dataset to?
-              </h2>
-              <div class="guided--container-data-display mt-sm" style="width: 100%">
-                <div class="guided--card-dataset-info">
-                  <div class="guided--dataset-description-container">
-                    <h5 class="guided--dataset-description">Current workspace:</h5>
-                  </div>
-                  <div
-                    class="guided--dataset-content-container change-current-account ds-dd organization guided-change-workspace"
-                  >
-                    <h5
-                      id="guided-pennsive-selected-organization"
-                      class="guided--dataset-content ps-organization-span"
-                    >
-                      Click here to select workspace
-                    </h5>
-                    <i class="far fa-edit jump-back" style="color: #000"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="guided--radio-button-container mb-sm" style="margin-top: 1rem">
-              <button
-                class="ui positive basic button guided--radio-button"
-                id="guided-confirm-pennsieve-organization-button"
-                style="width: 280px"
-                data-next-element="guided-section-background-services-check"
-                data-button-config-value="organization-has-been-confirmed"
-                data-button-config-value-state="yes"
-                onclick="window.checkPennsieveAgent('guided-mode-post-log-in-pennsieve-agent-check')"
-              >
-                Yes, this is the organization
-              </button>
-              <button
-                class="ui negative basic button guided--radio-button change-current-account ds-dd organization guided-change-workspace"
-                data-prevent-radio-handler="true"
-                data-reset-guided-mode-page="true"
-                style="width: 280px"
-              >
-                No, select a different organization
-              </button>
-            </div>
-          </div>
-          <div class="guided--section" id="guided-section-background-services-check">
-            <div
-              data-component-type="pennsieve-agent-check-display"
-              class="guided--section"
-              id="guided-mode-post-log-in-pennsieve-agent-check"
-            ></div>
-          </div>
-        </div>
+        
 
         <div id="guided-pennsieve-settings-tab" class="guided--page" data-page-name="Banner image">
           <div class="guided--section">
@@ -3380,6 +3181,225 @@
           data-page-name="Generation Options"
           data-component-type="generate-dataset-location-selector-page"
         ></div>
+        <div
+          id="guided-generate-dataset-locally"
+          class="guided--page"
+          data-page-name="Local Dataset Generation"
+        >
+          <div class="guided--section">
+            <h1 class="text-sub-step-title">Local Dataset Generation</h1>
+            <p class="help-text">
+              The SDS-compliant dataset tree view below shows the complete structure of your dataset
+              and its metadata. If you only need a local copy, click “Create local copy” to generate
+              it locally. If you are uploading the dataset to Pennsieve, you can optionally create a
+              local copy or proceed to the next step to begin the upload process.
+            </p>
+          </div>
+          <div
+            data-component-type="dataset-tree-view-renderer"
+            data-full-width="true"
+            class="guided--section"
+          ></div>
+          <div class="guided--section">
+            <div
+              id="guided-folder-and-metadata-structure-review"
+              style="display: block; margin-left: 0px; margin-right: 0px"
+            ></div>
+          </div>
+          <div class="guided--section" id="guided-section-create-local-dataset-copy">
+            <h2 class="text-sub-step-title">Create a local copy for review</h2>
+            <p class="help-text centered mb-1">
+              Would you like to create a local copy of the dataset for reviewing before continuing?
+            </p>
+            <div class="guided--radio-button-container">
+              <button
+                class="ui primary basic button button-starts-local-dataset-copy-generation"
+                style="margin: 5px 7px !important"
+              >
+                Create local copy
+              </button>
+              <button
+                class="ui primary basic button pass-button-click-to-next-button"
+                style="margin: 5px 7px !important"
+              >
+                Skip and continue
+              </button>
+            </div>
+          </div>
+          <div class="guided--section" id="guided-section-local-generation-status-table">
+            <table class="ui celled striped table mt-3" style="width: 100% !important">
+              <thead>
+                <tr>
+                  <th
+                    colspan="2"
+                    class="text-center guided--table-header"
+                    style="
+                      z-index: 2;
+                      height: 50px;
+                      position: sticky !important;
+                      top: -10px !important;
+                    "
+                  >
+                    <span>Local generation status</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="guided-tbody-local-generation-status">
+                <tr class="guided-tr-progress-bar">
+                  <td class="middle aligned" colspan="2">
+                    <progress
+                      class="progresstrack"
+                      id="guided-progress-bar-local-generation"
+                      style="width: 100%"
+                      max="100"
+                      value="0"
+                    ></progress>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="guided--section" id="guided-section-post-local-generation-success">
+            <h2 class="guided--text-user-directions">
+              Click "<span class="next-button-span"></span>" after the local dataset copy has been
+              reviewed.
+            </h2>
+          </div>
+          <div class="guided--section" id="guided-section-retry-local-generation">
+            <p class="help-text">
+              Click the button below to retry the local dataset copy generation.
+            </p>
+            <button
+              class="ui positive button soda-green-background button-starts-local-dataset-copy-generation"
+              style="width: 350px !important"
+            >
+              Retry local dataset copy generation
+            </button>
+          </div>
+        </div>
+        <div id="guided-pennsieve-intro-tab" class="guided--page" data-page-name="Pennsieve log in">
+          <div class="guided--section">
+            <h1 class="text-sub-step-title">Pennsieve metadata</h1>
+            <p class="help-text">
+              All SPARC datasets must be uploaded on
+              <a href="https://app.pennsieve.io" target="_blank">Pennsieve</a>, a free, open source
+              data management platform supported by the SPARC program. Over the next steps, you will
+              be prompted to add metadata to Pennsieve such as a banner image, description, license,
+              etc. and SODA will automatically add the metadata to your Pennsieve dataset when your
+              dataset is generated during the last step of this process. This information will be
+              shown on the landing page of your dataset when it is publised on sparc.science.
+            </p>
+          </div>
+
+          <div class="guided--section show-when-logged-out" id="guided-select-pennsieve-account">
+            <h2 class="text-sub-step-title">First, connect your Pennsieve account with SODA</h2>
+            <button
+              class="ui positive button mt-md"
+              data-reset-guided-mode-page="true"
+              onclick="window.openDropdownPrompt(this, 'ps')"
+              style="background-color: var(--color-light-green) !important; width: 200px !important"
+            >
+              Log in to Pennsieve
+            </button>
+          </div>
+
+          <div class="guided--section show-when-logged-in" id="guided-confirm-pennsieve-account">
+            <div class="guided--input-container">
+              <h2 class="text-sub-step-title">
+                Is this the Pennsieve account you would like to work with?
+              </h2>
+              <div class="guided--container-data-display mt-sm" style="width: 100%">
+                <div class="guided--card-dataset-info">
+                  <div class="guided--dataset-description-container">
+                    <h5 class="guided--dataset-description">Current account:</h5>
+                  </div>
+                  <div
+                    class="guided--dataset-content-container"
+                    onclick="window.openDropdownPrompt(this, 'ps')"
+                  >
+                    <h5 id="guided-pennsive-intro-ps-account" class="guided--dataset-content"></h5>
+                    <i class="far fa-edit jump-back" style="color: #000"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="guided--radio-button-container mb-sm" style="margin-top: 1rem">
+              <button
+                class="ui positive basic button guided--radio-button"
+                id="guided-confirm-pennsieve-account-button"
+                style="width: 247px"
+                data-next-element="guided-section-select-organization"
+                data-button-config-value="pennsieve-account-has-been-confirmed"
+                data-button-config-value-state="yes"
+              >
+                Yes, this is the account
+              </button>
+              <button
+                class="ui negative basic button guided--radio-button"
+                data-prevent-radio-handler="true"
+                data-reset-guided-mode-page="true"
+                onclick="window.openDropdownPrompt(this, 'ps')"
+                style="width: 247px"
+              >
+                No, connect another account
+              </button>
+            </div>
+          </div>
+
+          <div class="guided--section show-when-logged-in" id="guided-section-select-organization">
+            <div class="guided--input-container">
+              <h2 class="text-sub-step-title">
+                Is this the Pennsieve workspace you want to upload your dataset to?
+              </h2>
+              <div class="guided--container-data-display mt-sm" style="width: 100%">
+                <div class="guided--card-dataset-info">
+                  <div class="guided--dataset-description-container">
+                    <h5 class="guided--dataset-description">Current workspace:</h5>
+                  </div>
+                  <div
+                    class="guided--dataset-content-container change-current-account ds-dd organization guided-change-workspace"
+                  >
+                    <h5
+                      id="guided-pennsive-selected-organization"
+                      class="guided--dataset-content ps-organization-span"
+                    >
+                      Click here to select workspace
+                    </h5>
+                    <i class="far fa-edit jump-back" style="color: #000"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="guided--radio-button-container mb-sm" style="margin-top: 1rem">
+              <button
+                class="ui positive basic button guided--radio-button"
+                id="guided-confirm-pennsieve-organization-button"
+                style="width: 280px"
+                data-next-element="guided-section-background-services-check"
+                data-button-config-value="organization-has-been-confirmed"
+                data-button-config-value-state="yes"
+                onclick="window.checkPennsieveAgent('guided-mode-post-log-in-pennsieve-agent-check')"
+              >
+                Yes, this is the organization
+              </button>
+              <button
+                class="ui negative basic button guided--radio-button change-current-account ds-dd organization guided-change-workspace"
+                data-prevent-radio-handler="true"
+                data-reset-guided-mode-page="true"
+                style="width: 280px"
+              >
+                No, select a different organization
+              </button>
+            </div>
+          </div>
+          <div class="guided--section" id="guided-section-background-services-check">
+            <div
+              data-component-type="pennsieve-agent-check-display"
+              class="guided--section"
+              id="guided-mode-post-log-in-pennsieve-agent-check"
+            ></div>
+          </div>
+        </div>
         <div
           id="guided-pennsieve-settings-tab"
           class="guided--page"
