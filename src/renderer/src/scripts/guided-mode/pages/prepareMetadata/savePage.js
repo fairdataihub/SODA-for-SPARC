@@ -22,4 +22,8 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       window.sodaJSONObj["performance-related-folders-and-files"]
     );
   }
+  if (pageBeingLeftID === "guided-resources-entity-addition-tab") {
+    const resourceList = useGlobalStore.getState()["resourceList"];
+    window.sodaJSONObj["dataset_metadata"]["resources_metadata"] = resourceList;
+  }
 };

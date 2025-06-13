@@ -2265,6 +2265,7 @@ export const guidedPrepareDatasetStructureAndMetadataForUpload = async (sodaObj)
   console.log("samplesMetadata", samplesMetadata);
   sodaObj["dataset_metadata"]["samples_metadata"] = samplesMetadata;
 
+  // Prepare the sites metadata
   const sites = getExistingSites();
   const sitesMetadata = sites.map((site) => ({
     ...site.metadata,
@@ -2272,4 +2273,8 @@ export const guidedPrepareDatasetStructureAndMetadataForUpload = async (sodaObj)
   }));
   console.log("sitesMetadata", sitesMetadata);
   sodaObj["dataset_metadata"]["sites_metadata"] = sitesMetadata;
+
+  // Prepare the resources metadata
+  const resources = sodaObj["dataset_metadata"]["resources_metadata"];
+  console.log("resourcesMetadata", resources);
 };

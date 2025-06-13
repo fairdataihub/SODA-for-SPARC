@@ -35,6 +35,13 @@ const theme = createTheme({
         },
       },
     },
+    TextInput: {
+      styles: {
+        error: {
+          color: "red",
+        },
+      },
+    },
   },
 });
 

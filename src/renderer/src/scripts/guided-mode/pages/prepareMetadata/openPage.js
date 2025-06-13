@@ -24,6 +24,7 @@ import {
   guidedStudyTechniquesTagify,
   guidedOtherFundingsourcesTagify,
 } from "../../tagifies/tagifies";
+import { setResourceList } from "../../../../stores/slices/resourceMetadataSlice";
 import { guidedGetCurrentUserWorkSpace } from "../../../guided-mode/workspaces/workspaces";
 import { dragDrop, successCheck } from "../../../../assets/lotties/lotties";
 import { renderProtocolsTable } from "../../metadata/protocols";
@@ -160,6 +161,11 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     }
   }
 
+  if (targetPageID === "guided-resources-entity-addition-tab") {
+    const existingResources = window.sodaJSONObj["dataset_metadata"]["resources_metadata"] || [];
+    setResourceList(existingResources);
+  }
+
   if (targetPageID === "guided-create-description-metadata-tab") {
     const guidedLoadDescriptionDatasetInformation = () => {
       // Reset the keywords tags and add the stored ones if they exist in the JSON
@@ -294,11 +300,6 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     console.log("Opening samples metadata page");
     // This has componentType "entity-metadata-page" which likely handles most of the page functionality
     setEntityType("samples");
-  }
-
-  if (targetPageID === "guided-resources-entity-addition-tab") {
-    console.log("Opening experimental resources page");
-    // This has componentType "resources-management-page" which likely handles most of the page functionality
   }
 
   if (targetPageID === "guided-create-changes-metadata-tab") {
