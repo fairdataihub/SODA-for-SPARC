@@ -4837,15 +4837,15 @@ const guidedSaveDescriptionStudyInformation = () => {
   };
 };
 const guidedSaveDescriptionContributorInformation = () => {
-  const acknowledgementsInput = document.getElementById("guided-ds-acknowledgements");
-  const acknowledgements = acknowledgementsInput.value.trim();
+  const acknowledgmentsInput = document.getElementById("guided-ds-acknowledgments");
+  const acknowledgments = acknowledgmentsInput.value.trim();
 
   // Get tags from other funding tagify
   const otherFunding = window.getTagsFromTagifyElement(guidedOtherFundingsourcesTagify);
 
   window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributor-information"] = {
     funding: otherFunding,
-    acknowledgment: acknowledgements,
+    acknowledgment: acknowledgments,
   };
 };
 

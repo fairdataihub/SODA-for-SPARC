@@ -171,7 +171,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
       // Reset the keywords tags and add the stored ones if they exist in the JSON
       guidedDatasetKeywordsTagify.removeAllTags();
       const datasetKeyWords =
-        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["dataset-information"]?.[
+        window.sodaJSONObj["dataset_metadata"]["description_metadata"]["dataset-information"]?.[
           "keywords"
         ];
       if (datasetKeyWords) {
@@ -258,17 +258,17 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     guidedLoadDescriptionStudyInformation();
 
     const guidedLoadDescriptionContributorInformation = () => {
-      const acknowledgementsInput = document.getElementById("guided-ds-acknowledgements");
+      const acknowledgmentsInput = document.getElementById("guided-ds-acknowledgments");
       const contributorInformationMetadata =
         window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributor-information"];
 
       guidedOtherFundingsourcesTagify.removeAllTags();
 
       if (contributorInformationMetadata) {
-        acknowledgementsInput.value = contributorInformationMetadata["acknowledgment"];
+        acknowledgmentsInput.value = contributorInformationMetadata["acknowledgment"];
         guidedOtherFundingsourcesTagify.addTags(contributorInformationMetadata["funding"]);
       } else {
-        acknowledgementsInput.value = "";
+        acknowledgmentsInput.value = "";
         guidedOtherFundingsourcesTagify.removeAllTags();
       }
     };
