@@ -57,6 +57,7 @@ export const guidedPennsieveDatasetUpload = async () => {
     const guidedLicense = window.sodaJSONObj["digital-metadata"]["license"];
     const guidedBannerImagePath = window.sodaJSONObj["digital-metadata"]?.["banner-image-path"];
 
+    // TODO: When retrying the upload, skip to the failed step rather than starting from the beginning
     if (userMadeItToLastStep() && window.retryGuidedMode) {
       // scroll to the upload status table
       window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
@@ -180,6 +181,36 @@ export const guidedPennsieveDatasetUpload = async () => {
 
       // save & exit the upload
       if (!res.isConfirmed) {
+        const currentPageID = window.CURRENT_PAGE.id;
+        try {
+          await savePageChanges(currentPageID);
+        } catch (error) {
+          window.log.error("Error saving page changes", error);
+        }
+        guidedTransitionToHome();
+        return;
+      }
+
+      supplementaryChecks = await window.run_pre_flight_checks(
+        "guided-mode-pre-generate-pennsieve-agent-check"
+      );
+
+      if (!supplementaryChecks) {
+        // if the pre-flight checks fail, show an error message and exit
+        Swal.fire({
+          icon: "error",
+          title: "Could not complete upload due to pre-flight check failures",
+          text: "Please return to the home page to try the upload again. If the problem persists, please contact support by using the Contact Us page in the sidebar.",
+          confirmButtonText: "OK",
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+        });
         const currentPageID = window.CURRENT_PAGE.id;
         try {
           await savePageChanges(currentPageID);

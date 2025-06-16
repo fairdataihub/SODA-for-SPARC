@@ -121,7 +121,7 @@ export const openPageGenerateDataset = async (targetPageID) => {
       datasetTeamPermissionsReviewText.innerHTML = "No additional team permissions added";
     }
 
-    datasetTagsReviewText.innerHTML = datasetTags.join(", ");
+    datasetTagsReviewText.innerHTML = datasetTags?.join(", ");
     datasetLicenseReviewText.innerHTML = datasetLicense;
 
     guidedShowTreePreview(
