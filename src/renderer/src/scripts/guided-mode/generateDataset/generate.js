@@ -57,6 +57,14 @@ export const guidedPennsieveDatasetUpload = async () => {
     const guidedLicense = window.sodaJSONObj["digital-metadata"]["license"];
     const guidedBannerImagePath = window.sodaJSONObj["digital-metadata"]?.["banner-image-path"];
 
+    if (userMadeItToLastStep() && window.retryGuidedMode) {
+      // scroll to the upload status table
+      window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
+      // upload on the last step
+      await guidedUploadDatasetToPennsieve();
+      return;
+    }
+
     //Hide the upload tables
     document.querySelectorAll(".guided-upload-table").forEach((table) => {
       table.classList.add("hidden");
@@ -125,18 +133,33 @@ export const guidedPennsieveDatasetUpload = async () => {
 
     //Upload the dataset files
     await guidedUploadDatasetToPennsieve();
+    amountOfTimesPennsieveUploadFailed = 0; //reset the upload failed counter
   } catch (error) {
     clientError(error);
     let emessage = userErrorMessage(error);
-    //make an unclosable sweet alert that forces the user to close out of the app
-    let res = await Swal.fire({
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      icon: "error",
-      title: "An error occurred during your upload",
-      html: `
+
+    amountOfTimesPennsieveUploadFailed += 1;
+    window.retryGuidedMode = true; //set the retry flag to true
+    // run pre flight checks until they pass or fail 3 times
+    let supplementaryChecks = false;
+    while (!supplementaryChecks && amountOfTimesPennsieveUploadFailed <= 3) {
+      supplementaryChecks = await window.run_pre_flight_checks(
+        "guided-mode-pre-generate-pennsieve-agent-check"
+      );
+      if (!supplementaryChecks) amountOfTimesPennsieveUploadFailed += 1;
+    }
+
+    // if upload failed 3 times give user option to save and exit or try again
+    if (amountOfTimesPennsieveUploadFailed > 3) {
+      //make an unclosable sweet alert that forces the user to retry or close the app
+      let res = await Swal.fire({
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        icon: "error",
+        title: "An error occurred during your upload",
+        html: `
         <p>Error message: ${emessage}</p>
         <p>
         You may retry the upload now or save and exit.
@@ -144,53 +167,42 @@ export const guidedPennsieveDatasetUpload = async () => {
         button on your dataset's progress card.
         </p>
       `,
-      showCancelButton: true,
-      cancelButtonText: "Save and Exit",
-      confirmButtonText: "Retry Upload",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    });
+        showCancelButton: true,
+        cancelButtonText: "Save and Exit",
+        confirmButtonText: "Retry Upload",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
 
-    if (res.isConfirmed) {
-      window.retryGuidedMode = true; //set the retry flag to true
-      let supplementary_checks = await window.run_pre_flight_checks(
-        "guided-mode-pre-generate-pennsieve-agent-check"
-      );
-      if (!supplementary_checks) {
-        console.error("Failed supplementary checks");
-        return;
-      }
-
-      // check if the user made it to the last step
-      if (
-        !document
-          .querySelector("#guided-div-dataset-upload-status-table")
-          .classList.contains("hidden")
-      ) {
-        // scroll to the upload status table
-        window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
-        // upload on the last step
-        await guidedUploadDatasetToPennsieve();
-      } else {
-        // restart the whole process
-        await guidedPennsieveDatasetUpload();
+      // save & exit the upload
+      if (!res.isConfirmed) {
+        const currentPageID = window.CURRENT_PAGE.id;
+        try {
+          await savePageChanges(currentPageID);
+        } catch (error) {
+          window.log.error("Error saving page changes", error);
+        }
+        guidedTransitionToHome();
         return;
       }
     }
 
-    const currentPageID = window.CURRENT_PAGE.id;
-    try {
-      await savePageChanges(currentPageID);
-    } catch (error) {
-      window.log.error("Error saving page changes", error);
-    }
-    guidedTransitionToHome();
+    // retry the upload
+    await guidedPennsieveDatasetUpload();
   }
   guidedSetNavLoadingState(false);
+};
+
+let amountOfTimesPennsieveUploadFailed = 0;
+
+const userMadeItToLastStep = () => {
+  return !document
+    .querySelector("#guided-div-dataset-upload-status-table")
+    .classList.contains("hidden");
 };
 
 const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
@@ -1366,6 +1378,8 @@ const guidedUploadDatasetToPennsieve = async () => {
     .then(async (curationRes) => {
       // if the upload succeeds reset the retry guided mode flag
       window.retryGuidedMode = false;
+      // reset the amount of times the upload has failed
+      amountOfTimesPennsieveUploadFailed = 0;
       guidedSetNavLoadingState(false);
 
       let { data } = curationRes;
@@ -1605,7 +1619,6 @@ const guidedUploadDatasetToPennsieve = async () => {
         }
       );
 
-      let emessage = userErrorMessage(error);
       try {
         let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
           params: {
@@ -1617,68 +1630,6 @@ const guidedUploadDatasetToPennsieve = async () => {
       } catch (error) {
         clientError(error);
       }
-
-      //make an unclosable sweet alert that forces the user to close out of the app
-      let res = await Swal.fire({
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false,
-        icon: "error",
-        title: "An error occurred during your upload",
-        html: `
-          <p>Error message: ${emessage}</p>
-          <p>
-          You may retry the upload now or save and exit.
-          If you choose to save and exit you will be able to resume your upload by returning to Guided Mode and clicking the "Resume Upload"
-          button on your dataset's progress card.
-          </p>
-        `,
-        showCancelButton: true,
-        cancelButtonText: "Save and Exit",
-        confirmButtonText: "Retry Upload",
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-      });
-
-      if (res.isConfirmed) {
-        window.retryGuidedMode = true; //set the retry flag to true
-        let supplementary_checks = await window.run_pre_flight_checks(
-          "guided-mode-pre-generate-pennsieve-agent-check"
-        );
-        if (!supplementary_checks) {
-          return;
-        }
-
-        // check if the user made it to the last step
-        if (
-          !document
-            .querySelector("#guided-div-dataset-upload-status-table")
-            .classList.contains("hidden")
-        ) {
-          // scroll to the upload status table
-          window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
-          // upload on the last step
-          await guidedUploadDatasetToPennsieve();
-          return;
-        } else {
-          // restart the whole process
-          await guidedPennsieveDatasetUpload();
-          return;
-        }
-      }
-
-      const currentPageID = window.CURRENT_PAGE.id;
-      try {
-        await savePageChanges(currentPageID);
-      } catch (error) {
-        window.log.error("Error saving page changes", error);
-      }
-      guidedTransitionToHome();
     });
 
   const guidedUpdateUploadStatus = async () => {
