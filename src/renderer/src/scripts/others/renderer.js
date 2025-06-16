@@ -5679,6 +5679,8 @@ const preGenerateSetup = async (e, elementContext) => {
   // disable contact us view to be clicked again
   document.getElementById("contact-us-view").style.pointerEvents = "none";
 
+  document.getElementById("about-view").style.display = "block";
+
   // updateJSON structure after Generate dataset tab
   window.updateJSONStructureGenerate(window.sodaJSONObj);
 
@@ -7087,6 +7089,11 @@ window.scaleBannerImage = async (imagePath) => {
     return error.response;
   }
 };
+
+document.getElementById("button-view-impact").addEventListener("click", () => {
+  // open a new tab pointed towards the following external link: https://docs.sodaforsparc.io/
+  window.open("https://docs.sodaforsparc.io#impact/", "_blank");
+});
 
 document.getElementById("button-gather-logs").addEventListener("click", () => {
   //function will be used to gather all logs on all OS's

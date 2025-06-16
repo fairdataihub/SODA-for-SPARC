@@ -259,6 +259,7 @@ const handleSectionTrigger = async (event) => {
     "guided_mode-section", //Guided Mode
     "documentation-section", //Documentation
     "contact-us-section", //Contact us
+    "about-us-section",
   ];
 
   if (showSidebarSections.includes(sectionId)) {
