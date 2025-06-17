@@ -147,7 +147,7 @@ window.uploadDatasetDropHandler = async (ev) => {
   if (ev.dataTransfer.items) {
     const itemDropped = ev.dataTransfer.items[0];
     const folderPath = itemDropped.getAsFile().path;
-    const { isDirectory } = fs.statSync(folderPath);
+    const { isDirectory } = window.fs.statSync(folderPath);
 
     if (isDirectory) {
       window.sodaJSONObj = {
@@ -172,7 +172,7 @@ window.uploadDatasetDropHandler = async (ev) => {
       } else {
         Swal.fire({
           icon: "warning",
-          html: `1This dataset is not following the SPARC Dataset Structure (SDS). It is expected that each of the high-level folders in this dataset is named after one of the SDS folders.
+          html: `This dataset is not following the SPARC Dataset Structure (SDS). It is expected that each of the high-level folders in this dataset is named after one of the SDS folders.
           <br/>
           See the "Data Organization" section of the SPARC documentation for more 
           <a target="_blank" href="https://docs.sparc.science/docs/overview-of-sparc-dataset-format">details</a>`,
@@ -596,7 +596,6 @@ window.handleLocalDatasetImport = async (path) => {
 };
 
 window.importLocalDataset = async (folderPath) => {
-  print("Local thangs happenong here");
   // Reset the sodaJSONObj
   window.sodaJSONObj = {
     "ps-account-selected": {},
@@ -619,7 +618,7 @@ window.importLocalDataset = async (folderPath) => {
   } else {
     Swal.fire({
       icon: "warning",
-      html: `2This dataset is not following the SPARC Dataset Structure (SDS). It is expected that each of the high-level folders in this dataset is named after one of the SDS folders.
+      html: `This dataset is not following the SPARC Dataset Structure (SDS). It is expected that each of the high-level folders in this dataset is named after one of the SDS folders.
       <br/>
       See the "Data Organization" section of the SPARC documentation for more 
       <a target="_blank" href="https://docs.sparc.science/docs/overview-of-sparc-dataset-format">details</a>`,
@@ -645,14 +644,18 @@ window.importLocalDataset = async (folderPath) => {
   }
 };
 
-window.electron.ipcRenderer.on("selected-destination-upload-dataset", async (event, path) => {
-  if (path.length > 0) {
-    // Get the path of the first index
-    let folderPath = path[0];
+window.electron.ipcRenderer.on(
+  "selected-destination-upload-dataset",
+  async (event, importedFolderPath) => {
+    console.log("Running this one");
+    if (importedFolderPath.length > 0) {
+      // Get the path of the first index
+      let folderPath = importedFolderPath[0];
 
-    await window.importLocalDataset(folderPath);
+      await window.importLocalDataset(folderPath);
+    }
   }
-});
+);
 
 // Event listeners for buttons in step 2 of Organize Dataset
 document.getElementById("confirm-account-workspace").addEventListener("click", async function () {
