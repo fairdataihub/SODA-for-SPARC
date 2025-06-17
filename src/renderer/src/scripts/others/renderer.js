@@ -5656,8 +5656,7 @@ const deleteTreeviewFiles = (sodaJSONObj) => {
   }
 };
 
-const preGenerateSetup = async (e, elementContext) => {
-  $($($(elementContext).parent().parent()[0]).parents()[0]).removeClass("tab-active");
+const setupCode = async (resume = false) => {
   // set tab-active to generate-progress-tab
   $("#generate-dataset-progress-tab").addClass("tab-active");
   document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
@@ -5688,7 +5687,6 @@ const preGenerateSetup = async (e, elementContext) => {
 
   let dataset_destination = setDatasetNameAndDestination(window.sodaJSONObj)[1];
 
-  let resume = e.target.textContent.trim() == "Retry";
   if (!resume) {
     progressStatus.innerHTML = "Please wait while we verify a few things...";
     generateProgressBar.value = 0;
@@ -5711,7 +5709,7 @@ const preGenerateSetup = async (e, elementContext) => {
       $("#sidebarCollapse").prop("disabled", false);
 
       // return to the prior page
-      $($($(this).parent()[0]).parents()[0]).addClass("tab-active");
+      // $($($(this).parent()[0]).parents()[0]).addClass("tab-active");
       document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
       document.getElementById("para-please-wait-new-curate").innerHTML = "";
       document.getElementById("prevBtn").style.display = "inline";
@@ -5743,9 +5741,15 @@ const preGenerateSetup = async (e, elementContext) => {
 
   document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
 
-  deleteTreeviewFiles(sodaJSONObj);
+  deleteTreeviewFiles(window.sodaJSONObj);
 
-  initiate_generate(e);
+  initiate_generate(resume);
+};
+
+const preGenerateSetup = async (e, elementContext) => {
+  $($($(elementContext).parent().parent()[0]).parents()[0]).removeClass("tab-active");
+  let resume = e.target.textContent.trim() == "Retry";
+  setupCode(resume);
 };
 
 document.getElementById("button-generate").addEventListener("click", async function (e) {
@@ -5793,10 +5797,10 @@ window.uploadComplete = new Notyf({
   ],
 });
 
-// Generates a dataset organized in the Organize Dataset feature locally, or on Pennsieve
-const initiate_generate = async (e) => {
-  let resume = e.target.textContent.trim() == "Retry";
+let amountOfTimesPennsieveUploadFailed = 0;
 
+// Generates a dataset organized in the Organize Dataset feature locally, or on Pennsieve
+const initiate_generate = async (resume = false) => {
   // Disable the Guided Mode sidebar button to prevent the sodaJSONObj from being modified
   document.getElementById("guided_mode_view").style.pointerEvents = "none";
   // Disable the Docs sidebar button to prevent the sodaJSONObj from being modified
@@ -5916,6 +5920,7 @@ const initiate_generate = async (e) => {
     )
     .then(async (response) => {
       let { data } = response;
+      amountOfTimesPennsieveUploadFailed = 0;
 
       $("#party-lottie").show();
 
@@ -6016,6 +6021,7 @@ const initiate_generate = async (e) => {
       document.getElementById("contact-us-view").style.pointerEvents = "";
     })
     .catch(async (error) => {
+      amountOfTimesPennsieveUploadFailed += 1;
       clearInterval(timerProgress);
 
       $("#party-lottie").hide();
@@ -6031,7 +6037,6 @@ const initiate_generate = async (e) => {
       }
 
       // show the retry button and hide the verify file status button
-      $("#button-retry").show();
       $("#button-generate-validate").hide();
 
       //Allow guided_mode_view to be clicked again
@@ -6127,37 +6132,47 @@ const initiate_generate = async (e) => {
       document.getElementById("para-new-curate-progress-bar-error-status").innerHTML =
         `<span style='color: red;'>${emessage}</span>`;
 
-      Swal.fire({
-        icon: "error",
-        title: "An Error Occurred While Uploading Your Dataset",
-        html: "Check the error message on the progress page to learn more.",
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-        didOpen: () => {
-          document.getElementById("swal2-html-container").style.maxHeight = "19rem";
-          document.getElementById("swal2-html-container").style.overflowY = "auto";
-        },
-      }).then((result) => {
-        statusBarClone.remove();
-        sparc_container.style.display = "inline";
-        if (result.isConfirmed) {
-          let button = document.getElementById("button-generate");
-          $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
-          document.getElementById("prevBtn").style.display = "none";
-          document.getElementById("start-over-btn").style.display = "none";
-          document.getElementById("div-vertical-progress-bar").style.display = "none";
-          document.getElementById("wrapper-wrap").style.display = "flex";
-          document.getElementById("div-generate-comeback").style.display = "flex";
-          document.getElementById("generate-dataset-progress-tab").style.display = "flex";
-        }
-      });
+      if (amountOfTimesPennsieveUploadFailed > 3) {
+        Swal.fire({
+          icon: "error",
+          title: "An Error Occurred While Uploading Your Dataset",
+          html: "Check the error message on the progress page to learn more. If the  issue persists, please contact us by using the Contact Us page in the sidebar.",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+          didOpen: () => {
+            document.getElementById("swal2-html-container").style.maxHeight = "19rem";
+            document.getElementById("swal2-html-container").style.overflowY = "auto";
+          },
+        }).then((result) => {
+          statusBarClone.remove();
+          sparc_container.style.display = "inline";
+          if (result.isConfirmed) {
+            let button = document.getElementById("button-generate");
+            $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
+            document.getElementById("prevBtn").style.display = "none";
+            document.getElementById("start-over-btn").style.display = "none";
+            document.getElementById("div-vertical-progress-bar").style.display = "none";
+            document.getElementById("wrapper-wrap").style.display = "flex";
+            document.getElementById("div-generate-comeback").style.display = "flex";
+            document.getElementById("generate-dataset-progress-tab").style.display = "flex";
+          }
+        });
+        // show the retry button so the user can retry the upload manually or decide to contact us
+        $("#button-retry").show();
 
+        // do not update the dataset list or automaticallly retry the upload
+        return;
+      }
+
+      setupCode(true);
+
+      // update the dataset list
       try {
         let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
           params: {
