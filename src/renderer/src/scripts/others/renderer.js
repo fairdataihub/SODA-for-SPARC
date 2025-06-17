@@ -5693,7 +5693,6 @@ const setupCode = async (resume = false) => {
   } else {
     // NOTE: This only works if we got to the upload. SO add more code to check for this.
     progressStatus.innerHTML = `Please wait while we perform setup for retrying the upload...`;
-    // replace the first line with the following
   }
   document.getElementById("wrapper-wrap").style.display = "none";
 
@@ -5729,8 +5728,6 @@ const setupCode = async (resume = false) => {
       return;
     }
   }
-
-  // from here you can modify
 
   if (!resume) {
     progressBarNewCurate.value = 0;
@@ -6169,6 +6166,11 @@ const initiate_generate = async (resume = false) => {
         // do not update the dataset list or automaticallly retry the upload
         return;
       }
+
+      progressStatus.innerHTML = `Preparing to automatically retry the upload...`;
+      statusBarClone.remove();
+
+      await wait(5000);
 
       setupCode(true);
 
