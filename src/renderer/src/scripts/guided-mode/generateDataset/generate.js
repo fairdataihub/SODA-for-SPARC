@@ -141,17 +141,36 @@ export const guidedPennsieveDatasetUpload = async () => {
 
     amountOfTimesPennsieveUploadFailed += 1;
     window.retryGuidedMode = true; //set the retry flag to true
-    // run pre flight checks until they pass or fail 3 times
     let supplementaryChecks = false;
-    while (!supplementaryChecks && amountOfTimesPennsieveUploadFailed <= 3) {
-      supplementaryChecks = await window.run_pre_flight_checks(
-        "guided-mode-pre-generate-pennsieve-agent-check"
-      );
-      if (!supplementaryChecks) amountOfTimesPennsieveUploadFailed += 1;
-    }
 
+    if (amountOfTimesPennsieveUploadFailed <= 3) {
+      // run pre flight checks until they pass or fail 3 times
+      await Swal.fire({
+        title: `Retrying upload ${amountOfTimesPennsieveUploadFailed} of 3 times`,
+        icon: "error",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+        timer: 5000,
+        timerProgressBar: true,
+      });
+      while (!supplementaryChecks && amountOfTimesPennsieveUploadFailed <= 3) {
+        supplementaryChecks = await window.run_pre_flight_checks(
+          "guided-mode-pre-generate-pennsieve-agent-check"
+        );
+        if (!supplementaryChecks) amountOfTimesPennsieveUploadFailed += 1;
+      }
+    }
     // if upload failed 3 times give user option to save and exit or try again
-    if (amountOfTimesPennsieveUploadFailed > 3) {
+    else {
       //make an unclosable sweet alert that forces the user to retry or close the app
       let res = await Swal.fire({
         allowOutsideClick: false,
@@ -163,9 +182,10 @@ export const guidedPennsieveDatasetUpload = async () => {
         html: `
         <p>Error message: ${emessage}</p>
         <p>
-        You may retry the upload now or save and exit.
-        If you choose to save and exit you will be able to resume your upload by returning to Guided Mode and clicking the "Resume Upload"
-        button on your dataset's progress card.
+        SODA has retried the upload three times but was not successful. You may manually retry the upload now or save and exit.
+        If you choose to save and exit you will be able to resume your upload by returning to Prepare Dataset Step-by-Step and clicking the "Resume Upload"
+        button on your dataset's progress card. If this issue persists, please contact support by using the Contact Us page in the sidebar
+        after you Save and Exit.
         </p>
       `,
         showCancelButton: true,
@@ -194,32 +214,33 @@ export const guidedPennsieveDatasetUpload = async () => {
       supplementaryChecks = await window.run_pre_flight_checks(
         "guided-mode-pre-generate-pennsieve-agent-check"
       );
+    }
 
-      if (!supplementaryChecks) {
-        // if the pre-flight checks fail, show an error message and exit
-        Swal.fire({
-          icon: "error",
-          title: "Could not complete upload due to pre-flight check failures",
-          text: "Please return to the home page to try the upload again. If the problem persists, please contact support by using the Contact Us page in the sidebar.",
-          confirmButtonText: "OK",
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster",
-          },
-        });
-        const currentPageID = window.CURRENT_PAGE.id;
-        try {
-          await savePageChanges(currentPageID);
-        } catch (error) {
-          window.log.error("Error saving page changes", error);
-        }
-        guidedTransitionToHome();
-        return;
+    // force a save and exit if the pre flight checks fail
+    if (!supplementaryChecks) {
+      // if the pre-flight checks fail, show an error message and exit
+      Swal.fire({
+        icon: "error",
+        title: "Could not complete upload due to pre-flight check failures",
+        text: "Please return to the home page to try the upload again. If the problem persists, please contact support by using the Contact Us page in the sidebar.",
+        confirmButtonText: "OK",
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+      const currentPageID = window.CURRENT_PAGE.id;
+      try {
+        await savePageChanges(currentPageID);
+      } catch (error) {
+        window.log.error("Error saving page changes", error);
       }
+      guidedTransitionToHome();
+      return;
     }
 
     // retry the upload
