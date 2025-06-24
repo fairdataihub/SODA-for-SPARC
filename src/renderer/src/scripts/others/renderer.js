@@ -6167,10 +6167,10 @@ const initiate_generate = async (resume = false) => {
         return;
       }
 
-      progressStatus.innerHTML = `Preparing to automatically retry the upload...`;
+      progressStatus.innerHTML = `Retrying the upload automatically ${amountOfTimesPennsieveUploadFailed} of 3 times...`;
       statusBarClone.remove();
 
-      await wait(5000);
+      await window.wait(5000);
 
       setupCode(true);
 
