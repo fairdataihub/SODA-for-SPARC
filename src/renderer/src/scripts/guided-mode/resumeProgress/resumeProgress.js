@@ -14,6 +14,8 @@ import api from "../../others/api/api";
 import client from "../../client";
 import { clientError } from "../../others/http-error-handler/error-handler";
 import { swalShowInfo } from "../../utils/swal-utils";
+import { setDatasetEntityObj } from "../../../stores/slices/datasetEntitySelectorSlice";
+import { setDatasetEntityArray } from "../../../stores/slices/datasetEntityStructureSlice";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -141,6 +143,10 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
     window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
     window.subjectsTableData = window.sodaJSONObj["subjects-table-data"];
     window.samplesTableData = window.sodaJSONObj["samples-table-data"];
+    const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
+    setDatasetEntityObj(savedDatasetEntityObj);
+    const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
+    setDatasetEntityArray(datasetEntityArray);
 
     // Save the skipped pages in a temp variable since guidedTransitionFromHome will remove them
     const prevSessionSkikppedPages = [...window.sodaJSONObj["skipped-pages"]];

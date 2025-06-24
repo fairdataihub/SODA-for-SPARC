@@ -57,11 +57,6 @@ export const openPageDatasetStructure = async (targetPageID) => {
     // Component with type "data-categorization-page" will handle most of the logic
   }
 
-  if (targetPageID === "other-data-categorization-tab") {
-    console.log("Opening other data categorization page");
-    // Component with type "data-categorization-page" will handle most of the logic
-  }
-
   if (targetPageID === "guided-manual-dataset-entity-and-metadata-tab") {
     console.log("Opening manual dataset entity and metadata page");
     // Component with type "entity-metadata-page" will handle most of the logic
@@ -184,15 +179,6 @@ export const openPageDatasetStructure = async (targetPageID) => {
 
     deleteEmptyFolders(window.datasetStructureJSONObj);
 
-    if (!Object.keys(window.datasetStructureJSONObj.folders).length) {
-      await swalShowInfo(
-        "No files or folders are currently imported into SODA",
-        "You will be returned to the beginning of the dataset structuring section to import your data."
-      );
-      await window.openPage("guided-dataset-structure-intro-tab");
-      return;
-    }
-
     document.getElementById("guided-container-manifest-file-cards").innerHTML = `
       <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
       Updating your dataset's manifest files...
@@ -293,9 +279,9 @@ export const openPageDatasetStructure = async (targetPageID) => {
               console.log("Entity dataz: ", entityData);
 
               entityList.push(entityData.id);
-              if (entityData?.["metadata"]?.["sample id"]) {
-                const sampleId = entityData["metadata"]["sample id"];
-                console.log("foundz sample id", sampleId);
+              if (entityData?.["metadata"]?.["sample_id"]) {
+                const sampleId = entityData["metadata"]["sample_id"];
+                console.log("found sample id", sampleId);
                 entityList.push(sampleId);
               }
 
@@ -356,25 +342,19 @@ export const openPageDatasetStructure = async (targetPageID) => {
       manifestDataRows.forEach((row) => {
         const path = row[0]; // Path is in the first column
         console.log("path1", path);
+        if (
+          datasetEntityObj?.["high-level-folder-data-categorization"]?.["Experimental data"]?.[path]
+        ) {
+          console.log("found folder to move to primary", path);
+          const newPath = updateFilePathDataFolder(path, "primary/");
+          console.log("newPath", newPath);
+          row[fileNameColumnIndex] = newPath;
+          console.log("row[fileNameColumnIndex]", row[fileNameColumnIndex]);
+        }
 
         if (datasetEntityObj?.["high-level-folder-data-categorization"]?.["Code"]?.[path]) {
           console.log("found code path", path);
           const newPath = updateFilePathDataFolder(path, "code/");
-          console.log("newPath", newPath);
-          row[fileNameColumnIndex] = newPath;
-          console.log("row[fileNameColumnIndex]", row[fileNameColumnIndex]);
-        }
-        if (datasetEntityObj?.["other-data"]?.["Documentation"]?.[path]) {
-          console.log("found folder to move to documentation", path);
-          const newPath = updateFilePathDataFolder(path, "docs/");
-          console.log("newPath", newPath);
-          row[fileNameColumnIndex] = newPath;
-          console.log("row[fileNameColumnIndex]", row[fileNameColumnIndex]);
-        }
-
-        if (datasetEntityObj?.["other-data"]?.["Protocol data"]?.[path]) {
-          console.log("found folder to move to protocol", path);
-          const newPath = updateFilePathDataFolder(path, "protocol/");
           console.log("newPath", newPath);
           row[fileNameColumnIndex] = newPath;
           console.log("row[fileNameColumnIndex]", row[fileNameColumnIndex]);

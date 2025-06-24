@@ -39,7 +39,7 @@ const DataImporter = ({ dataType, relativeFolderPathToImportDataInto }) => {
         onDragOver={allowDrop}
         mb="lg"
       >
-        <Group justify="center" gap="xl" mih={220} style={{ pointerEvents: "none" }}>
+        <Group justify="center" gap="xl" mih={140} style={{ pointerEvents: "none" }}>
           <Dropzone.Accept>
             <IconUpload size={52} color="var(--mantine-color-blue-6)" stroke={1.5} />
           </Dropzone.Accept>
@@ -57,7 +57,7 @@ const DataImporter = ({ dataType, relativeFolderPathToImportDataInto }) => {
                 : "Drag and drop files or folders or click to import"}
             </Text>
             <Text size="sm" c="dimmed" inline mt={7}>
-              Import any files or folders from your computer to organize your dataset
+              Import all folders you would like to include in the dataset.
             </Text>
           </div>
         </Group>

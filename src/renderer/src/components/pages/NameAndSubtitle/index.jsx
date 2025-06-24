@@ -1,9 +1,10 @@
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import DropDownNote from "../../utils/ui/DropDownNote";
-import { TextInput, Textarea, Text } from "@mantine/core";
+import { TextInput, Textarea, Text, List } from "@mantine/core";
 import ExternalLink from "../../buttons/ExternalLink";
 import useGlobalStore from "../../../stores/globalStore";
+
 import {
   setGuidedDatasetName,
   setGuidedDatasetSubtitle,
@@ -17,31 +18,18 @@ const NameAndSubtitlePage = () => {
       <GuidedModeSection>
         <TextInput
           label="Dataset Name:"
+          required
+          description="Enter a unique and informative name for your dataset."
           placeholder="Enter dataset name"
           value={guidedDatasetName}
           onChange={(event) => setGuidedDatasetName(event.target.value)}
         />
-        <DropDownNote
-          dropDownIcon="info"
-          dropDownButtonText="What is the dataset name used for?"
-          dropDownNote={
-            <Text>
-              This field will be displayed in public as the title of the dataset once it is
-              published on the
-              <ExternalLink
-                href="https://sparc.science/"
-                buttonText="SPARC Data Portal"
-                buttonType="anchor"
-              />
-              . Please make sure that your dataset name is unique and relatively informative.
-            </Text>
-          }
-        />
-      </GuidedModeSection>
-      <GuidedModeSection>
+
         <Textarea
           label="Brief dataset description:"
-          placeholder="Enter a brief description of the dataset (255 characters max)"
+          description="Summarize your dataset in a few sentences (255 characters max)."
+          placeholder="Enter dataset description"
+          required
           autosize
           minRows={5}
           value={guidedDatasetSubtitle}
@@ -51,21 +39,6 @@ const NameAndSubtitlePage = () => {
         <Text align="right" style={{ marginTop: "-35px", zIndex: "10", marginRight: "10px" }}>
           {255 - guidedDatasetSubtitle.length} characters remaining
         </Text>
-        <DropDownNote
-          dropDownIcon="info"
-          dropDownButtonText="What is the dataset description used for?"
-          dropDownNote={
-            <Text>
-              This field will become the short description visible immediately under the title of
-              your dataset once it is published on the
-              <ExternalLink
-                href="https://sparc.science/"
-                buttonText="SPARC Data Portal"
-                buttonType="anchor"
-              />
-            </Text>
-          }
-        />
       </GuidedModeSection>
     </GuidedModePage>
   );

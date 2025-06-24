@@ -10,7 +10,6 @@ import client from "../../../client";
 import api from "../../../others/api/api";
 import { clientError, userErrorMessage } from "../../../others/http-error-handler/error-handler";
 import { guidedShowOptionalRetrySwal } from "../../swals/helperSwals";
-import { guidedShowBannerImagePreview } from "../../bannerImage/bannerImage";
 import { createParsedReadme } from "../../../metadata-files/datasetDescription";
 import { renderManifestCards } from "../../manifests/manifest";
 import { setTreeViewDatasetStructure } from "../../../../stores/slices/datasetTreeViewSlice";
@@ -33,29 +32,13 @@ import { guidedDatasetKeywordsTagify } from "../../tagifies/tagifies";
 import lottie from "lottie-web";
 import { renderAdditionalLinksTable } from "../../guided-curate-dataset";
 import { datasetIsSparcFunded } from "../../utils/sodaJSONObj";
-import { setDropdownState } from "../../../../stores/slices/dropDownSlice";
-
+import { createStandardizedDatasetStructure } from "../../../../scripts/utils/datasetStructure";
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
 export const openPagePrepareMetadata = async (targetPageID) => {
   console.log(`Opening prepare metadata page: ${targetPageID}`);
-
-  if (targetPageID === "guided-banner-image-tab") {
-    if (window.sodaJSONObj["digital-metadata"]["banner-image-path"]) {
-      //added extra param to function to prevent modification of URL
-      guidedShowBannerImagePreview(
-        window.sodaJSONObj["digital-metadata"]["banner-image-path"],
-        true
-      );
-      document.querySelector("#guided--skip-banner-img-btn").style.display = "none";
-    } else {
-      //reset the banner image page
-      $("#guided-button-add-banner-image").html("Add banner image");
-      $("#guided-banner-image-preview-container").hide();
-    }
-  }
 
   if (targetPageID === "guided-pennsieve-metadata-intro-tab") {
     console.log("Opening Pennsieve metadata intro page");
@@ -102,18 +85,8 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     }
   }
 
-  if (targetPageID === "guided-designate-permissions-tab") {
-    console.log("Opening Pennsieve user permissions page");
-    // Page-specific initialization code will go here
-  }
-
   if (targetPageID === "guided-assign-license-tab") {
     console.log("Opening sharing license page");
-    // Page-specific initialization code will go here
-  }
-
-  if (targetPageID === "guided-aux-folder-tab") {
-    console.log("Opening auxiliary data import page");
     // Page-specific initialization code will go here
   }
 
@@ -342,14 +315,37 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     }
   }
 
-  if (targetPageID === "guided-create-local-copy-tab") {
-    console.log("Opening complete dataset structure review page");
-    // Initialize the dataset structure review, possibly updating tree views or summaries
+  if (targetPageID === "guided-generate-dataset-locally") {
+    const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
 
-    // Update tree view if that component is used here
-    if (window.datasetStructureJSONObj) {
-      setTreeViewDatasetStructure(window.datasetStructureJSONObj, []);
-    }
+    // Create a deep copy of the dataset structure JSON object
+    const datasetStructureJSONObjCopy = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
+    console.log("datasetStructureJSONObjCopy", datasetStructureJSONObjCopy);
+
+    const starndardizedDatasetStructure = createStandardizedDatasetStructure(
+      window.datasetStructureJSONObj,
+      datasetEntityObj
+    );
+    setTreeViewDatasetStructure(starndardizedDatasetStructure, []);
+
+    // Restore the original dataset structure
+    window.datasetStructureJSONObj = datasetStructureJSONObjCopy;
+    console.log("datasetStructureJSONObj restored", window.datasetStructureJSONObj);
+
+    const guidedResetLocalGenerationUI = () => {
+      // Hide the local dataset copy generation section that containst the table/generation progress
+      document
+        .getElementById("guided-section-local-generation-status-table")
+        .classList.add("hidden");
+      // Hide the local dataset generation success section
+      document
+        .getElementById("guided-section-post-local-generation-success")
+        .classList.add("hidden");
+      // Hide the local dataset generation retry section
+      document.getElementById("guided-section-retry-local-generation").classList.add("hidden");
+    };
+
+    guidedResetLocalGenerationUI();
   }
 };
 

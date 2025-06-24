@@ -1,7 +1,7 @@
 import { openPageCurationPreparation } from "./curationPreparation/openPage.js";
 import { openPageDatasetStructure } from "./datasetStructure/openPage.js";
 import { openPagePrepareMetadata } from "./prepareMetadata/openPage.js";
-import { openGenerateDatasetPage } from "./generateDataset/openPage.js";
+import { openPageGenerateDataset } from "./generateDataset/openPage.js";
 import {
   resetGuidedRadioButtons,
   updateGuidedRadioButtonsFromJSON,
@@ -266,7 +266,7 @@ export const openPage = async (targetPageID) => {
 
         // Make any adjustments to the dataset entity object before setting it in the zustand store
         if (pageEntityType === "high-level-folder-data-categorization") {
-          const bucketTypes = ["Experimental data", "Other"];
+          const bucketTypes = ["Experimental", "Protocol", "Documentation"];
           if (selectedEntities.includes("code")) {
             bucketTypes.push("Code");
           }
@@ -276,7 +276,7 @@ export const openPage = async (targetPageID) => {
           }
         }
 
-        if (pageEntityType === "other-data") {
+        /*if (pageEntityType === "other-data") {
           const otherBucketTypes = ["Protocol data", "Documentation"];
           for (const otherBucketType of otherBucketTypes) {
             addEntityToEntityList("other-data", otherBucketType);
@@ -285,7 +285,7 @@ export const openPage = async (targetPageID) => {
             [{ type: "high-level-folder-data-categorization", names: ["Other"] }],
             []
           );
-        }
+        }*/
 
         if (pageEntityType === "sites") {
           const sites = getExistingSites().map((site) => site.id);
@@ -394,18 +394,7 @@ export const openPage = async (targetPageID) => {
     await openPageCurationPreparation(targetPageID);
     await openPageDatasetStructure(targetPageID);
     await openPagePrepareMetadata(targetPageID);
-    await openGenerateDatasetPage(targetPageID);
-
-    if (targetPageID === "supporting-data-tab") {
-      addEntityToEntityList("supporting-data", "Source data");
-      addEntityToEntityList("supporting-data", "Derivative data");
-      addEntityToEntityList("supporting-data", "Code");
-      addEntityToEntityList("supporting-data", "Protocol data");
-      addEntityToEntityList("supporting-data", "Documentation");
-      addEntityToEntityList("supporting-data", "Auxiliary");
-      setActiveEntity(null);
-      // console.log("datasetEntityObj", useGlobalStore.getState().datasetEntityObj);
-    }
+    await openPageGenerateDataset(targetPageID);
 
     //     if (targetPageID === "guided-subject-structure-spreadsheet-importation-tab") {
     //         const savedSpreadSheetPath = window.sodaJSONObj["dataset-structure-spreadsheet-path"];
@@ -439,9 +428,6 @@ export const openPage = async (targetPageID) => {
     //     if (targetPageID === "guided-docs-folder-tab") {
     //         guidedUpdateFolderStructureUI("docs/");
     //     }
-    //     if (targetPageID === "guided-aux-folder-tab") {
-    //         guidedUpdateFolderStructureUI("aux/");
-    //     }
 
     //     if (targetPageID === "guided-source-derivative-folders-and-files-selector-tab") {
     //         addEntityToEntityList("source-derivative-folders-and-files", "source");
@@ -454,58 +440,6 @@ export const openPage = async (targetPageID) => {
     //         addEntityToEntityList("modalities", "electrophysiology");
     //         setActiveEntity(null);
     //         console.log("datasetEntityObj", useGlobalStore.getState().datasetEntityObj);
-    //     }
-
-    //     if (targetPageID === "guided-samples-folder-tab") {
-    //         renderSamplesTable();
-    //     }
-
-    //
-
-    //     if (targetPageID === "guided-designate-permissions-tab") {
-    //         // Get the users that can be granted permissions
-    //         const usersReq = await client.get(
-    //             `manage_datasets/ps_get_users?selected_account=${window.defaultBfAccount}`
-    //         );
-    //         const usersThatCanBeGrantedPermissions = usersReq.data.users;
-
-    //         // Get the teams that can be granted permissions
-    //         // Note: This is in a try catch because guest accounts do not have access to the teams endpoint
-    //         // so the request will fail and teamsThatCanBeGrantedPermissions will remain an empty array
-    //         let teamsThatCanBeGrantedPermissions = [];
-    //         try {
-    //             const teamsReq = await client.get(
-    //                 `manage_datasets/ps_get_teams?selected_account=${window.defaultBfAccount}`
-    //             );
-    //             teamsThatCanBeGrantedPermissions = window.getSortedTeamStrings(teamsReq.data.teams);
-    //         } catch (error) {
-    //             clientError(error);
-    //         }
-
-    //         // Reset the dropdown with the new users and teams
-    //         guidedAddUsersAndTeamsToDropdown(
-    //             usersThatCanBeGrantedPermissions,
-    //             teamsThatCanBeGrantedPermissions
-    //         );
-
-    //         //If the PI owner is empty, set the PI owner to the user that is currently curating
-    //         if (Object.keys(window.sodaJSONObj["digital-metadata"]["pi-owner"]).length === 0) {
-    //             //Get the user information of the user that is currently curating
-    //             const user = await api.getUserInformation();
-
-    //             const loggedInUserString = `${user["firstName"]} ${user["lastName"]} (${user["email"]})`;
-    //             const loggedInUserUUID = user["id"];
-    //             const loggedInUserName = `${user["firstName"]} ${user["lastName"]}`;
-    //             const loggedInUserPiObj = {
-    //                 userString: loggedInUserString,
-    //                 UUID: loggedInUserUUID,
-    //                 name: loggedInUserName,
-    //             };
-    //             setGuidedDatasetPiOwner(loggedInUserPiObj);
-    //         }
-
-    //         renderPermissionsTable();
-    //         guidedResetUserTeamPermissionsDropdowns();
     //     }
 
     //     if (targetPageID === "guided-create-samples-metadata-tab") {
@@ -544,26 +478,6 @@ export const openPage = async (targetPageID) => {
     //         } else {
     //             changesTextArea.value = "";
     //         }
-    //     }
-
-    //     if (targetPageID === "guided-create-local-copy-tab") {
-    //         // Show the dataset structure preview using jsTree
-    //         guidedShowTreePreview(
-    //             window.sodaJSONObj["digital-metadata"]["name"],
-    //             "guided-folder-and-metadata-structure-review"
-    //         );
-
-    //         // If the dataset was not started from Pennsieve, show the "Copy dataset" section
-    //         // (We don't display this feature when starting from Pennsieve because we don't currently have the ability
-    //         // to copy a dataset from Pennsieve to the user's local system)
-    //         const createCopySection = document.getElementById("guided-section-create-local-dataset-copy");
-    //         if (window.sodaJSONObj["starting-point"]["origin"] === "new") {
-    //             createCopySection.classList.remove("hidden");
-    //         } else {
-    //             createCopySection.classList.add("hidden");
-    //         }
-
-    //         guidedResetLocalGenerationUI();
     //     }
 
     //     if (targetPageID === "guided-dataset-dissemination-tab") {
@@ -659,9 +573,9 @@ export const openPage = async (targetPageID) => {
     window.sodaJSONObj["page-before-exit"] = targetPageID;
     await guidedSaveProgress();
   } catch (error) {
+    console.error("Error opening page:", targetPageID);
+    console.error("Error: ", error);
     const eMessage = userErrorMessage(error);
-    console.error(error);
-    console.error(eMessage);
     Swal.fire({
       icon: "error",
       title: `Error opening the ${targetPageName} page`,

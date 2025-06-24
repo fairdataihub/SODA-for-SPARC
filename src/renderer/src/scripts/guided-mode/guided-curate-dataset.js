@@ -19,7 +19,7 @@ import { v4 as uuid } from "uuid";
 import client from "../client";
 import { guidedPennsieveDatasetUpload } from "./generateDataset/generate";
 import { guidedDatasetKeywordsTagify } from "./tagifies/tagifies";
-
+import { updateDatasetUploadProgressTable } from "./generateDataset/uploadProgressBar";
 import {
   swalConfirmAction,
   swalShowError,
@@ -27,6 +27,14 @@ import {
   swalFileListDoubleAction,
   swalShowInfo,
 } from "../utils/swal-utils";
+import {
+  guidedGenerateSubjectsMetadata,
+  guidedGenerateSamplesMetadata,
+  guidedPrepareDatasetStructureAndMetadataForUpload,
+} from "./generateDataset/generate";
+import { guidedCreateManifestFilesAndAddToDatasetStructure } from "./manifests/manifest";
+
+import { guidedGetDatasetName } from "./utils/sodaJSONObj";
 
 import { getDatasetEntityObj } from "../../stores/slices/datasetEntitySelectorSlice";
 
@@ -49,12 +57,6 @@ export const guidedGetDatasetType = () => {
   // Returns the dataset type (e.g. "computational" or "experimental")
   return window.sodaJSONObj?.["dataset-type"];
 };
-
-document
-  .getElementById("guided-button-resume-pennsieve-dataset")
-  .addEventListener("click", async () => {
-    renderGuidedResumePennsieveDatasetSelectionDropdown();
-  });
 
 window.verifyProfile = async () => {
   const accountValid = await window.check_api_key();
@@ -781,85 +783,8 @@ document
   });
 
 window.handleGuidedModeOrgSwitch = async (buttonClicked) => {
-  const clickedButtonId = buttonClicked.id;
-  if (clickedButtonId === "guided-button-change-workspace-dataset-import") {
-    renderGuidedResumePennsieveDatasetSelectionDropdown();
-  }
   if (buttonClicked.classList.contains("guided--progress-button-switch-workspace")) {
     await guidedRenderProgressCards();
-  }
-};
-
-$("#guided-select-pennsieve-dataset-to-resume").selectpicker();
-const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
-  // First hide the error div if it is showing
-  const errorDiv = document.getElementById("guided-panel-pennsieve-dataset-import-error");
-  const logInDiv = document.getElementById("guided-panel-log-in-before-resuming-pennsieve-dataset");
-  const loadingDiv = document.getElementById("guided-panel-pennsieve-dataset-import-loading");
-  const loadingDivText = document.getElementById(
-    "guided-panel-pennsieve-dataset-import-loading-para"
-  );
-  const pennsieveDatasetSelectDiv = document.getElementById(
-    "guided-panel-pennsieve-dataset-select"
-  );
-  // Hide all of the divs incase they were previously shown
-  errorDiv.classList.add("hidden");
-  logInDiv.classList.add("hidden");
-  loadingDiv.classList.add("hidden");
-  pennsieveDatasetSelectDiv.classList.add("hidden");
-
-  // If the user is not logged in, show the log in div and return
-  if (!window.defaultBfAccount) {
-    logInDiv.classList.remove("hidden");
-    return;
-  }
-
-  //Show the loading Div and hide the dropdown div while the datasets the user has access to are being retrieved
-  loadingDiv.classList.remove("hidden");
-
-  try {
-    loadingDivText.textContent = "Verifying account information";
-    await window.verifyProfile();
-    loadingDivText.textContent = "Verifying workspace information";
-    await window.synchronizePennsieveWorkspace();
-    loadingDivText.textContent = "Importing datasets from Pennsieve";
-  } catch (e) {
-    clientError(e);
-    await swalShowInfo(
-      "Something went wrong while verifying your profile",
-      "Please try again by clicking the 'Yes' button. If this issue persists please use our `Contact Us` page to report the issue."
-    );
-    loadingDiv.classList.add("hidden");
-    return;
-  }
-
-  const datasetSelectionSelectPicker = $("#guided-select-pennsieve-dataset-to-resume");
-  datasetSelectionSelectPicker.empty();
-  try {
-    let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
-      params: { selected_account: window.defaultBfAccount },
-    });
-    const datasets = responseObject.data.datasets;
-    //Add the datasets to the select picker
-    datasetSelectionSelectPicker.append(
-      `<option value="" selected>Select a dataset on Pennsieve to resume</option>`
-    );
-    for (const dataset of datasets) {
-      datasetSelectionSelectPicker.append(`<option value="${dataset.id}">${dataset.name}</option>`);
-    }
-    datasetSelectionSelectPicker.selectpicker("refresh");
-
-    //Hide the loading div and show the dropdown div
-    loadingDiv.classList.add("hidden");
-    pennsieveDatasetSelectDiv.classList.remove("hidden");
-  } catch (error) {
-    // Show the error div and hide the dropdown and loading divs
-    errorDiv.classList.remove("hidden");
-    loadingDiv.classList.add("hidden");
-    pennsieveDatasetSelectDiv.classList.add("hidden");
-    clientError(error);
-    document.getElementById("guided-pennsieve-dataset-import-error-message").innerHTML =
-      userErrorMessage(error);
   }
 };
 
@@ -4243,7 +4168,7 @@ const countFilesInDatasetStructure = (datasetStructure) => {
   return totalFiles;
 };
 
-// Listen for the selected path for local dataset generation
+// Listen for the selected path for local dataset generation that starts the local dataset generation process
 window.electron.ipcRenderer.on(
   "selected-guided-local-dataset-generation-path",
   async (event, filePath) => {
@@ -4254,20 +4179,23 @@ window.electron.ipcRenderer.on(
       const guidedDatasetName = guidedGetDatasetName(window.sodaJSONObj);
 
       const filePathToGenerateAt = window.path.join(filePath, guidedDatasetName);
+      console.log("filePathToGenerateAt", filePathToGenerateAt);
       if (window.fs.existsSync(filePathToGenerateAt)) {
+        // TEMP remove the folder at this path
+        /*
         throw new Error(
           `
             A folder named ${guidedDatasetName} already exists at the selected location.
             Please remove the folder at the selected location or choose a new location.
           `
-        );
+        );*/
       }
       // Reset and show the progress bar
       setGuidedProgressBarValue("local", 0);
       updateDatasetUploadProgressTable("local", {
         "Current action": `Checking available free space on disk`,
       });
-      unHideAndSmoothScrollToElement("guided-section-local-generation-status-table");
+      window.unHideAndSmoothScrollToElement("guided-section-local-generation-status-table");
 
       // Get available free memory on disk
       const freeMemoryInBytes = await window.electron.ipcRenderer.invoke("getDiskSpace", filePath);
@@ -4305,6 +4233,11 @@ window.electron.ipcRenderer.on(
       // check if the account details are valid during local generation
       delete sodaJSONObjCopy["ps-account-selected"];
       delete sodaJSONObjCopy["ps-dataset-selected"];
+
+      await guidedPrepareDatasetStructureAndMetadataForUpload(sodaJSONObjCopy);
+
+      // Add the dataset metadata json to the sodaJSONObjCopy
+      console.log("sodaJSONObjCopy['dataset_metadata']", sodaJSONObjCopy["dataset_metadata"]);
 
       updateDatasetUploadProgressTable("local", {
         "Current action": `Preparing dataset for local generation`,
@@ -4357,7 +4290,7 @@ window.electron.ipcRenderer.on(
             // Scroll the user down to the progress table if they haven't been scrolled down yet
             // (This only happens once)
             if (!userHasBeenScrolledToProgressTable) {
-              unHideAndSmoothScrollToElement("guided-section-local-generation-status-table");
+              window.unHideAndSmoothScrollToElement("guided-section-local-generation-status-table");
               userHasBeenScrolledToProgressTable = true;
             }
 
@@ -4378,7 +4311,7 @@ window.electron.ipcRenderer.on(
       setGuidedProgressBarValue("local", 100);
       updateDatasetUploadProgressTable("local", { "Current action": `Generating metadata files` });
 
-      // Generate all dataset metadata files
+      /* TEMP DISABLED FOR NOW // Generate all dataset metadata files
       await guidedGenerateSubjectsMetadata(
         window.path.join(filePath, guidedDatasetName, "subjects.xlsx")
       );
@@ -4399,7 +4332,7 @@ window.electron.ipcRenderer.on(
       );
       await guidedGenerateCodeDescriptionMetadata(
         window.path.join(filePath, guidedDatasetName, "code_description.xlsx")
-      );
+      );*/
 
       // Save the location of the generated dataset to the sodaJSONObj
       window.sodaJSONObj["path-to-local-dataset-copy"] = window.path.join(
@@ -4411,15 +4344,16 @@ window.electron.ipcRenderer.on(
       updateDatasetUploadProgressTable("local", {
         Status: `Dataset successfully generated locally`,
       });
-      unHideAndSmoothScrollToElement("guided-section-post-local-generation-success");
+      window.unHideAndSmoothScrollToElement("guided-section-post-local-generation-success");
     } catch (error) {
+      console.error("Error during local dataset generation:", error);
       // Handle and log errors
       const errorMessage = userErrorMessage(error);
       console.error(errorMessage);
       guidedResetLocalGenerationUI();
       await swalShowError("Error generating dataset locally", errorMessage);
       // Show and scroll down to the local dataset generation retry button
-      unHideAndSmoothScrollToElement("guided-section-retry-local-generation");
+      window.unHideAndSmoothScrollToElement("guided-section-retry-local-generation");
     }
     guidedSetNavLoadingState(false); // Unlock the nav after local dataset generation is done
   }

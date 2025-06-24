@@ -130,7 +130,7 @@ export const addSubject = (subjectId, metadata = {}) => {
       // Create merged metadata object with ID guaranteed
       const mergedMetadata = {
         ...metadata,
-        "subject id": normalizedSubjectId, // Ensure ID is always set correctly
+        subject_id: normalizedSubjectId, // Ensure ID is always set correctly
       };
 
       state.datasetEntityArray.push({
@@ -194,8 +194,8 @@ export const addSampleToSubject = (subjectId, sampleId, metadata = {}) => {
         // Create merged metadata object for the sample
         const mergedMetadata = {
           ...metadata,
-          "subject id": normalizedSubjectId,
-          "sample id": normalizedSampleId,
+          subject_id: normalizedSubjectId,
+          sample_id: normalizedSampleId,
         };
 
         subject.samples.push({
@@ -278,8 +278,8 @@ export const addSiteToSubject = (subjectId, siteId, metadata = {}) => {
         // Create merged metadata object for the site
         const mergedMetadata = {
           ...metadata,
-          "site id": normalizedSiteId,
-          "subject id": normalizedSubjectId,
+          site_id: normalizedSiteId,
+          subject_id: normalizedSubjectId,
         };
 
         subject.subjectSites.push({
@@ -341,9 +341,9 @@ export const addSiteToSample = (subjectId, sampleId, siteId, metadata = {}) => {
           // Create merged metadata object for the site
           const mergedMetadata = {
             ...metadata,
-            "site id": normalizedSiteId,
-            "subject id": normalizedSubjectId,
-            "sample id": normalizedSampleId,
+            site_id: normalizedSiteId,
+            subject_id: normalizedSubjectId,
+            sample_id: normalizedSampleId,
           };
 
           sample.sites.push({
@@ -551,7 +551,7 @@ export const updateExistingEntityMetadata = (entity, metadataChanges) => {
           subject.metadata[key] = value;
 
           // Update ID at top level if needed
-          if (key === "subject id") {
+          if (key === "subject_id") {
             subject.id = value.startsWith("sub-") ? value : `sub-${value}`;
           }
         });
@@ -639,7 +639,7 @@ export const updateExistingEntityMetadata = (entity, metadataChanges) => {
             site.metadata[key] = value;
             console.log(`Updated site metadata: ${key} = ${value}`);
 
-            if (key === "site id") {
+            if (key === "site_id") {
               site.id = value.startsWith("site-") ? value : `site-${value}`;
             }
           });
@@ -661,7 +661,7 @@ export const updateExistingEntityMetadata = (entity, metadataChanges) => {
             site.metadata[key] = value;
             console.log(`Updated subject site metadata: ${key} = ${value}`);
 
-            if (key === "site id") {
+            if (key === "site_id") {
               site.id = value.startsWith("site-") ? value : `site-${value}`;
             }
           });
@@ -744,7 +744,7 @@ export const getEntityMetadataValue = (entity, key, entityType = null, defaultVa
     }
 
     // Special ID handling
-    if (key === "subject id" && entity.type === "subject") {
+    if (key === "subject_id" && entity.type === "subject") {
       return entity.id.startsWith("sub-") ? entity.id.substring(4) : entity.id;
     }
 

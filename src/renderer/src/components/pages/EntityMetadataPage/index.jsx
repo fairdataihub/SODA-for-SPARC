@@ -56,7 +56,7 @@ import SodaPaper from "../../utils/ui/SodaPaper";
 import SodaGreenPaper from "../../utils/ui/SodaGreenPaper";
 import { getExistingSamples } from "../../../stores/slices/datasetEntityStructureSlice";
 import InstructionsTowardsLeftContainer from "../../utils/ui/InstructionsTowardsLeftContainer";
-
+import { OptionalFieldsNotice } from "./utils";
 /**
  * EntityMetadataForm Component
  *
@@ -150,8 +150,7 @@ const EntityMetadataForm = () => {
     return (
       <InstructionsTowardsLeftContainer>
         <Text fw={500}>
-          Click the "Add Subject" button to the left to begin structuring and your dataset's
-          entities.
+          Click the "Add Subject" button to the left to begin structuring your dataset's entities.
         </Text>
       </InstructionsTowardsLeftContainer>
     );
@@ -198,7 +197,7 @@ const EntityMetadataForm = () => {
         const tempMetadata = useGlobalStore.getState().temporaryEntityMetadata?.subject || {};
 
         // Validate required fields
-        if (!tempMetadata["subject id"]) {
+        if (!tempMetadata["subject_id"]) {
           window.notyf.open({
             duration: "4000",
             type: "error",
@@ -208,7 +207,7 @@ const EntityMetadataForm = () => {
         }
 
         try {
-          addSubject(tempMetadata["subject id"], tempMetadata);
+          addSubject(tempMetadata["subject_id"], tempMetadata);
         } catch (error) {
           window.notyf.open({ duration: "4000", type: "error", message: error.message });
           return;
@@ -218,14 +217,14 @@ const EntityMetadataForm = () => {
       } else if (activeFormType === "sample") {
         // Create sample entity
         const tempMetadata = useGlobalStore.getState().temporaryEntityMetadata?.sample || {};
-        addSampleToSubject(entityBeingAddedParentSubject, tempMetadata["sample id"], tempMetadata);
+        addSampleToSubject(entityBeingAddedParentSubject, tempMetadata["sample_id"], tempMetadata);
         clearTemporaryMetadata("sample");
       } else if (activeFormType === "site") {
         // Create site entity
         const tempMetadata = useGlobalStore.getState().temporaryEntityMetadata?.site || {};
 
         // Validate required fields
-        if (!tempMetadata["site id"]) {
+        if (!tempMetadata["site_id"]) {
           window.notyf.open({
             duration: "4000",
             type: "error",
@@ -241,12 +240,12 @@ const EntityMetadataForm = () => {
             addSiteToSample(
               entityBeingAddedParentSubject,
               entityBeingAddedParentSample,
-              tempMetadata["site id"],
+              tempMetadata["site_id"],
               tempMetadata
             );
           } else if (entityBeingAddedParentSubject) {
             // Site belongs directly to subject
-            addSiteToSubject(entityBeingAddedParentSubject, tempMetadata["site id"], tempMetadata);
+            addSiteToSubject(entityBeingAddedParentSubject, tempMetadata["site_id"], tempMetadata);
           }
         } catch (error) {
           window.notyf.open({ duration: "4000", type: "error", message: error.message });
@@ -299,15 +298,18 @@ const EntityMetadataForm = () => {
               label="Subject Identifier"
               description="Enter a unique identifier for this subject."
               placeholder="Enter subject ID"
-              value={getMetadataValue("subject id")}
-              onChange={(e) => handleChange("subject id", e.target.value)}
+              required
+              value={getMetadataValue("subject_id")}
+              onChange={(e) => handleChange("subject_id", e.target.value)}
               leftSection={
                 <Text size="sm" c="dimmed" mx="sm">
                   {entityPrefixes["subject"]}
                 </Text>
               }
               leftSectionWidth={50}
-            />{" "}
+            />
+            <OptionalFieldsNotice />
+
             <Select
               label="Sex"
               description="Subject's biological sex"
@@ -660,10 +662,11 @@ const EntityMetadataForm = () => {
             />
             <TextInput
               label="Sample Identifier"
+              required
               description="Enter a unique identifier for this biological sample."
               placeholder="Enter sample ID"
-              value={getMetadataValue("sample id")}
-              onChange={(e) => handleChange("sample id", e.target.value)}
+              value={getMetadataValue("sample_id")}
+              onChange={(e) => handleChange("sample_id", e.target.value)}
               leftSection={
                 <Text size="sm" c="dimmed" mx="sm">
                   {entityPrefixes["sample"]}
@@ -671,6 +674,7 @@ const EntityMetadataForm = () => {
               }
               leftSectionWidth={50}
             />
+            <OptionalFieldsNotice />
 
             <TextInput
               label="Sample Experimental Group"
@@ -704,14 +708,13 @@ const EntityMetadataForm = () => {
             />
             {showFullMetadataFormFields && (
               <>
-                {/* was derived from Select */}
                 <Select
                   label="Was derived from"
                   description="The entity this sample was derived from"
                   placeholder="Select entity"
                   data={getExistingSamples()
                     .map((sample) => sample.id)
-                    .filter((id) => id !== `sam-${getMetadataValue("sample id")}`)}
+                    .filter((id) => id !== `sam-${getMetadataValue("sample_id")}`)}
                   value={getMetadataValue("was derived from")}
                   onChange={(value) => handleChange("was derived from", value)}
                 />
@@ -773,8 +776,9 @@ const EntityMetadataForm = () => {
               label="Site Identifier"
               description="Enter a unique identifier for this site."
               placeholder="Enter site ID"
-              value={getMetadataValue("site id")}
-              onChange={(e) => handleChange("site id", e.target.value)}
+              required
+              value={getMetadataValue("site_id")}
+              onChange={(e) => handleChange("site_id", e.target.value)}
               leftSection={
                 <Text size="sm" c="dimmed" mx="sm">
                   {entityPrefixes["site"]}
@@ -782,6 +786,8 @@ const EntityMetadataForm = () => {
               }
               leftSectionWidth={50}
             />
+            <OptionalFieldsNotice />
+
             <TextInput
               label="Site type"
               placeholder="e.g., Recording site, Injection site"
@@ -800,39 +806,6 @@ const EntityMetadataForm = () => {
               placeholder="e.g., X:1.2, Y:3.4, Z:5.6"
               value={getMetadataValue("coordinates")}
               onChange={(e) => handleChange("coordinates", e.target.value)}
-            />
-          </Stack>
-        );
-      case "performance":
-        return (
-          <Stack spacing="md">
-            <TextInput
-              label="Performance Identifier"
-              description="Enter a unique identifier for this experimental session."
-              placeholder="Enter performance ID"
-              value={getMetadataValue("performance id")}
-              onChange={(e) => handleChange("performance id", e.target.value)}
-            />
-            <TextInput
-              label="Experimental Group"
-              description="The experimental group this performance belongs to"
-              placeholder="e.g., Control, Treatment A"
-              value={getMetadataValue("experimentalGroup")}
-              onChange={(e) => handleChange("experimentalGroup", e.target.value)}
-            />
-            <TextInput
-              label="Equipment"
-              description="Equipment used for this recording/performance"
-              placeholder="e.g., Multichannel electrode array"
-              value={getMetadataValue("equipment")}
-              onChange={(e) => handleChange("equipment", e.target.value)}
-            />
-            <TextInput
-              label="Date"
-              description="Date of the recording/performance"
-              placeholder="YYYY-MM-DD"
-              value={getMetadataValue("date")}
-              onChange={(e) => handleChange("date", e.target.value)}
             />
           </Stack>
         );
@@ -903,7 +876,7 @@ const EntityMetadataPage = ({ entityType }) => {
           {showFullMetadataFormFields
             ? `Tell us more about the ${entityType} you collected data from in the interface below. If your ${entityType} have
             a lot of overlapping metadata, you can use the copy metadata button to copy metadata between ${entityType}.`
-            : "Use the interface below to describe the structure of the data that was collected during your study."}
+            : "Use the interface below to describe the entities in your experimental data."}
         </Text>
       </GuidedModeSection>
 
@@ -911,7 +884,7 @@ const EntityMetadataPage = ({ entityType }) => {
         <Grid gutter="lg">
           {/* Entity selection panel */}
           <Grid.Col span={5} style={{ position: "sticky", top: "20px" }}>
-            <EntityListContainer title={`Select a ${entityType}`}>
+            <EntityListContainer title={entityType ? `Select a ${entityType}` : null}>
               <EntityHierarchyRenderer
                 allowEntityStructureEditing={true}
                 allowEntitySelection={true}

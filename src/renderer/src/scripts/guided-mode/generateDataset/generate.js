@@ -13,6 +13,12 @@ import {
   datasetIsSparcFunded,
   guidedGetDatasetOrigin,
 } from "../utils/sodaJSONObj";
+import {
+  getExistingSubjects,
+  getExistingSamples,
+  getExistingSites,
+} from "../../../stores/slices/datasetEntityStructureSlice";
+
 import datasetUploadSession from "../../analytics/upload-session-tracker";
 import { pageIsSkipped } from "../pages/navigationUtils/pageSkipping";
 import kombuchaEnums from "../../analytics/analytics-enums";
@@ -50,6 +56,15 @@ export const guidedPennsieveDatasetUpload = async () => {
     const guidedTags = window.sodaJSONObj["digital-metadata"]["dataset-tags"];
     const guidedLicense = window.sodaJSONObj["digital-metadata"]["license"];
     const guidedBannerImagePath = window.sodaJSONObj["digital-metadata"]?.["banner-image-path"];
+
+    // TODO: When retrying the upload, skip to the failed step rather than starting from the beginning
+    if (userMadeItToLastStep() && window.retryGuidedMode) {
+      // scroll to the upload status table
+      window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
+      // upload on the last step
+      await guidedUploadDatasetToPennsieve();
+      return;
+    }
 
     //Hide the upload tables
     document.querySelectorAll(".guided-upload-table").forEach((table) => {
@@ -119,72 +134,127 @@ export const guidedPennsieveDatasetUpload = async () => {
 
     //Upload the dataset files
     await guidedUploadDatasetToPennsieve();
+    amountOfTimesPennsieveUploadFailed = 0; //reset the upload failed counter
   } catch (error) {
     clientError(error);
     let emessage = userErrorMessage(error);
-    //make an unclosable sweet alert that forces the user to close out of the app
-    let res = await Swal.fire({
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      icon: "error",
-      title: "An error occurred during your upload",
-      html: `
+
+    amountOfTimesPennsieveUploadFailed += 1;
+    window.retryGuidedMode = true; //set the retry flag to true
+    let supplementaryChecks = false;
+
+    if (amountOfTimesPennsieveUploadFailed <= 3) {
+      // run pre flight checks until they pass or fail 3 times
+      await Swal.fire({
+        title: `Retrying upload ${amountOfTimesPennsieveUploadFailed} of 3 times`,
+        icon: "error",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+        timer: 5000,
+        timerProgressBar: true,
+      });
+      while (!supplementaryChecks && amountOfTimesPennsieveUploadFailed <= 3) {
+        supplementaryChecks = await window.run_pre_flight_checks(
+          "guided-mode-pre-generate-pennsieve-agent-check"
+        );
+        if (!supplementaryChecks) amountOfTimesPennsieveUploadFailed += 1;
+      }
+    }
+    // if upload failed 3 times give user option to save and exit or try again
+    else {
+      //make an unclosable sweet alert that forces the user to retry or close the app
+      let res = await Swal.fire({
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        icon: "error",
+        title: "An error occurred during your upload",
+        html: `
         <p>Error message: ${emessage}</p>
         <p>
-        You may retry the upload now or save and exit.
-        If you choose to save and exit you will be able to resume your upload by returning to Guided Mode and clicking the "Resume Upload"
-        button on your dataset's progress card.
+        SODA has retried the upload three times but was not successful. You may manually retry the upload now or save and exit.
+        If you choose to save and exit you will be able to resume your upload by returning to Prepare Dataset Step-by-Step and clicking the "Resume Upload"
+        button on your dataset's progress card. If this issue persists, please contact support by using the Contact Us page in the sidebar
+        after you Save and Exit.
         </p>
       `,
-      showCancelButton: true,
-      cancelButtonText: "Save and Exit",
-      confirmButtonText: "Retry Upload",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    });
+        showCancelButton: true,
+        cancelButtonText: "Save and Exit",
+        confirmButtonText: "Retry Upload",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
 
-    if (res.isConfirmed) {
-      window.retryGuidedMode = true; //set the retry flag to true
-      let supplementary_checks = await window.run_pre_flight_checks(
+      // save & exit the upload
+      if (!res.isConfirmed) {
+        const currentPageID = window.CURRENT_PAGE.id;
+        try {
+          await savePageChanges(currentPageID);
+        } catch (error) {
+          window.log.error("Error saving page changes", error);
+        }
+        guidedTransitionToHome();
+        return;
+      }
+
+      supplementaryChecks = await window.run_pre_flight_checks(
         "guided-mode-pre-generate-pennsieve-agent-check"
       );
-      if (!supplementary_checks) {
-        console.error("Failed supplementary checks");
-        return;
-      }
-
-      // check if the user made it to the last step
-      if (
-        !document
-          .querySelector("#guided-div-dataset-upload-status-table")
-          .classList.contains("hidden")
-      ) {
-        // scroll to the upload status table
-        window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
-        // upload on the last step
-        await guidedUploadDatasetToPennsieve();
-      } else {
-        // restart the whole process
-        await guidedPennsieveDatasetUpload();
-        return;
-      }
     }
 
-    const currentPageID = window.CURRENT_PAGE.id;
-    try {
-      await savePageChanges(currentPageID);
-    } catch (error) {
-      window.log.error("Error saving page changes", error);
+    // force a save and exit if the pre flight checks fail
+    if (!supplementaryChecks) {
+      // if the pre-flight checks fail, show an error message and exit
+      Swal.fire({
+        icon: "error",
+        title: "Could not complete upload due to pre-flight check failures",
+        text: "Please return to the home page to try the upload again. If the problem persists, please contact support by using the Contact Us page in the sidebar.",
+        confirmButtonText: "OK",
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+      const currentPageID = window.CURRENT_PAGE.id;
+      try {
+        await savePageChanges(currentPageID);
+      } catch (error) {
+        window.log.error("Error saving page changes", error);
+      }
+      guidedTransitionToHome();
+      return;
     }
-    guidedTransitionToHome();
+
+    // retry the upload
+    await guidedPennsieveDatasetUpload();
   }
   guidedSetNavLoadingState(false);
+};
+
+let amountOfTimesPennsieveUploadFailed = 0;
+
+const userMadeItToLastStep = () => {
+  return !document
+    .querySelector("#guided-div-dataset-upload-status-table")
+    .classList.contains("hidden");
 };
 
 const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
@@ -684,16 +754,17 @@ const guidedAddTeamPermissions = async (bfAccount, datasetName, teamPermissionsA
   await Promise.allSettled(promises);
 };
 
-const guidedGenerateSubjectsMetadata = async (destination) => {
+export const guidedGenerateSubjectsMetadata = async (destination) => {
+  // Get the list of existing subjects from the datasetEntityObj
+  const existingSubjects = getExistingSubjects();
+  console.log("Existing subjects:", existingSubjects);
   // Early return if subjects metadata table is empty or the tab is skipped
-  if (
-    window.subjectsTableData.length === 0 ||
-    pageIsSkipped("guided-create-subjects-metadata-tab")
-  ) {
+  if (existingSubjects.length === 0 || pageIsSkipped("guided-subjects-metadata-tab")) {
     return;
   }
 
   const generationDestination = destination === "Pennsieve" ? "Pennsieve" : "local";
+  console.log("Generation destination:", generationDestination);
 
   // Prepare UI elements for Pennsieve upload (if applicable)
   const subjectsMetadataGenerationText = document.getElementById(
@@ -765,7 +836,7 @@ const guidedGenerateSubjectsMetadata = async (destination) => {
   }
 };
 
-const guidedGenerateSamplesMetadata = async (destination) => {
+export const guidedGenerateSamplesMetadata = async (destination) => {
   // Early return if samples metadata table is empty or the tab is skipped
   if (window.samplesTableData.length === 0 || pageIsSkipped("guided-samples-metadata-tab")) {
     return;
@@ -841,7 +912,7 @@ const guidedGenerateSamplesMetadata = async (destination) => {
   }
 };
 
-const guidedGenerateSubmissionMetadata = async (destination) => {
+export const guidedGenerateSubmissionMetadata = async (destination) => {
   // Build the submission metadata array
   const guidedMilestones =
     window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["milestones"];
@@ -930,7 +1001,7 @@ const guidedGenerateSubmissionMetadata = async (destination) => {
   }
 };
 
-const guidedGenerateDatasetDescriptionMetadata = async (destination) => {
+export const guidedGenerateDatasetDescriptionMetadata = async (destination) => {
   const guidedDatasetInformation =
     window.sodaJSONObj["dataset_metadata"]["description-metadata"]["dataset-information"];
   const guidedStudyInformation =
@@ -1078,7 +1149,7 @@ const guidedGenerateDatasetDescriptionMetadata = async (destination) => {
   }
 };
 
-const guidedGenerateReadmeMetadata = async (destination) => {
+export const guidedGenerateReadmeMetadata = async (destination) => {
   const guidedReadMeMetadata = window.sodaJSONObj["dataset_metadata"]["README"];
 
   const generationDestination = destination === "Pennsieve" ? "Pennsieve" : "local";
@@ -1154,7 +1225,7 @@ const guidedGenerateReadmeMetadata = async (destination) => {
     throw new Error(emessage); // Re-throw for further handling
   }
 };
-const guidedGenerateChangesMetadata = async (destination) => {
+export const guidedGenerateChangesMetadata = async (destination) => {
   // Early return if changes metadata table is empty or the tab is skipped
   if (pageIsSkipped("guided-create-changes-metadata-tab")) {
     return;
@@ -1234,7 +1305,7 @@ const guidedGenerateChangesMetadata = async (destination) => {
   }
 };
 
-const guidedGenerateCodeDescriptionMetadata = async (destination) => {
+export const guidedGenerateCodeDescriptionMetadata = async (destination) => {
   if (pageIsSkipped("guided-add-code-metadata-tab")) {
     return;
   }
@@ -1359,6 +1430,8 @@ const guidedUploadDatasetToPennsieve = async () => {
     .then(async (curationRes) => {
       // if the upload succeeds reset the retry guided mode flag
       window.retryGuidedMode = false;
+      // reset the amount of times the upload has failed
+      amountOfTimesPennsieveUploadFailed = 0;
       guidedSetNavLoadingState(false);
 
       let { data } = curationRes;
@@ -1598,7 +1671,6 @@ const guidedUploadDatasetToPennsieve = async () => {
         }
       );
 
-      let emessage = userErrorMessage(error);
       try {
         let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
           params: {
@@ -1610,68 +1682,6 @@ const guidedUploadDatasetToPennsieve = async () => {
       } catch (error) {
         clientError(error);
       }
-
-      //make an unclosable sweet alert that forces the user to close out of the app
-      let res = await Swal.fire({
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false,
-        icon: "error",
-        title: "An error occurred during your upload",
-        html: `
-          <p>Error message: ${emessage}</p>
-          <p>
-          You may retry the upload now or save and exit.
-          If you choose to save and exit you will be able to resume your upload by returning to Guided Mode and clicking the "Resume Upload"
-          button on your dataset's progress card.
-          </p>
-        `,
-        showCancelButton: true,
-        cancelButtonText: "Save and Exit",
-        confirmButtonText: "Retry Upload",
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-      });
-
-      if (res.isConfirmed) {
-        window.retryGuidedMode = true; //set the retry flag to true
-        let supplementary_checks = await window.run_pre_flight_checks(
-          "guided-mode-pre-generate-pennsieve-agent-check"
-        );
-        if (!supplementary_checks) {
-          return;
-        }
-
-        // check if the user made it to the last step
-        if (
-          !document
-            .querySelector("#guided-div-dataset-upload-status-table")
-            .classList.contains("hidden")
-        ) {
-          // scroll to the upload status table
-          window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
-          // upload on the last step
-          await guidedUploadDatasetToPennsieve();
-          return;
-        } else {
-          // restart the whole process
-          await guidedPennsieveDatasetUpload();
-          return;
-        }
-      }
-
-      const currentPageID = window.CURRENT_PAGE.id;
-      try {
-        await savePageChanges(currentPageID);
-      } catch (error) {
-        window.log.error("Error saving page changes", error);
-      }
-      guidedTransitionToHome();
     });
 
   const guidedUpdateUploadStatus = async () => {
@@ -2235,4 +2245,34 @@ const guidedGetDatasetLinks = () => {
     ...window.sodaJSONObj["dataset_metadata"]["description-metadata"]["additional-links"],
     ...window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"],
   ];
+};
+
+export const guidedPrepareDatasetStructureAndMetadataForUpload = async (sodaObj) => {
+  console.log("baz");
+  console.log("Preparing dataset structure and metadata for upload...");
+  console.log("sodaObj", sodaObj);
+  console.log("dataset-metadata", sodaObj["dataset_metadata"]);
+  // Prepare the subject metadata
+  const subjects = getExistingSubjects();
+  const subjectsMetadata = subjects.map((subject) => {
+    return subject.metadata;
+  });
+  console.log("subjectsMetadata", subjectsMetadata);
+  sodaObj["dataset_metadata"]["subjects_metadata"] = subjectsMetadata;
+
+  // Prepare the samples metadata
+  const samples = getExistingSamples();
+  const samplesMetadata = samples.map((sample) => {
+    return sample.metadata;
+  });
+  console.log("samplesMetadata", samplesMetadata);
+  sodaObj["dataset_metadata"]["samples_metadata"] = samplesMetadata;
+
+  const sites = getExistingSites();
+  const sitesMetadata = sites.map((site) => ({
+    ...site.metadata,
+    specimen_id: `${site.metadata.subject_id} ${site.metadata.sample_id}`,
+  }));
+  console.log("sitesMetadata", sitesMetadata);
+  sodaObj["dataset_metadata"]["sites_metadata"] = sitesMetadata;
 };

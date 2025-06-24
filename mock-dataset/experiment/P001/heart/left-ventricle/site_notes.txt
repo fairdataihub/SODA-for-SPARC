@@ -1,9 +1,0 @@
-Site: left-ventricle
-Subject: sub-001
-Date: 2023-06-15
-Researcher: Dr. M. Cardio
-
-Site-specific Notes:
-- Left ventricular measurements taken at base and apex
-- Tissue appears healthy with good perfusion
-- Wall thickness within normal range

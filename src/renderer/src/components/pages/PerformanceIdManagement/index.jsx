@@ -49,9 +49,6 @@ const PerformanceMetadataForm = () => {
   const startDateTime = useGlobalStore((state) => state.startDateTime);
   const endDateTime = useGlobalStore((state) => state.endDateTime);
 
-  // Show the user what the full ID will be
-  const fullPerformanceId = performanceId ? `perf-${performanceId}` : "";
-
   return (
     <Stack spacing="md">
       <TextInput
@@ -104,7 +101,9 @@ const PerformanceIdManagement = () => {
   const protocolUrl = useGlobalStore((state) => state.protocolUrl);
   const startDateTime = useGlobalStore((state) => state.startDateTime);
   const endDateTime = useGlobalStore((state) => state.endDateTime);
+
   const performanceList = useGlobalStore((state) => state.performanceList);
+
   const isEditMode = useGlobalStore((state) => state.isEditMode);
   const originalPerformanceId = useGlobalStore((state) => state.originalPerformanceId);
 
@@ -147,7 +146,7 @@ const PerformanceIdManagement = () => {
     <GuidedModePage pageHeader="Description of Performances">
       <GuidedModeSection>
         <Text mb="md">
-          Provide information for each performance of experimental protocol in the interface below.
+          Provide information for each performance of the experimental protocol below.
         </Text>
       </GuidedModeSection>
 
@@ -302,8 +301,9 @@ const PerformanceIdManagement = () => {
             ) : (
               <InstructionsTowardsLeftContainer>
                 <Text fw={500}>
-                  Select a performance from the left to edit its metadata or click "Add Performance"
-                  to add a new performance.
+                  {!performanceList || performanceList.length === 0
+                    ? 'Click "Add Performance"  to begin adding a new performance.'
+                    : 'Choose a performance to view or edit, or click "Add Performance" to create a new one.'}
                 </Text>
               </InstructionsTowardsLeftContainer>
             )}

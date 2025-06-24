@@ -10,6 +10,7 @@ import SingleColumnTable from "../tables/singleColumn";
 import PennsieveAgentCheckDisplay from "../backgroundServices/PennsieveAgentCheckDisplay";
 import DatasetContentSelector from "../pages/DatasetContentSelector";
 import PerformanceIdManagementPage from "../pages/PerformanceIdManagement";
+import GenerateDatasetLocationSelectorPage from "../pages/GenerateDatasetLocationSelector";
 import ResourcesManagementPage from "../pages/ResourcesManagement";
 import ModalitySelectionPage from "../pages/ModalitySelection";
 import EntityMetadataPage from "../pages/EntityMetadataPage";
@@ -19,6 +20,7 @@ import EntityDataSelectorPage from "../pages/EntityDataSelector";
 import DataImporter from "../shared/DataImporter";
 import SubmissionMetadataForm from "../pages/SubmissionMetadataForm";
 import Icon from "../shared/Icon";
+import SodaTextInput from "../common/SodaTextInput";
 import { Divider } from "@mantine/core";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
@@ -148,6 +150,7 @@ const componentTypeRenderers = {
       </SodaComponentWrapper>
     );
   },
+
   "entity-metadata-page": (componentSlot) => {
     const root = createRoot(componentSlot);
     const props = {
@@ -157,6 +160,22 @@ const componentTypeRenderers = {
     root.render(
       <SodaComponentWrapper>
         <EntityMetadataPage {...props} />
+      </SodaComponentWrapper>
+    );
+  },
+  "soda-text-input": (componentSlot) => {
+    const props = {
+      id: componentSlot.id,
+      label: componentSlot.getAttribute("data-label"),
+      placeholder: componentSlot.getAttribute("data-placeholder") || "",
+      textArea: componentSlot.getAttribute("data-text-area") === "true",
+      description: componentSlot.getAttribute("data-description") || "",
+    };
+    const root = createRoot(componentSlot);
+
+    root.render(
+      <SodaComponentWrapper>
+        <SodaTextInput {...props} />
       </SodaComponentWrapper>
     );
   },
@@ -223,11 +242,11 @@ const componentTypeRenderers = {
     );
   },
 
-  "dataset-performance-id-management-page": (componentSlot) => {
+  "generate-dataset-location-selector-page": (componentSlot) => {
     const root = createRoot(componentSlot);
     root.render(
       <SodaComponentWrapper>
-        <DatasetEntityManagementPage />
+        <GenerateDatasetLocationSelectorPage />
       </SodaComponentWrapper>
     );
   },

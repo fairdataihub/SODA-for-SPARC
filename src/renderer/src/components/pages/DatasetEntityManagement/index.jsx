@@ -12,7 +12,7 @@ const DatasetEntityManagementPage = () => {
     <GuidedModePage pageHeader="Description of Entities">
       <GuidedModeSection>
         <Text>
-          The SPARC Data Structure requires you to assign IDs to the different entities you
+          The SPARC Dataset Structure requires you to assign IDs to the different entities you
           indicated on the previous page that you collected data from in order to differentiate them
           for metadata collection.
         </Text>

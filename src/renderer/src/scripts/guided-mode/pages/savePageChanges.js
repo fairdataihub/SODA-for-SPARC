@@ -5,6 +5,7 @@ import { savePageDatasetStructure } from "./datasetStructure/savePage";
 import { savePageCurationPreparation } from "./curationPreparation/savePage";
 import { savePagePrepareMetadata } from "./prepareMetadata/savePage";
 import { savePagePennsieveDetails } from "./pennsieveDetails/savePage";
+import { savePageGenerateDataset } from "./generateDataset/savePage";
 import { countFilesInDatasetStructure } from "../../utils/datasetStructure";
 import { guidedSkipPage, guidedUnSkipPage } from "./navigationUtils/pageSkipping";
 import useGlobalStore from "../../../stores/globalStore";
@@ -139,13 +140,6 @@ export const savePageChanges = async (pageBeingLeftID) => {
             });
             throw errorArray;
           }
-
-          const countOfFilesClassifiedAsOther = Object.keys(categorizedData["Other"] || {}).length;
-          if (countOfFilesClassifiedAsOther > 0) {
-            guidedUnSkipPage("other-data-categorization-tab");
-          } else {
-            guidedSkipPage("other-data-categorization-tab");
-          }
         }
 
         // Save the dataset entity object to the progress file
@@ -180,9 +174,8 @@ export const savePageChanges = async (pageBeingLeftID) => {
 
         const countOfFilesCategorizedAsCode = Object.keys(categorizedData["Code"] || {}).length;
         const countOfFilesCategorizedAsExperimental = Object.keys(
-          categorizedData["Experimental data"] || {}
+          categorizedData["Experimental"] || {}
         ).length;
-        const countOfFilesCategorizedAsOther = Object.keys(categorizedData["Other"] || {}).length;
 
         if (window.sodaJSONObj["selected-entities"].includes("code")) {
           if (countOfFilesCategorizedAsCode === 0) {
@@ -260,6 +253,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
     await savePageCurationPreparation(pageBeingLeftID);
     await savePagePrepareMetadata(pageBeingLeftID);
     await savePagePennsieveDetails(pageBeingLeftID);
+    await savePageGenerateDataset(pageBeingLeftID);
 
     if (pageBeingLeftID === "guided-entity-addition-method-selection-tab") {
       const userSelectedAddEntitiesFromSpreadsheet = document
@@ -665,7 +659,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
     //     window.sodaJSONObj["dataset_metadata"]["CHANGES"] = changes;
     //   }
     // }
-    // if (pageBeingLeftID === "guided-create-local-copy-tab") {
+    // if (pageBeingLeftID === "guided-generate-dataset-locally") {
     //   // If the user generated a local copy of the dataset, ask them if they would like to delete it
     //   if (window.fs.existsSync(window.sodaJSONObj["path-to-local-dataset-copy"])) {
     //     if (!window.sodaJSONObj["user-confirmed-to-keep-local-copy"]) {

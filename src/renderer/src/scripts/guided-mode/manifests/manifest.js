@@ -1,38 +1,42 @@
+/**
+ * Generates a single manifest file from guided manifest data and adds it to the dataset structure.
+ * - Empties the manifest directory before creation.
+ * - Converts manifest data to XLSX and saves it.
+ * - Registers the manifest in the dataset structure JSON.
+ */
 export const guidedCreateManifestFilesAndAddToDatasetStructure = async () => {
-  // First, empty the guided_manifest_files so we can add the new manifest files
+  // Clear the manifest directory to remove any old files
   window.fs.emptyDirSync(window.guidedManifestFilePath);
 
+  // Retrieve manifest data from the global SODA JSON object
   const guidedManifestData = window.sodaJSONObj["guided-manifest-file-data"];
-  for (const [highLevelFolder, _] of Object.entries(guidedManifestData)) {
-    let manifestJSON = window.processManifestInfo(
-      guidedManifestData[highLevelFolder]["headers"],
-      guidedManifestData[highLevelFolder]["data"]
-    );
+  const manifestJson = window.processManifestInfo(
+    guidedManifestData["headers"],
+    guidedManifestData["data"]
+  );
 
-    let jsonManifest = JSON.stringify(manifestJSON);
+  // Ensure the manifest directory exists
+  window.fs.mkdirSync(window.guidedManifestFilePath, { recursive: true });
 
-    const manifestPath = window.path.join(
-      window.guidedManifestFilePath,
-      highLevelFolder,
-      "manifest.xlsx"
-    );
+  // Write the manifest as an XLSX file
+  const manifestPath = window.path.join(window.guidedManifestFilePath, "manifest.xlsx");
+  await window.convertJSONToXlsx(manifestJson, manifestPath);
 
-    window.fs.mkdirSync(window.path.join(window.guidedManifestFilePath, highLevelFolder), {
-      recursive: true,
-    });
+  // Register the manifest in the dataset structure JSON
+  window.datasetStructureJSONObj["files"]["manifest.xlsx"] = {
+    action: ["new"],
+    path: manifestPath,
+    location: "local",
+  };
 
-    await window.convertJSONToXlsx(JSON.parse(jsonManifest), manifestPath);
-    window.datasetStructureJSONObj["folders"][highLevelFolder]["files"]["manifest.xlsx"] = {
-      action: ["new"],
-      path: manifestPath,
-      location: "local",
-    };
-  }
-
-  // wait for the manifest files to be created before continuing
+  // Wait briefly to ensure file system operations complete
   await new Promise((resolve) => setTimeout(resolve, 1000));
 };
 
+/**
+ * Renders a card UI for the manifest file with a preview/edit button.
+ * Scrolls smoothly to the card after rendering.
+ */
 export const renderManifestCards = () => {
   const manifestCard = `
     <div class="dataset-card">        

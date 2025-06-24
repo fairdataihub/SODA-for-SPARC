@@ -7,12 +7,7 @@ import {
 
 export const openPageCurationPreparation = async (targetPageID) => {
   if (targetPageID === "guided-select-starting-point-tab") {
-    // Hide the pennsieve dataset import progress circle
-    const importProgressCircle = document.querySelector(
-      "#guided_loading_pennsieve_dataset-organize"
-    );
-
-    importProgressCircle.classList.add("hidden");
+    console.log("opening home page in guided mode");
   }
 
   if (targetPageID === "guided-name-subtitle-tab") {

@@ -7,10 +7,14 @@ const EntityListContainer = ({
 }) => {
   return (
     <Paper padding="md" shadow="sm" radius="md" p="sm" flex={1} w="100%" withBorder>
-      <Text size="lg" fw={500}>
-        {title}
-      </Text>
-      <Divider my="xs" />
+      {title && (
+        <>
+          <Text size="lg" fw={500}>
+            {title}
+          </Text>
+          <Divider my="xs" />
+        </>
+      )}
       <Box style={{ maxHeight: "300px", overflowY: "auto" }}>{children}</Box>
     </Paper>
   );

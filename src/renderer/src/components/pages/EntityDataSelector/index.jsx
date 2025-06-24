@@ -147,20 +147,14 @@ const EntityDataSelectorPage = ({
               case "high-level-folder-data-categorization":
                 return (
                   <Text>
-                    The SDS requires data to be categorized into three categories: experimental,
-                    code, and other (data that is not experimental or code). Use the interface below
-                    to classify your data files.
+                    The SDS requires data to be organized into four categories: experimental, code,
+                    and other (data that is not experimental or code). Use the interface below to
+                    classify your data files.
                   </Text>
                 );
-              case "other-data":
-                return (
-                  <Text>
-                    The files you marked as "other" can now be classified into two categories:
-                    "Documentation", and "Protocol data". Use the interface below to classify your
-                    specify which files are documentation and which files are protocol data. Files
-                    not further classified on this page will not be included in your final dataset.
-                  </Text>
-                );
+
+              case "modalities":
+                return <Text>Select the folders and files that belong to each modality.</Text>;
 
               default:
                 return (
