@@ -97,7 +97,7 @@ export const setActiveEntity = (activeEntity) => {
 
   if (activeEntity.startsWith("site-") || activeEntity.startsWith("perf-")) {
     setEntityFilter(
-      [{ type: "high-level-folder-data-categorization", names: ["Experimental data"] }],
+      [{ type: "high-level-folder-data-categorization", names: ["Experimental"] }],
       []
     );
   }
@@ -112,7 +112,7 @@ export const setActiveEntity = (activeEntity) => {
       },
     ];
     setEntityFilter(
-      [{ type: "high-level-folder-data-categorization", names: ["Experimental data"] }],
+      [{ type: "high-level-folder-data-categorization", names: ["Experimental"] }],
       siteFilter
     );
   }
@@ -135,7 +135,7 @@ export const setActiveEntity = (activeEntity) => {
     const combinedFilter = [...siteFilter, ...sampleFilter];
     console.log("Setting entity filter: ", combinedFilter);
     setEntityFilter(
-      [{ type: "high-level-folder-data-categorization", names: ["Experimental data"] }],
+      [{ type: "high-level-folder-data-categorization", names: ["Experimental"] }],
       combinedFilter
     );
   }
@@ -289,7 +289,7 @@ export const checkIfRelativePathBelongsToEntity = (entityId, relativePath, entit
  * Recursively checks if a folder and all its contents belong to a specific entity
  * @param {string} entityId - The entity ID to check for
  * @param {object} folderContents - The folder contents object with structure {files, folders, relativePath}
- * @param {string} entityType - The type of entity (e.g., "Code", "Experimental data")
+ * @param {string} entityType - The type of entity (e.g., "Code", "Experimental")
  * @returns {boolean} - True if the folder or all its contents belong to the entity
  */
 export const checkIfFolderBelongsToEntity = (entityId, folderContents, entityType) => {

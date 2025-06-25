@@ -33,6 +33,7 @@ import {
   guidedPrepareDatasetStructureAndMetadataForUpload,
 } from "./generateDataset/generate";
 import { guidedCreateManifestFilesAndAddToDatasetStructure } from "./manifests/manifest";
+import { createStandardizedDatasetStructure } from "../utils/datasetStructure";
 
 import { guidedGetDatasetName } from "./utils/sodaJSONObj";
 
@@ -4175,6 +4176,15 @@ window.electron.ipcRenderer.on(
     guidedSetNavLoadingState(true); // Lock the nav while local dataset generation is in progress
     guidedResetLocalGenerationUI();
     try {
+      // Create a standardized copy of the dataset to upload
+      const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
+      const starndardizedDatasetStructure = createStandardizedDatasetStructure(
+        window.datasetStructureJSONObj,
+        datasetEntityObj
+      );
+      console.log("starndardizedDatasetStructure", starndardizedDatasetStructure);
+      window.sodaJSONObj["soda_json_structure"] = starndardizedDatasetStructure;
+
       // Get the dataset name based on the sodaJSONObj
       const guidedDatasetName = guidedGetDatasetName(window.sodaJSONObj);
 
@@ -4236,9 +4246,6 @@ window.electron.ipcRenderer.on(
 
       await guidedPrepareDatasetStructureAndMetadataForUpload(sodaJSONObjCopy);
 
-      // Add the dataset metadata json to the sodaJSONObjCopy
-      console.log("sodaJSONObjCopy['dataset_metadata']", sodaJSONObjCopy["dataset_metadata"]);
-
       updateDatasetUploadProgressTable("local", {
         "Current action": `Preparing dataset for local generation`,
       });
@@ -4255,9 +4262,7 @@ window.electron.ipcRenderer.on(
       // Track the status of local dataset generation
       const trackLocalDatasetGenerationProgress = async () => {
         // Get the number of files that need to be generated to calculate the progress
-        const numberOfFilesToGenerate = countFilesInDatasetStructure(
-          window.datasetStructureJSONObj
-        );
+        const numberOfFilesToGenerate = countFilesInDatasetStructure(starndardizedDatasetStructure);
         while (true) {
           try {
             const response = await client.get(`/curate_datasets/curation/progress`);

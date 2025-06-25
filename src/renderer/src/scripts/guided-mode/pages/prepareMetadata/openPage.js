@@ -285,12 +285,11 @@ export const openPagePrepareMetadata = async (targetPageID) => {
   }
 
   if (targetPageID === "guided-generate-dataset-locally") {
-    const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
-
     // Create a deep copy of the dataset structure JSON object
     const datasetStructureJSONObjCopy = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
     console.log("datasetStructureJSONObjCopy", datasetStructureJSONObjCopy);
 
+    const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
     const starndardizedDatasetStructure = createStandardizedDatasetStructure(
       window.datasetStructureJSONObj,
       datasetEntityObj

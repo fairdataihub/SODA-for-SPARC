@@ -184,10 +184,19 @@ export const openPageDatasetStructure = async (targetPageID) => {
       Updating your dataset's manifest files...
     `;
 
+    // Create a standardized SODA JSON object for the clean-dataset endpoint
+    const standardizedStructure = createStandardizedDatasetStructure(
+      window.datasetStructureJSONObj,
+      window.sodaJSONObj["dataset-entity-obj"]
+    );
+    console.log(
+      "standardizedStructure before manifest",
+      JSON.stringify(standardizedStructure, null, 2)
+    );
     const sodaCopy = {
       ...window.sodaJSONObj,
       "metadata-files": {},
-      "dataset-structure": window.datasetStructureJSONObj,
+      "dataset-structure": standardizedStructure,
     };
     delete sodaCopy["generate-dataset"];
 
@@ -342,9 +351,7 @@ export const openPageDatasetStructure = async (targetPageID) => {
       manifestDataRows.forEach((row) => {
         const path = row[0]; // Path is in the first column
         console.log("path1", path);
-        if (
-          datasetEntityObj?.["high-level-folder-data-categorization"]?.["Experimental data"]?.[path]
-        ) {
+        if (datasetEntityObj?.["high-level-folder-data-categorization"]?.["Experimental"]?.[path]) {
           console.log("found folder to move to primary", path);
           const newPath = updateFilePathDataFolder(path, "primary/");
           console.log("newPath", newPath);

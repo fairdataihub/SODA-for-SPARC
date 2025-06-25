@@ -1,6 +1,7 @@
 import useGlobalStore from "../../stores/globalStore";
 import { setTreeViewDatasetStructure } from "../../stores/slices/datasetTreeViewSlice";
 import { setFolderMoveMode } from "../../stores/slices/datasetTreeViewSlice";
+import { deleteEmptyFoldersFromStructure } from "../../stores/slices/datasetTreeViewSlice";
 
 export const countFilesInDatasetStructure = (datasetStructure) => {
   if (!datasetStructure || typeof datasetStructure !== "object") return 0;
@@ -26,7 +27,7 @@ export const countFilesInDatasetStructure = (datasetStructure) => {
  */
 export const newEmptyFolderObj = () => {
   console.log("newEmptyFolderObj");
-  return { folders: {}, files: {}, type: "virtual", action: ["new"] };
+  return { folders: {}, files: {}, type: "virtual", action: ["new"], location: "local" };
 };
 
 export const countSelectedFilesByEntityType = (entityType) => {
@@ -226,20 +227,39 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
     console.log("datasetStructure", datasetStructure);
     console.log("datasetEntityObj", datasetEntityObj);
 
-    // --- Step 2: Move code files to 'code/' folder ---
+    // Move Code files into the code/ folder
     moveFilesByCategory(
       datasetEntityObj?.["high-level-folder-data-categorization"]?.["Code"],
       "code/"
     );
 
-    // --- Step 3: Move experimental data into the primary folder ---
+    // Move Experimental files into the primary/ folder
     moveFilesByCategory(
-      datasetEntityObj?.["high-level-folder-data-categorization"]?.["Experimental data"],
+      datasetEntityObj?.["high-level-folder-data-categorization"]?.["Experimental"],
       "primary/"
+    );
+
+    // Move Documentation files into the docs/ folder
+    moveFilesByCategory(
+      datasetEntityObj?.["high-level-folder-data-categorization"]?.["Documentation"],
+      "docs/"
+    );
+
+    // Move Protocol files into the protocols/ folder
+    moveFilesByCategory(
+      datasetEntityObj?.["high-level-folder-data-categorization"]?.["Protocol"],
+      "protocol/"
+    );
+
+    // Delete any empty folders in the dataset structure
+    // (The window.datasetStructureJSONObj can be used since the move fns already update it)
+    window.datasetStructureJSONObj = deleteEmptyFoldersFromStructure(
+      window.datasetStructureJSONObj
     );
 
     // --- Step 6: Capture the modified structure before reverting changes ---
     const standardizedStructure = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
+    console.log("standardizedStructure", standardizedStructure);
 
     // --- Step 7: Revert any global changes to window.datasetStructureJSONObj ---
     window.datasetStructureJSONObj = originalStructure;
