@@ -167,117 +167,85 @@ export const openPagePrepareMetadata = async (targetPageID) => {
   }
 
   if (targetPageID === "guided-create-description-metadata-tab") {
+    console.log("Opening dataset description metadata page");
+    console.log(
+      "Dataset Description Metadata:",
+      window.sodaJSONObj["dataset_metadata"]?.["dataset_description"]
+    );
+    // Load dataset information fields
     const guidedLoadDescriptionDatasetInformation = () => {
-      // Reset the keywords tags and add the stored ones if they exist in the JSON
       guidedDatasetKeywordsTagify.removeAllTags();
-      const datasetKeyWords =
-        window.sodaJSONObj["dataset_metadata"]["description_metadata"]["dataset-information"]?.[
-          "keywords"
-        ];
-      if (datasetKeyWords) {
-        guidedDatasetKeywordsTagify.addTags(datasetKeyWords);
+      const datasetInfo =
+        window.sodaJSONObj["dataset_metadata"]?.["dataset_description"]?.["dataset-information"] ||
+        {};
+      if (datasetInfo["keywords"]) {
+        guidedDatasetKeywordsTagify.addTags(datasetInfo["keywords"]);
       }
+      // Set title, subtitle, description, license, funding, acknowledgments
+      const titleInput = document.getElementById("guided-ds-title");
+      const subtitleInput = document.getElementById("guided-ds-subtitle");
+      const descriptionInput = document.getElementById("guided-ds-description");
+      const licenseInput = document.getElementById("guided-ds-license");
+      if (titleInput) titleInput.value = datasetInfo["title"] || "";
+      if (subtitleInput) subtitleInput.value = datasetInfo["subtitle"] || "";
+      if (descriptionInput) descriptionInput.value = datasetInfo["description"] || "";
+      if (licenseInput) licenseInput.value = datasetInfo["license"] || "";
+      // Funding and acknowledgments
+      guidedOtherFundingsourcesTagify.removeAllTags();
+      if (datasetInfo["funding"]) guidedOtherFundingsourcesTagify.addTags(datasetInfo["funding"]);
+      const acknowledgmentsInput = document.getElementById("guided-ds-acknowledgments");
+      if (acknowledgmentsInput) acknowledgmentsInput.value = datasetInfo["acknowledgments"] || "";
     };
     guidedLoadDescriptionDatasetInformation();
 
+    // Load study information fields
     const guidedLoadDescriptionStudyInformation = () => {
+      const studyInfo =
+        window.sodaJSONObj["dataset_metadata"]?.["dataset_description"]?.["study-information"] ||
+        {};
       const studyPurposeInput = document.getElementById("guided-ds-study-purpose");
       const studyDataCollectionInput = document.getElementById("guided-ds-study-data-collection");
       const studyPrimaryConclusionInput = document.getElementById(
         "guided-ds-study-primary-conclusion"
       );
       const studyCollectionTitleInput = document.getElementById("guided-ds-study-collection-title");
-
-      //reset the inputs
-      studyPurposeInput.value = "";
-      studyDataCollectionInput.value = "";
-      studyPrimaryConclusionInput.value = "";
-      studyCollectionTitleInput.value = "";
+      if (studyPurposeInput) studyPurposeInput.value = studyInfo["study_purpose"] || "";
+      if (studyDataCollectionInput)
+        studyDataCollectionInput.value = studyInfo["study_data_collection"] || "";
+      if (studyPrimaryConclusionInput)
+        studyPrimaryConclusionInput.value = studyInfo["study_primary_conclusion"] || "";
+      if (studyCollectionTitleInput)
+        studyCollectionTitleInput.value = studyInfo["study_collection_title"] || "";
       guidedStudyOrganSystemsTagify.removeAllTags();
       guidedStudyApproachTagify.removeAllTags();
       guidedStudyTechniquesTagify.removeAllTags();
-
-      // Set the inputs if their respective keys exist in the JSON
-      // (if not, the input will remain blank)
-      const studyPurpose =
-        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"]?.[
-          "study purpose"
-        ];
-      if (studyPurpose) {
-        studyPurposeInput.value = studyPurpose;
-      }
-
-      const studyDataCollection =
-        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"]?.[
-          "study data collection"
-        ];
-      if (studyDataCollection) {
-        studyDataCollectionInput.value = studyDataCollection;
-      }
-
-      const studyPrimaryConclusion =
-        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"]?.[
-          "study primary conclusion"
-        ];
-      if (studyPrimaryConclusion) {
-        studyPrimaryConclusionInput.value = studyPrimaryConclusion;
-      }
-
-      const studyCollectionTitle =
-        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"]?.[
-          "study collection title"
-        ];
-      if (studyCollectionTitle) {
-        studyCollectionTitleInput.value = studyCollectionTitle;
-      }
-
-      const studyOrganSystems =
-        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"]?.[
-          "study organ system"
-        ];
-      if (studyOrganSystems) {
-        guidedStudyOrganSystemsTagify.addTags(studyOrganSystems);
-      }
-
-      const studyApproach =
-        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"]?.[
-          "study approach"
-        ];
-      if (studyApproach) {
-        guidedStudyApproachTagify.addTags(studyApproach);
-      }
-
-      const studyTechniques =
-        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"]?.[
-          "study technique"
-        ];
-      if (studyTechniques) {
-        guidedStudyTechniquesTagify.addTags(studyTechniques);
-      }
+      if (studyInfo["study_organ_system"])
+        guidedStudyOrganSystemsTagify.addTags(studyInfo["study_organ_system"]);
+      if (studyInfo["study_approach"])
+        guidedStudyApproachTagify.addTags(studyInfo["study_approach"]);
+      if (studyInfo["study_technique"])
+        guidedStudyTechniquesTagify.addTags(studyInfo["study_technique"]);
+      // Load participant information using savePage keys
+      const participantInfo =
+        window.sodaJSONObj["dataset_metadata"]?.["description_metadata"]?.[
+          "participant-information"
+        ] || {};
+      const numSubjectsInput = document.getElementById("guided-ds-num-subjects");
+      const numSamplesInput = document.getElementById("guided-ds-num-samples");
+      const numSitesInput = document.getElementById("guided-ds-num-sites");
+      const numPerformanceInput = document.getElementById("guided-ds-num-performance");
+      if (numSubjectsInput) numSubjectsInput.value = participantInfo["number_of_subjects"] ?? "";
+      if (numSamplesInput) numSamplesInput.value = participantInfo["number_of_samples"] ?? "";
+      if (numSitesInput) numSitesInput.value = participantInfo["number_of_sites"] ?? "";
+      if (numPerformanceInput)
+        numPerformanceInput.value = participantInfo["number_of_performance"] ?? "";
     };
     guidedLoadDescriptionStudyInformation();
 
-    const guidedLoadDescriptionContributorInformation = () => {
-      const acknowledgmentsInput = document.getElementById("guided-ds-acknowledgments");
-      const contributorInformationMetadata =
-        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributor-information"];
-
-      guidedOtherFundingsourcesTagify.removeAllTags();
-
-      if (contributorInformationMetadata) {
-        acknowledgmentsInput.value = contributorInformationMetadata["acknowledgment"];
-        guidedOtherFundingsourcesTagify.addTags(contributorInformationMetadata["funding"]);
-      } else {
-        acknowledgmentsInput.value = "";
-        guidedOtherFundingsourcesTagify.removeAllTags();
-      }
-    };
-    guidedLoadDescriptionContributorInformation();
-
+    // No contributor_information fields to load here (handled elsewhere)
     renderAdditionalLinksTable();
 
     const otherFundingLabel = document.getElementById("SPARC-award-other-funding-label");
-
     if (datasetIsSparcFunded()) {
       otherFundingLabel.innerHTML = ` besides the SPARC Award: ${window.sodaJSONObj["dataset_metadata"]["shared-metadata"]["sparc-award"]}`;
     } else {

@@ -61,10 +61,10 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     );
     const studyCollectionTitleInput = document.getElementById("guided-ds-study-collection-title");
 
-    const studyPurpose = studyPurposeInput.value.trim();
-    const studyDataCollection = studyDataCollectionInput.value.trim();
-    const studyPrimaryConclusion = studyPrimaryConclusionInput.value.trim();
-    const studyCollectionTitle = studyCollectionTitleInput.value.trim();
+    const studyPurpose = studyPurposeInput.value.trim() || "";
+    const studyDataCollection = studyDataCollectionInput.value.trim() || "";
+    const studyPrimaryConclusion = studyPrimaryConclusionInput.value.trim() || "";
+    const studyCollectionTitle = studyCollectionTitleInput.value.trim() || "";
 
     // Get tagify study fields
     const studyOrganSystemTags = window.getTagsFromTagifyElement(guidedStudyOrganSystemsTagify);
@@ -73,9 +73,15 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
 
     // Get acknowledgments and funding
     const acknowledgmentsInput = document.getElementById("guided-ds-acknowledgments");
-    const acknowledgments = acknowledgmentsInput.value.trim();
+    const acknowledgments = acknowledgmentsInput.value.trim() || "";
+    let fundingString = "";
     const otherFunding = window.getTagsFromTagifyElement(guidedOtherFundingsourcesTagify);
-    console.log("otherFunding", otherFunding);
+    if (otherFunding.length > 0) {
+      fundingString = otherFunding.join(", ");
+    }
+    console.log("fundingString", fundingString);
+    console.log("studyCollectionTitle", studyCollectionTitle);
+
     // Populate dataset_metadata > dataset_description
     window.sodaJSONObj["dataset_metadata"]["dataset_description"] = {
       metadata_version: metadataVersion,
@@ -89,20 +95,14 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
         subtitle,
         description: subtitle,
         keywords: keywordArray,
-        funding: otherFunding,
+        funding: fundingString,
         acknowledgments: acknowledgments,
         license: "CC-BY-4.0",
       },
       funding_information: {
-        funding_consortium: otherFunding,
-        funding_agency: ["SPARC Program"],
-        award_number: ["123"],
-      },
-      participant_information: {
-        number_of_subjects: numSubjects,
-        number_of_samples: numSamples,
-        number_of_sites: 0,
-        number_of_performance: 0,
+        funding_consortium: "ASDF Consortium",
+        funding_agency: "ASDF Program",
+        award_number: "123",
       },
       study_information: {
         study_purpose: studyPurpose,
@@ -114,6 +114,13 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
         study_collection_title: studyCollectionTitle,
       },
       contributor_information: [],
+      related_resource_information: [],
+      participant_information: {
+        number_of_subjects: numSubjects,
+        number_of_samples: numSamples,
+        number_of_sites: 0,
+        number_of_performance: 0,
+      },
     };
   }
 };

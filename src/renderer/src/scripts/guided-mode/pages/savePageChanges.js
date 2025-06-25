@@ -617,21 +617,6 @@ export const savePageChanges = async (pageBeingLeftID) => {
     //   }
     // }
 
-    // if (pageBeingLeftID === "guided-create-description-metadata-tab") {
-    //   try {
-    //     guidedSaveDescriptionDatasetInformation();
-    //     guidedSaveDescriptionStudyInformation();
-    //     guidedSaveDescriptionContributorInformation();
-    //   } catch (error) {
-    //     console.log(error);
-    //     errorArray.push({
-    //       type: "notyf",
-    //       message: error,
-    //     });
-    //     throw errorArray;
-    //   }
-    // }
-
     // if (pageBeingLeftID === "guided-create-readme-metadata-tab") {
     //   const readMeTextArea = document.getElementById("guided-textarea-create-readme");
     //   if (readMeTextArea.value.trim() === "") {
