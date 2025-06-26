@@ -170,6 +170,7 @@ const componentTypeRenderers = {
       placeholder: componentSlot.getAttribute("data-placeholder") || "",
       textArea: componentSlot.getAttribute("data-text-area") === "true",
       description: componentSlot.getAttribute("data-description") || "",
+      maxLength: componentSlot.getAttribute("data-max-length") || false,
     };
     const root = createRoot(componentSlot);
 

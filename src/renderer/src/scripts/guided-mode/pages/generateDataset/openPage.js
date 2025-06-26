@@ -46,6 +46,8 @@ export const openPageGenerateDataset = async (targetPageID) => {
     }
   }
   if (targetPageID === "guided-dataset-generation-confirmation-tab") {
+    $("#guided-next-button").css("visibility", "visible");
+    console.log("remove me later");
     //Set the inner text of the generate/retry pennsieve dataset button depending on
     //whether a dataset has bee uploaded from this progress file
     const generateOrRetryDatasetUploadButton = document.getElementById(
