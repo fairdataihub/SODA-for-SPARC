@@ -57,7 +57,7 @@ window.returnToGuided = () => {
 
 export const guidedGetDatasetType = () => {
   // Returns the dataset type (e.g. "computational" or "experimental")
-  return window.sodaJSONObj?.["dataset-type"];
+  return window.sodaJSONObj["dataset_metadata"]?.["dataset_description"]?.["type"];
 };
 
 window.verifyProfile = async () => {

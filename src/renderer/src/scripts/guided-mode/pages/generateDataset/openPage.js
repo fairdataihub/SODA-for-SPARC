@@ -100,12 +100,12 @@ export const openPageGenerateDataset = async (targetPageID) => {
 
     // Update the license select instructions based on the selected dataset type
     const licenseSelectInstructions = document.getElementById("license-select-text");
-    if (datasetType === "computational") {
+    if (datasetType === "Computational") {
       licenseSelectInstructions.innerHTML = `
             Select a license for your computational dataset from the options below.
           `;
     }
-    if (datasetType === "experimental") {
+    if (datasetType === "Experimental") {
       licenseSelectInstructions.innerHTML = `
             As per SPARC policy, all experimental datasets must be shared under the
             <b>Creative Commons Attribution (CC-BY)</b> license.
@@ -120,19 +120,19 @@ export const openPageGenerateDataset = async (targetPageID) => {
         licenseName: "Creative Commons Attribution",
         licenseDescription:
           "A permissive license commonly used for open data collections that allows others to use, modify, and distribute your work provided appropriate credit is given.",
-        datasetTypes: ["experimental"],
+        datasetTypes: ["Experimental"],
       },
       {
         licenseName: "MIT",
         licenseDescription:
           "A permissive license that allows others to use, modify, and distribute your work provided they grant you credit.",
-        datasetTypes: ["computational"],
+        datasetTypes: ["Computational"],
       },
       {
         licenseName: "GNU General Public License v3.0",
         licenseDescription:
           "A copyleft license that allows others to use, modify, and distribute your work provided they grant you credit and distribute their modifications under the GNU GPL license as well.",
-        datasetTypes: ["computational"],
+        datasetTypes: ["Computational"],
       },
     ];
 

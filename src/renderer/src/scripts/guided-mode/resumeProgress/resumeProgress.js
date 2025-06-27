@@ -1,7 +1,6 @@
 import Swal from "sweetalert2";
 import { guidedTransitionFromHome } from "../pages/navigate";
 import { checkIfDatasetExistsOnPennsieve } from "../pennsieveUtils";
-import { attachGuidedMethodsToSodaJSONObj } from "../utils/sodaJSONObj";
 import {
   guidedSkipPage,
   guidedUnSkipPage,
@@ -135,7 +134,6 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
       }
     }
     window.sodaJSONObj = datasetResumeJsonObj;
-    attachGuidedMethodsToSodaJSONObj();
 
     //patches the sodajsonobj if it was created in a previous version of guided mode
     await patchPreviousGuidedModeVersions();

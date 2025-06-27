@@ -86,11 +86,6 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     }
   }
 
-  if (targetPageID === "guided-assign-license-tab") {
-    console.log("Opening sharing license page");
-    // Page-specific initialization code will go here
-  }
-
   if (targetPageID === "guided-contributors-tab") {
     renderDatasetDescriptionContributorsTable();
   }
