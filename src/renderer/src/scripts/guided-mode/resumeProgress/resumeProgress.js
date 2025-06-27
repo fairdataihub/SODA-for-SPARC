@@ -21,6 +21,8 @@ while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
+const handlePreSdsThreeProgressFiles = async () => {};
+
 /**
  *
  * @param {string} datasetNameToResume - The name of the dataset associated with the save progress file the user wants to resume.
@@ -51,8 +53,6 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
     showCancelButton: false,
   });
 
-  // Wait for 2 seconds so that the loading icon can at least kind of be seen (This can be removed)
-  await new Promise((resolve) => setTimeout(resolve, 2000));
   try {
     const datasetResumeJsonObj = await getProgressFileData(datasetNameToResume);
 
@@ -235,153 +235,36 @@ const guidedGetPageToReturnTo = async () => {
   return usersPageBeforeExit;
 };
 
+const patchPreSdsThreeProgressFiles = async () => {};
+
 const patchPreviousGuidedModeVersions = async () => {
   //temp patch contributor affiliations if they are still a string (they were added in the previous version)
+  const appVersion = await window.electron.ipcRenderer.invoke("app-version");
+  const lastVersionOfSodaUsedOnThisProgressFile =
+    window.sodaJSONObj["last-version-of-soda-used"] || "10.0.4"; // default to 10.0.4 if not set (since that was the first version to use this key)
+  const sodaVersionOfIntialSdsThreeRelease = "16.0.0"; // The first version of SODA that had the SDS3 workflow
 
-  //Add key to track status of Pennsieve uploads
-  if (!window.sodaJSONObj["pennsieve-upload-status"]) {
-    window.sodaJSONObj["pennsieve-upload-status"] = {
-      "dataset-metadata-pennsieve-genration-status": "not-started",
-    };
+  // If the progress file was last updated before the SDS3 release, direct the user to the last stable version of SODA
+  // that can handle pre-SDS3 progress files
+  if (lastVersionOfSodaUsedOnThisProgressFile < sodaVersionOfIntialSdsThreeRelease) {
+    /*await Swal.fire({
+      icon: "info",
+      title: "This progress file was created before the SDS3 release",
+      html: `
+        The SDS3 workflow is not compatible with this progress file. 
+        Please use SODA version ${sodaVersionOfIntialSdsThreeRelease} or earlier to continue working on this dataset.
+      `,
+      width: 500,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: `I understand`,
+      focusConfirm: true,
+      allowOutsideClick: false,
+    });
+    return;*/
   }
 
-  if (!window.sodaJSONObj["previously-uploaded-data"]) {
-    window.sodaJSONObj["previously-uploaded-data"] = {};
-  }
-
-  if (!window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"]) {
-    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"] = [];
-  }
-
-  const contributors =
-    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"];
-  if (contributors) {
-    for (const contributor of window.sodaJSONObj["dataset_metadata"]["description-metadata"][
-      "contributors"
-    ]) {
-      //if contributor is in old format (string), convert to new format (array)
-      if (!Array.isArray(contributor.conAffliation)) {
-        contributor.conAffliation = [contributor.conAffliation];
-      }
-      // Replace improperly named PrincipleInvestigator role with Principle Investigator
-      if (contributor?.["conRole"].includes("PrincipleInvestigator")) {
-        contributor["conRole"] = contributor["conRole"].filter(
-          (role) => role !== "PrincipleInvestigator"
-        );
-        contributor["conRole"].unshift("PrincipalInvestigator");
-      }
-    }
-  }
-
-  if (!window.sodaJSONObj["button-config"]) {
-    window.sodaJSONObj["button-config"] = {};
-  }
-
-  if (!window.sodaJSONObj["skipped-pages"]) {
-    window.sodaJSONObj["skipped-pages"] = [];
-  }
-
-  if (!window.sodaJSONObj["dataset_metadata"]["description-metadata"]["dataset-information"]) {
-    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["dataset-information"] = {};
-  }
-
-  if (!window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"]) {
-    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"] = {};
-  }
-
-  if (!window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"]) {
-    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"] = [];
-  }
-
-  // If the user was on the airtable award page (does not exist anymore), send them to the create submission metadata page
-  if (window.sodaJSONObj["page-before-exit"] === "guided-airtable-award-tab") {
-    window.sodaJSONObj["page-before-exit"] = "guided-create-submission-metadata-tab";
-  }
-
-  if (!window.sodaJSONObj["last-version-of-soda-used"]) {
-    // This is the first time the user has used SODA since the "last-version-of-soda-used" key was added
-    window.sodaJSONObj["last-version-of-soda-used"] = "10.0.4";
-  }
-
-  // If the user started a dataset after version 10.0.4, skip CHANGES metadata pages
-  if (!window.sodaJSONObj["skipped-pages"].includes("guided-create-changes-metadata-tab")) {
-    if (window.sodaJSONObj["starting-point"]["origin"] === "new") {
-      window.sodaJSONObj["skipped-pages"].push("guided-create-changes-metadata-tab");
-    }
-  }
-
-  // If the the last time the user worked on the dataset was before v11.0.0, skip the changes page unless
-  // the dataset has already been published.
-  if (window.sodaJSONObj["last-version-of-soda-used"] <= "11.0.0") {
-    if (window.sodaJSONObj["starting-point"]["origin"] === "ps") {
-      const datasetsPennsieveID = window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
-
-      // Skip/unSkip the changes metadata page based on publishing status
-      // (if the changes file already exists, then still show it)
-      const changesCheckRes = await checkIfChangesMetadataPageShouldBeShown(datasetsPennsieveID);
-      if (changesCheckRes.shouldShow === true) {
-        window.sodaJSONObj["dataset_metadata"]["CHANGES"] = changesCheckRes.changesMetadata;
-        guidedUnSkipPage("guided-create-changes-metadata-tab");
-      } else {
-        window.sodaJSONObj["dataset_metadata"]["CHANGES"] = "";
-        guidedSkipPage("guided-create-changes-metadata-tab");
-      }
-
-      // Delete the saved button config for the code metadata page (The flow was slightly updated)
-      // The user will have to reselect their option If they do not have a code-description file, otherwise
-      // the new prompt will be shown.
-      if (window.sodaJSONObj?.["button-config"]?.["dataset-contains-code-data"]) {
-        delete window.sodaJSONObj["button-config"]["dataset-contains-code-data"];
-      }
-    }
-  }
-
-  if (window.sodaJSONObj?.["starting-point"]?.["origin"] === "ps") {
-    if (!window.sodaJSONObj?.["digital-metadata"]?.["dataset-workspace"]) {
-      // Skip the log in page since we no longer need it
-      guidedSkipPage("guided-pennsieve-intro-tab");
-      window.sodaJSONObj["digital-metadata"]["dataset-workspace"] = guidedGetCurrentUserWorkSpace();
-    }
-  }
-
-  // No longer skip validation page for non-sparc datasts ("page should always be unskipped")
-  if (window.sodaJSONObj["skipped-pages"].includes("guided-dataset-validation-tab")) {
-    window.sodaJSONObj["skipped-pages"] = window.sodaJSONObj["skipped-pages"].filter(
-      (page) => page !== "guided-dataset-validation-tab"
-    );
-  }
-
-  //If the dataset was successfully uploaded, send the user to the share with curation team
-  if (window.sodaJSONObj["previous-guided-upload-dataset-name"]) {
-    return "guided-dataset-dissemination-tab";
-  }
-
-  // Change the award number variable from sparc-award to award-number
-  if (window.sodaJSONObj?.["dataset_metadata"]?.["shared-metadata"]?.["sparc-award"]) {
-    window.sodaJSONObj["dataset_metadata"]["shared-metadata"]["award-number"] =
-      window.sodaJSONObj["dataset_metadata"]["shared-metadata"]["sparc-award"];
-  }
-  // If the consortium data standard is not defined, set it to an empty string
-  if (
-    !window.sodaJSONObj["dataset_metadata"]["submission-metadata"]?.["consortium-data-standard"]
-  ) {
-    window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["consortium-data-standard"] = "";
-  }
-  // If the funding consortium is not defined, set it to an empty string
-  if (!window.sodaJSONObj["dataset_metadata"]["submission-metadata"]?.["funding-consortium"]) {
-    window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["funding-consortium"] = "";
-  }
-
-  if (!window.sodaJSONObj["digital-metadata"]?.["license"]) {
-    window.sodaJSONObj["digital-metadata"]["license"] = "";
-  }
-
-  if (!window.sodaJSONObj["curation-mode"]) {
-    window.sodaJSONObj["cuartion-mode"] = "guided";
-  }
-
-  // If no other conditions are met, return the page the user was last on
-  return window.sodaJSONObj["page-before-exit"];
+  console.log("appVersion", appVersion);
 };
 
 const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {

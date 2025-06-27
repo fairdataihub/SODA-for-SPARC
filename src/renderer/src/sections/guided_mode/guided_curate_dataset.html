@@ -2922,6 +2922,8 @@
         class="guided--parent-tab hidden"
         data-parent-tab-name="Generate dataset"
       >
+        <!-- Disable the dataset validation page until implemented for sds 3 -->
+        <!--
         <div
           id="guided-dataset-validation-tab"
           class="guided--page"
@@ -3144,7 +3146,6 @@
                   <tr>
                     <th>Path</th>
                     <th>Message</th>
-                    <!-- <th>Fix Here</th> -->
                   </tr>
                 </thead>
                 <tbody></tbody>
@@ -3175,6 +3176,7 @@
             </h2>
           </div>
         </div>
+        -->
         <div
           id="guided-dataset-generation-options-tab"
           class="guided--page"
@@ -3407,7 +3409,11 @@
         >
           <div class="guided--section">
             <h1 class="text-sub-step-title">Pennsieve Settings</h1>
-            <p class="help-text">Enter some stuff for Pennsieve</p>
+            <p class="help-text">
+              Specify the name, subtitle, and optional banner image that will appear on Pennsieve.
+              The name and subtitle are pre-filled based on your earlier inputs, but you can make
+              changes here if desired.
+            </p>
           </div>
           <div class="guided--section">
             <div
@@ -3415,17 +3421,17 @@
               id="pennsieve-dataset-name"
               data-label="Pennsieve dataset name"
               data-description="The name of the dataset that will be created on Pennsieve."
-              data-placeholder="Enter a dataset on Pennsieve"
+              data-placeholder="Enter a Pennsieve dataset name"
               class="w-100"
             ></div>
           </div>
           <div class="guided--section">
             <div
               data-component-type="soda-text-input"
-              id="pennsieve-dataset-description"
-              data-label="Pennsieve dataset description"
-              data-description="The description of the dataset that will be created on Pennsieve."
-              data-placeholder="Enter a dataset description on Pennsieve"
+              id="pennsieve-dataset-subtitle"
+              data-label="Pennsieve dataset subtitle"
+              data-description="The subtitle of the dataset that will be created on Pennsieve."
+              data-placeholder="Enter a Pennsieve dataset"
               data-text-area="true"
               data-max-length="256"
               class="w-100"
@@ -3637,8 +3643,9 @@
                 >Current dataset structure:</label
               >
               <div
-                id="guided-folder-structure-review-generate"
-                style="display: block; margin-left: 35%"
+                data-component-type="dataset-tree-view-renderer"
+                data-full-width="true"
+                class="guided--section"
               ></div>
             </div>
             <div class="guided--card-dataset-info">
@@ -3681,48 +3688,6 @@
                 >
                   None
                 </h5>
-              </div>
-            </div>
-            <div class="guided--card-dataset-info">
-              <div class="guided--dataset-description-container">
-                <h5 class="guided--dataset-description">Dataset description:</h5>
-              </div>
-              <div class="guided--dataset-content-container">
-                <h5 class="guided--dataset-content" id="guided-review-dataset-description"></h5>
-              </div>
-            </div>
-            <div class="guided--card-dataset-info">
-              <div class="guided--dataset-description-container">
-                <h5 class="guided--dataset-description">Permissions to Pennsieve dataset:</h5>
-              </div>
-              <div class="guided--dataset-content-container">
-                <h5
-                  class="guided--dataset-content"
-                  id="guided-review-dataset-user-permissions"
-                ></h5>
-              </div>
-            </div>
-            <div class="guided--card-dataset-info">
-              <div class="guided--dataset-description-container">
-                <h5 class="guided--dataset-description">Designated team permissions:</h5>
-              </div>
-              <div class="guided--dataset-content-container">
-                <h5
-                  class="guided--dataset-content"
-                  id="guided-review-dataset-team-permissions"
-                ></h5>
-              </div>
-            </div>
-            <div class="guided--card-dataset-info">
-              <div class="guided--dataset-description-container">
-                <h5 class="guided--dataset-description">Dataset Tags:</h5>
-              </div>
-              <div class="guided--dataset-content-container">
-                <h5
-                  class="guided--dataset-content guidedDatasetTags"
-                  style="white-space: pre-wrap"
-                  id="guided-review-dataset-tags"
-                ></h5>
               </div>
             </div>
             <div class="guided--card-dataset-info">

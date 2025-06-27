@@ -1,4 +1,3 @@
-import { guidedShowTreePreview } from "../../datasetStructureTreePreview/treePreview.js";
 import { guidedGetDatasetType } from "../../guided-curate-dataset.js";
 import {
   setCheckboxCardUnchecked,
@@ -7,6 +6,8 @@ import {
 import { getGuidedDatasetName, getGuidedDatasetSubtitle } from "../curationPreparation/utils.js";
 import { setSodaTextInputValue } from "../../../../stores/slices/sodaTextInputSlice.js";
 import { guidedShowBannerImagePreview } from "../../bannerImage/bannerImage";
+import { createStandardizedDatasetStructure } from "../../../utils/datasetStructure.js";
+import { setTreeViewDatasetStructure } from "../../../../stores/slices/datasetTreeViewSlice.js";
 
 export const openPageGenerateDataset = async (targetPageID) => {
   if (targetPageID === "guided-dataset-generation-options-tab") {
@@ -29,7 +30,7 @@ export const openPageGenerateDataset = async (targetPageID) => {
     const datasetSubtitleToSet = pennsieveDatasetSubtitle || datasetSubtitle;
 
     setSodaTextInputValue("pennsieve-dataset-name", datasetNameToSet);
-    setSodaTextInputValue("pennsieve-dataset-description", datasetSubtitleToSet);
+    setSodaTextInputValue("pennsieve-dataset-subtitle", datasetSubtitleToSet);
 
     // Handle the banner image preview
     if (window.sodaJSONObj["digital-metadata"]["banner-image-path"]) {
@@ -46,8 +47,12 @@ export const openPageGenerateDataset = async (targetPageID) => {
     }
   }
   if (targetPageID === "guided-dataset-generation-confirmation-tab") {
-    $("#guided-next-button").css("visibility", "visible");
-    console.log("remove me later");
+    const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
+    const starndardizedDatasetStructure = createStandardizedDatasetStructure(
+      window.datasetStructureJSONObj,
+      datasetEntityObj
+    );
+    setTreeViewDatasetStructure(starndardizedDatasetStructure, []);
     //Set the inner text of the generate/retry pennsieve dataset button depending on
     //whether a dataset has bee uploaded from this progress file
     const generateOrRetryDatasetUploadButton = document.getElementById(
@@ -69,67 +74,19 @@ export const openPageGenerateDataset = async (targetPageID) => {
 
     const datsetName = window.sodaJSONObj["digital-metadata"]["name"];
     const datsetSubtitle = window.sodaJSONObj["digital-metadata"]["subtitle"];
-    const datasetUserPermissions = window.sodaJSONObj["digital-metadata"]["user-permissions"];
-    const datasetTeamPermissions = window.sodaJSONObj["digital-metadata"]["team-permissions"];
-    const datasetTags = window.sodaJSONObj["digital-metadata"]["dataset-tags"];
+
     const datasetLicense = window.sodaJSONObj["digital-metadata"]["license"];
 
     const datasetNameReviewText = document.getElementById("guided-review-dataset-name");
 
     const datasetSubtitleReviewText = document.getElementById("guided-review-dataset-subtitle");
-    const datasetDescriptionReviewText = document.getElementById(
-      "guided-review-dataset-description"
-    );
-    const datasetUserPermissionsReviewText = document.getElementById(
-      "guided-review-dataset-user-permissions"
-    );
-    const datasetTeamPermissionsReviewText = document.getElementById(
-      "guided-review-dataset-team-permissions"
-    );
-    const datasetTagsReviewText = document.getElementById("guided-review-dataset-tags");
+
     const datasetLicenseReviewText = document.getElementById("guided-review-dataset-license");
 
     datasetNameReviewText.innerHTML = datsetName;
     datasetSubtitleReviewText.innerHTML = datsetSubtitle;
 
-    datasetDescriptionReviewText.innerHTML = Object.keys(
-      window.sodaJSONObj["digital-metadata"]["description"]
-    )
-      .map((key) => {
-        //change - to spaces in description and then capitalize
-        const descriptionTitle = key
-          .split("-")
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" ");
-        return `<b>${descriptionTitle}</b>: ${window.sodaJSONObj["digital-metadata"]["description"][key]}<br /><br />`;
-      })
-      .join("\n");
-
-    if (datasetUserPermissions.length > 0) {
-      const datasetUserPermissionsString = datasetUserPermissions
-        .map((permission) => permission.userString)
-        .join("<br>");
-      datasetUserPermissionsReviewText.innerHTML = datasetUserPermissionsString;
-    } else {
-      datasetUserPermissionsReviewText.innerHTML = "No additional user permissions added";
-    }
-
-    if (datasetTeamPermissions.length > 0) {
-      const datasetTeamPermissionsString = datasetTeamPermissions
-        .map((permission) => permission.teamString)
-        .join("<br>");
-      datasetTeamPermissionsReviewText.innerHTML = datasetTeamPermissionsString;
-    } else {
-      datasetTeamPermissionsReviewText.innerHTML = "No additional team permissions added";
-    }
-
-    datasetTagsReviewText.innerHTML = datasetTags.join(", ");
     datasetLicenseReviewText.innerHTML = datasetLicense;
-
-    guidedShowTreePreview(
-      window.sodaJSONObj["digital-metadata"]["name"],
-      "guided-folder-structure-review-generate"
-    );
 
     // Hide the Pennsieve agent check section (unhidden if it requires user action)
     document

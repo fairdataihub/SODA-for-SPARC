@@ -9,10 +9,7 @@ import { guidedUpdateFolderStructureUI } from "./utils";
 import { renderManifestCards } from "../../manifests/manifest";
 import { swalFileListSingleAction } from "../../../utils/swal-utils";
 import { getEntityDataById } from "../../../../stores/slices/datasetEntityStructureSlice";
-import {
-  newEmptyFolderObj,
-  createStandardizedDatasetStructure,
-} from "../../../utils/datasetStructure";
+import { createStandardizedDatasetStructure } from "../../../utils/datasetStructure";
 import client from "../../../client";
 
 while (!window.baseHtmlLoaded) {

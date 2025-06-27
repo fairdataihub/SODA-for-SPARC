@@ -34,6 +34,7 @@ import {
 } from "./generateDataset/generate";
 import { guidedCreateManifestFilesAndAddToDatasetStructure } from "./manifests/manifest";
 import { createStandardizedDatasetStructure } from "../utils/datasetStructure";
+import { guidedRenderProgressCards } from "./resumeProgress/progressCards";
 
 import { guidedGetDatasetName } from "./utils/sodaJSONObj";
 
@@ -455,7 +456,7 @@ window.diffCheckManifestFiles = (newManifestData, existingManifestData) => {
 
   return { headers: combinedManifestDataHeaders, data: combinedManifestDataData };
 };
-
+/* Disable the dataset validation page until implemented for sds 3 
 document
   .getElementById("guided-button-run-dataset-validation")
   .addEventListener("click", async () => {
@@ -782,6 +783,7 @@ document
     }
     guidedSetNavLoadingState(false);
   });
+*/
 
 window.handleGuidedModeOrgSwitch = async (buttonClicked) => {
   if (buttonClicked.classList.contains("guided--progress-button-switch-workspace")) {
@@ -792,58 +794,12 @@ window.handleGuidedModeOrgSwitch = async (buttonClicked) => {
 let homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
 let guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
 
-const folderIsEmpty = (folder) => {
-  if (!folder) {
-    return true;
-  }
-
-  return Object.keys(folder.folders).length === 0 && Object.keys(folder.files).length === 0;
-};
-
-const guidedAddUsersAndTeamsToDropdown = (usersArray, teamsArray) => {
-  const guidedUsersAndTeamsDropdown = document.getElementById("guided_bf_list_users_and_teams");
-  // Reset the dropdown
-  guidedUsersAndTeamsDropdown.innerHTML =
-    "<option>Select individuals or teams to grant permissions to</option>";
-
-  // Loop through the users and add them to the dropdown
-  for (const userString of usersArray) {
-    const userNameAndEmail = userString.split("!|**|!")[0].trim();
-    const userID = userString.split("!|**|!")[1].trim();
-    const userOption = `
-          <option
-            permission-type="user"
-            value="${userID}"
-          >
-            ${userNameAndEmail}
-          </option>
-        `;
-    guidedUsersAndTeamsDropdown.insertAdjacentHTML("beforeend", userOption);
-  }
-
-  // Loop through the teams and add them to the dropdown
-  for (const team of teamsArray) {
-    const trimmedTeam = team.trim();
-    const teamOption = `
-          <option
-            permission-type="team"
-            value="${trimmedTeam}"
-          >
-            ${trimmedTeam}
-          </option>
-        `;
-    guidedUsersAndTeamsDropdown.insertAdjacentHTML("beforeend", teamOption);
-  }
-};
-
 const guidedResetUserTeamPermissionsDropdowns = () => {
   $("#guided_bf_list_users_and_teams").val("Select individuals or teams to grant permissions to");
   $("#guided_bf_list_users_and_teams").selectpicker("refresh");
   $("#select-permission-list-users-and-teams").val("Select role");
 };
 
-let addListener = true;
-let removeEventListener = false;
 const copyLink = (link) => {
   Clipboard.writeText(link);
 
@@ -1917,38 +1873,6 @@ const openAddAdditionLinkSwal = async () => {
   }
 };
 
-const renderSubjectSampleAdditionTable = (subject) => {
-  return `
-    <table
-      class="ui celled striped table"
-      style="margin-bottom: 10px; width: 800px"
-    >
-      <thead>
-        <tr>
-          <th class="text-center" colspan="2" style="position: relative">   
-            Samples taken from ${subject.subjectName}
-            <button
-              type="button"
-              class="btn btn-primary btn-sm button-subject-add-samples"
-              style="position: absolute; top: 10px; right: 20px;"
-              data-samples-subject-name="${subject.subjectName}"
-            >
-              Add samples
-            </button>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        ${subject.samples
-          .map((sample) => {
-            return generateSampleRowElement(sample);
-          })
-          .join("\n")}
-      </tbody>
-    </table>
-  `;
-};
-
 const openModifySampleMetadataPage = (sampleMetadataID, samplesSubjectID) => {
   //Get all samples from the dataset and add all other samples to the was derived from dropdown
   const [samplesInPools, samplesOutsidePools] = window.sodaJSONObj.getAllSamplesFromSubjects();
@@ -2241,119 +2165,6 @@ window.openSubjectRenameInput = (subjectNameEditButton) => {
     </div>
   `;
   subjectIdCellToRename.html(subjectRenameElement);
-};
-
-const generateSubjectRowElement = (subjectName) => {
-  return `
-    <tr>
-      <td class="middle aligned subject-id-cell">
-        <div class="space-between w-100" style="align-items: center">
-          <div class="space-between w-100">
-            <span class="subject-id">${subjectName}</span>
-            <i
-              class="far fa-edit guided-subject-edit-button"
-              style="cursor: pointer; margin-top: .2rem"
-              data-subject-name="${subjectName}"
-            >
-            </i>
-          </div>
-        </div>
-      </td>
-      <td class="middle aligned collapsing text-center remove-left-border">
-        <i
-          class="far fa-trash-alt"
-          style="color: red; cursor: pointer"
-          onclick="window.deleteSubject($(this))"
-        ></i>
-      </td>
-    </tr>
-  `;
-};
-
-const generateSubjectSpecificationRowElement = () => {
-  return `
-    <tr>
-      <td class="middle aligned subject-id-cell">
-        <div class="space-between w-100" style="align-items: center">
-          <span style="margin-right: 5px;">sub-</span>
-          <input
-            id="guided--subject-input"
-            class="guided--input"
-            type="text"
-            name="guided-subject-id"
-            placeholder="Enter subject ID and press enter"
-            onkeyup="specifySubject(event, window.$(this))"
-            data-alert-message="Subject IDs may not contain spaces or special characters"
-            data-alert-type="danger"
-            style="margin-right: 5px;"
-          />
-          <i class="far fa-check-circle fa-solid" style="cursor: pointer; margin-left: 15px; color: var(--color-light-green); font-size: 1.24rem;" onclick="window.confirmEnter(this)"></i>
-        </div>
-      </td>
-
-
-      <td class="middle aligned collapsing text-center remove-left-border">
-        <i
-          class="far fa-trash-alt"
-          style="color: red; cursor: pointer; display: none;"
-          onclick="window.deleteSubject($(this))"
-        ></i>
-      </td>
-      </tr>
-  `;
-};
-
-const generatePoolRowElement = (poolName) => {
-  return `
-    <tr>
-      <td class="middle aligned pool-cell collapsing">
-        <div class="space-between" style="align-items: center; width: 250px">
-          <div class="space-between" style="width: 250px">
-            <span class="pool-id">${poolName}</span>
-            <i
-              class="far fa-edit guided-pool-edit-button"
-              data-pool-name="${poolName}"
-              style="cursor: pointer"
-            >
-            </i>
-          </div>
-        </div>
-      </td>
-      <td class="middle aligned pool-subjects">
-        <select
-          class="js-example-basic-multiple"
-          style="width: 100%"
-          name="${poolName}-subjects-selection-dropdown"
-          multiple="multiple"
-        ></select>
-      </td>
-      <td class="middle aligned collapsing text-center remove-left-border">
-        <i
-          class="far fa-trash-alt"
-          style="color: red; cursor: pointer"
-          onclick="window.deletePool(window.$(this))"
-        ></i>
-      </td>
-    </tr>
-  `;
-};
-
-const generateSampleRowElement = (sampleName) => {
-  return `
-    <tr>
-    <td class="middle aligned sample-id-cell">
-      <div class="space-between w-100" style="align-items: center">
-    <div class="space-between w-100">
-      <span class="sample-id">${sampleName}</span>
-      <i class="far fa-edit jump-back guided-sample-edit-button" data-sample-name="${sampleName}" style="cursor: pointer;" >
-      </i>
-    </div>
-  </div>
-    </td>
-    <td class="middle aligned collapsing text-center remove-left-border">
-      <i class="far fa-trash-alt" style="color: red; cursor: pointer" onclick="window.deleteSample(window.$(this))"></i>
-    </td>
-  </tr>`;
 };
 
 const generateSampleSpecificationRowElement = () => {
@@ -2975,21 +2786,6 @@ const addSampleTableRow = () => {
     window.smoothScrollToElement(newSampleRow);
     newSampleInput.focus();
   }
-};
-
-//deletes subject from jsonObj and UI
-window.deleteSubject = async (subjectDeleteButton) => {
-  const subjectIdCellToDelete = subjectDeleteButton.closest("tr");
-  const subjectIdToDelete = subjectIdCellToDelete.find(".subject-id").text();
-
-  //Check to see if a subject has been added to the element
-  //if it has, delete the subject from the pool-sub-sam structure
-  if (subjectIdToDelete) {
-    await window.sodaJSONObj.deleteSubject(subjectIdToDelete);
-  }
-
-  //Rerender the subjects table
-  renderSubjectsTable();
 };
 
 window.deletePool = (poolDeleteButton) => {
