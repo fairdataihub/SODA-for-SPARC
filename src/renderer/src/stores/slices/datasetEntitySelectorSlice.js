@@ -196,6 +196,11 @@ export const getDatasetEntityObj = () => {
   return useGlobalStore.getState().datasetEntityObj;
 };
 
+export const getSubjectEntities = () => {
+  const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
+  console.log("datasetEntityObj", datasetEntityObj);
+};
+
 // Remove default value to require explicit parameter
 export const modifyDatasetEntityForRelativeFilePath = (
   entityType,

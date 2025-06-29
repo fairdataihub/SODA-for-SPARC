@@ -278,38 +278,6 @@ export const openPagePrepareMetadata = async (targetPageID) => {
       changesTextArea.value = "";
     }
   }
-
-  if (targetPageID === "guided-generate-dataset-locally") {
-    // Create a deep copy of the dataset structure JSON object
-    const datasetStructureJSONObjCopy = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
-    console.log("datasetStructureJSONObjCopy", datasetStructureJSONObjCopy);
-
-    const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
-    const starndardizedDatasetStructure = createStandardizedDatasetStructure(
-      window.datasetStructureJSONObj,
-      datasetEntityObj
-    );
-    setTreeViewDatasetStructure(starndardizedDatasetStructure, []);
-
-    // Restore the original dataset structure
-    window.datasetStructureJSONObj = datasetStructureJSONObjCopy;
-    console.log("datasetStructureJSONObj restored", window.datasetStructureJSONObj);
-
-    const guidedResetLocalGenerationUI = () => {
-      // Hide the local dataset copy generation section that containst the table/generation progress
-      document
-        .getElementById("guided-section-local-generation-status-table")
-        .classList.add("hidden");
-      // Hide the local dataset generation success section
-      document
-        .getElementById("guided-section-post-local-generation-success")
-        .classList.add("hidden");
-      // Hide the local dataset generation retry section
-      document.getElementById("guided-section-retry-local-generation").classList.add("hidden");
-    };
-
-    guidedResetLocalGenerationUI();
-  }
 };
 
 const getContributorFullNames = () => {

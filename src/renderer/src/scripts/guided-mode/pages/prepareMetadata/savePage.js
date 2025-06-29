@@ -10,6 +10,10 @@ import {
 import { getGuidedDatasetName, getGuidedDatasetSubtitle } from "../curationPreparation/utils";
 import useGlobalStore from "../../../../stores/globalStore";
 import { error } from "jquery";
+import {
+  getExistingSubjects,
+  getExistingSamples,
+} from "../../../../stores/slices/datasetEntityStructureSlice";
 
 export const savePagePrepareMetadata = async (pageBeingLeftID) => {
   const errorArray = [];
@@ -37,6 +41,25 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     window.sodaJSONObj["dataset_metadata"]["resources_metadata"] = resourceList;
   }
 
+  if (pageBeingLeftID === "guided-subjects-metadata-tab") {
+    const subjects = getExistingSubjects();
+    const subjectsMetadata = subjects.map((subject) => {
+      return subject.metadata;
+    });
+    console.log("subjectsMetadata", subjectsMetadata);
+    window.sodaJSONObj["dataset_metadata"]["subjects_metadata"] = subjectsMetadata;
+  }
+
+  if (pageBeingLeftID === "guided-samples-metadata-tab") {
+    // Prepare the samples metadata
+    const samples = getExistingSamples();
+    const samplesMetadata = samples.map((sample) => {
+      return sample.metadata;
+    });
+    console.log("samplesMetadata", samplesMetadata);
+    window.sodaJSONObj["dataset_metadata"]["samples_metadata"] = samplesMetadata;
+  }
+
   if (pageBeingLeftID === "guided-create-description-metadata-tab") {
     const metadataVersion = "3.0.0";
     // Get values from digital_metadata
@@ -47,12 +70,9 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     const keywordArray = window.getTagsFromTagifyElement(guidedDatasetKeywordsTagify);
 
     // Get subject and sample counts
-    const [subjectsInPools, subjectsOutsidePools] = window.sodaJSONObj.getAllSubjects();
-    const numSubjects = [...subjectsInPools, ...subjectsOutsidePools].length;
 
-    const [samplesInPools, samplesOutsidePools] = window.sodaJSONObj.getAllSamplesFromSubjects();
-    const numSamples = [...samplesInPools, ...samplesOutsidePools].length;
-
+    const numSubjects = 12;
+    const numSamples = 12;
     // Get study description inputs
     const studyPurposeInput = document.getElementById("guided-ds-study-purpose");
     const studyDataCollectionInput = document.getElementById("guided-ds-study-data-collection");

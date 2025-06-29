@@ -1,7 +1,7 @@
 import Swal from "sweetalert2";
 import { guidedGetCurrentUserWorkSpace } from "../../workspaces/workspaces";
 import { openPage } from "../openPage";
-import { guidedPennsieveDatasetUpload } from "../../generateDataset/generate";
+import { guidedGenerateDatasetOnPennsieve } from "../../generateDataset/generate";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -31,36 +31,11 @@ document.getElementById("guided-generate-dataset-button").addEventListener("clic
   }
 
   if (currentWorkspace != datasetWorkspace) {
-    if (window.sodaJSONObj?.["starting-point"]?.["origin"] === "ps") {
-      Swal.fire({
-        width: 700,
-        icon: "info",
-        title: "You are not logged in to the workspace you pulled this dataset from.",
-        html: `
-          <p class="text-left">
-            You pulled this dataset from the workspace <b>${datasetWorkspace}</b>, but you are currently
-            logged in to the workspace <b>${currentWorkspace}</b>.
-          </p>
-          <br />
-          <br />
-          <p class="text-left">
-            To push the changes you made to this dataset to Pennsieve, please select
-            the workspace <b>${datasetWorkspace}</b> by clicking the pencil icon to
-            the right of the Dataset workspace field on this page.
-          </p>
-        `,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: `OK`,
-        focusConfirm: true,
-        allowOutsideClick: false,
-      });
-    } else {
-      Swal.fire({
-        width: 700,
-        icon: "info",
-        title: "You are not logged in to the workspace you confirmed earlier.",
-        html: `
+    Swal.fire({
+      width: 700,
+      icon: "info",
+      title: "You are not logged in to the workspace you confirmed earlier.",
+      html: `
           You previously confirmed that the Dataset workspace is <b>${datasetWorkspace}</b>.
           <br />
           <br />
@@ -77,13 +52,13 @@ document.getElementById("guided-generate-dataset-button").addEventListener("clic
             change your workspace to <b>${currentWorkspace}</b>.
           </p>
         `,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: `OK`,
-        focusConfirm: true,
-        allowOutsideClick: false,
-      });
-    }
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: `OK`,
+      focusConfirm: true,
+      allowOutsideClick: false,
+    });
+
     return;
   }
 
@@ -94,6 +69,8 @@ document.getElementById("guided-generate-dataset-button").addEventListener("clic
   if (!supplementary_checks) {
     return;
   }
+  // If all checks pass, progress to the next page
   await openPage("guided-dataset-generation-tab");
-  guidedPennsieveDatasetUpload();
+  // Generate the dataset on Pennsieve
+  guidedGenerateDatasetOnPennsieve();
 });

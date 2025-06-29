@@ -18,11 +18,15 @@ import {
   getExistingSamples,
   getExistingSites,
 } from "../../../stores/slices/datasetEntityStructureSlice";
+import { createStandardizedDatasetStructure } from "../../utils/datasetStructure";
+
+import { guidedResetLocalGenerationUI } from "../guided-curate-dataset";
 
 import datasetUploadSession from "../../analytics/upload-session-tracker";
 import { pageIsSkipped } from "../pages/navigationUtils/pageSkipping";
 import kombuchaEnums from "../../analytics/analytics-enums";
 import Swal from "sweetalert2";
+import { swalShowError } from "../../utils/swal-utils";
 import lottie from "lottie-web";
 
 while (!window.baseHtmlLoaded) {
@@ -37,24 +41,19 @@ while (!window.baseHtmlLoaded) {
  *              When retrying the upload progress is resumed from where last left off - incompletely uploaded files will be restarted but finished files will be skipped.
  *
  */
-export const guidedPennsieveDatasetUpload = async () => {
+export const guidedGenerateDatasetOnPennsieve = async () => {
   guidedSetNavLoadingState(true);
   try {
     const guidedBfAccount = window.defaultBfAccount;
-    const guidedDatasetName = window.sodaJSONObj["digital-metadata"]["name"];
-    const guidedDatasetSubtitle = window.sodaJSONObj["digital-metadata"]["subtitle"];
-    const guidedUsers = window.sodaJSONObj["digital-metadata"]["user-permissions"];
-    //const guidedPIOwner = window.sodaJSONObj["digital-metadata"]["pi-owner"];
-    const guidedTeams = window.sodaJSONObj["digital-metadata"]["team-permissions"];
-
+    const pennsieveDatasetName = window.sodaJSONObj["pennsieve-dataset-name"];
+    const pennsieveDatasetSubtitle = window.sodaJSONObj["pennsieve-dataset-subtitle"];
+    const guidedLicense = window.sodaJSONObj["digital-metadata"]["license"];
     const guidedPennsieveStudyPurpose =
       window.sodaJSONObj["digital-metadata"]["description"]["study-purpose"];
     const guidedPennsieveDataCollection =
       window.sodaJSONObj["digital-metadata"]["description"]["data-collection"];
     const guidedPennsievePrimaryConclusion =
       window.sodaJSONObj["digital-metadata"]["description"]["primary-conclusion"];
-    const guidedTags = window.sodaJSONObj["digital-metadata"]["dataset-tags"];
-    const guidedLicense = window.sodaJSONObj["digital-metadata"]["license"];
     const guidedBannerImagePath = window.sodaJSONObj["digital-metadata"]?.["banner-image-path"];
 
     //Hide the upload tables
@@ -82,21 +81,18 @@ export const guidedPennsieveDatasetUpload = async () => {
     );
 
     // Create the dataset on Pennsieve
-    await guidedCreateOrRenameDataset(guidedBfAccount, guidedDatasetName);
+    await guidedCreateOrRenameDataset(guidedBfAccount, pennsieveDatasetName);
 
-    await guidedAddDatasetSubtitle(guidedBfAccount, guidedDatasetName, guidedDatasetSubtitle);
+    await guidedAddDatasetSubtitle(guidedBfAccount, pennsieveDatasetName, pennsieveDatasetSubtitle);
     await guidedAddDatasetDescription(
       guidedBfAccount,
-      guidedDatasetName,
+      pennsieveDatasetName,
       guidedPennsieveStudyPurpose,
       guidedPennsieveDataCollection,
       guidedPennsievePrimaryConclusion
     );
-    await guidedAddDatasetBannerImage(guidedBfAccount, guidedDatasetName, guidedBannerImagePath);
-    await guidedAddDatasetLicense(guidedBfAccount, guidedDatasetName, guidedLicense);
-    await guidedAddDatasetTags(guidedBfAccount, guidedDatasetName, guidedTags);
-    await guidedAddUserPermissions(guidedBfAccount, guidedDatasetName, guidedUsers);
-    await guidedAddTeamPermissions(guidedBfAccount, guidedDatasetName, guidedTeams);
+    await guidedAddDatasetBannerImage(guidedBfAccount, pennsieveDatasetName, guidedBannerImagePath);
+    await guidedAddDatasetLicense(guidedBfAccount, pennsieveDatasetName, guidedLicense);
 
     hideDatasetMetadataGenerationTableRows("pennsieve");
 
@@ -177,7 +173,7 @@ export const guidedPennsieveDatasetUpload = async () => {
         await guidedUploadDatasetToPennsieve();
       } else {
         // restart the whole process
-        await guidedPennsieveDatasetUpload();
+        await guidedGenerateDatasetOnPennsieve();
         return;
       }
     }
@@ -193,6 +189,203 @@ export const guidedPennsieveDatasetUpload = async () => {
   guidedSetNavLoadingState(false);
 };
 
+const roundToHundredth = (num) => {
+  return Math.round(num * 100) / 100;
+};
+
+const convertBytesToGb = (bytes) => {
+  return roundToHundredth(bytes / 1024 ** 3);
+};
+// Counts the number of files in the dataset structure
+// Note: This function should only be used for local datasets (Not datasets pulled from Pennsieve)
+const countFilesInDatasetStructure = (datasetStructure) => {
+  let totalFiles = 0;
+  const keys = Object.keys(datasetStructure);
+  for (const key of keys) {
+    if (key === "files") {
+      totalFiles += Object.keys(datasetStructure[key]).length;
+    }
+    if (key === "folders") {
+      const folders = Object.keys(datasetStructure[key]);
+      for (const folder of folders) {
+        totalFiles += countFilesInDatasetStructure(datasetStructure[key][folder]);
+      }
+    }
+  }
+  return totalFiles;
+};
+
+// Track the status of local dataset generation
+const trackLocalDatasetGenerationProgress = async () => {
+  // Get the number of files that need to be generated to calculate the progress
+  const numberOfFilesToGenerate = countFilesInDatasetStructure(starndardizedDatasetStructure);
+  while (true) {
+    try {
+      const response = await client.get(`/curate_datasets/curation/progress`);
+      const { data } = response;
+      const main_curate_progress_message = data["main_curate_progress_message"];
+      const main_curate_status = data["main_curate_status"];
+      if (main_curate_progress_message === "Success: COMPLETED!" || main_curate_status === "Done") {
+        break; // Exit the loop when generation is done
+      }
+      const elapsed_time_formatted = data["elapsed_time_formatted"];
+      const totalUploadedFiles = data["total_files_uploaded"];
+
+      // Get the current progress of local dataset generation
+      // Note: The progress is calculated based on the number of files that have been generated
+      // and the total number of files that need to be generated
+      const localGenerationProgressPercentage = Math.min(
+        100,
+        Math.max(0, (totalUploadedFiles / numberOfFilesToGenerate) * 100)
+      );
+      setGuidedProgressBarValue("local", localGenerationProgressPercentage);
+      updateDatasetUploadProgressTable("local", {
+        "Files generated": `${totalUploadedFiles} of ${numberOfFilesToGenerate}`,
+        "Percent generated": `${localGenerationProgressPercentage.toFixed(2)}%`,
+        "Elapsed time": `${elapsed_time_formatted}`,
+      });
+
+      // Scroll the user down to the progress table if they haven't been scrolled down yet
+      // (This only happens once)
+      if (!userHasBeenScrolledToProgressTable) {
+        window.unHideAndSmoothScrollToElement("guided-section-local-generation-status-table");
+        userHasBeenScrolledToProgressTable = true;
+      }
+
+      // Wait 1 second before checking the progress again
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 second
+    } catch (error) {
+      console.error("Error tracking progress:", error);
+      throw new Error(userErrorMessage(error)); // Re-throw with user-friendly message
+    }
+  }
+};
+
+export const guidedGenerateDatasetLocally = async (filePath) => {
+  guidedSetNavLoadingState(true); // Lock the nav while local dataset generation is in progress
+  guidedResetLocalGenerationUI();
+  try {
+    // Create a standardized copy of the dataset to upload
+    const starndardizedDatasetStructure = createStandardizedDatasetStructure(
+      window.datasetStructureJSONObj,
+      window.sodaJSONObj["dataset-entity-obj"]
+    );
+    console.log("starndardizedDatasetStructure", starndardizedDatasetStructure);
+    window.sodaJSONObj["soda_json_structure"] = starndardizedDatasetStructure;
+
+    // Reset and show the progress bar
+    setGuidedProgressBarValue("local", 0);
+    updateDatasetUploadProgressTable("local", {
+      "Current action": `Checking available free space on disk`,
+    });
+    window.unHideAndSmoothScrollToElement("guided-section-local-generation-status-table");
+
+    // Get available free memory on disk
+    const freeMemoryInBytes = await window.electron.ipcRenderer.invoke("getDiskSpace", filePath);
+
+    // Get the size of the dataset to be generated
+    const localDatasetSizeReq = await client.post(
+      "/curate_datasets/dataset_size",
+      { soda_json_structure: window.sodaJSONObj },
+      { timeout: 0 }
+    );
+    const localDatasetSizeInBytes = localDatasetSizeReq.data.dataset_size;
+
+    // Check if there is enough free space on disk for the dataset
+    if (freeMemoryInBytes < localDatasetSizeInBytes) {
+      const diskSpaceInGb = convertBytesToGb(freeMemoryInBytes);
+      const datasetSizeInGb = convertBytesToGb(localDatasetSizeInBytes);
+      throw new Error(
+        `Not enough free space on disk. Free space: ${diskSpaceInGb}GB. Dataset size: ${datasetSizeInGb}GB`
+      );
+    }
+
+    await guidedGenerateDatasetLocally();
+  } catch (error) {
+    console.error("Error during local dataset generation:", error);
+    // Handle and log errors
+    const errorMessage = userErrorMessage(error);
+    console.error(errorMessage);
+    guidedResetLocalGenerationUI();
+    await swalShowError("Error generating dataset locally", errorMessage);
+    // Show and scroll down to the local dataset generation retry button
+    window.unHideAndSmoothScrollToElement("guided-section-retry-local-generation");
+  }
+  guidedSetNavLoadingState(false); // Unlock the nav after local dataset generation is done
+
+  // Attach manifest files to the dataset structure before local generation
+  await guidedCreateManifestFilesAndAddToDatasetStructure();
+
+  // Create a temporary copy of sodaJSONObj for local dataset generation
+  const sodaJSONObjCopy = JSON.parse(JSON.stringify(window.sodaJSONObj));
+  sodaJSONObjCopy["generate-dataset"] = {
+    "dataset-name": guidedDatasetName,
+    destination: "local",
+    "generate-option": "new",
+    "if-existing": "new",
+    path: filePath,
+  };
+  // Remove unnecessary key from sodaJSONObjCopy since we don't need to
+  // check if the account details are valid during local generation
+  delete sodaJSONObjCopy["ps-account-selected"];
+  delete sodaJSONObjCopy["ps-dataset-selected"];
+
+  await guidedPrepareDatasetStructureAndMetadataForUpload(sodaJSONObjCopy);
+
+  updateDatasetUploadProgressTable("local", {
+    "Current action": `Preparing dataset for local generation`,
+  });
+
+  // Start the local dataset generation process
+  client.post(
+    `/curate_datasets/curation`,
+    { soda_json_structure: sodaJSONObjCopy, resume: false },
+    { timeout: 0 }
+  );
+
+  let userHasBeenScrolledToProgressTable = false;
+
+  // set a timeout for .5 seconds to allow the server to start generating the dataset
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  await trackLocalDatasetGenerationProgress();
+
+  setGuidedProgressBarValue("local", 100);
+  updateDatasetUploadProgressTable("local", { "Current action": `Generating metadata files` });
+
+  /* TEMP DISABLED FOR NOW // Generate all dataset metadata files
+        await guidedGenerateSubjectsMetadata(
+          window.path.join(filePath, guidedDatasetName, "subjects.xlsx")
+        );
+        await guidedGenerateSamplesMetadata(
+          window.path.join(filePath, guidedDatasetName, "samples.xlsx")
+        );
+        await guidedGenerateSubmissionMetadata(
+          window.path.join(filePath, guidedDatasetName, "submission.xlsx")
+        );
+        await guidedGenerateDatasetDescriptionMetadata(
+          window.path.join(filePath, guidedDatasetName, "dataset_description.xlsx")
+        );
+        await guidedGenerateReadmeMetadata(
+          window.path.join(filePath, guidedDatasetName, "README.txt")
+        );
+        await guidedGenerateChangesMetadata(
+          window.path.join(filePath, guidedDatasetName, "CHANGES.txt")
+        );
+        await guidedGenerateCodeDescriptionMetadata(
+          window.path.join(filePath, guidedDatasetName, "code_description.xlsx")
+        );*/
+
+  // Save the location of the generated dataset to the sodaJSONObj
+  window.sodaJSONObj["path-to-local-dataset-copy"] = window.path.join(filePath, guidedDatasetName);
+
+  // Update UI for successful local dataset generation
+  updateDatasetUploadProgressTable("local", {
+    Status: `Dataset successfully generated locally`,
+  });
+  window.unHideAndSmoothScrollToElement("guided-section-post-local-generation-success");
+};
+
 const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
   document.getElementById("guided-dataset-name-upload-tr").classList.remove("hidden");
   const datasetNameUploadText = document.getElementById("guided-dataset-name-upload-text");
@@ -202,7 +395,7 @@ const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
 
   //If the dataset has already been created in Guided Mode, we should have an ID for the
   //dataset. If a dataset with the ID still exists on Pennsieve, we will upload to that dataset.
-  if (window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]) {
+  if (window.sodaJSONObj["digital-metadata"]?.["pennsieve-dataset-id"]) {
     const existingDatasetNameOnPennsieve = await checkIfDatasetExistsOnPennsieve(
       window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
     );
@@ -248,6 +441,7 @@ const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
   }
 
   try {
+    // Use the datasetName passed in to create a new dataset on Pennsieve
     let bf_new_dataset = await client.post(
       `/manage_datasets/datasets`,
       {
@@ -575,119 +769,6 @@ const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) =
     );
     throw new Error(userErrorMessage(error));
   }
-};
-
-const guidedAddDatasetTags = async (bfAccount, datasetName, tags) => {
-  document.getElementById("guided-dataset-tags-upload-tr").classList.remove("hidden");
-  const datasetTagsUploadText = document.getElementById("guided-dataset-tags-upload-text");
-  datasetTagsUploadText.innerHTML = "Adding dataset tags...";
-  guidedUploadStatusIcon("guided-dataset-tags-upload-status", "loading");
-
-  const previouslyUploadedTags = window.sodaJSONObj["previously-uploaded-data"]["tags"];
-
-  if (JSON.stringify(previouslyUploadedTags) === JSON.stringify(tags)) {
-    datasetTagsUploadText.innerHTML = "Dataset tags already added on Pennsieve";
-    guidedUploadStatusIcon("guided-dataset-tags-upload-status", "success");
-    return;
-  }
-
-  try {
-    await client.put(
-      `/manage_datasets/datasets/${datasetName}/tags`,
-      { tags },
-      {
-        params: {
-          selected_account: bfAccount,
-        },
-      }
-    );
-
-    datasetTagsUploadText.innerHTML = `Successfully added dataset tags: ${tags.join(", ")}`;
-    guidedUploadStatusIcon("guided-dataset-tags-upload-status", "success");
-    window.sodaJSONObj["previously-uploaded-data"]["tags"] = tags;
-    await guidedSaveProgress();
-
-    // Send successful tags upload event to Kombucha
-    window.electron.ipcRenderer.send(
-      "track-kombucha",
-      kombuchaEnums.Category.GUIDED_MODE,
-      kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
-      kombuchaEnums.Label.TAGS,
-      kombuchaEnums.Status.SUCCESS,
-      {
-        value: 1,
-        dataset_name: guidedGetDatasetName(window.sodaJSONObj),
-        dataset_id: guidedGetDatasetId(window.sodaJSONObj),
-        dataset_int_id: window.defaultBfDatasetIntId,
-      }
-    );
-  } catch (error) {
-    datasetTagsUploadText.innerHTML = "Failed to add dataset tags.";
-    guidedUploadStatusIcon("guided-dataset-tags-upload-status", "error");
-
-    // Send failed tags upload event to Kombucha
-    window.electron.ipcRenderer.send(
-      "track-kombucha",
-      kombuchaEnums.Category.GUIDED_MODE,
-      kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
-      kombuchaEnums.Label.TAGS,
-      kombuchaEnums.Status.FAIL,
-      {
-        value: 1,
-        dataset_name: guidedGetDatasetName(window.sodaJSONObj),
-        dataset_id: guidedGetDatasetId(window.sodaJSONObj),
-        dataset_int_id: window.defaultBfDatasetIntId,
-      }
-    );
-    throw new Error(userErrorMessage(error));
-  }
-};
-
-const guidedAddUserPermissions = async (bfAccount, datasetName, userPermissionsArray) => {
-  //filter user permissions with loggedInUser key
-  const promises = userPermissionsArray.map((userPermission) => {
-    if (userPermission?.["deleteFromPennsieve"] === true) {
-      return guidedGrantUserPermission(
-        bfAccount,
-        datasetName,
-        userPermission.userName,
-        userPermission.UUID,
-        "remove current permissions"
-      );
-    } else {
-      return guidedGrantUserPermission(
-        bfAccount,
-        datasetName,
-        userPermission.userName,
-        userPermission.UUID,
-        userPermission.permission
-      );
-    }
-  });
-  await Promise.allSettled(promises);
-};
-
-const guidedAddTeamPermissions = async (bfAccount, datasetName, teamPermissionsArray) => {
-  const promises = teamPermissionsArray.map((teamPermission) => {
-    if (teamPermission?.["deleteFromPennsieve"] === true) {
-      return guidedGrantTeamPermission(
-        bfAccount,
-        datasetName,
-        teamPermission.UUID,
-        teamPermission.teamString,
-        "remove current permissions"
-      );
-    } else {
-      return guidedGrantTeamPermission(
-        bfAccount,
-        datasetName,
-        teamPermission.UUID,
-        teamPermission.teamString,
-        teamPermission.permission
-      );
-    }
-  });
-  await Promise.allSettled(promises);
 };
 
 export const guidedGenerateSubjectsMetadata = async (destination) => {
@@ -1667,7 +1748,7 @@ const guidedUploadDatasetToPennsieve = async () => {
           return;
         } else {
           // restart the whole process
-          await guidedPennsieveDatasetUpload();
+          await guidedGenerateDatasetOnPennsieve();
           return;
         }
       }
@@ -1850,7 +1931,7 @@ const openGuidedDatasetRenameSwal = async () => {
   if (newDatasetName) {
     window.sodaJSONObj["digital-metadata"]["name"] = newDatasetName;
 
-    guidedPennsieveDatasetUpload();
+    guidedGenerateDatasetOnPennsieve();
   }
 };
 
@@ -2250,20 +2331,6 @@ export const guidedPrepareDatasetStructureAndMetadataForUpload = async (sodaObj)
   console.log("sodaObj", sodaObj);
   console.log("dataset-metadata", sodaObj["dataset_metadata"]);
   // Prepare the subject metadata
-  const subjects = getExistingSubjects();
-  const subjectsMetadata = subjects.map((subject) => {
-    return subject.metadata;
-  });
-  console.log("subjectsMetadata", subjectsMetadata);
-  sodaObj["dataset_metadata"]["subjects_metadata"] = subjectsMetadata;
-
-  // Prepare the samples metadata
-  const samples = getExistingSamples();
-  const samplesMetadata = samples.map((sample) => {
-    return sample.metadata;
-  });
-  console.log("samplesMetadata", samplesMetadata);
-  sodaObj["dataset_metadata"]["samples_metadata"] = samplesMetadata;
 
   // Prepare the sites metadata
   const sites = getExistingSites();
