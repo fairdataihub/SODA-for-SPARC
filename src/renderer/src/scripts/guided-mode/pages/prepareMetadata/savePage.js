@@ -66,13 +66,23 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     const title = getGuidedDatasetName();
     const subtitle = getGuidedDatasetSubtitle();
 
+    const subjectsMetadata = window.sodaJSONObj["dataset_metadata"]["subjects_metadata"];
+    const samplesMetadata = window.sodaJSONObj["dataset_metadata"]["samples_metadata"];
+    const sitesMetadata = window.sodaJSONObj["dataset_metadata"]["sites_metadata"];
+    const performancesMetadata = window.sodaJSONObj["dataset_metadata"]["performance_metadata"];
+
+    const numSubjects = subjectsMetadata ? subjectsMetadata.length : 0;
+    const numSamples = samplesMetadata ? samplesMetadata.length : 0;
+    const numSites = sitesMetadata ? sitesMetadata.length : 0;
+    const numPerformances = performancesMetadata ? performancesMetadata.length : 0;
+
+    console.log("subjectsMetadata", subjectsMetadata);
+    console.log("samplesMetadata", samplesMetadata);
+    console.log("sitesMetadata", sitesMetadata);
+    console.log("performancesMetadata", performancesMetadata);
+
     // Get keywords
     const keywordArray = window.getTagsFromTagifyElement(guidedDatasetKeywordsTagify);
-
-    // Get subject and sample counts
-
-    const numSubjects = 12;
-    const numSamples = 12;
     // Get study description inputs
     const studyPurposeInput = document.getElementById("guided-ds-study-purpose");
     const studyDataCollectionInput = document.getElementById("guided-ds-study-data-collection");
@@ -138,8 +148,8 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       participant_information: {
         number_of_subjects: numSubjects,
         number_of_samples: numSamples,
-        number_of_sites: 0,
-        number_of_performance: 0,
+        number_of_sites: numSites,
+        number_of_performances: numPerformances,
       },
     };
   }

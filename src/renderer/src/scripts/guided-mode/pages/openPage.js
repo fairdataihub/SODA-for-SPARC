@@ -187,7 +187,7 @@ export const openPage = async (targetPageID) => {
     // Synchronize state between the SODA JSON object and the zustand store
     setSelectedEntities(window.sodaJSONObj["selected-entities"] || []);
     setDeSelectedEntities(window.sodaJSONObj["deSelected-entities"] || []);
-    setPerformanceList(window.sodaJSONObj["performance-list"] || []);
+    setPerformanceList(window.sodaJSONObj["dataset_metadata"]?.["performance_metadata"] || []);
 
     if (
       targetPageID === "guided-dataset-generation-tab" ||

@@ -28,6 +28,7 @@ import kombuchaEnums from "../../analytics/analytics-enums";
 import Swal from "sweetalert2";
 import { swalShowError } from "../../utils/swal-utils";
 import lottie from "lottie-web";
+import { getGuidedDatasetName } from "../pages/curationPreparation/utils";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -319,7 +320,7 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
   // Create a temporary copy of sodaJSONObj for local dataset generation
   const sodaJSONObjCopy = JSON.parse(JSON.stringify(window.sodaJSONObj));
   sodaJSONObjCopy["generate-dataset"] = {
-    "dataset-name": guidedDatasetName,
+    "dataset-name": getGuidedDatasetName(),
     destination: "local",
     "generate-option": "new",
     "if-existing": "new",
@@ -2330,16 +2331,6 @@ export const guidedPrepareDatasetStructureAndMetadataForUpload = async (sodaObj)
   console.log("Preparing dataset structure and metadata for upload...");
   console.log("sodaObj", sodaObj);
   console.log("dataset-metadata", sodaObj["dataset_metadata"]);
-  // Prepare the subject metadata
-
-  // Prepare the sites metadata
-  const sites = getExistingSites();
-  const sitesMetadata = sites.map((site) => ({
-    ...site.metadata,
-    specimen_id: `${site.metadata.subject_id} ${site.metadata.sample_id}`,
-  }));
-  console.log("sitesMetadata", sitesMetadata);
-  sodaObj["dataset_metadata"]["sites_metadata"] = sitesMetadata;
 
   // Prepare the resources metadata
   const resources = sodaObj["dataset_metadata"]["resources_metadata"];
