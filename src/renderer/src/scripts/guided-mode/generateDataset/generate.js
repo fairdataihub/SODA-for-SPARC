@@ -2339,8 +2339,4 @@ export const guidedPrepareDatasetStructureAndMetadataForUpload = async (sodaObj)
   // Prepare the dataset_description metadata
   const datasetDescriptionMetadata = sodaObj["dataset_metadata"]["dataset_description"];
   console.log("datasetDescriptionMetadata", datasetDescriptionMetadata);
-
-  // Prepare the submission metadata
-  const submissionMetadata = sodaObj["dataset_metadata"]["submission_metadata"];
-  console.log("submissionMetadata", submissionMetadata);
 };

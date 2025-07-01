@@ -15,6 +15,8 @@ import {
   getExistingSamples,
 } from "../../../../stores/slices/datasetEntityStructureSlice";
 
+import { getDropDownState } from "../../../../stores/slices/dropDownSlice";
+
 export const savePagePrepareMetadata = async (pageBeingLeftID) => {
   const errorArray = [];
   if (pageBeingLeftID === "guided-manifest-subject-entity-selector-tab") {
@@ -58,6 +60,47 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     });
     console.log("samplesMetadata", samplesMetadata);
     window.sodaJSONObj["dataset_metadata"]["samples_metadata"] = samplesMetadata;
+  }
+
+  if (pageBeingLeftID === "guided-submission-metatdata-tab") {
+    const fundingAgencyDropDownValue = getDropDownState("guided-select-funding-agency");
+    const fundingConsortiumDropDownValue = getDropDownState(
+      "guided-select-sparc-funding-consortium"
+    );
+    const awardNumber = useGlobalStore.getState().awardNumber || "";
+
+    let fundingAgency = "";
+    let fundingConsortium = "EXTERNAL";
+    let milestonesAchieved = [];
+    let milestoneCompletionDate = "";
+
+    if (fundingAgencyDropDownValue !== null) {
+      if (fundingAgencyDropDownValue === "Other") {
+        // Get the value from the other funding agency input
+        fundingAgency = useGlobalStore.getState().otherFundingAgency || "";
+      } else {
+        // Use the selected value from the dropdown
+        fundingAgency = fundingAgencyDropDownValue;
+      }
+
+      if (fundingAgency === "NIH") {
+        if (fundingConsortiumDropDownValue !== null) {
+          fundingConsortium = fundingConsortiumDropDownValue;
+        }
+      }
+    }
+
+    // Prepare the submission metadata
+    window.sodaJSONObj["dataset_metadata"]["submission_metadata"] = {
+      consortium_data_standard: "SPARC", // Hardcoded for now (SODA only supports SPARC data standard)
+      funding_consortium: fundingConsortium,
+      award_number: awardNumber,
+      milestone_achieved: milestonesAchieved,
+      milestone_completion_date: milestoneCompletionDate,
+    };
+
+    // Save the funding agency name for the dataset_description metadata
+    window.sodaJSONObj["funding_agency"] = fundingAgency;
   }
 
   if (pageBeingLeftID === "guided-create-description-metadata-tab") {

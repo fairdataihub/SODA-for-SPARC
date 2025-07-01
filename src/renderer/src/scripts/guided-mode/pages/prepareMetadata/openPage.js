@@ -34,6 +34,13 @@ import lottie from "lottie-web";
 import { renderAdditionalLinksTable } from "../../guided-curate-dataset";
 import { datasetIsSparcFunded } from "../../utils/sodaJSONObj";
 import { createStandardizedDatasetStructure } from "../../../../scripts/utils/datasetStructure";
+import { setDropdownState } from "../../../../stores/slices/dropDownSlice";
+import {
+  setOtherFundingAgency,
+  setAwardNumber,
+  setMilestones,
+  setMilestoneDate,
+} from "../../../../stores/slices/datasetMetadataSlice";
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
@@ -84,6 +91,39 @@ export const openPagePrepareMetadata = async (targetPageID) => {
         pennsieveIntroAccountDetailsText.innerHTML = "Error loading account details";
       }
     }
+  }
+
+  if (targetPageID === "guided-submission-metatdata-tab") {
+    const fundingAgency = window.sodaJSONObj["funding_agency"] || null;
+    const fundingConsortium =
+      window.sodaJSONObj["dataset_metadata"]?.["submission_metadata"]?.["funding_consortium"] || "";
+    const awardNumber =
+      window.sodaJSONObj["dataset_metadata"]?.["submission_metadata"]?.["award_number"] || "";
+    const milestoneAchieved =
+      window.sodaJSONObj["dataset_metadata"]?.["submission_metadata"]?.["milestone_achieved"] || [];
+    const milestoneCompletionDate =
+      window.sodaJSONObj["dataset_metadata"]?.["submission_metadata"]?.[
+        "milestone_completion_date"
+      ] || "";
+
+    setDropdownState("guided-select-funding-agency", fundingAgency);
+    if (fundingAgency === "NIH") {
+      setDropdownState("guided-select-sparc-funding-consortium", fundingConsortium);
+      if (fundingConsortium === "SPARC") {
+        setMilestones(milestoneAchieved);
+        setMilestoneDate(milestoneCompletionDate);
+      } else {
+        setMilestones([]);
+        setMilestoneDate(null);
+      }
+    } else {
+      setDropdownState("guided-select-sparc-funding-consortium", "");
+      setOtherFundingAgency(fundingAgency);
+      setMilestones([]);
+      setMilestoneDate(null);
+    }
+
+    setAwardNumber(awardNumber);
   }
 
   if (targetPageID === "guided-contributors-tab") {

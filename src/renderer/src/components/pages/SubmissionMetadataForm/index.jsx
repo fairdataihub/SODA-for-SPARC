@@ -42,11 +42,9 @@ import {
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import {
-  setOtherFundingConsortium,
   setOtherFundingAgency,
   toggleCompletionDateChecked,
 } from "../../../stores/slices/datasetMetadataSlice";
-import { Dropzone } from "@mantine/dropzone";
 
 import DropdownSelect from "../../common/DropdownSelect";
 
@@ -60,11 +58,6 @@ const SubmissionMetadataForm = () => {
   console.log("fundingAgencyDropdownState", fundingAgencyDropdownState);
   console.log("fundingConsortiumDropdownState", fundingConsortiumDropdownState);
   const completionDateChecked = useGlobalStore((state) => state.completionDateChecked);
-  const showCustomConsortiumNameUI =
-    fundingAgencyDropdownState !== "NIH" || fundingConsortiumDropdownState === "Other";
-  console.log("showCustomConsortiumNameUI", showCustomConsortiumNameUI);
-
-  const otherFundingConsortium = useGlobalStore((state) => state.otherFundingConsortium);
   const otherFundingAgency = useGlobalStore((state) => state.otherFundingAgency);
   const awardNumber = useGlobalStore((state) => state.awardNumber);
   const milestones = useGlobalStore((state) => state.milestones || []);
@@ -81,7 +74,7 @@ const SubmissionMetadataForm = () => {
   };
 
   return (
-    <GuidedModePage pageHeader="Funding and Submission Metadata">
+    <GuidedModePage pageHeader="Funding And Submission Metadata">
       <GuidedModeSection>
         <Text>
           Provide details about the institutions and funding sources associated with this dataset in
@@ -101,22 +94,13 @@ const SubmissionMetadataForm = () => {
                 description="Please specify the name of your funding agency."
                 value={otherFundingAgency}
                 onChange={(event) => setOtherFundingAgency(event.target.value)}
-                required
               />
             )}
             {/* Show consortium dropdown only if agency is NIH */}
             {fundingAgencyDropdownState === "NIH" && (
               <DropdownSelect id="guided-select-sparc-funding-consortium" />
             )}
-            {showCustomConsortiumNameUI && (
-              <TextInput
-                label="Funding Consortium Name:"
-                placeholder="Enter the name of the funding consortium or program"
-                description="The consortium that funded the creation of this dataset. Leave blank if not applicable."
-                value={otherFundingConsortium}
-                onChange={(event) => setOtherFundingConsortium(event.target.value)}
-              />
-            )}
+
             {fundingAgencyDropdownState && (
               <TextInput
                 label="Award number:"

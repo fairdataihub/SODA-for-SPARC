@@ -20,7 +20,6 @@ export const dropDownSlice = (set) => ({
         "Other",
       ],
       selectedValue: "",
-      required: true,
     },
     "guided-select-funding-agency": {
       label: "Funding agency:",
@@ -29,7 +28,6 @@ export const dropDownSlice = (set) => ({
         "Select the agency that funded the creation of this dataset or 'Other' if your funding agency is not in the dropdown.",
       options: ["NIH", "Other"],
       selectedValue: "",
-      required: true,
     },
     "guided-select-license": {
       label: "",
@@ -71,4 +69,8 @@ export const setDropdownState = (id, selectedValue) => {
       }
     })
   );
+};
+
+export const getDropDownState = (id) => {
+  return useGlobalStore.getState().dropDownState?.[id]?.selectedValue || null;
 };
