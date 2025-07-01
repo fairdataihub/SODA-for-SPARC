@@ -114,19 +114,6 @@ const guidedMovePennsieveFolder = (movedFolderName, folderJSONPath, newFolderJSO
   newFolderJSONPath["folders"][movedFolderName] = folderJSONPath;
 };
 
-/* 
-document.getElementById("guided-button-dataset-contains-code").addEventListener("click", () => {
-  const codeFolder = window.datasetStructureJSONObj["folders"]["code"];
-  if (codeFolder) {
-    if (folderImportedFromPennsieve(codeFolder)) {
-      // If the code folder is imported from Pennsieve, unmark it as deleted
-      guidedModifyPennsieveFolder(codeFolder, "restore");
-      // NOTE: We do not need to update the UI since this button is not on the ui structuring page
-    }
-  }
-});
-*/
-
 window.getDatasetEntityObj = getDatasetEntityObj;
 
 // This function reads the innerText of the textSharedWithCurationTeamStatus element
