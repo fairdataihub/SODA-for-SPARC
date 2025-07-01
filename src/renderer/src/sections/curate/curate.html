@@ -485,7 +485,7 @@
           <!-- 3. Upload Destination Selection Tab -->
           <div class="parent-tabs condensed" id="upload-destination-selection-tab"
             style="grid-template-rows: auto; padding-right: 10px">
-            <label style="margin-top: 2rem; font-size: 18px; text-align: center; font-weight: 700; color: var(--color-bg-plum)">Do you want to upload to a new or existing Pennsieve dataset?</label>
+            <label style="margin-top: 2rem; font-size: 18px; text-align: center; font-weight: 600; color: black">Do you want to upload to a new or existing Pennsieve dataset?</label>
             <div style="display: flex; flex-direction: row; align-self: center; margin-top: 3rem;">
               <div id="dataset-upload-new-dataset" class="option-card radio-button getting-started-1st-question" style="margin-right: 5rem">
                 <div class="card-head">
@@ -495,7 +495,7 @@
                   </div>
                 </div>
                 <div class="card-body">
-                  <svg width="45" height="40" viewBox="0 0 45 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <svg width="80" height="80" viewBox="0 0 45 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M23.4168 31.25C23.4168 31.9583 23.5001 32.6458 23.6043 33.3333H4.66679C3.56172 33.3333 2.50191 32.8943 1.72051 32.1129C0.939109 31.3315 0.500122 30.2717 0.500122 29.1667V4.16667C0.500122 1.85417 2.35429 0 4.66679 0H17.1668L21.3335 4.16667H38.0001C39.1052 4.16667 40.165 4.60565 40.9464 5.38705C41.7278 6.16846 42.1668 7.22826 42.1668 8.33333V20.4375C40.896 19.7083 39.5001 19.2083 38.0001 18.9375V8.33333H4.66679V29.1667H23.6043C23.5001 29.8542 23.4168 30.5417 23.4168 31.25ZM38.0001 29.1667V22.9167H33.8335V29.1667H27.5835V33.3333H33.8335V39.5833H38.0001V33.3333H44.2501V29.1667H38.0001Z" fill="#13716D"/>
                     </svg>
                   <h2 style="font-size: 15px;">New dataset</h2>
@@ -509,7 +509,7 @@
                   </div>
                 </div>
                 <div class="card-body">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="5rem" height="4rem" viewBox="0 0 24 24">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24">
                     <path fill="#13716D" d="M3.616 19.77q-.667 0-1.141-.475T2 18.154V7.077h1v11.077q0 .269.173.442t.443.173H19v1zm3-3q-.667 0-1.141-.475T5 15.154V4.616q0-.667.475-1.142T6.615 3h4.962l2 2h6.808q.666 0 1.14.475T22 6.615v8.539q0 .666-.475 1.14t-1.14.475z"></path>
                   </svg>
                   <h2 style="font-size: 15px;">Existing dataset</h2>
@@ -528,7 +528,7 @@
               <div class="individual-question generate-dataset test2 show" id="Question-generate-dataset-ps-dataset" style="width: 100%; margin: 0; align-self: center; display: flex !important">
                 <div class="ui form" style="width: 100%">
                   <div class="grouped fields">
-                    <label style="font-size: 18px; color: var(--color-bg-plum)">Which existing Pennsieve dataset
+                    <label style="font-size: 18px; color: black">Which existing Pennsieve dataset
                       would you like to use?</label>
                     <div class="field prepare-metadata-card-field">
                       <div style="
@@ -649,21 +649,22 @@
               class="hidden"
               style="margin-top: 5rem; display: flex; flex-direction: column; align-self: center;"
             >
-              <label class="w-100 text-center" style="font-weight: 700; font-size: 18px; color: var(--color-bg-plum)">How would you like to name the new dataset?</label>
+              <label class="w-100 text-center" style="font-weight: 600; font-size: 18px; color: black">How would you like to name the new dataset?</label>
               <div class="field justify-center"
                 style="margin-top: 2rem; display: flex; flex-direction: column; align-items: center">
                 <input type="text" class="form-control"
                   style="background: #fff !important; width: 550px !important" id="inputNewNameDataset-upload-dataset"
-                  placeholder="Type here" />
+                  placeholder="Enter dataset name" />
 
                   <p style="color: red; width: 440px; text-align: center; margin-top: 10px;" id="para-new-name-dataset-message"></p>
 
                   <button id="upload-dataset-btn-confirm-new-dataset-name"
-                  class="hidden ui positive button soda-green-background mt-lg"
+                  class="hidden ui positive basic button soda-green-border"
                   style="
                     margin-top: 1rem;
                     font-weight: 600;
                     font-size: 15px;
+                    min-width: 10rem;
                   ">
                   Confirm
                 </button>
@@ -1420,32 +1421,33 @@
           padding-top: 10px;
           display: flex;
           flex-direction: row;
-          justify-content: space-between;
           height: 67px;
-          margin-right: 3.7rem;
+          margin: auto;
         ">
-        <div style="display: flex; flex-direction: row">
-          <button type="button" onclick="window.nextPrev(-1)" id="prevBtn" class="transition-btn back">
-            <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
-          </button>
-          <button id="start-over-btn" type="button" class="start-over-button transition-btn popover-tooltip"
-            rel="popover" data-placement="top" data-trigger="hover"
-            data-content="Reset your progress and go back to Step 1" style="padding-left: 1.8rem">
-            <i class="fas fa-sync-alt" style="margin-right: 10px"></i>Start over
-          </button>
+        <div style="display: flex; flex-direction: row; margin-right: 10px;">
+          <div 
+              data-component-type="navigation-button" data-button-id="prevBtn" 
+              data-button-text="Back" data-nav-icon="left-arrow"
+              data-button-size="md" data-button-custom-width="215px"
+              onClick="window.nextPrev(-1)">
+              <style data-mantine-styles="true">:root{--mantine-primary-color-filled: 
+              var(--mantine-color-SodaGreen-filled);--mantine-primary-color-filled-hover: 
+              var(--mantine-color-SodaGreen-filled-hover);--mantine-primary-color-light: 
+              var(--mantine-color-SodaGreen-light);--mantine-primary-color-light-hover: 
+              var(--mantine-color-SodaGreen-light-hover);--mantine-primary-color-light-color: 
+              var(--mantine-color-SodaGreen-light-color);--mantine-font-size-xs: 0.8rem;--mantine-font-size-sm: 0.9rem;--mantine-font-size-md: 1rem;--mantine-font-size-lg: 1.2rem;--mantine-font-size-xl: 1.4rem;--mantine-primary-color-0: 
+              var(--mantine-color-SodaGreen-0);--mantine-primary-color-1: var(--mantine-color-SodaGreen-1);--mantine-primary-color-2: var(--mantine-color-SodaGreen-2);--mantine-primary-color-3: var(--mantine-color-SodaGreen-3);--mantine-primary-color-4: var(--mantine-color-SodaGreen-4);--mantine-primary-color-5: var(--mantine-color-SodaGreen-5);--mantine-primary-color-6: var(--mantine-color-SodaGreen-6);--mantine-primary-color-7: var(--mantine-color-SodaGreen-7);--mantine-primary-color-8: var(--mantine-color-SodaGreen-8);--mantine-primary-color-9: var(--mantine-color-SodaGreen-9);--mantine-color-SodaGreen-0: #13716d;--mantine-color-SodaGreen-1: #13716d;--mantine-color-SodaGreen-2: #13716d;--mantine-color-SodaGreen-3: #13716d;--mantine-color-SodaGreen-4: #13716d;--mantine-color-SodaGreen-5: #13716d;--mantine-color-SodaGreen-6: #13716d;--mantine-color-SodaGreen-7: #13716d;--mantine-color-SodaGreen-8: #13716d;--mantine-color-SodaGreen-9: #13716d;}:root[data-mantine-color-scheme="dark"]{--mantine-color-anchor: var(--mantine-color-SodaGreen-4);--mantine-color-SodaGreen-text:
+              var(--mantine-color-SodaGreen-4);--mantine-color-SodaGreen-filled: var(--mantine-color-SodaGreen-8);--mantine-color-SodaGreen-filled-hover: var(--mantine-color-SodaGreen-9);--mantine-color-SodaGreen-light: rgba(19, 113, 109, 0.15);--mantine-color-SodaGreen-light-hover: rgba(19, 113, 109, 0.2);--mantine-color-SodaGreen-light-color: var(--mantine-color-SodaGreen-3);--mantine-color-SodaGreen-outline: var(--mantine-color-SodaGreen-4);--mantine-color-SodaGreen-outline-hover: rgba(19, 113, 109, 0.05);}:root[data-mantine-color-scheme="light"]{--mantine-color-anchor: var(--mantine-color-SodaGreen-6);--mantine-color-SodaGreen-text: var(--mantine-color-SodaGreen-filled);--mantine-color-SodaGreen-filled: var(--mantine-color-SodaGreen-6);--mantine-color-SodaGreen-filled-hover: var(--mantine-color-SodaGreen-7);--mantine-color-SodaGreen-light: rgba(19, 113, 109, 0.1);--mantine-color-SodaGreen-light-hover: rgba(19, 113, 109, 0.12);--mantine-color-SodaGreen-light-color: var(--mantine-color-SodaGreen-6);--mantine-color-SodaGreen-outline: var(--mantine-color-SodaGreen-6);--mantine-color-SodaGreen-outline-hover: rgba(19, 113, 109, 0.05);}</style><style data-mantine-styles="classes">@media (max-width: 35.99375em) {.mantine-visible-from-xs {display: none !important;}}@media (min-width: 36em) {.mantine-hidden-from-xs {display: none !important;}}@media (max-width: 47.99375em) {.mantine-visible-from-sm {display: none !important;}}@media (min-width: 48em) {.mantine-hidden-from-sm {display: none !important;}}@media (max-width: 61.99375em) {.mantine-visible-from-md {display: none !important;}}@media (min-width: 62em) {.mantine-hidden-from-md {display: none !important;}}@media (max-width: 74.99375em) {.mantine-visible-from-lg {display: none !important;}}@media (min-width: 75em) {.mantine-hidden-from-lg {display: none !important;}}@media (max-width: 87.99375em) {.mantine-visible-from-xl {display: none !important;}}@media (min-width: 88em) {.mantine-hidden-from-xl {display: none !important;}}</style><button class="mantine-focus-auto mantine-active m_77c9d27d mantine-Button-root m_87cf2631 mantine-UnstyledButton-root" data-variant="outline" data-size="md" type="button" id="guided-back-button" style="--button-height:var(--button-height-md); --button-padding-x:var(--button-padding-x-md); --button-fz:var(--mantine-font-size-md); --button-bg:transparent; --button-hover:var(--mantine-color-SodaGreen-outline-hover); --button-color:var(--mantine-color-SodaGreen-outline); --button-bd:calc(0.0625rem * var(--mantine-scale)) solid var(--mantine-color-SodaGreen-outline); width: 215px; visibility: visible;"><span class="m_80f1301b mantine-Button-inner"><span class="m_811560b9 mantine-Button-label"><div class="m_4081bf90 mantine-Group-root" style="--group-gap:var(--mantine-spacing-md); --group-align:center; --group-justify:flex-start; --group-wrap:wrap;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon tabler-icon-arrow-left false"><path d="M5 12l14 0"></path><path d="M5 12l6 6"></path><path d="M5 12l6 -6"></path></svg><span class="nav-button-text">Back</span></div></span></span></button>
+          </div>
         </div>
         <div style="display: flex; flex-direction: row">
-          <button type="button" class="ui secondary basic button save-and-exit-button transition-btn popover-tooltip"
-            data-content="Save your progress and pick up from here later through Step 1 - Option 2: Continue with a previously saved progress in SODA."
-            rel="popover" data-placement="top" data-trigger="hover" id="save-progress-btn"
-            onclick="window.saveOrganizeProgressPrompt()" style="padding: 8px 10px">
-            <i class="far fa-save" style="margin-right: 10px"></i>Save progress
+          <button 
+            class="mantine-focus-auto mantine-active m_77c9d27d mantine-Button-root m_87cf2631 mantine-UnstyledButton-root" 
+            data-variant="outline" data-size="md" type="button" id="nextBtn" 
+            onClick="window.nextPrev(1)"
+            style="--button-height:var(--button-height-md); --button-padding-x:var(--button-padding-x-md); --button-fz:var(--mantine-font-size-md); --button-bg:transparent; --button-hover:var(--mantine-color-SodaGreen-outline-hover); --button-color:var(--mantine-color-SodaGreen-outline); --button-bd:calc(0.0625rem * var(--mantine-scale)) solid var(--mantine-color-SodaGreen-outline); width: 215px; visibility: visible;"><span class="m_80f1301b mantine-Button-inner"><span class="m_811560b9 mantine-Button-label"><div class="m_4081bf90 mantine-Group-root" style="--group-gap:var(--mantine-spacing-md); --group-align:center; --group-justify:flex-start; --group-wrap:wrap;"><span class="nav-button-text">Continue</span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon tabler-icon-arrow-right false"><path d="M5 12l14 0"></path><path d="M13 18l6 -6"></path><path d="M13 6l6 6"></path></svg></div></span></span>
           </button>
-          <button style="float: right; width: 135px" onclick="window.nextPrev(1)" id="nextBtn" type="button"
-            class="transition-btn" disabled>
-            Continue
-          </button>
-        </div>
+
       </div>
     </div>
     <!-- Modal -->
