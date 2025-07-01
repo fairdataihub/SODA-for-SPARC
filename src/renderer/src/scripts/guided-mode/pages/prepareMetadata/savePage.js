@@ -114,6 +114,10 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     window.sodaJSONObj["funding_agency"] = fundingAgency;
   }
 
+  if (pageBeingLeftID === "guided-contributors-tab") {
+    console.log("Checking contributors");
+  }
+
   if (pageBeingLeftID === "guided-create-description-metadata-tab") {
     const metadataVersion = "3.0.0";
     // Get values from digital_metadata

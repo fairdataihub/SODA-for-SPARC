@@ -955,38 +955,6 @@ const guidedOpenEntityEditSwal = async (entityName) => {
   }
 };
 
-const renderSubjectsTable = () => {
-  const [subjectsInPools, subjectsOutsidePools] = window.sodaJSONObj.getAllSubjects();
-  //Combine sample data from subjects in and out of pools
-  const subjects = [...subjectsInPools, ...subjectsOutsidePools];
-
-  // If there are no subjects, hide the subjects table
-  const subjectsTableContainer = document.getElementById("guided-section-subjects-table");
-  if (subjects.length === 0) {
-    subjectsTableContainer.classList.add("hidden");
-    return;
-  } else {
-    // If there are subjects, show the subjects table
-    subjectsTableContainer.classList.remove("hidden");
-  }
-
-  // Map the subjects to HTML elements
-  const subjectElementRows = subjects
-    .map((subject) => {
-      return generateSubjectRowElement(subject.subjectName);
-    })
-    .join("\n");
-  document.getElementById("subject-specification-table-body").innerHTML = subjectElementRows;
-
-  // Add event listeners to the subject edit buttons
-  document.querySelectorAll(".guided-subject-edit-button").forEach((button) => {
-    button.addEventListener("click", async () => {
-      const subjectName = button.dataset.subjectName;
-      await guidedOpenEntityEditSwal(subjectName);
-    });
-  });
-};
-
 function setGuidedProgressBarValue(destination, value) {
   const progressBar = document.querySelector(`#guided-progress-bar-${destination}-generation`);
   if (progressBar) {
@@ -3939,29 +3907,11 @@ document.querySelectorAll(".button-starts-local-dataset-copy-generation").forEac
   });
 });
 
-// Counts the number of files in the dataset structure
-// Note: This function should only be used for local datasets (Not datasets pulled from Pennsieve)
-const countFilesInDatasetStructure = (datasetStructure) => {
-  let totalFiles = 0;
-  const keys = Object.keys(datasetStructure);
-  for (const key of keys) {
-    if (key === "files") {
-      totalFiles += Object.keys(datasetStructure[key]).length;
-    }
-    if (key === "folders") {
-      const folders = Object.keys(datasetStructure[key]);
-      for (const folder of folders) {
-        totalFiles += countFilesInDatasetStructure(datasetStructure[key][folder]);
-      }
-    }
-  }
-  return totalFiles;
-};
-
 // Listen for the selected path for local dataset generation that starts the local dataset generation process
 window.electron.ipcRenderer.on(
   "selected-guided-local-dataset-generation-path",
   async (event, filePath) => {
+    console.log("Calling from the renderer with filePath:", filePath);
     await guidedGenerateDatasetLocally(filePath);
   }
 );

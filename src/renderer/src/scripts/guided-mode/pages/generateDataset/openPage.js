@@ -26,11 +26,11 @@ export const openPageGenerateDataset = async (targetPageID) => {
     console.log("datasetStructureJSONObjCopy", datasetStructureJSONObjCopy);
 
     const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
-    const starndardizedDatasetStructure = createStandardizedDatasetStructure(
+    const standardizedDatasetStructure = createStandardizedDatasetStructure(
       window.datasetStructureJSONObj,
       datasetEntityObj
     );
-    setTreeViewDatasetStructure(starndardizedDatasetStructure, []);
+    setTreeViewDatasetStructure(standardizedDatasetStructure, []);
 
     // Restore the original dataset structure
     window.datasetStructureJSONObj = datasetStructureJSONObjCopy;
@@ -70,11 +70,11 @@ export const openPageGenerateDataset = async (targetPageID) => {
   }
   if (targetPageID === "guided-dataset-generation-confirmation-tab") {
     const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
-    const starndardizedDatasetStructure = createStandardizedDatasetStructure(
+    const standardizedDatasetStructure = createStandardizedDatasetStructure(
       window.datasetStructureJSONObj,
       datasetEntityObj
     );
-    setTreeViewDatasetStructure(starndardizedDatasetStructure, []);
+    setTreeViewDatasetStructure(standardizedDatasetStructure, []);
     //Set the inner text of the generate/retry pennsieve dataset button depending on
     //whether a dataset has bee uploaded from this progress file
     const generateOrRetryDatasetUploadButton = document.getElementById(

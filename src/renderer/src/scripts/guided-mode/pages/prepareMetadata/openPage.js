@@ -94,10 +94,6 @@ export const openPagePrepareMetadata = async (targetPageID) => {
   }
 
   if (targetPageID === "guided-submission-metatdata-tab") {
-    console.log("submission metadata when opening submission metadata page");
-    console.log(window.sodaJSONObj["dataset_metadata"]?.["submission_metadata"]);
-    console.log("Funding agency when opening submission metadata page");
-    console.log(window.sodaJSONObj["funding_agency"]);
     // Set the funding agency (currently either NIH or Other)
     const fundingAgency = window.sodaJSONObj["funding_agency"] || "";
     const fundingConsortium =
@@ -136,7 +132,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
       setMilestoneDate(milestoneCompletionDate);
     } else {
       setMilestones([]);
-      setMilestoneDate(null);
+      setMilestoneDate("");
     }
 
     // Set the award number for all funding agencies

@@ -217,9 +217,9 @@ const countFilesInDatasetStructure = (datasetStructure) => {
 };
 
 // Track the status of local dataset generation
-const trackLocalDatasetGenerationProgress = async () => {
+const trackLocalDatasetGenerationProgress = async (standardizedDatasetStructure) => {
   // Get the number of files that need to be generated to calculate the progress
-  const numberOfFilesToGenerate = countFilesInDatasetStructure(starndardizedDatasetStructure);
+  const numberOfFilesToGenerate = countFilesInDatasetStructure(standardizedDatasetStructure);
   while (true) {
     try {
       const response = await client.get(`/curate_datasets/curation/progress`);
@@ -263,28 +263,30 @@ const trackLocalDatasetGenerationProgress = async () => {
 };
 
 export const guidedGenerateDatasetLocally = async (filePath) => {
+  console.log("Generating dataset at filePath:", filePath);
   guidedSetNavLoadingState(true); // Lock the nav while local dataset generation is in progress
   guidedResetLocalGenerationUI();
+
   try {
-    // Create a standardized copy of the dataset to upload
-    const starndardizedDatasetStructure = createStandardizedDatasetStructure(
+    // Create standardized structure
+    const standardizedDatasetStructure = createStandardizedDatasetStructure(
       window.datasetStructureJSONObj,
       window.sodaJSONObj["dataset-entity-obj"]
     );
-    console.log("starndardizedDatasetStructure", starndardizedDatasetStructure);
-    window.sodaJSONObj["soda_json_structure"] = starndardizedDatasetStructure;
+    console.log("standardizedDatasetStructure", standardizedDatasetStructure);
+    window.sodaJSONObj["soda_json_structure"] = standardizedDatasetStructure;
 
-    // Reset and show the progress bar
+    // Prepare progress UI
     setGuidedProgressBarValue("local", 0);
     updateDatasetUploadProgressTable("local", {
-      "Current action": `Checking available free space on disk`,
+      "Current action": "Checking available free space on disk",
     });
     window.unHideAndSmoothScrollToElement("guided-section-local-generation-status-table");
 
-    // Get available free memory on disk
+    // Get available disk space
     const freeMemoryInBytes = await window.electron.ipcRenderer.invoke("getDiskSpace", filePath);
 
-    // Get the size of the dataset to be generated
+    // Get dataset size
     const localDatasetSizeReq = await client.post(
       "/curate_datasets/dataset_size",
       { soda_json_structure: window.sodaJSONObj },
@@ -292,99 +294,86 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
     );
     const localDatasetSizeInBytes = localDatasetSizeReq.data.dataset_size;
 
-    // Check if there is enough free space on disk for the dataset
+    console.log("localDatasetSizeInBytes", localDatasetSizeInBytes);
+    console.log("freeMemoryInBytes", freeMemoryInBytes);
+
+    // Check available space
     if (freeMemoryInBytes < localDatasetSizeInBytes) {
-      const diskSpaceInGb = convertBytesToGb(freeMemoryInBytes);
-      const datasetSizeInGb = convertBytesToGb(localDatasetSizeInBytes);
       throw new Error(
-        `Not enough free space on disk. Free space: ${diskSpaceInGb}GB. Dataset size: ${datasetSizeInGb}GB`
+        `Not enough free space on disk. Free space: ${convertBytesToGb(
+          freeMemoryInBytes
+        )}GB. Dataset size: ${convertBytesToGb(localDatasetSizeInBytes)}GB`
       );
     }
 
-    await guidedGenerateDatasetLocally();
+    // Attach manifest files
+    await guidedCreateManifestFilesAndAddToDatasetStructure();
+
+    // Copy and prepare SODA object
+    const sodaJSONObjCopy = JSON.parse(JSON.stringify(window.sodaJSONObj));
+    sodaJSONObjCopy["generate-dataset"] = {
+      "dataset-name": getGuidedDatasetName(),
+      destination: "local",
+      "generate-option": "new",
+      "if-existing": "new",
+      path: filePath,
+    };
+    delete sodaJSONObjCopy["ps-account-selected"];
+    delete sodaJSONObjCopy["ps-dataset-selected"];
+
+    // Prepare dataset structure
+    await guidedPrepareDatasetStructureAndMetadataForUpload(sodaJSONObjCopy);
+    updateDatasetUploadProgressTable("local", {
+      "Current action": "Preparing dataset for local generation",
+    });
+
+    // Start local generation
+    client.post(
+      "/curate_datasets/curation",
+      { soda_json_structure: sodaJSONObjCopy, resume: false },
+      { timeout: 0 }
+    );
+
+    await trackLocalDatasetGenerationProgress(standardizedDatasetStructure);
+
+    setGuidedProgressBarValue("local", 100);
+    updateDatasetUploadProgressTable("local", {
+      "Current action": "Generating metadata files",
+    });
+
+    // Metadata file generation is temporarily disabled
+    /*
+    const datasetPath = window.path.join(filePath, guidedDatasetName);
+    await guidedGenerateSubjectsMetadata(window.path.join(datasetPath, "subjects.xlsx"));
+    await guidedGenerateSamplesMetadata(window.path.join(datasetPath, "samples.xlsx"));
+    await guidedGenerateSubmissionMetadata(window.path.join(datasetPath, "submission.xlsx"));
+    await guidedGenerateDatasetDescriptionMetadata(window.path.join(datasetPath, "dataset_description.xlsx"));
+    await guidedGenerateReadmeMetadata(window.path.join(datasetPath, "README.txt"));
+    await guidedGenerateChangesMetadata(window.path.join(datasetPath, "CHANGES.txt"));
+    await guidedGenerateCodeDescriptionMetadata(window.path.join(datasetPath, "code_description.xlsx"));
+    */
+
+    // Save dataset path
+    window.sodaJSONObj["path-to-local-dataset-copy"] = window.path.join(
+      filePath,
+      guidedDatasetName
+    );
+
+    // Final UI update
+    updateDatasetUploadProgressTable("local", {
+      Status: "Dataset successfully generated locally",
+    });
+    window.unHideAndSmoothScrollToElement("guided-section-post-local-generation-success");
   } catch (error) {
     console.error("Error during local dataset generation:", error);
-    // Handle and log errors
     const errorMessage = userErrorMessage(error);
     console.error(errorMessage);
     guidedResetLocalGenerationUI();
     await swalShowError("Error generating dataset locally", errorMessage);
-    // Show and scroll down to the local dataset generation retry button
     window.unHideAndSmoothScrollToElement("guided-section-retry-local-generation");
+  } finally {
+    guidedSetNavLoadingState(false); // Always unlock nav
   }
-  guidedSetNavLoadingState(false); // Unlock the nav after local dataset generation is done
-
-  // Attach manifest files to the dataset structure before local generation
-  await guidedCreateManifestFilesAndAddToDatasetStructure();
-
-  // Create a temporary copy of sodaJSONObj for local dataset generation
-  const sodaJSONObjCopy = JSON.parse(JSON.stringify(window.sodaJSONObj));
-  sodaJSONObjCopy["generate-dataset"] = {
-    "dataset-name": getGuidedDatasetName(),
-    destination: "local",
-    "generate-option": "new",
-    "if-existing": "new",
-    path: filePath,
-  };
-  // Remove unnecessary key from sodaJSONObjCopy since we don't need to
-  // check if the account details are valid during local generation
-  delete sodaJSONObjCopy["ps-account-selected"];
-  delete sodaJSONObjCopy["ps-dataset-selected"];
-
-  await guidedPrepareDatasetStructureAndMetadataForUpload(sodaJSONObjCopy);
-
-  updateDatasetUploadProgressTable("local", {
-    "Current action": `Preparing dataset for local generation`,
-  });
-
-  // Start the local dataset generation process
-  client.post(
-    `/curate_datasets/curation`,
-    { soda_json_structure: sodaJSONObjCopy, resume: false },
-    { timeout: 0 }
-  );
-
-  let userHasBeenScrolledToProgressTable = false;
-
-  // set a timeout for .5 seconds to allow the server to start generating the dataset
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  await trackLocalDatasetGenerationProgress();
-
-  setGuidedProgressBarValue("local", 100);
-  updateDatasetUploadProgressTable("local", { "Current action": `Generating metadata files` });
-
-  /* TEMP DISABLED FOR NOW // Generate all dataset metadata files
-        await guidedGenerateSubjectsMetadata(
-          window.path.join(filePath, guidedDatasetName, "subjects.xlsx")
-        );
-        await guidedGenerateSamplesMetadata(
-          window.path.join(filePath, guidedDatasetName, "samples.xlsx")
-        );
-        await guidedGenerateSubmissionMetadata(
-          window.path.join(filePath, guidedDatasetName, "submission.xlsx")
-        );
-        await guidedGenerateDatasetDescriptionMetadata(
-          window.path.join(filePath, guidedDatasetName, "dataset_description.xlsx")
-        );
-        await guidedGenerateReadmeMetadata(
-          window.path.join(filePath, guidedDatasetName, "README.txt")
-        );
-        await guidedGenerateChangesMetadata(
-          window.path.join(filePath, guidedDatasetName, "CHANGES.txt")
-        );
-        await guidedGenerateCodeDescriptionMetadata(
-          window.path.join(filePath, guidedDatasetName, "code_description.xlsx")
-        );*/
-
-  // Save the location of the generated dataset to the sodaJSONObj
-  window.sodaJSONObj["path-to-local-dataset-copy"] = window.path.join(filePath, guidedDatasetName);
-
-  // Update UI for successful local dataset generation
-  updateDatasetUploadProgressTable("local", {
-    Status: `Dataset successfully generated locally`,
-  });
-  window.unHideAndSmoothScrollToElement("guided-section-post-local-generation-success");
 };
 
 const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {

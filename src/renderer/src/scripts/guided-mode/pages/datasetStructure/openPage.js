@@ -377,11 +377,11 @@ export const openPageDatasetStructure = async (targetPageID) => {
     const datasetStructureJSONObjCopy = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
     console.log("datasetStructureJSONObjCopy", datasetStructureJSONObjCopy);
 
-    const starndardizedDatasetStructure = createStandardizedDatasetStructure(
+    const standardizedDatasetStructure = createStandardizedDatasetStructure(
       window.datasetStructureJSONObj,
       datasetEntityObj
     );
-    setTreeViewDatasetStructure(starndardizedDatasetStructure, []);
+    setTreeViewDatasetStructure(standardizedDatasetStructure, []);
 
     // Restore the original dataset structure
     window.datasetStructureJSONObj = datasetStructureJSONObjCopy;
