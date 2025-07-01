@@ -63,10 +63,8 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
   }
 
   if (pageBeingLeftID === "guided-submission-metatdata-tab") {
-    const fundingAgencyDropDownValue = getDropDownState("guided-select-funding-agency");
-    const fundingConsortiumDropDownValue = getDropDownState(
-      "guided-select-sparc-funding-consortium"
-    );
+    const fundingAgencyDropDownValue = getDropDownState("guided-funding-agency");
+    const fundingConsortiumDropDownValue = getDropDownState("guided-nih-funding-consortium");
     const awardNumber = useGlobalStore.getState().awardNumber || "";
 
     let fundingAgency = "";
@@ -74,19 +72,27 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     let milestonesAchieved = [];
     let milestoneCompletionDate = "";
 
+    console.log("fundingAgencyDropDownValue", fundingAgencyDropDownValue);
+    console.log("fundingConsortiumDropDownValue", fundingConsortiumDropDownValue);
+
     if (fundingAgencyDropDownValue !== null) {
+      if (fundingAgencyDropDownValue === "NIH") {
+        if (fundingConsortiumDropDownValue !== null) {
+          fundingConsortium = fundingConsortiumDropDownValue;
+          console.log("Setting NIH funding consortium to", fundingConsortium);
+          if (fundingConsortium === "SPARC") {
+            // If SPARC is selected, store the input for milestones and completion date
+            milestonesAchieved = useGlobalStore.getState().milestones || [];
+            milestoneCompletionDate = useGlobalStore.getState().milestoneDate || "";
+          }
+        }
+      }
       if (fundingAgencyDropDownValue === "Other") {
         // Get the value from the other funding agency input
-        fundingAgency = useGlobalStore.getState().otherFundingAgency || "";
+        fundingAgency = useGlobalStore.getState().manualFudingAgency || "";
       } else {
         // Use the selected value from the dropdown
         fundingAgency = fundingAgencyDropDownValue;
-      }
-
-      if (fundingAgency === "NIH") {
-        if (fundingConsortiumDropDownValue !== null) {
-          fundingConsortium = fundingConsortiumDropDownValue;
-        }
       }
     }
 
@@ -98,6 +104,11 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       milestone_achieved: milestonesAchieved,
       milestone_completion_date: milestoneCompletionDate,
     };
+    console.log(
+      "submission_metadata",
+      window.sodaJSONObj["dataset_metadata"]["submission_metadata"]
+    );
+    console.log("fundingAgency", fundingAgency);
 
     // Save the funding agency name for the dataset_description metadata
     window.sodaJSONObj["funding_agency"] = fundingAgency;

@@ -36,7 +36,7 @@ import { datasetIsSparcFunded } from "../../utils/sodaJSONObj";
 import { createStandardizedDatasetStructure } from "../../../../scripts/utils/datasetStructure";
 import { setDropdownState } from "../../../../stores/slices/dropDownSlice";
 import {
-  setOtherFundingAgency,
+  setManualFundingAgency,
   setAwardNumber,
   setMilestones,
   setMilestoneDate,
@@ -94,9 +94,15 @@ export const openPagePrepareMetadata = async (targetPageID) => {
   }
 
   if (targetPageID === "guided-submission-metatdata-tab") {
-    const fundingAgency = window.sodaJSONObj["funding_agency"] || null;
+    console.log("submission metadata when opening submission metadata page");
+    console.log(window.sodaJSONObj["dataset_metadata"]?.["submission_metadata"]);
+    console.log("Funding agency when opening submission metadata page");
+    console.log(window.sodaJSONObj["funding_agency"]);
+    // Set the funding agency (currently either NIH or Other)
+    const fundingAgency = window.sodaJSONObj["funding_agency"] || "";
     const fundingConsortium =
       window.sodaJSONObj["dataset_metadata"]?.["submission_metadata"]?.["funding_consortium"] || "";
+
     const awardNumber =
       window.sodaJSONObj["dataset_metadata"]?.["submission_metadata"]?.["award_number"] || "";
     const milestoneAchieved =
@@ -106,23 +112,34 @@ export const openPagePrepareMetadata = async (targetPageID) => {
         "milestone_completion_date"
       ] || "";
 
-    setDropdownState("guided-select-funding-agency", fundingAgency);
-    if (fundingAgency === "NIH") {
-      setDropdownState("guided-select-sparc-funding-consortium", fundingConsortium);
-      if (fundingConsortium === "SPARC") {
-        setMilestones(milestoneAchieved);
-        setMilestoneDate(milestoneCompletionDate);
+    if (fundingAgency) {
+      // Set the funding agency dropdown state
+
+      if (fundingAgency === "NIH") {
+        setDropdownState("guided-funding-agency", fundingAgency);
+        setDropdownState("guided-nih-funding-consortium", fundingConsortium);
+        setManualFundingAgency("");
       } else {
-        setMilestones([]);
-        setMilestoneDate(null);
+        setDropdownState("guided-funding-agency", "Other");
+        setDropdownState("guided-nih-funding-consortium", "");
+        setManualFundingAgency(fundingAgency);
       }
     } else {
-      setDropdownState("guided-select-sparc-funding-consortium", "");
-      setOtherFundingAgency(fundingAgency);
+      setDropdownState("guided-funding-agency", "");
+      setDropdownState("guided-nih-funding-consortium", "");
+      setManualFundingAgency("");
+    }
+
+    // If the consortium is SPARC, set the milestones and milestone date
+    if (fundingConsortium === "SPARC") {
+      setMilestones(milestoneAchieved);
+      setMilestoneDate(milestoneCompletionDate);
+    } else {
       setMilestones([]);
       setMilestoneDate(null);
     }
 
+    // Set the award number for all funding agencies
     setAwardNumber(awardNumber);
   }
 

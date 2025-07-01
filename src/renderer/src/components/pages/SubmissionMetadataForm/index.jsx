@@ -42,7 +42,7 @@ import {
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import {
-  setOtherFundingAgency,
+  setManualFundingAgency,
   toggleCompletionDateChecked,
 } from "../../../stores/slices/datasetMetadataSlice";
 
@@ -50,15 +50,15 @@ import DropdownSelect from "../../common/DropdownSelect";
 
 const SubmissionMetadataForm = () => {
   const fundingAgencyDropdownState = useGlobalStore(
-    (state) => state.dropDownState["guided-select-funding-agency"]?.selectedValue
+    (state) => state.dropDownState["guided-funding-agency"]?.selectedValue
   );
   const fundingConsortiumDropdownState = useGlobalStore(
-    (state) => state.dropDownState["guided-select-sparc-funding-consortium"]?.selectedValue
+    (state) => state.dropDownState["guided-nih-funding-consortium"]?.selectedValue
   );
   console.log("fundingAgencyDropdownState", fundingAgencyDropdownState);
   console.log("fundingConsortiumDropdownState", fundingConsortiumDropdownState);
   const completionDateChecked = useGlobalStore((state) => state.completionDateChecked);
-  const otherFundingAgency = useGlobalStore((state) => state.otherFundingAgency);
+  const manualFudingAgency = useGlobalStore((state) => state.manualFudingAgency);
   const awardNumber = useGlobalStore((state) => state.awardNumber);
   const milestones = useGlobalStore((state) => state.milestones || []);
   const milestoneDate = useGlobalStore((state) => state.milestoneDate || null);
@@ -82,7 +82,7 @@ const SubmissionMetadataForm = () => {
         </Text>
       </GuidedModeSection>
       <GuidedModeSection withBorder>
-        <DropdownSelect id="guided-select-funding-agency" />
+        <DropdownSelect id="guided-funding-agency" />
 
         {fundingAgencyDropdownState && (
           <>
@@ -92,23 +92,13 @@ const SubmissionMetadataForm = () => {
                 label="Funding agency name:"
                 placeholder="Enter the name of the funding agency"
                 description="Please specify the name of your funding agency."
-                value={otherFundingAgency}
-                onChange={(event) => setOtherFundingAgency(event.target.value)}
+                value={manualFudingAgency}
+                onChange={(event) => setManualFundingAgency(event.target.value)}
               />
             )}
             {/* Show consortium dropdown only if agency is NIH */}
             {fundingAgencyDropdownState === "NIH" && (
-              <DropdownSelect id="guided-select-sparc-funding-consortium" />
-            )}
-
-            {fundingAgencyDropdownState && (
-              <TextInput
-                label="Award number:"
-                description="The award number issued by the funding agency. Leave blank if not applicable."
-                placeholder="Enter award number"
-                value={awardNumber}
-                onChange={(event) => setAwardNumber(event.target.value)}
-              />
+              <DropdownSelect id="guided-nih-funding-consortium" />
             )}
             {/* SPARC-specific milestone UI (only if NIH/SPARC is selected) */}
             {fundingAgencyDropdownState === "NIH" && fundingConsortiumDropdownState === "SPARC" && (
@@ -120,7 +110,6 @@ const SubmissionMetadataForm = () => {
                   value={milestones}
                   onChange={handleMilestonesChange}
                   clearable
-                  splitChars={[",", ";", " "]}
                   data={[]}
                 />
                 <DateInput
@@ -134,6 +123,16 @@ const SubmissionMetadataForm = () => {
                   description="Enter the completion date associated with the milestone(s). Leave blank if the completion date is not related to a pre-agreed milestone."
                 />
               </>
+            )}
+
+            {fundingAgencyDropdownState && (
+              <TextInput
+                label="Award number:"
+                description="The award number issued by the funding agency. Leave blank if not applicable."
+                placeholder="Enter award number"
+                value={awardNumber}
+                onChange={(event) => setAwardNumber(event.target.value)}
+              />
             )}
           </>
         )}
