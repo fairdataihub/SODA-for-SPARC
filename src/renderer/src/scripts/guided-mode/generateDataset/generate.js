@@ -101,14 +101,13 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       "guided-div-dataset-metadata-pennsieve-genration-status-table"
     );
 
-    await guidedGenerateSubjectsMetadata("Pennsieve");
+    /*await guidedGenerateSubjectsMetadata("Pennsieve");
     await guidedGenerateSamplesMetadata("Pennsieve");
     await guidedGenerateSubmissionMetadata("Pennsieve");
     await guidedGenerateDatasetDescriptionMetadata("Pennsieve");
     await guidedGenerateReadmeMetadata("Pennsieve");
     await guidedGenerateChangesMetadata("Pennsieve");
-
-    await guidedGenerateCodeDescriptionMetadata("Pennsieve");
+    await guidedGenerateCodeDescriptionMetadata("Pennsieve");*/
 
     //Reset Upload Progress Bar and then scroll to it
     setGuidedProgressBarValue("pennsieve", 0);
@@ -220,6 +219,9 @@ const countFilesInDatasetStructure = (datasetStructure) => {
 const trackLocalDatasetGenerationProgress = async (standardizedDatasetStructure) => {
   // Get the number of files that need to be generated to calculate the progress
   const numberOfFilesToGenerate = countFilesInDatasetStructure(standardizedDatasetStructure);
+
+  let userHasBeenScrolledToProgressTable = false;
+
   while (true) {
     try {
       const response = await client.get(`/curate_datasets/curation/progress`);
@@ -268,13 +270,17 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
   guidedResetLocalGenerationUI();
 
   try {
+    // Get the dataset name based on the sodaJSONObj
+    const guidedDatasetName = guidedGetDatasetName(window.sodaJSONObj);
+
     // Create standardized structure
     const standardizedDatasetStructure = createStandardizedDatasetStructure(
       window.datasetStructureJSONObj,
       window.sodaJSONObj["dataset-entity-obj"]
     );
-    console.log("standardizedDatasetStructure", standardizedDatasetStructure);
+    // Set the standardized dataset structure in the global SODA JSON object (used on the backend)
     window.sodaJSONObj["soda_json_structure"] = standardizedDatasetStructure;
+    console.log("standardizedDatasetStructure", standardizedDatasetStructure);
 
     // Prepare progress UI
     setGuidedProgressBarValue("local", 0);
@@ -318,11 +324,15 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
       "if-existing": "new",
       path: filePath,
     };
+
+    // Remove unnecessary key from sodaJSONObjCopy since we don't need to
+    // check if the account details are valid during local generation
     delete sodaJSONObjCopy["ps-account-selected"];
     delete sodaJSONObjCopy["ps-dataset-selected"];
 
     // Prepare dataset structure
     await guidedPrepareDatasetStructureAndMetadataForUpload(sodaJSONObjCopy);
+
     updateDatasetUploadProgressTable("local", {
       "Current action": "Preparing dataset for local generation",
     });
@@ -785,8 +795,6 @@ export const guidedGenerateSubjectsMetadata = async (destination) => {
     guidedUploadStatusIcon(`guided-subjects-metadata-pennsieve-genration-status`, "loading");
   }
 
-  // TODO: SDS3 normalize so that we only use one way of storing dataset name and account name
-  window.sodaJSONObj["dataset_metadata"]["subjects"] = window.subjectsTableData;
   if (!window.sodaJSONObj["ps-account-selected"]) window.sodaJSONObj["ps-account-selected"] = {};
   window.sodaJSONObj["ps-account-selected"]["account-name"] = window.defaultBfAccount;
   window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = guidedGetDatasetName(
@@ -1406,7 +1414,7 @@ const guidedUploadDatasetToPennsieve = async () => {
     //Replace files and folders since guided mode always uploads to an existing Pennsieve dataset
     window.sodaJSONObj["generate-dataset"]["if-existing"] = "merge";
     window.sodaJSONObj["generate-dataset"]["if-existing-files"] = "skip";
-    dataset_name = window.sodaJSONObj["digital-metadata"]["name"];
+    dataset_name = window.sodaJSONObj["pennsieve-dataset-name"];
     window.sodaJSONObj["ps-dataset-selected"] = {};
     window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = dataset_name;
     window.sodaJSONObj["ps-account-selected"]["account-name"] = window.defaultBfAccount;
@@ -1422,7 +1430,7 @@ const guidedUploadDatasetToPennsieve = async () => {
   // create a copy of the window.sodaJSONobj that does not have the dataset_metadata key as it has already been uploaded
   // and we do not want to upload it again
   let datasetUploadObj = JSON.parse(JSON.stringify(window.sodaJSONObj));
-  delete datasetUploadObj["dataset_metadata"];
+  // delete datasetUploadObj["dataset_metadata"];
 
   guidedSetNavLoadingState(true);
   client

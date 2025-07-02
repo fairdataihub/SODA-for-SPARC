@@ -97,16 +97,14 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     // Set the funding agency (currently either NIH or Other)
     const fundingAgency = window.sodaJSONObj["funding_agency"] || "";
     const fundingConsortium =
-      window.sodaJSONObj["dataset_metadata"]?.["submission_metadata"]?.["funding_consortium"] || "";
+      window.sodaJSONObj["dataset_metadata"]?.["submission"]?.["funding_consortium"] || "";
 
     const awardNumber =
-      window.sodaJSONObj["dataset_metadata"]?.["submission_metadata"]?.["award_number"] || "";
+      window.sodaJSONObj["dataset_metadata"]?.["submission"]?.["award_number"] || "";
     const milestoneAchieved =
-      window.sodaJSONObj["dataset_metadata"]?.["submission_metadata"]?.["milestone_achieved"] || [];
+      window.sodaJSONObj["dataset_metadata"]?.["submission"]?.["milestone_achieved"] || [];
     const milestoneCompletionDate =
-      window.sodaJSONObj["dataset_metadata"]?.["submission_metadata"]?.[
-        "milestone_completion_date"
-      ] || "";
+      window.sodaJSONObj["dataset_metadata"]?.["submission"]?.["milestone_completion_date"] || "";
 
     if (fundingAgency) {
       // Set the funding agency dropdown state

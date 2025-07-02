@@ -93,20 +93,20 @@ export const openPageGenerateDataset = async (targetPageID) => {
       generateOrRetryDatasetUploadButton.innerHTML = generateButtonText;
       reviewGenerateButtonTextElement.innerHTML = generateButtonText;
     }
-
-    const datsetName = window.sodaJSONObj["digital-metadata"]["name"];
-    const datsetSubtitle = window.sodaJSONObj["digital-metadata"]["subtitle"];
+    const pennsieveDatasetName = window.sodaJSONObj["pennsieve-dataset-name"];
+    const pennsieveDatasetSubtitle = window.sodaJSONObj["pennsieve-dataset-subtitle"];
 
     const datasetLicense = window.sodaJSONObj["digital-metadata"]["license"];
 
-    const datasetNameReviewText = document.getElementById("guided-review-dataset-name");
-
-    const datasetSubtitleReviewText = document.getElementById("guided-review-dataset-subtitle");
+    const pennsieveDatasetNameReviewText = document.getElementById("guided-review-dataset-name");
+    const pennsieveDatasetSubtitleReviewText = document.getElementById(
+      "guided-review-dataset-subtitle"
+    );
 
     const datasetLicenseReviewText = document.getElementById("guided-review-dataset-license");
 
-    datasetNameReviewText.innerHTML = datsetName;
-    datasetSubtitleReviewText.innerHTML = datsetSubtitle;
+    pennsieveDatasetNameReviewText.innerHTML = pennsieveDatasetName;
+    pennsieveDatasetSubtitleReviewText.innerHTML = pennsieveDatasetSubtitle;
 
     datasetLicenseReviewText.innerHTML = datasetLicense;
 

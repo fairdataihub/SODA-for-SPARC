@@ -40,7 +40,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
   }
   if (pageBeingLeftID === "guided-resources-entity-addition-tab") {
     const resourceList = useGlobalStore.getState()["resourceList"];
-    window.sodaJSONObj["dataset_metadata"]["resources_metadata"] = resourceList;
+    window.sodaJSONObj["dataset_metadata"]["resources"] = resourceList;
   }
 
   if (pageBeingLeftID === "guided-subjects-metadata-tab") {
@@ -49,7 +49,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       return subject.metadata;
     });
     console.log("subjectsMetadata", subjectsMetadata);
-    window.sodaJSONObj["dataset_metadata"]["subjects_metadata"] = subjectsMetadata;
+    window.sodaJSONObj["dataset_metadata"]["subjects"] = subjectsMetadata;
   }
 
   if (pageBeingLeftID === "guided-samples-metadata-tab") {
@@ -59,7 +59,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       return sample.metadata;
     });
     console.log("samplesMetadata", samplesMetadata);
-    window.sodaJSONObj["dataset_metadata"]["samples_metadata"] = samplesMetadata;
+    window.sodaJSONObj["dataset_metadata"]["samples"] = samplesMetadata;
   }
 
   if (pageBeingLeftID === "guided-submission-metatdata-tab") {
@@ -97,17 +97,14 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     }
 
     // Prepare the submission metadata
-    window.sodaJSONObj["dataset_metadata"]["submission_metadata"] = {
+    window.sodaJSONObj["dataset_metadata"]["submission"] = {
       consortium_data_standard: "SPARC", // Hardcoded for now (SODA only supports SPARC data standard)
       funding_consortium: fundingConsortium,
       award_number: awardNumber,
       milestone_achieved: milestonesAchieved,
       milestone_completion_date: milestoneCompletionDate,
     };
-    console.log(
-      "submission_metadata",
-      window.sodaJSONObj["dataset_metadata"]["submission_metadata"]
-    );
+    console.log("submission metadata", window.sodaJSONObj["dataset_metadata"]["submission"]);
     console.log("fundingAgency", fundingAgency);
 
     // Save the funding agency name for the dataset_description metadata
@@ -124,10 +121,10 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     const title = getGuidedDatasetName();
     const subtitle = getGuidedDatasetSubtitle();
 
-    const subjectsMetadata = window.sodaJSONObj["dataset_metadata"]["subjects_metadata"];
-    const samplesMetadata = window.sodaJSONObj["dataset_metadata"]["samples_metadata"];
-    const sitesMetadata = window.sodaJSONObj["dataset_metadata"]["sites_metadata"];
-    const performancesMetadata = window.sodaJSONObj["dataset_metadata"]["performance_metadata"];
+    const subjectsMetadata = window.sodaJSONObj["dataset_metadata"]["subjects"];
+    const samplesMetadata = window.sodaJSONObj["dataset_metadata"]["samples"];
+    const sitesMetadata = window.sodaJSONObj["dataset_metadata"]["sites"];
+    const performancesMetadata = window.sodaJSONObj["dataset_metadata"]["performances"];
 
     const numSubjects = subjectsMetadata ? subjectsMetadata.length : 0;
     const numSamples = samplesMetadata ? samplesMetadata.length : 0;
