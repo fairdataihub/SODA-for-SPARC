@@ -171,14 +171,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     let dataset_name = fill_info_details();
     window.datasetStructureJSONObj["files"] = window.sodaJSONObj["metadata-files"];
     window.datasetStructureJSONObj["folders"] = window.sodaJSONObj["dataset-structure"]["folders"];
-    window.showTreeViewPreview(
-      false,
-      false,
-      false,
-      dataset_name,
-      window.jstreePreview,
-      window.datasetStructureJSONObj
-    );
+
     $("#Question-preview-dataset-details").show();
     $("#Question-preview-dataset-details").children().show();
     $("#Question-generate-dataset-generate-div").show();
@@ -261,6 +254,15 @@ const fill_info_details = () => {
       "Skip",
       1,
       "Question-generate-dataset-existing-folders-options",
+      true
+    );
+  } else {
+    // generating a new dataset show local dataset path
+    addCardDetail(
+      "Local dataset path",
+      document.getElementById("org-dataset-folder-path").innerHTML,
+      1,
+      "Question-getting-started-1",
       true
     );
   }

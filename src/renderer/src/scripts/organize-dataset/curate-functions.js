@@ -26,7 +26,6 @@ while (!window.baseHtmlLoaded) {
 }
 
 var metadataFile = "";
-window.jstreePreview = document.getElementById("div-dataset-tree-preview");
 window.nonAllowedCharacters = '<>:",;[]{}^`~@/|?*$=!%&+#\\';
 
 // Event listeners for opening the dropdown prompt
