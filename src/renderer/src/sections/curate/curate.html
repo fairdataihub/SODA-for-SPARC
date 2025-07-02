@@ -62,9 +62,9 @@
     <header class="section-header" style="margin-top: 1rem">
       <div class="container-tab-information-header" style="margin-bottom: 0 !important">
         <div class="need-help-div">
-          <h2>Upload Dataset</h2>
+          <h2 style="font-size: 16px">Upload Dataset</h2>
           <a target="_blank"
-            href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/prepare-dataset/organize-dataset">Need help?</a>
+            href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/prepare-dataset/organize-dataset" style="font-size: 16px;">Need help?</a>
         </div>
       </div>
     </header>
@@ -159,7 +159,7 @@
               style="text-align: -webkit-center; height: 100%">
               <div class="ui form" style="width: 100%; text-align: -webkit-center; height: 100%">
                 <div class="grouped fields" style="height: 90%; padding-top: 2rem">
-                  <label style="font-size: 17px; text-align: center; color: var(--color-bg-plum)">Where is the dataset folder located?</label>
+                  <label style="font-size: 18px; text-align: center; color: var(--color-bg-plum)">Where is the dataset folder located?</label>
 
                   <div
                     id="drag-n-drop-container"
@@ -175,7 +175,7 @@
                         </svg>
                         <p style="text-align: center; font-size: 15px; color: black; font-weight: 600; margin-top: 2rem">Drag and drop the folder here <br> or </p>
                         <button
-                          style="border-radius: 4px; height: 30px; width: 150px; background-color: #13716D; color: white; border: none"
+                          style="border-radius: 4px; height: 30px; width: 150px; background-color: #13716D; color: white; border: none; font-size: 15px;"
                           onclick="window.uploadDatasetClickHandler()"
                         >Browse Computer</button>
                     </div>
@@ -448,12 +448,12 @@
               margin-right: 50px;
             ">
             <div class="container-body condensed" style="height: 40%; flex-direction: column; align-items: center;">
-              <label id="help-text-account-workspace" style="font-size: 17px; text-align: center; font-weight: 700; color: var(--color-bg-plum)">Are these the Pennsieve account and workspace you would like to use for the upload?</label>
+              <label id="help-text-account-workspace" style="font-size: 18px; text-align: center; font-weight: 700; color: var(--color-bg-plum)">Are these the Pennsieve account and workspace you would like to use for the upload?</label>
               <div id="top-level-card-container--upload-dataset" class="top-level-card-container"></div>
               <div style="display: flex; flex-direction: row; justify-content: space-evenly; width: 550px;">
-                <button class="ui positive basic soda-green-border button guided--radio-button" style="min-width: 10rem;" id="confirm-account-workspace">Confirm</button>
-                <button class="ui negative basic button guided--radio-button" id="change-account-btn">Change Account</button>
-                <button class="ui negative basic button guided--radio-button" id="change-workspace-btn">Change Workspace</button>
+                <button class="ui positive basic soda-green-border button guided--radio-button" style="min-width: 10rem; font-size: 15px;" id="confirm-account-workspace">Confirm</button>
+                <button class="ui negative basic button guided--radio-button" id="change-account-btn" style="font-size: 15px;">Change Account</button>
+                <button class="ui negative basic button guided--radio-button" id="change-workspace-btn" style="font-size: 15px;">Change Workspace</button>
               </div>
             </div>
 
@@ -485,7 +485,7 @@
           <!-- 3. Upload Destination Selection Tab -->
           <div class="parent-tabs condensed" id="upload-destination-selection-tab"
             style="grid-template-rows: auto; padding-right: 10px">
-            <label style="margin-top: 2rem; font-size: 17px; text-align: center; font-weight: 700; color: var(--color-bg-plum)">Do you want to upload to a new or existing Pennsieve dataset?</label>
+            <label style="margin-top: 2rem; font-size: 18px; text-align: center; font-weight: 700; color: var(--color-bg-plum)">Do you want to upload to a new or existing Pennsieve dataset?</label>
             <div style="display: flex; flex-direction: row; align-self: center; margin-top: 3rem;">
               <div id="dataset-upload-new-dataset" class="option-card radio-button getting-started-1st-question" style="margin-right: 5rem">
                 <div class="card-head">
@@ -498,7 +498,7 @@
                   <svg width="45" height="40" viewBox="0 0 45 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M23.4168 31.25C23.4168 31.9583 23.5001 32.6458 23.6043 33.3333H4.66679C3.56172 33.3333 2.50191 32.8943 1.72051 32.1129C0.939109 31.3315 0.500122 30.2717 0.500122 29.1667V4.16667C0.500122 1.85417 2.35429 0 4.66679 0H17.1668L21.3335 4.16667H38.0001C39.1052 4.16667 40.165 4.60565 40.9464 5.38705C41.7278 6.16846 42.1668 7.22826 42.1668 8.33333V20.4375C40.896 19.7083 39.5001 19.2083 38.0001 18.9375V8.33333H4.66679V29.1667H23.6043C23.5001 29.8542 23.4168 30.5417 23.4168 31.25ZM38.0001 29.1667V22.9167H33.8335V29.1667H27.5835V33.3333H33.8335V39.5833H38.0001V33.3333H44.2501V29.1667H38.0001Z" fill="#13716D"/>
                     </svg>
-                  <h2>New dataset</h2>
+                  <h2 style="font-size: 15px;">New dataset</h2>
                 </div>
               </div>
               <div id="dataset-upload-existing-dataset" class="option-card radio-button getting-started-1st-question">
@@ -512,7 +512,7 @@
                   <svg xmlns="http://www.w3.org/2000/svg" width="5rem" height="4rem" viewBox="0 0 24 24">
                     <path fill="#13716D" d="M3.616 19.77q-.667 0-1.141-.475T2 18.154V7.077h1v11.077q0 .269.173.442t.443.173H19v1zm3-3q-.667 0-1.141-.475T5 15.154V4.616q0-.667.475-1.142T6.615 3h4.962l2 2h6.808q.666 0 1.14.475T22 6.615v8.539q0 .666-.475 1.14t-1.14.475z"></path>
                   </svg>
-                  <h2>Existing dataset</h2>
+                  <h2 style="font-size: 15px;">Existing dataset</h2>
                 </div>
               </div>
             </div>
@@ -528,7 +528,7 @@
               <div class="individual-question generate-dataset test2 show" id="Question-generate-dataset-ps-dataset" style="width: 100%; margin: 0; align-self: center; display: flex !important">
                 <div class="ui form" style="width: 100%">
                   <div class="grouped fields">
-                    <label style="font-size: 17px; color: var(--color-bg-plum)">Which existing Pennsieve dataset
+                    <label style="font-size: 18px; color: var(--color-bg-plum)">Which existing Pennsieve dataset
                       would you like to use?</label>
                     <div class="field prepare-metadata-card-field">
                       <div style="
@@ -649,7 +649,7 @@
               class="hidden"
               style="margin-top: 5rem; display: flex; flex-direction: column; align-self: center;"
             >
-              <label class="w-100 text-center" style="font-weight: 700; font-size: 17px; color: var(--color-bg-plum)">How would you like to name the new dataset?</label>
+              <label class="w-100 text-center" style="font-weight: 700; font-size: 18px; color: var(--color-bg-plum)">How would you like to name the new dataset?</label>
               <div class="field justify-center"
                 style="margin-top: 2rem; display: flex; flex-direction: column; align-items: center">
                 <input type="text" class="form-control"
@@ -663,7 +663,7 @@
                   style="
                     margin-top: 1rem;
                     font-weight: 600;
-                    font-size: 14px;
+                    font-size: 15px;
                   ">
                   Confirm
                 </button>
@@ -979,14 +979,14 @@
 
           <!-- 4. Manifest files -->
           <div class="parent-tabs condensed" id="manifest-file-tab" style="grid-template-rows: 10% 90%">
-            <label class="w-100 text-center" style="margin-top: 2.5rem; font-weight: 700; font-size: 17px; color: var(--color-bg-plum)">Would you like SODA to auto-generate your manifest files?</label>
+            <label class="w-100 text-center" style="margin-top: 2.5rem; font-weight: 700; font-size: 18px; color: var(--color-bg-plum)">Would you like SODA to auto-generate your manifest files?</label>
             <div id="manifest-intro-info" class="hidden" style="padding-left: 2rem; padding-right: 2rem; margin-top: 1rem; display: flex; place-content: center">
-              <p id="manifest-not-selected" class="guided--help-text">Manifest files are metadata files required in each of the high-level SDS folders. SODA can automatically generate them for your dataset.</p>
+              <p id="manifest-not-selected" class="guided--help-text" style="font-size: 15px; font-weight: 600;">Manifest files are metadata files required in each of the high-level SDS folders. SODA can automatically generate them for your dataset.</p>
             </div>
 
             <div style="height: 150px; text-align: center">
               <div style="margin-top: 30px; margin-bottom: 50px" id="pulse-manifest-checkbox">
-                <label class="labelradiocurate-manifest no" style="padding-left: 10px">
+                <label class="labelradiocurate-manifest no" style="padding-left: 10px; font-size: 16px;">
                   No
                 </label>
                 <label class="switch">
@@ -994,12 +994,12 @@
                     onclick="window.updateManifestLabelColor(this)" />
                   <span class="slider round manifest" style="width: 60px; height: 30px"></span>
                 </label>
-                <label class="labelradiocurate-manifest yes" style="padding-left: 10px" id="label-manifest">
+                <label class="labelradiocurate-manifest yes" style="padding-left: 10px; font-size: 16px;" id="label-manifest">
                   Yes
                 </label>
               </div>
               <div id="manifest-information-container" class="hidden" style="margin-left: 1rem; margin-right: 2rem; display: flex; place-content: center;">
-                <p id="manifest-selected" class="guided--help-text">You can preview below the manifest files that will be automatically included by SODA in each of the SDS folders. You can also suggest edits that will be incorporated by SODA</p>
+                <p id="manifest-selected" class="guided--help-text" style="font-size: 15px; font-weight: 600; margin-left: 1%;">You can preview below the manifest files that will be automatically included by SODA in each of the SDS folders. You can also suggest edits that will be incorporated by SODA</p>
               </div>
 
               <div class="guided--panel mt-0 hidden" id="manifest-creating-loading">
@@ -1040,7 +1040,7 @@
                       color: var(--color);
                       font-size: 15px;
                       margin-top: 20px;
-                      font-weight: 200;
+                      font-weight: 600;
                     ">
                     You can create a local copy of your manifest files for review. Click <a id="ffm-button-generate-manifest-files-locally">here</a> to do so if needed.
                   </h5>
@@ -1075,9 +1075,9 @@
           <!-- 5. Preview dataset -->
           <div class="parent-tabs" id="preview-dataset-tab" style="overflow-y: scroll">
             <h3 class="question-title" style="
-                color: black;
-                font-weight: 600;
-                font-size: 15px;
+                color: var(--color-bg-plum);
+                font-weight: 700;
+                font-size: 18px;
                 text-align: center;
                 margin-top: 20px;
                 padding-bottom: 0px;
@@ -1105,7 +1105,7 @@
                       " id="div-preview-dataset-details">
                       <div style="margin-bottom: 10px" id="div-dataset-preview">
                         <div style="display: flex; justify-content: center">
-                          <h4 style="width: 100%; text-align: center; color: #000">
+                          <h4 style="width: 100%; text-align: center; color: #000; font-size: 16px;">
                             Current dataset structure
                           </h4>
                           <i class="far fa-edit jump-back" onclick="window.traverse_back(4)" style="color: #000"></i>
@@ -1114,7 +1114,7 @@
                         <div id="div-dataset-tree-preview">js tree here.</div>
                       </div>
                       <br />
-                      <h4 style="width: 100%; text-align: center; color: #000; margin-bottom: 30px">
+                      <h4 style="width: 100%; text-align: center; color: #000; margin-bottom: 30px; font-size: 16px;">
                         Other dataset information
                       </h4>
                       <div id="other-dataset-information-container">

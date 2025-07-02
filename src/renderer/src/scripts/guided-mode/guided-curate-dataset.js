@@ -7,7 +7,6 @@ import {
   addContributor,
   renderDatasetDescriptionContributorsTable,
 } from "./metadata/contributors";
-import { renderManifestCards } from "./manifests/manifest";
 import { generateAlertElement } from "./metadata/utils";
 import determineDatasetLocation from "../analytics/analytics-utils";
 import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
@@ -118,19 +117,6 @@ const guidedMovePennsieveFolder = (movedFolderName, folderJSONPath, newFolderJSO
   window.addMovedRecursively(folderJSONPath);
   newFolderJSONPath["folders"][movedFolderName] = folderJSONPath;
 };
-
-/* 
-document.getElementById("guided-button-dataset-contains-code").addEventListener("click", () => {
-  const codeFolder = window.datasetStructureJSONObj["folders"]["code"];
-  if (codeFolder) {
-    if (folderImportedFromPennsieve(codeFolder)) {
-      // If the code folder is imported from Pennsieve, unmark it as deleted
-      guidedModifyPennsieveFolder(codeFolder, "restore");
-      // NOTE: We do not need to update the UI since this button is not on the ui structuring page
-    }
-  }
-});
-*/
 
 window.getDatasetEntityObj = getDatasetEntityObj;
 
@@ -388,7 +374,6 @@ window.guidedOpenManifestEditSwal = async () => {
 
       window.sodaJSONObj["guided-manifest-file-data"] = { headers: result[0], data: result[1] };
       await guidedSaveProgress();
-      renderManifestCards();
     }
   });
 };

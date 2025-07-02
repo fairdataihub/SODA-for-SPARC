@@ -2946,6 +2946,8 @@ window.updateJSONStructureGenerate = (sodaJSONObject) => {
   if (sodaJSONObject["starting-point"]["origin"] == "local") {
     sodaJSONObject["starting-point"]["origin"] = "new";
   }
+
+  if (!sodaJSONObject["dataset_metadata"]) sodaJSONObject["dataset_metadata"] = {};
 };
 
 const updateJSONStructureBfDestination = () => {

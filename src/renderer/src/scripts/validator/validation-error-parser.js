@@ -420,26 +420,3 @@ const ValidationErrorParser = {
 };
 
 export { ValidationErrorParser };
-
-//"None of
-// [{'contributor_name': 'Jeff, Salisbury',
-// 'contributor_affiliation': '<', 'contributor_role': ['PrincipalInvestigator']},
-// {'contributor_role': ['CorrespondingAuthor']}] are valid under the given schema"
-
-/*
-
-"None of [{'contributor_name': 'Jeff, Salisbury', 'contributor_affiliation': '<', 
-          'contributor_role': ['PrincipalInvestigator']}, 
-          {'contributor_role': ['CorrespondingAuthor']}] are valid under the given schema"
-
-
-"None of [{'contributor_name': 'Jeff, Salisbury', 'contributor_affiliation': '<', 
-        'contributor_role': ['PrincipalInvestigator'], 'first_name': 'Salisbury', 
-        'last_name': 'Jeff', 
-        'id': 'file:///C:/Users/CMarroquin/temp-datasets/DatasetTemplate/contributors/Salisbury-Jeff'}, 
-        {'contributor_name': 'Wallop, San', 'contributor_affiliation': '>>', 
-        'contributor_role': ['CorrespondingAuthor'], 'first_name': 'San', 'last_name': 'Wallop', 
-        'id': 'file:///C:/Users/CMarroquin/temp-datasets/DatasetTemplate/contributors/San-Wallop'}] 
-        are valid under the given schema"
-
-*/

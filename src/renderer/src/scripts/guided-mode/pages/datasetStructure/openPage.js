@@ -6,7 +6,6 @@ import {
 } from "../../../../stores/slices/guidedModeSlice";
 import { setTreeViewDatasetStructure } from "../../../../stores/slices/datasetTreeViewSlice";
 import { guidedUpdateFolderStructureUI } from "./utils";
-import { renderManifestCards } from "../../manifests/manifest";
 import { swalFileListSingleAction } from "../../../utils/swal-utils";
 import { getEntityDataById } from "../../../../stores/slices/datasetEntityStructureSlice";
 import { createStandardizedDatasetStructure } from "../../../utils/datasetStructure";
@@ -159,11 +158,6 @@ export const openPageDatasetStructure = async (targetPageID) => {
     };
 
     deleteEmptyFolders(window.datasetStructureJSONObj);
-
-    document.getElementById("guided-container-manifest-file-cards").innerHTML = `
-      <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-      Updating your dataset's manifest files...
-    `;
 
     // Create a standardized SODA JSON object for the clean-dataset endpoint
     const standardizedStructure = createStandardizedDatasetStructure(
@@ -366,8 +360,6 @@ export const openPageDatasetStructure = async (targetPageID) => {
           window.sodaJSONObj["guided-manifest-file-data"]
         )
       : newManifestData;
-
-    renderManifestCards();
   }
 
   if (targetPageID === "dataset-structure-review-tab") {

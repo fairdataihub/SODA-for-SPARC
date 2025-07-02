@@ -26,6 +26,15 @@ let contactHeartLottie = lottie.loadAnimation({
   autoplay: true,
 });
 
+let madeWithLoveContainerAbout = document.getElementById("made-with-love-lottie-about");
+let contactHeartLottieAbout = lottie.loadAnimation({
+  container: madeWithLoveContainerAbout,
+  animationData: heartLottie,
+  renderer: "svg",
+  loop: true,
+  autoplay: true,
+});
+
 let contact_us_lottie_observer = new MutationObserver(function (mutations) {
   mutations.forEach(function (mutation) {
     let attributeValue = mutation.target.getAttribute(mutation.attributeName);
@@ -43,6 +52,25 @@ let contact_us_lottie_observer = new MutationObserver(function (mutations) {
 
 let contact_section = document.getElementById("contact-us-section");
 contact_us_lottie_observer.observe(contact_section, {
+  attributes: true,
+  attributeFilter: ["class"],
+});
+
+let about_us_lottie_observer = new MutationObserver(function (mutations) {
+  mutations.forEach(function (mutation) {
+    let attributeValue = mutation.target.getAttribute(mutation.attributeName);
+    if (attributeValue.includes("is-shown")) {
+      //play lottie
+      contactHeartLottieAbout.play();
+    } else {
+      //stop lottie to preserve memory
+      contactHeartLottieAbout.stop();
+    }
+  });
+});
+
+let about_section = document.getElementById("about-us-section");
+about_us_lottie_observer.observe(about_section, {
   attributes: true,
   attributeFilter: ["class"],
 });
