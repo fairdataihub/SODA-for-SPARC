@@ -208,7 +208,7 @@ const fill_info_details = () => {
   addCardDetail(
     "Pennsieve account",
     $("#current-ps-account").text(),
-    1,
+    3,
     "Question-generate-dataset-ps-account",
     true
   );
@@ -217,7 +217,7 @@ const fill_info_details = () => {
   addCardDetail(
     "Pennsieve dataset name",
     $("#inputNewNameDataset-upload-dataset").val().trim(),
-    1,
+    2,
     "inputNewNameDataset",
     true
   );
@@ -228,7 +228,7 @@ const fill_info_details = () => {
     addCardDetail(
       "For existing folders",
       "Create a duplicate",
-      1,
+      2,
       "Question-generate-dataset-existing-folders-options",
       true
     );
@@ -236,7 +236,7 @@ const fill_info_details = () => {
     addCardDetail(
       "For existing folders",
       "Replace",
-      1,
+      2,
       "Question-generate-dataset-existing-folders-options",
       true
     );
@@ -244,7 +244,7 @@ const fill_info_details = () => {
     addCardDetail(
       "For existing folders",
       "Merge",
-      1,
+      2,
       "Question-generate-dataset-existing-folders-options",
       true
     );
@@ -252,7 +252,7 @@ const fill_info_details = () => {
     addCardDetail(
       "For existing folders",
       "Skip",
-      1,
+      2,
       "Question-generate-dataset-existing-folders-options",
       true
     );
@@ -261,7 +261,7 @@ const fill_info_details = () => {
     addCardDetail(
       "Local dataset path",
       document.getElementById("org-dataset-folder-path").innerHTML,
-      1,
+      4,
       "Question-getting-started-1",
       true
     );
