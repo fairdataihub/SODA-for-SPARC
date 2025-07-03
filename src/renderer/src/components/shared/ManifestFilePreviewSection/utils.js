@@ -42,29 +42,21 @@ export const handleOrganizeDsGenerateLocalManifestCopyButtonClick = async () => 
   // Step 6: Extract manifest file data from the sodaCopy object
   const manifestFileData = window.sodaCopy["manifest-files"];
 
-  // Step 7: Iterate over folders with manifest data
-  const foldersWithManifestData = Object.keys(manifestFileData);
-  for (const folder of foldersWithManifestData) {
-    // Step 7.1: Process manifest data and convert it to JSON
-    const manifestJSON = window.processManifestInfo(
-      manifestFileData[folder]["headers"],
-      manifestFileData[folder]["data"]
-    );
+  console.log("Manifest File Data:", manifestFileData);
 
-    // Step 7.2: Convert JSON manifest to a string
-    const jsonManifest = JSON.stringify(manifestJSON);
+  const manifestJSON = window.processManifestInfo(
+    manifestFileData["headers"],
+    manifestFileData["data"]
+  );
 
-    // Step 7.3: Define the path for the manifest file
-    const manifestPath = window.path.join(manifestFolderSavePath, folder, "manifest.xlsx");
+  const jsonManifest = JSON.stringify(manifestJSON);
 
-    // Step 7.4: Create necessary directories
-    window.fs.mkdirSync(window.path.join(manifestFolderSavePath, folder), {
-      recursive: true,
-    });
+  const manifestPath = window.path.join(manifestFolderSavePath, "manifest.xlsx");
 
-    // Step 7.5: Convert JSON manifest to an Excel file and save it
-    window.convertJSONToXlsx(JSON.parse(jsonManifest), manifestPath);
-  }
+  window.fs.mkdirSync(manifestFolderSavePath, { recursive: true });
+
+  // Create the manifest file
+  window.convertJSONToXlsx(JSON.parse(jsonManifest), manifestPath);
 
   // Step 8: Display a success notification
   window.notyf.open({

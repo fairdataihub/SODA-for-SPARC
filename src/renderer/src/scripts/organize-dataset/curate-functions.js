@@ -2348,20 +2348,12 @@ window.ffOpenManifestEditSwal = async () => {
   let saveManifestFiles = false;
   // Function for when user wants to edit the manifest cards
   const existingManifestData = window.sodaCopy["manifest-files"];
-
-  let ffmManifestContainer = document.getElementById("ffm-container-manifest-file-cards").children;
-  //Lock manifest buttons
-  for (let i = 0; i < ffmManifestContainer.length; i++) {
-    ffmManifestContainer[i].children[1].children[0].disabled = true;
-  }
+  console.log("existingManifestData", existingManifestData);
 
   window.electron.ipcRenderer.invoke("spreadsheet", existingManifestData);
 
   //upon receiving a reply of the spreadsheet, handle accordingly
   window.electron.ipcRenderer.on("spreadsheet-reply", async (event, result) => {
-    for (let i = 0; i < ffmManifestContainer.length; i++) {
-      ffmManifestContainer[i].children[1].children[0].disabled = false;
-    }
     if (!result || result === "") {
       window.electron.ipcRenderer.removeAllListeners("spreadsheet-reply");
       return;
@@ -2519,7 +2511,7 @@ window.ffmCreateManifest = async (sodaJson) => {
 
     if (manifestFileData.length > 1) {
       const manifestHeader = manifestFileData.shift();
-      newManifestData["primary"] = {
+      newManifestData = {
         headers: manifestHeader,
         data: manifestFileData,
       };
