@@ -173,7 +173,7 @@ const getDatasetDOI = async (dataset) => {
 };
 
 const getDatasetsForAccount = async () => {
-  let responseObject = await client.get(`manage_datasets/bf_dataset_account`);
+  let responseObject = await client.get(`manage_datasets/fetch_user_datasets`);
 
   let { datasets } = responseObject.data;
 

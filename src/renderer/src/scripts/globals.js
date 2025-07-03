@@ -987,7 +987,7 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
         gettingStartedPennsieveBtn.children[1].style.display = "flex";
 
         try {
-          let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
+          let responseObject = await client.get(`manage_datasets/fetch_user_datasets`, {
             params: {
               selected_account: bfacct,
             },
@@ -1469,7 +1469,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       if (window.datasetList.length === 0) {
         let responseObject;
         try {
-          responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
+          responseObject = await client.get(`manage_datasets/fetch_user_datasets`, {
             params: {
               selected_account: window.defaultBfAccount,
             },

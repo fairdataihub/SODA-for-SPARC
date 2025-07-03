@@ -5999,7 +5999,7 @@ const initiate_generate = async (resume = false) => {
 
       // update dataset list; set the dataset id and int id
       try {
-        let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
+        let responseObject = await client.get(`manage_datasets/fetch_user_datasets`, {
           params: {
             selected_account: window.defaultBfAccount,
           },
@@ -6176,7 +6176,7 @@ const initiate_generate = async (resume = false) => {
 
       // update the dataset list
       try {
-        let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
+        let responseObject = await client.get(`manage_datasets/fetch_user_datasets`, {
           params: {
             selected_account: window.defaultBfAccount,
           },

@@ -4,7 +4,7 @@ from manageDatasets import (
     submit_dataset_progress,
     bf_add_account_api_key,
     bf_account_list,
-    bf_dataset_account,
+    fetch_user_datasets,
     bf_account_details,
     bf_submit_dataset,
     create_new_dataset,
@@ -454,7 +454,7 @@ model_account_datasets_list_response = api.model('AccountDatasetsResponse', {
   'datasets': fields.List(fields.Nested(model_account_dataset), required=True, description="List of the datasets in the user's organization."),
 })
 
-@api.route('/bf_dataset_account')
+@api.route('/fetch_user_datasets')
 class BfDatasetAccount(Resource):
 
   
@@ -463,7 +463,7 @@ class BfDatasetAccount(Resource):
   def get(self):
     try:
 
-      return bf_dataset_account()
+      return fetch_user_datasets()
     except Exception as e:
       api.logger.exception(e)
       if notBadRequestException(e):

@@ -285,7 +285,7 @@ def bf_get_accounts():
 
 
 
-def bf_dataset_account():
+def fetch_user_datasets():
     """
     This function filters dataset dropdowns across SODA by the permissions granted to users.
 

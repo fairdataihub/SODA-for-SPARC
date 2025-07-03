@@ -1622,7 +1622,7 @@ const guidedUploadDatasetToPennsieve = async () => {
       $("#guided-next-button").css("visibility", "visible");
 
       try {
-        let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
+        let responseObject = await client.get(`manage_datasets/fetch_user_datasets`, {
           params: {
             selected_account: window.defaultBfAccount,
           },
@@ -1751,7 +1751,7 @@ const guidedUploadDatasetToPennsieve = async () => {
       );
 
       try {
-        let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
+        let responseObject = await client.get(`manage_datasets/fetch_user_datasets`, {
           params: {
             selected_account: window.defaultBfAccount,
           },

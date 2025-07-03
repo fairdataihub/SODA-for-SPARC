@@ -3,7 +3,7 @@ from .manage_datasets import (
     submit_dataset_progress,
     bf_add_account_api_key,
     bf_account_list,
-    bf_dataset_account,
+    fetch_user_datasets,
     bf_account_details,
     bf_submit_dataset,
     create_new_dataset,
