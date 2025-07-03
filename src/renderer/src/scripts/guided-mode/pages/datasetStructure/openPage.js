@@ -182,10 +182,7 @@ export const openPageDatasetStructure = async (targetPageID) => {
     );
 
     const responseData = response.data.soda;
-    console.log("keys in responseData: ", Object.keys(responseData));
 
-    console.log("Response from clean-dataset: ", response);
-    console.log("Response data" + JSON.stringify(response, null, 2));
     const manifestRes = (
       await client.post(
         "/curate_datasets/generate_manifest_file_data",
