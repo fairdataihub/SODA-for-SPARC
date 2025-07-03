@@ -171,7 +171,7 @@ window.uploadDatasetDropHandler = async (ev) => {
       } else {
         Swal.fire({
           icon: "warning",
-          html: `This dataset is not following the SPARC Dataset Structure (SDS). It is expected that each of the high-level folders in this dataset is named after one of the SDS folders.
+          html: `2This dataset is not following the SPARC Dataset Structure (SDS). It is expected that each of the high-level folders in this dataset is named after one of the SDS folders.
           <br/>
           See the "Data Organization" section of the SPARC documentation for more 
           <a target="_blank" href="https://docs.sparc.science/docs/overview-of-sparc-dataset-format">details</a>`,
@@ -2343,107 +2343,16 @@ const renderFFManifestCards = () => {
   window.smoothScrollToElement(manifestFilesCardsContainer);
 };
 
-const handleOrganizeDsGenerateLocalManifestCopyButtonClick = async () => {
-  // Step 1: Prompt the user to select a folder to save the dataset
-  const savePath = await window.electron.ipcRenderer.invoke(
-    "open-folder-path-select",
-    "Select a folder to save the manifest files to"
-  );
-
-  // Step 2: Check if a save path was selected
-  if (!savePath) {
-    // If no path selected, exit the function
-    return;
-  }
-
-  // Step 3: Define the base folder name for the manifest files
-  let manifestFolderName = "SODA Manifest Files";
-
-  // Step 4: Function to generate a unique folder path for the manifest files
-  const generateManifestFolderSavePath = () => {
-    // If the selected save path already contains a "SODA Manifest Files" directory, append a number to the folder name
-    // Otherwise, return the selected save path as is
-
-    // Step 4.1: Check if the "SODA Manifest Files" directory already exists at the selected save path
-    if (window.fs.existsSync(window.path.join(savePath, manifestFolderName))) {
-      let i = 1;
-
-      // Step 4.2: If the directory with the original name already exists, increment the number until a unique name is found
-      while (window.fs.existsSync(window.path.join(savePath, `${manifestFolderName} (${i})`))) {
-        i++;
-      }
-
-      // Step 4.3: Return the path with the incremented folder name
-      return window.path.join(savePath, `${manifestFolderName} (${i})`);
-    } else {
-      // Step 4.4: If the original directory does not exist, return the selected save path with the original folder name
-      return window.path.join(savePath, manifestFolderName);
-    }
-  };
-
-  // Step 5: Generate the unique folder path for the manifest files
-  const manifestFolderSavePath = generateManifestFolderSavePath();
-
-  // Step 6: Extract manifest file data from the sodaCopy object
-  const manifestFileData = window.sodaCopy["manifest-files"];
-
-  // Step 7: Iterate over folders with manifest data
-  const foldersWithManifestData = Object.keys(manifestFileData);
-  for (const folder of foldersWithManifestData) {
-    // Step 7.1: Process manifest data and convert it to JSON
-    const manifestJSON = window.processManifestInfo(
-      manifestFileData[folder]["headers"],
-      manifestFileData[folder]["data"]
-    );
-
-    // Step 7.2: Convert JSON manifest to a string
-    const jsonManifest = JSON.stringify(manifestJSON);
-
-    // Step 7.3: Define the path for the manifest file
-    const manifestPath = window.path.join(manifestFolderSavePath, folder, "manifest.xlsx");
-
-    // Step 7.4: Create necessary directories
-    window.fs.mkdirSync(window.path.join(manifestFolderSavePath, folder), {
-      recursive: true,
-    });
-
-    // Step 7.5: Convert JSON manifest to an Excel file and save it
-    window.convertJSONToXlsx(JSON.parse(jsonManifest), manifestPath);
-  }
-
-  // Step 8: Display a success notification
-  window.notyf.open({
-    duration: "5000",
-    type: "success",
-    message: "Manifest files successfully generated",
-  });
-};
-
-// Attach a click listener to the manifest file generation button
-document
-  .getElementById("ffm-button-generate-manifest-files-locally")
-  .addEventListener("click", async () => {
-    await handleOrganizeDsGenerateLocalManifestCopyButtonClick();
-  });
-
-window.ffOpenManifestEditSwal = async (highlevelFolderName) => {
+window.ffOpenManifestEditSwal = async () => {
   let saveManifestFiles = false;
   // Function for when user wants to edit the manifest cards
-  const existingManifestData = window.sodaCopy["manifest-files"]?.[highlevelFolderName];
-
-  let ffmManifestContainer = document.getElementById("ffm-container-manifest-file-cards").children;
-  //Lock manifest buttons
-  for (let i = 0; i < ffmManifestContainer.length; i++) {
-    ffmManifestContainer[i].children[1].children[0].disabled = true;
-  }
+  const existingManifestData = window.sodaCopy["manifest-files"];
+  console.log("existingManifestData", existingManifestData);
 
   window.electron.ipcRenderer.invoke("spreadsheet", existingManifestData);
 
   //upon receiving a reply of the spreadsheet, handle accordingly
   window.electron.ipcRenderer.on("spreadsheet-reply", async (event, result) => {
-    for (let i = 0; i < ffmManifestContainer.length; i++) {
-      ffmManifestContainer[i].children[1].children[0].disabled = false;
-    }
     if (!result || result === "") {
       window.electron.ipcRenderer.removeAllListeners("spreadsheet-reply");
       return;
@@ -2548,6 +2457,7 @@ window.ffmCreateManifest = async (sodaJson) => {
   await new Promise((r) => setTimeout(r, 0));
   //create a copy of the sodajson object
   window.sodaCopy = sodaJson;
+
   let datasetStructCopy = window.sodaCopy["dataset-structure"];
   if ("auto-generated" in window.sodaCopy["manifest-files"]) {
     delete window.sodaCopy["manifest-files"]["auto-generated"];
@@ -2556,7 +2466,7 @@ window.ffmCreateManifest = async (sodaJson) => {
     delete window.sodaCopy["manifest-files"]["destination"];
   }
 
-  console.log(window.sodaCopy);
+  console.log("window.sodaCopy", window.sodaCopy);
 
   try {
     // used for imported local datasets and pennsieve datasets
@@ -2566,10 +2476,13 @@ window.ffmCreateManifest = async (sodaJson) => {
       { soda_json_structure: window.sodaCopy },
       { timeout: 0 }
     );
+
+    console.log("cleanJson here", cleanJson);
     let response = cleanJson.data.soda;
     window.sodaCopy = response;
     console.log(window.sodaCopy);
   } catch (e) {
+    console.error("Error cleaning dataset structure:", e);
     clientError(e);
   }
 
@@ -2592,11 +2505,12 @@ window.ffmCreateManifest = async (sodaJson) => {
     // loop through each of the high level folders and create excel sheet in case no edits are made
     // will be auto generated and ready for upload
     const manifestFileData = res.data;
+    console.log("manifestFileData", manifestFileData);
     let newManifestData = {};
 
     if (manifestFileData.length > 1) {
       const manifestHeader = manifestFileData.shift();
-      newManifestData["primary"] = {
+      newManifestData = {
         headers: manifestHeader,
         data: manifestFileData,
       };
@@ -2638,6 +2552,7 @@ window.ffmCreateManifest = async (sodaJson) => {
     } else {
       updatedManifestData = newManifestData;
     }
+    console.log("updatedManifestData", updatedManifestData);
     // manifest data will be stored in window.sodaCopy to be reused for manifest edits/regenerating cards
     // sodaJSONObj will remain the same and only have 'additonal-metadata' and 'description' data
     window.sodaCopy["manifest-files"] = updatedManifestData;

@@ -285,21 +285,17 @@ def bf_get_accounts():
 
 
 
-def bf_dataset_account():
+def fetch_user_datasets(return_only_empty_datasets=False):
     """
     This function filters dataset dropdowns across SODA by the permissions granted to users.
-
-    Input: BFaccountname
+    If return_only_empty_datasets is True, only datasets with no files or folders are returned.
     Output: a filtered dataset list with objects as elements: {"name": dataset's name, "id": dataset's id, "role": permission}
-
     """
     global namespace_logger
 
-    # get the datasets the user has access to
-
     datasets = get_users_dataset_list()
-
-
+    namespace_logger.info(f"Fetched {len(datasets)} datasets for user")
+    namespace_logger.info(f"Datasets: {datasets}")
 
     datasets_list = []
     for ds in datasets:
@@ -313,6 +309,7 @@ def bf_dataset_account():
             r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/role", headers=create_request_headers(get_access_token()))
             r.raise_for_status()
             user_role = r.json()["role"]
+            namespace_logger.info(f"2Dataset response: {r.json()}")
             if user_role not in ["viewer", "editor"]:
                 store.append(
                     {"id": selected_dataset_id, "name": dataset['name'], "role": user_role, "intId": dataset["intId"]}
@@ -322,19 +319,34 @@ def bf_dataset_account():
     store = []
     threads = []
     nthreads = 8
-    # create the threads
     for i in range(nthreads):
         sub_datasets_list = datasets_list[i::nthreads]
         t = Thread(target=filter_dataset, args=(sub_datasets_list, store))
         threads.append(t)
-
-    # start the threads
     [t.start() for t in threads]
-    # wait for the threads to finish
     [t.join() for t in threads]
 
     sorted_bf_datasets = sorted(store, key=lambda k: k["name"].upper())
-    return {"datasets": sorted_bf_datasets}
+
+    # If filtering for empty datasets, fetch files/folders for each
+    if return_only_empty_datasets:
+        filtered_datasets = []
+        for ds in sorted_bf_datasets:
+            namespace_logger.info(f"Checking files for dataset {ds}")
+            try:
+                r = requests.get(f"{PENNSIEVE_URL}/datasets/{ds['id']}/packages", headers=create_request_headers(get_access_token()))
+                r.raise_for_status()
+                packages_response = r.json()
+                dataset_packages = packages_response.get("packages", [])
+                if not dataset_packages:
+                    namespace_logger.info(f"Dataset {ds['id']} is empty, adding to filtered list")
+                    filtered_datasets.append(ds)
+                
+            except Exception as e:
+                namespace_logger.error(f"Error checking files for dataset {ds['id']}: {e}")
+        return {"datasets": filtered_datasets}
+    else:
+        return {"datasets": sorted_bf_datasets}
 
 def get_username(accountname):
     """

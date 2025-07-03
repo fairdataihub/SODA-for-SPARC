@@ -187,7 +187,7 @@ export const openPage = async (targetPageID) => {
     // Synchronize state between the SODA JSON object and the zustand store
     setSelectedEntities(window.sodaJSONObj["selected-entities"] || []);
     setDeSelectedEntities(window.sodaJSONObj["deSelected-entities"] || []);
-    setPerformanceList(window.sodaJSONObj["performance-list"] || []);
+    setPerformanceList(window.sodaJSONObj["dataset_metadata"]?.["performance_metadata"] || []);
 
     if (
       targetPageID === "guided-dataset-generation-tab" ||
@@ -315,7 +315,7 @@ export const openPage = async (targetPageID) => {
             addEntityToEntityList("performances", performance.performanceId);
           }
           setEntityFilter(
-            [{ type: "high-level-folder-data-categorization", names: ["Experimental data"] }],
+            [{ type: "high-level-folder-data-categorization", names: ["Experimental"] }],
             []
           );
         }
@@ -326,7 +326,7 @@ export const openPage = async (targetPageID) => {
             addEntityToEntityList("modalities", modality);
           }
           setEntityFilter(
-            [{ type: "high-level-folder-data-categorization", names: ["Experimental data"] }],
+            [{ type: "high-level-folder-data-categorization", names: ["Experimental"] }],
             []
           );
         }
@@ -349,11 +349,9 @@ export const openPage = async (targetPageID) => {
 
         // Check if there are files in the Experimental data bucket
         const hasExperimentalData =
-          !!savedDatasetEntityObj?.["high-level-folder-data-categorization"]?.[
-            "Experimental data"
-          ] &&
+          !!savedDatasetEntityObj?.["high-level-folder-data-categorization"]?.["Experimental"] &&
           Object.keys(
-            savedDatasetEntityObj["high-level-folder-data-categorization"]["Experimental data"]
+            savedDatasetEntityObj["high-level-folder-data-categorization"]["Experimental"]
           ).length > 0;
 
         // If experimental data exists, apply the filter
@@ -361,7 +359,7 @@ export const openPage = async (targetPageID) => {
           console.log("Auto-filtering for Experimental data");
           // Apply the filter for experimental data
           setEntityFilter(
-            [{ type: "high-level-folder-data-categorization", names: ["Experimental data"] }],
+            [{ type: "high-level-folder-data-categorization", names: ["Experimental"] }],
             []
           );
         } else {

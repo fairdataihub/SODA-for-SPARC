@@ -77,8 +77,9 @@ const getBadgeColor = (entityId) => {
 
   // Entity type based colors
   if (entityId === "Code") return "blue";
-  if (entityId === "Experimental data") return "green";
-  if (entityId === "Other") return "gray";
+  if (entityId === "Experimental") return "green";
+  if (entityId === "Protocol") return "gray";
+  if (entityId === "Docs") return "cyan";
 };
 
 const formatEntityId = (entityId) => {

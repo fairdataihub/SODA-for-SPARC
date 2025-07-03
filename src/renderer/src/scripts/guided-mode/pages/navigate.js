@@ -10,7 +10,7 @@ import {
   getNonSkippedGuidedModePages,
 } from "./navigationUtils/pageSkipping";
 import { guidedUnLockSideBar, resetLazyLoading } from "../../../assets/nav";
-import { guidedCreateSodaJSONObj, attachGuidedMethodsToSodaJSONObj } from "../utils/sodaJSONObj";
+import { guidedCreateSodaJSONObj } from "../utils/sodaJSONObj";
 import api from "../../others/api/api";
 import lottie from "lottie-web";
 import { existingDataset, modifyDataset } from "../../../assets/lotties/lotties";
@@ -301,7 +301,6 @@ document.getElementById("button-homepage-guided-mode").addEventListener("click",
   $(".shared-folder-structure-element").appendTo($("#guided-folder-structure-container"));
 
   guidedCreateSodaJSONObj();
-  attachGuidedMethodsToSodaJSONObj();
   guidedTransitionFromHome();
 
   guidedUnLockSideBar();

@@ -310,31 +310,37 @@ export const addRelativePaths = (obj, currentPath = []) => {
   }
 };
 
+/**
+ * Recursively removes all empty folders from a nested folder structure.
+ * A folder is empty if it has:
+ * - no files
+ * - no non-empty subfolders
+ *
+ * @param {object} structure - The folder structure object
+ * @returns {object|null} - Cleaned structure, or null if empty
+ */
 export const deleteEmptyFoldersFromStructure = (structure) => {
   if (!structure) return null;
 
-  const folders = structure.folders || {};
-  const files = structure.files || {};
-
-  const newFolders = {};
-
-  Object.entries(folders).forEach(([key, value]) => {
-    const cleaned = deleteEmptyFoldersFromStructure(value);
-    if (
-      cleaned &&
-      (Object.keys(cleaned.folders || {}).length > 0 || Object.keys(cleaned.files || {}).length > 0)
-    ) {
-      newFolders[key] = cleaned;
+  const cleanedFolders = {};
+  for (const [name, folder] of Object.entries(structure.folders || {})) {
+    const cleaned = deleteEmptyFoldersFromStructure(folder);
+    if (cleaned !== null) {
+      cleanedFolders[name] = cleaned;
     }
-  });
+  }
 
-  const isEmpty = Object.keys(newFolders).length === 0 && Object.keys(files).length === 0;
-  if (isEmpty) return null;
+  const hasFiles = Object.keys(structure.files || {}).length > 0;
+  const hasFolders = Object.keys(cleanedFolders).length > 0;
+
+  if (!hasFiles && !hasFolders) {
+    return null;
+  }
 
   return {
     ...structure,
-    folders: newFolders,
-    files,
+    folders: cleanedFolders,
+    files: hasFiles ? structure.files : {},
   };
 };
 

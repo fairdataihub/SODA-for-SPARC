@@ -6,13 +6,9 @@ import {
 } from "../../../../stores/slices/guidedModeSlice";
 import { setTreeViewDatasetStructure } from "../../../../stores/slices/datasetTreeViewSlice";
 import { guidedUpdateFolderStructureUI } from "./utils";
-import { renderManifestCards } from "../../manifests/manifest";
 import { swalFileListSingleAction } from "../../../utils/swal-utils";
 import { getEntityDataById } from "../../../../stores/slices/datasetEntityStructureSlice";
-import {
-  newEmptyFolderObj,
-  createStandardizedDatasetStructure,
-} from "../../../utils/datasetStructure";
+import { createStandardizedDatasetStructure } from "../../../utils/datasetStructure";
 import client from "../../../client";
 
 while (!window.baseHtmlLoaded) {
@@ -21,22 +17,6 @@ while (!window.baseHtmlLoaded) {
 
 export const openPageDatasetStructure = async (targetPageID) => {
   console.log(`Opening dataset structure page: ${targetPageID}`);
-
-  if (targetPageID === "guided-dataset-structure-intro-tab") {
-    // Handle whether or not the spreadsheet importation page should be skipped
-    // Note: this is done here to centralize the logic for skipping the page
-    // The page is unskipped only if the user has not added any subjects,
-    // indicated that they will be adding subjects, and the user is not starting from Pennsieve
-    if (
-      window.getExistingSubjectNames().length === 0 &&
-      window.sodaJSONObj["starting-point"]["origin"] != "ps" &&
-      window.sodaJSONObj["button-config"]["dataset-contains-subjects"] === "yes"
-    ) {
-      guidedUnSkipPage("guided-subject-structure-spreadsheet-importation-tab");
-    } else {
-      guidedSkipPage("guided-subject-structure-spreadsheet-importation-tab");
-    }
-  }
 
   // Add handlers for other pages without componentType
   if (targetPageID === "guided-unstructured-data-import-tab") {
@@ -179,15 +159,19 @@ export const openPageDatasetStructure = async (targetPageID) => {
 
     deleteEmptyFolders(window.datasetStructureJSONObj);
 
-    document.getElementById("guided-container-manifest-file-cards").innerHTML = `
-      <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-      Updating your dataset's manifest files...
-    `;
-
+    // Create a standardized SODA JSON object for the clean-dataset endpoint
+    const standardizedStructure = createStandardizedDatasetStructure(
+      window.datasetStructureJSONObj,
+      window.sodaJSONObj["dataset-entity-obj"]
+    );
+    console.log(
+      "standardizedStructure before manifest",
+      JSON.stringify(standardizedStructure, null, 2)
+    );
     const sodaCopy = {
       ...window.sodaJSONObj,
       "metadata-files": {},
-      "dataset-structure": window.datasetStructureJSONObj,
+      "dataset-structure": standardizedStructure,
     };
     delete sodaCopy["generate-dataset"];
 
@@ -198,10 +182,7 @@ export const openPageDatasetStructure = async (targetPageID) => {
     );
 
     const responseData = response.data.soda;
-    console.log("keys in responseData: ", Object.keys(responseData));
 
-    console.log("Response from clean-dataset: ", response);
-    console.log("Response data" + JSON.stringify(response, null, 2));
     const manifestRes = (
       await client.post(
         "/curate_datasets/generate_manifest_file_data",
@@ -342,9 +323,7 @@ export const openPageDatasetStructure = async (targetPageID) => {
       manifestDataRows.forEach((row) => {
         const path = row[0]; // Path is in the first column
         console.log("path1", path);
-        if (
-          datasetEntityObj?.["high-level-folder-data-categorization"]?.["Experimental data"]?.[path]
-        ) {
+        if (datasetEntityObj?.["high-level-folder-data-categorization"]?.["Experimental"]?.[path]) {
           console.log("found folder to move to primary", path);
           const newPath = updateFilePathDataFolder(path, "primary/");
           console.log("newPath", newPath);
@@ -378,8 +357,6 @@ export const openPageDatasetStructure = async (targetPageID) => {
           window.sodaJSONObj["guided-manifest-file-data"]
         )
       : newManifestData;
-
-    renderManifestCards();
   }
 
   if (targetPageID === "dataset-structure-review-tab") {
@@ -389,11 +366,11 @@ export const openPageDatasetStructure = async (targetPageID) => {
     const datasetStructureJSONObjCopy = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
     console.log("datasetStructureJSONObjCopy", datasetStructureJSONObjCopy);
 
-    const starndardizedDatasetStructure = createStandardizedDatasetStructure(
+    const standardizedDatasetStructure = createStandardizedDatasetStructure(
       window.datasetStructureJSONObj,
       datasetEntityObj
     );
-    setTreeViewDatasetStructure(starndardizedDatasetStructure, []);
+    setTreeViewDatasetStructure(standardizedDatasetStructure, []);
 
     // Restore the original dataset structure
     window.datasetStructureJSONObj = datasetStructureJSONObjCopy;

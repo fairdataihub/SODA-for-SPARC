@@ -47,7 +47,7 @@ import {
   resourceTypes,
 } from "../../../stores/slices/resourceMetadataSlice";
 
-function toOxfordCommaString(arr) {
+const toOxfordCommaString = (arr) => {
   if (!Array.isArray(arr)) return "";
 
   const len = arr.length;
@@ -57,38 +57,42 @@ function toOxfordCommaString(arr) {
   if (len === 2) return `${arr[0]} and ${arr[1]}`;
 
   return `${arr.slice(0, -1).join(", ")}, and ${arr[len - 1]}`;
-}
+};
+
+const matchesHttpPattern = (str) => {
+  const pattern = /^https?:\/\/.+/;
+  console.log("matchesHttpPattern", str, pattern.test(str));
+  return pattern.test(str);
+};
 
 // Resource metadata form component with store-based state
 const ResourceMetadataForm = () => {
   // Get form values from the global store
-  const rrid = useGlobalStore((state) => state.rrid);
   const type = useGlobalStore((state) => state.type);
   const name = useGlobalStore((state) => state.name);
+  const rrid = useGlobalStore((state) => state.rrid);
   const url = useGlobalStore((state) => state.url);
   const vendor = useGlobalStore((state) => state.vendor);
   const version = useGlobalStore((state) => state.version);
-  const idInProtocol = useGlobalStore((state) => state.idInProtocol);
+  const id_in_protocol = useGlobalStore((state) => state.id_in_protocol);
 
   return (
     <Stack spacing="md">
-      <Select
-        label="Resource Type"
-        placeholder="Select resource type"
-        data={resourceTypes}
-        value={type}
-        onChange={(value) => setType(value)}
-        required
-      />
       <TextInput
-        label="Name"
+        label="Resource Name"
         description="Enter the name of the resource"
         placeholder="Resource name (e.g., GraphPad Prism, Abcam Antibody)"
         value={name}
         onChange={(event) => setName(event.currentTarget.value)}
         required
       />
-
+      <Select
+        label="Resource Type"
+        placeholder="Select resource type"
+        data={resourceTypes}
+        value={type}
+        onChange={(value) => setType(value)}
+      />
       <TextInput
         label="RRID (Research Resource Identifier)"
         description="Enter the standardized RRID if available"
@@ -103,31 +107,30 @@ const ResourceMetadataForm = () => {
         placeholder="e.g., https://example.com"
         value={url}
         onChange={(event) => setUrl(event.currentTarget.value)}
+        error={url && !matchesHttpPattern(url) ? "URL must start with http:// or https://" : null}
       />
 
-      <Group grow>
-        <TextInput
-          label="Vendor"
-          description="Provider or manufacturer of the resource"
-          placeholder="e.g., Abcam, Thermo Fisher"
-          value={vendor}
-          onChange={(event) => setVendor(event.currentTarget.value)}
-        />
+      <TextInput
+        label="Vendor"
+        description="Provider or manufacturer of the resource"
+        placeholder="e.g., Abcam, Thermo Fisher"
+        value={vendor}
+        onChange={(event) => setVendor(event.currentTarget.value)}
+      />
 
-        <TextInput
-          label="Version"
-          description="Version or catalog number"
-          placeholder="e.g., v1.0, Cat# ab123"
-          value={version}
-          onChange={(event) => setVersion(event.currentTarget.value)}
-        />
-      </Group>
+      <TextInput
+        label="Version"
+        description="Version or catalog number"
+        placeholder="e.g., v1.0, Cat# ab123"
+        value={version}
+        onChange={(event) => setVersion(event.currentTarget.value)}
+      />
 
       <TextInput
         label="ID in protocol"
         description="Identifier used in your protocol documentation"
         placeholder="e.g., Tool-1, Ab-3"
-        value={idInProtocol}
+        value={id_in_protocol}
         onChange={(event) => setIdInProtocol(event.currentTarget.value)}
       />
     </Stack>
@@ -137,12 +140,19 @@ const ResourceMetadataForm = () => {
 const ResourcesManagementPage = () => {
   const isResourceFormVisible = useGlobalStore((state) => state.isResourceFormVisible);
   const name = useGlobalStore((state) => state.name);
+  const url = useGlobalStore((state) => state.url);
   const resourceList = useGlobalStore((state) => state.resourceList);
   const isEditMode = useGlobalStore((state) => state.isEditMode);
   const originalResourceName = useGlobalStore((state) => state.originalResourceName);
 
+  const validateResourceForm = () => {
+    const resourceNameIsValid = name && name.trim().length > 0;
+    const urlIsValid = !url || matchesHttpPattern(url);
+    return resourceNameIsValid && urlIsValid;
+  };
+
   // Validation for add/update button
-  const isResourceValid = name && name.trim().length > 0; // At minimum, require a name
+  const isResourceValid = validateResourceForm();
 
   // Function to handle selecting a resource for editing
   const selectResourceForEdit = (resource) => {
@@ -154,7 +164,7 @@ const ResourcesManagementPage = () => {
     setUrl(resource.url || "");
     setVendor(resource.vendor || "");
     setVersion(resource.version || "");
-    setIdInProtocol(resource.idInProtocol || "");
+    setIdInProtocol(resource.id_in_protocol || "");
     setResourceFormVisible(true);
   };
 

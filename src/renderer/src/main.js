@@ -11,6 +11,7 @@ import "./scripts/guided-mode/tagifies/tagifies";
 import "./scripts/guided-mode/buttons/radioButtons";
 import "./scripts/guided-mode/metadata/utils";
 import "./scripts/guided-mode/metadata/contributors";
+import "./scripts/guided-mode/metadata/dataset_description";
 import "./scripts/guided-mode/metadata/protocols";
 import "./scripts/guided-mode/pages/navigationUtils/pageLoading";
 import "./scripts/guided-mode/pages/curationPreparation/openPage";

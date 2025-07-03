@@ -22,6 +22,8 @@ import {
   modalityIsSelected,
 } from "../../../stores/slices/modalitiesSlice";
 
+// import { handleNextButtonClick } from "../../../scripts/guided-mode/pages/navigate";
+
 const ModalitySelectionPage = () => {
   return (
     <GuidedModePage pageHeader="Dataset modalities">

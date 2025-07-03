@@ -21,6 +21,7 @@ import DataImporter from "../shared/DataImporter";
 import SubmissionMetadataForm from "../pages/SubmissionMetadataForm";
 import Icon from "../shared/Icon";
 import SodaTextInput from "../common/SodaTextInput";
+import ManifestFilePreviewSection from "../shared/ManifestFilePreviewSection";
 import { Divider } from "@mantine/core";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
@@ -170,6 +171,7 @@ const componentTypeRenderers = {
       placeholder: componentSlot.getAttribute("data-placeholder") || "",
       textArea: componentSlot.getAttribute("data-text-area") === "true",
       description: componentSlot.getAttribute("data-description") || "",
+      maxLength: componentSlot.getAttribute("data-max-length") || false,
     };
     const root = createRoot(componentSlot);
 
@@ -264,6 +266,17 @@ const componentTypeRenderers = {
     root.render(
       <SodaComponentWrapper>
         <Icon iconType={iconType} />
+      </SodaComponentWrapper>
+    );
+  },
+  "manifest-file-preview-section": (componentSlot) => {
+    const root = createRoot(componentSlot);
+    const props = {
+      id: componentSlot.id,
+    };
+    root.render(
+      <SodaComponentWrapper>
+        <ManifestFilePreviewSection {...props} />
       </SodaComponentWrapper>
     );
   },

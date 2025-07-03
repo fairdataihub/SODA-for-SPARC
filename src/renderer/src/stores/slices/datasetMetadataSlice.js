@@ -2,7 +2,7 @@ import useGlobalStore from "../globalStore";
 
 export const initialState = {
   otherFundingConsortium: "",
-  otherFundingAgency: "",
+  manualFudingAgency: "",
   awardNumber: "",
   submissionMilestones: [],
   completionDateChecked: false,
@@ -13,15 +13,9 @@ export const datasetMetadataSlice = (set) => ({
   ...initialState,
 });
 
-export const setOtherFundingConsortium = (otherFundingConsortium) => {
+export const setManualFundingAgency = (manualFudingAgency) => {
   useGlobalStore.setState({
-    otherFundingConsortium,
-  });
-};
-
-export const setOtherFundingAgency = (otherFundingAgency) => {
-  useGlobalStore.setState({
-    otherFundingAgency,
+    manualFudingAgency,
   });
 };
 

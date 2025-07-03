@@ -95,7 +95,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
           throw errorArray;
         }
         console.log("performanceList", performanceList);
-        window.sodaJSONObj["performance-list"] = performanceList;
+        window.sodaJSONObj["dataset_metadata"]["performance_metadata"] = performanceList;
       }
 
       if (pageBeingLeftComponentType === "modality-selection-page") {
@@ -245,6 +245,18 @@ export const savePageChanges = async (pageBeingLeftID) => {
 
         // Save the dataset entity object to the progress file
         window.sodaJSONObj["dataset-entity-array"] = datasetEntityArray;
+
+        // Save the Sites metadata since all site addition and metadata intake is done
+        // on this page
+
+        // Prepare the sites metadata
+        const sites = getExistingSites();
+        const sitesMetadata = sites.map((site) => ({
+          ...site.metadata,
+          specimen_id: `${site.metadata.subject_id} ${site.metadata.sample_id}`,
+        }));
+        console.log("sitesMetadata", sitesMetadata);
+        window.sodaJSONObj["dataset_metadata"]["sites_metadata"] = sitesMetadata;
       }
     }
 
@@ -614,21 +626,6 @@ export const savePageChanges = async (pageBeingLeftID) => {
 
     //   if (buttonNoDelayProtocolEntry.classList.contains("selected")) {
     //     window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"] = [];
-    //   }
-    // }
-
-    // if (pageBeingLeftID === "guided-create-description-metadata-tab") {
-    //   try {
-    //     guidedSaveDescriptionDatasetInformation();
-    //     guidedSaveDescriptionStudyInformation();
-    //     guidedSaveDescriptionContributorInformation();
-    //   } catch (error) {
-    //     console.log(error);
-    //     errorArray.push({
-    //       type: "notyf",
-    //       message: error,
-    //     });
-    //     throw errorArray;
     //   }
     // }
 

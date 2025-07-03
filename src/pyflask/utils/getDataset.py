@@ -31,7 +31,7 @@ def get_dataset_http(selected_dataset, access_token):
     return r.json()
 
 
-def get_users_dataset_list():
+def get_users_dataset_list(return_only_empty_datasets=False):
     """
         Returns a list of datasets the user has access to.
         Input:

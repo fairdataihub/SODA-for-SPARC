@@ -7,7 +7,6 @@ import {
   addContributor,
   renderDatasetDescriptionContributorsTable,
 } from "./metadata/contributors";
-import { renderManifestCards } from "./manifests/manifest";
 import { generateAlertElement } from "./metadata/utils";
 import determineDatasetLocation from "../analytics/analytics-utils";
 import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
@@ -17,7 +16,10 @@ import Swal from "sweetalert2";
 import Tagify from "@yaireo/tagify/dist/tagify.esm.js";
 import { v4 as uuid } from "uuid";
 import client from "../client";
-import { guidedPennsieveDatasetUpload } from "./generateDataset/generate";
+import {
+  guidedGenerateDatasetLocally,
+  guidedGenerateDatasetOnPennsieve,
+} from "./generateDataset/generate";
 import { guidedDatasetKeywordsTagify } from "./tagifies/tagifies";
 import { updateDatasetUploadProgressTable } from "./generateDataset/uploadProgressBar";
 import {
@@ -33,6 +35,8 @@ import {
   guidedPrepareDatasetStructureAndMetadataForUpload,
 } from "./generateDataset/generate";
 import { guidedCreateManifestFilesAndAddToDatasetStructure } from "./manifests/manifest";
+import { createStandardizedDatasetStructure } from "../utils/datasetStructure";
+import { guidedRenderProgressCards } from "./resumeProgress/progressCards";
 
 import { guidedGetDatasetName } from "./utils/sodaJSONObj";
 
@@ -55,7 +59,7 @@ window.returnToGuided = () => {
 
 export const guidedGetDatasetType = () => {
   // Returns the dataset type (e.g. "computational" or "experimental")
-  return window.sodaJSONObj?.["dataset-type"];
+  return window.sodaJSONObj["dataset_metadata"]?.["dataset_description"]?.["type"];
 };
 
 window.verifyProfile = async () => {
@@ -67,7 +71,7 @@ window.verifyProfile = async () => {
   }
 };
 
-const guidedResetLocalGenerationUI = () => {
+export const guidedResetLocalGenerationUI = () => {
   // Hide the local dataset copy generation section that containst the table/generation progress
   document.getElementById("guided-section-local-generation-status-table").classList.add("hidden");
   // Hide the local dataset generation success section
@@ -370,7 +374,6 @@ window.guidedOpenManifestEditSwal = async () => {
 
       window.sodaJSONObj["guided-manifest-file-data"] = { headers: result[0], data: result[1] };
       await guidedSaveProgress();
-      renderManifestCards();
     }
   });
 };
@@ -441,7 +444,7 @@ window.diffCheckManifestFiles = (newManifestData, existingManifestData) => {
 
   return { headers: combinedManifestDataHeaders, data: combinedManifestDataData };
 };
-
+/* Disable the dataset validation page until implemented for sds 3 
 document
   .getElementById("guided-button-run-dataset-validation")
   .addEventListener("click", async () => {
@@ -768,6 +771,7 @@ document
     }
     guidedSetNavLoadingState(false);
   });
+*/
 
 window.handleGuidedModeOrgSwitch = async (buttonClicked) => {
   if (buttonClicked.classList.contains("guided--progress-button-switch-workspace")) {
@@ -778,58 +782,12 @@ window.handleGuidedModeOrgSwitch = async (buttonClicked) => {
 let homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
 let guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
 
-const folderIsEmpty = (folder) => {
-  if (!folder) {
-    return true;
-  }
-
-  return Object.keys(folder.folders).length === 0 && Object.keys(folder.files).length === 0;
-};
-
-const guidedAddUsersAndTeamsToDropdown = (usersArray, teamsArray) => {
-  const guidedUsersAndTeamsDropdown = document.getElementById("guided_bf_list_users_and_teams");
-  // Reset the dropdown
-  guidedUsersAndTeamsDropdown.innerHTML =
-    "<option>Select individuals or teams to grant permissions to</option>";
-
-  // Loop through the users and add them to the dropdown
-  for (const userString of usersArray) {
-    const userNameAndEmail = userString.split("!|**|!")[0].trim();
-    const userID = userString.split("!|**|!")[1].trim();
-    const userOption = `
-          <option
-            permission-type="user"
-            value="${userID}"
-          >
-            ${userNameAndEmail}
-          </option>
-        `;
-    guidedUsersAndTeamsDropdown.insertAdjacentHTML("beforeend", userOption);
-  }
-
-  // Loop through the teams and add them to the dropdown
-  for (const team of teamsArray) {
-    const trimmedTeam = team.trim();
-    const teamOption = `
-          <option
-            permission-type="team"
-            value="${trimmedTeam}"
-          >
-            ${trimmedTeam}
-          </option>
-        `;
-    guidedUsersAndTeamsDropdown.insertAdjacentHTML("beforeend", teamOption);
-  }
-};
-
 const guidedResetUserTeamPermissionsDropdowns = () => {
   $("#guided_bf_list_users_and_teams").val("Select individuals or teams to grant permissions to");
   $("#guided_bf_list_users_and_teams").selectpicker("refresh");
   $("#select-permission-list-users-and-teams").val("Select role");
 };
 
-let addListener = true;
-let removeEventListener = false;
 const copyLink = (link) => {
   Clipboard.writeText(link);
 
@@ -980,38 +938,6 @@ const guidedOpenEntityEditSwal = async (entityName) => {
       renderSamplesTable();
     }
   }
-};
-
-const renderSubjectsTable = () => {
-  const [subjectsInPools, subjectsOutsidePools] = window.sodaJSONObj.getAllSubjects();
-  //Combine sample data from subjects in and out of pools
-  const subjects = [...subjectsInPools, ...subjectsOutsidePools];
-
-  // If there are no subjects, hide the subjects table
-  const subjectsTableContainer = document.getElementById("guided-section-subjects-table");
-  if (subjects.length === 0) {
-    subjectsTableContainer.classList.add("hidden");
-    return;
-  } else {
-    // If there are subjects, show the subjects table
-    subjectsTableContainer.classList.remove("hidden");
-  }
-
-  // Map the subjects to HTML elements
-  const subjectElementRows = subjects
-    .map((subject) => {
-      return generateSubjectRowElement(subject.subjectName);
-    })
-    .join("\n");
-  document.getElementById("subject-specification-table-body").innerHTML = subjectElementRows;
-
-  // Add event listeners to the subject edit buttons
-  document.querySelectorAll(".guided-subject-edit-button").forEach((button) => {
-    button.addEventListener("click", async () => {
-      const subjectName = button.dataset.subjectName;
-      await guidedOpenEntityEditSwal(subjectName);
-    });
-  });
 };
 
 function setGuidedProgressBarValue(destination, value) {
@@ -1903,38 +1829,6 @@ const openAddAdditionLinkSwal = async () => {
   }
 };
 
-const renderSubjectSampleAdditionTable = (subject) => {
-  return `
-    <table
-      class="ui celled striped table"
-      style="margin-bottom: 10px; width: 800px"
-    >
-      <thead>
-        <tr>
-          <th class="text-center" colspan="2" style="position: relative">   
-            Samples taken from ${subject.subjectName}
-            <button
-              type="button"
-              class="btn btn-primary btn-sm button-subject-add-samples"
-              style="position: absolute; top: 10px; right: 20px;"
-              data-samples-subject-name="${subject.subjectName}"
-            >
-              Add samples
-            </button>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        ${subject.samples
-          .map((sample) => {
-            return generateSampleRowElement(sample);
-          })
-          .join("\n")}
-      </tbody>
-    </table>
-  `;
-};
-
 const openModifySampleMetadataPage = (sampleMetadataID, samplesSubjectID) => {
   //Get all samples from the dataset and add all other samples to the was derived from dropdown
   const [samplesInPools, samplesOutsidePools] = window.sodaJSONObj.getAllSamplesFromSubjects();
@@ -2229,119 +2123,6 @@ window.openSubjectRenameInput = (subjectNameEditButton) => {
   subjectIdCellToRename.html(subjectRenameElement);
 };
 
-const generateSubjectRowElement = (subjectName) => {
-  return `
-    <tr>
-      <td class="middle aligned subject-id-cell">
-        <div class="space-between w-100" style="align-items: center">
-          <div class="space-between w-100">
-            <span class="subject-id">${subjectName}</span>
-            <i
-              class="far fa-edit guided-subject-edit-button"
-              style="cursor: pointer; margin-top: .2rem"
-              data-subject-name="${subjectName}"
-            >
-            </i>
-          </div>
-        </div>
-      </td>
-      <td class="middle aligned collapsing text-center remove-left-border">
-        <i
-          class="far fa-trash-alt"
-          style="color: red; cursor: pointer"
-          onclick="window.deleteSubject($(this))"
-        ></i>
-      </td>
-    </tr>
-  `;
-};
-
-const generateSubjectSpecificationRowElement = () => {
-  return `
-    <tr>
-      <td class="middle aligned subject-id-cell">
-        <div class="space-between w-100" style="align-items: center">
-          <span style="margin-right: 5px;">sub-</span>
-          <input
-            id="guided--subject-input"
-            class="guided--input"
-            type="text"
-            name="guided-subject-id"
-            placeholder="Enter subject ID and press enter"
-            onkeyup="specifySubject(event, window.$(this))"
-            data-alert-message="Subject IDs may not contain spaces or special characters"
-            data-alert-type="danger"
-            style="margin-right: 5px;"
-          />
-          <i class="far fa-check-circle fa-solid" style="cursor: pointer; margin-left: 15px; color: var(--color-light-green); font-size: 1.24rem;" onclick="window.confirmEnter(this)"></i>
-        </div>
-      </td>
-
-
-      <td class="middle aligned collapsing text-center remove-left-border">
-        <i
-          class="far fa-trash-alt"
-          style="color: red; cursor: pointer; display: none;"
-          onclick="window.deleteSubject($(this))"
-        ></i>
-      </td>
-      </tr>
-  `;
-};
-
-const generatePoolRowElement = (poolName) => {
-  return `
-    <tr>
-      <td class="middle aligned pool-cell collapsing">
-        <div class="space-between" style="align-items: center; width: 250px">
-          <div class="space-between" style="width: 250px">
-            <span class="pool-id">${poolName}</span>
-            <i
-              class="far fa-edit guided-pool-edit-button"
-              data-pool-name="${poolName}"
-              style="cursor: pointer"
-            >
-            </i>
-          </div>
-        </div>
-      </td>
-      <td class="middle aligned pool-subjects">
-        <select
-          class="js-example-basic-multiple"
-          style="width: 100%"
-          name="${poolName}-subjects-selection-dropdown"
-          multiple="multiple"
-        ></select>
-      </td>
-      <td class="middle aligned collapsing text-center remove-left-border">
-        <i
-          class="far fa-trash-alt"
-          style="color: red; cursor: pointer"
-          onclick="window.deletePool(window.$(this))"
-        ></i>
-      </td>
-    </tr>
-  `;
-};
-
-const generateSampleRowElement = (sampleName) => {
-  return `
-    <tr>
-    <td class="middle aligned sample-id-cell">
-      <div class="space-between w-100" style="align-items: center">
-    <div class="space-between w-100">
-      <span class="sample-id">${sampleName}</span>
-      <i class="far fa-edit jump-back guided-sample-edit-button" data-sample-name="${sampleName}" style="cursor: pointer;" >
-      </i>
-    </div>
-  </div>
-    </td>
-    <td class="middle aligned collapsing text-center remove-left-border">
-      <i class="far fa-trash-alt" style="color: red; cursor: pointer" onclick="window.deleteSample(window.$(this))"></i>
-    </td>
-  </tr>`;
-};
-
 const generateSampleSpecificationRowElement = () => {
   return `
     <tr>
@@ -2484,12 +2265,6 @@ const getSubjectsPool = (subjectName) => {
     }
   }
   return "";
-};
-
-const getExistingPoolNames = () => {
-  return Object.keys(
-    window.sodaJSONObj["dataset_metadata"]["pool-subject-sample-structure"]["pools"]
-  );
 };
 
 const getExistingSampleNames = () => {
@@ -2961,21 +2736,6 @@ const addSampleTableRow = () => {
     window.smoothScrollToElement(newSampleRow);
     newSampleInput.focus();
   }
-};
-
-//deletes subject from jsonObj and UI
-window.deleteSubject = async (subjectDeleteButton) => {
-  const subjectIdCellToDelete = subjectDeleteButton.closest("tr");
-  const subjectIdToDelete = subjectIdCellToDelete.find(".subject-id").text();
-
-  //Check to see if a subject has been added to the element
-  //if it has, delete the subject from the pool-sub-sam structure
-  if (subjectIdToDelete) {
-    await window.sodaJSONObj.deleteSubject(subjectIdToDelete);
-  }
-
-  //Rerender the subjects table
-  renderSubjectsTable();
 };
 
 window.deletePool = (poolDeleteButton) => {
@@ -4132,217 +3892,12 @@ document.querySelectorAll(".button-starts-local-dataset-copy-generation").forEac
   });
 });
 
-const convertBytesToGb = (bytes) => {
-  return roundToHundredth(bytes / 1024 ** 3);
-};
-
-// Counts the number of files in the dataset structure
-// Note: This function should only be used for local datasets (Not datasets pulled from Pennsieve)
-const countFilesInDatasetStructure = (datasetStructure) => {
-  let totalFiles = 0;
-  const keys = Object.keys(datasetStructure);
-  for (const key of keys) {
-    if (key === "files") {
-      totalFiles += Object.keys(datasetStructure[key]).length;
-    }
-    if (key === "folders") {
-      const folders = Object.keys(datasetStructure[key]);
-      for (const folder of folders) {
-        totalFiles += countFilesInDatasetStructure(datasetStructure[key][folder]);
-      }
-    }
-  }
-  return totalFiles;
-};
-
 // Listen for the selected path for local dataset generation that starts the local dataset generation process
 window.electron.ipcRenderer.on(
   "selected-guided-local-dataset-generation-path",
   async (event, filePath) => {
-    guidedSetNavLoadingState(true); // Lock the nav while local dataset generation is in progress
-    guidedResetLocalGenerationUI();
-    try {
-      // Get the dataset name based on the sodaJSONObj
-      const guidedDatasetName = guidedGetDatasetName(window.sodaJSONObj);
-
-      const filePathToGenerateAt = window.path.join(filePath, guidedDatasetName);
-      console.log("filePathToGenerateAt", filePathToGenerateAt);
-      if (window.fs.existsSync(filePathToGenerateAt)) {
-        // TEMP remove the folder at this path
-        /*
-        throw new Error(
-          `
-            A folder named ${guidedDatasetName} already exists at the selected location.
-            Please remove the folder at the selected location or choose a new location.
-          `
-        );*/
-      }
-      // Reset and show the progress bar
-      setGuidedProgressBarValue("local", 0);
-      updateDatasetUploadProgressTable("local", {
-        "Current action": `Checking available free space on disk`,
-      });
-      window.unHideAndSmoothScrollToElement("guided-section-local-generation-status-table");
-
-      // Get available free memory on disk
-      const freeMemoryInBytes = await window.electron.ipcRenderer.invoke("getDiskSpace", filePath);
-
-      // Get the size of the dataset to be generated
-      const localDatasetSizeReq = await client.post(
-        "/curate_datasets/dataset_size",
-        { soda_json_structure: window.sodaJSONObj },
-        { timeout: 0 }
-      );
-      const localDatasetSizeInBytes = localDatasetSizeReq.data.dataset_size;
-
-      // Check if there is enough free space on disk for the dataset
-      if (freeMemoryInBytes < localDatasetSizeInBytes) {
-        const diskSpaceInGb = convertBytesToGb(freeMemoryInBytes);
-        const datasetSizeInGb = convertBytesToGb(localDatasetSizeInBytes);
-        throw new Error(
-          `Not enough free space on disk. Free space: ${diskSpaceInGb}GB. Dataset size: ${datasetSizeInGb}GB`
-        );
-      }
-
-      // Attach manifest files to the dataset structure before local generation
-      await guidedCreateManifestFilesAndAddToDatasetStructure();
-
-      // Create a temporary copy of sodaJSONObj for local dataset generation
-      const sodaJSONObjCopy = JSON.parse(JSON.stringify(window.sodaJSONObj));
-      sodaJSONObjCopy["generate-dataset"] = {
-        "dataset-name": guidedDatasetName,
-        destination: "local",
-        "generate-option": "new",
-        "if-existing": "new",
-        path: filePath,
-      };
-      // Remove unnecessary key from sodaJSONObjCopy since we don't need to
-      // check if the account details are valid during local generation
-      delete sodaJSONObjCopy["ps-account-selected"];
-      delete sodaJSONObjCopy["ps-dataset-selected"];
-
-      await guidedPrepareDatasetStructureAndMetadataForUpload(sodaJSONObjCopy);
-
-      // Add the dataset metadata json to the sodaJSONObjCopy
-      console.log("sodaJSONObjCopy['dataset_metadata']", sodaJSONObjCopy["dataset_metadata"]);
-
-      updateDatasetUploadProgressTable("local", {
-        "Current action": `Preparing dataset for local generation`,
-      });
-
-      // Start the local dataset generation process
-      client.post(
-        `/curate_datasets/curation`,
-        { soda_json_structure: sodaJSONObjCopy, resume: false },
-        { timeout: 0 }
-      );
-
-      let userHasBeenScrolledToProgressTable = false;
-
-      // Track the status of local dataset generation
-      const trackLocalDatasetGenerationProgress = async () => {
-        // Get the number of files that need to be generated to calculate the progress
-        const numberOfFilesToGenerate = countFilesInDatasetStructure(
-          window.datasetStructureJSONObj
-        );
-        while (true) {
-          try {
-            const response = await client.get(`/curate_datasets/curation/progress`);
-            const { data } = response;
-            const main_curate_progress_message = data["main_curate_progress_message"];
-            const main_curate_status = data["main_curate_status"];
-            if (
-              main_curate_progress_message === "Success: COMPLETED!" ||
-              main_curate_status === "Done"
-            ) {
-              break; // Exit the loop when generation is done
-            }
-            const elapsed_time_formatted = data["elapsed_time_formatted"];
-            const totalUploadedFiles = data["total_files_uploaded"];
-
-            // Get the current progress of local dataset generation
-            // Note: The progress is calculated based on the number of files that have been generated
-            // and the total number of files that need to be generated
-            const localGenerationProgressPercentage = Math.min(
-              100,
-              Math.max(0, (totalUploadedFiles / numberOfFilesToGenerate) * 100)
-            );
-            setGuidedProgressBarValue("local", localGenerationProgressPercentage);
-            updateDatasetUploadProgressTable("local", {
-              "Files generated": `${totalUploadedFiles} of ${numberOfFilesToGenerate}`,
-              "Percent generated": `${localGenerationProgressPercentage.toFixed(2)}%`,
-              "Elapsed time": `${elapsed_time_formatted}`,
-            });
-
-            // Scroll the user down to the progress table if they haven't been scrolled down yet
-            // (This only happens once)
-            if (!userHasBeenScrolledToProgressTable) {
-              window.unHideAndSmoothScrollToElement("guided-section-local-generation-status-table");
-              userHasBeenScrolledToProgressTable = true;
-            }
-
-            // Wait 1 second before checking the progress again
-            await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 second
-          } catch (error) {
-            console.error("Error tracking progress:", error);
-            throw new Error(userErrorMessage(error)); // Re-throw with user-friendly message
-          }
-        }
-      };
-
-      // set a timeout for .5 seconds to allow the server to start generating the dataset
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      await trackLocalDatasetGenerationProgress();
-
-      setGuidedProgressBarValue("local", 100);
-      updateDatasetUploadProgressTable("local", { "Current action": `Generating metadata files` });
-
-      /* TEMP DISABLED FOR NOW // Generate all dataset metadata files
-      await guidedGenerateSubjectsMetadata(
-        window.path.join(filePath, guidedDatasetName, "subjects.xlsx")
-      );
-      await guidedGenerateSamplesMetadata(
-        window.path.join(filePath, guidedDatasetName, "samples.xlsx")
-      );
-      await guidedGenerateSubmissionMetadata(
-        window.path.join(filePath, guidedDatasetName, "submission.xlsx")
-      );
-      await guidedGenerateDatasetDescriptionMetadata(
-        window.path.join(filePath, guidedDatasetName, "dataset_description.xlsx")
-      );
-      await guidedGenerateReadmeMetadata(
-        window.path.join(filePath, guidedDatasetName, "README.txt")
-      );
-      await guidedGenerateChangesMetadata(
-        window.path.join(filePath, guidedDatasetName, "CHANGES.txt")
-      );
-      await guidedGenerateCodeDescriptionMetadata(
-        window.path.join(filePath, guidedDatasetName, "code_description.xlsx")
-      );*/
-
-      // Save the location of the generated dataset to the sodaJSONObj
-      window.sodaJSONObj["path-to-local-dataset-copy"] = window.path.join(
-        filePath,
-        guidedDatasetName
-      );
-
-      // Update UI for successful local dataset generation
-      updateDatasetUploadProgressTable("local", {
-        Status: `Dataset successfully generated locally`,
-      });
-      window.unHideAndSmoothScrollToElement("guided-section-post-local-generation-success");
-    } catch (error) {
-      console.error("Error during local dataset generation:", error);
-      // Handle and log errors
-      const errorMessage = userErrorMessage(error);
-      console.error(errorMessage);
-      guidedResetLocalGenerationUI();
-      await swalShowError("Error generating dataset locally", errorMessage);
-      // Show and scroll down to the local dataset generation retry button
-      window.unHideAndSmoothScrollToElement("guided-section-retry-local-generation");
-    }
-    guidedSetNavLoadingState(false); // Unlock the nav after local dataset generation is done
+    console.log("Calling from the renderer with filePath:", filePath);
+    await guidedGenerateDatasetLocally(filePath);
   }
 );
 
@@ -4372,7 +3927,7 @@ document
       await guidedUploadDatasetToPennsieve();
     } else {
       // restart the whole process
-      await guidedPennsieveDatasetUpload();
+      await guidedGenerateDatasetOnPennsieve();
     }
   });
 
@@ -4824,15 +4379,15 @@ const guidedSaveDescriptionStudyInformation = () => {
   };
 };
 const guidedSaveDescriptionContributorInformation = () => {
-  const acknowledgementsInput = document.getElementById("guided-ds-acknowledgements");
-  const acknowledgements = acknowledgementsInput.value.trim();
+  const acknowledgmentsInput = document.getElementById("guided-ds-acknowledgments");
+  const acknowledgments = acknowledgmentsInput.value.trim();
 
   // Get tags from other funding tagify
   const otherFunding = window.getTagsFromTagifyElement(guidedOtherFundingsourcesTagify);
 
   window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributor-information"] = {
     funding: otherFunding,
-    acknowledgment: acknowledgements,
+    acknowledgment: acknowledgments,
   };
 };
 
@@ -4863,7 +4418,7 @@ const doTheHack = async () => {
 
 // If this variable is set to true, you will be taken back to the last guided mode page you were working on
 // (always set to false when making production builds)
-const continueHackGm = true;
+const continueHackGm = false;
 if (continueHackGm) {
-  // doTheHack();
+  doTheHack();
 }

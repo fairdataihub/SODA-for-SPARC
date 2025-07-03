@@ -24,7 +24,7 @@ const readDirAsync = async (path) => {
   return result;
 };
 
-const guidedRenderProgressCards = async () => {
+export const guidedRenderProgressCards = async () => {
   const progressCardsContainer = document.getElementById("guided-container-progress-cards");
   const progressCardLoadingDiv = document.getElementById("guided-section-loading-progress-cards");
   const progressCardLoadingDivText = document.getElementById(

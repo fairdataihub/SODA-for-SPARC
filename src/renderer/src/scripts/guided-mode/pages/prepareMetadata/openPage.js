@@ -11,7 +11,6 @@ import api from "../../../others/api/api";
 import { clientError, userErrorMessage } from "../../../others/http-error-handler/error-handler";
 import { guidedShowOptionalRetrySwal } from "../../swals/helperSwals";
 import { createParsedReadme } from "../../../metadata-files/datasetDescription";
-import { renderManifestCards } from "../../manifests/manifest";
 import { setTreeViewDatasetStructure } from "../../../../stores/slices/datasetTreeViewSlice";
 import {
   setEntityType,
@@ -24,6 +23,7 @@ import {
   guidedStudyTechniquesTagify,
   guidedOtherFundingsourcesTagify,
 } from "../../tagifies/tagifies";
+import { setResourceList } from "../../../../stores/slices/resourceMetadataSlice";
 import { guidedGetCurrentUserWorkSpace } from "../../../guided-mode/workspaces/workspaces";
 import { dragDrop, successCheck } from "../../../../assets/lotties/lotties";
 import { renderProtocolsTable } from "../../metadata/protocols";
@@ -33,6 +33,13 @@ import lottie from "lottie-web";
 import { renderAdditionalLinksTable } from "../../guided-curate-dataset";
 import { datasetIsSparcFunded } from "../../utils/sodaJSONObj";
 import { createStandardizedDatasetStructure } from "../../../../scripts/utils/datasetStructure";
+import { setDropdownState } from "../../../../stores/slices/dropDownSlice";
+import {
+  setManualFundingAgency,
+  setAwardNumber,
+  setMilestones,
+  setMilestoneDate,
+} from "../../../../stores/slices/datasetMetadataSlice";
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
@@ -85,9 +92,48 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     }
   }
 
-  if (targetPageID === "guided-assign-license-tab") {
-    console.log("Opening sharing license page");
-    // Page-specific initialization code will go here
+  if (targetPageID === "guided-submission-metatdata-tab") {
+    // Set the funding agency (currently either NIH or Other)
+    const fundingAgency = window.sodaJSONObj["funding_agency"] || "";
+    const fundingConsortium =
+      window.sodaJSONObj["dataset_metadata"]?.["submission"]?.["funding_consortium"] || "";
+
+    const awardNumber =
+      window.sodaJSONObj["dataset_metadata"]?.["submission"]?.["award_number"] || "";
+    const milestoneAchieved =
+      window.sodaJSONObj["dataset_metadata"]?.["submission"]?.["milestone_achieved"] || [];
+    const milestoneCompletionDate =
+      window.sodaJSONObj["dataset_metadata"]?.["submission"]?.["milestone_completion_date"] || "";
+
+    if (fundingAgency) {
+      // Set the funding agency dropdown state
+
+      if (fundingAgency === "NIH") {
+        setDropdownState("guided-funding-agency", fundingAgency);
+        setDropdownState("guided-nih-funding-consortium", fundingConsortium);
+        setManualFundingAgency("");
+      } else {
+        setDropdownState("guided-funding-agency", "Other");
+        setDropdownState("guided-nih-funding-consortium", "");
+        setManualFundingAgency(fundingAgency);
+      }
+    } else {
+      setDropdownState("guided-funding-agency", "");
+      setDropdownState("guided-nih-funding-consortium", "");
+      setManualFundingAgency("");
+    }
+
+    // If the consortium is SPARC, set the milestones and milestone date
+    if (fundingConsortium === "SPARC") {
+      setMilestones(milestoneAchieved);
+      setMilestoneDate(milestoneCompletionDate);
+    } else {
+      setMilestones([]);
+      setMilestoneDate("");
+    }
+
+    // Set the award number for all funding agencies
+    setAwardNumber(awardNumber);
   }
 
   if (targetPageID === "guided-contributors-tab") {
@@ -160,118 +206,91 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     }
   }
 
+  if (targetPageID === "guided-resources-entity-addition-tab") {
+    const existingResources = window.sodaJSONObj["dataset_metadata"]["resources_metadata"] || [];
+    setResourceList(existingResources);
+  }
+
   if (targetPageID === "guided-create-description-metadata-tab") {
+    console.log("Opening dataset description metadata page");
+    console.log(
+      "Dataset Description Metadata:",
+      window.sodaJSONObj["dataset_metadata"]?.["dataset_description"]
+    );
+    // Load dataset information fields
     const guidedLoadDescriptionDatasetInformation = () => {
-      // Reset the keywords tags and add the stored ones if they exist in the JSON
       guidedDatasetKeywordsTagify.removeAllTags();
-      const datasetKeyWords =
-        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["dataset-information"]?.[
-          "keywords"
-        ];
-      if (datasetKeyWords) {
-        guidedDatasetKeywordsTagify.addTags(datasetKeyWords);
+      const datasetInfo =
+        window.sodaJSONObj["dataset_metadata"]?.["dataset_description"]?.["dataset-information"] ||
+        {};
+      if (datasetInfo["keywords"]) {
+        guidedDatasetKeywordsTagify.addTags(datasetInfo["keywords"]);
       }
+      // Set title, subtitle, description, license, funding, acknowledgments
+      const titleInput = document.getElementById("guided-ds-title");
+      const subtitleInput = document.getElementById("guided-ds-subtitle");
+      const descriptionInput = document.getElementById("guided-ds-description");
+      const licenseInput = document.getElementById("guided-ds-license");
+      if (titleInput) titleInput.value = datasetInfo["title"] || "";
+      if (subtitleInput) subtitleInput.value = datasetInfo["subtitle"] || "";
+      if (descriptionInput) descriptionInput.value = datasetInfo["description"] || "";
+      if (licenseInput) licenseInput.value = datasetInfo["license"] || "";
+      // Funding and acknowledgments
+      guidedOtherFundingsourcesTagify.removeAllTags();
+      if (datasetInfo["funding"]) guidedOtherFundingsourcesTagify.addTags(datasetInfo["funding"]);
+      const acknowledgmentsInput = document.getElementById("guided-ds-acknowledgments");
+      if (acknowledgmentsInput) acknowledgmentsInput.value = datasetInfo["acknowledgments"] || "";
     };
     guidedLoadDescriptionDatasetInformation();
 
+    // Load study information fields
     const guidedLoadDescriptionStudyInformation = () => {
+      const studyInfo =
+        window.sodaJSONObj["dataset_metadata"]?.["dataset_description"]?.["study-information"] ||
+        {};
       const studyPurposeInput = document.getElementById("guided-ds-study-purpose");
       const studyDataCollectionInput = document.getElementById("guided-ds-study-data-collection");
       const studyPrimaryConclusionInput = document.getElementById(
         "guided-ds-study-primary-conclusion"
       );
       const studyCollectionTitleInput = document.getElementById("guided-ds-study-collection-title");
-
-      //reset the inputs
-      studyPurposeInput.value = "";
-      studyDataCollectionInput.value = "";
-      studyPrimaryConclusionInput.value = "";
-      studyCollectionTitleInput.value = "";
+      if (studyPurposeInput) studyPurposeInput.value = studyInfo["study_purpose"] || "";
+      if (studyDataCollectionInput)
+        studyDataCollectionInput.value = studyInfo["study_data_collection"] || "";
+      if (studyPrimaryConclusionInput)
+        studyPrimaryConclusionInput.value = studyInfo["study_primary_conclusion"] || "";
+      if (studyCollectionTitleInput)
+        studyCollectionTitleInput.value = studyInfo["study_collection_title"] || "";
       guidedStudyOrganSystemsTagify.removeAllTags();
       guidedStudyApproachTagify.removeAllTags();
       guidedStudyTechniquesTagify.removeAllTags();
-
-      // Set the inputs if their respective keys exist in the JSON
-      // (if not, the input will remain blank)
-      const studyPurpose =
-        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"]?.[
-          "study purpose"
-        ];
-      if (studyPurpose) {
-        studyPurposeInput.value = studyPurpose;
-      }
-
-      const studyDataCollection =
-        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"]?.[
-          "study data collection"
-        ];
-      if (studyDataCollection) {
-        studyDataCollectionInput.value = studyDataCollection;
-      }
-
-      const studyPrimaryConclusion =
-        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"]?.[
-          "study primary conclusion"
-        ];
-      if (studyPrimaryConclusion) {
-        studyPrimaryConclusionInput.value = studyPrimaryConclusion;
-      }
-
-      const studyCollectionTitle =
-        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"]?.[
-          "study collection title"
-        ];
-      if (studyCollectionTitle) {
-        studyCollectionTitleInput.value = studyCollectionTitle;
-      }
-
-      const studyOrganSystems =
-        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"]?.[
-          "study organ system"
-        ];
-      if (studyOrganSystems) {
-        guidedStudyOrganSystemsTagify.addTags(studyOrganSystems);
-      }
-
-      const studyApproach =
-        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"]?.[
-          "study approach"
-        ];
-      if (studyApproach) {
-        guidedStudyApproachTagify.addTags(studyApproach);
-      }
-
-      const studyTechniques =
-        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"]?.[
-          "study technique"
-        ];
-      if (studyTechniques) {
-        guidedStudyTechniquesTagify.addTags(studyTechniques);
-      }
+      if (studyInfo["study_organ_system"])
+        guidedStudyOrganSystemsTagify.addTags(studyInfo["study_organ_system"]);
+      if (studyInfo["study_approach"])
+        guidedStudyApproachTagify.addTags(studyInfo["study_approach"]);
+      if (studyInfo["study_technique"])
+        guidedStudyTechniquesTagify.addTags(studyInfo["study_technique"]);
+      // Load participant information using savePage keys
+      const participantInfo =
+        window.sodaJSONObj["dataset_metadata"]?.["description_metadata"]?.[
+          "participant-information"
+        ] || {};
+      const numSubjectsInput = document.getElementById("guided-ds-num-subjects");
+      const numSamplesInput = document.getElementById("guided-ds-num-samples");
+      const numSitesInput = document.getElementById("guided-ds-num-sites");
+      const numPerformanceInput = document.getElementById("guided-ds-num-performance");
+      if (numSubjectsInput) numSubjectsInput.value = participantInfo["number_of_subjects"] ?? "";
+      if (numSamplesInput) numSamplesInput.value = participantInfo["number_of_samples"] ?? "";
+      if (numSitesInput) numSitesInput.value = participantInfo["number_of_sites"] ?? "";
+      if (numPerformanceInput)
+        numPerformanceInput.value = participantInfo["number_of_performance"] ?? "";
     };
     guidedLoadDescriptionStudyInformation();
 
-    const guidedLoadDescriptionContributorInformation = () => {
-      const acknowledgementsInput = document.getElementById("guided-ds-acknowledgements");
-      const contributorInformationMetadata =
-        window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributor-information"];
-
-      guidedOtherFundingsourcesTagify.removeAllTags();
-
-      if (contributorInformationMetadata) {
-        acknowledgementsInput.value = contributorInformationMetadata["acknowledgment"];
-        guidedOtherFundingsourcesTagify.addTags(contributorInformationMetadata["funding"]);
-      } else {
-        acknowledgementsInput.value = "";
-        guidedOtherFundingsourcesTagify.removeAllTags();
-      }
-    };
-    guidedLoadDescriptionContributorInformation();
-
+    // No contributor_information fields to load here (handled elsewhere)
     renderAdditionalLinksTable();
 
     const otherFundingLabel = document.getElementById("SPARC-award-other-funding-label");
-
     if (datasetIsSparcFunded()) {
       otherFundingLabel.innerHTML = ` besides the SPARC Award: ${window.sodaJSONObj["dataset_metadata"]["shared-metadata"]["sparc-award"]}`;
     } else {
@@ -296,11 +315,6 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     setEntityType("samples");
   }
 
-  if (targetPageID === "guided-resources-entity-addition-tab") {
-    console.log("Opening experimental resources page");
-    // This has componentType "resources-management-page" which likely handles most of the page functionality
-  }
-
   if (targetPageID === "guided-create-changes-metadata-tab") {
     console.log("Opening CHANGES metadata page");
 
@@ -313,39 +327,6 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     } else if (changesTextArea) {
       changesTextArea.value = "";
     }
-  }
-
-  if (targetPageID === "guided-generate-dataset-locally") {
-    const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
-
-    // Create a deep copy of the dataset structure JSON object
-    const datasetStructureJSONObjCopy = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
-    console.log("datasetStructureJSONObjCopy", datasetStructureJSONObjCopy);
-
-    const starndardizedDatasetStructure = createStandardizedDatasetStructure(
-      window.datasetStructureJSONObj,
-      datasetEntityObj
-    );
-    setTreeViewDatasetStructure(starndardizedDatasetStructure, []);
-
-    // Restore the original dataset structure
-    window.datasetStructureJSONObj = datasetStructureJSONObjCopy;
-    console.log("datasetStructureJSONObj restored", window.datasetStructureJSONObj);
-
-    const guidedResetLocalGenerationUI = () => {
-      // Hide the local dataset copy generation section that containst the table/generation progress
-      document
-        .getElementById("guided-section-local-generation-status-table")
-        .classList.add("hidden");
-      // Hide the local dataset generation success section
-      document
-        .getElementById("guided-section-post-local-generation-success")
-        .classList.add("hidden");
-      // Hide the local dataset generation retry section
-      document.getElementById("guided-section-retry-local-generation").classList.add("hidden");
-    };
-
-    guidedResetLocalGenerationUI();
   }
 };
 
