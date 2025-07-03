@@ -457,24 +457,26 @@ model_account_datasets_list_response = api.model('AccountDatasetsResponse', {
 @api.route('/fetch_user_datasets')
 class BfDatasetAccount(Resource):
 
+  parser_fetch_user_datasets = reqparse.RequestParser(bundle_errors=True)
+  parser_fetch_user_datasets.add_argument('return_only_empty_datasets', type=bool, required=False, location='args', help='If true, only return datasets that are empty.')
+
   
   @api.marshal_with(model_account_datasets_list_response, False, 200)
   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns a list of the datasets the given Pennsieve account has access to.")
+  @api.expect(parser_fetch_user_datasets)
   def get(self):
     try:
-
-      return fetch_user_datasets()
+      args = self.parser_fetch_user_datasets.parse_args()
+      return_only_empty_datasets = args.get('return_only_empty_datasets', False)
+      return fetch_user_datasets(return_only_empty_datasets=args)
     except Exception as e:
       api.logger.exception(e)
       if notBadRequestException(e):
-          # general exception that was unexpected and caused by our code
           api.abort(500, str(e))
-      if e.response is not None:
-          # requests exeption
+      if hasattr(e, 'response') and e.response is not None:
           api.logger.info("Error message details: ", e.response.json().get('message'))
           api.abort(e.response.status_code, e.response.json().get('message'))
       else:
-          # custom werkzeug.exception that we raised
           api.abort(e.code, e.description)
 
 

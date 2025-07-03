@@ -1472,6 +1472,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           responseObject = await client.get(`manage_datasets/fetch_user_datasets`, {
             params: {
               selected_account: window.defaultBfAccount,
+              return_only_empty_datasets: false, // this will only fetch datasets that are empty (we only allow uploading to empty atm)
             },
           });
         } catch (error) {

@@ -2640,6 +2640,7 @@ window.ffmCreateManifest = async (sodaJson) => {
     } else {
       updatedManifestData = newManifestData;
     }
+    console.log("updatedManifestData", updatedManifestData);
     // manifest data will be stored in window.sodaCopy to be reused for manifest edits/regenerating cards
     // sodaJSONObj will remain the same and only have 'additonal-metadata' and 'description' data
     window.sodaCopy["manifest-files"] = updatedManifestData;
