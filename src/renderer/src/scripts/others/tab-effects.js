@@ -129,7 +129,6 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     // if the user has files already on their dataset when starting from new/local and merging to existing pennsieve then
     // show them a message detailing why they cannot create manifest files
     if (document.getElementById("dataset-upload-existing-dataset").classList.contains("checked")) {
-      $("#manifest-creation-prohibited").show();
       if ($("#generate-manifest-curate").prop("checked")) {
         $("#generate-manifest-curate").click();
       }
@@ -144,7 +143,6 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
       if (!document.getElementById("generate-manifest-curate").checked) {
         document.getElementById("manifest-information-container").classList.add("hidden");
       }
-      $("#manifest-creation-prohibited").hide();
       document.getElementById("generate-manifest-curate").disabled = false;
       $("#generate-manifest-curate").prop("disabled", false);
     }
@@ -154,7 +152,6 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
       //Hide the UI until the manifest card are created
       $("#manifest-creating-loading").removeClass("hidden");
       $("#manifest-items-container").addClass("hidden");
-      await window.ffmCreateManifest(window.sodaJSONObj);
       $("#manifest-items-container").removeClass("hidden");
       $("#manifest-creating-loading").addClass("hidden");
     } else {
@@ -630,20 +627,6 @@ window.nextPrev = async (pageIndex) => {
     window.currentTab = window.currentTab + pageIndex;
     // Display the correct tab:
     window.showParentTab(window.currentTab, pageIndex);
-    // hide/show prohibited manifest warning based on if the dataset already has files
-    // if (window.hasFiles) {
-
-    //   $("#manifest-creation-prohibited").show();
-    //   // uncheck the manifest file checkbox if it is currently checked
-    //   if ($("#generate-manifest-curate").prop("checked")) {
-    //     $("#generate-manifest-curate").click();
-    //   }
-    //   $("#generate-manifest-curate").prop("disabled", true);
-    //   $("#nextBtn").prop("disabled", false);
-    // } else {
-    //   $("#manifest-creation-prohibited").hide();
-    //   $("#generate-manifest-curate").prop("disabled", false);
-    // }
   } else {
     // Hide the current tab:
     $(parentTabs[window.currentTab]).removeClass("tab-active");
@@ -3217,34 +3200,6 @@ window.wipeOutCurateProgress = () => {
   $("#Question-validate-dataset-upload-3").hide();
   // empty the failed files table if it has values
   $("#validate-dataset-failed-table tbody tr").remove();
-
-  // uncheck all radio buttons and checkboxes
-  // $("#organize-section").find(".option-card").removeClass("checked");
-  // $("#organize-section").find(".option-card.radio-button").removeClass("non-selected");
-  // $("#organize-section").find(".option-card.high-level-folders").removeClass("disabled");
-  // $("#organize-section").find(".option-card .folder-input-check").prop("checked", false);
-  // $("#organize-section").find(".parent-tabs.option-card").removeClass("checked");
-  // $("#organize-section").find(".parent-tabs.option-card.radio-button").removeClass("non-selected");
-  // $("#organize-section")
-  //   .find(".parent-tabs.option-card.high-level-folders")
-  //   .removeClass("disabled");
-  // $("#organize-section").find(".parent-tabs.option-card.folder-input-check").prop("checked", false);
-  // $(".metadata-button.button-generate-dataset").removeClass("done");
-  // $(".metadata-button.button-generate-dataset").removeClass("d-flex");
-  // $("#organize-section input:checkbox").prop("checked", false);
-  // $("#organize-section input:radio").prop("checked", false);
-
-  // set back local destination for folders to empty
-  // $("#input-destination-generate-dataset-locally").val("");
-  // $("#input-destination-getting-started-locally").val("");
-  // $("#input-destination-getting-started-locally").prop("placeholder", "Browse here");
-  // $("#input-destination-generate-dataset-locally").prop("placeholder", "Browse here");
-
-  // set metadata file paths to empty
-  // $(".para-metadata-file-status").text("");
-
-  // hide the generate manifest locally button
-  // document.getElementById("ffm-container-local-manifest-file-generation").classList.add("hidden");
 
   // set back Please continue para element
   $("#para-continue-prepare-new-getting-started").text("");
