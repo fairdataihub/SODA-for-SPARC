@@ -3680,6 +3680,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
   const problematicFolderNames = [];
   const problematicFileNames = [];
   const datasetStructure = {};
+  const manifestStructure = [];
   const hiddenItems = [];
   const emptyFolders = [];
   const emptyFiles = [];
@@ -3687,7 +3688,12 @@ window.buildDatasetStructureJsonFromImportedData = async (
   showFileImportLoadingSweetAlert(500);
 
   // Function to traverse and build JSON structure
-  const traverseAndBuildJson = async (pathToExplore, currentStructure, currentStructurePath) => {
+  const traverseAndBuildJson = async (
+    pathToExplore,
+    currentStructure,
+    manifestStructure,
+    currentStructurePath
+  ) => {
     // Initialize the current structure if it does not exist
     currentStructure["folders"] = currentStructure["folders"] || {};
     currentStructure["files"] = currentStructure["files"] || {};
@@ -3718,6 +3724,18 @@ window.buildDatasetStructureJsonFromImportedData = async (
             action: ["new"],
           };
 
+          // get timestamp of the file at the given path
+          const statsObj = await window.fs.stat(pathToExplore);
+          const timeStamp = statsObj.mtime.toISOString();
+
+          manifestStructure.push({
+            timestamp: timeStamp,
+            file_name: pathToExplore,
+            file_type: "folder",
+          });
+
+          console.log(manifestStructure);
+
           // Recursively traverse the folder and build the JSON structure
           const folderContents = await window.fs.readdir(pathToExplore);
           await Promise.all(
@@ -3726,6 +3744,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
               await traverseAndBuildJson(
                 itemPath,
                 currentStructure["folders"][folderName],
+                manifestStructure,
                 `${currentStructurePath}${folderName}/`
               );
             })
@@ -3740,6 +3759,16 @@ window.buildDatasetStructureJsonFromImportedData = async (
           localFilePath: pathToExplore,
           fileName: fileName,
         };
+
+        // get timestamp of the file at the given path
+        const statsObj = await window.fs.stat(pathToExplore);
+        const timeStamp = statsObj.mtime.toISOString();
+
+        manifestStructure.push({
+          timestamp: timeStamp,
+          file_name: pathToExplore,
+          file_type: fileExtension,
+        });
 
         const fileIsInForbiddenFilesList = window.evaluateStringAgainstSdsRequirements(
           fileName,
@@ -3797,7 +3826,12 @@ window.buildDatasetStructureJsonFromImportedData = async (
   // Process itemPaths in parallel
   await Promise.all(
     itemPaths.map(async (itemPath) => {
-      await traverseAndBuildJson(itemPath, datasetStructure, currentFileExplorerPath);
+      await traverseAndBuildJson(
+        itemPath,
+        datasetStructure,
+        manifestStructure,
+        currentFileExplorerPath
+      );
     })
   );
 
@@ -3910,10 +3944,10 @@ window.buildDatasetStructureJsonFromImportedData = async (
   }
 
   if (datasetImport) {
-    return [datasetStructure, problematicFolderNames, problematicFileNames];
+    return [datasetStructure, manifestStructure, problematicFolderNames, problematicFileNames];
   }
 
-  return datasetStructure;
+  return [datasetStructure, manifestStructure];
 };
 
 window.deleteFoldersByRelativePath = (arrayOfRelativePaths) => {

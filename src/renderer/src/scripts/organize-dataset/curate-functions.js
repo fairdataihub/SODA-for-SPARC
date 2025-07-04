@@ -488,14 +488,17 @@ window.uploadDatasetClickHandler = async (ev) => {
 
 window.handleLocalDatasetImport = async (path) => {
   const list = await getFilesAndFolders(path);
-  const builtDatasetStructure = await window.buildDatasetStructureJsonFromImportedData(
+  const structure = await window.buildDatasetStructureJsonFromImportedData(
     list.folders,
     "dataset_root/", // Use dataset_root as the root folder since we are importing the root in this case
     true
   );
 
-  window.sodaJSONObj["dataset-structure"] = builtDatasetStructure[0];
-  window.sodaJSONObj["metadata-files"] = list.files;
+  console.log(structure);
+
+  window.sodaJSONObj["dataset-structure"] = structure[0];
+  window.sodaJSONObj["dataset-structure"]["files"] = list.files;
+  window.sodaJSONObj["dataset_metadata"]["manifest_file"] = structure[1];
   const forbiddenFileNames = [];
   const problematicFiles = [];
   const hiddenItems = [];
@@ -585,11 +588,11 @@ window.handleLocalDatasetImport = async (path) => {
 
   // window.sodaJSONObj["metadata-files"] = list.files;
   window.sodaJSONObj["starting-point"]["local-path"] = path;
-  window.sodaJSONObj = await window.addManifestDetailsToDatasetStructure(
-    window.sodaJSONObj,
-    list.manifestFiles,
-    builtDatasetStructure
-  );
+  // window.sodaJSONObj = await window.addManifestDetailsToDatasetStructure(
+  //   window.sodaJSONObj,
+  //   list.manifestFiles,
+  //   builtDatasetStructure
+  // );
 
   return true;
 };
@@ -603,6 +606,9 @@ window.importLocalDataset = async (folderPath) => {
     "metadata-files": {},
     "manifest-files": {},
     "generate-dataset": {},
+    dataset_metadata: {
+      manifest_file: [],
+    },
     "starting-point": {
       origin: "local",
       "local-path": "",
@@ -2334,14 +2340,11 @@ window.openmanifestEditSwal = async () => {
   });
 };
 
+// TODO: Revisit
 $("#generate-manifest-curate").change(async function () {
   if (this.checked) {
     //display manifest generator UI here
     $("#manifest-creating-loading").removeClass("hidden");
-    // create the manifest of the high level folders within sodaJSONObj
-    if ("manifest-files" in window.sodaJSONObj === false) {
-      window.sodaJSONObj["manifest-files"] = {};
-    }
 
     $("#ffm-manifest-generator").show();
     // For the back end to know the manifest files have been created in $HOME/SODA/manifest-files/<highLvlFolder>

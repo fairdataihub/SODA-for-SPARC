@@ -12,8 +12,10 @@ from prepareMetadata import (
     import_ps_manifest_file,
     manifest_creation_progress
 )
-from pysoda.core.metadata import (
-    load_existing_manifest_file
+from pysoda.core.metadata.manifest import (
+    load_existing_manifest_file,
+    create_excel
+
 )
 from flask import request
 from namespaces import NamespaceEnum, get_namespace
@@ -645,6 +647,28 @@ class GetLocalManifestFile(Resource):
         try:
             return load_existing_manifest_file(path_to_manifest_file)
         except Exception as e:
+            if notBadRequestException(e):
+                api.abort(500, str(e))
+            raise e
+
+
+    def post(self):
+        data = request.get_json()
+
+        path_to_manifest_file = data.get('path_to_manifest_file')
+        soda = data.get("soda")
+
+        if not path_to_manifest_file:
+            api.abort(400, "Error:  To save a local manifest file provide a filepath.")
+
+        try:
+            return create_excel(soda, False, path_to_manifest_file)
+        except Exception as e:
+            if isinstance(e, ValidationError):
+                # Extract properties from the ValidationError
+                validation_err_msg = validation_error_message(e)
+                # Return the ValidationError as JSON
+                api.abort(400, validation_err_msg)
             if notBadRequestException(e):
                 api.abort(500, str(e))
             raise e
