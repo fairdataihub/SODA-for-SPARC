@@ -531,7 +531,19 @@ const initializeSODARenderer = async () => {
   // Set the app version in the sidebar for the user to see
   setSidebarAppVersion();
 
-  await warnUserIfBetaVersionAndDntNotEnabled();
+  // Since this is a special version of SODA, notify them that they will not be auto-updated to the latest version
+  // of SODA (since this is a special version made to handle pre-SDS3)
+  await swalShowInfo(
+    "This is a special release of SODA for working with SDS2 datasets",
+    `
+    When you are finished with the tasks that require this version of SODA,
+    please update to the latest version of SODA by going to the link below:
+    <br /></br />
+    <a href="https://docs.sodaforsparc.io/docs/getting-started/download-soda" target="_blank" rel="noopener noreferrer">
+      Download the latest version of SODA
+    </a>
+    `
+  );
 
   // Launch announcements if the user has not seen them yet
   await launchAnnouncements();
