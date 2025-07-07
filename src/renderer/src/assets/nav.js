@@ -2,6 +2,7 @@ import Swal from "sweetalert2";
 import { swalConfirmAction } from "../scripts/utils/swal-utils";
 import lottie from "lottie-web";
 import { existingDataset, modifyDataset } from "../assets/lotties/lotties";
+import { swalShowInfo } from "../scripts/utils/swal-utils";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -335,6 +336,19 @@ document.querySelector("#shortcut-navigate-to-create_submission").addEventListen
 });
 
 document.querySelector("#button-homepage-freeform-mode").addEventListener("click", async () => {
+  // Disable Upload datasets feature for this special version of SODA
+  await swalShowInfo(
+    "The Upload Dataset feature is not supported in this special version of SODA",
+    `
+        Please update to the latest version of SODA to use the Upload Dataset feature.
+        <br /></br />
+        <a href="https://docs.sodaforsparc.io/docs/getting-started/download-soda" target="_blank" rel="noopener noreferrer">
+          Download the latest version of SODA
+        </a>
+        `
+  );
+  return;
+
   //Free form mode will open through here (FROM HOME TO UPLOAD DATASET NOW)
   window.guidedPrepareHomeScreen();
 

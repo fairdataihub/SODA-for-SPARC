@@ -614,9 +614,6 @@ const savePageChanges = async (pageBeingLeftID) => {
     //save changes to the current page
 
     if (pageBeingLeftID === "guided-select-starting-point-tab") {
-      const startingNewCuration = document
-        .getElementById("guided-button-start-new-curation")
-        .classList.contains("selected");
       const resumingExistingProgress = document
         .getElementById("guided-button-resume-progress-file")
         .classList.contains("selected");
@@ -13341,17 +13338,6 @@ document.getElementById("button-homepage-guided-mode").addEventListener("click",
   await window.openPage("guided-select-starting-point-tab");
 });
 
-// Free form mode event listener (from curate and share page)
-document.querySelector("#button-homepage-freeform-mode").addEventListener("click", async () => {
-  //Free form mode will open through here
-  window.guidedPrepareHomeScreen();
-
-  // guidedResetSkippedPages();
-
-  directToFreeFormMode();
-  document.getElementById("guided_mode_view").classList.add("is-selected");
-});
-
 $("#guided-button-add-permission-user-or-team").on("click", function () {
   try {
     //get the selected permission element
@@ -13665,6 +13651,25 @@ const handleMultipleSubSectionDisplay = async (controlledSectionID) => {
 $(".guided--radio-button").on("click", async function () {
   const selectedButton = $(this);
   const notSelectedButton = $(this).siblings(".guided--radio-button");
+  const selectedButtonID = selectedButton.attr("id");
+  console.log("Selected button ID:", selectedButtonID);
+
+  // If the user is trying to create a new dataset, let them know that they need to update SODA
+  // to create a dataset using the latest sds standards
+  if (selectedButtonID === "guided-button-start-new-curation") {
+    await swalShowInfo(
+      "Starting a new dataset is not supported in this special version of SODA",
+      `
+      To begin curating a new dataset adhering to the latest SDS standards,
+      please update to the latest version of SODA by going to the link below: 
+      <br /></br />
+      <a href="https://docs.sodaforsparc.io/docs/getting-started/download-soda" target="_blank" rel="noopener noreferrer">
+        Download the latest version of SODA
+      </a>
+      `
+    );
+    return;
+  }
 
   if (selectedButton.data("warn-before-click") === true) {
     const buttonId = selectedButton.attr("id");
