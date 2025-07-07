@@ -255,7 +255,7 @@ function initialize() {
     });
     mainWindow.webContents.once("dom-ready", () => {
       if (updatechecked == false && !buildIsBeta) {
-        autoUpdater.checkForUpdatesAndNotify();
+        // autoUpdater.checkForUpdatesAndNotify();
       }
     });
     mainWindow.on("close", async (e) => {
@@ -344,7 +344,7 @@ function initialize() {
 
         start_pre_flight_checks();
         if (!buildIsBeta) {
-          autoUpdater.checkForUpdatesAndNotify();
+          // autoUpdater.checkForUpdatesAndNotify();
         }
         updatechecked = true;
       }, 6000);

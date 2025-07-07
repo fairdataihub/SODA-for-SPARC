@@ -576,7 +576,7 @@ const initialize = () => {
         // start_pre_flight_checks();
         if (!buildIsBeta) {
           log.info("Checking for updates in initialize");
-          autoUpdater.checkForUpdatesAndNotify();
+          // autoUpdater.checkForUpdatesAndNotify();
         }
         updatechecked = true;
       }, 6000);
