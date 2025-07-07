@@ -657,16 +657,18 @@ class GetLocalManifestFile(Resource):
 
         path_to_manifest_file = data.get('path_to_manifest_file')
         soda = data.get("soda")
+        upload_boolean = data.get('upload_boolean', False)
 
         if not path_to_manifest_file:
             api.abort(400, "Error:  To save a local manifest file provide a filepath.")
 
         try:
-            return create_excel(soda, False, path_to_manifest_file)
+            return create_excel(soda, upload_boolean, path_to_manifest_file)
         except Exception as e:
             if isinstance(e, ValidationError):
                 # Extract properties from the ValidationError
                 validation_err_msg = validation_error_message(e)
+                api.logger.info(validation_err_msg)
                 # Return the ValidationError as JSON
                 api.abort(400, validation_err_msg)
             if notBadRequestException(e):

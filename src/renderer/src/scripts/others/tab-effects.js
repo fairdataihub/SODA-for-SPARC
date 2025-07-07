@@ -3262,10 +3262,7 @@ const saveSODAJSONProgress = (progressFileName) => {
   var filePath = window.path.join(progressFilePath, progressFileName + ".json");
   // record all information listed in SODA JSON Object before saving
   updateJSONObjectProgress();
-  // delete window.sodaJSONObj["dataset-structure"] value that was added only for the Preview tree view
-  if ("files" in window.sodaJSONObj["dataset-structure"]) {
-    window.sodaJSONObj["dataset-structure"]["files"] = {};
-  }
+
   // delete manifest files added for treeview
   for (var highLevelFol in window.sodaJSONObj["dataset-structure"]["folders"]) {
     if (

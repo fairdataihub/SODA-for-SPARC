@@ -3732,6 +3732,14 @@ window.buildDatasetStructureJsonFromImportedData = async (
             timestamp: timeStamp,
             file_name: pathToExplore,
             file_type: "folder",
+            description: "",
+            entity: "",
+            data_modality: "",
+            also_in_dataset: "",
+            also_in_dataset_path: "",
+            data_dictionary_path: "",
+            entity_is_transitive: "",
+            additional_metadata: "",
           });
 
           console.log(manifestStructure);
@@ -3768,6 +3776,14 @@ window.buildDatasetStructureJsonFromImportedData = async (
           timestamp: timeStamp,
           file_name: pathToExplore,
           file_type: fileExtension,
+          description: "",
+          entity: "",
+          data_modality: "",
+          also_in_dataset: "",
+          also_in_dataset_path: "",
+          data_dictionary_path: "",
+          entity_is_transitive: "",
+          additional_metadata: "",
         });
 
         const fileIsInForbiddenFilesList = window.evaluateStringAgainstSdsRequirements(
@@ -5674,9 +5690,7 @@ const setDatasetNameAndDestination = (sodaJSONObj) => {
 
 const deleteTreeviewFiles = (sodaJSONObj) => {
   // delete datasetStructureObject["files"] value (with metadata files (if any)) that was added only for the Preview tree view
-  if ("files" in sodaJSONObj["dataset-structure"]) {
-    sodaJSONObj["dataset-structure"]["files"] = {};
-  }
+
   // delete manifest files added for treeview
   for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
     if (
@@ -5891,6 +5905,8 @@ const initiate_generate = async (resume = false) => {
   returnButton.type = "button";
   returnButton.id = "returnButton";
   returnButton.innerHTML = "Return to progress";
+
+  console.log(window.sodaJSONObj);
 
   // Event handler for navigation menu's progress bar clone
   returnButton.onclick = function () {

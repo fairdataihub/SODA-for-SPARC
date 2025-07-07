@@ -494,8 +494,6 @@ window.handleLocalDatasetImport = async (path) => {
     true
   );
 
-  console.log(structure);
-
   window.sodaJSONObj["dataset-structure"] = structure[0];
   window.sodaJSONObj["dataset-structure"]["files"] = list.files;
   window.sodaJSONObj["dataset_metadata"]["manifest_file"] = structure[1];
@@ -527,6 +525,7 @@ window.handleLocalDatasetImport = async (path) => {
     }
   }
 
+  // TODO: Handle dropped/renamed files in the manifest file
   if (forbiddenFileNames.length > 0) {
     await swalFileListSingleAction(
       forbiddenFileNames.map((file) => `dataset_root/${file}`),
@@ -588,6 +587,7 @@ window.handleLocalDatasetImport = async (path) => {
 
   // window.sodaJSONObj["metadata-files"] = list.files;
   window.sodaJSONObj["starting-point"]["local-path"] = path;
+  // TODO: Add manfiest details to the dataset structure?
   // window.sodaJSONObj = await window.addManifestDetailsToDatasetStructure(
   //   window.sodaJSONObj,
   //   list.manifestFiles,
@@ -922,7 +922,7 @@ window.dropHandler = async (
       }
       if (dataDeliverables === true) {
         let filepath = file.path;
-        log.info(`Importing Data Deliverables document: ${filepath}`);
+        window.log.info(`Importing Data Deliverables document: ${filepath}`);
         try {
           let extract_milestone = await client.get(`/prepare_metadata/import_milestone`, {
             params: {
@@ -2323,7 +2323,22 @@ const generateFFManifestEditCard = (highLevelFolderName) => {
 };
 
 window.openmanifestEditSwal = async () => {
-  const existingManifestData = window.sodaJSONObj["manifest-files"];
+  let existingManifestData = {};
+  try {
+    let pathToManifest = window.path.join(
+      window.homeDirectory,
+      "SODA",
+      "manifest_files",
+      "manifest.xlsx"
+    );
+    existingManifestData = await client.get(
+      `/prepare_metadata/manifest?path_to_manifest_file=${pathToManifest}`
+    );
+    existingManifestData = existingManifestData.data;
+  } catch (error) {
+    clientError(error);
+    return;
+  }
 
   window.electron.ipcRenderer.invoke("spreadsheet", existingManifestData);
 
@@ -2350,6 +2365,21 @@ $("#generate-manifest-curate").change(async function () {
     // For the back end to know the manifest files have been created in $HOME/SODA/manifest-files/<highLvlFolder>
     window.sodaJSONObj["manifest-files"]["auto-generated"] = true;
     $("#manifest-creating-loading").addClass("hidden");
+
+    try {
+      await client.post("/prepare_metadata/manifest", {
+        soda: window.sodaJSONObj,
+        path_to_manifest_file: window.path.join(
+          window.homeDirectory,
+          "SODA",
+          "manifest_files",
+          "manifest.xlsx"
+        ),
+        upload_boolean: false,
+      });
+    } catch (error) {
+      clientError(error);
+    }
 
     document.getElementById("manifest-information-container").classList.remove("hidden");
     document
