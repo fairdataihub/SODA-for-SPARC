@@ -16,9 +16,61 @@ const DataImporter = ({ dataType, relativeFolderPathToImportDataInto }) => {
 
   // Handles the file drop logic
   const handleDrop = async (files) => {
-    console.log("Dropped files:", files);
+    console.log("[DataImporter] handleDrop called");
+    console.log("[DataImporter] Dropped files:", files);
+    // Try to extract folder paths from dropped files (Electron only)
+    const parentFolders = files
+      .map((file) => {
+        if (file.path) {
+          return file.path.substring(0, file.path.lastIndexOf("\\"));
+        }
+        return null;
+      })
+      .filter(Boolean);
+    const uniqueFolders = Array.from(new Set(parentFolders));
+    // If only one unique parent folder and more than one file, treat as folder drop
+    if (uniqueFolders.length === 1 && files.length > 1 && window.electron?.ipcRenderer) {
+      console.log("[DataImporter] Detected folder drop:", uniqueFolders[0]);
+      window.electron.ipcRenderer.send("selected-folders-organize-datasets", {
+        filePaths: uniqueFolders,
+        importRelativePath: relativeFolderPathToImportDataInto,
+      });
+      return;
+    }
+    // If multiple top-level folders (from multi-folder drop), filter out subfolders
+    if (uniqueFolders.length > 1) {
+      const topLevelFolders = uniqueFolders.filter(
+        (folder) =>
+          !uniqueFolders.some((other) => other !== folder && folder.startsWith(other + "\\"))
+      );
+      if (topLevelFolders.length > 0 && window.electron?.ipcRenderer) {
+        console.log("[DataImporter] Top-level dropped folders:", topLevelFolders);
+        window.electron.ipcRenderer.send("selected-folders-organize-datasets", {
+          filePaths: topLevelFolders,
+          importRelativePath: relativeFolderPathToImportDataInto,
+        });
+        return;
+      }
+    }
+    // Otherwise, treat as file drop (fallback)
+    if (files && files.length > 0) {
+      files.forEach((file, idx) => {
+        console.log(`[DataImporter] File #${idx}:`, file);
+        if (file.webkitRelativePath) {
+          console.log(`[DataImporter] webkitRelativePath: ${file.webkitRelativePath}`);
+        }
+      });
+    } else {
+      console.log("[DataImporter] No files detected in drop event.");
+    }
     const syntheticDropEvent = createSyntheticDropEvent(files);
-    await window.drop(syntheticDropEvent);
+    if (window.drop) {
+      console.log("[DataImporter] window.drop is defined, calling it...");
+      await window.drop(syntheticDropEvent);
+      console.log("[DataImporter] window.drop finished.");
+    } else {
+      console.warn("[DataImporter] window.drop is NOT defined!");
+    }
   };
 
   // Opens the dataset dialog on click
