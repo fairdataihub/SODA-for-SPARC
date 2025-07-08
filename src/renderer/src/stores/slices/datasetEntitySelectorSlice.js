@@ -61,7 +61,11 @@ export const setEntityListUsingArray = (entityType, entityArray) => {
 export const removeEntityFromEntityList = (entityType, entityName) => {
   useGlobalStore.setState(
     produce((state) => {
-      delete state.datasetEntityObj?.[entityType]?.[entityName];
+      if (state.datasetEntityObj && state.datasetEntityObj[entityType]) {
+        delete state.datasetEntityObj[entityType][entityName];
+      } else {
+        console.warn(`Entity type ${entityType} does not exist in datasetEntityObj.`);
+      }
     })
   );
 };

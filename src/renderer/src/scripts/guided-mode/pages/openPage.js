@@ -14,6 +14,7 @@ import {
 } from "../../../stores/slices/datasetTreeViewSlice.js";
 import {
   addEntityToEntityList,
+  removeEntityFromEntityList,
   setActiveEntity,
   setShowFullMetadataFormFields,
 } from "../../../stores/slices/datasetEntitySelectorSlice.js";
@@ -279,23 +280,14 @@ export const openPage = async (targetPageID) => {
           const bucketTypes = ["Experimental", "Protocol", "Documentation"];
           if (selectedEntities.includes("code")) {
             bucketTypes.push("Code");
+          } else {
+            removeEntityFromEntityList("high-level-folder-data-categorization", "Code");
           }
 
           for (const bucketType of bucketTypes) {
             addEntityToEntityList("high-level-folder-data-categorization", bucketType);
           }
         }
-
-        /*if (pageEntityType === "other-data") {
-          const otherBucketTypes = ["Protocol data", "Documentation"];
-          for (const otherBucketType of otherBucketTypes) {
-            addEntityToEntityList("other-data", otherBucketType);
-          }
-          setEntityFilter(
-            [{ type: "high-level-folder-data-categorization", names: ["Other"] }],
-            []
-          );
-        }*/
 
         if (pageEntityType === "sites") {
           const sites = getExistingSites().map((site) => site.id);
