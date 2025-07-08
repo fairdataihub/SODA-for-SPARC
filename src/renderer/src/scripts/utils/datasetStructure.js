@@ -47,29 +47,39 @@ export const countSelectedFilesByEntityType = (entityType) => {
 };
 
 const getNestedObjectAtPathArray = (pathArray) => {
-  // Traverse the dataset structure to find the object at the given path.
-  let currentPath = window.datasetStructureJSONObj;
+  let current = window.datasetStructureJSONObj;
+
   for (const folder of pathArray) {
-    currentPath = currentPath["folders"][folder];
+    if (!current || !current.folders || !current.folders[folder]) {
+      return null; // or undefined, or throw new Error(...) depending on your needs
+    }
+    current = current.folders[folder];
   }
-  return currentPath;
+
+  return current;
 };
 
-const getItemAtPath = (relativePath, itemType) => {
-  if (itemType === "folder") {
-    console.log("hey");
-    console.log("relativePath", relativePath);
-  }
+export const getItemAtPath = (relativePath, itemType) => {
+  console.log("getItemAtPath called with relativePath:", relativePath, "itemType:", itemType);
   // Split the relative path into segments and isolate the item name.
   const pathSegments = relativePath.split("/").filter((segment) => segment !== "");
   const itemName = pathSegments.pop();
 
   // Get the parent folder by traversing the path segments.
   const parentFolder = getNestedObjectAtPathArray(pathSegments);
+  if (!parentFolder) {
+    console.error(`Parent folder not found for path: ${relativePath}`);
+    return null;
+  }
 
   // Retrieve the target item from the parent folder based on its type.
   const itemObject =
     itemType === "folder" ? parentFolder["folders"][itemName] : parentFolder["files"][itemName];
+
+  if (!itemObject) {
+    console.error(`Item not found at path: ${relativePath}`);
+    return null;
+  }
 
   return { parentFolder, itemName, itemObject };
 };

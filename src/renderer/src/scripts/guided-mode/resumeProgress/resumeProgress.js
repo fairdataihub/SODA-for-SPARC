@@ -74,7 +74,7 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
     console.log("lastModifiedDate", lastModifiedDate);
     console.log("sds3ReleaseDate", sds3ReleaseDate);
 
-    if (lastModifiedDate < sds3ReleaseDate) {
+    /*if (lastModifiedDate < sds3ReleaseDate) {
       await swalShowInfo(
         "This dataset requires an older version of SODA to resume.",
         `This progress file was created before SODA adopted the SDS3 workflow.<br><br>
@@ -84,7 +84,7 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
         </a>`
       );
       return;
-    }
+    }*/
     // If the dataset had been previously successfully uploaded, check to make sure it exists on Pennsieve still.
     if (datasetHasAlreadyBeenSuccessfullyUploaded) {
       const previouslyUploadedDatasetId =

@@ -3916,26 +3916,6 @@ window.buildDatasetStructureJsonFromImportedData = async (
   return datasetStructure;
 };
 
-window.deleteFoldersByRelativePath = (arrayOfRelativePaths) => {
-  for (const relativePathToDelete of arrayOfRelativePaths) {
-    const currentPathArray = window.getGlobalPath(relativePathToDelete);
-    console.log("currentPathArray", currentPathArray);
-    const folderToDeleteName = currentPathArray.pop();
-    const parentFolder = window.getRecursivePath(currentPathArray, window.datasetStructureJSONObj);
-
-    const folderToDeleteIsFromPennsieve =
-      parentFolder["folders"][folderToDeleteName]?.["location"] === "ps";
-    console.log("folderToDeleteIsFromPennsieve", folderToDeleteIsFromPennsieve);
-    if (folderToDeleteIsFromPennsieve) {
-      parentFolder["folders"][folderToDeleteName]["action"].push("deleted");
-    } else {
-      delete parentFolder["folders"][folderToDeleteName];
-    }
-  }
-
-  setTreeViewDatasetStructure(window.datasetStructureJSONObj);
-};
-
 window.deleteFilesByRelativePath = (arrayOfRelativePaths) => {
   // for example primary/test/abc.txt
   for (const relativePathToDelete of arrayOfRelativePaths) {

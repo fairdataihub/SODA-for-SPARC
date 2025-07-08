@@ -40,6 +40,7 @@ import useGlobalStore from "../../../stores/globalStore.js";
 import { setPerformanceList } from "../../../stores/slices/performancesSlice.js";
 import { setSelectedModalities } from "../../../stores/slices/modalitiesSlice.js";
 import { guidedSaveProgress } from "./savePageChanges.js";
+import { getItemAtPath } from "../../utils/datasetStructure.js";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -262,7 +263,46 @@ export const openPage = async (targetPageID) => {
         const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
         const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
 
-        setDatasetEntityObj(savedDatasetEntityObj);
+        console.log("savedDatasetEntityObj", savedDatasetEntityObj);
+
+        // Filter out any entities in the savedDatasetEntityObj that no longer exist in the
+        // dataset structure (for example if the user went back and deleted some folders/files)
+        const filterRemovedFilesFromDatasetEntityObj = (entityObj) => {
+          const filteredEntityObj = {};
+
+          // Loop through each entity type in the savedDatasetEntityObj
+          // For example , "high-level-folder-data-categorization", "modalities" etc
+          for (const [entityType, entities] of Object.entries(entityObj)) {
+            filteredEntityObj[entityType] = {};
+
+            // Loop through the entities of the current entity type
+            // For example "Code", "Experimental", "Protocol" etc
+            for (const [entityName, entityData] of Object.entries(entities)) {
+              // Loop through the files and if they exist re-add them to the filteredEntityObj
+              for (const fileName of Object.keys(entityData)) {
+                const itemAtPath = getItemAtPath(fileName, "file");
+                // If the file still exists in the dataset structure, add it to the filteredEntityObj
+                if (itemAtPath) {
+                  if (!filteredEntityObj[entityType][entityName]) {
+                    filteredEntityObj[entityType][entityName] = {};
+                  }
+                  filteredEntityObj[entityType][entityName][fileName] = entityData[fileName];
+                } else {
+                  console.log(
+                    `File ${fileName} in entity ${entityName} of type ${entityType} has been removed from the dataset structure.`
+                  );
+                }
+              }
+            }
+          }
+          return filteredEntityObj;
+        };
+
+        const filteredDatasetEntityObj =
+          filterRemovedFilesFromDatasetEntityObj(savedDatasetEntityObj);
+        console.log("filteredDatasetEntityObj", filteredDatasetEntityObj);
+
+        setDatasetEntityObj(filteredDatasetEntityObj);
 
         // Make any adjustments to the dataset entity object before setting it in the zustand store
         if (pageEntityType === "high-level-folder-data-categorization") {
