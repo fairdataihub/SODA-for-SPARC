@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import useGlobalStore from "../../../stores/globalStore";
-import ExternalLink from "../../buttons/ExternalLink";
+import DropDownNote from "../../utils/ui/DropDownNote";
 import {
   setAwardNumber,
   setMilestones,
@@ -80,6 +80,7 @@ const SubmissionMetadataForm = () => {
           Provide details about the institutions and funding sources associated with this dataset in
           the interface below.
         </Text>
+        <DropDownNote />
       </GuidedModeSection>
       <GuidedModeSection withBorder>
         <DropdownSelect id="guided-funding-agency" />

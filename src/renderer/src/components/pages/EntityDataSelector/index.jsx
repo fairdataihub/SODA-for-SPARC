@@ -18,6 +18,8 @@ import {
   countSelectedFilesByEntityType,
 } from "../../../scripts/utils/datasetStructure";
 import InstructionsTowardsLeftContainer from "../../utils/ui/InstructionsTowardsLeftContainer";
+import ExternalLink from "../../buttons/ExternalLink";
+import DropDownNote from "../../utils/ui/DropDownNote";
 
 const ENTITY_PREFIXES = ["sub-", "sam-", "perf-"];
 
@@ -130,6 +132,8 @@ const EntityDataSelectorPage = ({
   showProgress = false,
 }) => {
   const activeEntity = useGlobalStore((state) => state.activeEntity);
+  const selectedEntities = useGlobalStore((state) => state.selectedEntities);
+  console.log("EntityDataSelectorPage - selectedEntities:", selectedEntities);
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
   const renderDatasetStructureJSONObj = useGlobalStore(
     (state) => state.renderDatasetStructureJSONObj
@@ -146,11 +150,58 @@ const EntityDataSelectorPage = ({
             switch (entityType) {
               case "high-level-folder-data-categorization":
                 return (
-                  <Text>
-                    The SDS requires data to be organized into four categories: experimental, code,
-                    and other (data that is not experimental or code). Use the interface below to
-                    classify your data files.
-                  </Text>
+                  <>
+                    <Text mb={0}>
+                      The SDS requires data to be organized into four categories: Experimental,
+                      Code, Documentation, and Protocol. Use the interface below to classify your
+                      data files.
+                    </Text>
+                    <DropDownNote
+                      dropDownIcon="info"
+                      dropDownButtonText="Learn more about the data categories"
+                      dropDownNote={
+                        <Stack gap="sm">
+                          <Paper shadow="xs" p="sm" radius="md" withBorder>
+                            <Text fw={600} color="blue.7">
+                              Experimental
+                            </Text>
+                            <Text size="sm">
+                              Data collected from experiments, such as raw or processed
+                              measurements, images, recordings, or any primary data generated during
+                              the course of the study.
+                            </Text>
+                          </Paper>
+                          <Paper shadow="xs" p="sm" radius="md" withBorder>
+                            <Text fw={600} color="blue.7">
+                              Code
+                            </Text>
+                            <Text size="sm">
+                              Scripts, computational models, analysis pipelines, or other software
+                              used for data processing, analysis, or simulation in the study.
+                            </Text>
+                          </Paper>
+                          <Paper shadow="xs" p="sm" radius="md" withBorder>
+                            <Text fw={600} color="blue.7">
+                              Documentation
+                            </Text>
+                            <Text size="sm">
+                              Supporting documents such as README files, data dictionaries, or other
+                              materials that help users understand and reuse the dataset.
+                            </Text>
+                          </Paper>
+                          <Paper shadow="xs" p="sm" radius="md" withBorder>
+                            <Text fw={600} color="blue.7">
+                              Protocol
+                            </Text>
+                            <Text size="sm">
+                              Protocols, standard operating procedures, or step-by-step instructions
+                              describing how experiments or analyses were performed.
+                            </Text>
+                          </Paper>
+                        </Stack>
+                      }
+                    />
+                  </>
                 );
 
               case "modalities":

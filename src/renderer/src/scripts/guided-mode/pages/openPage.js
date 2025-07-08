@@ -28,7 +28,10 @@ import {
   setSelectedEntities,
   setDeSelectedEntities,
 } from "../../../stores/slices/datasetContentSelectorSlice.js";
-import { setDatasetEntityObj } from "../../../stores/slices/datasetEntitySelectorSlice.js";
+import {
+  setDatasetEntityObj,
+  filterRemovedFilesFromDatasetEntityObj,
+} from "../../../stores/slices/datasetEntitySelectorSlice.js";
 import { setSelectedHierarchyEntity } from "../../../stores/slices/datasetContentSelectorSlice.js";
 import { guidedSetNavLoadingState } from "./navigationUtils/pageLoading.js";
 import Swal from "sweetalert2";
@@ -264,39 +267,6 @@ export const openPage = async (targetPageID) => {
         const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
 
         console.log("savedDatasetEntityObj", savedDatasetEntityObj);
-
-        // Filter out any entities in the savedDatasetEntityObj that no longer exist in the
-        // dataset structure (for example if the user went back and deleted some folders/files)
-        const filterRemovedFilesFromDatasetEntityObj = (entityObj) => {
-          const filteredEntityObj = {};
-
-          // Loop through each entity type in the savedDatasetEntityObj
-          // For example , "high-level-folder-data-categorization", "modalities" etc
-          for (const [entityType, entities] of Object.entries(entityObj)) {
-            filteredEntityObj[entityType] = {};
-
-            // Loop through the entities of the current entity type
-            // For example "Code", "Experimental", "Protocol" etc
-            for (const [entityName, entityData] of Object.entries(entities)) {
-              // Loop through the files and if they exist re-add them to the filteredEntityObj
-              for (const fileName of Object.keys(entityData)) {
-                const itemAtPath = getItemAtPath(fileName, "file");
-                // If the file still exists in the dataset structure, add it to the filteredEntityObj
-                if (itemAtPath) {
-                  if (!filteredEntityObj[entityType][entityName]) {
-                    filteredEntityObj[entityType][entityName] = {};
-                  }
-                  filteredEntityObj[entityType][entityName][fileName] = entityData[fileName];
-                } else {
-                  console.log(
-                    `File ${fileName} in entity ${entityName} of type ${entityType} has been removed from the dataset structure.`
-                  );
-                }
-              }
-            }
-          }
-          return filteredEntityObj;
-        };
 
         const filteredDatasetEntityObj =
           filterRemovedFilesFromDatasetEntityObj(savedDatasetEntityObj);
