@@ -150,7 +150,12 @@ export const processEntityData = (rawData, entityType) => {
   // Format the entities using the config's format function and normalized IDs
   const entities = rawData.map((item) => {
     // Get the original ID and normalize it
-    const originalId = item[idField];
+    let originalId = item[idField];
+    // Coerce to string to avoid issues with numbers from Excel
+    if (originalId !== undefined && originalId !== null) {
+      originalId = String(originalId);
+    }
+    console.log("originalId", originalId, "idField", idField, "item", item, "prefix", prefix);
     const normalizedId = normalizeEntityId(prefix, originalId);
 
     // For debugging - log if there's a potential issue with normalization
@@ -184,8 +189,11 @@ export const importEntitiesFromExcel = async (file, entityType) => {
     // Read the data
     const rawData = await readExcelFile(file);
 
+    console.log("rawData", rawData);
+
     // Process and validate data
     const processResult = processEntityData(rawData, entityType);
+    console.log("processResult", processResult);
 
     return processResult;
   } catch (error) {
