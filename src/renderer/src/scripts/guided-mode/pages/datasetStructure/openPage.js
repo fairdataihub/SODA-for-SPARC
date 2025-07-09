@@ -9,6 +9,7 @@ import { guidedUpdateFolderStructureUI } from "./utils";
 import { swalFileListSingleAction } from "../../../utils/swal-utils";
 import { getEntityDataById } from "../../../../stores/slices/datasetEntityStructureSlice";
 import { createStandardizedDatasetStructure } from "../../../utils/datasetStructure";
+import { deleteEmptyFoldersFromStructure } from "../../../../stores/slices/datasetTreeViewSlice";
 import client from "../../../client";
 
 while (!window.baseHtmlLoaded) {
@@ -145,19 +146,10 @@ export const openPageDatasetStructure = async (targetPageID) => {
 
     await purgeNonExistentFiles(window.datasetStructureJSONObj);
 
-    /**
-     * Recursively delete empty folders from the dataset structure.
-     */
-    const deleteEmptyFolders = (currentStructure) => {
-      Object.entries(currentStructure.folders || {}).forEach(([folderName, folder]) => {
-        deleteEmptyFolders(folder);
-        if (!Object.keys(folder.files || {}).length && !Object.keys(folder.folders || {}).length) {
-          delete currentStructure.folders[folderName];
-        }
-      });
-    };
-
-    deleteEmptyFolders(window.datasetStructureJSONObj);
+    // Delete empty folders from the dataset structure
+    window.datasetStructureJSONObj = deleteEmptyFoldersFromStructure(
+      window.datasetStructureJSONObj
+    );
 
     // Create a standardized SODA JSON object for the clean-dataset endpoint
     const standardizedStructure = createStandardizedDatasetStructure(
