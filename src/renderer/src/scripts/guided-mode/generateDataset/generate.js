@@ -126,8 +126,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     });
     window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
 
-    await guidedCreateManifestFilesAndAddToDatasetStructure();
-
     //Upload the dataset files
     await guidedUploadDatasetToPennsieve();
     amountOfTimesPennsieveUploadFailed = 0; //reset the upload failed counter
@@ -328,9 +326,6 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
   try {
     // Get the dataset name based on the sodaJSONObj
     const guidedDatasetName = guidedGetDatasetName(window.sodaJSONObj);
-
-    // Attach manifest files
-    await guidedCreateManifestFilesAndAddToDatasetStructure();
 
     // Create standardized structure
     const standardizedDatasetStructure = createStandardizedDatasetStructure(

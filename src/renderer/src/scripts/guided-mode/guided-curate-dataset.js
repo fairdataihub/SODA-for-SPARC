@@ -513,9 +513,6 @@ document
         throw new Error("Dataset is too large for validation");
       }
 
-      // create the manifest files if the user auto generated manifest files at any point
-      await guidedCreateManifestFilesAndAddToDatasetStructure();
-
       // get the manifest files
       let manifestJSONResponse;
       try {

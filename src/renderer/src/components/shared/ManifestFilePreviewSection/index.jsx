@@ -30,12 +30,17 @@ const ManifestFilePreviewSection = ({ id }) => {
           <Button size="md" onClick={handleClick}>
             Preview/Edit Manifest file
           </Button>
-          <Text>
-            You can create a local copy of your manifest files for review. Click to do so if needed.
-          </Text>
-          <Button size="md" onClick={handleGenerateLocalCopy}>
-            Create local copy
-          </Button>
+          {id === "ffm-manifest-file-preview" && (
+            <>
+              <Text>
+                You can create a local copy of your manifest files for review. Click to do so if
+                needed.
+              </Text>
+              <Button size="md" onClick={handleGenerateLocalCopy}>
+                Create local copy
+              </Button>
+            </>
+          )}
         </Stack>
       </Center>
     </SodaPaper>

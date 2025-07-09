@@ -209,9 +209,49 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     // Add validation logic for guided-modalities-data-selection-tab if needed
   }
 
-  if (pageBeingLeftID === "guided-manifest-file-generation-tab") {
-    console.log("Validating manifest file generation page");
-    // Add validation logic for guided-manifest-file-generation-tab if needed
+  if (pageBeingLeftID === "guided-manifest-file-review-tab") {
+    const guidedManifestData = window.sodaJSONObj["guided-manifest-file-data"];
+    console.log("guidedManifestData", guidedManifestData);
+    console.log("manifestHeaders", guidedManifestData["headers"]);
+    // console log the first 3 rows of data
+    console.log("manifestData", guidedManifestData["data"].slice(0, 3));
+
+    const headerToSchemaKey = {
+      filename: "file_name",
+      timestamp: "timestamp",
+      description: "description",
+      "file type": "file_type",
+      entity: "entity",
+      "data modality": "data_modality",
+      "also in dataset": "also_in_dataset",
+      "data dictionary path": "data_dictionary_path",
+      "entity is transitive": "entity_is_transitive",
+      "Additional Metadata": "additional_metadata",
+    };
+
+    const convertGuidedManifestToSchema = ({ headers, data }) => {
+      return data.map((row) => {
+        const obj = {};
+
+        headers.forEach((header, index) => {
+          const key = headerToSchemaKey[header];
+          if (key) {
+            let value = row[index] ?? ""; // fallback to empty string if missing
+            // Optional fix for timestamp format (replace comma with dot)
+            if (key === "timestamp") {
+              value = value.replace(",", ".");
+            }
+            obj[key] = value;
+          }
+        });
+
+        return obj;
+      });
+    };
+
+    const manifestObjects = convertGuidedManifestToSchema(guidedManifestData);
+    // Set the manifest objects in the sodaJSONObj at where they will be detected by pysoda
+    window.sodaJSONObj["dataset_metadata"]["manifest_file"] = manifestObjects;
   }
 
   if (pageBeingLeftID === "dataset-structure-review-tab") {
