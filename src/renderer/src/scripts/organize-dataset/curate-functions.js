@@ -534,10 +534,10 @@ window.handleLocalDatasetImport = async (path) => {
       false
     );
 
-    const metadataFiles = Object.keys(window.sodaJSONObj["metadata-files"]);
+    const metadataFiles = Object.keys(window.sodaJSONObj["dataset-structure"]["files"]);
     for (let file of metadataFiles) {
       if (forbiddenFileNames.includes(file)) {
-        delete window.sodaJSONObj["metadata-files"][file];
+        delete window.sodaJSONObj["dataset-structure"]["files"][file];
       }
     }
   }
