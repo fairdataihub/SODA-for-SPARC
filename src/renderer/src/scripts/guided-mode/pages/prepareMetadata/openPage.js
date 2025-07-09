@@ -125,11 +125,12 @@ export const openPagePrepareMetadata = async (targetPageID) => {
 
     // If the consortium is SPARC, set the milestones and milestone date
     if (fundingConsortium === "SPARC") {
+      console.log("milestoneCompletionDate", milestoneCompletionDate);
       setMilestones(milestoneAchieved);
-      setMilestoneDate(milestoneCompletionDate);
+      setMilestoneDate(milestoneCompletionDate ? new Date(milestoneCompletionDate) : null);
     } else {
       setMilestones([]);
-      setMilestoneDate("");
+      setMilestoneDate(null);
     }
 
     // Set the award number for all funding agencies
@@ -207,7 +208,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
   }
 
   if (targetPageID === "guided-resources-entity-addition-tab") {
-    const existingResources = window.sodaJSONObj["dataset_metadata"]["resources_metadata"] || [];
+    const existingResources = window.sodaJSONObj["dataset_metadata"]["resources"] || [];
     setResourceList(existingResources);
   }
 

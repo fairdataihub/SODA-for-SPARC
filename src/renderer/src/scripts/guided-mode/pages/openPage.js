@@ -277,6 +277,8 @@ export const openPage = async (targetPageID) => {
 
         // Make any adjustments to the dataset entity object before setting it in the zustand store
         if (pageEntityType === "high-level-folder-data-categorization") {
+          // Delete the manifest file because it throws off the count of files selected
+          delete window.datasetStructureJSONObj?.["files"]?.["manifest.xlsx"];
           const bucketTypes = ["Experimental", "Protocol", "Documentation"];
           if (selectedEntities.includes("code")) {
             bucketTypes.push("Code");
@@ -440,32 +442,6 @@ export const openPage = async (targetPageID) => {
     //         addEntityToEntityList("modalities", "electrophysiology");
     //         setActiveEntity(null);
     //         console.log("datasetEntityObj", useGlobalStore.getState().datasetEntityObj);
-    //     }
-
-    //     if (targetPageID === "guided-create-samples-metadata-tab") {
-    //         //remove custom fields that may have existed from a previous session
-    //         document.getElementById("guided-accordian-custom-fields-samples").innerHTML = "";
-    //         document.getElementById("guided-bootbox-subject-id-samples").value = "";
-    //         document.getElementById("guided-bootbox-sample-id").value = "";
-    //         await renderSamplesMetadataAsideItems();
-    //         const samplesMetadataBlackArrowLottieContainer = document.getElementById(
-    //             "samples-metadata-black-arrow-lottie-container"
-    //         );
-    //         samplesMetadataBlackArrowLottieContainer.innerHTML = "";
-    //         lottie.loadAnimation({
-    //             container: samplesMetadataBlackArrowLottieContainer,
-    //             animationData: blackArrow,
-    //             renderer: "svg",
-    //             loop: true,
-    //             autoplay: true,
-    //         });
-    //         hideEleShowEle("guided-form-add-a-sample", "guided-form-add-a-sample-intro");
-
-    //         // Hide the samples protocol section if no protocols have been attached to the dataset
-    //         const samplesProtocolContainer = document.getElementById("guided-container-samples-protocol");
-    //         window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"].length > 0
-    //             ? samplesProtocolContainer.classList.remove("hidden")
-    //             : samplesProtocolContainer.classList.add("hidden");
     //     }
 
     //     if (targetPageID === "guided-create-changes-metadata-tab") {

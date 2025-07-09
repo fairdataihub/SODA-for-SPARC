@@ -58,7 +58,7 @@ const DropDownNote = ({ id }) => {
     },
     "entity-types-list": {
       dropDownIcon: "info",
-      dropDownButtonText: "What are data entities?",
+      dropDownButtonText: "Learn more about entities and entity types",
       dropDownNote: (
         <>
           <Text size="sm" mb="md">

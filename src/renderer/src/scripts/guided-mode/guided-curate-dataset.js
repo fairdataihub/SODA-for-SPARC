@@ -1829,69 +1829,6 @@ const openAddAdditionLinkSwal = async () => {
   }
 };
 
-const openModifySampleMetadataPage = (sampleMetadataID, samplesSubjectID) => {
-  //Get all samples from the dataset and add all other samples to the was derived from dropdown
-  const [samplesInPools, samplesOutsidePools] = window.sodaJSONObj.getAllSamplesFromSubjects();
-  //Combine sample data from samples in and out of pools
-  let samples = [...samplesInPools, ...samplesOutsidePools];
-  const samplesBesidesCurrSample = samples.filter(
-    (sample) => sample.sampleName !== sampleMetadataID
-  );
-  document.getElementById("guided-bootbox-wasDerivedFromSample").innerHTML = `
- <option value="">Sample not derived from another sample</option>
- ${samplesBesidesCurrSample
-   .map((sample) => {
-     return `<option value="${sample.sampleName}">${sample.sampleName}</option>`;
-   })
-   .join("\n")}))
- `;
-
-  //Add protocol titles to the protocol dropdown
-  const protocols = window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"];
-  document.getElementById("guided-bootbox-sample-protocol-title").innerHTML = `
-    <option value="">No protocols associated with this sample</option>
-    ${protocols
-      .map((protocol) => {
-        return `
-          <option
-            value="${protocol.description}"
-            data-protocol-link="${protocol.link}"
-          >
-            ${protocol.description}
-          </option>
-        `;
-      })
-      .join("\n")}))
-  `;
-
-  document.getElementById("guided-bootbox-sample-protocol-location").innerHTML = `
-    <option value="">No protocols associated with this sample</option>
-    ${protocols
-      .map((protocol) => {
-        return `
-          <option
-            value="${protocol.link}"
-            data-protocol-description="${protocol.description}"
-          >
-            ${protocol.link}
-          </option>
-        `;
-      })
-      .join("\n")}))
-  `;
-
-  for (let i = 1; i < window.samplesTableData.length; i++) {
-    if (
-      window.samplesTableData[i][0] === samplesSubjectID &&
-      window.samplesTableData[i][1] === sampleMetadataID
-    ) {
-      //if the id matches, load the metadata into the form
-      window.populateFormsSamples(samplesSubjectID, sampleMetadataID, "", "guided");
-      return;
-    }
-  }
-};
-
 window.openCopySubjectMetadataPopup = async () => {
   //save current subject metadata entered in the form
   window.addSubject("guided");
@@ -2038,6 +1975,8 @@ window.openCopySampleMetadataPopup = async () => {
     focusCancel: true,
   }).then(async (result) => {
     if (result.isConfirmed) {
+      /*
+      Commented out BUT THIS IS PROBABLY WHERE COPY METADATA STUFF IS
       const selectedCopyFromSample = $("input[name='copy-from']:checked").val();
       //loop through checked copy-to checkboxes and return the value of the checkbox element if checked
       let selectedCopyToSamples = []; //["sam2","sam3"]
@@ -2076,7 +2015,7 @@ window.openCopySampleMetadataPopup = async () => {
       if (currentSampleOpenInView) {
         openModifySampleMetadataPage(currentSampleOpenInView, currentSampleSubjectOpenInView);
       }
-      await guidedSaveProgress();
+      await guidedSaveProgress();*/
     }
   });
 };
@@ -3534,153 +3473,6 @@ const renderSubjectsMetadataAsideItems = async () => {
   });
 };
 
-const renderSamplesMetadataAsideItems = async () => {
-  const asideElement = document.getElementById(`guided-samples-metadata-aside`);
-  asideElement.innerHTML = "";
-
-  const [samplesInPools, samplesOutsidePools] = window.sodaJSONObj.getAllSamplesFromSubjects();
-  //Combine sample data from samples in and out of pools
-  let samples = [...samplesInPools, ...samplesOutsidePools];
-  const sampleNames = samples.map((sample) => sample.sampleName);
-
-  const sampleMetadataCopyButton = document.getElementById("guided-button-sample-metadata-copy");
-  const sampleMetadataCopyTip = document.getElementById("guided-copy-samples-tip");
-
-  if (samples.length > 1) {
-    sampleMetadataCopyButton.classList.remove("hidden");
-    sampleMetadataCopyTip.classList.remove("hidden");
-  } else {
-    sampleMetadataCopyButton.classList.add("hidden");
-    sampleMetadataCopyTip.classList.add("hidden");
-  }
-
-  const samplesFormEntries = window.guidedSamplesFormDiv.querySelectorAll(".samples-form-entry");
-
-  //Create an array of samplesFormEntries name attribute
-  const samplesFormNames = [...samplesFormEntries].map((entry) => {
-    return entry.name;
-  });
-
-  if (window.samplesTableData.length == 0) {
-    //Get items with class "samples-form-entry" from samplesForDiv
-    window.samplesTableData[0] = samplesFormNames;
-    for (const sample of samples) {
-      const sampleDataArray = [];
-      sampleDataArray.push(sample.subjectName);
-      sampleDataArray.push(sample.sampleName);
-      //Push an empty string for was derived from
-      sampleDataArray.push("");
-      sampleDataArray.push(sample.poolName ? sample.poolName : "");
-      for (let i = 0; i < samplesFormNames.length - 4; i++) {
-        sampleDataArray.push("");
-      }
-      window.samplesTableData.push(sampleDataArray);
-    }
-  } else {
-    //Add samples that have not yet been added to the table to the table
-    for (const sample of samples) {
-      let sampleAlreadyInTable = false;
-      for (let i = 0; i < window.samplesTableData.length; i++) {
-        if (window.samplesTableData[i][1] == sample.sampleName) {
-          sampleAlreadyInTable = true;
-        }
-      }
-      if (!sampleAlreadyInTable) {
-        const sampleDataArray = [];
-        sampleDataArray.push(sample.subjectName);
-        sampleDataArray.push(sample.sampleName);
-        //Push an empty string for was derived from
-        sampleDataArray.push("");
-        sampleDataArray.push(sample.poolName ? sample.poolName : "");
-        for (let i = 0; i < window.samplesTableData[0].length - 4; i++) {
-          sampleDataArray.push("");
-        }
-        window.samplesTableData.push(sampleDataArray);
-      }
-    }
-  }
-
-  // If the subject is in the table but not in the subjects array, remove it
-  for (let i = 1; i < window.samplesTableData.length; i++) {
-    if (!sampleNames.includes(window.samplesTableData[i][1])) {
-      window.samplesTableData.splice(i, 1);
-    }
-  }
-
-  //If custom fields have been added to the window.samplesTableData, create a field for each custom field
-  //added
-  // Samples metadata have 19 standard fields to fill, if the sample has more then additional fields are included
-  if (window.samplesTableData[0].length > 19) {
-    for (let i = 19; i < window.samplesTableData[0].length; i++) {
-      if (
-        !samplesFormNames.includes(window.samplesTableData[0][i]) ||
-        !samplesFormNames.includes(
-          window.samplesTableData[0][i].charAt(0).toUpperCase() +
-            window.samplesTableData[0][i].slice(1)
-        )
-      ) {
-        window.addCustomHeader("samples", window.samplesTableData[0][i], "guided");
-      }
-    }
-  }
-
-  //Create the HTML for the samples
-  const sampleItems = samples
-    .map((sample) => {
-      return `
-        <div
-          class="samples-metadata-aside-item selection-aside-item"
-          data-samples-subject-name="${sample.subjectName}"
-        >
-          ${sample.subjectName}/${sample.sampleName}
-        </div>
-      `;
-    })
-    .join("\n");
-
-  //Add the samples to the DOM
-  asideElement.innerHTML = sampleItems;
-
-  //add click event to each sample item
-  const selectionAsideItems = document.querySelectorAll(`div.samples-metadata-aside-item`);
-  selectionAsideItems.forEach(async (item) => {
-    item.addEventListener("click", async (e) => {
-      //Hide intro and show metadata fields if intro is open
-      const introElement = document.getElementById("guided-form-add-a-sample-intro");
-      if (!introElement.classList.contains("hidden")) {
-        hideEleShowEle("guided-form-add-a-sample-intro", "guided-form-add-a-sample");
-      }
-
-      let previousSample = document.getElementById("guided-bootbox-sample-id").value;
-
-      //check to see if previousSample is empty
-      if (previousSample) {
-        window.addSample("guided");
-        await guidedSaveProgress();
-      }
-
-      //add selected class to clicked element
-      e.target.classList.add("is-selected");
-      //remove selected class from all other elements
-      selectionAsideItems.forEach((item) => {
-        if (item != e.target) {
-          item.classList.remove("is-selected");
-        }
-      });
-
-      //clear all sample form fields
-      window.clearAllSubjectFormFields(window.guidedSamplesFormDiv);
-
-      openModifySampleMetadataPage(
-        e.target.innerText.split("/")[1],
-        e.target.innerText.split("/")[0]
-      );
-
-      await guidedSaveProgress();
-    });
-  });
-};
-
 // Guided mode event listener (from curate and share page)
 
 // Free form mode event listener (from curate and share page)
@@ -3821,40 +3613,6 @@ $("#guided-dataset-subtitle-input").on("keyup", () => {
     guidedDatasetSubtitleCharCount
   );
 });
-
-document
-  .getElementById("guided-bootbox-sample-protocol-title")
-  .addEventListener("change", function () {
-    const newDescriptionAssociatedLink = $(this).find(":selected").data("protocol-link");
-    document.getElementById("guided-bootbox-sample-protocol-location").value =
-      newDescriptionAssociatedLink ? newDescriptionAssociatedLink : "";
-  });
-document
-  .getElementById("guided-bootbox-sample-protocol-location")
-  .addEventListener("change", function () {
-    const newDescriptionAssociatedDescription = $(this)
-      .find(":selected")
-      .data("protocol-description");
-    document.getElementById("guided-bootbox-sample-protocol-title").value =
-      newDescriptionAssociatedDescription ? newDescriptionAssociatedDescription : "";
-  });
-
-document
-  .getElementById("guided-bootbox-subject-protocol-title")
-  .addEventListener("change", function () {
-    const newDescriptionAssociatedLink = $(this).find(":selected").data("protocol-link");
-    document.getElementById("guided-bootbox-subject-protocol-location").value =
-      newDescriptionAssociatedLink ? newDescriptionAssociatedLink : "";
-  });
-document
-  .getElementById("guided-bootbox-subject-protocol-location")
-  .addEventListener("change", function () {
-    const newDescriptionAssociatedDescription = $(this)
-      .find(":selected")
-      .data("protocol-description");
-    document.getElementById("guided-bootbox-subject-protocol-title").value =
-      newDescriptionAssociatedDescription ? newDescriptionAssociatedDescription : "";
-  });
 
 // function for importing a banner image if one already exists
 $("#guided-button-add-banner-image").click(async () => {

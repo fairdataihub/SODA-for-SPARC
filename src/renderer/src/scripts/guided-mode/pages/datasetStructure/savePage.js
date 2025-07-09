@@ -160,7 +160,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
   }
 
   if (pageBeingLeftID === "guided-entity-addition-method-selection-tab") {
-    console.log("Validating entity addition method selection page");
+    console.log("Validating Entity Addition Method selection page");
     // Add validation logic for guided-entity-addition-method-selection-tab if needed
   }
 

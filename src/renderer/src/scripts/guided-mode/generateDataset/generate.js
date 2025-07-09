@@ -329,6 +329,9 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
     // Get the dataset name based on the sodaJSONObj
     const guidedDatasetName = guidedGetDatasetName(window.sodaJSONObj);
 
+    // Attach manifest files
+    await guidedCreateManifestFilesAndAddToDatasetStructure();
+
     // Create standardized structure
     const standardizedDatasetStructure = createStandardizedDatasetStructure(
       window.datasetStructureJSONObj,
@@ -367,9 +370,6 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
         )}GB. Dataset size: ${convertBytesToGb(localDatasetSizeInBytes)}GB`
       );
     }
-
-    // Attach manifest files
-    await guidedCreateManifestFilesAndAddToDatasetStructure();
 
     // Copy and prepare SODA object
     const sodaJSONObjCopy = JSON.parse(JSON.stringify(window.sodaJSONObj));
@@ -2395,7 +2395,7 @@ export const guidedPrepareDatasetStructureAndMetadataForUpload = async (sodaObj)
   console.log("dataset-metadata", sodaObj["dataset_metadata"]);
 
   // Prepare the resources metadata
-  const resources = sodaObj["dataset_metadata"]["resources_metadata"];
+  const resources = sodaObj["dataset_metadata"]["resources"];
   console.log("resourcesMetadata", resources);
 
   // Prepare the dataset_description metadata

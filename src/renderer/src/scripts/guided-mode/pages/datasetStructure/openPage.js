@@ -24,7 +24,7 @@ export const openPageDatasetStructure = async (targetPageID) => {
   }
 
   if (targetPageID === "guided-entity-addition-method-selection-tab") {
-    console.log("Opening entity addition method selection page");
+    console.log("Opening Entity Addition Method selection page");
   }
 
   if (targetPageID === "guided-dataset-content-tab") {
