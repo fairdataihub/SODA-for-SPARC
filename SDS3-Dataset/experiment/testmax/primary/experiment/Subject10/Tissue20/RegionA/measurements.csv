@@ -1,0 +1,5 @@
+Time,Position,Measurement,Value
+1,RegionA,Temperature,35.74 °C
+2,RegionA,pH,7.15
+3,RegionA,Pressure,90.51 mmHg
+4,RegionA,Flow Rate,60.05 ml/min
