@@ -22,6 +22,7 @@ import SubmissionMetadataForm from "../pages/SubmissionMetadataForm";
 import Icon from "../shared/Icon";
 import SodaTextInput from "../common/SodaTextInput";
 import ManifestFilePreviewSection from "../shared/ManifestFilePreviewSection";
+import DropDownNote from "../utils/ui/DropDownNote";
 import { Divider } from "@mantine/core";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
@@ -277,6 +278,18 @@ const componentTypeRenderers = {
     root.render(
       <SodaComponentWrapper>
         <ManifestFilePreviewSection {...props} />
+      </SodaComponentWrapper>
+    );
+  },
+  "dropdown-note-renderer": (componentSlot) => {
+    const root = createRoot(componentSlot);
+    const props = {
+      id: componentSlot.id,
+    };
+    console.log("zd:" + componentSlot.id);
+    root.render(
+      <SodaComponentWrapper>
+        <DropDownNote {...props} />
       </SodaComponentWrapper>
     );
   },

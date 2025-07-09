@@ -157,45 +157,7 @@ const EntityDataSelectorPage = ({
                       {datasetIncludesCode ? ", Code," : ","} Documentation, and Protocol. Use the
                       interface below to classify your data files.
                     </Text>
-                    <DropDownNote
-                      dropDownIcon="info"
-                      dropDownButtonText="Learn more about the data categories"
-                      dropDownNote={
-                        <>
-                          <SodaPaper>
-                            <Text fw={600}>Experimental</Text>
-                            <Text size="sm">
-                              Data collected from experiments, such as raw or processed
-                              measurements, images, recordings, or any primary data generated during
-                              the study.
-                            </Text>
-                          </SodaPaper>
-                          {datasetIncludesCode && (
-                            <SodaPaper>
-                              <Text fw={600}>Code</Text>
-                              <Text size="sm">
-                                Scripts, computational models, analysis pipelines, or other software
-                                used for data processing, analysis, or simulation in the study.
-                              </Text>
-                            </SodaPaper>
-                          )}
-                          <SodaPaper>
-                            <Text fw={600}>Documentation</Text>
-                            <Text size="sm">
-                              Supporting documents such as README files, data dictionaries, or other
-                              materials that help users understand and reuse the dataset.
-                            </Text>
-                          </SodaPaper>
-                          <SodaPaper>
-                            <Text fw={600}>Protocol</Text>
-                            <Text size="sm">
-                              Protocols, standard operating procedures, or step-by-step instructions
-                              describing how experiments or analyses were performed.
-                            </Text>
-                          </SodaPaper>
-                        </>
-                      }
-                    />
+                    <DropDownNote id="data-categories-list" />
                   </>
                 );
 
