@@ -307,7 +307,6 @@ def fetch_user_datasets(return_only_empty_datasets=False):
             r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/role", headers=create_request_headers(get_access_token()))
             r.raise_for_status()
             user_role = r.json()["role"]
-            namespace_logger.info(f"2Dataset response: {r.json()}")
             if user_role not in ["viewer", "editor"]:
                 store.append(
                     {"id": selected_dataset_id, "name": dataset['name'], "role": user_role, "intId": dataset["intId"]}
