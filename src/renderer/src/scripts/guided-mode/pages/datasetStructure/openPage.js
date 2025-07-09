@@ -231,8 +231,18 @@ export const openPageDatasetStructure = async (targetPageID) => {
     const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
 
     const updateEntityColumn = (manifestDataRows, datasetEntityObj) => {
+      console.log("manifestDataRows", manifestDataRows);
+      console.log("datasetEntityObj", datasetEntityObj);
       manifestDataRows.forEach((row) => {
-        const path = row[0]; // Path is in the first column
+        let path = row[0]; // Path is in the first column
+        // replace the first part of the path with "data/"
+        const pathSegments = path.split("/");
+        if (pathSegments.length > 0) {
+          pathSegments[0] = "data";
+          path = pathSegments.join("/");
+        }
+
+        console.log("path2:", path);
         let entityList = [];
 
         const entityTypes = ["sites", "samples", "subjects", "performances"];
