@@ -2457,10 +2457,11 @@ $("#generate-manifest-curate").change(async function () {
     document
       .getElementById("ffm-container-local-manifest-file-generation")
       .classList.remove("hidden");
+    document.getElementById("manifest-items-container").classList.remove("hidden");
   } else {
     $("#ffm-manifest-generator").hide();
     $("#manifest-creating-loading").addClass("hidden");
-    document.getElementById("ffm-container-manifest-file-cards").innerHTML = "";
+    // document.getElementById("ffm-container-manifest-file-cards").innerHTML = "";
     if (window.sodaJSONObj["manifest-files"]?.["destination"]) {
       delete window.sodaJSONObj["manifest-files"]["destination"];
     }
@@ -2469,5 +2470,6 @@ $("#generate-manifest-curate").change(async function () {
     }
     document.getElementById("ffm-container-local-manifest-file-generation").classList.add("hidden");
     document.getElementById("manifest-information-container").classList.add("hidden");
+    document.getElementById("manifest-items-container").classList.add("hidden");
   }
 });
