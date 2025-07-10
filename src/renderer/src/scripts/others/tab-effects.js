@@ -3156,6 +3156,7 @@ window.wipeOutCurateProgress = () => {
     "starting-point": { origin: "" },
     "dataset-structure": {},
     "metadata-files": {},
+    dataset_metadata: {},
   };
 
   // reset imported dataset path
@@ -3171,6 +3172,10 @@ window.wipeOutCurateProgress = () => {
   $("#change-workspace-btn").removeClass("selected");
   $("#change-workspace-btn").removeClass("not-selected");
   $("#confirm-account-workspace").addClass("basic");
+  // hide the pennsieve agent
+  document
+    .querySelector("#freeform-mode-post-account-confirmation-pennsieve-agent-check")
+    .classList.add("hidden");
 
   // reset page 3 dataset upload options
 
