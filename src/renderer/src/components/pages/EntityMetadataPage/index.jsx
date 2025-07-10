@@ -57,6 +57,7 @@ import SodaGreenPaper from "../../utils/ui/SodaGreenPaper";
 import { getExistingSamples } from "../../../stores/slices/datasetEntityStructureSlice";
 import InstructionsTowardsLeftContainer from "../../utils/ui/InstructionsTowardsLeftContainer";
 import { OptionalFieldsNotice } from "./utils";
+import DropDownNote from "../../utils/ui/DropDownNote";
 /**
  * EntityMetadataForm Component
  *
@@ -878,6 +879,7 @@ const EntityMetadataPage = ({ entityType }) => {
             a lot of overlapping metadata, you can use the copy metadata button to copy metadata between ${entityType}.`
             : "Use the interface below to describe the entities in your experimental data."}
         </Text>
+        {!showFullMetadataFormFields && <DropDownNote id="dataset-entity-management-page" />}
       </GuidedModeSection>
 
       <GuidedModeSection>

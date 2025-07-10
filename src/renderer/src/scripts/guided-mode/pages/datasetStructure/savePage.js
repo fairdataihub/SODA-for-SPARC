@@ -200,8 +200,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
   }
 
   if (pageBeingLeftID === "guided-modalities-selection-tab") {
-    console.log("Validating modalities selection page");
-    // Add validation logic for guided-modalities-selection-tab if needed
+    // Page logic handled by the component nothing to do here
   }
 
   if (pageBeingLeftID === "guided-modalities-data-selection-tab") {

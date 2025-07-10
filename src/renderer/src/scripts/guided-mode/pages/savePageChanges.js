@@ -99,6 +99,32 @@ export const savePageChanges = async (pageBeingLeftID) => {
       }
 
       if (pageBeingLeftComponentType === "modality-selection-page") {
+        const userSelectedTheyHaveMultipleModalities = document
+          .getElementById("modality-selection-yes")
+          .classList.contains("selected");
+        const userSelectedTheyDoNotHaveMultipleModalities = document
+          .getElementById("modality-selection-no")
+          .classList.contains("selected");
+        console.log(
+          "userSelectedTheyHaveMultipleModalities",
+          userSelectedTheyHaveMultipleModalities
+        );
+        console.log(
+          "userSelectedTheyDoNotHaveMultipleModalities",
+          userSelectedTheyDoNotHaveMultipleModalities
+        );
+
+        if (
+          !userSelectedTheyDoNotHaveMultipleModalities &&
+          !userSelectedTheyHaveMultipleModalities
+        ) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please indicate if your dataset has multiple modalities.",
+          });
+          throw errorArray;
+        }
+
         const selectedModalities = useGlobalStore.getState()["selectedModalities"];
         console.log("selectedModalities", selectedModalities);
         if (selectedModalities.length === 0) {

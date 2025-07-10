@@ -62,10 +62,10 @@ const DropDownNote = ({ id }) => {
       dropDownNote: (
         <>
           <Text size="sm" mb="md">
-            In the SPARC Dataset Structure (SDS), a <strong>data entity</strong> represents a key
-            item in your dataset, such as a subject, sample, or site. Entities help organize your
-            data and define its structure. Each entity must be assigned a unique ID in SODA, linked
-            to files in your dataset, and you will be asked to provide metadata describing each one.
+            In the SPARC Dataset Structure (SDS), an <strong>entity</strong> is a core item in your
+            dataset such as a subject, sample, or site, that helps organize and describe your data.
+            Based on your selections on the Dataset Content page, you will need to provide assign
+            unique IDs for the following entity types:
           </Text>
 
           <SodaPaper>
@@ -95,6 +95,17 @@ const DropDownNote = ({ id }) => {
             </Text>
           </SodaPaper>
         </>
+      ),
+    },
+    "dataset-entity-management-page": {
+      dropDownIcon: "info",
+      dropDownButtonText: "Learn more about managing the structure of your entities",
+      dropDownNote: (
+        <Text size="sm">
+          The SPARC Dataset Structure (SDS) requires you to manage entities and their relationships
+          to ensure your dataset is well-organized and reusable. This page allows you to add, edit,
+          or remove entities such as subjects, samples, and sites.
+        </Text>
       ),
     },
   };
