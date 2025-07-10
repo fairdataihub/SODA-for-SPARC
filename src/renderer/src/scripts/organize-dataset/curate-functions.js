@@ -496,7 +496,6 @@ window.handleLocalDatasetImport = async (path) => {
 
   window.sodaJSONObj["dataset-structure"] = structure[0];
   window.sodaJSONObj["dataset-structure"]["files"] = list.files;
-  window.sodaJSONObj["dataset_metadata"]["manifest_file"] = structure[1];
   const forbiddenFileNames = [];
   const problematicFiles = [];
   const hiddenItems = [];
@@ -557,7 +556,7 @@ window.handleLocalDatasetImport = async (path) => {
     );
 
     if (userResponse === "confirm") {
-      window.replaceProblematicFilesWithSDSCompliantNames(window.sodaJSONObj["metadata-files"]);
+      window.replaceProblematicFilesWithSDSCompliantNames(window.sodaJSONObj);
     }
 
     if (userResponse === "cancel") {
@@ -567,7 +566,7 @@ window.handleLocalDatasetImport = async (path) => {
 
   if (hiddenItems.length > 0) {
     const userResponse = await swalFileListTripleAction(
-      hidden.map((file) => `dataset_root/${file}`),
+      hiddenItems.map((file) => `dataset_root/${file}`),
       "<p>Hidden files detected</p>",
       `Hidden files are typically not recommend per the SPARC data standards, but you can choose to keep them if you wish.`,
       "Import the hidden files into SODA",
@@ -577,7 +576,7 @@ window.handleLocalDatasetImport = async (path) => {
     );
 
     if (userResponse === "deny") {
-      window.removeHiddenFiles(window.sodaJSONObj["metadata-files"]);
+      window.removeHiddenFiles(window.sodaJSONObj["dataset-structure"]);
     }
 
     if (userResponse === "cancel") {
@@ -2322,6 +2321,66 @@ const generateFFManifestEditCard = (highLevelFolderName) => {
 `;
 };
 
+// PRE-REQ: Happens after the dataset name has been selected
+window.ffmCreateManifest = async () => {
+  let datasetStructure = window.sodaJSONObj["dataset-structure"];
+
+  let manifestStructure = [];
+
+  // recursively go through the dataset structure
+  const createManifestStructure = async (
+    datasetStructure,
+    manifestStructure,
+    parentFolder = ""
+  ) => {
+    for (const folder in datasetStructure["folders"]) {
+      let folderName = parentFolder ? `${parentFolder}/${folder}` : folder;
+      const statsObj = await window.fs.stat(datasetStructure["folders"][folder]["path"]);
+      const timeStamp = statsObj.mtime.toISOString();
+      manifestStructure.push({
+        file_name: folderName,
+        file_type: "folder",
+        description: "",
+        entity: "",
+        data_modality: "",
+        also_in_dataset: "",
+        also_in_dataset_path: "",
+        data_dictionary_path: "",
+        entity_is_transitive: "",
+        additional_metadata: "",
+        timestamp: timeStamp,
+      });
+      createManifestStructure(datasetStructure["folders"][folder], manifestStructure, folderName);
+    }
+
+    for (const file in datasetStructure["files"]) {
+      let filePath = parentFolder ? `${parentFolder}/${file}` : file;
+      // get timestamp of the file at the given path
+      const statsObj = await window.fs.stat(datasetStructure["files"][file]["path"]);
+      const timeStamp = statsObj.mtime.toISOString();
+      const fileExtension = window.path.extname(datasetStructure["files"][file]["path"]);
+
+      manifestStructure.push({
+        timestamp: timeStamp,
+        file_name: filePath,
+        file_type: fileExtension,
+        description: "",
+        entity: "",
+        data_modality: "",
+        also_in_dataset: "",
+        also_in_dataset_path: "",
+        data_dictionary_path: "",
+        entity_is_transitive: "",
+        additional_metadata: "",
+      });
+    }
+  };
+
+  await createManifestStructure(datasetStructure, manifestStructure);
+
+  return manifestStructure;
+};
+
 window.openmanifestEditSwal = async () => {
   let existingManifestData = {};
   try {
@@ -2331,6 +2390,22 @@ window.openmanifestEditSwal = async () => {
       "manifest_files",
       "manifest.xlsx"
     );
+
+    // create file path if it does not exist
+    if (!window.fs.existsSync(pathToManifest)) {
+      window.fs.mkdirSync(window.path.dirname(pathToManifest), { recursive: true });
+    }
+
+    try {
+      await client.post("/prepare_metadata/manifest", {
+        soda: window.sodaJSONObj,
+        path_to_manifest_file: pathToManifest,
+        upload_boolean: false,
+      });
+    } catch (error) {
+      clientError(error);
+    }
+
     existingManifestData = await client.get(
       `/prepare_metadata/manifest?path_to_manifest_file=${pathToManifest}`
     );
@@ -2351,6 +2426,16 @@ window.openmanifestEditSwal = async () => {
       window.electron.ipcRenderer.removeAllListeners("spreadsheet-reply");
 
       window.sodaJSONObj["manifest-files"] = { headers: result[0], data: result[1] };
+      // load the updated data values into the dataset_metadata object
+      const newManifestData = [];
+      for (let dataIdx = 0; dataIdx < result[1].length; dataIdx++) {
+        const newRow = {};
+        for (let headerIdx = 0; headerIdx < result[0].length; headerIdx++) {
+          newRow[result[0][headerIdx].replace(/ /g, "_")] = result[1][dataIdx][headerIdx];
+        }
+        newManifestData.push(newRow);
+      }
+      window.sodaJSONObj["dataset_metadata"]["manifest_file"] = newManifestData;
     }
   });
 };
@@ -2362,24 +2447,11 @@ $("#generate-manifest-curate").change(async function () {
     $("#manifest-creating-loading").removeClass("hidden");
 
     $("#ffm-manifest-generator").show();
+    let manifestStructure = await window.ffmCreateManifest();
+    window.sodaJSONObj["dataset_metadata"]["manifest_file"] = manifestStructure;
     // For the back end to know the manifest files have been created in $HOME/SODA/manifest-files/<highLvlFolder>
     window.sodaJSONObj["manifest-files"]["auto-generated"] = true;
     $("#manifest-creating-loading").addClass("hidden");
-
-    try {
-      await client.post("/prepare_metadata/manifest", {
-        soda: window.sodaJSONObj,
-        path_to_manifest_file: window.path.join(
-          window.homeDirectory,
-          "SODA",
-          "manifest_files",
-          "manifest.xlsx"
-        ),
-        upload_boolean: false,
-      });
-    } catch (error) {
-      clientError(error);
-    }
 
     document.getElementById("manifest-information-container").classList.remove("hidden");
     document

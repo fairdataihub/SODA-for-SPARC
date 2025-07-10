@@ -3724,26 +3724,6 @@ window.buildDatasetStructureJsonFromImportedData = async (
             action: ["new"],
           };
 
-          // get timestamp of the file at the given path
-          const statsObj = await window.fs.stat(pathToExplore);
-          const timeStamp = statsObj.mtime.toISOString();
-
-          manifestStructure.push({
-            timestamp: timeStamp,
-            file_name: pathToExplore,
-            file_type: "folder",
-            description: "",
-            entity: "",
-            data_modality: "",
-            also_in_dataset: "",
-            also_in_dataset_path: "",
-            data_dictionary_path: "",
-            entity_is_transitive: "",
-            additional_metadata: "",
-          });
-
-          console.log(manifestStructure);
-
           // Recursively traverse the folder and build the JSON structure
           const folderContents = await window.fs.readdir(pathToExplore);
           await Promise.all(
@@ -3767,24 +3747,6 @@ window.buildDatasetStructureJsonFromImportedData = async (
           localFilePath: pathToExplore,
           fileName: fileName,
         };
-
-        // get timestamp of the file at the given path
-        const statsObj = await window.fs.stat(pathToExplore);
-        const timeStamp = statsObj.mtime.toISOString();
-
-        manifestStructure.push({
-          timestamp: timeStamp,
-          file_name: pathToExplore,
-          file_type: fileExtension,
-          description: "",
-          entity: "",
-          data_modality: "",
-          also_in_dataset: "",
-          also_in_dataset_path: "",
-          data_dictionary_path: "",
-          entity_is_transitive: "",
-          additional_metadata: "",
-        });
 
         const fileIsInForbiddenFilesList = window.evaluateStringAgainstSdsRequirements(
           fileName,
@@ -3960,10 +3922,10 @@ window.buildDatasetStructureJsonFromImportedData = async (
   }
 
   if (datasetImport) {
-    return [datasetStructure, manifestStructure, problematicFolderNames, problematicFileNames];
+    return [datasetStructure, problematicFolderNames, problematicFileNames];
   }
 
-  return [datasetStructure, manifestStructure];
+  return [datasetStructure];
 };
 
 window.deleteFoldersByRelativePath = (arrayOfRelativePaths) => {
