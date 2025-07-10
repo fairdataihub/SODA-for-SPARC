@@ -692,7 +692,8 @@ document.getElementById("confirm-account-workspace").addEventListener("click", a
   try {
     pennsieveAgentCheckDiv.classList.remove("hidden");
     // Check to make sure the Pennsieve agent is installed
-    await window.checkPennsieveAgent(pennsieveAgentCheckDivId);
+    let passed = await window.checkPennsieveAgent(pennsieveAgentCheckDivId);
+    if (passed) document.getElementById("nextBtn").disabled = false;
   } catch (e) {
     console.error("Error with agent" + e);
   }
@@ -700,7 +701,6 @@ document.getElementById("confirm-account-workspace").addEventListener("click", a
   // If the user confirms the workspace and account, proceed to the next step
   document.getElementById("confirm-account-workspace").classList.remove("soda-green-border");
   document.getElementById("confirm-account-workspace").classList.add("soda-green-background");
-  document.getElementById("nextBtn").disabled = false;
 });
 
 document

@@ -33,6 +33,8 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
   // tabNow represent the current tab
   // nextOrPrev represent the direction of the tab (1 or -1)
 
+  console.log(tabNow);
+
   $("#nextBtn").prop("disabled", true);
   if (tabNow == -1) {
     // When exiting upload dataset workflow, the tabNow state changes to -1 which will cause an error
@@ -68,34 +70,29 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     $("#nextBtn").prop("disabled", false);
   }
 
-  if (tabNow === 1 && !$("#confirm-account-workspace").hasClass("selected")) {
-    if (!window.defaultBfAccount) {
-      $("#help-text-account-workspace").text(
-        "Please click the account field to sign in to your Pennsieve account"
-      );
-      $("#confirm-account-workspace").prop("disabled", true);
-    } else {
-      $("#help-text-account-workspace").text(
-        "Are these the Pennsieve account and workspace you would like to use for the upload?"
-      );
-
-      $("#nextBtn").prop("disabled", false);
+  const pennsieveAgentCheckDivId = "freeform-mode-post-account-confirmation-pennsieve-agent-check";
+  const pennsieveAgentCheckDiv = document.getElementById(pennsieveAgentCheckDivId);
+  let continueBtnYes = false;
+  if (!pennsieveAgentCheckDiv.classList.contains("hidden")) {
+    const text = pennsieveAgentCheckDiv.querySelectorAll("p");
+    for (const p of text) {
+      if (
+        p.innerText.includes(
+          "Please download and install the latest version of the Pennsieve Agent below."
+        )
+      ) {
+        continueBtnYes = true;
+      }
+      if (p.innerText.includes("The Pennsieve Agent is running and ready to upload!")) {
+        continueBtnYes = true;
+      }
     }
   }
-
-  if (tabNow == 1 && $("#confirm-account-workspace").hasClass("selected")) {
-    if (!window.defaultBfAccount) {
-      $("#help-text-account-workspace").text(
-        "Please click the account field to sign in to your Pennsieve account"
-      );
-      $("#confirm-account-workspace").prop("disabled", true);
-    } else {
-      $("#help-text-account-workspace").text(
-        "Are these the Pennsieve account and workspace you would like to use for the upload?"
-      );
-
-      $("#nextBtn").prop("disabled", false);
-    }
+  console.log("continueBtnYes: ", continueBtnYes);
+  if (tabNow === 1 && continueBtnYes) {
+    $("#nextBtn").prop("disabled", false);
+  } else {
+    $("#nextBtn").prop("disabled", true);
   }
 
   if (tabNow == 2) {
@@ -385,12 +382,17 @@ window.nextPrev = async (pageIndex) => {
     window.returnToGuided();
   }
 
+  if (parentTabs[window.currentTab].id === "getting-started-tab") {
+    console.log("Getting started tab is active");
+  }
+
   // update JSON structure
   updateOverallJSONStructure(parentTabs[window.currentTab].id);
 
   // reset datasetStructureObject["files"] back to {},
   // and delete ui preview-added manifest files
   if (parentTabs[window.currentTab].id === "high-level-folders-tab") {
+    console.log("YEs we call this strangely");
     $("#items").empty();
     $("#items").append(already_created_elem);
     getInFolder(".single-item", "#items", dataset_path, window.datasetStructureJSONObj);
@@ -628,6 +630,7 @@ window.nextPrev = async (pageIndex) => {
     // Display the correct tab:
     window.showParentTab(window.currentTab, pageIndex);
   } else {
+    console.log("ALso catching here");
     // Hide the current tab:
     $(parentTabs[window.currentTab]).removeClass("tab-active");
     // Increase or decrease the current tab by 1:
