@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
       let saveAndExitManifest = document.getElementById("manifest-save-exit");
 
       const readOnlyHeaders = ["A", "B", "D"];
-      const columnHeaders = ["A", "B", "C", "D", "E", "F", "G", "H", "I"];
+      const columnHeaders = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"];
       if (manifestFileData[0][0] != "filename") {
         manifestFileData.unshift(manifestHeaders);
       }
@@ -56,11 +56,13 @@ document.addEventListener("DOMContentLoaded", function () {
           B1: "background-color: #a8d08d; font-weight: 700;",
           C1: "background-color: #a8d08d; font-weight: 700;",
           D1: "background-color: #a8d08d; font-weight: 700;",
-          E1: "background-color: #ffd965; font-weight: 700;",
-          F1: "background-color: #ffd965; font-weight: 700;",
-          G1: "background-color: #ffd965; font-weight: 700;",
-          H1: "background-color: #ffd965; font-weight: 700;",
-          I1: "background-color: #ffd965; font-weight: 700;",
+          E1: "background-color: #a8d08d; font-weight: 700;",
+          F1: "background-color: #a8d08d; font-weight: 700;",
+          G1: "background-color: #a8d08d; font-weight: 700;",
+          H1: "background-color: #a8d08d; font-weight: 700;",
+          I1: "background-color: #a8d08d; font-weight: 700;",
+          J1: "background-color: #a8d08d; font-weight: 700;",
+          K1: "background-color: #ffd965; font-weight: 700;",
         },
       });
 

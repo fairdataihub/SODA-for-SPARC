@@ -294,8 +294,6 @@ def fetch_user_datasets(return_only_empty_datasets=False):
     global namespace_logger
 
     datasets = get_users_dataset_list()
-    namespace_logger.info(f"Fetched {len(datasets)} datasets for user")
-    namespace_logger.info(f"Datasets: {datasets}")
 
     datasets_list = []
     for ds in datasets:
@@ -309,7 +307,6 @@ def fetch_user_datasets(return_only_empty_datasets=False):
             r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/role", headers=create_request_headers(get_access_token()))
             r.raise_for_status()
             user_role = r.json()["role"]
-            namespace_logger.info(f"2Dataset response: {r.json()}")
             if user_role not in ["viewer", "editor"]:
                 store.append(
                     {"id": selected_dataset_id, "name": dataset['name'], "role": user_role, "intId": dataset["intId"]}
@@ -332,7 +329,6 @@ def fetch_user_datasets(return_only_empty_datasets=False):
     if return_only_empty_datasets:
         filtered_datasets = []
         for ds in sorted_bf_datasets:
-            namespace_logger.info(f"Checking files for dataset {ds}")
             try:
                 r = requests.get(f"{PENNSIEVE_URL}/datasets/{ds['id']}/packages", headers=create_request_headers(get_access_token()))
                 r.raise_for_status()

@@ -3680,6 +3680,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
   const problematicFolderNames = [];
   const problematicFileNames = [];
   const datasetStructure = {};
+  const manifestStructure = [];
   const hiddenItems = [];
   const emptyFolders = [];
   const emptyFiles = [];
@@ -3687,7 +3688,12 @@ window.buildDatasetStructureJsonFromImportedData = async (
   showFileImportLoadingSweetAlert(500);
 
   // Function to traverse and build JSON structure
-  const traverseAndBuildJson = async (pathToExplore, currentStructure, currentStructurePath) => {
+  const traverseAndBuildJson = async (
+    pathToExplore,
+    currentStructure,
+    manifestStructure,
+    currentStructurePath
+  ) => {
     // Initialize the current structure if it does not exist
     currentStructure["folders"] = currentStructure["folders"] || {};
     currentStructure["files"] = currentStructure["files"] || {};
@@ -3726,6 +3732,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
               await traverseAndBuildJson(
                 itemPath,
                 currentStructure["folders"][folderName],
+                manifestStructure,
                 `${currentStructurePath}${folderName}/`
               );
             })
@@ -3797,7 +3804,12 @@ window.buildDatasetStructureJsonFromImportedData = async (
   // Process itemPaths in parallel
   await Promise.all(
     itemPaths.map(async (itemPath) => {
-      await traverseAndBuildJson(itemPath, datasetStructure, currentFileExplorerPath);
+      await traverseAndBuildJson(
+        itemPath,
+        datasetStructure,
+        manifestStructure,
+        currentFileExplorerPath
+      );
     })
   );
 
@@ -3913,7 +3925,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
     return [datasetStructure, problematicFolderNames, problematicFileNames];
   }
 
-  return datasetStructure;
+  return [datasetStructure];
 };
 
 window.deleteFilesByRelativePath = (arrayOfRelativePaths) => {
@@ -5620,9 +5632,7 @@ const setDatasetNameAndDestination = (sodaJSONObj) => {
 
 const deleteTreeviewFiles = (sodaJSONObj) => {
   // delete datasetStructureObject["files"] value (with metadata files (if any)) that was added only for the Preview tree view
-  if ("files" in sodaJSONObj["dataset-structure"]) {
-    sodaJSONObj["dataset-structure"]["files"] = {};
-  }
+
   // delete manifest files added for treeview
   for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
     if (
@@ -5837,6 +5847,8 @@ const initiate_generate = async (resume = false) => {
   returnButton.type = "button";
   returnButton.id = "returnButton";
   returnButton.innerHTML = "Return to progress";
+
+  console.log(window.sodaJSONObj);
 
   // Event handler for navigation menu's progress bar clone
   returnButton.onclick = function () {

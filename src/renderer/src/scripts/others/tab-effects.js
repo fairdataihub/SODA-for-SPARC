@@ -33,6 +33,8 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
   // tabNow represent the current tab
   // nextOrPrev represent the direction of the tab (1 or -1)
 
+  console.log(tabNow);
+
   $("#nextBtn").prop("disabled", true);
   if (tabNow == -1) {
     // When exiting upload dataset workflow, the tabNow state changes to -1 which will cause an error
@@ -68,34 +70,29 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     $("#nextBtn").prop("disabled", false);
   }
 
-  if (tabNow === 1 && !$("#confirm-account-workspace").hasClass("selected")) {
-    if (!window.defaultBfAccount) {
-      $("#help-text-account-workspace").text(
-        "Please click the account field to sign in to your Pennsieve account"
-      );
-      $("#confirm-account-workspace").prop("disabled", true);
-    } else {
-      $("#help-text-account-workspace").text(
-        "Are these the Pennsieve account and workspace you would like to use for the upload?"
-      );
-
-      $("#nextBtn").prop("disabled", false);
+  const pennsieveAgentCheckDivId = "freeform-mode-post-account-confirmation-pennsieve-agent-check";
+  const pennsieveAgentCheckDiv = document.getElementById(pennsieveAgentCheckDivId);
+  let continueBtnYes = false;
+  if (!pennsieveAgentCheckDiv.classList.contains("hidden")) {
+    const text = pennsieveAgentCheckDiv.querySelectorAll("p");
+    for (const p of text) {
+      if (
+        p.innerText.includes(
+          "Please download and install the latest version of the Pennsieve Agent below."
+        )
+      ) {
+        continueBtnYes = true;
+      }
+      if (p.innerText.includes("The Pennsieve Agent is running and ready to upload!")) {
+        continueBtnYes = true;
+      }
     }
   }
-
-  if (tabNow == 1 && $("#confirm-account-workspace").hasClass("selected")) {
-    if (!window.defaultBfAccount) {
-      $("#help-text-account-workspace").text(
-        "Please click the account field to sign in to your Pennsieve account"
-      );
-      $("#confirm-account-workspace").prop("disabled", true);
-    } else {
-      $("#help-text-account-workspace").text(
-        "Are these the Pennsieve account and workspace you would like to use for the upload?"
-      );
-
-      $("#nextBtn").prop("disabled", false);
-    }
+  console.log("continueBtnYes: ", continueBtnYes);
+  if (tabNow === 1 && continueBtnYes) {
+    $("#nextBtn").prop("disabled", false);
+  } else {
+    $("#nextBtn").prop("disabled", true);
   }
 
   if (tabNow == 2) {
@@ -129,7 +126,6 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     // if the user has files already on their dataset when starting from new/local and merging to existing pennsieve then
     // show them a message detailing why they cannot create manifest files
     if (document.getElementById("dataset-upload-existing-dataset").classList.contains("checked")) {
-      $("#manifest-creation-prohibited").show();
       if ($("#generate-manifest-curate").prop("checked")) {
         $("#generate-manifest-curate").click();
       }
@@ -144,7 +140,6 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
       if (!document.getElementById("generate-manifest-curate").checked) {
         document.getElementById("manifest-information-container").classList.add("hidden");
       }
-      $("#manifest-creation-prohibited").hide();
       document.getElementById("generate-manifest-curate").disabled = false;
       $("#generate-manifest-curate").prop("disabled", false);
     }
@@ -154,11 +149,8 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
       //Hide the UI until the manifest card are created
       $("#manifest-creating-loading").removeClass("hidden");
       $("#manifest-items-container").addClass("hidden");
-      await window.ffmCreateManifest(window.sodaJSONObj);
       $("#manifest-items-container").removeClass("hidden");
       $("#manifest-creating-loading").addClass("hidden");
-    } else {
-      document.getElementById("ffm-container-manifest-file-cards").innerHTML = "";
     }
   }
 
@@ -168,8 +160,8 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     if (document.getElementById("dataset-upload-existing-dataset").classList.contains("checked")) {
       $("#inputNewNameDataset-upload-dataset").val(defaultBfDataset);
     }
-    let dataset_name = fill_info_details();
-    window.datasetStructureJSONObj["files"] = window.sodaJSONObj["metadata-files"];
+    fill_info_details();
+    // window.datasetStructureJSONObj["files"] = window.sodaJSONObj["metadata-files"];
     window.datasetStructureJSONObj["folders"] = window.sodaJSONObj["dataset-structure"]["folders"];
 
     $("#Question-preview-dataset-details").show();
@@ -388,12 +380,17 @@ window.nextPrev = async (pageIndex) => {
     window.returnToGuided();
   }
 
+  if (parentTabs[window.currentTab].id === "getting-started-tab") {
+    console.log("Getting started tab is active");
+  }
+
   // update JSON structure
   updateOverallJSONStructure(parentTabs[window.currentTab].id);
 
   // reset datasetStructureObject["files"] back to {},
   // and delete ui preview-added manifest files
   if (parentTabs[window.currentTab].id === "high-level-folders-tab") {
+    console.log("YEs we call this strangely");
     $("#items").empty();
     $("#items").append(already_created_elem);
     getInFolder(".single-item", "#items", dataset_path, window.datasetStructureJSONObj);
@@ -630,21 +627,8 @@ window.nextPrev = async (pageIndex) => {
     window.currentTab = window.currentTab + pageIndex;
     // Display the correct tab:
     window.showParentTab(window.currentTab, pageIndex);
-    // hide/show prohibited manifest warning based on if the dataset already has files
-    // if (window.hasFiles) {
-
-    //   $("#manifest-creation-prohibited").show();
-    //   // uncheck the manifest file checkbox if it is currently checked
-    //   if ($("#generate-manifest-curate").prop("checked")) {
-    //     $("#generate-manifest-curate").click();
-    //   }
-    //   $("#generate-manifest-curate").prop("disabled", true);
-    //   $("#nextBtn").prop("disabled", false);
-    // } else {
-    //   $("#manifest-creation-prohibited").hide();
-    //   $("#generate-manifest-curate").prop("disabled", false);
-    // }
   } else {
+    console.log("ALso catching here");
     // Hide the current tab:
     $(parentTabs[window.currentTab]).removeClass("tab-active");
     // Increase or decrease the current tab by 1:
@@ -3170,6 +3154,7 @@ window.wipeOutCurateProgress = () => {
     "starting-point": { origin: "" },
     "dataset-structure": {},
     "metadata-files": {},
+    dataset_metadata: {},
   };
 
   // reset imported dataset path
@@ -3185,6 +3170,10 @@ window.wipeOutCurateProgress = () => {
   $("#change-workspace-btn").removeClass("selected");
   $("#change-workspace-btn").removeClass("not-selected");
   $("#confirm-account-workspace").addClass("basic");
+  // hide the pennsieve agent
+  document
+    .querySelector("#freeform-mode-post-account-confirmation-pennsieve-agent-check")
+    .classList.add("hidden");
 
   // reset page 3 dataset upload options
 
@@ -3217,34 +3206,6 @@ window.wipeOutCurateProgress = () => {
   $("#Question-validate-dataset-upload-3").hide();
   // empty the failed files table if it has values
   $("#validate-dataset-failed-table tbody tr").remove();
-
-  // uncheck all radio buttons and checkboxes
-  // $("#organize-section").find(".option-card").removeClass("checked");
-  // $("#organize-section").find(".option-card.radio-button").removeClass("non-selected");
-  // $("#organize-section").find(".option-card.high-level-folders").removeClass("disabled");
-  // $("#organize-section").find(".option-card .folder-input-check").prop("checked", false);
-  // $("#organize-section").find(".parent-tabs.option-card").removeClass("checked");
-  // $("#organize-section").find(".parent-tabs.option-card.radio-button").removeClass("non-selected");
-  // $("#organize-section")
-  //   .find(".parent-tabs.option-card.high-level-folders")
-  //   .removeClass("disabled");
-  // $("#organize-section").find(".parent-tabs.option-card.folder-input-check").prop("checked", false);
-  // $(".metadata-button.button-generate-dataset").removeClass("done");
-  // $(".metadata-button.button-generate-dataset").removeClass("d-flex");
-  // $("#organize-section input:checkbox").prop("checked", false);
-  // $("#organize-section input:radio").prop("checked", false);
-
-  // set back local destination for folders to empty
-  // $("#input-destination-generate-dataset-locally").val("");
-  // $("#input-destination-getting-started-locally").val("");
-  // $("#input-destination-getting-started-locally").prop("placeholder", "Browse here");
-  // $("#input-destination-generate-dataset-locally").prop("placeholder", "Browse here");
-
-  // set metadata file paths to empty
-  // $(".para-metadata-file-status").text("");
-
-  // hide the generate manifest locally button
-  // document.getElementById("ffm-container-local-manifest-file-generation").classList.add("hidden");
 
   // set back Please continue para element
   $("#para-continue-prepare-new-getting-started").text("");
@@ -3307,10 +3268,7 @@ const saveSODAJSONProgress = (progressFileName) => {
   var filePath = window.path.join(progressFilePath, progressFileName + ".json");
   // record all information listed in SODA JSON Object before saving
   updateJSONObjectProgress();
-  // delete window.sodaJSONObj["dataset-structure"] value that was added only for the Preview tree view
-  if ("files" in window.sodaJSONObj["dataset-structure"]) {
-    window.sodaJSONObj["dataset-structure"]["files"] = {};
-  }
+
   // delete manifest files added for treeview
   for (var highLevelFol in window.sodaJSONObj["dataset-structure"]["folders"]) {
     if (

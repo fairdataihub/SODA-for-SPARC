@@ -8,7 +8,7 @@ const ManifestFilePreviewSection = ({ id }) => {
       window.guidedOpenManifestEditSwal();
     }
     if (id === "ffm-manifest-file-preview") {
-      window.ffOpenManifestEditSwal();
+      window.openmanifestEditSwal();
     }
   };
 
