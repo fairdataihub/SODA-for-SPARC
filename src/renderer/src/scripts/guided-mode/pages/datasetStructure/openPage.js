@@ -81,7 +81,7 @@ export const openPageDatasetStructure = async (targetPageID) => {
     // Component with type "data-categorization-page" will handle most of the logic
   }
 
-  if (targetPageID === "guided-manifest-file-review-tab") {
+  if (targetPageID === "guided-dataset-structure-and-manifest-review-tab") {
     // Delete existing manifest files in the dataset structure
     Object.values(window.datasetStructureJSONObj.folders).forEach((folder) => {
       delete folder.files["manifest.xlsx"];

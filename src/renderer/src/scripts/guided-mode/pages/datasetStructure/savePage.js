@@ -208,7 +208,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     // Add validation logic for guided-modalities-data-selection-tab if needed
   }
 
-  if (pageBeingLeftID === "guided-manifest-file-review-tab") {
+  if (pageBeingLeftID === "guided-dataset-structure-and-manifest-review-tab") {
     const guidedManifestData = window.sodaJSONObj["guided-manifest-file-data"];
     console.log("guidedManifestData", guidedManifestData);
     console.log("manifestHeaders", guidedManifestData["headers"]);

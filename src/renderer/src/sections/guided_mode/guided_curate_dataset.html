@@ -765,33 +765,33 @@
         ></div>
         <div
           class="guided--page"
-          id="guided-manifest-file-review-tab"
-          data-page-name="Manifest File Review"
+          id="guided-dataset-structure-and-manifest-review-tab"
+          data-page-name="Dataset Structure And Manifest Preview"
         >
           <div class="guided--section" id="guided-section-auto-generate-manifest-files">
-            <h2 class="text-sub-step-title">Manifest File Review</h2>
+            <h2 class="text-sub-step-title">Dataset Structure And Manifest Preview</h2>
             <p class="help-text">
-              SODA has automatically generated a manifest file based on your data and entities you
-              provided in prior steps.
+              The dataset structure below displays the folder structure of your dataset as it will
+              be when it is generated locally and/or on Pennsieve. SODA has also generated a
+              manifest file that describes the contents of your dataset. You can edit the manifest
+              file if you would like to provide more information about the files in your dataset,
+              but it is not required to do so.
             </p>
+          </div>
+          <div class="guided--section">
+            <div
+              data-component-type="dataset-tree-view-renderer"
+              data-full-width="true"
+              class="guided--section"
+            ></div>
+          </div>
+          <div class="guided--section">
             <div
               data-component-type="manifest-file-preview-section"
               class="guided--section"
               id="gm-manifest-file-preview"
             ></div>
           </div>
-          <div class="guided--section">
-            <h1 class="text-sub-step-title">Dataset Structure Review</h1>
-            <p class="help-text">
-              The dataset structure below displays the updated folder structure of your dataset as
-              it will be generated locally or on Pennsieve.
-            </p>
-          </div>
-          <div
-            data-component-type="dataset-tree-view-renderer"
-            data-full-width="true"
-            class="guided--section"
-          ></div>
         </div>
 
         <div
