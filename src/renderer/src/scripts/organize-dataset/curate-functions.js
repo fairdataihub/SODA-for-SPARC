@@ -2388,8 +2388,6 @@ window.openmanifestEditSwal = async () => {
     return;
   }
 
-  console.log(existingManifestData);
-
   window.electron.ipcRenderer.invoke("spreadsheet", existingManifestData);
 
   //upon receiving a reply of the spreadsheet, handle accordingly

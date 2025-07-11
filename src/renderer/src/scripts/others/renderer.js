@@ -5918,6 +5918,12 @@ const initiate_generate = async (resume = false) => {
     datasetUploadSession.startSession();
   }
 
+  const manifestCheckbox = document.getElementById("generate-manifest-curate");
+  if (!manifestCheckbox.checked) {
+    // Checkbox is OFF (not checked)
+    delete window.sodaJSONObj["dataset_metadata"]["manifest_file"];
+  }
+
   client
     .post(
       `/curate_datasets/curation`,
