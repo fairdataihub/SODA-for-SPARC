@@ -151,8 +151,6 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
       $("#manifest-items-container").addClass("hidden");
       $("#manifest-items-container").removeClass("hidden");
       $("#manifest-creating-loading").addClass("hidden");
-    } else {
-      document.getElementById("ffm-container-manifest-file-cards").innerHTML = "";
     }
   }
 
