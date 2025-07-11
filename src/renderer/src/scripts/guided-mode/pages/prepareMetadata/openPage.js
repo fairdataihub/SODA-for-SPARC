@@ -148,13 +148,9 @@ export const openPagePrepareMetadata = async (targetPageID) => {
   if (targetPageID === "guided-create-readme-metadata-tab") {
     const readMeTextArea = document.getElementById("guided-textarea-create-readme");
 
-    const readMe = window.sodaJSONObj["dataset_metadata"]["README"];
+    const readMe = window.sodaJSONObj["dataset_metadata"]["README"] || "";
 
-    if (readMe) {
-      readMeTextArea.value = readMe;
-    } else {
-      readMeTextArea.value = "";
-    }
+    readMeTextArea.value = readMe;
   }
 
   if (targetPageID === "guided-add-code-metadata-tab") {

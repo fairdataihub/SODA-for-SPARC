@@ -655,20 +655,6 @@ export const savePageChanges = async (pageBeingLeftID) => {
     //   }
     // }
 
-    // if (pageBeingLeftID === "guided-create-readme-metadata-tab") {
-    //   const readMeTextArea = document.getElementById("guided-textarea-create-readme");
-    //   if (readMeTextArea.value.trim() === "") {
-    //     errorArray.push({
-    //       type: "notyf",
-    //       message: "Please enter a README for your dataset",
-    //     });
-    //     throw errorArray;
-    //   } else {
-    //     const readMe = readMeTextArea.value.trim();
-    //     window.sodaJSONObj["dataset_metadata"]["README"] = readMe;
-    //   }
-    // }
-
     // if (pageBeingLeftID === "guided-create-changes-metadata-tab") {
     //   const changesTextArea = document.getElementById("guided-textarea-create-changes");
     //   if (changesTextArea.value.trim() === "") {

@@ -208,4 +208,18 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       },
     };
   }
+
+  if (pageBeingLeftID === "guided-create-readme-metadata-tab") {
+    const readMeTextArea = document.getElementById("guided-textarea-create-readme");
+    const readmeTextContent = readMeTextArea.value.trim() || "";
+    if (!readmeTextContent) {
+      errorArray.push({
+        type: "notyf",
+        message: "Please add a README for your dataset.",
+      });
+      throw errorArray;
+    }
+    // Save the README content to the sodaJSONObj
+    window.sodaJSONObj["dataset_metadata"]["README"] = readmeTextContent;
+  }
 };
