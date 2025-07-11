@@ -160,8 +160,8 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     if (document.getElementById("dataset-upload-existing-dataset").classList.contains("checked")) {
       $("#inputNewNameDataset-upload-dataset").val(defaultBfDataset);
     }
-    let dataset_name = fill_info_details();
-    window.datasetStructureJSONObj["files"] = window.sodaJSONObj["metadata-files"];
+    fill_info_details();
+    // window.datasetStructureJSONObj["files"] = window.sodaJSONObj["metadata-files"];
     window.datasetStructureJSONObj["folders"] = window.sodaJSONObj["dataset-structure"]["folders"];
 
     $("#Question-preview-dataset-details").show();

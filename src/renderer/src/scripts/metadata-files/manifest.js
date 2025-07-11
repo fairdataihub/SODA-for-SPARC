@@ -268,6 +268,7 @@ $(document).ready(async function () {
 
   //Event listener for the jstree to open manifest files
   $(jstreePreviewManifest).on("select_node.jstree", async function (evt, data) {
+    console.log("DOing this apparently");
     // Check if pennsieve option was selected to reset localDataSetImport
     if (document.getElementById("pennsieve-option-create-manifest").classList.contains("checked")) {
       localDataSetImport = false;
@@ -741,6 +742,7 @@ window.processManifestInfo = (headers, data) => {
 };
 
 window.convertJSONToXlsx = async (jsondata, excelfile) => {
+  console.log("Converting JSON to XLSX", jsondata, excelfile);
   await window.electron.ipcRenderer.invoke("convertJSONToSxlsx", jsondata, excelfile);
 };
 

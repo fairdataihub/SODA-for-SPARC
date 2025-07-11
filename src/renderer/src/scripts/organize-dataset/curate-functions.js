@@ -2294,33 +2294,6 @@ const revertManifestForTreeView = () => {
   }
 };
 
-const generateFFManifestEditCard = (highLevelFolderName) => {
-  return `
-  <div class="dataset-card">        
-    <div class="dataset-card-body shrink">
-      <div class="dataset-card-row">
-        <h1 class="dataset-card-title-text">
-          <span class="manifest-folder-name">${highLevelFolderName}</span>
-        </h1>
-      </div>
-    </div>
-    <div class="dataset-card-button-container">
-      <button
-        class="ui primary button dataset-card-button-confirm"
-        style="
-          width: 295px !important;
-          height: 3rem;
-          font-size: 13px;
-        "
-        onClick="window.ffOpenManifestEditSwal('${highLevelFolderName}')"
-      >
-        Preview/Edit ${highLevelFolderName} manifest file
-      </button>
-    </div>
-  </div>
-`;
-};
-
 // PRE-REQ: Happens after the dataset name has been selected
 window.ffmCreateManifest = async () => {
   let datasetStructure = window.sodaJSONObj["dataset-structure"];
@@ -2415,6 +2388,8 @@ window.openmanifestEditSwal = async () => {
     return;
   }
 
+  console.log(existingManifestData);
+
   window.electron.ipcRenderer.invoke("spreadsheet", existingManifestData);
 
   //upon receiving a reply of the spreadsheet, handle accordingly
@@ -2450,7 +2425,7 @@ $("#generate-manifest-curate").change(async function () {
     let manifestStructure = await window.ffmCreateManifest();
     window.sodaJSONObj["dataset_metadata"]["manifest_file"] = manifestStructure;
     // For the back end to know the manifest files have been created in $HOME/SODA/manifest-files/<highLvlFolder>
-    window.sodaJSONObj["manifest-files"]["auto-generated"] = true;
+    // window.sodaJSONObj["manifest-files"]["auto-generated"] = true;
     $("#manifest-creating-loading").addClass("hidden");
 
     document.getElementById("manifest-information-container").classList.remove("hidden");
