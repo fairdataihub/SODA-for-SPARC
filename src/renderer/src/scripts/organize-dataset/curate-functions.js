@@ -2339,8 +2339,9 @@ window.ffmCreateManifest = async () => {
       const timeStamp = statsObj.mtime.toISOString();
       manifestStructure.push({
         file_name: folderName,
-        file_type: "folder",
+        timestamp: timeStamp,
         description: "",
+        file_type: "folder",
         entity: "",
         data_modality: "",
         also_in_dataset: "",
@@ -2348,7 +2349,6 @@ window.ffmCreateManifest = async () => {
         data_dictionary_path: "",
         entity_is_transitive: "",
         additional_metadata: "",
-        timestamp: timeStamp,
       });
       createManifestStructure(datasetStructure["folders"][folder], manifestStructure, folderName);
     }
@@ -2361,10 +2361,10 @@ window.ffmCreateManifest = async () => {
       const fileExtension = window.path.extname(datasetStructure["files"][file]["path"]);
 
       manifestStructure.push({
-        timestamp: timeStamp,
         file_name: filePath,
-        file_type: fileExtension,
+        timestamp: timeStamp,
         description: "",
+        file_type: fileExtension,
         entity: "",
         data_modality: "",
         also_in_dataset: "",
