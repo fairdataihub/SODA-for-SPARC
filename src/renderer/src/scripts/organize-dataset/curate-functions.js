@@ -2311,7 +2311,7 @@ window.ffmCreateManifest = async () => {
       const statsObj = await window.fs.stat(datasetStructure["folders"][folder]["path"]);
       const timeStamp = statsObj.mtime.toISOString();
       manifestStructure.push({
-        file_name: folderName,
+        filename: folderName,
         timestamp: timeStamp,
         description: "",
         file_type: "folder",
@@ -2334,7 +2334,7 @@ window.ffmCreateManifest = async () => {
       const fileExtension = window.path.extname(datasetStructure["files"][file]["path"]);
 
       manifestStructure.push({
-        file_name: filePath,
+        filename: filePath,
         timestamp: timeStamp,
         description: "",
         file_type: fileExtension,
