@@ -252,9 +252,4 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     // Set the manifest objects in the sodaJSONObj at where they will be detected by pysoda
     window.sodaJSONObj["dataset_metadata"]["manifest_file"] = manifestObjects;
   }
-
-  if (pageBeingLeftID === "dataset-structure-review-tab") {
-    console.log("Validating dataset structure review page");
-    // Add validation logic for dataset structure review page if needed
-  }
 };
