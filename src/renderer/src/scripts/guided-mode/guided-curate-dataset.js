@@ -32,7 +32,6 @@ import {
 import {
   guidedGenerateSubjectsMetadata,
   guidedGenerateSamplesMetadata,
-  guidedPrepareDatasetStructureAndMetadataForUpload,
 } from "./generateDataset/generate";
 import { guidedCreateManifestFilesAndAddToDatasetStructure } from "./manifests/manifest";
 import { createStandardizedDatasetStructure } from "../utils/datasetStructure";
