@@ -1,3 +1,4 @@
+import { error } from "jquery";
 import useGlobalStore from "../../../../stores/globalStore";
 
 let homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
@@ -42,6 +43,14 @@ export const savePageCurationPreparation = async (pageBeingLeftID) => {
       errorArray.push({
         type: "notyf",
         message: "Please select a dataset start location",
+      });
+      throw errorArray;
+    }
+
+    if (resumingExistingProgress) {
+      errorArray.push({
+        type: "notyf",
+        message: "Select a dataset in progress to resume curation",
       });
       throw errorArray;
     }

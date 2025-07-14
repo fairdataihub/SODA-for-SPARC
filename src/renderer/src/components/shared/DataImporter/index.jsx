@@ -4,7 +4,7 @@ import { IconUpload, IconFile, IconX } from "@tabler/icons-react";
 import FullWidthContainer from "../../containers/FullWidthContainer";
 import DatasetTreeViewRenderer from "../DatasetTreeViewRenderer";
 
-const DataImporter = ({ dataType, relativeFolderPathToImportDataInto }) => {
+const DataImporter = ({ relativeFolderPathToImportDataInto }) => {
   // Handles preventing default drop action
   const allowDrop = (event) => event.preventDefault();
 
@@ -104,9 +104,7 @@ const DataImporter = ({ dataType, relativeFolderPathToImportDataInto }) => {
 
           <div>
             <Text size="xl" inline>
-              {dataType
-                ? `Drag ${dataType} data here or click to import`
-                : "Drag and drop files or folders or click to import"}
+              Drag and drop files or folders or click to import
             </Text>
             <Text size="sm" c="dimmed" inline mt={7}>
               Import all folders you would like to include in the dataset.

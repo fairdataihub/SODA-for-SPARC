@@ -93,11 +93,12 @@ const handleGuidedValidationState = (targetPageID) => {
   }
 };
 
-const guidedLockSideBar = (boolShowNavBar) => {
+const guidedLockSideBar = (boolShowGuidedModeContainerElements) => {
   const sidebar = document.getElementById("sidebarCollapse");
   const guidedModeSection = document.getElementById("guided_mode-section");
   const guidedDatsetTab = document.getElementById("guided_curate_dataset-tab");
   const guidedNav = document.getElementById("guided-nav");
+  const guidedProgressContainer = document.getElementById("guided-header-div");
 
   if (!sidebar.classList.contains("active")) {
     sidebar.click();
@@ -106,12 +107,14 @@ const guidedLockSideBar = (boolShowNavBar) => {
   sidebar.disabled = true;
   guidedModeSection.style.marginLeft = "-70px";
 
-  if (boolShowNavBar) {
+  if (boolShowGuidedModeContainerElements) {
     guidedDatsetTab.style.marginLeft = "215px";
     guidedNav.style.display = "flex";
+    guidedProgressContainer.classList.remove("hidden");
   } else {
     guidedDatsetTab.style.marginLeft = "0px";
     guidedNav.style.display = "none";
+    guidedProgressContainer.classList.add("hidden");
   }
 };
 
@@ -181,7 +184,6 @@ export const openPage = async (targetPageID) => {
 
     // clear the entity filter when navigating to a new page
     clearEntityFilter();
-
     setSelectedHierarchyEntity(null);
     setActiveEntity(null);
 
@@ -211,15 +213,6 @@ export const openPage = async (targetPageID) => {
     handleNextButtonVisibility(targetPageID);
     handleBackButtonVisibility(targetPageID);
     handleGuidedValidationState(targetPageID);
-
-    // Hide the Header div on the resume existing dataset page
-    const guidedProgressContainer = document.getElementById("guided-header-div");
-
-    if (targetPageID === "guided-select-starting-point-tab") {
-      guidedProgressContainer.classList.add("hidden");
-    } else {
-      guidedProgressContainer.classList.remove("hidden");
-    }
 
     // If the user has not saved the dataset name and subtitle, then the next button should say "Continue"
     // as they are not really saving anything
