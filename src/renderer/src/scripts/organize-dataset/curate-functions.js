@@ -1640,6 +1640,7 @@ window.create_child_node = (
     }
   }
 
+  // New
   return newFormatNode;
 };
 
