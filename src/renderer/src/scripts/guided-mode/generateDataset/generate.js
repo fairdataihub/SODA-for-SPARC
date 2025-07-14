@@ -111,7 +111,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
 
     // Show Pennsieve metadata upload table
     window.unHideAndSmoothScrollToElement(
-      "guided-div-pennsieve-metadata-pennsieve-genration-status-table"
+      "guided-div-pennsieve-metadata-pennsieve-generation-status-table"
     );
 
     // Create or rename dataset, then add metadata
@@ -132,7 +132,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     // (Metadata file generation temporarily disabled)
     /*
     window.unHideAndSmoothScrollToElement(
-      "guided-div-dataset-metadata-pennsieve-genration-status-table"
+      "guided-div-dataset-metadata-pennsieve-generation-status-table"
     );
     await guidedGenerateSubjectsMetadata("Pennsieve");
     await guidedGenerateSamplesMetadata("Pennsieve");
@@ -912,14 +912,14 @@ export const guidedGenerateSubjectsMetadata = async (destination) => {
 
   // Prepare UI elements for Pennsieve upload (if applicable)
   const subjectsMetadataGenerationText = document.getElementById(
-    `guided-subjects-metadata-pennsieve-genration-text`
+    `guided-subjects-metadata-pennsieve-generation-text`
   );
   if (generationDestination === "Pennsieve") {
     document
-      .getElementById(`guided-subjects-metadata-pennsieve-genration-tr`)
+      .getElementById(`guided-subjects-metadata-pennsieve-generation-tr`)
       .classList.remove("hidden");
     subjectsMetadataGenerationText.innerHTML = "Uploading subjects metadata...";
-    guidedUploadStatusIcon(`guided-subjects-metadata-pennsieve-genration-status`, "loading");
+    guidedUploadStatusIcon(`guided-subjects-metadata-pennsieve-generation-status`, "loading");
   }
 
   if (!window.sodaJSONObj["ps-account-selected"]) window.sodaJSONObj["ps-account-selected"] = {};
@@ -945,7 +945,7 @@ export const guidedGenerateSubjectsMetadata = async (destination) => {
 
     // Update UI for successful generation (Pennsieve) and send success event
     if (generationDestination === "Pennsieve") {
-      guidedUploadStatusIcon(`guided-subjects-metadata-pennsieve-genration-status`, "success");
+      guidedUploadStatusIcon(`guided-subjects-metadata-pennsieve-generation-status`, "success");
       subjectsMetadataGenerationText.innerHTML = `Subjects metadata successfully generated`;
     }
     window.electron.ipcRenderer.send(
@@ -963,7 +963,7 @@ export const guidedGenerateSubjectsMetadata = async (destination) => {
     userErrorMessage(error);
     // Update UI for generation failure (Pennsieve) and send failure event
     if (generationDestination === "Pennsieve") {
-      guidedUploadStatusIcon(`guided-subjects-metadata-pennsieve-genration-status`, "error");
+      guidedUploadStatusIcon(`guided-subjects-metadata-pennsieve-generation-status`, "error");
       subjectsMetadataGenerationText.innerHTML = `Failed to generate subjects metadata`;
     }
     window.electron.ipcRenderer.send(
@@ -988,16 +988,16 @@ export const guidedGenerateSamplesMetadata = async (destination) => {
 
   // Prepare UI elements for Pennsieve upload (if applicable)
   const samplesMetadataUploadText = document.getElementById(
-    "guided-samples-metadata-pennsieve-genration-text"
+    "guided-samples-metadata-pennsieve-generation-text"
   );
 
   if (generationDestination === "Pennsieve") {
     document
-      .getElementById("guided-samples-metadata-pennsieve-genration-tr")
+      .getElementById("guided-samples-metadata-pennsieve-generation-tr")
       .classList.remove("hidden");
 
     samplesMetadataUploadText.innerHTML = "Uploading samples metadata...";
-    guidedUploadStatusIcon("guided-samples-metadata-pennsieve-genration-status", "loading");
+    guidedUploadStatusIcon("guided-samples-metadata-pennsieve-generation-status", "loading");
   }
 
   if (!window.sodaJSONObj["ps-account-selected"]) window.sodaJSONObj["ps-account-selected"] = {};
@@ -1022,7 +1022,7 @@ export const guidedGenerateSamplesMetadata = async (destination) => {
     );
     // Update UI for successful generation (Pennsieve) and send success event
     if (generationDestination === "Pennsieve") {
-      guidedUploadStatusIcon("guided-samples-metadata-pennsieve-genration-status", "success");
+      guidedUploadStatusIcon("guided-samples-metadata-pennsieve-generation-status", "success");
       samplesMetadataUploadText.innerHTML = `Samples metadata successfully uploaded`;
     }
 
@@ -1038,7 +1038,7 @@ export const guidedGenerateSamplesMetadata = async (destination) => {
     const emessage = userErrorMessage(error);
     // Update UI for generation failure (Pennsieve) and send failure event
     if (generationDestination === "Pennsieve") {
-      guidedUploadStatusIcon("guided-samples-metadata-pennsieve-genration-status", "error");
+      guidedUploadStatusIcon("guided-samples-metadata-pennsieve-generation-status", "error");
       samplesMetadataUploadText.innerHTML = `Failed to upload samples metadata`;
     }
     // Send failed samples metadata generation event to Kombucha
@@ -1084,14 +1084,14 @@ export const guidedGenerateSubmissionMetadata = async (destination) => {
 
   // Prepare UI elements for Pennsieve upload (if applicable)
   const submissionMetadataUploadText = document.getElementById(
-    "guided-submission-metadata-pennsieve-genration-text"
+    "guided-submission-metadata-pennsieve-generation-text"
   );
   if (generationDestination === "Pennsieve") {
     document
-      .getElementById("guided-submission-metadata-pennsieve-genration-tr")
+      .getElementById("guided-submission-metadata-pennsieve-generation-tr")
       .classList.remove("hidden");
     submissionMetadataUploadText.innerHTML = "Uploading submission metadata...";
-    guidedUploadStatusIcon("guided-submission-metadata-pennsieve-genration-status", "loading");
+    guidedUploadStatusIcon("guided-submission-metadata-pennsieve-generation-status", "loading");
   }
 
   if (!window.sodaJSONObj["ps-account-selected"]) window.sodaJSONObj["ps-account-selected"] = {};
@@ -1109,7 +1109,7 @@ export const guidedGenerateSubmissionMetadata = async (destination) => {
     });
     // Update UI for successful generation (Pennsieve) and send success event
     if (generationDestination === "Pennsieve") {
-      guidedUploadStatusIcon("guided-submission-metadata-pennsieve-genration-status", "success");
+      guidedUploadStatusIcon("guided-submission-metadata-pennsieve-generation-status", "success");
       submissionMetadataUploadText.innerHTML = `Submission metadata successfully uploaded`;
     }
 
@@ -1126,7 +1126,7 @@ export const guidedGenerateSubmissionMetadata = async (destination) => {
     const emessage = userErrorMessage(error);
     // Update UI for generation failure (Pennsieve) and send failure event
     if (generationDestination === "Pennsieve") {
-      guidedUploadStatusIcon("guided-submission-metadata-pennsieve-genration-status", "error");
+      guidedUploadStatusIcon("guided-submission-metadata-pennsieve-generation-status", "error");
       submissionMetadataUploadText.innerHTML = `Failed to upload submission metadata`;
     }
 
@@ -1155,16 +1155,16 @@ export const guidedGenerateDatasetDescriptionMetadata = async (destination) => {
 
   // Prepare UI elements for Pennsieve upload (if applicable)
   const datasetDescriptionMetadataUploadText = document.getElementById(
-    "guided-dataset-description-metadata-pennsieve-genration-text"
+    "guided-dataset-description-metadata-pennsieve-generation-text"
   );
   if (generationDestination === "Pennsieve") {
     document
-      .getElementById("guided-dataset-description-metadata-pennsieve-genration-tr")
+      .getElementById("guided-dataset-description-metadata-pennsieve-generation-tr")
       .classList.remove("hidden");
 
     datasetDescriptionMetadataUploadText.innerHTML = "Uploading dataset description metadata...";
     guidedUploadStatusIcon(
-      "guided-dataset-description-metadata-pennsieve-genration-status",
+      "guided-dataset-description-metadata-pennsieve-generation-status",
       "loading"
     );
   }
@@ -1249,7 +1249,7 @@ export const guidedGenerateDatasetDescriptionMetadata = async (destination) => {
     // Update UI for successful generation (Pennsieve) and send success event
     if (generationDestination === "Pennsieve") {
       guidedUploadStatusIcon(
-        "guided-dataset-description-metadata-pennsieve-genration-status",
+        "guided-dataset-description-metadata-pennsieve-generation-status",
         "success"
       );
       datasetDescriptionMetadataUploadText.innerHTML =
@@ -1271,7 +1271,7 @@ export const guidedGenerateDatasetDescriptionMetadata = async (destination) => {
     // Update UI for generation failure (Pennsieve) and send failure event
     if (generationDestination === "Pennsieve") {
       guidedUploadStatusIcon(
-        "guided-dataset-description-metadata-pennsieve-genration-status",
+        "guided-dataset-description-metadata-pennsieve-generation-status",
         "error"
       );
       datasetDescriptionMetadataUploadText.innerHTML = `Failed to upload dataset description metadata`;
@@ -1298,14 +1298,14 @@ export const guidedGenerateReadmeMetadata = async (destination) => {
 
   // Prepare UI elements for Pennsieve upload (if applicable)
   const readmeMetadataUploadText = document.getElementById(
-    "guided-readme-metadata-pennsieve-genration-text"
+    "guided-readme-metadata-pennsieve-generation-text"
   );
   if (generationDestination === "Pennsieve") {
     document
-      .getElementById("guided-readme-metadata-pennsieve-genration-tr")
+      .getElementById("guided-readme-metadata-pennsieve-generation-tr")
       .classList.remove("hidden");
     readmeMetadataUploadText.innerHTML = "Uploading README metadata...";
-    guidedUploadStatusIcon("guided-readme-metadata-pennsieve-genration-status", "loading");
+    guidedUploadStatusIcon("guided-readme-metadata-pennsieve-generation-status", "loading");
   }
 
   window.sodaJSONObj["ps-account-selected"]["account-name"] = window.defaultBfAccount;
@@ -1333,7 +1333,7 @@ export const guidedGenerateReadmeMetadata = async (destination) => {
 
     // Update UI for successful generation (Pennsieve) and send success event
     if (generationDestination === "Pennsieve") {
-      guidedUploadStatusIcon("guided-readme-metadata-pennsieve-genration-status", "success");
+      guidedUploadStatusIcon("guided-readme-metadata-pennsieve-generation-status", "success");
       readmeMetadataUploadText.innerHTML = "README metadata successfully uploaded";
     }
 
@@ -1351,7 +1351,7 @@ export const guidedGenerateReadmeMetadata = async (destination) => {
     console.error("Error generating README metadata: ", emessage);
     // Update UI for generation failure (Pennsieve) and send failure event
     if (generationDestination === "Pennsieve") {
-      guidedUploadStatusIcon("guided-readme-metadata-pennsieve-genration-status", "error");
+      guidedUploadStatusIcon("guided-readme-metadata-pennsieve-generation-status", "error");
       readmeMetadataUploadText.innerHTML = "Failed to upload README metadata";
     }
 
@@ -1378,14 +1378,14 @@ export const guidedGenerateChangesMetadata = async (destination) => {
 
   // Prepare UI elements for Pennsieve upload (if applicable)
   const changesMetadataUploadText = document.getElementById(
-    "guided-changes-metadata-pennsieve-genration-text"
+    "guided-changes-metadata-pennsieve-generation-text"
   );
   if (generationDestination === "Pennsieve") {
     document
-      .getElementById("guided-changes-metadata-pennsieve-genration-tr")
+      .getElementById("guided-changes-metadata-pennsieve-generation-tr")
       .classList.remove("hidden");
     changesMetadataUploadText.innerHTML = "Uploading CHANGES metadata...";
-    guidedUploadStatusIcon("guided-changes-metadata-pennsieve-genration-status", "loading");
+    guidedUploadStatusIcon("guided-changes-metadata-pennsieve-generation-status", "loading");
   }
 
   window.sodaJSONObj["ps-account-selected"]["account-name"] = window.defaultBfAccount;
@@ -1413,7 +1413,7 @@ export const guidedGenerateChangesMetadata = async (destination) => {
 
     // Update UI for successful generation (Pennsieve) and send success event
     if (generationDestination === "Pennsieve") {
-      guidedUploadStatusIcon("guided-changes-metadata-pennsieve-genration-status", "success");
+      guidedUploadStatusIcon("guided-changes-metadata-pennsieve-generation-status", "success");
       changesMetadataUploadText.innerHTML = "CHANGES metadata successfully uploaded";
     }
 
@@ -1430,7 +1430,7 @@ export const guidedGenerateChangesMetadata = async (destination) => {
     const emessage = userErrorMessage(error);
     // Update UI for generation failure (Pennsieve) and send failure event
     if (generationDestination === "Pennsieve") {
-      guidedUploadStatusIcon("guided-changes-metadata-pennsieve-genration-status", "error");
+      guidedUploadStatusIcon("guided-changes-metadata-pennsieve-generation-status", "error");
       changesMetadataUploadText.innerHTML = "Failed to upload CHANGES metadata";
     }
 
@@ -1461,16 +1461,16 @@ export const guidedGenerateCodeDescriptionMetadata = async (destination) => {
 
   // Prepare UI elements for Pennsieve upload (if applicable)
   const codeDescriptionMetadataUploadText = document.getElementById(
-    "guided-code-description-metadata-pennsieve-genration-text"
+    "guided-code-description-metadata-pennsieve-generation-text"
   );
   if (generationDestination === "Pennsieve") {
     document
-      .getElementById("guided-code-description-metadata-pennsieve-genration-tr")
+      .getElementById("guided-code-description-metadata-pennsieve-generation-tr")
       .classList.remove("hidden");
 
     codeDescriptionMetadataUploadText.innerHTML = "Uploading code description metadata...";
     guidedUploadStatusIcon(
-      "guided-code-description-metadata-pennsieve-genration-status",
+      "guided-code-description-metadata-pennsieve-generation-status",
       "loading"
     );
   }
@@ -1488,7 +1488,7 @@ export const guidedGenerateCodeDescriptionMetadata = async (destination) => {
     // Update UI for successful generation (Pennsieve) and send success event
     if (generationDestination === "Pennsieve") {
       guidedUploadStatusIcon(
-        "guided-code-description-metadata-pennsieve-genration-status",
+        "guided-code-description-metadata-pennsieve-generation-status",
         "success"
       );
       codeDescriptionMetadataUploadText.innerHTML = "Code description metadata added to Pennsieve";
@@ -1507,7 +1507,7 @@ export const guidedGenerateCodeDescriptionMetadata = async (destination) => {
     const emessage = userErrorMessage(error);
     if (generationDestination === "Pennsieve") {
       guidedUploadStatusIcon(
-        "guided-code-description-metadata-pennsieve-genration-status",
+        "guided-code-description-metadata-pennsieve-generation-status",
         "error"
       );
       codeDescriptionMetadataUploadText.innerHTML = `Failed to upload code description metadata`;

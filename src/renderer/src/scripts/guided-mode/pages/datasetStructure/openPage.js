@@ -82,6 +82,7 @@ export const openPageDatasetStructure = async (targetPageID) => {
   }
 
   if (targetPageID === "guided-dataset-structure-and-manifest-review-tab") {
+    console.log("Opening page guided-dataset-structure-and-manifest-review-tab");
     // Delete existing manifest files in the dataset structure
     Object.values(window.datasetStructureJSONObj.folders).forEach((folder) => {
       delete folder.files["manifest.xlsx"];
@@ -154,6 +155,9 @@ export const openPageDatasetStructure = async (targetPageID) => {
       window.datasetStructureJSONObj,
       window.sodaJSONObj["dataset-entity-obj"]
     );
+
+    setTreeViewDatasetStructure(standardizedStructure, []);
+
     console.log(
       "standardizedStructure before manifest",
       JSON.stringify(standardizedStructure, null, 2)
