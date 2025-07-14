@@ -50,7 +50,6 @@ export const guidedUnSkipPage = (pageId) => {
 export const guidedResetSkippedPages = () => {
   const pagesThatShouldAlwaysBeskipped = [
     "guided-dataset-generation-tab",
-    "guided-structure-folder-tab",
     "guided-dataset-dissemination-tab",
     "guided-select-starting-point-tab",
   ];

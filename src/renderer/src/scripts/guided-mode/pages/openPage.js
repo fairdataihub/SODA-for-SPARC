@@ -161,10 +161,6 @@ export const openPage = async (targetPageID) => {
   // and whenever it is being called, we know that the user is trying to navigate to a new page
   // this function is async because we sometimes need to fetch data before the page is ready to be opened
 
-  let itemsContainer = document.getElementById("items-guided-container");
-  if (itemsContainer.classList.contains("border-styling")) {
-    itemsContainer.classList.remove("border-styling");
-  }
   guidedSetNavLoadingState(true);
 
   const targetPage = document.getElementById(targetPageID);

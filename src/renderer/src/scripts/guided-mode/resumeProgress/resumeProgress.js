@@ -20,8 +20,6 @@ while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
-const handlePreSdsThreeProgressFiles = async () => {};
-
 /**
  *
  * @param {string} datasetNameToResume - The name of the dataset associated with the save progress file the user wants to resume.
@@ -165,8 +163,6 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
     await patchPreviousGuidedModeVersions();
 
     window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
-    window.subjectsTableData = window.sodaJSONObj["subjects-table-data"];
-    window.samplesTableData = window.sodaJSONObj["samples-table-data"];
     const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
     setDatasetEntityObj(savedDatasetEntityObj);
     const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];

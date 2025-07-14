@@ -221,7 +221,10 @@ export const moveFileToTargetLocation = (relativePathToMove, destionationRelativ
 
 export const createStandardizedDatasetStructure = (datasetStructure, datasetEntityObj) => {
   // --- Step 1: Preserve the original global structure ---
-  const originalStructure = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
+  let originalStructure = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
+
+  // Remove any empty folders from the original structure
+  originalStructure = deleteEmptyFoldersFromStructure(originalStructure);
 
   // Helper to move files by mapping
   const moveFilesByCategory = (categoryObj, destFolder) => {

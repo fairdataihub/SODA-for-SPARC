@@ -4919,30 +4919,6 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
   let splitPath = datasetPath.value.split("/");
   let fullPath = datasetPath.value;
 
-  if (window.organizeDSglobalPath.id === "guided-input-global-path") {
-    let currentPageID = window.CURRENT_PAGE.id;
-    //capsules need to determine if sample or subjects section
-    //subjects initially display two folder levels meanwhile samples will initially only show one folder level
-
-    //remove my_dataset_folder and if any of the ROOT FOLDER names is included
-    if (splitPath[0] === "dataset_root") splitPath.shift();
-    if (rootFolders.includes(splitPath[0])) splitPath.shift();
-    //remove the last element in array is it is always ''
-    splitPath.pop();
-
-    let trimmedPath = "";
-    console.log("current page id: ", currentPageID);
-
-    for (let i = 0; i < splitPath.length; i++) {
-      if (splitPath[i] === "dataset_root" || splitPath[i] === undefined) continue;
-      trimmedPath += splitPath[i] + "/";
-    }
-
-    //append path to tippy and display path to the file explorer
-    pathDisplay.innerText = trimmedPath;
-    pathDisplay._tippy.setContent(fullPath);
-  }
-
   var appendString = "";
   var sortedObj = window.sortObjByKeys(jsonObj);
   let file_elements = [],
@@ -4955,79 +4931,6 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
   //start creating folder elements to be rendered
   if (Object.keys(sortedObj["folders"]).length > 0) {
     for (var item in sortedObj["folders"]) {
-      //hide samples when on the subjects page
-      if (hideSampleFolders) {
-        let allSamples = window.sodaJSONObj.getAllSamplesFromSubjects();
-        let noPoolSamples = [];
-        let poolSamples = [];
-        let skipSubjectFolder = false;
-        if (allSamples.length > 1) {
-          //subjects within pools and others not
-          poolSamples = allSamples[0];
-          noPoolSamples = allSamples[1];
-          for (let i = 0; i < poolSamples.length; i++) {
-            if (item === poolSamples[i]["sampleName"]) {
-              skipSubjectFolder = true;
-              break;
-            }
-          }
-          if (skipSubjectFolder) continue;
-          for (let i = 0; i < noPoolSamples.length; i++) {
-            if (item === noPoolSamples[i]["sampleName"]) {
-              skipSubjectFolder = true;
-              break;
-            }
-          }
-          if (skipSubjectFolder) continue;
-        }
-        if (allSamples.length === 1) {
-          poolSamples = allSamples[1];
-          for (let i = 0; i < poolSamples.length; i++) {
-            if (item === poolSamples[i]["sampleName"]) {
-              skipSubjectFolder = true;
-              break;
-            }
-          }
-          if (skipSubjectFolder) continue;
-        }
-      }
-      if (hideSubjectFolders) {
-        //hide subject folders when displaying pool page
-        let currentSubjects = window.sodaJSONObj.getAllSubjects();
-        let poolSubjects = [];
-        let noPoolSubjects = [];
-        let skipSubjectFolder = false;
-        if (currentSubjects.length === 1) {
-          poolSubjects = currentSubjects[0];
-          for (let i = 0; i < poolSubjects.length; i++) {
-            if (item === poolSubjects[i]["subjectName"]) {
-              skipSubjectFolder = true;
-              break;
-            }
-          }
-          if (skipSubjectFolder) continue;
-        }
-        if (currentSubjects.length > 1) {
-          //some subjects in pools and some not
-          poolSubjects = currentSubjects[0];
-          noPoolSubjects = currentSubjects[1];
-          for (let i = 0; i < noPoolSubjects.length; i++) {
-            if (item === noPoolSubjects[i]["subjectName"]) {
-              skipSubjectFolder = true;
-              break;
-            }
-          }
-          if (skipSubjectFolder) continue;
-          for (let i = 0; i < poolSubjects.length; i++) {
-            if (item === poolSubjects[i]["subjectName"]) {
-              skipSubjectFolder = true;
-              break;
-            }
-          }
-        }
-        if (skipSubjectFolder) continue;
-      }
-
       count += 1;
       var emptyFolder = "";
       if (!window.highLevelFolders.includes(item)) {

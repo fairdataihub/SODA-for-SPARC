@@ -172,33 +172,13 @@ const handleSectionTrigger = async (event) => {
       document.getElementById("organize_dataset_btn").click();
     }
 
-    if (sectionRenderFileExplorer != "file-explorer") {
-      window.sodaJSONObj = {};
-      window.datasetStructureJSONObj = {};
-      window.subjectsTableData = [];
-      window.samplesTableData = [];
-    }
-
-    //Transition file explorer elements to guided mode
-    window.organizeDSglobalPath = document.getElementById("guided-input-global-path");
-    window.organizeDSglobalPath.value = "";
-    window.dataset_path = document.getElementById("guided-input-global-path");
-    window.scroll_box = document.querySelector("#guided-body");
-    itemsContainer.innerHTML = "";
-    resetLazyLoading();
-    freeFormItemsContainer.classList.remove("freeform-file-explorer"); //add styling for free form mode
-    freeFormButtons.classList.remove("freeform-file-explorer-buttons");
-    document.querySelectorAll(".shared-folder-structure-element").forEach((folderElement) => {
-      document.querySelector("#guided-folder-structure-container").appendChild(folderElement);
-    });
-
     let guidedModeSection = document.getElementById("guided_mode-section");
     if (!guidedModeSection.classList.contains("is-shown")) {
       guidedModeSection.classList.add("is-shown");
     }
 
     // Transition back to the home screen
-    document.getElementById("guided-home").classList.remove("hidden");
+    document.getElementById("soda-home-page").classList.remove("hidden");
     document.getElementById("guided_mode-section").classList.add("is-shown");
     document.getElementById("guided_curate_dataset-tab").classList.add("show");
 

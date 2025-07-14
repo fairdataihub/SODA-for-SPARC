@@ -570,22 +570,6 @@
   width: 90%;
 }
 
-.guided--folder-organization-buttons-container {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  flex-direction: row;
-  align-items: center;
-  margin-bottom: 5px;
-  height: 35px;
-}
-
-.guided--folder-organization-buttons-container-sub {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .guided-section {
   /* display: none; */
   position: absolute;

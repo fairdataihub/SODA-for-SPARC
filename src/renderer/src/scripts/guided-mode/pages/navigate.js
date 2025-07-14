@@ -5,12 +5,10 @@ import {
   guidedUnSkipPage,
   getNextPageNotSkipped,
   getPrevPageNotSkipped,
-  guidedResetSkippedPages,
   guidedSkipPage,
   getNonSkippedGuidedModePages,
 } from "./navigationUtils/pageSkipping";
 import { guidedUnLockSideBar, resetLazyLoading } from "../../../assets/nav";
-import { guidedCreateSodaJSONObj } from "../utils/sodaJSONObj";
 import api from "../../others/api/api";
 import lottie from "lottie-web";
 import { existingDataset, modifyDataset } from "../../../assets/lotties/lotties";
@@ -110,62 +108,8 @@ document.getElementById("guided-button-save-and-exit").addEventListener("click",
   await guidedSaveAndExit();
 });
 
-let homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
-let guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
-
-const guidedHighLevelFolders = ["primary", "source", "derivative"];
-const nonGuidedHighLevelFolders = ["code", "protocol", "docs"];
-
-/**
- *
- *
- * @returns {Promise<void>}
- * @description This function is called when the user clicks the next button on the guided mode pages.
- *              It handles the logic for properly determining which page to open first, which
- *              depends upon whether the user is starting a new curation, resuming an existing progress file,
- *              or resuming a Pennsieve dataset.
- */
-const handleStartCuration = async () => {
-  const errorArray = [];
-  const startingNewCuration = document
-    .getElementById("guided-button-start-new-curation")
-    .classList.contains("selected");
-  const resumingExistingProgress = document
-    .getElementById("guided-button-resume-progress-file")
-    .classList.contains("selected");
-
-  if (!startingNewCuration && !resumingExistingProgress) {
-    errorArray.push({
-      type: "notyf",
-      message: "Please select a dataset start location",
-    });
-    throw errorArray;
-  }
-
-  if (startingNewCuration) {
-    window.sodaJSONObj["starting-point"]["origin"] = "new";
-    window.sodaJSONObj["generate-dataset"]["generate-option"] = "new";
-
-    // Skip the changes metadata tab as new datasets do not have changes metadata
-    guidedSkipPage("guided-create-changes-metadata-tab");
-
-    // Open the first page
-    const firstPage = getNonSkippedGuidedModePages(document)[0];
-    console.log(firstPage);
-    await openPage(firstPage.id);
-  }
-
-  if (resumingExistingProgress) {
-    errorArray.push({
-      type: "notyf",
-      message: "Please click the button of the dataset you would like to resume above",
-    });
-    throw errorArray;
-  }
-
-  //Skip this page because we should not come back to it
-  guidedSkipPage("guided-select-starting-point-tab");
-};
+const homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
+const guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
 
 /**
  *
@@ -237,7 +181,7 @@ export const guidedTransitionToHome = () => {
   guidedUnLockSideBar();
   window.guidedPrepareHomeScreen();
 
-  document.getElementById("guided-home").classList.remove("hidden");
+  document.getElementById("soda-home-page").classList.remove("hidden");
   // Hide all of the parent tabs
   const guidedParentTabs = Array.from(document.querySelectorAll(".guided--parent-tab"));
   for (const guidedParentTab of guidedParentTabs) {
@@ -255,7 +199,6 @@ export const guidedTransitionToHome = () => {
 window.guidedPrepareHomeScreen = async () => {
   //Wipe out existing progress if it exists
   guidedResetProgressVariables();
-  //Check if Guided-Progress folder exists. If not, create it.
 
   if (!window.fs.existsSync(guidedProgressFilePath)) {
     window.fs.mkdirSync(guidedProgressFilePath, { recursive: true });
@@ -283,35 +226,19 @@ window.guidedPrepareHomeScreen = async () => {
   guidedUnLockSideBar();
 };
 
-const itemsContainer = document.getElementById("items");
-const freeFormItemsContainer = document.getElementById("free-form-folder-structure-container");
-const freeFormButtons = document.getElementById("organize-path-and-back-button-div");
-
 document.getElementById("button-homepage-guided-mode").addEventListener("click", async () => {
   console.log("Homepage button called");
-  //Transition file explorer elements to guided mode
-  window.organizeDSglobalPath = document.getElementById("guided-input-global-path");
-  window.organizeDSglobalPath.value = "";
-  window.dataset_path = document.getElementById("guided-input-global-path");
-  window.scroll_box = document.querySelector("#guided-body");
-  itemsContainer.innerHTML = "";
-  resetLazyLoading();
-  freeFormItemsContainer.classList.remove("freeform-file-explorer");
-  freeFormButtons.classList.remove("freeform-file-explorer-buttons");
-  $(".shared-folder-structure-element").appendTo($("#guided-folder-structure-container"));
 
-  guidedCreateSodaJSONObj();
   guidedTransitionFromHome();
 
   guidedUnLockSideBar();
 
-  guidedUnSkipPage("guided-select-starting-point-tab");
   await openPage("guided-select-starting-point-tab");
 });
 
 export const guidedTransitionFromHome = async () => {
   //Hide the home screen
-  document.getElementById("guided-home").classList.add("hidden");
+  document.getElementById("soda-home-page").classList.add("hidden");
   document.getElementById("curation-preparation-parent-tab").classList.remove("hidden");
   document.getElementById("guided-header-div").classList.remove("hidden");
 
@@ -328,16 +255,11 @@ export const guidedTransitionFromHome = async () => {
   window.CURRENT_PAGE = document.getElementById("guided-select-starting-point-tab");
 
   document.getElementById("guided-footer-div").classList.remove("hidden");
-
-  //Unskip all pages besides the ones that should always be skipped
-  guidedResetSkippedPages();
 };
 
 const guidedResetProgressVariables = () => {
   window.sodaJSONObj = {};
   window.datasetStructureJSONObj = {};
-  window.subjectsTableData = [];
-  window.samplesTableData = [];
 };
 
 const objectsHaveSameKeys = (...objects) => {
@@ -367,75 +289,6 @@ const checkIfChangesMetadataPageShouldBeShown = async (pennsieveDatasetID) => {
       return { shouldShow: false };
     }
   }
-};
-
-const guidedCheckHighLevelFoldersForImproperFiles = (datasetStructure) => {
-  const invalidFolders = [];
-  const invalidFiles = [];
-
-  for (const hlf of guidedHighLevelFolders) {
-    if (datasetStructure["folders"][hlf]) {
-      const hlfFolders = Object.keys(datasetStructure["folders"][hlf]["folders"]);
-      //filter out hlfFolders that do not start with pool- or sub-
-      const invalidBaseFolders = hlfFolders.filter((folder) => {
-        return !folder.startsWith("pool-") && !folder.startsWith("sub-");
-      });
-
-      for (const invalidBaseFolder of invalidBaseFolders) {
-        invalidFolders.push(invalidBaseFolder);
-      }
-
-      const hlfFiles = Object.keys(datasetStructure["folders"][hlf]["files"]);
-      const invalidBaseFiles = hlfFiles.filter((file) => {
-        return !file.startsWith("manifest");
-      });
-      for (const invalidBaseFile of invalidBaseFiles) {
-        invalidFiles.push(invalidBaseFile);
-      }
-    }
-  }
-  return [invalidFolders, invalidFiles];
-};
-
-const createGuidedStructureFromSubSamMetadata = (subjectsMetadataRows, samplesMetadataRows) => {
-  const poolSubSamStructure = {
-    pools: {},
-    subjects: {},
-  };
-
-  const datasetPools = [
-    ...new Set(
-      subjectsMetadataRows
-        .map((subjectDataArray) => subjectDataArray[1])
-        .filter((pool) => pool !== "")
-    ),
-  ];
-
-  for (const pool of datasetPools) {
-    poolSubSamStructure["pools"][pool] = {};
-  }
-
-  for (const subject of subjectsMetadataRows) {
-    const subjectID = subject[0];
-    const poolID = subject[1];
-    if (poolID !== "") {
-      poolSubSamStructure["pools"][poolID][subjectID] = {};
-    } else {
-      poolSubSamStructure["subjects"][subjectID] = {};
-    }
-  }
-
-  for (const sample of samplesMetadataRows) {
-    const subjectID = sample[0];
-    const sampleID = sample[1];
-    const poolID = sample[3];
-    if (poolID !== "") {
-      poolSubSamStructure["pools"][poolID][subjectID][sampleID] = {};
-    } else {
-      poolSubSamStructure["subjects"][subjectID][sampleID] = {};
-    }
-  }
-  return poolSubSamStructure;
 };
 
 export const scrollToBottomOfGuidedBody = () => {
