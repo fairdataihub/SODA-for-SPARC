@@ -99,6 +99,32 @@ export const savePageChanges = async (pageBeingLeftID) => {
       }
 
       if (pageBeingLeftComponentType === "modality-selection-page") {
+        const userSelectedTheyHaveMultipleModalities = document
+          .getElementById("modality-selection-yes")
+          .classList.contains("selected");
+        const userSelectedTheyDoNotHaveMultipleModalities = document
+          .getElementById("modality-selection-no")
+          .classList.contains("selected");
+        console.log(
+          "userSelectedTheyHaveMultipleModalities",
+          userSelectedTheyHaveMultipleModalities
+        );
+        console.log(
+          "userSelectedTheyDoNotHaveMultipleModalities",
+          userSelectedTheyDoNotHaveMultipleModalities
+        );
+
+        if (
+          !userSelectedTheyDoNotHaveMultipleModalities &&
+          !userSelectedTheyHaveMultipleModalities
+        ) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please indicate if your dataset has multiple modalities.",
+          });
+          throw errorArray;
+        }
+
         const selectedModalities = useGlobalStore.getState()["selectedModalities"];
         console.log("selectedModalities", selectedModalities);
         if (selectedModalities.length === 0) {
@@ -626,20 +652,6 @@ export const savePageChanges = async (pageBeingLeftID) => {
 
     //   if (buttonNoDelayProtocolEntry.classList.contains("selected")) {
     //     window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"] = [];
-    //   }
-    // }
-
-    // if (pageBeingLeftID === "guided-create-readme-metadata-tab") {
-    //   const readMeTextArea = document.getElementById("guided-textarea-create-readme");
-    //   if (readMeTextArea.value.trim() === "") {
-    //     errorArray.push({
-    //       type: "notyf",
-    //       message: "Please enter a README for your dataset",
-    //     });
-    //     throw errorArray;
-    //   } else {
-    //     const readMe = readMeTextArea.value.trim();
-    //     window.sodaJSONObj["dataset_metadata"]["README"] = readMe;
     //   }
     // }
 

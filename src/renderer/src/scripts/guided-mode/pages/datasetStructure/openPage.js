@@ -9,6 +9,7 @@ import { guidedUpdateFolderStructureUI } from "./utils";
 import { swalFileListSingleAction } from "../../../utils/swal-utils";
 import { getEntityDataById } from "../../../../stores/slices/datasetEntityStructureSlice";
 import { createStandardizedDatasetStructure } from "../../../utils/datasetStructure";
+import { deleteEmptyFoldersFromStructure } from "../../../../stores/slices/datasetTreeViewSlice";
 import client from "../../../client";
 
 while (!window.baseHtmlLoaded) {
@@ -20,11 +21,12 @@ export const openPageDatasetStructure = async (targetPageID) => {
 
   // Add handlers for other pages without componentType
   if (targetPageID === "guided-unstructured-data-import-tab") {
+    setTreeViewDatasetStructure(window.datasetStructureJSONObj, []);
     guidedUpdateFolderStructureUI("data/");
   }
 
   if (targetPageID === "guided-entity-addition-method-selection-tab") {
-    console.log("Opening entity addition method selection page");
+    console.log("Opening Entity Addition Method selection page");
   }
 
   if (targetPageID === "guided-dataset-content-tab") {
@@ -73,8 +75,6 @@ export const openPageDatasetStructure = async (targetPageID) => {
   }
 
   if (targetPageID === "guided-modalities-selection-tab") {
-    console.log("Opening modalities selection page");
-    // Component with type "modality-selection-page" will handle most of the logic
   }
 
   if (targetPageID === "guided-modalities-data-selection-tab") {
@@ -82,7 +82,8 @@ export const openPageDatasetStructure = async (targetPageID) => {
     // Component with type "data-categorization-page" will handle most of the logic
   }
 
-  if (targetPageID === "guided-manifest-file-generation-tab") {
+  if (targetPageID === "guided-dataset-structure-and-manifest-review-tab") {
+    console.log("Opening page guided-dataset-structure-and-manifest-review-tab");
     // Delete existing manifest files in the dataset structure
     Object.values(window.datasetStructureJSONObj.folders).forEach((folder) => {
       delete folder.files["manifest.xlsx"];
@@ -145,25 +146,19 @@ export const openPageDatasetStructure = async (targetPageID) => {
 
     await purgeNonExistentFiles(window.datasetStructureJSONObj);
 
-    /**
-     * Recursively delete empty folders from the dataset structure.
-     */
-    const deleteEmptyFolders = (currentStructure) => {
-      Object.entries(currentStructure.folders || {}).forEach(([folderName, folder]) => {
-        deleteEmptyFolders(folder);
-        if (!Object.keys(folder.files || {}).length && !Object.keys(folder.folders || {}).length) {
-          delete currentStructure.folders[folderName];
-        }
-      });
-    };
-
-    deleteEmptyFolders(window.datasetStructureJSONObj);
+    // Delete empty folders from the dataset structure
+    window.datasetStructureJSONObj = deleteEmptyFoldersFromStructure(
+      window.datasetStructureJSONObj
+    );
 
     // Create a standardized SODA JSON object for the clean-dataset endpoint
     const standardizedStructure = createStandardizedDatasetStructure(
       window.datasetStructureJSONObj,
       window.sodaJSONObj["dataset-entity-obj"]
     );
+
+    setTreeViewDatasetStructure(standardizedStructure, []);
+
     console.log(
       "standardizedStructure before manifest",
       JSON.stringify(standardizedStructure, null, 2)
@@ -239,8 +234,18 @@ export const openPageDatasetStructure = async (targetPageID) => {
     const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
 
     const updateEntityColumn = (manifestDataRows, datasetEntityObj) => {
+      console.log("manifestDataRows", manifestDataRows);
+      console.log("datasetEntityObj", datasetEntityObj);
       manifestDataRows.forEach((row) => {
-        const path = row[0]; // Path is in the first column
+        let path = row[0]; // Path is in the first column
+        // replace the first part of the path with "data/"
+        const pathSegments = path.split("/");
+        if (pathSegments.length > 0) {
+          pathSegments[0] = "data";
+          path = pathSegments.join("/");
+        }
+
+        console.log("path2:", path);
         let entityList = [];
 
         const entityTypes = ["sites", "samples", "subjects", "performances"];
@@ -289,7 +294,13 @@ export const openPageDatasetStructure = async (targetPageID) => {
       console.log("modalitiesColumnIndex", modalitiesColumnIndex);
 
       manifestDataRows.forEach((row) => {
-        const path = row[0]; // Path is in the first column
+        // Use the updated path (replace high-level folder with data/)
+        let path = row[0]; // Path is in the first column
+        const pathSegments = path.split("/");
+        if (pathSegments.length > 0) {
+          pathSegments[0] = "data";
+          path = pathSegments.join("/");
+        }
         let modalitiesList = [];
 
         // Check all modalities
@@ -306,47 +317,9 @@ export const openPageDatasetStructure = async (targetPageID) => {
       return manifestDataRows;
     };
 
-    const updateFileNameColumn = (manifestDataRows, datasetEntityObj) => {
-      const fileNameColumnIndex = newManifestData.headers.indexOf("filename");
-      console.log("fileNameColumnIndex", fileNameColumnIndex);
-
-      const updateFilePathDataFolder = (path, newFolder) => {
-        // Find the first instance of data/ in the path and replace it with newFolder
-        const dataIndex = path.indexOf("data/");
-        if (dataIndex !== -1) {
-          const newPath = path.slice(0, dataIndex) + newFolder + path.slice(dataIndex + 5);
-          return newPath;
-        }
-        return path; // Return the original path if data/ is not found
-      };
-
-      manifestDataRows.forEach((row) => {
-        const path = row[0]; // Path is in the first column
-        console.log("path1", path);
-        if (datasetEntityObj?.["high-level-folder-data-categorization"]?.["Experimental"]?.[path]) {
-          console.log("found folder to move to primary", path);
-          const newPath = updateFilePathDataFolder(path, "primary/");
-          console.log("newPath", newPath);
-          row[fileNameColumnIndex] = newPath;
-          console.log("row[fileNameColumnIndex]", row[fileNameColumnIndex]);
-        }
-
-        if (datasetEntityObj?.["high-level-folder-data-categorization"]?.["Code"]?.[path]) {
-          console.log("found code path", path);
-          const newPath = updateFilePathDataFolder(path, "code/");
-          console.log("newPath", newPath);
-          row[fileNameColumnIndex] = newPath;
-          console.log("row[fileNameColumnIndex]", row[fileNameColumnIndex]);
-        }
-      });
-
-      return manifestDataRows;
-    };
-
-    // Apply the function
+    // Update the column values for entities and modalities
     updateEntityColumn(newManifestData.data, datasetEntityObj);
     updateModalitiesColumn(newManifestData.data, datasetEntityObj);
-    updateFileNameColumn(newManifestData.data, datasetEntityObj);
 
     console.log("After sort: ", newManifestData.data);
     window.sodaJSONObj["guided-manifest-file-data"] = window.sodaJSONObj[
@@ -357,23 +330,5 @@ export const openPageDatasetStructure = async (targetPageID) => {
           window.sodaJSONObj["guided-manifest-file-data"]
         )
       : newManifestData;
-  }
-
-  if (targetPageID === "dataset-structure-review-tab") {
-    const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
-
-    // Create a deep copy of the dataset structure JSON object
-    const datasetStructureJSONObjCopy = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
-    console.log("datasetStructureJSONObjCopy", datasetStructureJSONObjCopy);
-
-    const standardizedDatasetStructure = createStandardizedDatasetStructure(
-      window.datasetStructureJSONObj,
-      datasetEntityObj
-    );
-    setTreeViewDatasetStructure(standardizedDatasetStructure, []);
-
-    // Restore the original dataset structure
-    window.datasetStructureJSONObj = datasetStructureJSONObjCopy;
-    console.log("datasetStructureJSONObj restored", window.datasetStructureJSONObj);
   }
 };

@@ -45,6 +45,7 @@ while (!window.baseHtmlLoaded) {
 export const guidedGenerateDatasetOnPennsieve = async () => {
   guidedSetNavLoadingState(true);
   try {
+    // Gather all required dataset info from window.sodaJSONObj
     const guidedBfAccount = window.defaultBfAccount;
     const pennsieveDatasetName = window.sodaJSONObj["pennsieve-dataset-name"];
     const pennsieveDatasetSubtitle = window.sodaJSONObj["pennsieve-dataset-subtitle"];
@@ -57,42 +58,64 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       window.sodaJSONObj["digital-metadata"]["description"]["primary-conclusion"];
     const guidedBannerImagePath = window.sodaJSONObj["digital-metadata"]?.["banner-image-path"];
 
-    // TODO: When retrying the upload, skip to the failed step rather than starting from the beginning
+    // If retrying upload, skip to upload step
     if (userMadeItToLastStep() && window.retryGuidedMode) {
-      // scroll to the upload status table
       window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
-      // upload on the last step
-      await guidedUploadDatasetToPennsieve();
+      window.updateJSONStructureDSstructure();
+      // --- Ensure all required keys are set for retry upload ---
+      window.sodaJSONObj["generate-dataset"] = {
+        "dataset-name": window.sodaJSONObj["pennsieve-dataset-name"],
+        destination: "ps",
+        "generate-option": "merge",
+        "if-existing": "merge",
+        "if-existing-files": "skip",
+      };
+      window.sodaJSONObj["ps-dataset-selected"] = {
+        "dataset-name": window.sodaJSONObj["pennsieve-dataset-name"],
+      };
+      window.sodaJSONObj["ps-account-selected"] = {
+        "account-name": window.defaultBfAccount,
+      };
+      datasetUploadSession.startSession();
+      let datasetUploadObj = JSON.parse(JSON.stringify(window.sodaJSONObj));
+      guidedSetNavLoadingState(true);
+      await client.post(
+        `/curate_datasets/curation`,
+        {
+          soda_json_structure: datasetUploadObj,
+          resume: !!window.retryGuidedMode,
+        },
+        { timeout: 0 }
+      );
+      guidedSetNavLoadingState(false);
       return;
     }
 
-    //Hide the upload tables
-    document.querySelectorAll(".guided-upload-table").forEach((table) => {
-      table.classList.add("hidden");
-    });
+    // Hide all upload tables
+    document
+      .querySelectorAll(".guided-upload-table")
+      .forEach((table) => table.classList.add("hidden"));
 
-    //Remove any permissions rows from the UI that may have been added from a previous upload
+    // Remove any permissions rows from the UI that may have been added from a previous upload
     const pennsieveMetadataUploadTable = document.getElementById(
       "guided-tbody-pennsieve-metadata-upload"
     );
     const pennsieveMetadataUploadTableRows = pennsieveMetadataUploadTable.children;
     for (const row of pennsieveMetadataUploadTableRows) {
       if (row.classList.contains("permissions-upload-tr")) {
-        //delete the row to reset permissions UI
         row.remove();
       } else {
         row.classList.add("hidden");
       }
     }
 
-    //Display the Pennsieve metadata upload table
+    // Show Pennsieve metadata upload table
     window.unHideAndSmoothScrollToElement(
-      "guided-div-pennsieve-metadata-pennsieve-genration-status-table"
+      "guided-div-pennsieve-metadata-pennsieve-generation-status-table"
     );
 
-    // Create the dataset on Pennsieve
+    // Create or rename dataset, then add metadata
     await guidedCreateOrRenameDataset(guidedBfAccount, pennsieveDatasetName);
-
     await guidedAddDatasetSubtitle(guidedBfAccount, pennsieveDatasetName, pennsieveDatasetSubtitle);
     await guidedAddDatasetDescription(
       guidedBfAccount,
@@ -106,11 +129,12 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
 
     hideDatasetMetadataGenerationTableRows("pennsieve");
 
+    // (Metadata file generation temporarily disabled)
+    /*
     window.unHideAndSmoothScrollToElement(
-      "guided-div-dataset-metadata-pennsieve-genration-status-table"
+      "guided-div-dataset-metadata-pennsieve-generation-status-table"
     );
-
-    /*await guidedGenerateSubjectsMetadata("Pennsieve");
+    await guidedGenerateSubjectsMetadata("Pennsieve");
     await guidedGenerateSamplesMetadata("Pennsieve");
     await guidedGenerateSubmissionMetadata("Pennsieve");
     await guidedGenerateDatasetDescriptionMetadata("Pennsieve");
@@ -118,29 +142,48 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     await guidedGenerateChangesMetadata("Pennsieve");
     await guidedGenerateCodeDescriptionMetadata("Pennsieve");*/
 
-    //Reset Upload Progress Bar and then scroll to it
+    // Reset upload progress bar and scroll to it
     setGuidedProgressBarValue("pennsieve", 0);
-
     updateDatasetUploadProgressTable("pennsieve", {
       "Upload status": `Preparing dataset for upload`,
     });
     window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
 
-    await guidedCreateManifestFilesAndAddToDatasetStructure();
-
-    //Upload the dataset files
-    await guidedUploadDatasetToPennsieve();
-    amountOfTimesPennsieveUploadFailed = 0; //reset the upload failed counter
+    // --- Ensure all required keys are set for initial upload ---
+    window.sodaJSONObj["generate-dataset"] = {
+      "dataset-name": window.sodaJSONObj["pennsieve-dataset-name"],
+      destination: "ps",
+      "generate-option": "new",
+      "if-existing": "new",
+      "if-existing-files": "new",
+    };
+    window.sodaJSONObj["ps-dataset-selected"] = {
+      "dataset-name": window.sodaJSONObj["pennsieve-dataset-name"],
+    };
+    window.sodaJSONObj["ps-account-selected"] = {
+      "account-name": window.defaultBfAccount,
+    };
+    datasetUploadSession.startSession();
+    let datasetUploadObj = JSON.parse(JSON.stringify(window.sodaJSONObj));
+    guidedSetNavLoadingState(true);
+    await client.post(
+      `/curate_datasets/curation`,
+      {
+        soda_json_structure: datasetUploadObj,
+        resume: !!window.retryGuidedMode,
+      },
+      { timeout: 0 }
+    );
+    guidedSetNavLoadingState(false);
+    amountOfTimesPennsieveUploadFailed = 0;
   } catch (error) {
     clientError(error);
     let emessage = userErrorMessage(error);
-
     amountOfTimesPennsieveUploadFailed += 1;
-    window.retryGuidedMode = true; //set the retry flag to true
+    window.retryGuidedMode = true;
     let supplementaryChecks = false;
 
     if (amountOfTimesPennsieveUploadFailed <= 3) {
-      // run pre flight checks until they pass or fail 3 times
       await Swal.fire({
         title: `Retrying upload ${amountOfTimesPennsieveUploadFailed} of 3 times`,
         icon: "error",
@@ -149,12 +192,8 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         showConfirmButton: false,
         backdrop: "rgba(0,0,0, 0.4)",
         heightAuto: false,
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
+        showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+        hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
         timer: 5000,
         timerProgressBar: true,
       });
@@ -164,10 +203,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         );
         if (!supplementaryChecks) amountOfTimesPennsieveUploadFailed += 1;
       }
-    }
-    // if upload failed 3 times give user option to save and exit or try again
-    else {
-      //make an unclosable sweet alert that forces the user to retry or close the app
+    } else {
       let res = await Swal.fire({
         allowOutsideClick: false,
         allowEscapeKey: false,
@@ -187,15 +223,9 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         showCancelButton: true,
         cancelButtonText: "Save and Exit",
         confirmButtonText: "Retry Upload",
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
+        showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+        hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
       });
-
-      // save & exit the upload
       if (!res.isConfirmed) {
         const currentPageID = window.CURRENT_PAGE.id;
         try {
@@ -206,15 +236,12 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         guidedTransitionToHome();
         return;
       }
-
       supplementaryChecks = await window.run_pre_flight_checks(
         "guided-mode-pre-generate-pennsieve-agent-check"
       );
     }
 
-    // force a save and exit if the pre flight checks fail
     if (!supplementaryChecks) {
-      // if the pre-flight checks fail, show an error message and exit
       Swal.fire({
         icon: "error",
         title: "Could not complete upload due to pre-flight check failures",
@@ -222,12 +249,8 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         confirmButtonText: "OK",
         backdrop: "rgba(0,0,0, 0.4)",
         heightAuto: false,
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
+        showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+        hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
       });
       const currentPageID = window.CURRENT_PAGE.id;
       try {
@@ -238,9 +261,32 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       guidedTransitionToHome();
       return;
     }
-
-    // retry the upload
-    await guidedPennsieveDatasetUpload();
+    // --- Ensure all required keys are set for retry upload (in error handler) ---
+    window.sodaJSONObj["generate-dataset"] = {
+      "dataset-name": window.sodaJSONObj["pennsieve-dataset-name"],
+      destination: "ps",
+      "generate-option": "merge",
+      "if-existing": "merge",
+      "if-existing-files": "skip",
+    };
+    window.sodaJSONObj["ps-dataset-selected"] = {
+      "dataset-name": window.sodaJSONObj["pennsieve-dataset-name"],
+    };
+    window.sodaJSONObj["ps-account-selected"] = {
+      "account-name": window.defaultBfAccount,
+    };
+    datasetUploadSession.startSession();
+    let datasetUploadObj = JSON.parse(JSON.stringify(window.sodaJSONObj));
+    guidedSetNavLoadingState(true);
+    await client.post(
+      `/curate_datasets/curation`,
+      {
+        soda_json_structure: datasetUploadObj,
+        resume: !!window.retryGuidedMode,
+      },
+      { timeout: 0 }
+    );
+    guidedSetNavLoadingState(false);
   }
   guidedSetNavLoadingState(false);
 };
@@ -368,9 +414,6 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
       );
     }
 
-    // Attach manifest files
-    await guidedCreateManifestFilesAndAddToDatasetStructure();
-
     // Copy and prepare SODA object
     const sodaJSONObjCopy = JSON.parse(JSON.stringify(window.sodaJSONObj));
     sodaJSONObjCopy["generate-dataset"] = {
@@ -385,9 +428,6 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
     // check if the account details are valid during local generation
     delete sodaJSONObjCopy["ps-account-selected"];
     delete sodaJSONObjCopy["ps-dataset-selected"];
-
-    // Prepare dataset structure
-    await guidedPrepareDatasetStructureAndMetadataForUpload(sodaJSONObjCopy);
 
     updateDatasetUploadProgressTable("local", {
       "Current action": "Preparing dataset for local generation",
@@ -451,6 +491,7 @@ const userMadeItToLastStep = () => {
 };
 
 const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
+  console.log("[guidedCreateOrRenameDataset] called with:", { bfAccount, datasetName });
   document.getElementById("guided-dataset-name-upload-tr").classList.remove("hidden");
   const datasetNameUploadText = document.getElementById("guided-dataset-name-upload-text");
 
@@ -460,18 +501,32 @@ const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
   //If the dataset has already been created in Guided Mode, we should have an ID for the
   //dataset. If a dataset with the ID still exists on Pennsieve, we will upload to that dataset.
   if (window.sodaJSONObj["digital-metadata"]?.["pennsieve-dataset-id"]) {
+    console.log(
+      "[guidedCreateOrRenameDataset] Found existing Pennsieve dataset ID:",
+      window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
+    );
     const existingDatasetNameOnPennsieve = await checkIfDatasetExistsOnPennsieve(
       window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
     );
+    console.log(
+      "[guidedCreateOrRenameDataset] checkIfDatasetExistsOnPennsieve result:",
+      existingDatasetNameOnPennsieve
+    );
     if (existingDatasetNameOnPennsieve) {
-      // If the name entered in the input matches the dataset name on Pennsieve, we will upload to that dataset
       if (existingDatasetNameOnPennsieve === datasetName) {
+        console.log(
+          "[guidedCreateOrRenameDataset] Dataset name matches existing. Returning existing ID."
+        );
         datasetNameUploadText.innerHTML = "Dataset already exists on Pennsieve";
         guidedUploadStatusIcon("guided-dataset-name-upload-status", "success");
         return window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
       } else {
-        // If the name entered in the input does not match the dataset name on Pennsieve, we will change
-        // the name of the dataset on Pennsieve to match the name entered in the input
+        console.log(
+          "[guidedCreateOrRenameDataset] Renaming dataset on Pennsieve from",
+          existingDatasetNameOnPennsieve,
+          "to",
+          datasetName
+        );
         try {
           await client.put(
             `/manage_datasets/ps_rename_dataset`,
@@ -485,27 +540,29 @@ const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
               },
             }
           );
+          console.log("[guidedCreateOrRenameDataset] Successfully renamed dataset.");
           datasetNameUploadText.innerHTML = `Changed dataset name from ${existingDatasetNameOnPennsieve} to ${datasetName}`;
           guidedUploadStatusIcon("guided-dataset-name-upload-status", "success");
           return window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
         } catch (error) {
           const emessage = userErrorMessage(error);
+          console.error("[guidedCreateOrRenameDataset] Error renaming dataset:", error, emessage);
           datasetNameUploadText.innerHTML = emessage;
           guidedUploadStatusIcon("guided-dataset-name-upload-status", "error");
           throw new Error(emessage);
         }
       }
     } else {
-      // if the previously uploaded dataset does not exist, wipe out the previously uploaded metadata
-      // so new metadata can be uploaded to the newly created dataset
-      // (This would happen if the user deleted the dataset on Pennsieve)
+      console.log(
+        "[guidedCreateOrRenameDataset] No existing dataset found for stored ID. Resetting previously-uploaded-data."
+      );
       window.sodaJSONObj["previously-uploaded-data"] = {};
       await guidedSaveProgress();
     }
   }
 
   try {
-    // Use the datasetName passed in to create a new dataset on Pennsieve
+    console.log("[guidedCreateOrRenameDataset] Creating new dataset on Pennsieve:", datasetName);
     let bf_new_dataset = await client.post(
       `/manage_datasets/datasets`,
       {
@@ -519,6 +576,11 @@ const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
     );
     let createdDatasetsID = bf_new_dataset.data.id;
     let createdDatasetIntId = bf_new_dataset.data.int_id;
+
+    console.log("[guidedCreateOrRenameDataset] Dataset created:", {
+      createdDatasetsID,
+      createdDatasetIntId,
+    });
 
     // set the global dataset id and dataset int id for reference in future events
     window.defaultBfDatasetId = createdDatasetsID;
@@ -558,12 +620,13 @@ const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
 
     return createdDatasetsID;
   } catch (error) {
-    console.error(error);
+    console.error("[guidedCreateOrRenameDataset] Error creating dataset:", error);
     let emessage = userErrorMessage(error);
 
     datasetNameUploadText.innerHTML = "Failed to create a new dataset.";
 
     if (emessage == "Dataset name already exists") {
+      console.warn("[guidedCreateOrRenameDataset] Dataset name already exists:", datasetName);
       datasetNameUploadText.innerHTML = `A dataset with the name <b>${datasetName}</b> already exists on Pennsieve.<br />
           Please rename your dataset and try again.`;
       document.getElementById("guided-dataset-name-upload-status").innerHTML = `
@@ -849,14 +912,14 @@ export const guidedGenerateSubjectsMetadata = async (destination) => {
 
   // Prepare UI elements for Pennsieve upload (if applicable)
   const subjectsMetadataGenerationText = document.getElementById(
-    `guided-subjects-metadata-pennsieve-genration-text`
+    `guided-subjects-metadata-pennsieve-generation-text`
   );
   if (generationDestination === "Pennsieve") {
     document
-      .getElementById(`guided-subjects-metadata-pennsieve-genration-tr`)
+      .getElementById(`guided-subjects-metadata-pennsieve-generation-tr`)
       .classList.remove("hidden");
     subjectsMetadataGenerationText.innerHTML = "Uploading subjects metadata...";
-    guidedUploadStatusIcon(`guided-subjects-metadata-pennsieve-genration-status`, "loading");
+    guidedUploadStatusIcon(`guided-subjects-metadata-pennsieve-generation-status`, "loading");
   }
 
   if (!window.sodaJSONObj["ps-account-selected"]) window.sodaJSONObj["ps-account-selected"] = {};
@@ -882,7 +945,7 @@ export const guidedGenerateSubjectsMetadata = async (destination) => {
 
     // Update UI for successful generation (Pennsieve) and send success event
     if (generationDestination === "Pennsieve") {
-      guidedUploadStatusIcon(`guided-subjects-metadata-pennsieve-genration-status`, "success");
+      guidedUploadStatusIcon(`guided-subjects-metadata-pennsieve-generation-status`, "success");
       subjectsMetadataGenerationText.innerHTML = `Subjects metadata successfully generated`;
     }
     window.electron.ipcRenderer.send(
@@ -900,7 +963,7 @@ export const guidedGenerateSubjectsMetadata = async (destination) => {
     userErrorMessage(error);
     // Update UI for generation failure (Pennsieve) and send failure event
     if (generationDestination === "Pennsieve") {
-      guidedUploadStatusIcon(`guided-subjects-metadata-pennsieve-genration-status`, "error");
+      guidedUploadStatusIcon(`guided-subjects-metadata-pennsieve-generation-status`, "error");
       subjectsMetadataGenerationText.innerHTML = `Failed to generate subjects metadata`;
     }
     window.electron.ipcRenderer.send(
@@ -925,16 +988,16 @@ export const guidedGenerateSamplesMetadata = async (destination) => {
 
   // Prepare UI elements for Pennsieve upload (if applicable)
   const samplesMetadataUploadText = document.getElementById(
-    "guided-samples-metadata-pennsieve-genration-text"
+    "guided-samples-metadata-pennsieve-generation-text"
   );
 
   if (generationDestination === "Pennsieve") {
     document
-      .getElementById("guided-samples-metadata-pennsieve-genration-tr")
+      .getElementById("guided-samples-metadata-pennsieve-generation-tr")
       .classList.remove("hidden");
 
     samplesMetadataUploadText.innerHTML = "Uploading samples metadata...";
-    guidedUploadStatusIcon("guided-samples-metadata-pennsieve-genration-status", "loading");
+    guidedUploadStatusIcon("guided-samples-metadata-pennsieve-generation-status", "loading");
   }
 
   if (!window.sodaJSONObj["ps-account-selected"]) window.sodaJSONObj["ps-account-selected"] = {};
@@ -959,7 +1022,7 @@ export const guidedGenerateSamplesMetadata = async (destination) => {
     );
     // Update UI for successful generation (Pennsieve) and send success event
     if (generationDestination === "Pennsieve") {
-      guidedUploadStatusIcon("guided-samples-metadata-pennsieve-genration-status", "success");
+      guidedUploadStatusIcon("guided-samples-metadata-pennsieve-generation-status", "success");
       samplesMetadataUploadText.innerHTML = `Samples metadata successfully uploaded`;
     }
 
@@ -975,7 +1038,7 @@ export const guidedGenerateSamplesMetadata = async (destination) => {
     const emessage = userErrorMessage(error);
     // Update UI for generation failure (Pennsieve) and send failure event
     if (generationDestination === "Pennsieve") {
-      guidedUploadStatusIcon("guided-samples-metadata-pennsieve-genration-status", "error");
+      guidedUploadStatusIcon("guided-samples-metadata-pennsieve-generation-status", "error");
       samplesMetadataUploadText.innerHTML = `Failed to upload samples metadata`;
     }
     // Send failed samples metadata generation event to Kombucha
@@ -1021,14 +1084,14 @@ export const guidedGenerateSubmissionMetadata = async (destination) => {
 
   // Prepare UI elements for Pennsieve upload (if applicable)
   const submissionMetadataUploadText = document.getElementById(
-    "guided-submission-metadata-pennsieve-genration-text"
+    "guided-submission-metadata-pennsieve-generation-text"
   );
   if (generationDestination === "Pennsieve") {
     document
-      .getElementById("guided-submission-metadata-pennsieve-genration-tr")
+      .getElementById("guided-submission-metadata-pennsieve-generation-tr")
       .classList.remove("hidden");
     submissionMetadataUploadText.innerHTML = "Uploading submission metadata...";
-    guidedUploadStatusIcon("guided-submission-metadata-pennsieve-genration-status", "loading");
+    guidedUploadStatusIcon("guided-submission-metadata-pennsieve-generation-status", "loading");
   }
 
   if (!window.sodaJSONObj["ps-account-selected"]) window.sodaJSONObj["ps-account-selected"] = {};
@@ -1046,7 +1109,7 @@ export const guidedGenerateSubmissionMetadata = async (destination) => {
     });
     // Update UI for successful generation (Pennsieve) and send success event
     if (generationDestination === "Pennsieve") {
-      guidedUploadStatusIcon("guided-submission-metadata-pennsieve-genration-status", "success");
+      guidedUploadStatusIcon("guided-submission-metadata-pennsieve-generation-status", "success");
       submissionMetadataUploadText.innerHTML = `Submission metadata successfully uploaded`;
     }
 
@@ -1063,7 +1126,7 @@ export const guidedGenerateSubmissionMetadata = async (destination) => {
     const emessage = userErrorMessage(error);
     // Update UI for generation failure (Pennsieve) and send failure event
     if (generationDestination === "Pennsieve") {
-      guidedUploadStatusIcon("guided-submission-metadata-pennsieve-genration-status", "error");
+      guidedUploadStatusIcon("guided-submission-metadata-pennsieve-generation-status", "error");
       submissionMetadataUploadText.innerHTML = `Failed to upload submission metadata`;
     }
 
@@ -1092,16 +1155,16 @@ export const guidedGenerateDatasetDescriptionMetadata = async (destination) => {
 
   // Prepare UI elements for Pennsieve upload (if applicable)
   const datasetDescriptionMetadataUploadText = document.getElementById(
-    "guided-dataset-description-metadata-pennsieve-genration-text"
+    "guided-dataset-description-metadata-pennsieve-generation-text"
   );
   if (generationDestination === "Pennsieve") {
     document
-      .getElementById("guided-dataset-description-metadata-pennsieve-genration-tr")
+      .getElementById("guided-dataset-description-metadata-pennsieve-generation-tr")
       .classList.remove("hidden");
 
     datasetDescriptionMetadataUploadText.innerHTML = "Uploading dataset description metadata...";
     guidedUploadStatusIcon(
-      "guided-dataset-description-metadata-pennsieve-genration-status",
+      "guided-dataset-description-metadata-pennsieve-generation-status",
       "loading"
     );
   }
@@ -1186,7 +1249,7 @@ export const guidedGenerateDatasetDescriptionMetadata = async (destination) => {
     // Update UI for successful generation (Pennsieve) and send success event
     if (generationDestination === "Pennsieve") {
       guidedUploadStatusIcon(
-        "guided-dataset-description-metadata-pennsieve-genration-status",
+        "guided-dataset-description-metadata-pennsieve-generation-status",
         "success"
       );
       datasetDescriptionMetadataUploadText.innerHTML =
@@ -1208,7 +1271,7 @@ export const guidedGenerateDatasetDescriptionMetadata = async (destination) => {
     // Update UI for generation failure (Pennsieve) and send failure event
     if (generationDestination === "Pennsieve") {
       guidedUploadStatusIcon(
-        "guided-dataset-description-metadata-pennsieve-genration-status",
+        "guided-dataset-description-metadata-pennsieve-generation-status",
         "error"
       );
       datasetDescriptionMetadataUploadText.innerHTML = `Failed to upload dataset description metadata`;
@@ -1235,14 +1298,14 @@ export const guidedGenerateReadmeMetadata = async (destination) => {
 
   // Prepare UI elements for Pennsieve upload (if applicable)
   const readmeMetadataUploadText = document.getElementById(
-    "guided-readme-metadata-pennsieve-genration-text"
+    "guided-readme-metadata-pennsieve-generation-text"
   );
   if (generationDestination === "Pennsieve") {
     document
-      .getElementById("guided-readme-metadata-pennsieve-genration-tr")
+      .getElementById("guided-readme-metadata-pennsieve-generation-tr")
       .classList.remove("hidden");
     readmeMetadataUploadText.innerHTML = "Uploading README metadata...";
-    guidedUploadStatusIcon("guided-readme-metadata-pennsieve-genration-status", "loading");
+    guidedUploadStatusIcon("guided-readme-metadata-pennsieve-generation-status", "loading");
   }
 
   window.sodaJSONObj["ps-account-selected"]["account-name"] = window.defaultBfAccount;
@@ -1270,7 +1333,7 @@ export const guidedGenerateReadmeMetadata = async (destination) => {
 
     // Update UI for successful generation (Pennsieve) and send success event
     if (generationDestination === "Pennsieve") {
-      guidedUploadStatusIcon("guided-readme-metadata-pennsieve-genration-status", "success");
+      guidedUploadStatusIcon("guided-readme-metadata-pennsieve-generation-status", "success");
       readmeMetadataUploadText.innerHTML = "README metadata successfully uploaded";
     }
 
@@ -1288,7 +1351,7 @@ export const guidedGenerateReadmeMetadata = async (destination) => {
     console.error("Error generating README metadata: ", emessage);
     // Update UI for generation failure (Pennsieve) and send failure event
     if (generationDestination === "Pennsieve") {
-      guidedUploadStatusIcon("guided-readme-metadata-pennsieve-genration-status", "error");
+      guidedUploadStatusIcon("guided-readme-metadata-pennsieve-generation-status", "error");
       readmeMetadataUploadText.innerHTML = "Failed to upload README metadata";
     }
 
@@ -1315,14 +1378,14 @@ export const guidedGenerateChangesMetadata = async (destination) => {
 
   // Prepare UI elements for Pennsieve upload (if applicable)
   const changesMetadataUploadText = document.getElementById(
-    "guided-changes-metadata-pennsieve-genration-text"
+    "guided-changes-metadata-pennsieve-generation-text"
   );
   if (generationDestination === "Pennsieve") {
     document
-      .getElementById("guided-changes-metadata-pennsieve-genration-tr")
+      .getElementById("guided-changes-metadata-pennsieve-generation-tr")
       .classList.remove("hidden");
     changesMetadataUploadText.innerHTML = "Uploading CHANGES metadata...";
-    guidedUploadStatusIcon("guided-changes-metadata-pennsieve-genration-status", "loading");
+    guidedUploadStatusIcon("guided-changes-metadata-pennsieve-generation-status", "loading");
   }
 
   window.sodaJSONObj["ps-account-selected"]["account-name"] = window.defaultBfAccount;
@@ -1350,7 +1413,7 @@ export const guidedGenerateChangesMetadata = async (destination) => {
 
     // Update UI for successful generation (Pennsieve) and send success event
     if (generationDestination === "Pennsieve") {
-      guidedUploadStatusIcon("guided-changes-metadata-pennsieve-genration-status", "success");
+      guidedUploadStatusIcon("guided-changes-metadata-pennsieve-generation-status", "success");
       changesMetadataUploadText.innerHTML = "CHANGES metadata successfully uploaded";
     }
 
@@ -1367,7 +1430,7 @@ export const guidedGenerateChangesMetadata = async (destination) => {
     const emessage = userErrorMessage(error);
     // Update UI for generation failure (Pennsieve) and send failure event
     if (generationDestination === "Pennsieve") {
-      guidedUploadStatusIcon("guided-changes-metadata-pennsieve-genration-status", "error");
+      guidedUploadStatusIcon("guided-changes-metadata-pennsieve-generation-status", "error");
       changesMetadataUploadText.innerHTML = "Failed to upload CHANGES metadata";
     }
 
@@ -1398,16 +1461,16 @@ export const guidedGenerateCodeDescriptionMetadata = async (destination) => {
 
   // Prepare UI elements for Pennsieve upload (if applicable)
   const codeDescriptionMetadataUploadText = document.getElementById(
-    "guided-code-description-metadata-pennsieve-genration-text"
+    "guided-code-description-metadata-pennsieve-generation-text"
   );
   if (generationDestination === "Pennsieve") {
     document
-      .getElementById("guided-code-description-metadata-pennsieve-genration-tr")
+      .getElementById("guided-code-description-metadata-pennsieve-generation-tr")
       .classList.remove("hidden");
 
     codeDescriptionMetadataUploadText.innerHTML = "Uploading code description metadata...";
     guidedUploadStatusIcon(
-      "guided-code-description-metadata-pennsieve-genration-status",
+      "guided-code-description-metadata-pennsieve-generation-status",
       "loading"
     );
   }
@@ -1415,7 +1478,7 @@ export const guidedGenerateCodeDescriptionMetadata = async (destination) => {
     if (generationDestination === "Pennsieve") {
       await client.post("/prepare_metadata/code_description_file", {
         filepath: codeDescriptionFilePath,
-        selected_account: window.defaultBfAccount,
+        selected_account: window.defaultBfDatasetIntId,
         selected_dataset: guidedGetDatasetName(window.sodaJSONObj),
       });
     } else {
@@ -1425,7 +1488,7 @@ export const guidedGenerateCodeDescriptionMetadata = async (destination) => {
     // Update UI for successful generation (Pennsieve) and send success event
     if (generationDestination === "Pennsieve") {
       guidedUploadStatusIcon(
-        "guided-code-description-metadata-pennsieve-genration-status",
+        "guided-code-description-metadata-pennsieve-generation-status",
         "success"
       );
       codeDescriptionMetadataUploadText.innerHTML = "Code description metadata added to Pennsieve";
@@ -1444,7 +1507,7 @@ export const guidedGenerateCodeDescriptionMetadata = async (destination) => {
     const emessage = userErrorMessage(error);
     if (generationDestination === "Pennsieve") {
       guidedUploadStatusIcon(
-        "guided-code-description-metadata-pennsieve-genration-status",
+        "guided-code-description-metadata-pennsieve-generation-status",
         "error"
       );
       codeDescriptionMetadataUploadText.innerHTML = `Failed to upload code description metadata`;
@@ -1460,442 +1523,6 @@ export const guidedGenerateCodeDescriptionMetadata = async (destination) => {
     );
     throw new Error(emessage);
   }
-};
-
-const guidedUploadDatasetToPennsieve = async () => {
-  window.updateJSONStructureDSstructure();
-
-  // Initiate curation by calling Python function
-  let main_curate_status = "Solving";
-  let main_total_generate_dataset_size;
-
-  // track the amount of files that have been uploaded/generated
-  let uploadedFiles = 0;
-  let dataset_name;
-  let dataset_destination;
-
-  if (window.sodaJSONObj["generate-dataset"]["destination"] == "ps") {
-    //Replace files and folders since guided mode always uploads to an existing Pennsieve dataset
-    window.sodaJSONObj["generate-dataset"]["if-existing"] = "merge";
-    window.sodaJSONObj["generate-dataset"]["if-existing-files"] = "skip";
-    dataset_name = window.sodaJSONObj["pennsieve-dataset-name"];
-    window.sodaJSONObj["ps-dataset-selected"] = {};
-    window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = dataset_name;
-    window.sodaJSONObj["ps-account-selected"]["account-name"] = window.defaultBfAccount;
-    dataset_destination = "Pennsieve";
-  }
-
-  // if uploading to Pennsieve start a tracking session for the dataset upload
-  if (dataset_destination == "Pennsieve") {
-    // create a dataset upload session
-    datasetUploadSession.startSession();
-  }
-
-  // create a copy of the window.sodaJSONobj that does not have the dataset_metadata key as it has already been uploaded
-  // and we do not want to upload it again
-  let datasetUploadObj = JSON.parse(JSON.stringify(window.sodaJSONObj));
-  // delete datasetUploadObj["dataset_metadata"];
-
-  guidedSetNavLoadingState(true);
-  client
-    .post(
-      `/curate_datasets/curation`,
-      {
-        soda_json_structure: datasetUploadObj,
-        resume: !!window.retryGuidedMode,
-      },
-      { timeout: 0 }
-    )
-    .then(async (curationRes) => {
-      // if the upload succeeds reset the retry guided mode flag
-      window.retryGuidedMode = false;
-      // reset the amount of times the upload has failed
-      amountOfTimesPennsieveUploadFailed = 0;
-      guidedSetNavLoadingState(false);
-
-      let { data } = curationRes;
-      window.pennsieveManifestId = data["origin_manifest_id"];
-      window.totalFilesCount = data["main_curation_total_files"];
-
-      $("#sidebarCollapse").prop("disabled", false);
-      window.log.info("Completed curate function");
-
-      // log that a dataset upload was successful
-      window.electron.ipcRenderer.send(
-        "track-kombucha",
-        kombuchaEnums.Category.GUIDED_MODE,
-        kombuchaEnums.Action.GENERATE_DATASET,
-        kombuchaEnums.Label.TOTAL_UPLOADS,
-        kombuchaEnums.Status.SUCCCESS,
-        {
-          value: 1,
-          dataset_id: guidedGetDatasetId(window.sodaJSONObj),
-          dataset_name: guidedGetDatasetName(window.sodaJSONObj),
-          origin: guidedGetDatasetOrigin(window.sodaJSONObj),
-          destination: "Pennsieve",
-          dataset_int_id: window.defaultBfDatasetIntId,
-        }
-      );
-
-      // log the difference again to Google Analytics
-      let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
-      if (finalFilesCount > 0) {
-        window.electron.ipcRenderer.send(
-          "track-kombucha",
-          kombuchaEnums.Category.GUIDED_MODE,
-          kombuchaEnums.Action.GENERATE_DATASET,
-          kombuchaEnums.Label.FILES,
-          kombuchaEnums.Status.SUCCCESS,
-          {
-            value: finalFilesCount,
-            dataset_id: guidedGetDatasetId(window.sodaJSONObj),
-            dataset_name: guidedGetDatasetName(window.sodaJSONObj),
-            origin: guidedGetDatasetOrigin(window.sodaJSONObj),
-            destination: "Pennsieve",
-            upload_session: datasetUploadSession.id,
-            dataset_int_id: window.defaultBfDatasetIntId,
-          }
-        );
-      }
-
-      window.electron.ipcRenderer.send(
-        "track-event",
-        "Success",
-        "Guided Mode - Generate - Dataset - Number of Files",
-        `${datasetUploadSession.id}`,
-        finalFilesCount
-      );
-
-      let differenceInBytes = main_total_generate_dataset_size - bytesOnPreviousLogPage;
-
-      if (differenceInBytes > 0) {
-        window.electron.ipcRenderer.send(
-          "track-kombucha",
-          kombuchaEnums.Category.GUIDED_MODE,
-          kombuchaEnums.Action.GENERATE_DATASET,
-          kombuchaEnums.Label.SIZE,
-          kombuchaEnums.Status.SUCCCESS,
-          {
-            value: differenceInBytes,
-            dataset_id: guidedGetDatasetId(window.sodaJSONObj),
-            dataset_name: guidedGetDatasetName(window.sodaJSONObj),
-            origin: guidedGetDatasetOrigin(window.sodaJSONObj),
-            destination: "Pennsieve",
-            upload_session: datasetUploadSession.id,
-            dataset_int_id: window.defaultBfDatasetIntId,
-          }
-        );
-      }
-
-      window.electron.ipcRenderer.send(
-        "track-event",
-        "Success",
-        "Guided Mode - Generate - Dataset - Size",
-        `${datasetUploadSession.id}`,
-        differenceInBytes
-      );
-
-      updateDatasetUploadProgressTable("pennsieve", {
-        "Upload status": "Dataset successfully uploaded to Pennsieve!",
-      });
-
-      // Clear the saved upload progress data because the dataset has been successfully
-      // uploaded to Pennsieve, and any future uploads will upload using new data
-      window.sodaJSONObj["previously-uploaded-data"] = {};
-
-      window.sodaJSONObj["previous-guided-upload-dataset-name"] =
-        window.sodaJSONObj["digital-metadata"]["name"];
-
-      // Save the window.sodaJSONObj after a successful upload
-      await guidedSaveProgress();
-
-      //Display the click next text
-      document.getElementById("guided--verify-files").classList.remove("hidden");
-
-      // enable the verify files button
-      document.querySelector("#guided--verify-files-button").disabled = false;
-      document.querySelector("#guided--skip-verify-btn").disabled = false;
-
-      scrollToBottomOfGuidedBody();
-
-      //Show the next button
-      $("#guided-next-button").css("visibility", "visible");
-
-      try {
-        let responseObject = await client.get(`manage_datasets/fetch_user_datasets`, {
-          params: {
-            selected_account: window.defaultBfAccount,
-          },
-        });
-        window.datasetList = [];
-        window.datasetList = responseObject.data.datasets;
-      } catch (error) {
-        clientError(error);
-      }
-    })
-    .catch(async (error) => {
-      guidedSetNavLoadingState(false);
-      clientError(error);
-
-      window.electron.ipcRenderer.send(
-        "track-kombucha",
-        kombuchaEnums.Category.GUIDED_MODE,
-        kombuchaEnums.Action.GENERATE_DATASET,
-        kombuchaEnums.Label.TOTAL_UPLOADS,
-        kombuchaEnums.Status.FAIL,
-        {
-          value: 1,
-          dataset_id: guidedGetDatasetId(window.sodaJSONObj),
-          dataset_name: guidedGetDatasetName(window.sodaJSONObj),
-          origin: guidedGetDatasetOrigin(window.sodaJSONObj),
-          destination: "Pennsieve",
-          dataset_int_id: window.defaultBfDatasetIntId,
-        }
-      );
-
-      // log the difference again to Google Analytics
-      let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
-
-      if (finalFilesCount > 0) {
-        window.electron.ipcRenderer.send(
-          "track-kombucha",
-          kombuchaEnums.Category.GUIDED_MODE,
-          kombuchaEnums.Action.GENERATE_DATASET,
-          kombuchaEnums.Label.FILES,
-          kombuchaEnums.Status.SUCCCESS,
-          {
-            value: finalFilesCount,
-            dataset_id: guidedGetDatasetId(window.sodaJSONObj),
-            dataset_name: guidedGetDatasetName(window.sodaJSONObj),
-            origin: guidedGetDatasetOrigin(window.sodaJSONObj),
-            destination: "Pennsieve",
-            upload_session: datasetUploadSession.id,
-            dataset_int_id: window.defaultBfDatasetIntId,
-          }
-        );
-      }
-
-      window.electron.ipcRenderer.send(
-        "track-event",
-        "Success",
-        "Guided Mode - Generate - Dataset - Number of Files",
-        `${datasetUploadSession.id}`,
-        finalFilesCount
-      );
-
-      let differenceInBytes = main_total_generate_dataset_size - bytesOnPreviousLogPage;
-
-      if (differenceInBytes > 0) {
-        window.electron.ipcRenderer.send(
-          "track-kombucha",
-          kombuchaEnums.Category.GUIDED_MODE,
-          kombuchaEnums.Action.GENERATE_DATASET,
-          kombuchaEnums.Label.SIZE,
-          kombuchaEnums.Status.SUCCCESS,
-          {
-            value: differenceInBytes,
-            dataset_id: guidedGetDatasetId(window.sodaJSONObj),
-            dataset_name: guidedGetDatasetName(window.sodaJSONObj),
-            origin: guidedGetDatasetOrigin(window.sodaJSONObj),
-            destination: "Pennsieve",
-            upload_session: datasetUploadSession.id,
-            dataset_int_id: window.defaultBfDatasetIntId,
-          }
-        );
-      }
-
-      window.electron.ipcRenderer.send(
-        "track-event",
-        "Success",
-        "Guided Mode - Generate - Dataset - Size",
-        `${datasetUploadSession.id}`,
-        differenceInBytes
-      );
-
-      // log the amount of files we attempted to upload -- good for knowing if a certain file amount poses the agent/our own code problems
-      if (uploadedFiles > 0) {
-        window.electron.ipcRenderer.send(
-          "track-kombucha",
-          kombuchaEnums.Category.GUIDED_MODE,
-          kombuchaEnums.Action.GENERATE_DATASET,
-          kombuchaEnums.Label.FILES,
-          kombuchaEnums.Status.FAIL,
-          {
-            value: uploadedFiles,
-            dataset_id: guidedGetDatasetId(window.sodaJSONObj),
-            dataset_name: guidedGetDatasetName(window.sodaJSONObj),
-            origin: guidedGetDatasetOrigin(window.sodaJSONObj),
-            destination: "Pennsieve",
-            upload_session: datasetUploadSession.id,
-            dataset_int_id: window.defaultBfDatasetIntId,
-          }
-        );
-      }
-
-      // log the size of the dataset we attempted to upload
-      window.electron.ipcRenderer.send(
-        "track-kombucha",
-        kombuchaEnums.Category.GUIDED_MODE,
-        kombuchaEnums.Action.GENERATE_DATASET,
-        kombuchaEnums.Label.SIZE,
-        kombuchaEnums.Status.FAIL,
-        {
-          value: main_total_generate_dataset_size,
-          dataset_id: guidedGetDatasetId(window.sodaJSONObj),
-          dataset_name: guidedGetDatasetName(window.sodaJSONObj),
-          origin: guidedGetDatasetOrigin(window.sodaJSONObj),
-          destination: "Pennsieve",
-          upload_session: datasetUploadSession.id,
-          dataset_int_id: window.defaultBfDatasetIntId,
-        }
-      );
-
-      try {
-        let responseObject = await client.get(`manage_datasets/fetch_user_datasets`, {
-          params: {
-            selected_account: window.defaultBfAccount,
-          },
-        });
-        window.datasetList = [];
-        window.datasetList = responseObject.data.datasets;
-      } catch (error) {
-        clientError(error);
-      }
-
-      //make an unclosable sweet alert that forces the user to close out of the app
-      let res = await Swal.fire({
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false,
-        icon: "error",
-        title: "An error occurred during your upload",
-        html: `
-          <p>Error message: ${emessage}</p>
-          <p>
-          You may retry the upload now or save and exit.
-          If you choose to save and exit you will be able to resume your upload by returning to Guided Mode and clicking the "Resume Upload"
-          button on your dataset's progress card.
-          </p>
-        `,
-        showCancelButton: true,
-        cancelButtonText: "Save and Exit",
-        confirmButtonText: "Retry Upload",
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-      });
-
-      if (res.isConfirmed) {
-        window.retryGuidedMode = true; //set the retry flag to true
-        let supplementary_checks = await window.run_pre_flight_checks(
-          "guided-mode-pre-generate-pennsieve-agent-check"
-        );
-        if (!supplementary_checks) {
-          return;
-        }
-
-        // check if the user made it to the last step
-        if (
-          !document
-            .querySelector("#guided-div-dataset-upload-status-table")
-            .classList.contains("hidden")
-        ) {
-          // scroll to the upload status table
-          window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
-          // upload on the last step
-          await guidedUploadDatasetToPennsieve();
-          return;
-        } else {
-          // restart the whole process
-          await guidedGenerateDatasetOnPennsieve();
-          return;
-        }
-      }
-
-      const currentPageID = window.CURRENT_PAGE.id;
-      try {
-        await savePageChanges(currentPageID);
-      } catch (error) {
-        window.log.error("Error saving page changes", error);
-      }
-      guidedTransitionToHome();
-    });
-
-  const guidedUpdateUploadStatus = async () => {
-    let mainCurationProgressResponse;
-    try {
-      mainCurationProgressResponse = await client.get(`/curate_datasets/curation/progress`);
-    } catch (error) {
-      const emessage = userErrorMessage(error);
-      console.error("Error getting curation progress", emessage);
-      clearInterval(timerProgress);
-      throw emessage;
-    }
-
-    let { data } = mainCurationProgressResponse;
-
-    main_curate_status = data["main_curate_status"];
-    const start_generate = data["start_generate"];
-    const main_curate_progress_message = data["main_curate_progress_message"];
-    main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
-    const main_generated_dataset_size = data["main_generated_dataset_size"];
-    const elapsed_time_formatted = data["elapsed_time_formatted"];
-    const totalUploadedFiles = data["total_files_uploaded"];
-    uploadedFiles = totalUploadedFiles;
-
-    if (start_generate === 1) {
-      $("#guided-progress-bar-new-curate").css("display", "block");
-      //Case when the dataset upload is complete
-      if (main_curate_progress_message.includes("Success: COMPLETED!")) {
-        setGuidedProgressBarValue("pennsieve", 100);
-      } else {
-        const percentOfDatasetUploaded =
-          (main_generated_dataset_size / main_total_generate_dataset_size) * 100;
-        setGuidedProgressBarValue("pennsieve", percentOfDatasetUploaded);
-
-        if (main_curate_progress_message.includes("Renaming files...")) {
-          updateDatasetUploadProgressTable("pennsieve", {
-            "Upload status": `${main_curate_progress_message}`,
-            "Percent uploaded": `${percentOfDatasetUploaded.toFixed(2)}%`,
-            "Elapsed time": `${elapsed_time_formatted}`,
-            "Files Renamed": `${main_generated_dataset_size} of ${main_total_generate_dataset_size}`,
-          });
-        } else {
-          updateDatasetUploadProgressTable("pennsieve", {
-            "Upload status": `${main_curate_progress_message}`,
-            "Percent uploaded": `${percentOfDatasetUploaded.toFixed(2)}%`,
-            "Elapsed time": `${elapsed_time_formatted}`,
-            "Files Uploaded": `${totalUploadedFiles}`,
-          });
-        }
-      }
-    } else {
-      updateDatasetUploadProgressTable("pennsieve", {
-        "Upload status": `${main_curate_progress_message}`,
-        "Elapsed time": `${elapsed_time_formatted}`,
-      });
-    }
-
-    //If the curate function is complete, clear the interval
-    if (main_curate_status === "Done") {
-      $("#sidebarCollapse").prop("disabled", false);
-      window.log.info("Done curate track");
-      // then show the sidebar again
-      // forceActionSidebar("show");
-      clearInterval(timerProgress);
-      // electron.powerSaveBlocker.stop(prevent_sleep_id)
-    }
-  };
-
-  // Progress tracking function for main curate
-  let timerProgress = setInterval(() => guidedUpdateUploadStatus(), 1000);
-
-  let bytesOnPreviousLogPage = 0;
-  let filesOnPreviousLogPage = 0;
 };
 
 const hideDatasetMetadataGenerationTableRows = (destination) => {
@@ -2225,6 +1852,7 @@ const guidedGrantTeamPermission = async (
   if (selectedRole === "remove current permissions") {
     teamPermissionUploadElement = `
         <tr id="guided-dataset-${teamString}-permissions-upload-tr" class="permissions-upload-tr">
+
           <td class="middle aligned" id="guided-dataset-${teamString}-permissions-upload-text">
             Remove permissions from: ${teamString}.
           </td>
@@ -2386,19 +2014,4 @@ const guidedGetDatasetLinks = () => {
     ...window.sodaJSONObj["dataset_metadata"]["description-metadata"]["additional-links"],
     ...window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"],
   ];
-};
-
-export const guidedPrepareDatasetStructureAndMetadataForUpload = async (sodaObj) => {
-  console.log("baz");
-  console.log("Preparing dataset structure and metadata for upload...");
-  console.log("sodaObj", sodaObj);
-  console.log("dataset-metadata", sodaObj["dataset_metadata"]);
-
-  // Prepare the resources metadata
-  const resources = sodaObj["dataset_metadata"]["resources_metadata"];
-  console.log("resourcesMetadata", resources);
-
-  // Prepare the dataset_description metadata
-  const datasetDescriptionMetadata = sodaObj["dataset_metadata"]["dataset_description"];
-  console.log("datasetDescriptionMetadata", datasetDescriptionMetadata);
 };

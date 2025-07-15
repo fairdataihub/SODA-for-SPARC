@@ -371,6 +371,7 @@ const setSidebarAppVersion = async () => {
 const warnUserIfBetaVersionAndDntNotEnabled = async () => {
   try {
     let currentAppVersion = await window.electron.ipcRenderer.invoke("app-version");
+    const homeDirectory = await window.electron.ipcRenderer.invoke("get-app-path", "home");
     const dntFilePath = window.path.join(homeDirectory, ".soda-config", "dnt.soda");
     if (currentAppVersion.includes("beta") && !window.fs.existsSync(dntFilePath)) {
       await swalShowInfo(

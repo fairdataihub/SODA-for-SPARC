@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import useGlobalStore from "../../../stores/globalStore";
-import ExternalLink from "../../buttons/ExternalLink";
 import {
   setAwardNumber,
   setMilestones,

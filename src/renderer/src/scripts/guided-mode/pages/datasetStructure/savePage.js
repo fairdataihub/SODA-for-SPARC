@@ -160,7 +160,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
   }
 
   if (pageBeingLeftID === "guided-entity-addition-method-selection-tab") {
-    console.log("Validating entity addition method selection page");
+    console.log("Validating Entity Addition Method selection page");
     // Add validation logic for guided-entity-addition-method-selection-tab if needed
   }
 
@@ -200,8 +200,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
   }
 
   if (pageBeingLeftID === "guided-modalities-selection-tab") {
-    console.log("Validating modalities selection page");
-    // Add validation logic for guided-modalities-selection-tab if needed
+    // Page logic handled by the component nothing to do here
   }
 
   if (pageBeingLeftID === "guided-modalities-data-selection-tab") {
@@ -209,13 +208,48 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     // Add validation logic for guided-modalities-data-selection-tab if needed
   }
 
-  if (pageBeingLeftID === "guided-manifest-file-generation-tab") {
-    console.log("Validating manifest file generation page");
-    // Add validation logic for guided-manifest-file-generation-tab if needed
-  }
+  if (pageBeingLeftID === "guided-dataset-structure-and-manifest-review-tab") {
+    const guidedManifestData = window.sodaJSONObj["guided-manifest-file-data"];
+    console.log("guidedManifestData", guidedManifestData);
+    console.log("manifestHeaders", guidedManifestData["headers"]);
+    // console log the first 3 rows of data
+    console.log("manifestData", guidedManifestData["data"].slice(0, 3));
 
-  if (pageBeingLeftID === "dataset-structure-review-tab") {
-    console.log("Validating dataset structure review page");
-    // Add validation logic for dataset structure review page if needed
+    const headerToSchemaKey = {
+      filename: "file_name",
+      timestamp: "timestamp",
+      description: "description",
+      "file type": "file_type",
+      entity: "entity",
+      "data modality": "data_modality",
+      "also in dataset": "also_in_dataset",
+      "data dictionary path": "data_dictionary_path",
+      "entity is transitive": "entity_is_transitive",
+      "Additional Metadata": "additional_metadata",
+    };
+
+    const convertGuidedManifestToSchema = ({ headers, data }) => {
+      return data.map((row) => {
+        const obj = {};
+
+        headers.forEach((header, index) => {
+          const key = headerToSchemaKey[header];
+          if (key) {
+            let value = row[index] ?? ""; // fallback to empty string if missing
+            // Optional fix for timestamp format (replace comma with dot)
+            if (key === "timestamp") {
+              value = value.replace(",", ".");
+            }
+            obj[key] = value;
+          }
+        });
+
+        return obj;
+      });
+    };
+
+    const manifestObjects = convertGuidedManifestToSchema(guidedManifestData);
+    // Set the manifest objects in the sodaJSONObj at where they will be detected by pysoda
+    window.sodaJSONObj["dataset_metadata"]["manifest_file"] = manifestObjects;
   }
 };

@@ -37,7 +37,7 @@ export const contentOptionsMap = {
     ml: 10,
   },
   code: {
-    label: "Did you use software code to generate or analyze your data?",
+    label: "Did you use code to generate or analyze your data?",
     description:
       "Select yes if your research involved computational tools, scripts, or analysis pipelines that were important for generating or analyzing your data. This includes custom code, analysis scripts, and simulation software relevant to understanding your results.",
     ml: 0,

@@ -57,7 +57,7 @@
     </header>
 
     <div id="guided-body" class="guided--body">
-      <div id="guided-home" class="guided--main-tab justify-center">
+      <div id="soda-home-page" class="guided--main-tab justify-center">
         <div class="guided--panel">
           <h2
             class="justify-center"
@@ -243,7 +243,23 @@
             <div class="guided--section" id="guided-container-progress-cards"></div>
           </div>
         </div>
+        <div class="guided--page" id="guided-mode-intro-tab" data-page-name="Intro">
+          <h1 class="text-sub-step-title">Step-By-Step Dataset Preparation Overview</h1>
+          <div class="guided--section">
+            <p class="help-text">
+              SODA’s step-by-step dataset preparation feature helps you organize your dataset
+              according to the SPARC Dataset Structure (SDS) through a series of guided interfaces
+              and prompts.
+            </p>
+          </div>
 
+          <div class="guided--section">
+            <h2 class="guided--text-user-directions">
+              Click "<span class="next-button-span"></span>" to begin the step-by-step dataset
+              preparation process.
+            </h2>
+          </div>
+        </div>
         <div
           id="guided-name-subtitle-tab"
           class="guided--page"
@@ -599,14 +615,13 @@
           </div>
           <div
             data-component-type="data-importer"
-            data-data-type=""
             data-relative-folder-path-to-import-data-into="data/"
             class="guided--section"
           ></div>
         </div>
         <div
           id="guided-dataset-content-tab"
-          data-page-name="Dataset content"
+          data-page-name="Dataset Content"
           class="guided--page"
           data-component-type="dataset-content-selector"
         ></div>
@@ -624,11 +639,11 @@
         ></div>
         <div
           id="guided-entity-addition-method-selection-tab"
-          data-page-name="Entity addition method"
+          data-page-name="Entity Addition Method"
           class="guided--page"
         >
           <div class="guided--section">
-            <h1 class="text-sub-step-title">Entity addition method</h1>
+            <h1 class="text-sub-step-title">Entity Addition Method</h1>
             <p class="help-text">
               To help SODA better understand your experimental setup, you’ll need to assign IDs to
               each entity in your dataset (such as subjects and samples). You can do this manually
@@ -638,6 +653,12 @@
               spreadsheet is recommend to avoid having to type out all of your entity IDs within the
               SODA UI.
             </p>
+
+            <div
+              data-component-type="dropdown-note-renderer"
+              id="entity-types-list"
+              style="align-self: flex-start"
+            ></div>
           </div>
 
           <div class="guided--section">
@@ -759,15 +780,27 @@
         ></div>
         <div
           class="guided--page"
-          id="guided-manifest-file-generation-tab"
-          data-page-name="Manifest File Review"
+          id="guided-dataset-structure-and-manifest-review-tab"
+          data-page-name="Dataset Structure And Manifest Preview"
         >
           <div class="guided--section" id="guided-section-auto-generate-manifest-files">
-            <h2 class="text-sub-step-title">Manifest File Review</h2>
+            <h2 class="text-sub-step-title">Dataset Structure And Manifest Preview</h2>
             <p class="help-text">
-              SODA has automatically generated a manifest file based on your data and entities you
-              provided in prior steps.
+              The dataset structure below displays the folder structure of your dataset as it will
+              be when it is generated locally and/or on Pennsieve. SODA has also generated a
+              manifest file that describes the contents of your dataset. You can edit the manifest
+              file if you would like to provide more information about the files in your dataset,
+              but it is not required to do so.
             </p>
+          </div>
+          <div class="guided--section">
+            <div
+              data-component-type="dataset-tree-view-renderer"
+              data-full-width="true"
+              class="guided--section"
+            ></div>
+          </div>
+          <div class="guided--section">
             <div
               data-component-type="manifest-file-preview-section"
               class="guided--section"
@@ -775,77 +808,6 @@
             ></div>
           </div>
         </div>
-
-        <div
-          class="guided--page"
-          id="dataset-structure-review-tab"
-          data-page-name="Dataset structure review"
-        >
-          <div class="guided--section">
-            <h1 class="text-sub-step-title">Dataset Structure Review</h1>
-            <p class="help-text">
-              The dataset structure below displays the updated folder structure of your dataset as
-              it will be generated locally or on Pennsieve.
-            </p>
-          </div>
-          <div
-            data-component-type="dataset-tree-view-renderer"
-            data-full-width="true"
-            class="guided--section"
-          ></div>
-        </div>
-
-        <!--
-        <div id="guided-protocol-folder-tab" class="guided--page" data-page-name="Protocols import">
-          <div class="guided--section">
-            <h1 class="text-sub-step-title">Protocol importation</h1>
-            <p class="help-text">
-              Import any files that describe the experimental procedures used in your study below.
-            </p>
-          </div>
-          <div
-            data-component-type="data-importer"
-            data-data-type="protocol"
-            data-relative-folder-path-to-import-data-into="protocol/"
-            class="guided--section"
-          ></div>
-        </div>
-        <div id="guided-docs-folder-tab" class="guided--page" data-page-name="Docs import">
-          <div class="guided--section">
-            <h1 class="text-sub-step-title">Docs importation</h1>
-            <p class="help-text">
-              Import any files that provide documentation related to your study below.
-            </p>
-          </div>
-          <div
-            data-component-type="data-importer"
-            data-data-type="documentation"
-            data-relative-folder-path-to-import-data-into="docs/"
-            class="guided--section"
-          ></div>
-        </div>
-        
-        <div
-          id="guided-dataset-structure-review-tab"
-          class="guided--page"
-          data-page-name="Dataset structure review"
-        >
-          <div class="guided--section">
-            <h1 class="text-sub-step-title">Dataset structure review</h1>
-            <p class="help-text">
-              The interface below displays the structure of your dataset as it will be generated by
-              SODA. Review the structure to ensure that all data has been imported correctly, and
-              then click <span class="next-button-span"></span> to proceed.
-            </p>
-          </div>
-
-          <div
-            data-component-type="dataset-tree-view-renderer"
-            data-full-width="true"
-            class="guided--section"
-          ></div>
-        </div>
-        -->
       </div>
 
       <div
@@ -1411,612 +1373,7 @@
           data-component-type="entity-metadata-page"
           data-entity-type="subjects"
         ></div>
-        <div
-          id="guided-create-subjects-metadata-tab"
-          class="guided--page"
-          data-page-name="Subjects metadata"
-        >
-          <div class="guided--section">
-            <h1 class="text-sub-step-title">Subjects metadata</h1>
-            <p class="help-text">
-              Provide as much information as possible about the subjects in your dataset in the
-              section below. SODA will use that information to automatically create the subjects
-              metadata file and include it in your dataset when it is generated in the last step of
-              this guided workflow.
-            </p>
-            <p class="help-text" id="guided-copy-subjects-tip">
-              <b>Pro tip:</b> If the metadata for one subject is similar to that of another subject,
-              you can enter it for one subject and then use the "Copy metadata from other subjects"
-              button (found under the subject list) to apply the same metadata to all other
-              subjects.
-            </p>
-          </div>
-          <div class="guided--container-subject-samples w-100 mt-md">
-            <div
-              class="guided--hlf-selection-container ml-2 asideTitleContainer"
-              style="margin-left: 0 !important; border: 2px solid lightgray"
-            >
-              <label
-                class="guided--form-label centered asideTitle"
-                style="height: 84px; padding: 31px"
-                >Dataset subjects:
-              </label>
-              <aside
-                class="guided--hlf-selection-aside"
-                id="guided-subjects-metadata-aside"
-                style="font-weight: 600"
-              ></aside>
-              <button
-                type="button"
-                id="guided-button-subject-metadata-copy"
-                class="btn btn-primary btn-sm"
-                onclick="window.openCopySubjectMetadataPopup()"
-                style="margin-top: 10px; height: 42px !important; width: 210px"
-              >
-                Copy metadata from other subjects
-              </button>
-            </div>
-            <div
-              id="guided-form-add-a-subject-intro"
-              class="guided--panel mb-0"
-              style="height: 475px; padding: 25px; border: black solid 2px"
-            >
-              <div class="guided--section" style="justify-content: flex-start">
-                <h1 class="text-sub-step-title">
-                  Select a subject on the left to edit its metadata.
-                </h1>
-                <div
-                  id="subjects-metadata-black-arrow-lottie-container"
-                  class="black-arrow-lottie-container"
-                ></div>
-              </div>
-            </div>
-            <div id="guided-form-add-a-subject" class="guided--panel hidden">
-              <div class="guided--section neumorphic mt-0">
-                <label class="guided--form-label mt-0">Subject ID:</label>
-                <input
-                  class="guided--input subjects-form-entry"
-                  id="guided-bootbox-subject-id"
-                  name="subject id"
-                  type="text"
-                  placeholder="Enter Subject ID here"
-                  readonly
-                />
-              </div>
-              <div class="guided--section neumorphic mt-xl">
-                <h2 class="text-sub-step-title mt-0">Experimental Setup</h2>
 
-                <label class="guided--form-label mt-xl hidden">Pool ID:</label>
-                <input
-                  class="guided--input subjects-form-entry hidden"
-                  id="guided-bootbox-subject-pool-id"
-                  name="pool id"
-                  type="text"
-                  placeholder="This subject is not part of a pool"
-                  readonly
-                />
-
-                <label class="guided--form-label mt-xl">Subject experimental group:</label>
-                <input
-                  class="guided--input subjects-form-entry"
-                  id="guided-bootbox-subject-exp-group"
-                  name="subject experimental group"
-                  type="text"
-                  placeholder="Enter subject experimental group here"
-                />
-                <p class="guided--text-input-instructions mb-0">
-                  Experimental group of the subject if assigned to in the research project.<br />
-                  <b>Example:</b> Control or Experimental
-                </p>
-              </div>
-              <div class="guided--section neumorphic mt-xl">
-                <h2 class="text-sub-step-title mt-0">Species information</h2>
-
-                <label class="guided--form-label mt-xl">Sex:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified">
-                    <select
-                      type="number"
-                      id="guided-bootbox-subject-sex"
-                      name="Sex"
-                      class="ui selection dropdown subjects-form-entry"
-                      placeholder="Select here..."
-                    >
-                      <option value="Select">Select an option</option>
-                      <option value="Female">Female</option>
-                      <option value="Male">Male</option>
-                    </select>
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  Sex of the subject. If unknown, leave it empty. <br />
-                  <b>Example:</b> Male
-                </p>
-
-                <label class="guided--form-label mt-xl mb-0">Species and strain</label>
-                <label
-                  class="guided--form-label species-strain-rrid-element mt-3 mb-0"
-                  style="font-size: 1em !important; font-weight: 500"
-                  >Species:</label
-                >
-                <div class="demo-controls-body w-100 species-strain-rrid-element">
-                  <div class="ui input modified">
-                    <input
-                      type="text"
-                      id="guided-bootbox-subject-species"
-                      name="Species"
-                      class="subjects-form-entry"
-                      placeholder="Enter species name here..."
-                    />
-                  </div>
-                </div>
-                <label
-                  class="guided--form-label species-strain-rrid-element mt-3 mb-0"
-                  style="font-size: 1em !important; font-weight: 500"
-                  >Strain:</label
-                >
-                <div class="demo-controls-body w-100 species-strain-rrid-element">
-                  <div class="ui input modified">
-                    <input
-                      type="text"
-                      id="guided-bootbox-subject-strain"
-                      name="Strain"
-                      class="subjects-form-entry"
-                      placeholder="Enter strain name here..."
-                    />
-                  </div>
-                </div>
-                <label
-                  class="guided--form-label species-strain-rrid-element mt-3 mb-0"
-                  style="font-size: 1em !important; font-weight: 500"
-                  >Strain RRID:</label
-                >
-                <div class="demo-controls-body w-100 species-strain-rrid-element">
-                  <div class="ui input modified">
-                    <input
-                      type="text"
-                      id="guided-bootbox-subject-strain-RRID"
-                      name="RRID for strain"
-                      class="subjects-form-entry"
-                      readonly
-                      placeholder="Enter strain RRID here..."
-                    />
-                  </div>
-                </div>
-                <button
-                  class="button-add-species ml-0 opens-rrid-modal-on-click mb-3 mt-3"
-                  id="guided-button-specify-subject-species-strain-rrid"
-                  style="width: 250px"
-                >
-                  Specify species and strain
-                </button>
-
-                <label class="guided--form-label mt-xl"
-                  >Exact age at the start of experiment:</label
-                >
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified" style="margin-right: 5px">
-                    <input
-                      type="text"
-                      id="guided-bootbox-subject-age"
-                      name="Age"
-                      class="subjects-form-entry"
-                      placeholder="Type here..."
-                    />
-                  </div>
-                  <div class="ui input modified">
-                    <select
-                      type="number"
-                      id="guided-bootbox-subject-age-info"
-                      name="Age-info"
-                      class="ui selection dropdown"
-                      placeholder="Select here..."
-                    >
-                      <option value="Select">Select a unit</option>
-                      <option value="hours">hour(s)</option>
-                      <option value="days">day(s)</option>
-                      <option value="weeks">week(s)</option>
-                      <option value="months">month(s)</option>
-                      <option value="years">year(s)</option>
-                      <option value="N/A">N/A</option>
-                    </select>
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  Type the exact age of the subject at the start of the experiment. If unknown,
-                  leave it empty. <br />
-                  <b>Example:</b> 4 weeks
-                </p>
-
-                <label class="guided--form-label mt-xl">Member of:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified">
-                    <input
-                      type="text"
-                      id="guided-bootbox-subject-member-of"
-                      name="member of"
-                      class="subjects-form-entry"
-                      placeholder="Type here"
-                    />
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  Provide a population that the specimen of your subject belongs to. If unknown,
-                  leave it empty. <br />
-                  <b>Example:</b> pop-1
-                </p>
-
-                <label class="guided--form-label mt-xl">Also in dataset:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified">
-                    <input
-                      type="text"
-                      id="guided-bootbox-subject-also-in-dataset"
-                      name="also in dataset"
-                      class="subjects-form-entry"
-                      placeholder="Type here"
-                    />
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  Include the Pennsieve id(s) for other datasets that have data about the same
-                  specimen.
-                </p>
-
-                <label class="guided--form-label mt-xl">Age category:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified">
-                    <select
-                      id="guided-bootbox-subject-age-category"
-                      name="Age category"
-                      class="ui selection dropdown subjects-form-entry"
-                      placeholder="Select here..."
-                    >
-                      <option value="Select">Select a stage</option>
-                      <option value="2 cell stage">2 cell stage</option>
-                      <option value="4 cell stage">4 cell stage</option>
-                      <option value="8 cell stage">8 cell stage</option>
-                      <option value="blastula stage">blastula stage</option>
-                      <option value="cleavage stage">cleavage stage</option>
-                      <option value="copepodite stage">copepodite stage</option>
-                      <option value="crustacean post-larval stage">
-                        crustacean post-larval stage
-                      </option>
-                      <option value="cysticercus stage">cysticercus stage</option>
-                      <option value="death stage">death stage</option>
-                      <option value="embryo stage">embryo stage</option>
-                      <option value="fully formed stage">fully formed stage</option>
-                      <option value="gastrula stage">gastrula stage</option>
-                      <option value="glaucothoe stage">glaucothoe stage</option>
-                      <option value="infant stage">infant stage</option>
-                      <option value="juvenile stage">juvenile stage</option>
-                      <option value="larval stage">larval stage</option>
-                      <option value="late adult stage">late adult stage</option>
-                      <option value="late embryonic stage">late embryonic stage</option>
-                      <option value="nauplius stage">nauplius stage</option>
-                      <option value="neonate stage">neonate stage</option>
-                      <option value="neurula stage">neurula stage</option>
-                      <option value="nursing stage">nursing stage</option>
-                      <option value="organogenesis stage">organogenesis stage</option>
-                      <option value="perinatal stage">perinatal stage</option>
-                      <option value="pharyngula stage">pharyngula stage</option>
-                      <option value="post-embryonic stage">post-embryonic stage</option>
-                      <option value="post-juvenile adult stage">post-juvenile adult stage</option>
-                      <option value="prime adult stage">prime adult stage</option>
-                      <option value="pupal stage">pupal stage</option>
-                      <option value="sexually immature stage">sexually immature stage</option>
-                      <option value="trochophore stage">trochophore stage</option>
-                      <option value="veliger stage">veliger stage</option>
-                      <option value="zoea stage">zoea stage</option>
-                      <option value="zygote stage">zygote stage</option>
-                    </select>
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  Description of age category. Must be derived from the
-                  <a
-                    target="_blank"
-                    href="http://www.ontobee.org/ontology/catalog/UBERON?iri=http://purl.obolibrary.org/obo/UBERON_0000105"
-                    >UBERON life cycle stage</a
-                  >.
-                  <br />
-                  <b>Example:</b> Prime adult stage
-                </p>
-
-                <label class="guided--form-label mt-xl">Age range:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified" style="margin-right: 5px">
-                    <input
-                      type="text"
-                      id="guided-bootbox-subject-age-range-min"
-                      name="Age range (min)"
-                      class="subjects-form-entry"
-                      placeholder="Minimum age"
-                    />
-                  </div>
-                  <div class="ui input modified">
-                    <input
-                      type="text"
-                      id="guided-bootbox-subject-age-range-max"
-                      name="Age range (max)"
-                      class="subjects-form-entry"
-                      placeholder="Maximum age"
-                    />
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  The minimal age (youngest) and maximal age (oldest) of the subject during the
-                  study.<br />
-                  The format for this field: numerical value + space + unit (spelled out).
-                  <br />
-                  <b>Example:</b> 10 days (min) 20 days (max)
-                </p>
-
-                <label class="guided--form-label mt-xl">Date of birth:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified" style="margin-right: 5px">
-                    <input
-                      class="subjects-form-entry"
-                      id="guided-bootbox-subject-dob"
-                      type="date"
-                      name="date of birth"
-                    />
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  The date of birth of the subject.
-                </p>
-              </div>
-              <div class="guided--section neumorphic mt-xl" id="guided-container-subjects-protocol">
-                <h2 class="text-sub-step-title mt-0">Protocol information</h2>
-
-                <label class="guided--form-label mt-xl">Protocol title on protocols.io:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified">
-                    <select
-                      type="text"
-                      id="guided-bootbox-subject-protocol-title"
-                      name="Protocol title"
-                      class="ui selection dropdown subjects-form-entry"
-                      placeholder="Type here..."
-                    ></select>
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  Title of the protocol on protocols.io associated with this subject study. <br />
-                  <b>Example:</b> Spinal cord extraction
-                </p>
-
-                <label class="guided--form-label mt-xl">Protocol URL on protocols.io</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified">
-                    <select
-                      type="text"
-                      id="guided-bootbox-subject-protocol-location"
-                      name="protocol url or doi"
-                      class="ui selection dropdown subjects-form-entry"
-                      placeholder="Type here..."
-                    ></select>
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  The protocol.io URL for the protocol associated with this subject study. <br />
-                  <b>Example:</b>
-                  https://www.protocols.io/view/corchea-paper-based-microfluidic-device-vtwe6pe
-                </p>
-              </div>
-
-              <div class="guided--section neumorphic mt-xl">
-                <h2 class="text-sub-step-title mt-0">Additional fields:</h2>
-
-                <label class="guided--form-label mt-xl">Handedness:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified">
-                    <select
-                      type="text"
-                      id="guided-bootbox-subject-handedness"
-                      name="Handedness"
-                      class="ui selection dropdown subjects-form-entry"
-                    >
-                      <option value="Select">Select here</option>
-                      <option value="right">Right</option>
-                      <option value="left">Left</option>
-                    </select>
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  Preference of the subject to use the right or left hand, if applicable.
-                </p>
-
-                <label class="guided--form-label mt-xl">Body mass:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified" style="margin-right: 5px">
-                    <input
-                      class="subjects-form-entry"
-                      id="guided-bootbox-subject-body-mass"
-                      name="body mass"
-                      placeholder="Type here..."
-                    />
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">The body mass of the subject.</p>
-
-                <label class="guided--form-label mt-xl">Genotype:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified">
-                    <input
-                      type="text"
-                      id="guided-bootbox-subject-genotype"
-                      name="Genotype"
-                      class="subjects-form-entry"
-                      placeholder="Type here..."
-                    />
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  Genetic makeup of genetically modified alleles in transgenic animals belonging to
-                  the same subject group. Ignore if strain is provided.<br />
-                  <b>Example:</b> MGI:3851780
-                </p>
-
-                <label class="guided--form-label mt-xl">Phenotype:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified" style="margin-right: 5px">
-                    <input
-                      class="subjects-form-entry"
-                      id="guided-bootbox-subject-phenotype"
-                      name="phenotype"
-                      placeholder="Type here..."
-                    />
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  Provide the phenotype of the subject.
-                </p>
-
-                <label class="guided--form-label mt-xl">Disease or disorder:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified" style="margin-right: 5px">
-                    <input
-                      class="subjects-form-entry"
-                      id="guided-bootbox-subject-disease"
-                      name="disease or disorder"
-                      placeholder="Type here..."
-                    />
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  Provide any disease of disorder of the subject.
-                </p>
-
-                <label class="guided--form-label mt-xl">Disease model:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified" style="margin-right: 5px">
-                    <input
-                      class="subjects-form-entry"
-                      id="guided-bootbox-subject-disease-model"
-                      name="disease model"
-                      placeholder="Type here..."
-                    />
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  Provide the disease model of the subject.
-                </p>
-
-                <label class="guided--form-label mt-xl">Intervention:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified" style="margin-right: 5px">
-                    <input
-                      class="subjects-form-entry"
-                      id="guided-bootbox-subject-intervention"
-                      name="intervention"
-                      placeholder="Type here..."
-                    />
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  Provide the intervention applied to your subject (if any).<br />
-                  <b>Example:</b> A surgery
-                </p>
-
-                <label class="guided--form-label mt-xl">Reference atlas:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified">
-                    <input
-                      type="text"
-                      id="guided-bootbox-subject-reference-atlas"
-                      name="Reference atlas"
-                      class="subjects-form-entry"
-                      placeholder="Type here..."
-                    />
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  The reference atlas and organ. <br />
-                  <b>Example:</b> Paxinos Rat V3
-                </p>
-
-                <label class="guided--form-label mt-xl"> Experimental log file path: </label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified">
-                    <input
-                      type="text"
-                      id="guided-bootbox-subject-experimental-log-file-name"
-                      name="Experimental log file path"
-                      class="subjects-form-entry"
-                      placeholder="Type here..."
-                    />
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  A file containing experimental records for each subject.
-                </p>
-
-                <label class="guided--form-label mt-xl">Experimental date:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified">
-                    <input
-                      id="guided-bootbox-subject-experimental-date"
-                      name="experiment date"
-                      type="date"
-                      class="subjects-form-entry"
-                      placeholder="Type here..."
-                    />
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  Provide the date at which the experiment takes place.
-                </p>
-
-                <label class="guided--form-label mt-xl">Laboratory internal id:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified">
-                    <input
-                      type="text"
-                      id="guided-bootbox-subject-lab-internal-id"
-                      name="laboratory internal id"
-                      class="subjects-form-entry"
-                      placeholder="Type here"
-                    />
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  Provide a mapping for groups that have incompatible internal identifier
-                  conventions.
-                </p>
-              </div>
-
-              <div class="guided--section neumorphic mt-xl">
-                <h2 class="text-sub-step-title mt-0">Custom fields:</h2>
-                <div class="w-100" id="guided-accordian-custom-fields"></div>
-                <div
-                  class="ui secondary submit button"
-                  style="margin: 20px; font-family: Poppins"
-                  onclick="window.addCustomField('subjects', 'guided')"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    style="vertical-align: middle"
-                    width="18"
-                    height="18"
-                    fill="currentColor"
-                    class="bi bi-plus"
-                    viewbox="0 0 16 16"
-                  >
-                    <path
-                      d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
-                    />
-                  </svg>
-                  Add a field
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  To add a custom field, click on the button above.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
         <div
           id="guided-samples-metadata-tab"
           class="guided--page"
@@ -2024,435 +1381,7 @@
           data-component-type="entity-metadata-page"
           data-entity-type="samples"
         ></div>
-        <div
-          id="guided-create-samples-metadata-tab"
-          class="guided--page"
-          data-page-name="Samples metadata"
-        >
-          <div class="guided--section">
-            <h1 class="text-sub-step-title">Samples metadata</h1>
-            <p class="help-text">
-              Provide as much information as possible about the samples in your dataset in the
-              section below. SODA will use that information to automatically create the samples
-              metadata file and include it in your dataset when it is generated in the last step of
-              this guided workflow.
-            </p>
-            <p class="help-text" id="guided-copy-samples-tip">
-              <b>Pro tip:</b> If the metadata for one sample is similar to that of another sample,
-              you can enter it for one sample and then use the "Copy metadata from other samples"
-              button (found under the sample list) to apply the same metadata to all other samples.
-            </p>
-          </div>
 
-          <div class="guided--container-subject-samples w-100 mt-md">
-            <div
-              class="guided--hlf-selection-container ml-2 asideContainer"
-              style="padding-top: 0; padding-bottom: 5px"
-            >
-              <label class="guided--form-label centered asideTitle">Dataset samples: </label>
-              <aside class="guided--hlf-selection-aside" id="guided-samples-metadata-aside"></aside>
-              <button
-                type="button"
-                class="btn btn-primary btn-sm"
-                id="guided-button-sample-metadata-copy"
-                onclick="window.openCopySampleMetadataPopup()"
-                style="margin: 10px; height: 42px !important; width: 210px"
-              >
-                Copy metadata from other samples
-              </button>
-            </div>
-            <div
-              id="guided-form-add-a-sample-intro"
-              class="guided--panel mb-0"
-              style="height: 475px; padding: 25px; border: black solid 2px"
-            >
-              <div class="guided--section" style="justify-content: flex-start">
-                <h1 class="text-sub-step-title">
-                  Select a sample on the left to edit its metadata.
-                </h1>
-                <div
-                  id="samples-metadata-black-arrow-lottie-container"
-                  class="black-arrow-lottie-container"
-                ></div>
-              </div>
-            </div>
-            <div id="guided-form-add-a-sample" class="guided--panel hidden">
-              <div class="guided--section neumorphic mt-xl">
-                <label class="guided--form-label mt-0">Subject ID:</label>
-                <input
-                  class="guided--input samples-form-entry"
-                  id="guided-bootbox-subject-id-samples"
-                  name="subject id"
-                  type="text"
-                  placeholder="Enter sample's subject ID here"
-                  readonly
-                /><label class="guided--form-label mt-xl">Sample ID:</label>
-                <input
-                  class="guided--input samples-form-entry"
-                  id="guided-bootbox-sample-id"
-                  name="sample id"
-                  type="text"
-                  placeholder="Enter sample id here"
-                  readonly
-                />
-              </div>
-
-              <div class="guided--section neumorphic mt-xl">
-                <h2 class="text-sub-step-title mt-0">Experimental Setup</h2>
-
-                <label class="guided--form-label mt-xl">Was derived from:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified">
-                    <select
-                      type="text"
-                      id="guided-bootbox-wasDerivedFromSample"
-                      name="was derived from"
-                      class="ui selection dropdown samples-form-entry"
-                      placeholder="Type here..."
-                    >
-                      <option value="Select">Not derived from another sample</option>
-                      <option value="original">Original</option>
-                    </select>
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  sample ID of the sample from which the current sample was derived. <br />
-                </p>
-
-                <label class="guided--form-label mt-xl hidden">Pool id:</label>
-                <div class="demo-controls-body w-100 hidden">
-                  <div class="ui input modified">
-                    <input
-                      type="text"
-                      id="guided-bootbox-sample-pool-id"
-                      name="pool id"
-                      class="samples-form-entry"
-                      placeholder="This sample is not part of a pool"
-                      readonly
-                    />
-                  </div>
-                </div>
-                <!--
-                  <p class="guided--text-input-instructions mb-0">
-                    The pool of the subject this sample belongs to. <br />
-                    <b>No further action required.</b>
-                  </p>-->
-
-                <label class="guided--form-label mt-xl">Sample experimental group:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified">
-                    <input
-                      type="text"
-                      id="guided-bootbox-sample-exp-group"
-                      name="sample experimental group"
-                      class="samples-form-entry"
-                      placeholder="Type here..."
-                    />
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  Experimental group the sample is assigned to in the study.
-                </p>
-              </div>
-
-              <div class="guided--section neumorphic mt-xl">
-                <h2 class="text-sub-step-title mt-0">Specimen Information</h2>
-
-                <label class="guided--form-label mt-xl">Sample type:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified">
-                    <select
-                      type="text"
-                      id="guided-bootbox-sample-specimen-type"
-                      name="sample type"
-                      class="ui selection dropdown samples-form-entry"
-                      placeholder="Type here..."
-                    >
-                      <option value="Select">Select a type</option>
-                      <option value="whole organism">whole organism</option>
-                      <option value="whole organ">whole organ</option>
-                      <option value="fluid specimen">fluid specimen</option>
-                      <option value="tissue">tissue</option>
-                      <option value="nerve">nerve</option>
-                      <option value="slice">slice</option>
-                      <option value="section">section</option>
-                      <option value="cryosection">cryosection</option>
-                      <option value="cell">cell</option>
-                      <option value="nucleus">nucleus</option>
-                      <option value="nucleic acid">nucleic acid</option>
-                      <option value="slide">slide</option>
-                      <option value="whole mount">whole mount</option>
-                    </select>
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  Physical type of the specimen from which the data were extracted.
-                  <b>Select a specimen from the dropdown.</b>
-                </p>
-
-                <label class="guided--form-label mt-xl">Sample anatomical location:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified">
-                    <input
-                      type="text"
-                      id="guided-bootbox-sample-specimen-anatomical-location"
-                      name="sample anatomical location"
-                      class="samples-form-entry"
-                      placeholder="Type here..."
-                    />
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  The organ, or subregion of organ from which the data were extracted.<br />
-                  <b>Example:</b> dentate gyrus
-                </p>
-
-                <label class="guided--form-label mt-xl">Member of:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified">
-                    <input
-                      type="text"
-                      id="guided-bootbox-sample-member-of"
-                      name="member of"
-                      class="samples-form-entry"
-                      placeholder="Type here"
-                    />
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  Provide a population that the specimen or sample belongs to.<br />
-                </p>
-
-                <label class="guided--form-label mt-xl">Also in dataset:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified">
-                    <input
-                      type="text"
-                      id="guided-bootbox-sample-also-in-dataset"
-                      name="also in dataset"
-                      class="samples-form-entry"
-                      placeholder="Type here"
-                    />
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  Include the Pennsieve id(s) for other datasets that have data about the same
-                  specimen.
-                </p>
-              </div>
-
-              <div class="guided--section neumorphic mt-xl" id="guided-container-samples-protocol">
-                <h2 class="text-sub-step-title mt-0">Protocol Information</h2>
-
-                <label class="guided--form-label mt-xl">Protocol title on protocols.io:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified">
-                    <select
-                      type="text"
-                      id="guided-bootbox-sample-protocol-title"
-                      name="Protocol title"
-                      class="ui selection dropdown samples-form-entry"
-                      placeholder="Type here..."
-                    ></select>
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  Title of the protocol on protocols.io associated with this sample.<br />
-                  <b>Example:</b> Spinal Cord extraction
-                </p>
-
-                <label class="guided--form-label mt-xl">Protocol URL on protocols.io:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified">
-                    <select
-                      type="text"
-                      id="guided-bootbox-sample-protocol-location"
-                      name="protocol url or doi"
-                      class="ui selection dropdown samples-form-entry"
-                      placeholder="Type here..."
-                    ></select>
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  The protocol.io URL for the protocol associated with this sample.<br />
-                  <b>Example:</b>
-                  https://www.protocols.io/view/corchea-paper-based-microfluidic-device-vtwe6pe
-                </p>
-              </div>
-
-              <div class="guided--section neumorphic mt-xl">
-                <h2 class="text-sub-step-title mt-0">Additional Fields</h2>
-
-                <label class="guided--form-label mt-xl">Laboratory internal id:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified">
-                    <input
-                      type="text"
-                      id="guided-bootbox-sample-laboratory-internal-id"
-                      name="laboratory internal id"
-                      class="samples-form-entry"
-                      placeholder="Type here..."
-                    />
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  Provide a mapping for groups that have incompatible internal identifier
-                  conventions.
-                </p>
-
-                <label class="guided--form-label mt-xl">Date of derivation:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified">
-                    <input
-                      type="date"
-                      id="guided-bootbox-sample-date-of-derivation"
-                      name="date of derivation"
-                      class="samples-form-entry"
-                      placeholder="Type here..."
-                    />
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  Provide the date at which the subject was collected.
-                </p>
-
-                <label class="guided--form-label mt-xl">Pathology:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified">
-                    <input
-                      type="text"
-                      id="guided-bootbox-sample-pathology"
-                      name="pathology"
-                      class="samples-form-entry"
-                      placeholder="Type here..."
-                    />
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  Provide the pathological condition of the sample if applicable.
-                </p>
-
-                <label class="guided--form-label mt-xl">Laterality:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified">
-                    <select
-                      id="guided-bootbox-sample-laterality"
-                      name="laterality"
-                      class="ui selection dropdown samples-form-entry"
-                    >
-                      <option value="Select">Select here</option>
-                      <option value="right">Right</option>
-                      <option value="left">Left</option>
-                    </select>
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  This indicates which one of a pair of organs (i.e: kidneys or lungs) the sample is
-                  <br />
-                  <b>Select a polarity from the dropdown above.</b>
-                </p>
-
-                <label class="guided--form-label mt-xl">Cell type:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified">
-                    <input
-                      type="text"
-                      id="guided-bootbox-sample-cell-type"
-                      name="cell type"
-                      class="samples-form-entry"
-                      placeholder="Type here..."
-                    />
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  Provide the cell type of your subject.
-                </p>
-
-                <label class="guided--form-label mt-xl">Plane of section:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified">
-                    <select
-                      id="guided-bootbox-sample-plane-of-section"
-                      name="plane of section"
-                      class="ui selection dropdown samples-form-entry"
-                    >
-                      <option value="Select">Select here</option>
-                      <option value="anatomical plane">Anatomical plane</option>
-                      <option value="transverse">Transverse</option>
-                      <option value="coronal">Coronal</option>
-                      <option value="sagittal">Sagittal</option>
-                      <option value="horizontal">Horizontal</option>
-                    </select>
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  Provide the plane of section of your subject.
-                </p>
-
-                <label class="guided--form-label mt-xl">Reference atlas:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified">
-                    <input
-                      type="text"
-                      id="guided-bootbox-sample-reference-atlas"
-                      name="Reference atlas"
-                      class="samples-form-entry"
-                      placeholder="Type here..."
-                    />
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  The reference atlas and organ.<br />
-                  <b>Example:</b> Paxinos Rat V3
-                </p>
-
-                <label class="guided--form-label mt-xl"> Experimental log file path:</label>
-                <div class="demo-controls-body w-100">
-                  <div class="ui input modified">
-                    <input
-                      type="text"
-                      id="guided-bootbox-sample-experimental-log-file-name"
-                      name="Experimental log file path"
-                      class="samples-form-entry"
-                      placeholder="Type here..."
-                    />
-                  </div>
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  A file containing experimental records for each sample.
-                </p>
-              </div>
-
-              <div class="guided--section neumorphic mt-xl">
-                <h2 class="text-sub-step-title mt-0">Custom fields:</h2>
-                <div class="w-100" id="guided-accordian-custom-fields-samples"></div>
-                <div
-                  class="ui secondary submit button"
-                  style="margin: 20px; font-family: Poppins"
-                  onclick="window.addCustomField('samples', 'guided')"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    style="vertical-align: middle"
-                    width="18"
-                    height="18"
-                    fill="currentColor"
-                    class="bi bi-plus"
-                    viewbox="0 0 16 16"
-                  >
-                    <path
-                      d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"
-                    />
-                  </svg>
-                  Add a field
-                </div>
-                <p class="guided--text-input-instructions mb-0">
-                  To add a custom field, click on the button above.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
         <div id="guided-add-code-metadata-tab" class="guided--page" data-page-name="Code metadata">
           <div class="guided--section">
             <h1 class="text-sub-step-title">Code-related metadata</h1>
@@ -2685,15 +1614,14 @@
         <div
           id="guided-dataset-structure-review-tab"
           class="guided--page"
-          data-page-name="Dataset Structure Review"
+          data-page-name="Final Dataset Review"
         >
           <div class="guided--section">
-            <h1 class="text-sub-step-title">Dataset Structure Review</h1>
+            <h1 class="text-sub-step-title">Final Dataset Review</h1>
             <p class="help-text">
-              The SDS-compliant dataset tree view below shows the complete structure of your dataset
-              and its metadata. If you only need a local copy, click “Create local copy” to generate
-              it locally. If you are uploading the dataset to Pennsieve, you can optionally create a
-              local copy or proceed to the next step to begin the upload process.
+              The interface below is a preview of your dataset and its metadata as it will be
+              generated. If you are satisfied with the information provided, click "Save and
+              Continue" to begin the dataset generation process.
             </p>
           </div>
           <div
@@ -3422,6 +2350,32 @@
             </p>
           </div>
           <div class="guided--section">
+            <div class="guided--section" id="guided-section-start-new-code-metadata-query">
+              <label class="guided--form-label centered">
+                Does your dataset contain computational modeling-related code files?
+              </label>
+
+              <div class="guided--radio-button-container">
+                <button
+                  class="ui positive button guided--radio-button"
+                  id="guided-button-has-computational-modeling-data"
+                  data-next-element="guided-section-import-computational-modeling-data"
+                  data-button-config-value="dataset-contains-computational-modeling-data"
+                  data-button-config-value-state="yes"
+                >
+                  Yes
+                </button>
+                <button
+                  class="ui negative basic button guided--radio-button"
+                  id="guided-button-no-computational-modeling-data"
+                  data-next-element="guided-section-no-computational-modeling-data"
+                  data-button-config-value="dataset-contains-computational-modeling-data"
+                  data-button-config-value-state="no"
+                >
+                  No
+                </button>
+              </div>
+            </div>
             <div
               data-component-type="soda-text-input"
               id="pennsieve-dataset-name"
@@ -3737,7 +2691,7 @@
           </div>
           <div
             class="guided--section hidden mt-lg guided-upload-table"
-            id="guided-div-pennsieve-metadata-pennsieve-genration-status-table"
+            id="guided-div-pennsieve-metadata-pennsieve-generation-status-table"
           >
             <table class="ui celled striped table" style="width: 100% !important">
               <thead>
@@ -3853,7 +2807,7 @@
           </div>
           <div
             class="guided--section hidden mt-lg guided-upload-table"
-            id="guided-div-dataset-metadata-pennsieve-genration-status-table"
+            id="guided-div-dataset-metadata-pennsieve-generation-status-table"
           >
             <table class="ui celled striped table" style="width: 100% !important; margin-top: 0px">
               <thead>
@@ -3892,90 +2846,93 @@
               <tbody id="guided-tbody-pennsieve-dataset-metadata-generation">
                 <tr
                   class="hidden generation-status-tr"
-                  id="guided-subjects-metadata-pennsieve-genration-tr"
+                  id="guided-subjects-metadata-pennsieve-generation-tr"
                 >
-                  <td class="middle aligned" id="guided-subjects-metadata-pennsieve-genration-text">
+                  <td
+                    class="middle aligned"
+                    id="guided-subjects-metadata-pennsieve-generation-text"
+                  >
                     Subjects metadata
                   </td>
                   <td class="middle aligned text-center collapsing border-left-0 p-0">
                     <div
                       class="guided--container-upload-status"
-                      id="guided-subjects-metadata-pennsieve-genration-status"
+                      id="guided-subjects-metadata-pennsieve-generation-status"
                     ></div>
                   </td>
                 </tr>
-                <tr class="hidden" id="guided-samples-metadata-pennsieve-genration-tr">
-                  <td class="middle aligned" id="guided-samples-metadata-pennsieve-genration-text">
+                <tr class="hidden" id="guided-samples-metadata-pennsieve-generation-tr">
+                  <td class="middle aligned" id="guided-samples-metadata-pennsieve-generation-text">
                     Samples metadata
                   </td>
                   <td class="middle aligned text-center collapsing border-left-0 p-0">
                     <div
                       class="guided--container-upload-status"
-                      id="guided-samples-metadata-pennsieve-genration-status"
+                      id="guided-samples-metadata-pennsieve-generation-status"
                     ></div>
                   </td>
                 </tr>
-                <tr class="hidden" id="guided-submission-metadata-pennsieve-genration-tr">
+                <tr class="hidden" id="guided-submission-metadata-pennsieve-generation-tr">
                   <td
                     class="middle aligned"
-                    id="guided-submission-metadata-pennsieve-genration-text"
+                    id="guided-submission-metadata-pennsieve-generation-text"
                   >
                     Submission metadata
                   </td>
                   <td class="middle aligned text-center collapsing border-left-0 p-0">
                     <div
                       class="guided--container-upload-status"
-                      id="guided-submission-metadata-pennsieve-genration-status"
+                      id="guided-submission-metadata-pennsieve-generation-status"
                     ></div>
                   </td>
                 </tr>
-                <tr class="hidden" id="guided-dataset-description-metadata-pennsieve-genration-tr">
+                <tr class="hidden" id="guided-dataset-description-metadata-pennsieve-generation-tr">
                   <td
                     class="middle aligned"
-                    id="guided-dataset-description-metadata-pennsieve-genration-text"
+                    id="guided-dataset-description-metadata-pennsieve-generation-text"
                   >
                     Dataset description metadata
                   </td>
                   <td class="middle aligned text-center collapsing border-left-0 p-0">
                     <div
                       class="guided--container-upload-status"
-                      id="guided-dataset-description-metadata-pennsieve-genration-status"
+                      id="guided-dataset-description-metadata-pennsieve-generation-status"
                     ></div>
                   </td>
                 </tr>
-                <tr class="hidden" id="guided-readme-metadata-pennsieve-genration-tr">
-                  <td class="middle aligned" id="guided-readme-metadata-pennsieve-genration-text">
+                <tr class="hidden" id="guided-readme-metadata-pennsieve-generation-tr">
+                  <td class="middle aligned" id="guided-readme-metadata-pennsieve-generation-text">
                     README metadata
                   </td>
                   <td class="middle aligned text-center collapsing border-left-0 p-0">
                     <div
                       class="guided--container-upload-status"
-                      id="guided-readme-metadata-pennsieve-genration-status"
+                      id="guided-readme-metadata-pennsieve-generation-status"
                     ></div>
                   </td>
                 </tr>
-                <tr class="hidden" id="guided-changes-metadata-pennsieve-genration-tr">
-                  <td class="middle aligned" id="guided-changes-metadata-pennsieve-genration-text">
+                <tr class="hidden" id="guided-changes-metadata-pennsieve-generation-tr">
+                  <td class="middle aligned" id="guided-changes-metadata-pennsieve-generation-text">
                     CHANGES metadata
                   </td>
                   <td class="middle aligned text-center collapsing border-left-0 p-0">
                     <div
                       class="guided--container-upload-status"
-                      id="guided-changes-metadata-pennsieve-genration-status"
+                      id="guided-changes-metadata-pennsieve-generation-status"
                     ></div>
                   </td>
                 </tr>
-                <tr class="hidden" id="guided-code-description-metadata-pennsieve-genration-tr">
+                <tr class="hidden" id="guided-code-description-metadata-pennsieve-generation-tr">
                   <td
                     class="middle aligned"
-                    id="guided-code-description-metadata-pennsieve-genration-text"
+                    id="guided-code-description-metadata-pennsieve-generation-text"
                   >
                     Dataset description metadata
                   </td>
                   <td class="middle aligned text-center collapsing border-left-0 p-0">
                     <div
                       class="guided--container-upload-status"
-                      id="guided-code-description-metadata-pennsieve-genration-status"
+                      id="guided-code-description-metadata-pennsieve-generation-status"
                     ></div>
                   </td>
                 </tr>

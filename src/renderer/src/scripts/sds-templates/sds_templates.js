@@ -20,7 +20,7 @@ window.downloadTemplate = (template) => {
 
 const transitionToSDSPage = () => {
   //Hide the home screen
-  document.getElementById("guided-home").classList.add("hidden");
+  document.getElementById("soda-home-page").classList.add("hidden");
   document.getElementById("guided_mode-section").classList.remove("is-shown");
   document.getElementById("guided_curate_dataset-tab").classList.remove("show");
   hideAllSectionsAndDeselectButtons();
@@ -50,7 +50,7 @@ $("#sds-templates").on("click", () => {
 $("#sds-templates-back-button").on("click", () => {
   // Transition back to the home screen
   // Transition back to the home screen
-  document.getElementById("guided-home").classList.remove("hidden");
+  document.getElementById("soda-home-page").classList.remove("hidden");
   document.getElementById("guided_mode-section").classList.add("is-shown");
   document.getElementById("guided_curate_dataset-tab").classList.add("show");
 

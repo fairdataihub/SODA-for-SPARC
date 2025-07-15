@@ -29,7 +29,7 @@ const SodaTextInput = ({ id, label, description, placeholder, textArea, maxLengt
         style={{ width: "100%" }}
         minRows={5}
         autosize
-        maxLength={maxLength}
+        maxLength={typeof maxLength === "number" ? maxLength : undefined}
       />
     );
   }
@@ -42,7 +42,7 @@ const SodaTextInput = ({ id, label, description, placeholder, textArea, maxLengt
       value={value}
       onChange={handleChange}
       style={{ width: "100%" }}
-      maxLength={maxLength}
+      maxLength={typeof maxLength === "number" ? maxLength : undefined}
     />
   );
 };

@@ -4,10 +4,13 @@ import {
   setGuidedDatasetName,
   setGuidedDatasetSubtitle,
 } from "../../../../stores/slices/guidedModeSlice";
+import { guidedCreateSodaJSONObj } from "../../utils/sodaJSONObj.js";
+import { guidedResetSkippedPages } from "../navigationUtils/pageSkipping.js";
 
 export const openPageCurationPreparation = async (targetPageID) => {
   if (targetPageID === "guided-select-starting-point-tab") {
-    console.log("opening home page in guided mode");
+    guidedCreateSodaJSONObj();
+    guidedResetSkippedPages();
   }
 
   if (targetPageID === "guided-name-subtitle-tab") {

@@ -1,0 +1,10 @@
+Site: RegionB
+Subject: Subject03
+Sample: Tissue06
+Date: 2023-07-01
+Researcher: Dr. M. Researcher
+
+Site-specific Notes:
+- Measurements taken according to SOP-onB
+- Site appears healthy and normal
+- Processing completed successfully

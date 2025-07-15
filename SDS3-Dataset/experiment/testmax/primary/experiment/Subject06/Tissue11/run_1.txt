@@ -1,0 +1,5 @@
+# Raw Tissue11 data - Run 1
+Sample ID: Subject06
+Date: 5/28/2025
+Values: 39.02, 26.03, 43.94, 12.72, 25.12
+Notes: Standard collection protocol followed

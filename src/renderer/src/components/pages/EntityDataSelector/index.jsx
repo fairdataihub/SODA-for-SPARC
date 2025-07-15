@@ -18,6 +18,8 @@ import {
   countSelectedFilesByEntityType,
 } from "../../../scripts/utils/datasetStructure";
 import InstructionsTowardsLeftContainer from "../../utils/ui/InstructionsTowardsLeftContainer";
+import SodaPaper from "../../utils/ui/SodaPaper";
+import DropDownNote from "../../utils/ui/DropDownNote";
 
 const ENTITY_PREFIXES = ["sub-", "sam-", "perf-"];
 
@@ -130,6 +132,8 @@ const EntityDataSelectorPage = ({
   showProgress = false,
 }) => {
   const activeEntity = useGlobalStore((state) => state.activeEntity);
+  const selectedEntities = useGlobalStore((state) => state.selectedEntities);
+  const datasetIncludesCode = selectedEntities.includes("code");
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
   const renderDatasetStructureJSONObj = useGlobalStore(
     (state) => state.renderDatasetStructureJSONObj
@@ -146,11 +150,15 @@ const EntityDataSelectorPage = ({
             switch (entityType) {
               case "high-level-folder-data-categorization":
                 return (
-                  <Text>
-                    The SDS requires data to be organized into four categories: experimental, code,
-                    and other (data that is not experimental or code). Use the interface below to
-                    classify your data files.
-                  </Text>
+                  <>
+                    <Text mb={0}>
+                      The SDS requires data to be organized into{" "}
+                      {datasetIncludesCode ? "four" : "three"} categories: Experimental
+                      {datasetIncludesCode ? ", Code," : ","} Documentation, and Protocol. Use the
+                      interface below to classify your data files.
+                    </Text>
+                    <DropDownNote id="data-categories-list" />
+                  </>
                 );
 
               case "modalities":

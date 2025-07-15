@@ -1,0 +1,5 @@
+# Raw Tissue20 data - Run 1
+Sample ID: Subject10
+Date: 5/28/2025
+Values: 20.84, 21.09, 38.67, 44.63, 37.55
+Notes: Standard collection protocol followed
