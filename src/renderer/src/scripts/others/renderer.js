@@ -3968,12 +3968,13 @@ const mergeLocalAndRemoteDatasetStructure = async (
     const currentNestedPathArray = window.getGlobalPathFromString(recursedFilePath);
     console.log("currentNestedPathArray", currentNestedPathArray);
     console.log("window.datasetStructureJSONObj", window.datasetStructureJSONObj);
-    console.log("currentNestedPathArray", currentNestedPathArray);
     const existingDatasetJsonAtPath = window.getRecursivePath(
       currentNestedPathArray.slice(1),
       window.datasetStructureJSONObj
     );
     console.log("existingDatasetJsonAtPath", existingDatasetJsonAtPath);
+    console.log("existingDatasetJsonAtPath['folders']", existingDatasetJsonAtPath["folders"]);
+    console.log("existingDatasetJsonAtPath['files']", existingDatasetJsonAtPath["files"]);
 
     const ExistingFoldersAtPath = Object.keys(existingDatasetJsonAtPath["folders"]) || [];
     const ExistingFilesAtPath = Object.keys(existingDatasetJsonAtPath["files"]) || [];
