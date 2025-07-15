@@ -21,8 +21,8 @@ export const openPageDatasetStructure = async (targetPageID) => {
 
   // Add handlers for other pages without componentType
   if (targetPageID === "guided-unstructured-data-import-tab") {
-    guidedUpdateFolderStructureUI("data/");
     setTreeViewDatasetStructure(window.datasetStructureJSONObj, []);
+    guidedUpdateFolderStructureUI("data/");
   }
 
   if (targetPageID === "guided-entity-addition-method-selection-tab") {

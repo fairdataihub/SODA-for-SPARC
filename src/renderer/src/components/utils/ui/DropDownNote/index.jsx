@@ -1,4 +1,4 @@
-import { Stack, Button, Text, Center } from "@mantine/core";
+import { Stack, Button, Text, List } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import { IconChevronRight, IconChevronDown, IconInfoCircle } from "@tabler/icons-react";
 import classes from "./DropDownNote.module.css";
@@ -48,7 +48,11 @@ const renderDataCategoriesNote = (datasetIncludesCode) => (
 const DropDownNote = ({ id }) => {
   console.log("DropDownNote rendered with id:", id);
   const [isOpen, toggleOpen] = useToggle([false, true]);
-  const datasetIncludesCode = useGlobalStore((state) => state.selectedEntities.includes("code"));
+  const selectedEntities = useGlobalStore((state) => state.selectedEntities);
+  const datasetIncludesSubjects = selectedEntities.includes("subjects");
+  const datasetIncludesSamples = selectedEntities.includes("samples");
+  const datasetIncludesSites = selectedEntities.includes("sites");
+  const datasetIncludesCode = selectedEntities.includes("code");
 
   const configMap = {
     "data-categories-list": {
@@ -67,33 +71,37 @@ const DropDownNote = ({ id }) => {
             Based on your selections on the Dataset Content page, you will need to provide assign
             unique IDs for the following entity types:
           </Text>
+          {datasetIncludesSubjects && (
+            <SodaPaper>
+              <Text fw={600}>Subjects</Text>
+              <Text size="sm">
+                Subjects are living organisms from which data or samples are collected, such as
+                mice, rats, or humans. Each subject must be assigned an unique ID (e.g.,
+                sub-mouse-1, sub-mouse-2).
+              </Text>
+            </SodaPaper>
+          )}
+          {datasetIncludesSamples && (
+            <SodaPaper>
+              <Text fw={600}>Samples</Text>
+              <Text size="sm">
+                Samples are biological materials taken from a subject, such as brain tissue or
+                blood. Each sample must be assigned an unique ID (e.g., sam-tissue-1, sam-tissue-2)
+                and be linked to a subject.
+              </Text>
+            </SodaPaper>
+          )}
 
-          <SodaPaper>
-            <Text fw={600}>Subjects</Text>
-            <Text size="sm">
-              Subjects are living organisms from which data or samples are collected, such as mice,
-              rats, or humans. Each subject must be assigned an unique ID (e.g., sub-mouse-1,
-              sub-mouse-2).
-            </Text>
-          </SodaPaper>
-
-          <SodaPaper>
-            <Text fw={600}>Samples</Text>
-            <Text size="sm">
-              Samples are biological materials taken from a subject, such as brain tissue or blood.
-              Each sample must be assigned an unique ID (e.g., sam-tissue-1, sam-tissue-2) and be
-              linked to a subject.
-            </Text>
-          </SodaPaper>
-
-          <SodaPaper>
-            <Text fw={600}>Sites</Text>
-            <Text size="sm">
-              Sites are specific locations on a subject or sample where data is collected or
-              procedures take place, such as a brain region or tissue section. Each site must be
-              assigned an unique ID (e.g., site-node-1, site-node-2).
-            </Text>
-          </SodaPaper>
+          {datasetIncludesSites && (
+            <SodaPaper>
+              <Text fw={600}>Sites</Text>
+              <Text size="sm">
+                Sites are specific locations on a subject or sample where data is collected or
+                procedures take place, such as a brain region or tissue section. Each site must be
+                assigned an unique ID (e.g., site-node-1, site-node-2).
+              </Text>
+            </SodaPaper>
+          )}
         </>
       ),
     },
@@ -101,11 +109,43 @@ const DropDownNote = ({ id }) => {
       dropDownIcon: "info",
       dropDownButtonText: "Learn more about managing the structure of your entities",
       dropDownNote: (
-        <Text size="sm">
-          The SPARC Dataset Structure (SDS) requires you to manage entities and their relationships
-          to ensure your dataset is well-organized and reusable. This page allows you to add, edit,
-          or remove entities such as subjects, samples, and sites.
-        </Text>
+        <>
+          <Text size="sm">
+            The SPARC Dataset Structure (SDS) requires you to denote entities and their
+            relationships. This page allows you to add, edit, or remove entities such as subjects,
+            samples, and sites. The recommended workflow for this page is:
+          </Text>
+          <List type="ordered" mt="md">
+            {datasetIncludesSubjects && (
+              <List.Item>
+                <Text>
+                  <strong>Add subjects</strong> - Click the "Add Subject" button, enter some
+                  metadata for the subject (at minimum the subject's ID), and click the "Add
+                  subject" button at the bottom of the form.
+                </Text>
+              </List.Item>
+            )}
+            {datasetIncludesSamples && (
+              <List.Item>
+                <Text>
+                  <strong>Add samples</strong> - Click the "Add Sample" button underneath the
+                  subject that the sample was taken from, enter some metadata for the sample (at
+                  minimum the sample's ID), and click the "Add Sample" button at the bottom of the
+                  form.
+                </Text>
+              </List.Item>
+            )}
+            {datasetIncludesSites && (
+              <List.Item>
+                <Text>
+                  <strong>Add sites</strong> - Click the "Add site" button underneath the sample the
+                  site is from, enter some metadata for the site (at minimum the site's ID), and
+                  click the "Add site" button at the bottom of the form.
+                </Text>
+              </List.Item>
+            )}
+          </List>
+        </>
       ),
     },
   };

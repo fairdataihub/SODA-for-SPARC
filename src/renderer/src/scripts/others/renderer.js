@@ -3925,7 +3925,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
     return [datasetStructure, problematicFolderNames, problematicFileNames];
   }
 
-  return [datasetStructure];
+  return datasetStructure;
 };
 
 window.deleteFilesByRelativePath = (arrayOfRelativePaths) => {

@@ -302,6 +302,15 @@ const EntityMetadataForm = () => {
               required
               value={getMetadataValue("subject_id")}
               onChange={(e) => handleChange("subject_id", e.target.value)}
+              error={
+                getMetadataValue("subject_id") &&
+                !window.evaluateStringAgainstSdsRequirements(
+                  getMetadataValue("subject_id"),
+                  "string-adheres-to-identifier-conventions"
+                )
+                  ? "Subject IDs can only contain letters, numbers, and hyphens."
+                  : undefined
+              }
               leftSection={
                 <Text size="sm" c="dimmed" mx="sm">
                   {entityPrefixes["subject"]}
@@ -668,6 +677,15 @@ const EntityMetadataForm = () => {
               placeholder="Enter sample ID"
               value={getMetadataValue("sample_id")}
               onChange={(e) => handleChange("sample_id", e.target.value)}
+              error={
+                getMetadataValue("sample_id") &&
+                !window.evaluateStringAgainstSdsRequirements(
+                  getMetadataValue("sample_id"),
+                  "string-adheres-to-identifier-conventions"
+                )
+                  ? "Sample IDs can only contain letters, numbers, and hyphens."
+                  : undefined
+              }
               leftSection={
                 <Text size="sm" c="dimmed" mx="sm">
                   {entityPrefixes["sample"]}
@@ -780,6 +798,15 @@ const EntityMetadataForm = () => {
               required
               value={getMetadataValue("site_id")}
               onChange={(e) => handleChange("site_id", e.target.value)}
+              error={
+                getMetadataValue("site_id") &&
+                !window.evaluateStringAgainstSdsRequirements(
+                  getMetadataValue("site_id"),
+                  "string-adheres-to-identifier-conventions"
+                )
+                  ? "Site IDs can only contain letters, numbers, and hyphens."
+                  : undefined
+              }
               leftSection={
                 <Text size="sm" c="dimmed" mx="sm">
                   {entityPrefixes["site"]}
