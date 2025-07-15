@@ -3777,3 +3777,12 @@ const continueHackGm = true;
 if (continueHackGm) {
   doTheHack();
 }
+
+// Add the event listener for the Data importation component
+const dragDropElementId = document.getElementById("data-importer-dropzone");
+dragDropElementId.addEventListener("click", (event) => {
+  event.preventDefault();
+  window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog", {
+    importRelativePath: "data/",
+  });
+});

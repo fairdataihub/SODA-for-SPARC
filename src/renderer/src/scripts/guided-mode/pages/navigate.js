@@ -226,13 +226,24 @@ window.guidedPrepareHomeScreen = async () => {
   guidedUnLockSideBar();
 };
 
+const itemsContainer = document.getElementById("items");
+const freeFormItemsContainer = document.getElementById("free-form-folder-structure-container");
+const freeFormButtons = document.getElementById("organize-path-and-back-button-div");
+
 document.getElementById("button-homepage-guided-mode").addEventListener("click", async () => {
   console.log("Homepage button called");
-
+  //Transition file explorer elements to guided mode
+  window.organizeDSglobalPath = document.getElementById("guided-input-global-path");
+  window.organizeDSglobalPath.value = "";
+  window.dataset_path = document.getElementById("guided-input-global-path");
+  window.scroll_box = document.querySelector("#guided-body");
+  itemsContainer.innerHTML = "";
+  resetLazyLoading();
+  freeFormItemsContainer.classList.remove("freeform-file-explorer");
+  freeFormButtons.classList.remove("freeform-file-explorer-buttons");
+  $(".shared-folder-structure-element").appendTo($("#guided-folder-structure-container"));
   guidedTransitionFromHome();
-
   guidedUnLockSideBar();
-
   await openPage("guided-select-starting-point-tab");
 });
 

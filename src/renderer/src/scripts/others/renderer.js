@@ -3966,17 +3966,19 @@ const mergeLocalAndRemoteDatasetStructure = async (
 
   const traverseAndMergeDatasetJsonObjects = async (datasetStructureToMerge, recursedFilePath) => {
     const currentNestedPathArray = window.getGlobalPathFromString(recursedFilePath);
+    console.log("currentNestedPathArray", currentNestedPathArray);
     console.log("window.datasetStructureJSONObj", window.datasetStructureJSONObj);
     console.log("currentNestedPathArray", currentNestedPathArray);
     const existingDatasetJsonAtPath = window.getRecursivePath(
       currentNestedPathArray.slice(1),
       window.datasetStructureJSONObj
-    ); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')
+    );
+    console.log("existingDatasetJsonAtPath", existingDatasetJsonAtPath);
 
-    const ExistingFoldersAtPath = Object.keys(existingDatasetJsonAtPath["folders"]);
-    const ExistingFilesAtPath = Object.keys(existingDatasetJsonAtPath["files"]);
-    const foldersBeingMergedToPath = Object.keys(datasetStructureToMerge["folders"]);
-    const filesBeingMergedToPath = Object.keys(datasetStructureToMerge["files"]);
+    const ExistingFoldersAtPath = Object.keys(existingDatasetJsonAtPath["folders"]) || [];
+    const ExistingFilesAtPath = Object.keys(existingDatasetJsonAtPath["files"]) || [];
+    const foldersBeingMergedToPath = Object.keys(datasetStructureToMerge["folders"]) || [];
+    const filesBeingMergedToPath = Object.keys(datasetStructureToMerge["files"]) || [];
 
     for (const folder of foldersBeingMergedToPath) {
       if (ExistingFoldersAtPath.includes(folder)) {
