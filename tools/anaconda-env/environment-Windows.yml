@@ -79,4 +79,5 @@ dependencies:
     - zope-interface==6.1
     - setuptools == 71.0.4
     - backports.tarfile
+    - pysoda-fairdataihub-tools==0.1.37
 
