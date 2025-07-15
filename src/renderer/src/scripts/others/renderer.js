@@ -3436,6 +3436,7 @@ organizeDSaddFolders.addEventListener("click", function () {
 window.electron.ipcRenderer.on(
   "selected-folders-organize-datasets",
   async (event, { filePaths: importedFolders, importRelativePath }) => {
+    console.log("importRelativePath:", importRelativePath);
     try {
       if (!importRelativePath) {
         throw new Error("The 'importRelativePath' property is missing in the response.");
@@ -4092,8 +4093,8 @@ const mergeNewDatasetStructureToExistingDatasetStructureAtPath = async (
   relativePathToMergeObjectInto
 ) => {
   try {
+    console.log("builtDatasetStructure", builtDatasetStructure);
     console.log("relativePathToMergeObjectInto", relativePathToMergeObjectInto);
-    console.log("currentFileExplorerPath", currentFileExplorerPath);
 
     // Step 2: Add the imported data to the dataset structure (This function handles duplicate files, etc)
     await mergeLocalAndRemoteDatasetStructure(builtDatasetStructure, currentFileExplorerPath);

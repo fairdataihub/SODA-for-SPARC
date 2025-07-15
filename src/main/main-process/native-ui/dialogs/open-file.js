@@ -579,6 +579,15 @@ ipcMain.on("open-files-organize-datasets-dialog", async (event) => {
   }
 });
 
+ipcMain.on("file-explorer-dropped-datasets", (event, args) => {
+  const mainWindow = BrowserWindow.getFocusedWindow();
+  const importRelativePath = args.importRelativePath;
+  mainWindow.webContents.send("selected-folders-organize-datasets", {
+    filePaths: args.filePaths,
+    importRelativePath,
+  });
+});
+
 ipcMain.on("open-folders-organize-datasets-dialog", async (event, args) => {
   console.log("[main-process] Received open-folders-organize-datasets-dialog");
   console.log("[main-process] Args:", args);
@@ -607,11 +616,6 @@ ipcMain.on("open-folders-organize-datasets-dialog", async (event, args) => {
     return; // Exit if the dialog is canceled
   }
 
-  // Send the selected folders and the relative path back to the renderer
-  console.log("[main-process] Sending selected-folders-organize-datasets", {
-    filePaths: folders.filePaths,
-    importRelativePath,
-  });
   mainWindow.webContents.send("selected-folders-organize-datasets", {
     filePaths: folders.filePaths,
     importRelativePath,

@@ -8,18 +8,10 @@ const DataImporter = ({ relativeFolderPathToImportDataInto }) => {
   // Handles preventing default drop action
   const allowDrop = (event) => event.preventDefault();
 
-  // Handles the file drop logic
-  const handleDrop = async () => {};
-
-  // Opens the dataset dialog on click
-  const handleClick = async (event) => {};
-
   return (
     <FullWidthContainer>
       <Box w="100%" m={0} p={0} id="data-importer-dropzone">
         <Dropzone
-          onDrop={handleDrop}
-          onClick={handleClick}
           onReject={(files) => console.log("Rejected files:", files)}
           onDragOver={allowDrop}
           mb="lg"

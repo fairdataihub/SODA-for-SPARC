@@ -3786,3 +3786,14 @@ dragDropElementId.addEventListener("click", (event) => {
     importRelativePath: "data/",
   });
 });
+// Add a drop listener that handles the drop event
+dragDropElementId.addEventListener("drop", (event) => {
+  event.preventDefault();
+  const itemsDroppedInFileExplorer = Array.from(event.dataTransfer.files).map((file) => file.path);
+  console.log("Items dropped in file explorer:", itemsDroppedInFileExplorer);
+
+  window.electron.ipcRenderer.send("file-explorer-dropped-datasets", {
+    filePaths: itemsDroppedInFileExplorer,
+    importRelativePath: "data/",
+  });
+});
