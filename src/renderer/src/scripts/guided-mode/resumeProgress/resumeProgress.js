@@ -20,8 +20,6 @@ while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
-const handlePreSdsThreeProgressFiles = async () => {};
-
 /**
  *
  * @param {string} datasetNameToResume - The name of the dataset associated with the save progress file the user wants to resume.
@@ -52,13 +50,39 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
     showCancelButton: false,
   });
 
+  // pause for a second to allow the loading screen to render
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
   try {
     const datasetResumeJsonObj = await getProgressFileData(datasetNameToResume);
+    console.log("datasetResumeJsonObj", datasetResumeJsonObj);
 
     // Datasets successfully uploaded will have the "previous-guided-upload-dataset-name" key
     const datasetHasAlreadyBeenSuccessfullyUploaded =
       datasetResumeJsonObj["previous-guided-upload-dataset-name"];
 
+    // Handle pre-sds3 datasets by referring them back to the stable SDS2 release if the dataset was last modified
+    // Before the SDS3 release
+    const lastModifiedDateStr = datasetResumeJsonObj["last-modified"];
+    const lastModifiedDate = new Date(lastModifiedDateStr);
+
+    // Date of the first SDS3 release (July 11 2025 at 00:00:00 UTC)
+    const sds3ReleaseDate = new Date("2025-07-11T00:00:00Z");
+
+    console.log("lastModifiedDate", lastModifiedDate);
+    console.log("sds3ReleaseDate", sds3ReleaseDate);
+
+    /*if (lastModifiedDate < sds3ReleaseDate) {
+      await swalShowInfo(
+        "This dataset requires an older version of SODA to resume.",
+        `This progress file was created before SODA adopted the SDS3 workflow.<br><br>
+        To continue working on this dataset, download the final version of SODA that supports SDS2:<br><br>
+        <a href="https://github.com/bvhpatel/SODA-for-SPARC/releases/tag/v15.0.0" target="_blank" rel="noopener noreferrer">
+          Download SODA v15.0.0 (SDS2 support)
+        </a>`
+      );
+      return;
+    }*/
     // If the dataset had been previously successfully uploaded, check to make sure it exists on Pennsieve still.
     if (datasetHasAlreadyBeenSuccessfullyUploaded) {
       const previouslyUploadedDatasetId =
@@ -139,8 +163,6 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
     await patchPreviousGuidedModeVersions();
 
     window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
-    window.subjectsTableData = window.sodaJSONObj["subjects-table-data"];
-    window.samplesTableData = window.sodaJSONObj["samples-table-data"];
     const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
     setDatasetEntityObj(savedDatasetEntityObj);
     const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];

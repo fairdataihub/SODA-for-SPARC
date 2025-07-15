@@ -57,6 +57,7 @@ import SodaGreenPaper from "../../utils/ui/SodaGreenPaper";
 import { getExistingSamples } from "../../../stores/slices/datasetEntityStructureSlice";
 import InstructionsTowardsLeftContainer from "../../utils/ui/InstructionsTowardsLeftContainer";
 import { OptionalFieldsNotice } from "./utils";
+import DropDownNote from "../../utils/ui/DropDownNote";
 /**
  * EntityMetadataForm Component
  *
@@ -160,7 +161,7 @@ const EntityMetadataForm = () => {
   if (!selectedHierarchyEntity && !activeFormType) {
     return (
       <InstructionsTowardsLeftContainer>
-        <Text fw={500} c="dimmed">
+        <Text fw={500}>
           {showFullMetadataFormFields
             ? "Select a sample from the list on the left to edit its metadata."
             : "Select an entity from the hierarchy on the left to edit its metadata or click an entity addition button to add a new entity."}
@@ -301,6 +302,15 @@ const EntityMetadataForm = () => {
               required
               value={getMetadataValue("subject_id")}
               onChange={(e) => handleChange("subject_id", e.target.value)}
+              error={
+                getMetadataValue("subject_id") &&
+                !window.evaluateStringAgainstSdsRequirements(
+                  getMetadataValue("subject_id"),
+                  "string-adheres-to-identifier-conventions"
+                )
+                  ? "Subject IDs can only contain letters, numbers, and hyphens."
+                  : undefined
+              }
               leftSection={
                 <Text size="sm" c="dimmed" mx="sm">
                   {entityPrefixes["subject"]}
@@ -667,6 +677,15 @@ const EntityMetadataForm = () => {
               placeholder="Enter sample ID"
               value={getMetadataValue("sample_id")}
               onChange={(e) => handleChange("sample_id", e.target.value)}
+              error={
+                getMetadataValue("sample_id") &&
+                !window.evaluateStringAgainstSdsRequirements(
+                  getMetadataValue("sample_id"),
+                  "string-adheres-to-identifier-conventions"
+                )
+                  ? "Sample IDs can only contain letters, numbers, and hyphens."
+                  : undefined
+              }
               leftSection={
                 <Text size="sm" c="dimmed" mx="sm">
                   {entityPrefixes["sample"]}
@@ -779,6 +798,15 @@ const EntityMetadataForm = () => {
               required
               value={getMetadataValue("site_id")}
               onChange={(e) => handleChange("site_id", e.target.value)}
+              error={
+                getMetadataValue("site_id") &&
+                !window.evaluateStringAgainstSdsRequirements(
+                  getMetadataValue("site_id"),
+                  "string-adheres-to-identifier-conventions"
+                )
+                  ? "Site IDs can only contain letters, numbers, and hyphens."
+                  : undefined
+              }
               leftSection={
                 <Text size="sm" c="dimmed" mx="sm">
                   {entityPrefixes["site"]}
@@ -878,6 +906,7 @@ const EntityMetadataPage = ({ entityType }) => {
             a lot of overlapping metadata, you can use the copy metadata button to copy metadata between ${entityType}.`
             : "Use the interface below to describe the entities in your experimental data."}
         </Text>
+        {!showFullMetadataFormFields && <DropDownNote id="dataset-entity-management-page" />}
       </GuidedModeSection>
 
       <GuidedModeSection>

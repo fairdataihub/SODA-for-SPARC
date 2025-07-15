@@ -32,7 +32,6 @@ import {
 import {
   guidedGenerateSubjectsMetadata,
   guidedGenerateSamplesMetadata,
-  guidedPrepareDatasetStructureAndMetadataForUpload,
 } from "./generateDataset/generate";
 import { guidedCreateManifestFilesAndAddToDatasetStructure } from "./manifests/manifest";
 import { createStandardizedDatasetStructure } from "../utils/datasetStructure";
@@ -512,9 +511,6 @@ document
         });
         throw new Error("Dataset is too large for validation");
       }
-
-      // create the manifest files if the user auto generated manifest files at any point
-      await guidedCreateManifestFilesAndAddToDatasetStructure();
 
       // get the manifest files
       let manifestJSONResponse;
@@ -1829,69 +1825,6 @@ const openAddAdditionLinkSwal = async () => {
   }
 };
 
-const openModifySampleMetadataPage = (sampleMetadataID, samplesSubjectID) => {
-  //Get all samples from the dataset and add all other samples to the was derived from dropdown
-  const [samplesInPools, samplesOutsidePools] = window.sodaJSONObj.getAllSamplesFromSubjects();
-  //Combine sample data from samples in and out of pools
-  let samples = [...samplesInPools, ...samplesOutsidePools];
-  const samplesBesidesCurrSample = samples.filter(
-    (sample) => sample.sampleName !== sampleMetadataID
-  );
-  document.getElementById("guided-bootbox-wasDerivedFromSample").innerHTML = `
- <option value="">Sample not derived from another sample</option>
- ${samplesBesidesCurrSample
-   .map((sample) => {
-     return `<option value="${sample.sampleName}">${sample.sampleName}</option>`;
-   })
-   .join("\n")}))
- `;
-
-  //Add protocol titles to the protocol dropdown
-  const protocols = window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"];
-  document.getElementById("guided-bootbox-sample-protocol-title").innerHTML = `
-    <option value="">No protocols associated with this sample</option>
-    ${protocols
-      .map((protocol) => {
-        return `
-          <option
-            value="${protocol.description}"
-            data-protocol-link="${protocol.link}"
-          >
-            ${protocol.description}
-          </option>
-        `;
-      })
-      .join("\n")}))
-  `;
-
-  document.getElementById("guided-bootbox-sample-protocol-location").innerHTML = `
-    <option value="">No protocols associated with this sample</option>
-    ${protocols
-      .map((protocol) => {
-        return `
-          <option
-            value="${protocol.link}"
-            data-protocol-description="${protocol.description}"
-          >
-            ${protocol.link}
-          </option>
-        `;
-      })
-      .join("\n")}))
-  `;
-
-  for (let i = 1; i < window.samplesTableData.length; i++) {
-    if (
-      window.samplesTableData[i][0] === samplesSubjectID &&
-      window.samplesTableData[i][1] === sampleMetadataID
-    ) {
-      //if the id matches, load the metadata into the form
-      window.populateFormsSamples(samplesSubjectID, sampleMetadataID, "", "guided");
-      return;
-    }
-  }
-};
-
 window.openCopySubjectMetadataPopup = async () => {
   //save current subject metadata entered in the form
   window.addSubject("guided");
@@ -2038,6 +1971,8 @@ window.openCopySampleMetadataPopup = async () => {
     focusCancel: true,
   }).then(async (result) => {
     if (result.isConfirmed) {
+      /*
+      Commented out BUT THIS IS PROBABLY WHERE COPY METADATA STUFF IS
       const selectedCopyFromSample = $("input[name='copy-from']:checked").val();
       //loop through checked copy-to checkboxes and return the value of the checkbox element if checked
       let selectedCopyToSamples = []; //["sam2","sam3"]
@@ -2076,7 +2011,7 @@ window.openCopySampleMetadataPopup = async () => {
       if (currentSampleOpenInView) {
         openModifySampleMetadataPage(currentSampleOpenInView, currentSampleSubjectOpenInView);
       }
-      await guidedSaveProgress();
+      await guidedSaveProgress();*/
     }
   });
 };
@@ -3165,239 +3100,6 @@ const guidedAddTeamPermission = (newTeamPermissionObj) => {
   renderPermissionsTable();
 };
 
-const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
-  const asideElement = document.getElementById(`guided-${highLevelFolderName}-samples-aside`);
-  asideElement.innerHTML = "";
-
-  const [subjectsInPools, subjectsOutsidePools] = window.sodaJSONObj.getAllSubjects();
-  //Combine sample data from subjects in and out of pools
-  let subjects = [...subjectsInPools, ...subjectsOutsidePools];
-
-  const subjectsWithSamples = subjects.filter((subject) => {
-    return subject.samples.length > 0;
-  });
-
-  let asideElementTemplateLiteral = ``;
-
-  //create an array of objects that groups subjectsWithSamples by poolName property
-  const subjectsWithSamplesInPools = subjectsWithSamples.reduce((acc, subject) => {
-    if (subject.poolName) {
-      if (acc[subject.poolName]) {
-        acc[subject.poolName].push(subject);
-      } else {
-        acc[subject.poolName] = [subject];
-      }
-    }
-    return acc;
-  }, {});
-  //loop through the pools and create an aside element for each sample in the pools subjects
-  for (const [_, subjects] of Object.entries(subjectsWithSamplesInPools)) {
-    asideElementTemplateLiteral += `
-    ${subjects
-      .map((subject) => {
-        return `
-        <div style="display: flex; flex-direction: column; width: 100%; border-radius: 4px; margin-bottom: 1rem">
-            <div class="justify-center" style="background: lightgray; padding: 5px 0 2px 0;">
-              <label class="guided--form-label centered" style="color: black;">
-                ${subject.subjectName}
-              </label>
-              </div>
-                ${subject.samples
-                  .map((sample) => {
-                    return `
-                    <a 
-                      class="${highLevelFolderName}-selection-aside-item selection-aside-item"
-                      data-path-suffix="${subject.poolName}/${subject.subjectName}/${sample}"
-                      style="padding-left: 1rem; direction: ltr"
-                    >${sample}</a>
-                  `;
-                  })
-                  .join("\n")}
-            </div>`;
-      })
-      .join("\n")}`;
-  }
-
-  //filter out subjects that are not in a pool
-  const subjectsWithSamplesOutsidePools = subjectsWithSamples.filter((subject) => {
-    return !subject.poolName;
-  });
-  //loop through the subjects and create an aside element for each
-  for (const subject of subjectsWithSamplesOutsidePools) {
-    asideElementTemplateLiteral += `
-      <div style="display: flex; flex-direction: column; width: 100%; border-radius: 4px; margin-bottom: 1rem">
-      <div class="justify-center" style="background: lightgray; padding: 5px 0 2px 0;">
-        <label class="guided--form-label centered" style="color: black;">
-          ${subject.subjectName}
-        </label>
-      </div>
-        ${subject.samples
-          .map((sample) => {
-            return `  
-              <a
-                class="${highLevelFolderName}-selection-aside-item selection-aside-item"
-                style="direction: ltr; padding-left: 1rem;"
-                data-path-suffix="${subject.subjectName}/${sample}"
-              >${sample}</a>
-`;
-          })
-          .join("\n")}
-    `;
-  }
-
-  //Add the samples to the DOM
-  asideElement.innerHTML = asideElementTemplateLiteral;
-
-  //add click event to each sample item
-  const selectionAsideItems = document.querySelectorAll(
-    `a.${highLevelFolderName}-selection-aside-item`
-  );
-
-  selectionAsideItems.forEach((item) => {
-    item.addEventListener("click", (e) => {
-      //Hide intro and show subject folder explorer if intro is open
-      const introElement = document.getElementById(
-        `guided-${highLevelFolderName}-samples-file-explorer-intro`
-      );
-      if (!introElement.classList.contains("hidden")) {
-        hideEleShowEle(
-          `guided-${highLevelFolderName}-samples-file-explorer-intro`,
-          "guided-file-explorer-elements"
-        );
-      }
-
-      //add selected class to clicked element
-      e.target.classList.add("is-selected");
-      //remove selected class from all other elements
-      selectionAsideItems.forEach((item) => {
-        if (item != e.target) {
-          item.classList.remove("is-selected");
-        }
-      });
-      //get the path prefix from the clicked item
-      const pathSuffix = e.target.dataset.pathSuffix;
-
-      //render folder section in #items
-      guidedUpdateFolderStructureUI(`${highLevelFolderName}/${pathSuffix}`);
-    });
-    //add hover event that changes the background color to black
-    item.addEventListener("mouseover", (e) => {
-      e.target.style.backgroundColor = "whitesmoke";
-    });
-    item.addEventListener("mouseout", (e) => {
-      e.target.style.backgroundColor = "";
-    });
-  });
-};
-
-const renderSubjectsHighLevelFolderAsideItems = (highLevelFolderName) => {
-  const asideElement = document.getElementById(`guided-${highLevelFolderName}-subjects-aside`);
-  asideElement.innerHTML = "";
-  const [subjectsInPools, subjectsOutsidePools] = window.sodaJSONObj.getAllSubjects();
-  //Combine sample data from subjects in and out of pools
-  let subjects = [...subjectsInPools, ...subjectsOutsidePools];
-
-  //sort subjects object by subjectName property alphabetically
-
-  //Create the HTML for the subjects
-  const subjectItems = subjects
-    .map((subject) => {
-      return `
-          <a 
-            class="${highLevelFolderName}-selection-aside-item selection-aside-item"
-            style="align-self: center; width: 97%; direction: ltr;"
-            data-path-suffix="${subject.poolName ? subject.poolName + "/" : ""}${
-              subject.subjectName
-            }"
-          >${subject.subjectName}</a>
-        `;
-    })
-    .join("\n");
-
-  //Add the subjects to the DOM
-  asideElement.innerHTML = subjectItems;
-
-  //add click event to each sample item
-  const selectionAsideItems = document.querySelectorAll(
-    `a.${highLevelFolderName}-selection-aside-item`
-  );
-  selectionAsideItems.forEach((item) => {
-    item.addEventListener("click", (e) => {
-      //Hide intro and show subject folder explorer if intro is open
-      const introElement = document.getElementById(
-        `guided-${highLevelFolderName}-subjects-file-explorer-intro`
-      );
-      if (!introElement.classList.contains("hidden")) {
-        hideEleShowEle(
-          `guided-${highLevelFolderName}-subjects-file-explorer-intro`,
-          "guided-file-explorer-elements"
-        );
-      }
-
-      //add selected class to clicked element
-      e.target.classList.add("is-selected");
-      //remove selected class from all other elements
-      selectionAsideItems.forEach((item) => {
-        if (item != e.target) {
-          item.classList.remove("is-selected");
-        }
-      });
-      //get the path prefix from the clicked item
-      const pathSuffix = e.target.dataset.pathSuffix;
-
-      guidedUpdateFolderStructureUI(`${highLevelFolderName}/${pathSuffix}`);
-    });
-  });
-};
-
-const renderPoolsHighLevelFolderAsideItems = (highLevelFolderName) => {
-  const asideElement = document.getElementById(`guided-${highLevelFolderName}-pools-aside`);
-  asideElement.innerHTML = "";
-  const pools = Object.keys(window.sodaJSONObj.getPools());
-
-  const poolItems = pools
-    .map((pool) => {
-      return `
-          <a 
-            class="${highLevelFolderName}-selection-aside-item selection-aside-item"
-            style="align-self: center; width: 97%; direction: ltr;"
-            data-path-suffix="${pool}"
-          >${pool}</a>
-        `;
-    })
-    .join("\n");
-
-  //Add the subjects to the DOM
-  asideElement.innerHTML = poolItems;
-
-  //add click event to each sample item
-  const selectionAsideItems = document.querySelectorAll(
-    `a.${highLevelFolderName}-selection-aside-item`
-  );
-  selectionAsideItems.forEach((item) => {
-    item.addEventListener("click", (e) => {
-      //Hide intro and show subject folder explorer if intro is open
-      hideEleShowEle(
-        `guided-${highLevelFolderName}-pools-file-explorer-intro`,
-        "guided-file-explorer-elements"
-      );
-
-      //add selected class to clicked element
-      e.target.classList.add("is-selected");
-      //remove selected class from all other elements
-      selectionAsideItems.forEach((item) => {
-        if (item != e.target) {
-          item.classList.remove("is-selected");
-        }
-      });
-      //get the path prefix from the clicked item
-      const { pathSuffix } = e.target.dataset;
-
-      guidedUpdateFolderStructureUI(`${highLevelFolderName}/${pathSuffix}`);
-    });
-  });
-};
-
 const renderSubjectsMetadataAsideItems = async () => {
   const asideElement = document.getElementById(`guided-subjects-metadata-aside`);
   asideElement.innerHTML = "";
@@ -3528,153 +3230,6 @@ const renderSubjectsMetadataAsideItems = async () => {
       });
 
       document.getElementById("guided-bootbox-subject-id").value = e.target.innerText;
-
-      await guidedSaveProgress();
-    });
-  });
-};
-
-const renderSamplesMetadataAsideItems = async () => {
-  const asideElement = document.getElementById(`guided-samples-metadata-aside`);
-  asideElement.innerHTML = "";
-
-  const [samplesInPools, samplesOutsidePools] = window.sodaJSONObj.getAllSamplesFromSubjects();
-  //Combine sample data from samples in and out of pools
-  let samples = [...samplesInPools, ...samplesOutsidePools];
-  const sampleNames = samples.map((sample) => sample.sampleName);
-
-  const sampleMetadataCopyButton = document.getElementById("guided-button-sample-metadata-copy");
-  const sampleMetadataCopyTip = document.getElementById("guided-copy-samples-tip");
-
-  if (samples.length > 1) {
-    sampleMetadataCopyButton.classList.remove("hidden");
-    sampleMetadataCopyTip.classList.remove("hidden");
-  } else {
-    sampleMetadataCopyButton.classList.add("hidden");
-    sampleMetadataCopyTip.classList.add("hidden");
-  }
-
-  const samplesFormEntries = window.guidedSamplesFormDiv.querySelectorAll(".samples-form-entry");
-
-  //Create an array of samplesFormEntries name attribute
-  const samplesFormNames = [...samplesFormEntries].map((entry) => {
-    return entry.name;
-  });
-
-  if (window.samplesTableData.length == 0) {
-    //Get items with class "samples-form-entry" from samplesForDiv
-    window.samplesTableData[0] = samplesFormNames;
-    for (const sample of samples) {
-      const sampleDataArray = [];
-      sampleDataArray.push(sample.subjectName);
-      sampleDataArray.push(sample.sampleName);
-      //Push an empty string for was derived from
-      sampleDataArray.push("");
-      sampleDataArray.push(sample.poolName ? sample.poolName : "");
-      for (let i = 0; i < samplesFormNames.length - 4; i++) {
-        sampleDataArray.push("");
-      }
-      window.samplesTableData.push(sampleDataArray);
-    }
-  } else {
-    //Add samples that have not yet been added to the table to the table
-    for (const sample of samples) {
-      let sampleAlreadyInTable = false;
-      for (let i = 0; i < window.samplesTableData.length; i++) {
-        if (window.samplesTableData[i][1] == sample.sampleName) {
-          sampleAlreadyInTable = true;
-        }
-      }
-      if (!sampleAlreadyInTable) {
-        const sampleDataArray = [];
-        sampleDataArray.push(sample.subjectName);
-        sampleDataArray.push(sample.sampleName);
-        //Push an empty string for was derived from
-        sampleDataArray.push("");
-        sampleDataArray.push(sample.poolName ? sample.poolName : "");
-        for (let i = 0; i < window.samplesTableData[0].length - 4; i++) {
-          sampleDataArray.push("");
-        }
-        window.samplesTableData.push(sampleDataArray);
-      }
-    }
-  }
-
-  // If the subject is in the table but not in the subjects array, remove it
-  for (let i = 1; i < window.samplesTableData.length; i++) {
-    if (!sampleNames.includes(window.samplesTableData[i][1])) {
-      window.samplesTableData.splice(i, 1);
-    }
-  }
-
-  //If custom fields have been added to the window.samplesTableData, create a field for each custom field
-  //added
-  // Samples metadata have 19 standard fields to fill, if the sample has more then additional fields are included
-  if (window.samplesTableData[0].length > 19) {
-    for (let i = 19; i < window.samplesTableData[0].length; i++) {
-      if (
-        !samplesFormNames.includes(window.samplesTableData[0][i]) ||
-        !samplesFormNames.includes(
-          window.samplesTableData[0][i].charAt(0).toUpperCase() +
-            window.samplesTableData[0][i].slice(1)
-        )
-      ) {
-        window.addCustomHeader("samples", window.samplesTableData[0][i], "guided");
-      }
-    }
-  }
-
-  //Create the HTML for the samples
-  const sampleItems = samples
-    .map((sample) => {
-      return `
-        <div
-          class="samples-metadata-aside-item selection-aside-item"
-          data-samples-subject-name="${sample.subjectName}"
-        >
-          ${sample.subjectName}/${sample.sampleName}
-        </div>
-      `;
-    })
-    .join("\n");
-
-  //Add the samples to the DOM
-  asideElement.innerHTML = sampleItems;
-
-  //add click event to each sample item
-  const selectionAsideItems = document.querySelectorAll(`div.samples-metadata-aside-item`);
-  selectionAsideItems.forEach(async (item) => {
-    item.addEventListener("click", async (e) => {
-      //Hide intro and show metadata fields if intro is open
-      const introElement = document.getElementById("guided-form-add-a-sample-intro");
-      if (!introElement.classList.contains("hidden")) {
-        hideEleShowEle("guided-form-add-a-sample-intro", "guided-form-add-a-sample");
-      }
-
-      let previousSample = document.getElementById("guided-bootbox-sample-id").value;
-
-      //check to see if previousSample is empty
-      if (previousSample) {
-        window.addSample("guided");
-        await guidedSaveProgress();
-      }
-
-      //add selected class to clicked element
-      e.target.classList.add("is-selected");
-      //remove selected class from all other elements
-      selectionAsideItems.forEach((item) => {
-        if (item != e.target) {
-          item.classList.remove("is-selected");
-        }
-      });
-
-      //clear all sample form fields
-      window.clearAllSubjectFormFields(window.guidedSamplesFormDiv);
-
-      openModifySampleMetadataPage(
-        e.target.innerText.split("/")[1],
-        e.target.innerText.split("/")[0]
-      );
 
       await guidedSaveProgress();
     });
@@ -3821,40 +3376,6 @@ $("#guided-dataset-subtitle-input").on("keyup", () => {
     guidedDatasetSubtitleCharCount
   );
 });
-
-document
-  .getElementById("guided-bootbox-sample-protocol-title")
-  .addEventListener("change", function () {
-    const newDescriptionAssociatedLink = $(this).find(":selected").data("protocol-link");
-    document.getElementById("guided-bootbox-sample-protocol-location").value =
-      newDescriptionAssociatedLink ? newDescriptionAssociatedLink : "";
-  });
-document
-  .getElementById("guided-bootbox-sample-protocol-location")
-  .addEventListener("change", function () {
-    const newDescriptionAssociatedDescription = $(this)
-      .find(":selected")
-      .data("protocol-description");
-    document.getElementById("guided-bootbox-sample-protocol-title").value =
-      newDescriptionAssociatedDescription ? newDescriptionAssociatedDescription : "";
-  });
-
-document
-  .getElementById("guided-bootbox-subject-protocol-title")
-  .addEventListener("change", function () {
-    const newDescriptionAssociatedLink = $(this).find(":selected").data("protocol-link");
-    document.getElementById("guided-bootbox-subject-protocol-location").value =
-      newDescriptionAssociatedLink ? newDescriptionAssociatedLink : "";
-  });
-document
-  .getElementById("guided-bootbox-subject-protocol-location")
-  .addEventListener("change", function () {
-    const newDescriptionAssociatedDescription = $(this)
-      .find(":selected")
-      .data("protocol-description");
-    document.getElementById("guided-bootbox-subject-protocol-title").value =
-      newDescriptionAssociatedDescription ? newDescriptionAssociatedDescription : "";
-  });
 
 // function for importing a banner image if one already exists
 $("#guided-button-add-banner-image").click(async () => {
@@ -4119,172 +3640,6 @@ $("#guided-generate-changes-file").on("click", () => {
 
 //tagify initializations
 
-/// back button Curate
-$("#guided-button-back").on("click", function () {
-  var slashCount = window.organizeDSglobalPath.value.trim().split("/").length - 1;
-  if (slashCount !== 1) {
-    var filtered = window.getGlobalPath(window.organizeDSglobalPath);
-    if (filtered.length === 1) {
-      window.organizeDSglobalPath.value = filtered[0] + "/";
-    } else {
-      window.organizeDSglobalPath.value = filtered.slice(0, filtered.length - 1).join("/") + "/";
-    }
-    var myPath = window.datasetStructureJSONObj;
-    for (var item of filtered.slice(1, filtered.length - 1)) {
-      myPath = myPath["folders"][item];
-    }
-    // construct UI with files and folders
-    $("#items").empty();
-    window.already_created_elem = [];
-    let items = window.loadFileFolder(myPath); //array -
-    //we have some items to display
-    window.listItems(myPath, "#items", 500, true);
-    window.organizeLandingUIEffect();
-    // reconstruct div with new elements
-    window.getInFolder(
-      ".single-item",
-      "#items",
-      window.organizeDSglobalPath,
-      window.datasetStructureJSONObj
-    );
-  }
-});
-
-$("#guided-new-folder").on("click", () => {
-  event.preventDefault();
-  var slashCount = window.organizeDSglobalPath.value.trim().split("/").length - 1;
-  if (slashCount !== 1) {
-    var newFolderName = "New Folder";
-    Swal.fire({
-      title: "Add new folder...",
-      text: "Enter a name below:",
-      heightAuto: false,
-      input: "text",
-      backdrop: "rgba(0,0,0, 0.4)",
-      showCancelButton: "Cancel",
-      confirmButtonText: "Add folder",
-      reverseButtons: window.reverseSwalButtons,
-      showClass: { popup: "animate__animated animate__fadeInDown animate__faster" },
-      hideClass: { popup: "animate__animated animate__fadeOutUp animate__faster" },
-      didOpen: () => {
-        let swal_container = document.getElementsByClassName("swal2-popup")[0];
-        swal_container.style.width = "600px";
-        swal_container.style.padding = "1.5rem";
-        $(".swal2-input").attr("id", "add-new-folder-input");
-        $(".swal2-confirm").attr("id", "add-new-folder-button");
-        $("#add-new-folder-input").keyup(function () {
-          let val = $("#add-new-folder-input").val();
-          const folderNameIsValid = window.evaluateStringAgainstSdsRequirements(
-            val,
-            "folder-or-file-name-is-valid"
-          );
-          if (folderNameIsValid) {
-            $("#add-new-folder-button").attr("disabled", false);
-          } else {
-            Swal.showValidationMessage(`The folder name contains non-allowed characters.`);
-            $("#add-new-folder-button").attr("disabled", true);
-            return;
-          }
-        });
-      },
-      didDestroy: () => {
-        $(".swal2-confirm").attr("id", "");
-        $(".swal2-input").attr("id", "");
-      },
-    }).then((result) => {
-      if (result.value) {
-        if (result.value !== null && result.value !== "") {
-          newFolderName = result.value.trim();
-          // check for duplicate or files with the same name
-          var duplicate = false;
-          var itemDivElements = document.getElementById("items").children;
-          for (var i = 0; i < itemDivElements.length; i++) {
-            if (newFolderName === itemDivElements[i].innerText) {
-              duplicate = true;
-              break;
-            }
-          }
-          if (duplicate) {
-            Swal.fire({
-              icon: "error",
-              text: "Duplicate folder name: " + newFolderName,
-              confirmButtonText: "OK",
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-            });
-
-            window.logCurationForAnalytics(
-              "Error",
-              window.PrepareDatasetsAnalyticsPrefix.CURATE,
-              window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-              ["Step 3", "Add", "Folder"],
-              determineDatasetLocation()
-            );
-          } else {
-            var currentPath = window.organizeDSglobalPath.value;
-            var jsonPathArray = currentPath.split("/");
-            var filtered = jsonPathArray.slice(1).filter(function (el) {
-              return el != "";
-            });
-
-            var myPath = window.getRecursivePath(filtered, window.datasetStructureJSONObj);
-            // update Json object with new folder created
-            var renamedNewFolder = newFolderName;
-            myPath["folders"][renamedNewFolder] = newEmptyFolderObj();
-
-            window.listItems(myPath, "#items", 500, true);
-            window.getInFolder(
-              ".single-item",
-              "#items",
-              window.organizeDSglobalPath,
-              window.datasetStructureJSONObj
-            );
-
-            // log that the folder was successfully added
-            window.logCurationForAnalytics(
-              "Success",
-              window.PrepareDatasetsAnalyticsPrefix.CURATE,
-              window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-              ["Step 3", "Add", "Folder"],
-              determineDatasetLocation()
-            );
-
-            window.hideMenu(
-              "folder",
-              window.menuFolder,
-              window.menuHighLevelFolders,
-              window.menuFile
-            );
-            window.hideMenu(
-              "high-level-folder",
-              window.menuFolder,
-              window.menuHighLevelFolders,
-              window.menuFile
-            );
-          }
-        }
-      }
-    });
-  } else {
-    Swal.fire({
-      icon: "error",
-      text: "New folders cannot be added at this level. If you want to add high-level SPARC folder(s), please go back to the previous step to do so.",
-      confirmButtonText: "OK",
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
-      hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
-    });
-  }
-});
-
-$("#guided-imoprt-file").on("click", () => {
-  window.electron.ipcRenderer.send("open-files-organize-datasets-dialog");
-});
-$("#guided-import-folder").on("click", () => {
-  window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog");
-});
-
 const guidedSaveDescriptionDatasetInformation = () => {
   const title = window.sodaJSONObj["digital-metadata"]["name"];
   const subtitle = window.sodaJSONObj["digital-metadata"]["subtitle"];
@@ -4418,7 +3773,27 @@ const doTheHack = async () => {
 
 // If this variable is set to true, you will be taken back to the last guided mode page you were working on
 // (always set to false when making production builds)
-const continueHackGm = false;
+const continueHackGm = true;
 if (continueHackGm) {
   doTheHack();
 }
+
+// Add the event listener for the Data importation component
+const dragDropElementId = document.getElementById("data-importer-dropzone");
+dragDropElementId.addEventListener("click", (event) => {
+  event.preventDefault();
+  window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog", {
+    importRelativePath: "data/",
+  });
+});
+// Add a drop listener that handles the drop event
+dragDropElementId.addEventListener("drop", (event) => {
+  event.preventDefault();
+  const itemsDroppedInFileExplorer = Array.from(event.dataTransfer.files).map((file) => file.path);
+  console.log("Items dropped in file explorer:", itemsDroppedInFileExplorer);
+
+  window.electron.ipcRenderer.send("file-explorer-dropped-datasets", {
+    filePaths: itemsDroppedInFileExplorer,
+    importRelativePath: "data/",
+  });
+});

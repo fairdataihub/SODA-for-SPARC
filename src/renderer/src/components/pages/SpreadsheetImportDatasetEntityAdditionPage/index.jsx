@@ -4,7 +4,6 @@ import GuidedModeSection from "../../containers/GuidedModeSection";
 import {
   IconUser,
   IconFlask,
-  IconMapPin,
   IconFileSpreadsheet,
   IconAlertCircle,
   IconCheck,
@@ -40,14 +39,12 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
   const [importResults, setImportResults] = useState({
     subjects: null,
     samples: null,
-    sites: null,
   });
 
   // Check which entity types are enabled for this dataset
   const entityTypes = {
     subjects: selectedEntities?.includes("subjects"),
     samples: selectedEntities?.includes("samples"),
-    sites: selectedEntities?.includes("sites"),
   };
 
   /**
@@ -58,16 +55,23 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
 
     const config = entityConfigs[entityType];
     if (!config) {
-      window.notyf.error(`Unsupported entity type: ${entityType}`);
+      window.notyf.open({
+        type: "error",
+        message: `Unsupported entity type: ${entityType}`,
+      });
       return;
     }
 
     try {
       // Process file and get formatted entities
       const result = await importEntitiesFromExcel(files[0], entityType);
+      console.log("Import result:", result);
 
       if (!result.success) {
-        window.notyf.error(result.message);
+        window.notyf.open({
+          type: "error",
+          message: result.message,
+        });
         return;
       }
 
@@ -83,7 +87,10 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
       );
 
       if (!confirmed) {
-        window.notyf.info(`${entityType} import cancelled`);
+        window.notyf.open({
+          type: "info",
+          message: `${entityType} import cancelled`,
+        });
         return;
       }
 
@@ -92,12 +99,21 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
       setImportResults((prev) => ({ ...prev, [entityType]: saveResult }));
 
       if (saveResult.success) {
-        window.notyf.success(saveResult.message);
+        window.notyf.open({
+          type: "success",
+          message: saveResult.message,
+        });
       } else {
-        window.notyf.error(saveResult.message);
+        window.notyf.open({
+          type: "error",
+          message: saveResult.message,
+        });
       }
     } catch (error) {
-      window.notyf.error(`Error importing ${entityType}: ${error.message}`);
+      window.notyf.open({
+        type: "error",
+        message: `Error importing ${entityType}: ${error.message}`,
+      });
     }
   };
 
@@ -105,7 +121,10 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
   const handleDownloadTemplate = (entityType) => {
     const config = entityConfigs[entityType];
     if (!config) {
-      console.error(`No template available for entity type: ${entityType}`);
+      window.notyf.open({
+        type: "error",
+        message: `No template available for entity type: ${entityType}`,
+      });
       return;
     }
 
@@ -117,7 +136,10 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
   };
 
   const handleFileRejection = () => {
-    window.notyf.error("Invalid file format. Please upload an Excel file (.xlsx or .xls)");
+    window.notyf.open({
+      type: "error",
+      message: "Invalid file format. Please upload an Excel file (.xlsx or .xls)",
+    });
   };
 
   useEffect(() => {
@@ -162,15 +184,6 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
       description: "Import sample IDs and metadata from an Excel file",
       dependsOn: ["subjects"], // Depends on subjects being imported first
       sequence: 2,
-    },
-    sites: {
-      title: "Import Sites",
-      singularString: "site",
-      icon: <IconMapPin size={24} />,
-      color: "orange",
-      description: "Import site IDs and metadata from an Excel file",
-      dependsOn: ["subjects", "samples"], // Depends on both subjects and samples
-      sequence: 3,
     },
   };
 

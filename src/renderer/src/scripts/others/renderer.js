@@ -3436,6 +3436,7 @@ organizeDSaddFolders.addEventListener("click", function () {
 window.electron.ipcRenderer.on(
   "selected-folders-organize-datasets",
   async (event, { filePaths: importedFolders, importRelativePath }) => {
+    console.log("importRelativePath:", importRelativePath);
     try {
       if (!importRelativePath) {
         throw new Error("The 'importRelativePath' property is missing in the response.");
@@ -3928,54 +3929,6 @@ window.buildDatasetStructureJsonFromImportedData = async (
   return datasetStructure;
 };
 
-window.deleteFoldersByRelativePath = (arrayOfRelativePaths) => {
-  for (const relativePathToDelete of arrayOfRelativePaths) {
-    const currentPathArray = window.getGlobalPath(relativePathToDelete);
-    console.log("currentPathArray", currentPathArray);
-    const folderToDeleteName = currentPathArray.pop();
-    const parentFolder = window.getRecursivePath(currentPathArray, window.datasetStructureJSONObj);
-
-    const folderToDeleteIsFromPennsieve =
-      parentFolder["folders"][folderToDeleteName]?.["location"] === "ps";
-    console.log("folderToDeleteIsFromPennsieve", folderToDeleteIsFromPennsieve);
-    if (folderToDeleteIsFromPennsieve) {
-      parentFolder["folders"][folderToDeleteName]["action"].push("deleted");
-    } else {
-      delete parentFolder["folders"][folderToDeleteName];
-    }
-  }
-
-  setTreeViewDatasetStructure(window.datasetStructureJSONObj);
-};
-
-window.deleteFilesByRelativePath = (arrayOfRelativePaths) => {
-  // for example primary/test/abc.txt
-  for (const relativePathToDelete of arrayOfRelativePaths) {
-    const slashDirectlyBeforeFileName = relativePathToDelete.lastIndexOf("/");
-    const relativeFolderPathToFile = relativePathToDelete.slice(0, slashDirectlyBeforeFileName);
-    const fileNameToDelete = relativePathToDelete.slice(slashDirectlyBeforeFileName + 1);
-    console.log("relativeFolderPathToFile", relativeFolderPathToFile);
-    console.log("fileNameToDelete", fileNameToDelete);
-
-    const currentPathArray = window.getGlobalPath(relativeFolderPathToFile);
-    console.log("currentPathArray", currentPathArray);
-
-    const parentFolder = window.getRecursivePath(currentPathArray, window.datasetStructureJSONObj);
-    console.log("parentFolder", parentFolder);
-
-    const fileToDeleteIsFromPennsieve =
-      parentFolder["files"][fileNameToDelete]?.["location"] === "ps";
-
-    if (fileToDeleteIsFromPennsieve) {
-      parentFolder["files"][fileNameToDelete]["action"].push("deleted");
-    } else {
-      delete parentFolder["files"][fileNameToDelete];
-    }
-  }
-
-  setTreeViewDatasetStructure(window.datasetStructureJSONObj);
-};
-
 const mergeLocalAndRemoteDatasetStructure = async (
   datasetStructureToMerge,
   currentFileExplorerPath
@@ -3986,17 +3939,20 @@ const mergeLocalAndRemoteDatasetStructure = async (
 
   const traverseAndMergeDatasetJsonObjects = async (datasetStructureToMerge, recursedFilePath) => {
     const currentNestedPathArray = window.getGlobalPathFromString(recursedFilePath);
-    console.log("window.datasetStructureJSONObj", window.datasetStructureJSONObj);
     console.log("currentNestedPathArray", currentNestedPathArray);
+    console.log("window.datasetStructureJSONObj", window.datasetStructureJSONObj);
     const existingDatasetJsonAtPath = window.getRecursivePath(
       currentNestedPathArray.slice(1),
       window.datasetStructureJSONObj
-    ); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')
+    );
+    console.log("existingDatasetJsonAtPath", existingDatasetJsonAtPath);
+    console.log("existingDatasetJsonAtPath['folders']", existingDatasetJsonAtPath["folders"]);
+    console.log("existingDatasetJsonAtPath['files']", existingDatasetJsonAtPath["files"]);
 
-    const ExistingFoldersAtPath = Object.keys(existingDatasetJsonAtPath["folders"]);
-    const ExistingFilesAtPath = Object.keys(existingDatasetJsonAtPath["files"]);
-    const foldersBeingMergedToPath = Object.keys(datasetStructureToMerge["folders"]);
-    const filesBeingMergedToPath = Object.keys(datasetStructureToMerge["files"]);
+    const ExistingFoldersAtPath = Object.keys(existingDatasetJsonAtPath["folders"]) || [];
+    const ExistingFilesAtPath = Object.keys(existingDatasetJsonAtPath["files"]) || [];
+    const foldersBeingMergedToPath = Object.keys(datasetStructureToMerge["folders"]) || [];
+    const filesBeingMergedToPath = Object.keys(datasetStructureToMerge["files"]) || [];
 
     for (const folder of foldersBeingMergedToPath) {
       if (ExistingFoldersAtPath.includes(folder)) {
@@ -4109,8 +4065,8 @@ const mergeNewDatasetStructureToExistingDatasetStructureAtPath = async (
   relativePathToMergeObjectInto
 ) => {
   try {
+    console.log("builtDatasetStructure", builtDatasetStructure);
     console.log("relativePathToMergeObjectInto", relativePathToMergeObjectInto);
-    console.log("currentFileExplorerPath", currentFileExplorerPath);
 
     // Step 2: Add the imported data to the dataset structure (This function handles duplicate files, etc)
     await mergeLocalAndRemoteDatasetStructure(builtDatasetStructure, currentFileExplorerPath);
@@ -4939,30 +4895,6 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
   let splitPath = datasetPath.value.split("/");
   let fullPath = datasetPath.value;
 
-  if (window.organizeDSglobalPath.id === "guided-input-global-path") {
-    let currentPageID = window.CURRENT_PAGE.id;
-    //capsules need to determine if sample or subjects section
-    //subjects initially display two folder levels meanwhile samples will initially only show one folder level
-
-    //remove my_dataset_folder and if any of the ROOT FOLDER names is included
-    if (splitPath[0] === "dataset_root") splitPath.shift();
-    if (rootFolders.includes(splitPath[0])) splitPath.shift();
-    //remove the last element in array is it is always ''
-    splitPath.pop();
-
-    let trimmedPath = "";
-    console.log("current page id: ", currentPageID);
-
-    for (let i = 0; i < splitPath.length; i++) {
-      if (splitPath[i] === "dataset_root" || splitPath[i] === undefined) continue;
-      trimmedPath += splitPath[i] + "/";
-    }
-
-    //append path to tippy and display path to the file explorer
-    pathDisplay.innerText = trimmedPath;
-    pathDisplay._tippy.setContent(fullPath);
-  }
-
   var appendString = "";
   var sortedObj = window.sortObjByKeys(jsonObj);
   let file_elements = [],
@@ -4975,79 +4907,6 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
   //start creating folder elements to be rendered
   if (Object.keys(sortedObj["folders"]).length > 0) {
     for (var item in sortedObj["folders"]) {
-      //hide samples when on the subjects page
-      if (hideSampleFolders) {
-        let allSamples = window.sodaJSONObj.getAllSamplesFromSubjects();
-        let noPoolSamples = [];
-        let poolSamples = [];
-        let skipSubjectFolder = false;
-        if (allSamples.length > 1) {
-          //subjects within pools and others not
-          poolSamples = allSamples[0];
-          noPoolSamples = allSamples[1];
-          for (let i = 0; i < poolSamples.length; i++) {
-            if (item === poolSamples[i]["sampleName"]) {
-              skipSubjectFolder = true;
-              break;
-            }
-          }
-          if (skipSubjectFolder) continue;
-          for (let i = 0; i < noPoolSamples.length; i++) {
-            if (item === noPoolSamples[i]["sampleName"]) {
-              skipSubjectFolder = true;
-              break;
-            }
-          }
-          if (skipSubjectFolder) continue;
-        }
-        if (allSamples.length === 1) {
-          poolSamples = allSamples[1];
-          for (let i = 0; i < poolSamples.length; i++) {
-            if (item === poolSamples[i]["sampleName"]) {
-              skipSubjectFolder = true;
-              break;
-            }
-          }
-          if (skipSubjectFolder) continue;
-        }
-      }
-      if (hideSubjectFolders) {
-        //hide subject folders when displaying pool page
-        let currentSubjects = window.sodaJSONObj.getAllSubjects();
-        let poolSubjects = [];
-        let noPoolSubjects = [];
-        let skipSubjectFolder = false;
-        if (currentSubjects.length === 1) {
-          poolSubjects = currentSubjects[0];
-          for (let i = 0; i < poolSubjects.length; i++) {
-            if (item === poolSubjects[i]["subjectName"]) {
-              skipSubjectFolder = true;
-              break;
-            }
-          }
-          if (skipSubjectFolder) continue;
-        }
-        if (currentSubjects.length > 1) {
-          //some subjects in pools and some not
-          poolSubjects = currentSubjects[0];
-          noPoolSubjects = currentSubjects[1];
-          for (let i = 0; i < noPoolSubjects.length; i++) {
-            if (item === noPoolSubjects[i]["subjectName"]) {
-              skipSubjectFolder = true;
-              break;
-            }
-          }
-          if (skipSubjectFolder) continue;
-          for (let i = 0; i < poolSubjects.length; i++) {
-            if (item === poolSubjects[i]["subjectName"]) {
-              skipSubjectFolder = true;
-              break;
-            }
-          }
-        }
-        if (skipSubjectFolder) continue;
-      }
-
       count += 1;
       var emptyFolder = "";
       if (!window.highLevelFolders.includes(item)) {

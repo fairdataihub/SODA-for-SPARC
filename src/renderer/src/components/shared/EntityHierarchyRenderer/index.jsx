@@ -184,7 +184,7 @@ const EntityHierarchyRenderer = ({
   const selectedEntityParentSampleId = selectedHierarchyEntity?.parentSample;
 
   const activeEntity = useGlobalStore((state) => state.activeEntity);
-  console.log("activeEntity", activeEntity);
+  console.log("activeEntity being rendered", activeEntity);
 
   // Memoize the entity select handler to prevent recreation on each render
   const handleEntitySelect = useCallback((entityData) => {

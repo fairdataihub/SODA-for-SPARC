@@ -14,6 +14,7 @@ import {
 } from "../../../stores/slices/datasetTreeViewSlice.js";
 import {
   addEntityToEntityList,
+  removeEntityFromEntityList,
   setActiveEntity,
   setShowFullMetadataFormFields,
 } from "../../../stores/slices/datasetEntitySelectorSlice.js";
@@ -28,7 +29,10 @@ import {
   setSelectedEntities,
   setDeSelectedEntities,
 } from "../../../stores/slices/datasetContentSelectorSlice.js";
-import { setDatasetEntityObj } from "../../../stores/slices/datasetEntitySelectorSlice.js";
+import {
+  setDatasetEntityObj,
+  filterRemovedFilesFromDatasetEntityObj,
+} from "../../../stores/slices/datasetEntitySelectorSlice.js";
 import { setSelectedHierarchyEntity } from "../../../stores/slices/datasetContentSelectorSlice.js";
 import { guidedSetNavLoadingState } from "./navigationUtils/pageLoading.js";
 import Swal from "sweetalert2";
@@ -40,6 +44,7 @@ import useGlobalStore from "../../../stores/globalStore.js";
 import { setPerformanceList } from "../../../stores/slices/performancesSlice.js";
 import { setSelectedModalities } from "../../../stores/slices/modalitiesSlice.js";
 import { guidedSaveProgress } from "./savePageChanges.js";
+import { getItemAtPath } from "../../utils/datasetStructure.js";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -88,11 +93,12 @@ const handleGuidedValidationState = (targetPageID) => {
   }
 };
 
-const guidedLockSideBar = (boolShowNavBar) => {
+const guidedLockSideBar = (boolShowGuidedModeContainerElements) => {
   const sidebar = document.getElementById("sidebarCollapse");
   const guidedModeSection = document.getElementById("guided_mode-section");
   const guidedDatsetTab = document.getElementById("guided_curate_dataset-tab");
   const guidedNav = document.getElementById("guided-nav");
+  const guidedProgressContainer = document.getElementById("guided-header-div");
 
   if (!sidebar.classList.contains("active")) {
     sidebar.click();
@@ -101,12 +107,14 @@ const guidedLockSideBar = (boolShowNavBar) => {
   sidebar.disabled = true;
   guidedModeSection.style.marginLeft = "-70px";
 
-  if (boolShowNavBar) {
+  if (boolShowGuidedModeContainerElements) {
     guidedDatsetTab.style.marginLeft = "215px";
     guidedNav.style.display = "flex";
+    guidedProgressContainer.classList.remove("hidden");
   } else {
     guidedDatsetTab.style.marginLeft = "0px";
     guidedNav.style.display = "none";
+    guidedProgressContainer.classList.add("hidden");
   }
 };
 
@@ -156,10 +164,6 @@ export const openPage = async (targetPageID) => {
   // and whenever it is being called, we know that the user is trying to navigate to a new page
   // this function is async because we sometimes need to fetch data before the page is ready to be opened
 
-  let itemsContainer = document.getElementById("items-guided-container");
-  if (itemsContainer.classList.contains("border-styling")) {
-    itemsContainer.classList.remove("border-styling");
-  }
   guidedSetNavLoadingState(true);
 
   const targetPage = document.getElementById(targetPageID);
@@ -180,7 +184,6 @@ export const openPage = async (targetPageID) => {
 
     // clear the entity filter when navigating to a new page
     clearEntityFilter();
-
     setSelectedHierarchyEntity(null);
     setActiveEntity(null);
 
@@ -210,15 +213,6 @@ export const openPage = async (targetPageID) => {
     handleNextButtonVisibility(targetPageID);
     handleBackButtonVisibility(targetPageID);
     handleGuidedValidationState(targetPageID);
-
-    // Hide the Header div on the resume existing dataset page
-    const guidedProgressContainer = document.getElementById("guided-header-div");
-
-    if (targetPageID === "guided-select-starting-point-tab") {
-      guidedProgressContainer.classList.add("hidden");
-    } else {
-      guidedProgressContainer.classList.remove("hidden");
-    }
 
     // If the user has not saved the dataset name and subtitle, then the next button should say "Continue"
     // as they are not really saving anything
@@ -262,30 +256,29 @@ export const openPage = async (targetPageID) => {
         const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
         const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
 
-        setDatasetEntityObj(savedDatasetEntityObj);
+        console.log("savedDatasetEntityObj", savedDatasetEntityObj);
+
+        const filteredDatasetEntityObj =
+          filterRemovedFilesFromDatasetEntityObj(savedDatasetEntityObj);
+        console.log("filteredDatasetEntityObj", filteredDatasetEntityObj);
+
+        setDatasetEntityObj(filteredDatasetEntityObj);
 
         // Make any adjustments to the dataset entity object before setting it in the zustand store
         if (pageEntityType === "high-level-folder-data-categorization") {
+          // Delete the manifest file because it throws off the count of files selected
+          delete window.datasetStructureJSONObj?.["files"]?.["manifest.xlsx"];
           const bucketTypes = ["Experimental", "Protocol", "Documentation"];
           if (selectedEntities.includes("code")) {
             bucketTypes.push("Code");
+          } else {
+            removeEntityFromEntityList("high-level-folder-data-categorization", "Code");
           }
 
           for (const bucketType of bucketTypes) {
             addEntityToEntityList("high-level-folder-data-categorization", bucketType);
           }
         }
-
-        /*if (pageEntityType === "other-data") {
-          const otherBucketTypes = ["Protocol data", "Documentation"];
-          for (const otherBucketType of otherBucketTypes) {
-            addEntityToEntityList("other-data", otherBucketType);
-          }
-          setEntityFilter(
-            [{ type: "high-level-folder-data-categorization", names: ["Other"] }],
-            []
-          );
-        }*/
 
         if (pageEntityType === "sites") {
           const sites = getExistingSites().map((site) => site.id);
@@ -438,32 +431,6 @@ export const openPage = async (targetPageID) => {
     //         addEntityToEntityList("modalities", "electrophysiology");
     //         setActiveEntity(null);
     //         console.log("datasetEntityObj", useGlobalStore.getState().datasetEntityObj);
-    //     }
-
-    //     if (targetPageID === "guided-create-samples-metadata-tab") {
-    //         //remove custom fields that may have existed from a previous session
-    //         document.getElementById("guided-accordian-custom-fields-samples").innerHTML = "";
-    //         document.getElementById("guided-bootbox-subject-id-samples").value = "";
-    //         document.getElementById("guided-bootbox-sample-id").value = "";
-    //         await renderSamplesMetadataAsideItems();
-    //         const samplesMetadataBlackArrowLottieContainer = document.getElementById(
-    //             "samples-metadata-black-arrow-lottie-container"
-    //         );
-    //         samplesMetadataBlackArrowLottieContainer.innerHTML = "";
-    //         lottie.loadAnimation({
-    //             container: samplesMetadataBlackArrowLottieContainer,
-    //             animationData: blackArrow,
-    //             renderer: "svg",
-    //             loop: true,
-    //             autoplay: true,
-    //         });
-    //         hideEleShowEle("guided-form-add-a-sample", "guided-form-add-a-sample-intro");
-
-    //         // Hide the samples protocol section if no protocols have been attached to the dataset
-    //         const samplesProtocolContainer = document.getElementById("guided-container-samples-protocol");
-    //         window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"].length > 0
-    //             ? samplesProtocolContainer.classList.remove("hidden")
-    //             : samplesProtocolContainer.classList.add("hidden");
     //     }
 
     //     if (targetPageID === "guided-create-changes-metadata-tab") {

@@ -47,71 +47,52 @@ export const setRenderDatasetStructureJSONObjIsLoading = (isLoading) => {
 
 // Check if a file passes the entity filter criteria based on the complex filter configuration
 const checkIfFilePassesEntityFilter = (filePath, entityFilters) => {
-  const globalStore = useGlobalStore.getState();
-  const datasetEntityObj = globalStore.datasetEntityObj;
+  const { datasetEntityObj } = useGlobalStore.getState();
 
   if (!datasetEntityObj) {
     console.log("Dataset entity object not found");
     return false;
   }
 
-  // If both include and exclude lists are empty, don't filter (show everything)
-  if (entityFilters.include.length === 0 && entityFilters.exclude.length === 0) {
-    return true;
-  }
+  const { include, exclude } = entityFilters;
 
-  // Check exclusions first - if file is associated with ANY excluded entity, reject it
-  for (const filter of entityFilters.exclude) {
-    const { type, names } = filter;
-    if (!type || !names || !Array.isArray(names) || names.length === 0) continue;
+  // If no filters, pass all
+  if (include.length === 0 && exclude.length === 0) return true;
 
-    // Skip if entity type doesn't exist in datasetEntityObj
-    if (!datasetEntityObj[type]) {
-      console.log(`Entity type ${type} not found in datasetEntityObj`);
-      continue;
-    }
-
-    // Check each entity name in the exclusion list
-    for (const entityName of names) {
-      if (entityName && datasetEntityObj[type][entityName]) {
-        const isAssociated = Boolean(datasetEntityObj[type][entityName][filePath]);
-        if (isAssociated) {
-          console.log(`File ${filePath} is EXCLUDED by ${type}/${entityName}`);
-          return false; // File is associated with an excluded entity, so don't show it
+  // Helper: check if file associated with any entities in filters
+  const isAssociatedWithFilters = (filters) => {
+    for (const { type, names } of filters) {
+      if (!type || !Array.isArray(names) || names.length === 0) continue;
+      const entities = datasetEntityObj[type];
+      if (!entities) {
+        console.log(`Entity type ${type} not found in datasetEntityObj`);
+        continue;
+      }
+      for (const name of names) {
+        if (name && entities[name] && entities[name][filePath]) {
+          return true;
         }
       }
     }
+    return false;
+  };
+
+  // Exclude check: if associated with any exclude, reject immediately
+  if (isAssociatedWithFilters(exclude)) {
+    console.log(`File ${filePath} is EXCLUDED by filter`);
+    return false;
   }
 
-  // If there's no include list, we only needed to pass the exclude check
-  if (entityFilters.include.length === 0) {
+  // Include check: if include list is empty, pass since no includes to check
+  if (include.length === 0) return true;
+
+  // If associated with any include, accept
+  if (isAssociatedWithFilters(include)) {
+    console.log(`File ${filePath} is INCLUDED by filter`);
     return true;
   }
 
-  // Check inclusions - must match AT LEAST ONE inclusion filter set
-  for (const filter of entityFilters.include) {
-    const { type, names } = filter;
-    if (!type || !names || !Array.isArray(names) || names.length === 0) continue;
-
-    // Skip if entity type doesn't exist in datasetEntityObj
-    if (!datasetEntityObj[type]) {
-      console.log(`Entity type ${type} not found in datasetEntityObj`);
-      continue;
-    }
-
-    // Check each entity name in the inclusion list
-    for (const entityName of names) {
-      if (entityName && datasetEntityObj[type][entityName]) {
-        const isAssociated = Boolean(datasetEntityObj[type][entityName][filePath]);
-        if (isAssociated) {
-          console.log(`File ${filePath} is INCLUDED by ${type}/${entityName}`);
-          return true; // File is associated with an included entity, so show it
-        }
-      }
-    }
-  }
-
-  // If we get here, the file didn't match any include entity
+  // Otherwise, no include matches
   console.log(`File ${filePath} did not match any included entities`);
   return false;
 };

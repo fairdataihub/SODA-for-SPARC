@@ -348,6 +348,13 @@
   margin-bottom: 20px;
 }
 
+.guided--section > .text-sub-step-title:first-child {
+  text-transform: capitalize;
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: var(--color-bg-plum);
+}
+
 .guided--loading-div {
   display: flex;
   flex-direction: column;
@@ -561,22 +568,6 @@
   align-items: flex-start;
   max-width: 1200px;
   width: 90%;
-}
-
-.guided--folder-organization-buttons-container {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  flex-direction: row;
-  align-items: center;
-  margin-bottom: 5px;
-  height: 35px;
-}
-
-.guided--folder-organization-buttons-container-sub {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .guided-section {

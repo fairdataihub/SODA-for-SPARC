@@ -33,7 +33,7 @@ const ModalitySelectionPage = () => {
           multiple modalities such as imaging, recordings, or behavioral data, the manifest file
           must indicate which modality was used for the data that was collected.
         </Text>
-        <label class="guided--form-label centered">
+        <label className="guided--form-label centered">
           Does your dataset include data collected from multiple modalities?
         </label>
 

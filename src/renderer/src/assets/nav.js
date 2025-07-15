@@ -198,7 +198,7 @@ const handleSectionTrigger = async (event) => {
     }
 
     // Transition back to the home screen
-    document.getElementById("guided-home").classList.remove("hidden");
+    document.getElementById("soda-home-page").classList.remove("hidden");
     document.getElementById("guided_mode-section").classList.add("is-shown");
     document.getElementById("guided_curate_dataset-tab").classList.add("show");
 
