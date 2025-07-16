@@ -1,0 +1,629 @@
+{
+  "type": "object",
+  "properties": {
+    "RRID_term": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "description": "The term used to identify the resource in the RRID database."
+      },
+      "description": "The term used to identify the resource in the RRID database."
+    },
+    "RRID_identifier": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "description": "The identifier used to identify the resource in the RRID database."
+      }
+    },
+    "ontology_term": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "description": "The term used to identify the resource in the ontology database."
+      },
+      "description": "The term used to identify the resource in the ontology database."
+    },
+    "ontology_identifier": {
+      "type": "string",
+      "items": {
+        "type": "string",
+        "description": "The identifier used to identify the resource in the ontology database."
+      },
+      "description": "The identifier used to identify the resource in the ontology database."
+    },
+    "ten_simple_rules": {
+      "type": "object",
+      "properties": {
+        "TSR1": {
+          "type": "object",
+          "properties": {
+            "Link": {
+              "type": "string",
+              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "description": "The URL or DOI of the publication that describes the tool or method."
+            },
+            "Rating": {
+              "type": "string",
+              "description": "The rating"
+            },
+            "Target": {
+              "type": "string",
+              "description": "The target"
+            },
+            "Target Justification": {
+              "type": "string",
+              "description": "The target justification"
+            },
+            "Text": {
+              "type": "string",
+              "description": "Text"
+            }
+          },
+          "required": [
+            "Link",
+            "Rating",
+            "Target",
+            "Target Justification",
+            "Text"
+          ]
+        },
+        "TSR2": {
+          "type": "object",
+          "properties": {
+            "Link": {
+              "type": "string",
+              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "description": "The URL or DOI of the publication that describes the tool or method."
+            },
+            "Rating": {
+              "type": "string",
+              "description": "The rating"
+            },
+            "Target": {
+              "type": "string",
+              "description": "The target"
+            },
+            "Target Justification": {
+              "type": "string",
+              "description": "The target justification"
+            },
+            "Text": {
+              "type": "string",
+              "description": "Text"
+            }
+          },
+          "required": [
+            "Link",
+            "Rating",
+            "Target",
+            "Target Justification",
+            "Text"
+          ]
+        },
+        "TSR3a": {
+          "type": "object",
+          "properties": {
+            "Link": {
+              "type": "string",
+              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "description": "The URL or DOI of the publication that describes the tool or method."
+            },
+            "Rating": {
+              "type": "string",
+              "description": "The rating"
+            },
+            "Target": {
+              "type": "string",
+              "description": "The target"
+            },
+            "Target Justification": {
+              "type": "string",
+              "description": "The target justification"
+            },
+            "Text": {
+              "type": "string",
+              "description": "Text"
+            }
+          },
+          "required": [
+            "Link",
+            "Rating",
+            "Target",
+            "Target Justification",
+            "Text"
+          ]
+        },
+        "TSR3b": {
+          "type": "object",
+          "properties": {
+            "Link": {
+              "type": "string",
+              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "description": "The URL or DOI of the publication that describes the tool or method."
+            }
+          },
+          "required": [
+            "Link"
+          ]
+        },
+        "TSR3c": {
+          "type": "object",
+          "properties": {
+            "Link": {
+              "type": "string",
+              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "description": "The URL or DOI of the publication that describes the tool or method."
+            }
+          },
+          "required": [
+            "Link"
+          ]
+        },
+        "TSR4": {
+          "type": "object",
+          "properties": {
+            "Link": {
+              "type": "string",
+              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "description": "The URL or DOI of the publication that describes the tool or method."
+            },
+            "Rating": {
+              "type": "string",
+              "description": "The rating"
+            },
+            "Target": {
+              "type": "string",
+              "description": "The target"
+            },
+            "Target Justification": {
+              "type": "string",
+              "description": "The target justification"
+            },
+            "Text": {
+              "type": "string",
+              "description": "Text"
+            }
+          },
+          "required": [
+            "Link",
+            "Rating",
+            "Target",
+            "Target Justification",
+            "Text"
+          ]
+        },
+        "TSR5": {
+          "type": "object",
+          "properties": {
+            "Link": {
+              "type": "string",
+              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "description": "The URL or DOI of the publication that describes the tool or method."
+            },
+            "Rating": {
+              "type": "string",
+              "description": "The rating"
+            },
+            "Target": {
+              "type": "string",
+              "description": "The target"
+            },
+            "Target Justification": {
+              "type": "string",
+              "description": "The target justification"
+            },
+            "Text": {
+              "type": "string",
+              "description": "Text"
+            }
+          },
+          "required": [
+            "Link",
+            "Rating",
+            "Target",
+            "Target Justification",
+            "Text"
+          ]
+        },
+        "TSR6": {
+          "type": "object",
+          "properties": {
+            "Link": {
+              "type": "string",
+              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "description": "The URL or DOI of the publication that describes the tool or method."
+            },
+            "Rating": {
+              "type": "string",
+              "description": "The rating"
+            },
+            "Target": {
+              "type": "string",
+              "description": "The target"
+            },
+            "Target Justification": {
+              "type": "string",
+              "description": "The target justification"
+            },
+            "Text": {
+              "type": "string",
+              "description": "Text"
+            }
+          },
+          "required": [
+            "Link",
+            "Rating",
+            "Target",
+            "Target Justification",
+            "Text"
+          ]
+        },
+        "TSR7a": {
+          "type": "object",
+          "properties": {
+            "Link": {
+              "type": "string",
+              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "description": "The URL or DOI of the publication that describes the tool or method."
+            },
+            "Rating": {
+              "type": "string",
+              "description": "The rating"
+            },
+            "Target": {
+              "type": "string",
+              "description": "The target"
+            },
+            "Target Justification": {
+              "type": "string",
+              "description": "The target justification"
+            },
+            "Text": {
+              "type": "string",
+              "description": "Text"
+            }
+          },
+          "required": [
+            "Link",
+            "Rating",
+            "Target",
+            "Target Justification",
+            "Text"
+          ]
+        },
+        "TSR7b": {
+          "type": "object",
+          "properties": {
+            "Link": {
+              "type": "string",
+              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "description": "The URL or DOI of the publication that describes the tool or method."
+            }
+          },
+          "required": [
+            "Link"
+          ]
+        },
+        "TSR7c": {
+          "type": "object",
+          "properties": {
+            "Link": {
+              "type": "string",
+              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "description": "The URL or DOI of the publication that describes the tool or method."
+            }
+          },
+          "required": [
+            "Link"
+          ]
+        },
+        "TSR7d": {
+          "type": "object",
+          "properties": {
+            "Link": {
+              "type": "string",
+              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "description": "The URL or DOI of the publication that describes the tool or method."
+            }
+          },
+          "required": [
+            "Link"
+          ]
+        },
+        "TSR7e": {
+          "type": "object",
+          "properties": {
+            "Link": {
+              "type": "string",
+              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "description": "The URL or DOI of the publication that describes the tool or method."
+            }
+          },
+          "required": [
+            "Link"
+          ]
+        },
+        "TSR8a": {
+          "type": "object",
+          "properties": {
+            "Link": {
+              "type": "string",
+              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "description": "The URL or DOI of the publication that describes the tool or method."
+            },
+            "Rating": {
+              "type": "string",
+              "description": "The rating"
+            },
+            "Target": {
+              "type": "string",
+              "description": "The target"
+            },
+            "Target Justification": {
+              "type": "string",
+              "description": "The target justification"
+            },
+            "Text": {
+              "type": "string",
+              "description": "Text"
+            }
+          },
+          "required": [
+            "Link",
+            "Rating",
+            "Target",
+            "Target Justification",
+            "Text"
+          ]
+        },
+        "TSR8b": {
+          "type": "object",
+          "properties": {
+            "Link": {
+              "type": "string",
+              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "description": "The URL or DOI of the publication that describes the tool or method."
+            }
+          },
+          "required": [
+            "Link"
+          ]
+        },
+        "TSR9": {
+          "type": "object",
+          "properties": {
+            "Link": {
+              "type": "string",
+              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "description": "The URL or DOI of the publication that describes the tool or method."
+            },
+            "Rating": {
+              "type": "string",
+              "description": "The rating"
+            },
+            "Target": {
+              "type": "string",
+              "description": "The target"
+            },
+            "Target Justification": {
+              "type": "string",
+              "description": "The target justification"
+            },
+            "Text": {
+              "type": "string",
+              "description": "Text"
+            }
+          },
+          "required": [
+            "Link",
+            "Rating",
+            "Target",
+            "Target Justification",
+            "Text"
+          ]
+        },
+        "TSR10a": {
+          "type": "object",
+          "properties": {
+            "Link": {
+              "type": "string",
+              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "description": "The URL or DOI of the publication that describes the tool or method."
+            },
+            "Rating": {
+              "type": "string",
+              "description": "The rating"
+            },
+            "Target": {
+              "type": "string",
+              "description": "The target"
+            },
+            "Target Justification": {
+              "type": "string",
+              "description": "The target justification"
+            },
+            "Text": {
+              "type": "string",
+              "description": "Text"
+            }
+          },
+          "required": [
+            "Link",
+            "Rating",
+            "Target",
+            "Target Justification",
+            "Text"
+          ]
+        },
+        "TSR10b": {
+          "type": "object",
+          "properties": {
+            "Link": {
+              "type": "string",
+              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "description": "The URL or DOI of the publication that describes the tool or method."
+            }
+          },
+          "required": [
+            "Link"
+          ]
+        }
+      },
+      "required": [
+        "TSR1",
+        "TSR2",
+        "TSR3a",
+        "TSR3b",
+        "TSR3c",
+        "TSR4",
+        "TSR5",
+        "TSR6",
+        "TSR7a",
+        "TSR7b",
+        "TSR7c",
+        "TSR7d",
+        "TSR7e",
+        "TSR8a",
+        "TSR8b",
+        "TSR9",
+        "TSR10a",
+        "TSR10b"
+      ]
+    },
+    "input_output_information": {
+      "type": "object",
+      "properties": {
+        "number_of_inputs": {
+          "type": "number"
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "input_parameter_name": {
+                "type": "string"
+              },
+              "input parameter type": {
+                "type": "string"
+              },
+              "input_parameter_description": {
+                "type": "string"
+              },
+              "input_units": {
+                "type": "string"
+              },
+              "input_default_value": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "input_constraints": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "maxItems": 2,
+                    "minItems": 2,
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "type": "array",
+                    "maxItems": 2,
+                    "minItems": 2,
+                    "items": {
+                      "type": "number"
+                    }
+                  }
+                ]
+              }
+            },
+            "required": [
+              "number_of_inputs",
+              "input_parameter_name",
+              "input_parameter_type",
+              "input_parameter_description",
+              "input_units",
+              "number_of_outputs",
+              "output_parameter_name",
+              "output_paramter_type",
+              "output_parameter_description",
+              "output_units"
+            ]
+          }
+        },
+        "number_of_outputs": {
+          "type": "number"
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "output_parameter_name": {
+                "type": "string"
+              },
+              "output_parameter_type": {
+                "type": "string"
+              },
+              "output_parameter_description": {
+                "type": "string"
+              },
+              "output_units": {
+                "type": "string"
+              },
+              "output_constraints": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "maxItems": 2,
+                    "minItems": 2,
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "type": "array",
+                    "maxItems": 2,
+                    "minItems": 2,
+                    "items": {
+                      "type": "number"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "required": [
+        "number_of_inputs",
+        "inputs",
+        "number_of_outputs",
+        "outputs"
+      ]
+    }
+  },
+  "required": [
+    "input_output_information",
+    "basic_information",
+    "ten_simple_rules",
+    "RRID_term",
+    "RRID_identifier",
+    "ontology_term",
+    "ontology_identifier"
+  ]
+}

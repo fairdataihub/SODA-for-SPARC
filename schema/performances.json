@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json.schemastore.org/performances.json",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "performance_id": {
+        "type": "string",
+        "description": "Unique identifier for the performance"
+      },
+      "protocol_url_or_doi": {
+        "type": "string",
+        "description": "URL or DOI of the protocol associated with the performance",
+        "pattern": "^(https?://|doi:).+"
+      },
+      "date": {
+        "type": "string",
+        "format": "date",
+        "description": "Date of the performance in YYYY-MM-DD format"
+      },
+      "start_datetime": {
+        "type": "string",
+        "format": "date-time",
+        "description": "Start date and time of the performance in ISO 8601 format"
+      },
+      "end_datetime": {
+        "type": "string",
+        "format": "date-time",
+        "description": "End date and time of the performance in ISO 8601 format"
+      },
+      "participants": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "additional_metadata": {
+        "type": "string",
+        "description": "Any additional metadata related to the performance"
+      }
+    },
+    "required": [
+      "performance_id",
+      "protocol_url_or_doi",
+      "date",
+      "start_datetime",
+      "end_datetime",
+      "participants"
+    ]
+  }
+}

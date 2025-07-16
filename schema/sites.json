@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "site_id": {
+        "type": "string",
+        "description": "Unique identifier for the site"
+      },
+      "specimen_id": {
+        "type": "string",
+        "description": "Unique identifier for the specimen associated with the site"
+      },
+      "site_type": {
+        "type": "string",
+        "description": "Type of the site (e.g., 'tissue', 'cell culture')"
+      },
+      "laboratory_internal_id": {
+        "type": "string",
+        "description": "Internal id for the site"
+      },
+      "coordinate_system": {
+        "type": "string",
+        "description": "Coordinate system used for the site (e.g., 'microns', 'pixels')"
+      },
+      "coordinate_system_position": {
+        "type": "string",
+        "description": "Position in the coordinate system (e.g., 'x,y,z' for 3D coordinates)"
+      },
+      "more...": {
+        "type": "string",
+        "description": "Any additional metadata related to the site"
+      }
+    },
+    "required": ["site_id", "specimen_id"]
+  }
+}

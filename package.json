@@ -21,8 +21,6 @@
     "build:win": "npm run python-onefile-build-win && npm run build && electron-builder --win --config",
     "build:mac": "npm run build && electron-builder --mac --config",
     "build:linux": "npm run build && electron-builder --linux --config",
-    "python-onefile-build-win": "python -m PyInstaller --onefile --add-data ./src/pyflask/libcrypto-1_1-x64.dll;. --add-data ./src/pyflask/libssl-1_1-x64.dll;. --additional-hooks-dir=./hooks/hook-backports.py;. --clean ./src/pyflask/app.py --distpath ./pyflaskdist",
-    "python-onefile-build-unix": "python -m PyInstaller --onefile --clean ./src/pyflask/app.py --additional-hooks-dir=./hooks/hook-backports.py --distpath ./pyflaskdist",
     "python-folder-build-unix": "python -m PyInstaller --onedir --clean ./src/pyflask/app.py --additional-hooks-dir=./hooks/hook-backports.py --distpath ./pyflaskdist",
     "python-folder-build-win": "python -m PyInstaller --onedir --add-data ./src/pyflask/libcrypto-1_1-x64.dll;. --add-data ./src/pyflask/libssl-1_1-x64.dll;. --additional-hooks-dir=./hooks/hook-backports.py;. --clean ./src/pyflask/app.py --distpath ./pyflaskdist",
     "deploy-win": "npm run python-folder-build-win && npm run build && electron-builder --win --config --publish always",
