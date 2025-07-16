@@ -303,7 +303,7 @@ export const openPage = async (targetPageID) => {
         }
 
         if (pageEntityType === "performances") {
-          const performanceList = window.sodaJSONObj["performance-list"] || [];
+          const performanceList = window.sodaJSONObj["dataset_metadata"]["performances"];
           for (const performance of performanceList) {
             addEntityToEntityList("performances", performance.performanceId);
           }
