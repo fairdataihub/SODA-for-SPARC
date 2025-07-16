@@ -1,0 +1,235 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "metadata_version": {
+      "type": "string",
+      "description": "The version of the metadata schema used."
+    },
+    "type": {
+      "type": "string",
+      "description": "The type of the dataset. For example, experimental."
+    },
+    "standards_information": {
+      "type": "object",
+      "properties": {
+        "data_standard": {
+          "type": "string",
+          "description": "The name of the standard used in the project."
+        },
+        "data_standard_version": {
+          "type": "string",
+          "description": "The version of the standard used in the project."
+        }
+      },
+      "required": []
+    },
+    "basic_information": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "The title of the project."
+        },
+        "subtitle": {
+          "type": "string",
+          "description": "The subtitle of the project."
+        },
+        "description": {
+          "type": "string",
+          "description": "A detailed description of the project."
+        },
+        "keywords": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of keywords related to the project."
+        },
+        "funding": {
+          "type": "string",
+          "description": "Funding awards for the project."
+        },
+        "acknowledgments": {
+          "type": "string",
+          "description": "Acknowledgments for the project."
+        },
+        "license": {
+          "type": "string",
+          "description": "The license under which the project is released."
+        }
+      },
+      "required": []
+    },
+    "funding_information": {
+      "type": "object",
+      "properties": {
+        "funding_consortium": {
+          "type": "string",
+          "description": "The name of the funding consortium."
+        },
+        "funding_agency": {
+          "type": "string",
+          "description": "The name of the funding agency."
+        },
+        "award_number": {
+          "type": "string",
+          "description": "The award number for the funding."
+        }
+      }
+    },
+    "study_information": {
+      "type": "object",
+      "properties": {
+        "study_purpose": {
+          "type": "string",
+          "description": "The purpose of the study."
+        },
+        "study_data_collection": {
+          "type": "string",
+          "description": "The data collection methods used in the study."
+        },
+        "study_primary_conclusion": {
+          "type": "string",
+          "description": "The primary conclusion of the study."
+        },
+        "study_organ_system": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The organ system(s) studied in the research."
+        },
+        "study_approach": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The approach used in the study. E.g., electrophysiology"
+        },
+        "study_technique": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The technique(s) used in the study. E.g., patch clamp, whole cell recording"
+        },
+        "study_collection_title": {
+          "type": "string",
+          "description": "The title of the study collection this dataset belongs to, if one exists."
+        }
+      },
+      "required": []
+    },
+    "contributor_information": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "contributor_orcid_id": {
+            "type": "string",
+            "description": "The ORCiD for this contributor."
+          },
+          "contributor_affiliation": {
+            "type": "string",
+            "description": "The institutional affiliation for this contributor."
+          },
+          "contributor_name": {
+            "type": "string",
+            "pattern": "^[A-Za-z]+, [A-Za-z]+( [A-Za-z]+)?$",
+            "description": "The name of the contributor. The format should be 'Last Name, First Name'."
+          },
+          "contributor_role": {
+            "type": "string",
+            "enum": [
+              "PrincipalInvestigator",
+              "Creator",
+              "CoInvestigator",
+              "CorrespondingAuthor",
+              "DataCollector",
+              "DataCurator",
+              "DataManager",
+              "Distributor",
+              "Editor",
+              "Producer",
+              "ProjectLeader",
+              "ProjectManager",
+              "ProjectMember",
+              "RelatedPerson",
+              "Researcher",
+              "ResearchGroup",
+              "Sponsor",
+              "Supervisor",
+              "WorkPackageLeader",
+              "Other"
+            ],
+            "description": "The role of the contributor in the project. There must be at least one PrincipalInvestigator."
+          }
+        }
+      }
+    },
+    "related_resource_information": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "identifier_description": {
+            "type": "string"
+          },
+          "relation_type": {
+            "type": "string",
+            "enum": ["IsProtocolFor", "HasProtocol"]
+          },
+          "identifier": {
+            "type": "string",
+            "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$"
+          },
+          "identifier_type": {
+            "type": "string",
+            "enum": ["DOI", "URL"]
+          }
+        },
+        "required": []
+      }
+    },
+    "participant_information": {
+      "type": "object",
+      "properties": {
+        "number_of_subjects": {
+          "type": "number",
+          "description": "The number of subjects in the study."
+        },
+        "number_of_samples": {
+          "type": "number",
+          "description": "The number of samples in the study."
+        },
+        "number_of_sites": {
+          "type": "number",
+          "description": "The number of sites in the study."
+        },
+        "number_of_performances": {
+          "type": "number",
+          "description": "The number of performance in the study."
+        }
+      },
+      "required": []
+    },
+    "data_dictionary_information": {
+      "type": "object",
+      "properties": {
+        "data_dictionary_path": {
+          "type": "string",
+          "description": "The path to the data dictionary file."
+        },
+        "data_dictionary_type": {
+          "type": "string",
+          "description": "The type of the data dictionary. E.g., json-schema"
+        },
+        "data_dictionary_description": {
+          "type": "string",
+          "description": "A descrption of the data dictionary."
+        }
+      }
+    }
+  }
+}
