@@ -122,6 +122,12 @@ export const addSubject = (subjectId, metadata = {}) => {
     throw new Error("Subject ID cannot be empty");
   }
 
+  // Prevent duplicate subject IDs
+  const existingSubjects = getExistingSubjects();
+  if (existingSubjects.some((subject) => subject.id === normalizedSubjectId)) {
+    throw new Error(`A subject with ID ${normalizedSubjectId} already exists.`);
+  }
+
   // Log the metadata being passed in
   console.log("Adding subject with metadata:", metadata);
 
@@ -183,6 +189,12 @@ export const addSampleToSubject = (subjectId, sampleId, metadata = {}) => {
 
   if (!normalizedSampleId) {
     throw new Error("Sample ID cannot be empty");
+  }
+
+  // Prevent duplicate sample IDs within all samples
+  const existingSamples = getExistingSamples();
+  if (existingSamples.some((sample) => sample.id === normalizedSampleId)) {
+    throw new Error(`A sample with ID ${normalizedSampleId} already exists.`);
   }
 
   console.log("Adding sample with metadata:", metadata);
@@ -267,6 +279,12 @@ export const addSiteToSubject = (subjectId, siteId, metadata = {}) => {
     throw new Error("Site ID cannot be empty");
   }
 
+  // Prevent duplicate site IDs within all sites
+  const existingSites = getExistingSites();
+  if (existingSites.some((site) => site.id === normalizedSiteId)) {
+    throw new Error(`A site with ID ${normalizedSiteId} already exists.`);
+  }
+
   console.log("Adding site to subject with metadata:", metadata);
 
   useGlobalStore.setState(
@@ -326,6 +344,12 @@ export const addSiteToSample = (subjectId, sampleId, siteId, metadata = {}) => {
 
   if (!normalizedSiteId) {
     throw new Error("Site ID cannot be empty");
+  }
+
+  // Prevent duplicate site IDs within all sites
+  const existingSites = getExistingSites();
+  if (existingSites.some((site) => site.id === normalizedSiteId)) {
+    throw new Error(`A site with ID ${normalizedSiteId} already exists.`);
   }
 
   console.log("Adding site to sample with metadata:", metadata);
