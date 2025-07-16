@@ -5,15 +5,19 @@ import FullWidthContainer from "../../containers/FullWidthContainer";
 import DatasetTreeViewRenderer from "../DatasetTreeViewRenderer";
 
 const DataImporter = ({ relativeFolderPathToImportDataInto }) => {
-  // Handles preventing default drop action
-  const allowDrop = (event) => event.preventDefault();
-
   return (
     <FullWidthContainer>
       <Box w="100%" m={0} p={0} id="data-importer-dropzone">
         <Dropzone
-          onReject={(files) => console.log("Rejected files:", files)}
-          onDragOver={allowDrop}
+          onDrop={(files) => {
+            event.preventDefault();
+            console.log("Dropped files:", files);
+          }}
+          onReject={(files) => {
+            event.preventDefault();
+            console.error("Rejected files:", files);
+          }}
+          onClick={(event) => event.preventDefault()}
           mb="lg"
         >
           <Group justify="center" gap="xl" mih={140} style={{ pointerEvents: "none" }}>
