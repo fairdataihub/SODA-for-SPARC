@@ -85,46 +85,6 @@ export const guidedResetLocalGenerationUI = () => {
   document.getElementById("guided-section-retry-local-generation").classList.add("hidden");
 };
 
-const folderImportedFromPennsieve = (folderJSONPath) => {
-  return folderJSONPath.type === "ps";
-};
-
-const guidedModifyPennsieveFolder = (folderJSONPath, action) => {
-  //Actions can be "delete"  or "restore"
-
-  if (!folderJSONPath) {
-    return;
-  }
-  if (action === "delete") {
-    if (!folderJSONPath["action"].includes("deleted")) {
-      folderJSONPath["action"].push("deleted");
-    }
-
-    window.recursive_mark_sub_files_deleted(folderJSONPath, "delete");
-  }
-  if (action === "restore") {
-    folderJSONPath["action"] = folderJSONPath["action"].filter(
-      (action) => action !== "recursive_deleted" || action !== "deleted"
-    );
-    window.recursive_mark_sub_files_deleted(folderJSONPath, "restore");
-  }
-};
-
-const guidedMovePennsieveFolder = (movedFolderName, folderJSONPath, newFolderJSONPath) => {
-  if (!folderJSONPath) {
-    return;
-  }
-  if (!newFolderJSONPath) {
-    return;
-  }
-
-  folderJSONPath["action"] = ["existing", "moved"];
-  window.addMovedRecursively(folderJSONPath);
-  newFolderJSONPath["folders"][movedFolderName] = folderJSONPath;
-};
-
-window.getDatasetEntityObj = getDatasetEntityObj;
-
 // This function reads the innerText of the textSharedWithCurationTeamStatus element
 // and hides or shows the share and unshare buttons accordingly
 window.guidedSetCurationTeamUI = () => {

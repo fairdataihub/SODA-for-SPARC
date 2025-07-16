@@ -1,8 +1,7 @@
 import { setGuidedProgressBarValue, updateDatasetUploadProgressTable } from "./uploadProgressBar";
-import { guidedCreateManifestFilesAndAddToDatasetStructure } from "../manifests/manifest";
 import { guidedSetNavLoadingState } from "../pages/navigationUtils/pageLoading";
 import { clientError, userErrorMessage } from "../../others/http-error-handler/error-handler";
-import { guidedTransitionToHome, scrollToBottomOfGuidedBody } from "../pages/navigate";
+import { guidedTransitionToHome } from "../pages/navigate";
 import { savePageChanges, guidedSaveProgress } from "../pages/savePageChanges";
 import client from "../../client";
 import { checkIfDatasetExistsOnPennsieve } from "../pennsieveUtils";
@@ -11,13 +10,8 @@ import {
   guidedGetDatasetName,
   guidedGetDatasetId,
   datasetIsSparcFunded,
-  guidedGetDatasetOrigin,
 } from "../utils/sodaJSONObj";
-import {
-  getExistingSubjects,
-  getExistingSamples,
-  getExistingSites,
-} from "../../../stores/slices/datasetEntityStructureSlice";
+import { getExistingSubjects } from "../../../stores/slices/datasetEntityStructureSlice";
 import { createStandardizedDatasetStructure } from "../../utils/datasetStructure";
 
 import { guidedResetLocalGenerationUI } from "../guided-curate-dataset";
@@ -319,49 +313,41 @@ const countFilesInDatasetStructure = (datasetStructure) => {
 
 // Track the status of local dataset generation
 const trackLocalDatasetGenerationProgress = async (standardizedDatasetStructure) => {
-  // Get the number of files that need to be generated to calculate the progress
   const numberOfFilesToGenerate = countFilesInDatasetStructure(standardizedDatasetStructure);
 
-  let userHasBeenScrolledToProgressTable = false;
+  window.unHideAndSmoothScrollToElement("guided-section-local-generation-status-table");
+
+  const fetchProgressData = async () => {
+    const { data } = await client.get(`/curate_datasets/curation/progress`);
+    return {
+      status: data["main_curate_status"],
+      message: data["main_curate_progress_message"],
+      elapsedTime: data["elapsed_time_formatted"],
+      uploadedFiles: data["total_files_uploaded"],
+    };
+  };
+
+  const updateProgressUI = (uploadedFiles, elapsedTime) => {
+    const progress = Math.min(100, Math.max(0, (uploadedFiles / numberOfFilesToGenerate) * 100));
+    setGuidedProgressBarValue("local", progress);
+    updateDatasetUploadProgressTable("local", {
+      "Files generated": `${uploadedFiles} of ${numberOfFilesToGenerate}`,
+      "Percent generated": `${progress.toFixed(2)}%`,
+      "Elapsed time": elapsedTime,
+    });
+  };
 
   while (true) {
     try {
-      const response = await client.get(`/curate_datasets/curation/progress`);
-      const { data } = response;
-      const main_curate_progress_message = data["main_curate_progress_message"];
-      const main_curate_status = data["main_curate_status"];
-      if (main_curate_progress_message === "Success: COMPLETED!" || main_curate_status === "Done") {
-        break; // Exit the loop when generation is done
-      }
-      const elapsed_time_formatted = data["elapsed_time_formatted"];
-      const totalUploadedFiles = data["total_files_uploaded"];
+      const { status, message, elapsedTime, uploadedFiles } = await fetchProgressData();
 
-      // Get the current progress of local dataset generation
-      // Note: The progress is calculated based on the number of files that have been generated
-      // and the total number of files that need to be generated
-      const localGenerationProgressPercentage = Math.min(
-        100,
-        Math.max(0, (totalUploadedFiles / numberOfFilesToGenerate) * 100)
-      );
-      setGuidedProgressBarValue("local", localGenerationProgressPercentage);
-      updateDatasetUploadProgressTable("local", {
-        "Files generated": `${totalUploadedFiles} of ${numberOfFilesToGenerate}`,
-        "Percent generated": `${localGenerationProgressPercentage.toFixed(2)}%`,
-        "Elapsed time": `${elapsed_time_formatted}`,
-      });
+      if (message === "Success: COMPLETED!" || status === "Done") break;
 
-      // Scroll the user down to the progress table if they haven't been scrolled down yet
-      // (This only happens once)
-      if (!userHasBeenScrolledToProgressTable) {
-        window.unHideAndSmoothScrollToElement("guided-section-local-generation-status-table");
-        userHasBeenScrolledToProgressTable = true;
-      }
-
-      // Wait 1 second before checking the progress again
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1 second
+      updateProgressUI(uploadedFiles, elapsedTime);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     } catch (error) {
       console.error("Error tracking progress:", error);
-      throw new Error(userErrorMessage(error)); // Re-throw with user-friendly message
+      throw new Error(userErrorMessage(error));
     }
   }
 };
