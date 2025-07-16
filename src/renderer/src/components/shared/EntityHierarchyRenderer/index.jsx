@@ -406,7 +406,7 @@ const EntityHierarchyRenderer = ({
                         style={{ marginLeft: "4px", opacity: 0.6, cursor: "pointer" }}
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleEditSubject(subject);
+                          handleEntitySelect(subject);
                         }}
                       />
                       <IconTrash
@@ -444,7 +444,7 @@ const EntityHierarchyRenderer = ({
                       allowEntitySelection={allowEntitySelection}
                       entityData={sample}
                       parentEntityData={subject}
-                      onEdit={() => handleEditSample(sample, subject)}
+                      onEdit={handleEntitySelect}
                       onDelete={() => handleDeleteSample(sample, subject)}
                       onSelect={handleEntitySelect}
                       isSampleParent={sample.id === selectedEntityParentSampleId}
@@ -470,7 +470,7 @@ const EntityHierarchyRenderer = ({
                             allowEntitySelection={allowEntitySelection}
                             entityData={site}
                             parentEntityData={{ sample, subject }}
-                            onEdit={() => handleEditSampleSite(site, { sample, subject })}
+                            onEdit={handleEntitySelect}
                             onDelete={() => handleDeleteSampleSite(site, { sample, subject })}
                             onSelect={handleEntitySelect}
                           />
