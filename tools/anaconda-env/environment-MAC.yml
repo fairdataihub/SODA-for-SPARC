@@ -34,4 +34,4 @@ dependencies:
   - requests == 2.31.0
   - backports.tarfile
   - setuptools == 71.0.4
-  - pysoda-fairdataihub-tools == 0.1.43
+  - pysoda-fairdataihub-tools == 0.1.44

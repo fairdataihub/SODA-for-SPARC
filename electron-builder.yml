@@ -41,7 +41,6 @@ mac:
       to: ./file_templates
     - from: ./metadata_templates
       to: ./metadata_templates
-    - from: ./pyflaskdist/app
     - from: ./schema
       to: ./schema
     - from: ./pennsieve-io-chain.pem
