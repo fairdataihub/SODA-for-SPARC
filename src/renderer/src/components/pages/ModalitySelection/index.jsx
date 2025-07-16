@@ -22,8 +22,6 @@ import {
   modalityIsSelected,
 } from "../../../stores/slices/modalitiesSlice";
 
-// import { handleNextButtonClick } from "../../../scripts/guided-mode/pages/navigate";
-
 const ModalitySelectionPage = () => {
   return (
     <GuidedModePage pageHeader="Dataset modalities">
@@ -95,7 +93,8 @@ const ModalitySelectionPage = () => {
         <Center mt="xl">
           <NavigationButton
             onClick={() => {
-              handleNextButtonClick();
+              // Pass the button click to the real next button
+              document.getElementById("guided-next-button").click();
             }}
             buttonCustomWidth={"215px"}
             buttonText={"Save and Continue"}
