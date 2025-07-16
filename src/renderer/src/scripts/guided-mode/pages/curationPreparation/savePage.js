@@ -1,8 +1,11 @@
 import { error } from "jquery";
 import useGlobalStore from "../../../../stores/globalStore";
 
-let homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
-let guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
+const homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
+const guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
+if (!window.fs.existsSync(guidedProgressFilePath)) {
+  window.fs.mkdirSync(guidedProgressFilePath, { recursive: true });
+}
 
 export const getGuidedProgressFileNames = () => {
   return window.fs

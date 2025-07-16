@@ -52,6 +52,12 @@ while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
+const homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
+const guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
+if (!window.fs.existsSync(guidedProgressFilePath)) {
+  window.fs.mkdirSync(guidedProgressFilePath, { recursive: true });
+}
+
 window.returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
 };
@@ -774,9 +780,6 @@ window.handleGuidedModeOrgSwitch = async (buttonClicked) => {
     await guidedRenderProgressCards();
   }
 };
-
-let homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
-let guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
 
 const guidedResetUserTeamPermissionsDropdowns = () => {
   $("#guided_bf_list_users_and_teams").val("Select individuals or teams to grant permissions to");

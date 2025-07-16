@@ -18,8 +18,11 @@ while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
-let homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
-let guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
+const homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
+const guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
+if (!window.fs.existsSync(guidedProgressFilePath)) {
+  window.fs.mkdirSync(guidedProgressFilePath, { recursive: true });
+}
 
 /**
  *
@@ -41,13 +44,7 @@ export const guidedSaveProgress = async () => {
   //Destination: HOMEDIR/SODA/Guided-Progress
   window.sodaJSONObj["last-modified"] = new Date();
 
-  try {
-    //create Guided-Progress folder if one does not exist
-    window.fs.mkdirSync(guidedProgressFilePath, { recursive: true });
-  } catch (error) {
-    window.log.error(error);
-  }
-  var guidedFilePath = window.path.join(guidedProgressFilePath, guidedProgressFileName + ".json");
+  const guidedFilePath = window.path.join(guidedProgressFilePath, guidedProgressFileName + ".json");
 
   // Store global variable values to the progress file before saving
   window.sodaJSONObj["dataset-structure"] = window.datasetStructureJSONObj;

@@ -1,13 +1,19 @@
 import { guidedGetCurrentUserWorkSpace } from "../workspaces/workspaces";
 import { getAllProgressFileData } from "./progressFile";
+import hasConnectedAccountWithPennsieve from "../../others/authentication/auth";
+import { swalShowInfo } from "../../utils/swal-utils";
 import tippy from "tippy.js";
+import { clientError } from "../../others/http-error-handler/error-handler";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
-let homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
-let guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
+const homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
+const guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
+if (!window.fs.existsSync(guidedProgressFilePath)) {
+  window.fs.mkdirSync(guidedProgressFilePath, { recursive: true });
+}
 
 /**
  *  @description - Associated with a the 'Continue a dataset saved in SODA' button in the Prepare Dataset Step-by-Step menu page.
@@ -51,14 +57,8 @@ export const guidedRenderProgressCards = async () => {
         "Something went wrong while verifying your profile",
         "Please try again by clicking the 'Yes' button. If this issue persists please use our `Contact Us` page to report the issue."
       );
-      loadingDiv.classList.add("hidden");
       return;
     }
-  }
-
-  //Check if Guided-Progress folder exists. If not, create it.
-  if (!window.fs.existsSync(guidedProgressFilePath)) {
-    window.fs.mkdirSync(guidedProgressFilePath, { recursive: true });
   }
 
   const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);

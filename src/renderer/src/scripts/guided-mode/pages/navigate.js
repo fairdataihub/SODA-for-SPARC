@@ -19,6 +19,13 @@ import client from "../../client";
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
+
+const homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
+const guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
+if (!window.fs.existsSync(guidedProgressFilePath)) {
+  window.fs.mkdirSync(guidedProgressFilePath, { recursive: true });
+}
+
 /**
  * @description Navigate to the next page in the active prepare datasets step-by-step workflow.
  */
@@ -108,9 +115,6 @@ document.getElementById("guided-button-save-and-exit").addEventListener("click",
   await guidedSaveAndExit();
 });
 
-const homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
-const guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
-
 /**
  *
  * @returns {Promise<void>}
@@ -199,10 +203,6 @@ export const guidedTransitionToHome = () => {
 window.guidedPrepareHomeScreen = async () => {
   //Wipe out existing progress if it exists
   guidedResetProgressVariables();
-
-  if (!window.fs.existsSync(guidedProgressFilePath)) {
-    window.fs.mkdirSync(guidedProgressFilePath, { recursive: true });
-  }
 
   document.getElementById("existing-dataset-lottie").innerHTML = "";
   document.getElementById("edit-dataset-component-lottie").innerHTML = "";

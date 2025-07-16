@@ -829,14 +829,10 @@ dragselect_area.subscribe("dragstart", ({ event }) => {
 
 // /////// Save and load award and milestone info
 let metadataPath = window.path.join(window.homeDirectory, "SODA", "METADATA");
-// let awardFileName = "awards.json";
 let affiliationFileName = "affiliations.json";
-// let milestoneFileName = "milestones.json";
-// let protocolConfigFileName = "protocol-config.json";
+
 window.affiliationConfigPath = window.path.join(metadataPath, affiliationFileName);
-// let milestonePath = window.path.join(metadataPath, milestoneFileName);
 window.progressFilePath = window.path.join(window.homeDirectory, "SODA", "Progress");
-// let guidedProgressFilePath = window.path.join(window.homeDirectory, "SODA", "Guided-Progress");
 window.guidedManifestFilePath = window.path.join(
   window.homeDirectory,
   "SODA",
