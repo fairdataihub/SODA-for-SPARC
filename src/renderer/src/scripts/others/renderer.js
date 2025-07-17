@@ -5795,15 +5795,15 @@ const initiate_generate = async (resume = false) => {
       $("#party-lottie").show();
 
       // check if we updated an existing dataset
-      const mergeSelectedCard = document
-        .querySelector("#dataset-upload-existing-dataset")
-        .classList.contains("checked");
-      if (mergeSelectedCard) {
-        await swalShowInfo(
-          "Manifest Files Not Updated With New Files",
-          "Please navigate to the `Advanced Features` tab and use the standalone manifest generator to update your manifest files with the new files."
-        );
-      }
+      // const mergeSelectedCard = document
+      //   .querySelector("#dataset-upload-existing-dataset")
+      //   .classList.contains("checked");
+      // if (mergeSelectedCard) {
+      //   await swalShowInfo(
+      //     "Manifest Files Not Updated With New Files",
+      //     "Please navigate to the `Advanced Features` tab and use the standalone manifest generator to update your manifest files with the new files."
+      //   );
+      // }
 
       main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
       uploadedFiles = data["main_curation_uploaded_files"];

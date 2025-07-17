@@ -125,24 +125,23 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
 
     // if the user has files already on their dataset when starting from new/local and merging to existing pennsieve then
     // show them a message detailing why they cannot create manifest files
-    if (document.getElementById("dataset-upload-existing-dataset").classList.contains("checked")) {
-      if ($("#generate-manifest-curate").prop("checked")) {
-        $("#generate-manifest-curate").click();
-      }
-      $("#generate-manifest-curate").prop("disabled", true);
-      $("#nextBtn").prop("disabled", false);
-      $("#generate-manifest-curate").prop("disabled", true);
+    // if (document.getElementById("dataset-upload-existing-dataset").classList.contains("checked")) {
+    //   if ($("#generate-manifest-curate").prop("checked")) {
+    //     $("#generate-manifest-curate").click();
+    //   }
+    //   $("#generate-manifest-curate").prop("disabled", true);
+    //   $("#nextBtn").prop("disabled", false);
+    //   $("#generate-manifest-curate").prop("disabled", true);
+    //   document.getElementById("manifest-information-container").classList.add("hidden");
+    //   document.getElementById("manifest-intro-info").classList.add("hidden");
+    // }
+    document.getElementById("manifest-information-container").classList.remove("hidden");
+    document.getElementById("manifest-intro-info").classList.remove("hidden");
+    if (!document.getElementById("generate-manifest-curate").checked) {
       document.getElementById("manifest-information-container").classList.add("hidden");
-      document.getElementById("manifest-intro-info").classList.add("hidden");
-    } else {
-      document.getElementById("manifest-information-container").classList.remove("hidden");
-      document.getElementById("manifest-intro-info").classList.remove("hidden");
-      if (!document.getElementById("generate-manifest-curate").checked) {
-        document.getElementById("manifest-information-container").classList.add("hidden");
-      }
-      document.getElementById("generate-manifest-curate").disabled = false;
-      $("#generate-manifest-curate").prop("disabled", false);
     }
+    document.getElementById("generate-manifest-curate").disabled = false;
+    $("#generate-manifest-curate").prop("disabled", false);
 
     if (document.getElementById("generate-manifest-curate").checked) {
       // need to run manifest creation
