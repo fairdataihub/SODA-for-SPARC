@@ -133,7 +133,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     }
 
     if (buttonYesUserHasProtocols.classList.contains("selected")) {
-      const protocols = window.sodaJSONObj["dataset_protocols"] || [];
+      const protocols = window.sodaJSONObj["related_resources"] || [];
 
       if (protocols.length === 0) {
         errorArray.push({
@@ -145,7 +145,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     }
 
     if (buttonNoDelayProtocolEntry.classList.contains("selected")) {
-      window.sodaJSONObj["dataset_protocols"] = []; // Clear protocols if user says they will add later
+      window.sodaJSONObj["related_resources"] = []; // Clear protocols if user says they will add later
     }
   }
 
@@ -198,8 +198,8 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     if (otherFunding.length > 0) {
       fundingString = otherFunding.join(", ");
     }
-    console.log("fundingString", fundingString);
-    console.log("studyCollectionTitle", studyCollectionTitle);
+
+    const relatedResourceInformation = window.sodaJSONObj["related_resources"] || [];
 
     // Populate dataset_metadata > dataset_description
     window.sodaJSONObj["dataset_metadata"]["dataset_description"] = {
@@ -233,7 +233,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
         study_collection_title: studyCollectionTitle,
       },
       contributor_information: [],
-      related_resource_information: [],
+      related_resource_information: relatedResourceInformation,
       participant_information: {
         number_of_subjects: numSubjects,
         number_of_samples: numSamples,

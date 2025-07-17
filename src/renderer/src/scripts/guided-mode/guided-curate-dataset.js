@@ -788,13 +788,11 @@ const handleValidationTableUi = (errors) => {
 
 window.deleteContributor = (clickedDelContribuButton, contributorOrcid) => {
   const contributorField = clickedDelContribuButton.parentElement.parentElement;
-  const contributorsBeforeDelete =
-    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"];
+  const contributorsBeforeDelete = window.sodaJSONObj["dataset_contributors"];
 
-  window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"] =
-    contributorsBeforeDelete.filter((contributor) => {
-      return contributor.conID !== contributorOrcid;
-    });
+  window.sodaJSONObj["dataset_contributors"] = contributorsBeforeDelete.filter((contributor) => {
+    return contributor.conID !== contributorOrcid;
+  });
   contributorField.remove();
   //rerender the table after deleting a contributor
   renderDatasetDescriptionContributorsTable();
@@ -966,8 +964,7 @@ window.removeContributorField = (contributorDeleteButton) => {
   const contributorField = contributorDeleteButton.parentElement;
   const { contributorFirstName, contributorLastName } = contributorField.dataset;
 
-  const contributorsBeforeDelete =
-    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"];
+  const contributorsBeforeDelete = window.sodaJSONObj["dataset_contributors"];
   //If the contributor has data-first-name and data-last-name, then it is a contributor that
   //already been added. Delete it from the contributors array.
   if (contributorFirstName && contributorLastName) {
@@ -979,19 +976,17 @@ window.removeContributorField = (contributorDeleteButton) => {
       );
     });
 
-    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"] =
-      filteredContributors;
+    window.sodaJSONObj["dataset_contributors"];
+    filteredContributors;
   }
 
   contributorField.remove();
 };
 
 const getExistingContributorORCiDs = () => {
-  return window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"].map(
-    (contributor) => {
-      return contributor.conID;
-    }
-  );
+  return window.sodaJSONObj["dataset_contributors"].map((contributor) => {
+    return contributor.conID;
+  });
 };
 
 const editContributorByOrcid = (
@@ -1583,8 +1578,7 @@ window.contributorDataIsValid = (contributorObj) => {
 };
 
 const getContributorMarkedAsPrincipalInvestigator = () => {
-  const contributors =
-    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"];
+  const contributors = window.sodaJSONObj["dataset_contributors"];
   const PrincipalInvestigator = contributors.find((contributor) =>
     contributor["conRole"].includes("PrincipalInvestigator")
   );
@@ -1597,8 +1591,7 @@ const getContributorMarkedAsPrincipalInvestigator = () => {
 };
 
 const switchOrderOfContributors = (draggedOrcid, targetOrcid) => {
-  const contributors =
-    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"];
+  const contributors = window.sodaJSONObj["dataset_contributors"];
   const draggedContributorIndex = contributors.findIndex(
     (contributor) => contributor["conID"] === draggedOrcid
   );
@@ -1617,7 +1610,7 @@ const switchOrderOfContributors = (draggedOrcid, targetOrcid) => {
     contributors.splice(targetContributorIndex, 0, contributors[draggedContributorIndex]);
     contributors.splice(draggedContributorIndex + 1, 1);
   }
-  window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"] = contributors;
+  window.sodaJSONObj["dataset_contributors"] = contributors;
 };
 
 // Constants used for drag and drop functionality for contributors
@@ -3681,18 +3674,6 @@ const guidedSaveDescriptionStudyInformation = () => {
     "study-purpose": studyPurpose,
     "data-collection": studyDataCollection,
     "primary-conclusion": studyPrimaryConclusion,
-  };
-};
-const guidedSaveDescriptionContributorInformation = () => {
-  const acknowledgmentsInput = document.getElementById("guided-ds-acknowledgments");
-  const acknowledgments = acknowledgmentsInput.value.trim();
-
-  // Get tags from other funding tagify
-  const otherFunding = window.getTagsFromTagifyElement(guidedOtherFundingsourcesTagify);
-
-  window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributor-information"] = {
-    funding: otherFunding,
-    acknowledgment: acknowledgments,
   };
 };
 

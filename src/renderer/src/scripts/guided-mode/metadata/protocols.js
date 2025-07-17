@@ -41,7 +41,7 @@ const protocolObjIsFair = (protocolLink, protocoldescription) => {
 };
 
 export const renderProtocolsTable = () => {
-  const protocols = window.sodaJSONObj["dataset_protocols"];
+  const protocols = window.sodaJSONObj["related_resources"];
   console.log("renderProtocolsTable protocols", protocols);
 
   const protocolsContainer = document.getElementById("protocols-container");
@@ -103,7 +103,7 @@ const generateProtocolField = (identifier, identifier_description) => {
 window.guidedOpenAddProtocolSwal = async (editIdentifier = null) => {
   let protocolToEdit = null;
   if (editIdentifier) {
-    protocolToEdit = (window.sodaJSONObj["dataset_protocols"] || []).find(
+    protocolToEdit = (window.sodaJSONObj["related_resources"] || []).find(
       (p) => p.identifier === editIdentifier
     );
   }
@@ -143,7 +143,7 @@ window.guidedOpenAddProtocolSwal = async (editIdentifier = null) => {
         return;
       }
       try {
-        let protocols = window.sodaJSONObj["dataset_protocols"] || [];
+        let protocols = window.sodaJSONObj["related_resources"] || [];
         if (protocolToEdit) {
           protocols = protocols.map((p) =>
             p.identifier === editIdentifier
@@ -166,7 +166,7 @@ window.guidedOpenAddProtocolSwal = async (editIdentifier = null) => {
             },
           ];
         }
-        window.sodaJSONObj["dataset_protocols"] = protocols;
+        window.sodaJSONObj["related_resources"] = protocols;
         renderProtocolsTable();
       } catch (error) {
         Swal.showValidationMessage(error);
@@ -235,7 +235,7 @@ window.openProtocolSwal = async (protocolElement) => {
 };
 
 window.guidedDeleteProtocol = (identifier) => {
-  window.sodaJSONObj["dataset_protocols"] = window.sodaJSONObj["dataset_protocols"].filter(
+  window.sodaJSONObj["related_resources"] = window.sodaJSONObj["related_resources"].filter(
     (protocol) => protocol.identifier !== identifier
   );
   renderProtocolsTable();

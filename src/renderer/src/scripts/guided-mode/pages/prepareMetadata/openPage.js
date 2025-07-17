@@ -326,17 +326,3 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     }
   }
 };
-
-const getContributorFullNames = () => {
-  return window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"].map(
-    (contributor) => {
-      return contributor.conName;
-    }
-  );
-};
-
-const getGuidedAdditionalLinks = () => {
-  return window.sodaJSONObj["dataset_metadata"]["description-metadata"]["additional-links"].map(
-    (link) => link.link
-  );
-};
