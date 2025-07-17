@@ -51,6 +51,7 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
    * Generic entity import handler
    */
   const handleEntityFileImport = async (files, entityType) => {
+    console.log(`Handling import for entity type: ${entityType}`, files);
     if (!files?.length) return;
 
     const config = entityConfigs[entityType];
@@ -339,7 +340,6 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
 
                         <Group spacing="xs">
                           <Button
-                            compact
                             variant="light"
                             color="blue"
                             onClick={() =>

@@ -115,6 +115,40 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     console.log("Checking contributors");
   }
 
+  if (pageBeingLeftID === "guided-protocols-tab") {
+    const buttonYesUserHasProtocols = document.getElementById("guided-button-user-has-protocols");
+    const buttonNoDelayProtocolEntry = document.getElementById(
+      "guided-button-delay-protocol-entry"
+    );
+
+    if (
+      !buttonYesUserHasProtocols.classList.contains("selected") &&
+      !buttonNoDelayProtocolEntry.classList.contains("selected")
+    ) {
+      errorArray.push({
+        type: "notyf",
+        message: "Please indicate if protocols are ready to be added to your dataset",
+      });
+      throw errorArray;
+    }
+
+    if (buttonYesUserHasProtocols.classList.contains("selected")) {
+      const protocols = window.sodaJSONObj["dataset_protocols"] || [];
+
+      if (protocols.length === 0) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please add at least one protocol",
+        });
+        throw errorArray;
+      }
+    }
+
+    if (buttonNoDelayProtocolEntry.classList.contains("selected")) {
+      window.sodaJSONObj["dataset_protocols"] = []; // Clear protocols if user says they will add later
+    }
+  }
+
   if (pageBeingLeftID === "guided-create-description-metadata-tab") {
     const metadataVersion = "3.0.0";
     // Get values from digital_metadata

@@ -94,6 +94,7 @@ export const guidedCreateSodaJSONObj = () => {
   window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"] = {};
   window.sodaJSONObj["dataset_metadata"]["README"] = "";
   window.sodaJSONObj["dataset_metadata"]["CHANGES"] = "";
+  window.sodaJSONObj["dataset_protocols"] = [];
   window.sodaJSONObj["digital-metadata"] = {};
   window.sodaJSONObj["previously-uploaded-data"] = {};
   window.sodaJSONObj["digital-metadata"]["description"] = {};

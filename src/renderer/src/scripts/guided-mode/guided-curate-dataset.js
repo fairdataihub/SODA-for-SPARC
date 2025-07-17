@@ -3415,19 +3415,6 @@ document
     }
   });
 
-$("#guided-add-subject-button").on("click", () => {
-  $("#guided-subjects-intro").hide();
-  $("#guided-add-subject-div").show();
-});
-
-$("#guided-button-edit-protocol-fields").on("click", () => {
-  enableElementById("protocols-container");
-  enableElementById("guided-button-add-protocol");
-  //switch button from edit to save
-  document.getElementById("guided-button-edit-protocol-fields").style.display = "none";
-  document.getElementById("guided-button-save-protocol-fields").style.display = "flex";
-  unPulseNextButton();
-});
 $("#guided-button-save-other-link-fields").on("click", () => {
   let allInputsValid = true;
   //get all contributor fields
@@ -3734,6 +3721,13 @@ const doTheHack = async () => {
   document.querySelector(".primary-selection-aside-item.selection-aside-item").click();
 };
 
+// If this variable is set to true, you will be taken back to the last guided mode page you were working on
+// (always set to false when making production builds)
+const continueHackGm = true;
+if (continueHackGm) {
+  doTheHack();
+}
+
 // Add the event listener for the Data importation component
 const dragDropElementId = document.getElementById("data-importer-dropzone");
 dragDropElementId.addEventListener("click", (event) => {
@@ -3753,10 +3747,3 @@ dragDropElementId.addEventListener("drop", (event) => {
     importRelativePath: "data/",
   });
 });
-
-// If this variable is set to true, you will be taken back to the last guided mode page you were working on
-// (always set to false when making production builds)
-const continueHackGm = false;
-if (continueHackGm) {
-  doTheHack();
-}
