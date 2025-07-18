@@ -337,7 +337,6 @@ def bf_dataset_account(accountname):
             r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/role", headers=create_request_headers(get_access_token()))
             r.raise_for_status()
             user_role = r.json()["role"]
-            namespace_logger.info(f"User role: {user_role}")
             if user_role not in ["viewer"]:
                 store.append(
                     {"id": selected_dataset_id, "name": dataset['name'], "role": user_role, "intId": dataset["intId"]}
@@ -359,7 +358,6 @@ def bf_dataset_account(accountname):
     [t.join() for t in threads]
 
     sorted_bf_datasets = sorted(store, key=lambda k: k["name"].upper())
-    namespace_logger.info(f"Sorted datasets: {sorted_bf_datasets}")
     return {"datasets": sorted_bf_datasets}
 
 def get_username(accountname):

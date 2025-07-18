@@ -21,6 +21,8 @@ import {
   swalFileListTripleAction,
   swalShowInfo,
 } from "../utils/swal-utils";
+import util from "util";
+
 // const path = require("path");
 
 while (!window.baseHtmlLoaded) {
@@ -501,8 +503,38 @@ window.uploadDatasetClickHandler = async (ev) => {
   window.electron.ipcRenderer.send("open-file-dialog-upload-dataset");
 };
 
+// recursively go through datast-structure and log the folder names and file names separately
+window.logStructure = (datasetStructure) => {
+  const folders = [];
+  const files = [];
+
+  console.log(datasetStructure);
+
+  const traverse = (structure, parentFolder) => {
+    if (structure.folders) {
+      for (const folderName in structure.folders) {
+        folders.push(folderName);
+        traverse(structure.folders[folderName], folderName);
+      }
+
+      if (structure.files) {
+        for (const fileName in structure.files) {
+          files.push(`${parentFolder}: ${fileName}`);
+        }
+      }
+    }
+  };
+
+  traverse(datasetStructure, "root");
+  window.log.info("Dataset Structure Folders post import finalization:");
+  window.log.info(folders);
+  window.log.info("Dataset Structure Files post import finalization:");
+  window.log.info(files);
+};
+
 window.handleLocalDatasetImport = async (path) => {
   const list = await getFilesAndFolders(path);
+  window.log.info("Importing local dataset");
   const currentFileExplorerPath = window.organizeDSglobalPath.value.trim();
   const builtDatasetStructure = await window.buildDatasetStructureJsonFromImportedData(
     list.folders,
@@ -512,6 +544,15 @@ window.handleLocalDatasetImport = async (path) => {
 
   window.sodaJSONObj["dataset-structure"] = builtDatasetStructure[0];
   window.sodaJSONObj["metadata-files"] = list.files;
+
+  window.logStructure(window.sodaJSONObj["dataset-structure"]);
+  window.log.info("Metadata files included: ");
+  let logMetadataFiles = [];
+  Object.entries(window.sodaJSONObj["metadata-files"]).forEach(([key, fileData]) => {
+    console.log(key);
+    logMetadataFiles.push(`${key}`);
+  });
+  window.log.info(logMetadataFiles);
   const forbiddenFileNames = [];
   const problematicFiles = [];
   const hiddenItems = [];

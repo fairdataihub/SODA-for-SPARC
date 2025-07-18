@@ -4582,6 +4582,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
   closeFileImportLoadingSweetAlert();
 
   if (inaccessibleItems.length > 0) {
+    window.log.info(`The following files were inaccessible: ${inaccessibleItems.join(", ")}`);
     await swalFileListSingleAction(
       inaccessibleItems,
       "SODA was unable to access some of your imported files",
@@ -4591,6 +4592,11 @@ window.buildDatasetStructureJsonFromImportedData = async (
   }
 
   if (forbiddenFileNames.length > 0) {
+    window.log.info(
+      `THe following files are forbidden: ${forbiddenFileNames
+        .map((file) => file.relativePath)
+        .join(", ")}`
+    );
     await swalFileListSingleAction(
       forbiddenFileNames.map((file) => file.relativePath),
       "Forbidden file names detected",
@@ -4600,6 +4606,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
   }
 
   if (emptyFolders.length > 0) {
+    window.log.info(`The following folders are empty: ${emptyFolders.join(", ")}`);
     await swalFileListSingleAction(
       emptyFolders,
       "Empty folders detected",
@@ -4609,6 +4616,9 @@ window.buildDatasetStructureJsonFromImportedData = async (
   }
 
   if (emptyFiles.length > 0) {
+    window.log.info(
+      `The following files are empty: ${emptyFiles.map((file) => file.relativePath).join(", ")}`
+    );
     await swalFileListSingleAction(
       emptyFiles.map((file) => file.relativePath),
       "Empty files detected",
@@ -4618,6 +4628,12 @@ window.buildDatasetStructureJsonFromImportedData = async (
   }
 
   if (problematicFolderNames.length > 0) {
+    window.log.info(
+      `The following folders have names that do not comply with the SPARC data standards: ${problematicFolderNames.join(
+        ", "
+      )}`
+    );
+    // Ask the user what they want to do with the problematic folder names
     const userResponse = await swalFileListTripleAction(
       problematicFolderNames,
       "<p>Folder name modifications</p>",
@@ -4631,15 +4647,22 @@ window.buildDatasetStructureJsonFromImportedData = async (
       "What would you like to do with the folders with special characters?"
     );
     if (userResponse === "confirm") {
+      window.log.info(`Replacing the problematic folder names with SDS compliant names`);
       replaceProblematicFoldersWithSDSCompliantNames(datasetStructure);
     }
     // If the userResponse is "deny", nothing needs to be done
     if (userResponse === "cancel") {
-      throw new Error("Importation cancelled");
+      window.log.info(`User cancelled the import of the dataset`);
+      throw new Error("Import cancelled");
     }
   }
 
   if (problematicFileNames.length > 0) {
+    window.log.info(
+      `The following files have names that do not comply with the SPARC data standards: ${problematicFileNames
+        .map((file) => file.relativePath)
+        .join(", ")}`
+    );
     const userResponse = await swalFileListTripleAction(
       problematicFileNames.map((file) => file.relativePath),
       "<p>File name modifications</p>",
@@ -4653,15 +4676,19 @@ window.buildDatasetStructureJsonFromImportedData = async (
       "What would you like to do with the files with special characters?"
     );
     if (userResponse === "confirm") {
+      window.log.info(`Replacing the problematic file names with SDS compliant names`);
       window.replaceProblematicFilesWithSDSCompliantNames(datasetStructure);
     }
     // If the userResponse is "deny", nothing needs to be done
     if (userResponse === "cancel") {
-      throw new Error("Importation cancelled");
+      throw new Error("Import cancelled");
     }
   }
 
   if (hiddenItems.length > 0) {
+    window.log.info(
+      `The following files are hidden: ${hiddenItems.map((file) => file.relativePath).join(", ")}`
+    );
     const userResponse = await swalFileListTripleAction(
       hiddenItems.map((file) => file.relativePath),
       "<p>Hidden files detected</p>",
@@ -4673,10 +4700,12 @@ window.buildDatasetStructureJsonFromImportedData = async (
     );
     // If the userResponse is "confirm", nothing needs to be done
     if (userResponse === "deny") {
+      window.log.info(`Removing the hidden files from the dataset structure`);
       removeHiddenFilesFromDatasetStructure(datasetStructure);
     }
     if (userResponse === "cancel") {
-      throw new Error("Importation cancelled");
+      window.log.info(`User cancelled the import of the dataset`);
+      throw new Error("Import cancelled");
     }
   }
 
