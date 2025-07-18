@@ -7,7 +7,7 @@ on:
       - main
       - staging
       - pre-staging
-      - guest-contributor-fixes-ui-update
+      - build_with_logs
 
 jobs:
   deploy-on-windows:
