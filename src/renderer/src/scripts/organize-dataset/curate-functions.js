@@ -877,54 +877,70 @@ document.getElementById("change-workspace-btn").addEventListener("click", async 
   document.getElementById("change-workspace-btn").classList.add("basic");
   document.getElementById("change-workspace-btn").classList.remove("selected");
 
-  // check if the user selected an existing dataset option on page 3 of the Upload Dataset workflow
-  const existingDatasetCard = document.getElementById("dataset-upload-existing-dataset");
-  if (existingDatasetCard.classList.contains("checked")) {
-    // If the user has selected the existing dataset option, reset all progress up to the current page
-    document.getElementById("existing-dataset-upload").classList.add("hidden");
-    document.getElementById("current-ps-dataset-generate").innerText = "";
-    document.getElementById("dataset-upload-existing-dataset").classList.remove("checked");
-    document.getElementById("dataset-upload-new-dataset").classList.remove("checked");
-    document.getElementById("inputNewNameDataset-upload-dataset").value = "";
-    document.getElementById("button-confirm-ps-dataset").parentNode.style.display = "flex";
-    document.getElementsByName("generate-5").forEach((element) => {
-      element.checked = false;
-    });
-    // Remove checks from all the cards in step 3 (merge option cards)
-    document.getElementById("skip-folder-card").classList.remove("checked");
-    document.getElementById("skip-folder-card").classList.remove("non-selected");
-    document.getElementById("merge-folder-card").classList.remove("checked");
-    document.getElementById("merge-folder-card").classList.remove("non-selected");
-    document.getElementById("replace-folder-card").classList.remove("checked");
-    document.getElementById("replace-folder-card").classList.remove("non-selected");
+  // If the user has selected the existing dataset option, reset all progress up to the current page
+  document.getElementById("existing-dataset-upload").classList.add("hidden");
+  document.getElementById("current-ps-dataset-generate").innerText = "";
+  document.getElementById("dataset-upload-existing-dataset").classList.remove("checked");
+  document.getElementById("dataset-upload-new-dataset").classList.remove("checked");
+  document.getElementById("inputNewNameDataset-upload-dataset").value = "";
+  document.getElementById("button-confirm-ps-dataset").parentNode.style.display = "flex";
+  document.getElementsByName("generate-5").forEach((element) => {
+    element.checked = false;
+  });
+  // Remove checks from all the cards in step 3 (merge option cards)
+  document.getElementById("skip-folder-card").classList.remove("checked");
+  document.getElementById("skip-folder-card").classList.remove("non-selected");
+  document.getElementById("merge-folder-card").classList.remove("checked");
+  document.getElementById("merge-folder-card").classList.remove("non-selected");
+  document.getElementById("replace-folder-card").classList.remove("checked");
+  document.getElementById("replace-folder-card").classList.remove("non-selected");
 
-    document.getElementById("replace-file-card").classList.remove("non-selected");
-    document.getElementById("replace-file-card").classList.remove("checked");
-    document.getElementById("skip-file-card").classList.remove("checked");
-    document.getElementById("skip-file-card").classList.remove("non-selected");
+  document.getElementById("replace-file-card").classList.remove("non-selected");
+  document.getElementById("replace-file-card").classList.remove("checked");
+  document.getElementById("skip-file-card").classList.remove("checked");
+  document.getElementById("skip-file-card").classList.remove("non-selected");
 
-    // Step 4
-    if (document.getElementById("generate-manifest-curate").checked) {
-      document.getElementById("generate-manifest-curate").click();
-      // if the manifest_files folder exists in ~/SODA delete it
-      if (window.fs.existsSync(window.path.join(window.os.homedir(), "SODA", "manifest_files"))) {
-        window.fs.rmdirSync(window.path.join(window.os.homedir(), "SODA", "manifest_files"), {
-          recursive: true,
-        });
-      }
+  // Step 4
+  if (document.getElementById("generate-manifest-curate").checked) {
+    document.getElementById("generate-manifest-curate").click();
+    // if the manifest_files folder exists in ~/SODA delete it
+    if (window.fs.existsSync(window.path.join(window.os.homedir(), "SODA", "manifest_files"))) {
+      window.fs.rmdirSync(window.path.join(window.os.homedir(), "SODA", "manifest_files"), {
+        recursive: true,
+      });
+    }
 
-      if (window.fs.existsSync(window.path.join(window.os.homedir(), "SODA", "manifest_file"))) {
-        window.fs.rmdirSync(window.path.join(window.os.homedir(), "SODA", "manifest_file"), {
-          recursive: true,
-        });
-      }
+    if (window.fs.existsSync(window.path.join(window.os.homedir(), "SODA", "manifest_file"))) {
+      window.fs.rmdirSync(window.path.join(window.os.homedir(), "SODA", "manifest_file"), {
+        recursive: true,
+      });
+    }
 
-      // reset the manifest information in soda
-      if (window.sodaJSONObj["dataset_metadata"]["manifest_file"]) {
-        window.sodaJSONObj["dataset_metadata"]["manifest_file"] = [];
-      }
+    // reset the manifest information in soda
+    if (window.sodaJSONObj["dataset_metadata"]["manifest_file"]) {
+      window.sodaJSONObj["dataset_metadata"]["manifest_file"] = [];
     }
   }
+
+  // reset the dataset name input field
+  document.getElementById("inputNewNameDataset-upload-dataset").value = "";
+  document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
+  $("#upload-dataset-btn-confirm-new-dataset-name").addClass("hidden");
+
+  // get every input with name="generate-5" and remove the checked property
+  let inputs = document.querySelectorAll('input[name="generate-5"]');
+  inputs.forEach((input) => {
+    input.checked = false;
+    input.classList.remove("checked");
+  });
+  document.getElementById("current-ps-dataset-generate").textContent = "None";
+  // hide the existing folder/files options
+  $("#Question-generate-dataset-existing-folders-options").addClass("hidden");
+  $("#Question-generate-dataset-existing-files-options").addClass("hidden");
+  $("#please-wait-new-curate-div").show();
+
+  $("#existing-dataset-upload").addClass("hidden");
+  $("#Question-generate-dataset-ps-dataset-options").addClass("hidden");
 });
 
 const metadataFileExtensionObject = {
