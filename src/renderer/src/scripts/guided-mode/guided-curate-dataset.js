@@ -1275,6 +1275,8 @@ const handleAddContributorHeaderUI = () => {
     return !existingContributorORCiDs.includes(contributor.ORCiD);
   });
 
+  console.log("locallyStoredContributorArray", locallyStoredContributorArray);
+
   // If no stored contributors are found, use the default header
   if (locallyStoredContributorArray.length === 0) {
     return `
@@ -3674,6 +3676,18 @@ const guidedSaveDescriptionStudyInformation = () => {
     "study-purpose": studyPurpose,
     "data-collection": studyDataCollection,
     "primary-conclusion": studyPrimaryConclusion,
+  };
+};
+const guidedSaveDescriptionContributorInformation = () => {
+  const acknowledgmentsInput = document.getElementById("guided-ds-acknowledgments");
+  const acknowledgments = acknowledgmentsInput.value.trim();
+
+  // Get tags from other funding tagify
+  const otherFunding = window.getTagsFromTagifyElement(guidedOtherFundingsourcesTagify);
+
+  window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributor-information"] = {
+    funding: otherFunding,
+    acknowledgment: acknowledgments,
   };
 };
 

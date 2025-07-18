@@ -3,9 +3,16 @@ while (!window.baseHtmlLoaded) {
 }
 
 // Save the contributors array to the JSON file
-const saveStoredContributors = (contributors) => {
+window.saveStoredContributors = (contributors) => {
+  // Map contributors to schema before saving
+  const mappedContributors = contributors.map((contributor) => ({
+    contributor_orcid_id: contributor.contributor_orcid_id,
+    contributor_affiliation: contributor.contributor_affiliation,
+    contributor_name: contributor.contributor_name,
+    contributor_role: contributor.contributor_role,
+  }));
   try {
-    window.fs.writeFileSync(window.storedContributorsPath, JSON.stringify(contributors));
+    window.fs.writeFileSync(window.storedContributorsPath, JSON.stringify(mappedContributors));
   } catch (err) {
     window.log.info("Error saving stored contributors file: " + err);
   }
@@ -16,7 +23,10 @@ const saveStoredContributors = (contributors) => {
 window.loadStoredContributors = () => {
   try {
     const contributorFileData = window.fs.readFileSync(window.storedContributorsPath, "utf8");
-    return JSON.parse(contributorFileData);
+    const contributors = JSON.parse(contributorFileData);
+
+    // Only return contributors that have the contributor_orcid_id field
+    return contributors.filter((contributor) => contributor.contributor_orcid_id);
   } catch (err) {
     window.log.info("Error loading stored contributors file: " + err);
     window.log.info("Returning empty array instead");
@@ -27,30 +37,25 @@ window.loadStoredContributors = () => {
 // Add a new contributor to the JSON file
 // If a contributor with the same ORCiD already exists, update the existing contributor
 window.addOrUpdateStoredContributor = (
-  firstName,
-  lastName,
-  ORCiD,
-  affiliationsArray,
-  rolesArray
+  contributor_orcid_id,
+  contributor_affiliation,
+  contributor_name,
+  contributor_role
 ) => {
-  if (typeof firstName !== "string" || !firstName.length > 0) {
-    window.log.info("Attempted to add contributor with invalid first name");
-    return;
-  }
-  if (typeof lastName !== "string" || !lastName.length > 0) {
-    window.log.info("Attempted to add contributor with invalid last name");
-    return;
-  }
-  if (typeof ORCiD !== "string" || !ORCiD.length > 0) {
+  if (typeof contributor_orcid_id !== "string" || !contributor_orcid_id.length > 0) {
     window.log.info("Attempted to add contributor with invalid ORCiD");
     return;
   }
-  if (!Array.isArray(affiliationsArray) || affiliationsArray.length === 0) {
-    window.log.info("Invalid affiliations array");
+  if (typeof contributor_affiliation !== "string" || !contributor_affiliation.length > 0) {
+    window.log.info("Invalid contributor affiliation");
     return;
   }
-  if (!Array.isArray(rolesArray) || rolesArray.length === 0) {
-    window.log.info("Invalid roles array");
+  if (typeof contributor_name !== "string" || !contributor_name.length > 0) {
+    window.log.info("Invalid contributor name");
+    return;
+  }
+  if (typeof contributor_role !== "string" || !contributor_role.length > 0) {
+    window.log.info("Invalid contributor role");
     return;
   }
 
@@ -65,17 +70,16 @@ window.addOrUpdateStoredContributor = (
   }
 
   const contributorObj = {
-    firstName: firstName,
-    lastName: lastName,
-    ORCiD: ORCiD,
-    affiliations: affiliationsArray,
-    roles: rolesArray,
+    contributor_orcid_id,
+    contributor_affiliation,
+    contributor_name,
+    contributor_role,
   };
 
   const storedContributorsArray = window.loadStoredContributors();
 
   const existingStoredContributorWithSameORCiDIndex = storedContributorsArray.findIndex(
-    (contributorObj) => contributorObj.ORCiD === ORCiD
+    (contributorObj) => contributorObj.contributor_orcid_id === contributor_orcid_id
   );
 
   // If a contributor with the same ORCiD already exists, update the existing contributor
@@ -86,5 +90,5 @@ window.addOrUpdateStoredContributor = (
     storedContributorsArray.push(contributorObj);
   }
   // Write the updated array to the JSON file
-  saveStoredContributors(storedContributorsArray);
+  window.saveStoredContributors(storedContributorsArray);
 };
