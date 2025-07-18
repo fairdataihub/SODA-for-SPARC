@@ -82,7 +82,7 @@ const generateProtocolField = (identifier, identifier_description) => {
             type="button"
             class="btn btn-sm"
             style="color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);"
-            onclick="window.guidedOpenAddProtocolSwal('${identifier}')"
+            onclick="window.guidedOpenAddOrEditProtocolSwal('${identifier}')"
           >
           View/Edit
           </button>
@@ -100,7 +100,7 @@ const generateProtocolField = (identifier, identifier_description) => {
     `;
 };
 
-window.guidedOpenAddProtocolSwal = async (editIdentifier = null) => {
+window.guidedOpenAddOrEditProtocolSwal = async (editIdentifier = null) => {
   let protocolToEdit = null;
   if (editIdentifier) {
     protocolToEdit = (window.sodaJSONObj["related_resources"] || []).find(
