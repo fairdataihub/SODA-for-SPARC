@@ -34,3 +34,4 @@ dependencies:
   - flask-cors == 4.0.0
   - setuptools == 71.0.4
   - backports.tarfile
+  - pysoda-fairdataihub-tools == 0.1.50
