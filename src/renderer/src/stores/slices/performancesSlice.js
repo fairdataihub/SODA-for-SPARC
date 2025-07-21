@@ -5,11 +5,11 @@ export const performancesSlice = (set, get) => ({
   // UI state
   IsPerformanceFormVisible: false,
 
-  // Form field values - store raw ID without prefix
-  performanceId: "",
-  protocolUrl: "",
-  startDateTime: null,
-  endDateTime: null,
+  // Form field values (schema-compliant)
+  performance_id: "",
+  protocol_url_or_doi: "",
+  start_datetime: "",
+  end_datetime: "",
 
   // Performance list
   performanceList: [],
@@ -43,34 +43,52 @@ export const setPerformanceFormVisible = (IsPerformanceFormVisible) => {
 
       // Reset form fields when closing the form
       if (!IsPerformanceFormVisible) {
-        state.performanceId = "";
-        state.protocolUrl = "";
-        state.startDateTime = null;
-        state.endDateTime = null;
+        state.performance_id = "";
+        state.protocol_url_or_doi = "";
+        state.start_datetime = "";
+        state.end_datetime = "";
       }
     })
   );
 };
 
-// Update performance ID - strip prefix if present
+// Update performance_id - strip prefix if present
 export const setPerformanceId = (value) => {
   useGlobalStore.setState(
     produce((state) => {
       // Remove "perf-" prefix if user enters it
       if (value.startsWith("perf-")) {
-        state.performanceId = value.substring(5);
+        state.performance_id = value.substring(5);
       } else {
-        state.performanceId = value;
+        state.performance_id = value;
       }
     })
   );
 };
 
-// Update protocol URL
-export const setProtocolUrl = (value) => {
+// Update protocol_url_or_doi
+export const setProtocolUrlOrDoi = (value) => {
   useGlobalStore.setState(
     produce((state) => {
-      state.protocolUrl = value;
+      state.protocol_url_or_doi = value;
+    })
+  );
+};
+
+// Update start_datetime
+export const setStartDatetime = (value) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      state.start_datetime = value;
+    })
+  );
+};
+
+// Update end_datetime
+export const setEndDatetime = (value) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      state.end_datetime = value;
     })
   );
 };
@@ -93,11 +111,11 @@ export const setEndDateTime = (value) => {
   );
 };
 
-export const deletePerformance = (performanceId) => {
+export const deletePerformance = (performance_id) => {
   useGlobalStore.setState(
     produce((state) => {
       state.performanceList = state.performanceList.filter(
-        (performance) => performance.performanceId !== performanceId
+        (performance) => performance.performance_id !== performance_id
       );
     })
   );
@@ -108,7 +126,7 @@ export const addPerformance = () => {
   const state = useGlobalStore.getState();
 
   // Get raw ID from state (without prefix)
-  const rawId = state.performanceId.trim();
+  const rawId = state.performance_id.trim();
 
   // Validate ID is not empty
   if (!rawId) {
@@ -120,36 +138,59 @@ export const addPerformance = () => {
     return false;
   }
 
+  // Validate SDS identifier conventions
+  if (
+    !window.evaluateStringAgainstSdsRequirements(rawId, "string-adheres-to-identifier-conventions")
+  ) {
+    window.notyf.open({
+      duration: "4000",
+      type: "error",
+      message: "Performance ID can only contain letters, numbers, and hyphens.",
+    });
+    return false;
+  }
+
+  // Validate protocol_url_or_doi pattern only if a value is present
+  const protocolPattern = /^(https?:\/\/|doi:).+/;
+  if (state.protocol_url_or_doi && !protocolPattern.test(state.protocol_url_or_doi)) {
+    window.notyf.open({
+      duration: "4000",
+      type: "error",
+      message: "Protocol URL or DOI must start with 'https://' or 'doi:'.",
+    });
+    return false;
+  }
+
   // Construct full ID with prefix
-  const performanceId = `perf-${rawId}`;
+  const performance_id = `perf-${rawId}`;
 
   // Get other values from state
-  const protocolUrl = state.protocolUrl;
-  const startDateTime = state.startDateTime;
-  const endDateTime = state.endDateTime;
+  const protocol_url_or_doi = state.protocol_url_or_doi;
+  const start_datetime = state.start_datetime;
+  const end_datetime = state.end_datetime;
 
   // Check for duplicates in existing list
   const isDuplicate = state.performanceList.some(
-    (performance) => performance.performanceId === performanceId
+    (performance) => performance.performance_id === performance_id
   );
 
   if (isDuplicate) {
     window.notyf.open({
       duration: "4000",
       type: "error",
-      message: `Performance ID "${performanceId}" already exists.`,
+      message: `Performance ID "${performance_id}" already exists.`,
     });
     return false;
   }
 
-  // Add performance to the list with properly prefixed ID
+  // Add performance to the list with properly prefixed ID and schema fields
   useGlobalStore.setState(
     produce((state) => {
       state.performanceList.push({
-        performanceId,
-        protocolUrl,
-        startDateTime,
-        endDateTime,
+        performance_id,
+        protocol_url_or_doi,
+        start_datetime,
+        end_datetime,
       });
     })
   );
@@ -157,7 +198,7 @@ export const addPerformance = () => {
   window.notyf.open({
     duration: "4000",
     type: "success",
-    message: `Performance ${performanceId} added successfully.`,
+    message: `Performance ${performance_id} added successfully.`,
   });
 
   // Close form after adding
@@ -172,7 +213,7 @@ export const updatePerformance = () => {
 
   // Get the original and new IDs
   const originalId = state.originalPerformanceId;
-  const rawId = state.performanceId.trim();
+  const rawId = state.performance_id.trim();
 
   // Validate ID is not empty
   if (!rawId) {
@@ -184,18 +225,41 @@ export const updatePerformance = () => {
     return false;
   }
 
+  // Validate SDS identifier conventions
+  if (
+    !window.evaluateStringAgainstSdsRequirements(rawId, "string-adheres-to-identifier-conventions")
+  ) {
+    window.notyf.open({
+      duration: "4000",
+      type: "error",
+      message: "Performance ID can only contain letters, numbers, and hyphens.",
+    });
+    return false;
+  }
+
+  // Validate protocol_url_or_doi pattern only if a value is present
+  const protocolPattern = /^(https?:\/\/|doi:).+/;
+  if (state.protocol_url_or_doi && !protocolPattern.test(state.protocol_url_or_doi)) {
+    window.notyf.open({
+      duration: "4000",
+      type: "error",
+      message: "Protocol URL or DOI must start with 'https://' or 'doi:'.",
+    });
+    return false;
+  }
+
   // Construct full ID with prefix
   const newPerformanceId = `perf-${rawId}`;
 
   // Get other values from state
-  const protocolUrl = state.protocolUrl;
-  const startDateTime = state.startDateTime;
-  const endDateTime = state.endDateTime;
+  const protocol_url_or_doi = state.protocol_url_or_doi;
+  const start_datetime = state.start_datetime;
+  const end_datetime = state.end_datetime;
 
   // Check for duplicates only if ID has changed
   if (newPerformanceId !== originalId) {
     const isDuplicate = state.performanceList.some(
-      (performance) => performance.performanceId === newPerformanceId
+      (performance) => performance.performance_id === newPerformanceId
     );
 
     if (isDuplicate) {
@@ -213,15 +277,15 @@ export const updatePerformance = () => {
     produce((state) => {
       // Remove the old performance
       state.performanceList = state.performanceList.filter(
-        (performance) => performance.performanceId !== originalId
+        (performance) => performance.performance_id !== originalId
       );
 
       // Add the updated performance
       state.performanceList.push({
-        performanceId: newPerformanceId,
-        protocolUrl,
-        startDateTime,
-        endDateTime,
+        performance_id: newPerformanceId,
+        protocol_url_or_doi,
+        start_datetime,
+        end_datetime,
       });
 
       // Reset edit mode

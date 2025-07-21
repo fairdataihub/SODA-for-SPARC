@@ -51,10 +51,14 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     const guidedPennsievePrimaryConclusion =
       window.sodaJSONObj["digital-metadata"]["description"]["primary-conclusion"];
     const guidedBannerImagePath = window.sodaJSONObj["digital-metadata"]?.["banner-image-path"];
+    // Create standardized structure
     const standardizedDatasetStructure = createStandardizedDatasetStructure(
       window.datasetStructureJSONObj,
       window.sodaJSONObj["dataset-entity-obj"]
     );
+    console.log("standardizedDatasetStructure", standardizedDatasetStructure);
+
+    // Set the standardized dataset structure in the global SODA JSON object (used on the backend)
     window.sodaJSONObj["soda_json_structure"] = standardizedDatasetStructure;
 
     // If retrying upload, skip to upload step

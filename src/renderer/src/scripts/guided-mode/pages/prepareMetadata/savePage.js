@@ -178,7 +178,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     const subjectsMetadata = window.sodaJSONObj["dataset_metadata"]["subjects"];
     const samplesMetadata = window.sodaJSONObj["dataset_metadata"]["samples"];
     const sitesMetadata = window.sodaJSONObj["dataset_metadata"]["sites"];
-    const performancesMetadata = window.sodaJSONObj["dataset_metadata"]["performances"];
+    const performancesMetadata = window.sodaJSONObj["dataset_performances"];
 
     const numSubjects = subjectsMetadata ? subjectsMetadata.length : 0;
     const numSamples = samplesMetadata ? samplesMetadata.length : 0;
