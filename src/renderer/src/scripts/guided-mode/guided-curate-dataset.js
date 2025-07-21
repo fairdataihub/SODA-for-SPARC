@@ -5,7 +5,7 @@ import { guidedSaveProgress } from "./pages/savePageChanges";
 import {
   getContributorByOrcid,
   addContributor,
-  renderDatasetDescriptionContributorsTable,
+  renderContributorsTable,
 } from "./metadata/contributors";
 import { generateAlertElement } from "./metadata/utils";
 import determineDatasetLocation from "../analytics/analytics-utils";
@@ -788,16 +788,13 @@ const handleValidationTableUi = (errors) => {
 
 window.deleteContributor = (clickedDelContribuButton, contributorOrcid) => {
   const contributorField = clickedDelContribuButton.parentElement.parentElement;
-  const contributorsBeforeDelete =
-    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"];
+  const contributorsBeforeDelete = window.sodaJSONObj["dataset_contributors"];
 
-  window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"] =
-    contributorsBeforeDelete.filter((contributor) => {
-      return contributor.conID !== contributorOrcid;
-    });
-  contributorField.remove();
+  window.sodaJSONObj["dataset_contributors"] = contributorsBeforeDelete.filter((contributor) => {
+    return contributor.contributor_orcid_id !== contributorOrcid;
+  });
   //rerender the table after deleting a contributor
-  renderDatasetDescriptionContributorsTable();
+  renderContributorsTable();
 };
 
 // end imported openPage stuff
@@ -899,24 +896,6 @@ const guidedOpenEntityEditSwal = async (entityName) => {
   }
 };
 
-function setGuidedProgressBarValue(destination, value) {
-  const progressBar = document.querySelector(`#guided-progress-bar-${destination}-generation`);
-  if (progressBar) {
-    progressBar.setAttribute("value", value);
-  } else {
-    console.error(`Could not find progress bar for ${destination}`);
-  }
-}
-
-const generateAlertMessage = (elementToWarn) => {
-  const alertMessage = elementToWarn.data("alert-message");
-  const alertType = elementToWarn.data("alert-type");
-  if (!elementToWarn.next().hasClass("alert")) {
-    elementToWarn.after(generateAlertElement(alertType, alertMessage));
-  }
-  enableProgressButton();
-};
-
 const removeAlertMessageIfExists = (elementToCheck) => {
   const alertMessageToRemove = elementToCheck.next();
   if (alertMessageToRemove.hasClass("alert")) {
@@ -966,8 +945,7 @@ window.removeContributorField = (contributorDeleteButton) => {
   const contributorField = contributorDeleteButton.parentElement;
   const { contributorFirstName, contributorLastName } = contributorField.dataset;
 
-  const contributorsBeforeDelete =
-    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"];
+  const contributorsBeforeDelete = window.sodaJSONObj["dataset_contributors"];
   //If the contributor has data-first-name and data-last-name, then it is a contributor that
   //already been added. Delete it from the contributors array.
   if (contributorFirstName && contributorLastName) {
@@ -979,31 +957,33 @@ window.removeContributorField = (contributorDeleteButton) => {
       );
     });
 
-    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"] =
-      filteredContributors;
+    window.sodaJSONObj["dataset_contributors"];
+    filteredContributors;
   }
 
   contributorField.remove();
 };
 
 const getExistingContributorORCiDs = () => {
-  return window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"].map(
-    (contributor) => {
-      return contributor.conID;
-    }
-  );
+  return window.sodaJSONObj["dataset_contributors"].map((contributor) => {
+    return contributor.contributor_orcid_id;
+  });
 };
 
 const editContributorByOrcid = (
   prevContributorOrcid,
-  contributorFirstName,
   contributorLastName,
+  contributorFirstName,
   newContributorOrcid,
-  contributorAffiliationsArray,
-  contributorRolesArray
+  contributor_affiliation,
+  contributor_role
 ) => {
-  const contributor = getContributorByOrcid(prevContributorOrcid);
-  if (!contributor) {
+  // Get the index of the contributor to edit
+  const contributorsIndex = window.sodaJSONObj["dataset_contributors"].findIndex(
+    (contributor) => contributor["contributor_orcid_id"] === prevContributorOrcid
+  );
+
+  if (contributorsIndex === -1) {
     throw new Error("No contributor with the entered ORCID exists");
   }
 
@@ -1013,272 +993,33 @@ const editContributorByOrcid = (
     }
   }
 
-  contributor.contributorFirstName = contributorFirstName;
-  contributor.contributorLastName = contributorLastName;
-  contributor.conName = `${contributorLastName}, ${contributorFirstName}`;
-  contributor.conID = newContributorOrcid;
-  contributor.conAffliation = contributorAffiliationsArray;
-  contributor.conRole = contributorRolesArray;
-
-  // Update the contributor's locally stored data
-  try {
-    window.addOrUpdateStoredContributor(
-      contributorFirstName,
-      contributorLastName,
-      newContributorOrcid,
-      contributorAffiliationsArray,
-      contributorRolesArray
-    );
-  } catch (error) {
-    console.error("Failed to edit contributor data" + error);
-  }
+  // Update the contributor's information
+  window.sodaJSONObj["dataset_contributors"][contributorsIndex] = {
+    contributor_orcid_id: newContributorOrcid,
+    contributor_first_name: contributorFirstName,
+    contributor_last_name: contributorLastName,
+    contributor_affiliation: contributor_affiliation,
+    contributor_role: contributor_role,
+  };
 };
 
-window.openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
-  const contributorData = getContributorByOrcid(contibuttorOrcidToEdit);
-  const contributorFirstName = contributorData.contributorFirstName;
-  const contributorLastName = contributorData.contributorLastName;
-  const contributorORCID = contributorData.conID;
-  const contributorAffiliationsArray = contributorData.conAffliation;
-  const contributorRolesArray = contributorData.conRole;
-  const contributorFullName = contributorData.conName;
-
-  let boolShowIncorrectFullName = false;
-
-  if (contributorFirstName.length === 0 && contributorLastName.length === 0) {
-    boolShowIncorrectFullName = true;
+const handleAddOrEditContributorHeaderUI = (boolEditingContributor) => {
+  // When editing a contributor, simply display the header for editing
+  if (boolEditingContributor) {
+    return `
+      <label class="guided--form-label centered mb-md" style="font-size: 1em !important;">
+        Edit the contributor's information below.
+      </label>
+    `;
   }
-
-  let affiliationTagify;
-  let contributorRolesTagify;
-
-  await Swal.fire({
-    allowOutsideClick: false,
-    allowEscapeKey: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    width: "800px",
-    heightAuto: false,
-    html: `
-      <div class="guided--flex-center mt-sm">
-        <label class="guided--form-label centered mb-md">
-          Make changes to the contributor's information below.
-        </label>
-        ${
-          boolShowIncorrectFullName
-            ? `
-              <div class="guided--container-warning-text">
-                <p class="guided--help-text">
-                  Contributor names should be in the format of "Last name, First name".
-                  <br />
-                  The name found on Pennsieve was: <b>${contributorFullName}</b>
-                </p>
-              </div>
-              `
-            : ``
-        }
-        <div class="space-between w-100">
-          <div class="guided--flex-center mt-sm" style="width: 45%">
-            <label class="guided--form-label required">First name: </label>
-            <input
-              class="guided--input"
-              id="guided-contributor-first-name"
-              type="text"
-              placeholder="Contributor's first name"
-              value=""
-            />
-          </div>
-          <div class="guided--flex-center mt-sm" style="width: 45%">
-            <label class="guided--form-label required">Last name: </label>
-            <input
-              class="guided--input"
-              id="guided-contributor-last-name"
-              type="text"
-              placeholder="Contributor's Last name"
-              value=""
-            />
-            </div>
-          </div>
-          <label class="guided--form-label mt-md required">ORCID: </label>
-          <input
-            class="guided--input"
-            id="guided-contributor-orcid"
-            type="text"
-            placeholder="https://orcid.org/0000-0000-0000-0000"
-            value=""
-          />
-          <p class="guided--text-input-instructions mb-0 text-left">
-            If your contributor does not have an ORCID, have the contributor <a
-            target="_blank"
-            href="https://orcid.org"
-            >sign up for one on orcid.org</a
-          >.
-
-          </p>
-          <label class="guided--form-label mt-md required">Affiliation(s): </label>
-          <input id="guided-contributor-affiliation-input"
-            contenteditable="true"
-          />
-          <p class="guided--text-input-instructions mb-0 text-left">
-            Institution(s) the contributor is affiliated with.
-            <br />
-            <b>
-              Press enter after entering an institution to add it to the list.
-            </b>
-          </p>
-          <label class="guided--form-label mt-md required">Role(s): </label>
-          <input id="guided-contributor-roles-input"
-            contenteditable="true"
-          />
-          <p class="guided--text-input-instructions mb-0 text-left">
-            Role(s) the contributor played in the creation of the dataset. Visit <a target="_blank" href="https://schema.datacite.org/meta/kernel-4.4/doc/DataCite-MetadataKernel_v4.4.pdf">DataCite</a> for a definition of the roles.
-            <br />
-            <b>
-              Select a role from the dropdown to add it to the list.
-            </b>
-          </p>
-        </div>
-      </div>
-    `,
-    showCancelButton: true,
-    confirmButtonText: "Edit contributor",
-    confirmButtonColor: "#3085d6 !important",
-    willOpen: () => {
-      //Create Affiliation(s) tagify for each contributor
-      const contributorAffiliationInput = document.getElementById(
-        "guided-contributor-affiliation-input"
-      );
-      affiliationTagify = new Tagify(contributorAffiliationInput, { duplicate: false });
-      window.createDragSort(affiliationTagify);
-      affiliationTagify.addTags(contributorAffiliationsArray);
-
-      const contributorRolesInput = document.getElementById("guided-contributor-roles-input");
-      contributorRolesTagify = new Tagify(contributorRolesInput, {
-        whitelist: [
-          "ContactPerson",
-          "CoInvestigator",
-          "CorrespondingAuthor",
-          "Creator",
-          "DataCollector",
-          "DataCurator",
-          "DataManager",
-          "Distributor",
-          "Editor",
-          "HostingInstitution",
-          "PrincipalInvestigator",
-          "Producer",
-          "ProjectLeader",
-          "ProjectManager",
-          "ProjectMember",
-          "RegistrationAgency",
-          "RegistrationAuthority",
-          "RelatedPerson",
-          "ResearchGroup",
-          "Researcher",
-          "RightsHolder",
-          "Sponsor",
-          "Supervisor",
-          "WorkPackageLeader",
-          "Other",
-        ],
-        enforceWhitelist: true,
-        dropdown: { maxItems: Infinity, enabled: 0, closeOnSelect: true, position: "auto" },
-      });
-      window.createDragSort(contributorRolesTagify);
-      contributorRolesTagify.addTags(contributorRolesArray);
-
-      document.getElementById("guided-contributor-first-name").value = contributorFirstName;
-      document.getElementById("guided-contributor-last-name").value = contributorLastName;
-      document.getElementById("guided-contributor-orcid").value = contributorORCID;
-    },
-
-    preConfirm: async () => {
-      const contributorFirstName = document.getElementById("guided-contributor-first-name").value;
-      const contributorLastName = document.getElementById("guided-contributor-last-name").value;
-      const contributorOrcid = document.getElementById("guided-contributor-orcid").value;
-      const contributorAffiliations = affiliationTagify.value.map((item) => item.value);
-      const contributorRoles = contributorRolesTagify.value.map((item) => item.value);
-
-      if (
-        !contributorFirstName ||
-        !contributorLastName ||
-        !contributorOrcid ||
-        contributorAffiliations.length === 0 ||
-        contributorRoles.length === 0
-      ) {
-        return Swal.showValidationMessage("Please fill out all required fields");
-      }
-
-      if (contributorOrcid.length !== 37) {
-        return Swal.showValidationMessage(
-          "Please enter ORCID ID in the format: https://orcid.org/0000-0000-0000-0000"
-        );
-      }
-
-      // If a contributor has already been marked as Principal Investigator, make sure that the
-      // current contributor is the one marked as Principal Investigator
-      // otherwise, show an error message
-      if (contributorRoles.includes("PrincipalInvestigator")) {
-        const currentPIsOrcid = getContributorMarkedAsPrincipalInvestigator();
-        if (currentPIsOrcid && currentPIsOrcid !== contributorOrcid) {
-          return Swal.showValidationMessage(
-            "Only one contributor can be marked as Principal Investigator"
-          );
-        }
-      }
-
-      if (contributorFirstName.includes(",") || contributorLastName.includes(",")) {
-        return Swal.showValidationMessage("Please remove commas from the name fields");
-      }
-
-      // Verify ORCID ID
-      const orcidSite = contributorOrcid.substr(0, 18);
-      if (orcidSite !== "https://orcid.org/") {
-        return Swal.showValidationMessage(
-          "Please enter your ORCID ID with https://orcid.org/ in the beginning"
-        );
-      }
-
-      const orcidDigits = contributorOrcid.substr(18);
-      let total = 0;
-      for (let i = 0; i < orcidDigits.length - 1; i++) {
-        const digit = parseInt(orcidDigits.substr(i, 1));
-        if (isNaN(digit)) {
-          continue;
-        }
-        total = (total + digit) * 2;
-      }
-
-      const remainder = total % 11;
-      const result = (12 - remainder) % 11;
-      const checkDigit = result === 10 ? "X" : String(result);
-
-      if (checkDigit !== contributorOrcid.substr(-1)) {
-        return Swal.showValidationMessage("ORCID iD does not exist");
-      }
-
-      try {
-        await editContributorByOrcid(
-          contibuttorOrcidToEdit,
-          contributorFirstName,
-          contributorLastName,
-          contributorOrcid,
-          contributorAffiliations,
-          contributorRoles
-        );
-      } catch (error) {
-        return Swal.showValidationMessage(error);
-      }
-
-      renderDatasetDescriptionContributorsTable();
-    },
-  });
-};
-
-const handleAddContributorHeaderUI = () => {
   const existingContributorORCiDs = getExistingContributorORCiDs();
+  console.log("existingContributorORCiDs", existingContributorORCiDs);
+
   const locallyStoredContributorArray = window.loadStoredContributors().filter((contributor) => {
-    return !existingContributorORCiDs.includes(contributor.ORCiD);
+    return !existingContributorORCiDs.includes(contributor["contributor_orcid_id"]);
   });
+
+  console.log("locallyStoredContributorArray", locallyStoredContributorArray);
 
   // If no stored contributors are found, use the default header
   if (locallyStoredContributorArray.length === 0) {
@@ -1289,25 +1030,20 @@ const handleAddContributorHeaderUI = () => {
     `;
   }
 
-  const contributorOptions = locallyStoredContributorArray
-    .filter((contributor) => {
-      // Filter out any contributors that have already been added by ORCID
-      return !existingContributorORCiDs.includes(contributor.ORCiD);
-    })
-    .map((contributor) => {
-      return `
+  const contributorOptions = locallyStoredContributorArray.map((contributor) => {
+    return `
         <option
-          value="${contributor.lastName}, ${contributor.firstName}"
-          data-first-name="${contributor.firstName ?? ""}"
-          data-last-name="${contributor.lastName ?? ""}"
-          data-orcid="${contributor.ORCiD ?? ""}"
-          data-affiliation="${contributor.affiliations ?? contributor.affiliations.join(",") ?? ""}"
-          data-roles="${contributor.roles ? contributor.roles.join(",") : ""}"
+          value="${contributor.contributor_last_name}, ${contributor.contributor_first_name}"
+          data-first-name="${contributor.contributor_first_name ?? ""}"
+          data-last-name="${contributor.contributor_last_name ?? ""}"
+          data-orcid="${contributor.contributor_orcid_id ?? ""}"
+          data-affiliation="${contributor.contributor_affiliation ?? ""}"
+          data-roles="${contributor.contributor_role ?? ""}"
         >
           ${contributor.lastName}, ${contributor.firstName}
         </option>
       `;
-    });
+  });
 
   return `
     <label class="guided--form-label centered mb-2" style="font-size: 1em !important;">
@@ -1337,9 +1073,23 @@ const handleAddContributorHeaderUI = () => {
   `;
 };
 
-window.openGuidedAddContributorSwal = async () => {
-  let affiliationTagify;
-  let contributorRolesTagify;
+window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) => {
+  let defaultFirstName = "";
+  let defaultLastName = "";
+  let defaultOrcid = "";
+  let defaultAffiliation = "";
+  let defaultRole = "";
+  let contributorSwalTitle = "Add a new contributor";
+
+  if (contributorIdToEdit) {
+    const contributorData = getContributorByOrcid(contributorIdToEdit);
+    defaultFirstName = contributorData["contributor_first_name"] || "";
+    defaultLastName = contributorData["contributor_last_name"] || "";
+    defaultOrcid = contributorData["contributor_orcid_id"] || "";
+    defaultAffiliation = contributorData["contributor_affiliation"] || "";
+    defaultRole = contributorData["contributor_role"] || "";
+    contributorSwalTitle = `Edit contributor ${defaultLastName}, ${defaultFirstName}`;
+  }
 
   await Swal.fire({
     allowOutsideClick: false,
@@ -1347,159 +1097,164 @@ window.openGuidedAddContributorSwal = async () => {
     backdrop: "rgba(0,0,0, 0.4)",
     width: "900px",
     heightAuto: false,
-    // title: contributorSwalTitle,
+    title: contributorSwalTitle,
     html: `
       <div class="guided--flex-center mb-1" style="font-size: 1em !important; height: 550px;">
-        ${handleAddContributorHeaderUI()}
+        ${handleAddOrEditContributorHeaderUI(!!contributorIdToEdit)}
         <div class="space-between w-100">
-            <div class="guided--flex-center mt-sm" style="width: 45%">
-              <label class="guided--form-label required" style="font-size: 1em !important;">First name: </label>
-              <input
-                class="guided--input"
-                id="guided-contributor-first-name"
-                type="text"
-                placeholder="Contributor's first name"
-                value=""
-              />
-            </div>
-            <div class="guided--flex-center mt-sm" style="width: 45%">
-              <label class="guided--form-label required" style="font-size: 1em !important;">Last name: </label>
-              <input
-                class="guided--input"
-                id="guided-contributor-last-name"
-                type="text"
-                placeholder="Contributor's Last name"
-                value=""
-              />
-            </div>
+          <div class="guided--flex-center mt-sm" style="width: 45%">
+            <label class="guided--form-label required" style="font-size: 1em !important;">Last name: </label>
+            <input
+              class="guided--input"
+              id="guided-contributor-last-name"
+              type="text"
+              placeholder="Contributor's last name"
+              value="${defaultLastName}"
+            />
           </div>
-          <label class="guided--form-label mt-md required" style="font-size: 1em !important;">ORCID: </label>
-          <input
-            class="guided--input"
-            id="guided-contributor-orcid"
-            type="text"
-            placeholder="https://orcid.org/0000-0000-0000-0000"
-            value=""
-          />
-          <p class="guided--text-input-instructions mb-0 text-left">
-            If your contributor does not have an ORCID, have the contributor <a
-            target="_blank"
-            href="https://orcid.org/register"
-            >sign up for one on orcid.org</a
-          >.
-
-          </p>
-          <label class="guided--form-label mt-md required" style="font-size: 1em !important;">Affiliation(s): </label>
-          <input id="guided-contributor-affiliation-input"
-            contenteditable="true"
-          />
-          <p class="guided--text-input-instructions mb-0 text-left">
-            Institution(s) the contributor is affiliated with.
-            <br />
-            <b>
-              Press enter after entering an institution to add it to the list.
-            </b>
-          </p>
-          <label class="guided--form-label mt-md required" style="font-size: 1em !important;">Role(s): </label>
-          <input id="guided-contributor-roles-input"
-            contenteditable="true"
-          />
-          <p class="guided--text-input-instructions mb-0 text-left">
-            Role(s) the contributor played in the creation of the dataset. Visit <a  target="_blank" rel="noopener noreferrer" href="https://schema.datacite.org/meta/kernel-4.4/doc/DataCite-MetadataKernel_v4.4.pdf">DataCite</a> for a definition of the roles.
-            <br />
-            <b>
-              Select a role from the dropdown to add it to the list.
-            </b>
-          </p>
+          <div class="guided--flex-center mt-sm" style="width: 45%">
+            <label class="guided--form-label required" style="font-size: 1em !important;">First name: </label>
+            <input
+              class="guided--input"
+              id="guided-contributor-first-name"
+              type="text"
+              placeholder="Contributor's first name"
+              value="${defaultFirstName}"
+            />
+          </div>
         </div>
+        <label class="guided--form-label mt-md required" style="font-size: 1em !important;">ORCID: </label>
+        <input
+          class="guided--input"
+          id="guided-contributor-orcid"
+          type="text"
+          placeholder="https://orcid.org/0000-0000-0000-0000"
+          value="${defaultOrcid}"
+        />
+        <p class="guided--text-input-instructions mb-0 text-left">
+          If your contributor does not have an ORCID, have the contributor <a
+          target="_blank"
+          href="https://orcid.org/register"
+          >sign up for one on orcid.org</a>.
+        </p>
+
+        <label class="guided--form-label mt-md required" style="font-size: 1em !important;">Affiliation: </label>
+        <input
+          class="guided--input"
+          id="guided-contributor-affiliation-input"
+          type="text"
+          placeholder="Institution name"
+          value="${defaultAffiliation}"
+        />
+        <p class="guided--text-input-instructions mb-0 text-left">
+          Institution the contributor is affiliated with.
+        </p>
+
+        <label class="guided--form-label mt-md required" style="font-size: 1em !important;">Role: </label>
+        <select
+          id="guided-contributor-role-select"
+          class="w-100 SODA-select-picker"
+          title="Select a role"
+          data-live-search="true"
+          name="Dataset contributor role"
+        >
+          <option value="">Select a role</option>
+          <option value="ContactPerson">Contact Person</option>
+          <option value="CoInvestigator">Co-Investigator</option>
+          <option value="CorrespondingAuthor">Corresponding Author</option>
+          <option value="Creator">Creator</option>
+          <option value="DataCollector">Data Collector</option>
+          <option value="DataCurator">Data Curator</option>
+          <option value="DataManager">Data Manager</option>
+          <option value="Distributor">Distributor</option>
+          <option value="Editor">Editor</option>
+          <option value="HostingInstitution">Hosting Institution</option>
+          <option value="PrincipalInvestigator">Principal Investigator</option>
+          <option value="Producer">Producer</option>
+          <option value="ProjectLeader">Project Leader</option>
+          <option value="ProjectManager">Project Manager</option>
+          <option value="ProjectMember">Project Member</option>
+          <option value="RegistrationAgency">Registration Agency</option>
+          <option value="RegistrationAuthority">Registration Authority</option>
+          <option value="RelatedPerson">Related Person</option>
+          <option value="ResearchGroup">Research Group</option>
+          <option value="Researcher">Researcher</option>
+          <option value="RightsHolder">Rights Holder</option>
+          <option value="Sponsor">Sponsor</option>
+          <option value="Supervisor">Supervisor</option>
+          <option value="WorkPackageLeader">Work Package Leader</option>
+          <option value="Other">Other</option>
+        </select>
+        <p class="guided--text-input-instructions mb-0 text-left">
+          Role the contributor played in the creation of the dataset. Visit <a target="_blank" rel="noopener noreferrer" href="https://schema.datacite.org/meta/kernel-4.4/doc/DataCite-MetadataKernel_v4.4.pdf">DataCite</a> for a definition of the roles.
+          <br />
+          <b>Select a role from the dropdown.</b>
+        </p>
       </div>
     `,
     showCancelButton: true,
-    confirmButtonText: "Add contributor",
+    confirmButtonText: contributorIdToEdit ? "Edit contributor" : "Add contributor",
     confirmButtonColor: "#3085d6 !important",
     willOpen: () => {
-      //Create Affiliation(s) tagify for each contributor
-      const contributorAffiliationInput = document.getElementById(
-        "guided-contributor-affiliation-input"
-      );
-      affiliationTagify = new Tagify(contributorAffiliationInput, { duplicate: false });
-      window.createDragSort(affiliationTagify);
-
-      const contributorRolesInput = document.getElementById("guided-contributor-roles-input");
-      contributorRolesTagify = new Tagify(contributorRolesInput, {
-        whitelist: [
-          "ContactPerson",
-          "CoInvestigator",
-          "CorrespondingAuthor",
-          "Creator",
-          "DataCollector",
-          "DataCurator",
-          "DataManager",
-          "Distributor",
-          "Editor",
-          "HostingInstitution",
-          "Other",
-          "PrincipalInvestigator",
-          "Producer",
-          "ProjectLeader",
-          "ProjectManager",
-          "ProjectMember",
-          "RegistrationAgency",
-          "RegistrationAuthority",
-          "RelatedPerson",
-          "ResearchGroup",
-          "Researcher",
-          "RightsHolder",
-          "Sponsor",
-          "Supervisor",
-          "WorkPackageLeader",
-        ],
-        enforceWhitelist: true,
-        dropdown: { maxItems: Infinity, enabled: 0, closeOnSelect: true, position: "auto" },
-      });
-      window.createDragSort(contributorRolesTagify);
-
+      // Initialize selectpicker on stored contributors dropdown
       $("#guided-stored-contributors-select").selectpicker({ style: "SODA-select-picker" });
       $("#guided-stored-contributors-select").selectpicker("refresh");
+
+      // Initialize selectpicker on role select dropdown
+      $("#guided-contributor-role-select").selectpicker({ style: "SODA-select-picker" });
+      $("#guided-contributor-role-select").selectpicker("refresh");
+
+      // If editing, set default role in role select
+      if (defaultRole) {
+        $("#guided-contributor-role-select").selectpicker("val", defaultRole);
+      }
+
+      // When selecting a stored contributor, populate fields including role select
       $("#guided-stored-contributors-select").on("change", function () {
-        const selectedFirstName = $("#guided-stored-contributors-select option:selected").data(
-          "first-name"
-        );
-        const selectedLastName = $("#guided-stored-contributors-select option:selected").data(
-          "last-name"
-        );
-        const selectedOrcid = $("#guided-stored-contributors-select option:selected").data("orcid");
-        const selectedAffiliation = $("#guided-stored-contributors-select option:selected").data(
-          "affiliation"
-        );
-        const selectedRoles = $("#guided-stored-contributors-select option:selected").data("roles");
+        const selectedFirstName =
+          $("#guided-stored-contributors-select option:selected").data("first-name") || "";
+        const selectedLastName =
+          $("#guided-stored-contributors-select option:selected").data("last-name") || "";
+        const selectedOrcid =
+          $("#guided-stored-contributors-select option:selected").data("orcid") || "";
+        const selectedAffiliation =
+          $("#guided-stored-contributors-select option:selected").data("affiliation") || "";
+        const selectedRole =
+          $("#guided-stored-contributors-select option:selected").data("roles") || "";
+
         document.getElementById("guided-contributor-first-name").value = selectedFirstName;
         document.getElementById("guided-contributor-last-name").value = selectedLastName;
         document.getElementById("guided-contributor-orcid").value = selectedOrcid;
-        affiliationTagify.removeAllTags();
-        affiliationTagify.addTags(selectedAffiliation);
-        contributorRolesTagify.removeAllTags();
-        contributorRolesTagify.addTags(selectedRoles.split());
+        document.getElementById("guided-contributor-affiliation-input").value = selectedAffiliation;
+
+        $("#guided-contributor-role-select").selectpicker("val", selectedRole);
       });
     },
-
     preConfirm: () => {
-      const contributorFirstName = document
+      const contributorFirstNameValue = document
         .getElementById("guided-contributor-first-name")
         .value.trim();
-      const contributorLastName = document
+      const contributorLastNameValue = document
         .getElementById("guided-contributor-last-name")
         .value.trim();
       const contributorOrcid = document.getElementById("guided-contributor-orcid").value.trim();
-      const contributorAffiliations = affiliationTagify.value.map((item) => item.value);
-      const contributorRoles = contributorRolesTagify.value.map((item) => item.value);
+      const contributorAffiliation = document
+        .getElementById("guided-contributor-affiliation-input")
+        .value.trim();
+      const contributorRole = document.getElementById("guided-contributor-role-select").value;
+
+      console.log("contributorFirstNameValue", contributorFirstNameValue);
+      console.log("contributorLastNameValue", contributorLastNameValue);
+      console.log("contributorOrcid", contributorOrcid);
+      console.log("contributorAffiliation", contributorAffiliation);
+      console.log("contributorRole", contributorRole);
 
       if (
-        !contributorFirstName ||
-        !contributorLastName ||
+        !contributorFirstNameValue ||
+        !contributorLastNameValue ||
         !contributorOrcid ||
-        contributorAffiliations.length === 0 ||
-        contributorRoles.length === 0
+        !contributorAffiliation ||
+        !contributorRole
       ) {
         return Swal.showValidationMessage("Please fill out all required fields");
       }
@@ -1510,19 +1265,10 @@ window.openGuidedAddContributorSwal = async () => {
         );
       }
 
-      if (contributorRoles.includes("PrincipalInvestigator")) {
-        if (getContributorMarkedAsPrincipalInvestigator()) {
-          return Swal.showValidationMessage(
-            "Only one contributor can be marked as Principal Investigator"
-          );
-        }
-      }
-
-      if (contributorFirstName.includes(",") || contributorLastName.includes(",")) {
+      if (contributorFirstNameValue.includes(",") || contributorLastNameValue.includes(",")) {
         return Swal.showValidationMessage("Please remove commas from the name fields");
       }
 
-      // Verify ORCID ID
       const orcidSite = contributorOrcid.substr(0, 18);
       if (orcidSite !== "https://orcid.org/") {
         return Swal.showValidationMessage(
@@ -1534,9 +1280,7 @@ window.openGuidedAddContributorSwal = async () => {
       let total = 0;
       for (let i = 0; i < orcidDigits.length - 1; i++) {
         const digit = parseInt(orcidDigits.substr(i, 1));
-        if (isNaN(digit)) {
-          continue;
-        }
+        if (isNaN(digit)) continue;
         total = (total + digit) * 2;
       }
 
@@ -1548,62 +1292,46 @@ window.openGuidedAddContributorSwal = async () => {
         return Swal.showValidationMessage("ORCID iD does not exist");
       }
 
-      // Combine first and last name into full name
-      const contributorsFullName = `${contributorLastName}, ${contributorFirstName}`;
-
       try {
-        addContributor(
-          contributorsFullName,
-          contributorOrcid,
-          contributorAffiliations,
-          contributorRoles
-        );
+        if (contributorIdToEdit) {
+          console.log("Editing existing contributor with ORCID:", contributorIdToEdit);
+          // If editing an existing contributor, update their data
+          editContributorByOrcid(
+            contributorIdToEdit,
+            contributorLastNameValue,
+            contributorFirstNameValue,
+            contributorOrcid,
+            contributorAffiliation,
+            contributorRole
+          );
+          console.log("Contributor edited successfully");
+        } else {
+          // If adding a new contributor, add them to the dataset
+          addContributor(
+            contributorLastNameValue,
+            contributorFirstNameValue,
+            contributorOrcid,
+            contributorAffiliation,
+            contributorRole // keep role as an array for compatibility
+          );
+          console.log("Contributor added successfully");
+        }
       } catch (error) {
         return Swal.showValidationMessage(error);
       }
 
-      //rerender the table after adding a contributor
-      renderDatasetDescriptionContributorsTable();
+      renderContributorsTable();
     },
   });
 };
 
-window.contributorDataIsValid = (contributorObj) => {
-  if (
-    contributorObj.conAffliation.length > 0 &&
-    contributorObj.conID &&
-    contributorObj.conRole.length > 0 &&
-    contributorObj.contributorFirstName.length > 0 &&
-    contributorObj.contributorLastName.length > 0
-  ) {
-    return true;
-  } else {
-    return false;
-  }
-};
-
-const getContributorMarkedAsPrincipalInvestigator = () => {
-  const contributors =
-    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"];
-  const PrincipalInvestigator = contributors.find((contributor) =>
-    contributor["conRole"].includes("PrincipalInvestigator")
-  );
-  // If there is no Principal Investigator, return null
-  if (!PrincipalInvestigator) {
-    return null;
-  }
-  // Otherwise, return their ORCID
-  return PrincipalInvestigator["conID"];
-};
-
 const switchOrderOfContributors = (draggedOrcid, targetOrcid) => {
-  const contributors =
-    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"];
+  const contributors = window.sodaJSONObj["dataset_contributors"];
   const draggedContributorIndex = contributors.findIndex(
-    (contributor) => contributor["conID"] === draggedOrcid
+    (contributor) => contributor["contributor_orcid_id"] === draggedOrcid
   );
   const targetContributorIndex = contributors.findIndex(
-    (contributor) => contributor["conID"] === targetOrcid
+    (contributor) => contributor["contributor_orcid_id"] === targetOrcid
   );
 
   // If the dragged contributor is above the target contributor
@@ -1617,7 +1345,7 @@ const switchOrderOfContributors = (draggedOrcid, targetOrcid) => {
     contributors.splice(targetContributorIndex, 0, contributors[draggedContributorIndex]);
     contributors.splice(draggedContributorIndex + 1, 1);
   }
-  window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"] = contributors;
+  window.sodaJSONObj["dataset_contributors"] = contributors;
 };
 
 // Constants used for drag and drop functionality for contributors
@@ -1642,7 +1370,7 @@ window.handleContributorDrop = (event) => {
 
   switchOrderOfContributors(draggedOrcid, targetOrcid);
 
-  renderDatasetDescriptionContributorsTable();
+  renderContributorsTable();
 };
 
 export const renderAdditionalLinksTable = () => {
@@ -3415,19 +3143,6 @@ document
     }
   });
 
-$("#guided-add-subject-button").on("click", () => {
-  $("#guided-subjects-intro").hide();
-  $("#guided-add-subject-div").show();
-});
-
-$("#guided-button-edit-protocol-fields").on("click", () => {
-  enableElementById("protocols-container");
-  enableElementById("guided-button-add-protocol");
-  //switch button from edit to save
-  document.getElementById("guided-button-edit-protocol-fields").style.display = "none";
-  document.getElementById("guided-button-save-protocol-fields").style.display = "flex";
-  unPulseNextButton();
-});
 $("#guided-button-save-other-link-fields").on("click", () => {
   let allInputsValid = true;
   //get all contributor fields
@@ -3734,6 +3449,13 @@ const doTheHack = async () => {
   document.querySelector(".primary-selection-aside-item.selection-aside-item").click();
 };
 
+// If this variable is set to true, you will be taken back to the last guided mode page you were working on
+// (always set to false when making production builds)
+const continueHackGm = true;
+if (continueHackGm) {
+  doTheHack();
+}
+
 // Add the event listener for the Data importation component
 const dragDropElementId = document.getElementById("data-importer-dropzone");
 dragDropElementId.addEventListener("click", (event) => {
@@ -3753,10 +3475,3 @@ dragDropElementId.addEventListener("drop", (event) => {
     importRelativePath: "data/",
   });
 });
-
-// If this variable is set to true, you will be taken back to the last guided mode page you were working on
-// (always set to false when making production builds)
-const continueHackGm = false;
-if (continueHackGm) {
-  doTheHack();
-}

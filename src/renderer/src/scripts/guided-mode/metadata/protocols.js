@@ -1,6 +1,7 @@
 import { generateAlertElement } from "./utils.js";
 import doiRegex from "doi-regex";
 import validator from "validator";
+import Swal from "sweetalert2";
 
 export const addGuidedProtocol = (link, description, type) => {
   const currentProtocolLinks = getGuidedProtocolLinks();
@@ -40,7 +41,8 @@ const protocolObjIsFair = (protocolLink, protocoldescription) => {
 };
 
 export const renderProtocolsTable = () => {
-  const protocols = window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"];
+  const protocols = window.sodaJSONObj["related_resources"];
+  console.log("renderProtocolsTable protocols", protocols);
 
   const protocolsContainer = document.getElementById("protocols-container");
 
@@ -57,44 +59,30 @@ export const renderProtocolsTable = () => {
 
   const protocolElements = protocols
     .map((protocol) => {
-      return generateProtocolField(
-        protocol["link"],
-        protocol["location"],
-        protocol["description"],
-        protocol["isFair"]
-      );
+      return generateProtocolField(protocol["identifier"], protocol["identifier_description"]);
     })
     .join("\n");
   protocolsContainer.innerHTML = protocolElements;
 };
 
 //TODO: handle new blank protocol fields (when parameter are blank)
-const generateProtocolField = (protocolUrl, protocolType, protocolDescription, isFair) => {
+const generateProtocolField = (identifier, identifier_description) => {
   return `
       <tr 
         class="guided-protocol-field-container"
       >
         <td class="middle aligned link-name-cell" >
-          ${protocolUrl}
+          ${identifier}
         </td>
         <td class="middle aligned">
-          ${protocolDescription}
-        </td>
-        <td class="middle aligned collapsing text-center">
-          ${
-            isFair
-              ? `<span class="badge badge-pill badge-success">Valid</span>`
-              : `<span class="badge badge-pill badge-warning">Needs modification</span>`
-          }
+          ${identifier_description}
         </td>
         <td class="middle aligned collapsing text-center">
           <button
             type="button"
             class="btn btn-sm"
             style="color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);"
-            data-protocol-url="${protocolUrl}"
-            data-protocol-description="${protocolDescription}"
-            onclick="window.openProtocolSwal(this)"
+            onclick="window.guidedOpenAddOrEditProtocolSwal('${identifier}')"
           >
           View/Edit
           </button>
@@ -103,15 +91,88 @@ const generateProtocolField = (protocolUrl, protocolType, protocolDescription, i
           <button
             type="button"
             class="btn btn-danger btn-sm"
-            data-protocol-url="${protocolUrl}"
-            data-protocol-description="${protocolDescription}"
-            onclick="window.guidedDeleteProtocol(this)"
+            onclick="window.guidedDeleteProtocol('${identifier}')"
           >
           Delete
           </button>
         </td>
       </tr>
     `;
+};
+
+window.guidedOpenAddOrEditProtocolSwal = async (editIdentifier = null) => {
+  let protocolToEdit = null;
+  if (editIdentifier) {
+    protocolToEdit = (window.sodaJSONObj["related_resources"] || []).find(
+      (p) => p.identifier === editIdentifier
+    );
+  }
+  const initialIdentifier = protocolToEdit ? protocolToEdit.identifier : "";
+  const initialDescription = protocolToEdit ? protocolToEdit.identifier_description : "";
+  await Swal.fire({
+    title: protocolToEdit ? "Edit protocol" : "Add a protocol",
+    html:
+      `<label>Protocol URL or DOI: <i class="fas fa-info-circle swal-popover" data-content="Enter a protocol link or DOI." rel="popover" data-placement="right" data-html="true" data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL or DOI" value="${initialIdentifier}">` +
+      `<label>Protocol description: <i class="fas fa-info-circle swal-popover" data-content="Provide a brief description for this protocol." rel="popover" data-placement="right" data-html="true" data-trigger="hover"></i></label><textarea id="DD-protocol-description" class="swal2-textarea" placeholder="Enter a description">${initialDescription}</textarea>`,
+    focusConfirm: false,
+    confirmButtonText: protocolToEdit ? "Save" : "Add",
+    cancelButtonText: "Cancel",
+    customClass: "swal-content-additional-link",
+    showCancelButton: true,
+    reverseButtons: window.reverseSwalButtons,
+    heightAuto: false,
+    width: "38rem",
+    backdrop: "rgba(0,0,0, 0.4)",
+    didOpen: () => {
+      $(".swal-popover").popover();
+    },
+    preConfirm: () => {
+      const identifier = $("#DD-protocol-link").val();
+      const identifier_description = $("#DD-protocol-description").val();
+      if (identifier === "") {
+        Swal.showValidationMessage(`Please enter a URL or DOI!`);
+        return;
+      }
+      if (identifier_description === "") {
+        Swal.showValidationMessage(`Please enter a short description!`);
+        return;
+      }
+      let identifier_type = determineIfLinkIsDOIorURL(identifier);
+      if (identifier_type === "neither") {
+        Swal.showValidationMessage(`Please enter a valid URL or DOI!`);
+        return;
+      }
+      try {
+        let protocols = window.sodaJSONObj["related_resources"] || [];
+        if (protocolToEdit) {
+          protocols = protocols.map((p) =>
+            p.identifier === editIdentifier
+              ? {
+                  ...p,
+                  identifier,
+                  identifier_description,
+                  identifier_type,
+                }
+              : p
+          );
+        } else {
+          protocols = [
+            ...protocols,
+            {
+              identifier_description,
+              relation_type: "IsProtocolFor",
+              identifier,
+              identifier_type,
+            },
+          ];
+        }
+        window.sodaJSONObj["related_resources"] = protocols;
+        renderProtocolsTable();
+      } catch (error) {
+        Swal.showValidationMessage(error);
+      }
+    },
+  });
 };
 
 window.openProtocolSwal = async (protocolElement) => {
@@ -173,11 +234,10 @@ window.openProtocolSwal = async (protocolElement) => {
   });
 };
 
-window.guidedDeleteProtocol = (protocolElement) => {
-  const linkToDelete = protocolElement.dataset.protocolUrl;
-  window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"] = window.sodaJSONObj[
-    "dataset_metadata"
-  ]["description-metadata"]["protocols"].filter((protocol) => protocol.link !== linkToDelete);
+window.guidedDeleteProtocol = (identifier) => {
+  window.sodaJSONObj["related_resources"] = window.sodaJSONObj["related_resources"].filter(
+    (protocol) => protocol.identifier !== identifier
+  );
   renderProtocolsTable();
 };
 
@@ -200,16 +260,12 @@ const editGuidedProtocol = (oldLink, newLink, description, type) => {
 };
 
 const determineIfLinkIsDOIorURL = (link) => {
-  // returns either "DOI" or "URL" or "neither"
+  // returns "DOI" if DOI, null if not, or "neither" if invalid
   if (doiRegex.declared({ exact: true }).test(link) === true) {
     return "DOI";
   }
-  if (validator.isURL(link) != true) {
-    return "neither";
-  }
-  if (link.includes("doi")) {
-    return "DOI";
-  } else {
+  if (validator.isURL(link) === true) {
     return "URL";
   }
+  return "neither";
 };

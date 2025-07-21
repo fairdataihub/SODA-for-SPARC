@@ -191,6 +191,9 @@ window.dataset_path = document.getElementById("input-global-path");
 // GM Contributors page
 const homeDirectory = await window.electron.ipcRenderer.invoke("get-app-path", "home");
 window.storedContributorsPath = window.path.join(homeDirectory, "SODA", "stored-contributors.json");
+if (!window.fs.existsSync(window.storedContributorsPath)) {
+  window.fs.writeFileSync(window.storedContributorsPath, "[]");
+}
 
 // used in renderer and guided Mode
 window.createDragSort = (tagify) => {

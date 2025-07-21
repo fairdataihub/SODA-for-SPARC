@@ -88,12 +88,13 @@ export const guidedCreateSodaJSONObj = () => {
   window.sodaJSONObj["dataset_metadata"]["description-metadata"] = {};
   window.sodaJSONObj["dataset_metadata"]["code-metadata"] = {};
   window.sodaJSONObj["dataset_metadata"]["description-metadata"]["additional-links"] = [];
-  window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributors"] = [];
+  window.sodaJSONObj["dataset_contributors"] = [];
   window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"] = [];
   window.sodaJSONObj["dataset_metadata"]["description-metadata"]["dataset-information"] = {};
   window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"] = {};
   window.sodaJSONObj["dataset_metadata"]["README"] = "";
   window.sodaJSONObj["dataset_metadata"]["CHANGES"] = "";
+  window.sodaJSONObj["related_resources"] = [];
   window.sodaJSONObj["digital-metadata"] = {};
   window.sodaJSONObj["previously-uploaded-data"] = {};
   window.sodaJSONObj["digital-metadata"]["description"] = {};

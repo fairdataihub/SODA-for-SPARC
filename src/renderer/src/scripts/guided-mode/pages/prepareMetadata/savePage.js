@@ -112,7 +112,61 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
   }
 
   if (pageBeingLeftID === "guided-contributors-tab") {
-    console.log("Checking contributors");
+    // Make sure the user has added at least one contributor
+    const contributors = window.sodaJSONObj["dataset_contributors"];
+    if (contributors.length === 0) {
+      errorArray.push({
+        type: "notyf",
+        message: "Please add at least one contributor to your dataset",
+      });
+      throw errorArray;
+    }
+
+    // Make sure at least one contributor has the contributor_role of "PrincipalInvestigator"
+    const hasPrincipalInvestigator = contributors.some(
+      (contributor) => contributor.contributor_role === "PrincipalInvestigator"
+    );
+    if (!hasPrincipalInvestigator) {
+      errorArray.push({
+        type: "notyf",
+        message: "Please assign at least one contributor as Principal Investigator",
+      });
+      throw errorArray;
+    }
+  }
+
+  if (pageBeingLeftID === "guided-protocols-tab") {
+    const buttonYesUserHasProtocols = document.getElementById("guided-button-user-has-protocols");
+    const buttonNoDelayProtocolEntry = document.getElementById(
+      "guided-button-delay-protocol-entry"
+    );
+
+    if (
+      !buttonYesUserHasProtocols.classList.contains("selected") &&
+      !buttonNoDelayProtocolEntry.classList.contains("selected")
+    ) {
+      errorArray.push({
+        type: "notyf",
+        message: "Please indicate if protocols are ready to be added to your dataset",
+      });
+      throw errorArray;
+    }
+
+    if (buttonYesUserHasProtocols.classList.contains("selected")) {
+      const protocols = window.sodaJSONObj["related_resources"] || [];
+
+      if (protocols.length === 0) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please add at least one protocol",
+        });
+        throw errorArray;
+      }
+    }
+
+    if (buttonNoDelayProtocolEntry.classList.contains("selected")) {
+      window.sodaJSONObj["related_resources"] = []; // Clear protocols if user says they will add later
+    }
   }
 
   if (pageBeingLeftID === "guided-create-description-metadata-tab") {
@@ -164,8 +218,14 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     if (otherFunding.length > 0) {
       fundingString = otherFunding.join(", ");
     }
-    console.log("fundingString", fundingString);
-    console.log("studyCollectionTitle", studyCollectionTitle);
+
+    const contributorInformation = window.sodaJSONObj["dataset_contributors"] || [];
+    // Combine the last and first names of contributors
+    contributorInformation.forEach((contributor) => {
+      contributor.contributor_name = `${contributor.contributor_last_name}, ${contributor.contributor_first_name}`;
+    });
+
+    const relatedResourceInformation = window.sodaJSONObj["related_resources"] || [];
 
     // Populate dataset_metadata > dataset_description
     window.sodaJSONObj["dataset_metadata"]["dataset_description"] = {
@@ -198,8 +258,8 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
         study_technique: studyTechniqueTags,
         study_collection_title: studyCollectionTitle,
       },
-      contributor_information: [],
-      related_resource_information: [],
+      contributor_information: contributorInformation,
+      related_resource_information: relatedResourceInformation,
       participant_information: {
         number_of_subjects: numSubjects,
         number_of_samples: numSamples,
@@ -207,6 +267,11 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
         number_of_performances: numPerformances,
       },
     };
+
+    console.log(
+      "dataset_description metadata",
+      JSON.stringify(window.sodaJSONObj["dataset_metadata"]["dataset_description"], null, 2)
+    );
   }
 
   if (pageBeingLeftID === "guided-create-readme-metadata-tab") {

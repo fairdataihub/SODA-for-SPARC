@@ -9,11 +9,11 @@ const DataImporter = ({ relativeFolderPathToImportDataInto }) => {
     <FullWidthContainer>
       <Box w="100%" m={0} p={0} id="data-importer-dropzone">
         <Dropzone
-          onDrop={(files) => {
+          onDrop={(event) => {
             event.preventDefault();
             console.log("Dropped files:", files);
           }}
-          onReject={(files) => {
+          onReject={(event) => {
             event.preventDefault();
             console.error("Rejected files:", files);
           }}
