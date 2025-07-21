@@ -981,14 +981,18 @@ const getExistingContributorORCiDs = () => {
 
 const editContributorByOrcid = (
   prevContributorOrcid,
-  contributorFirstName,
   contributorLastName,
+  contributorFirstName,
   newContributorOrcid,
-  contributorAffiliationsArray,
-  contributorRolesArray
+  contributor_affiliation,
+  contributor_role
 ) => {
-  const contributor = getContributorByOrcid(prevContributorOrcid);
-  if (!contributor) {
+  // Get the index of the contributor to edit
+  const contributorsIndex = window.sodaJSONObj["dataset_contributors"].findIndex(
+    (contributor) => contributor.contributor_orcid_id === prevContributorOrcid
+  );
+
+  if (!contributorsIndex) {
     throw new Error("No contributor with the entered ORCID exists");
   }
 
@@ -998,14 +1002,14 @@ const editContributorByOrcid = (
     }
   }
 
-  contributor.contributorFirstName = contributorFirstName;
-  contributor.contributorLastName = contributorLastName;
-  contributor.conName = `${contributorLastName}, ${contributorFirstName}`;
-  contributor.conID = newContributorOrcid;
-  contributor.conAffliation = contributorAffiliationsArray;
-  contributor.conRole = contributorRolesArray;
-
-  // Update the contributor's locally stored data
+  // Update the contributor's information
+  window.sodaJSONObj["dataset_contributors"][contributorsIndex] = {
+    contributor_orcid_id: newContributorOrcid,
+    contributor_first_name: contributorFirstName,
+    contributor_last_name: contributorLastName,
+    contributor_affiliation: contributor_affiliation,
+    contributor_role: contributor_role,
+  };
 };
 
 const handleAddOrEditContributorHeaderUI = (boolEditingContributor) => {
@@ -1164,30 +1168,30 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
           name="Dataset contributor role"
         >
           <option value="">Select a role</option>
-          <option value="ContactPerson">ContactPerson</option>
-          <option value="CoInvestigator">CoInvestigator</option>
-          <option value="CorrespondingAuthor">CorrespondingAuthor</option>
+          <option value="ContactPerson">Contact Person</option>
+          <option value="CoInvestigator">Co-Investigator</option>
+          <option value="CorrespondingAuthor">Corresponding Author</option>
           <option value="Creator">Creator</option>
-          <option value="DataCollector">DataCollector</option>
-          <option value="DataCurator">DataCurator</option>
-          <option value="DataManager">DataManager</option>
+          <option value="DataCollector">Data Collector</option>
+          <option value="DataCurator">Data Curator</option>
+          <option value="DataManager">Data Manager</option>
           <option value="Distributor">Distributor</option>
           <option value="Editor">Editor</option>
-          <option value="HostingInstitution">HostingInstitution</option>
-          <option value="PrincipalInvestigator">PrincipalInvestigator</option>
+          <option value="HostingInstitution">Hosting Institution</option>
+          <option value="PrincipalInvestigator">Principal Investigator</option>
           <option value="Producer">Producer</option>
-          <option value="ProjectLeader">ProjectLeader</option>
-          <option value="ProjectManager">ProjectManager</option>
-          <option value="ProjectMember">ProjectMember</option>
-          <option value="RegistrationAgency">RegistrationAgency</option>
-          <option value="RegistrationAuthority">RegistrationAuthority</option>
-          <option value="RelatedPerson">RelatedPerson</option>
-          <option value="ResearchGroup">ResearchGroup</option>
+          <option value="ProjectLeader">Project Leader</option>
+          <option value="ProjectManager">Project Manager</option>
+          <option value="ProjectMember">Project Member</option>
+          <option value="RegistrationAgency">Registration Agency</option>
+          <option value="RegistrationAuthority">Registration Authority</option>
+          <option value="RelatedPerson">Related Person</option>
+          <option value="ResearchGroup">Research Group</option>
           <option value="Researcher">Researcher</option>
-          <option value="RightsHolder">RightsHolder</option>
+          <option value="RightsHolder">Rights Holder</option>
           <option value="Sponsor">Sponsor</option>
           <option value="Supervisor">Supervisor</option>
-          <option value="WorkPackageLeader">WorkPackageLeader</option>
+          <option value="WorkPackageLeader">Work Package Leader</option>
           <option value="Other">Other</option>
         </select>
         <p class="guided--text-input-instructions mb-0 text-left">
@@ -1198,7 +1202,7 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
       </div>
     `,
     showCancelButton: true,
-    confirmButtonText: "Add contributor",
+    confirmButtonText: contributorIdToEdit ? "Edit contributor" : "Add contributor",
     confirmButtonColor: "#3085d6 !important",
     willOpen: () => {
       // Initialize selectpicker on stored contributors dropdown
@@ -1270,14 +1274,6 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
         );
       }
 
-      if (contributorRole === "PrincipalInvestigator") {
-        if (userHasAlreadyBeenMarkedAsPrincipalInvestigator()) {
-          return Swal.showValidationMessage(
-            "Only one contributor can be marked as Principal Investigator"
-          );
-        }
-      }
-
       if (contributorFirstNameValue.includes(",") || contributorLastNameValue.includes(",")) {
         return Swal.showValidationMessage("Please remove commas from the name fields");
       }
@@ -1310,8 +1306,8 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
           // If editing an existing contributor, update their data
           editContributorByOrcid(
             contributorIdToEdit,
-            contributorFirstNameValue,
             contributorLastNameValue,
+            contributorFirstNameValue,
             contributorOrcid,
             contributorAffiliation,
             contributorRole
@@ -1335,14 +1331,6 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
       renderContributorsTable();
     },
   });
-};
-
-const userHasAlreadyBeenMarkedAsPrincipalInvestigator = () => {
-  const contributors = window.sodaJSONObj["dataset_contributors"];
-  const PrincipalInvestigator = contributors.find((contributor) =>
-    contributor["contributor_role"].includes("PrincipalInvestigator")
-  );
-  return PrincipalInvestigator !== undefined;
 };
 
 const switchOrderOfContributors = (draggedOrcid, targetOrcid) => {

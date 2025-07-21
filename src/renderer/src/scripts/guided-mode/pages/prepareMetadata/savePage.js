@@ -112,7 +112,27 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
   }
 
   if (pageBeingLeftID === "guided-contributors-tab") {
-    console.log("Checking contributors");
+    // Make sure the user has added at least one contributor
+    const contributors = window.sodaJSONObj["dataset_contributors"];
+    if (contributors.length === 0) {
+      errorArray.push({
+        type: "notyf",
+        message: "Please add at least one contributor to your dataset",
+      });
+      throw errorArray;
+    }
+
+    // Make sure at least one contributor has the contributor_role of "PrincipalInvestigator"
+    const hasPrincipalInvestigator = contributors.some(
+      (contributor) => contributor.contributor_role === "PrincipalInvestigator"
+    );
+    if (!hasPrincipalInvestigator) {
+      errorArray.push({
+        type: "notyf",
+        message: "Please assign at least one contributor as Principal Investigator",
+      });
+      throw errorArray;
+    }
   }
 
   if (pageBeingLeftID === "guided-protocols-tab") {
@@ -199,6 +219,8 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       fundingString = otherFunding.join(", ");
     }
 
+    const contributorInformation = window.sodaJSONObj["dataset_contributors"] || [];
+
     const relatedResourceInformation = window.sodaJSONObj["related_resources"] || [];
 
     // Populate dataset_metadata > dataset_description
@@ -232,7 +254,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
         study_technique: studyTechniqueTags,
         study_collection_title: studyCollectionTitle,
       },
-      contributor_information: [],
+      contributor_information: contributorInformation,
       related_resource_information: relatedResourceInformation,
       participant_information: {
         number_of_subjects: numSubjects,
