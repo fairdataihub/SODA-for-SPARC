@@ -1,8 +1,5 @@
 import { setPageLoadingState } from "../navigationUtils/pageLoading";
-import {
-  addContributor,
-  renderDatasetDescriptionContributorsTable,
-} from "../../metadata/contributors";
+import { addContributor, renderContributorsTable } from "../../metadata/contributors";
 import { addGuidedProtocol } from "../../metadata/protocols";
 import Swal from "sweetalert2";
 import Cropper from "cropperjs";
@@ -138,7 +135,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
   }
 
   if (targetPageID === "guided-contributors-tab") {
-    renderDatasetDescriptionContributorsTable();
+    renderContributorsTable();
   }
 
   if (targetPageID === "guided-protocols-tab") {

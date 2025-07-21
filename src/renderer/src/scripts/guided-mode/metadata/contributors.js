@@ -1,5 +1,6 @@
 export const addContributor = (
-  contributor_name, // string: full name
+  contributor_last_name, // string: last name
+  contributor_first_name, // string: first name
   contributor_orcid_id, // string: ORCID
   contributor_affiliation, // string: affiliation
   contributor_role // string: role (not array)
@@ -11,7 +12,8 @@ export const addContributor = (
 
   // Add to dataset_contributors using new schema
   window.sodaJSONObj["dataset_contributors"].push({
-    contributor_name,
+    contributor_last_name: contributor_last_name,
+    contributor_first_name: contributor_first_name,
     contributor_orcid_id,
     contributor_affiliation,
     contributor_role,
@@ -50,10 +52,11 @@ export const editContributorByID = (
   }
 };
 
-export const renderDatasetDescriptionContributorsTable = () => {
+export const renderContributorsTable = () => {
   const contributorsTable = document.getElementById("guided-DD-connoributors-table");
   let contributorsTableHTML;
   const contributors = window.sodaJSONObj["dataset_contributors"];
+  console.log("dataset_contributors:", contributors);
 
   if (contributors.length === 0) {
     contributorsTableHTML = `
@@ -82,11 +85,9 @@ export const getContributorByOrcid = (orcid) => {
 };
 
 const generateContributorTableRow = (contributorObj, contributorIndex) => {
-  const contributorObjIsValid = window.contributorDataIsValid(contributorObj);
-  const contributorFullName = contributorObj["contributor_name"];
+  const contributorFullName = `${contributorObj["contributor_last_name"]}, ${contributorObj["contributor_first_name"]}`;
   const contributorOrcid = contributorObj["contributor_orcid_id"];
   const contributorRoleString = contributorObj["contributor_role"];
-  const contributorAffiliation = contributorObj["contributor_affiliation"];
 
   return `
     <tr 
@@ -107,28 +108,20 @@ const generateContributorTableRow = (contributorObj, contributorIndex) => {
         ${contributorRoleString}
       </td>
       <td class="middle aligned">
-        ${contributorAffiliation}
-      </td>
-      <td class="middle aligned collapsing text-center">
-        ${
-          contributorObjIsValid
-            ? `<span class="badge badge-pill badge-success">Valid</span>`
-            : `<span class="badge badge-pill badge-warning">Needs Modification</span>`
-        }
-      </td>
-      <td class="middle aligned collapsing text-center">
-        <button
+         <button
           type="button"
           class="btn btn-sm"
           style="color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);"
-          onclick="window.openGuidedContributorSwal('${contributorOrcid}')"
+          onclick="window.guidedOpenAddOrEditContributorSwal('${contributorOrcid}')"
         >
           Edit
         </button>
+      </td>
+      <td class="middle aligned">
         <button
           type="button"
           class="btn btn-danger btn-sm"
-          onclick="window.deleteContributor(this, '${contributorOrcid}')"
+          onclick="window.deleteContributor('${contributorOrcid}')"
         >
           Delete
         </button>

@@ -5,7 +5,7 @@ import { guidedSaveProgress } from "./pages/savePageChanges";
 import {
   getContributorByOrcid,
   addContributor,
-  renderDatasetDescriptionContributorsTable,
+  renderContributorsTable,
 } from "./metadata/contributors";
 import { generateAlertElement } from "./metadata/utils";
 import determineDatasetLocation from "../analytics/analytics-utils";
@@ -791,11 +791,10 @@ window.deleteContributor = (clickedDelContribuButton, contributorOrcid) => {
   const contributorsBeforeDelete = window.sodaJSONObj["dataset_contributors"];
 
   window.sodaJSONObj["dataset_contributors"] = contributorsBeforeDelete.filter((contributor) => {
-    return contributor.conID !== contributorOrcid;
+    return contributor.contributor_orcid_id !== contributorOrcid;
   });
-  contributorField.remove();
   //rerender the table after deleting a contributor
-  renderDatasetDescriptionContributorsTable();
+  renderContributorsTable();
 };
 
 // end imported openPage stuff
@@ -1157,7 +1156,13 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
         </p>
 
         <label class="guided--form-label mt-md required" style="font-size: 1em !important;">Role: </label>
-        <select id="guided-contributor-role-select" class="guided--input SODA-select-picker" title="Select a role">
+        <select
+          id="guided-contributor-role-select"
+          class="w-100 SODA-select-picker"
+          title="Select a role"
+          data-live-search="true"
+          name="Dataset contributor role"
+        >
           <option value="">Select a role</option>
           <option value="ContactPerson">ContactPerson</option>
           <option value="CoInvestigator">CoInvestigator</option>
@@ -1243,6 +1248,12 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
         .value.trim();
       const contributorRole = document.getElementById("guided-contributor-role-select").value;
 
+      console.log("contributorFirstNameValue", contributorFirstNameValue);
+      console.log("contributorLastNameValue", contributorLastNameValue);
+      console.log("contributorOrcid", contributorOrcid);
+      console.log("contributorAffiliation", contributorAffiliation);
+      console.log("contributorRole", contributorRole);
+
       if (
         !contributorFirstNameValue ||
         !contributorLastNameValue ||
@@ -1260,7 +1271,7 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
       }
 
       if (contributorRole === "PrincipalInvestigator") {
-        if (getContributorMarkedAsPrincipalInvestigator()) {
+        if (userHasAlreadyBeenMarkedAsPrincipalInvestigator()) {
           return Swal.showValidationMessage(
             "Only one contributor can be marked as Principal Investigator"
           );
@@ -1295,56 +1306,52 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
       }
 
       try {
-        addContributor(
-          contributorLastNameValue,
-          contributorFirstNameValue,
-          contributorOrcid,
-          contributorAffiliation,
-          [contributorRole] // keep role as an array for compatibility
-        );
+        if (contributorIdToEdit) {
+          // If editing an existing contributor, update their data
+          editContributorByOrcid(
+            contributorIdToEdit,
+            contributorFirstNameValue,
+            contributorLastNameValue,
+            contributorOrcid,
+            contributorAffiliation,
+            contributorRole
+          );
+          console.log("Contributor edited successfully");
+        } else {
+          // If adding a new contributor, add them to the dataset
+          addContributor(
+            contributorLastNameValue,
+            contributorFirstNameValue,
+            contributorOrcid,
+            contributorAffiliation,
+            contributorRole // keep role as an array for compatibility
+          );
+          console.log("Contributor added successfully");
+        }
       } catch (error) {
         return Swal.showValidationMessage(error);
       }
 
-      renderDatasetDescriptionContributorsTable();
+      renderContributorsTable();
     },
   });
 };
 
-window.contributorDataIsValid = (contributorObj) => {
-  if (
-    contributorObj.conAffliation.length > 0 &&
-    contributorObj.conID &&
-    contributorObj.conRole.length > 0 &&
-    contributorObj.contributorFirstName.length > 0 &&
-    contributorObj.contributorLastName.length > 0
-  ) {
-    return true;
-  } else {
-    return false;
-  }
-};
-
-const getContributorMarkedAsPrincipalInvestigator = () => {
+const userHasAlreadyBeenMarkedAsPrincipalInvestigator = () => {
   const contributors = window.sodaJSONObj["dataset_contributors"];
   const PrincipalInvestigator = contributors.find((contributor) =>
-    contributor["conRole"].includes("PrincipalInvestigator")
+    contributor["contributor_role"].includes("PrincipalInvestigator")
   );
-  // If there is no Principal Investigator, return null
-  if (!PrincipalInvestigator) {
-    return null;
-  }
-  // Otherwise, return their ORCID
-  return PrincipalInvestigator["conID"];
+  return PrincipalInvestigator !== undefined;
 };
 
 const switchOrderOfContributors = (draggedOrcid, targetOrcid) => {
   const contributors = window.sodaJSONObj["dataset_contributors"];
   const draggedContributorIndex = contributors.findIndex(
-    (contributor) => contributor["conID"] === draggedOrcid
+    (contributor) => contributor["contributor_orcid_id"] === draggedOrcid
   );
   const targetContributorIndex = contributors.findIndex(
-    (contributor) => contributor["conID"] === targetOrcid
+    (contributor) => contributor["contributor_orcid_id"] === targetOrcid
   );
 
   // If the dragged contributor is above the target contributor
@@ -1383,7 +1390,7 @@ window.handleContributorDrop = (event) => {
 
   switchOrderOfContributors(draggedOrcid, targetOrcid);
 
-  renderDatasetDescriptionContributorsTable();
+  renderContributorsTable();
 };
 
 export const renderAdditionalLinksTable = () => {
