@@ -965,15 +965,6 @@ window.removeContributorField = (contributorDeleteButton) => {
 };
 
 const getExistingContributorORCiDs = () => {
-  return [
-    {
-      contributor_orcid_id: "0000-0000-0000-0000",
-      contributor_last_name: "No ORCID",
-      contributor_first_name: "No ORCID",
-      contributor_role: "No ORCID",
-      contributor_affiliation: "No ORCID",
-    },
-  ];
   return window.sodaJSONObj["dataset_contributors"].map((contributor) => {
     return contributor.contributor_orcid_id;
   });

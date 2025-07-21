@@ -267,6 +267,11 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
         number_of_performances: numPerformances,
       },
     };
+
+    console.log(
+      "dataset_description metadata",
+      JSON.stringify(window.sodaJSONObj["dataset_metadata"]["dataset_description"], null, 2)
+    );
   }
 
   if (pageBeingLeftID === "guided-create-readme-metadata-tab") {
