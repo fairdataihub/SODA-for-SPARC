@@ -211,77 +211,49 @@ export const openPagePrepareMetadata = async (targetPageID) => {
       "Dataset Description Metadata:",
       window.sodaJSONObj["dataset_metadata"]?.["dataset_description"]
     );
-    // Load dataset information fields
-    const guidedLoadDescriptionDatasetInformation = () => {
-      guidedDatasetKeywordsTagify.removeAllTags();
-      const datasetInfo =
-        window.sodaJSONObj["dataset_metadata"]?.["dataset_description"]?.["dataset-information"] ||
-        {};
-      if (datasetInfo["keywords"]) {
-        guidedDatasetKeywordsTagify.addTags(datasetInfo["keywords"]);
-      }
-      // Set title, subtitle, description, license, funding, acknowledgments
-      const titleInput = document.getElementById("guided-ds-title");
-      const subtitleInput = document.getElementById("guided-ds-subtitle");
-      const descriptionInput = document.getElementById("guided-ds-description");
-      const licenseInput = document.getElementById("guided-ds-license");
-      if (titleInput) titleInput.value = datasetInfo["title"] || "";
-      if (subtitleInput) subtitleInput.value = datasetInfo["subtitle"] || "";
-      if (descriptionInput) descriptionInput.value = datasetInfo["description"] || "";
-      if (licenseInput) licenseInput.value = datasetInfo["license"] || "";
-      // Funding and acknowledgments
-      guidedOtherFundingsourcesTagify.removeAllTags();
-      if (datasetInfo["funding"]) guidedOtherFundingsourcesTagify.addTags(datasetInfo["funding"]);
-      const acknowledgmentsInput = document.getElementById("guided-ds-acknowledgments");
-      if (acknowledgmentsInput) acknowledgmentsInput.value = datasetInfo["acknowledgments"] || "";
-    };
-    guidedLoadDescriptionDatasetInformation();
 
-    // Load study information fields
-    const guidedLoadDescriptionStudyInformation = () => {
-      const studyInfo =
-        window.sodaJSONObj["dataset_metadata"]?.["dataset_description"]?.["study-information"] ||
-        {};
-      const studyPurposeInput = document.getElementById("guided-ds-study-purpose");
-      const studyDataCollectionInput = document.getElementById("guided-ds-study-data-collection");
-      const studyPrimaryConclusionInput = document.getElementById(
-        "guided-ds-study-primary-conclusion"
-      );
-      const studyCollectionTitleInput = document.getElementById("guided-ds-study-collection-title");
-      if (studyPurposeInput) studyPurposeInput.value = studyInfo["study_purpose"] || "";
-      if (studyDataCollectionInput)
-        studyDataCollectionInput.value = studyInfo["study_data_collection"] || "";
-      if (studyPrimaryConclusionInput)
-        studyPrimaryConclusionInput.value = studyInfo["study_primary_conclusion"] || "";
-      if (studyCollectionTitleInput)
-        studyCollectionTitleInput.value = studyInfo["study_collection_title"] || "";
-      guidedStudyOrganSystemsTagify.removeAllTags();
-      guidedStudyApproachTagify.removeAllTags();
-      guidedStudyTechniquesTagify.removeAllTags();
-      if (studyInfo["study_organ_system"])
-        guidedStudyOrganSystemsTagify.addTags(studyInfo["study_organ_system"]);
-      if (studyInfo["study_approach"])
-        guidedStudyApproachTagify.addTags(studyInfo["study_approach"]);
-      if (studyInfo["study_technique"])
-        guidedStudyTechniquesTagify.addTags(studyInfo["study_technique"]);
-      // Load participant information using savePage keys
-      const participantInfo =
-        window.sodaJSONObj["dataset_metadata"]?.["description_metadata"]?.[
-          "participant-information"
-        ] || {};
-      const numSubjectsInput = document.getElementById("guided-ds-num-subjects");
-      const numSamplesInput = document.getElementById("guided-ds-num-samples");
-      const numSitesInput = document.getElementById("guided-ds-num-sites");
-      const numPerformanceInput = document.getElementById("guided-ds-num-performance");
-      if (numSubjectsInput) numSubjectsInput.value = participantInfo["number_of_subjects"] ?? "";
-      if (numSamplesInput) numSamplesInput.value = participantInfo["number_of_samples"] ?? "";
-      if (numSitesInput) numSitesInput.value = participantInfo["number_of_sites"] ?? "";
-      if (numPerformanceInput)
-        numPerformanceInput.value = participantInfo["number_of_performance"] ?? "";
-    };
-    guidedLoadDescriptionStudyInformation();
+    const datasetMetadata = window.sodaJSONObj["dataset_metadata"]?.["dataset_description"] || {};
+    const basicInformation = datasetMetadata?.["basic_information"] || {};
+    const studyInformation = datasetMetadata?.["study_information"] || {};
+    const fundingInformation = datasetMetadata?.["funding_information"] || {};
 
-    // No contributor_information fields to load here (handled elsewhere)
+    // Set basic information fields
+    guidedDatasetKeywordsTagify.removeAllTags();
+    const keywords = basicInformation["keywords"] || [];
+    guidedDatasetKeywordsTagify.addTags(keywords);
+
+    // Set the Study information fields
+    const studyPurpose = studyInformation["study_purpose"] || "";
+    document.getElementById("guided-ds-study-purpose").value = studyPurpose;
+    const studyDataCollection = studyInformation["study_data_collection"] || "";
+    document.getElementById("guided-ds-study-data-collection").value = studyDataCollection;
+    const studyPrimaryConclusion = studyInformation["study_primary_conclusion"] || "";
+    document.getElementById("guided-ds-study-primary-conclusion").value = studyPrimaryConclusion;
+
+    guidedStudyOrganSystemsTagify.removeAllTags();
+    const studyOrganSystems = studyInformation["study_organ_system"] || [];
+    guidedStudyOrganSystemsTagify.addTags(studyOrganSystems);
+
+    guidedStudyApproachTagify.removeAllTags();
+    const studyApproach = studyInformation["study_approach"] || [];
+    guidedStudyApproachTagify.addTags(studyApproach);
+
+    guidedStudyTechniquesTagify.removeAllTags();
+    const studyTechniques = studyInformation["study_technique"] || [];
+    guidedStudyTechniquesTagify.addTags(studyTechniques);
+
+    // Set additional information fields
+    const studyCollectionTitle = studyInformation["study_collection_title"] || "";
+    document.getElementById("guided-ds-study-collection-title").value = studyCollectionTitle;
+
+    guidedOtherFundingsourcesTagify.removeAllTags();
+    ///////////
+
+    const acknowledgments = basicInformation["acknowledgments"] || "";
+    document.getElementById("guided-ds-acknowledgments").value = acknowledgments;
+
+    const license = basicInformation["license"] || "";
+
     renderAdditionalLinksTable();
 
     const otherFundingLabel = document.getElementById("SPARC-award-other-funding-label");
