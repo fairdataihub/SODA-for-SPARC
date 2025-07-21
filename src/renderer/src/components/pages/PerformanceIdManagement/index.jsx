@@ -30,9 +30,9 @@ import { DateTimePicker } from "@mantine/dates";
 import {
   setPerformanceFormVisible,
   setPerformanceId,
-  setProtocolUrl,
-  setStartDateTime,
-  setEndDateTime,
+  setProtocolUrlOrDoi,
+  setStartDatetime,
+  setEndDatetime,
   addPerformance,
   updatePerformance,
   deletePerformance,
@@ -44,10 +44,10 @@ import InstructionsTowardsLeftContainer from "../../utils/ui/InstructionsTowards
 // Performance metadata form component with store-based state
 const PerformanceMetadataForm = () => {
   // Get form values from the global store
-  const performanceId = useGlobalStore((state) => state.performanceId);
-  const protocolUrl = useGlobalStore((state) => state.protocolUrl);
-  const startDateTime = useGlobalStore((state) => state.startDateTime);
-  const endDateTime = useGlobalStore((state) => state.endDateTime);
+  const performance_id = useGlobalStore((state) => state.performance_id);
+  const protocol_url_or_doi = useGlobalStore((state) => state.protocol_url_or_doi);
+  const start_datetime = useGlobalStore((state) => state.start_datetime);
+  const end_datetime = useGlobalStore((state) => state.end_datetime);
 
   return (
     <Stack spacing="md">
@@ -55,8 +55,17 @@ const PerformanceMetadataForm = () => {
         label="Performance ID"
         description="Enter a unique identifier for this performance."
         placeholder="Enter performance ID (e.g., mri01)"
-        value={performanceId}
+        value={performance_id}
         onChange={(event) => setPerformanceId(event.currentTarget.value)}
+        error={
+          performance_id &&
+          !window.evaluateStringAgainstSdsRequirements(
+            performance_id,
+            "string-adheres-to-identifier-conventions"
+          )
+            ? "Performance IDs can only contain letters, numbers, and hyphens."
+            : undefined
+        }
         leftSection={
           <Text size="sm" c="dimmed" mx="sm">
             perf-
@@ -69,8 +78,8 @@ const PerformanceMetadataForm = () => {
         label="Protocol URL or DOI"
         description="Link to the protocol documentation that describes the methods used for this performance type."
         placeholder="Enter protocol URL or DOI (e.g., doi:10.1000/xyz123 or https://protocol.io/...)"
-        value={protocolUrl}
-        onChange={(event) => setProtocolUrl(event.currentTarget.value)}
+        value={protocol_url_or_doi}
+        onChange={(event) => setProtocolUrlOrDoi(event.currentTarget.value)}
       />
 
       <Group grow>
@@ -78,16 +87,16 @@ const PerformanceMetadataForm = () => {
           label="Start Date & Time"
           description="Enter the date and time when the performance started."
           placeholder="Select start date and time"
-          value={startDateTime}
-          onChange={setStartDateTime}
+          value={start_datetime ? new Date(start_datetime) : null}
+          onChange={(val) => setStartDatetime(val ? val.toISOString() : "")}
           clearable
         />
         <DateTimePicker
           label="End Date & Time"
           description="Enter the date and time when the performance ended."
           placeholder="Select end date and time"
-          value={endDateTime}
-          onChange={setEndDateTime}
+          value={end_datetime ? new Date(end_datetime) : null}
+          onChange={(val) => setEndDatetime(val ? val.toISOString() : "")}
           clearable
         />
       </Group>
@@ -97,10 +106,7 @@ const PerformanceMetadataForm = () => {
 
 const PerformanceIdManagement = () => {
   const IsPerformanceFormVisible = useGlobalStore((state) => state.IsPerformanceFormVisible);
-  const performanceId = useGlobalStore((state) => state.performanceId);
-  const protocolUrl = useGlobalStore((state) => state.protocolUrl);
-  const startDateTime = useGlobalStore((state) => state.startDateTime);
-  const endDateTime = useGlobalStore((state) => state.endDateTime);
+  const performance_id = useGlobalStore((state) => state.performance_id);
 
   const performanceList = useGlobalStore((state) => state.performanceList);
 
@@ -109,18 +115,18 @@ const PerformanceIdManagement = () => {
 
   // Validation for add/update button
   const isPerformanceIdValid = window.evaluateStringAgainstSdsRequirements?.(
-    performanceId,
+    performance_id,
     "string-adheres-to-identifier-conventions"
   );
 
   // Function to handle selecting a performance for editing
   const selectPerformanceForEdit = (performance) => {
     setIsEditMode(true);
-    setOriginalPerformanceId(performance.performanceId);
-    setPerformanceId(performance.performanceId.replace("perf-", ""));
-    setProtocolUrl(performance.protocolUrl || "");
-    setStartDateTime(performance.startDateTime ? new Date(performance.startDateTime) : null);
-    setEndDateTime(performance.endDateTime ? new Date(performance.endDateTime) : null);
+    setOriginalPerformanceId(performance.performance_id);
+    setPerformanceId(performance.performance_id.replace("perf-", ""));
+    setProtocolUrlOrDoi(performance.protocol_url_or_doi || "");
+    setStartDatetime(performance.start_datetime || "");
+    setEndDatetime(performance.end_datetime || "");
     setPerformanceFormVisible(true);
   };
 
@@ -129,9 +135,9 @@ const PerformanceIdManagement = () => {
     setIsEditMode(false);
     setOriginalPerformanceId("");
     setPerformanceId("");
-    setProtocolUrl("");
-    setStartDateTime(null);
-    setEndDateTime(null);
+    setProtocolUrlOrDoi("");
+    setStartDatetime("");
+    setEndDatetime("");
     setPerformanceFormVisible(true);
   };
 
@@ -190,7 +196,7 @@ const PerformanceIdManagement = () => {
                   >
                     {performanceList.map((performance) => (
                       <Flex
-                        key={performance.performanceId}
+                        key={performance.performance_id}
                         align="center"
                         justify="space-between"
                         gap="xs"
@@ -199,7 +205,7 @@ const PerformanceIdManagement = () => {
                           padding: "4px",
                           borderRadius: "4px",
                           backgroundColor:
-                            isEditMode && originalPerformanceId === performance.performanceId
+                            isEditMode && originalPerformanceId === performance.performance_id
                               ? "#e6f7ff"
                               : "transparent",
                           "&:hover": {
@@ -213,7 +219,7 @@ const PerformanceIdManagement = () => {
                           style={{ flex: 1 }}
                         >
                           <IconClipboard size={15} />
-                          <Text fw={600}>{performance.performanceId}</Text>
+                          <Text fw={600}>{performance.performance_id}</Text>
                         </Group>
                         <Group gap="3px">
                           <IconEdit
@@ -231,7 +237,7 @@ const PerformanceIdManagement = () => {
                             style={{ opacity: 0.6, cursor: "pointer" }}
                             onClick={(e) => {
                               e.stopPropagation();
-                              deletePerformance(performance.performanceId);
+                              deletePerformance(performance.performance_id);
                             }}
                           />
                         </Group>
@@ -291,7 +297,7 @@ const PerformanceIdManagement = () => {
                       color="blue"
                       onClick={isEditMode ? updatePerformance : addPerformance}
                       leftIcon={<IconDeviceFloppy size={16} />}
-                      disabled={!performanceId || !isPerformanceIdValid}
+                      disabled={!performance_id || !isPerformanceIdValid}
                     >
                       {isEditMode ? "Update Performance" : "Add Performance"}
                     </Button>

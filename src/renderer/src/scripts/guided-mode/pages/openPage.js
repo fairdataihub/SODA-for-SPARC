@@ -246,6 +246,11 @@ export const openPage = async (targetPageID) => {
 
       console.log("targetPageDataset", targetPageDataset);
 
+      if (targetPageComponentType === "performance-id-management-page") {
+        const performanceList = window.sodaJSONObj["dataset_performances"] || [];
+        setPerformanceList(performanceList);
+      }
+
       if (targetPageComponentType === "modality-selection-page") {
         const modalities = window.sodaJSONObj["selected-modalities"] || [];
         setSelectedModalities(modalities);
@@ -303,9 +308,9 @@ export const openPage = async (targetPageID) => {
         }
 
         if (pageEntityType === "performances") {
-          const performanceList = window.sodaJSONObj["dataset_metadata"]["performances"];
+          const performanceList = window.sodaJSONObj["dataset_performances"];
           for (const performance of performanceList) {
-            addEntityToEntityList("performances", performance.performanceId);
+            addEntityToEntityList("performances", performance.performance_id);
           }
           setEntityFilter(
             [{ type: "high-level-folder-data-categorization", names: ["Experimental"] }],

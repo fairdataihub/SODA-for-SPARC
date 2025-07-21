@@ -92,7 +92,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
           throw errorArray;
         }
         console.log("performanceList", performanceList);
-        window.sodaJSONObj["dataset_metadata"]["performances"] = performanceList;
+        window.sodaJSONObj["dataset_performances"] = performanceList;
       }
 
       if (pageBeingLeftComponentType === "modality-selection-page") {
