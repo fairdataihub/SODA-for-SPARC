@@ -220,6 +220,10 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     }
 
     const contributorInformation = window.sodaJSONObj["dataset_contributors"] || [];
+    // Combine the last and first names of contributors
+    contributorInformation.forEach((contributor) => {
+      contributor.contributor_name = `${contributor.contributor_last_name}, ${contributor.contributor_first_name}`;
+    });
 
     const relatedResourceInformation = window.sodaJSONObj["related_resources"] || [];
 

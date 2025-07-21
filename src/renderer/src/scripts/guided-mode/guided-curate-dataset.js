@@ -989,10 +989,10 @@ const editContributorByOrcid = (
 ) => {
   // Get the index of the contributor to edit
   const contributorsIndex = window.sodaJSONObj["dataset_contributors"].findIndex(
-    (contributor) => contributor.contributor_orcid_id === prevContributorOrcid
+    (contributor) => contributor["contributor_orcid_id"] === prevContributorOrcid
   );
 
-  if (!contributorsIndex) {
+  if (contributorsIndex === -1) {
     throw new Error("No contributor with the entered ORCID exists");
   }
 
@@ -1303,6 +1303,7 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
 
       try {
         if (contributorIdToEdit) {
+          console.log("Editing existing contributor with ORCID:", contributorIdToEdit);
           // If editing an existing contributor, update their data
           editContributorByOrcid(
             contributorIdToEdit,
