@@ -373,7 +373,6 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
     );
     console.log("standardizedDatasetStructure", standardizedDatasetStructure);
 
-
     // Set the standardized dataset structure in the global SODA JSON object (used on the backend)
     window.sodaJSONObj["soda_json_structure"] = standardizedDatasetStructure;
 
