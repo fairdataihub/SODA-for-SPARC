@@ -1,53 +1,58 @@
 export const addContributor = (
-  contributorFullName,
-  contributorORCID,
-  contributorAffiliationsArray,
-  contributorRolesArray
+  contributor_name, // string: full name
+  contributor_orcid_id, // string: ORCID
+  contributor_affiliation, // string: affiliation
+  contributor_role // string: role (not array)
 ) => {
-  //Check if the contributor already exists
-
-  if (getContributorByOrcid(contributorORCID)) {
+  // Check if the contributor already exists
+  if (getContributorByOrcid(contributor_orcid_id)) {
     throw new Error("A contributor with the entered ORCID already exists");
   }
 
-  //If the contributorFullName has one comma, we can successfully split the name into first and last name
-  //If not, they will remain as empty strings until they are edited
-  let contributorFirstName = "";
-  let contributorLastName = "";
-  if (contributorFullName.split(",").length === 2) {
-    [contributorLastName, contributorFirstName] = contributorFullName
-      .split(",")
-      .map((name) => name.trim());
-  }
-
+  // Add to dataset_contributors using new schema
   window.sodaJSONObj["dataset_contributors"].push({
-    contributorFirstName: contributorFirstName,
-    contributorLastName: contributorLastName,
-    conName: contributorFullName,
-    conID: contributorORCID,
-    conAffliation: contributorAffiliationsArray,
-    conRole: contributorRolesArray,
+    contributor_name,
+    contributor_orcid_id,
+    contributor_affiliation,
+    contributor_role,
   });
 
   // Store the contributor locally so they can import the contributor's data in the future
+};
+
+export const editContributorByID = (
+  prev_contributor_orcid_id, // string: ORCID of the contributor to edit
+  contributor_name, // string: full name
+  contributor_orcid_id, // string: ORCID
+  contributor_affiliation, // string: affiliation
+  contributor_role // string: role (not array)
+) => {
+  // Find the contributor by ORCID
+  const contributor = getContributorByOrcid(prev_contributor_orcid_id);
+  if (!contributor) {
+    throw new Error("Contributor with the specified ORCID does not exist");
+  }
+  // Update the contributor's details
+  contributor.contributor_name = contributor_name;
+  contributor.contributor_orcid_id = contributor_orcid_id;
+  contributor.contributor_affiliation = contributor_affiliation;
+  contributor.contributor_role = contributor_role;
+  // Update the stored contributor data
   try {
     window.addOrUpdateStoredContributor(
-      contributorFirstName,
-      contributorLastName,
-      contributorORCID,
-      contributorAffiliationsArray,
-      contributorRolesArray
+      contributor_name,
+      contributor_orcid_id,
+      contributor_affiliation,
+      contributor_role
     );
   } catch (error) {
-    console.error("Failed to store contributor locally" + error);
+    console.error("Failed to update stored contributor: " + error);
   }
 };
 
 export const renderDatasetDescriptionContributorsTable = () => {
   const contributorsTable = document.getElementById("guided-DD-connoributors-table");
-
   let contributorsTableHTML;
-
   const contributors = window.sodaJSONObj["dataset_contributors"];
 
   if (contributors.length === 0) {
@@ -73,21 +78,19 @@ export const renderDatasetDescriptionContributorsTable = () => {
 
 export const getContributorByOrcid = (orcid) => {
   const contributors = window.sodaJSONObj["dataset_contributors"];
-  const contributor = contributors.find((contributor) => {
-    return contributor.conID == orcid;
-  });
-  return contributor;
+  return contributors.find((contributor) => contributor.contributor_orcid_id === orcid);
 };
 
 const generateContributorTableRow = (contributorObj, contributorIndex) => {
   const contributorObjIsValid = window.contributorDataIsValid(contributorObj);
-  const contributorFullName = contributorObj["conName"];
-  const contributorOrcid = contributorObj["conID"];
-  const contributorRoleString = contributorObj["conRole"].join(", ");
+  const contributorFullName = contributorObj["contributor_name"];
+  const contributorOrcid = contributorObj["contributor_orcid_id"];
+  const contributorRoleString = contributorObj["contributor_role"];
+  const contributorAffiliation = contributorObj["contributor_affiliation"];
 
   return `
     <tr 
-      data-contributor-orcid=${contributorOrcid}
+      data-contributor-orcid="${contributorOrcid}"
       draggable="true"
       ondragstart="window.handleContributorDragStart(event)"
       ondragover="window.handleContributorDragOver(event)"
@@ -103,6 +106,9 @@ const generateContributorTableRow = (contributorObj, contributorIndex) => {
       <td class="middle aligned">
         ${contributorRoleString}
       </td>
+      <td class="middle aligned">
+        ${contributorAffiliation}
+      </td>
       <td class="middle aligned collapsing text-center">
         ${
           contributorObjIsValid
@@ -115,15 +121,13 @@ const generateContributorTableRow = (contributorObj, contributorIndex) => {
           type="button"
           class="btn btn-sm"
           style="color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);"
-          onclick="window.openGuidedEditContributorSwal('${contributorOrcid}')"
+          onclick="window.openGuidedContributorSwal('${contributorOrcid}')"
         >
-        View/Edit
+          Edit
         </button>
-      </td>
-      <td class="middle aligned collapsing text-center">
         <button
           type="button"
-          class="btn btn-danger btn-sm" 
+          class="btn btn-danger btn-sm"
           onclick="window.deleteContributor(this, '${contributorOrcid}')"
         >
           Delete
