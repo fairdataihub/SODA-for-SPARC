@@ -192,6 +192,8 @@ window.dataset_path = document.getElementById("input-global-path");
 const homeDirectory = await window.electron.ipcRenderer.invoke("get-app-path", "home");
 window.storedContributorsPath = window.path.join(homeDirectory, "SODA", "stored-contributors.json");
 if (!window.fs.existsSync(window.storedContributorsPath)) {
+  // Create the file and then write an empty array to it
+  window.fs.mkdirSync(window.path.dirname(window.storedContributorsPath), { recursive: true });
   window.fs.writeFileSync(window.storedContributorsPath, "[]");
 }
 

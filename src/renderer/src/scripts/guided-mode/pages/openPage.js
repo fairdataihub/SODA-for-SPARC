@@ -157,7 +157,7 @@ const setActiveProgressionTab = (targetPageID) => {
  * @param {string} targetPageID - The html element id of the page to display.
  *
  */
-window.openPage = async (targetPageID) => {
+export const openPage = async (targetPageID) => {
   //NOTE: 2 Bottom back buttons (one handles sub pages, and the other handles main pages)
   //Back buttons should be disabled and the function setLoading should be (set as false?)
 
@@ -193,7 +193,7 @@ window.openPage = async (targetPageID) => {
     setDeSelectedEntities(window.sodaJSONObj["deSelected-entities"] || []);
     setPerformanceList(window.sodaJSONObj["dataset_metadata"]?.["performance_metadata"] || []);
 
-    if (targetPageID === "guided-dataset-generation-tab") {
+    if (targetPageID === "guided-generate-dataset-locally") {
       // Set the dataset metadata to preview
       setDataSetMetadataToPreview(window.sodaJSONObj["dataset_metadata"] || {});
     } else {

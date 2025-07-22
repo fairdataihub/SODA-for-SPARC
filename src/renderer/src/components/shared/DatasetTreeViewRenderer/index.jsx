@@ -664,6 +664,7 @@ const DatasetTreeViewRenderer = ({
                 />
               )
             )}
+
             {dataSetMetadataToPreview && <></>}
           </>
         )}

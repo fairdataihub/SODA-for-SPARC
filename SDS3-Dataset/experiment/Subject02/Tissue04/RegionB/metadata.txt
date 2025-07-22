@@ -1,6 +1,0 @@
-Site ID: RegionB
-Related Subject: Subject02
-Related Sample: Tissue04
-Collection Date: 7/22/2025
-Anatomical Location: RegionB
-Coordinates: X:8, Y:19, Z:24

@@ -1,4 +1,4 @@
-Subject ID: Subject02
+Mouse ID: Mouse02
 Collection Date: 2023-06-16
 Experimenter: J. Smith
 Project: Experiment-2023

@@ -1,5 +1,0 @@
-# Raw RegionB data - Run 1
-Sample ID: Subject01
-Date: 7/22/2025
-Values: 24.22, 49.37, 22.88, 47.98, 32.77
-Notes: Standard collection protocol followed

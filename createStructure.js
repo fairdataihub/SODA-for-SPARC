@@ -398,80 +398,27 @@ for (let i = 0; i < numSubjects; i++) {
 }
 
 // Generate dataset description content
-let datasetDescriptionContent = "Subject ID,Sample ID,Region,Collection Date\n";
+let datasetDescriptionContent = "Mouse ID,Sample ID,Region,Collection Date\n";
 
 // Generate data structure for each subject
 for (let i = 1; i <= numSubjects; i++) {
-  const subjectID = `Subject${i.toString().padStart(2, "0")}`;
+  const mouseID = `Mouse${i.toString().padStart(2, "0")}`;
   const collectionDate = collectionDates[i - 1];
 
-  // Create subject directory inside experiment folder
-  createDir(`${rootDir}/experiment/${subjectID}`);
+  // Create mouse directory inside experiment folder
+  createDir(`${rootDir}/experiment/${mouseID}`);
 
-  // Subject overview file
+  // Mouse overview file
   createFile(
-    `${rootDir}/experiment/${subjectID}/subject_info.txt`,
-    `Subject ID: ${subjectID}\nCollection Date: ${collectionDate}\nExperimenter: J. Smith\nProject: Experiment-2023`
+    `${rootDir}/experiment/${mouseID}/mouse_info.txt`,
+    `Mouse ID: ${mouseID}\nCollection Date: ${collectionDate}\nExperimenter: J. Smith\nProject: Experiment-2023`
   );
 
-  // Create tissue samples for each subject
-  for (let j = 1; j <= samplesPerSubject; j++) {
-    // Calculate sample number for sequential tissue numbering across subjects
-    const sampleNum = (i - 1) * samplesPerSubject + j;
-    const sampleID = `Tissue${sampleNum.toString().padStart(2, "0")}`;
-    const sampleDir = `${rootDir}/experiment/${subjectID}/${sampleID}`;
-
-    // Create sample directory
-    createDir(sampleDir);
-
-    // Create sample files
-    createFile(`${sampleDir}/${sampleID}_data.csv`, sampleExcelData(subjectID, sampleID));
-    createFile(`${sampleDir}/lab_notes.txt`, labNotes(subjectID, sampleID, collectionDate));
-    createFile(`${sampleDir}/run_1.txt`, sampleRawData(subjectID, sampleID, 1));
-    createFile(`${sampleDir}/run_2.txt`, sampleRawData(subjectID, sampleID, 2));
-
-    // Create regions for each sample
-    for (let k = 0; k < regionsPerSample; k++) {
-      const region = String.fromCharCode(65 + k); // A, B, C, etc.
-      const siteID = `Region${region}`;
-      const siteDir = `${sampleDir}/${siteID}`;
-
-      // Add to dataset description
-      datasetDescriptionContent += `${subjectID},${sampleID},${siteID},${collectionDate}\n`;
-
-      // Create site directory
-      createDir(siteDir);
-
-      // Create site-specific files
-      createFile(`${siteDir}/metadata.txt`, siteMetadata(subjectID, sampleID, siteID));
-      createFile(
-        `${siteDir}/site_notes.txt`,
-        siteNotes(subjectID, sampleID, siteID, collectionDate)
-      );
-      createFile(`${siteDir}/measurements.csv`, siteMeasurementData(siteID));
-      createFile(`${siteDir}/run_1.txt`, sampleRawData(subjectID, siteID, 1));
-
-      // Create some additional data files for testing
-      createFile(`${siteDir}/image_data.jpg`, `[This would be an image file for ${siteID}]`);
-
-      // Create a results directory with some files
-      createDir(`${siteDir}/results`);
-      createFile(
-        `${siteDir}/results/analysis_output.csv`,
-        `Parameter,Value,Unit\n` +
-          `Temperature,${(Math.random() * 5 + 35).toFixed(2)},°C\n` +
-          `pH,${(Math.random() * 1 + 7).toFixed(2)},pH\n` +
-          `Volume,${(Math.random() * 5 + 1).toFixed(2)},mL\n`
-      );
-      createFile(
-        `${siteDir}/results/notes.txt`,
-        `Analysis performed: ${new Date().toLocaleDateString()}\n` +
-          `Analyst: J. Researcher\n` +
-          `Results: Normal parameters detected\n` +
-          `Quality check: Passed`
-      );
-    }
-  }
+  // Create a single performance file for each mouse
+  createFile(
+    `${rootDir}/experiment/${mouseID}/${mouseID}_performance.txt`,
+    `Performance data for ${mouseID}\nCollection Date: ${collectionDate}\nExperimenter: J. Smith\nNotes: All measurements and observations for this mouse are included in this file.`
+  );
 }
 
 // Update the dataset description with all entries

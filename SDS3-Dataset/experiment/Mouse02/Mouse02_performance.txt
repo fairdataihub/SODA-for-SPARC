@@ -1,0 +1,4 @@
+Performance data for Mouse02
+Collection Date: 2023-06-16
+Experimenter: J. Smith
+Notes: All measurements and observations for this mouse are included in this file.
