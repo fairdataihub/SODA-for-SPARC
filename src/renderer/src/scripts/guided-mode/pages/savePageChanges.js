@@ -290,7 +290,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
           specimen_id: `${site.metadata.subject_id} ${site.metadata.sample_id}`,
         }));
         console.log("sitesMetadata", sitesMetadata);
-        window.sodaJSONObj["dataset_metadata"]["sites_metadata"] = sitesMetadata;
+        window.sodaJSONObj["dataset_metadata"]["sites"] = sitesMetadata;
       }
     }
 
