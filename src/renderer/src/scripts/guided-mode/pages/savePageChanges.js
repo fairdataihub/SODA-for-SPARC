@@ -93,6 +93,17 @@ export const savePageChanges = async (pageBeingLeftID) => {
         }
         console.log("performanceList", performanceList);
         window.sodaJSONObj["dataset_performances"] = performanceList;
+        // Create a copy of the performance list
+        // to avoid mutating the original list in the global store
+        const performanceListCopy = JSON.parse(JSON.stringify(performanceList));
+        // Loop through the performances, and if they have a start datetime in this format start_datetime: "2025-07-01T07:00:00.000Z",
+        // The set the date as the start datetime but just the date part
+        performanceListCopy.forEach((performance) => {
+          if (performance.start_datetime) {
+            performance.date = performance.start_datetime.split("T")[0];
+          }
+        });
+        window.sodaJSONObj["dataset_metadata"]["performances"] = performanceListCopy;
       }
 
       if (pageBeingLeftComponentType === "modality-selection-page") {
