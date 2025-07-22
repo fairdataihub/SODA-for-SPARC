@@ -1,5 +1,0 @@
-# Raw Tissue12 data - Run 2
-Sample ID: Subject06
-Date: 5/28/2025
-Values: 12.24, 56.73, 14.89, 53.47, 15.45
-Notes: Standard collection protocol followed

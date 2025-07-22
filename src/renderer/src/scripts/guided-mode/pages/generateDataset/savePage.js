@@ -2,8 +2,8 @@ import { countFilesInDatasetStructure } from "../../../utils/datasetStructure";
 import useGlobalStore from "../../../../stores/globalStore";
 import { contentOptionsMap } from "../../../../components/pages/DatasetContentSelector";
 import {
-  guidedSkipPage,
-  guidedUnSkipPage,
+  guidedSkipPageSet,
+  guidedUnskipPageSet,
 } from "../../../guided-mode/pages/navigationUtils/pageSkipping";
 import { isCheckboxCardChecked } from "../../../../stores/slices/checkboxCardSlice";
 import { getSodaTextInputValue } from "../../../../stores/slices/sodaTextInputSlice";
@@ -31,6 +31,23 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
     }
     window.sodaJSONObj["generate-dataset-locally"] = generateDatasetLocallyCardChecked;
     window.sodaJSONObj["generate-dataset-on-pennsieve"] = generateDatasetOnPennsieveCardChecked;
+
+    const localGenerationPageSetClass = "local-generation-page-set";
+    const pennsieveGenerationPageSetClass = "pennsieve-generation-page-set";
+    // If the user selected to generate the dataset locally, unskip the local generation page set
+    // Otherwise, skip it
+    if (generateDatasetLocallyCardChecked) {
+      guidedUnskipPageSet(localGenerationPageSetClass);
+    } else {
+      guidedSkipPageSet(localGenerationPageSetClass);
+    }
+    // If the user selected to generate the dataset on Pennsieve, unskip the Pennsieve generation page set
+    // Otherwise, skip it
+    if (generateDatasetOnPennsieveCardChecked) {
+      guidedUnskipPageSet(pennsieveGenerationPageSetClass);
+    } else {
+      guidedSkipPageSet(pennsieveGenerationPageSetClass);
+    }
   }
 
   if (pageBeingLeftID === "guided-pennsieve-settings-tab") {

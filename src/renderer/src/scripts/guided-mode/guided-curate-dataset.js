@@ -1004,6 +1004,8 @@ const editContributorByOrcid = (
 };
 
 const handleAddOrEditContributorHeaderUI = (boolEditingContributor) => {
+  // This is a WIP return empty string for now
+  return "";
   // When editing a contributor, simply display the header for editing
   if (boolEditingContributor) {
     return `
@@ -1079,7 +1081,7 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
   let defaultOrcid = "";
   let defaultAffiliation = "";
   let defaultRole = "";
-  let contributorSwalTitle = "Add a new contributor";
+  let contributorSwalTitle = "Adding a new contributor";
 
   if (contributorIdToEdit) {
     const contributorData = getContributorByOrcid(contributorIdToEdit);

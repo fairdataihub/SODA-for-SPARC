@@ -22,6 +22,7 @@ const initialState = {
     include: [], // Array of {type, names} objects for inclusion
     exclude: [], // Array of {type, names} objects for exclusion
   },
+  dataSetMetadataToPreview: null, // Metadata to preview for the dataset
 };
 
 // Create the dataset tree view slice for global state
@@ -530,4 +531,10 @@ export const clearEntityFilter = () => {
     const currentSearchFilter = useGlobalStore.getState().datasetStructureSearchFilter;
     setDatasetStructureSearchFilter(currentSearchFilter);
   }, 0);
+};
+
+export const setDataSetMetadataToPreview = (metadata) => {
+  useGlobalStore.setState({
+    dataSetMetadataToPreview: metadata,
+  });
 };

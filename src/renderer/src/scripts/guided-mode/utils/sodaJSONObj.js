@@ -93,7 +93,6 @@ export const guidedCreateSodaJSONObj = () => {
   window.sodaJSONObj["dataset_metadata"]["description-metadata"]["dataset-information"] = {};
   window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"] = {};
   window.sodaJSONObj["dataset_metadata"]["README"] = "";
-
   window.sodaJSONObj["related_resources"] = [];
   window.sodaJSONObj["digital-metadata"] = {};
   window.sodaJSONObj["previously-uploaded-data"] = {};

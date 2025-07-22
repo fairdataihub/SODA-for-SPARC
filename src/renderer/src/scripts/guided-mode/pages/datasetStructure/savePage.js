@@ -154,8 +154,10 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
 
     if (selectedEntities.includes("code")) {
       guidedUnSkipPage("guided-code-folder-tab");
+      guidedSkipPage("guided-add-code-metadata-tab");
     } else {
       guidedSkipPage("guided-code-folder-tab");
+      guidedSkipPage("guided-add-code-metadata-tab");
     }
   }
 

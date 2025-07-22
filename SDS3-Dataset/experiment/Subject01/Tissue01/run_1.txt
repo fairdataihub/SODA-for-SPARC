@@ -1,5 +1,5 @@
 # Raw Tissue01 data - Run 1
 Sample ID: Subject01
-Date: 5/28/2025
-Values: 10.30, 54.56, 29.53, 55.98, 49.34
+Date: 7/22/2025
+Values: 37.41, 40.01, 50.47, 16.21, 17.67
 Notes: Standard collection protocol followed

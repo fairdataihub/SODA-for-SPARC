@@ -541,6 +541,7 @@ const DatasetTreeViewRenderer = ({
   const externallySetSearchFilterValue = useGlobalStore(
     (state) => state.externallySetSearchFilterValue
   );
+  const dataSetMetadataToPreview = useGlobalStore((state) => state.dataSetMetadataToPreview);
 
   const [inputSearchFilter, setInputSearchFilter] = useState(datasetStructureSearchFilter);
   const [debouncedSearchFilter] = useDebouncedValue(inputSearchFilter, 300); // 300ms debounce
@@ -662,6 +663,14 @@ const DatasetTreeViewRenderer = ({
                   entityType={entityType} // Pass to FileItem
                 />
               )
+            )}
+            {dataSetMetadataToPreview && (
+              <>
+                <Text size="sm" c="gray">
+                  Previewing metadata for dataset:
+                </Text>
+                <pre>{JSON.stringify(dataSetMetadataToPreview, null, 2)}</pre>
+              </>
             )}
           </>
         )}
