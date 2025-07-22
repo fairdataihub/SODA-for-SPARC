@@ -4,6 +4,8 @@ import { contentOptionsMap } from "../../../../components/pages/DatasetContentSe
 import {
   guidedSkipPage,
   guidedUnSkipPage,
+  guidedSkipPageSet,
+  guidedUnSkipPageSet,
 } from "../../../guided-mode/pages/navigationUtils/pageSkipping";
 
 export const savePageDatasetStructure = async (pageBeingLeftID) => {
@@ -111,35 +113,39 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     console.log("Setting up page skipping based on content selections");
 
     if (selectedEntities.includes("subjects")) {
-      guidedUnSkipPage("guided-subjects-entity-addition-tab");
-      guidedUnSkipPage("guided-subjects-selection-tab");
-      guidedUnSkipPage("guided-unstructured-data-import-tab");
-      guidedUnSkipPage("guided-subjects-metadata-tab");
+      guidedUnSkipPageSet("guided-subjects-metadata-page-set");
     } else {
-      guidedSkipPage("guided-subjects-entity-addition-tab");
-      guidedSkipPage("guided-subjects-selection-tab");
-      guidedSkipPage("guided-unstructured-data-import-tab");
-      guidedSkipPage("guided-subjects-metadata-tab");
+      // Delete the existing subjects metadata if it exists
+      const existingSubjectsMetadata = window.sodaJSONObj["dataset_metadata"]?.["subjects"];
+      if (existingSubjectsMetadata) {
+        delete window.sodaJSONObj["dataset_metadata"]["subjects"];
+      }
+
+      guidedSkipPageSet("guided-subjects-metadata-page-set");
     }
 
     if (selectedEntities.includes("samples")) {
-      guidedUnSkipPage("guided-samples-entity-addition-tab");
-      guidedUnSkipPage("guided-samples-selection-tab");
-      guidedUnSkipPage("guided-samples-metadata-tab");
+      guidedSkipPageSet("guided-samples-metadata-page-set");
     } else {
-      guidedSkipPage("guided-samples-entity-addition-tab");
-      guidedSkipPage("guided-samples-selection-tab");
-      guidedSkipPage("guided-samples-metadata-tab");
+      // Delete the existing samples metadata if it exists
+      const existingSamplesMetadata = window.sodaJSONObj["dataset_metadata"]?.["samples"];
+      if (existingSamplesMetadata) {
+        delete window.sodaJSONObj["dataset_metadata"]["samples"];
+      }
+
+      guidedSkipPageSet("guided-samples-metadata-page-set");
     }
 
     if (selectedEntities.includes("sites")) {
-      guidedUnSkipPage("guided-sites-entity-addition-tab");
-      guidedUnSkipPage("guided-sites-selection-tab");
-      guidedUnSkipPage("guided-create-sites-metadata-tab");
+      guidedUnSkipPageSet("guided-sites-metadata-page-set");
     } else {
-      guidedSkipPage("guided-sites-entity-addition-tab");
-      guidedSkipPage("guided-sites-selection-tab");
-      guidedSkipPage("guided-create-sites-metadata-tab");
+      guidedSkipPageSet("guided-sites-metadata-page-set");
+
+      // Delete the existing sites metadata if it exists
+      const existingSitesMetadata = window.sodaJSONObj["dataset_metadata"]?.["sites"];
+      if (existingSitesMetadata) {
+        delete window.sodaJSONObj["dataset_metadata"]["sites"];
+      }
     }
 
     if (selectedEntities.includes("performances")) {

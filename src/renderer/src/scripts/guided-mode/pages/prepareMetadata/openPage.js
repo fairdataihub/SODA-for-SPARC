@@ -28,7 +28,6 @@ import { swalFileListSingleAction, swalShowInfo } from "../../../utils/swal-util
 import { guidedDatasetKeywordsTagify } from "../../tagifies/tagifies";
 import lottie from "lottie-web";
 import { renderAdditionalLinksTable } from "../../guided-curate-dataset";
-import { datasetIsSparcFunded } from "../../utils/sodaJSONObj";
 import { createStandardizedDatasetStructure } from "../../../../scripts/utils/datasetStructure";
 import { setDropdownState } from "../../../../stores/slices/dropDownSlice";
 import {
@@ -268,13 +267,6 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     const license = basicInformation["license"] || "";
 
     renderAdditionalLinksTable();
-
-    const otherFundingLabel = document.getElementById("SPARC-award-other-funding-label");
-    if (datasetIsSparcFunded()) {
-      otherFundingLabel.innerHTML = ` besides the SPARC Award: ${window.sodaJSONObj["dataset_metadata"]["shared-metadata"]["sparc-award"]}`;
-    } else {
-      otherFundingLabel.innerHTML = "";
-    }
   }
 
   if (targetPageID === "guided-dataset-metadata-intro-tab") {

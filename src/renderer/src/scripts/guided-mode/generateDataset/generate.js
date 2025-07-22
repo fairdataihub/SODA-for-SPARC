@@ -6,11 +6,7 @@ import { savePageChanges, guidedSaveProgress } from "../pages/savePageChanges";
 import client from "../../client";
 import { checkIfDatasetExistsOnPennsieve } from "../pennsieveUtils";
 import { successCheck, errorMark } from "../../../assets/lotties/lotties";
-import {
-  guidedGetDatasetName,
-  guidedGetDatasetId,
-  datasetIsSparcFunded,
-} from "../utils/sodaJSONObj";
+import { guidedGetDatasetName, guidedGetDatasetId } from "../utils/sodaJSONObj";
 import { getExistingSubjects } from "../../../stores/slices/datasetEntityStructureSlice";
 import { createStandardizedDatasetStructure } from "../../utils/datasetStructure";
 
@@ -1354,41 +1350,4 @@ const guidedCreateEventDataPrepareMetadata = (destination, value) => {
     value,
     destination,
   };
-};
-
-const guidedGetContributorInformation = () => {
-  let guidedContributorInformation = {
-    ...window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributor-information"],
-  };
-  const guidedSparcAward = window.sodaJSONObj["dataset_metadata"]["shared-metadata"]["sparc-award"];
-  if (datasetIsSparcFunded()) {
-    // Move the SPARC award to the front of the funding array
-    guidedContributorInformation["funding"] = guidedContributorInformation["funding"].filter(
-      (funding) => funding !== guidedSparcAward
-    );
-    guidedContributorInformation["funding"].unshift(guidedSparcAward);
-  }
-
-  const guidedContributorsArray = window.sodaJSONObj["dataset_metadata"]["description-metadata"][
-    "contributors"
-  ].map((contributor) => {
-    return {
-      conAffliation: contributor["conAffliation"].join(", "),
-      conID: contributor["conID"],
-      conName: contributor["conName"],
-      conRole: contributor["conRole"].join(", "),
-      contributorFirstName: contributor["contributorFirstName"],
-      contributorLastName: contributor["contributorLastName"],
-    };
-  });
-  guidedContributorInformation["contributors"] = guidedContributorsArray;
-
-  return guidedContributorInformation;
-};
-
-const guidedGetDatasetLinks = () => {
-  return [
-    ...window.sodaJSONObj["dataset_metadata"]["description-metadata"]["additional-links"],
-    ...window.sodaJSONObj["dataset_metadata"]["description-metadata"]["protocols"],
-  ];
 };

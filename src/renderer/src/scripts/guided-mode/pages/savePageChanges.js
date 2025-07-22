@@ -390,9 +390,9 @@ export const savePageChanges = async (pageBeingLeftID) => {
     //       });
     //       throw errorArray;
     //     }
-    //     //Unskip the sample file annotation page
+    //     //UnSkip the sample file annotation page
 
-    //     //Unskip the samples metadata page
+    //     //UnSkip the samples metadata page
     //     guidedUnSkipPage(`guided-create-samples-metadata-tab`);
     //   }
     //   if (userSelectedDatasetDoesNotHaveSamples) {
