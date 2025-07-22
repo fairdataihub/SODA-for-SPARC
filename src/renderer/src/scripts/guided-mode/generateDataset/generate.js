@@ -167,10 +167,14 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     window.sodaJSONObj["ps-account-selected"] = {
       "account-name": window.defaultBfAccount,
     };
+    window.sodaJSONObj["dataset-structure"] = standardizedDatasetStructure;
     datasetUploadSession.startSession();
     let datasetUploadObj = JSON.parse(JSON.stringify(window.sodaJSONObj));
     guidedSetNavLoadingState(true);
-    console.log("Uploading dataset to Pennsieve with data:", datasetUploadObj);
+    console.log(
+      "[Pennsieve] soda_json_structure being sent:",
+      datasetUploadObj.soda_json_structure
+    );
     client.post(
       `/curate_datasets/curation`,
       {
@@ -179,7 +183,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       },
       { timeout: 0 }
     );
-    console.log("HERE 1");
     await trackPennsieveDatasetGenerationProgress(standardizedDatasetStructure);
     guidedSetNavLoadingState(false);
     amountOfTimesPennsieveUploadFailed = 0;
@@ -500,6 +503,7 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
     });
 
     // Start local generation
+    console.log("[Local] soda_json_structure being sent:", sodaJSONObjCopy.soda_json_structure);
     client.post(
       "/curate_datasets/curation",
       { soda_json_structure: sodaJSONObjCopy, resume: false },

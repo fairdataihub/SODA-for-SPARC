@@ -150,6 +150,9 @@ class Curation(Resource):
 
         if "soda_json_structure" not in data:
             api.abort(400, "Missing parameter: soda_json_structure")
+        
+        api.logger.info(f"Received data for curation: {data}")
+        
 
         if "resume" not in data:
             api.abort(400, "Missing parameter: resume")
