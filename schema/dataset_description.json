@@ -178,15 +178,75 @@
           },
           "relation_type": {
             "type": "string",
-            "enum": ["IsProtocolFor", "HasProtocol"]
+            "enum": [
+              "IsProtocolFor",
+              "HasProtocol",
+              "IsSoftwareFor",
+              "HasSoftware",
+              "SharesEntitiesWithDataset",
+              "IsCitedBy",
+              "Cites",
+              "IsSupplementTo",
+              "IsSupplementedBy",
+              "IsContinuedBy",
+              "Continues",
+              "IsDescribedBy",
+              "Describes",
+              "HasMetadata",
+              "IsMetadataFor",
+              "HasVersion",
+              "IsVersionOf",
+              "IsNewVersionOf",
+              "IsPreviousVersionOf",
+              "IsPartOf",
+              "HasPart",
+              "IsPublishedIn",
+              "IsReferencedBy",
+              "References",
+              "IsDocumentedBy",
+              "Documents",
+              "IsCompiledBy",
+              "Compiles",
+              "IsVariantFormOf",
+              "IsOriginalFormOf",
+              "IsIdenticalTo",
+              "IsReviewedBy",
+              "Reviews",
+              "IsDerivedFrom",
+              "IsSourceOf",
+              "IsRequiredBy",
+              "Requires",
+              "IsObsoletedBy",
+              "Obsoletes"
+            ],
+            "description": "The relationship that this dataset has to the related identifier. For example, the originating article would be this dataset IsDescribedBy originating article."
           },
           "identifier": {
-            "type": "string",
-            "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$"
+            "type": "string"
           },
           "identifier_type": {
             "type": "string",
-            "enum": ["DOI", "URL"]
+            "enum": [
+              "ARK",
+              "arXiv",
+              "bibcode",
+              "DOI",
+              "EAN13",
+              "EISSN",
+              "Handle",
+              "IGSN",
+              "ISBN",
+              "ISSN",
+              "ISTC",
+              "LISSN",
+              "LSID",
+              "PMID",
+              "PURL",
+              "UPC",
+              "URL",
+              "URN",
+              "w3id"
+            ]
           }
         },
         "required": []
