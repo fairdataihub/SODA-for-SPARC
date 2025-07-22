@@ -43,16 +43,17 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     const guidedPennsieveStudyPurpose =
       window.sodaJSONObj["dataset_metadata"]?.["dataset_description"]?.["study_information"]?.[
         "study_purpose"
-      ];
+      ] || "";
     const guidedPennsieveDataCollection =
       window.sodaJSONObj["dataset_metadata"]?.["dataset_description"]?.["study_information"]?.[
         "study_data_collection"
-      ];
+      ] || "";
     const guidedPennsievePrimaryConclusion =
       window.sodaJSONObj["dataset_metadata"]?.["dataset_description"]?.["description"]?.[
         "study_primary_conclusion"
-      ];
-    const guidedBannerImagePath = window.sodaJSONObj["dataset_metadata"]?.["banner-image-path"];
+      ] || "";
+    const guidedBannerImagePath =
+      window.sodaJSONObj["dataset_metadata"]?.["banner-image-path"] || "";
     // Create standardized structure
     const standardizedDatasetStructure = createStandardizedDatasetStructure(
       window.datasetStructureJSONObj,

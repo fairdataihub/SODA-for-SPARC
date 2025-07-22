@@ -79,6 +79,7 @@ export const guidedCreateSodaJSONObj = () => {
   window.sodaJSONObj["starting-point"] = { origin: "new" };
   window.sodaJSONObj["dataset_metadata"] = {};
   window.sodaJSONObj["dataset_contributors"] = [];
+  window.sodaJSONObj["dataset_additional_links"] = [];
   window.sodaJSONObj["related_resources"] = [];
   window.sodaJSONObj["digital-metadata"] = {};
   window.sodaJSONObj["previously-uploaded-data"] = {};
