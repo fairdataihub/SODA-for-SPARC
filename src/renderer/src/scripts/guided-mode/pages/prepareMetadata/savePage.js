@@ -45,10 +45,38 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
 
   if (pageBeingLeftID === "guided-subjects-metadata-tab") {
     const subjects = getExistingSubjects();
+
     const subjectsMetadata = subjects.map((subject) => {
-      return subject.metadata;
+      const metadata = { ...subject.metadata };
+
+      if (metadata.age_numeric_value && metadata.age_unit) {
+        metadata.age = `${metadata.age_numeric_value} ${metadata.age_unit}`;
+      }
+      if (metadata.age_range_min_numeric_value && metadata.age_range_unit) {
+        metadata.age_range_min = `${metadata.age_range_min_numeric_value} ${metadata.age_range_unit}`;
+      }
+
+      if (metadata.age_range_max_numeric_value && metadata.age_range_unit) {
+        metadata.age_range_max = `${metadata.age_range_max_numeric_value} ${metadata.age_range_unit}`;
+      }
+
+      if (metadata.body_mass_numeric_value && metadata.body_mass_unit) {
+        metadata.body_mass = `${metadata.body_mass_numeric_value} ${metadata.body_mass_unit}`;
+      }
+
+      // Remove the extraneous fields to prevent schema validation errors
+      delete metadata.age_numeric_value;
+      delete metadata.age_unit;
+      delete metadata.age_range_min_numeric_value;
+      delete metadata.age_range_max_numeric_value;
+      delete metadata.age_range_unit;
+      delete metadata.body_mass_numeric_value;
+      delete metadata.body_mass_unit;
+
+      return metadata;
     });
-    console.log("subjectsMetadata", subjectsMetadata);
+
+    console.log("subjectsMetadata:", subjectsMetadata);
     window.sodaJSONObj["dataset_metadata"]["subjects"] = subjectsMetadata;
   }
 

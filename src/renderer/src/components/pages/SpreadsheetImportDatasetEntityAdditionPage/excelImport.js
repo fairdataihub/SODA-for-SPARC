@@ -34,13 +34,13 @@ export const readExcelFile = (file) => {
  */
 export const entityConfigs = {
   subjects: {
-    idField: "subject id",
+    idField: "subject_id",
     prefix: "sub-",
-    requiredFields: ["subject id"],
+    requiredFields: ["subject_id"],
     formatEntity: (item, id) => ({
       id,
       type: "subject",
-      metadata: { ...item, "subject id": id },
+      metadata: { ...item, subject_id: id },
     }),
     saveEntity: (entity) => addSubject(entity.id, entity.metadata),
     formatDisplayId: (entity) => entity.id,
@@ -48,18 +48,18 @@ export const entityConfigs = {
   },
 
   samples: {
-    idField: "sample id",
+    idField: "sample_id",
     prefix: "sam-",
-    requiredFields: ["sample id", "subject id"],
+    requiredFields: ["sample_id", "subject_id"],
     formatEntity: (item, id) => {
       // Normalize the subject ID using the imported function
-      const subjectId = normalizeEntityId("sub-", item["subject id"]);
+      const subjectId = normalizeEntityId("sub-", item["subject_id"]);
 
       return {
         id,
         type: "sample",
         parentSubject: subjectId,
-        metadata: { ...item, "sample id": id, "subject id": subjectId },
+        metadata: { ...item, sample_id: id, subject_id: subjectId },
       };
     },
     saveEntity: (entity) => addSampleToSubject(entity.parentSubject, entity.id, entity.metadata),
@@ -68,27 +68,27 @@ export const entityConfigs = {
   },
 
   sites: {
-    idField: "site id",
+    idField: "site_id",
     prefix: "site-",
-    requiredFields: ["site id", "subject id"],
-    optionalFields: ["sample id"],
+    requiredFields: ["site_id", "subject_id"],
+    optionalFields: ["sample_id"],
     formatEntity: (item, id) => {
       // Normalize parent IDs consistently using the imported function
-      const subjectId = normalizeEntityId("sub-", item["subject id"]);
+      const subjectId = normalizeEntityId("sub-", item["subject_id"]);
 
       // Create base entity with subject parent
       const entity = {
         id,
         type: "site",
         parentSubject: subjectId,
-        metadata: { ...item, "site id": id, "subject id": subjectId },
+        metadata: { ...item, site_id: id, subject_id: subjectId },
       };
 
       // Add sample parent if it exists
-      if (item["sample id"]) {
-        const sampleId = normalizeEntityId("sam-", item["sample id"]);
+      if (item["sample_id"]) {
+        const sampleId = normalizeEntityId("sam-", item["sample_id"]);
         entity.parentSample = sampleId;
-        entity.metadata["sample id"] = sampleId;
+        entity.metadata["sample_id"] = sampleId;
       }
 
       return entity;

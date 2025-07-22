@@ -121,7 +121,7 @@ window.guidedOpenAddOrEditProtocolSwal = async (editIdentifier = null) => {
     showCancelButton: true,
     reverseButtons: window.reverseSwalButtons,
     heightAuto: false,
-    width: "38rem",
+    width: "800",
     backdrop: "rgba(0,0,0, 0.4)",
     didOpen: () => {
       $(".swal-popover").popover();

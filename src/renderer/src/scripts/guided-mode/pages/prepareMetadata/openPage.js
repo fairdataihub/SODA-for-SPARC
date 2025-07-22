@@ -150,6 +150,19 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     readMeTextArea.value = readMe;
   }
 
+  if (targetPageID === "guided-dataset-structure-review-tab") {
+    console.log("Opening dataset structure review page");
+
+    // Create standardized structure
+    const standardizedDatasetStructure = createStandardizedDatasetStructure(
+      window.datasetStructureJSONObj,
+      window.sodaJSONObj["dataset-entity-obj"]
+    );
+
+    // Set the dataset structure in the Redux store
+    setTreeViewDatasetStructure(standardizedDatasetStructure);
+  }
+
   if (targetPageID === "guided-add-code-metadata-tab") {
     const startNewCodeDescYesNoContainer = document.getElementById(
       "guided-section-start-new-code-metadata-query"

@@ -387,8 +387,8 @@ const EntityMetadataForm = () => {
                 </Text>
                 <NumberInput
                   placeholder="e.g., 12"
-                  value={getMetadataValue("age")}
-                  onChange={(value) => handleChange("age", value)}
+                  value={getMetadataValue("age_numeric_value")}
+                  onChange={(value) => handleChange("age_numeric_value", value)}
                   min={0}
                   defaultValue={0}
                 />
@@ -410,8 +410,8 @@ const EntityMetadataForm = () => {
                     { value: "months", label: "Months" },
                     { value: "years", label: "Years" },
                   ]}
-                  value={getMetadataValue("age unit")}
-                  onChange={(value) => handleChange("age unit", value)}
+                  value={getMetadataValue("age_unit")}
+                  onChange={(value) => handleChange("age_unit", value)}
                   defaultValue={"Select unit"}
                 />
               </Box>
@@ -496,22 +496,22 @@ const EntityMetadataForm = () => {
                     Age Range
                   </Text>
                   <Text size="xs" c="dimmed" mb={5}>
-                    Specify the minimum and maximum age range for the subject
+                    The min and max age range for the subject during the experiment
                   </Text>
                   <Group grow align="flex-start">
                     <NumberInput
                       label="Minimum"
                       placeholder="Min age"
-                      value={getMetadataValue("age_range_min")}
-                      onChange={(value) => handleChange("age_range_min", value)}
+                      value={getMetadataValue("age_range_min_numeric_value")}
+                      onChange={(value) => handleChange("age_range_min_numeric_value", value)}
                       min={0}
                     />
 
                     <NumberInput
                       label="Maximum"
                       placeholder="Max age"
-                      value={getMetadataValue("age_range_max")}
-                      onChange={(value) => handleChange("age_range_max", value)}
+                      value={getMetadataValue("age_range_max_numeric_value")}
+                      onChange={(value) => handleChange("age_range_max_numeric_value", value)}
                       min={0}
                     />
 
@@ -525,8 +525,8 @@ const EntityMetadataForm = () => {
                         { value: "months", label: "Months" },
                         { value: "years", label: "Years" },
                       ]}
-                      value={getMetadataValue("age range unit")}
-                      onChange={(value) => handleChange("age range unit", value)}
+                      value={getMetadataValue("age_range_unit")}
+                      onChange={(value) => handleChange("age_range_unit", value)}
                     />
                   </Group>
                 </Box>
@@ -543,8 +543,8 @@ const EntityMetadataForm = () => {
                     <NumberInput
                       label="Mass value"
                       placeholder="Enter mass"
-                      value={getMetadataValue("body mass")}
-                      onChange={(value) => handleChange("body mass", value)}
+                      value={getMetadataValue("body_mass_numeric_value")}
+                      onChange={(value) => handleChange("body_mass_numeric_value", value)}
                       min={0}
                       precision={3}
                     />
@@ -557,8 +557,8 @@ const EntityMetadataForm = () => {
                         { value: "kg", label: "kilograms (kg)" },
                         { value: "lb", label: "pounds (lb)" },
                       ]}
-                      value={getMetadataValue("body mass unit")}
-                      onChange={(value) => handleChange("body mass unit", value)}
+                      value={getMetadataValue("body_mass_unit")}
+                      onChange={(value) => handleChange("body_mass_unit", value)}
                     />
                   </Group>
                 </Box>
