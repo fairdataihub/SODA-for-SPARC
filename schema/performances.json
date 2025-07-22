@@ -11,7 +11,7 @@
       "protocol_url_or_doi": {
         "type": "string",
         "description": "URL or DOI of the protocol associated with the performance",
-        "pattern": "^(https?://|doi:).+"
+        "pattern": "^$|^(https?://|doi:).+"
       },
       "date": {
         "type": "string",
@@ -39,13 +39,6 @@
         "description": "Any additional metadata related to the performance"
       }
     },
-    "required": [
-      "performance_id",
-      "protocol_url_or_doi",
-      "date",
-      "start_datetime",
-      "end_datetime",
-      "participants"
-    ]
+    "required": ["performance_id"]
   }
 }
