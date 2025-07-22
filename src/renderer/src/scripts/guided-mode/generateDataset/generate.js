@@ -45,12 +45,18 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     const pennsieveDatasetSubtitle = window.sodaJSONObj["pennsieve-dataset-subtitle"];
     const guidedLicense = window.sodaJSONObj["digital-metadata"]["license"];
     const guidedPennsieveStudyPurpose =
-      window.sodaJSONObj["digital-metadata"]["description"]["study-purpose"];
+      window.sodaJSONObj["dataset_metadata"]?.["dataset_description"]?.["study_information"]?.[
+        "study_purpose"
+      ];
     const guidedPennsieveDataCollection =
-      window.sodaJSONObj["digital-metadata"]["description"]["data-collection"];
+      window.sodaJSONObj["dataset_metadata"]?.["dataset_description"]?.["study_information"]?.[
+        "study_data_collection"
+      ];
     const guidedPennsievePrimaryConclusion =
-      window.sodaJSONObj["digital-metadata"]["description"]["primary-conclusion"];
-    const guidedBannerImagePath = window.sodaJSONObj["digital-metadata"]?.["banner-image-path"];
+      window.sodaJSONObj["dataset_metadata"]?.["dataset_description"]?.["description"]?.[
+        "study_primary_conclusion"
+      ];
+    const guidedBannerImagePath = window.sodaJSONObj["dataset_metadata"]?.["banner-image-path"];
     // Create standardized structure
     const standardizedDatasetStructure = createStandardizedDatasetStructure(
       window.datasetStructureJSONObj,

@@ -987,6 +987,18 @@ const EntityMetadataForm = () => {
 const EntityMetadataPage = ({ entityType }) => {
   console.log("entityType", entityType);
   const showFullMetadataFormFields = useGlobalStore((state) => state.showFullMetadataFormFields);
+  const generateSelectTextByEntityType = (entityType) => {
+    switch (entityType) {
+      case "subjects":
+        return "Select a subject";
+      case "samples":
+        return "Select a sample";
+      case "sites":
+        return "Select a site";
+      default:
+        return "Select an entity";
+    }
+  };
 
   return (
     <GuidedModePage pageHeader="Dataset entity metadata">
@@ -1004,7 +1016,7 @@ const EntityMetadataPage = ({ entityType }) => {
         <Grid gutter="lg">
           {/* Entity selection panel */}
           <Grid.Col span={5} style={{ position: "sticky", top: "20px" }}>
-            <EntityListContainer title={entityType ? `Select a ${entityType}` : null}>
+            <EntityListContainer title={generateSelectTextByEntityType(entityType)}>
               <EntityHierarchyRenderer
                 allowEntityStructureEditing={true}
                 allowEntitySelection={true}

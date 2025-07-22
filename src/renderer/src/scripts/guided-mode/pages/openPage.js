@@ -11,6 +11,7 @@ import {
   setTreeViewDatasetStructure,
   clearEntityFilter, // Add this import
   setEntityFilter, // Add this import
+  setDataSetMetadataToPreview, // Add this import
 } from "../../../stores/slices/datasetTreeViewSlice.js";
 import {
   addEntityToEntityList,
@@ -191,6 +192,14 @@ export const openPage = async (targetPageID) => {
     setSelectedEntities(window.sodaJSONObj["selected-entities"] || []);
     setDeSelectedEntities(window.sodaJSONObj["deSelected-entities"] || []);
     setPerformanceList(window.sodaJSONObj["dataset_metadata"]?.["performance_metadata"] || []);
+
+    if (targetPageID === "guided-dataset-generation-tab") {
+      // Set the dataset metadata to preview
+      setDataSetMetadataToPreview(window.sodaJSONObj["dataset_metadata"] || {});
+    } else {
+      // Clear the dataset metadata preview if not on the generation page
+      setDataSetMetadataToPreview(null);
+    }
 
     if (
       targetPageID === "guided-dataset-generation-tab" ||
