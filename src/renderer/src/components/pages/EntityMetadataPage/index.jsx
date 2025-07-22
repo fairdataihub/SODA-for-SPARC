@@ -78,6 +78,8 @@ const EntityMetadataForm = () => {
   const entityBeingAddedParentSample = useGlobalStore(
     (state) => state.entityBeingAddedParentSample
   );
+  console.log("entityBeingAddedParentSubject", entityBeingAddedParentSubject);
+  console.log("entityBeingAddedParentSample", entityBeingAddedParentSample);
   const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const showFullMetadataFormFields = useGlobalStore((state) => state.showFullMetadataFormFields);

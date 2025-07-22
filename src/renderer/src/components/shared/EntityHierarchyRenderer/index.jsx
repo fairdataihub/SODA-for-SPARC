@@ -207,8 +207,10 @@ const EntityHierarchyRenderer = ({
 
   // ----- SAMPLE OPERATIONS -----
   const handleAddSampleButtonClick = useCallback((subject) => {
+    console.log("Subject clicked for adding sample:", subject);
+    const subjectId = subject["metadata"]["subject_id"];
     setSelectedHierarchyEntity(null);
-    setEntityBeingAddedParentSubject(subject.id);
+    setEntityBeingAddedParentSubject(subjectId);
     setActiveFormType("sample");
   }, []);
 
@@ -230,9 +232,11 @@ const EntityHierarchyRenderer = ({
 
   // ----- SAMPLE SITE OPERATIONS -----
   const handleAddSampleSiteButtonClick = useCallback(({ sample, subject }) => {
+    const subjectId = subject["metadata"]["subject_id"];
+    const sampleId = sample["metadata"]["sample_id"];
     setSelectedHierarchyEntity(null);
-    setEntityBeingAddedParentSample(sample.id);
-    setEntityBeingAddedParentSubject(subject.id);
+    setEntityBeingAddedParentSample(sampleId);
+    setEntityBeingAddedParentSubject(subjectId);
     setActiveFormType("site");
   }, []);
 
