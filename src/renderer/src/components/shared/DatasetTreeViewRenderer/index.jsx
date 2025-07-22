@@ -664,14 +664,7 @@ const DatasetTreeViewRenderer = ({
                 />
               )
             )}
-            {dataSetMetadataToPreview && (
-              <>
-                <Text size="sm" c="gray">
-                  Previewing metadata for dataset:
-                </Text>
-                <pre>{JSON.stringify(dataSetMetadataToPreview, null, 2)}</pre>
-              </>
-            )}
+            {dataSetMetadataToPreview && <></>}
           </>
         )}
       </Stack>
