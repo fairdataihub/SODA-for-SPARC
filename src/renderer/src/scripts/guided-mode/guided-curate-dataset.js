@@ -3097,13 +3097,10 @@ $("#guided-input-destination-getting-started-locally").on("click", () => {
   window.electron.ipcRenderer.send("guided-open-file-dialog-local-destination-curate");
 });
 
-//********************************************************************************************************
-// Add click event listener to the button triggering local dataset generation
-document.querySelectorAll(".button-starts-local-dataset-copy-generation").forEach((button) => {
-  button.addEventListener("click", () => {
-    // Send an IPC message to select the local dataset generation path
-    window.electron.ipcRenderer.send("guided-select-local-dataset-generation-path");
-  });
+// add a click listener to button with id guided-generate-dataset-locally-button that triggers local gen
+document.querySelector("#guided-generate-dataset-locally-button").addEventListener("click", () => {
+  // Send an IPC message to select the local dataset generation path
+  window.electron.ipcRenderer.send("guided-select-local-dataset-generation-path");
 });
 
 // Listen for the selected path for local dataset generation that starts the local dataset generation process

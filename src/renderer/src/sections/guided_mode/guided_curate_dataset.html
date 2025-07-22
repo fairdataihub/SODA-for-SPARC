@@ -2123,9 +2123,9 @@
             <h1 class="text-sub-step-title">Local Dataset Generation</h1>
             <p class="help-text">
               The SDS-compliant dataset tree view below shows the complete structure of your dataset
-              and its metadata. If you only need a local copy, click “Create local copy” to generate
-              it locally. If you are uploading the dataset to Pennsieve, you can optionally create a
-              local copy or proceed to the next step to begin the upload process.
+              and its metadata. To generate a local copy of your dataset, click the "Generate
+              Dataset Locally" button below. You will be asked where you would like to save the
+              dataset, and the dataset will be generated in the selected location.
             </p>
           </div>
           <div
@@ -2135,29 +2135,13 @@
           ></div>
           <div class="guided--section">
             <div
-              id="guided-folder-and-metadata-structure-review"
-              style="display: block; margin-left: 0px; margin-right: 0px"
+              data-component-type="generic-button"
+              data-button-id="guided-generate-dataset-locally-button"
+              data-variant="filled"
+              data-size="md"
+              data-text="Generate Dataset Locally"
+              class="mb-md mt-md"
             ></div>
-          </div>
-          <div class="guided--section" id="guided-section-create-local-dataset-copy">
-            <h2 class="text-sub-step-title">Create a local copy for review</h2>
-            <p class="help-text centered mb-1">
-              Would you like to create a local copy of the dataset for reviewing before continuing?
-            </p>
-            <div class="guided--radio-button-container">
-              <button
-                class="ui primary basic button button-starts-local-dataset-copy-generation"
-                style="margin: 5px 7px !important"
-              >
-                Create local copy
-              </button>
-              <button
-                class="ui primary basic button pass-button-click-to-next-button"
-                style="margin: 5px 7px !important"
-              >
-                Skip and continue
-              </button>
-            </div>
           </div>
           <div class="guided--section" id="guided-section-local-generation-status-table">
             <table class="ui celled striped table mt-3" style="width: 100% !important">
