@@ -78,7 +78,7 @@ export const openPageDatasetStructure = async (targetPageID) => {
   }
 
   if (targetPageID === "guided-modalities-data-selection-tab") {
-    console.log("Opening modalities data selection page");
+    console.log("Opening modalities Data Selection page");
     // Component with type "data-categorization-page" will handle most of the logic
   }
 

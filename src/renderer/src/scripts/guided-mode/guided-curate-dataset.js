@@ -3450,9 +3450,9 @@ const doTheHack = async () => {
 
 // If this variable is set to true, you will be taken back to the last guided mode page you were working on
 // (always set to false when making production builds)
-const continueHackGm = true;
+const continueHackGm = false;
 if (continueHackGm) {
-  // doTheHack();
+  doTheHack();
 }
 
 // Add the event listener for the Data importation component

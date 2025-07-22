@@ -91,18 +91,45 @@ export const savePageChanges = async (pageBeingLeftID) => {
           });
           throw errorArray;
         }
-        console.log("performanceList", performanceList);
+
+        const sharesAtLeastOneKey = (a, b) => {
+          return Object.keys(a).some((key) => {
+            return key in b;
+          });
+        };
+
         window.sodaJSONObj["dataset_performances"] = performanceList;
-        // Create a copy of the performance list
-        // to avoid mutating the original list in the global store
-        const performanceListCopy = JSON.parse(JSON.stringify(performanceList));
-        // Loop through the performances, and if they have a start datetime in this format start_datetime: "2025-07-01T07:00:00.000Z",
-        // The set the date as the start datetime but just the date part
+
+        // Deep copy to avoid mutating the original list in the global store
+        const performanceListCopy = structuredClone(performanceList);
+        const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
+
         performanceListCopy.forEach((performance) => {
+          const performanceId = performance.performance_id;
+          const performanceParticipants = [];
+
+          if (datasetEntityObj?.performances?.[performanceId]) {
+            const performanceFiles = datasetEntityObj.performances[performanceId];
+
+            for (const entityType of ["subjects", "samples", "sites"]) {
+              const entities = datasetEntityObj[entityType];
+              if (!entities) continue;
+
+              for (const [entityId, entityFiles] of Object.entries(entities)) {
+                if (sharesAtLeastOneKey(entityFiles, performanceFiles)) {
+                  performanceParticipants.push(entityId);
+                }
+              }
+            }
+          }
+
+          performance.participants = performanceParticipants;
+
           if (performance.start_datetime) {
             performance.date = performance.start_datetime.split("T")[0];
           }
         });
+
         window.sodaJSONObj["dataset_metadata"]["performances"] = performanceListCopy;
       }
 
