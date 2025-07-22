@@ -2,8 +2,6 @@ import { countFilesInDatasetStructure } from "../../../utils/datasetStructure";
 import useGlobalStore from "../../../../stores/globalStore";
 import { contentOptionsMap } from "../../../../components/pages/DatasetContentSelector";
 import {
-  guidedSkipPage,
-  guidedUnSkipPage,
   guidedSkipPageSet,
   guidedUnskipPageSet,
 } from "../../../guided-mode/pages/navigationUtils/pageSkipping";
