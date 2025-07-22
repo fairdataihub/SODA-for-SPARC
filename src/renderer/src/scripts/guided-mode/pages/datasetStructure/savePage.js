@@ -125,7 +125,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     }
 
     if (selectedEntities.includes("samples")) {
-      guidedSkipPageSet("guided-samples-metadata-page-set");
+      guidedUnSkipPageSet("guided-samples-metadata-page-set");
     } else {
       // Delete the existing samples metadata if it exists
       const existingSamplesMetadata = window.sodaJSONObj["dataset_metadata"]?.["samples"];
@@ -149,20 +149,19 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     }
 
     if (selectedEntities.includes("performances")) {
-      guidedUnSkipPage("guided-performances-entity-addition-tab");
-      guidedUnSkipPage("guided-Performances-selection-tab");
-      guidedUnSkipPage("guided-create-performances-metadata-tab");
+      guidedUnSkipPageSet("guided-performances-metadata-page-set");
     } else {
-      guidedSkipPage("guided-performances-entity-addition-tab");
-      guidedSkipPage("guided-Performances-selection-tab");
-      guidedSkipPage("guided-create-performances-metadata-tab");
+      guidedSkipPageSet("guided-performances-metadata-page-set");
+      // Delete the existing performances metadata if it exists
+      const existingPerformancesMetadata = window.sodaJSONObj["dataset_metadata"]?.["performances"];
+      if (existingPerformancesMetadata) {
+        delete window.sodaJSONObj["dataset_metadata"]["performances"];
+      }
     }
 
     if (selectedEntities.includes("code")) {
-      guidedUnSkipPage("guided-code-folder-tab");
       guidedSkipPage("guided-add-code-metadata-tab");
     } else {
-      guidedSkipPage("guided-code-folder-tab");
       guidedSkipPage("guided-add-code-metadata-tab");
     }
   }

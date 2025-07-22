@@ -40,7 +40,14 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
   }
   if (pageBeingLeftID === "guided-resources-entity-addition-tab") {
     const resourceList = useGlobalStore.getState()["resourceList"];
-    window.sodaJSONObj["dataset_metadata"]["resources"] = resourceList;
+    if (!resourceList || resourceList.length === 0) {
+      // Delete the resources metadata if no resources are added
+      if (window.sodaJSONObj["dataset_metadata"]?.["resources"]) {
+        delete window.sodaJSONObj["dataset_metadata"]["resources"];
+      }
+    } else {
+      window.sodaJSONObj["dataset_metadata"]["resources"] = resourceList;
+    }
   }
 
   if (pageBeingLeftID === "guided-subjects-metadata-tab") {

@@ -901,14 +901,12 @@ const removeAlertMessageIfExists = (elementToCheck) => {
 };
 
 window.deleteAdditionalLink = (linkName) => {
-  const additionalLinks =
-    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["additional-links"];
+  const additionalLinks = window.sodaJSONObj["dataset_additional_links"];
   //filter additional links to remove the one to be deleted
   const filteredAdditionalLinks = additionalLinks.filter((link) => {
     return link.link != linkName;
   });
-  window.sodaJSONObj["dataset_metadata"]["description-metadata"]["additional-links"] =
-    filteredAdditionalLinks;
+  window.sodaJSONObj["dataset_additional_links"] = filteredAdditionalLinks;
   //update the UI
   renderAdditionalLinksTable();
 };
@@ -1374,8 +1372,7 @@ window.handleContributorDrop = (event) => {
 
 export const renderAdditionalLinksTable = () => {
   const additionalLinksTableBody = document.getElementById("additional-links-table-body");
-  const additionalLinkData =
-    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["additional-links"];
+  const additionalLinkData = window.sodaJSONObj["dataset_additional_links"];
   if (additionalLinkData.length != 0) {
     const additionalLinkElements = additionalLinkData
       .map((link) => {
@@ -1461,6 +1458,7 @@ const openAddAdditionLinkSwal = async () => {
     reverseButtons: window.reverseSwalButtons,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
+    width: "800",
     didOpen: () => {
       $(".swal-popover").popover();
     },
@@ -1504,12 +1502,11 @@ const openAddAdditionLinkSwal = async () => {
     }
     const description = values[2];
     //add link to jsonObj
-    window.sodaJSONObj["dataset_metadata"]["description-metadata"]["additional-links"].push({
+    window.sodaJSONObj["dataset_additional_links"].push({
       link: link,
       relation: relation,
       description: description,
       type: linkType,
-      isFair: true,
     });
     renderAdditionalLinksTable();
   }

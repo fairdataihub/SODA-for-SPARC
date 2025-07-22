@@ -295,29 +295,30 @@ export const savePageChanges = async (pageBeingLeftID) => {
         }
 
         if (selectedEntities.includes("sites")) {
-          if (getExistingSites().length === 0) {
+          const sites = getExistingSites();
+          if (sites.length === 0) {
             errorArray.push({
               type: "notyf",
               message: "You must add at least one site to your dataset before continuing",
             });
             throw errorArray;
           }
+          // Prepare the sites metadata
+          const sitesMetadata = sites.map((site) => ({
+            ...site.metadata,
+            specimen_id: `${site.metadata.subject_id} ${site.metadata.sample_id}`,
+          }));
+          console.log("sitesMetadata", sitesMetadata);
+          window.sodaJSONObj["dataset_metadata"]["sites"] = sitesMetadata;
+        } else {
+          // If sites metadata has been added, remove it (It shouldn't be there but just in case)
+          if (window.sodaJSONObj["dataset_metadata"]?.["sites"]) {
+            delete window.sodaJSONObj["dataset_metadata"]["sites"];
+          }
         }
 
         // Save the dataset entity object to the progress file
         window.sodaJSONObj["dataset-entity-array"] = datasetEntityArray;
-
-        // Save the Sites metadata since all site addition and metadata intake is done
-        // on this page
-
-        // Prepare the sites metadata
-        const sites = getExistingSites();
-        const sitesMetadata = sites.map((site) => ({
-          ...site.metadata,
-          specimen_id: `${site.metadata.subject_id} ${site.metadata.sample_id}`,
-        }));
-        console.log("sitesMetadata", sitesMetadata);
-        window.sodaJSONObj["dataset_metadata"]["sites"] = sitesMetadata;
       }
     }
 
@@ -482,9 +483,6 @@ export const savePageChanges = async (pageBeingLeftID) => {
     //       throw errorArray;
     //     }
     //   }
-    // }
-
-    // if (pageBeingLeftID === "guided-code-folder-tab") {
     // }
 
     // if (pageBeingLeftID === "guided-protocol-folder-tab") {

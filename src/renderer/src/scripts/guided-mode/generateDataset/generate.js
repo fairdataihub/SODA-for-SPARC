@@ -372,8 +372,17 @@ const trackLocalDatasetGenerationProgress = async (standardizedDatasetStructure)
 
 // Track the status of Pennsieve dataset upload
 const trackPennsieveDatasetGenerationProgress = async (standardizedDatasetStructure) => {
-  const numberOfFilesToUpload = countFilesInDatasetStructure(standardizedDatasetStructure);
-  console.log("[Pennsieve Progress] Number of files to upload:", numberOfFilesToUpload);
+  let numberOfFilesToUpload = countFilesInDatasetStructure(standardizedDatasetStructure);
+  // Count the number of keys in the dataset_metadata obj and add it to the number of files to upload
+  const numberOfMetadataFilesToUpload = Object.keys(
+    window.sodaJSONObj["dataset_metadata"] || {}
+  ).length;
+  console.log(
+    "[Pennsieve Progress] Number of metadata files to upload:",
+    numberOfMetadataFilesToUpload
+  );
+  numberOfFilesToUpload += numberOfMetadataFilesToUpload;
+  console.log("[Pennsieve Progress] Total number of files to upload:", numberOfFilesToUpload);
 
   window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
 

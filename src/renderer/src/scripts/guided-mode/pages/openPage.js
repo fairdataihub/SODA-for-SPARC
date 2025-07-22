@@ -422,10 +422,6 @@ window.openPage = async (targetPageID) => {
     //         guidedUpdateFolderStructureUI("data/");
     //     }
 
-    //     if (targetPageID === "guided-code-folder-tab") {
-    //         guidedUpdateFolderStructureUI("code/");
-    //     }
-
     //     if (targetPageID === "guided-protocol-folder-tab") {
     //         guidedUpdateFolderStructureUI("protocol/");
     //     }
