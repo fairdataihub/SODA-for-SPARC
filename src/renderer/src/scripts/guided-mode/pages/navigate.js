@@ -1,4 +1,3 @@
-import { openPage } from "./openPage";
 import { savePageChanges } from "./savePageChanges";
 import { getGuidedProgressFileNames } from "./curationPreparation/savePage";
 import {
@@ -35,7 +34,7 @@ export const handleNextButtonClick = async () => {
 
   if (window.pageBeingLeftID === "guided-dataset-generation-tab") {
     guidedUnSkipPage("guided-dataset-dissemination-tab");
-    await openPage("guided-dataset-dissemination-tab");
+    await window.openPage("guided-dataset-dissemination-tab");
     return;
   }
 
@@ -51,7 +50,7 @@ export const handleNextButtonClick = async () => {
     const targetPage = getNextPageNotSkipped(window.CURRENT_PAGE.id);
     const targetPageID = targetPage.id;
 
-    await openPage(targetPageID);
+    await window.openPage(targetPageID);
   } catch (error) {
     window.log.error(error);
     if (Array.isArray(error)) {
@@ -102,7 +101,7 @@ export const handleBackButtonClick = async () => {
   }
 
   const targetPageID = targetPage.id;
-  await openPage(targetPageID);
+  await window.openPage(targetPageID);
 };
 
 const nextButton = document.getElementById("guided-next-button");
@@ -244,7 +243,7 @@ document.getElementById("button-homepage-guided-mode").addEventListener("click",
   $(".shared-folder-structure-element").appendTo($("#guided-folder-structure-container"));
   guidedTransitionFromHome();
   guidedUnLockSideBar();
-  await openPage("guided-select-starting-point-tab");
+  await window.openPage("guided-select-starting-point-tab");
 });
 
 export const guidedTransitionFromHome = async () => {

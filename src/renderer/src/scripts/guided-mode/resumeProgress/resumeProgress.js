@@ -8,7 +8,6 @@ import {
 } from "../pages/navigationUtils/pageSkipping";
 import { guidedGetCurrentUserWorkSpace } from "../workspaces/workspaces";
 import { getProgressFileData } from "./progressFile";
-import { openPage } from "../pages/openPage";
 import api from "../../others/api/api";
 import client from "../../client";
 import { clientError } from "../../others/http-error-handler/error-handler";
@@ -183,7 +182,7 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
     // pageToReturnTo will be set to the page the user will return to
     const pageToReturnTo = await guidedGetPageToReturnTo(window.sodaJSONObj);
 
-    await openPage(pageToReturnTo);
+    await window.openPage(pageToReturnTo);
 
     // Close the loading screen, the user should be on the page they left off on now
     loadingSwal.close();

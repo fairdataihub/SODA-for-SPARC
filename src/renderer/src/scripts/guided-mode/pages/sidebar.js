@@ -1,6 +1,5 @@
 import { getNonSkippedGuidedModePages } from "../pages/navigationUtils/pageSkipping";
 import { savePageChanges } from "../pages/savePageChanges";
-import { openPage } from "../pages/openPage";
 import Swal from "sweetalert2";
 
 /**
@@ -213,7 +212,7 @@ export const renderSideBar = (activePage) => {
 
 const checkIfPageIsValid = async (pageID) => {
   try {
-    await openPage(pageID);
+    await window.openPage(pageID);
     await savePageChanges(pageID);
   } catch (error) {
     console.log("Error on page: ", pageID);

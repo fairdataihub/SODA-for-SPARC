@@ -1,6 +1,5 @@
 import Swal from "sweetalert2";
 import { guidedGetCurrentUserWorkSpace } from "../../workspaces/workspaces";
-import { openPage } from "../openPage";
 import { guidedGenerateDatasetOnPennsieve } from "../../generateDataset/generate";
 
 while (!window.baseHtmlLoaded) {
@@ -70,7 +69,7 @@ document.getElementById("guided-generate-dataset-button").addEventListener("clic
     return;
   }
   // If all checks pass, progress to the next page
-  await openPage("guided-dataset-generation-tab");
+  await window.openPage("guided-dataset-generation-tab");
   // Generate the dataset on Pennsieve
   guidedGenerateDatasetOnPennsieve();
 });
