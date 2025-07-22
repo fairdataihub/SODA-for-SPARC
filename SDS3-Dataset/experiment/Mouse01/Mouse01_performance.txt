@@ -1,4 +1,0 @@
-Performance data for Mouse01
-Collection Date: 2023-06-01
-Experimenter: J. Smith
-Notes: All measurements and observations for this mouse are included in this file.
