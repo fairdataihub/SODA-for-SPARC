@@ -157,7 +157,7 @@ const setActiveProgressionTab = (targetPageID) => {
  * @param {string} targetPageID - The html element id of the page to display.
  *
  */
-export const openPage = async (targetPageID) => {
+window.openPage = async (targetPageID) => {
   //NOTE: 2 Bottom back buttons (one handles sub pages, and the other handles main pages)
   //Back buttons should be disabled and the function setLoading should be (set as false?)
 
