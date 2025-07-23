@@ -1,0 +1,5 @@
+# Raw Tissue04 data - Run 2
+Sample ID: Subject02
+Date: 7/23/2025
+Values: 31.00, 13.78, 14.25, 32.43, 34.05
+Notes: Standard collection protocol followed

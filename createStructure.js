@@ -5,7 +5,7 @@ const rootDir = "SDS3-Dataset";
 
 // Configuration variables - adjust these to scale the dataset
 const numSubjects = 2; // Number of subjects to create
-const samplesPerSubject = 6; // Number of tissue samples per subject
+const samplesPerSubject = 2; // Number of tissue samples per subject
 const regionsPerSample = 2; // Number of regions per sample
 
 // Delete directory recursively if it exists
@@ -33,89 +33,62 @@ if (fs.existsSync(rootDir)) {
 }
 
 // Sample realistic file contents for typical lab data
-const sampleRawData = (id, type, runNum) => {
-  const block =
-    `# Raw ${type} data - Run ${runNum}\n` +
-    `Sample ID: ${id}\n` +
-    `Date: ${new Date().toLocaleDateString()}\n` +
-    `Values: ${Array.from({ length: 100 }, () => (Math.random() * 50 + 10).toFixed(2)).join(
-      ", "
-    )}\n` +
-    `Notes: Standard collection protocol followed\n`;
-  const repeat = Math.ceil((0.25 * 1024 * 1024) / block.length);
-  return block.repeat(repeat).slice(0, 0.25 * 1024 * 1024);
-};
+const sampleRawData = (id, type, runNum) =>
+  `# Raw ${type} data - Run ${runNum}\n` +
+  `Sample ID: ${id}\n` +
+  `Date: ${new Date().toLocaleDateString()}\n` +
+  `Values: ${Array.from({ length: 5 }, () => (Math.random() * 50 + 10).toFixed(2)).join(", ")}\n` +
+  `Notes: Standard collection protocol followed`;
 
-const sampleExcelData = (id, type) => {
-  let header = `Subject,Measurement Type,Value 1,Value 2,Value 3\n`;
-  let row = `${id},${type},${(Math.random() * 50 + 10).toFixed(2)},${(
+const sampleExcelData = (id, type) =>
+  `Subject,Measurement Type,Value 1,Value 2,Value 3\n` +
+  `${id},${type},${(Math.random() * 50 + 10).toFixed(2)},${(Math.random() * 50 + 10).toFixed(2)},${(
     Math.random() * 50 +
     10
-  ).toFixed(2)},${(Math.random() * 50 + 10).toFixed(2)}\n`;
-  const repeat = Math.ceil((0.25 * 1024 * 1024) / row.length);
-  let content = header + row.repeat(repeat);
-  return content.slice(0, 0.25 * 1024 * 1024);
-};
+  ).toFixed(2)}`;
 
-const labNotes = (id, sampleType, date) => {
-  const block =
-    `Lab Notes - ${sampleType} Sample\n` +
-    `Subject: ${id}\n` +
-    `Sample: ${sampleType}\n` +
-    `Date: ${date}\n` +
-    `Collected by: J. Smith\n\n` +
-    `Processing Notes:\n` +
-    `- Sample processed according to protocol\n` +
-    `- Stored at -80°C (Freezer #2)\n` +
-    `- Quality check: Passed\n\n` +
-    `Observations: Sample appears normal with no visible contamination\n`;
-  const repeat = Math.ceil((0.25 * 1024 * 1024) / block.length);
-  return block.repeat(repeat).slice(0, 0.25 * 1024 * 1024);
-};
+const labNotes = (id, sampleType, date) =>
+  `Lab Notes - ${sampleType} Sample\n` +
+  `Subject: ${id}\n` +
+  `Sample: ${sampleType}\n` +
+  `Date: ${date}\n` +
+  `Collected by: J. Smith\n\n` +
+  `Processing Notes:\n` +
+  `- Sample processed according to protocol\n` +
+  `- Stored at -80°C (Freezer #2)\n` +
+  `- Quality check: Passed\n\n` +
+  `Observations: Sample appears normal with no visible contamination`;
 
 // Site-specific notes
-const siteNotes = (subjectId, sampleId, siteId, date) => {
-  const block =
-    `Site: ${siteId}\n` +
-    `Subject: ${subjectId}\n` +
-    `Sample: ${sampleId}\n` +
-    `Date: ${date}\n` +
-    `Researcher: Dr. M. Researcher\n\n` +
-    `Site-specific Notes:\n` +
-    `- Measurements taken according to SOP-${siteId.slice(-3)}\n` +
-    `- Site appears healthy and normal\n` +
-    `- Processing completed successfully\n`;
-  const repeat = Math.ceil((0.25 * 1024 * 1024) / block.length);
-  return block.repeat(repeat).slice(0, 0.25 * 1024 * 1024);
-};
+const siteNotes = (subjectId, sampleId, siteId, date) =>
+  `Site: ${siteId}\n` +
+  `Subject: ${subjectId}\n` +
+  `Sample: ${sampleId}\n` +
+  `Date: ${date}\n` +
+  `Researcher: Dr. M. Researcher\n\n` +
+  `Site-specific Notes:\n` +
+  `- Measurements taken according to SOP-${siteId.slice(-3)}\n` +
+  `- Site appears healthy and normal\n` +
+  `- Processing completed successfully\n`;
 
 // Site metadata file content
-const siteMetadata = (subjectId, sampleId, siteId) => {
-  const block =
-    `Site ID: ${siteId}\n` +
-    `Related Subject: ${subjectId}\n` +
-    `Related Sample: ${sampleId}\n` +
-    `Collection Date: ${new Date().toLocaleDateString()}\n` +
-    `Anatomical Location: ${siteId}\n` +
-    `Coordinates: X:${Math.floor(Math.random() * 50)}, Y:${Math.floor(
-      Math.random() * 50
-    )}, Z:${Math.floor(Math.random() * 50)}\n`;
-  const repeat = Math.ceil((0.25 * 1024 * 1024) / block.length);
-  return block.repeat(repeat).slice(0, 0.25 * 1024 * 1024);
-};
+const siteMetadata = (subjectId, sampleId, siteId) =>
+  `Site ID: ${siteId}\n` +
+  `Related Subject: ${subjectId}\n` +
+  `Related Sample: ${sampleId}\n` +
+  `Collection Date: ${new Date().toLocaleDateString()}\n` +
+  `Anatomical Location: ${siteId}\n` +
+  `Coordinates: X:${Math.floor(Math.random() * 50)}, Y:${Math.floor(
+    Math.random() * 50
+  )}, Z:${Math.floor(Math.random() * 50)}\n`;
 
 // Site measurements data
-const siteMeasurementData = (siteId) => {
-  let header = `Time,Position,Measurement,Value\n`;
-  let row =
-    `1,${siteId},Temperature,${(Math.random() * 5 + 35).toFixed(2)} °C\n` +
-    `2,${siteId},pH,${(Math.random() * 1 + 7).toFixed(2)}\n` +
-    `3,${siteId},Pressure,${(Math.random() * 40 + 80).toFixed(2)} mmHg\n` +
-    `4,${siteId},Flow Rate,${(Math.random() * 100 + 50).toFixed(2)} ml/min\n`;
-  const repeat = Math.ceil((0.25 * 1024 * 1024) / row.length);
-  let content = header + row.repeat(repeat);
-  return content.slice(0, 0.25 * 1024 * 1024);
-};
+const siteMeasurementData = (siteId) =>
+  `Time,Position,Measurement,Value\n` +
+  `1,${siteId},Temperature,${(Math.random() * 5 + 35).toFixed(2)} °C\n` +
+  `2,${siteId},pH,${(Math.random() * 1 + 7).toFixed(2)}\n` +
+  `3,${siteId},Pressure,${(Math.random() * 40 + 80).toFixed(2)} mmHg\n` +
+  `4,${siteId},Flow Rate,${(Math.random() * 100 + 50).toFixed(2)} ml/min\n`;
 
 // Generate the project readme dynamically based on configuration
 const projectReadme =
@@ -397,34 +370,14 @@ This document describes the standardized procedures for taking measurements at s
 
 // Function to create directories
 function createDir(dirPath) {
-  // Add '(' to every folder name segment if not present
-  const newDirPath = dirPath
-    .split(/[\\/]/)
-    .map((part) => (part.includes("(") ? part : part + "("))
-    .join(path.sep);
-  if (!fs.existsSync(newDirPath)) {
-    fs.mkdirSync(newDirPath, { recursive: true });
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true });
   }
 }
 
 // Function to create a file with content
 function createFile(filePath, content) {
-  // Add '(' to every file and folder segment if not present
-  const parts = filePath.split(/[\\/]/);
-  const newParts = parts.map((part) => (part.includes("(") ? part : part + "("));
-  const newFilePath = path.join(...newParts);
-  // If the file is .txt, .csv, .md, or .xlsx, and content is not already large, pad it to ~5MB
-  const ext = path.extname(filePath).toLowerCase();
-  let paddedContent = content;
-  if (
-    [".txt", ".csv", ".md", ".xlsx"].includes(ext) &&
-    Buffer.byteLength(content, "utf8") < 0.25 * 1024 * 1024
-  ) {
-    // Pad with newlines to reach 5MB
-    const padSize = 0.25 * 1024 * 1024 - Buffer.byteLength(content, "utf8");
-    paddedContent = content + "\n".repeat(Math.ceil(padSize / 2));
-  }
-  fs.writeFileSync(newFilePath, paddedContent);
+  fs.writeFileSync(filePath, content);
 }
 
 console.log(`Creating new ${rootDir} directory...`);
