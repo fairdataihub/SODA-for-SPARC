@@ -304,7 +304,8 @@ export const savePageChanges = async (pageBeingLeftID) => {
             throw errorArray;
           }
           // Prepare the sites metadata
-          const sitesMetadata = sites.map((site) => ({
+          const sitesCopy = structuredClone(sites);
+          const sitesMetadata = sitesCopy.map((site) => ({
             ...site.metadata,
             specimen_id: `${site.metadata.subject_id} ${site.metadata.sample_id}`,
           }));
