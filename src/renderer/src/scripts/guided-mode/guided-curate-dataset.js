@@ -1372,7 +1372,7 @@ window.handleContributorDrop = (event) => {
 
 export const renderAdditionalLinksTable = () => {
   const additionalLinksTableBody = document.getElementById("additional-links-table-body");
-  const additionalLinkData = window.sodaJSONObj["dataset_additional_links"];
+  const additionalLinkData = window.sodaJSONObj["dataset_additional_links"] || [];
   if (additionalLinkData.length != 0) {
     const additionalLinkElements = additionalLinkData
       .map((link) => {

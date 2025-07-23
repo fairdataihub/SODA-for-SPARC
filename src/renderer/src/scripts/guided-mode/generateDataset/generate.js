@@ -178,14 +178,26 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       "[Pennsieve] soda_json_structure being sent:",
       datasetUploadObj.soda_json_structure
     );
-    client.post(
-      `/curate_datasets/curation`,
-      {
-        soda_json_structure: datasetUploadObj,
-        resume: !!window.retryGuidedMode,
-      },
-      { timeout: 0 }
-    );
+    client
+      .post(
+        `/curate_datasets/curation`,
+        {
+          soda_json_structure: datasetUploadObj,
+          resume: !!window.retryGuidedMode,
+        },
+        { timeout: 0 }
+      )
+      .then((response) => {
+        console.log("This is finished and called here");
+        let { data } = response;
+
+        // Verify files setup section
+        window.pennsieveManifestId = data["origin_manifest_id"];
+        window.totalFilesCount = data["main_curation_total_files"];
+
+        // show verify files section
+        document.getElementById("guided--verify-files").classList.remove("hidden");
+      });
     await trackPennsieveDatasetGenerationProgress(standardizedDatasetStructure);
     guidedSetNavLoadingState(false);
     amountOfTimesPennsieveUploadFailed = 0;
