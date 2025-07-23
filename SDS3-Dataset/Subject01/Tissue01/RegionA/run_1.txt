@@ -1,5 +1,5 @@
 # Raw RegionA data - Run 1
 Sample ID: Subject01
-Date: 7/22/2025
-Values: 44.15, 42.35, 53.91, 10.65, 18.52
+Date: 7/23/2025
+Values: 45.65, 39.82, 45.04, 16.11, 28.42
 Notes: Standard collection protocol followed

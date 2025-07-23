@@ -1,6 +1,6 @@
 Site ID: RegionA
 Related Subject: Subject02
 Related Sample: Tissue03
-Collection Date: 7/22/2025
+Collection Date: 7/23/2025
 Anatomical Location: RegionA
-Coordinates: X:8, Y:11, Z:27
+Coordinates: X:7, Y:4, Z:5

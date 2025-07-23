@@ -403,10 +403,14 @@ const trackPennsieveDatasetGenerationProgress = async (standardizedDatasetStruct
     const { data } = await client.get(`/curate_datasets/curation/progress`);
     console.log("[Pennsieve Progress] Raw progress data:", data);
     return {
+      main_generated_dataset_size: data["main_generated_dataset_size"],
       status: data["main_curate_status"],
       message: data["main_curate_progress_message"],
       elapsedTime: data["elapsed_time_formatted"],
       uploadedFiles: data["total_files_uploaded"],
+      startGenerate: data["start_generate"],
+      mainTotalGenerateDatasetSize: data["main_total_generate_dataset_size"],
+      mainGeneratedDatasetSize: data["main_generated_dataset_size"],
     };
   };
 
@@ -434,6 +438,11 @@ const trackPennsieveDatasetGenerationProgress = async (standardizedDatasetStruct
         elapsedTime,
         uploadedFiles,
       });
+
+      // Show renaming status if present using updateProgressUI
+      if (message && message.includes("Preparing files to be renamed")) {
+        updateProgressUI(0, elapsedTime, status, "Preparing files to be renamed...");
+      }
 
       if (message === "Success: COMPLETED!" || status === "Done") {
         console.log("[Pennsieve Progress] Upload completed.");

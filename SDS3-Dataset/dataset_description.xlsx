@@ -1,0 +1,9 @@
+Subject ID,Sample ID,Region,Collection Date
+Subject01,Tissue01,RegionA,2023-06-01
+Subject01,Tissue01,RegionB,2023-06-01
+Subject01,Tissue02,RegionA,2023-06-01
+Subject01,Tissue02,RegionB,2023-06-01
+Subject02,Tissue03,RegionA,2023-06-16
+Subject02,Tissue03,RegionB,2023-06-16
+Subject02,Tissue04,RegionA,2023-06-16
+Subject02,Tissue04,RegionB,2023-06-16
