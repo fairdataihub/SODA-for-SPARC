@@ -319,7 +319,7 @@ document.getElementById("guided-button-reserve-doi").addEventListener("click", a
   const pennsieveDatasetID = window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
   const datasetDOI = await api.reserveDOI(pennsieveDatasetID);
   if (datasetDOI) {
-    window.sodaJSONObj["digital-metadata"]["doi"]; = datasetDOI;
+    window.sodaJSONObj["digital-metadata"]["doi"] = datasetDOI;
   }
 
   guidedSetDOIUI(datasetDOI);
