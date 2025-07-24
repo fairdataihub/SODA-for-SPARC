@@ -374,6 +374,15 @@ const trackPennsieveDatasetGenerationProgress = async (standardizedDatasetStruct
   numberOfFilesToUpload += numberOfMetadataFilesToUpload;
   console.log("[Pennsieve Progress] Total number of files to upload:", numberOfFilesToUpload);
 
+  // Get dataset size
+  const localDatasetSizeReq = await client.post(
+    "/curate_datasets/dataset_size",
+    { soda_json_structure: window.sodaJSONObj },
+    { timeout: 0 }
+  );
+  const localDatasetSizeInBytes = localDatasetSizeReq.data.dataset_size;
+  console.log("[Local] Dataset size in bytes:", localDatasetSizeInBytes);
+
   window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
 
   const fetchProgressData = async () => {
@@ -384,40 +393,92 @@ const trackPennsieveDatasetGenerationProgress = async (standardizedDatasetStruct
       message: data["main_curate_progress_message"],
       elapsedTime: data["elapsed_time_formatted"],
       uploadedFiles: data["total_files_uploaded"],
+      startGenerate: data["start_generate"],
+      mainTotalGenerateDatasetSize: data["main_total_generate_dataset_size"],
+      mainGeneratedDatasetSize: data["main_generated_dataset_size"],
     };
   };
 
-  const updateProgressUI = (uploadedFiles, elapsedTime, status, message) => {
-    const progress = Math.min(100, Math.max(0, (uploadedFiles / numberOfFilesToUpload) * 100));
-    console.log(
-      `[Pennsieve Progress] Uploaded: ${uploadedFiles}/${numberOfFilesToUpload}, Percent: ${progress.toFixed(
-        2
-      )}%, Elapsed: ${elapsedTime}, Status: ${status}, Message: ${message}`
-    );
-    setGuidedProgressBarValue("pennsieve", progress);
-    updateDatasetUploadProgressTable("pennsieve", {
-      "Files uploaded": `${uploadedFiles} of ${numberOfFilesToUpload}`,
-      "Percent uploaded": `${progress.toFixed(2)}%`,
-      "Elapsed time": elapsedTime,
-    });
+  const formatBytes = (bytes) => {
+    if (bytes === 0) return "0 Bytes";
+
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    const value = bytes / Math.pow(k, i);
+
+    return `${value.toFixed(2)} ${sizes[i]}`;
   };
 
   while (true) {
     try {
-      const { status, message, elapsedTime, uploadedFiles } = await fetchProgressData();
+      const {
+        status,
+        message,
+        elapsedTime,
+        uploadedFiles,
+        startGenerate,
+        mainTotalGenerateDatasetSize,
+        mainGeneratedDatasetSize,
+      } = await fetchProgressData();
       console.log("[Pennsieve Progress] Fetched progress data:", {
         status,
         message,
         elapsedTime,
         uploadedFiles,
+        startGenerate,
+        mainTotalGenerateDatasetSize,
+        mainGeneratedDatasetSize,
       });
 
-      if (message === "Success: COMPLETED!" || status === "Done") {
-        console.log("[Pennsieve Progress] Upload completed.");
-        break;
+      if (message && message.includes("Preparing files to be renamed")) {
+        setGuidedProgressBarValue("pennsieve", 0);
+        updateDatasetUploadProgressTable("pennsieve", {
+          "Current action": "Preparing files to be renamed...",
+        });
+      } else if (message && message.includes("Renaming files")) {
+        setGuidedProgressBarValue(
+          "pennsieve",
+          (mainGeneratedDatasetSize / mainTotalGenerateDatasetSize) * 100
+        );
+        updateDatasetUploadProgressTable("pennsieve", {
+          "Current action": "Renaming files...",
+          "files renamed": `${mainGeneratedDatasetSize} of ${mainTotalGenerateDatasetSize}`,
+        });
+      } else {
+        if (mainGeneratedDatasetSize && mainTotalGenerateDatasetSize) {
+          // Default progress update
+          const progress = Math.min(
+            100,
+            Math.max(0, (mainGeneratedDatasetSize / mainTotalGenerateDatasetSize) * 100)
+          );
+          setGuidedProgressBarValue("pennsieve", progress);
+          updateDatasetUploadProgressTable("pennsieve", {
+            "Current action": message || "",
+            "Data Uploaded": `${formatBytes(mainGeneratedDatasetSize)} of ${formatBytes(
+              mainTotalGenerateDatasetSize
+            )}`,
+            "Percent uploaded": `${progress.toFixed(2)}%`,
+            "Elapsed time": elapsedTime,
+          });
+        } else {
+          // Fallback for when mainGeneratedDatasetSize or mainTotalGenerateDatasetSize is not available
+          setGuidedProgressBarValue("pennsieve", 0);
+          updateDatasetUploadProgressTable("pennsieve", {
+            "Current action": message || "Preparing dataset for upload",
+          });
+        }
       }
 
-      updateProgressUI(uploadedFiles, elapsedTime, status, message);
+      if (status === "Done") {
+        console.log("[Pennsieve Progress] Finalizing upload progress UI.");
+        setGuidedProgressBarValue("pennsieve", 100);
+        updateDatasetUploadProgressTable("pennsieve", {
+          Status: "Dataset successfully uploaded to Pennsieve",
+        });
+        // Break the loop to stop tracking progress (upload is complete)
+        break;
+      }
 
       // Wait for a second before fetching the next progress update
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -426,13 +487,6 @@ const trackPennsieveDatasetGenerationProgress = async (standardizedDatasetStruct
       throw new Error(userErrorMessage(error));
     }
   }
-
-  console.log("[Pennsieve Progress] Finalizing upload progress UI.");
-  setGuidedProgressBarValue("pennsieve", 100);
-  updateDatasetUploadProgressTable("pennsieve", {
-    Status: "Dataset successfully uploaded to Pennsieve",
-  });
-  console.log("[Pennsieve Progress] Upload progress UI finalized.");
 };
 
 export const guidedGenerateDatasetLocally = async (filePath) => {
