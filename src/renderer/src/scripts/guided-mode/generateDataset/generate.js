@@ -67,7 +67,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     // If retrying upload, skip to upload step
     if (userMadeItToLastStep() && window.retryGuidedMode) {
       window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
-      window.updateJSONStructureDSstructure();
       // --- Ensure all required keys are set for retry upload ---
       window.sodaJSONObj["generate-dataset"] = {
         "dataset-name": window.sodaJSONObj["pennsieve-dataset-name"],
@@ -83,18 +82,30 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         "account-name": window.defaultBfAccount,
       };
       datasetUploadSession.startSession();
-      let datasetUploadObj = JSON.parse(JSON.stringify(window.sodaJSONObj));
       guidedSetNavLoadingState(true);
-      await client.post(
-        `/curate_datasets/curation`,
-        {
-          soda_json_structure: datasetUploadObj,
-          resume: !!window.retryGuidedMode,
-        },
-        { timeout: 0 }
-      );
+      await client
+        .post(
+          `/curate_datasets/curation`,
+          {
+            soda_json_structure: window.sodaJSONObj,
+            resume: !!window.retryGuidedMode,
+          },
+          { timeout: 0 }
+        )
+        .then((response) => {
+          console.log("This is finished and called here");
+          let { data } = response;
+
+          // Verify files setup section
+          window.pennsieveManifestId = data["origin_manifest_id"];
+          window.totalFilesCount = data["main_curation_total_files"];
+
+          // show verify files section
+          document.getElementById("guided--verify-files").classList.remove("hidden");
+        });
       await trackPennsieveDatasetGenerationProgress(standardizedDatasetStructure);
       guidedSetNavLoadingState(false);
+      amountOfTimesPennsieveUploadFailed = 0; // Reset the upload failure counter
       return;
     }
 
@@ -135,19 +146,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     await guidedAddDatasetLicense(guidedBfAccount, pennsieveDatasetName, guidedLicense);
 
     hideDatasetMetadataGenerationTableRows("pennsieve");
-
-    // (Metadata file generation temporarily disabled)
-    /*
-    window.unHideAndSmoothScrollToElement(
-      "guided-div-dataset-metadata-pennsieve-generation-status-table"
-    );
-    await guidedGenerateSubjectsMetadata("Pennsieve");
-    await guidedGenerateSamplesMetadata("Pennsieve");
-    await guidedGenerateSubmissionMetadata("Pennsieve");
-    await guidedGenerateDatasetDescriptionMetadata("Pennsieve");
-    await guidedGenerateReadmeMetadata("Pennsieve");
-    await guidedGenerateChangesMetadata("Pennsieve");
-    await guidedGenerateCodeDescriptionMetadata("Pennsieve");*/
 
     // Reset upload progress bar and scroll to it
     setGuidedProgressBarValue("pennsieve", 0);
@@ -286,31 +284,10 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       guidedTransitionToHome();
       return;
     }
-    // --- Ensure all required keys are set for retry upload (in error handler) ---
-    window.sodaJSONObj["generate-dataset"] = {
-      "dataset-name": window.sodaJSONObj["pennsieve-dataset-name"],
-      destination: "ps",
-      "generate-option": "merge",
-      "if-existing": "merge",
-      "if-existing-files": "skip",
-    };
-    window.sodaJSONObj["ps-dataset-selected"] = {
-      "dataset-name": window.sodaJSONObj["pennsieve-dataset-name"],
-    };
-    window.sodaJSONObj["ps-account-selected"] = {
-      "account-name": window.defaultBfAccount,
-    };
-    datasetUploadSession.startSession();
-    let datasetUploadObj = JSON.parse(JSON.stringify(window.sodaJSONObj));
-    guidedSetNavLoadingState(true);
-    await client.post(
-      `/curate_datasets/curation`,
-      {
-        soda_json_structure: datasetUploadObj,
-        resume: !!window.retryGuidedMode,
-      },
-      { timeout: 0 }
-    );
+
+    // call self so this failure code can run up to 3 times automatically
+    guidedGenerateDatasetOnPennsieve();
+
     guidedSetNavLoadingState(false);
   }
   guidedSetNavLoadingState(false);
