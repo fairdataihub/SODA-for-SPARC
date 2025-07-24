@@ -59,19 +59,19 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       window.datasetStructureJSONObj,
       window.sodaJSONObj["dataset-entity-obj"]
     );
-    console.log("standardizedDatasetStructure", standardizedDatasetStructure);
 
     // Set the standardized dataset structure in the global SODA JSON object (used on the backend)
     window.sodaJSONObj["soda_json_structure"] = standardizedDatasetStructure;
 
     // If retrying upload, skip to upload step
-    if (userMadeItToLastStep() && window.retryGuidedMode) {
+    if (window.retryGuidedMode) {
+      console.log("Retry guided mode block being called");
       window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
       // --- Ensure all required keys are set for retry upload ---
       window.sodaJSONObj["generate-dataset"] = {
         "dataset-name": window.sodaJSONObj["pennsieve-dataset-name"],
         destination: "ps",
-        "generate-option": "merge",
+        "generate-option": "existing-ps",
         "if-existing": "merge",
         "if-existing-files": "skip",
       };
@@ -83,7 +83,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       };
       datasetUploadSession.startSession();
       guidedSetNavLoadingState(true);
-      await client
+      client
         .post(
           `/curate_datasets/curation`,
           {
@@ -93,7 +93,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
           { timeout: 0 }
         )
         .then((response) => {
-          console.log("This is finished and called here");
           let { data } = response;
 
           // Verify files setup section
@@ -103,9 +102,9 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
           // show verify files section
           document.getElementById("guided--verify-files").classList.remove("hidden");
         });
-      await trackPennsieveDatasetGenerationProgress(standardizedDatasetStructure);
+
+      trackPennsieveDatasetGenerationProgress(standardizedDatasetStructure);
       guidedSetNavLoadingState(false);
-      amountOfTimesPennsieveUploadFailed = 0; // Reset the upload failure counter
       return;
     }
 
@@ -172,10 +171,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     datasetUploadSession.startSession();
     let datasetUploadObj = JSON.parse(JSON.stringify(window.sodaJSONObj));
     guidedSetNavLoadingState(true);
-    console.log(
-      "[Pennsieve] soda_json_structure being sent:",
-      datasetUploadObj.soda_json_structure
-    );
+
     client
       .post(
         `/curate_datasets/curation`,
@@ -186,7 +182,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         { timeout: 0 }
       )
       .then((response) => {
-        console.log("This is finished and called here");
         let { data } = response;
 
         // Verify files setup section
@@ -196,98 +191,16 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         // show verify files section
         document.getElementById("guided--verify-files").classList.remove("hidden");
       });
-    await trackPennsieveDatasetGenerationProgress(standardizedDatasetStructure);
+
+    trackPennsieveDatasetGenerationProgress(standardizedDatasetStructure);
     guidedSetNavLoadingState(false);
-    amountOfTimesPennsieveUploadFailed = 0;
   } catch (error) {
     clientError(error);
     let emessage = userErrorMessage(error);
     amountOfTimesPennsieveUploadFailed += 1;
     window.retryGuidedMode = true;
     let supplementaryChecks = false;
-
-    if (amountOfTimesPennsieveUploadFailed <= 3) {
-      await Swal.fire({
-        title: `Retrying upload ${amountOfTimesPennsieveUploadFailed} of 3 times`,
-        icon: "error",
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        showConfirmButton: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false,
-        showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
-        hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
-        timer: 5000,
-        timerProgressBar: true,
-      });
-      while (!supplementaryChecks && amountOfTimesPennsieveUploadFailed <= 3) {
-        supplementaryChecks = await window.run_pre_flight_checks(
-          "guided-mode-pre-generate-pennsieve-agent-check"
-        );
-        if (!supplementaryChecks) amountOfTimesPennsieveUploadFailed += 1;
-      }
-    } else {
-      let res = await Swal.fire({
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false,
-        icon: "error",
-        title: "An error occurred during your upload",
-        html: `
-        <p>Error message: ${emessage}</p>
-        <p>
-        SODA has retried the upload three times but was not successful. You may manually retry the upload now or save and exit.
-        If you choose to save and exit you will be able to resume your upload by returning to Prepare Dataset Step-by-Step and clicking the "Resume Upload"
-        button on your dataset's progress card. If this issue persists, please contact support by using the Contact Us page in the sidebar
-        after you Save and Exit.
-        </p>
-      `,
-        showCancelButton: true,
-        cancelButtonText: "Save and Exit",
-        confirmButtonText: "Retry Upload",
-        showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
-        hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
-      });
-      if (!res.isConfirmed) {
-        const currentPageID = window.CURRENT_PAGE.id;
-        try {
-          await savePageChanges(currentPageID);
-        } catch (error) {
-          window.log.error("Error saving page changes", error);
-        }
-        guidedTransitionToHome();
-        return;
-      }
-      supplementaryChecks = await window.run_pre_flight_checks(
-        "guided-mode-pre-generate-pennsieve-agent-check"
-      );
-    }
-
-    if (!supplementaryChecks) {
-      Swal.fire({
-        icon: "error",
-        title: "Could not complete upload due to pre-flight check failures",
-        text: "Please return to the home page to try the upload again. If the problem persists, please contact support by using the Contact Us page in the sidebar.",
-        confirmButtonText: "OK",
-        backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false,
-        showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
-        hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
-      });
-      const currentPageID = window.CURRENT_PAGE.id;
-      try {
-        await savePageChanges(currentPageID);
-      } catch (error) {
-        window.log.error("Error saving page changes", error);
-      }
-      guidedTransitionToHome();
-      return;
-    }
-
-    // call self so this failure code can run up to 3 times automatically
-    guidedGenerateDatasetOnPennsieve();
-
+    automaticRetry(supplementaryChecks, emessage);
     guidedSetNavLoadingState(false);
   }
   guidedSetNavLoadingState(false);
@@ -367,12 +280,12 @@ const trackPennsieveDatasetGenerationProgress = async (standardizedDatasetStruct
   const numberOfMetadataFilesToUpload = Object.keys(
     window.sodaJSONObj["dataset_metadata"] || {}
   ).length;
-  console.log(
-    "[Pennsieve Progress] Number of metadata files to upload:",
-    numberOfMetadataFilesToUpload
-  );
+  // console.log(
+  //   "[Pennsieve Progress] Number of metadata files to upload:",
+  //   numberOfMetadataFilesToUpload
+  // );
   numberOfFilesToUpload += numberOfMetadataFilesToUpload;
-  console.log("[Pennsieve Progress] Total number of files to upload:", numberOfFilesToUpload);
+  // console.log("[Pennsieve Progress] Total number of files to upload:", numberOfFilesToUpload);
 
   // Get dataset size
   const localDatasetSizeReq = await client.post(
@@ -381,13 +294,13 @@ const trackPennsieveDatasetGenerationProgress = async (standardizedDatasetStruct
     { timeout: 0 }
   );
   const localDatasetSizeInBytes = localDatasetSizeReq.data.dataset_size;
-  console.log("[Local] Dataset size in bytes:", localDatasetSizeInBytes);
+  // console.log("[Local] Dataset size in bytes:", localDatasetSizeInBytes);
 
   window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
 
   const fetchProgressData = async () => {
     const { data } = await client.get(`/curate_datasets/curation/progress`);
-    console.log("[Pennsieve Progress] Raw progress data:", data);
+    // console.log("[Pennsieve Progress] Raw progress data:", data);
     return {
       status: data["main_curate_status"],
       message: data["main_curate_progress_message"],
@@ -421,15 +334,6 @@ const trackPennsieveDatasetGenerationProgress = async (standardizedDatasetStruct
         mainTotalGenerateDatasetSize,
         mainGeneratedDatasetSize,
       } = await fetchProgressData();
-      console.log("[Pennsieve Progress] Fetched progress data:", {
-        status,
-        message,
-        elapsedTime,
-        uploadedFiles,
-        startGenerate,
-        mainTotalGenerateDatasetSize,
-        mainGeneratedDatasetSize,
-      });
 
       if (message && message.includes("Preparing files to be renamed")) {
         setGuidedProgressBarValue("pennsieve", 0);
@@ -470,13 +374,28 @@ const trackPennsieveDatasetGenerationProgress = async (standardizedDatasetStruct
         }
       }
 
-      if (status === "Done") {
+      if (status === "Done" && message == "Success: COMPLETED!") {
         console.log("[Pennsieve Progress] Finalizing upload progress UI.");
+        amountOfTimesPennsieveUploadFailed = 0;
+
         setGuidedProgressBarValue("pennsieve", 100);
         updateDatasetUploadProgressTable("pennsieve", {
           Status: "Dataset successfully uploaded to Pennsieve",
         });
         // Break the loop to stop tracking progress (upload is complete)
+        break;
+      } else if (status === "Done" && message !== "Success: COMPLETED!") {
+        console.error("The upload monitor noticed the upload failed");
+        // Handle the case where upload error happens
+        setGuidedProgressBarValue("pennsieve", 0);
+        updateDatasetUploadProgressTable("pennsieve", {
+          Status: "Dataset upload failed",
+          "Error message": message,
+        });
+        amountOfTimesPennsieveUploadFailed += 1;
+        window.retryGuidedMode = true;
+        let supplementaryChecks = false;
+        automaticRetry(supplementaryChecks, message);
         break;
       }
 
@@ -487,6 +406,90 @@ const trackPennsieveDatasetGenerationProgress = async (standardizedDatasetStruct
       throw new Error(userErrorMessage(error));
     }
   }
+};
+
+const automaticRetry = async (supplementaryChecks = false, errorMessage = "") => {
+  if (amountOfTimesPennsieveUploadFailed <= 3) {
+    await Swal.fire({
+      title: `Retrying upload ${amountOfTimesPennsieveUploadFailed} of 3 times`,
+      icon: "error",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+      hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
+      timer: 5000,
+      timerProgressBar: true,
+    });
+    while (!supplementaryChecks && amountOfTimesPennsieveUploadFailed <= 3) {
+      supplementaryChecks = await window.run_pre_flight_checks(
+        "guided-mode-pre-generate-pennsieve-agent-check"
+      );
+      if (!supplementaryChecks) amountOfTimesPennsieveUploadFailed += 1;
+    }
+  } else {
+    let res = await Swal.fire({
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      icon: "error",
+      title: "An error occurred during your upload",
+      html: `
+        <p>Error message: ${errorMessage}</p>
+        <p>
+        SODA has retried the upload three times but was not successful. You may manually retry the upload now or save and exit.
+        If you choose to save and exit you will be able to resume your upload by returning to Prepare Dataset Step-by-Step and clicking the "Resume Upload"
+        button on your dataset's progress card. If this issue persists, please contact support by using the Contact Us page in the sidebar
+        after you Save and Exit.
+        </p>
+      `,
+      showCancelButton: true,
+      cancelButtonText: "Save and Exit",
+      confirmButtonText: "Retry Upload",
+      showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+      hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
+    });
+    if (!res.isConfirmed) {
+      const currentPageID = window.CURRENT_PAGE.id;
+      try {
+        await savePageChanges(currentPageID);
+      } catch (error) {
+        window.log.error("Error saving page changes", error);
+      }
+      guidedTransitionToHome();
+      return;
+    }
+    supplementaryChecks = await window.run_pre_flight_checks(
+      "guided-mode-pre-generate-pennsieve-agent-check"
+    );
+  }
+
+  if (!supplementaryChecks) {
+    Swal.fire({
+      icon: "error",
+      title: "Could not complete upload due to pre-flight check failures",
+      text: "Please return to the home page to try the upload again. If the problem persists, please contact support by using the Contact Us page in the sidebar.",
+      confirmButtonText: "OK",
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+      hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
+    });
+    const currentPageID = window.CURRENT_PAGE.id;
+    try {
+      await savePageChanges(currentPageID);
+    } catch (error) {
+      window.log.error("Error saving page changes", error);
+    }
+    guidedTransitionToHome();
+    return;
+  }
+
+  // call self so this failure code can run up to 3 times automatically
+  guidedGenerateDatasetOnPennsieve();
 };
 
 export const guidedGenerateDatasetLocally = async (filePath) => {
