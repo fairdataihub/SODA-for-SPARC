@@ -101,93 +101,98 @@ window.guidedSetCurationTeamUI = () => {
   }
 };
 
-// Function used to reserve a DOI for the current dataset and account
-window.guidedReserveAndSaveDOI = async () => {
-  let dataset = window.sodaJSONObj["ps-dataset-selected"]["dataset-name"];
-  $("#curate-button-reserve-doi").addClass("loading");
-  $("#curate-button-reserve-doi").disabled = true;
-
-  let doiInformation = await api.reserveDOI(dataset);
-  window.electron.ipcRenderer.send(
-    "track-kombucha",
-    kombuchaEnums.Category.DISSEMINATE_DATASETS,
-    kombuchaEnums.Action.GUIDED_MODE,
-    kombuchaEnums.Label.RESERVE_DOI,
-    kombuchaEnums.Status.SUCCESS,
-    { value: 1 }
-  );
-  guidedSetDOIUI(doiInformation);
-};
-
 // Function is for displaying DOI information on the Guided UI
 const guidedSetDOIUI = (doiInformation) => {
-  $("#curate-button-reserve-doi").removeClass("loading");
-  $("#curate-button-reserve-doi").disabled = false;
-  if (doiInformation === "locked") {
-    // Show reserve DOI button and hide copy button
-    // $("#guided-pennsieve-copy-doi").addClass("hidden");
-    $("#curate-button-reserve-doi").addClass("hidden");
-
-    Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      confirmButtonText: "Ok",
-      title: "Cannot reserve DOI",
-      text: "Your dataset is locked, so modification is not allowed.",
-      icon: "error",
-      showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
-      hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
-    });
-
-    return;
-  }
-
   $("#guided--para-doi-info").text(doiInformation);
 
   if (doiInformation === "No DOI found for this dataset" || doiInformation === false) {
-    // Hide the reserve DOI button and show copy button
-    //  $("#guided-pennsieve-copy-doi").addClass("hidden");
     $("#curate-button-reserve-doi").removeClass("hidden");
   } else {
-    // Show reserve DOI button and hide copy button
-    // $("#guided-pennsieve-copy-doi").removeClass("hidden");
     $("#curate-button-reserve-doi").addClass("hidden");
+  }
+};
+
+// Withdraw dataset from review (guided mode only)
+const withdrawDatasetSubmission = async () => {
+  try {
+    const { value: withdraw } = await Swal.fire({
+      title: "Unshare this dataset from Curation Team?",
+      icon: "warning",
+      showDenyButton: true,
+      confirmButtonText: "Yes",
+      denyButtonText: "No",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+    });
+
+    if (!withdraw) return false;
+
+    await window.showPublishingStatus(withdrawDatasetCheck);
+    return true;
+  } catch (error) {
+    window.log.error(error);
+    console.error(error);
+
+    Swal.fire({
+      title: "Could not withdraw dataset from publication!",
+      text: `${userErrorMessage(error)}`,
+      icon: "error",
+      heightAuto: false,
+      confirmButtonText: "Ok",
+      backdrop: "rgba(0,0,0, 0.4)",
+      showClass: {
+        popup: "animate__animated animate__fadeInDown animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__fadeOutUp animate__faster",
+      },
+    });
+
+    window.logGeneralOperationsForAnalytics(
+      "Error",
+      window.DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
+      window.AnalyticsGranularity.ALL_LEVELS,
+      ["Withdraw dataset"]
+    );
+
+    return false;
   }
 };
 
 // This function is for when a user clicks the share/unshare with curation team (requires Dataset to be published and locked)
 window.guidedModifyCurationTeamAccess = async (action) => {
-  const guidedShareWithCurationTeamButton = document.getElementById(
-    "guided-button-share-dataset-with-curation-team"
-  );
-  const guidedUnshareWithCurationTeamButton = document.getElementById(
-    "guided-button-unshare-dataset-with-curation-team"
-  );
-  const guidedUnshareMessage = document.getElementById(
+  const shareBtn = document.getElementById("guided-button-share-dataset-with-curation-team");
+  const unshareBtn = document.getElementById("guided-button-unshare-dataset-with-curation-team");
+  const unshareMessage = document.getElementById(
     "guided-unshare-dataset-with-curation-team-message"
   );
   const curationMode = "guided";
 
+  const setButtonState = (button, { disabled = false, loading = false, hidden = false }) => {
+    button.disabled = disabled;
+    button.classList.toggle("loading", loading);
+    button.classList.toggle("hidden", hidden);
+  };
+
   if (action === "share") {
-    guidedShareWithCurationTeamButton.disabled = true;
-    guidedShareWithCurationTeamButton.classList.add("loading");
+    setButtonState(shareBtn, { disabled: true, loading: true });
 
-    let publishPreCheckStatus = await window.beginPrepublishingFlow(curationMode);
-    let embargoDetails = publishPreCheckStatus[1];
+    const [precheckPassed, embargoDetails] = await window.beginPrepublishingFlow(curationMode);
 
-    // Will return false if there are issues running the precheck flow
-    if (publishPreCheckStatus[0]) {
-      guidedShareWithCurationTeamButton.classList.add("hidden");
+    if (precheckPassed) {
+      setButtonState(shareBtn, { hidden: true });
       await window.submitReviewDataset(embargoDetails[1], curationMode);
-      guidedUnshareMessage.classList.remove("hidden");
+      unshareMessage.classList.remove("hidden");
     }
-    guidedShareWithCurationTeamButton.classList.remove("loading");
-    guidedShareWithCurationTeamButton.disabled = false;
+
+    setButtonState(shareBtn, { disabled: false, loading: false });
   }
+
   if (action === "unshare") {
-    // Add your dataset has been shared, to withdraw please do so from Pennsieve
-    guidedUnshareWithCurationTeamButton.disabled = true;
-    guidedUnshareWithCurationTeamButton.classList.add("loading");
+    setButtonState(unshareBtn, { disabled: true, loading: true });
 
     const { value: withdraw } = await Swal.fire({
       title: "Unshare this dataset from Curation Team?",
@@ -203,20 +208,18 @@ window.guidedModifyCurationTeamAccess = async (action) => {
     });
 
     if (!withdraw) {
-      guidedUnshareWithCurationTeamButton.disabled = false;
-      guidedUnshareWithCurationTeamButton.classList.remove("loading");
+      setButtonState(unshareBtn, { disabled: false, loading: false });
       return;
     }
 
-    let removeStatus = await withdrawDatasetSubmission("guided");
+    const removeStatus = await withdrawDatasetSubmission(curationMode);
 
     if (removeStatus) {
-      guidedUnshareWithCurationTeamButton.classList.add("hidden");
-      guidedShareWithCurationTeamButton.classList.remove("hidden");
+      setButtonState(unshareBtn, { hidden: true });
+      shareBtn.classList.remove("hidden");
     }
 
-    guidedUnshareWithCurationTeamButton.disabled = false;
-    guidedUnshareWithCurationTeamButton.classList.remove("loading");
+    setButtonState(unshareBtn, { disabled: false, loading: false });
   }
 };
 
@@ -295,6 +298,41 @@ const deleteProgresFile = async (progressFileName) => {
     console.log(err);
   });
 };
+
+// Add event listener to open dataset link in new tab
+document
+  .getElementById("guided-button-open-link-on-pennsieve")
+  .addEventListener("click", (event) => {
+    event.preventDefault();
+    const pennsieveDatasetID = window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+    let datasetLink = `https://app.pennsieve.io/N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0/datasets/${pennsieveDatasetID}/overview`;
+
+    if (datasetLink) {
+      window.open(datasetLink, "_blank");
+    }
+  });
+
+// Add event listener to Reserve DOI button "guided-button-reserve-doi"
+document.getElementById("guided-button-reserve-doi").addEventListener("click", async (event) => {
+  event.preventDefault();
+
+  const pennsieveDatasetID = window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+  const datasetDOI = await api.reserveDOI(pennsieveDatasetID);
+  if (datasetDOI) {
+    window.sodaJSONObj["digital-metadata"]["doi"]; = datasetDOI;
+  }
+
+  guidedSetDOIUI(datasetDOI);
+
+  window.electron.ipcRenderer.send(
+    "track-kombucha",
+    kombuchaEnums.Category.DISSEMINATE_DATASETS,
+    kombuchaEnums.Action.GUIDED_MODE,
+    kombuchaEnums.Label.RESERVE_DOI,
+    kombuchaEnums.Status.SUCCESS,
+    { value: 1 }
+  );
+});
 
 window.deleteProgressCard = async (progressCardDeleteButton) => {
   const progressCard = progressCardDeleteButton.parentElement.parentElement;

@@ -978,19 +978,6 @@ details[open] > summary::before {
   /* background: #1c687e !important; TODO: FIX COPY TO CLIPBOARD POST-BUNDLE */
 }
 
-#guided-pennsieve-dataset-link {
-  border-bottom: none !important;
-  max-width: 700px;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  font-size: medium;
-}
-
-#guided-pennsieve-dataset-link:hover {
-  border-bottom: 1px solid !important;
-}
-
 #other-dataset-information-container {
   display: flex;
   flex-direction: column;

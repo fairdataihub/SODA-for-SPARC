@@ -86,6 +86,7 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
     if (datasetHasAlreadyBeenSuccessfullyUploaded) {
       const previouslyUploadedDatasetId =
         datasetResumeJsonObj["digital-metadata"]["pennsieve-dataset-id"];
+      console.log("previouslyUploadedDatasetId", previouslyUploadedDatasetId);
       const datasetToResumeExistsOnPennsieve = await checkIfDatasetExistsOnPennsieve(
         previouslyUploadedDatasetId
       );
@@ -253,8 +254,6 @@ const guidedGetPageToReturnTo = async () => {
   // If no special cases apply, return the user to the page they were on before they left
   return usersPageBeforeExit;
 };
-
-const patchPreSdsThreeProgressFiles = async () => {};
 
 const patchPreviousGuidedModeVersions = async () => {
   //temp patch contributor affiliations if they are still a string (they were added in the previous version)

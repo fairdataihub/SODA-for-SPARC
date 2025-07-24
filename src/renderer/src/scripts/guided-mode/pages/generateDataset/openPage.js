@@ -215,4 +215,19 @@ export const openPageGenerateDataset = async (targetPageID) => {
   if (targetPageID === "guided-dataset-generation-tab") {
     document.getElementById("guided--verify-files").classList.add("hidden");
   }
+
+  if (targetPageID === "guided-dataset-dissemination-tab") {
+    const pennsieveCopy = document.getElementById("guided-pennsieve-copy-dataset-link");
+
+    const pennsieveDatasetCopyIcon = document.getElementById("guided-pennsieve-copy-icon");
+
+    pennsieveDatasetCopyIcon.classList.add("fa-copy");
+
+    // let pennsieveDOICheck = await api.getDatasetDOI(currentDataset);
+
+    //Set the ui for curation team and DOI information
+    await window.showPublishingStatus("", "guided");
+    window.guidedSetCurationTeamUI();
+    //guidedSetDOIUI(pennsieveDOICheck);
+  }
 };

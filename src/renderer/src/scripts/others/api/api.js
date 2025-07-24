@@ -141,34 +141,41 @@ const getDatasetPermissions = async (selected_dataset, boolReturnAll) => {
   }
 };
 
-// This function will be call after a dataset has been shared with the curation team
-// Users will be able to reserve DOI's for their datasets
+/**
+ * Reserves a DOI for a Pennsieve dataset after it has been shared with the curation team.
+ * @param {string} dataset - The dataset ID or name.
+ * @returns {{ success: true, doi: string } | { success: false, message: string }}
+ */
 const reserveDOI = async (dataset) => {
-  // reference: https://docs.pennsieve.io/reference/reservedoi
-  // information: https://docs.pennsieve.io/docs/digital-object-identifiers-dois#assigning-doi-to-your-pennsieve-dataset
-
   try {
-    let doiReserve = await client.post(`datasets/${dataset}/reserve-doi`);
-    return doiReserve.data.doi;
+    const response = await client.post(`datasets/${dataset}/reserve-doi`);
+    return {
+      success: true,
+      doi: response.data.doi,
+    };
   } catch (err) {
-    let errorMessage = userErrorMessage(err);
+    const errorMessage = userErrorMessage(err);
     clientError(err);
-    if (errorMessage.includes("is locked")) {
-      return "locked";
-    }
-    return false;
+
+    return {
+      success: false,
+      message: errorMessage,
+    };
   }
 };
 
+/**
+ * Retrieves the reserved DOI for a Pennsieve dataset, if available.
+ * @param {string} dataset - The dataset ID or name.
+ * @returns {string | null} - The DOI string, or null if not available or an error occurred.
+ */
 const getDatasetDOI = async (dataset) => {
-  // reference: https://docs.pennsieve.io/reference/getdoi
-
   try {
-    let doi = await client.get(`datasets/${dataset}/reserve-doi`);
-    return doi.data.doi;
+    const response = await client.get(`datasets/${dataset}/reserve-doi`);
+    return response.data.doi || null;
   } catch (err) {
     clientError(err);
-    userErrorMessage(err);
+    return null;
   }
 };
 

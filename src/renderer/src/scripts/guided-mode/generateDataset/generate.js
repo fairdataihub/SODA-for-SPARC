@@ -199,6 +199,28 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         document.getElementById("guided--verify-files").classList.remove("hidden");
       });
     await trackPennsieveDatasetGenerationProgress(standardizedDatasetStructure);
+
+    // ANYTHING THAT HAPPENS HERE IS AFTER THE UPLOAD IS COMPLETED SUCCESSFULLY
+
+    // Clear the saved upload progress data because the dataset has been successfully
+    // uploaded to Pennsieve, and any future uploads will upload using new data
+    window.sodaJSONObj["previously-uploaded-data"] = {};
+
+    window.sodaJSONObj["previous-guided-upload-dataset-name"] =
+      window.sodaJSONObj["digital-metadata"]["name"];
+
+    // Save the window.sodaJSONObj after a successful upload
+    await guidedSaveProgress();
+
+    //Display the click next text
+    document.getElementById("guided--verify-files").classList.remove("hidden");
+
+    // enable the verify files button
+    document.querySelector("#guided--verify-files-button").disabled = false;
+    document.querySelector("#guided--skip-verify-btn").disabled = false;
+
+    //Show the next button
+    $("#guided-next-button").css("visibility", "visible");
     guidedSetNavLoadingState(false);
     amountOfTimesPennsieveUploadFailed = 0;
   } catch (error) {

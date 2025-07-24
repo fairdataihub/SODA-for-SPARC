@@ -57,6 +57,14 @@ const componentTypeRenderers = {
     };
     renderComponent(componentSlot, <ExternalLink {...props} />);
   },
+  "dynamic-link": (componentSlot) => {
+    const props = {
+      id: componentSlot.id,
+      buttonText: componentSlot.getAttribute("data-button-text"),
+      buttonType: componentSlot.getAttribute("data-button-type"),
+    };
+    renderComponent(componentSlot, <DynamicLink {...props} />);
+  },
   "dropdown-select": (componentSlot) => {
     const props = {
       id: componentSlot.id,
@@ -93,42 +101,24 @@ const componentTypeRenderers = {
   "single-column-table": (componentSlot) => {
     const columnName = componentSlot.getAttribute("data-column-name");
     const id = componentSlot.id;
-
-    // Create a React root and render the component
-    const root = createRoot(componentSlot);
-    root.render(
-      <SodaComponentWrapper>
-        <SingleColumnTable id={id} columnName={columnName} />
-      </SodaComponentWrapper>
-    );
+    renderComponent(componentSlot, <SingleColumnTable id={id} columnName={columnName} />);
   },
   "dataset-tree-view-renderer": (componentSlot) => {
-    const root = createRoot(componentSlot);
-    const props = {
-      fw: componentSlot.getAttribute("data-full-width") === "true",
-    };
-    root.render(
-      <SodaComponentWrapper>
-        <DatasetTreeViewRenderer hideSearchBar={true} entityType={null} />
-      </SodaComponentWrapper>
+    renderComponent(
+      componentSlot,
+      <DatasetTreeViewRenderer hideSearchBar={true} entityType={null} />
     );
   },
 
   "data-importer": (componentSlot) => {
-    const root = createRoot(componentSlot);
     const props = {
       relativeFolderPathToImportDataInto: componentSlot.getAttribute(
         "data-relative-folder-path-to-import-data-into"
       ),
     };
-    root.render(
-      <SodaComponentWrapper>
-        <DataImporter {...props} />
-      </SodaComponentWrapper>
-    );
+    renderComponent(componentSlot, <DataImporter {...props} />);
   },
   "performance-id-management-page": (componentSlot) => {
-    const root = createRoot(componentSlot);
     const props = {
       pageName: componentSlot.getAttribute("data-page-name"),
       entityType: componentSlot.getAttribute("data-entity-type"),
@@ -136,33 +126,17 @@ const componentTypeRenderers = {
       entityTypeStringPlural: componentSlot.getAttribute("data-entity-type-string-plural"),
       entityTypePrefix: componentSlot.getAttribute("data-entity-type-prefix"),
     };
-
-    root.render(
-      <SodaComponentWrapper>
-        <PerformanceIdManagementPage {...props} />
-      </SodaComponentWrapper>
-    );
+    renderComponent(componentSlot, <PerformanceIdManagementPage {...props} />);
   },
   "resources-management-page": (componentSlot) => {
-    const root = createRoot(componentSlot);
-    root.render(
-      <SodaComponentWrapper>
-        <ResourcesManagementPage />
-      </SodaComponentWrapper>
-    );
+    renderComponent(componentSlot, <ResourcesManagementPage />);
   },
 
   "entity-metadata-page": (componentSlot) => {
-    const root = createRoot(componentSlot);
     const props = {
       entityType: componentSlot.getAttribute("data-entity-type"),
     };
-
-    root.render(
-      <SodaComponentWrapper>
-        <EntityMetadataPage {...props} />
-      </SodaComponentWrapper>
-    );
+    renderComponent(componentSlot, <EntityMetadataPage {...props} />);
   },
   "soda-text-input": (componentSlot) => {
     const props = {
@@ -173,37 +147,19 @@ const componentTypeRenderers = {
       description: componentSlot.getAttribute("data-description") || "",
       maxLength: componentSlot.getAttribute("data-max-length") || false,
     };
-    const root = createRoot(componentSlot);
-
-    root.render(
-      <SodaComponentWrapper>
-        <SodaTextInput {...props} />
-      </SodaComponentWrapper>
-    );
+    renderComponent(componentSlot, <SodaTextInput {...props} />);
   },
   "entity-spreadsheet-import-page": (componentSlot) => {
-    const root = createRoot(componentSlot);
-
-    root.render(
-      <SodaComponentWrapper>
-        <SpreadsheetImportDatasetEntityAdditionPage />
-      </SodaComponentWrapper>
-    );
+    renderComponent(componentSlot, <SpreadsheetImportDatasetEntityAdditionPage />);
   },
   "entity-file-mapping-page": (componentSlot) => {
-    const root = createRoot(componentSlot);
     const props = {
       entityType: componentSlot.getAttribute("data-entity-type"),
     };
-    root.render(
-      <SodaComponentWrapper>
-        <DatasetEntityFileMapper {...props} />
-      </SodaComponentWrapper>
-    );
+    renderComponent(componentSlot, <DatasetEntityFileMapper {...props} />);
   },
 
   "data-categorization-page": (componentSlot) => {
-    const root = createRoot(componentSlot);
     const props = {
       pageName: componentSlot.getAttribute("data-page-name"),
       entityType: componentSlot.getAttribute("data-entity-type"),
@@ -211,86 +167,40 @@ const componentTypeRenderers = {
       entityTypeStringPlural: componentSlot.getAttribute("data-entity-type-string-plural"),
       showProgress: componentSlot.getAttribute("data-show-progress") || false,
     };
-
-    root.render(
-      <SodaComponentWrapper>
-        <EntityDataSelectorPage {...props} />
-      </SodaComponentWrapper>
-    );
+    renderComponent(componentSlot, <EntityDataSelectorPage {...props} />);
   },
   "modality-selection-page": (componentSlot) => {
-    const root = createRoot(componentSlot);
-
-    root.render(
-      <SodaComponentWrapper>
-        <ModalitySelectionPage />
-      </SodaComponentWrapper>
-    );
+    renderComponent(componentSlot, <ModalitySelectionPage />);
   },
   "submission-metadata-form": (componentSlot) => {
-    const root = createRoot(componentSlot);
-    root.render(
-      <SodaComponentWrapper>
-        <SubmissionMetadataForm />
-      </SodaComponentWrapper>
-    );
+    renderComponent(componentSlot, <SubmissionMetadataForm />);
   },
   "dataset-content-selector": (componentSlot) => {
-    const root = createRoot(componentSlot);
-    root.render(
-      <SodaComponentWrapper>
-        <DatasetContentSelector />
-      </SodaComponentWrapper>
-    );
+    renderComponent(componentSlot, <DatasetContentSelector />);
   },
 
   "generate-dataset-location-selector-page": (componentSlot) => {
-    const root = createRoot(componentSlot);
-    root.render(
-      <SodaComponentWrapper>
-        <GenerateDatasetLocationSelectorPage />
-      </SodaComponentWrapper>
-    );
+    renderComponent(componentSlot, <GenerateDatasetLocationSelectorPage />);
   },
   divider: (componentSlot) => {
-    const root = createRoot(componentSlot);
-    root.render(
-      <SodaComponentWrapper>
-        <Divider my="xl" />
-      </SodaComponentWrapper>
-    );
+    renderComponent(componentSlot, <Divider my="xl" />);
   },
   icon: (componentSlot) => {
-    const root = createRoot(componentSlot);
     const iconType = componentSlot.getAttribute("data-icon-type");
-    root.render(
-      <SodaComponentWrapper>
-        <Icon iconType={iconType} />
-      </SodaComponentWrapper>
-    );
+    renderComponent(componentSlot, <Icon iconType={iconType} />);
   },
   "manifest-file-preview-section": (componentSlot) => {
-    const root = createRoot(componentSlot);
     const props = {
       id: componentSlot.id,
     };
-    root.render(
-      <SodaComponentWrapper>
-        <ManifestFilePreviewSection {...props} />
-      </SodaComponentWrapper>
-    );
+    renderComponent(componentSlot, <ManifestFilePreviewSection {...props} />);
   },
   "dropdown-note-renderer": (componentSlot) => {
-    const root = createRoot(componentSlot);
     const props = {
       id: componentSlot.id,
     };
     console.log("zd:" + componentSlot.id);
-    root.render(
-      <SodaComponentWrapper>
-        <DropDownNote {...props} />
-      </SodaComponentWrapper>
-    );
+    renderComponent(componentSlot, <DropDownNote {...props} />);
   },
 };
 
