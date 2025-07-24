@@ -1003,7 +1003,7 @@ const EntityMetadataPage = ({ entityType }) => {
   };
 
   return (
-    <GuidedModePage pageHeader="Dataset entity metadata">
+    <GuidedModePage pageHeader={`${entityType} Metadata`}>
       <GuidedModeSection>
         <Text>
           {showFullMetadataFormFields
