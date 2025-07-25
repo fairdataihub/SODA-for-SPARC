@@ -1097,3 +1097,58 @@
 .align-flex-center {
   align-items: center;
 }
+
+.tile-button.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.tile-button.coming-soon {
+  position: relative;
+}
+
+.coming-soon-text {
+  font-size: 12px;
+  color: #ff6b35;
+  font-weight: bold;
+  display: block;
+  margin-top: 5px;
+}
+
+.tile-button.coming-soon:hover::before {
+  content: "Coming Soon";
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  white-space: nowrap;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.tile-button.coming-soon:hover::after {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 8px solid transparent;
+  border-top-color: #333;
+  z-index: 999;
+}
+
+/* Re-enable pointer events for hover effect */
+.tile-button.coming-soon {
+  pointer-events: auto;
+  background-color: #dbdbdbff;
+}
+
+.tile-button.coming-soon:hover {
+  cursor: not-allowed;
+}

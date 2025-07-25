@@ -650,20 +650,6 @@
             <div class="guided--radio-button-container">
               <button
                 class="guided--radio-button tile-button"
-                id="guided-button-add-entities-via-spreadsheet"
-                data-next-element="guided-section-start-new-curation"
-                data-button-config-value="entity-addition-method"
-                data-button-config-value-state="spreadsheet"
-              >
-                <div class="tile-button-icon">
-                  <div data-component-type="icon" data-icon-type="spreadsheet-import"></div>
-                </div>
-                <div class="tile-button-text">
-                  <h2>Import entity IDs using a spreadsheet</h2>
-                </div>
-              </button>
-              <button
-                class="guided--radio-button tile-button"
                 id="guided-button-add-entities-manually"
                 data-next-element="guided-section-start-new-curation"
                 data-button-config-value="entity-addition-method"
@@ -674,6 +660,21 @@
                 </div>
                 <div class="tile-button-text">
                   <h2>Enter entity IDs manually in the SODA UI</h2>
+                </div>
+              </button>
+              <button
+                class="guided--radio-button tile-button coming-soon"
+                id="guided-button-add-entities-via-spreadsheet"
+                data-next-element="guided-section-start-new-curation"
+                data-button-config-value="entity-addition-method"
+                data-button-config-value-state="spreadsheet"
+                disabled
+              >
+                <div class="tile-button-icon">
+                  <div data-component-type="icon" data-icon-type="spreadsheet-import"></div>
+                </div>
+                <div class="tile-button-text">
+                  <h2>Import entity IDs using a spreadsheet</h2>
                 </div>
               </button>
             </div>

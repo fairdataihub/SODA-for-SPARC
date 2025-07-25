@@ -1007,8 +1007,7 @@ const EntityMetadataPage = ({ entityType }) => {
       <GuidedModeSection>
         <Text>
           {showFullMetadataFormFields
-            ? `Tell us more about the ${entityType} you collected data from in the interface below. If your ${entityType} have
-            a lot of overlapping metadata, you can use the copy metadata button to copy metadata between ${entityType}.`
+            ? `Tell us more about the ${entityType} you collected data from in the interface below. `
             : "Use the interface below to describe the entities in your experimental data."}
         </Text>
         {!showFullMetadataFormFields && <DropDownNote id="dataset-entity-management-page" />}
