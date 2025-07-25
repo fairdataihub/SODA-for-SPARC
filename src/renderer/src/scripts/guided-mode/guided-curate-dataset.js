@@ -171,7 +171,7 @@ const withdrawDatasetSubmission = async () => {
 const guidedSubmitDatasetForReview = async (embargoReleaseDate) => {
   // Always guided mode: get account and dataset from sodaJSONObj
   const currentAccount = window.sodaJSONObj["ps-account-selected"]["account-name"];
-  const currentDataset = window.sodaJSONObj["ps-dataset-selected"]["dataset-name"];
+  const currentDataset = window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
 
   // show a SWAL loading message until the submit for prepublishing flow is successful or fails
   Swal.fire({
@@ -295,13 +295,12 @@ window.guidedModifyCurationTeamAccess = async (action) => {
   const handleShare = async () => {
     try {
       setButtonState(shareBtn, { disabled: true, loading: true });
+      const datasetId = window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
 
       console.log("Starting prepublishing flow for sharing dataset with curation team...");
 
       console.log("[PrepublishingFlow] Fetching user dataset role...");
-      let role = await api.getDatasetRole(
-        window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
-      );
+      let role = await api.getDatasetRole(datasetId);
       console.log("[PrepublishingFlow] User role for dataset:", role);
 
       if (role !== "owner") {
@@ -315,6 +314,9 @@ window.guidedModifyCurationTeamAccess = async (action) => {
         });
         return false;
       }
+
+      const statuses = await window.getPrepublishingChecklistStatuses(datasetId);
+      console.log("[PrepublishingFlow] Checklist statuses:", statuses);
 
       // status is NOT_PUBLISHED
       // embargo release date represents the time a dataset that has been reviewed for publication becomes public
