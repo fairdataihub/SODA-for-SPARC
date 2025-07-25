@@ -3189,26 +3189,19 @@
                 </div>
               </div>
             </div>
-            <div
-              data-component-type="generic-button"
-              data-button-id="guided-button-share-dataset-with-curation-team"
-              data-variant="filled"
-              data-size="md"
-              data-text="Generate Dataset on Pennsieve"
-              class="mb-md mt-md"
-            ></div>
+
             <button
-              class="ui positive button soda-green-background mt-lg"
+              class="ui positive button soda-green-background mt-lg guided-curation-team-task-button"
               id="guided-button-share-dataset-with-curation-team"
               style="width: 281px !important; height: 3.2rem"
-              onclick="window.guidedModifyCurationTeamAccess('share')"
+              data-button-curation-team-task="share"
             >
               Share with SPARC Curation Team</button
             ><button
-              class="ui positive button plum-background mt-lg"
+              class="ui positive button plum-background mt-lg guided-curation-team-task-button"
               id="guided-button-unshare-dataset-with-curation-team"
               style="width: 281px !important; height: 3.2rem"
-              onclick="window.guidedModifyCurationTeamAccess('unshare')"
+              data-button-curation-team-task="unshare"
             >
               Withdraw from review
             </button>

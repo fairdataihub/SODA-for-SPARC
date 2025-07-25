@@ -148,19 +148,10 @@ const getDatasetPermissions = async (selected_dataset, boolReturnAll) => {
  */
 const reserveDOI = async (dataset) => {
   try {
-    const response = await client.post(`datasets/${dataset}/reserve-doi`);
-    return {
-      success: true,
-      doi: response.data.doi,
-    };
+    const { data } = await client.post(`datasets/${dataset}/reserve-doi`);
+    return { success: true, doi: data.doi };
   } catch (err) {
-    const errorMessage = userErrorMessage(err);
-    clientError(err);
-
-    return {
-      success: false,
-      message: errorMessage,
-    };
+    return { success: false, message: userErrorMessage(err) };
   }
 };
 

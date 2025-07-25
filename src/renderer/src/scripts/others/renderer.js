@@ -2895,108 +2895,83 @@ const showPrePublishingPageElements = () => {
   $(".pre-publishing-continue-container").hide();
 };
 
-// The callback argument is used to determine whether or not to publish or unpublish the dataset
-// If callback is empty then the dataset status will only be fetched and displayed
+// The callback argument determines whether to publish/unpublish the dataset.
+// If callback is empty, only the dataset status will be fetched and displayed.
 window.showPublishingStatus = async (callback, curationMode = "") => {
-  return new Promise(async function (resolve, reject) {
-    let curationModeID = "";
-    let currentAccount = $("#current-ps-account").text();
-    let currentDataset = $(".ps-dataset-span")
-      .html()
-      .replace(/^\s+|\s+$/g, "");
+  let curationModeID = "";
+  let currentAccount = $("#current-ps-account").text();
+  let currentDataset = $(".ps-dataset-span").html().trim();
 
-    if (curationMode === "guided") {
-      curationModeID = "guided--";
-      currentAccount = window.sodaJSONObj["ps-account-selected"]["account-name"];
-      currentDataset = window.sodaJSONObj["ps-dataset-selected"]["dataset-name"];
-    }
-
-    if (currentDataset === "None") {
-      if (curationMode === "" || curationMode === "freeform") {
-        $("#button-refresh-publishing-status").addClass("hidden");
-        $("#curation-dataset-status-loading").addClass("hidden");
-      }
-      resolve();
-    } else {
-      try {
-        let get_publishing_status = await client.get(
-          `/disseminate_datasets/datasets/${currentDataset}/publishing_status`,
-          {
-            params: {
-              selected_account: currentAccount,
-            },
-          }
-        );
-        let res = get_publishing_status.data;
-
-        try {
-          //update the dataset's publication status and display
-          //onscreen for the user under their dataset name
-          $(`#${curationModeID}para-review-dataset-info-disseminate`).text(
-            publishStatusOutputConversion(res)
-          );
-
-          if (callback === window.submitReviewDatasetCheck || callback === withdrawDatasetCheck) {
-            return resolve(callback(res, curationMode));
-          }
-          if (curationMode === "" || curationMode === "freeform") {
-            $("#submit_prepublishing_review-question-2").removeClass("hidden");
-            $("#curation-dataset-status-loading").addClass("hidden");
-            // $("#button-refresh-publishing-status").removeClass("hidden");
-            $("#button-refresh-publishing-status").removeClass("fa-spin");
-          }
-          resolve();
-        } catch (error) {
-          // an exception will be caught and rejected
-          // if the executor function is not ready before an exception is found it is uncaught without the try catch
-          reject(error);
-        }
-      } catch (error) {
-        clientError(error);
-
-        Swal.fire({
-          title: "Could not get your publishing status!",
-          text: userErrorMessage(error),
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          confirmButtonText: "Ok",
-          reverseButtons: window.reverseSwalButtons,
-          showClass: {
-            popup: "animate__animated animate__fadeInDown animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__fadeOutUp animate__faster",
-          },
-        });
-
-        window.logGeneralOperationsForAnalytics(
-          "Error",
-          window.DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
-          window.AnalyticsGranularity.ALL_LEVELS,
-          ["Show publishing status"]
-        );
-
-        resolve();
-      }
-    }
-  });
-};
-
-const publishStatusOutputConversion = (res) => {
-  var reviewStatus = res["review_request_status"];
-
-  var outputMessage = "";
-  if (reviewStatus === "draft" || reviewStatus === "cancelled") {
-    outputMessage += "Dataset is not under review currently";
-  } else if (reviewStatus === "requested") {
-    outputMessage += "Dataset is currently under review";
-  } else if (reviewStatus === "rejected") {
-    outputMessage += "Dataset has been rejected by your Publishing Team and may require revision";
-  } else if (reviewStatus === "accepted") {
-    outputMessage += "Dataset has been accepted for publication by your Publishing Team";
+  if (curationMode === "guided") {
+    curationModeID = "guided--";
+    currentAccount = window.sodaJSONObj["ps-account-selected"]["account-name"];
+    currentDataset = window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
   }
 
-  return outputMessage;
+  if (currentDataset === "None") {
+    if (curationMode === "" || curationMode === "freeform") {
+      $("#button-refresh-publishing-status").addClass("hidden");
+      $("#curation-dataset-status-loading").addClass("hidden");
+    }
+    return;
+  }
+
+  console.log("Fetching publishing status for dataset:", currentDataset);
+
+  try {
+    const { data: res } = await client.get(
+      `/disseminate_datasets/datasets/${currentDataset}/publishing_status`,
+      { params: { selected_account: currentAccount } }
+    );
+    console.log("Publishing status response:", res);
+
+    // Inline publishStatusOutputConversion logic here
+    var reviewStatus = res["review_request_status"];
+    console.log("Review status:", reviewStatus);
+    var outputMessage = "";
+    if (reviewStatus === "draft" || reviewStatus === "cancelled") {
+      outputMessage = "Dataset is not under review currently";
+    } else if (reviewStatus === "requested") {
+      outputMessage = "Dataset is currently under review";
+    } else if (reviewStatus === "rejected") {
+      outputMessage = "Dataset has been rejected by your Publishing Team and may require revision";
+    } else if (reviewStatus === "accepted") {
+      outputMessage = "Dataset has been accepted for publication by your Publishing Team";
+    }
+
+    // Update the dataset's publication status onscreen for the user
+    $(`#${curationModeID}para-review-dataset-info-disseminate`).text(outputMessage);
+
+    if (callback === window.submitReviewDatasetCheck || callback === withdrawDatasetCheck) {
+      return callback(res, curationMode);
+    }
+
+    if (curationMode === "" || curationMode === "freeform") {
+      $("#submit_prepublishing_review-question-2").removeClass("hidden");
+      $("#curation-dataset-status-loading").addClass("hidden");
+      $("#button-refresh-publishing-status").removeClass("fa-spin");
+    }
+  } catch (error) {
+    clientError(error);
+
+    Swal.fire({
+      title: "Could not get your publishing status!",
+      text: userErrorMessage(error),
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Ok",
+      reverseButtons: window.reverseSwalButtons,
+      showClass: { popup: "animate__animated animate__fadeInDown animate__faster" },
+      hideClass: { popup: "animate__animated animate__fadeOutUp animate__faster" },
+    });
+
+    window.logGeneralOperationsForAnalytics(
+      "Error",
+      window.DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
+      window.AnalyticsGranularity.ALL_LEVELS,
+      ["Show publishing status"]
+    );
+  }
 };
 
 // //////////////////////////////////////////////////////////////////////////////////////////

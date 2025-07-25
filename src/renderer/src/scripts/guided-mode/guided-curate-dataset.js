@@ -102,13 +102,18 @@ window.guidedSetCurationTeamUI = () => {
 };
 
 // Function is for displaying DOI information on the Guided UI
-const guidedSetDOIUI = (doiInformation) => {
-  $("#guided--para-doi-info").text(doiInformation);
+export const guidedSetDOIUI = (datasetDOI) => {
+  console.log("Setting DOI information in Guided UI:", datasetDOI);
 
-  if (doiInformation === "No DOI found for this dataset" || doiInformation === false) {
-    $("#curate-button-reserve-doi").removeClass("hidden");
+  // If the DOI is not found or is false, show the Reserve DOI button
+  // Otherwise, hide the Reserve DOI button
+  const buttonReserveDOI = document.getElementById("guided-button-reserve-doi");
+  if (datasetDOI) {
+    buttonReserveDOI.classList.add("hidden");
+    $("#guided--para-doi-info").text(datasetDOI);
   } else {
-    $("#curate-button-reserve-doi").addClass("hidden");
+    buttonReserveDOI.classList.remove("hidden");
+    $("#guided--para-doi-info").text("No DOI found for this dataset");
   }
 };
 
@@ -130,7 +135,7 @@ const withdrawDatasetSubmission = async () => {
 
     if (!withdraw) return false;
 
-    await window.showPublishingStatus(withdrawDatasetCheck);
+    await window.showPublishingStatus(withdrawDatasetCheck, "guided");
     return true;
   } catch (error) {
     window.log.error(error);
@@ -162,7 +167,7 @@ const withdrawDatasetSubmission = async () => {
   }
 };
 
-// This function is for when a user clicks the share/unshare with curation team (requires Dataset to be published and locked)
+// Handles sharing/unsharing the dataset with the curation team (requires published + locked dataset)
 window.guidedModifyCurationTeamAccess = async (action) => {
   const shareBtn = document.getElementById("guided-button-share-dataset-with-curation-team");
   const unshareBtn = document.getElementById("guided-button-unshare-dataset-with-curation-team");
@@ -177,11 +182,14 @@ window.guidedModifyCurationTeamAccess = async (action) => {
     button.classList.toggle("hidden", hidden);
   };
 
-  if (action === "share") {
+  const handleShare = async () => {
     setButtonState(shareBtn, { disabled: true, loading: true });
 
-    const [precheckPassed, embargoDetails] = await window.beginPrepublishingFlow(curationMode);
+    console.log("Starting prepublishing flow for sharing dataset with curation team...");
 
+    const [precheckPassed, embargoDetails] = await window.beginPrepublishingFlow();
+
+    console.log("Return from prepublishing flow:", precheckPassed, embargoDetails);
     if (precheckPassed) {
       setButtonState(shareBtn, { hidden: true });
       await window.submitReviewDataset(embargoDetails[1], curationMode);
@@ -189,9 +197,9 @@ window.guidedModifyCurationTeamAccess = async (action) => {
     }
 
     setButtonState(shareBtn, { disabled: false, loading: false });
-  }
+  };
 
-  if (action === "unshare") {
+  const handleUnshare = async () => {
     setButtonState(unshareBtn, { disabled: true, loading: true });
 
     const { value: withdraw } = await Swal.fire({
@@ -220,9 +228,14 @@ window.guidedModifyCurationTeamAccess = async (action) => {
     }
 
     setButtonState(unshareBtn, { disabled: false, loading: false });
+  };
+
+  if (action === "share") {
+    await handleShare();
+  } else if (action === "unshare") {
+    await handleUnshare();
   }
 };
-
 // Adds the click handlers to the info drop downs in Guided Mode
 // The selectors also append the info icon before the label depending on data attributes
 // passed in the HTML
@@ -317,12 +330,16 @@ document.getElementById("guided-button-reserve-doi").addEventListener("click", a
   event.preventDefault();
 
   const pennsieveDatasetID = window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
-  const datasetDOI = await api.reserveDOI(pennsieveDatasetID);
-  if (datasetDOI) {
-    window.sodaJSONObj["digital-metadata"]["doi"] = datasetDOI;
+  const doiResult = await api.reserveDOI(pennsieveDatasetID);
+  if (doiResult && doiResult.success) {
+    window.sodaJSONObj["digital-metadata"]["doi"] = doiResult.doi;
+    guidedSetDOIUI(doiResult.doi);
+  } else {
+    await swalShowError(
+      "Failed to reserve DOI",
+      userErrorMessage(doiResult.error || "SODA was unable to reserve a DOI for this dataset.")
+    );
   }
-
-  guidedSetDOIUI(datasetDOI);
 
   window.electron.ipcRenderer.send(
     "track-kombucha",
@@ -332,6 +349,15 @@ document.getElementById("guided-button-reserve-doi").addEventListener("click", a
     kombuchaEnums.Status.SUCCESS,
     { value: 1 }
   );
+});
+
+// Add an event listener to the buttons that share/unshare the dataset with the curation team
+document.querySelectorAll(".guided-curation-team-task-button").forEach((button) => {
+  button.addEventListener("click", async () => {
+    // Get the task ("share" or "unshare") from the button's data attribute
+    const task = button.getAttribute("data-button-curation-team-task");
+    window.guidedModifyCurationTeamAccess(task);
+  });
 });
 
 window.deleteProgressCard = async (progressCardDeleteButton) => {
@@ -3482,7 +3508,7 @@ const doTheHack = async () => {
 
 // If this variable is set to true, you will be taken back to the last guided mode page you were working on
 // (always set to false when making production builds)
-const continueHackGm = false;
+const continueHackGm = true;
 if (continueHackGm) {
   doTheHack();
 }

@@ -8,7 +8,8 @@ import { setSodaTextInputValue } from "../../../../stores/slices/sodaTextInputSl
 import { guidedShowBannerImagePreview } from "../../bannerImage/bannerImage";
 import { createStandardizedDatasetStructure } from "../../../utils/datasetStructure.js";
 import { setTreeViewDatasetStructure } from "../../../../stores/slices/datasetTreeViewSlice.js";
-import { guidedResetLocalGenerationUI } from "../../guided-curate-dataset.js";
+import { guidedResetLocalGenerationUI, guidedSetDOIUI } from "../../guided-curate-dataset.js";
+import api from "../../../others/api/api.js";
 
 export const openPageGenerateDataset = async (targetPageID) => {
   const targetPageDataset = document.getElementById(targetPageID).dataset;
@@ -217,17 +218,16 @@ export const openPageGenerateDataset = async (targetPageID) => {
   }
 
   if (targetPageID === "guided-dataset-dissemination-tab") {
-    const pennsieveCopy = document.getElementById("guided-pennsieve-copy-dataset-link");
-
     const pennsieveDatasetCopyIcon = document.getElementById("guided-pennsieve-copy-icon");
 
     pennsieveDatasetCopyIcon.classList.add("fa-copy");
 
-    // let pennsieveDOICheck = await api.getDatasetDOI(currentDataset);
+    const pennsieveDatasetID = window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+    const pennsieveDatasetDOI = await api.getDatasetDOI(pennsieveDatasetID);
+    guidedSetDOIUI(pennsieveDatasetDOI);
 
     //Set the ui for curation team and DOI information
     await window.showPublishingStatus("", "guided");
     window.guidedSetCurationTeamUI();
-    //guidedSetDOIUI(pennsieveDOICheck);
   }
 };

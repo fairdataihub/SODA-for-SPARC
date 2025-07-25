@@ -17,30 +17,6 @@ while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
-const resetSubmissionChecklistText = () => {
-  let subtitleText = $(`#prepublishing-checklist-icon-subtitle`).parent().siblings()[0];
-  let tagsText = $(`#prepublishing-checklist-icon-tags`).parent().siblings()[0];
-  let desctiptionText = $(`#prepublishing-checklist-icon-readme`).parent().siblings()[0];
-  let bannerText = $(`#prepublishing-checklist-icon-banner`).parent().siblings()[0];
-  let licenseText = $(`#prepublishing-checklist-icon-license`).parent().siblings()[0];
-  let orcidText = $(`#prepublishing-checklist-icon-ORCID`).parent().siblings()[0];
-
-  subtitleText.innerText = "Checking subtitle";
-  tagsText.innerText = "Checking tags";
-  desctiptionText.innerText = "Checking description";
-  bannerText.innerText = "Checking banner image";
-  licenseText.innerText = "Checking license";
-  orcidText.innerText = "Checking ORCID ID";
-
-  let elements = [subtitleText, tagsText, desctiptionText, bannerText, licenseText, orcidText];
-
-  elements.forEach((element) => {
-    element.classList.remove("green-hollow-button");
-    element.classList.add("text-left");
-    element.classList.add("no-pointer");
-  });
-};
-
 /**
  *
  * @param {string} currentDataset - The currently selected dataset - name
@@ -248,7 +224,6 @@ window.orcidSignIn = async (ev, curationMode) => {
 //  Function fetches the status of each item needed to publish a dataset from the backend and updates the UI accordingly.
 //  inPrePublishing: boolean - True when the function is ran in the pre-publishing submission flow; false otherwise
 window.showPrePublishingStatus = async (inPrePublishing = false, curationMode = "") => {
-  resetSubmissionChecklistText();
   document.getElementById("pre-publishing-continue-btn").disabled = true;
   $("#pre-publishing-continue-btn").disabled = true;
   let currentDataset = window.defaultBfDataset;
@@ -563,58 +538,69 @@ window.createPrepublishingChecklist = async (curationMode) => {
   }
 };
 
-// check if the user is the dataset owner and transition to the prepublishing checklist question if so
+// Check if the user is the dataset owner and transition to the prepublishing checklist question if so
 // TODO: Dorian handle the freeform withdraw button and remove it
-window.beginPrepublishingFlow = async (curationMode) => {
-  let currentDataset = window.defaultBfDataset;
-  let currentAccount = window.defaultBfAccount;
+window.beginPrepublishingFlow = async () => {
+  console.log("[PrepublishingFlow] Starting guided prepublishing flow");
 
-  let curationModeID = "";
-  let embargoDetails;
-  if (curationMode === "guided") {
-    curationModeID = "guided--";
-    currentAccount = window.sodaJSONObj["ps-account-selected"]["account-name"];
-    currentDataset = window.sodaJSONObj["ps-dataset-selected"]["dataset-name"];
-    let get_publishing_status = await client.get(
+  let currentAccount = window.sodaJSONObj["ps-account-selected"]["account-name"];
+  let currentDataset = window.sodaJSONObj["ps-dataset-selected"]["dataset-name"];
+
+  console.log("[PrepublishingFlow] Using account:", currentAccount);
+  console.log("[PrepublishingFlow] Using dataset:", currentDataset);
+
+  try {
+    console.log("[PrepublishingFlow] Fetching publishing status...");
+    let getPublishingStatus = await client.get(
       `/disseminate_datasets/datasets/${currentDataset}/publishing_status`,
-      {
-        params: {
-          selected_account: currentAccount,
-        },
-      }
+      { params: { selected_account: currentAccount } }
     );
-    let res = get_publishing_status.data;
+    let res = getPublishingStatus.data;
+    console.log("[PrepublishingFlow] Publishing status response:", res);
 
-    // Don't send true until pre-publishing checklist is complete
-    embargoDetails = await window.submitReviewDatasetCheck(res, "guided");
+    console.log("[PrepublishingFlow] Running pre-publishing checklist validation...");
+    let embargoDetails = await window.submitReviewDatasetCheck(res, "guided");
+    console.log("[PrepublishingFlow] Embargo details:", embargoDetails);
+
     if (embargoDetails[0] === false) {
+      console.warn("[PrepublishingFlow] Checklist incomplete. Aborting prepublishing flow.");
       Swal.close();
       return false;
     }
-  }
-  if (curationMode === "freeform" || curationMode === undefined) {
-    resetSubmissionChecklistText();
 
-    Swal.fire({
-      title: "Determining your dataset permissions",
-      html: "Please wait...",
-      allowEscapeKey: false,
-      allowOutsideClick: false,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
-  }
+    console.log("[PrepublishingFlow] Fetching user dataset role...");
+    let role = await api.getDatasetRole(currentDataset);
+    console.log("[PrepublishingFlow] User role for dataset:", role);
 
-  // check if the user is the dataset owner
-  let role;
-  try {
-    role = await api.getDatasetRole(currentDataset);
+    if (role !== "owner") {
+      console.warn("[PrepublishingFlow] User is not the dataset owner. Showing error popup.");
+      await Swal.fire({
+        title: "Only the dataset owner can submit a dataset to the Curation Team.",
+        icon: "error",
+        confirmButtonText: "Ok",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+      return false;
+    }
+
+    console.log("[PrepublishingFlow] User is the dataset owner. Proceeding with guided mode.");
+
+    Swal.close();
+
+    if ($("#guided--para-review-dataset-info-disseminate").text() === "") {
+      console.log("[PrepublishingFlow] Waiting for review status to populate...");
+      await window.wait(1000);
+    }
+
+    console.log("[PrepublishingFlow] Showing prepublishing status UI in guided mode...");
+    let status = await window.showPrePublishingStatus(true, "guided");
+    console.log("[PrepublishingFlow] Prepublishing status result:", status);
+
+    console.log("[PrepublishingFlow] Guided prepublishing flow completed.");
+    return [status, embargoDetails];
   } catch (error) {
-    // tell the user something went wrong getting access to their dataset permissions
+    console.error("[PrepublishingFlow] Error during prepublishing flow:", error);
     await Swal.fire({
       title: "Failed to determine if you are the dataset owner",
       text: userErrorMessage(error),
@@ -624,10 +610,8 @@ window.beginPrepublishingFlow = async (curationMode) => {
       allowOutsideClick: false,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
     });
 
-    // log the error information then continue execution -- this is because they may not want to ignore files when they publish
     clientError(error);
     window.logGeneralOperationsForAnalytics(
       "Error",
@@ -635,77 +619,7 @@ window.beginPrepublishingFlow = async (curationMode) => {
       window.AnalyticsGranularity.ALL_LEVELS,
       ["Determine User's Dataset Role"]
     );
-
     return false;
-  }
-
-  window.logGeneralOperationsForAnalytics(
-    "Success",
-    window.DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
-    window.AnalyticsGranularity.ACTION,
-    ["Determine User's Dataset Role"]
-  );
-
-  // check if the user is the owner
-  if (role !== "owner") {
-    await Swal.fire({
-      title: "Only the dataset owner can submit a dataset to the Curation Team.",
-      icon: "error",
-      confirmButtonText: "Ok",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-    });
-
-    return false;
-  }
-
-  // Close the swal pop up for freeform mode
-  Swal.close();
-
-  // wait for the Review status to be filled
-  if ($(`#${curationModeID}para-review-dataset-info-disseminate`).text() === "") {
-    await window.wait(1000);
-  }
-
-  // transition to the next question if not in guided mode
-  // load the next question's data
-  if (curationMode !== "guided") {
-    let reviewDatasetInfo = $("#para-review-dataset-info-disseminate").text();
-    let datasetHasBeenPublished = await window.resetffmPrepublishingUI();
-
-    $("#begin-prepublishing-btn").addClass("hidden");
-    $("#submit_prepublishing_review-question-2").removeClass("show");
-    $("#submit_prepublishing_review-question-3").addClass("show");
-    document.getElementById("pre-publishing-continue-btn").disabled = true;
-    $("#pre-publishing-continue-btn").disabled = true;
-
-    if (!datasetHasBeenPublished) {
-      window.smoothScrollToElement("prepublishing-checklist");
-
-      let success = await window.showPrePublishingStatus(true, "freeform");
-      if (!success) {
-        await Swal.fire({
-          title: "Cannot continue this submission",
-          text: `Please try again shortly.`,
-          icon: "error",
-          allowEscapeKey: true,
-          allowOutsideClick: true,
-          confirmButtonText: "Ok",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          timerProgressBar: false,
-        });
-        $("#submit_prepublishing_review-question-3").removeClass("show");
-        $("#submit_prepublishing_review-question-1").removeClass("prev");
-        $("#submit_prepublishing_review-question-2").addClass("show");
-        $("#begin-prepublishing-btn").removeClass("hidden");
-        return;
-      }
-    }
-  } else {
-    //Curation mode is guided mode
-    let status = await window.showPrePublishingStatus(true, "guided");
-    return [status, embargoDetails];
   }
 };
 
