@@ -283,11 +283,12 @@ const FolderItem = ({
   allowFolderSelection,
   folderClickHoverText,
   entityType,
+  isTopLevelFolder = false,
 }) => {
   const contextMenuItemData = useGlobalStore((state) => state.contextMenuItemData);
   const contextMenuIsOpened = useGlobalStore((state) => state.contextMenuIsOpened);
 
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(isTopLevelFolder);
   const { hovered, ref } = useHover();
 
   // Get associated entities for this folder, filtering by entityType
@@ -499,6 +500,7 @@ const FolderItem = ({
             allowFolderSelection={allowFolderSelection}
             folderClickHoverText={folderClickHoverText}
             entityType={entityType}
+            isTopLevelFolder={false}
           />
         ))}
         {naturalSort(Object.keys(content?.files || {})).map((fileName) => (
@@ -631,12 +633,13 @@ const DatasetTreeViewRenderer = ({
         ) : (
           <>
             {naturalSort(Object.keys(renderDatasetStructureJSONObj?.folders || {})).map(
-              (folderName) => (
+              (folderName, index) => (
                 <FolderItem
                   key={folderName}
                   name={folderName}
                   content={renderDatasetStructureJSONObj.folders[folderName]}
                   onFolderClick={allowFolderSelection ? folderActions?.["on-folder-click"] : null}
+                  isTopLevelFolder={true}
                   onFileClick={fileActions?.["on-file-click"] ? handleFileItemClick : null}
                   folderClickHoverText={
                     folderActions?.["folder-click-hover-text"] ||
