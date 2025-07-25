@@ -18,70 +18,59 @@ while (!window.baseHtmlLoaded) {
 }
 
 /**
+ * Fetches and evaluates the pre-publishing checklist statuses for a dataset.
  *
- * @param {string} currentDataset - The currently selected dataset - name
- * @returns statuses - A status object that details the state of each pre-publishing checklist item for the given dataset and user
+ * @param {string} currentDataset - The currently selected dataset name or ID.
+ * @returns {Object} statuses - A status object detailing the state of each checklist item.
  */
 window.getPrepublishingChecklistStatuses = async (currentDataset) => {
-  // check that a dataset name or id is provided
-  if (!currentDataset || currentDataset === "") {
-    throw new Error(
-      "Error: Must provide a valid dataset to log status of submission checklist items from."
-    );
+  if (!currentDataset || currentDataset.trim() === "") {
+    throw new Error("Must provide a valid dataset to check pre-publishing statuses.");
   }
 
-  // construct the statuses object
   const statuses = {};
 
+  // Fetch dataset metadata
   let dataset;
   try {
     dataset = await api.getDataset(currentDataset);
   } catch (error) {
     clientError(error);
+    return statuses; // Return empty if dataset fetch fails
   }
 
-  // get the description - aka subtitle (unfortunate naming), tags, banner image URL, collaborators, and license
-  let { description, tags, license } = dataset["content"];
-  description = description.trim();
+  const { description = "", tags = [], license = "" } = dataset.content || {};
+  statuses.subtitle = description.trim().length > 0;
+  statuses.tags = tags.length > 0;
+  statuses.license = license.trim().length > 0;
 
-  // set the subtitle's status
-  statuses.subtitle = description && description.length ? true : false;
-
-  let readme = await api.getDatasetReadme(currentDataset);
-  readme = readme.trim();
-
-  // set the readme's status
-  statuses.readme = readme && readme.length >= 1 ? true : false;
-
-  // set tags's status
-  statuses.tags = tags && tags.length ? true : false;
-
-  let bannerImageURL = await api.getDatasetBannerImageURL(currentDataset);
-
-  // set the banner image's url status
-  statuses.bannerImageURL = bannerImageURL !== "No banner image" ? true : false;
-
-  // set the license's status
-  statuses.license = license && license.length ? true : false;
-
-  // declare the orcidId
-  let orcidId;
-
-  // get the user's information
-  let user = await api.getUserInformation();
-
-  // get the orcid object out of the user information
-  let orcidObject = user.orcid;
-
-  // check if the owner has an orcid id
-  if (orcidObject) {
-    orcidId = orcidObject.orcid;
-  } else {
-    orcidId = undefined;
+  // Fetch and check readme
+  let readme = "";
+  try {
+    readme = await api.getDatasetReadme(currentDataset);
+  } catch (error) {
+    clientError(error);
   }
+  statuses.readme = readme.trim().length >= 1;
 
-  // the user has an ORCID iD if the property is defined and non-empty
-  statuses.ORCID = orcidId && orcidId.length ? true : false;
+  // Fetch and check banner image
+  let bannerImageURL = "";
+  try {
+    bannerImageURL = await api.getDatasetBannerImageURL(currentDataset);
+  } catch (error) {
+    clientError(error);
+  }
+  statuses.bannerImageURL = bannerImageURL !== "No banner image";
+
+  // Check ORCID for current user
+  let orcidId = "";
+  try {
+    const user = await api.getUserInformation();
+    orcidId = user.orcid?.orcid || "";
+  } catch (error) {
+    clientError(error);
+  }
+  statuses.ORCID = orcidId.trim().length > 0;
 
   return statuses;
 };
@@ -539,8 +528,7 @@ window.createPrepublishingChecklist = async (curationMode) => {
 };
 
 // Check if the user is the dataset owner and transition to the prepublishing checklist question if so
-// TODO: Dorian handle the freeform withdraw button and remove it
-window.beginPrepublishingFlow = async () => {
+window.validateAndPrepareForCurationSubmission = async () => {
   console.log("[PrepublishingFlow] Starting guided prepublishing flow");
 
   let currentAccount = window.sodaJSONObj["ps-account-selected"]["account-name"];
@@ -598,6 +586,8 @@ window.beginPrepublishingFlow = async () => {
     console.log("[PrepublishingFlow] Prepublishing status result:", status);
 
     console.log("[PrepublishingFlow] Guided prepublishing flow completed.");
+    console.log("[PrepublishingFlow] Final status:", status);
+    console.log("[PrepublishingFlow] Embargo details:", embargoDetails);
     return [status, embargoDetails];
   } catch (error) {
     console.error("[PrepublishingFlow] Error during prepublishing flow:", error);
@@ -620,11 +610,5 @@ window.beginPrepublishingFlow = async () => {
       ["Determine User's Dataset Role"]
     );
     return false;
-  }
-};
-
-const removeChildren = (parent) => {
-  while (parent.firstChild) {
-    parent.removeChild(parent.firstChild);
   }
 };

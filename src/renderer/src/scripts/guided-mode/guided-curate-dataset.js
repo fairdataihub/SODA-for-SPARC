@@ -29,6 +29,7 @@ import {
   swalFileListDoubleAction,
   swalShowInfo,
 } from "../utils/swal-utils";
+import DatePicker from "tui-date-picker";
 
 import { guidedCreateManifestFilesAndAddToDatasetStructure } from "./manifests/manifest";
 import { createStandardizedDatasetStructure } from "../utils/datasetStructure";
@@ -167,6 +168,115 @@ const withdrawDatasetSubmission = async () => {
   }
 };
 
+const guidedSubmitDatasetForReview = async (embargoReleaseDate) => {
+  // Always guided mode: get account and dataset from sodaJSONObj
+  const currentAccount = window.sodaJSONObj["ps-account-selected"]["account-name"];
+  const currentDataset = window.sodaJSONObj["ps-dataset-selected"]["dataset-name"];
+
+  // show a SWAL loading message until the submit for prepublishing flow is successful or fails
+  Swal.fire({
+    title: "Submitting dataset to Curation Team",
+    html: "Please wait...",
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+
+  try {
+    console.log(
+      "Submitting dataset for publication review... Embargo release date:",
+      embargoReleaseDate
+    );
+    const response = await api.submitDatasetForPublication(
+      currentAccount,
+      currentDataset,
+      embargoReleaseDate,
+      embargoReleaseDate === "" ? "publication" : "embargo"
+    );
+    console.log("Dataset submitted for publication:", response);
+  } catch (error) {
+    clientError(error);
+    window.electron.ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.DISSEMINATE_DATASETS,
+      kombuchaEnums.Action.SHARE_WITH_CURATION_TEAM,
+      kombuchaEnums.Label.SUBMISSION,
+      kombuchaEnums.Status.FAIL,
+      {
+        value: 1,
+        dataset_id: window.defaultBfDatasetId,
+        dataset_int_id: window.defaultBfDatasetIntId,
+      }
+    );
+
+    // alert the user of an error
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      confirmButtonText: "Ok",
+      title: `Could not submit your dataset to Curation Team`,
+      icon: "error",
+      reverseButtons: window.reverseSwalButtons,
+      text: userErrorMessage(error),
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+
+    // stop execution
+    return;
+  }
+
+  // update the publishing status UI element
+  await window.showPublishingStatus("noClear", "guided");
+
+  // track success
+  window.electron.ipcRenderer.send(
+    "track-kombucha",
+    kombuchaEnums.Category.DISSEMINATE_DATASETS,
+    kombuchaEnums.Action.SHARE_WITH_CURATION_TEAM,
+    kombuchaEnums.Label.SUBMISSION,
+    kombuchaEnums.Status.SUCCESS,
+    {
+      value: 1,
+      dataset_id: window.defaultBfDatasetId,
+      dataset_int_id: window.defaultBfDatasetIntId,
+    }
+  );
+
+  // alert the user the submission was successful
+  Swal.fire({
+    backdrop: "rgba(0,0,0, 0.4)",
+    heightAuto: false,
+    confirmButtonText: "Ok",
+    title: `Dataset has been submitted for review to the SPARC Curation Team!`,
+    icon: "success",
+    reverseButtons: window.reverseSwalButtons,
+    showClass: {
+      popup: "animate__animated animate__zoomIn animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
+  });
+
+  // Update the UI again and hide the flow
+  $("#guided--prepublishing-checklist-container").addClass("hidden");
+  $("#guided-button-share-dataset-with-curation-team").removeClass("hidden");
+  $("#guided-button-share-dataset-with-curation-team").removeClass("loading");
+  $("#guided-button-share-dataset-with-curation-team").disabled = false;
+
+  window.guidedSetCurationTeamUI();
+};
+
 // Handles sharing/unsharing the dataset with the curation team (requires published + locked dataset)
 window.guidedModifyCurationTeamAccess = async (action) => {
   const shareBtn = document.getElementById("guided-button-share-dataset-with-curation-team");
@@ -183,20 +293,166 @@ window.guidedModifyCurationTeamAccess = async (action) => {
   };
 
   const handleShare = async () => {
-    setButtonState(shareBtn, { disabled: true, loading: true });
+    try {
+      setButtonState(shareBtn, { disabled: true, loading: true });
 
-    console.log("Starting prepublishing flow for sharing dataset with curation team...");
+      console.log("Starting prepublishing flow for sharing dataset with curation team...");
 
-    const [precheckPassed, embargoDetails] = await window.beginPrepublishingFlow();
+      console.log("[PrepublishingFlow] Fetching user dataset role...");
+      let role = await api.getDatasetRole(
+        window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
+      );
+      console.log("[PrepublishingFlow] User role for dataset:", role);
 
-    console.log("Return from prepublishing flow:", precheckPassed, embargoDetails);
-    if (precheckPassed) {
+      if (role !== "owner") {
+        console.warn("[PrepublishingFlow] User is not the dataset owner. Showing error popup.");
+        await Swal.fire({
+          title: "Only the dataset owner can submit a dataset to the Curation Team.",
+          icon: "error",
+          confirmButtonText: "Ok",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+        });
+        return false;
+      }
+
+      // status is NOT_PUBLISHED
+      // embargo release date represents the time a dataset that has been reviewed for publication becomes public
+      // user sets this value in the UI otherwise it stays an empty string
+      let embargoReleaseDate = "";
+
+      // confirm with the user that they will submit a dataset and check if they want to set an embargo date
+      let userResponse = await Swal.fire({
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        confirmButtonText: "Submit",
+        denyButtonText: "Cancel",
+        showDenyButton: true,
+        title: `Submit your dataset for review`,
+        reverseButtons: window.reverseSwalButtons,
+        html: `
+          <div style="display: flex; flex-direction: column;  font-size: 15px;">
+            <p style="text-align:left">Your dataset will be submitted for review to the SPARC Curation Team. While under review, the dataset will become locked until it has either been approved or rejected for publication. </p>
+            <div style="text-align: left; margin-bottom: 5px; display: flex; ">
+              <input type="checkbox" id="confirm-to-awknowledge" name="publishing-options" value="immediate" style=" border: 0px; width: 18px; height: 18px;">
+              <div style="margin-left: 5px;"><label for="immediate">I understand that submitting to the Curation Team will lock this dataset</label></div>
+            </div>
+            <div style="text-align: left; margin-bottom: 5px; display: flex; ">
+              <input type="checkbox" id="embargo-date-check" name="publishing-options" value="embargo-date-check" style=" border: 0px; width: 22px; height: 22px;">
+              <div style="margin-left: 5px;"><label for="embargo-date-check" style="text-align:left">Place this dataset under embargo so that it is not made public immediately after publishing.</label> <br> <a href="https://docs.pennsieve.io/docs/what-is-an-embargoed-dataset" target="_blank">What is this?</a></div>
+            </div>
+            <div style="visibility:hidden; flex-direction: column;  margin-top: 10px;" id="calendar-wrapper">
+            <label style="margin-bottom: 5px; font-size: 13px;">When would you like this dataset to become publicly available?<label>
+            <div class="tui-datepicker-input tui-datetime-input tui-has-focus" style="margin-top: 5px;">
+
+                <input
+                  type="text"
+                  id="tui-date-picker-target"
+                  aria-label="Date-Time"
+                  />
+
+                  <span class="tui-ico-date"></span>
+                </div>
+                <div
+                id="tui-date-picker-container"
+                style="margin-top: -1px; margin-left: 60px;"
+                ></div>
+            </div>
+          </div>
+        `,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+        willOpen: () => {
+          // setup the calendar that is in the popup
+          const container = document.getElementById("tui-date-picker-container");
+          const target = document.getElementById("tui-date-picker-target");
+
+          // calculate one year from now
+          let oneYearFromNow = new Date();
+          oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+
+          // initialize the calendar
+          new DatePicker(container, {
+            input: {
+              element: target,
+            },
+            date: new Date(),
+            // a user can lift an embargo today or a year from now
+            selectableRanges: [[new Date(), oneYearFromNow]],
+          });
+
+          // display/hide calendar on toggle
+          $("input[id='embargo-date-check']").on("change", (e) => {
+            let tuiCalendarWrapper = document.getElementById("calendar-wrapper");
+            if ($(`#${e.target.value}`).is(":checked")) {
+              tuiCalendarWrapper.style.visibility = "visible";
+            } else {
+              tuiCalendarWrapper.style.visibility = "hidden";
+            }
+          });
+
+          // add a scroll effect
+          const input = document.getElementById("tui-date-picker-target");
+          let calendar = document.querySelector(".tui-calendar-body-inner");
+
+          input.addEventListener("click", () => {
+            setTimeout(() => {
+              calendar.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
+            }, 200);
+          });
+        },
+        didOpen: () => {
+          // Add an event listener to id confirm-to-awknowledge
+          document.querySelector(".swal2-confirm").disabled = true;
+          document.getElementById("confirm-to-awknowledge").addEventListener("click", () => {
+            // if the checkbox is checked, enable the submit button
+            if (document.getElementById("confirm-to-awknowledge").checked) {
+              document.querySelector(".swal2-confirm").disabled = false;
+            } else {
+              // if the checkbox is not checked, disable the submit button
+              document.querySelector(".swal2-confirm").disabled = true;
+            }
+          });
+        },
+        willClose: () => {
+          if (document.getElementById("embargo-date-check").checked) {
+            // set the embargoDate variable if so
+            embargoReleaseDate = $("#tui-date-picker-target").val();
+          }
+        },
+      });
+
+      console.log("User response from prepublishing flow:", userResponse);
+      // check if the user cancelled
+      if (!userResponse.isConfirmed) {
+        setButtonState(shareBtn, { disabled: false, loading: false });
+        return;
+      }
+
       setButtonState(shareBtn, { hidden: true });
-      await window.submitReviewDataset(embargoDetails[1], curationMode);
+      await guidedSubmitDatasetForReview(embargoReleaseDate);
       unshareMessage.classList.remove("hidden");
-    }
 
-    setButtonState(shareBtn, { disabled: false, loading: false });
+      setButtonState(shareBtn, { disabled: false, loading: false });
+    } catch (error) {
+      setButtonState(shareBtn, { disabled: false, loading: false });
+      console.error("Error during share flow:", error);
+      await Swal.fire({
+        title: "Failed to share dataset with Curation Team",
+        text: userErrorMessage(error),
+        icon: "error",
+        confirmButtonText: "Ok",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+    }
   };
 
   const handleUnshare = async () => {
