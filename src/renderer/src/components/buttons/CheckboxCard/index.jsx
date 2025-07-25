@@ -16,7 +16,8 @@ const dataMap = {
   },
   "generate-dataset-on-pennsieve": {
     title: "Generate dataset on Pennsieve",
-    description: "Generate a dataset directly on the Pennsieve platform",
+    description:
+      "Pennsieve is a free, open source data management platform supported by the SPARC program",
     image: pennsieveLogo,
   },
 };
