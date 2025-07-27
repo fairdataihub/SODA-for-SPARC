@@ -1052,18 +1052,13 @@ class BfGetDatasetReadme(Resource):
 
 
   parser_readme_get = reqparse.RequestParser(bundle_errors=True)
-  parser_readme_get.add_argument('selected_account', type=str, required=True, location='args', help='The target account to rename the dataset for.')
 
   @api.expect(parser_readme_get)
   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Get the readme for a dataset.")
   @api.marshal_with(model_get_readme_response, False, 200)
   def get(self, dataset_name_or_id):
-    data = self.parser_readme_get.parse_args()
-
-    selected_account = data.get('selected_account')
-
     try:
-      return get_dataset_readme(selected_account, dataset_name_or_id)
+      return get_dataset_readme(dataset_name_or_id)
     except Exception as e:
       if notBadRequestException(e):
         api.abort(500, str(e))

@@ -28,50 +28,65 @@ window.getPrepublishingChecklistStatuses = async (currentDataset) => {
     throw new Error("Must provide a valid dataset to check pre-publishing statuses.");
   }
 
-  const statuses = {};
+  const statuses = {
+    subtitle: false,
+    tags: false,
+    license: false,
+    readme: false,
+    bannerImageURL: false,
+    ORCID: false,
+  };
 
-  // Fetch dataset metadata
-  let dataset;
+  console.log("[Prepublishing Checklist] Starting check for dataset:", currentDataset);
+
+  // Dataset metadata
   try {
-    dataset = await api.getDataset(currentDataset);
+    const dataset = await api.getDataset(currentDataset);
+    const { description = "", tags = [], license = "" } = dataset.content || {};
+    statuses.subtitle = description.trim().length > 0;
+    statuses.tags = tags.length > 0;
+    statuses.license = license.trim().length > 0;
   } catch (error) {
     clientError(error);
-    return statuses; // Return empty if dataset fetch fails
+    console.log("[Prepublishing Checklist] Metadata check failed.");
   }
+  console.log("[Prepublishing Checklist] Metadata results:", {
+    subtitle: statuses.subtitle,
+    tags: statuses.tags,
+    license: statuses.license,
+  });
 
-  const { description = "", tags = [], license = "" } = dataset.content || {};
-  statuses.subtitle = description.trim().length > 0;
-  statuses.tags = tags.length > 0;
-  statuses.license = license.trim().length > 0;
-
-  // Fetch and check readme
-  let readme = "";
+  // Readme
   try {
-    readme = await api.getDatasetReadme(currentDataset);
+    const readme = await api.getDatasetReadme(currentDataset);
+    statuses.readme = readme.trim().length > 0;
   } catch (error) {
     clientError(error);
+    console.log("[Prepublishing Checklist] Readme check failed.");
   }
-  statuses.readme = readme.trim().length >= 1;
+  console.log("[Prepublishing Checklist] Readme result:", statuses.readme);
 
-  // Fetch and check banner image
-  let bannerImageURL = "";
+  // Banner image
   try {
-    bannerImageURL = await api.getDatasetBannerImageURL(currentDataset);
+    const bannerImageURL = await api.getDatasetBannerImageURL(currentDataset);
+    statuses.bannerImageURL = bannerImageURL !== "No banner image";
   } catch (error) {
     clientError(error);
+    console.log("[Prepublishing Checklist] Banner image check failed.");
   }
-  statuses.bannerImageURL = bannerImageURL !== "No banner image";
+  console.log("[Prepublishing Checklist] Banner image result:", statuses.bannerImageURL);
 
-  // Check ORCID for current user
-  let orcidId = "";
+  // ORCID
   try {
     const user = await api.getUserInformation();
-    orcidId = user.orcid?.orcid || "";
+    statuses.ORCID = (user?.orcid?.orcid || "").trim().length > 0;
   } catch (error) {
     clientError(error);
+    console.log("[Prepublishing Checklist] ORCID check failed.");
   }
-  statuses.ORCID = orcidId.trim().length > 0;
+  console.log("[Prepublishing Checklist] ORCID result:", statuses.ORCID);
 
+  console.log("[Prepublishing Checklist] Final statuses:", statuses);
   return statuses;
 };
 

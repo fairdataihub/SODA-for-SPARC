@@ -191,7 +191,9 @@ const getDatasetSubtitle = async (selected_dataset) => {
 };
 
 const getDatasetReadme = async (selected_dataset) => {
+  console.log("selected_dataset", selected_dataset);
   let readmeResponse = await client.get(`/manage_datasets/datasets/${selected_dataset}/readme`);
+  console.log("readmeResponse", readmeResponse);
 
   let { readme } = readmeResponse.data;
 
