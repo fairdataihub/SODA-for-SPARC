@@ -38,10 +38,17 @@ export const handleNextButtonClick = async () => {
       window.sodaJSONObj["completed-tabs"].push(window.pageBeingLeftID);
     }
 
-    const targetPage = getNextPageNotSkipped(window.CURRENT_PAGE.id);
-    const targetPageID = targetPage.id;
+    // If the current page is the dataset generation page, go to the share with curation team
+    // page, otherwise, go to the next page in the workflow.
 
-    await window.openPage(targetPageID);
+    if (window.pageBeingLeftID === "guided-dataset-generation-tab") {
+      await window.openPage("guided-dataset-dissemination-tab");
+    } else {
+      const targetPage = getNextPageNotSkipped(window.CURRENT_PAGE.id);
+      const targetPageID = targetPage.id;
+
+      await window.openPage(targetPageID);
+    }
   } catch (error) {
     window.log.error(error);
     if (Array.isArray(error)) {
