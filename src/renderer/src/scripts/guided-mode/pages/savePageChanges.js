@@ -730,15 +730,6 @@ export const savePageChanges = async (pageBeingLeftID) => {
     //   window.sodaJSONObj["path-to-local-dataset-copy"];
     // }
 
-    // if (pageBeingLeftID === "guided-dataset-dissemination-tab") {
-    //   //Save the DOI information of the dataset
-    //   window.sodaJSONObj["digital-metadata"]["doi"] = $("#guided--para-doi-info").text();
-    //   // Reset the share with curation UI and DOI UI
-    //   $("#guided--prepublishing-checklist-container").addClass("hidden");
-    //   $("#guided--para-doi-info").text("");
-    //   $("#guided-button-unshare-dataset-with-curation-team");
-    // }
-
     // if (pageBeingLeftID === "guided-dataset-validation-tab") {
     //   const guidedButtonRunValidation = document.getElementById(
     //     "guided-button-run-dataset-validation"

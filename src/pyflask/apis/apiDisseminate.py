@@ -156,17 +156,10 @@ class PublicationRequest(Resource):
 @api.route("/datasets/<string:dataset_name>/publication/cancel")
 class PublicationCancel(Resource):
     
-        publication_cancel_parser_post = reqparse.RequestParser()
-        publication_cancel_parser_post.add_argument("selected_account", type=str, help="Pennsieve account name", location="json", required=True)
-        @api.expect(publication_cancel_parser_post)
+        @api.doc(responses={200: "Success", 400: "Validation Error", 500: "Internal Server Error"})
         def post(self, dataset_name):
-
-            # get the arguments
-            data = self.publication_cancel_parser_post.parse_args()
-            selected_account = data.get("selected_account")
-
             try:
-                return bf_withdraw_review_dataset(selected_account, dataset_name)
+                return bf_withdraw_review_dataset(dataset_name)
             except Exception as e:
                 if notBadRequestException(e):
                     api.abort(500, str(e))

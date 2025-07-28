@@ -29,6 +29,7 @@ import {
   swalFileListDoubleAction,
   swalShowInfo,
 } from "../utils/swal-utils";
+import DatePicker from "tui-date-picker";
 
 import { guidedCreateManifestFilesAndAddToDatasetStructure } from "./manifests/manifest";
 import { createStandardizedDatasetStructure } from "../utils/datasetStructure";
@@ -94,101 +95,31 @@ window.guidedSetCurationTeamUI = () => {
     $("#guided-unshare-dataset-with-curation-team-message").removeClass("hidden");
   } else {
     $("#guided--prepublishing-checklist-container").addClass("hidden");
-    $("#guided-button-share-dataset-with-curation-team").addClass("hidden");
     $("#guided-button-share-dataset-with-curation-team").removeClass("hidden");
     $("#guided-button-unshare-dataset-with-curation-team").addClass("hidden");
     $("#guided-unshare-dataset-with-curation-team-message").addClass("hidden");
   }
 };
 
-// Function used to reserve a DOI for the current dataset and account
-window.guidedReserveAndSaveDOI = async () => {
-  let dataset = window.sodaJSONObj["ps-dataset-selected"]["dataset-name"];
-  $("#curate-button-reserve-doi").addClass("loading");
-  $("#curate-button-reserve-doi").disabled = true;
-
-  let doiInformation = await api.reserveDOI(dataset);
-  window.electron.ipcRenderer.send(
-    "track-kombucha",
-    kombuchaEnums.Category.DISSEMINATE_DATASETS,
-    kombuchaEnums.Action.GUIDED_MODE,
-    kombuchaEnums.Label.RESERVE_DOI,
-    kombuchaEnums.Status.SUCCESS,
-    { value: 1 }
-  );
-  guidedSetDOIUI(doiInformation);
-};
-
 // Function is for displaying DOI information on the Guided UI
-const guidedSetDOIUI = (doiInformation) => {
-  $("#curate-button-reserve-doi").removeClass("loading");
-  $("#curate-button-reserve-doi").disabled = false;
-  if (doiInformation === "locked") {
-    // Show reserve DOI button and hide copy button
-    // $("#guided-pennsieve-copy-doi").addClass("hidden");
-    $("#curate-button-reserve-doi").addClass("hidden");
+export const guidedSetDOIUI = (datasetDOI) => {
+  console.log("Setting DOI information in Guided UI:", datasetDOI);
 
-    Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      confirmButtonText: "Ok",
-      title: "Cannot reserve DOI",
-      text: "Your dataset is locked, so modification is not allowed.",
-      icon: "error",
-      showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
-      hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
-    });
-
-    return;
-  }
-
-  $("#guided--para-doi-info").text(doiInformation);
-
-  if (doiInformation === "No DOI found for this dataset" || doiInformation === false) {
-    // Hide the reserve DOI button and show copy button
-    //  $("#guided-pennsieve-copy-doi").addClass("hidden");
-    $("#curate-button-reserve-doi").removeClass("hidden");
+  // If the DOI is not found or is false, show the Reserve DOI button
+  // Otherwise, hide the Reserve DOI button
+  const buttonReserveDOI = document.getElementById("guided-button-reserve-doi");
+  if (datasetDOI) {
+    buttonReserveDOI.classList.add("hidden");
+    $("#guided--para-doi-info").text(datasetDOI);
   } else {
-    // Show reserve DOI button and hide copy button
-    // $("#guided-pennsieve-copy-doi").removeClass("hidden");
-    $("#curate-button-reserve-doi").addClass("hidden");
+    buttonReserveDOI.classList.remove("hidden");
+    $("#guided--para-doi-info").text("No DOI found for this dataset");
   }
 };
 
-// This function is for when a user clicks the share/unshare with curation team (requires Dataset to be published and locked)
-window.guidedModifyCurationTeamAccess = async (action) => {
-  const guidedShareWithCurationTeamButton = document.getElementById(
-    "guided-button-share-dataset-with-curation-team"
-  );
-  const guidedUnshareWithCurationTeamButton = document.getElementById(
-    "guided-button-unshare-dataset-with-curation-team"
-  );
-  const guidedUnshareMessage = document.getElementById(
-    "guided-unshare-dataset-with-curation-team-message"
-  );
-  const curationMode = "guided";
-
-  if (action === "share") {
-    guidedShareWithCurationTeamButton.disabled = true;
-    guidedShareWithCurationTeamButton.classList.add("loading");
-
-    let publishPreCheckStatus = await window.beginPrepublishingFlow(curationMode);
-    let embargoDetails = publishPreCheckStatus[1];
-
-    // Will return false if there are issues running the precheck flow
-    if (publishPreCheckStatus[0]) {
-      guidedShareWithCurationTeamButton.classList.add("hidden");
-      await window.submitReviewDataset(embargoDetails[1], curationMode);
-      guidedUnshareMessage.classList.remove("hidden");
-    }
-    guidedShareWithCurationTeamButton.classList.remove("loading");
-    guidedShareWithCurationTeamButton.disabled = false;
-  }
-  if (action === "unshare") {
-    // Add your dataset has been shared, to withdraw please do so from Pennsieve
-    guidedUnshareWithCurationTeamButton.disabled = true;
-    guidedUnshareWithCurationTeamButton.classList.add("loading");
-
+// Withdraw dataset from review (guided mode only)
+const withdrawDatasetSubmission = async () => {
+  try {
     const { value: withdraw } = await Swal.fire({
       title: "Unshare this dataset from Curation Team?",
       icon: "warning",
@@ -202,24 +133,442 @@ window.guidedModifyCurationTeamAccess = async (action) => {
       timerProgressBar: false,
     });
 
-    if (!withdraw) {
-      guidedUnshareWithCurationTeamButton.disabled = false;
-      guidedUnshareWithCurationTeamButton.classList.remove("loading");
-      return;
-    }
+    if (!withdraw) return false;
 
-    let removeStatus = await withdrawDatasetSubmission("guided");
+    await window.showPublishingStatus(withdrawDatasetCheck, "guided");
+    return true;
+  } catch (error) {
+    window.log.error(error);
+    console.error(error);
 
-    if (removeStatus) {
-      guidedUnshareWithCurationTeamButton.classList.add("hidden");
-      guidedShareWithCurationTeamButton.classList.remove("hidden");
-    }
+    Swal.fire({
+      title: "Could not withdraw dataset from publication!",
+      text: `${userErrorMessage(error)}`,
+      icon: "error",
+      heightAuto: false,
+      confirmButtonText: "Ok",
+      backdrop: "rgba(0,0,0, 0.4)",
+      showClass: {
+        popup: "animate__animated animate__fadeInDown animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__fadeOutUp animate__faster",
+      },
+    });
 
-    guidedUnshareWithCurationTeamButton.disabled = false;
-    guidedUnshareWithCurationTeamButton.classList.remove("loading");
+    window.logGeneralOperationsForAnalytics(
+      "Error",
+      window.DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
+      window.AnalyticsGranularity.ALL_LEVELS,
+      ["Withdraw dataset"]
+    );
+
+    return false;
   }
 };
 
+/**
+ * Submits the current dataset for review by the SPARC Curation Team.
+ * @param {string} embargoReleaseDate - Optional embargo release date. Empty string means immediate publication.
+ */
+const guidedSubmitDatasetForReview = async (embargoReleaseDate = "") => {
+  try {
+    // Validate required data
+    const currentAccount = window?.sodaJSONObj?.["ps-account-selected"]?.["account-name"];
+    const currentDataset = window?.sodaJSONObj?.["digital-metadata"]?.["pennsieve-dataset-id"];
+
+    if (!currentAccount || !currentDataset) {
+      throw new Error("Missing account or dataset information for submission.");
+    }
+
+    // Show loading state
+    Swal.fire({
+      title: "Submitting dataset to Curation Team",
+      html: "Please wait...",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0,0.4)",
+      didOpen: () => Swal.showLoading(),
+    });
+
+    console.log("[Dataset Submission] Starting process", {
+      embargoReleaseDate,
+      account: currentAccount,
+      datasetId: currentDataset,
+    });
+
+    // Perform API call
+    const submissionType = embargoReleaseDate === "" ? "publication" : "embargo";
+    const response = await api.submitDatasetForPublication(
+      currentAccount,
+      currentDataset,
+      embargoReleaseDate,
+      submissionType
+    );
+
+    console.log("[Dataset Submission] API response:", response);
+
+    // Track success
+    window.electron.ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.DISSEMINATE_DATASETS,
+      kombuchaEnums.Action.SHARE_WITH_CURATION_TEAM,
+      kombuchaEnums.Label.SUBMISSION,
+      kombuchaEnums.Status.SUCCESS,
+      {
+        value: 1,
+        dataset_id: window.defaultBfDatasetId,
+        dataset_int_id: window.defaultBfDatasetIntId,
+      }
+    );
+
+    // Show success message
+    Swal.fire({
+      backdrop: "rgba(0,0,0,0.4)",
+      heightAuto: false,
+      confirmButtonText: "Ok",
+      title: "Dataset submitted for review to the SPARC Curation Team!",
+      icon: "success",
+      reverseButtons: window.reverseSwalButtons,
+      showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+      hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
+    });
+  } catch (error) {
+    console.error("[Dataset Submission] Error:", error);
+
+    // Track failure
+    window.electron.ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.DISSEMINATE_DATASETS,
+      kombuchaEnums.Action.SHARE_WITH_CURATION_TEAM,
+      kombuchaEnums.Label.SUBMISSION,
+      kombuchaEnums.Status.FAIL,
+      {
+        value: 1,
+        dataset_id: window.defaultBfDatasetId,
+        dataset_int_id: window.defaultBfDatasetIntId,
+      }
+    );
+
+    // Show error message
+    Swal.fire({
+      backdrop: "rgba(0,0,0,0.4)",
+      heightAuto: false,
+      confirmButtonText: "Ok",
+      title: "Could not submit your dataset to the Curation Team",
+      icon: "error",
+      reverseButtons: window.reverseSwalButtons,
+      text: userErrorMessage(error),
+      showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+      hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
+    });
+
+    clientError(error);
+  }
+};
+
+const guidedUnSubmitDatasetForReview = async () => {
+  try {
+    // Validate required data
+    const currentAccount = window?.sodaJSONObj?.["ps-account-selected"]?.["account-name"];
+    const currentDataset = window?.sodaJSONObj?.["digital-metadata"]?.["pennsieve-dataset-id"];
+    if (!currentAccount || !currentDataset) {
+      throw new Error("Missing account or dataset information for unsubmission.");
+    }
+    // Show loading state
+    Swal.fire({
+      title: "Unsharing dataset from Curation Team",
+      html: "Please wait...",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0,0.4)",
+      didOpen: () => Swal.showLoading(),
+    });
+    console.log("[Dataset Unsubmission] Starting process", {
+      account: currentAccount,
+      datasetId: currentDataset,
+    });
+
+    // Perform API call
+    const response = await api.unSubmitDatasetForPublication(currentAccount, currentDataset);
+    console.log("[Dataset Unsubmission] API response:", response);
+
+    // Update UI state
+    await window.showPublishingStatus("noClear", "guided");
+    // Track success
+  } catch (error) {
+    console.error("[Dataset Unsubmission] Error:", error);
+  }
+};
+
+export const guidedSetPublishingStatusUI = async () => {
+  const currentAccount = window.sodaJSONObj["ps-account-selected"]["account-name"];
+  const currentDataset = window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+
+  console.log("[PrepublishingFlow] Using account:", currentAccount);
+  console.log("[PrepublishingFlow] Using dataset:", currentDataset);
+
+  try {
+    console.log("[PrepublishingFlow] Fetching publishing status...");
+    const res = await client.get(
+      `/disseminate_datasets/datasets/${currentDataset}/publishing_status`,
+      { params: { selected_account: currentAccount } }
+    );
+
+    const publishingStatus = res.data?.publishing_status;
+    const reviewStatus = res.data?.review_request_status;
+
+    console.log("Publishing status:", publishingStatus);
+    console.log("Review status:", reviewStatus);
+
+    const statusMessages = {
+      draft: "Dataset is not under review currently",
+      cancelled: "Dataset is not under review currently",
+      requested: "Dataset is currently under review",
+      rejected: "Dataset has been rejected by your Publishing Team and may require revision",
+      accepted: "Dataset has been accepted for publication by your Publishing Team",
+    };
+
+    const outputMessage = statusMessages[reviewStatus] || "Unknown publishing status";
+    $(`#guided--para-review-dataset-info-disseminate`).text(outputMessage);
+
+    if (reviewStatus === "requested") {
+      $("#guided-button-share-dataset-with-curation-team").addClass("hidden");
+      $("#guided-button-unshare-dataset-with-curation-team").removeClass("hidden");
+      $("#guided-unshare-dataset-with-curation-team-message").removeClass("hidden");
+    } else {
+      $("#guided-button-share-dataset-with-curation-team").removeClass("hidden");
+      $("#guided-button-unshare-dataset-with-curation-team").addClass("hidden");
+      $("#guided-unshare-dataset-with-curation-team-message").addClass("hidden");
+    }
+  } catch (error) {
+    console.error("[PrepublishingFlow] Error fetching publishing status:", error);
+    await Swal.fire({
+      title: "Error fetching publishing status",
+      text: userErrorMessage(error),
+      icon: "error",
+      confirmButtonText: "Ok",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0,0.4)",
+    });
+    clientError(error);
+    return;
+  }
+};
+
+/**
+ * Handles sharing/unsharing the dataset with the Curation Team (guided mode).
+ * @param {"share" | "unshare"} action - Action to perform.
+ */
+window.guidedModifyCurationTeamAccess = async (action) => {
+  const shareBtn = document.getElementById("guided-button-share-dataset-with-curation-team");
+  const unshareBtn = document.getElementById("guided-button-unshare-dataset-with-curation-team");
+  const unshareMessage = document.getElementById(
+    "guided-unshare-dataset-with-curation-team-message"
+  );
+  const curationMode = "guided";
+
+  // Helper: Set button state
+  const setButtonState = (button, { disabled = false, loading = false, hidden = false }) => {
+    if (!button) return;
+    button.disabled = disabled;
+    button.classList.toggle("loading", loading);
+    button.classList.toggle("hidden", hidden);
+  };
+
+  if (action === "share") {
+    try {
+      setButtonState(shareBtn, { disabled: true, loading: true });
+
+      const datasetId = window?.sodaJSONObj?.["digital-metadata"]?.["pennsieve-dataset-id"];
+      if (!datasetId) throw new Error("Dataset ID is missing, cannot share with Curation Team.");
+
+      console.log("[Curation Access] Starting share flow for dataset:", datasetId);
+
+      // Check role
+      const role = await api.getDatasetRole(datasetId);
+      console.log("[Curation Access] User role:", role);
+      if (role !== "owner") {
+        await swalShowError(
+          "Insufficient Permissions",
+          "You must be the owner of the dataset to share it with the Curation Team."
+        );
+        setButtonState(shareBtn, { disabled: false, loading: false });
+        return;
+      }
+
+      const datasetInformation = await api.getDataset(datasetId);
+      console.log("[Curation Access] Dataset information:", datasetInformation);
+
+      const datasetIsPublishable = datasetInformation?.canPublish === true;
+      if (!datasetIsPublishable) {
+        await swalShowError(
+          "Your dataset is not ready for publication",
+          `
+            Open your dataset on Pennsieve, go to the "Publishing" section, and complete all required pre-publication steps.
+            Once done, return to SODA to share your dataset with the Curation Team.
+          `
+        );
+        setButtonState(shareBtn, { disabled: false, loading: false });
+        return;
+      }
+
+      // Prompt user for embargo date
+      let embargoReleaseDate = "";
+      const userResponse = await Swal.fire({
+        backdrop: "rgba(0,0,0,0.4)",
+        heightAuto: false,
+        confirmButtonText: "Submit",
+        denyButtonText: "Cancel",
+        showDenyButton: true,
+        title: "Submit your dataset for review",
+        reverseButtons: window.reverseSwalButtons,
+        html: `
+          <div style="display:flex; flex-direction:column; font-size:15px;">
+            <p style="text-align:left;">
+              Your dataset will be submitted for review to the SPARC Curation Team.
+              While under review, the dataset will be locked until approved or rejected.
+            </p>
+            <div style="display:flex; text-align:left; margin-bottom:5px;">
+              <input type="checkbox" id="confirm-to-acknowledge" style="width:18px; height:18px;">
+              <label style="margin-left:5px;">I understand that submitting will lock this dataset</label>
+            </div>
+            <div style="display:flex; text-align:left; margin-bottom:5px;">
+              <input type="checkbox" id="embargo-date-check" style="width:22px; height:22px;">
+              <div style="margin-left:5px;">
+                <label>Place this dataset under embargo so it is not made public immediately after publishing.</label>
+                <br><a href="https://docs.pennsieve.io/docs/what-is-an-embargoed-dataset" target="_blank">What is this?</a>
+              </div>
+            </div>
+            <div id="calendar-wrapper" style="visibility:hidden; flex-direction:column; margin-top:10px;">
+              <label style="margin-bottom:5px; font-size:13px;">When should this dataset become public?</label>
+              <div class="tui-datepicker-input tui-datetime-input">
+                <input type="text" id="tui-date-picker-target" aria-label="Date-Time"/>
+                <span class="tui-ico-date"></span>
+              </div>
+              <div id="tui-date-picker-container" style="margin-top:-1px; margin-left:60px;"></div>
+            </div>
+          </div>`,
+        willOpen: () => {
+          const container = document.getElementById("tui-date-picker-container");
+          const target = document.getElementById("tui-date-picker-target");
+          if (container && target) {
+            let oneYearFromNow = new Date();
+            oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+            new DatePicker(container, {
+              input: { element: target },
+              date: new Date(),
+              selectableRanges: [[new Date(), oneYearFromNow]],
+            });
+          }
+
+          document.getElementById("embargo-date-check")?.addEventListener("change", (e) => {
+            const wrapper = document.getElementById("calendar-wrapper");
+            if (wrapper) wrapper.style.visibility = e.target.checked ? "visible" : "hidden";
+          });
+        },
+        didOpen: () => {
+          const confirmBtn = document.querySelector(".swal2-confirm");
+          const checkbox = document.getElementById("confirm-to-acknowledge");
+          if (confirmBtn && checkbox) {
+            confirmBtn.disabled = true;
+            checkbox.addEventListener("change", () => {
+              confirmBtn.disabled = !checkbox.checked;
+            });
+          }
+        },
+        willClose: () => {
+          if (document.getElementById("embargo-date-check")?.checked) {
+            embargoReleaseDate = $("#tui-date-picker-target").val();
+          }
+        },
+        showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+        hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
+      });
+
+      if (!userResponse.isConfirmed) {
+        setButtonState(shareBtn, { disabled: false, loading: false });
+        return;
+      }
+
+      setButtonState(shareBtn, { hidden: true });
+      await guidedSubmitDatasetForReview(embargoReleaseDate);
+
+      setButtonState(shareBtn, { disabled: false, loading: false });
+    } catch (error) {
+      console.error("[Curation Access] Share flow error:", error);
+      setButtonState(shareBtn, { disabled: false, loading: false });
+      await Swal.fire({
+        title: "Failed to share dataset with Curation Team",
+        text: userErrorMessage(error),
+        icon: "error",
+        confirmButtonText: "Ok",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0,0.4)",
+      });
+      clientError(error);
+    }
+  }
+
+  if (action === "unshare") {
+    try {
+      setButtonState(unshareBtn, { disabled: true, loading: true });
+
+      const { value: withdraw } = await Swal.fire({
+        title: "Unshare this dataset from Curation Team?",
+        icon: "warning",
+        showDenyButton: true,
+        confirmButtonText: "Yes",
+        denyButtonText: "No",
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0,0.4)",
+      });
+
+      if (!withdraw) {
+        setButtonState(unshareBtn, { disabled: false, loading: false });
+        return;
+      }
+
+      const datasetId = window?.sodaJSONObj?.["digital-metadata"]?.["pennsieve-dataset-id"];
+
+      await api.withdrawDatasetReviewSubmission(datasetId);
+
+      await Swal.fire({
+        backdrop: "rgba(0,0,0,0.4)",
+        heightAuto: false,
+        confirmButtonText: "Ok",
+        title: "Dataset unshared from Curation Team",
+        icon: "success",
+        reverseButtons: window.reverseSwalButtons,
+        showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+        hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
+      });
+
+      console.log("[Curation Access] Dataset unshared successfully");
+
+      setButtonState(unshareBtn, { disabled: false, loading: false });
+    } catch (error) {
+      console.error("[Curation Access] Unshare flow error:", error);
+      setButtonState(unshareBtn, { disabled: false, loading: false });
+      await Swal.fire({
+        title: "Failed to unshare dataset from Curation Team",
+        text: userErrorMessage(error),
+        icon: "error",
+        confirmButtonText: "Ok",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0,0.4)",
+      });
+      clientError(error);
+    }
+  }
+
+  // Update the UI to reflect the current state of sharing with the Curation Team
+  await guidedSetPublishingStatusUI();
+};
 // Adds the click handlers to the info drop downs in Guided Mode
 // The selectors also append the info icon before the label depending on data attributes
 // passed in the HTML
@@ -295,6 +644,54 @@ const deleteProgresFile = async (progressFileName) => {
     console.log(err);
   });
 };
+
+// Add event listener to open dataset link in new tab
+document
+  .getElementById("guided-button-open-link-on-pennsieve")
+  .addEventListener("click", (event) => {
+    event.preventDefault();
+    const pennsieveDatasetID = window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+    let datasetLink = `https://app.pennsieve.io/N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0/datasets/${pennsieveDatasetID}/overview`;
+
+    if (datasetLink) {
+      window.open(datasetLink, "_blank");
+    }
+  });
+
+// Add event listener to Reserve DOI button "guided-button-reserve-doi"
+document.getElementById("guided-button-reserve-doi").addEventListener("click", async (event) => {
+  event.preventDefault();
+
+  const pennsieveDatasetID = window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+  const doiResult = await api.reserveDOI(pennsieveDatasetID);
+  if (doiResult && doiResult.success) {
+    window.sodaJSONObj["digital-metadata"]["doi"] = doiResult.doi;
+    guidedSetDOIUI(doiResult.doi);
+  } else {
+    await swalShowError(
+      "Failed to reserve DOI",
+      userErrorMessage(doiResult.error || "SODA was unable to reserve a DOI for this dataset.")
+    );
+  }
+
+  window.electron.ipcRenderer.send(
+    "track-kombucha",
+    kombuchaEnums.Category.DISSEMINATE_DATASETS,
+    kombuchaEnums.Action.GUIDED_MODE,
+    kombuchaEnums.Label.RESERVE_DOI,
+    kombuchaEnums.Status.SUCCESS,
+    { value: 1 }
+  );
+});
+
+// Add an event listener to the buttons that share/unshare the dataset with the curation team
+document.querySelectorAll(".guided-curation-team-task-button").forEach((button) => {
+  button.addEventListener("click", async () => {
+    // Get the task ("share" or "unshare") from the button's data attribute
+    const task = button.getAttribute("data-button-curation-team-task");
+    window.guidedModifyCurationTeamAccess(task);
+  });
+});
 
 window.deleteProgressCard = async (progressCardDeleteButton) => {
   const progressCard = progressCardDeleteButton.parentElement.parentElement;
@@ -3444,7 +3841,7 @@ const doTheHack = async () => {
 
 // If this variable is set to true, you will be taken back to the last guided mode page you were working on
 // (always set to false when making production builds)
-const continueHackGm = false;
+const continueHackGm = true;
 if (continueHackGm) {
   doTheHack();
 }

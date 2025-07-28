@@ -2206,394 +2206,6 @@ const setupPublicationOptionsPopover = () => {
   });
 };
 
-window.submitReviewDatasetCheck = async (res, curationMode) => {
-  if (res["publishing_status"] === "PUBLISH_IN_PROGRESS") {
-    Swal.fire({
-      icon: "error",
-      title: "Your dataset is currently being published. Please wait until it is completed.",
-      text: "Your dataset is already under review. Please wait until the Publishers within your organization make a decision.",
-      confirmButtonText: "Ok",
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    });
-  } else if (res["review_request_status"] === "requested") {
-    Swal.fire({
-      icon: "error",
-      title: "Cannot submit the dataset at this time!",
-      text: "Your dataset is already submitted. Please wait until the Curation Team within your organization make a decision.",
-      confirmButtonText: "Ok",
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    });
-  } else if (res["publishing_status"] === "PUBLISH_SUCCEEDED") {
-    // embargo release date represents the time a dataset that has been reviewed for publication becomes public
-    // user sets this value in the UI otherwise it stays an empty string
-    let embargoReleaseDate = "";
-
-    // confirm with the user that they will submit a dataset and check if they want to set an embargo date
-    let userResponse = await Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      icon: "warning",
-      confirmButtonText: "Submit",
-      denyButtonText: "Cancel",
-      showDenyButton: true,
-      title: `Submit your dataset for review`,
-      reverseButtons: window.reverseSwalButtons,
-      text: "",
-      html: `
-                <div style="display: flex; flex-direction: column;  font-size: 15px;">
-                <p style="text-align:left">This dataset has already been published. This action will submit the dataset again for review to the SPARC Curation Team. While under review, the dataset will become locked until it has either been approved or rejected for publication. If accepted a new version of your dataset will be published.</p>
-                <div style="text-align: left; margin-bottom: 5px; display: flex; ">
-                  <input type="radio" name="publishing-options" value="immediate" style=" border: 0px; width: 18px; height: 18px;" checked>
-                  <div style="margin-left: 5px;"><label for="immediate"> Make this dataset available to the public immediately after publishing</label></div>
-                </div>
-                <div style="text-align: left; margin-bottom: 5px; display: flex; ">
-                  <input type="radio" id="embargo-date-check" name="publishing-options" value="embargo-date-check" style=" border: 0px; width: 22px; height: 22px;">
-                  <div style="margin-left: 5px;"><label for="embargo-date-check" style="text-align:left">Place this dataset under embargo so that it is not made public immediately after publishing</label></div>
-                </div>
-                <div style="visibility:hidden; flex-direction: column;  margin-top: 10px;" id="calendar-wrapper">
-                <label style="margin-bottom: 5px; font-size: 13px;">When would you like this dataset to become publicly available?<label>
-                <div class="tui-datepicker-input tui-datetime-input tui-has-focus" style="margin-top: 5px;">
-
-                    <input
-                      type="text"
-                      id="tui-date-picker-target"
-                      aria-label="Date-Time"
-                      />
-
-                      <span class="tui-ico-date"></span>
-                    </div>
-                    <div
-                    id="tui-date-picker-container"
-                    style="margin-top: -1px; margin-left: 60px;"
-                    ></div>
-                </div>
-              </div>
-            `,
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-      willOpen: () => {
-        setupPublicationOptionsPopover();
-      },
-      willClose: () => {
-        // check if the embargo radio button is selected
-        const checkedRadioButton = $("input:radio[id ='confirm-to-awknowledge']:checked").val();
-
-        if (checkedRadioButton === "embargo-date-check") {
-          // set the embargoDate variable if so
-          embargoReleaseDate = $("#tui-date-picker-target").val();
-        }
-      },
-    });
-
-    // check if the user cancelled
-    if (!userResponse.isConfirmed) {
-      // do not submit the dataset
-      return;
-    }
-    // submit the dataset for review with the given embargoReleaseDate
-    await window.submitReviewDataset(embargoReleaseDate, curationMode);
-  } else {
-    // status is NOT_PUBLISHED
-    // embargo release date represents the time a dataset that has been reviewed for publication becomes public
-    // user sets this value in the UI otherwise it stays an empty string
-    let embargoReleaseDate = "";
-
-    // confirm with the user that they will submit a dataset and check if they want to set an embargo date
-    let userResponse = await Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      confirmButtonText: "Submit",
-      denyButtonText: "Cancel",
-      showDenyButton: true,
-      title: `Submit your dataset for review`,
-      reverseButtons: window.reverseSwalButtons,
-      html: `
-              <div style="display: flex; flex-direction: column;  font-size: 15px;">
-                <p style="text-align:left">Your dataset will be submitted for review to the SPARC Curation Team. While under review, the dataset will become locked until it has either been approved or rejected for publication. </p>
-                <div style="text-align: left; margin-bottom: 5px; display: flex; ">
-                  <input type="checkbox" id="confirm-to-awknowledge" name="publishing-options" value="immediate" style=" border: 0px; width: 18px; height: 18px;">
-                  <div style="margin-left: 5px;"><label for="immediate">I understand that submitting to the Curation Team will lock this dataset</label></div>
-                </div>
-                <div style="text-align: left; margin-bottom: 5px; display: flex; ">
-                  <input type="checkbox" id="embargo-date-check" name="publishing-options" value="embargo-date-check" style=" border: 0px; width: 22px; height: 22px;">
-                  <div style="margin-left: 5px;"><label for="embargo-date-check" style="text-align:left">Place this dataset under embargo so that it is not made public immediately after publishing.</label> <br> <a href="https://docs.pennsieve.io/docs/what-is-an-embargoed-dataset" target="_blank">What is this?</a></div>
-                </div>
-                <div style="visibility:hidden; flex-direction: column;  margin-top: 10px;" id="calendar-wrapper">
-                <label style="margin-bottom: 5px; font-size: 13px;">When would you like this dataset to become publicly available?<label>
-                <div class="tui-datepicker-input tui-datetime-input tui-has-focus" style="margin-top: 5px;">
-
-                    <input
-                      type="text"
-                      id="tui-date-picker-target"
-                      aria-label="Date-Time"
-                      />
-
-                      <span class="tui-ico-date"></span>
-                    </div>
-                    <div
-                    id="tui-date-picker-container"
-                    style="margin-top: -1px; margin-left: 60px;"
-                    ></div>
-                </div>
-              </div>
-            `,
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-      willOpen: () => {
-        setupPublicationOptionsPopover();
-      },
-      didOpen: () => {
-        // Add an event listener to id confirm-to-awknowledge
-        document.querySelector(".swal2-confirm").disabled = true;
-        document.getElementById("confirm-to-awknowledge").addEventListener("click", () => {
-          // if the checkbox is checked, enable the submit button
-          if (document.getElementById("confirm-to-awknowledge").checked) {
-            document.querySelector(".swal2-confirm").disabled = false;
-          } else {
-            // if the checkbox is not checked, disable the submit button
-            document.querySelector(".swal2-confirm").disabled = true;
-          }
-        });
-      },
-      willClose: () => {
-        // check if the embargo checkbox button is selected or not
-        // const checkedRadioButton = $("input:checkbox[name ='publishing-options']:checked").val();
-
-        // const checkedRadioButton = $("input:checkbox[name ='publishing-options']:checked");
-
-        if (document.getElementById("embargo-date-check").checked) {
-          // set the embargoDate variable if so
-          embargoReleaseDate = $("#tui-date-picker-target").val();
-        }
-      },
-    });
-
-    // check if the user cancelled
-    if (!userResponse.isConfirmed) {
-      // do not submit the dataset
-      return [false, ""];
-    }
-
-    if (userResponse.isConfirmed) {
-      return [true, embargoReleaseDate];
-    }
-  }
-};
-
-// Go about removing the feature and see how it effects dataset submissions
-window.submitReviewDataset = async (embargoReleaseDate, curationMode) => {
-  let currentAccount = window.defaultBfAccount;
-  let currentDataset = window.defaultBfDataset;
-
-  if (curationMode === "guided") {
-    currentAccount = window.sodaJSONObj["ps-account-selected"]["account-name"];
-    currentDataset = window.sodaJSONObj["ps-dataset-selected"]["dataset-name"];
-  } else {
-    $("#pre-publishing-continue-btn").removeClass("loading");
-    $("#pre-publishing-continue-btn").disabled = false;
-  }
-
-  // show a SWAL loading message until the submit for prepublishing flow is successful or fails
-  Swal.fire({
-    title: "Submitting dataset to Curation Team",
-    html: "Please wait...",
-    // timer: 5000,
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: false,
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  });
-
-  try {
-    await api.submitDatasetForPublication(
-      currentAccount,
-      currentDataset,
-      embargoReleaseDate,
-      embargoReleaseDate === "" ? "publication" : "embargo"
-    );
-  } catch (error) {
-    clientError(error);
-    window.electron.ipcRenderer.send(
-      "track-kombucha",
-      kombuchaEnums.Category.DISSEMINATE_DATASETS,
-      kombuchaEnums.Action.SHARE_WITH_CURATION_TEAM,
-      kombuchaEnums.Label.SUBMISSION,
-      kombuchaEnums.Status.FAIL,
-      {
-        value: 1,
-        dataset_id: window.defaultBfDatasetId,
-        dataset_int_id: window.defaultBfDatasetIntId,
-      }
-    );
-
-    // alert the user of an error
-    Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      confirmButtonText: "Ok",
-      title: `Could not submit your dataset to Curation Team`,
-      icon: "error",
-      reverseButtons: window.reverseSwalButtons,
-      text: userErrorMessage(error),
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    });
-
-    // stop execution
-    return;
-  }
-
-  // update the publishing status UI element
-  await window.showPublishingStatus("noClear", curationMode);
-
-  // track success
-  window.electron.ipcRenderer.send(
-    "track-kombucha",
-    kombuchaEnums.Category.DISSEMINATE_DATASETS,
-    kombuchaEnums.Action.SHARE_WITH_CURATION_TEAM,
-    kombuchaEnums.Label.SUBMISSION,
-    kombuchaEnums.Status.SUCCESS,
-    {
-      value: 1,
-      dataset_id: window.defaultBfDatasetId,
-      dataset_int_id: window.defaultBfDatasetIntId,
-    }
-  );
-
-  // alert the user the submission was successful
-  Swal.fire({
-    backdrop: "rgba(0,0,0, 0.4)",
-    heightAuto: false,
-    confirmButtonText: "Ok",
-    title: `Dataset has been submitted for review to the SPARC Curation Team!`,
-    icon: "success",
-    reverseButtons: window.reverseSwalButtons,
-    showClass: {
-      popup: "animate__animated animate__zoomIn animate__faster",
-    },
-    hideClass: {
-      popup: "animate__animated animate__zoomOut animate__faster",
-    },
-  });
-
-  if (curationMode != "guided") {
-    await window.resetffmPrepublishingUI();
-  } else {
-    // Update the UI again and hide the flow
-    $("#guided--prepublishing-checklist-container").addClass("hidden");
-    $("#guided-button-share-dataset-with-curation-team").removeClass("hidden");
-    $("#guided-button-share-dataset-with-curation-team").removeClass("loading");
-    $("#guided-button-share-dataset-with-curation-team").disabled = false;
-
-    window.guidedSetCurationTeamUI();
-  }
-};
-
-// // //Withdraw dataset from review
-// const withdrawDatasetSubmission = async (curationMode = "") => {
-//   // show a SWAL loading message until the submit for prepublishing flow is successful or fails
-
-//   if (curationMode != "guided") {
-//     document.getElementById("btn-withdraw-review-dataset").disabled = true;
-//     $("#btn-withdraw-review-dataset").addClass("loading");
-//     $("#btn-withdraw-review-dataset").addClass("text-transparent");
-
-//     const { value: withdraw } = await Swal.fire({
-//       title: "Withdraw this dataset from review?",
-//       icon: "warning",
-//       showDenyButton: true,
-//       confirmButtonText: "Yes",
-//       denyButtonText: "No",
-//       allowEscapeKey: false,
-//       allowOutsideClick: false,
-//       heightAuto: false,
-//       backdrop: "rgba(0,0,0, 0.4)",
-//       timerProgressBar: false,
-//     });
-
-//     if (!withdraw) {
-//       document.getElementById("btn-withdraw-review-dataset").disabled = false;
-//       $("#btn-withdraw-review-dataset").removeClass("loading");
-//       $("#btn-withdraw-review-dataset").removeClass("text-transparent");
-//       return false;
-//     }
-//   }
-
-//   // get the publishing status of the currently selected dataset
-//   // then check if it can be withdrawn, then withdraw it
-//   // catch any uncaught errors at this level (aka greacefully catch any exceptions to alert the user we cannot withdraw their dataset)
-//   let status = await window.showPublishingStatus(withdrawDatasetCheck, curationMode).catch((error) => {
-//     window.log.error(error);
-//     console.error(error);
-//     Swal.fire({
-//       title: "Could not withdraw dataset from publication!",
-//       text: `${userErrorMessage(error)}`,
-//       heightAuto: false,
-//       icon: "error",
-//       confirmButtonText: "Ok",
-//       backdrop: "rgba(0,0,0, 0.4)",
-//       confirmButtonText: "Ok",
-//       showClass: {
-//         popup: "animate__animated animate__fadeInDown animate__faster",
-//       },
-//       hideClass: {
-//         popup: "animate__animated animate__fadeOutUp animate__faster",
-//       },
-//     });
-
-//     // track the error for analysis
-//     window.logGeneralOperationsForAnalytics(
-//       "Error",
-//       window.DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
-//       window.AnalyticsGranularity.ALL_LEVELS,
-//       ["Withdraw dataset"]
-//     );
-//     // This helps signal guided mode to update the UI
-//     if (curationMode === "guided") {
-//       return false;
-//     }
-//   });
-
-//   // This helps signal guided mode to update the UI
-//   if (curationMode === "guided") {
-//     return true;
-//   } else {
-//     document.getElementById("btn-withdraw-review-dataset").disabled = false;
-//     $("#btn-withdraw-review-dataset").removeClass("loading");
-//     $("#btn-withdraw-review-dataset").removeClass("text-transparent");
-//   }
-// };
-
 // // TODO: Dorian -> Remove this feature as we don't allow withdraws anymore
 const withdrawDatasetCheck = async (res, curationMode) => {
   let requestStatus = res["review_request_status"];
@@ -2970,108 +2582,83 @@ const showPrePublishingPageElements = () => {
   $(".pre-publishing-continue-container").hide();
 };
 
-// The callback argument is used to determine whether or not to publish or unpublish the dataset
-// If callback is empty then the dataset status will only be fetched and displayed
+// The callback argument determines whether to publish/unpublish the dataset.
+// If callback is empty, only the dataset status will be fetched and displayed.
 window.showPublishingStatus = async (callback, curationMode = "") => {
-  return new Promise(async function (resolve, reject) {
-    let curationModeID = "";
-    let currentAccount = $("#current-ps-account").text();
-    let currentDataset = $(".ps-dataset-span")
-      .html()
-      .replace(/^\s+|\s+$/g, "");
+  let curationModeID = "";
+  let currentAccount = $("#current-ps-account").text();
+  let currentDataset = $(".ps-dataset-span").html().trim();
 
-    if (curationMode === "guided") {
-      curationModeID = "guided--";
-      currentAccount = window.sodaJSONObj["ps-account-selected"]["account-name"];
-      currentDataset = window.sodaJSONObj["ps-dataset-selected"]["dataset-name"];
-    }
-
-    if (currentDataset === "None") {
-      if (curationMode === "" || curationMode === "freeform") {
-        $("#button-refresh-publishing-status").addClass("hidden");
-        $("#curation-dataset-status-loading").addClass("hidden");
-      }
-      resolve();
-    } else {
-      try {
-        let get_publishing_status = await client.get(
-          `/disseminate_datasets/datasets/${currentDataset}/publishing_status`,
-          {
-            params: {
-              selected_account: currentAccount,
-            },
-          }
-        );
-        let res = get_publishing_status.data;
-
-        try {
-          //update the dataset's publication status and display
-          //onscreen for the user under their dataset name
-          $(`#${curationModeID}para-review-dataset-info-disseminate`).text(
-            publishStatusOutputConversion(res)
-          );
-
-          if (callback === window.submitReviewDatasetCheck || callback === withdrawDatasetCheck) {
-            return resolve(callback(res, curationMode));
-          }
-          if (curationMode === "" || curationMode === "freeform") {
-            $("#submit_prepublishing_review-question-2").removeClass("hidden");
-            $("#curation-dataset-status-loading").addClass("hidden");
-            // $("#button-refresh-publishing-status").removeClass("hidden");
-            $("#button-refresh-publishing-status").removeClass("fa-spin");
-          }
-          resolve();
-        } catch (error) {
-          // an exception will be caught and rejected
-          // if the executor function is not ready before an exception is found it is uncaught without the try catch
-          reject(error);
-        }
-      } catch (error) {
-        clientError(error);
-
-        Swal.fire({
-          title: "Could not get your publishing status!",
-          text: userErrorMessage(error),
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          confirmButtonText: "Ok",
-          reverseButtons: window.reverseSwalButtons,
-          showClass: {
-            popup: "animate__animated animate__fadeInDown animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__fadeOutUp animate__faster",
-          },
-        });
-
-        window.logGeneralOperationsForAnalytics(
-          "Error",
-          window.DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
-          window.AnalyticsGranularity.ALL_LEVELS,
-          ["Show publishing status"]
-        );
-
-        resolve();
-      }
-    }
-  });
-};
-
-const publishStatusOutputConversion = (res) => {
-  var reviewStatus = res["review_request_status"];
-
-  var outputMessage = "";
-  if (reviewStatus === "draft" || reviewStatus === "cancelled") {
-    outputMessage += "Dataset is not under review currently";
-  } else if (reviewStatus === "requested") {
-    outputMessage += "Dataset is currently under review";
-  } else if (reviewStatus === "rejected") {
-    outputMessage += "Dataset has been rejected by your Publishing Team and may require revision";
-  } else if (reviewStatus === "accepted") {
-    outputMessage += "Dataset has been accepted for publication by your Publishing Team";
+  if (curationMode === "guided") {
+    curationModeID = "guided--";
+    currentAccount = window.sodaJSONObj["ps-account-selected"]["account-name"];
+    currentDataset = window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
   }
 
-  return outputMessage;
+  if (currentDataset === "None") {
+    if (curationMode === "" || curationMode === "freeform") {
+      $("#button-refresh-publishing-status").addClass("hidden");
+      $("#curation-dataset-status-loading").addClass("hidden");
+    }
+    return;
+  }
+
+  console.log("Fetching publishing status for dataset:", currentDataset);
+
+  try {
+    const { data: res } = await client.get(
+      `/disseminate_datasets/datasets/${currentDataset}/publishing_status`,
+      { params: { selected_account: currentAccount } }
+    );
+    console.log("Publishing status response:", res);
+
+    // Inline publishStatusOutputConversion logic here
+    var reviewStatus = res["review_request_status"];
+    console.log("Review status:", reviewStatus);
+    var outputMessage = "";
+    if (reviewStatus === "draft" || reviewStatus === "cancelled") {
+      outputMessage = "Dataset is not under review currently";
+    } else if (reviewStatus === "requested") {
+      outputMessage = "Dataset is currently under review";
+    } else if (reviewStatus === "rejected") {
+      outputMessage = "Dataset has been rejected by your Publishing Team and may require revision";
+    } else if (reviewStatus === "accepted") {
+      outputMessage = "Dataset has been accepted for publication by your Publishing Team";
+    }
+
+    // Update the dataset's publication status onscreen for the user
+    $(`#${curationModeID}para-review-dataset-info-disseminate`).text(outputMessage);
+
+    if (callback === window.submitReviewDatasetCheck || callback === withdrawDatasetCheck) {
+      return callback(res, curationMode);
+    }
+
+    if (curationMode === "" || curationMode === "freeform") {
+      $("#submit_prepublishing_review-question-2").removeClass("hidden");
+      $("#curation-dataset-status-loading").addClass("hidden");
+      $("#button-refresh-publishing-status").removeClass("fa-spin");
+    }
+  } catch (error) {
+    clientError(error);
+
+    Swal.fire({
+      title: "Could not get your publishing status!",
+      text: userErrorMessage(error),
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Ok",
+      reverseButtons: window.reverseSwalButtons,
+      showClass: { popup: "animate__animated animate__fadeInDown animate__faster" },
+      hideClass: { popup: "animate__animated animate__fadeOutUp animate__faster" },
+    });
+
+    window.logGeneralOperationsForAnalytics(
+      "Error",
+      window.DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
+      window.AnalyticsGranularity.ALL_LEVELS,
+      ["Show publishing status"]
+    );
+  }
 };
 
 // //////////////////////////////////////////////////////////////////////////////////////////

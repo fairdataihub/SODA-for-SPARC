@@ -201,24 +201,6 @@ window.openPage = async (targetPageID) => {
       setDataSetMetadataToPreview(null);
     }
 
-    if (
-      targetPageID === "guided-dataset-generation-tab" ||
-      targetPageID === "guided-dataset-dissemination-tab"
-    ) {
-      $("#guided-next-button").css("visibility", "hidden");
-    } else {
-      $("#guided-next-button").css("visibility", "visible");
-    }
-
-    if (
-      targetPageID === "guided-dataset-dissemination-tab" ||
-      targetPageID === "guided-dataset-generation-tab"
-    ) {
-      $("#guided-back-button").css("visibility", "hidden");
-    } else {
-      $("#guided-back-button").css("visibility", "visible");
-    }
-
     handleNextButtonVisibility(targetPageID);
     handleBackButtonVisibility(targetPageID);
     handleGuidedValidationState(targetPageID);
@@ -453,60 +435,6 @@ window.openPage = async (targetPageID) => {
     //         } else {
     //             changesTextArea.value = "";
     //         }
-    //     }
-
-    //     if (targetPageID === "guided-dataset-dissemination-tab") {
-    //         // Show the loading page while the page's data is being fetched from Pennsieve
-    //         setPageLoadingState(true);
-
-    //         const currentAccount = window.sodaJSONObj["ps-account-selected"]["account-name"];
-    //         const currentDataset = window.sodaJSONObj["ps-dataset-selected"]["dataset-name"];
-
-    //         const pennsieveDatasetID = window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
-
-    //         const pennsieveDatasetLink = document.getElementById("guided-pennsieve-dataset-link");
-
-    //         const pennsieveCopy = document.getElementById("guided-pennsieve-copy-dataset-link");
-
-    //         const pennsieveDatasetCopyIcon = document.getElementById("guided-pennsieve-copy-icon");
-
-    //         pennsieveDatasetCopyIcon.classList.add("fa-copy");
-
-    //         let datasetLink = `https://app.pennsieve.io/N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0/datasets/${pennsieveDatasetID}/overview`;
-    //         let linkIcon = `<i class="fas fa-link" style="margin-right: 0.4rem; margin-left: 0.4rem"></i>`;
-
-    //         pennsieveDatasetLink.innerHTML = linkIcon + datasetLink;
-    //         pennsieveDatasetLink.href = datasetLink;
-
-    //         if (removeEventListener) {
-    //             pennsieveCopy.removeEventListener(
-    //                 "click",
-    //                 () => {
-    //                     copyLink(datasetLink);
-    //                 },
-    //                 true
-    //             );
-    //         }
-    //         if (addListener) {
-    //             pennsieveCopy.addEventListener("click", () => {
-    //                 copyLink(datasetLink);
-    //             });
-    //             /*
-    //             TODO: FIX COPY TO CLIPBOARD POST-BUNDLE
-    //             pennsieveDOICopy.addEventListener("click", () => {
-    //               let doiInfo = document.getElementById("guided--para-doi-info").innerText;
-    //               copyLink(doiInfo);
-    //             });*/
-    //             addListener = false;
-    //             removeEventListener = true;
-    //         }
-
-    //         let pennsieveDOICheck = await api.getDatasetDOI(currentDataset);
-
-    //         //Set the ui for curation team and DOI information
-    //         await window.showPublishingStatus("", "guided");
-    //         window.guidedSetCurationTeamUI();
-    //         guidedSetDOIUI(pennsieveDOICheck);
     //     }
 
     let currentParentTab = window.CURRENT_PAGE.closest(".guided--parent-tab");

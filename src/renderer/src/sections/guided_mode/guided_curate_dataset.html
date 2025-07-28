@@ -3094,43 +3094,24 @@
         <div
           id="guided-dataset-dissemination-tab"
           class="guided--page"
-          data-page-name="Share with SPARC Curation Team"
+          data-page-name="Share With SPARC Curation Team"
         >
           <div class="guided--section">
             <h1 class="text-sub-step-title">Share with the SPARC Curation Team</h1>
-            <h2 class="text-sub-step-title">View dataset on Pennsieve</h2>
+            <h2 class="text-sub-step-title">Review the dataset on Pennsieve</h2>
 
-            <p
-              class="help-text text-center"
-              style="margin-bottom: 1rem; text-align: justify !important"
-            >
-              Review dataset on Pennsieve to ensure it has been generated as requested and all the
-              data and metadata are included properly
-            </p>
-
-            <a id="guided-pennsieve-dataset-link" target="_blank">
-              <i
-                class="fas fa-link"
-                style="margin-right: 0.4rem; margin-left: 0.4rem; writing-mode: tbd"
-              ></i>
-            </a>
-            <!--TODO: FIX COPY TO CLIPBOARD POST-BUNDLE -->
-            <button id="guided-pennsieve-copy-dataset-link" class="copy-button hidden">
-              <i id="guided-pennsieve-copy-icon" class="fas fa-copy"></i>
-            </button>
-          </div>
-          <div class="guided--section">
-            <h2 class="text-sub-step-title mt-0">Editing this dataset</h2>
             <p class="help-text">
-              If you need to edit this dataset before sharing it with the curation team, you may do
-              so by clicking either "Free Form Mode" or "Continue working on a dataset" on the home
-              page. Selecting "Free Form Mode" is best for making small, individual changes to your
-              dataset, while "Continue working on a dataset" will take you through the same end to
-              end process as the initial upload but will allow you to edit your data uploaded to
-              Pennsieve. Once your dataset is ready for SPARC curation review, you may share it with
-              the curation team below.
+              Review the dataset on Pennsieve by clicking the button below to ensure all of the data
+              and metadata were uploaded correctly.
             </p>
+            <div
+              id="guided-button-open-link-on-pennsieve"
+              data-component-type="external-link"
+              data-button-text="View Dataset on Pennsieve"
+              data-button-type="button"
+            ></div>
           </div>
+
           <div class="guided--section">
             <h2 class="text-sub-step-title mt-0">Reserve a DOI</h2>
             <p class="help-text">
@@ -3150,14 +3131,13 @@
                 <i id="guided-pennsieve-copy-icon" class="fas fa-copy"></i>
               </button>
             </div>
-            <button
-              class="ui positive button soda-green-background mt-3"
-              id="curate-button-reserve-doi"
-              style="width: 150px !important; height: 3.2rem"
-              onclick="window.guidedReserveAndSaveDOI()"
-            >
-              Reserve DOI
-            </button>
+            <div
+              id="guided-button-reserve-doi"
+              data-component-type="generic-button"
+              data-variant="filled"
+              data-size="md"
+              data-text="Reserve a DOI for this dataset"
+            ></div>
             <p id="curate-doi-information" class="help-text mt-2"></p>
           </div>
           <div class="guided--section">
@@ -3183,18 +3163,19 @@
                 </div>
               </div>
             </div>
+
             <button
-              class="ui positive button soda-green-background mt-lg"
+              class="ui positive button soda-green-background mt-lg guided-curation-team-task-button"
               id="guided-button-share-dataset-with-curation-team"
               style="width: 281px !important; height: 3.2rem"
-              onclick="window.guidedModifyCurationTeamAccess('share')"
+              data-button-curation-team-task="share"
             >
               Share with SPARC Curation Team</button
             ><button
-              class="ui positive button plum-background mt-lg"
+              class="ui positive button plum-background mt-lg guided-curation-team-task-button"
               id="guided-button-unshare-dataset-with-curation-team"
               style="width: 281px !important; height: 3.2rem"
-              onclick="window.guidedModifyCurationTeamAccess('unshare')"
+              data-button-curation-team-task="unshare"
             >
               Withdraw from review
             </button>

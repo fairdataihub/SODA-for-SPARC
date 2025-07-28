@@ -1431,7 +1431,7 @@ def get_number_of_files_and_folders_locally(filepath):
 
 
 
-def get_dataset_readme(selected_account, selected_dataset):
+def get_dataset_readme( selected_dataset):
     """
     Function to get readme for a dataset
     
@@ -1444,11 +1444,15 @@ def get_dataset_readme(selected_account, selected_dataset):
     selected_dataset_id = get_dataset_id(selected_dataset)
 
     try:
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", headers=create_request_headers(get_access_token()))
+        namespace_logger.info(f"Getting readme for dataset {selected_dataset_id}")
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", headers=create_request_headers(get_access_token()))       
+        namespace_logger.info(f"Readme for dataset {selected_dataset_id} retrieved successfully")
+        namespace_logger.info(f"Readme response: {r.text}")
         r.raise_for_status()
 
         readme = r.json()
     except Exception as e:
+        namespace_logger.error(f"Error retrieving readme for dataset {selected_dataset_id}: {e}")
         raise Exception(e)
 
     return readme

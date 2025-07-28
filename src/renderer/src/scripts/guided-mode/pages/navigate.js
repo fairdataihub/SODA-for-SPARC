@@ -32,12 +32,6 @@ export const handleNextButtonClick = async () => {
   //Get the ID of the current page to handle actions on page leave (next button pressed)
   window.pageBeingLeftID = window.CURRENT_PAGE.id;
 
-  if (window.pageBeingLeftID === "guided-dataset-generation-tab") {
-    guidedUnSkipPage("guided-dataset-dissemination-tab");
-    await window.openPage("guided-dataset-dissemination-tab");
-    return;
-  }
-
   try {
     console.log("About to save");
     await savePageChanges(window.pageBeingLeftID);

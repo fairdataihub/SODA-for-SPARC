@@ -173,7 +173,8 @@
 }
 
 .guided--progress-button-switch-workspace,
-.guided--progress-button-login-to-pennsieve {
+.guided--progress-button-login-to-pennsieve,
+.guided--progress-button-update-soda {
   background-color: gainsboro !important;
   margin: 4px;
   margin-bottom: 15px;

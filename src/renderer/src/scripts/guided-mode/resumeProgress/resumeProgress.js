@@ -60,32 +60,26 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
     const datasetHasAlreadyBeenSuccessfullyUploaded =
       datasetResumeJsonObj["previous-guided-upload-dataset-name"];
 
-    // Handle pre-sds3 datasets by referring them back to the stable SDS2 release if the dataset was last modified
-    // Before the SDS3 release
-    const lastModifiedDateStr = datasetResumeJsonObj["last-modified"];
-    const lastModifiedDate = new Date(lastModifiedDateStr);
+    const lastVersionOfSodaUsed = datasetResumeJsonObj["last-version-of-soda-used"];
 
-    // Date of the first SDS3 release (July 11 2025 at 00:00:00 UTC)
-    const sds3ReleaseDate = new Date("2025-07-11T00:00:00Z");
+    console.log("lastVersionOfSodaUsed", lastVersionOfSodaUsed);
 
-    console.log("lastModifiedDate", lastModifiedDate);
-    console.log("sds3ReleaseDate", sds3ReleaseDate);
-
-    /*if (lastModifiedDate < sds3ReleaseDate) {
+    if (lastVersionOfSodaUsed < "16.0.0") {
       await swalShowInfo(
         "This dataset requires an older version of SODA to resume.",
         `This progress file was created before SODA adopted the SDS3 workflow.<br><br>
         To continue working on this dataset, download the final version of SODA that supports SDS2:<br><br>
-        <a href="https://github.com/bvhpatel/SODA-for-SPARC/releases/tag/v15.0.0" target="_blank" rel="noopener noreferrer">
-          Download SODA v15.0.0 (SDS2 support)
+        <a href="https://github.com/fairdataihub/SODA-for-SPARC/releases/tag/v15.3.2" target="_blank" rel="noopener noreferrer">
+          Download SODA v15.3.2 (SDS2 support)
         </a>`
       );
-      return;
-    }*/
+      // return;
+    }
     // If the dataset had been previously successfully uploaded, check to make sure it exists on Pennsieve still.
     if (datasetHasAlreadyBeenSuccessfullyUploaded) {
       const previouslyUploadedDatasetId =
         datasetResumeJsonObj["digital-metadata"]["pennsieve-dataset-id"];
+      console.log("previouslyUploadedDatasetId", previouslyUploadedDatasetId);
       const datasetToResumeExistsOnPennsieve = await checkIfDatasetExistsOnPennsieve(
         previouslyUploadedDatasetId
       );
@@ -254,36 +248,8 @@ const guidedGetPageToReturnTo = async () => {
   return usersPageBeforeExit;
 };
 
-const patchPreSdsThreeProgressFiles = async () => {};
-
 const patchPreviousGuidedModeVersions = async () => {
-  //temp patch contributor affiliations if they are still a string (they were added in the previous version)
-  const appVersion = await window.electron.ipcRenderer.invoke("app-version");
-  const lastVersionOfSodaUsedOnThisProgressFile =
-    window.sodaJSONObj["last-version-of-soda-used"] || "10.0.4"; // default to 10.0.4 if not set (since that was the first version to use this key)
-  const sodaVersionOfIntialSdsThreeRelease = "16.0.0"; // The first version of SODA that had the SDS3 workflow
-
-  // If the progress file was last updated before the SDS3 release, direct the user to the last stable version of SODA
-  // that can handle pre-SDS3 progress files
-  if (lastVersionOfSodaUsedOnThisProgressFile < sodaVersionOfIntialSdsThreeRelease) {
-    /*await Swal.fire({
-      icon: "info",
-      title: "This progress file was created before the SDS3 release",
-      html: `
-        The SDS3 workflow is not compatible with this progress file. 
-        Please use SODA version ${sodaVersionOfIntialSdsThreeRelease} or earlier to continue working on this dataset.
-      `,
-      width: 500,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      confirmButtonText: `I understand`,
-      focusConfirm: true,
-      allowOutsideClick: false,
-    });
-    return;*/
-  }
-
-  console.log("appVersion", appVersion);
+  // Empty since this is the first SDS3 release and no changes need be modified
 };
 
 const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
