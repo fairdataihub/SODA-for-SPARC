@@ -1027,7 +1027,7 @@ const warnUsersAboutSpecialVersionsOfSODA = async () => {
     if (currentAppVersion === "15.4.0") {
       await swalShowInfo(
         "You are using a special version of SODA",
-        "This version should only be used to finish uploading a SDS2 progress file in the end-to-end curation mode. Once you have finished uploading your SDS2 progress file, please download the latest stable version of SODA below <br /> <a href='https://docs.sodaforsparc.io/' target='_blank'>Download the latest version of SODA</a>"
+        "This version should only be used to finish uploading a SDS2 progress file in the Prepare Dataset Step-by-Step curation mode. Once you have finished uploading your SDS2 progress file, please download the latest stable version of SODA below <br /> <a href='https://docs.sodaforsparc.io/' target='_blank'>Download the latest version of SODA</a>"
       );
     }
   } catch (err) {
