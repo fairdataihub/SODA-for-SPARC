@@ -533,8 +533,8 @@ export const clearEntityFilter = () => {
   }, 0);
 };
 
-export const setDataSetMetadataToPreview = (metadata) => {
+export const setDataSetMetadataToPreview = (metadataKeys) => {
   useGlobalStore.setState({
-    dataSetMetadataToPreview: metadata,
+    dataSetMetadataToPreview: metadataKeys,
   });
 };

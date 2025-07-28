@@ -56,9 +56,9 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
     const datasetResumeJsonObj = await getProgressFileData(datasetNameToResume);
     console.log("datasetResumeJsonObj", datasetResumeJsonObj);
 
-    // Datasets successfully uploaded will have the "previous-guided-upload-dataset-name" key
+    // Datasets successfully uploaded will have the "dataset-successfully-uploaded-to-pennsieve" key
     const datasetHasAlreadyBeenSuccessfullyUploaded =
-      datasetResumeJsonObj["previous-guided-upload-dataset-name"];
+      datasetResumeJsonObj["dataset-successfully-uploaded-to-pennsieve"];
 
     const lastVersionOfSodaUsed = datasetResumeJsonObj["last-version-of-soda-used"];
 
@@ -69,8 +69,8 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
         "This dataset requires an older version of SODA to resume.",
         `This progress file was created before SODA adopted the SDS3 workflow.<br><br>
         To continue working on this dataset, download the final version of SODA that supports SDS2:<br><br>
-        <a href="https://github.com/fairdataihub/SODA-for-SPARC/releases/tag/v15.3.2" target="_blank" rel="noopener noreferrer">
-          Download SODA v15.3.2 (SDS2 support)
+        <a href="https://github.com/fairdataihub/SODA-for-SPARC/releases/tag/v15.4.0" target="_blank" rel="noopener noreferrer">
+          Download SODA v15.4.0 (SDS2 support)
         </a>`
       );
       // return;
@@ -79,7 +79,6 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
     if (datasetHasAlreadyBeenSuccessfullyUploaded) {
       const previouslyUploadedDatasetId =
         datasetResumeJsonObj["digital-metadata"]["pennsieve-dataset-id"];
-      console.log("previouslyUploadedDatasetId", previouslyUploadedDatasetId);
       const datasetToResumeExistsOnPennsieve = await checkIfDatasetExistsOnPennsieve(
         previouslyUploadedDatasetId
       );
@@ -146,7 +145,7 @@ const guidedGetPageToReturnTo = async () => {
   console.log("usersPageBeforeExit", usersPageBeforeExit);
 
   //If the dataset was successfully uploaded, send the user to the share with curation team
-  if (window.sodaJSONObj["previous-guided-upload-dataset-name"]) {
+  if (window.sodaJSONObj?.["dataset-successfully-uploaded-to-pennsieve"]) {
     return "guided-dataset-dissemination-tab";
   }
 

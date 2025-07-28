@@ -43,15 +43,15 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     const guidedPennsieveStudyPurpose =
       window.sodaJSONObj["dataset_metadata"]?.["dataset_description"]?.["study_information"]?.[
         "study_purpose"
-      ] || "";
+      ] || "Not provided";
     const guidedPennsieveDataCollection =
       window.sodaJSONObj["dataset_metadata"]?.["dataset_description"]?.["study_information"]?.[
         "study_data_collection"
-      ] || "";
+      ] || "Not provided";
     const guidedPennsievePrimaryConclusion =
       window.sodaJSONObj["dataset_metadata"]?.["dataset_description"]?.["description"]?.[
         "study_primary_conclusion"
-      ] || "";
+      ] || "Not provided";
     const guidedBannerImagePath =
       window.sodaJSONObj["dataset_metadata"]?.["banner-image-path"] || "";
     // Create standardized structure
@@ -199,8 +199,9 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     // uploaded to Pennsieve, and any future uploads will upload using new data
     window.sodaJSONObj["previously-uploaded-data"] = {};
 
-    window.sodaJSONObj["previous-guided-upload-dataset-name"] =
-      window.sodaJSONObj["digital-metadata"]["name"];
+    // Mark "dataset-successfully-uploaded-to-pennsieve" as true in the sodaJSONObj which is used
+    // to determine if the dataset has been successfully uploaded to Pennsieve (for page navigation)
+    window.sodaJSONObj["dataset-successfully-uploaded-to-pennsieve"] = true;
 
     //Display the click next text
     document.getElementById("guided--verify-files").classList.remove("hidden");
