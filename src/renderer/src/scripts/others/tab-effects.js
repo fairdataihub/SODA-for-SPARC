@@ -32,9 +32,6 @@ const delay = 250;
 window.showParentTab = async (tabNow, nextOrPrev) => {
   // tabNow represent the current tab
   // nextOrPrev represent the direction of the tab (1 or -1)
-
-  console.log(tabNow);
-
   $("#nextBtn").prop("disabled", true);
   if (tabNow == -1) {
     // When exiting upload dataset workflow, the tabNow state changes to -1 which will cause an error
@@ -88,7 +85,6 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
       }
     }
   }
-  console.log("continueBtnYes: ", continueBtnYes);
   if (tabNow === 1 && continueBtnYes) {
     $("#nextBtn").prop("disabled", false);
   } else {
@@ -435,7 +431,6 @@ window.nextPrev = async (pageIndex) => {
   }
 
   if (parentTabs[window.currentTab].id === "getting-started-tab") {
-    console.log("Getting started tab is active");
   }
 
   // update JSON structure
@@ -444,7 +439,6 @@ window.nextPrev = async (pageIndex) => {
   // reset datasetStructureObject["files"] back to {},
   // and delete ui preview-added manifest files
   if (parentTabs[window.currentTab].id === "high-level-folders-tab") {
-    console.log("YEs we call this strangely");
     $("#items").empty();
     $("#items").append(already_created_elem);
     getInFolder(".single-item", "#items", dataset_path, window.datasetStructureJSONObj);
@@ -697,7 +691,6 @@ window.nextPrev = async (pageIndex) => {
     // Display the correct tab:
     window.showParentTab(window.currentTab, pageIndex);
   } else {
-    console.log("ALso catching here");
     // Hide the current tab:
     $(parentTabs[window.currentTab]).removeClass("tab-active");
     // Increase or decrease the current tab by 1:
@@ -3332,7 +3325,6 @@ const saveSODAJSONProgress = (progressFileName) => {
     window.fs.mkdirSync(progressFilePath, { recursive: true });
   } catch (error) {
     log.error(error);
-    console.log(error);
   }
   var filePath = window.path.join(progressFilePath, progressFileName + ".json");
   // record all information listed in SODA JSON Object before saving

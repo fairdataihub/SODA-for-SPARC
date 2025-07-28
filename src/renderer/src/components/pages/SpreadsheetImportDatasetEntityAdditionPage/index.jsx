@@ -51,7 +51,6 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
    * Generic entity import handler
    */
   const handleEntityFileImport = async (files, entityType) => {
-    console.log(`Handling import for entity type: ${entityType}`, files);
     if (!files?.length) return;
 
     const config = entityConfigs[entityType];
@@ -66,8 +65,6 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
     try {
       // Process file and get formatted entities
       const result = await importEntitiesFromExcel(files[0], entityType);
-      console.log("Import result:", result);
-
       if (!result.success) {
         window.notyf.open({
           type: "error",
@@ -146,8 +143,6 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
   useEffect(() => {
     // Bind IPC event listeners for template downloads
     const handleFolderSelected = (event, path, filename) => {
-      console.log("Selected folder:", path);
-      console.log("Template to download:", filename);
     };
 
     const handleDownloadError = (event, error) => {

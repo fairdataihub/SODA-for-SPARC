@@ -12,7 +12,6 @@ import {
  * @param {string} [placeholder] - Optional placeholder text.
  */
 const SodaTextInput = ({ id, label, description, placeholder, textArea, maxLength }) => {
-  console.log("textArea", textArea);
   const value = useGlobalStore((state) => state.sodaTextInputs?.[id] || "");
   const handleChange = (event) => {
     setSodaTextInputValue(id, event.target.value);

@@ -199,7 +199,6 @@ const componentTypeRenderers = {
     const props = {
       id: componentSlot.id,
     };
-    console.log("zd:" + componentSlot.id);
     renderComponent(componentSlot, <DropDownNote {...props} />);
   },
 };

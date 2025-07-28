@@ -239,9 +239,6 @@ window.openPage = async (targetPageID) => {
 
     if (targetPageDataset.componentType) {
       const targetPageComponentType = targetPageDataset.componentType;
-
-      console.log("targetPageDataset", targetPageDataset);
-
       if (targetPageComponentType === "performance-id-management-page") {
         const performanceList = window.sodaJSONObj["dataset_performances"] || [];
         setPerformanceList(performanceList);
@@ -256,13 +253,8 @@ window.openPage = async (targetPageID) => {
         const pageEntityType = targetPageDataset.entityType;
         const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
         const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
-
-        console.log("savedDatasetEntityObj", savedDatasetEntityObj);
-
         const filteredDatasetEntityObj =
           filterRemovedFilesFromDatasetEntityObj(savedDatasetEntityObj);
-        console.log("filteredDatasetEntityObj", filteredDatasetEntityObj);
-
         setDatasetEntityObj(filteredDatasetEntityObj);
 
         // Make any adjustments to the dataset entity object before setting it in the zustand store
@@ -283,7 +275,6 @@ window.openPage = async (targetPageID) => {
 
         if (pageEntityType === "sites") {
           const sites = getExistingSites().map((site) => site.id);
-          console.log("Found sites", sites);
           for (const site of sites) {
             addEntityToEntityList("sites", site);
           }
@@ -324,10 +315,6 @@ window.openPage = async (targetPageID) => {
             []
           );
         }
-
-        console.log("savedDatasetEntityObj", savedDatasetEntityObj);
-        console.log("pageEntityType", pageEntityType);
-
         setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["data"]);
       }
 
@@ -350,14 +337,12 @@ window.openPage = async (targetPageID) => {
 
         // If experimental data exists, apply the filter
         if (hasExperimentalData) {
-          console.log("Auto-filtering for Experimental data");
           // Apply the filter for experimental data
           setEntityFilter(
             [{ type: "high-level-folder-data-categorization", names: ["Experimental"] }],
             []
           );
         } else {
-          console.log("No experimental data found to filter");
         }
 
         setDatasetEntityArray(datasetEntityArray);
@@ -497,7 +482,6 @@ window.openPage = async (targetPageID) => {
     });
 
     guidedSetNavLoadingState(false);
-    console.log(error);
     throw error;
   }
 

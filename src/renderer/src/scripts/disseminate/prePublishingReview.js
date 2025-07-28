@@ -36,26 +36,16 @@ window.getPrepublishingChecklistStatuses = async (currentDataset) => {
     bannerImageURL: false,
     ORCID: false,
   };
-
-  console.log("[Prepublishing Checklist] Starting check for dataset:", currentDataset);
-
   // Dataset metadata
   try {
     const dataset = await api.getDataset(currentDataset);
-    console.log("[Prepublishing Checklist] Fetched dataset metadata:", dataset);
     const { description = "", tags = [], license = "" } = dataset.content || {};
     statuses.subtitle = description.trim().length > 0;
     statuses.tags = tags.length > 0;
     statuses.license = license.trim().length > 0;
   } catch (error) {
     clientError(error);
-    console.log("[Prepublishing Checklist] Metadata check failed.");
   }
-  console.log("[Prepublishing Checklist] Metadata results:", {
-    subtitle: statuses.subtitle,
-    tags: statuses.tags,
-    license: statuses.license,
-  });
 
   // Readme
   try {
@@ -63,31 +53,21 @@ window.getPrepublishingChecklistStatuses = async (currentDataset) => {
     statuses.readme = readme.trim().length > 0;
   } catch (error) {
     clientError(error);
-    console.log("[Prepublishing Checklist] Readme check failed.");
   }
-  console.log("[Prepublishing Checklist] Readme result:", statuses.readme);
-
   // Banner image
   try {
     const bannerImageURL = await api.getDatasetBannerImageURL(currentDataset);
     statuses.bannerImageURL = bannerImageURL !== "No banner image";
   } catch (error) {
     clientError(error);
-    console.log("[Prepublishing Checklist] Banner image check failed.");
   }
-  console.log("[Prepublishing Checklist] Banner image result:", statuses.bannerImageURL);
-
   // ORCID
   try {
     const user = await api.getUserInformation();
     statuses.ORCID = (user?.orcid?.orcid || "").trim().length > 0;
   } catch (error) {
     clientError(error);
-    console.log("[Prepublishing Checklist] ORCID check failed.");
   }
-  console.log("[Prepublishing Checklist] ORCID result:", statuses.ORCID);
-
-  console.log("[Prepublishing Checklist] Final statuses:", statuses);
   return statuses;
 };
 
@@ -545,37 +525,21 @@ window.createPrepublishingChecklist = async (curationMode) => {
 
 // Check if the user is the dataset owner and transition to the prepublishing checklist question if so
 window.validateAndPrepareForCurationSubmission = async () => {
-  console.log("[PrepublishingFlow] Starting guided prepublishing flow");
-
   let currentAccount = window.sodaJSONObj["ps-account-selected"]["account-name"];
   let currentDataset = window.sodaJSONObj["ps-dataset-selected"]["dataset-name"];
-
-  console.log("[PrepublishingFlow] Using account:", currentAccount);
-  console.log("[PrepublishingFlow] Using dataset:", currentDataset);
-
   try {
-    console.log("[PrepublishingFlow] Fetching publishing status...");
     let getPublishingStatus = await client.get(
       `/disseminate_datasets/datasets/${currentDataset}/publishing_status`,
       { params: { selected_account: currentAccount } }
     );
     let res = getPublishingStatus.data;
-    console.log("[PrepublishingFlow] Publishing status response:", res);
-
-    console.log("[PrepublishingFlow] Running pre-publishing checklist validation...");
     let embargoDetails = await window.submitReviewDatasetCheck(res, "guided");
-    console.log("[PrepublishingFlow] Embargo details:", embargoDetails);
-
     if (embargoDetails[0] === false) {
       console.warn("[PrepublishingFlow] Checklist incomplete. Aborting prepublishing flow.");
       Swal.close();
       return false;
     }
-
-    console.log("[PrepublishingFlow] Fetching user dataset role...");
     let role = await api.getDatasetRole(currentDataset);
-    console.log("[PrepublishingFlow] User role for dataset:", role);
-
     if (role !== "owner") {
       console.warn("[PrepublishingFlow] User is not the dataset owner. Showing error popup.");
       await Swal.fire({
@@ -587,23 +551,12 @@ window.validateAndPrepareForCurationSubmission = async () => {
       });
       return false;
     }
-
-    console.log("[PrepublishingFlow] User is the dataset owner. Proceeding with guided mode.");
-
     Swal.close();
 
     if ($("#guided--para-review-dataset-info-disseminate").text() === "") {
-      console.log("[PrepublishingFlow] Waiting for review status to populate...");
       await window.wait(1000);
     }
-
-    console.log("[PrepublishingFlow] Showing prepublishing status UI in guided mode...");
     let status = await window.showPrePublishingStatus(true, "guided");
-    console.log("[PrepublishingFlow] Prepublishing status result:", status);
-
-    console.log("[PrepublishingFlow] Guided prepublishing flow completed.");
-    console.log("[PrepublishingFlow] Final status:", status);
-    console.log("[PrepublishingFlow] Embargo details:", embargoDetails);
     return [status, embargoDetails];
   } catch (error) {
     console.error("[PrepublishingFlow] Error during prepublishing flow:", error);

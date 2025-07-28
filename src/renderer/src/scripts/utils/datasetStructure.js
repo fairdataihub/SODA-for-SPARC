@@ -26,7 +26,6 @@ export const countFilesInDatasetStructure = (datasetStructure) => {
  * @returns {Object} A new empty folder object
  */
 export const newEmptyFolderObj = () => {
-  console.log("newEmptyFolderObj");
   return { folders: {}, files: {}, type: "virtual", action: ["new"], location: "local" };
 };
 
@@ -60,7 +59,6 @@ const getNestedObjectAtPathArray = (pathArray) => {
 };
 
 export const getItemAtPath = (relativePath, itemType) => {
-  console.log("getItemAtPath called with relativePath:", relativePath, "itemType:", itemType);
   // Split the relative path into segments and isolate the item name.
   const pathSegments = relativePath.split("/").filter((segment) => segment !== "");
   const itemName = pathSegments.pop();
@@ -122,30 +120,15 @@ export const moveFoldersToTargetLocation = (
   arrayOfRelativePathsToMove,
   destionationRelativePath
 ) => {
-  console.log("moveFoldersByRelativePath called");
-  console.log("arrayOfRelativePathsToMove", arrayOfRelativePathsToMove);
-  console.log("destionationRelativePath", destionationRelativePath);
-
   const {
     parentFolder: destinationParentFolder,
     itemName: destinationItemName,
     itemObject: destinationItemObject,
   } = getItemAtPath(destionationRelativePath, "folder");
-  console.log("destinationParentFolder", destinationParentFolder);
-  console.log("destinationItemName", destinationItemName);
-
   for (const relativePathToMove of arrayOfRelativePathsToMove) {
     const { parentFolder, itemName, itemObject } = getItemAtPath(relativePathToMove, "folder");
-    console.log("parentFolder", parentFolder);
-    console.log("itemName", itemName);
-    console.log("itemObject", itemObject);
     // Move the folder to the destination folder.
-    console.log("destinationItemObject before move", destinationItemObject);
-    console.log("number of folders", Object.keys(destinationItemObject["folders"]).length);
     destinationItemObject["folders"][itemName] = itemObject;
-    console.log("itemObject after move", destinationItemObject);
-    console.log("number of folders", Object.keys(destinationItemObject["folders"]).length);
-
     // Remove the folder from its original location.
     delete parentFolder["folders"][itemName];
   }
@@ -163,10 +146,6 @@ export const moveFilesToTargetLocation = (arrayOfRelativePathsToMove, destionati
 
   for (const relativePathToMove of arrayOfRelativePathsToMove) {
     const { parentFolder, itemName, itemObject } = getItemAtPath(relativePathToMove, "file");
-    console.log("parentFolder for file", parentFolder);
-    console.log("itemName for file", itemName);
-    console.log("itemObject for file", itemObject);
-
     // Move the file to the destination folder.
     destinationItemObject["files"][itemName] = itemObject;
 
@@ -179,9 +158,6 @@ export const moveFilesToTargetLocation = (arrayOfRelativePathsToMove, destionati
 };
 
 export const moveFileToTargetLocation = (relativePathToMove, destionationRelativeFolderPath) => {
-  console.log("moveFileToTargetLocation called");
-  console.log("relativePathToMove", relativePathToMove);
-
   // Get the file's path segments and file name
   const filePathSegments = relativePathToMove.split("/").filter(Boolean);
   // Don't pop fileName here, use itemName from getItemAtPath
@@ -236,10 +212,6 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
   };
 
   try {
-    console.log("createStandardizedDatasetStructure");
-    console.log("datasetStructure", datasetStructure);
-    console.log("datasetEntityObj", datasetEntityObj);
-
     // Move Code files into the code/ folder
     moveFilesByCategory(
       datasetEntityObj?.["high-level-folder-data-categorization"]?.["Code"],
@@ -272,8 +244,6 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
 
     // --- Step 6: Capture the modified structure before reverting changes ---
     const standardizedStructure = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
-    console.log("standardizedStructure", standardizedStructure);
-
     // --- Step 7: Revert any global changes to window.datasetStructureJSONObj ---
     window.datasetStructureJSONObj = originalStructure;
 

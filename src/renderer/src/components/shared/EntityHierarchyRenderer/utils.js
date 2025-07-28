@@ -11,18 +11,12 @@ import {
   addSiteToSubject,
 } from "../../../stores/slices/datasetEntityStructureSlice";
 export const guidedOpenEntityAdditionSwal = async ({ entityType, subjectId, sampleId }) => {
-  console.log("guidedOpenEntityAdditionSwal called");
-  console.log("entityType", entityType);
-  console.log("subjectId", subjectId);
-  console.log("sampleId", sampleId);
   // Get a list of the existing entities so we can check for duplicates
   let preExistingEntities;
   let entityNameSingular;
   let entityPrefix;
 
   const datasetEntityArray = useGlobalStore.getState().datasetEntityArray;
-  console.log("datasetEntityArray", datasetEntityArray);
-
   // case when adding subjects
   if (entityType === "subjects") {
     preExistingEntities = getExistingSubjects().map((subject) => subject.id);
@@ -32,14 +26,12 @@ export const guidedOpenEntityAdditionSwal = async ({ entityType, subjectId, samp
 
   if (entityType === "samples") {
     preExistingEntities = getExistingSamples().map((sample) => sample.id);
-    console.log("preExistingEntities", preExistingEntities);
     entityNameSingular = "sample";
     entityPrefix = "sam-";
   }
 
   if (entityType === "performances") {
     preExistingEntities = getExistingPerformancesR().map((performance) => performance.id);
-    console.log("preExistingEntities", preExistingEntities);
     entityNameSingular = "performance";
     entityPrefix = "perf-";
   }
@@ -47,7 +39,6 @@ export const guidedOpenEntityAdditionSwal = async ({ entityType, subjectId, samp
   // Add sites entity type
   if (entityType === "sites") {
     preExistingEntities = getExistingSites().map((site) => site.id);
-    console.log("preExistingEntities", preExistingEntities);
     entityNameSingular = "site";
     entityPrefix = "site-";
   }
@@ -255,7 +246,6 @@ export const guidedOpenEntityAdditionSwal = async ({ entityType, subjectId, samp
     newEntities.reverse();
     if (entityType === "subjects") {
       for (const entityId of newEntities) {
-        console.log("Adding subject", entityId);
         addSubject(entityId);
       }
     }
@@ -268,13 +258,8 @@ export const guidedOpenEntityAdditionSwal = async ({ entityType, subjectId, samp
 
     // Add sites handling
     if (entityType === "sites") {
-      console.log("subjectId", subjectId);
-      console.log("sampleId", sampleId);
       if (sampleId) {
         for (const entityId of newEntities) {
-          console.log("Adding site", entityId);
-          console.log("subjectId", subjectId);
-          console.log("sampleId", sampleId);
           addSiteToSample(subjectId, sampleId, entityId);
         }
       } else {

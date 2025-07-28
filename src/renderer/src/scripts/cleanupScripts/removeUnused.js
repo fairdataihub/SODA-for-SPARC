@@ -20,8 +20,6 @@ module.exports = function (fileInfo, api) {
   const root = j(fileInfo.source);
 
   // Debugging: Log the file being processed
-  console.log(`Processing file: ${fileInfo.path}`);
-
   // Find and remove the unused 'event' variables in reverse order
   linesToRemove.forEach(({ filePath, line, column, endLine }) => {
     // remove unused function declarations of type function name() {}
@@ -57,12 +55,10 @@ module.exports = function (fileInfo, api) {
           return false;
         }
         if (hits > 2) {
-          // console.log("Failed hit at line ", line);
           return false;
         }
         const start = path.node.loc?.start;
         if (start && start.line === line && start.column === column - 1 && !hitAtLine[start.line]) {
-          console.log(`Found 'event' at line ${start.line}, column ${start.column}`);
           hitAtLine[line] = true;
           hits = hits + 1;
           return true;
@@ -80,13 +76,12 @@ module.exports = function (fileInfo, api) {
     //     }
     //   }).remove()
     // Debugging: Log the file path, line, and column being checked
-    // console.log(`Checking: ${filePath} at line ${line}, column ${column}`);
     // remove identifiers matching the line and column from the esLint list of items to remove
     // root.find(j.Identifier, { name: 'event' })
     //   .filter(path => {
     //     const start = path.node.loc.start;
     //     // Debugging: Log the position of the identifier
-    //     if (start.line === line) {console.log(`Found 'event' at line ${start.line}, column ${start.column}`)}
+    //     if (start.line === line) {}
     //     return start.line === line && start.column === column - 1;
     //   })
     //   .remove();
@@ -95,7 +90,6 @@ module.exports = function (fileInfo, api) {
     // .forEach(path => {
     //   const start = path?.node?.loc?.start;
     //   if(start) {
-    //     console.log(start)
     //     if(start.line === line && start.column === column - 1) {
     //       hits = hits + 1;
     //       j(path).replaceWith(j.memberExpression(j.identifier('window'), j.identifier('path')));
@@ -105,9 +99,7 @@ module.exports = function (fileInfo, api) {
     // root.find(j.Identifier).forEach((path) => {
     //   const start = path?.node?.loc?.start;
     //   if (start && start.line === 17747) {
-    //     console.log("in like flynn");
     //     if (start.line === line) {
-    //       // console.log(start.line, start.column);
     //       hits = hits + 1;
     //       const parent = path.parent.node;
     //       if (
@@ -115,7 +107,6 @@ module.exports = function (fileInfo, api) {
     //         // j.FunctionExpression.check(parent) ||
     //         parent.init.type === "ArrowFunctionExpression"
     //       ) {
-    //         console.log("Inside the thing");
     //         // remove the whole function
     //         let functionStart = parent.init.loc.start;
     //         // let functionEnd = parent.init.loc.end;
@@ -128,12 +119,7 @@ module.exports = function (fileInfo, api) {
     // });
   });
 
-  // console.log(JSON.stringify(root, null, 2));
-
-  console.log(`Total hits for path: ${hits}`);
   try {
     return root.toSource();
-  } catch (e) {
-    console.log(e);
-  }
+  } catch (e) {}
 };

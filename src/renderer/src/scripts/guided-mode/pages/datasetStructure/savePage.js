@@ -9,12 +9,9 @@ import {
 } from "../../../guided-mode/pages/navigationUtils/pageSkipping";
 
 export const savePageDatasetStructure = async (pageBeingLeftID) => {
-  console.log(`Saving dataset structure page: ${pageBeingLeftID}`);
-
   const errorArray = [];
 
   if (pageBeingLeftID === "guided-unstructured-data-import-tab") {
-    console.log("Validating data import page");
     // Count the files imported into the dataset to make sure they imported something
     const datasetFileCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
     if (datasetFileCount === 0) {
@@ -28,13 +25,8 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
   }
 
   if (pageBeingLeftID === "guided-dataset-content-tab") {
-    console.log("Validating dataset content selections");
     const selectedEntities = useGlobalStore.getState()["selectedEntities"];
     const deSelectedEntities = useGlobalStore.getState()["deSelectedEntities"];
-
-    console.log("selectedEntities", selectedEntities);
-    console.log("deSelectedEntities", deSelectedEntities);
-
     // Check if any selections were made
     if (selectedEntities.length === 0) {
       errorArray.push({
@@ -110,8 +102,6 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     }
 
     // Handle page skipping based on selections
-    console.log("Setting up page skipping based on content selections");
-
     if (selectedEntities.includes("subjects")) {
       guidedUnSkipPageSet("guided-subjects-metadata-page-set");
     } else {
@@ -167,42 +157,34 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
   }
 
   if (pageBeingLeftID === "guided-entity-addition-method-selection-tab") {
-    console.log("Validating Entity Addition Method selection page");
     // Add validation logic for guided-entity-addition-method-selection-tab if needed
   }
 
   if (pageBeingLeftID === "guided-manual-dataset-entity-and-metadata-tab") {
-    console.log("Validating manual dataset entity and metadata page");
     // Add validation logic for guided-manual-dataset-entity-and-metadata-tab if needed
   }
 
   if (pageBeingLeftID === "guided-spreadsheet-import-dataset-entity-and-metadata-tab") {
-    console.log("Validating spreadsheet import dataset entity and metadata page");
     // Add validation logic for guided-spreadsheet-import-dataset-entity-and-metadata-tab if needed
   }
 
   if (pageBeingLeftID === "guided-sites-selection-tab") {
-    console.log("Validating sites selection page");
     // Add validation logic for guided-sites-selection-tab if needed
   }
 
   if (pageBeingLeftID === "guided-samples-selection-tab") {
-    console.log("Validating samples selection page");
     // Add validation logic for guided-samples-selection-tab if needed
   }
 
   if (pageBeingLeftID === "guided-subjects-selection-tab") {
-    console.log("Validating subjects selection page");
     // Add validation logic for guided-subjects-selection-tab if needed
   }
 
   if (pageBeingLeftID === "guided-performances-entity-addition-tab") {
-    console.log("Validating performances entity addition page");
     // Add validation logic for guided-performances-entity-addition-tab if needed
   }
 
   if (pageBeingLeftID === "guided-Performances-selection-tab") {
-    console.log("Validating performances selection page");
     // Add validation logic for guided-Performances-selection-tab if needed
   }
 
@@ -211,17 +193,12 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
   }
 
   if (pageBeingLeftID === "guided-modalities-data-selection-tab") {
-    console.log("Validating modalities Data Selection page");
     // Add validation logic for guided-modalities-data-selection-tab if needed
   }
 
   if (pageBeingLeftID === "guided-dataset-structure-and-manifest-review-tab") {
     const guidedManifestData = window.sodaJSONObj["guided-manifest-file-data"];
-    console.log("guidedManifestData", guidedManifestData);
-    console.log("manifestHeaders", guidedManifestData["headers"]);
     // console log the first 3 rows of data
-    console.log("manifestData", guidedManifestData["data"].slice(0, 3));
-
     const headerToSchemaKey = {
       filename: "file_name",
       timestamp: "timestamp",

@@ -54,16 +54,11 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
 
   try {
     const datasetResumeJsonObj = await getProgressFileData(datasetNameToResume);
-    console.log("datasetResumeJsonObj", datasetResumeJsonObj);
-
     // Datasets successfully uploaded will have the "dataset-successfully-uploaded-to-pennsieve" key
     const datasetHasAlreadyBeenSuccessfullyUploaded =
       datasetResumeJsonObj["dataset-successfully-uploaded-to-pennsieve"];
 
     const lastVersionOfSodaUsed = datasetResumeJsonObj["last-version-of-soda-used"];
-
-    console.log("lastVersionOfSodaUsed", lastVersionOfSodaUsed);
-
     if (lastVersionOfSodaUsed < "16.0.0") {
       await swalShowInfo(
         "This dataset requires an older version of SODA to resume.",
@@ -142,8 +137,6 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
 const guidedGetPageToReturnTo = async () => {
   // Set by openPage function
   const usersPageBeforeExit = window.sodaJSONObj["page-before-exit"];
-  console.log("usersPageBeforeExit", usersPageBeforeExit);
-
   //If the dataset was successfully uploaded, send the user to the share with curation team
   if (window.sodaJSONObj?.["dataset-successfully-uploaded-to-pennsieve"]) {
     return "guided-dataset-dissemination-tab";
@@ -190,38 +183,13 @@ const patchPreviousGuidedModeVersions = async () => {
 };
 
 const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
-  console.log("--- CHECKING ACCOUNT CONFIRMATION REQUIREMENTS ---");
-
   // Check if guided-pennsieve-intro-tab is in completed tabs
   if (!window.sodaJSONObj["completed-tabs"].includes("guided-pennsieve-intro-tab")) {
-    console.log("User has not yet completed the Pennsieve intro tab, no reconfirmation needed");
     return false;
   }
 
-  // Log current and previously confirmed account details
-  console.log(`Current Pennsieve account: ${window.defaultBfAccount}`);
-  console.log(
-    `Last confirmed account: ${window.sodaJSONObj?.["last-confirmed-ps-account-details"]}`
-  );
-
   // Check if the user has changed their Pennsieve account
   if (window.sodaJSONObj?.["last-confirmed-ps-account-details"] !== window.defaultBfAccount) {
-    console.log("RECONFIRMATION NEEDED: Pennsieve account changed");
-
-    // Log button config states
-    console.log(
-      "Clearing pennsieve-account-has-been-confirmed:",
-      window.sodaJSONObj["button-config"]?.["pennsieve-account-has-been-confirmed"]
-        ? "was set"
-        : "was not set"
-    );
-    console.log(
-      "Clearing organization-has-been-confirmed:",
-      window.sodaJSONObj["button-config"]?.["organization-has-been-confirmed"]
-        ? "was set"
-        : "was not set"
-    );
-
     if (window.sodaJSONObj["button-config"]?.["pennsieve-account-has-been-confirmed"]) {
       delete window.sodaJSONObj["button-config"]["pennsieve-account-has-been-confirmed"];
     }
@@ -233,23 +201,9 @@ const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
 
   // Log current and previously confirmed workspace details
   const currentWorkspace = guidedGetCurrentUserWorkSpace();
-  console.log(`Current workspace: ${currentWorkspace}`);
-  console.log(
-    `Last confirmed workspace: ${window.sodaJSONObj?.["last-confirmed-pennsieve-workspace-details"]}`
-  );
 
   // Check if the user has changed their Pennsieve workspace
   if (currentWorkspace != window.sodaJSONObj?.["last-confirmed-pennsieve-workspace-details"]) {
-    console.log("RECONFIRMATION NEEDED: Workspace changed");
-
-    // Log button config state
-    console.log(
-      "Clearing organization-has-been-confirmed:",
-      window.sodaJSONObj["button-config"]?.["organization-has-been-confirmed"]
-        ? "was set"
-        : "was not set"
-    );
-
     if (window.sodaJSONObj["button-config"]?.["organization-has-been-confirmed"]) {
       delete window.sodaJSONObj["button-config"]["organization-has-been-confirmed"];
     }
@@ -257,6 +211,5 @@ const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
   }
 
   // If no reconfirmation is needed, log that information
-  console.log("No reconfirmation needed");
   return false;
 };

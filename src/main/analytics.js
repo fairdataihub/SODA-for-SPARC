@@ -22,7 +22,6 @@ const kombuchaServer = axios.create({
 let userId;
 try {
   userId = nodeStorage.getItem("userId");
-  console.log("User id is: ", userId);
 } catch (e) {
   userId = null;
 }
@@ -45,7 +44,6 @@ if (!fs.existsSync(configFolderPath)) {
 } else {
   let dntFilePath = path.join(configFolderPath, "dnt.soda");
   if (fs.existsSync(dntFilePath)) {
-    console.log("dnt file exists");
     dnt = true;
   } else {
     dnt = false;
@@ -66,11 +64,7 @@ if (process.env.NODE_ENV === "development") {
 }
 
 if (dnt) {
-  console.log("DNT enabled");
-  console.log(`App Status: ${appStatus}`);
 } else {
-  console.log("DNT disabled");
-  console.log(`App Status: ${appStatus}`);
 }
 
 // Generate new userid on a chance basis
@@ -94,7 +88,6 @@ const userIdGeneratorForKombucha = async () => {
       nodeStorage.setItem("kombuchaUserCreated", true);
       return res.data.token;
     } catch (e) {
-      console.log(e);
     }
   }
 
@@ -123,7 +116,6 @@ const sendKombuchaAnalyticsEvent = async (eventData, userToken) => {
         // Retry sending the event data with the updated token
         sendKombuchaAnalyticsEvent(eventData, res.data.token);
       } catch (e) {
-        console.log(e);
       }
     }
   }

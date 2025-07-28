@@ -33,10 +33,7 @@ export const handleNextButtonClick = async () => {
   window.pageBeingLeftID = window.CURRENT_PAGE.id;
 
   try {
-    console.log("About to save");
     await savePageChanges(window.pageBeingLeftID);
-    console.log("Past save changes");
-
     if (!window.sodaJSONObj["completed-tabs"].includes(window.pageBeingLeftID)) {
       window.sodaJSONObj["completed-tabs"].push(window.pageBeingLeftID);
     }
@@ -224,7 +221,6 @@ const freeFormItemsContainer = document.getElementById("free-form-folder-structu
 const freeFormButtons = document.getElementById("organize-path-and-back-button-div");
 
 document.getElementById("button-homepage-guided-mode").addEventListener("click", async () => {
-  console.log("Homepage button called");
   //Transition file explorer elements to guided mode
   window.organizeDSglobalPath = document.getElementById("guided-input-global-path");
   window.organizeDSglobalPath.value = "";

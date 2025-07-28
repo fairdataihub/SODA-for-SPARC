@@ -308,7 +308,6 @@ document.querySelectorAll(".button-import-data-deliverables-document").forEach(a
         dataDeliverablesDocumentFilePath
       );
     } catch (error) {
-      console.log(error);
       clientError(error);
       Swal.fire({
         backdrop: "rgba(0,0,0, 0.4)",

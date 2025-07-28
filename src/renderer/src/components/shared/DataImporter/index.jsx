@@ -11,7 +11,6 @@ const DataImporter = ({ relativeFolderPathToImportDataInto }) => {
         <Dropzone
           onDrop={(event) => {
             event.preventDefault();
-            console.log("Dropped files:", files);
           }}
           onReject={(event) => {
             event.preventDefault();

@@ -77,8 +77,6 @@ export const savePageChanges = async (pageBeingLeftID) => {
     // Check if the page being left is part of a page set
     const pageBeingLeftElement = document.getElementById(pageBeingLeftID);
     const pageBeingLeftDataSet = pageBeingLeftElement.dataset;
-    console.log("pageBeingLeftDataSet", pageBeingLeftDataSet);
-
     // Handle page exit logic for pages that are controlled by React components
     if (pageBeingLeftDataSet.componentType) {
       const pageBeingLeftComponentType = pageBeingLeftDataSet.componentType;
@@ -140,14 +138,6 @@ export const savePageChanges = async (pageBeingLeftID) => {
         const userSelectedTheyDoNotHaveMultipleModalities = document
           .getElementById("modality-selection-no")
           .classList.contains("selected");
-        console.log(
-          "userSelectedTheyHaveMultipleModalities",
-          userSelectedTheyHaveMultipleModalities
-        );
-        console.log(
-          "userSelectedTheyDoNotHaveMultipleModalities",
-          userSelectedTheyDoNotHaveMultipleModalities
-        );
 
         if (
           !userSelectedTheyDoNotHaveMultipleModalities &&
@@ -161,7 +151,6 @@ export const savePageChanges = async (pageBeingLeftID) => {
         }
 
         const selectedModalities = useGlobalStore.getState()["selectedModalities"];
-        console.log("selectedModalities", selectedModalities);
         if (selectedModalities.length === 0) {
           guidedSkipPage("guided-modalities-data-selection-tab");
         } else {
@@ -205,17 +194,8 @@ export const savePageChanges = async (pageBeingLeftID) => {
 
         // Save the dataset entity object to the progress file
         window.sodaJSONObj["dataset-entity-obj"] = datasetEntityObj;
-        console.log("Validating data categorization page");
-
         const datasetFileCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
         const categorizedData = datasetEntityObj?.["high-level-folder-data-categorization"];
-        console.log("dataset file count", datasetFileCount);
-        console.log("datasetEntityObj2", JSON.stringify(datasetEntityObj, null, 2));
-        console.log(
-          "datasetStructureJSONObj",
-          JSON.stringify(window.datasetStructureJSONObj, null, 2)
-        );
-        console.log("categorizedData", categorizedData);
 
         let categorizedFileCount = 0;
         if (categorizedData) {
@@ -262,7 +242,6 @@ export const savePageChanges = async (pageBeingLeftID) => {
 
       if (pageBeingLeftComponentType === "entity-file-mapping-page") {
         const datasetEntityObj = getDatasetEntityObj();
-        console.log("datasetEntityObj when leaving" + pageBeingLeftID, datasetEntityObj);
         // Save the dataset entity object to the progress file
         window.sodaJSONObj["dataset-entity-obj"] = datasetEntityObj;
       }
@@ -309,7 +288,6 @@ export const savePageChanges = async (pageBeingLeftID) => {
             ...site.metadata,
             specimen_id: `${site.metadata.subject_id} ${site.metadata.sample_id}`,
           }));
-          console.log("sitesMetadata", sitesMetadata);
           window.sodaJSONObj["dataset_metadata"]["sites"] = sitesMetadata;
         } else {
           // If sites metadata has been added, remove it (It shouldn't be there but just in case)
@@ -773,7 +751,6 @@ export const savePageChanges = async (pageBeingLeftID) => {
     }
   } catch (error) {
     guidedSetNavLoadingState(false);
-    console.log(error);
     throw error;
   }
 
@@ -799,7 +776,5 @@ export const saveEntityFileMappingChanges = () => {
   //   });
   // }
   // window.sodaJSONObj["dataset-entity-obj-compat"] = compatDatasetEntityObj;
-
-  console.log("Entity file mapping saved:", datasetEntityObj);
   return true;
 };

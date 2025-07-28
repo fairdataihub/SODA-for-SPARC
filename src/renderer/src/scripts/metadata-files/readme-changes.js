@@ -385,7 +385,6 @@ window.saveRCFile = async (type) => {
   }
   window.fs.writeFile(destinationPath, data, (err) => {
     if (err) {
-      console.log(err);
       log.error(err);
       var emessage = userErrorMessage(error);
       Swal.fire({
@@ -416,7 +415,6 @@ window.saveRCFile = async (type) => {
       }
       window.fs.rename(destinationPath, newName, async (err) => {
         if (err) {
-          console.log(err);
           log.error(err);
           Swal.fire({
             title: `Failed to generate the ${type}.txt file`,
@@ -737,7 +735,6 @@ const loadExistingRCFile = async (filepath, type) => {
     $(`#button-fake-confirm-existing-${type}-file-load`).click();
   } catch (error) {
     let emessage = userErrorMessage(error);
-    console.log(error);
     window.log.error(error);
     Swal.fire({
       title: "Failed to import existing file",

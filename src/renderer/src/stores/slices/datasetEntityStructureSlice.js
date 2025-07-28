@@ -70,9 +70,7 @@ export const normalizeEntityId = (entityPrefix, entityId) => {
 };
 
 export const getEntityDataById = (entityId) => {
-  console.log("Getting entity data for ID:", entityId);
   const { datasetEntityArray } = useGlobalStore.getState();
-  console.log("Dataset entity array:", datasetEntityArray);
   if (!entityId || !datasetEntityArray) {
     return null;
   }
@@ -92,7 +90,6 @@ export const getEntityDataById = (entityId) => {
   if (entityId.startsWith("site-")) {
     // Look through all of the samples and find the site
     for (const subject of datasetEntityArray) {
-      console.log("Checking Subject:", subject);
       for (const sample of subject.samples) {
         const site = sample.sites.find((site) => site.id === entityId);
         if (site) {
@@ -104,7 +101,6 @@ export const getEntityDataById = (entityId) => {
 
   if (entityId.startsWith("perf-")) {
     const performanceList = useGlobalStore.getState()["performanceList"];
-    console.log("Performance List:", performanceList);
     if (performanceList) {
       return performanceList.find((performance) => performance.performanceId === entityId);
     }
@@ -129,8 +125,6 @@ export const addSubject = (subjectId, metadata = {}) => {
   }
 
   // Log the metadata being passed in
-  console.log("Adding subject with metadata:", metadata);
-
   useGlobalStore.setState(
     produce((state) => {
       // Create merged metadata object with ID guaranteed
@@ -147,8 +141,6 @@ export const addSubject = (subjectId, metadata = {}) => {
         subjectSites: [],
         subjectPerformances: [],
       });
-
-      console.log("Subject added successfully with metadata:", mergedMetadata);
     })
   );
 };
@@ -196,9 +188,6 @@ export const addSampleToSubject = (subjectId, sampleId, metadata = {}) => {
   if (existingSamples.some((sample) => sample.id === normalizedSampleId)) {
     throw new Error(`A sample with ID ${normalizedSampleId} already exists.`);
   }
-
-  console.log("Adding sample with metadata:", metadata);
-
   useGlobalStore.setState(
     produce((state) => {
       const subject = state.datasetEntityArray.find((s) => s.id === normalizedSubjectId);
@@ -218,8 +207,6 @@ export const addSampleToSubject = (subjectId, sampleId, metadata = {}) => {
           sites: [],
           performances: [],
         });
-
-        console.log("Sample added successfully with metadata:", mergedMetadata);
       }
     })
   );
@@ -248,10 +235,8 @@ export const getExistingSamples = () => {
 export const getExistingSites = () => {
   // Get the list of samples from the dataset
   const existingSamples = getExistingSamples();
-  console.log("Existing samples:", existingSamples);
   // Flatten the samples and extract site IDs
   const existingSites = existingSamples.flatMap((sample) => sample.sites || []);
-  console.log("Existing sites:", existingSites);
   return existingSites;
 };
 
@@ -284,9 +269,6 @@ export const addSiteToSubject = (subjectId, siteId, metadata = {}) => {
   if (existingSites.some((site) => site.id === normalizedSiteId)) {
     throw new Error(`A site with ID ${normalizedSiteId} already exists.`);
   }
-
-  console.log("Adding site to subject with metadata:", metadata);
-
   useGlobalStore.setState(
     produce((state) => {
       const subject = state.datasetEntityArray.find((s) => s.id === normalizedSubjectId);
@@ -306,8 +288,6 @@ export const addSiteToSubject = (subjectId, siteId, metadata = {}) => {
           parentSubject: subject.id,
           metadata: mergedMetadata,
         });
-
-        console.log("Site added to subject successfully with metadata:", mergedMetadata);
       }
     })
   );
@@ -331,7 +311,6 @@ export const getExistingPerformancesR = () => {
   const existingPerformances = existingSubjects.flatMap(
     (subject) => subject.subjectPerformances || []
   );
-  console.log("Existing performances:", existingPerformances);
   return existingPerformances;
 };
 
@@ -351,9 +330,6 @@ export const addSiteToSample = (subjectId, sampleId, siteId, metadata = {}) => {
   if (existingSites.some((site) => site.id === normalizedSiteId)) {
     throw new Error(`A site with ID ${normalizedSiteId} already exists.`);
   }
-
-  console.log("Adding site to sample with metadata:", metadata);
-
   useGlobalStore.setState(
     produce((state) => {
       const subject = state.datasetEntityArray.find((s) => s.id === normalizedSubjectId);
@@ -377,8 +353,6 @@ export const addSiteToSample = (subjectId, sampleId, siteId, metadata = {}) => {
             parentSample: sample.id,
             metadata: mergedMetadata,
           });
-
-          console.log("Site added to sample successfully with metadata:", mergedMetadata);
         }
       }
     })
@@ -552,9 +526,6 @@ export const updateExistingEntityMetadata = (entity, metadataChanges) => {
     console.error("Invalid entity provided to updateExistingEntityMetadata", entity);
     return;
   }
-
-  console.log("Updating metadata for entity:", entity.id, "Changes:", metadataChanges);
-
   useGlobalStore.setState(
     produce((state) => {
       let updatedEntity = null;
@@ -606,8 +577,6 @@ export const updateExistingEntityMetadata = (entity, metadataChanges) => {
         // Apply changes
         Object.entries(metadataChanges).forEach(([key, value]) => {
           sample.metadata[key] = value;
-          console.log(`Updated sample metadata: ${key} = ${value}`);
-
           // Handle ID updates if needed
           if (key === "sample id") {
             sample.id = value.startsWith("sam-") ? value : `sam-${value}`;
@@ -616,18 +585,13 @@ export const updateExistingEntityMetadata = (entity, metadataChanges) => {
 
         // Set updatedEntity to the sample we just modified
         updatedEntity = sample;
-        console.log("Updated sample entity:", updatedEntity);
       } else if (entity.type === "site") {
-        console.log("Updating site entity:", entity.id);
-        console.log("Site entity data:", entity);
-
         // Find the parent subject
         let subject = null;
         let sample = null;
 
         if (entity.parentSubject) {
           subject = state.datasetEntityArray.find((s) => s.id === entity.parentSubject);
-          console.log("Found parent subject:", subject?.id);
         }
 
         if (!subject) {
@@ -639,8 +603,6 @@ export const updateExistingEntityMetadata = (entity, metadataChanges) => {
         if (entity.parentSample) {
           // Site belongs to a sample
           sample = subject.samples?.find((s) => s.id === entity.parentSample);
-          console.log("Found parent sample:", sample?.id);
-
           if (!sample) {
             console.error(
               `Parent sample ${entity.parentSample} not found in subject ${subject.id}`
@@ -661,8 +623,6 @@ export const updateExistingEntityMetadata = (entity, metadataChanges) => {
           // Apply changes
           Object.entries(metadataChanges).forEach(([key, value]) => {
             site.metadata[key] = value;
-            console.log(`Updated site metadata: ${key} = ${value}`);
-
             if (key === "site_id") {
               site.id = value.startsWith("site-") ? value : `site-${value}`;
             }
@@ -683,8 +643,6 @@ export const updateExistingEntityMetadata = (entity, metadataChanges) => {
           // Apply changes
           Object.entries(metadataChanges).forEach(([key, value]) => {
             site.metadata[key] = value;
-            console.log(`Updated subject site metadata: ${key} = ${value}`);
-
             if (key === "site_id") {
               site.id = value.startsWith("site-") ? value : `site-${value}`;
             }
@@ -692,14 +650,11 @@ export const updateExistingEntityMetadata = (entity, metadataChanges) => {
 
           updatedEntity = site;
         }
-
-        console.log("Updated site entity:", updatedEntity);
       }
 
       // If this is the currently selected entity, update our reference to it
       if (state.selectedHierarchyEntity && state.selectedHierarchyEntity.id === entity.id) {
         state.selectedHierarchyEntity = updatedEntity || state.selectedHierarchyEntity;
-        console.log("Updated selectedHierarchyEntity reference:", state.selectedHierarchyEntity);
       }
     })
   );
@@ -715,8 +670,6 @@ export const updateExistingEntityMetadata = (entity, metadataChanges) => {
  * @param {Object} metadataChanges - Object containing the metadata key/value pairs to update
  */
 export const updateTemporaryMetadata = (entityType, metadataChanges) => {
-  console.log("Updating temporary metadata for", entityType, "Changes:", metadataChanges);
-
   useGlobalStore.setState(
     produce((state) => {
       // Ensure the temporary metadata object structure exists

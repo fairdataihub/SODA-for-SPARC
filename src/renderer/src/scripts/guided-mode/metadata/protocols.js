@@ -42,8 +42,6 @@ const protocolObjIsFair = (protocolLink, protocoldescription) => {
 
 export const renderProtocolsTable = () => {
   const protocols = window.sodaJSONObj["related_resources"];
-  console.log("renderProtocolsTable protocols", protocols);
-
   const protocolsContainer = document.getElementById("protocols-container");
 
   //protocols is either undefined when brand new dataset or 0 when returning from a saved dataset

@@ -268,18 +268,13 @@ $(document).ready(async function () {
 
   //Event listener for the jstree to open manifest files
   $(jstreePreviewManifest).on("select_node.jstree", async function (evt, data) {
-    console.log("DOing this apparently");
     // Check if pennsieve option was selected to reset localDataSetImport
     if (document.getElementById("pennsieve-option-create-manifest").classList.contains("checked")) {
       localDataSetImport = false;
     }
-
-    console.log("We clicked here");
-
     // Check if the selected file is a manifest file
     // If there's already an opened manifest file, don't open another one
     if (data.node.text === "manifest.xlsx") {
-      console.log("We are in edit sttuff");
       if (openedEdit) {
         return;
       }
@@ -365,13 +360,11 @@ $(document).ready(async function () {
         // loop through each of the high level folders and create excel sheet in case no edits are made
         // will be auto generated and ready for upload
         const manifestFileData = res.data;
-        console.log("We are working with this data: ", manifestFileData);
         let newManifestData = {};
 
         // Format response for
         if (manifestFileData.length > 1) {
           const manifestHeader = manifestFileData.shift();
-          console.log("Manifest header: ", manifestHeader);
           newManifestData = {
             headers: manifestHeader,
             data: manifestFileData,
@@ -396,8 +389,6 @@ $(document).ready(async function () {
                 "*": "{{columnHeader}}",
               },
             });
-
-            console.log("Makes: ", jsonManifest);
           }
           // If file doesn't exist then that means it didn't get imported properly
           let sortedJSON = window.processManifestInfo(manifestHeader, manifestFileData);
@@ -409,7 +400,6 @@ $(document).ready(async function () {
         // If local then we need to read the excel file and create a json object
         let highLvlFolderNames = [];
         if (localDataSetImport && !fileOpenedOnce?.[parentFolderName]) {
-          console.log("Doing this stuff");
           // get the paths of the manifest files that were imported locally
           let manifestPaths = [];
           for (const [highLevelFolderName, folderData] of Object.entries(
@@ -524,7 +514,6 @@ $(document).ready(async function () {
         window.sodaJSONObj["manifest-files"] = originalManifestFilesValue;
       } catch (err) {
         clientError(err);
-        console.log(err);
         userErrorMessage(err);
       }
 
@@ -532,17 +521,12 @@ $(document).ready(async function () {
       // const existingManifestData = window.sodaJSONObj["guided-manifest-file-data"][highLevelFolderName];
       //send manifest data to main.js to then send to child window
       const existingManifestData = window.sodaCopy["manifest-files"]?.["data"];
-      console.log("Existing manifest data: ", existingManifestData);
       Swal.close();
       // TODO: Lock all other manifest buttons
       window.electron.ipcRenderer.invoke("spreadsheet", existingManifestData);
-
-      console.log("Resume finalizing work here");
-
       //upon receiving a reply of the spreadsheet, handle accordingly
       window.electron.ipcRenderer.on("spreadsheet-reply", async (event, result) => {
         openedEdit = false;
-        console.log(result);
         if (!result || result === "") {
           window.electron.ipcRenderer.removeAllListeners("spreadsheet-reply");
           return;
@@ -571,9 +555,6 @@ $(document).ready(async function () {
                 "*": "{{columnHeader}}",
               },
             });
-
-            console.log(jsonManifest);
-
             let sortedJSON = window.processManifestInfo(savedHeaders, savedData);
             jsonManifest = JSON.stringify(sortedJSON);
             window.convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
@@ -666,7 +647,6 @@ $(document).ready(async function () {
   });
 
   $(guidedJsTreePreviewManifest).on("select_node.jstree", async function (evt, data) {
-    console.log("Is this called now too?");
     if (data.node.text === "manifest.xlsx") {
       // Show loading popup
       Swal.fire({
@@ -742,7 +722,6 @@ window.processManifestInfo = (headers, data) => {
 };
 
 window.convertJSONToXlsx = async (jsondata, excelfile) => {
-  console.log("Converting JSON to XLSX", jsondata, excelfile);
   await window.electron.ipcRenderer.invoke("convertJSONToSxlsx", jsondata, excelfile);
 };
 
@@ -1231,7 +1210,6 @@ const moveManifestFiles = (sourceFolder, destinationFolder) => {
   return new Promise((resolve) => {
     window.fs.readdircallback(sourceFolder, (err, folders) => {
       if (err) {
-        console.log(err);
         resolve(false);
       } else {
         folders.forEach(async function (folder) {
@@ -1449,9 +1427,6 @@ const extractBFDatasetForManifestFile = async (editBoolean, bfaccount, bfdataset
   } catch (err) {
     result = [false, userErrorMessage(err)];
   }
-
-  console.log("Imported dataset is: ", result);
-
   if (!result[0]) {
     Swal.fire({
       icon: "error",
@@ -2350,8 +2325,6 @@ window.readManifestFileAndStoreInSodaJSON = async () => {
     }
 
     window.sodaJSONObj["dataset_metadata"]["manifest_files"] = manifestData;
-
-    console.log("Manifest file successfully read and stored in sodaJSONObj.");
   } catch (error) {
     console.error("Error reading or processing the manifest file:", error);
   }

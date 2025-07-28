@@ -175,7 +175,6 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
       spreadSheetModal.destroy();
       // spreadSheetModal.close();
     } catch (e) {
-      console.log(e);
     }
   });
 
@@ -200,7 +199,6 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
       spreadSheetModal.destroy();
       // spreadSheetModal.close();
     } catch (e) {
-      console.log(e);
     }
   });
 });
@@ -306,7 +304,6 @@ const createPyProc = async () => {
   try {
     await killAllPreviousProcesses();
   } catch (e) {
-    console.log(e);
   }
   if (existsSync(script)) {
     log.info("Server exists at specified location", script);
@@ -367,7 +364,6 @@ const createPyProc = async () => {
         });
 
         pyflaskProcess.on("data", function () {
-          console.log("pyflaskProcess successfully started");
         });
 
         pyflaskProcess.on("error", function (err) {
@@ -398,7 +394,6 @@ const createPyProc = async () => {
         });
       }
       if (pyflaskProcess != null) {
-        console.log("child process success on port " + port);
         log.info("child process success on port " + port);
       } else {
         console.error("child process failed to start on port" + port);
@@ -407,7 +402,6 @@ const createPyProc = async () => {
     })
     .catch((err) => {
       log.error("Error starting the python server");
-      console.log(err);
     });
 };
 
@@ -421,7 +415,6 @@ const exitPyProc = async () => {
   try {
     await killAllPreviousProcesses();
   } catch (e) {
-    console.log(e);
   }
   // check if the platform is Windows
   if (process.platform === "win32") {
@@ -439,7 +432,6 @@ const exitPyProc = async () => {
       pyflaskProcess = null;
     }
   } catch (e) {
-    console.log(e);
   }
   PORT = null;
 };
@@ -557,7 +549,6 @@ const initialize = () => {
     try {
       createWindow();
     } catch (err) {
-      console.log(err);
       log.info(err);
     }
 
@@ -587,7 +578,6 @@ const initialize = () => {
     try {
       createPyProc();
     } catch (err) {
-      console.log(err);
       log.info(err);
     }
 

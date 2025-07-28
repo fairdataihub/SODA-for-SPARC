@@ -651,7 +651,6 @@ window.importLocalDataset = async (folderPath) => {
 window.electron.ipcRenderer.on(
   "selected-destination-upload-dataset",
   async (event, importedFolderPath) => {
-    console.log("Running this one");
     if (importedFolderPath.length > 0) {
       // Get the path of the first index
       let folderPath = importedFolderPath[0];
@@ -1075,7 +1074,6 @@ const progressFileParse = (ev) => {
       return contentJson;
     } catch (error) {
       window.log.error(error);
-      console.log(error);
       document.getElementById("para-progress-file-status").innerHTML =
         "<span style='color:red'>" + error + "</span>";
 

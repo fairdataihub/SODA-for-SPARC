@@ -1357,8 +1357,6 @@ var dropdownEventID = "";
 window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
   // if users edit current account
   if (dropdown === "ps") {
-    console.log("Calling opendropdown here?");
-
     await window.addBfAccount(ev, false);
   } else if (dropdown === "dataset") {
     dropdownEventID = ev?.id ?? "";

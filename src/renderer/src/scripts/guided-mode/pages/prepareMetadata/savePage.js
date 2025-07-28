@@ -23,19 +23,10 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     window.sodaJSONObj["subject-related-folders-and-files"] = getEntityObjForEntityType(
       "subject-related-folders-and-files"
     );
-    console.log(
-      "subject-related-folders-and-files",
-      window.sodaJSONObj["subject-related-folders-and-files"]
-    );
   }
   if (pageBeingLeftID === "guided-manifest-performance-entity-selector-tab") {
     window.sodaJSONObj["performance-related-folders-and-files"] = getEntityObjForEntityType(
       "performance-related-folders-and-files"
-    );
-
-    console.log(
-      "performance-related-folders-and-files",
-      window.sodaJSONObj["performance-related-folders-and-files"]
     );
   }
   if (pageBeingLeftID === "guided-resources-entity-addition-tab") {
@@ -82,8 +73,6 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
 
       return metadata;
     });
-
-    console.log("subjectsMetadata:", subjectsMetadata);
     window.sodaJSONObj["dataset_metadata"]["subjects"] = subjectsMetadata;
   }
 
@@ -93,7 +82,6 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     const samplesMetadata = samples.map((sample) => {
       return sample.metadata;
     });
-    console.log("samplesMetadata", samplesMetadata);
     window.sodaJSONObj["dataset_metadata"]["samples"] = samplesMetadata;
   }
 
@@ -106,15 +94,10 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     let fundingConsortium = "EXTERNAL";
     let milestonesAchieved = [];
     let milestoneCompletionDate = "";
-
-    console.log("fundingAgencyDropDownValue", fundingAgencyDropDownValue);
-    console.log("fundingConsortiumDropDownValue", fundingConsortiumDropDownValue);
-
     if (fundingAgencyDropDownValue !== null) {
       if (fundingAgencyDropDownValue === "NIH") {
         if (fundingConsortiumDropDownValue !== null) {
           fundingConsortium = fundingConsortiumDropDownValue;
-          console.log("Setting NIH funding consortium to", fundingConsortium);
           if (fundingConsortium === "SPARC") {
             // If SPARC is selected, store the input for milestones and completion date
             milestonesAchieved = useGlobalStore.getState().milestones || [];
@@ -139,9 +122,6 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       milestone_achieved: milestonesAchieved,
       milestone_completion_date: milestoneCompletionDate,
     };
-    console.log("submission metadata", window.sodaJSONObj["dataset_metadata"]["submission"]);
-    console.log("fundingAgency", fundingAgency);
-
     // Save the funding agency name for the dataset_description metadata
     window.sodaJSONObj["funding_agency"] = fundingAgency;
   }
@@ -219,12 +199,6 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     const numSamples = samplesMetadata ? samplesMetadata.length : 0;
     const numSites = sitesMetadata ? sitesMetadata.length : 0;
     const numPerformances = performancesMetadata ? performancesMetadata.length : 0;
-
-    console.log("subjectsMetadata", subjectsMetadata);
-    console.log("samplesMetadata", samplesMetadata);
-    console.log("sitesMetadata", sitesMetadata);
-    console.log("performancesMetadata", performancesMetadata);
-
     // Get keywords
     const keywordArray = window.getTagsFromTagifyElement(guidedDatasetKeywordsTagify);
     // Get study description inputs
@@ -302,11 +276,6 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
         number_of_performances: numPerformances,
       },
     };
-
-    console.log(
-      "dataset_description metadata",
-      JSON.stringify(window.sodaJSONObj["dataset_metadata"]["dataset_description"], null, 2)
-    );
   }
 
   if (pageBeingLeftID === "guided-create-readme-metadata-tab") {

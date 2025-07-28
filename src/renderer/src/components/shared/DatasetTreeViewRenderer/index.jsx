@@ -321,7 +321,6 @@ const FolderItem = ({
     !content ||
     (Object.keys(content.folders).length === 0 && Object.keys(content.files).length === 0);
   if (name === "left-ventricle") {
-    console.log("FolderItem", content);
   }
 
   if (folderIsEmpty) return null; // Don't render empty folders

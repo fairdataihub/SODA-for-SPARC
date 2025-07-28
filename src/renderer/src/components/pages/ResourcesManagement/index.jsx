@@ -61,7 +61,6 @@ const toOxfordCommaString = (arr) => {
 
 const matchesHttpPattern = (str) => {
   const pattern = /^https?:\/\/.+/;
-  console.log("matchesHttpPattern", str, pattern.test(str));
   return pattern.test(str);
 };
 

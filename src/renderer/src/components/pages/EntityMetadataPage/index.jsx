@@ -79,13 +79,9 @@ const EntityMetadataForm = () => {
   const entityBeingAddedParentSample = useGlobalStore(
     (state) => state.entityBeingAddedParentSample
   );
-  console.log("entityBeingAddedParentSubject", entityBeingAddedParentSubject);
-  console.log("entityBeingAddedParentSample", entityBeingAddedParentSample);
   const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const showFullMetadataFormFields = useGlobalStore((state) => state.showFullMetadataFormFields);
-  console.log("showFullMetadataFormFields", showFullMetadataFormFields);
-
   // Define standard prefixes for entity IDs
   const entityPrefixes = {
     subject: "sub-",
@@ -997,7 +993,6 @@ const EntityMetadataForm = () => {
  * Provides entity selection and metadata editing interface.
  */
 const EntityMetadataPage = ({ entityType }) => {
-  console.log("entityType", entityType);
   const showFullMetadataFormFields = useGlobalStore((state) => state.showFullMetadataFormFields);
   const generateSelectTextByEntityType = (entityType) => {
     switch (entityType) {

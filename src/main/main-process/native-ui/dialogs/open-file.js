@@ -589,8 +589,6 @@ ipcMain.on("file-explorer-dropped-datasets", (event, args) => {
 });
 
 ipcMain.on("open-folders-organize-datasets-dialog", async (event, args) => {
-  console.log("[main-process] Received open-folders-organize-datasets-dialog");
-  console.log("[main-process] Args:", args);
   if (!args?.importRelativePath) {
     console.error(
       "[main-process] The 'importRelativePath' property is required but was not provided."
@@ -599,20 +597,12 @@ ipcMain.on("open-folders-organize-datasets-dialog", async (event, args) => {
   }
 
   let mainWindow = BrowserWindow.getFocusedWindow();
-  console.log("[main-process] mainWindow:", !!mainWindow);
-
   const importRelativePath = args.importRelativePath;
-  console.log("[main-process] importRelativePath:", importRelativePath);
-
   let folders = await dialog.showOpenDialog(mainWindow, {
     properties: ["openDirectory", "multiSelections"],
     title: `Select folder(s) to import into SODA`,
   });
-
-  console.log("[main-process] Dialog result:", folders);
-
   if (folders.canceled) {
-    console.log("[main-process] Dialog was canceled by user.");
     return; // Exit if the dialog is canceled
   }
 
@@ -713,7 +703,6 @@ ipcMain.on("guided-select-local-dataset-generation-path", (event) => {
   });
 
   if (selectedPath && selectedPath[0]) {
-    console.log("Selected path for guided local dataset generation:", selectedPath[0]);
     event.sender.send("selected-guided-local-dataset-generation-path", selectedPath[0]);
   }
 });

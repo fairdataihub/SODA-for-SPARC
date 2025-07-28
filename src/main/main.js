@@ -145,7 +145,6 @@ const createPyProc = async () => {
         });
       }
       if (pyflaskProcess != null) {
-        console.log("child process success on port " + port);
         log.info("child process success on port " + port);
       } else {
         console.error("child process failed to start on port" + port);
@@ -153,7 +152,6 @@ const createPyProc = async () => {
       selectedPort = port;
     })
     .catch((err) => {
-      console.log(err);
     });
 };
 /**
@@ -171,7 +169,6 @@ const exitPyProc = async () => {
       "/t",
     ]);
   };
-  console.log("Killing the process");
   await killAllPreviousProcesses();
   // check if the platform is Windows
   if (process.platform === "win32") {
@@ -190,7 +187,6 @@ const exitPyProc = async () => {
   PORT = null;
 };
 const killAllPreviousProcesses = async () => {
-  console.log("Killing all previous processes");
   // kill all previous python processes that could be running.
   let promisesArray = [];
   let endRange = PORT + portRange;
@@ -472,7 +468,6 @@ ipcMain.on("restart_app", async () => {
 // passing in the spreadsheet data to pass to a modal
 // that will have a jspreadsheet for user edits
 ipcMain.handle("spreadsheet", (event, spreadsheet) => {
-  console.log("Spreadsheet invoked");
   const windowOptions = {
     minHeight: 450,
     width: 1120,
@@ -496,7 +491,6 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
       spreadSheetModal.destroy();
       // spreadSheetModal.close();
     } catch (e) {
-      console.log(e);
     }
   });
   spreadSheetModal.loadFile("./sections/spreadSheetModal/spreadSheet.html");
@@ -514,7 +508,6 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
       spreadSheetModal.destroy();
       // spreadSheetModal.close();
     } catch (e) {
-      console.log(e);
     }
   });
 });

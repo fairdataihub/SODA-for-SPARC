@@ -10,7 +10,6 @@ ipcMain.on("open-entity-id-import-selector", (event) => {
   });
 
   if (folderPaths && folderPaths.length > 0) {
-    console.log("Selected folder paths: ", folderPaths);
     // Send all selected folder paths back to the renderer process
     event.sender.send("selected-create-dataset-structure-spreadsheet-pah", folderPaths);
   }

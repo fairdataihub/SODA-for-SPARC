@@ -5,7 +5,6 @@ while (!window.baseHtmlLoaded) {
 }
 
 const guidedDatasetKeyWordsInput = document.getElementById("guided-ds-dataset-keywords");
-console.log("guidedDatasetKeyWordsInput", guidedDatasetKeyWordsInput);
 export const guidedDatasetKeywordsTagify = new Tagify(guidedDatasetKeyWordsInput, {
   duplicates: false,
   maxTags: 5,

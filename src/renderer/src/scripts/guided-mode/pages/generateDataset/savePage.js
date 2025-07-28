@@ -8,15 +8,11 @@ import {
 import { isCheckboxCardChecked } from "../../../../stores/slices/checkboxCardSlice";
 import { getSodaTextInputValue } from "../../../../stores/slices/sodaTextInputSlice";
 export const savePageGenerateDataset = async (pageBeingLeftID) => {
-  console.log(`Saving dataset structure page: ${pageBeingLeftID}`);
-
   const errorArray = [];
 
   // Check if the page being left is part of a page set
   const pageBeingLeftElement = document.getElementById(pageBeingLeftID);
   const pageBeingLeftDataSet = pageBeingLeftElement.dataset;
-  console.log("pageBeingLeftDataSet prepare structure", pageBeingLeftDataSet);
-
   if (pageBeingLeftID === "guided-dataset-generation-options-tab") {
     const generateDatasetLocallyCardChecked = isCheckboxCardChecked("generate-dataset-locally");
     const generateDatasetOnPennsieveCardChecked = isCheckboxCardChecked(

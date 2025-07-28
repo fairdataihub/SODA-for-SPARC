@@ -1,6 +1,0 @@
-Site ID: RegionA
-Related Subject: Subject01
-Related Sample: Tissue01
-Collection Date: 7/23/2025
-Anatomical Location: RegionA
-Coordinates: X:45, Y:0, Z:0

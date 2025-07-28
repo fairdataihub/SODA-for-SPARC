@@ -155,7 +155,6 @@ export const processEntityData = (rawData, entityType) => {
     if (originalId !== undefined && originalId !== null) {
       originalId = String(originalId);
     }
-    console.log("originalId", originalId, "idField", idField, "item", item, "prefix", prefix);
     const normalizedId = normalizeEntityId(prefix, originalId);
 
     // For debugging - log if there's a potential issue with normalization
@@ -188,13 +187,8 @@ export const importEntitiesFromExcel = async (file, entityType) => {
   try {
     // Read the data
     const rawData = await readExcelFile(file);
-
-    console.log("rawData", rawData);
-
     // Process and validate data
     const processResult = processEntityData(rawData, entityType);
-    console.log("processResult", processResult);
-
     return processResult;
   } catch (error) {
     console.error(`Error processing ${entityType} data:`, error);

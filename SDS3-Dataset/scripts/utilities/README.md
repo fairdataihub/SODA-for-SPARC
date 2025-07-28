@@ -1,8 +1,0 @@
-# Data Processing Utilities
-
-This directory contains utility scripts for processing and analyzing the SDS3 dataset.
-
-## Contents
-
-- data_preprocessing.py: Functions for normalizing and preprocessing measurement data
-- Add more utilities as needed

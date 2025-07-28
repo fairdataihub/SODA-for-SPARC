@@ -20,9 +20,6 @@ while (!window.baseHtmlLoaded) {
 
 window.createValidationReport = async (sodaJSONObj) => {
   const clientUUID = uuid();
-
-  console.log(sodaJSONObj);
-
   let manifestJSONResponse = await client.post(
     "/skeleton_dataset/manifest_json",
     {

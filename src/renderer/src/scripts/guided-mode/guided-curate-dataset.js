@@ -103,8 +103,6 @@ window.guidedSetCurationTeamUI = () => {
 
 // Function is for displaying DOI information on the Guided UI
 export const guidedSetDOIUI = (datasetDOI) => {
-  console.log("Setting DOI information in Guided UI:", datasetDOI);
-
   // If the DOI is not found or is false, show the Reserve DOI button
   // Otherwise, hide the Reserve DOI button
   const buttonReserveDOI = document.getElementById("guided-button-reserve-doi");
@@ -113,7 +111,6 @@ export const guidedSetDOIUI = (datasetDOI) => {
     $("#guided--para-doi-info").text(datasetDOI);
   } else {
     buttonReserveDOI.classList.remove("hidden");
-    console.log("Showing Reserve DOI button in Guided UI");
     $("#guided--para-doi-info").text("No DOI found for this dataset");
   }
 };
@@ -193,12 +190,6 @@ const guidedSubmitDatasetForReview = async (embargoReleaseDate = "") => {
       didOpen: () => Swal.showLoading(),
     });
 
-    console.log("[Dataset Submission] Starting process", {
-      embargoReleaseDate,
-      account: currentAccount,
-      datasetId: currentDataset,
-    });
-
     // Perform API call
     const submissionType = embargoReleaseDate === "" ? "publication" : "embargo";
     const response = await api.submitDatasetForPublication(
@@ -207,9 +198,6 @@ const guidedSubmitDatasetForReview = async (embargoReleaseDate = "") => {
       embargoReleaseDate,
       submissionType
     );
-
-    console.log("[Dataset Submission] API response:", response);
-
     // Track success
     window.electron.ipcRenderer.send(
       "track-kombucha",
@@ -287,15 +275,9 @@ const guidedUnSubmitDatasetForReview = async () => {
       backdrop: "rgba(0,0,0,0.4)",
       didOpen: () => Swal.showLoading(),
     });
-    console.log("[Dataset Unsubmission] Starting process", {
-      account: currentAccount,
-      datasetId: currentDataset,
-    });
 
     // Perform API call
     const response = await api.unSubmitDatasetForPublication(currentAccount, currentDataset);
-    console.log("[Dataset Unsubmission] API response:", response);
-
     // Update UI state
     await window.showPublishingStatus("noClear", "guided");
     // Track success
@@ -307,12 +289,7 @@ const guidedUnSubmitDatasetForReview = async () => {
 export const guidedSetPublishingStatusUI = async () => {
   const currentAccount = window.sodaJSONObj["ps-account-selected"]["account-name"];
   const currentDataset = window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
-
-  console.log("[PrepublishingFlow] Using account:", currentAccount);
-  console.log("[PrepublishingFlow] Using dataset:", currentDataset);
-
   try {
-    console.log("[PrepublishingFlow] Fetching publishing status...");
     const res = await client.get(
       `/disseminate_datasets/datasets/${currentDataset}/publishing_status`,
       { params: { selected_account: currentAccount } }
@@ -320,10 +297,6 @@ export const guidedSetPublishingStatusUI = async () => {
 
     const publishingStatus = res.data?.publishing_status;
     const reviewStatus = res.data?.review_request_status;
-
-    console.log("Publishing status:", publishingStatus);
-    console.log("Review status:", reviewStatus);
-
     const statusMessages = {
       draft: "Dataset is not under review currently",
       cancelled: "Dataset is not under review currently",
@@ -385,12 +358,8 @@ window.guidedModifyCurationTeamAccess = async (action) => {
 
       const datasetId = window?.sodaJSONObj?.["digital-metadata"]?.["pennsieve-dataset-id"];
       if (!datasetId) throw new Error("Dataset ID is missing, cannot share with Curation Team.");
-
-      console.log("[Curation Access] Starting share flow for dataset:", datasetId);
-
       // Check role
       const role = await api.getDatasetRole(datasetId);
-      console.log("[Curation Access] User role:", role);
       if (role !== "owner") {
         await swalShowError(
           "Insufficient Permissions",
@@ -401,8 +370,6 @@ window.guidedModifyCurationTeamAccess = async (action) => {
       }
 
       const datasetInformation = await api.getDataset(datasetId);
-      console.log("[Curation Access] Dataset information:", datasetInformation);
-
       const datasetIsPublishable = datasetInformation?.canPublish === true;
       if (!datasetIsPublishable) {
         await swalShowError(
@@ -548,9 +515,6 @@ window.guidedModifyCurationTeamAccess = async (action) => {
         showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
         hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
       });
-
-      console.log("[Curation Access] Dataset unshared successfully");
-
       setButtonState(unshareBtn, { disabled: false, loading: false });
     } catch (error) {
       console.error("[Curation Access] Unshare flow error:", error);
@@ -641,9 +605,7 @@ const deleteProgresFile = async (progressFileName) => {
     progressFileName + ".json"
   );
   //delete the progress file
-  window.fs.unlinkSync(progressFilePathToDelete, (err) => {
-    console.log(err);
-  });
+  window.fs.unlinkSync(progressFilePathToDelete, (err) => {});
 };
 
 // Add event listener to open dataset link in new tab
@@ -748,10 +710,6 @@ window.diffCheckManifestFiles = (newManifestData, existingManifestData) => {
   if (!existingManifestData["headers"] || !existingManifestData["data"]) {
     return newManifestData;
   }
-
-  console.log("newManifestData", newManifestData);
-  console.log("existingManifestData", existingManifestData);
-
   const columnValuesNotToUseOldValuesFor = new Set(["filename", "timestamp", "file type"]);
 
   const newManifestDataHeaders = newManifestData["headers"];
@@ -766,7 +724,6 @@ window.diffCheckManifestFiles = (newManifestData, existingManifestData) => {
   // Add headers from the existing manifest that are not present in the new manifest
   for (const header of existingManifestDataHeaders) {
     if (!newManifestDataHeaders.includes(header)) {
-      console.log(`Adding header "${header}" to combined manifest data headers`);
       combinedManifestDataHeaders.push(header);
       // Add empty values for the new column in each row of the combined data
       for (const row of combinedManifestDataData) {
@@ -787,9 +744,6 @@ window.diffCheckManifestFiles = (newManifestData, existingManifestData) => {
     }
     existingManifestDataHashTable[relativePath] = fileObj;
   }
-
-  console.log("existingManifestDataHashTable", existingManifestDataHashTable);
-
   // Update rows in the combined data by looping over the new manifest data
   for (const row of combinedManifestDataData) {
     const relativePath = row[0];
@@ -1408,14 +1362,9 @@ const handleAddOrEditContributorHeaderUI = (boolEditingContributor) => {
     `;
   }
   const existingContributorORCiDs = getExistingContributorORCiDs();
-  console.log("existingContributorORCiDs", existingContributorORCiDs);
-
   const locallyStoredContributorArray = window.loadStoredContributors().filter((contributor) => {
     return !existingContributorORCiDs.includes(contributor["contributor_orcid_id"]);
   });
-
-  console.log("locallyStoredContributorArray", locallyStoredContributorArray);
-
   // If no stored contributors are found, use the default header
   if (locallyStoredContributorArray.length === 0) {
     return `
@@ -1637,13 +1586,6 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
         .getElementById("guided-contributor-affiliation-input")
         .value.trim();
       const contributorRole = document.getElementById("guided-contributor-role-select").value;
-
-      console.log("contributorFirstNameValue", contributorFirstNameValue);
-      console.log("contributorLastNameValue", contributorLastNameValue);
-      console.log("contributorOrcid", contributorOrcid);
-      console.log("contributorAffiliation", contributorAffiliation);
-      console.log("contributorRole", contributorRole);
-
       if (
         !contributorFirstNameValue ||
         !contributorLastNameValue ||
@@ -1689,7 +1631,6 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
 
       try {
         if (contributorIdToEdit) {
-          console.log("Editing existing contributor with ORCID:", contributorIdToEdit);
           // If editing an existing contributor, update their data
           editContributorByOrcid(
             contributorIdToEdit,
@@ -1699,7 +1640,6 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
             contributorAffiliation,
             contributorRole
           );
-          console.log("Contributor edited successfully");
         } else {
           // If adding a new contributor, add them to the dataset
           addContributor(
@@ -1709,7 +1649,6 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
             contributorAffiliation,
             contributorRole // keep role as an array for compatibility
           );
-          console.log("Contributor added successfully");
         }
       } catch (error) {
         return Swal.showValidationMessage(error);
@@ -3499,7 +3438,6 @@ document.querySelector("#guided-generate-dataset-locally-button").addEventListen
 window.electron.ipcRenderer.on(
   "selected-guided-local-dataset-generation-path",
   async (event, filePath) => {
-    console.log("Calling from the renderer with filePath:", filePath);
     await guidedGenerateDatasetLocally(filePath);
   }
 );
@@ -3642,7 +3580,6 @@ const guidedSaveRCFile = async (type) => {
   }
   window.fs.writeFile(destinationPath, data, (err) => {
     if (err) {
-      console.log(err);
       window.log.error(err);
       var emessage = userErrorMessage(err);
       Swal.fire({
@@ -3662,7 +3599,6 @@ const guidedSaveRCFile = async (type) => {
           : window.path.join(window.path.dirname(destinationPath), "README.txt");
       window.fs.rename(destinationPath, newName, async (err) => {
         if (err) {
-          console.log(err);
           window.log.error(err);
           Swal.fire({
             title: `Failed to generate the ${type}.txt file`,
@@ -3816,7 +3752,6 @@ const guidedSaveDescriptionContributorInformation = () => {
 };
 
 const doTheHack = async () => {
-  console.log("Doing the hack");
   // wait for a second
   await new Promise((resolve) => setTimeout(resolve, 5000));
   document.getElementById("button-homepage-guided-mode").click();
@@ -3859,8 +3794,6 @@ dragDropElementId.addEventListener("click", (event) => {
 dragDropElementId.addEventListener("drop", (event) => {
   event.preventDefault();
   const itemsDroppedInFileExplorer = Array.from(event.dataTransfer.files).map((file) => file.path);
-  console.log("Items dropped in file explorer:", itemsDroppedInFileExplorer);
-
   window.electron.ipcRenderer.send("file-explorer-dropped-datasets", {
     filePaths: itemsDroppedInFileExplorer,
     importRelativePath: "data/",

@@ -25,11 +25,6 @@ const clientError = (error) => {
     log.error(JSON.stringify(error.config));
     log.error("Response Headers: ");
     log.error(JSON.stringify(error_headers));
-
-    console.log(`Error caused from: ${error_message}`);
-    console.log(`Response Status: ${error_status}`);
-    console.log("Headers:");
-    console.log(error_headers);
   } else if (error.request) {
     // The request was made but no response was received
     log.error(error.request);
@@ -45,7 +40,6 @@ const clientError = (error) => {
 const userErrorMessage = (error) => {
   let errorMessage = "";
   if (error.response) {
-    console.log("userResponse");
     // The request was made and the server responded with a status code
     // that falls out of the range of 2xx
     errorMessage = `${error.response.data.message}`;

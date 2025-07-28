@@ -41,10 +41,7 @@ while (!window.baseHtmlLoaded) {
 }
 
 export const openPagePrepareMetadata = async (targetPageID) => {
-  console.log(`Opening prepare metadata page: ${targetPageID}`);
-
   if (targetPageID === "guided-pennsieve-metadata-intro-tab") {
-    console.log("Opening Pennsieve metadata intro page");
     // Page-specific initialization code will go here
   }
 
@@ -121,7 +118,6 @@ export const openPagePrepareMetadata = async (targetPageID) => {
 
     // If the consortium is SPARC, set the milestones and milestone date
     if (fundingConsortium === "SPARC") {
-      console.log("milestoneCompletionDate", milestoneCompletionDate);
       setMilestones(milestoneAchieved);
       setMilestoneDate(milestoneCompletionDate ? new Date(milestoneCompletionDate) : null);
     } else {
@@ -150,8 +146,6 @@ export const openPagePrepareMetadata = async (targetPageID) => {
   }
 
   if (targetPageID === "guided-dataset-structure-review-tab") {
-    console.log("Opening dataset structure review page");
-
     // Create standardized structure
     const standardizedDatasetStructure = createStandardizedDatasetStructure(
       window.datasetStructureJSONObj,
@@ -218,12 +212,6 @@ export const openPagePrepareMetadata = async (targetPageID) => {
   }
 
   if (targetPageID === "guided-create-description-metadata-tab") {
-    console.log("Opening dataset description metadata page");
-    console.log(
-      "Dataset Description Metadata:",
-      window.sodaJSONObj["dataset_metadata"]?.["dataset_description"]
-    );
-
     const datasetMetadata = window.sodaJSONObj["dataset_metadata"]?.["dataset_description"] || {};
     const basicInformation = datasetMetadata?.["basic_information"] || {};
     const studyInformation = datasetMetadata?.["study_information"] || {};
@@ -270,25 +258,20 @@ export const openPagePrepareMetadata = async (targetPageID) => {
   }
 
   if (targetPageID === "guided-dataset-metadata-intro-tab") {
-    console.log("Opening dataset metadata intro page");
     // Initialize any required components or state for the intro page
   }
 
   if (targetPageID === "guided-subjects-metadata-tab") {
-    console.log("Opening subjects metadata page");
     // This has componentType "entity-metadata-page" which likely handles most of the page functionality
     setEntityType("subjects");
   }
 
   if (targetPageID === "guided-samples-metadata-tab") {
-    console.log("Opening samples metadata page");
     // This has componentType "entity-metadata-page" which likely handles most of the page functionality
     setEntityType("samples");
   }
 
   if (targetPageID === "guided-create-changes-metadata-tab") {
-    console.log("Opening CHANGES metadata page");
-
     // Handle loading existing CHANGES content if available
     const changesMetadata = window.sodaJSONObj["dataset_metadata"]["CHANGES"];
     const changesTextArea = document.getElementById("guided-textarea-create-changes");

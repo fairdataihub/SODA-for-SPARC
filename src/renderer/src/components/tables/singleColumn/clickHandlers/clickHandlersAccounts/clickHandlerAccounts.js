@@ -21,7 +21,6 @@ export const accountsClickHandlers = async (index) => {
       testPennsieveConnectionClickHandler();
       break;
     default:
-      console.log("Invalid row index");
       break;
   }
 };

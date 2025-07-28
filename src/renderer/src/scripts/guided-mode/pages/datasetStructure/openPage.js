@@ -17,8 +17,6 @@ while (!window.baseHtmlLoaded) {
 }
 
 export const openPageDatasetStructure = async (targetPageID) => {
-  console.log(`Opening dataset structure page: ${targetPageID}`);
-
   // Add handlers for other pages without componentType
   if (targetPageID === "guided-unstructured-data-import-tab") {
     setTreeViewDatasetStructure(window.datasetStructureJSONObj, []);
@@ -26,51 +24,41 @@ export const openPageDatasetStructure = async (targetPageID) => {
   }
 
   if (targetPageID === "guided-entity-addition-method-selection-tab") {
-    console.log("Opening Entity Addition Method selection page");
   }
 
   if (targetPageID === "guided-dataset-content-tab") {
-    console.log("Opening dataset content selector page");
     // Component with type "dataset-content-selector" will handle most of the logic
   }
 
   if (targetPageID === "data-categorization-tab") {
-    console.log("Opening data categorization page");
     // Component with type "data-categorization-page" will handle most of the logic
   }
 
   if (targetPageID === "guided-manual-dataset-entity-and-metadata-tab") {
-    console.log("Opening manual dataset entity and metadata page");
     // Component with type "entity-metadata-page" will handle most of the logic
   }
 
   if (targetPageID === "guided-spreadsheet-import-dataset-entity-and-metadata-tab") {
-    console.log("Opening spreadsheet import dataset entity and metadata page");
     // Component with type "entity-spreadsheet-import-page" will handle most of the logic
   }
 
   if (targetPageID === "guided-sites-selection-tab") {
-    console.log("Opening sites selection page");
     // Component with type "data-categorization-page" will handle most of the logic
   }
 
   if (targetPageID === "guided-samples-selection-tab") {
-    console.log("Opening samples selection page");
     // Component with type "data-categorization-page" will handle most of the logic
   }
 
   if (targetPageID === "guided-subjects-selection-tab") {
-    console.log("Opening subjects selection page");
     // Component with type "data-categorization-page" will handle most of the logic
   }
 
   if (targetPageID === "guided-performances-entity-addition-tab") {
-    console.log("Opening performances entity addition page");
     // Component with type "performance-id-management-page" will handle most of the logic
   }
 
   if (targetPageID === "guided-Performances-selection-tab") {
-    console.log("Opening performances selection page");
     // Component with type "data-categorization-page" will handle most of the logic
   }
 
@@ -78,12 +66,10 @@ export const openPageDatasetStructure = async (targetPageID) => {
   }
 
   if (targetPageID === "guided-modalities-data-selection-tab") {
-    console.log("Opening modalities Data Selection page");
     // Component with type "data-categorization-page" will handle most of the logic
   }
 
   if (targetPageID === "guided-dataset-structure-and-manifest-review-tab") {
-    console.log("Opening page guided-dataset-structure-and-manifest-review-tab");
     // Delete existing manifest files in the dataset structure
     Object.values(window.datasetStructureJSONObj.folders).forEach((folder) => {
       delete folder.files["manifest.xlsx"];
@@ -159,10 +145,6 @@ export const openPageDatasetStructure = async (targetPageID) => {
 
     setTreeViewDatasetStructure(standardizedStructure, []);
 
-    console.log(
-      "standardizedStructure before manifest",
-      JSON.stringify(standardizedStructure, null, 2)
-    );
     const sodaCopy = {
       ...window.sodaJSONObj,
       "metadata-files": {},
@@ -226,16 +208,11 @@ export const openPageDatasetStructure = async (targetPageID) => {
         return pathA.localeCompare(pathB);
       });
     };
-
-    console.log("Before sort: ", newManifestData.data);
-
     newManifestData.data = sortManifestDataRows(newManifestData.data);
 
     const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
 
     const updateEntityColumn = (manifestDataRows, datasetEntityObj) => {
-      console.log("manifestDataRows", manifestDataRows);
-      console.log("datasetEntityObj", datasetEntityObj);
       manifestDataRows.forEach((row) => {
         let path = row[0]; // Path is in the first column
         // replace the first part of the path with "data/"
@@ -244,30 +221,22 @@ export const openPageDatasetStructure = async (targetPageID) => {
           pathSegments[0] = "data";
           path = pathSegments.join("/");
         }
-
-        console.log("path2:", path);
         let entityList = [];
 
         const entityTypes = ["sites", "samples", "subjects", "performances"];
 
         for (const type of entityTypes) {
           const entities = datasetEntityObj?.[type] || {};
-          console.log(`datasetEntityObj ${type}:`, Object.keys(entities));
-
           for (const [entity, paths] of Object.entries(entities)) {
             if (paths?.[path]) {
-              console.log(`Found ${type} entity: ${entity} in path: ${path}`);
               const entityData = getEntityDataById(entity);
               if (!entityData) {
                 console.error(`Entity data not found for ID: ${entity}`);
                 continue;
               }
-              console.log("Entity dataz: ", entityData);
-
               entityList.push(entityData.id);
               if (entityData?.["metadata"]?.["sample_id"]) {
                 const sampleId = entityData["metadata"]["sample_id"];
-                console.log("found sample id", sampleId);
                 entityList.push(sampleId);
               }
 
@@ -291,8 +260,6 @@ export const openPageDatasetStructure = async (targetPageID) => {
 
     const updateModalitiesColumn = (manifestDataRows, datasetEntityObj) => {
       const modalitiesColumnIndex = newManifestData.headers.indexOf("data modality");
-      console.log("modalitiesColumnIndex", modalitiesColumnIndex);
-
       manifestDataRows.forEach((row) => {
         // Use the updated path (replace high-level folder with data/)
         let path = row[0]; // Path is in the first column
@@ -320,8 +287,6 @@ export const openPageDatasetStructure = async (targetPageID) => {
     // Update the column values for entities and modalities
     updateEntityColumn(newManifestData.data, datasetEntityObj);
     updateModalitiesColumn(newManifestData.data, datasetEntityObj);
-
-    console.log("After sort: ", newManifestData.data);
     window.sodaJSONObj["guided-manifest-file-data"] = window.sodaJSONObj[
       "guided-manifest-file-data"
     ]

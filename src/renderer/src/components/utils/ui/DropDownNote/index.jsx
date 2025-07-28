@@ -46,7 +46,6 @@ const renderDataCategoriesNote = (datasetIncludesCode) => (
 );
 
 const DropDownNote = ({ id }) => {
-  console.log("DropDownNote rendered with id:", id);
   const [isOpen, toggleOpen] = useToggle([false, true]);
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const datasetIncludesSubjects = selectedEntities.includes("subjects");

@@ -2602,19 +2602,13 @@ window.showPublishingStatus = async (callback, curationMode = "") => {
     }
     return;
   }
-
-  console.log("Fetching publishing status for dataset:", currentDataset);
-
   try {
     const { data: res } = await client.get(
       `/disseminate_datasets/datasets/${currentDataset}/publishing_status`,
       { params: { selected_account: currentAccount } }
     );
-    console.log("Publishing status response:", res);
-
     // Inline publishStatusOutputConversion logic here
     var reviewStatus = res["review_request_status"];
-    console.log("Review status:", reviewStatus);
     var outputMessage = "";
     if (reviewStatus === "draft" || reviewStatus === "cancelled") {
       outputMessage = "Dataset is not under review currently";
@@ -3019,7 +3013,6 @@ organizeDSaddFolders.addEventListener("click", function () {
 window.electron.ipcRenderer.on(
   "selected-folders-organize-datasets",
   async (event, { filePaths: importedFolders, importRelativePath }) => {
-    console.log("importRelativePath:", importRelativePath);
     try {
       if (!importRelativePath) {
         throw new Error("The 'importRelativePath' property is missing in the response.");
@@ -3027,19 +3020,11 @@ window.electron.ipcRenderer.on(
 
       // Use the current file explorer path or the provided relative path
       const currentFileExplorerPath = `dataset_root/${importRelativePath}`;
-
-      console.log("currentFileExplorerPath we are merging into at", currentFileExplorerPath);
-
       const builtDatasetStructureFromImportedFolders =
         await window.buildDatasetStructureJsonFromImportedData(
           importedFolders,
           currentFileExplorerPath
         );
-
-      console.log(
-        "builtDatasetStructureFromImportedFolders after importing data",
-        builtDatasetStructureFromImportedFolders
-      );
 
       // Add the imported folders to the dataset structure
       await mergeLocalAndRemoteDatasetStructure(
@@ -3516,22 +3501,14 @@ const mergeLocalAndRemoteDatasetStructure = async (
   datasetStructureToMerge,
   currentFileExplorerPath
 ) => {
-  console.log("datasetStructureToMerge", datasetStructureToMerge);
-  console.log("currentFileExplorerPath", currentFileExplorerPath);
   const duplicateFiles = [];
 
   const traverseAndMergeDatasetJsonObjects = async (datasetStructureToMerge, recursedFilePath) => {
     const currentNestedPathArray = window.getGlobalPathFromString(recursedFilePath);
-    console.log("currentNestedPathArray", currentNestedPathArray);
-    console.log("window.datasetStructureJSONObj", window.datasetStructureJSONObj);
     const existingDatasetJsonAtPath = window.getRecursivePath(
       currentNestedPathArray.slice(1),
       window.datasetStructureJSONObj
     );
-    console.log("existingDatasetJsonAtPath", existingDatasetJsonAtPath);
-    console.log("existingDatasetJsonAtPath['folders']", existingDatasetJsonAtPath["folders"]);
-    console.log("existingDatasetJsonAtPath['files']", existingDatasetJsonAtPath["files"]);
-
     const ExistingFoldersAtPath = Object.keys(existingDatasetJsonAtPath["folders"]) || [];
     const ExistingFilesAtPath = Object.keys(existingDatasetJsonAtPath["files"]) || [];
     const foldersBeingMergedToPath = Object.keys(datasetStructureToMerge["folders"]) || [];
@@ -3623,9 +3600,6 @@ const mergeLocalAndRemoteDatasetStructure = async (
       }
     }
   }
-
-  console.log("Successfully merged local and remote dataset structure");
-
   const currentPathArray = window.getGlobalPath(currentFileExplorerPath); // ['dataset_root', 'code']
   const nestedJsonDatasetStructure = window.getRecursivePath(
     currentPathArray.slice(1),
@@ -3638,8 +3612,6 @@ const mergeLocalAndRemoteDatasetStructure = async (
     window.organizeDSglobalPath,
     window.datasetStructureJSONObj
   );
-  console.log("currentPathArray", currentPathArray.slice(1));
-
   setTreeViewDatasetStructure(window.datasetStructureJSONObj);
 };
 
@@ -3648,9 +3620,6 @@ const mergeNewDatasetStructureToExistingDatasetStructureAtPath = async (
   relativePathToMergeObjectInto
 ) => {
   try {
-    console.log("builtDatasetStructure", builtDatasetStructure);
-    console.log("relativePathToMergeObjectInto", relativePathToMergeObjectInto);
-
     // Step 2: Add the imported data to the dataset structure (This function handles duplicate files, etc)
     await mergeLocalAndRemoteDatasetStructure(builtDatasetStructure, currentFileExplorerPath);
     console.log(
@@ -3669,8 +3638,6 @@ const mergeNewDatasetStructureToExistingDatasetStructureAtPath = async (
       window.organizeDSglobalPath,
       window.datasetStructureJSONObj
     );
-    console.log("currentPathArray", currentPathArray.slice(1));
-
     setTreeViewDatasetStructure(window.datasetStructureJSONObj);
 
     // Step 4: Update successful, show success message
@@ -5309,9 +5276,6 @@ const initiate_generate = async (resume = false) => {
   returnButton.type = "button";
   returnButton.id = "returnButton";
   returnButton.innerHTML = "Return to progress";
-
-  console.log(window.sodaJSONObj);
-
   // Event handler for navigation menu's progress bar clone
   returnButton.onclick = function () {
     organizeDataset.disabled = false;

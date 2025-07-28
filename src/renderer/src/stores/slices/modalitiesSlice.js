@@ -16,7 +16,6 @@ export const modalityIsSelected = (modality) => {
 };
 
 export const toggleModalitySelection = (modality) => {
-  console.log("toggleModality " + modality);
   useGlobalStore.setState(
     produce((state) => {
       if (state.selectedModalities.includes(modality)) {

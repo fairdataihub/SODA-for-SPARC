@@ -31,24 +31,18 @@ const ContextMenu = () => {
     }
 
     if (event.target.closest("#context-menu") || event.target.closest(".mantine-Menu-dropdown")) {
-      console.log("✅ Click was inside the context menu or portal. Ignoring...");
     } else {
-      console.log("❌ Click was outside the context menu. Closing menu...");
       closeContextMenu();
     }
   }, []);
 
   useEffect(() => {
     if (!contextMenuIsOpened) {
-      console.log("🛑 Context menu is not open. Skipping listener setup.");
       return;
     }
-
-    console.log("✅ Adding click outside listener.");
     document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
-      console.log("🔄 Cleaning up click outside listener.");
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [contextMenuIsOpened, handleClickOutside]);

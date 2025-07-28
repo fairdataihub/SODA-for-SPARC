@@ -22,13 +22,11 @@ function deleteFolderRecursive(folderPath) {
       }
     });
     fs.rmdirSync(folderPath);
-    console.log(`Deleted existing directory: ${folderPath}`);
   }
 }
 
 // Clean up existing dataset folder if it exists
 if (fs.existsSync(rootDir)) {
-  console.log(`Found existing ${rootDir} directory. Deleting...`);
   deleteFolderRecursive(rootDir);
 }
 
@@ -379,9 +377,6 @@ function createDir(dirPath) {
 function createFile(filePath, content) {
   fs.writeFileSync(filePath, content);
 }
-
-console.log(`Creating new ${rootDir} directory...`);
-
 // Create SDS3 dataset structure
 createDir(rootDir);
 

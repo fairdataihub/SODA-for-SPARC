@@ -109,7 +109,6 @@ export const setActiveEntity = (activeEntity) => {
 
   if (activeEntity.startsWith("sam-")) {
     const existingSiteIds = getExistingSites().map((site) => site.id);
-    console.log("Existing sites: ", getExistingSites());
     const siteFilter = [
       {
         type: "sites",
@@ -138,7 +137,6 @@ export const setActiveEntity = (activeEntity) => {
       },
     ];
     const combinedFilter = [...siteFilter, ...sampleFilter];
-    console.log("Setting entity filter: ", combinedFilter);
     setEntityFilter(
       [{ type: "high-level-folder-data-categorization", names: ["Experimental"] }],
       combinedFilter
@@ -223,10 +221,6 @@ export const filterRemovedFilesFromDatasetEntityObj = (entityObj) => {
             filteredEntityObj[entityType][entityName] = {};
           }
           filteredEntityObj[entityType][entityName][fileName] = entityData[fileName];
-        } else {
-          console.log(
-            `File ${fileName} in entity ${entityName} of type ${entityType} has been removed from the dataset structure.`
-          );
         }
       }
     }
@@ -235,7 +229,6 @@ export const filterRemovedFilesFromDatasetEntityObj = (entityObj) => {
 };
 export const getSubjectEntities = () => {
   const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
-  console.log("datasetEntityObj", datasetEntityObj);
 };
 
 // Remove default value to require explicit parameter

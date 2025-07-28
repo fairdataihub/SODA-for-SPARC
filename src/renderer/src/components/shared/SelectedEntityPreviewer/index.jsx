@@ -7,7 +7,6 @@ const SelectedEntityPreviewer = () => {
     return null;
   }
   const activeEntityData = getEntityDataById(activeEntity);
-  console.log("activeEntityData", activeEntityData);
   if (!activeEntityData) {
     return null;
   }

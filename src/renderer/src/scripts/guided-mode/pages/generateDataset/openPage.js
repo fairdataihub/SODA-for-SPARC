@@ -17,7 +17,6 @@ import api from "../../../others/api/api.js";
 
 export const openPageGenerateDataset = async (targetPageID) => {
   const targetPageDataset = document.getElementById(targetPageID).dataset;
-  console.log(`Opening page: ${targetPageID}`, targetPageDataset);
   if (targetPageID === "guided-dataset-generation-options-tab") {
     ["generate-dataset-locally", "generate-dataset-on-pennsieve"].forEach((key) => {
       const isChecked = window.sodaJSONObj[key] === true;
@@ -28,8 +27,6 @@ export const openPageGenerateDataset = async (targetPageID) => {
   if (targetPageID === "guided-generate-dataset-locally") {
     // Create a deep copy of the dataset structure JSON object
     const datasetStructureJSONObjCopy = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
-    console.log("datasetStructureJSONObjCopy", datasetStructureJSONObjCopy);
-
     const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
     const standardizedDatasetStructure = createStandardizedDatasetStructure(
       window.datasetStructureJSONObj,
@@ -39,8 +36,6 @@ export const openPageGenerateDataset = async (targetPageID) => {
 
     // Restore the original dataset structure
     window.datasetStructureJSONObj = datasetStructureJSONObjCopy;
-    console.log("datasetStructureJSONObj restored", window.datasetStructureJSONObj);
-
     guidedResetLocalGenerationUI();
   }
 
@@ -123,8 +118,6 @@ export const openPageGenerateDataset = async (targetPageID) => {
   if (targetPageID === "guided-assign-license-tab") {
     // Get the selected dataset type ("computational" or "experimental")
     const datasetType = guidedGetDatasetType();
-    console.log("dtype", datasetType);
-
     // Update the license select instructions based on the selected dataset type
     const licenseSelectInstructions = document.getElementById("license-select-text");
     if (datasetType === "Computational") {

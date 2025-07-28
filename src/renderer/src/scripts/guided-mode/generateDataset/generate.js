@@ -65,7 +65,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
 
     // If retrying upload, skip to upload step
     if (window.retryGuidedMode) {
-      console.log("Retry guided mode block being called");
       window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
       // --- Ensure all required keys are set for retry upload ---
       window.sodaJSONObj["generate-dataset"] = {
@@ -297,27 +296,6 @@ const trackLocalDatasetGenerationProgress = async (standardizedDatasetStructure)
 
 // Track the status of Pennsieve dataset upload
 const trackPennsieveDatasetGenerationProgress = async (standardizedDatasetStructure) => {
-  let numberOfFilesToUpload = countFilesInDatasetStructure(standardizedDatasetStructure);
-  // Count the number of keys in the dataset_metadata obj and add it to the number of files to upload
-  const numberOfMetadataFilesToUpload = Object.keys(
-    window.sodaJSONObj["dataset_metadata"] || {}
-  ).length;
-  // console.log(
-  //   "[Pennsieve Progress] Number of metadata files to upload:",
-  //   numberOfMetadataFilesToUpload
-  // );
-  numberOfFilesToUpload += numberOfMetadataFilesToUpload;
-  // console.log("[Pennsieve Progress] Total number of files to upload:", numberOfFilesToUpload);
-
-  // Get dataset size
-  const localDatasetSizeReq = await client.post(
-    "/curate_datasets/dataset_size",
-    { soda_json_structure: window.sodaJSONObj },
-    { timeout: 0 }
-  );
-  const localDatasetSizeInBytes = localDatasetSizeReq.data.dataset_size;
-  // console.log("[Local] Dataset size in bytes:", localDatasetSizeInBytes);
-
   window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
 
   const fetchProgressData = async () => {
@@ -397,7 +375,6 @@ const trackPennsieveDatasetGenerationProgress = async (standardizedDatasetStruct
       }
 
       if (status === "Done" && message == "Success: COMPLETED!") {
-        console.log("[Pennsieve Progress] Finalizing upload progress UI.");
         amountOfTimesPennsieveUploadFailed = 0;
 
         setGuidedProgressBarValue("pennsieve", 100);
@@ -515,7 +492,6 @@ const automaticRetry = async (supplementaryChecks = false, errorMessage = "") =>
 };
 
 export const guidedGenerateDatasetLocally = async (filePath) => {
-  console.log("Generating dataset at filePath:", filePath);
   guidedSetNavLoadingState(true); // Lock the nav while local dataset generation is in progress
   guidedResetLocalGenerationUI();
 
@@ -528,8 +504,6 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
       window.datasetStructureJSONObj,
       window.sodaJSONObj["dataset-entity-obj"]
     );
-    console.log("standardizedDatasetStructure", standardizedDatasetStructure);
-
     // Set the standardized dataset structure in the global SODA JSON object (used on the backend)
     window.sodaJSONObj["soda_json_structure"] = standardizedDatasetStructure;
 
@@ -550,10 +524,6 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
       { timeout: 0 }
     );
     const localDatasetSizeInBytes = localDatasetSizeReq.data.dataset_size;
-
-    console.log("localDatasetSizeInBytes", localDatasetSizeInBytes);
-    console.log("freeMemoryInBytes", freeMemoryInBytes);
-
     // Check available space
     if (freeMemoryInBytes < localDatasetSizeInBytes) {
       throw new Error(
@@ -583,7 +553,6 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
     });
 
     // Start local generation
-    console.log("[Local] soda_json_structure being sent:", sodaJSONObjCopy.soda_json_structure);
     client.post(
       "/curate_datasets/curation",
       { soda_json_structure: sodaJSONObjCopy, resume: false },
@@ -641,8 +610,6 @@ const userMadeItToLastStep = () => {
 };
 
 const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
-  console.log("[guidedCreateOrRenameDataset] called with:", { bfAccount, datasetName });
-
   const uploadRow = document.getElementById("guided-dataset-name-upload-tr");
   const uploadText = document.getElementById("guided-dataset-name-upload-text");
   const statusId = "guided-dataset-name-upload-status";
@@ -654,7 +621,6 @@ const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
   const datasetId = window.sodaJSONObj["digital-metadata"]?.["pennsieve-dataset-id"];
   // If the dataset ID already exists, return and set the progress table
   if (datasetId) {
-    console.log("[guidedCreateOrRenameDataset] Dataset ID already exists:", datasetId);
     uploadText.innerHTML = "Dataset already exists on Pennsieve";
     guidedUploadStatusIcon(statusId, "success");
     return datasetId;

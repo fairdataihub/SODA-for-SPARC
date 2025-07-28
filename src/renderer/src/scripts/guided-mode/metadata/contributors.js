@@ -70,8 +70,6 @@ export const renderContributorsTable = () => {
   const contributorsTable = document.getElementById("guided-DD-connoributors-table");
   let contributorsTableHTML;
   const contributors = window.sodaJSONObj["dataset_contributors"];
-  console.log("dataset_contributors:", contributors);
-
   if (contributors.length === 0) {
     contributorsTableHTML = `
         <tr>

@@ -51,7 +51,6 @@ const checkIfFilePassesEntityFilter = (filePath, entityFilters) => {
   const { datasetEntityObj } = useGlobalStore.getState();
 
   if (!datasetEntityObj) {
-    console.log("Dataset entity object not found");
     return false;
   }
 
@@ -66,7 +65,6 @@ const checkIfFilePassesEntityFilter = (filePath, entityFilters) => {
       if (!type || !Array.isArray(names) || names.length === 0) continue;
       const entities = datasetEntityObj[type];
       if (!entities) {
-        console.log(`Entity type ${type} not found in datasetEntityObj`);
         continue;
       }
       for (const name of names) {
@@ -80,7 +78,6 @@ const checkIfFilePassesEntityFilter = (filePath, entityFilters) => {
 
   // Exclude check: if associated with any exclude, reject immediately
   if (isAssociatedWithFilters(exclude)) {
-    console.log(`File ${filePath} is EXCLUDED by filter`);
     return false;
   }
 
@@ -89,12 +86,10 @@ const checkIfFilePassesEntityFilter = (filePath, entityFilters) => {
 
   // If associated with any include, accept
   if (isAssociatedWithFilters(include)) {
-    console.log(`File ${filePath} is INCLUDED by filter`);
     return true;
   }
 
   // Otherwise, no include matches
-  console.log(`File ${filePath} did not match any included entities`);
   return false;
 };
 
@@ -129,8 +124,6 @@ const pruneFolder = (folder, searchFilter, entityFilterConfig = null) => {
       );
 
       // Log filtering results for debugging
-      console.log(`File ${file.relativePath} filtering result: ${passesEntityFilter}`);
-
       if (matchesSearch && passesEntityFilter) {
         matchingFiles[key] = file;
       }
@@ -140,9 +133,6 @@ const pruneFolder = (folder, searchFilter, entityFilterConfig = null) => {
   });
 
   const hasMatchingFiles = Object.keys(matchingFiles).length > 0;
-  console.log(
-    `Folder ${folder.relativePath} has ${Object.keys(matchingFiles).length} matching files`
-  );
 
   // Recursively prune subfolders first to determine if any contain matches
   const subfolders = folder.folders || {};
@@ -172,20 +162,14 @@ const pruneFolder = (folder, searchFilter, entityFilterConfig = null) => {
   }
 
   // If we get here, this folder and all its contents don't match the criteria
-  console.log(`Pruning out folder ${folder.relativePath} - no matches`);
   return null;
 };
 
 // Filters the dataset structure based on the search filter
 export const filterStructure = (structure, searchFilter) => {
   if (!searchFilter) return structure; // Return the original structure if no filter is applied
-  console.log("Filter structure called on structure: ", JSON.stringify(structure, null, 2)); // Debug log
-  console.log("Search filter:", searchFilter); // Debug log
-  console.time("Filter Structure"); // Debug log
-  console.log(JSON.stringify(structure, null, 2)); // Debug log
+
   const result = pruneFolder(structure, searchFilter);
-  console.timeEnd("Filter Structure");
-  console.log("Result of filterStructure:", JSON.stringify(result, null, 2)); // Debug log
 
   return result;
 };
@@ -193,8 +177,6 @@ export const filterStructure = (structure, searchFilter) => {
 // Updates the dataset search filter and modifies the rendered structure
 export const setDatasetStructureSearchFilter = (searchFilter) => {
   try {
-    console.log("Setting dataset search filter:", searchFilter);
-
     useGlobalStore.setState({
       datasetStructureSearchFilter: searchFilter || "",
       renderDatasetStructureJSONObjIsLoading: true,
@@ -262,7 +244,6 @@ export const setDatasetStructureSearchFilter = (searchFilter) => {
 
 export const externallySetSearchFilterValue = (searchFilterValue) => {
   try {
-    console.log("Externally setting search filter value:", searchFilterValue);
     useGlobalStore.setState({
       externallySetSearchFilterValue: searchFilterValue || "",
     });
@@ -276,7 +257,6 @@ export const externallySetSearchFilterValue = (searchFilterValue) => {
 
 export const addRelativePaths = (obj, currentPath = []) => {
   if (!obj) {
-    console.log("object is null but had addRelativePaths called on it");
     return;
   }
   obj.relativePath = currentPath.join("/") + "/";
@@ -329,7 +309,6 @@ export const deleteEmptyFoldersFromStructure = (structure) => {
 // Set the dataset structure and prepare it for rendering
 export const setTreeViewDatasetStructure = (datasetStructure, pathToRender) => {
   try {
-    console.log("Setting tree view dataset structure");
     pathToRender = pathToRender ? pathToRender : useGlobalStore.getState().pathToRender;
 
     if (!datasetStructure) {
@@ -449,7 +428,6 @@ export const moveFolderToNewLocation = (targetRelativePath) => {
 
     const originalStructure = globalStore.datasetStructureJSONObj;
     const folderToDeletePathSegments = contextMenuItemData.relativePath.split("/").filter(Boolean);
-    console.log("folderToDeletePathSegments:", folderToDeletePathSegments);
     const parentFolder = traverseStructureByPath(
       originalStructure,
       folderToDeletePathSegments.slice(0, -1)
@@ -488,8 +466,6 @@ export const setEntityFilter = (include = [], exclude = []) => {
   };
 
   // Log what we're filtering
-  console.log("Setting entity filters:", JSON.stringify(entityFilters, null, 2));
-
   // Only activate filter if we have valid filters
   const isFilterActive = include.length > 0 || exclude.length > 0;
 
@@ -518,8 +494,6 @@ export const setSimpleEntityFilter = (entityType, includeNames = [], excludeName
 
 // Clear the entity filter
 export const clearEntityFilter = () => {
-  console.log("Clearing entity filter");
-
   useGlobalStore.setState({
     renderDatasetStructureJSONObjIsLoading: true,
     entityFilterActive: false,

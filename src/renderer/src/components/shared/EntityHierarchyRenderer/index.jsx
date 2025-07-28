@@ -184,8 +184,6 @@ const EntityHierarchyRenderer = ({
   const selectedEntityParentSampleId = selectedHierarchyEntity?.parentSample;
 
   const activeEntity = useGlobalStore((state) => state.activeEntity);
-  console.log("activeEntity being rendered", activeEntity);
-
   // Memoize the entity select handler to prevent recreation on each render
   const handleEntitySelect = useCallback((entityData) => {
     setSelectedHierarchyEntity(entityData);
@@ -207,7 +205,6 @@ const EntityHierarchyRenderer = ({
 
   // ----- SAMPLE OPERATIONS -----
   const handleAddSampleButtonClick = useCallback((subject) => {
-    console.log("Subject clicked for adding sample:", subject);
     const subjectId = subject["metadata"]["subject_id"];
     setSelectedHierarchyEntity(null);
     setEntityBeingAddedParentSubject(subjectId);
@@ -283,9 +280,6 @@ const EntityHierarchyRenderer = ({
     console.error("Invalid entity type for rendering:", onlyRenderEntityType);
     return [];
   };
-
-  console.log("onlyRenderEntityType", onlyRenderEntityType);
-
   // Get the specific entities to render if we're only showing one type
   const entitiesToRender = onlyRenderEntityType ? getEntitiesToRender() : [];
 

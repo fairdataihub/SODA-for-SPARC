@@ -54,8 +54,6 @@ const SubmissionMetadataForm = () => {
   const fundingConsortiumDropdownState = useGlobalStore(
     (state) => state.dropDownState["guided-nih-funding-consortium"]?.selectedValue
   );
-  console.log("fundingAgencyDropdownState", fundingAgencyDropdownState);
-  console.log("fundingConsortiumDropdownState", fundingConsortiumDropdownState);
   const completionDateChecked = useGlobalStore((state) => state.completionDateChecked);
   const manualFudingAgency = useGlobalStore((state) => state.manualFudingAgency);
   const awardNumber = useGlobalStore((state) => state.awardNumber);
