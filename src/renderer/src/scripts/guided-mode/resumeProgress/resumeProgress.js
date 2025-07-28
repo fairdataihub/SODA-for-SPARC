@@ -68,7 +68,7 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
           Download SODA v15.4.0 (SDS2 support)
         </a>`
       );
-      // return;
+      return;
     }
     // If the dataset had been previously successfully uploaded, check to make sure it exists on Pennsieve still.
     if (datasetHasAlreadyBeenSuccessfullyUploaded) {
