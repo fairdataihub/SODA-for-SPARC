@@ -1013,7 +1013,11 @@ const EntityMetadataPage = ({ entityType }) => {
   };
 
   return (
-    <GuidedModePage pageHeader={`${entityType} Metadata`}>
+    <GuidedModePage
+      pageHeader={
+        !showFullMetadataFormFields ? `Dataset Entity Metadata` : `${entityType} Metadata`
+      }
+    >
       <GuidedModeSection>
         <Text>
           {showFullMetadataFormFields

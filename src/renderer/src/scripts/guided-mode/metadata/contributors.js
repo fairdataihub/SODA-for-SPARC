@@ -20,11 +20,23 @@ export const addContributor = (
   });
 
   // Store the contributor locally so they can import the contributor's data in the future
+  try {
+    window.addOrUpdateStoredContributor(
+      contributor_first_name,
+      contributor_last_name,
+      contributor_orcid_id,
+      contributor_affiliation,
+      contributor_role
+    );
+  } catch (error) {
+    console.error("Failed to store contributor: " + error);
+  }
 };
 
 export const editContributorByID = (
   prev_contributor_orcid_id, // string: ORCID of the contributor to edit
-  contributor_name, // string: full name
+  contributor_first_name, // string: first name
+  contributor_last_name, // string: last name
   contributor_orcid_id, // string: ORCID
   contributor_affiliation, // string: affiliation
   contributor_role // string: role (not array)
@@ -35,14 +47,16 @@ export const editContributorByID = (
     throw new Error("Contributor with the specified ORCID does not exist");
   }
   // Update the contributor's details
-  contributor.contributor_name = contributor_name;
+  contributor.contributor_first_name = contributor_first_name;
+  contributor.contributor_last_name = contributor_last_name;
   contributor.contributor_orcid_id = contributor_orcid_id;
   contributor.contributor_affiliation = contributor_affiliation;
   contributor.contributor_role = contributor_role;
   // Update the stored contributor data
   try {
     window.addOrUpdateStoredContributor(
-      contributor_name,
+      contributor_first_name,
+      contributor_last_name,
       contributor_orcid_id,
       contributor_affiliation,
       contributor_role

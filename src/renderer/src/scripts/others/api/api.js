@@ -163,7 +163,12 @@ const reserveDOI = async (dataset) => {
 const getDatasetDOI = async (dataset) => {
   try {
     const response = await client.get(`datasets/${dataset}/reserve-doi`);
-    return response.data.doi || null;
+    const datasetDOI = response.data.doi;
+    if (datasetDOI && datasetDOI !== "No DOI found for this dataset") {
+      return datasetDOI;
+    } else {
+      return null; // No DOI found or not reserved
+    }
   } catch (err) {
     clientError(err);
     return null;

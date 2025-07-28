@@ -185,79 +185,78 @@ const PerformanceIdManagement = () => {
                     </Text>
                   </Flex>
                 </Box>
-                {performanceList.length > 0 ? (
-                  <Box
-                    style={{
-                      border: "1px solid #ddd",
-                      borderRadius: "8px",
-                      backgroundColor: "#f9f9f9",
-                    }}
-                    p="sm"
-                  >
-                    {performanceList.map((performance) => (
-                      <Flex
-                        key={performance.performance_id}
-                        align="center"
-                        justify="space-between"
-                        gap="xs"
-                        style={{
-                          cursor: "pointer",
-                          padding: "4px",
-                          borderRadius: "4px",
-                          backgroundColor:
-                            isEditMode && originalPerformanceId === performance.performance_id
-                              ? "#e6f7ff"
-                              : "transparent",
-                          "&:hover": {
-                            backgroundColor: "#f0f0f0",
-                          },
-                        }}
-                      >
-                        <Group
-                          gap="xs"
+                <ScrollArea h={300}>
+                  {performanceList.length > 0 ? (
+                    <Stack gap="4px">
+                      {performanceList.map((performance) => (
+                        <Paper
+                          key={performance.performance_id}
+                          p="xs"
+                          withBorder
+                          radius="sm"
+                          style={{
+                            cursor: "pointer",
+                            backgroundColor:
+                              isEditMode && originalPerformanceId === performance.performance_id
+                                ? "#e6f7ff"
+                                : "#fff",
+                            transition: "background 0.2s",
+                          }}
                           onClick={() => selectPerformanceForEdit(performance)}
-                          style={{ flex: 1 }}
                         >
-                          <IconClipboard size={15} />
-                          <Text fw={600}>{performance.performance_id}</Text>
-                        </Group>
-                        <Group gap="3px">
-                          <IconEdit
-                            color="blue"
-                            size={18}
-                            style={{ marginLeft: "4px", opacity: 0.6, cursor: "pointer" }}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              selectPerformanceForEdit(performance);
-                            }}
-                          />
-                          <IconTrash
-                            color="red"
-                            size={16}
-                            style={{ opacity: 0.6, cursor: "pointer" }}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deletePerformance(performance.performance_id);
-                            }}
-                          />
-                        </Group>
-                      </Flex>
-                    ))}
-                  </Box>
-                ) : (
-                  <Box
-                    style={{
-                      border: "1px solid #ddd",
-                      borderRadius: "8px",
-                      backgroundColor: "#f9f9f9",
-                    }}
-                    p="md"
-                  >
-                    <Text c="dimmed" ta="center">
-                      No performances to display
-                    </Text>
-                  </Box>
-                )}
+                          <Flex align="center" justify="space-between">
+                            <Group gap="xs" style={{ flex: 1, minWidth: 0 }}>
+                              <IconClipboard size={15} />
+                              <Text
+                                fw={600}
+                                truncate
+                                title={performance.performance_id}
+                                style={{ flex: 1, maxWidth: "85%" }}
+                              >
+                                {performance.performance_id}
+                              </Text>
+                            </Group>
+                            <Group gap="4px" flex="none">
+                              <ActionIcon
+                                variant="subtle"
+                                color="blue"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  selectPerformanceForEdit(performance);
+                                }}
+                              >
+                                <IconEdit size={16} />
+                              </ActionIcon>
+                              <ActionIcon
+                                variant="subtle"
+                                color="red"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  deletePerformance(performance.performance_id);
+                                }}
+                              >
+                                <IconTrash size={14} />
+                              </ActionIcon>
+                            </Group>
+                          </Flex>
+                        </Paper>
+                      ))}
+                    </Stack>
+                  ) : (
+                    <Box
+                      style={{
+                        border: "1px solid #ddd",
+                        borderRadius: "8px",
+                        backgroundColor: "#f9f9f9",
+                      }}
+                      p="md"
+                    >
+                      <Text c="dimmed" ta="center">
+                        No performances to display
+                      </Text>
+                    </Box>
+                  )}
+                </ScrollArea>
               </Stack>
             </Paper>
           </Grid.Col>

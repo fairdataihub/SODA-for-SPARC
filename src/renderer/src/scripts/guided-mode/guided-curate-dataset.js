@@ -113,6 +113,7 @@ export const guidedSetDOIUI = (datasetDOI) => {
     $("#guided--para-doi-info").text(datasetDOI);
   } else {
     buttonReserveDOI.classList.remove("hidden");
+    console.log("Showing Reserve DOI button in Guided UI");
     $("#guided--para-doi-info").text("No DOI found for this dataset");
   }
 };

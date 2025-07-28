@@ -103,7 +103,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
           document.getElementById("guided--verify-files").classList.remove("hidden");
         });
 
-      trackPennsieveDatasetGenerationProgress(standardizedDatasetStructure);
+      await trackPennsieveDatasetGenerationProgress(standardizedDatasetStructure);
       guidedSetNavLoadingState(false);
       return;
     }
@@ -202,9 +202,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     window.sodaJSONObj["previous-guided-upload-dataset-name"] =
       window.sodaJSONObj["digital-metadata"]["name"];
 
-    // Save the window.sodaJSONObj after a successful upload
-    await guidedSaveProgress();
-
     //Display the click next text
     document.getElementById("guided--verify-files").classList.remove("hidden");
 
@@ -214,6 +211,9 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
 
     //Show the next button
     $("#guided-next-button").css("visibility", "visible");
+
+    // Save the window.sodaJSONObj after a successful upload
+    await guidedSaveProgress();
     guidedSetNavLoadingState(false);
   } catch (error) {
     clientError(error);

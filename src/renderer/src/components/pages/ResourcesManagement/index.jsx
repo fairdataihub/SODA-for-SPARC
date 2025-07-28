@@ -200,7 +200,6 @@ const ResourcesManagementPage = () => {
 
       <GuidedModeSection>
         <Grid gutter="lg">
-          {/* Left Column - Resource List */}
           <Grid.Col span={4}>
             <Paper
               shadow="sm"
@@ -227,99 +226,79 @@ const ResourcesManagementPage = () => {
                     </Text>
                   </Flex>
                 </Box>
-                {resourceList.length > 0 ? (
-                  <Box
-                    style={{
-                      border: "1px solid #ddd",
-                      borderRadius: "8px",
-                      backgroundColor: "#f9f9f9",
-                      maxHeight: "400px",
-                      overflow: "auto",
-                    }}
-                    p="sm"
-                  >
-                    {resourceList.map((resource) => (
-                      <Flex
-                        key={resource.name} // Updated from resource.id
-                        align="center"
-                        justify="space-between"
-                        gap="xs"
-                        mb="xs"
-                        style={{
-                          cursor: "pointer",
-                          padding: "6px 8px",
-                          borderRadius: "4px",
-                          backgroundColor:
-                            isEditMode && originalResourceName === resource.name
-                              ? "#e6f7ff"
-                              : "#ffffff",
-                          "&:hover": {
-                            backgroundColor: "#f0f0f0",
-                          },
-                          border: "1px solid #eee",
-                        }}
-                      >
-                        <Group
-                          gap="xs"
+
+                <ScrollArea h={300}>
+                  {resourceList.length > 0 ? (
+                    <Stack gap="4px">
+                      {resourceList.map((resource) => (
+                        <Paper
+                          key={resource.name}
+                          p="xs"
+                          withBorder
+                          radius="sm"
+                          style={{
+                            cursor: "pointer",
+                            backgroundColor:
+                              isEditMode && originalResourceName === resource.name
+                                ? "#e6f7ff"
+                                : "#fff",
+                            transition: "background 0.2s",
+                          }}
                           onClick={() => selectResourceForEdit(resource)}
-                          style={{ flex: 1 }}
                         >
-                          <IconFlask size={15} />
-                          <div>
-                            <Text fw={600}>{resource.name}</Text>
-                            <Group gap="xs">
-                              {resource.type && (
-                                <Badge size="xs" color="blue" variant="light">
-                                  {resource.type}
-                                </Badge>
-                              )}
-                              {resource.rrid && (
-                                <Text size="xs" c="dimmed">
-                                  {resource.rrid}
-                                </Text>
-                              )}
+                          <Flex align="center" justify="space-between">
+                            <Group gap="xs" style={{ flex: 1, minWidth: 0 }}>
+                              <IconClipboard size={15} />
+                              <Text
+                                fw={600}
+                                truncate
+                                title={resource.name}
+                                style={{ flex: 1, maxWidth: "85%" }}
+                              >
+                                {resource.name}
+                              </Text>
                             </Group>
-                          </div>
-                        </Group>
-                        <Group gap="3px">
-                          <ActionIcon
-                            color="blue"
-                            variant="subtle"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              selectResourceForEdit(resource);
-                            }}
-                          >
-                            <IconEdit size={16} />
-                          </ActionIcon>
-                          <ActionIcon
-                            color="red"
-                            variant="subtle"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteResource(resource.name); // Updated from resource.id
-                            }}
-                          >
-                            <IconTrash size={16} />
-                          </ActionIcon>
-                        </Group>
-                      </Flex>
-                    ))}
-                  </Box>
-                ) : (
-                  <Box
-                    style={{
-                      border: "1px solid #ddd",
-                      borderRadius: "8px",
-                      backgroundColor: "#f9f9f9",
-                    }}
-                    p="md"
-                  >
-                    <Text c="dimmed" ta="center">
-                      No resources to display
-                    </Text>
-                  </Box>
-                )}
+                            <Group gap="4px" flex="none">
+                              <ActionIcon
+                                variant="subtle"
+                                color="blue"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  selectResourceForEdit(resource);
+                                }}
+                              >
+                                <IconEdit size={16} />
+                              </ActionIcon>
+                              <ActionIcon
+                                variant="subtle"
+                                color="red"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  deleteResource(resource.name);
+                                }}
+                              >
+                                <IconTrash size={14} />
+                              </ActionIcon>
+                            </Group>
+                          </Flex>
+                        </Paper>
+                      ))}
+                    </Stack>
+                  ) : (
+                    <Box
+                      style={{
+                        border: "1px solid #ddd",
+                        borderRadius: "8px",
+                        backgroundColor: "#f9f9f9",
+                      }}
+                      p="md"
+                    >
+                      <Text c="dimmed" ta="center">
+                        No resources to display
+                      </Text>
+                    </Box>
+                  )}
+                </ScrollArea>
               </Stack>
             </Paper>
           </Grid.Col>
@@ -330,13 +309,21 @@ const ResourcesManagementPage = () => {
               <Paper shadow="sm" radius="md" p="md" withBorder mb="md">
                 <Stack spacing="lg">
                   {/* Header section with entity type and title */}
-                  <Group position="apart">
+                  <Group justify="space-between">
                     <Group>
                       <IconFlask size={20} color="#ae3ec9" />
                       <Title order={4}>
                         {isEditMode ? "Edit research resource" : "Add new research resource"}
                       </Title>
                     </Group>
+                    <Button
+                      color="blue"
+                      onClick={isEditMode ? updateResource : addResource}
+                      leftIcon={<IconDeviceFloppy size={16} />}
+                      disabled={!isResourceValid}
+                    >
+                      {isEditMode ? "Update Resource" : "Add Resource"}
+                    </Button>
                   </Group>
 
                   <Divider />
