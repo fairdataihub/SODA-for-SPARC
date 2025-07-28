@@ -2072,11 +2072,11 @@ const datasetStatusListChange = () => {
 // This function is called when the user selects a dataset from the dropdown list
 // It is called to update the UI elements that are related to the publishing status
 // of the dataset and displaying the correct UI elements
-const postCurationListChange = () => {
-  // display the pre-publishing page
-  showPrePublishingPageElements();
-  window.showPublishingStatus();
-};
+// const postCurationListChange = () => {
+//   // display the pre-publishing page
+//   showPrePublishingPageElements();
+//   window.showPublishingStatus();
+// };
 
 // // upload banner image //
 // const Cropper = require("cropperjs");
@@ -2479,9 +2479,9 @@ const populateDatasetDropdowns = (mylist) => {
 
     window.curateDatasetDropdown.appendChild(option2);
   }
-  metadataDatasetlistChange();
+  // metadataDatasetlistChange();
   permissionDatasetlistChange();
-  postCurationListChange();
+  // postCurationListChange();
   datasetStatusListChange();
 };
 
