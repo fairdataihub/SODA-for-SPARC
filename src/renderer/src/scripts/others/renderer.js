@@ -1021,7 +1021,7 @@ const warnUsersAboutSpecialVersionsOfSODA = async () => {
     if (currentAppVersion.includes("beta") && !window.fs.existsSync(dntFilePath)) {
       await swalShowInfo(
         "You are on a beta version of SODA",
-        "When you are finished using this special version of SODA, please download the latest stable version<a href='https://docs.sodaforsparc.io/' target='_blank'> by clicking here</a>"
+        "When you are finished using this special version of SODA, please download the latest stable version<br /><a href='https://docs.sodaforsparc.io/' target='_blank'>by clicking here</a>"
       );
     }
     if (currentAppVersion === "15.4.0") {
