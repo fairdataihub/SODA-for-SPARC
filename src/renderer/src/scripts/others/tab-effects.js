@@ -347,19 +347,74 @@ const checkHighLevelFoldersInput = () => {
   return checked;
 };
 
-window.hasEmptyFolders = (currentFolder) => {
-  if (
-    !Object.keys(currentFolder["folders"]).length &&
-    !Object.keys(currentFolder["files"]).length
-  ) {
-    return true;
+const EmptyStatuses = {
+  NO_EMPTY: "NO_EMPTY",
+  SOME_EMPTY: "SOME_EMPTY",
+  ALL_EMPTY: "ALL_EMPTY",
+};
+
+// Updated function to return the appropriate EmptyStatus
+window.checkEmptyFoldersStatus = (currentFolder) => {
+  const result = analyzeEmptyFolders(currentFolder);
+
+  if (result.totalFolders === 0) {
+    // If there are no folders at all, consider it as no empty folders
+    return EmptyStatuses.NO_EMPTY;
   }
 
-  let emptyFolders = false;
-  for (const folder in currentFolder["folders"]) {
-    emptyFolders = emptyFolders || window.hasEmptyFolders(currentFolder["folders"][folder]);
+  if (result.emptyFolders === 0) {
+    return EmptyStatuses.NO_EMPTY;
+  } else if (result.emptyFolders === result.totalFolders) {
+    return EmptyStatuses.ALL_EMPTY;
+  } else {
+    return EmptyStatuses.SOME_EMPTY;
   }
-  return emptyFolders;
+};
+
+// Helper function to analyze the folder structure
+const analyzeEmptyFolders = (currentFolder) => {
+  let totalFolders = 0;
+  let emptyFolders = 0;
+
+  const checkFolder = (folder) => {
+    const hasFiles = Object.keys(folder["files"] || {}).length > 0;
+    const subfolders = folder["folders"] || {};
+    const hasSubfolders = Object.keys(subfolders).length > 0;
+
+    totalFolders++;
+
+    if (!hasFiles && !hasSubfolders) {
+      emptyFolders++;
+      return;
+    }
+
+    // If it has subfolders, check them recursively
+    if (hasSubfolders) {
+      let hasNonEmptySubfolder = false;
+      for (const subfolder in subfolders) {
+        const subResult = analyzeEmptyFolders(subfolders[subfolder]);
+        totalFolders += subResult.totalFolders;
+        emptyFolders += subResult.emptyFolders;
+
+        // If any subfolder is not empty, this folder is not empty
+        if (
+          subResult.emptyFolders < subResult.totalFolders ||
+          Object.keys(subfolders[subfolder]["files"] || {}).length > 0
+        ) {
+          hasNonEmptySubfolder = true;
+        }
+      }
+
+      // If folder has no files and all subfolders are empty, mark as empty
+      if (!hasFiles && !hasNonEmptySubfolder) {
+        emptyFolders++;
+      }
+    }
+  };
+
+  checkFolder(currentFolder);
+
+  return { totalFolders, emptyFolders };
 };
 
 /**
@@ -420,9 +475,24 @@ window.nextPrev = async (pageIndex) => {
   if (pageIndex === 1 && parentTabs[window.currentTab].id === "getting-started-tab") {
     // traverse the dataset structure key of sodaJSONObj depth first to see if there are any empty folders
     // if there are empty folders, show a warning message to the user
-    let emptyFolders = window.hasEmptyFolders(window.sodaJSONObj["dataset-structure"]);
+    let emptyFolderStatus = window.checkEmptyFoldersStatus(window.sodaJSONObj["dataset-structure"]);
 
-    if (emptyFolders) {
+    if (emptyFolderStatus === EmptyStatuses.ALL_EMPTY) {
+      Swal.fire({
+        icon: "error",
+        text: "The current dataset has only empty folders. Please add files to the dataset before proceeding.",
+        showCancelButton: false,
+        confirmButtonText: "OK",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+    } else if (emptyFolderStatus === EmptyStatuses.SOME_EMPTY) {
       Swal.fire({
         icon: "warning",
         text: "The current dataset has empty folders. Are you sure you want to continue?",
