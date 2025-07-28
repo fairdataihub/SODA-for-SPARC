@@ -150,7 +150,7 @@ const generateProgressCardElement = (progressFileJSONObj) => {
       day: "numeric",
     }
   );
-  const savedUploadDataProgress =
+  const failedUploadInProgress =
     progressFileJSONObj["previously-uploaded-data"] &&
     Object.keys(progressFileJSONObj["previously-uploaded-data"]).length > 0;
 
@@ -163,6 +163,8 @@ const generateProgressCardElement = (progressFileJSONObj) => {
     workspaceUserNeedsToSwitchTo = datasetWorkspace;
   }
 
+  const lastVersionOfSodaUsed = progressFileJSONObj?.["last-version-of-soda-used"] || "1.0.0";
+
   // True if the progress file has already been uploaded to Pennsieve
   const alreadyUploadedToPennsieve = !!progressFileJSONObj["previous-guided-upload-dataset-name"];
 
@@ -171,7 +173,8 @@ const generateProgressCardElement = (progressFileJSONObj) => {
     datasetStartingPoint,
     boolAlreadyUploadedToPennsieve,
     progressFileName,
-    workspaceUserNeedsToSwitchTo
+    workspaceUserNeedsToSwitchTo,
+    lastVersionOfSodaUsed
   ) => {
     if (workspaceUserNeedsToSwitchTo) {
       // If the progress file has an organization set but the user is no longer logged in,
@@ -202,7 +205,6 @@ const generateProgressCardElement = (progressFileJSONObj) => {
     let buttonText;
     let buttonClass;
 
-    console.log("datasetStartingPoint", datasetStartingPoint);
     if (boolAlreadyUploadedToPennsieve) {
       buttonText = "Share with the curation team";
       buttonClass = "guided--progress-button-share";
@@ -212,6 +214,11 @@ const generateProgressCardElement = (progressFileJSONObj) => {
     } else {
       buttonText = "Continue updating Pennsieve dataset";
       buttonClass = "guided--progress-button-resume-pennsieve";
+    }
+
+    if (lastVersionOfSodaUsed < "16.0.0") {
+      buttonText = "Continue using a previous version of SODA";
+      buttonClass = "guided--progress-button-update-soda";
     }
 
     return `
@@ -266,7 +273,7 @@ const generateProgressCardElement = (progressFileJSONObj) => {
             </h2>
             <h1 class="dataset-card-date-text">${progressFileLastModified}</h1>
             ${
-              savedUploadDataProgress
+              failedUploadInProgress
                 ? `
                   <span class="badge badge-warning mx-2">Incomplete upload</span>
                 `
@@ -279,7 +286,8 @@ const generateProgressCardElement = (progressFileJSONObj) => {
             datasetStartingPoint,
             alreadyUploadedToPennsieve,
             progressFileName,
-            workspaceUserNeedsToSwitchTo
+            workspaceUserNeedsToSwitchTo,
+            lastVersionOfSodaUsed
           )}
           <h2 class="dataset-card-button-delete" onclick="window.deleteProgressCard(this)">
             <i

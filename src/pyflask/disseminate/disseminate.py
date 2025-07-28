@@ -187,7 +187,7 @@ def get_publication_type(ps_or_token, selected_dataset_id):
 
 
 
-def bf_withdraw_review_dataset(selected_bfaccount, selected_bfdataset):
+def bf_withdraw_review_dataset(selected_bfdataset):
 
     selected_dataset_id = get_dataset_id(selected_bfdataset)
 
