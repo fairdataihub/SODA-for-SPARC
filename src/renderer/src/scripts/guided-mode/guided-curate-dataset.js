@@ -8046,6 +8046,18 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
   try {
     const datasetResumeJsonObj = await getProgressFileData(datasetNameToResume);
 
+    const lastVersionOfSodaUsed = datasetResumeJsonObj["last-version-of-soda-used"];
+    console.log("Last version of SODA used:", lastVersionOfSodaUsed);
+    if (lastVersionOfSodaUsed >= "16.0.0") {
+      await swalShowInfo(
+        "This dataset was created with a newer version of SODA",
+        `This progress file was created after SODA adopted the SDS3 workflow.<br><br>
+        To continue working on this dataset, download the lastest version of SODA:<br><br>
+        <a href='https://docs.sodaforsparc.io/' target='_blank'>Download the latest version of SODA</a>`
+      );
+      return;
+    }
+
     // Datasets successfully uploaded will have the "previous-guided-upload-dataset-name" key
     const datasetHasAlreadyBeenSuccessfullyUploaded =
       datasetResumeJsonObj["previous-guided-upload-dataset-name"];
