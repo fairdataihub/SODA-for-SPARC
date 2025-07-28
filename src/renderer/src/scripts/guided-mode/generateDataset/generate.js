@@ -13,7 +13,7 @@ import { createStandardizedDatasetStructure } from "../../utils/datasetStructure
 import { guidedResetLocalGenerationUI } from "../guided-curate-dataset";
 
 import datasetUploadSession from "../../analytics/upload-session-tracker";
-import { pageIsSkipped } from "../pages/navigationUtils/pageSkipping";
+import { guidedUnSkipPage, pageIsSkipped } from "../pages/navigationUtils/pageSkipping";
 import kombuchaEnums from "../../analytics/analytics-enums";
 import Swal from "sweetalert2";
 import { swalShowError } from "../../utils/swal-utils";
@@ -86,13 +86,15 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         .post(
           `/curate_datasets/curation`,
           {
-            soda_json_structure: window.sodaJSONObj,
+            soda_json_structure: datasetUploadObj,
             resume: !!window.retryGuidedMode,
           },
           { timeout: 0 }
         )
-        .then((response) => {
-          let { data } = response;
+        .then(async (response) => {
+          // ANYTHING THAT HAPPENS HERE IS AFTER THE UPLOAD IS COMPLETED SUCCESSFULLY
+
+          const { data } = response;
 
           // Verify files setup section
           window.pennsieveManifestId = data["origin_manifest_id"];
@@ -100,6 +102,26 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
 
           // show verify files section
           document.getElementById("guided--verify-files").classList.remove("hidden");
+
+          // Clear the saved upload progress data because the dataset has been successfully
+          window.sodaJSONObj["previously-uploaded-data"] = {};
+
+          // Mark "dataset-successfully-uploaded-to-pennsieve" as true in the sodaJSONObj
+          // to denote the dataset was successfully uploaded to Pennsieve
+          window.sodaJSONObj["dataset-successfully-uploaded-to-pennsieve"] = true;
+
+          // enable the verify files button
+          document.querySelector("#guided--verify-files-button").disabled = false;
+          document.querySelector("#guided--skip-verify-btn").disabled = false;
+
+          // Show the next button
+          $("#guided-next-button").css("visibility", "visible");
+
+          // Save the window.sodaJSONObj after a successful upload
+          await guidedSaveProgress();
+        })
+        .catch((error) => {
+          console.error("Dataset upload failed:", error);
         });
 
       await trackPennsieveDatasetGenerationProgress(standardizedDatasetStructure);
@@ -180,8 +202,10 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         },
         { timeout: 0 }
       )
-      .then((response) => {
-        let { data } = response;
+      .then(async (response) => {
+        // ANYTHING THAT HAPPENS HERE IS AFTER THE UPLOAD IS COMPLETED SUCCESSFULLY
+
+        const { data } = response;
 
         // Verify files setup section
         window.pennsieveManifestId = data["origin_manifest_id"];
@@ -189,31 +213,30 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
 
         // show verify files section
         document.getElementById("guided--verify-files").classList.remove("hidden");
+
+        // Clear the saved upload progress data because the dataset has been successfully
+        window.sodaJSONObj["previously-uploaded-data"] = {};
+
+        // Mark "dataset-successfully-uploaded-to-pennsieve" as true in the sodaJSONObj
+        // to denote the dataset was successfully uploaded to Pennsieve
+        window.sodaJSONObj["dataset-successfully-uploaded-to-pennsieve"] = true;
+
+        // enable the verify files button
+        document.querySelector("#guided--verify-files-button").disabled = false;
+        document.querySelector("#guided--skip-verify-btn").disabled = false;
+
+        // Show the next button
+        $("#guided-next-button").css("visibility", "visible");
+
+        // Save the window.sodaJSONObj after a successful upload
+        await guidedSaveProgress();
+      })
+      .catch((error) => {
+        console.error("Dataset upload failed:", error);
       });
+
     await trackPennsieveDatasetGenerationProgress(standardizedDatasetStructure);
 
-    // ANYTHING THAT HAPPENS HERE IS AFTER THE UPLOAD IS COMPLETED SUCCESSFULLY
-
-    // Clear the saved upload progress data because the dataset has been successfully
-    // uploaded to Pennsieve, and any future uploads will upload using new data
-    window.sodaJSONObj["previously-uploaded-data"] = {};
-
-    // Mark "dataset-successfully-uploaded-to-pennsieve" as true in the sodaJSONObj which is used
-    // to determine if the dataset has been successfully uploaded to Pennsieve (for page navigation)
-    window.sodaJSONObj["dataset-successfully-uploaded-to-pennsieve"] = true;
-
-    //Display the click next text
-    document.getElementById("guided--verify-files").classList.remove("hidden");
-
-    // enable the verify files button
-    document.querySelector("#guided--verify-files-button").disabled = false;
-    document.querySelector("#guided--skip-verify-btn").disabled = false;
-
-    //Show the next button
-    $("#guided-next-button").css("visibility", "visible");
-
-    // Save the window.sodaJSONObj after a successful upload
-    await guidedSaveProgress();
     guidedSetNavLoadingState(false);
   } catch (error) {
     clientError(error);
