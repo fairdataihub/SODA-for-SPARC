@@ -84,6 +84,7 @@ import {
   blockedMessage,
   hostFirewallMessage,
 } from "../check-firewall/checkFirewall";
+import { current } from "immer";
 
 // add jquery to the window object
 window.$ = jQuery;
@@ -531,7 +532,7 @@ const initializeSODARenderer = async () => {
   // Set the app version in the sidebar for the user to see
   setSidebarAppVersion();
 
-  await warnUserIfBetaVersionAndDntNotEnabled();
+  await warnUsersAboutSpecialVersionsOfSODA();
 
   // Launch announcements if the user has not seen them yet
   await launchAnnouncements();
@@ -1013,7 +1014,7 @@ const setSidebarAppVersion = async () => {
 };
 
 // Warn the user if they are on a beta version of the app
-const warnUserIfBetaVersionAndDntNotEnabled = async () => {
+const warnUsersAboutSpecialVersionsOfSODA = async () => {
   try {
     let currentAppVersion = await window.electron.ipcRenderer.invoke("app-version");
     const dntFilePath = window.path.join(homeDirectory, ".soda-config", "dnt.soda");
@@ -1021,6 +1022,12 @@ const warnUserIfBetaVersionAndDntNotEnabled = async () => {
       await swalShowInfo(
         "You are on a beta version of SODA",
         "When you are finished using this special version of SODA, please download the latest stable version<a href='https://docs.sodaforsparc.io/' target='_blank'> by clicking here</a>"
+      );
+    }
+    if (currentAppVersion === "15.4.0") {
+      await swalShowInfo(
+        "You are using a special version of SODA",
+        "This version should only be used to finish uploading a SDS2 progress file in the end-to-end curation mode. Once you have finished uploading your SDS2 progress file, please download the latest stable version of SODA below <br /> <a href='https://docs.sodaforsparc.io/' target='_blank'>Download the latest version of SODA</a>"
       );
     }
   } catch (err) {

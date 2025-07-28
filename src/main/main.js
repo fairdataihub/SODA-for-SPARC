@@ -22,7 +22,7 @@ const uuid = require("uuid").v4;
 
 const sodaVersion = app.getVersion();
 // If the version includes "beta", the app will not check for updates
-const buildIsBeta = sodaVersion.includes("beta");
+const buildIsBeta = sodaVersion.includes("beta") || sodaVersion === "15.4.0";
 if (buildIsBeta) {
   log.info("This is a beta build. Updates will not be checked.");
 }
