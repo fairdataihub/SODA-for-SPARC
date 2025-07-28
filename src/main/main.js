@@ -295,10 +295,10 @@ function initialize() {
   app.on("ready", () => {
     createPyProc();
     const windowOptions = {
-      minWidth: 1121,
-      minHeight: 735,
-      width: 1121,
-      height: 735,
+      minWidth: 1200,
+      minHeight: 850,
+      width: 1200,
+      height: 850,
       center: true,
       show: false,
       icon: __dirname + "/assets/menu-icon/soda_icon.png",
