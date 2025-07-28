@@ -341,7 +341,7 @@ document.querySelector("#button-homepage-freeform-mode").addEventListener("click
 
   await swalShowInfo(
     "Upload Dataset is not supported in this version of SODA.",
-    "Please download the latest version of SODA to use this feature."
+    "Please download the latest version of SODA to use this feature. <br /><br /> <a href='https://docs.sodaforsparc.io/' target='_blank'>Download the latest version of SODA</a>"
   );
   return;
 });
