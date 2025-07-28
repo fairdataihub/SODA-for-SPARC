@@ -4,8 +4,7 @@ run-name: ${{ github.actor }} is building a MAC release for SODA
 on:
   push:
     branches:
-      - main
-      - create-perm-15.4.0-pre-sds3-build
+      - create-perm-15.4.0-pre-sds3-buildz
 
 jobs:
   deploy-on-mac:
