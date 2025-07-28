@@ -69,8 +69,8 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
         "This dataset requires an older version of SODA to resume.",
         `This progress file was created before SODA adopted the SDS3 workflow.<br><br>
         To continue working on this dataset, download the final version of SODA that supports SDS2:<br><br>
-        <a href="https://github.com/fairdataihub/SODA-for-SPARC/releases/tag/v15.3.2" target="_blank" rel="noopener noreferrer">
-          Download SODA v15.3.2 (SDS2 support)
+        <a href="https://github.com/fairdataihub/SODA-for-SPARC/releases/tag/v15.4.0" target="_blank" rel="noopener noreferrer">
+          Download SODA v15.4.0 (SDS2 support)
         </a>`
       );
       // return;
