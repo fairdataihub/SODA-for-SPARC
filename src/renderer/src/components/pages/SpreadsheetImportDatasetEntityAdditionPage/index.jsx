@@ -142,8 +142,7 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
 
   useEffect(() => {
     // Bind IPC event listeners for template downloads
-    const handleFolderSelected = (event, path, filename) => {
-    };
+    const handleFolderSelected = (event, path, filename) => {};
 
     const handleDownloadError = (event, error) => {
       console.error("Template download error:", error);
