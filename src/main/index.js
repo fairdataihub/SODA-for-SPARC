@@ -595,10 +595,10 @@ const initialize = () => {
       // Create the browser window.
       mainWindow = new BrowserWindow({
         show: false,
-        minWidth: 1500,
-        minHeight: 1000,
-        width: 1500,
-        height: 1000,
+        minWidth: 1121,
+        minHeight: 735,
+        width: 1121,
+        height: 735,
         center: true,
         show: false,
         nodeIntegration: true,
