@@ -198,7 +198,7 @@ const handleSectionTrigger = async (event) => {
     }
 
     // Transition back to the home screen
-    document.getElementById("guided-home").classList.remove("hidden");
+    document.getElementById("soda-home-page").classList.remove("hidden");
     document.getElementById("guided_mode-section").classList.add("is-shown");
     document.getElementById("guided_curate_dataset-tab").classList.add("show");
 
@@ -259,6 +259,7 @@ const handleSectionTrigger = async (event) => {
     "guided_mode-section", //Guided Mode
     "documentation-section", //Documentation
     "contact-us-section", //Contact us
+    "about-us-section",
   ];
 
   if (showSidebarSections.includes(sectionId)) {
@@ -337,11 +338,7 @@ document.querySelector("#shortcut-navigate-to-create_submission").addEventListen
 document.querySelector("#button-homepage-freeform-mode").addEventListener("click", async () => {
   //Free form mode will open through here (FROM HOME TO UPLOAD DATASET NOW)
   window.guidedPrepareHomeScreen();
-
-  // guidedResetSkippedPages();
-
   window.directToFreeFormMode();
-  document.getElementById("guided_mode_view").classList.add("is-selected");
 });
 
 $(document).ready(() => {

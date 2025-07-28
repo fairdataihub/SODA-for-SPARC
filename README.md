@@ -92,7 +92,7 @@ This data helps us:
 
 To learn more about what SODA collects and how we use Kombucha Analytics within SODA, please read our [Privacy Policy](https://docs.sodaforsparc.io/docs/legal/privacypolicy).
 
-## Acknowledgements
+## Acknowledgments
 
 - [NIH SPARC Initiative](https://commonfund.nih.gov/sparc)
 - [Pennsieve Team](https://discover.pennsieve.io/)

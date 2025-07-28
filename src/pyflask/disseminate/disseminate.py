@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
 ### Import required python modules
-from venv import create
 from flask import abort 
 import requests
-from permissions import pennsieve_get_current_user_permissions, has_edit_permissions
-from utils import connect_pennsieve_client, get_dataset_id, authenticate_user_with_client, create_request_headers
+from permissions import  has_edit_permissions
+from utils import  get_dataset_id, create_request_headers
 from errorHandlers import handle_http_error
 from authentication import get_access_token
 from constants import PENNSIEVE_URL
@@ -18,7 +17,7 @@ namespace_logger = get_namespace_logger(NamespaceEnum.MANAGE_DATASETS)
 
 
 
-def bf_get_doi(selected_bfaccount, selected_bfdataset):
+def bf_get_doi(selected_bfdataset):
     """
     Function to get current doi for a selected dataset
 
@@ -132,30 +131,41 @@ def construct_publication_qs(publication_type, embargo_release_date):
     return f"?publicationType={publication_type}&embargoReleaseDate={embargo_release_date}" if embargo_release_date else f"?publicationType={publication_type}"
 
 
-def bf_submit_review_dataset(selected_bfaccount, selected_bfdataset, publication_type, embargo_release_date):
+def bf_submit_review_dataset(selected_account, selected_dataset, publication_type, embargo_release_date):
     """
         Function to publish for a selected dataset
 
         Args:
-            selected_bfaccount: name of selected Pennsieve account (string)
-            selected_bfdataset: name of selected Pennsieve dataset (string)
+            selected_account: name of selected Pennsieve account (string)
+            selected_dataset: name of selected Pennsieve dataset (string)
             publication_type: type of publication (string)
             embargo_release_date: (optional) date at which embargo lifts from dataset after publication
         Return:
             Success or error message
     """
-    selected_dataset_id = get_dataset_id(selected_bfdataset)
+    selected_dataset_id = get_dataset_id(selected_dataset)
+
+    namespace_logger.info(f"bf_submit_review_dataset called with: account={selected_account}, dataset={selected_dataset}, publication_type={publication_type}, embargo_release_date={embargo_release_date}")
 
     if not has_edit_permissions(get_access_token(), selected_dataset_id):
+        namespace_logger.warning(f"User does not have edit permissions for dataset {selected_dataset_id}")
         abort(403, "You do not have permission to edit this dataset.")
-        
+
     qs = construct_publication_qs(publication_type, embargo_release_date)
+    namespace_logger.debug(f"Constructed publication query string: {qs}")
+
+    url = f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/publication/request{qs}"
+    headers = create_request_headers(get_access_token())
+    namespace_logger.info(f"POST {url}")
 
     try:
-        r = requests.post(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/publication/request{qs}", headers=create_request_headers(get_access_token()))
+        r = requests.post(url, headers=headers)
+        namespace_logger.info(f"Response status: {r.status_code}")
         r.raise_for_status()
+        namespace_logger.debug(f"Response JSON: {r.json()}")
         return r.json()
     except Exception as e:
+        namespace_logger.error(f"Exception during POST to {url}: {e}")
         handle_http_error(e)
 
 
@@ -177,7 +187,7 @@ def get_publication_type(ps_or_token, selected_dataset_id):
 
 
 
-def bf_withdraw_review_dataset(selected_bfaccount, selected_bfdataset):
+def bf_withdraw_review_dataset(selected_bfdataset):
 
     selected_dataset_id = get_dataset_id(selected_bfdataset)
 
@@ -210,7 +220,7 @@ METADATA_FILES = [
     "subjects.xlsx"
 ]
 
-def get_metadata_files(selected_dataset, pennsieve_account):
+def get_metadata_files(selected_dataset):
     """
     Function to get the metadata files
 

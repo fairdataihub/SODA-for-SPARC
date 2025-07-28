@@ -14,47 +14,32 @@ import fileDoc from "/img/doc-file.png";
 import fileXlsx from "/img/excel-file.png";
 import fileJpeg from "/img/jpeg-file.png";
 import fileOther from "/img/other-file.png";
-// import * as path from "path";
 import {
   swalConfirmAction,
   swalFileListSingleAction,
   swalFileListTripleAction,
   swalShowInfo,
 } from "../utils/swal-utils";
-// const path = require("path");
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
 var metadataFile = "";
-window.jstreePreview = document.getElementById("div-dataset-tree-preview");
 window.nonAllowedCharacters = '<>:",;[]{}^`~@/|?*$=!%&+#\\';
 
 // Event listeners for opening the dropdown prompt
 document
-  .querySelector("#Question-getting-started-BF-account .change-current-account")
+  .querySelector("#Question-getting-started-ps-account .change-current-account")
   .addEventListener("click", function () {
-    window.openDropdownPrompt(this, "bf");
+    window.openDropdownPrompt(this, "ps");
   });
 
 document
-  .querySelector("#Question-generate-dataset-BF-dataset .change-current-account")
+  .querySelector("#Question-generate-dataset-ps-dataset .change-current-account")
   .addEventListener("click", function () {
     window.openDropdownPrompt(this, "dataset", false);
   });
-
-// document
-//   .querySelector("#Question-generate-dataset-BF-dataset .change-current-account:not(.organization)")
-//   .addEventListener("click", function (event) {
-//     window.openDropdownPrompt(event.target, "dataset", false);
-//   });
-
-// document
-//   .querySelector("#Question-generate-dataset-BF-account .change-current-account")
-//   .addEventListener("click", function () {
-//     window.openDropdownPrompt(this, "bf");
-//   });
 
 $(".button-individual-metadata.remove").click(function () {
   let metadataFileStatus = $($(this).parents()[1]).find(".para-metadata-file-status");
@@ -161,18 +146,18 @@ window.uploadDatasetDropHandler = async (ev) => {
   if (ev.dataTransfer.items) {
     const itemDropped = ev.dataTransfer.items[0];
     const folderPath = itemDropped.getAsFile().path;
-    const { isDirectory } = fs.statSync(folderPath);
+    const { isDirectory } = window.fs.statSync(folderPath);
 
     if (isDirectory) {
       window.sodaJSONObj = {
-        "bf-account-selected": {},
-        "bf-dataset-selected": {},
+        "ps-account-selected": {},
+        "ps-dataset-selected": {},
         "dataset-structure": {},
         "metadata-files": {},
         "manifest-files": {},
         "generate-dataset": {},
         "starting-point": {
-          type: "local",
+          location: "local",
           "local-path": "",
         },
       };
@@ -186,7 +171,7 @@ window.uploadDatasetDropHandler = async (ev) => {
       } else {
         Swal.fire({
           icon: "warning",
-          html: `This dataset is not following the SPARC Data Structure (SDS). It is expected that each of the high-level folders in this dataset is named after one of the SDS folders.
+          html: `2This dataset is not following the SPARC Dataset Structure (SDS). It is expected that each of the high-level folders in this dataset is named after one of the SDS folders.
           <br/>
           See the "Data Organization" section of the SPARC documentation for more 
           <a target="_blank" href="https://docs.sparc.science/docs/overview-of-sparc-dataset-format">details</a>`,
@@ -234,7 +219,7 @@ const getFilesAndFolders = async (directoryPath) => {
         files[item] = {
           path: itemPath,
           action: ["new"],
-          type: "local",
+          location: "local",
         };
       } else if (stats.isDirectory) {
         folders.push(itemPath);
@@ -361,7 +346,7 @@ window.addManifestDetailsToDatasetStructure = async (
                 "additional-metadata": String(additionalMetadata),
                 description: String(description),
                 timestamp: String(timestamp),
-                type: "local",
+                location: "local",
                 extension: metadata.extension,
                 path: metadata.path,
                 extension: metadata.extension,
@@ -462,7 +447,7 @@ window.addManifestDetailsToDatasetStructure = async (
                 "additional-metadata": String(additionalMetadata),
                 description: String(description),
                 timestamp: String(timestamp),
-                type: "local",
+                location: "local",
                 extension: metadata.extension,
                 path: metadata.path,
                 extension: metadata.extension,
@@ -503,15 +488,14 @@ window.uploadDatasetClickHandler = async (ev) => {
 
 window.handleLocalDatasetImport = async (path) => {
   const list = await getFilesAndFolders(path);
-  const currentFileExplorerPath = window.organizeDSglobalPath.value.trim();
-  const builtDatasetStructure = await window.buildDatasetStructureJsonFromImportedData(
+  const structure = await window.buildDatasetStructureJsonFromImportedData(
     list.folders,
     "dataset_root/", // Use dataset_root as the root folder since we are importing the root in this case
     true
   );
 
-  window.sodaJSONObj["dataset-structure"] = builtDatasetStructure[0];
-  window.sodaJSONObj["metadata-files"] = list.files;
+  window.sodaJSONObj["dataset-structure"] = structure[0];
+  window.sodaJSONObj["dataset-structure"]["files"] = list.files;
   const forbiddenFileNames = [];
   const problematicFiles = [];
   const hiddenItems = [];
@@ -519,27 +503,28 @@ window.handleLocalDatasetImport = async (path) => {
   for (let file in list.files) {
     const filesIsForbiddenFilesList = window.evaluateStringAgainstSdsRequirements(
       file,
-      "file-is-in-forbidden-files-list"
+      "is-forbidden-file"
     );
     if (filesIsForbiddenFilesList) {
       forbiddenFileNames.push(file);
     } else {
       const fileNameIsValid = window.evaluateStringAgainstSdsRequirements(
         file,
-        "folder-and-file-name-is-valid"
+        "folder-or-file-name-is-valid"
       );
 
       if (!fileNameIsValid) {
         problematicFiles.push(file);
       }
 
-      const fileIsHidden = window.evaluateStringAgainstSdsRequirements("file", "file-is-hidden");
+      const fileIsHidden = window.evaluateStringAgainstSdsRequirements("file", "is-hidden-file");
       if (fileIsHidden) {
         hiddenItems.push(file);
       }
     }
   }
 
+  // TODO: Handle dropped/renamed files in the manifest file
   if (forbiddenFileNames.length > 0) {
     await swalFileListSingleAction(
       forbiddenFileNames.map((file) => `dataset_root/${file}`),
@@ -548,10 +533,10 @@ window.handleLocalDatasetImport = async (path) => {
       false
     );
 
-    const metadataFiles = Object.keys(window.sodaJSONObj["metadata-files"]);
+    const metadataFiles = Object.keys(window.sodaJSONObj["dataset-structure"]["files"]);
     for (let file of metadataFiles) {
       if (forbiddenFileNames.includes(file)) {
-        delete window.sodaJSONObj["metadata-files"][file];
+        delete window.sodaJSONObj["dataset-structure"]["files"][file];
       }
     }
   }
@@ -571,7 +556,7 @@ window.handleLocalDatasetImport = async (path) => {
     );
 
     if (userResponse === "confirm") {
-      window.replaceProblematicFilesWithSDSCompliantNames(window.sodaJSONObj["metadata-files"]);
+      window.replaceProblematicFilesWithSDSCompliantNames(window.sodaJSONObj);
     }
 
     if (userResponse === "cancel") {
@@ -581,7 +566,7 @@ window.handleLocalDatasetImport = async (path) => {
 
   if (hiddenItems.length > 0) {
     const userResponse = await swalFileListTripleAction(
-      hidden.map((file) => `dataset_root/${file}`),
+      hiddenItems.map((file) => `dataset_root/${file}`),
       "<p>Hidden files detected</p>",
       `Hidden files are typically not recommend per the SPARC data standards, but you can choose to keep them if you wish.`,
       "Import the hidden files into SODA",
@@ -591,7 +576,7 @@ window.handleLocalDatasetImport = async (path) => {
     );
 
     if (userResponse === "deny") {
-      window.removeHiddenFiles(window.sodaJSONObj["metadata-files"]);
+      window.removeHiddenFiles(window.sodaJSONObj["dataset-structure"]);
     }
 
     if (userResponse === "cancel") {
@@ -601,30 +586,35 @@ window.handleLocalDatasetImport = async (path) => {
 
   // window.sodaJSONObj["metadata-files"] = list.files;
   window.sodaJSONObj["starting-point"]["local-path"] = path;
-  window.sodaJSONObj = await window.addManifestDetailsToDatasetStructure(
-    window.sodaJSONObj,
-    list.manifestFiles,
-    builtDatasetStructure
-  );
+  // TODO: Add manfiest details to the dataset structure?
+  // window.sodaJSONObj = await window.addManifestDetailsToDatasetStructure(
+  //   window.sodaJSONObj,
+  //   list.manifestFiles,
+  //   builtDatasetStructure
+  // );
 
   return true;
 };
 
 window.importLocalDataset = async (folderPath) => {
+  // Reset the sodaJSONObj
   window.sodaJSONObj = {
-    "bf-account-selected": {},
-    "bf-dataset-selected": {},
+    "ps-account-selected": {},
+    "ps-dataset-selected": {},
     "dataset-structure": {},
     "metadata-files": {},
     "manifest-files": {},
     "generate-dataset": {},
+    dataset_metadata: {
+      manifest_file: [],
+    },
     "starting-point": {
-      type: "local",
+      origin: "local",
       "local-path": "",
     },
   };
-  let moveForward = false;
 
+  let moveForward = false;
   let valid_dataset = window.verifySparcFolder(folderPath, "local");
 
   if (valid_dataset) {
@@ -632,7 +622,7 @@ window.importLocalDataset = async (folderPath) => {
   } else {
     Swal.fire({
       icon: "warning",
-      html: `This dataset is not following the SPARC Data Structure (SDS). It is expected that each of the high-level folders in this dataset is named after one of the SDS folders.
+      html: `This dataset is not following the SPARC Dataset Structure (SDS). It is expected that each of the high-level folders in this dataset is named after one of the SDS folders.
       <br/>
       See the "Data Organization" section of the SPARC documentation for more 
       <a target="_blank" href="https://docs.sparc.science/docs/overview-of-sparc-dataset-format">details</a>`,
@@ -658,14 +648,17 @@ window.importLocalDataset = async (folderPath) => {
   }
 };
 
-window.electron.ipcRenderer.on("selected-destination-upload-dataset", async (event, path) => {
-  if (path.length > 0) {
-    // Get the path of the first index
-    let folderPath = path[0];
+window.electron.ipcRenderer.on(
+  "selected-destination-upload-dataset",
+  async (event, importedFolderPath) => {
+    if (importedFolderPath.length > 0) {
+      // Get the path of the first index
+      let folderPath = importedFolderPath[0];
 
-    await window.importLocalDataset(folderPath);
+      await window.importLocalDataset(folderPath);
+    }
   }
-});
+);
 
 // Event listeners for buttons in step 2 of Organize Dataset
 document.getElementById("confirm-account-workspace").addEventListener("click", async function () {
@@ -698,7 +691,8 @@ document.getElementById("confirm-account-workspace").addEventListener("click", a
   try {
     pennsieveAgentCheckDiv.classList.remove("hidden");
     // Check to make sure the Pennsieve agent is installed
-    await window.checkPennsieveAgent(pennsieveAgentCheckDivId);
+    let passed = await window.checkPennsieveAgent(pennsieveAgentCheckDivId);
+    if (passed) document.getElementById("nextBtn").disabled = false;
   } catch (e) {
     console.error("Error with agent" + e);
   }
@@ -706,7 +700,6 @@ document.getElementById("confirm-account-workspace").addEventListener("click", a
   // If the user confirms the workspace and account, proceed to the next step
   document.getElementById("confirm-account-workspace").classList.remove("soda-green-border");
   document.getElementById("confirm-account-workspace").classList.add("soda-green-background");
-  document.getElementById("nextBtn").disabled = false;
 });
 
 document
@@ -743,7 +736,7 @@ document
   });
 
 document.getElementById("dataset-upload-new-dataset").addEventListener("click", async function () {
-  const dsName = document.getElementById("current-bf-dataset-generate").innerText;
+  const dsName = document.getElementById("current-ps-dataset-generate").innerText;
   const existingCardChecked = document
     .getElementById("dataset-upload-existing-dataset")
     .classList.contains("checked");
@@ -762,7 +755,7 @@ document.getElementById("dataset-upload-new-dataset").addEventListener("click", 
     $("#inputNewNameDataset-upload-dataset").val("");
 
     // reset the dataset name input field
-    document.getElementById("current-bf-dataset-generate").textContent = "None";
+    document.getElementById("current-ps-dataset-generate").textContent = "None";
 
     // TODO: REset sodaJSONObj here too
     // Remove checked state from all checkbox cards (input field inside the cards)
@@ -870,7 +863,7 @@ document.getElementById("change-account-btn").addEventListener("click", async fu
   // If the user changes the account, show the dropdown prompt
   document.getElementById("confirm-account-workspace").classList.add("soda-green-border");
   document.getElementById("confirm-account-workspace").classList.remove("soda-green-background");
-  await window.openDropdownPrompt(this, "bf");
+  await window.openDropdownPrompt(this, "ps");
   document.getElementById("change-account-btn").classList.add("basic");
   document.getElementById("change-account-btn").classList.remove("selected");
 });
@@ -882,6 +875,71 @@ document.getElementById("change-workspace-btn").addEventListener("click", async 
   await window.openDropdownPrompt(this, "organization");
   document.getElementById("change-workspace-btn").classList.add("basic");
   document.getElementById("change-workspace-btn").classList.remove("selected");
+
+  // If the user has selected the existing dataset option, reset all progress up to the current page
+  document.getElementById("existing-dataset-upload").classList.add("hidden");
+  document.getElementById("current-ps-dataset-generate").innerText = "";
+  document.getElementById("dataset-upload-existing-dataset").classList.remove("checked");
+  document.getElementById("dataset-upload-new-dataset").classList.remove("checked");
+  document.getElementById("inputNewNameDataset-upload-dataset").value = "";
+  document.getElementById("button-confirm-ps-dataset").parentNode.style.display = "flex";
+  document.getElementsByName("generate-5").forEach((element) => {
+    element.checked = false;
+  });
+  // Remove checks from all the cards in step 3 (merge option cards)
+  document.getElementById("skip-folder-card").classList.remove("checked");
+  document.getElementById("skip-folder-card").classList.remove("non-selected");
+  document.getElementById("merge-folder-card").classList.remove("checked");
+  document.getElementById("merge-folder-card").classList.remove("non-selected");
+  document.getElementById("replace-folder-card").classList.remove("checked");
+  document.getElementById("replace-folder-card").classList.remove("non-selected");
+
+  document.getElementById("replace-file-card").classList.remove("non-selected");
+  document.getElementById("replace-file-card").classList.remove("checked");
+  document.getElementById("skip-file-card").classList.remove("checked");
+  document.getElementById("skip-file-card").classList.remove("non-selected");
+
+  // Step 4
+  if (document.getElementById("generate-manifest-curate").checked) {
+    document.getElementById("generate-manifest-curate").click();
+    // if the manifest_files folder exists in ~/SODA delete it
+    if (window.fs.existsSync(window.path.join(window.os.homedir(), "SODA", "manifest_files"))) {
+      window.fs.rmdirSync(window.path.join(window.os.homedir(), "SODA", "manifest_files"), {
+        recursive: true,
+      });
+    }
+
+    if (window.fs.existsSync(window.path.join(window.os.homedir(), "SODA", "manifest_file"))) {
+      window.fs.rmdirSync(window.path.join(window.os.homedir(), "SODA", "manifest_file"), {
+        recursive: true,
+      });
+    }
+
+    // reset the manifest information in soda
+    if (window.sodaJSONObj["dataset_metadata"]["manifest_file"]) {
+      window.sodaJSONObj["dataset_metadata"]["manifest_file"] = [];
+    }
+  }
+
+  // reset the dataset name input field
+  document.getElementById("inputNewNameDataset-upload-dataset").value = "";
+  document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
+  $("#upload-dataset-btn-confirm-new-dataset-name").addClass("hidden");
+
+  // get every input with name="generate-5" and remove the checked property
+  let inputs = document.querySelectorAll('input[name="generate-5"]');
+  inputs.forEach((input) => {
+    input.checked = false;
+    input.classList.remove("checked");
+  });
+  document.getElementById("current-ps-dataset-generate").textContent = "None";
+  // hide the existing folder/files options
+  $("#Question-generate-dataset-existing-folders-options").addClass("hidden");
+  $("#Question-generate-dataset-existing-files-options").addClass("hidden");
+  $("#please-wait-new-curate-div").show();
+
+  $("#existing-dataset-upload").addClass("hidden");
+  $("#Question-generate-dataset-ps-dataset-options").addClass("hidden");
 });
 
 const metadataFileExtensionObject = {
@@ -904,10 +962,8 @@ window.dropHandler = async (
   curationMode,
   dataDeliverables = false
 ) => {
-  let gettingStartedSection = false;
   if (curationMode === "guided-getting-started") {
     curationMode = "guided";
-    gettingStartedSection = true;
   }
   // Prevent default behavior (Prevent file from being opened)
   ev.preventDefault();
@@ -929,7 +985,7 @@ window.dropHandler = async (
       }
       if (dataDeliverables === true) {
         let filepath = file.path;
-        log.info(`Importing Data Deliverables document: ${filepath}`);
+        window.log.info(`Importing Data Deliverables document: ${filepath}`);
         try {
           let extract_milestone = await client.get(`/prepare_metadata/import_milestone`, {
             params: {
@@ -971,7 +1027,7 @@ window.dropHandler = async (
               //get the value of data-code-metadata-file-type from dragDropContainer
               const metadataFileType = dragDropContainer.dataset.codeMetadataFileType;
               //save the path of the metadata file to the json object
-              window.sodaJSONObj["dataset-metadata"]["code-metadata"][metadataFileType] = file.path;
+              window.sodaJSONObj["dataset_metadata"]["code-metadata"][metadataFileType] = file.path;
               const lottieContainer = dragDropContainer.querySelector(
                 ".code-metadata-lottie-container"
               );
@@ -1003,107 +1059,6 @@ window.dropHandler = async (
   }
 };
 
-const checkAvailableSpace = async () => {
-  const roundToHundredth = (value) => {
-    return Number(parseFloat(value.toFixed(2)));
-  };
-
-  let location = document
-    .getElementById("input-destination-generate-dataset-locally")
-    .getAttribute("placeholder");
-
-  let freeMemory = await window.electron.ipcRenderer.invoke("getDiskSpace", location);
-  let freeMemoryMB = roundToHundredth(freeMemory / 1024 ** 2);
-
-  let datasetSizeResponse;
-  try {
-    datasetSizeResponse = await client.post(
-      "/curate_datasets/dataset_size",
-      {
-        soda_json_structure: window.sodaJSONObj,
-      },
-      { timeout: 0 }
-    );
-
-    let tempFolderSize = datasetSizeResponse.data.dataset_size;
-    let folderSizeMB = roundToHundredth(tempFolderSize / 1024 ** 2);
-    let warningText =
-      "Please free up " +
-      roundToHundredth(folderSizeMB) +
-      "MB " +
-      "or consider uploading directly to Pennsieve.";
-
-    //converted to MB/GB/TB for user readability
-    if (folderSizeMB > 1000) {
-      //if bigger than a gb then convert to that
-      folderSizeMB = roundToHundredth(folderSizeMB / 1024);
-      freeMemoryMB = roundToHundredth(freeMemoryMB / 1024);
-      warningText =
-        "Please free up " +
-        roundToHundredth(folderSizeMB) +
-        "GB " +
-        "or consider uploading directly to Pennsieve.";
-      //if bigger than a tb then convert to that
-      if (folderSizeMB > 1000) {
-        folderSizeMB = roundToHundredth(folderSizeMB / 1024);
-        freeMemoryMB = roundToHundredth(freeMemoryMB / 1024);
-        warningText =
-          "Please free up " +
-          roundToHundredth(folderSizeMB) +
-          "TB " +
-          "or consider uploading directly to Pennsieve.";
-      }
-    }
-
-    //comparison is done in bytes
-    if (freeMemory < tempFolderSize) {
-      $("#div-confirm-destination-locally button").hide();
-      $("#Question-generate-dataset-choose-ds-name").css("display", "none");
-      document.getElementById("input-destination-generate-dataset-locally").placeholder =
-        "Browse here";
-
-      Swal.fire({
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: "OK",
-        heightAuto: false,
-        icon: "warning",
-        showCancelButton: false,
-        title: "Not enough space in storage device",
-        text: warningText,
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-      });
-
-      window.logCurationForAnalytics(
-        "Error",
-        window.PrepareDatasetsAnalyticsPrefix.CURATE,
-        window.AnalyticsGranularity.ACTION_WITH_DESTINATION,
-        ["Step 6", "Check Storage Space", determineDatasetLocation()],
-        determineDatasetLocation()
-      );
-
-      // return to avoid logging that the user passed the storage space check
-      return;
-    }
-
-    window.logCurationForAnalytics(
-      "Success",
-      window.PrepareDatasetsAnalyticsPrefix.CURATE,
-      window.AnalyticsGranularity.ACTION_WITH_DESTINATION,
-      ["Step 6", "Check Storage Space", determineDatasetLocation()],
-      determineDatasetLocation()
-    );
-  } catch (error) {
-    clientError(error);
-  }
-};
-// const btnConfirmLocalDatasetGeneration = document.getElementById("btn-confirm-local-destination");
-// btnConfirmLocalDatasetGeneration.addEventListener("click", checkAvailableSpace, false);
-
 //////////////// IMPORT EXISTING PROGRESS FILES ////////////////////////////////
 window.progressFileDropdown = document.getElementById("progress-files-dropdown");
 
@@ -1118,8 +1073,7 @@ const progressFileParse = (ev) => {
       let contentJson = JSON.parse(content);
       return contentJson;
     } catch (error) {
-      log.error(error);
-      console.log(error);
+      window.log.error(error);
       document.getElementById("para-progress-file-status").innerHTML =
         "<span style='color:red'>" + error + "</span>";
 
@@ -1190,7 +1144,7 @@ const importDatasetStructure = (object) => {
   }
 };
 
-const importGenerateDatasetStep = async (object) => {
+const importGenerateDatasetStep = async () => {
   if ("generate-dataset" in window.sodaJSONObj) {
     // Step 1: Where to generate the dataset
     if (sodaJSONObj["generate-dataset"]["destination"] === "local") {
@@ -1201,28 +1155,30 @@ const importGenerateDatasetStep = async (object) => {
         "placeholder",
         window.sodaJSONObj["generate-dataset"]["path"]
       );
-      $("#input-destination-generate-dataset-locally").val(sodaJSONObj["generate-dataset"]["path"]);
+      $("#input-destination-generate-dataset-locally").val(
+        window.sodaJSONObj["generate-dataset"]["path"]
+      );
       $("#btn-confirm-local-destination").click();
-      $("#inputNewNameDataset").val(sodaJSONObj["generate-dataset"]["dataset-name"]);
+      $("#inputNewNameDataset").val(window.sodaJSONObj["generate-dataset"]["dataset-name"]);
       $("#btn-confirm-new-dataset-name").click();
-    } else if (sodaJSONObj["generate-dataset"]["destination"] === "bf") {
-      $("#generate-upload-BF").prop("checked", true);
-      $($("#generate-upload-BF").parents()[2]).click();
-      // Step 2: if generate on bf, choose bf account
+    } else if (window.sodaJSONObj["generate-dataset"]["destination"] === "ps") {
+      $("#generate-upload-ps").prop("checked", true);
+      $($("#generate-upload-ps").parents()[2]).click();
+      // Step 2: if generate on ps, choose ps account
       if (
-        "bf-account-selected" in window.sodaJSONObj &&
-        window.sodaJSONObj["bf-account-selected"]["account-name"] !== ""
+        "ps-account-selected" in window.sodaJSONObj &&
+        window.sodaJSONObj["ps-account-selected"]["account-name"] !== ""
       ) {
-        let bfAccountSelected = window.sodaJSONObj["bf-account-selected"]["account-name"];
+        let bfAccountSelected = window.sodaJSONObj["ps-account-selected"]["account-name"];
         if (bfAccountSelected != window.defaultBfDataset) {
           return;
         }
-        $("#current-bf-account-generate").text(bfAccountSelected);
+        $("#current-ps-account-generate").text(bfAccountSelected);
         $("#para-account-detail-curate").html("");
 
         try {
-          log.info(`Loading account details for ${bfAccountSelected}`);
-          let dataset_request = await client.get(`/manage_datasets/bf_account_details`, {
+          window.log.info(`Loading account details for ${bfAccountSelected}`);
+          await client.get(`/manage_datasets/bf_account_details`, {
             params: {
               selected_account: bfAccountSelected,
             },
@@ -1233,19 +1189,18 @@ const importGenerateDatasetStep = async (object) => {
           showHideDropdownButtons("account", "hide");
         }
 
-        $("#btn-bf-account").trigger("click");
+        $("#btn-ps-account").trigger("click");
         // Step 3: choose to generate on an existing or new dataset
         if (
-          "bf-dataset-selected" in window.sodaJSONObj &&
-          window.sodaJSONObj["bf-dataset-selected"]["dataset-name"] !== ""
+          "ps-dataset-selected" in window.sodaJSONObj &&
+          window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] !== ""
         ) {
-          $("#generate-BF-dataset-options-existing").prop("checked", true);
-          $($("#generate-BF-dataset-options-existing").parents()[2]).click();
-          let bfDatasetSelected = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+          $("#generate-ps-dataset-options-existing").prop("checked", true);
+          $($("#generate-ps-dataset-options-existing").parents()[2]).click();
+          let bfDatasetSelected = window.sodaJSONObj["ps-dataset-selected"]["dataset-name"];
           setTimeout(() => {
             let valid_dataset = false;
             for (const index in window.datasetList) {
-              let x = window.datasetList[index]["name"];
               if (bfDatasetSelected == window.datasetList[index]["name"]) {
                 valid_dataset = true;
               }
@@ -1253,8 +1208,8 @@ const importGenerateDatasetStep = async (object) => {
             if (valid_dataset == false) {
               return;
             }
-            $("#current-bf-dataset-generate").text(bfDatasetSelected);
-            $("#button-confirm-bf-dataset").click();
+            $("#current-ps-dataset-generate").text(bfDatasetSelected);
+            $("#button-confirm-ps-dataset").click();
             // Step 4: Handle existing files and folders
             if ("if-existing" in window.sodaJSONObj["generate-dataset"]) {
               let existingFolderOption = window.sodaJSONObj["generate-dataset"]["if-existing"];
@@ -1268,8 +1223,8 @@ const importGenerateDatasetStep = async (object) => {
             }
           }, 3000);
         } else {
-          $("#generate-BF-dataset-options-new").prop("checked", true);
-          $($("#generate-BF-dataset-options-new").parents()[2]).click();
+          $("#generate-ps-dataset-options-new").prop("checked", true);
+          $($("#generate-ps-dataset-options-new").parents()[2]).click();
           $("#inputNewNameDataset").val(sodaJSONObj["generate-dataset"]["dataset-name"]);
           $("#inputNewNameDataset").keyup();
         }
@@ -1356,7 +1311,7 @@ window.loadProgressFile = (ev) => {
       importManifest(window.sodaJSONObj);
       importMetadataFilesProgress(window.sodaJSONObj);
       importDatasetStructure(window.sodaJSONObj);
-      importGenerateDatasetStep(window.sodaJSONObj);
+      importGenerateDatasetStep();
       if (missing_dataset_files.length > 0 || missing_metadata_files > 0) {
         verify_missing_files("pre-existing");
       } else {
@@ -1385,7 +1340,7 @@ window.loadProgressFile = (ev) => {
       importManifest(window.sodaJSONObj);
       importMetadataFilesProgress(window.sodaJSONObj);
       importDatasetStructure(window.sodaJSONObj);
-      importGenerateDatasetStep(window.sodaJSONObj);
+      importGenerateDatasetStep();
       if (missing_dataset_files.length > 0 || missing_metadata_files > 0) {
         return_option = verify_missing_files("new");
       } else {
@@ -1569,15 +1524,15 @@ $("#select-permission-list-2").change((e) => {
   // updateDatasetList(window.defaultBfDataset);
   $("#div-filter-datasets-progress-2").css("display", "block");
 
-  $("#bf-dataset-select-header").css("display", "none");
+  $("#ps-dataset-select-header").css("display", "none");
   $("#curatebfdatasetlist").selectpicker("hide");
   $("#curatebfdatasetlist").selectpicker("refresh");
   $(".selectpicker").selectpicker("hide");
   $(".selectpicker").selectpicker("refresh");
-  $("#bf-dataset-select-div").hide();
+  $("#ps-dataset-select-div").hide();
 
   // var datasetPermission = $("#select-permission-list-2").val();
-  var bfacct = $("#current-bf-account").text();
+  var bfacct = $("#current-ps-account").text();
 
   if (bfacct === "None") {
     $("#para-filter-datasets-status-2").html(
@@ -1585,51 +1540,17 @@ $("#select-permission-list-2").change((e) => {
     );
     $(datasetPermissionDiv).find("#div-filter-datasets-progress-2").css("display", "none");
 
-    //$("#bf-dataset-select-header").css("display", "block")
+    //$("#ps-dataset-select-header").css("display", "block")
     $("#curatebfdatasetlist").selectpicker("show");
     $("#curatebfdatasetlist").selectpicker("refresh");
     $(".selectpicker").selectpicker("show");
     $(".selectpicker").selectpicker("refresh");
-    $("#bf-dataset-select-div").show();
+    $("#ps-dataset-select-div").show();
   } else {
     $("#curatebfdatasetlist").selectpicker("render");
     updateDatasetList(bfacct);
   }
 });
-
-const checkPrevDivForConfirmButton = (category) => {
-  if (category === "account") {
-    if (!$("#Question-generate-dataset-BF-account").hasClass("prev")) {
-      $("#div-bf-account-btns").css("display", "flex");
-      $("#div-bf-account-btns button").show();
-    } else {
-      $("#div-bf-account-btns").css("display", "none");
-      $("#div-bf-account-btns button").hide();
-    }
-    if (!$("#Question-getting-started-BF-account").hasClass("prev")) {
-      $("#div-bf-account-btns-getting-started").css("display", "flex");
-      $("#div-bf-account-btns-getting-started button").show();
-    } else {
-      $("#div-bf-account-btns-getting-started").css("display", "none");
-      $("#div-bf-account-btns-getting-started button").hide();
-    }
-  } else if (category === "dataset") {
-    if (!$("#Question-generate-dataset-BF-dataset").hasClass("prev")) {
-      $($("#button-confirm-bf-dataset").parent()[0]).css("display", "flex");
-      $("#button-confirm-bf-dataset").show();
-    } else {
-      $($("#button-confirm-bf-dataset").parent()[0]).css("display", "none");
-      $("#button-confirm-bf-dataset").hide();
-    }
-    if (!$("#Question-getting-started-BF-dataset").hasClass("prev")) {
-      $($("#button-confirm-bf-dataset-getting-started").parent()[0]).css("display", "flex");
-      $("#button-confirm-bf-dataset-getting-started").show();
-    } else {
-      $($("#button-confirm-bf-dataset-getting-started").parent()[0]).css("display", "none");
-      $("#button-confirm-bf-dataset-getting-started").hide();
-    }
-  }
-};
 
 let high_lvl_folder_node = "";
 window.create_child_node = (
@@ -1782,6 +1703,7 @@ window.create_child_node = (
     }
   }
 
+  // New
   return newFormatNode;
 };
 
@@ -1889,7 +1811,7 @@ $(document).ready(function () {
   });
 });
 
-window.moveItems = async (ev, category) => {
+window.moveItems = async (ev) => {
   let filtered = window.getGlobalPath(window.organizeDSglobalPath);
   let myPath = window.getRecursivePath(filtered.slice(1), window.datasetStructureJSONObj);
   let parentFolder = filtered[1];
@@ -2280,7 +2202,6 @@ $(jstreeInstance).on("changed.jstree", function (e, data) {
   if (data.node) {
     selectedNode = data.node.text;
     selectedPath = data.instance.get_path(data.node, "/");
-    var parentNode = $(jstreeInstance).jstree("get_selected");
   }
 });
 
@@ -2437,396 +2358,147 @@ const revertManifestForTreeView = () => {
   }
 };
 
-const generateFFManifestEditCard = (highLevelFolderName) => {
-  return `
-  <div class="dataset-card">        
-    <div class="dataset-card-body shrink">
-      <div class="dataset-card-row">
-        <h1 class="dataset-card-title-text">
-          <span class="manifest-folder-name">${highLevelFolderName}</span>
-        </h1>
-      </div>
-    </div>
-    <div class="dataset-card-button-container">
-      <button
-        class="ui primary button dataset-card-button-confirm"
-        style="
-          width: 295px !important;
-          height: 3rem;
-          font-size: 13px;
-        "
-        onClick="window.ffOpenManifestEditSwal('${highLevelFolderName}')"
-      >
-        Preview/Edit ${highLevelFolderName} manifest file
-      </button>
-    </div>
-  </div>
-`;
-};
+// PRE-REQ: Happens after the dataset name has been selected
+window.ffmCreateManifest = async () => {
+  let datasetStructure = window.sodaJSONObj["dataset-structure"];
 
-const renderFFManifestCards = () => {
-  // Retrieve manifest data from the sodaCopy object
-  const manifestData = window.sodaCopy["manifest-files"];
+  let manifestStructure = [];
 
-  // Extract high-level folders with manifest data
-  const highLevelFoldersWithManifestData = Object.keys(manifestData);
+  // recursively go through the dataset structure
+  const createManifestStructure = async (
+    datasetStructure,
+    manifestStructure,
+    parentFolder = ""
+  ) => {
+    for (const folder in datasetStructure["folders"]) {
+      let folderName = parentFolder ? `${parentFolder}/${folder}` : folder;
+      const statsObj = await window.fs.stat(datasetStructure["folders"][folder]["path"]);
+      const timeStamp = statsObj.mtime.toISOString();
+      manifestStructure.push({
+        filename: folderName,
+        timestamp: timeStamp,
+        description: "",
+        file_type: "folder",
+        entity: "",
+        data_modality: "",
+        also_in_dataset: "",
+        also_in_dataset_path: "",
+        data_dictionary_path: "",
+        entity_is_transitive: "",
+        additional_metadata: "",
+      });
+      createManifestStructure(datasetStructure["folders"][folder], manifestStructure, folderName);
+    }
 
-  // Generate manifest cards for each high-level folder
-  const manifestCards = highLevelFoldersWithManifestData
-    .map((highLevelFolder) => generateFFManifestEditCard(highLevelFolder))
-    .join("\n");
+    for (const file in datasetStructure["files"]) {
+      let filePath = parentFolder ? `${parentFolder}/${file}` : file;
+      // get timestamp of the file at the given path
+      const statsObj = await window.fs.stat(datasetStructure["files"][file]["path"]);
+      const timeStamp = statsObj.mtime.toISOString();
+      const fileExtension = window.path.extname(datasetStructure["files"][file]["path"]);
 
-  // Get the container for manifest file cards
-  const manifestFilesCardsContainer = document.getElementById("ffm-container-manifest-file-cards");
-
-  // Set the inner HTML of the container with the generated manifest cards
-  manifestFilesCardsContainer.innerHTML = manifestCards;
-
-  // Unhide the generate manifest files button
-  document
-    .getElementById("ffm-container-local-manifest-file-generation")
-    .classList.remove("hidden");
-
-  // Scroll to the manifest file cards container
-  window.smoothScrollToElement(manifestFilesCardsContainer);
-};
-
-const handleOrganizeDsGenerateLocalManifestCopyButtonClick = async () => {
-  // Step 1: Prompt the user to select a folder to save the dataset
-  const savePath = await window.electron.ipcRenderer.invoke(
-    "open-folder-path-select",
-    "Select a folder to save the manifest files to"
-  );
-
-  // Step 2: Check if a save path was selected
-  if (!savePath) {
-    // If no path selected, exit the function
-    return;
-  }
-
-  // Step 3: Define the base folder name for the manifest files
-  let manifestFolderName = "SODA Manifest Files";
-
-  // Step 4: Function to generate a unique folder path for the manifest files
-  const generateManifestFolderSavePath = () => {
-    // If the selected save path already contains a "SODA Manifest Files" directory, append a number to the folder name
-    // Otherwise, return the selected save path as is
-
-    // Step 4.1: Check if the "SODA Manifest Files" directory already exists at the selected save path
-    if (window.fs.existsSync(window.path.join(savePath, manifestFolderName))) {
-      let i = 1;
-
-      // Step 4.2: If the directory with the original name already exists, increment the number until a unique name is found
-      while (window.fs.existsSync(window.path.join(savePath, `${manifestFolderName} (${i})`))) {
-        i++;
-      }
-
-      // Step 4.3: Return the path with the incremented folder name
-      return window.path.join(savePath, `${manifestFolderName} (${i})`);
-    } else {
-      // Step 4.4: If the original directory does not exist, return the selected save path with the original folder name
-      return window.path.join(savePath, manifestFolderName);
+      manifestStructure.push({
+        filename: filePath,
+        timestamp: timeStamp,
+        description: "",
+        file_type: fileExtension,
+        entity: "",
+        data_modality: "",
+        also_in_dataset: "",
+        also_in_dataset_path: "",
+        data_dictionary_path: "",
+        entity_is_transitive: "",
+        additional_metadata: "",
+      });
     }
   };
 
-  // Step 5: Generate the unique folder path for the manifest files
-  const manifestFolderSavePath = generateManifestFolderSavePath();
+  await createManifestStructure(datasetStructure, manifestStructure);
 
-  // Step 6: Extract manifest file data from the sodaCopy object
-  const manifestFileData = window.sodaCopy["manifest-files"];
-
-  // Step 7: Iterate over folders with manifest data
-  const foldersWithManifestData = Object.keys(manifestFileData);
-  for (const folder of foldersWithManifestData) {
-    // Step 7.1: Process manifest data and convert it to JSON
-    const manifestJSON = window.processManifestInfo(
-      manifestFileData[folder]["headers"],
-      manifestFileData[folder]["data"]
-    );
-
-    // Step 7.2: Convert JSON manifest to a string
-    const jsonManifest = JSON.stringify(manifestJSON);
-
-    // Step 7.3: Define the path for the manifest file
-    const manifestPath = window.path.join(manifestFolderSavePath, folder, "manifest.xlsx");
-
-    // Step 7.4: Create necessary directories
-    window.fs.mkdirSync(window.path.join(manifestFolderSavePath, folder), {
-      recursive: true,
-    });
-
-    // Step 7.5: Convert JSON manifest to an Excel file and save it
-    window.convertJSONToXlsx(JSON.parse(jsonManifest), manifestPath);
-  }
-
-  // Step 8: Display a success notification
-  window.notyf.open({
-    duration: "5000",
-    type: "success",
-    message: "Manifest files successfully generated",
-  });
+  return manifestStructure;
 };
 
-// Attach a click listener to the manifest file generation button
-document
-  .getElementById("ffm-button-generate-manifest-files-locally")
-  .addEventListener("click", async () => {
-    await handleOrganizeDsGenerateLocalManifestCopyButtonClick();
-  });
+window.openmanifestEditSwal = async () => {
+  let existingManifestData = {};
+  try {
+    let pathToManifest = window.path.join(
+      window.homeDirectory,
+      "SODA",
+      "manifest_files",
+      "manifest.xlsx"
+    );
 
-window.ffOpenManifestEditSwal = async (highlevelFolderName) => {
-  let saveManifestFiles = false;
-  let guidedManifestTable = [];
-  // Function for when user wants to edit the manifest cards
-  const existingManifestData = window.sodaCopy["manifest-files"]?.[highlevelFolderName];
+    // create file path if it does not exist
+    if (!window.fs.existsSync(pathToManifest)) {
+      window.fs.mkdirSync(window.path.dirname(pathToManifest), { recursive: true });
+    }
 
-  let ffmManifestContainer = document.getElementById("ffm-container-manifest-file-cards").children;
-  //Lock manifest buttons
-  for (let i = 0; i < ffmManifestContainer.length; i++) {
-    ffmManifestContainer[i].children[1].children[0].disabled = true;
+    try {
+      await client.post("/prepare_metadata/manifest", {
+        soda: window.sodaJSONObj,
+        path_to_manifest_file: pathToManifest,
+        upload_boolean: false,
+      });
+    } catch (error) {
+      clientError(error);
+    }
+
+    existingManifestData = await client.get(
+      `/prepare_metadata/manifest?path_to_manifest_file=${pathToManifest}`
+    );
+    existingManifestData = existingManifestData.data;
+  } catch (error) {
+    clientError(error);
+    return;
   }
 
   window.electron.ipcRenderer.invoke("spreadsheet", existingManifestData);
 
   //upon receiving a reply of the spreadsheet, handle accordingly
   window.electron.ipcRenderer.on("spreadsheet-reply", async (event, result) => {
-    for (let i = 0; i < ffmManifestContainer.length; i++) {
-      ffmManifestContainer[i].children[1].children[0].disabled = false;
-    }
     if (!result || result === "") {
       window.electron.ipcRenderer.removeAllListeners("spreadsheet-reply");
       return;
     } else {
-      //spreadsheet reply contained results
       window.electron.ipcRenderer.removeAllListeners("spreadsheet-reply");
-      saveManifestFiles = true;
-      if (saveManifestFiles) {
-        //if additional metadata or description gets added for a file then add to json as well
-        window.sodaJSONObj["manifest-files"]["auto-generated"] = true;
-        const savedHeaders = result[0];
-        const savedData = result[1];
-        let jsonManifest = {};
-        let localFolderPath = window.path.join(
-          homeDirectory,
-          "SODA",
-          "manifest_files",
-          highlevelFolderName
-        );
-        let selectedManifestFilePath = window.path.join(localFolderPath, "manifest.xlsx");
 
-        if (!window.fs.existsSync(localFolderPath)) {
-          window.fs.mkdirSync(localFolderPath);
-          window.fs.closeSync(window.fs.openSync(selectedManifestFilePath, "w"));
+      window.sodaJSONObj["manifest-files"] = { headers: result[0], data: result[1] };
+      // load the updated data values into the dataset_metadata object
+      const newManifestData = [];
+      for (let dataIdx = 0; dataIdx < result[1].length; dataIdx++) {
+        const newRow = {};
+        for (let headerIdx = 0; headerIdx < result[0].length; headerIdx++) {
+          newRow[result[0][headerIdx].replace(/ /g, "_")] = result[1][dataIdx][headerIdx];
         }
-
-        jsonManifest = await window.electron.ipcRenderer.invoke("excelToJsonSheet1Options", {
-          sourceFile: selectedManifestFilePath,
-          columnToKey: {
-            "*": "{{columnHeader}}",
-          },
-        });
-
-        let sortedJSON = window.processManifestInfo(savedHeaders, savedData);
-        jsonManifest = JSON.stringify(sortedJSON);
-        window.convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
-        //Update the metadata in json object
-        for (let i = 0; i < savedData.length; i++) {
-          let fileName = savedData[i][0];
-          if (fileName == "" || fileName == undefined) {
-            // fileName is blank if user accidentally creates a new row and does not remove it
-            continue;
-          }
-          let cleanedFileName = "";
-          let fileNameSplit = fileName.split("/");
-          let description = savedData[i][2];
-          let additionalMetadata = savedData[i][4];
-          if (fileNameSplit[0] === "") {
-            //not in a subfolder
-            cleanedFileName = fileNameSplit[1];
-            window.sodaCopy["dataset-structure"]["folders"][highlevelFolderName]["files"][
-              cleanedFileName
-            ]["description"] = description;
-            window.sodaJSONObj["dataset-structure"]["folders"][highlevelFolderName]["files"][
-              cleanedFileName
-            ]["description"];
-            window.sodaCopy["dataset-structure"]["folders"][highlevelFolderName]["files"][
-              cleanedFileName
-            ]["additional-metadata"] = additionalMetadata;
-            window.sodaJSONObj["dataset-structure"]["folders"][highlevelFolderName]["files"][
-              cleanedFileName
-            ]["additional-metadata"] = additionalMetadata;
-          } else {
-            // is in a subfolder so search for it and update metadata
-            // need to add description and additional metadata to original sodaJSONObj
-            let folderDepthCopy =
-              window.sodaCopy["dataset-structure"]["folders"][highlevelFolderName];
-            let folderDepthReal =
-              window.sodaJSONObj["dataset-structure"]["folders"][highlevelFolderName];
-            for (let j = 0; j < fileNameSplit.length; j++) {
-              if (j === fileNameSplit.length - 1) {
-                folderDepthCopy["files"][fileNameSplit[j]]["description"] = description;
-                folderDepthReal["files"][fileNameSplit[j]]["description"] = description;
-                folderDepthCopy["files"][fileNameSplit[j]]["additional-metadata"] =
-                  additionalMetadata;
-                folderDepthReal["files"][fileNameSplit[j]]["additional-metadata"] =
-                  additionalMetadata;
-              } else {
-                folderDepthCopy = folderDepthCopy["folders"][fileNameSplit[j]];
-                folderDepthReal = folderDepthReal["folders"][fileNameSplit[j]];
-              }
-            }
-          }
-        }
-
-        window.sodaCopy["manifest-files"][highlevelFolderName] = {
-          headers: savedHeaders,
-          data: savedData,
-        };
+        newManifestData.push(newRow);
       }
-
-      //Rerender the manifest cards
-      renderFFManifestCards();
+      window.sodaJSONObj["dataset_metadata"]["manifest_file"] = newManifestData;
     }
   });
 };
 
-// Function takes in original sodaJSONObj and creates a copy of it to modify to manifest edits
-// Manifest edits will create
-window.ffmCreateManifest = async (sodaJson) => {
-  await new Promise((r) => setTimeout(r, 0));
-  //create a copy of the sodajson object
-  window.sodaCopy = sodaJson;
-  let datasetStructCopy = window.sodaCopy["dataset-structure"];
-  if ("auto-generated" in window.sodaCopy["manifest-files"]) {
-    delete window.sodaCopy["manifest-files"]["auto-generated"];
-  }
-  if ("destination" in window.sodaCopy["manifest-files"]) {
-    delete window.sodaCopy["manifest-files"]["destination"];
-  }
-
-  try {
-    // used for imported local datasets and pennsieve datasets
-    // filters out deleted files/folders before creating manifest data again
-    const cleanJson = await client.post(
-      `/curate_datasets/clean-dataset`,
-      { soda_json_structure: window.sodaCopy },
-      { timeout: 0 }
-    );
-    let response = cleanJson.data.soda_json_structure;
-    window.sodaCopy = response;
-  } catch (e) {
-    clientError(e);
-  }
-
-  //manifest will still include pennsieve or locally imported files
-  // deleted to prevent from showing up as manifest card
-  if (window.sodaCopy["manifest-files"]?.["destination"]) {
-    delete window.sodaCopy["manifest-files"]["destination"];
-  }
-
-  // create manifest data of all high level folders
-  try {
-    const res = await client.post(
-      `/curate_datasets/generate_high_level_folder_manifest_data`,
-      {
-        dataset_structure_obj: datasetStructCopy,
-      },
-      { timeout: 0 }
-    );
-
-    // loop through each of the high level folders and create excel sheet in case no edits are made
-    // will be auto generated and ready for upload
-    const manifestRes = res.data;
-    let newManifestData = {};
-    for (const [highLevelFolderName, manifestFileData] of Object.entries(manifestRes)) {
-      if (manifestFileData.length > 1) {
-        const manifestHeader = manifestFileData.shift();
-        newManifestData[highLevelFolderName] = {
-          headers: manifestHeader,
-          data: manifestFileData,
-        };
-        // Will create an excel sheet of the manifest files in case they receive no edits
-        let jsonManifest = {};
-        let manifestFolder = window.path.join(homeDirectory, "SODA", "manifest_files");
-        let localFolderPath = window.path.join(manifestFolder, highLevelFolderName);
-        let selectedManifestFilePath = window.path.join(localFolderPath, "manifest.xlsx");
-        // create manifest folders if they don't exist
-        if (!window.fs.existsSync(manifestFolder)) {
-          window.fs.mkdirSync(manifestFolder);
-        }
-        if (!window.fs.existsSync(localFolderPath)) {
-          window.fs.mkdirSync(localFolderPath);
-          window.fs.closeSync(window.fs.openSync(selectedManifestFilePath, "w"));
-        }
-        if (!window.fs.existsSync(selectedManifestFilePath)) {
-        } else {
-          jsonManifest = await window.electron.ipcRenderer.invoke("excelToJsonSheet1Options", {
-            sourceFile: selectedManifestFilePath,
-            columnToKey: {
-              "*": "{{columnHeader}}",
-            },
-          });
-        }
-        // If file doesn't exist then that means it didn't get imported properly
-
-        let sortedJSON = window.processManifestInfo(manifestHeader, manifestFileData);
-        jsonManifest = JSON.stringify(sortedJSON);
-        window.convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
-      }
-    }
-
-    // Check if manifest data is different from what exists already (if previous data exists)
-    const existingManifestData = window.sodaCopy["manifest-files"];
-    let updatedManifestData;
-
-    if (existingManifestData) {
-      updatedManifestData = window.diffCheckManifestFiles(newManifestData, existingManifestData);
-    } else {
-      updatedManifestData = newManifestData;
-    }
-    // manifest data will be stored in window.sodaCopy to be reused for manifest edits/regenerating cards
-    // sodaJSONObj will remain the same and only have 'additonal-metadata' and 'description' data
-    window.sodaCopy["manifest-files"] = updatedManifestData;
-
-    // below needs to be added added before the main_curate_function begins
-    window.sodaJSONObj["manifest-files"] = {
-      "auto-generated": true,
-      destination: "generate-dataset",
-    };
-  } catch (err) {
-    clientError(err);
-    userErrorMessage(err);
-  }
-  renderFFManifestCards();
-};
-
+// TODO: Revisit
 $("#generate-manifest-curate").change(async function () {
   if (this.checked) {
     //display manifest generator UI here
     $("#manifest-creating-loading").removeClass("hidden");
-    // create the manifest of the high level folders within sodaJSONObj
-    if ("manifest-files" in window.sodaJSONObj === false) {
-      window.sodaJSONObj["manifest-files"] = {
-        "auto-generated": true,
-        destination: "generate-dataset",
-      };
-    }
 
-    await window.ffmCreateManifest(sodaJSONObj);
     $("#ffm-manifest-generator").show();
+    let manifestStructure = await window.ffmCreateManifest();
+    window.sodaJSONObj["dataset_metadata"]["manifest_file"] = manifestStructure;
     // For the back end to know the manifest files have been created in $HOME/SODA/manifest-files/<highLvlFolder>
-    window.sodaJSONObj["manifest-files"]["auto-generated"] = true;
+    // window.sodaJSONObj["manifest-files"]["auto-generated"] = true;
     $("#manifest-creating-loading").addClass("hidden");
+
+    document.getElementById("manifest-information-container").classList.remove("hidden");
     document
       .getElementById("ffm-container-local-manifest-file-generation")
       .classList.remove("hidden");
-
-    document.getElementById("manifest-information-container").classList.remove("hidden");
-    // document.getElementById("manifest-not-selected").classList.add("hidden");
+    document.getElementById("manifest-items-container").classList.remove("hidden");
   } else {
     $("#ffm-manifest-generator").hide();
     $("#manifest-creating-loading").addClass("hidden");
-    document.getElementById("ffm-container-manifest-file-cards").innerHTML = "";
+    // document.getElementById("ffm-container-manifest-file-cards").innerHTML = "";
     if (window.sodaJSONObj["manifest-files"]?.["destination"]) {
       delete window.sodaJSONObj["manifest-files"]["destination"];
     }
@@ -2835,6 +2507,6 @@ $("#generate-manifest-curate").change(async function () {
     }
     document.getElementById("ffm-container-local-manifest-file-generation").classList.add("hidden");
     document.getElementById("manifest-information-container").classList.add("hidden");
-    // document.getElementById("manifest-selected").classList.add("hidden");
+    document.getElementById("manifest-items-container").classList.add("hidden");
   }
 });

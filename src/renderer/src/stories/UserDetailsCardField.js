@@ -27,7 +27,7 @@ const UserDetailsCardField = ({ fieldOption, tabName }) => {
         <div style="width: 100%; display: flex">
           <h5 class="card-left" style="padding-right: 5px">Current dataset:</h5>
           <div class="change-current-account ds-dd dataset-name" style="margin-left: 10px">
-            <h5 class="card-right bf-dataset-span" style="width: fit-content">None</h5>
+            <h5 class="card-right ps-dataset-span" style="width: fit-content">None</h5>
 
             <svg
               class="svg-change-current-account dataset bi bi-pencil-fill"
@@ -56,7 +56,7 @@ const UserDetailsCardField = ({ fieldOption, tabName }) => {
           <div style="width: 100%; display: flex">
             <h5 class="card-left" style="padding-right: 5px">Current workspace:</h5>
             <div class="change-current-account ds-dd organization" style="margin-left: 12px">
-              <h5 class="card-right bf-organization-span" style="width: fit-content">None</h5>
+              <h5 class="card-right ps-organization-span" style="width: fit-content">None</h5>
 
               <svg
                 class="svg-change-current-account organization bi bi-pencil-fill"
@@ -83,7 +83,7 @@ const UserDetailsCardField = ({ fieldOption, tabName }) => {
               <h5 class="card-left" style="padding-right: 21px; width: 40%">
                 Account details:
               </h5>
-              <h5 class="card-right bf-account-details-span" style="padding-left: 4px;">None</h5>
+              <h5 class="card-right ps-account-details-span" style="padding-left: 4px;">None</h5>
             </div>
           </div>
         </div>
@@ -125,7 +125,7 @@ const UserDetailsCardField = ({ fieldOption, tabName }) => {
               class="change-current-account md-change-current-account"
               style="margin-left: 6px"
             >
-              <h5 class="card-right bf-account-span" style="width: fit-content">None</h5>
+              <h5 class="card-right ps-account-span" style="width: fit-content">None</h5>
 
               <svg
                 class="svg-change-current-account bi bi-pencil-fill"

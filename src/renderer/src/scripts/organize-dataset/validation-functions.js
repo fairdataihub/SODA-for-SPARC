@@ -1,8 +1,7 @@
 // Purpose: Logic for Organize Dataset Step 7: Validate Dataset
-import { v4 as uuid } from "uuid";
 import api from "../others/api/api";
 import Swal from "sweetalert2";
-import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
+import { clientError } from "../others/http-error-handler/error-handler";
 import kombuchaEnums from "../analytics/analytics-enums";
 
 while (!window.baseHtmlLoaded) {
@@ -16,15 +15,15 @@ window.validateOrganizedDataset = async () => {
   let datasetOrigin = "";
   let datasetDestination = "";
 
-  if (window.sodaJSONObj["starting-point"]["type"] == "bf") {
+  if (window.sodaJSONObj["starting-point"]["origin"] == "ps") {
     datasetOrigin = "Pennsieve";
   }
 
-  if (window.sodaJSONObj["starting-point"]["type"] == "local") {
+  if (window.sodaJSONObj["starting-point"]["origin"] == "local") {
     datasetOrigin = "Local";
   }
 
-  if (window.sodaJSONObj["starting-point"]["type"] == "new") {
+  if (window.sodaJSONObj["starting-point"]["origin"] == "new") {
     datasetOrigin = "New";
   }
 
@@ -78,7 +77,7 @@ window.validateOrganizedDataset = async () => {
 
   // if the user performed move, rename, delete on files in an imported dataset we need to perform those actions before creating the validation report;
   // rationale for this can be found in the function definition
-  if (sodaJSONObjCopy["starting-point"]["type"] === "bf") {
+  if (sodaJSONObjCopy["starting-point"]["origin"] === "ps") {
     await api.performUserActions(sodaJSONObjCopy);
   }
 
@@ -93,20 +92,19 @@ window.validateOrganizedDataset = async () => {
 
   // get the number of files and folders in the dataset that have been added in the virutal organizer
   let file_counter = 0;
-  let folder_counter = 0;
   window.get_num_files_and_folders(sodaJSONObjCopy["dataset-structure"]);
 
   // check if the virutal files will be merged with a Pennsieve dataset
   if (
     $('input[name="generate-4"]:checked')[0] &&
-    $('input[name="generate-4"]:checked')[0].id === "generate-BF-dataset-options-existing"
+    $('input[name="generate-4"]:checked')[0].id === "generate-ps-dataset-options-existing"
   ) {
     // get the package count of the PS dataset in order to see if it exceeds the maximumn size
     let packageTypeCounts;
     try {
       // TOOD: Handle the replacements if-existing case as this will change the amount of validation work to be done + therefore the actual amt
       packageTypeCounts = await api.getNumberOfPackagesInDataset(
-        sodaJSONObjCopy["bf-dataset-selected"]["dataset-name"]
+        sodaJSONObjCopy["ps-dataset-selected"]["dataset-name"]
       );
     } catch (err) {
       clientError(err);
@@ -207,7 +205,6 @@ window.validateOrganizedDataset = async () => {
     }
 
     file_counter = 0;
-    folder_counter = 0;
     window.get_num_files_and_folders(window.sodaJSONObj["dataset-structure"]);
     // log successful validation run to analytics
     window.electron.ipcRenderer.send(
@@ -242,7 +239,6 @@ window.validateOrganizedDataset = async () => {
   window.fs.writeFileSync(validationReportPath, fullReport);
 
   file_counter = 0;
-  folder_counter = 0;
   window.get_num_files_and_folders(window.sodaJSONObj["dataset-structure"]);
   // log successful validation run to analytics
   window.electron.ipcRenderer.send(
@@ -347,63 +343,6 @@ window.validateOrganizedDataset = async () => {
   });
 });
 
-const displayValidationReportErrors = (validationReport, tableBody, validationErrorsContainer) => {
-  // this works because the returned validation results are in an Object Literal. If the returned object is changed this will break (e.g., an array will have a length property as well)
-  let hasValidationErrors = Object.getOwnPropertyNames(validationReport).length >= 1;
-
-  Swal.fire({
-    title: hasValidationErrors ? "Dataset is Invalid" : `Dataset is Valid`,
-    text: hasValidationErrors
-      ? `Please fix the errors listed in the table below then re-run validation to check that your dataset conforms to the SDS.`
-      : `Your dataset conforms to the SPARC Dataset Structure.`,
-    allowEscapeKey: true,
-    allowOutsideClick: true,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: false,
-    showConfirmButton: true,
-    icon: hasValidationErrors ? "error" : "success",
-  });
-
-  // check if there are validation errors
-  if (!window.validationErrorsOccurred(validationReport)) {
-    return;
-  }
-
-  // display errors onto the page
-  window.displayValidationErrors(validationReport, tableBody);
-
-  // show the validation errors to the user
-  validationErrorsContainer.style.visibility = "visible";
-};
-
-// {
-//   if (dataset_destination == "Pennsieve" && "bf" === sodaJSONObjCopy["starting-point"]["type"]) {
-//   }
-
-//   let errorMessage = await checkEmptyFilesAndFolders(sodaJSONObjCopy);
-
-//   if (errorMessage) {
-//     Swal.fire({
-//       icon: "error",
-//       title: "Empty Files or Folders Detected",
-//       text: "Cannot validate a dataset with empty files or folders.",
-//       confirmButtonText: "Ok",
-//       backdrop: "rgba(0,0,0, 0.4)",
-//       reverseButtons: window.reverseSwalButtons,
-//       heightAuto: false,
-//       showClass: {
-//         popup: "animate__animated animate__zoomIn animate__faster",
-//       },
-//       hideClass: {
-//         popup: "animate__animated animate__zoomOut animate__faster",
-//       },
-//     });
-//   }
-
-//   return sodaJSONObjCopy;
-// }
-
 /**
  * @param {Object} sodaJSONObj - The global soda json object or a copy of it
  *
@@ -412,6 +351,6 @@ const displayValidationReportErrors = (validationReport, tableBody, validationEr
  */
 const formatForDatasetGeneration = (sodaJSONObj) => {
   // update the copy of the json structure to get its state post generation initialization
-  window.updateJSONStructureGenerate(false, sodaJSONObj);
+  window.updateJSONStructureGenerate(sodaJSONObj);
   window.setSodaJSONStartingPoint(sodaJSONObj);
 };

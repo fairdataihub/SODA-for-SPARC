@@ -1,4 +1,4 @@
-import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils";
+import { Destinations } from "../analytics/analytics-utils";
 import api from "../others/api/api";
 import Swal from "sweetalert2";
 import client from "../client";
@@ -13,7 +13,7 @@ while (!window.baseHtmlLoaded) {
 // event listeners for changes open dropdown prompts
 document.querySelectorAll(".changes-change-current-account").forEach((element) => {
   element.addEventListener("click", function () {
-    window.openDropdownPrompt(null, "bf");
+    window.openDropdownPrompt(null, "ps");
   });
 });
 
@@ -26,7 +26,7 @@ document.querySelectorAll(".changes-change-current-ds").forEach((element) => {
 // event listeners for readme open dropdown prompts
 document.querySelectorAll(".readme-change-current-account").forEach((element) => {
   element.addEventListener("click", function () {
-    window.openDropdownPrompt(null, "bf");
+    window.openDropdownPrompt(null, "ps");
   });
 });
 
@@ -76,7 +76,7 @@ window.generateRCFiles = async (uploadBFBoolean, fileType) => {
     }
 
     // Check if dataset is locked after running pre-flight checks
-    const isLocked = await api.isDatasetLocked(window.defaultBfAccount, bfDataset);
+    const isLocked = await api.isDatasetLocked(bfDataset);
     if (isLocked) {
       await Swal.fire({
         icon: "info",
@@ -125,7 +125,7 @@ window.generateRCFiles = async (uploadBFBoolean, fileType) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then(() => {});
 
   if (uploadBFBoolean) {
     let textValue = $(`#textarea-create-${fileType}`).val().trim();
@@ -230,7 +230,6 @@ $(document).ready(function () {
     "selected-destination-generate-readme-locally",
     (event, dirpath, filename) => {
       filename = "README.txt";
-      let data = $("#textarea-create-readme").val().trim();
       if (dirpath.length > 0) {
         var destinationPath = window.path.join(dirpath[0], filename);
         readmeDestinationPath = destinationPath;
@@ -317,10 +316,10 @@ $(document).ready(function () {
       }
     }
     if ($("#bf_dataset_load_changes").text().trim() !== "None") {
-      $("#div-check-bf-import-changes").css("display", "flex");
-      $($("#div-check-bf-import-changes").children()[0]).show();
+      $("#div-check-ps-import-changes").css("display", "flex");
+      $($("#div-check-ps-import-changes").children()[0]).show();
     } else {
-      $("#div-check-bf-import-changes").css("display", "none");
+      $("#div-check-ps-import-changes").css("display", "none");
     }
   });
 
@@ -332,26 +331,26 @@ $(document).ready(function () {
       }
     }
     if ($("#bf_dataset_load_readme").text().trim() !== "None") {
-      $("#div-check-bf-import-readme").css("display", "flex");
-      $($("#div-check-bf-import-readme").children()[0]).show();
+      $("#div-check-ps-import-readme").css("display", "flex");
+      $($("#div-check-ps-import-readme").children()[0]).show();
     } else {
-      $("#div-check-bf-import-readme").css("display", "none");
+      $("#div-check-ps-import-readme").css("display", "none");
     }
   });
 
   $("#bf_dataset_generate_readme").on("DOMSubtreeModified", function () {
     if ($("#bf_dataset_generate_readme").text().trim() !== "None") {
-      $("#div-check-bf-generate-readme").css("display", "flex");
+      $("#div-check-ps-generate-readme").css("display", "flex");
     } else {
-      $("#div-check-bf-generate-readme").css("display", "none");
+      $("#div-check-ps-generate-readme").css("display", "none");
     }
   });
 
   $("#bf_dataset_generate_changes").on("DOMSubtreeModified", function () {
     if ($("#bf_dataset_generate_changes").text().trim() !== "None") {
-      $("#div-check-bf-generate-changes").css("display", "flex");
+      $("#div-check-ps-generate-changes").css("display", "flex");
     } else {
-      $("#div-check-bf-generate-changes").css("display", "none");
+      $("#div-check-ps-generate-changes").css("display", "none");
     }
   });
 });
@@ -386,7 +385,6 @@ window.saveRCFile = async (type) => {
   }
   window.fs.writeFile(destinationPath, data, (err) => {
     if (err) {
-      console.log(err);
       log.error(err);
       var emessage = userErrorMessage(error);
       Swal.fire({
@@ -417,7 +415,6 @@ window.saveRCFile = async (type) => {
       }
       window.fs.rename(destinationPath, newName, async (err) => {
         if (err) {
-          console.log(err);
           log.error(err);
           Swal.fire({
             title: `Failed to generate the ${type}.txt file`,
@@ -568,7 +565,7 @@ window.getRC = async (type) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then(() => {});
   if (type === "CHANGES.txt") {
     var shortName = "changes";
   } else {
@@ -618,8 +615,8 @@ window.getRC = async (type) => {
         backdrop: "rgba(0,0,0,0.4)",
       });
     }
-    $($(`#button-fake-confirm-existing-bf-${shortName}-file-load`).siblings()[0]).hide();
-    $(`#button-fake-confirm-existing-bf-${shortName}-file-load`).click();
+    $($(`#button-fake-confirm-existing-ps-${shortName}-file-load`).siblings()[0]).hide();
+    $(`#button-fake-confirm-existing-ps-${shortName}-file-load`).click();
   } catch (error) {
     clientError(error);
 
@@ -698,7 +695,7 @@ window.importExistingRCFile = (type) => {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => {});
+      }).then(() => {});
       setTimeout(loadExistingRCFile(filePath, type), 1000);
     }
   }
@@ -738,7 +735,6 @@ const loadExistingRCFile = async (filepath, type) => {
     $(`#button-fake-confirm-existing-${type}-file-load`).click();
   } catch (error) {
     let emessage = userErrorMessage(error);
-    console.log(error);
     window.log.error(error);
     Swal.fire({
       title: "Failed to import existing file",

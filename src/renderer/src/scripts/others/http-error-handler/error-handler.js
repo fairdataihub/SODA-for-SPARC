@@ -25,11 +25,6 @@ const clientError = (error) => {
     log.error(JSON.stringify(error.config));
     log.error("Response Headers: ");
     log.error(JSON.stringify(error_headers));
-
-    console.log(`Error caused from: ${error_message}`);
-    console.log(`Response Status: ${error_status}`);
-    console.log("Headers:");
-    console.log(error_headers);
   } else if (error.request) {
     // The request was made but no response was received
     log.error(error.request);
@@ -45,7 +40,6 @@ const clientError = (error) => {
 const userErrorMessage = (error) => {
   let errorMessage = "";
   if (error.response) {
-    console.log("userResponse");
     // The request was made and the server responded with a status code
     // that falls out of the range of 2xx
     errorMessage = `${error.response.data.message}`;
@@ -152,14 +146,14 @@ window.switchToCurrentWorkspace = async () => {
         },
       });
       // reset the dataset field values
-      $("#current-bf-dataset").text("None");
-      $("#current-bf-dataset-generate").text("None");
-      $(".bf-dataset-span").html("None");
-      $("#para-continue-bf-dataset-getting-started").text("");
+      $("#current-ps-dataset").text("None");
+      $("#current-ps-dataset-generate").text("None");
+      $(".ps-dataset-span").html("None");
+      $("#para-continue-ps-dataset-getting-started").text("");
 
       // set the workspace field values to the user's current workspace
       let org = bf_account_details_req.data.organization;
-      $(".bf-organization-span").text(org);
+      $(".ps-organization-span").text(org);
 
       showHideDropdownButtons("account", "show");
       confirm_click_account_function();

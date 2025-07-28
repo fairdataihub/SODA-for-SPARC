@@ -4,12 +4,11 @@ This file contains all of the functions related to the submission.xlsx file
 import Swal from "sweetalert2";
 import lottie from "lottie-web";
 import "fomantic-ui/dist/semantic";
-import introJs from "intro.js";
 import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
 import client from "../client";
 import kombuchaEnums from "../analytics/analytics-enums";
 import createEventDataPrepareMetadata from "../analytics/prepare-metadata-analytics";
-import determineDatasetLocation, { Destinations } from "../analytics/analytics-utils";
+import { Destinations } from "../analytics/analytics-utils";
 import api from "../others/api/api";
 import { successCheck } from "../../assets/lotties/lotties";
 
@@ -20,12 +19,21 @@ while (!window.baseHtmlLoaded) {
 $(".ui.accordion").accordion();
 
 // List of funding consortiums taken from the 2.1 submission file
-window.sparcFundingConsortiums = ["SPARC", "SPARC-2", "VESPA", "REVA", "HORNET"];
+window.sparcFundingConsortiums = [
+  "SPARC",
+  "SPARC-2",
+  "VESPA",
+  "REVA",
+  "HORNET",
+  "HEAL",
+  "HEAL-REJOIN",
+  "HEAL-PRECISION",
+];
 
 // event listeners for opendropdown prompt
 document.querySelectorAll(".submission-change-current-account").forEach((element) => {
   element.addEventListener("click", function () {
-    window.openDropdownPrompt(null, "bf");
+    window.openDropdownPrompt(null, "ps");
   });
 });
 
@@ -84,7 +92,6 @@ window.openSubmissionMultiStepSwal = async (curationMode, sparcAward, milestoneR
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     allowOutsideClick: false,
-    progressSteps: ["1", "2"],
   });
 
   await Queue.fire({
@@ -118,7 +125,7 @@ window.openSubmissionMultiStepSwal = async (curationMode, sparcAward, milestoneR
         ? Swal.showValidationMessage("Please select at least one milestone")
         : (milestoneData = checkedMilestoneData);
     },
-    curentProgress: 0,
+    currentProgressStep: 0,
   });
 
   await Queue.fire({
@@ -301,7 +308,6 @@ document.querySelectorAll(".button-import-data-deliverables-document").forEach(a
         dataDeliverablesDocumentFilePath
       );
     } catch (error) {
-      console.log(error);
       clientError(error);
       Swal.fire({
         backdrop: "rgba(0,0,0, 0.4)",
@@ -313,8 +319,6 @@ document.querySelectorAll(".button-import-data-deliverables-document").forEach(a
   });
 });
 
-let guidedMilestoneData = {};
-
 const createCompletionDateRadioElement = (name, label) => {
   return `
     <div class="field" style="width: auto !important">
@@ -324,33 +328,6 @@ const createCompletionDateRadioElement = (name, label) => {
       </div>
     </div>
   `;
-};
-
-const handleMilestoneClick = () => {
-  //get all checked checkboxes with name "milestone" vanilla js
-  const checkedMilestones = document.querySelectorAll("input[name='milestone']:checked");
-  //convert checkMilestones to array of checkMilestones values
-  const checkedMilestonesArray = Array.from(checkedMilestones);
-  //get the values of checkedMilestonesArray
-  const checkedMilestonesValues = checkedMilestonesArray.map(
-    (checkMilestone) => checkMilestone.value
-  );
-  const completionDatesToCheck = [];
-  for (const milestone of checkedMilestonesValues) {
-    for (const task of guidedMilestoneData[milestone]) {
-      completionDatesToCheck.push(task["Expected date of completion"]);
-    }
-  }
-
-  const completionDatesToCheckArray = Array.from(new Set(completionDatesToCheck));
-  const completionDateRadioElements = completionDatesToCheckArray
-    .map((completionDate) => createCompletionDateRadioElement("completion-date", completionDate))
-    .join("\n");
-  //replace the current completion-date-radio-elements with the new ones
-  const completionDateRadioElementContainer = document.getElementById(
-    "guided-completion-date-checkbox-container"
-  );
-  completionDateRadioElementContainer.innerHTML = completionDateRadioElements;
 };
 
 const generateMilestoneRowElement = (dataDescription, milestoneString, dateString) => {
@@ -405,12 +382,10 @@ window.openDDDImport = async (curationMode) => {
       1
     );
     if (curationMode === "guided") {
-      window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"] = filepath[0];
-      let swal_container = document.getElementsByClassName("swal2-popup")[0];
-      let swal_actions = document.getElementsByClassName("swal2-actions")[0];
+      window.sodaJSONObj["dataset_metadata"]["submission-metadata"]["filepath"] = filepath[0];
       let swal_content = document.getElementsByClassName("swal2-content")[0];
       let DDLottie = document.getElementById("swal-data-deliverable");
-      let swal_header = document.getElementsByClassName("swal2-header")[0];
+
       //append file path
       DDLottie.innerHTML = "";
       let firstItem = swal_content.children[0];
@@ -443,32 +418,6 @@ window.openDDDImport = async (curationMode) => {
       // log the successful attempt to import a data deliverables document from the user's computer
     }
   }
-};
-
-const onboardingSubmission = async () => {
-  // Set a half second timeout to allow the page to scroll before the introjs starts
-  setTimeout(function () {
-    const introOptions = {
-      steps: [
-        {
-          element: document.querySelector("#button-ffm-import-data-deliverables-document"),
-          intro:
-            "Click here to import your Data Deliverables document for SODA to automatically retrieve your milestone and completion date.",
-        },
-      ],
-      dontShowAgain: true,
-      exitOnEsc: false,
-      exitOnOverlayClick: false,
-      disableInteraction: false,
-    };
-
-    introJs()
-      .setOptions(introOptions)
-      .onbeforeexit(() => {
-        introStatus.submission = true;
-      })
-      .start();
-  }, 1500);
 };
 
 window.validateSubmissionFileInputs = () => {
@@ -636,18 +585,18 @@ $(document).ready(function () {
       $("#Question-prepare-submission-2").removeClass("show");
     }
     if ($("#bf_dataset_load_submission").text().trim() !== "None") {
-      $("#div-check-bf-import-submission").css("display", "flex");
-      $($("#div-check-bf-import-submission").children()[0]).show();
+      $("#div-check-ps-import-submission").css("display", "flex");
+      $($("#div-check-ps-import-submission").children()[0]).show();
     } else {
-      $("#div-check-bf-import-submission").css("display", "none");
+      $("#div-check-ps-import-submission").css("display", "none");
     }
   });
 
   $("#bf_dataset_generate_submission").on("DOMSubtreeModified", function () {
     if ($("#bf_dataset_generate_submission").text().trim() !== "None") {
-      $("#div-check-bf-generate-submission").css("display", "flex");
+      $("#div-check-ps-generate-submission").css("display", "flex");
     } else {
-      $("#div-check-bf-generate-submission").css("display", "none");
+      $("#div-check-ps-generate-submission").css("display", "none");
     }
   });
 });
@@ -782,7 +731,7 @@ window.generateSubmissionHelper = async (uploadBFBoolean) => {
     }
 
     // Check if dataset is locked after running pre-flight checks
-    const isLocked = await api.isDatasetLocked(window.defaultBfAccount, datasetName);
+    const isLocked = await api.isDatasetLocked(datasetName);
 
     if (isLocked) {
       await Swal.fire({
@@ -1023,7 +972,7 @@ $("#cancel-reupload-DDD").click(function () {
 });
 
 // import existing Changes/README file
-window.showExistingSubmissionFile = (type) => {
+window.showExistingSubmissionFile = () => {
   if (
     $(`#existing-submission-file-destination`).prop("placeholder") !== "Browse here" &&
     $(`#Question-prepare-submission-2`).hasClass("show")
@@ -1058,7 +1007,7 @@ window.openFileBrowserDestination = (metadataType) => {
   window.electron.ipcRenderer.send(`open-destination-generate-${metadataType}-locally`);
 };
 
-window.importExistingSubmissionFile = (type) => {
+window.importExistingSubmissionFile = () => {
   let filePath = $(`#existing-submission-file-destination`).prop("placeholder");
   if (filePath === "Browse here") {
     Swal.fire("No file chosen", `Please select a path to your submission.xlsx file`, "error");
@@ -1099,7 +1048,7 @@ window.importExistingSubmissionFile = (type) => {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => {});
+      }).then(() => {});
       setTimeout(loadExistingSubmissionFile(filePath), 1000);
     }
   }
@@ -1215,9 +1164,9 @@ const loadSubmissionFileToUI = (data, type) => {
     $($("#div-confirm-existing-submission-import button")[0]).hide();
     $("#button-fake-confirm-existing-submission-file-load").click();
   } else {
-    $("#div-check-bf-import-submission").hide();
-    $($("#div-check-bf-import-submission button")[0]).hide();
-    $("#button-fake-confirm-existing-bf-submission-file-load").click();
+    $("#div-check-ps-import-submission").hide();
+    $($("#div-check-ps-import-submission button")[0]).hide();
+    $("#button-fake-confirm-existing-ps-submission-file-load").click();
   }
 };
 
@@ -1236,7 +1185,7 @@ window.checkBFImportSubmission = async () => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then(() => {});
   const bfDataset = $("#bf_dataset_load_submission").text().trim();
   window.log.info(`Loading submission file from Pennsieve dataset: ${bfDataset}`);
   try {
@@ -1249,7 +1198,7 @@ window.checkBFImportSubmission = async () => {
     });
     let res = import_metadata.data;
 
-    loadSubmissionFileToUI(res, "bf");
+    loadSubmissionFileToUI(res, "ps");
   } catch (error) {
     clientError(error);
     Swal.fire({

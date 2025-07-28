@@ -499,6 +499,7 @@ a[data-toggle="collapse"] {
   margin-left: 15px;
   margin-top: 3px;
   padding-left: 5px;
+  text-transform: capitalize;
 }
 
 .guided--nav-bar-section-page.completed {
@@ -529,7 +530,7 @@ a[data-toggle="collapse"] {
   width: 100%;
   list-style: none;
   padding-left: 0px;
-  max-height: 450px;
+  max-height: 600px;
   overflow-y: auto;
   /* Make the scroll bar align with the right side of the container */
   margin-right: -12px;

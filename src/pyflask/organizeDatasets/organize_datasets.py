@@ -2,7 +2,6 @@
 from flask import abort
 import platform
 import os
-import itertools
 from os import makedirs, mkdir, walk
 from openpyxl import load_workbook
 from os.path import (
@@ -19,22 +18,15 @@ import time
 import shutil
 import subprocess
 import re
-from timeit import default_timer as timer
-from datetime import timedelta
 import gevent
 import pathlib
 from datetime import datetime, timezone
-import requests 
-from permissions import pennsieve_get_current_user_permissions
-from utils import get_dataset_id, create_request_headers
 from namespaces import NamespaceEnum, get_namespace_logger
 from openpyxl.styles import PatternFill
 from openpyxl import load_workbook
-from utils import load_metadata_to_dataframe
-from constants import PENNSIEVE_URL
+
 
 namespace_logger = get_namespace_logger(NamespaceEnum.ORGANIZE_DATASETS)
-from authentication import get_access_token
 
 
 
@@ -72,25 +64,7 @@ forbidden_characters_bf = '\/:*?"<>'
 from namespaces import NamespaceEnum, get_namespace_logger
 namespace_logger = get_namespace_logger(NamespaceEnum.MANAGE_DATASETS)
 
-METADATA_FILES_SPARC = [
-        "submission.xlsx",
-        "submission.csv",
-        "submission.json",
-        "dataset_description.xlsx",
-        "dataset_description.csv",
-        "dataset_description.json",
-        "subjects.xlsx",
-        "subjects.csv",
-        "subjects.json",
-        "samples.xlsx",
-        "samples.csv",
-        "samples.json",
-        "README.txt",
-        "CHANGES.txt",
-        "code_description.xlsx",
-        "inputs_metadata.xlsx",
-        "outputs_metadata.xlsx",
-    ]
+
 
 ### Internal functions
 def TZLOCAL():

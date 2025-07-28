@@ -348,6 +348,13 @@
   margin-bottom: 20px;
 }
 
+.guided--section > .text-sub-step-title:first-child {
+  text-transform: capitalize;
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: var(--color-bg-plum);
+}
+
 .guided--loading-div {
   display: flex;
   flex-direction: column;
@@ -563,22 +570,6 @@
   width: 90%;
 }
 
-.guided--folder-organization-buttons-container {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  flex-direction: row;
-  align-items: center;
-  margin-bottom: 5px;
-  height: 35px;
-}
-
-.guided--folder-organization-buttons-container-sub {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .guided-section {
   /* display: none; */
   position: absolute;
@@ -627,33 +618,11 @@
   background-color: var(--color-light-green);
 }
 
-.guided--capsule-container-sub-page {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-.guided--capsule-sub-page {
-  height: 5px;
-  width: 50px;
-  margin-left: 5px;
-  margin-right: 5px;
-  background-color: #d5eaff;
-  border: none;
-  display: inline-block;
-  cursor: pointer;
-  transform: skewx(-25deg);
-}
-.guided--capsule-sub-page.active {
-  background-color: #007bff !important;
-}
-
 .guided--form-label {
   width: 100%;
   margin: 0 0 0.45rem 0;
   color: black;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 1.2em !important;
 }
 
@@ -664,6 +633,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: fit-content;
 }
 
 .guided--radio-button {
@@ -1126,4 +1096,59 @@
 
 .align-flex-center {
   align-items: center;
+}
+
+.tile-button.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.tile-button.coming-soon {
+  position: relative;
+}
+
+.coming-soon-text {
+  font-size: 12px;
+  color: #ff6b35;
+  font-weight: bold;
+  display: block;
+  margin-top: 5px;
+}
+
+.tile-button.coming-soon:hover::before {
+  content: "Coming Soon";
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  white-space: nowrap;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.tile-button.coming-soon:hover::after {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 8px solid transparent;
+  border-top-color: #333;
+  z-index: 999;
+}
+
+/* Re-enable pointer events for hover effect */
+.tile-button.coming-soon {
+  pointer-events: auto;
+  background-color: #dbdbdbff;
+}
+
+.tile-button.coming-soon:hover {
+  cursor: not-allowed;
 }

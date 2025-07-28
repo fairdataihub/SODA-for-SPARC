@@ -3,7 +3,7 @@ import useGlobalStore from "../../../stores/globalStore";
 import { setDropdownState } from "../../../stores/slices/dropDownSlice";
 
 const DropdownSelect = ({ id }) => {
-  const { label, selectedValue, placeholder, options } = useGlobalStore(
+  const { label, description, selectedValue, placeholder, options, required } = useGlobalStore(
     (state) => state.dropDownState[id]
   );
 
@@ -15,9 +15,11 @@ const DropdownSelect = ({ id }) => {
     <Select
       label={label}
       placeholder={placeholder}
+      description={description || ""}
       data={options}
       value={selectedValue}
       onChange={onChange}
+      required={required}
     />
   );
 };

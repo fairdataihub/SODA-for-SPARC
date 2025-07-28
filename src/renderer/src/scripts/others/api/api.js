@@ -5,11 +5,7 @@ import client from "../../client";
 import { clientError, userErrorMessage } from "../http-error-handler/error-handler";
 
 const getUserInformation = async () => {
-  let userResponse = await client.get(`/user`, {
-    params: {
-      pennsieve_account: window.defaultBfDataset,
-    },
-  });
+  let userResponse = await client.get(`/user`);
 
   return userResponse.data;
 };
@@ -24,10 +20,9 @@ const getDataset = async (datasetNameOrID) => {
   return datasetResponse.data;
 };
 
-const getDatasetBannerImageURL = async (selected_account, selected_dataset) => {
+const getDatasetBannerImageURL = async (selected_dataset) => {
   let bannerResponse = await client.get(`/manage_datasets/bf_banner_image`, {
     params: {
-      selected_account,
       selected_dataset,
     },
   });
@@ -37,7 +32,7 @@ const getDatasetBannerImageURL = async (selected_account, selected_dataset) => {
   return banner_image;
 };
 
-const isDatasetLocked = async (account, datasetNameOrId) => {
+const isDatasetLocked = async (datasetNameOrId) => {
   try {
     // get the logged in user's information which will be used to check if the user is a member of the "Publishers" team
     const currentUserInformation = await getUserInformation();
@@ -48,9 +43,7 @@ const isDatasetLocked = async (account, datasetNameOrId) => {
     // the user will not be checked for membership in the "Publishers" team
     let teamsInCurrentUsersOrganization = [];
     try {
-      const teamsReq = await client.get(
-        `manage_datasets/ps_get_teams?selected_account=${window.defaultBfDataset}`
-      );
+      const teamsReq = await client.get(`manage_datasets/ps_get_teams`);
       teamsInCurrentUsersOrganization = teamsReq.data.teams;
     } catch (error) {
       clientError(error);
@@ -103,12 +96,8 @@ const getDatasetAccessDetails = async (datasetNameOrId) => {
   return { userRole, userCanModifyPennsieveMetadata };
 };
 
-const getDatasetInformation = async (account, datasetNameOrId) => {
-  const datasetInformationResponse = await client.get(`/datasets/${datasetNameOrId}`, {
-    params: {
-      pennsieve_account: account,
-    },
-  });
+const getDatasetInformation = async (datasetNameOrId) => {
+  const datasetInformationResponse = await client.get(`/datasets/${datasetNameOrId}`);
   // Returns information about the dataset (locked, published, etc.)
   return datasetInformationResponse.data;
 };
@@ -118,10 +107,8 @@ const getDatasetInformation = async (account, datasetNameOrId) => {
  * @param {string} datasetIdOrName
  * @returns {Promise<void>}
  */
-const withdrawDatasetReviewSubmission = async (datasetName, selected_account) => {
-  await client.post(`/disseminate_datasets/datasets/${datasetName}/publication/cancel`, {
-    selected_account,
-  });
+const withdrawDatasetReviewSubmission = async (datasetName) => {
+  await client.post(`/disseminate_datasets/datasets/${datasetName}/publication/cancel`);
 };
 
 // retrieves the currently selected dataset's metadata files
@@ -130,12 +117,7 @@ const withdrawDatasetReviewSubmission = async (datasetName, selected_account) =>
 const getDatasetMetadataFiles = async (datasetName) => {
   // get the metadata files for the dataset
   let datasetwithChildrenResponse = await client.get(
-    `/disseminate_datasets/datasets/${datasetName}/metadata-files`,
-    {
-      params: {
-        selected_account: window.defaultBfDataset,
-      },
-    }
+    `/disseminate_datasets/datasets/${datasetName}/metadata-files`
   );
 
   let { metadata_files } = datasetwithChildrenResponse.data;
@@ -144,12 +126,9 @@ const getDatasetMetadataFiles = async (datasetName) => {
   return metadata_files;
 };
 
-const setDatasetPermissions = async (selected_account, selected_dataset, params) => {};
-
-const getDatasetPermissions = async (selected_account, selected_dataset, boolReturnAll) => {
+const getDatasetPermissions = async (selected_dataset, boolReturnAll) => {
   let getDatasetPermissionsResponse = await client.get(`/manage_datasets/bf_dataset_permissions`, {
     params: {
-      selected_account,
       selected_dataset,
     },
   });
@@ -165,65 +144,51 @@ const getDatasetPermissions = async (selected_account, selected_dataset, boolRet
   }
 };
 
-// This function will be call after a dataset has been shared with the curation team
-// Users will be able to reserve DOI's for their datasets
-const reserveDOI = async (account, dataset) => {
-  // reference: https://docs.pennsieve.io/reference/reservedoi
-  // information: https://docs.pennsieve.io/docs/digital-object-identifiers-dois#assigning-doi-to-your-pennsieve-dataset
-
+/**
+ * Reserves a DOI for a Pennsieve dataset after it has been shared with the curation team.
+ * @param {string} dataset - The dataset ID or name.
+ * @returns {{ success: true, doi: string } | { success: false, message: string }}
+ */
+const reserveDOI = async (dataset) => {
   try {
-    let doiReserve = await client.post(`datasets/${dataset}/reserve-doi`);
-    return doiReserve.data.doi;
+    const { data } = await client.post(`datasets/${dataset}/reserve-doi`);
+    return { success: true, doi: data.doi };
   } catch (err) {
-    let errorMessage = userErrorMessage(err);
-    clientError(err);
-    if (errorMessage.includes("is locked")) {
-      return "locked";
+    return { success: false, message: userErrorMessage(err) };
+  }
+};
+
+/**
+ * Retrieves the reserved DOI for a Pennsieve dataset, if available.
+ * @param {string} dataset - The dataset ID or name.
+ * @returns {string | null} - The DOI string, or null if not available or an error occurred.
+ */
+const getDatasetDOI = async (dataset) => {
+  try {
+    const response = await client.get(`datasets/${dataset}/reserve-doi`);
+    const datasetDOI = response.data.doi;
+    if (datasetDOI && datasetDOI !== "No DOI found for this dataset") {
+      return datasetDOI;
+    } else {
+      return null; // No DOI found or not reserved
     }
-    return false;
-  }
-};
-
-const getDatasetDOI = async (account, dataset) => {
-  // reference: https://docs.pennsieve.io/reference/getdoi
-
-  try {
-    let doi = await client.get(`datasets/${dataset}/reserve-doi`);
-    return doi.data.doi;
   } catch (err) {
     clientError(err);
-    userErrorMessage(err);
+    return null;
   }
 };
 
-const getLockStatus = async (datasetNameOrId) => {
-  try {
-    let lockStatusResponse = await client.get(`/datasets/${datasetNameOrId}/lock-status`);
-    return lockStatusResponse.data;
-  } catch (err) {
-    clientError(err);
-    userErrorMessage(err);
-  }
-};
-
-// TODO: Add api function for setting dataset permissions
-
-const getDatasetsForAccount = async (selected_account) => {
-  let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
-    params: {
-      selected_account,
-    },
-  });
+const getDatasetsForAccount = async () => {
+  let responseObject = await client.get(`manage_datasets/fetch_user_datasets`);
 
   let { datasets } = responseObject.data;
 
   return datasets;
 };
 
-const getDatasetSubtitle = async (selected_account, selected_dataset) => {
+const getDatasetSubtitle = async (selected_dataset) => {
   let getSubtitleResponse = await client.get(`/manage_datasets/bf_dataset_subtitle`, {
     params: {
-      selected_account,
       selected_dataset,
     },
   });
@@ -233,11 +198,8 @@ const getDatasetSubtitle = async (selected_account, selected_dataset) => {
   return subtitle;
 };
 
-const getDatasetReadme = async (selected_account, selected_dataset) => {
-  let readmeResponse = await client.get(`/manage_datasets/datasets/${selected_dataset}/readme`, {
-    params: { selected_account },
-  });
-
+const getDatasetReadme = async (selected_dataset) => {
+  let readmeResponse = await client.get(`/manage_datasets/datasets/${selected_dataset}/readme`);
   let { readme } = readmeResponse.data;
 
   return readme;
@@ -250,7 +212,6 @@ const getDatasetReadme = async (selected_account, selected_dataset) => {
 //  datasetIdOrName: string - the id/name of the dataset being submitted for publication
 //  embargoReleaseDate?: string  - in yyyy-mm-dd format. Represents the day an embargo will be lifted on this dataset; at which point the dataset will be made public.
 // O: void
-// TODO: Replace the share with curation team endpoints/functions with the function below
 const submitDatasetForPublication = async (
   pennsieveAccount,
   datasetName,
@@ -272,14 +233,10 @@ const submitDatasetForPublication = async (
   );
 };
 
-const getCurrentCollectionTags = async (account, dataset) => {
+const getCurrentCollectionTags = async (dataset) => {
   window.currentTags = {};
   try {
-    let result = await client.get(`/datasets/${dataset}/collections`, {
-      params: {
-        selected_account: account,
-      },
-    });
+    let result = await client.get(`/datasets/${dataset}/collections`);
     let res = result.data;
     for (let i = 0; i < res.length; i++) {
       let name = res[i]["name"];
@@ -298,12 +255,10 @@ const getCurrentCollectionTags = async (account, dataset) => {
 };
 
 //Function used to get all collections that belong to the Org
-const getAllCollectionTags = async (account) => {
+const getAllCollectionTags = async () => {
   window.allCollectionTags = {};
   try {
-    let result = await client.get(`/collections/`, {
-      params: { selected_account: account },
-    });
+    let result = await client.get(`/collections/`);
     let res = result.data;
     for (let i = 0; i < res.length; i++) {
       let name = res[i]["name"];
@@ -327,19 +282,16 @@ const getAllCollectionTags = async (account) => {
 //function is for uploading collection names that haven't been created on Pennsieve yet
 //First it will upload the new names to then receive their ID's
 //Then with those IDs we will associate them to the given dataset
-const uploadNewTags = async (account, dataset, tags) => {
+const uploadNewTags = async (dataset, tags) => {
   //upload names first to then get their ids to add to dataset
   //PARAMS: tags = list of collection names
   let newUploadedTags = [];
   let response200 = false;
 
   try {
-    let newCollectionNames = await client.post(
-      `collections/?selected_account=${account}&selected_dataset=${dataset}`,
-      {
-        collection: tags,
-      }
-    );
+    let newCollectionNames = await client.post(`collections/?selected_dataset=${dataset}`, {
+      collection: tags,
+    });
 
     let res = newCollectionNames.data.collection;
     //store ids into an array for next call
@@ -373,16 +325,13 @@ const uploadNewTags = async (account, dataset, tags) => {
   }
 };
 
-const removeCollectionTags = async (account, dataset, tags) => {
+const removeCollectionTags = async (dataset, tags) => {
   //remove collection names from a dataset with their given IDs
   //PARAMS: tags = list of collection IDs
   try {
-    let removedTags = await client.delete(
-      `datasets/${dataset}/collections?selected_account=${account}`,
-      {
-        data: { collection: tags },
-      }
-    );
+    let removedTags = await client.delete(`datasets/${dataset}/collections`, {
+      data: { collection: tags },
+    });
     return removedTags.data;
   } catch (error) {
     clientError(error);
@@ -390,21 +339,13 @@ const removeCollectionTags = async (account, dataset, tags) => {
   }
 };
 
-const uploadCollectionTags = async (account, dataset, tags) => {
+const uploadCollectionTags = async (dataset, tags) => {
   //upload tags that have already been created on Pennsieve
   //PARAMS: tags = list of collection IDs
   try {
-    let uploadedTags = await client.put(
-      `datasets/${dataset}/collections`,
-      {
-        collection: tags,
-      },
-      {
-        params: {
-          selected_account: account,
-        },
-      }
-    );
+    let uploadedTags = await client.put(`datasets/${dataset}/collections`, {
+      collection: tags,
+    });
     return uploadedTags.data;
   } catch (error) {
     clientError(error);
@@ -478,7 +419,7 @@ const setPreferredOrganization = async (
   return response.data;
 };
 
-const getOrganizations = async (profile) => {
+const getOrganizations = async () => {
   let organizations = await client.get("/user/organizations");
   return organizations.data;
 };
@@ -552,6 +493,13 @@ const deleteFilesFromDataset = async (datasetId, packages) => {
   return response.data;
 };
 
+const loadManifestToJSON = async (manifestPath) => {
+  const response = await client.get(
+    `prepare_metadata/manifest?path_to_manifest_file=${manifestPath}`
+  );
+  return response.data;
+};
+
 const api = {
   getUserInformation,
   getDataset,
@@ -589,6 +537,7 @@ const api = {
   getPennsieveUploadManifestFiles,
   getLocalRemoteComparisonResults,
   deleteFilesFromDataset,
+  loadManifestToJSON,
 };
 
 export default api;

@@ -29,7 +29,10 @@ const ExternalLink = ({ href, buttonText, buttonType, buttonSize }) => {
         style={{ whiteSpace: "nowrap", color: "#0070f3" }}
       >
         {buttonText}
-        <IconExternalLink size={18} style={{ marginLeft: "3px", marginRight: "3px" }} />
+        <IconExternalLink
+          size={18}
+          style={{ marginLeft: "3px", marginRight: "3px", marginBottom: "-3px" }}
+        />
       </Anchor>
     );
   }

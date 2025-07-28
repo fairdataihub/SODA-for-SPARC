@@ -31,7 +31,7 @@ from utils import (
 )
 from authentication import get_access_token, bf_delete_account, clear_cached_access_token
 from users import get_user_information, update_config_account_name
-from permissions import has_edit_permissions, pennsieve_get_current_user_permissions
+from permissions import has_edit_permissions
 from configUtils import lowercase_account_names, format_agent_profile_name
 from constants import PENNSIEVE_URL
 from pysodaUtils import (
@@ -67,7 +67,7 @@ metadatapath = join(userpath, "SODA", "SODA_metadata")
 
 total_bytes_uploaded = {}
 
-bf = ""
+ps = ""
 myds = ""
 initial_bfdataset_size = 0
 upload_directly_to_bf = 0
@@ -171,7 +171,7 @@ def bf_add_account_api_key(keyname, key, secret):
 
     # Check key and secret are valid, if not delete account from config
     try:
-        token = get_access_token()
+        get_access_token()
     except Exception as e:
         namespace_logger.error(e)
         bf_delete_account(formatted_key_name)
@@ -181,16 +181,6 @@ def bf_add_account_api_key(keyname, key, secret):
 
     # Check that the Pennsieve account is in the SPARC Organization
     try:
-        org_id = get_user_information(token)["preferredOrganization"]
-
-        ''' Commented out as users should be able to sign in to non-sparc organizations using an API key
-            TODO: Remove this code if it is not needed
-        if org_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
-            abort(403,
-                "Please check that your account is within the SPARC Organization"
-            )
-        '''
-
         if not config.has_section("global"):
             config.add_section("global")
 
@@ -200,27 +190,13 @@ def bf_add_account_api_key(keyname, key, secret):
         with open(configpath, "w") as configfile:
             config.write(configfile)
 
-        return {"message": f"Successfully added account {str(bf)}"}
+        return {"message": f"Successfully added account {str(ps)}"}
 
     except Exception as e:
         bf_delete_account(formatted_key_name)
         raise e
     
-def check_forbidden_characters_ps(my_string):
-    """
-    Check for forbidden characters in Pennsieve file/folder name
 
-    Args:
-        my_string: string with characters (string)
-    Returns:
-        False: no forbidden character
-        True: presence of forbidden character(s)
-    """
-    regex = re.compile(f"[{forbidden_characters_bf}]")
-    if regex.search(my_string) == None and "\\" not in r"%r" % my_string:
-        return False
-    else:
-        return True
 
 
 def bf_account_list():
@@ -309,21 +285,15 @@ def bf_get_accounts():
 
 
 
-def bf_dataset_account(accountname):
+def fetch_user_datasets(return_only_empty_datasets=False):
     """
     This function filters dataset dropdowns across SODA by the permissions granted to users.
-
-    Input: BFaccountname
+    If return_only_empty_datasets is True, only datasets with no files or folders are returned.
     Output: a filtered dataset list with objects as elements: {"name": dataset's name, "id": dataset's id, "role": permission}
-
     """
     global namespace_logger
 
-    # get the datasets the user has access to
-
     datasets = get_users_dataset_list()
-
-
 
     datasets_list = []
     for ds in datasets:
@@ -347,20 +317,33 @@ def bf_dataset_account(accountname):
     store = []
     threads = []
     nthreads = 8
-    # create the threads
     for i in range(nthreads):
         sub_datasets_list = datasets_list[i::nthreads]
         t = Thread(target=filter_dataset, args=(sub_datasets_list, store))
         threads.append(t)
-
-    # start the threads
     [t.start() for t in threads]
-    # wait for the threads to finish
     [t.join() for t in threads]
 
     sorted_bf_datasets = sorted(store, key=lambda k: k["name"].upper())
-    namespace_logger.info(f"Sorted datasets: {sorted_bf_datasets}")
-    return {"datasets": sorted_bf_datasets}
+
+    # If filtering for empty datasets, fetch files/folders for each
+    if return_only_empty_datasets:
+        filtered_datasets = []
+        for ds in sorted_bf_datasets:
+            try:
+                r = requests.get(f"{PENNSIEVE_URL}/datasets/{ds['id']}/packages", headers=create_request_headers(get_access_token()))
+                r.raise_for_status()
+                packages_response = r.json()
+                dataset_packages = packages_response.get("packages", [])
+                if not dataset_packages:
+                    namespace_logger.info(f"Dataset {ds['id']} is empty, adding to filtered list")
+                    filtered_datasets.append(ds)
+                
+            except Exception as e:
+                namespace_logger.error(f"Error checking files for dataset {ds['id']}: {e}")
+        return {"datasets": filtered_datasets}
+    else:
+        return {"datasets": sorted_bf_datasets}
 
 def get_username(accountname):
     """
@@ -556,7 +539,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     global uploaded_file_size
     global submitprintstatus
     global start_time_bf_upload
-    global bf
+    global ps
     global myds
     global start_submit
     global initial_bfdataset_size_submit
@@ -807,7 +790,7 @@ def ps_get_users(selected_bfaccount):
     return {"users": list_users_first_last}
 
 
-def ps_get_teams(selected_bfaccount):
+def ps_get_teams():
     """
     Args:
       selected_bfaccount: name of selected Pennsieve account (string)
@@ -828,7 +811,7 @@ def ps_get_teams(selected_bfaccount):
 
 
 # Also remove selected_bfaccount from parameters since it isn't used
-def ps_get_permission(selected_bfaccount, selected_bfdataset):
+def ps_get_permission( selected_bfdataset):
 
     """
     Function to get permission for a selected dataset
@@ -1122,7 +1105,7 @@ def ps_add_permission_team(
         raise e
 
 
-def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
+def bf_get_subtitle( selected_bfdataset):
     """
     Function to get current subtitle associated with a selected dataset
 
@@ -1223,7 +1206,7 @@ def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
 
 
 
-def bf_get_banner_image(selected_bfaccount, selected_bfdataset):
+def bf_get_banner_image(selected_bfdataset):
     """
     Function to get url of current banner image associated with a selected dataset
 
@@ -1449,7 +1432,7 @@ def get_number_of_files_and_folders_locally(filepath):
 
 
 
-def get_dataset_readme(selected_account, selected_dataset):
+def get_dataset_readme( selected_dataset):
     """
     Function to get readme for a dataset
     
@@ -1462,17 +1445,21 @@ def get_dataset_readme(selected_account, selected_dataset):
     selected_dataset_id = get_dataset_id(selected_dataset)
 
     try:
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", headers=create_request_headers(get_access_token()))
+        namespace_logger.info(f"Getting readme for dataset {selected_dataset_id}")
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", headers=create_request_headers(get_access_token()))       
+        namespace_logger.info(f"Readme for dataset {selected_dataset_id} retrieved successfully")
+        namespace_logger.info(f"Readme response: {r.text}")
         r.raise_for_status()
 
         readme = r.json()
     except Exception as e:
+        namespace_logger.error(f"Error retrieving readme for dataset {selected_dataset_id}: {e}")
         raise Exception(e)
 
     return readme
 
 
-def update_dataset_readme(selected_account, selected_dataset, updated_readme):
+def update_dataset_readme(selected_dataset, updated_readme):
     """
     Update the readme of a dataset on Pennsieve with the given readme string.
     """

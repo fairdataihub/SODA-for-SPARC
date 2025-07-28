@@ -1,15 +1,13 @@
 from organizeDatasets import (
     generate_dataset_locally,
-    create_soda_json_object_backend,
-    monitor_local_json_progress,
     monitor_pennsieve_json_progress,
-    import_pennsieve_dataset,
 )
+
+from pysoda.core.dataset_importing import import_pennsieve_dataset, create_soda_json_object_backend, monitor_local_json_progress
 
 from namespaces import NamespaceEnum, get_namespace
 from flask_restx import Resource, fields, reqparse
 from errorHandlers import notBadRequestException
-import json
 from flask import request
 
 api = get_namespace(NamespaceEnum.ORGANIZE_DATASETS)

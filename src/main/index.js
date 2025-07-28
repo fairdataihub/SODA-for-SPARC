@@ -18,6 +18,7 @@ import "./node-storage";
 import "./main-process/native-ui/dialogs/open-file";
 import "./strain";
 import "./checkDiskSpace";
+import "./folder-entity-id-import-gm";
 import "./spreadsheet-import-gm";
 import "./shell";
 import "./templates";
@@ -173,9 +174,7 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
     try {
       spreadSheetModal.destroy();
       // spreadSheetModal.close();
-    } catch (e) {
-      console.log(e);
-    }
+    } catch (e) {}
   });
 
   if (is.dev && process.env["ELECTRON_RENDERER_URL"]) {
@@ -198,9 +197,7 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
     try {
       spreadSheetModal.destroy();
       // spreadSheetModal.close();
-    } catch (e) {
-      console.log(e);
-    }
+    } catch (e) {}
   });
 });
 
@@ -304,9 +301,7 @@ const createPyProc = async () => {
   let port = "" + selectPort();
   try {
     await killAllPreviousProcesses();
-  } catch (e) {
-    console.log(e);
-  }
+  } catch (e) {}
   if (existsSync(script)) {
     log.info("Server exists at specified location", script);
   } else {
@@ -365,9 +360,7 @@ const createPyProc = async () => {
           stdio: "ignore",
         });
 
-        pyflaskProcess.on("data", function () {
-          console.log("pyflaskProcess successfully started");
-        });
+        pyflaskProcess.on("data", function () {});
 
         pyflaskProcess.on("error", function (err) {
           console.error("Failed to start pyflaskProcess:", err);
@@ -397,7 +390,6 @@ const createPyProc = async () => {
         });
       }
       if (pyflaskProcess != null) {
-        console.log("child process success on port " + port);
         log.info("child process success on port " + port);
       } else {
         console.error("child process failed to start on port" + port);
@@ -406,7 +398,6 @@ const createPyProc = async () => {
     })
     .catch((err) => {
       log.error("Error starting the python server");
-      console.log(err);
     });
 };
 
@@ -419,9 +410,7 @@ const exitPyProc = async () => {
   };
   try {
     await killAllPreviousProcesses();
-  } catch (e) {
-    console.log(e);
-  }
+  } catch (e) {}
   // check if the platform is Windows
   if (process.platform === "win32") {
     if (pyflaskProcess != null) {
@@ -437,9 +426,7 @@ const exitPyProc = async () => {
       pyflaskProcess.kill();
       pyflaskProcess = null;
     }
-  } catch (e) {
-    console.log(e);
-  }
+  } catch (e) {}
   PORT = null;
 };
 
@@ -556,7 +543,6 @@ const initialize = () => {
     try {
       createWindow();
     } catch (err) {
-      console.log(err);
       log.info(err);
     }
 
@@ -586,7 +572,6 @@ const initialize = () => {
     try {
       createPyProc();
     } catch (err) {
-      console.log(err);
       log.info(err);
     }
 
@@ -610,10 +595,10 @@ const initialize = () => {
       // Create the browser window.
       mainWindow = new BrowserWindow({
         show: false,
-        minWidth: 1121,
-        minHeight: 735,
-        width: 1121,
-        height: 735,
+        minWidth: 1200,
+        minHeight: 850,
+        width: 1200,
+        height: 850,
         center: true,
         show: false,
         nodeIntegration: true,

@@ -1,18 +1,9 @@
 import useGlobalStore from "../globalStore";
 import { produce } from "immer";
 export const guidedModeSlice = (set) => ({
-  currentGuidedModePage: null,
   guidedDatasetName: "",
   guidedDatasetSubtitle: "",
 });
-
-export const setGuidedModePage = (guidedModePageName) => {
-  useGlobalStore.setState((state) =>
-    produce((state) => {
-      state.currentGuidedModePage = guidedModePageName;
-    })
-  );
-};
 
 export const setGuidedDatasetName = (datasetName) => {
   useGlobalStore.setState(

@@ -8,11 +8,11 @@ export const Destinations = {
 // determine if we are working with a Local, Saved, or Pennsieve dataset in the current Curation flow
 const determineDatasetLocation = () => {
   let location = "";
-  let datasetLocation = window.sodaJSONObj?.["starting-point"]?.["type"];
+  let datasetLocation = window.sodaJSONObj?.["starting-point"]?.["origin"];
   if ("save-progress" in window.sodaJSONObj) {
     return Destinations.SAVED;
   }
-  if (datasetLocation === "bf") {
+  if (datasetLocation === "ps") {
     return Destinations.PENNSIEVE;
   }
   if (

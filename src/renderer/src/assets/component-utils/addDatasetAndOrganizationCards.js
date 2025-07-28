@@ -47,7 +47,7 @@ const addDatasetAndOrganizationCardComponents = () => {
     currentParentTab: "bf_collection-tab",
     action: "delete",
     section: "individual-question manage-dataset",
-    dataNext: "div-collection-bf-dataset",
+    dataNext: "div-collection-ps-dataset",
     fields: [
       FIELD_OPTIONS.ACCOUNT_EDITABLE,
 
@@ -67,7 +67,7 @@ const addDatasetAndOrganizationCardComponents = () => {
     currentParentTab: "rename_bf_dataset-tab",
     action: "delete",
     section: "individual-question manage-dataset",
-    dataNext: "div-rename-bf-dataset",
+    dataNext: "div-rename-ps-dataset",
     fields: [
       FIELD_OPTIONS.ACCOUNT_EDITABLE,
 

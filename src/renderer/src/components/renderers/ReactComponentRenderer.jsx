@@ -4,9 +4,25 @@ import ExternalLink from "../buttons/ExternalLink";
 import NavigationButton from "../buttons/Navigation";
 import NameAndSubtitlePage from "../pages/NameAndSubtitle";
 import DropdownSelect from "../common/DropdownSelect";
+import DatasetTreeViewRenderer from "../shared/DatasetTreeViewRenderer";
 import GenericButton from "../buttons/Generic";
 import SingleColumnTable from "../tables/singleColumn";
 import PennsieveAgentCheckDisplay from "../backgroundServices/PennsieveAgentCheckDisplay";
+import DatasetContentSelector from "../pages/DatasetContentSelector";
+import PerformanceIdManagementPage from "../pages/PerformanceIdManagement";
+import GenerateDatasetLocationSelectorPage from "../pages/GenerateDatasetLocationSelector";
+import ResourcesManagementPage from "../pages/ResourcesManagement";
+import ModalitySelectionPage from "../pages/ModalitySelection";
+import EntityMetadataPage from "../pages/EntityMetadataPage";
+import SpreadsheetImportDatasetEntityAdditionPage from "../pages/SpreadsheetImportDatasetEntityAdditionPage";
+import DatasetEntityFileMapper from "../pages/DatasetEntityFileMapper";
+import EntityDataSelectorPage from "../pages/EntityDataSelector";
+import DataImporter from "../shared/DataImporter";
+import SubmissionMetadataForm from "../pages/SubmissionMetadataForm";
+import Icon from "../shared/Icon";
+import SodaTextInput from "../common/SodaTextInput";
+import ManifestFilePreviewSection from "../shared/ManifestFilePreviewSection";
+import DropDownNote from "../utils/ui/DropDownNote";
 import { Divider } from "@mantine/core";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
@@ -40,6 +56,14 @@ const componentTypeRenderers = {
       buttonType: componentSlot.getAttribute("data-button-type"),
     };
     renderComponent(componentSlot, <ExternalLink {...props} />);
+  },
+  "dynamic-link": (componentSlot) => {
+    const props = {
+      id: componentSlot.id,
+      buttonText: componentSlot.getAttribute("data-button-text"),
+      buttonType: componentSlot.getAttribute("data-button-type"),
+    };
+    renderComponent(componentSlot, <DynamicLink {...props} />);
   },
   "dropdown-select": (componentSlot) => {
     const props = {
@@ -77,22 +101,105 @@ const componentTypeRenderers = {
   "single-column-table": (componentSlot) => {
     const columnName = componentSlot.getAttribute("data-column-name");
     const id = componentSlot.id;
-
-    // Create a React root and render the component
-    const root = createRoot(componentSlot);
-    root.render(
-      <SodaComponentWrapper>
-        <SingleColumnTable id={id} columnName={columnName} />
-      </SodaComponentWrapper>
+    renderComponent(componentSlot, <SingleColumnTable id={id} columnName={columnName} />);
+  },
+  "dataset-tree-view-renderer": (componentSlot) => {
+    renderComponent(
+      componentSlot,
+      <DatasetTreeViewRenderer hideSearchBar={true} entityType={null} />
     );
   },
+
+  "data-importer": (componentSlot) => {
+    const props = {
+      relativeFolderPathToImportDataInto: componentSlot.getAttribute(
+        "data-relative-folder-path-to-import-data-into"
+      ),
+    };
+    renderComponent(componentSlot, <DataImporter {...props} />);
+  },
+  "performance-id-management-page": (componentSlot) => {
+    const props = {
+      pageName: componentSlot.getAttribute("data-page-name"),
+      entityType: componentSlot.getAttribute("data-entity-type"),
+      entityTypeStringSingular: componentSlot.getAttribute("data-entity-type-string-singular"),
+      entityTypeStringPlural: componentSlot.getAttribute("data-entity-type-string-plural"),
+      entityTypePrefix: componentSlot.getAttribute("data-entity-type-prefix"),
+    };
+    renderComponent(componentSlot, <PerformanceIdManagementPage {...props} />);
+  },
+  "resources-management-page": (componentSlot) => {
+    renderComponent(componentSlot, <ResourcesManagementPage />);
+  },
+
+  "entity-metadata-page": (componentSlot) => {
+    const props = {
+      entityType: componentSlot.getAttribute("data-entity-type"),
+    };
+    renderComponent(componentSlot, <EntityMetadataPage {...props} />);
+  },
+  "soda-text-input": (componentSlot) => {
+    const props = {
+      id: componentSlot.id,
+      label: componentSlot.getAttribute("data-label"),
+      placeholder: componentSlot.getAttribute("data-placeholder") || "",
+      textArea: componentSlot.getAttribute("data-text-area") === "true",
+      description: componentSlot.getAttribute("data-description") || "",
+      maxLength: componentSlot.getAttribute("data-max-length") || false,
+    };
+    renderComponent(componentSlot, <SodaTextInput {...props} />);
+  },
+  "entity-spreadsheet-import-page": (componentSlot) => {
+    renderComponent(componentSlot, <SpreadsheetImportDatasetEntityAdditionPage />);
+  },
+  "entity-file-mapping-page": (componentSlot) => {
+    const props = {
+      entityType: componentSlot.getAttribute("data-entity-type"),
+    };
+    renderComponent(componentSlot, <DatasetEntityFileMapper {...props} />);
+  },
+
+  "data-categorization-page": (componentSlot) => {
+    const props = {
+      pageName: componentSlot.getAttribute("data-page-name"),
+      entityType: componentSlot.getAttribute("data-entity-type"),
+      entityTypeStringSingular: componentSlot.getAttribute("data-entity-type-string-singular"),
+      entityTypeStringPlural: componentSlot.getAttribute("data-entity-type-string-plural"),
+      showProgress: componentSlot.getAttribute("data-show-progress") || false,
+    };
+    renderComponent(componentSlot, <EntityDataSelectorPage {...props} />);
+  },
+  "modality-selection-page": (componentSlot) => {
+    renderComponent(componentSlot, <ModalitySelectionPage />);
+  },
+  "submission-metadata-form": (componentSlot) => {
+    renderComponent(componentSlot, <SubmissionMetadataForm />);
+  },
+  "dataset-content-selector": (componentSlot) => {
+    renderComponent(componentSlot, <DatasetContentSelector />);
+  },
+
+  "generate-dataset-location-selector-page": (componentSlot) => {
+    renderComponent(componentSlot, <GenerateDatasetLocationSelectorPage />);
+  },
   divider: (componentSlot) => {
-    const root = createRoot(componentSlot);
-    root.render(
-      <SodaComponentWrapper>
-        <Divider my="xl" />
-      </SodaComponentWrapper>
-    );
+    renderComponent(componentSlot, <Divider my="xl" />);
+  },
+  icon: (componentSlot) => {
+    const iconType = componentSlot.getAttribute("data-icon-type");
+    renderComponent(componentSlot, <Icon iconType={iconType} />);
+  },
+  "manifest-file-preview-section": (componentSlot) => {
+    const props = {
+      id: componentSlot.id,
+    };
+    renderComponent(componentSlot, <ManifestFilePreviewSection {...props} />);
+  },
+  "dropdown-note-renderer": (componentSlot) => {
+    const props = {
+      id: componentSlot.id,
+    };
+    renderComponent(componentSlot, <DropDownNote {...props} />);
   },
 };
 

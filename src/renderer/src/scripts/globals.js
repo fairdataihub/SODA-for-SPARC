@@ -17,34 +17,34 @@ const showHideDropdownButtons = (category, action) => {
   if (category === "dataset") {
     if (action === "show") {
       // btn under Step 6
-      $($("#button-confirm-bf-dataset").parents()[0]).css("display", "flex");
-      $("#button-confirm-bf-dataset").show();
+      $($("#button-confirm-ps-dataset").parents()[0]).css("display", "flex");
+      $("#button-confirm-ps-dataset").show();
       // btn under Step 1
-      $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css("display", "flex");
-      $("#button-confirm-bf-dataset-getting-started").show();
+      $($("#button-confirm-ps-dataset-getting-started").parents()[0]).css("display", "flex");
+      $("#button-confirm-ps-dataset-getting-started").show();
     } else {
       // btn under Step 6
-      $($("#button-confirm-bf-dataset").parents()[0]).css("display", "none");
-      $("#button-confirm-bf-dataset").hide();
+      $($("#button-confirm-ps-dataset").parents()[0]).css("display", "none");
+      $("#button-confirm-ps-dataset").hide();
       // btn under Step 1
-      $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css("display", "none");
-      $("#button-confirm-bf-dataset-getting-started").hide();
+      $($("#button-confirm-ps-dataset-getting-started").parents()[0]).css("display", "none");
+      $("#button-confirm-ps-dataset-getting-started").hide();
     }
   } else if (category === "account") {
     if (action === "show") {
       // btn under Step 6
-      $("#div-bf-account-btns").css("display", "flex");
-      $("#div-bf-account-btns button").show();
+      $("#div-ps-account-btns").css("display", "flex");
+      $("#div-ps-account-btns button").show();
       // btn under Step 1
-      $("#div-bf-account-btns-getting-started").css("display", "flex");
-      $("#div-bf-account-btns-getting-started button").show();
+      $("#div-ps-account-btns-getting-started").css("display", "flex");
+      $("#div-ps-account-btns-getting-started button").show();
     } else {
       // btn under Step 6
-      $("#div-bf-account-btns").css("display", "none");
-      $("#div-bf-account-btns button").hide();
+      $("#div-ps-account-btns").css("display", "none");
+      $("#div-ps-account-btns button").hide();
       // btn under Step 1
-      $("#div-bf-account-btns-getting-started").css("display", "none");
-      $("#div-bf-account-btns-getting-started button").hide();
+      $("#div-ps-account-btns-getting-started").css("display", "none");
+      $("#div-ps-account-btns-getting-started button").hide();
     }
   } else if (category === "organization") {
   }
@@ -52,17 +52,17 @@ const showHideDropdownButtons = (category, action) => {
 
 // Function to clear the confirm options in the curate feature
 const confirm_click_account_function = () => {
-  let temp = $(".bf-account-span")
+  let temp = $(".ps-account-span")
     .html()
     .replace(/^\s+|\s+$/g, "");
   if (temp == "None" || temp == "") {
     $("#div-create_empty_dataset-account-btns").css("display", "none");
-    $("#div-bf-account-btns-getting-started").css("display", "none");
-    $("#div-bf-account-btns-getting-started button").hide();
+    $("#div-ps-account-btns-getting-started").css("display", "none");
+    $("#div-ps-account-btns-getting-started button").hide();
   } else {
     $("#div-create_empty_dataset-account-btns").css("display", "flex");
-    $("#div-bf-account-btns-getting-started").css("display", "flex");
-    $("#div-bf-account-btns-getting-started button").show();
+    $("#div-ps-account-btns-getting-started").css("display", "flex");
+    $("#div-ps-account-btns-getting-started button").show();
   }
 };
 
@@ -92,14 +92,14 @@ const updateDatasetList = (bfaccount) => {
 
   initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
 
-  $("#bf-dataset-select-header").css("display", "none");
+  $("#ps-dataset-select-header").css("display", "none");
   $("#curatebfdatasetlist").selectpicker("hide");
   $("#curatebfdatasetlist").selectpicker("refresh");
   $(".selectpicker").selectpicker("hide");
   $(".selectpicker").selectpicker("refresh");
-  $("#bf-dataset-select-div").hide();
+  $("#ps-dataset-select-div").hide();
 
-  // waiting for dataset list to load first before initiating BF dataset dropdown list
+  // waiting for dataset list to load first before initiating ps dataset dropdown list
   setTimeout(() => {
     var myPermission = $(window.datasetPermissionDiv).find("#select-permission-list-2").val();
 
@@ -137,12 +137,12 @@ const updateDatasetList = (bfaccount) => {
     initializeBootstrapSelect("#curatebfdatasetlist", "show");
 
     $("#div-filter-datasets-progress-2").css("display", "none");
-    //$("#bf-dataset-select-header").css("display", "block")
+    //$("#ps-dataset-select-header").css("display", "block")
     $("#curatebfdatasetlist").selectpicker("show");
     $("#curatebfdatasetlist").selectpicker("refresh");
     $(".selectpicker").selectpicker("show");
     $(".selectpicker").selectpicker("refresh");
-    $("#bf-dataset-select-div").show();
+    $("#ps-dataset-select-div").show();
 
     if (document.getElementById("div-permission-list-2")) {
       document.getElementById("para-filter-datasets-status-2").innerHTML =
@@ -191,6 +191,11 @@ window.dataset_path = document.getElementById("input-global-path");
 // GM Contributors page
 const homeDirectory = await window.electron.ipcRenderer.invoke("get-app-path", "home");
 window.storedContributorsPath = window.path.join(homeDirectory, "SODA", "stored-contributors.json");
+if (!window.fs.existsSync(window.storedContributorsPath)) {
+  // Create the file and then write an empty array to it
+  window.fs.mkdirSync(window.path.dirname(window.storedContributorsPath), { recursive: true });
+  window.fs.writeFileSync(window.storedContributorsPath, "[]");
+}
 
 // used in renderer and guided Mode
 window.createDragSort = (tagify) => {
@@ -215,12 +220,12 @@ window.updateOrganizationList = async (bfaccount) => {
 
   initializeBootstrapSelect("#curatebforganizationlist", "disabled");
 
-  $("#bf-organization-select-header").css("display", "none");
+  $("#ps-organization-select-header").css("display", "none");
   $("#curatebforganizationlist").selectpicker("hide");
   $("#curatebforganizationlist").selectpicker("refresh");
   $(".selectpicker").selectpicker("hide");
   $(".selectpicker").selectpicker("refresh");
-  $("#bf-organization-select-div").hide();
+  $("#ps-organization-select-div").hide();
 
   await window.wait(100);
 
@@ -238,17 +243,17 @@ window.updateOrganizationList = async (bfaccount) => {
   initializeBootstrapSelect("#curatebforganizationlist", "show");
 
   $("#div-filter-datasets-progress-2").css("display", "none");
-  $("#bf-dataset-select-header").css("display", "block");
+  $("#ps-dataset-select-header").css("display", "block");
   $("#curatebforganizationlist").selectpicker("show");
   $("#curatebforganizationlist").selectpicker("refresh");
   $(".selectpicker").selectpicker("show");
   $(".selectpicker").selectpicker("refresh");
-  $("#bf-organization-select-div").show();
+  $("#ps-organization-select-div").show();
 };
 
 // per change event of current dataset span text
 const confirm_click_function = () => {
-  let temp = $(".bf-dataset-span").html();
+  let temp = $(".ps-dataset-span").html();
   if (temp == "None" || temp == "") {
     $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "none");
     $("#para-review-dataset-info-disseminate").text("None");
@@ -319,10 +324,10 @@ window.resetSubmissionFields = () => {
   $("#div-confirm-existing-submission-import").hide();
 
   if ($("#bf_dataset_load_submission").text().trim() !== "None") {
-    $($("#div-check-bf-import-submission").children()[0]).show();
-    $("#div-check-bf-import-submission").css("display", "flex");
+    $($("#div-check-ps-import-submission").children()[0]).show();
+    $("#div-check-ps-import-submission").css("display", "flex");
   } else {
-    $("#div-check-bf-import-submission").hide();
+    $("#div-check-ps-import-submission").hide();
   }
 
   var inputFields = $("#Question-prepare-submission-1").nextAll().find("input");
@@ -430,10 +435,10 @@ window.resetDDFields = () => {
   $("#div-confirm-existing-dd-import").hide();
 
   if ($("#bf_dataset_load_dd").text().trim() !== "None") {
-    $($("#div-check-bf-import-dd").children()[0]).show();
-    $("#div-check-bf-import-dd").css("display", "flex");
+    $($("#div-check-ps-import-dd").children()[0]).show();
+    $("#div-check-ps-import-dd").css("display", "flex");
   } else {
-    $("#div-check-bf-import-dd").hide();
+    $("#div-check-ps-import-dd").hide();
   }
 
   // show generate button again
@@ -764,7 +769,7 @@ window.resetFFMUI = (ev) => {
   $("#div_add_edit_subtitle").removeClass("show");
   $("#div_add_edit_subtitle_tab").removeClass("prev");
 
-  $("#div-rename-bf-dataset").removeClass("show");
+  $("#div-rename-ps-dataset").removeClass("show");
   $("#rename_dataset_BF_account_tab").removeClass("prev");
 
   $("#div_make_pi_owner_permissions").removeClass("show");
@@ -795,7 +800,7 @@ window.resetFFMUI = (ev) => {
   $("#div_view_change_dataset_status").removeClass("show");
 
   $("#collection_BF_account_tab").removeClass("prev");
-  $("#div-collection-bf-dataset").removeClass("show");
+  $("#div-collection-ps-dataset").removeClass("show");
 
   $("#upload_local_dataset_tab").removeClass("prev");
   $("#upload_local_dataset_div").removeClass("show");
@@ -829,20 +834,20 @@ window.resetFFMUI = (ev) => {
     // }
     if (ev.parentNode.parentNode.classList.contains("organize-dataset")) {
       resetOrganizationTab = false;
-      if (ev.parentNode.parentNode.id === "bf-organization-curate-first-question-container") {
-        $("#current-bf-dataset").text("None");
-        $("#para-continue-bf-dataset-getting-started").hide();
-        $("#button-confirm-bf-dataset-getting-started").css("display", "none");
+      if (ev.parentNode.parentNode.id === "ps-organization-curate-first-question-container") {
+        $("#current-ps-dataset").text("None");
+        $("#para-continue-ps-dataset-getting-started").hide();
+        $("#button-confirm-ps-dataset-getting-started").css("display", "none");
       } else if (
-        ev.parentNode.parentNode.id === "bf-organization-curate-second-question-container"
+        ev.parentNode.parentNode.id === "ps-organization-curate-second-question-container"
       ) {
-        $("#current-bf-dataset-generate").text("None");
+        $("#current-ps-dataset-generate").text("None");
         // show the confirm button under the workspace selection question
-        $("#btn-bf-workspace").css("display", "flex");
+        $("#btn-ps-workspace").css("display", "flex");
         // hide the dataset options selection section
         window.transitionSubQuestionsButton(
-          document.querySelector("#btn-bf-workspace"),
-          "Question-generate-dataset-BF-workspace",
+          document.querySelector("#btn-ps-workspace"),
+          "Question-generate-dataset-ps-workspace",
           "generate-dataset-tab",
           "delete",
           "individual-question generate-dataset"
@@ -875,8 +880,8 @@ window.resetFFMUI = (ev) => {
   // do not wipe curation progress when resetting in GM or from within Organize Datasets
   if (resetOrganizationTab) {
     // if we are going to reset the organization and are not within the organize flow, set the first dataset field value to None -- the second dataset field gets reset within window.resetCuration
-    $("#current-bf-dataset").text("None");
-    $("#button-confirm-bf-dataset-getting-started").css("display", "none");
+    $("#current-ps-dataset").text("None");
+    $("#button-confirm-ps-dataset-getting-started").css("display", "none");
     window.resetCuration();
   }
 
@@ -885,7 +890,7 @@ window.resetFFMUI = (ev) => {
   if (resetValidation) {
     // Function only resets the table and hides the validation section
     // If they have selected the first cards those will not be reset
-    // $("#div-check-bf-import-validator").css("display", "flex");
+    // $("#div-check-ps-import-validator").css("display", "flex");
     $("#validate_dataset-question-3").removeClass("show");
     $("#validate_dataset-question-3").removeClass("prev");
     $("#validate_dataset-question-4").removeClass("show");
@@ -939,32 +944,32 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
           Swal.showLoading();
         },
       });
-      $("#Question-getting-started-BF-account")
+      $("#Question-getting-started-ps-account")
         .nextAll()
         .removeClass("show")
         .removeClass("prev")
         .removeClass("test2");
-      $("#Question-generate-dataset-BF-account")
+      $("#Question-generate-dataset-ps-account")
         .nextAll()
         .removeClass("show")
         .removeClass("prev")
         .removeClass("test2");
-      $("#current-bf-account").text("");
-      $("#current-bf-account-generate").text("");
+      $("#current-ps-account").text("");
+      $("#current-ps-account-generate").text("");
       $("#create_empty_dataset_BF_account_span").text("");
-      $(".bf-account-span").text("");
-      $("#current-bf-dataset").text("None");
-      $("#current-bf-dataset-generate").text("None");
-      $(".bf-dataset-span").html("None");
+      $(".ps-account-span").text("");
+      $("#current-ps-dataset").text("None");
+      $("#current-ps-dataset-generate").text("None");
+      $(".ps-dataset-span").html("None");
       window.defaultBfDataset = "Select dataset";
       document.getElementById("ds-description").innerHTML = "";
       window.refreshDatasetList();
-      $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css("display", "none");
-      $("#button-confirm-bf-dataset-getting-started").hide();
+      $($("#button-confirm-ps-dataset-getting-started").parents()[0]).css("display", "none");
+      $("#button-confirm-ps-dataset-getting-started").hide();
 
       $("#para-account-detail-curate").html("");
-      $("#current-bf-dataset").text("None");
-      $(".bf-dataset-span").html("None");
+      $("#current-ps-dataset").text("None");
+      $(".ps-dataset-span").html("None");
       showHideDropdownButtons("dataset", "hide");
 
       try {
@@ -974,10 +979,10 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
           },
         });
         let user_email = bf_account_details_req.data.email;
-        $("#current-bf-account").text(user_email);
-        $("#current-bf-account-generate").text(user_email);
+        $("#current-ps-account").text(user_email);
+        $("#current-ps-account-generate").text(user_email);
         $("#create_empty_dataset_BF_account_span").text(user_email);
-        $(".bf-account-span").text(user_email);
+        $(".ps-account-span").text(user_email);
         window.updateBfAccountList();
         //change icons in getting started page (guided mode)
         const gettingStartedPennsieveBtn = document.getElementById(
@@ -987,7 +992,7 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
         gettingStartedPennsieveBtn.children[1].style.display = "flex";
 
         try {
-          let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
+          let responseObject = await client.get(`manage_datasets/fetch_user_datasets`, {
             params: {
               selected_account: bfacct,
             },
@@ -1190,14 +1195,14 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
           },
         });
         // reset the dataset field values
-        $("#current-bf-dataset").text("None");
-        $("#current-bf-dataset-generate").text("None");
-        $(".bf-dataset-span").html("None");
-        $("#para-continue-bf-dataset-getting-started").text("");
+        $("#current-ps-dataset").text("None");
+        $("#current-ps-dataset-generate").text("None");
+        $(".ps-dataset-span").html("None");
+        $("#para-continue-ps-dataset-getting-started").text("");
 
         // set the workspace field values to the user's current workspace
         let org = bf_account_details_req.data.organization;
-        $(".bf-organization-span").text(org);
+        $(".ps-organization-span").text(org);
 
         showHideDropdownButtons("account", "show");
         confirm_click_account_function();
@@ -1209,7 +1214,7 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
           // Get the current page that the user is on in the guided mode
           const currentPage = CURRENT_PAGE.id;
           if (currentPage) {
-            await openPage(currentPage);
+            await window.openPage(currentPage);
           }
         }
       } catch (error) {
@@ -1282,14 +1287,14 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
           },
         });
         // reset the dataset field values
-        $("#current-bf-dataset").text("None");
-        $("#current-bf-dataset-generate").text("None");
-        $(".bf-dataset-span").html("None");
-        $("#para-continue-bf-dataset-getting-started").text("");
+        $("#current-ps-dataset").text("None");
+        $("#current-ps-dataset-generate").text("None");
+        $(".ps-dataset-span").html("None");
+        $("#para-continue-ps-dataset-getting-started").text("");
 
         // set the workspace field values to the user's current workspace
         let org = bf_account_details_req.data.organization;
-        $(".bf-organization-span").text(org);
+        $(".ps-organization-span").text(org);
 
         showHideDropdownButtons("account", "show");
         confirm_click_account_function();
@@ -1351,14 +1356,14 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
 var dropdownEventID = "";
 window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
   // if users edit current account
-  if (dropdown === "bf") {
+  if (dropdown === "ps") {
     await window.addBfAccount(ev, false);
   } else if (dropdown === "dataset") {
     dropdownEventID = ev?.id ?? "";
 
     // check the value of Current Organization
     // TODO: Test heavily
-    let currentOrganization = $(".bf-organization-span:first").text();
+    let currentOrganization = $(".ps-organization-span:first").text();
 
     if (currentOrganization === "None") {
       Swal.fire({
@@ -1395,10 +1400,10 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         .find("#div-filter-datasets-progress-2")
         .css("display", "block");
 
-      $("#bf-dataset-select-header").css("display", "none");
+      $("#ps-dataset-select-header").css("display", "none");
 
       $(window.datasetPermissionDiv).find("#para-filter-datasets-status-2").text("");
-      $("#para-continue-bf-dataset-getting-started").text("");
+      $("#para-continue-ps-dataset-getting-started").text("");
 
       $(window.datasetPermissionDiv).find("#select-permission-list-2").val("All").trigger("change");
       $(window.datasetPermissionDiv)
@@ -1436,7 +1441,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           },
         }).then(async (result) => {
           if (result.isConfirmed) {
-            await window.openDropdownPrompt(ev, "bf");
+            await window.openDropdownPrompt(ev, "ps");
             $(".ui.active.green.inline.loader.small").css("display", "none");
             $(".svg-change-current-account.dataset").css("display", "block");
           } else {
@@ -1467,9 +1472,10 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       if (window.datasetList.length === 0) {
         let responseObject;
         try {
-          responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
+          responseObject = await client.get(`manage_datasets/fetch_user_datasets`, {
             params: {
               selected_account: window.defaultBfAccount,
+              return_only_empty_datasets: false, // this will only fetch datasets that are empty (we only allow uploading to empty atm)
             },
           });
         } catch (error) {
@@ -1553,7 +1559,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           willOpen: () => {
             $("#curatebfdatasetlist").selectpicker("hide");
             $("#curatebfdatasetlist").selectpicker("refresh");
-            $("#bf-dataset-select-div").hide();
+            $("#ps-dataset-select-div").hide();
           },
           didOpen: () => {
             $("#div-permission-list-2").css("display", "block");
@@ -1565,8 +1571,8 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               .css("display", "none");
             $("#curatebfdatasetlist").selectpicker("refresh");
             $("#curatebfdatasetlist").selectpicker("show");
-            $("#bf-dataset-select-div").show();
-            $("#bf-organization-select-div").hide();
+            $("#ps-dataset-select-div").show();
+            $("#ps-organization-select-div").hide();
 
             bfDataset = $("#curatebfdatasetlist").val();
             let sweet_al = document.getElementsByClassName("swal2-html-container")[0];
@@ -1593,7 +1599,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
                 .css("display", "none");
               $("#curatebfdatasetlist").selectpicker("show");
               $("#curatebfdatasetlist").selectpicker("refresh");
-              $("#bf-dataset-select-div").show();
+              $("#ps-dataset-select-div").show();
 
               return undefined;
             } else {
@@ -1605,7 +1611,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
                   .css("display", "none");
                 $("#curatebfdatasetlist").selectpicker("show");
                 $("#curatebfdatasetlist").selectpicker("refresh");
-                $("#bf-dataset-select-div").show();
+                $("#ps-dataset-select-div").show();
 
                 return undefined;
               } else {
@@ -1631,7 +1637,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
             // Ensure the dataset is not locked except for when the user is on the disseminate page (to allow for the dataset to be unsubmitted)
             // Ensure the dataset is not locked before proceeding
-            const datasetIsLocked = await api.isDatasetLocked(window.defaultBfAccount, bfDataset);
+            const datasetIsLocked = await api.isDatasetLocked(bfDataset);
             if (datasetIsLocked) {
               // Show the locked swal and return
               await Swal.fire({
@@ -1658,7 +1664,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
             if (
               dropdownEventID === "organize-ds-step-6-ds-select" ||
-              dropdownEventID === "current-bf-dataset-generate"
+              dropdownEventID === "current-ps-dataset-generate"
             ) {
               try {
                 // get the amount of files in the existing dataset and skip the Merge/Skip/Replace step if there are no files in the existing dataset
@@ -1680,15 +1686,15 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
             if (dropdownEventID === "dd-select-pennsieve-dataset") {
               $("#ds-name").val(bfDataset);
-              $("#ds-description").val = $("#bf-dataset-subtitle").val;
+              $("#ds-description").val = $("#ps-dataset-subtitle").val;
               $("body").removeClass("waiting");
               $(".svg-change-current-account.dataset").css("display", "block");
               dropdownEventID = "";
               return;
             }
-            $("#current-bf-dataset").text(bfDataset);
-            $("#current-bf-dataset-generate").text(bfDataset);
-            $(".bf-dataset-span").html(bfDataset);
+            $("#current-ps-dataset").text(bfDataset);
+            $("#current-ps-dataset-generate").text(bfDataset);
+            $(".ps-dataset-span").html(bfDataset);
             confirm_click_function();
             // $("#button-refresh-publishing-status").removeClass("hidden");
             $("#button-refresh-publishing-status").addClass("fa-spin");
@@ -1700,7 +1706,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             $("#dataset-loaded-message").hide();
 
             showHideDropdownButtons("dataset", "show");
-            // document.getElementById("div-rename-bf-dataset").children[0].style.display =
+            // document.getElementById("div-rename-ps-dataset").children[0].style.display =
             //   "flex !important";
 
             // show the confirm button underneath the dataset select dropdown if one exists
@@ -1715,7 +1721,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           }
         });
 
-        if ($("#current-bf-dataset-generate").text() === "None") {
+        if ($("#current-ps-dataset-generate").text() === "None") {
           showHideDropdownButtons("dataset", "hide");
         } else {
           showHideDropdownButtons("dataset", "show");
@@ -1777,14 +1783,14 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       }
 
       // hide "Confirm" button if Current dataset set to None
-      if ($("#current-bf-dataset-generate").text() === "None") {
+      if ($("#current-ps-dataset-generate").text() === "None") {
         showHideDropdownButtons("dataset", "hide");
       } else {
         showHideDropdownButtons("dataset", "show");
       }
 
       // hide "Confirm" button if Current dataset under Getting started set to None
-      if ($("#current-bf-dataset").text() === "None") {
+      if ($("#current-ps-dataset").text() === "None") {
         showHideDropdownButtons("dataset", "hide");
       } else {
         showHideDropdownButtons("dataset", "show");
@@ -1848,7 +1854,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       });
 
       if (result) {
-        await window.openDropdownPrompt(this, "bf");
+        await window.openDropdownPrompt(this, "ps");
         $(".ui.active.green.inline.loader.small").css("display", "none");
         $(".svg-change-current-account.dataset").css("display", "block");
         return;
@@ -1941,10 +1947,10 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         willOpen: () => {
           $("#curatebforganizationlist").selectpicker("hide");
           $("#curatebforganizationlist").selectpicker("refresh");
-          // $("#bf-organization-select-header").show();
+          // $("#ps-organization-select-header").show();
           // TODO: How to make this unnecessary?
-          // $("#bf-dataset-select-div").hide();
-          // $("#bf-dataset-select-header").hide();
+          // $("#ps-dataset-select-div").hide();
+          // $("#ps-dataset-select-header").hide();
         },
         didOpen: () => {
           $("#div-permission-list-2").css("display", "block");
@@ -1956,9 +1962,9 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             .css("display", "none");
           $("#curatebforganizationlist").selectpicker("refresh");
           $("#curatebforganizationlist").selectpicker("show");
-          $("#bf-organization-select-div").show();
-          $("#bf-dataset-select-div").hide();
-          $("#bf-dataset-select-header").hide();
+          $("#ps-organization-select-div").show();
+          $("#ps-dataset-select-div").hide();
+          $("#ps-dataset-select-header").hide();
 
           window.bfOrganization = $("#curatebforganizationlist").val();
           let sweet_al = document.getElementsByClassName("swal2-html-container")[0];
@@ -1985,7 +1991,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               .css("display", "none");
             $("#curatebforganizationlist").selectpicker("show");
             $("#curatebforganizationlist").selectpicker("refresh");
-            $("#bf-organization-select-div").show();
+            $("#ps-organization-select-div").show();
 
             return undefined;
           }
@@ -1998,7 +2004,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               .css("display", "none");
             $("#curatebforganizationlist").selectpicker("show");
             $("#curatebforganizationlist").selectpicker("refresh");
-            $("#bf-organization-select-div").show();
+            $("#ps-organization-select-div").show();
 
             return undefined;
           }
@@ -2021,7 +2027,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
       if (dropdownEventID === "dd-select-pennsieve-organization") {
         $("#ds-name").val(window.bfOrganization);
-        $("#ds-description").val = $("#bf-dataset-subtitle").val;
+        $("#ds-description").val = $("#ps-dataset-subtitle").val;
         $("body").removeClass("waiting");
         $(".svg-change-current-account.dataset").css("display", "block");
         dropdownEventID = "";
@@ -2032,7 +2038,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       $("#dataset-loaded-message").hide();
 
       showHideDropdownButtons("organization", "show");
-      document.getElementById("div-rename-bf-dataset").children[0].style.display = "flex";
+      document.getElementById("div-rename-ps-dataset").children[0].style.display = "flex";
 
       // rejoin test organiztion
       const { value: res } = await Swal.fire({
@@ -2111,9 +2117,9 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           }
 
           // set the new organization information in the appropriate fields
-          $("#current-bf-organization").text(window.bfOrganization);
-          $("#current-bf-organization-generate").text(window.bfOrganization);
-          $(".bf-organization-span").html(window.bfOrganization);
+          $("#current-ps-organization").text(window.bfOrganization);
+          $("#current-ps-organization-generate").text(window.bfOrganization);
+          $(".ps-organization-span").html(window.bfOrganization);
           // set the permissions content to an empty string
           await window.loadDefaultAccount();
 
@@ -2133,7 +2139,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       }
 
       // reset the selected dataset to None
-      $(".bf-dataset-span").html("None");
+      $(".ps-dataset-span").html("None");
       // reset the current owner span in the manage dataset make pi owner of a dataset tab
       $(".current-permissions").html("None");
 

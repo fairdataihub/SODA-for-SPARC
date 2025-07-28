@@ -3,7 +3,5 @@ import { accountsClickHandlers } from "./clickHandlersAccounts/clickHandlerAccou
 export const getClickHandlerFunctions = (id) => {
   if (id === "account-options-table") {
     return accountsClickHandlers;
-  } else {
-    return () => console.log("No click handler found for this table");
   }
 };

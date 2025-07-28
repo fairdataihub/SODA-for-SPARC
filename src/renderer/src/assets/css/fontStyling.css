@@ -59,7 +59,7 @@
 }
 
 .help-text {
-  font-size: 16px;
+  font-size: 14px;
   max-width: 800px;
   text-align: justify;
 }
@@ -155,7 +155,7 @@
 
 .text-sub-step-title {
   display: block;
-  font-size: 18px;
+  font-size: 16px;
   color: rgba(0, 0, 0, 0.87);
   text-align: center;
   font-weight: 600;
@@ -178,7 +178,7 @@ h2.guided--text-user-directions {
 }
 
 h1.text-sub-step-title {
-  font-size: 25px !important;
+  font-size: 19.6px !important;
   margin-bottom: 15px;
 }
 

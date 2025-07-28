@@ -6,12 +6,9 @@ while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
-import * as os from "os";
 import * as path from "path";
-import Editor from "@toast-ui/editor";
 // const remote = require("@electron/remote");
 import { Notyf } from "notyf";
-import { v4 as uuidv4 } from "uuid";
 import Tagify from "@yaireo/tagify/dist/tagify.esm.js";
 // const https = require("https");
 // const electron = require("electron");
@@ -33,11 +30,14 @@ import lottie from "lottie-web";
 import { dragDrop, successCheck } from "../../assets/lotties/lotties";
 import autoComplete from "@tarekraafat/autocomplete.js/dist/autoComplete.min.js";
 import Cropper from "cropperjs";
-import DragSort from "@yaireo/dragsort";
 import axios from "axios";
 import Swal from "sweetalert2";
 import DatePicker from "tui-date-picker";
 import datasetUploadSession from "../analytics/upload-session-tracker";
+import {
+  startBackgroundServices,
+  initializeSODARenderer,
+} from "../startup/initializeRendererProcess";
 import kombuchaEnums from "../analytics/analytics-enums";
 import client from "../client";
 import {
@@ -62,12 +62,10 @@ import {
   swalFileListDoubleAction,
   swalShowError,
   swalShowInfo,
-  swalConfirmAction,
 } from "../utils/swal-utils";
-import canSmiley from "/img/can-smiley.png";
-import canSad from "/img/can-sad.png";
 
 import useGlobalStore from "../../stores/globalStore";
+import { setTreeViewDatasetStructure } from "../../stores/slices/datasetTreeViewSlice";
 import {
   resetPennsieveAgentCheckState,
   setPennsieveAgentCheckSuccessful,
@@ -79,11 +77,6 @@ import {
   setPennsieveAgentCheckInProgress,
   setPostPennsieveAgentCheckAction,
 } from "../../stores/slices/backgroundServicesSlice";
-import {
-  clientBlockedByExternalFirewall,
-  blockedMessage,
-  hostFirewallMessage,
-} from "../check-firewall/checkFirewall";
 
 // add jquery to the window object
 window.$ = jQuery;
@@ -94,24 +87,12 @@ document.addEventListener("DOMContentLoaded", function () {
   $("select").select2();
 });
 
-// // const prevent_sleep_id = "";
-// // const electron_app = electron.app;
-// const { app } = remote;
-// const Clipboard = electron.clipboard;
-
 window.nextBtnDisabledVariable = true;
 
 window.datasetStructureJSONObj = {
   folders: {},
   files: {},
   type: "",
-};
-
-window.introStatus = {
-  organizeStep3: true,
-  submission: false,
-  subjects: false,
-  samples: false,
 };
 
 // //////////////////////////////////
@@ -141,33 +122,6 @@ const appVersion = await window.electron.ipcRenderer.invoke("app-version");
 window.log.info("Current SODA version:", appVersion);
 
 document.getElementById("guided_mode_view").click();
-
-// check for announcements on startup; if the user is in the auto update workflow do not check for announcements
-// Rationale: The auto update workflow involves refreshing the DOM which will cause a re-run of
-//            the renderer process. One potential outcome of this is the renderer reaches this code block before the refresh
-//            and sets the launch_announcements flag to false. On the second run, the one which the user will have time to see announcements
-//            before the DOM reloads, the announcements will not be checked or displayed at all.
-let autoUpdateLaunch = await window.electron.ipcRenderer.invoke(
-  "get-nodestorage-key",
-  "auto_update_launch"
-);
-let launchAnnouncement = await window.electron.ipcRenderer.invoke(
-  "get-nodestorage-key",
-  "launch_announcements"
-);
-if (autoUpdateLaunch == false || autoUpdateLaunch == null || autoUpdateLaunch == undefined) {
-  // if launchAnnouncements is undefined/null then announcements havent been launched yet; set launch_announcements to true
-  // later code will reference this flag to determine if announcements should be checked for
-  if (launchAnnouncement === undefined || launchAnnouncement === null) {
-    launchAnnouncement = true;
-  }
-  // do not check for announcements on the next launch
-  await window.electron.ipcRenderer.invoke("set-nodestorage-key", "launch_announcements", false); // NOTE: launch_announcements is only set to true during the auto update process ( see main.js )
-}
-
-// //////////////////////////////////
-// // Connect to Python back-end
-// //////////////////////////////////
 
 window.notyf = new Notyf({
   position: { x: "right", y: "bottom" },
@@ -308,240 +262,13 @@ window.notyf = new Notyf({
   ],
 });
 
-let connected_to_internet = false;
 let update_available_notification = "";
 let update_downloaded_notification = "";
 
-const showErrorAndRestart = async (errorMessage) => {
-  await swalShowError(
-    "Error connecting to SODA's background services",
-    `Something went wrong while initializing SODA's background services. Please restart SODA and try again. If this issue occurs multiple times, please email <a target="_blank" href='mailto:help@fairdataihub.org'>help@fairdataihub.org</a>.`
-  );
-  await window.electron.ipcRenderer.invoke("relaunch-soda");
-};
-
-const connectToServer = async () => {
-  const maxWaitTime = 300000; // 5 minutes in milliseconds
-  const retryInterval = 3000; // 3 seconds in milliseconds
-  const totalNumberOfRetries = Math.floor(maxWaitTime / retryInterval);
-  for (let i = 0; i < totalNumberOfRetries; i++) {
-    try {
-      const res = await client.get("/startup/echo?arg=server ready");
-
-      // Log the successful connection to the server
-      window.log.info("Connected to Python back-end successfully");
-      window.electron.ipcRenderer.send("track-event", "Success", "Establishing Python Connection");
-      window.electron.ipcRenderer.send(
-        "track-kombucha",
-        kombuchaEnums.Category.STARTUP,
-        kombuchaEnums.Action.APP_LAUNCHED,
-        kombuchaEnums.Label.PYTHON_CONNECTION,
-        kombuchaEnums.Status.SUCCESS,
-        {
-          value: 1,
-        }
-      );
-      return;
-    } catch (e) {
-      console.error("Error connecting to server: ", e);
-      await window.wait(retryInterval);
-    }
-  }
-
-  // If we get to this point, it means we were unable to connect to the server
-  // Report the event and throw an error
-  window.electron.ipcRenderer.send("track-event", "Error", "Establishing Python Connection");
-  window.electron.ipcRenderer.send(
-    "track-kombucha",
-    kombuchaEnums.Category.STARTUP,
-    kombuchaEnums.Action.APP_LAUNCHED,
-    kombuchaEnums.Label.PYTHON_CONNECTION,
-    kombuchaEnums.Status.FAIL,
-    {
-      value: 1,
-    }
-  );
-  throw new Error("Unable to connect to server within the max wait time.");
-};
-
-const ensureUsernameExists = async () => {
-  try {
-    // get the current user profile name using electron
-    const { username } = window.os.userInfo();
-
-    // check if a shortened uuid exists in local storage
-    let usernameExists = await window.electron.ipcRenderer.invoke("get-nodestorage-item", username);
-
-    // if the username does not exist in local storage, create a shortened uuid and store it
-    if (!usernameExists) {
-      const shortenedUUID = uuidv4().substring(0, 4);
-      await window.electron.ipcRenderer.invoke("set-nodestorage-key", username, shortenedUUID);
-    }
-  } catch (error) {
-    const errorMessage = "Error creating a new user profile name.";
-    clientError(errorMessage);
-    throw new Error(errorMessage);
-  }
-};
-
-const startBackgroundServices = async () => {
-  try {
-    await connectToServer();
-    await ensureUsernameExists();
-
-    try {
-      initializePennsieveAccountList();
-    } catch (error) {
-      console.error("Error retrieving BF accounts: ", error);
-    }
-
-    notyf.open({
-      duration: "2000",
-      type: "success",
-      message: `Connected to SODA's background services successfully.`,
-    });
-  } catch (error) {
-    console.error("Error connecting to server: ", error);
-    await showErrorAndRestart(error);
-  }
-};
-
+// //////////////////////////////////
+// // Initialize the renderer process
+// //////////////////////////////////
 startBackgroundServices();
-
-const launchAnnouncements = async () => {
-  if (launchAnnouncement) {
-    await checkForAnnouncements("announcements");
-    launchAnnouncement = false;
-    await window.electron.ipcRenderer.invoke("set-nodestorage-key", "announcements", false);
-  }
-};
-
-// check that the client connected to the server using exponential backoff
-// verify the api versions match
-const startupServerAndApiCheck = async () => {
-  const maxWaitTime = 300000; // 5 minutes in milliseconds
-  const retryInterval = 3000; // 3 seconds in milliseconds
-  const totalNumberOfRetries = Math.floor(maxWaitTime / retryInterval);
-
-  Swal.fire({
-    icon: "info",
-    title: `Initializing SODA's background services<br /><br />This may take several minutes...`,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    confirmButtonText: "Restart now",
-    allowOutsideClick: false,
-    allowEscapeKey: false,
-    showClass: {
-      popup: "animate__animated animate__zoomIn animate__faster",
-    },
-    hideClass: {
-      popup: "animate__animated animate__zoomOut animate__faster",
-    },
-    didOpen: () => Swal.showLoading(),
-  });
-
-  await window.wait(3000);
-
-  for (let i = 0; i < totalNumberOfRetries; i++) {
-    try {
-      await client.get("/startup/echo?arg=server ready");
-      window.log.info("Connected to Python back-end successfully");
-      window.electron.ipcRenderer.send("track-event", "Success", "Establishing Python Connection");
-      window.electron.ipcRenderer.send(
-        "track-kombucha",
-        kombuchaEnums.Category.STARTUP,
-        kombuchaEnums.Action.APP_LAUNCHED,
-        kombuchaEnums.Label.PYTHON_CONNECTION,
-        kombuchaEnums.Status.SUCCESS,
-        { value: 1 }
-      );
-      ensureUsernameExists();
-      Swal.close();
-      return;
-    } catch (e) {
-      console.error("Error connecting to server: ", e);
-      await window.wait(retryInterval);
-    }
-  }
-
-  window.electron.ipcRenderer.send("track-event", "Error", "Establishing Python Connection");
-  window.electron.ipcRenderer.send(
-    "track-kombucha",
-    kombuchaEnums.Category.STARTUP,
-    kombuchaEnums.Action.APP_LAUNCHED,
-    kombuchaEnums.Label.PYTHON_CONNECTION,
-    kombuchaEnums.Status.FAIL,
-    { value: 1 }
-  );
-
-  let serverIsLive = await window.server.serverIsLive();
-  if (serverIsLive) {
-    // notify the user that there may be a firewall issue preventing the client from connecting to the server
-    Swal.close();
-    await Swal.fire({
-      icon: "info",
-      title: "Potential Network Issues",
-      html: hostFirewallMessage,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      confirmButtonText: "Restart SODA To Try Again",
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      width: 900,
-    });
-    await window.electron.ipcRenderer.invoke("relaunch-soda");
-  }
-
-  Swal.close();
-  await Swal.fire({
-    icon: "error",
-    html: `Something went wrong while initializing SODA's background services. SODA will relaunch to try to fix the problem. If this issue occurs multiple times, please email <a target="_blank" href='mailto:help@fairdataihub.org'>help@fairdataihub.org</a>.`,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    confirmButtonText: "Restart now",
-    allowOutsideClick: false,
-    allowEscapeKey: false,
-  });
-  await window.electron.ipcRenderer.invoke("relaunch-soda");
-};
-
-// Check if we are connected to the Pysoda server
-// Check app version on current app and display in the side bar
-// Also check the core systems to make sure they are all operational
-const initializeSODARenderer = async () => {
-  // TODO: Add check for internal firewall that blocks us from talking to the server here (detect-firewall)
-  // check that the server is live and the api versions match
-  // If this fails after the allotted time, the app will restart
-  await startupServerAndApiCheck();
-
-  // check if the API versions match
-  // If they do not match, the app will restart to attempt to fix the issue
-  await ensureServerVersionMatchesClientVersion();
-
-  //Refresh the Pennsieve account list if the user has connected their Pennsieve account in the past
-  if (hasConnectedAccountWithPennsieve()) {
-    // check for external firewall interference (aspirational in that may not be foolproof)
-    const pennsieveURL = "https://api.pennsieve.io/discover/datasets";
-    const blocked = await clientBlockedByExternalFirewall(pennsieveURL);
-    if (blocked) {
-      swalShowInfo("Potential Network Issue Detected", blockedMessage);
-    }
-  }
-
-  // Set the app version in the sidebar for the user to see
-  setSidebarAppVersion();
-
-  await warnUserIfBetaVersionAndDntNotEnabled();
-
-  // Launch announcements if the user has not seen them yet
-  await launchAnnouncements();
-
-  // Set the template paths for dataset metadata generation
-  await setTemplatePaths();
-
-  window.log.info("Successfully initialized SODA renderer process");
-};
-
 initializeSODARenderer();
 
 const abortPennsieveAgentCheck = (pennsieveAgentStatusDivId) => {
@@ -631,20 +358,20 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
       return false;
     }
 
-    let agentDownloadUrl;
     let latestPennsieveAgentVersion;
 
     try {
-      [agentDownloadUrl, latestPennsieveAgentVersion] = await getLatestPennsieveAgentVersion();
+      const [_, version] = await getLatestPennsieveAgentVersion();
+      latestPennsieveAgentVersion = version;
     } catch (error) {
       const emessage = userErrorMessage(error);
       setPennsieveAgentCheckError(
         "Unable to get information about the latest Pennsieve Agent release",
         emessage
       );
-      abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+      // abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
 
-      return false;
+      // return false;
     }
 
     if (usersPennsieveAgentVersion !== latestPennsieveAgentVersion) {
@@ -689,7 +416,7 @@ window.synchronizePennsieveWorkspace = async () => {
   //           under the default profile does not mean that key is associated with the user's current workspace.
   const profileMatches = await window.defaultProfileMatchesCurrentWorkspace();
   if (!profileMatches) {
-    log.info("Default api key is for a different workspace");
+    window.log.info("Default api key is for a different workspace");
     await window.switchToCurrentWorkspace();
   }
 };
@@ -711,7 +438,7 @@ window.run_pre_flight_checks = async (pennsieveAgentStatusDivId) => {
     }
 
     // Check the internet connection and if available check the rest.
-    const userConnectedToInternet = await checkInternetConnection();
+    const userConnectedToInternet = await window.checkInternetConnection();
     if (!userConnectedToInternet) {
       throw new Error(
         "It seems that you are not connected to the internet. Please check your connection and try again."
@@ -784,73 +511,6 @@ window.run_pre_flight_checks = async (pennsieveAgentStatusDivId) => {
   }
 };
 
-// Check if the Pysoda server API version and the package.json versions match
-const ensureServerVersionMatchesClientVersion = async () => {
-  let responseObject;
-
-  try {
-    responseObject = await client.get("/startup/minimum_api_version");
-  } catch (e) {
-    clientError(e);
-    window.log.info("Minimum API Versions do not match");
-    window.electron.ipcRenderer.send(
-      "track-event",
-      "Error",
-      "Verifying App Version",
-      userErrorMessage(e)
-    );
-
-    await swalShowError(
-      "Unable to verify Server API Version",
-      `SODA will restart to attempt to fix the issue. If the issue persists, please contact the SODA team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>`
-    );
-    await window.electron.ipcRenderer.invoke("relaunch-soda");
-  }
-
-  let serverAppVersion = responseObject.data.version;
-
-  window.log.info(`Server version is ${serverAppVersion}`);
-
-  if (serverAppVersion !== appVersion) {
-    window.log.info("Server version does not match client version");
-    console.error("Server version does not match client version");
-    window.electron.ipcRenderer.send(
-      "track-event",
-      "Error",
-      "Verifying App Version",
-      "Server version does not match client version"
-    );
-
-    await swalShowError(
-      "SODA Server version and Client version mismatch",
-      `SODA will restart to attempt to fix the issue. If the issue persists, please contact the SODA team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>`
-    );
-    await window.electron.ipcRenderer.invoke("relaunch-soda");
-  }
-
-  window.electron.ipcRenderer.send("track-event", "Success", "Verifying App Version");
-};
-
-const setTemplatePaths = async () => {
-  try {
-    // get apps base path
-    const basepath = await window.electron.ipcRenderer.invoke("get-app-path", undefined);
-    const resourcesPath = window.process.resourcesPath();
-    await client.put("prepare_metadata/template_paths", {
-      basepath: basepath,
-      resourcesPath: resourcesPath,
-    });
-    window.electron.ipcRenderer.send("track-event", "Success", "Setting Templates Path");
-  } catch (error) {
-    window.electron.ipcRenderer.send("track-event", "Error", "Setting Templates Path");
-    await swalShowError(
-      "Error setting template paths",
-      `SODA will restart to attempt to fix the issue. If the issue persists, please contact the SODA team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>`
-    );
-    await window.electron.ipcRenderer.invoke("relaunch-soda");
-  }
-};
-
 window.checkInternetConnection = async () => {
   try {
     await axios.get("https://www.google.com");
@@ -887,7 +547,7 @@ window.check_api_key = async (showNotyfs = false) => {
   try {
     responseObject = await client.get("manage_datasets/bf_account_list");
   } catch (e) {
-    log.info("Current default profile API Key is obsolete");
+    window.log.info("Current default profile API Key is obsolete");
     clientError(e);
     if (showNotyfs) {
       window.notyf.dismiss(notification);
@@ -902,7 +562,7 @@ window.check_api_key = async (showNotyfs = false) => {
   let res = responseObject.data["accounts"];
 
   if (res[0] === "Select" && res.length === 1) {
-    log.info("No api keys found");
+    window.log.info("No api keys found");
     //no api key found
     if (showNotyfs) {
       window.notyf.dismiss(notification);
@@ -913,7 +573,7 @@ window.check_api_key = async (showNotyfs = false) => {
     }
     return false;
   } else {
-    log.info("Found non obsolete api key in default profile");
+    window.log.info("Found non obsolete api key in default profile");
 
     if (showNotyfs) {
       window.notyf.dismiss(notification);
@@ -930,7 +590,7 @@ const getPlatformSpecificAgentDownloadURL = async () => {
   // Try to the direct download url for the platform specific agent
   // If that fails, then return the generic download url
   try {
-    const [directDownloadUrl, latestPennsieveAgentVersion] = await getLatestPennsieveAgentVersion();
+    const [directDownloadUrl, _] = await getLatestPennsieveAgentVersion();
     return directDownloadUrl;
   } catch (error) {
     return "https://github.com/Pennsieve/pennsieve-agent/releases";
@@ -1004,28 +664,6 @@ const getLatestPennsieveAgentVersion = async () => {
   }
 
   return [platformSpecificAgentDownloadURL, latestPennsieveAgentVersion];
-};
-
-const setSidebarAppVersion = async () => {
-  let currentAppVersion = await window.electron.ipcRenderer.invoke("app-version");
-  const version = document.getElementById("version");
-  version.innerText = currentAppVersion;
-};
-
-// Warn the user if they are on a beta version of the app
-const warnUserIfBetaVersionAndDntNotEnabled = async () => {
-  try {
-    let currentAppVersion = await window.electron.ipcRenderer.invoke("app-version");
-    const dntFilePath = window.path.join(homeDirectory, ".soda-config", "dnt.soda");
-    if (currentAppVersion.includes("beta") && !window.fs.existsSync(dntFilePath)) {
-      await swalShowInfo(
-        "You are on a beta version of SODA",
-        "When you are finished using this special version of SODA, please download the latest stable version<a href='https://docs.sodaforsparc.io/' target='_blank'> by clicking here</a>"
-      );
-    }
-  } catch (err) {
-    console.error("Error determing if beta pop up should exist:", err);
-  }
 };
 
 // Check app version on current app and display in the side bar
@@ -1102,60 +740,24 @@ const restartApp = async () => {
 // // Get html elements from UI
 // //////////////////////////////////
 
-// // Navigator button //
-// const buttonSidebar = document.getElementById("button-hamburger");
-// const buttonSidebarIcon = document.getElementById("button-soda-icon");
-// const buttonSidebarBigIcon = document.getElementById("button-soda-big-icon");
-
 // /////// New Organize Datasets /////////////////////
 
 const organizeDSbackButton = document.getElementById("button-back");
 const organizeDSaddFiles = document.getElementById("add-files");
 const organizeDSaddNewFolder = document.getElementById("new-folder");
 const organizeDSaddFolders = document.getElementById("add-folders");
-const contextMenu = document.getElementById("mycontext");
 const fullNameValue = document.querySelector(".hoverFullName");
-const homePathButton = document.getElementById("home-path");
 window.menuFolder = document.querySelector(".menu.reg-folder");
 window.menuFile = document.querySelector(".menu.file");
 window.menuHighLevelFolders = document.querySelector(".menu.high-level-folder");
-const organizeNextStepBtn = document.getElementById("button-organize-confirm-create");
-const organizePrevStepBtn = document.getElementById("button-organize-prev");
 window.manifestFileCheck = document.getElementById("generate-manifest-curate");
 
-// Organize dataset //
-const selectImportFileOrganizationBtn = document.getElementById(
-  "button-select-upload-file-organization"
-);
-const tableMetadata = document.getElementById("metadata-table");
-let tableMetadataCount = 0;
-
-// Validate dataset //
-const validateCurrentDSBtn = document.getElementById("button-validate-current-ds");
-const validateCurrentDatasetReport = document.querySelector("#textarea-validate-current-dataset");
-const currentDatasetReportBtn = document.getElementById("button-generate-report-current-ds");
-const validateLocalDSBtn = document.getElementById("button-validate-local-ds");
-const validateLocalDatasetReport = document.querySelector("#textarea-validate-local-dataset");
-const localDatasetReportBtn = document.getElementById("button-generate-report-local-ds");
-const validateLocalProgressBar = document.getElementById("div-indetermiate-bar-validate-local");
-const validateSODAProgressBar = document.getElementById("div-indetermiate-bar-validate-soda");
-
-// Generate dataset //
-// var window.subjectsTableData = [];
-// var window.samplesTableData = [];
-
-const newDatasetName = document.querySelector("#new-dataset-name");
-const manifestStatus = document.querySelector("#generate-manifest");
-
 // Manage datasets //
-
 window.sodaCopy = {};
-let datasetStructCopy = {};
-const bfUploadRefreshDatasetBtn = document.getElementById("button-upload-refresh-dataset-list");
 
 window.pathSubmitDataset = document.querySelector("#selected-local-dataset-submit");
 // const progressUploadBf = document.getElementById("div-progress-submit");
-window.progressBarUploadBf = document.getElementById("progress-bar-upload-bf");
+window.progressBarUploadBf = document.getElementById("progress-bar-upload-ps");
 window.datasetPermissionDiv = document.getElementById("div-permission-list-2");
 
 window.bfDatasetSubtitleCharCount = document.querySelector("#para-char-count-metadata");
@@ -1165,13 +767,9 @@ window.bfCurrentBannerImg = document.getElementById("current-banner-img");
 window.bfViewImportedImage = document.querySelector("#image-banner");
 window.guidedBfViewImportedImage = document.querySelector("#guided-image-banner");
 
-const bfSaveBannerImageBtn = document.getElementById("save-banner-image");
-const datasetBannerImageStatus = document.querySelector("#para-dataset-banner-image-status");
 window.formBannerHeight = document.getElementById("form-banner-height");
 window.guidedFormBannerHeight = document.getElementById("guided-form-banner-height");
 window.currentDatasetLicense = document.querySelector("#para-dataset-license-current");
-const bfListLicense = document.querySelector("#bf-license-list");
-const bfAddLicenseBtn = document.getElementById("button-add-license");
 
 // // Pennsieve dataset permission //
 window.currentDatasetPermission = document.querySelector("#para-dataset-permission-current");
@@ -1180,20 +778,12 @@ window.currentAddEditDatasetPermission = document.querySelector(
 );
 const bfListUsersPI = document.querySelector("#bf_list_users_pi");
 
-// const bfAddPermissionCurationTeamBtn = document.getElementById(
-//   "button-add-permission-curation-team"
-// );
-// const datasetPermissionStatusCurationTeam = document.querySelector(
-//   "#para-dataset-permission-status-curation-team"
-// );
 const bfListUsers = document.querySelector("#bf_list_users");
 const bfListTeams = document.querySelector("#bf_list_teams");
-const bfListRolesTeam = document.querySelector("#bf_list_roles_team");
-const bfAddPermissionTeamBtn = document.getElementById("button-add-permission-team");
 
 //Pennsieve dataset status
 window.bfCurrentDatasetStatusProgress = document.querySelector(
-  "#div-bf-current-dataset-status-progress"
+  "#div-ps-current-dataset-status-progress"
 );
 window.bfListDatasetStatus = document.querySelector("#bf_list_dataset_status");
 
@@ -1206,9 +796,6 @@ const bfWithdrawReviewDatasetBtn = document.querySelector("#btn-withdraw-review-
 // //////////////////////////////////
 // // Constant parameters
 // //////////////////////////////////
-// const blackColor = "#000";
-// const redColor = "#ff1a1a";
-// const sparcFolderNames = ["code", "derivative", "docs", "primary", "protocol", "source"];
 window.delayAnimation = 250;
 
 //////////////////////////////////
@@ -1216,22 +803,6 @@ window.delayAnimation = 250;
 //////////////////////////////////
 
 // Sidebar Navigation //
-let open = false;
-const openSidebar = (buttonElement) => {
-  if (!open) {
-    window.electron.ipcRenderer.send("resize-window", "up");
-    $("#main-nav").css("width", "250px");
-    $("#SODA-logo").css("display", "block");
-    $(buttonSidebarIcon).css("display", "none");
-    open = true;
-  } else {
-    window.electron.ipcRenderer.send("resize-window", "down");
-    $("#main-nav").css("width", "70px");
-    $("#SODA-logo").css("display", "block");
-    $(buttonSidebarIcon).css("display", "none");
-    open = false;
-  }
-};
 
 // Assign dragable area in the code to allow for dragging and selecting items//
 let drag_event_fired = false;
@@ -1242,13 +813,13 @@ let dragselect_area = new DragSelect({
 });
 
 // Assign the callback event for selecting items
-dragselect_area.subscribe("callback", ({ items, event }) => {
-  select_items(items, event, isDragging);
+dragselect_area.subscribe("callback", ({ items }) => {
+  select_items(items);
 });
 
 // Assign an additional event to allow for ctrl drag behaviour
-dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
-  select_items_ctrl(items, event, isDragging);
+dragselect_area.subscribe("dragstart", ({ event }) => {
+  select_items_ctrl(event);
 });
 
 // ///////////////////// Prepare Metadata Section ////////////////////////////////
@@ -1258,14 +829,10 @@ dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
 
 // /////// Save and load award and milestone info
 let metadataPath = window.path.join(window.homeDirectory, "SODA", "METADATA");
-// let awardFileName = "awards.json";
 let affiliationFileName = "affiliations.json";
-// let milestoneFileName = "milestones.json";
-// let protocolConfigFileName = "protocol-config.json";
+
 window.affiliationConfigPath = window.path.join(metadataPath, affiliationFileName);
-// let milestonePath = window.path.join(metadataPath, milestoneFileName);
 window.progressFilePath = window.path.join(window.homeDirectory, "SODA", "Progress");
-// let guidedProgressFilePath = window.path.join(window.homeDirectory, "SODA", "Guided-Progress");
 window.guidedManifestFilePath = window.path.join(
   window.homeDirectory,
   "SODA",
@@ -1288,21 +855,6 @@ if (window.process.platform() === "linux") {
     window.fs.removeSync(window.path.join(window.homeDirectory, "Soda"));
   }
 }
-
-const guidedSubmissionTagsInputManual = document.getElementById(
-  "guided-tagify-submission-milestone-tags-manual"
-);
-window.guidedSubmissionTagsTagifyManual = new Tagify(guidedSubmissionTagsInputManual, {
-  duplicates: false,
-  delimiters: null,
-  dropdown: {
-    classname: "color-blue",
-    maxItems: Infinity,
-    enabled: 0,
-    closeOnSelect: true,
-  },
-});
-window.createDragSort(window.guidedSubmissionTagsTagifyManual);
 
 // initiate Tagify input fields for Dataset description file
 var keywordInput = document.getElementById("ds-keywords");
@@ -1453,7 +1005,7 @@ window.electron.ipcRenderer.on(
   (event, dirpath, filename) => {
     if (dirpath.length > 0) {
       var destinationPath = window.path.join(dirpath[0], filename);
-      if (fs.existsSync(destinationPath)) {
+      if (window.fs.existsSync(destinationPath)) {
         var emessage =
           "File '" +
           filename +
@@ -1483,7 +1035,7 @@ window.electron.ipcRenderer.on(
               didOpen: () => {
                 Swal.showLoading();
               },
-            }).then((result) => {});
+            }).then(() => {});
             window.generateSubjectsFileHelper(false);
           }
         });
@@ -1516,7 +1068,7 @@ window.generateSubjectsFileHelper = async (uploadBFBoolean) => {
     }
 
     // Check if dataset is locked after running pre-flight checks
-    const isLocked = await api.isDatasetLocked(window.defaultBfAccount, bfdataset);
+    const isLocked = await api.isDatasetLocked(bfdataset);
 
     if (isLocked) {
       await Swal.fire({
@@ -1663,58 +1215,6 @@ window.generateSubjectsFileHelper = async (uploadBFBoolean) => {
   }
 };
 
-// generate samples file
-window.electron.ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) => {
-  if (dirpath.length > 0) {
-    var destinationPath = window.path.join(dirpath[0], filename);
-    if (fs.existsSync(destinationPath)) {
-      var emessage =
-        "File '" + filename + "' already exists in " + dirpath[0] + ". Do you want to replace it?";
-      Swal.fire({
-        icon: "warning",
-        title: "Metadata file already exists",
-        text: `${emessage}`,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        showConfirmButton: true,
-        showCancelButton: true,
-        cancelButtonText: "No",
-        confirmButtonText: "Yes",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          Swal.fire({
-            title: "Generating the samples.xlsx file",
-            html: "Please wait...",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            allowEscapeKey: false,
-            allowOutsideClick: false,
-            timerProgressBar: false,
-            didOpen: () => {
-              Swal.showLoading();
-            },
-          }).then((result) => {});
-          window.generateSamplesFileHelper(uploadBFBoolean);
-        }
-      });
-    } else {
-      Swal.fire({
-        title: "Generating the samples.xlsx file",
-        html: "Please wait...",
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        allowEscapeKey: false,
-        allowOutsideClick: false,
-        timerProgressBar: false,
-        didOpen: () => {
-          Swal.showLoading();
-        },
-      }).then((result) => {});
-      window.generateSamplesFileHelper(uploadBFBoolean);
-    }
-  }
-});
-
 window.generateSamplesFileHelper = async (uploadBFBoolean) => {
   let bfDataset = $("#bf_dataset_load_samples").text().trim();
   if (uploadBFBoolean) {
@@ -1725,7 +1225,7 @@ window.generateSamplesFileHelper = async (uploadBFBoolean) => {
     }
 
     // Check if dataset is locked after running pre-flight checks
-    const isLocked = await api.isDatasetLocked(window.defaultBfAccount, bfDataset);
+    const isLocked = await api.isDatasetLocked(bfDataset);
     if (isLocked) {
       await Swal.fire({
         icon: "info",
@@ -1791,7 +1291,7 @@ window.generateSamplesFileHelper = async (uploadBFBoolean) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then(() => {});
 
   try {
     let samplesFileResponse = await client.post(
@@ -2124,81 +1624,11 @@ const specimenType = [
   "slide",
   "whole mount",
 ];
-function createSpecimenTypeAutocomplete(id) {
-  var autoCompleteJS3 = new autoComplete({
-    selector: "#" + id,
-    data: {
-      cache: true,
-      src: specimenType,
-    },
-    onSelection: (feedback) => {
-      var selection = feedback.selection.value;
-      document.querySelector("#" + id).value = selection;
-    },
-    trigger: {
-      event: ["input", "focus"],
-      // condition: () => true
-    },
-    resultItem: {
-      destination: "#" + id,
-      highlight: {
-        render: true,
-      },
-    },
-    resultsList: {
-      // id: listID,
-      maxResults: 5,
-    },
-  });
-}
 
 //////////////// Dataset description file ///////////////////////
 //////////////// //////////////// //////////////// ////////////////
 
 //// get datasets and append that to option list for parent datasets
-function getParentDatasets() {
-  var parentDatasets = [];
-  for (var i = 0; i < window.datasetList.length; i++) {
-    parentDatasets.push(window.datasetList[i].name);
-  }
-  return parentDatasets;
-}
-
-window.changeAwardInputDsDescription = () => {
-  if (dsContributorArrayLast1) {
-    window.removeOptions(dsContributorArrayLast1);
-  }
-  if (dsContributorArrayFirst1) {
-    window.removeOptions(dsContributorArrayFirst1);
-    window.addOption(dsContributorArrayFirst1, "Select an option", "Select an option");
-  }
-
-  window.currentContributorsLastNames = [];
-  currentContributorsFirstNames = [];
-  window.globalContributorNameObject = {};
-
-  /// delete old table
-  $("#table-current-contributors").find("tr").slice(1, -1).remove();
-  for (
-    var i = 0;
-    i < document.getElementById("table-current-contributors").rows[1].cells.length;
-    i++
-  ) {
-    $($($("#table-current-contributors").find("tr")[1].cells[i]).find("input")[0]).val("");
-    $($($("#table-current-contributors").find("tr")[1].cells[i]).find("textarea")[0]).val("");
-  }
-
-  var selectID = document.getElementById(
-    $($($("#table-current-contributors").find("tr")[1].cells[1]).find("select")[0]).prop("id")
-  );
-  if (selectID) {
-    window.removeOptions(selectID);
-    $($($("#table-current-contributors").find("tr")[1].cells[1]).find("select")[0]).prop(
-      "disabled",
-      true
-    );
-  }
-};
 
 // on change event when users choose a contributor's last name
 window.onchangeLastNames = () => {
@@ -2612,31 +2042,14 @@ window.displaySIze = 1000;
 // //////////////////////////////////// Prepare dataset UI ////////////////////////////////////////////
 // /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/// Add all BF accounts to the dropdown list, and then choose by default one option ('global' account)
+/// Add all ps accounts to the dropdown list, and then choose by default one option ('global' account)
 window.curateDatasetDropdown = document.getElementById("curatebfdatasetlist");
 window.curateOrganizationDropdown = document.getElementById("curatebforganizationlist");
 
-//// De-populate dataset dropdowns to clear options for CURATE
-function populateDatasetDropdownCurate(datasetDropdown, datasetList) {
-  window.removeOptions(datasetDropdown);
-
-  /// making the first option: "Select" disabled
-  window.addOption(datasetDropdown, "Select dataset", "Select dataset");
-  var options = datasetDropdown.getElementsByTagName("option");
-  options[0].disabled = true;
-
-  for (let myitem of datasetList) {
-    var myitemselect = myitem.name;
-    var option = document.createElement("option");
-    option.textContent = myitemselect;
-    option.value = myitemselect;
-    datasetDropdown.appendChild(option);
-  }
-}
 // ///////////////////////////////END OF NEW CURATE UI CODE ADAPTATION ///////////////////////////////////////////////////
 
 const metadataDatasetlistChange = () => {
-  $("#bf-dataset-subtitle").val("");
+  $("#ps-dataset-subtitle").val("");
   $("#para-dataset-banner-image-status").html("");
   window.showCurrentSubtitle();
   window.showCurrentDescription();
@@ -2652,7 +2065,7 @@ const permissionDatasetlistChange = () => {
 
 const datasetStatusListChange = () => {
   $(window.bfCurrentDatasetStatusProgress).css("visibility", "visible");
-  $("#bf-dataset-status-spinner").css("display", "block");
+  $("#ps-dataset-status-spinner").css("display", "block");
   window.showCurrentDatasetStatus();
 };
 
@@ -2760,7 +2173,7 @@ const setupPublicationOptionsPopover = () => {
   oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
 
   // initialize the calendar
-  const instance = new DatePicker(container, {
+  new DatePicker(container, {
     input: {
       element: target,
     },
@@ -2793,413 +2206,8 @@ const setupPublicationOptionsPopover = () => {
   });
 };
 
-window.submitReviewDatasetCheck = async (res, curationMode) => {
-  let reviewstatus = res["review_request_status"];
-  let publishingStatus = res["publishing_status"];
-  if (res["publishing_status"] === "PUBLISH_IN_PROGRESS") {
-    Swal.fire({
-      icon: "error",
-      title: "Your dataset is currently being published. Please wait until it is completed.",
-      text: "Your dataset is already under review. Please wait until the Publishers within your organization make a decision.",
-      confirmButtonText: "Ok",
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    });
-  } else if (res["review_request_status"] === "requested") {
-    Swal.fire({
-      icon: "error",
-      title: "Cannot submit the dataset at this time!",
-      text: "Your dataset is already submitted. Please wait until the Curation Team within your organization make a decision.",
-      confirmButtonText: "Ok",
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    });
-  } else if (res["publishing_status"] === "PUBLISH_SUCCEEDED") {
-    // embargo release date represents the time a dataset that has been reviewed for publication becomes public
-    // user sets this value in the UI otherwise it stays an empty string
-    let embargoReleaseDate = "";
-
-    // confirm with the user that they will submit a dataset and check if they want to set an embargo date
-    let userResponse = await Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      icon: "warning",
-      confirmButtonText: "Submit",
-      denyButtonText: "Cancel",
-      showDenyButton: true,
-      title: `Submit your dataset for review`,
-      reverseButtons: window.reverseSwalButtons,
-      text: "",
-      html: `
-                <div style="display: flex; flex-direction: column;  font-size: 15px;">
-                <p style="text-align:left">This dataset has already been published. This action will submit the dataset again for review to the SPARC Curation Team. While under review, the dataset will become locked until it has either been approved or rejected for publication. If accepted a new version of your dataset will be published.</p>
-                <div style="text-align: left; margin-bottom: 5px; display: flex; ">
-                  <input type="radio" name="publishing-options" value="immediate" style=" border: 0px; width: 18px; height: 18px;" checked>
-                  <div style="margin-left: 5px;"><label for="immediate"> Make this dataset available to the public immediately after publishing</label></div>
-                </div>
-                <div style="text-align: left; margin-bottom: 5px; display: flex; ">
-                  <input type="radio" id="embargo-date-check" name="publishing-options" value="embargo-date-check" style=" border: 0px; width: 22px; height: 22px;">
-                  <div style="margin-left: 5px;"><label for="embargo-date-check" style="text-align:left">Place this dataset under embargo so that it is not made public immediately after publishing</label></div>
-                </div>
-                <div style="visibility:hidden; flex-direction: column;  margin-top: 10px;" id="calendar-wrapper">
-                <label style="margin-bottom: 5px; font-size: 13px;">When would you like this dataset to become publicly available?<label>
-                <div class="tui-datepicker-input tui-datetime-input tui-has-focus" style="margin-top: 5px;">
-
-                    <input
-                      type="text"
-                      id="tui-date-picker-target"
-                      aria-label="Date-Time"
-                      />
-
-                      <span class="tui-ico-date"></span>
-                    </div>
-                    <div
-                    id="tui-date-picker-container"
-                    style="margin-top: -1px; margin-left: 60px;"
-                    ></div>
-                </div>
-              </div>
-            `,
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-      willOpen: () => {
-        setupPublicationOptionsPopover();
-      },
-      willClose: () => {
-        // check if the embargo radio button is selected
-        const checkedRadioButton = $("input:radio[id ='confirm-to-awknowledge']:checked").val();
-
-        if (checkedRadioButton === "embargo-date-check") {
-          // set the embargoDate variable if so
-          embargoReleaseDate = $("#tui-date-picker-target").val();
-        }
-      },
-    });
-
-    // check if the user cancelled
-    if (!userResponse.isConfirmed) {
-      // do not submit the dataset
-      return;
-    }
-    // submit the dataset for review with the given embargoReleaseDate
-    await window.submitReviewDataset(embargoReleaseDate, curationMode);
-  } else {
-    // status is NOT_PUBLISHED
-    // embargo release date represents the time a dataset that has been reviewed for publication becomes public
-    // user sets this value in the UI otherwise it stays an empty string
-    let embargoReleaseDate = "";
-
-    // confirm with the user that they will submit a dataset and check if they want to set an embargo date
-    let userResponse = await Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      confirmButtonText: "Submit",
-      denyButtonText: "Cancel",
-      showDenyButton: true,
-      title: `Submit your dataset for review`,
-      reverseButtons: window.reverseSwalButtons,
-      html: `
-              <div style="display: flex; flex-direction: column;  font-size: 15px;">
-                <p style="text-align:left">Your dataset will be submitted for review to the SPARC Curation Team. While under review, the dataset will become locked until it has either been approved or rejected for publication. </p>
-                <div style="text-align: left; margin-bottom: 5px; display: flex; ">
-                  <input type="checkbox" id="confirm-to-awknowledge" name="publishing-options" value="immediate" style=" border: 0px; width: 18px; height: 18px;">
-                  <div style="margin-left: 5px;"><label for="immediate">I understand that submitting to the Curation Team will lock this dataset</label></div>
-                </div>
-                <div style="text-align: left; margin-bottom: 5px; display: flex; ">
-                  <input type="checkbox" id="embargo-date-check" name="publishing-options" value="embargo-date-check" style=" border: 0px; width: 22px; height: 22px;">
-                  <div style="margin-left: 5px;"><label for="embargo-date-check" style="text-align:left">Place this dataset under embargo so that it is not made public immediately after publishing.</label> <br> <a href="https://docs.pennsieve.io/docs/what-is-an-embargoed-dataset" target="_blank">What is this?</a></div>
-                </div>
-                <div style="visibility:hidden; flex-direction: column;  margin-top: 10px;" id="calendar-wrapper">
-                <label style="margin-bottom: 5px; font-size: 13px;">When would you like this dataset to become publicly available?<label>
-                <div class="tui-datepicker-input tui-datetime-input tui-has-focus" style="margin-top: 5px;">
-
-                    <input
-                      type="text"
-                      id="tui-date-picker-target"
-                      aria-label="Date-Time"
-                      />
-
-                      <span class="tui-ico-date"></span>
-                    </div>
-                    <div
-                    id="tui-date-picker-container"
-                    style="margin-top: -1px; margin-left: 60px;"
-                    ></div>
-                </div>
-              </div>
-            `,
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-      willOpen: () => {
-        setupPublicationOptionsPopover();
-      },
-      didOpen: () => {
-        // Add an event listener to id confirm-to-awknowledge
-        document.querySelector(".swal2-confirm").disabled = true;
-        document.getElementById("confirm-to-awknowledge").addEventListener("click", () => {
-          // if the checkbox is checked, enable the submit button
-          if (document.getElementById("confirm-to-awknowledge").checked) {
-            document.querySelector(".swal2-confirm").disabled = false;
-          } else {
-            // if the checkbox is not checked, disable the submit button
-            document.querySelector(".swal2-confirm").disabled = true;
-          }
-        });
-      },
-      willClose: () => {
-        // check if the embargo checkbox button is selected or not
-        // const checkedRadioButton = $("input:checkbox[name ='publishing-options']:checked").val();
-
-        // const checkedRadioButton = $("input:checkbox[name ='publishing-options']:checked");
-
-        if (document.getElementById("embargo-date-check").checked) {
-          // set the embargoDate variable if so
-          embargoReleaseDate = $("#tui-date-picker-target").val();
-        }
-      },
-    });
-
-    // check if the user cancelled
-    if (!userResponse.isConfirmed) {
-      // do not submit the dataset
-      return [false, ""];
-    }
-
-    if (userResponse.isConfirmed) {
-      return [true, embargoReleaseDate];
-    }
-  }
-};
-
-// window.electron.ipcRenderer.on("warning-publish-dataset-selection", (event, index) => {
-//   if (index === 0) {
-//     window.submitReviewDataset();
-//   }
-//   $("#submit_prepublishing_review-spinner").hide();
-// });
-
-// window.electron.ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
-//   if (index === 0) {
-//     window.submitReviewDataset();
-//   }
-//   $("#submit_prepublishing_review-spinner").hide();
-// });
-
-// Go about removing the feature and see how it effects dataset submissions
-window.submitReviewDataset = async (embargoReleaseDate, curationMode) => {
-  let currentAccount = window.defaultBfAccount;
-  let currentDataset = window.defaultBfDataset;
-
-  if (curationMode === "guided") {
-    currentAccount = window.sodaJSONObj["bf-account-selected"]["account-name"];
-    currentDataset = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-  } else {
-    $("#pre-publishing-continue-btn").removeClass("loading");
-    $("#pre-publishing-continue-btn").disabled = false;
-  }
-
-  // show a SWAL loading message until the submit for prepublishing flow is successful or fails
-  Swal.fire({
-    title: "Submitting dataset to Curation Team",
-    html: "Please wait...",
-    // timer: 5000,
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: false,
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  });
-
-  try {
-    await api.submitDatasetForPublication(
-      currentAccount,
-      currentDataset,
-      embargoReleaseDate,
-      embargoReleaseDate === "" ? "publication" : "embargo"
-    );
-  } catch (error) {
-    clientError(error);
-    window.electron.ipcRenderer.send(
-      "track-kombucha",
-      kombuchaEnums.Category.DISSEMINATE_DATASETS,
-      kombuchaEnums.Action.SHARE_WITH_CURATION_TEAM,
-      kombuchaEnums.Label.SUBMISSION,
-      kombuchaEnums.Status.FAIL,
-      {
-        value: 1,
-        dataset_id: window.defaultBfDatasetId,
-        dataset_int_id: window.defaultBfDatasetIntId,
-      }
-    );
-
-    // alert the user of an error
-    Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      confirmButtonText: "Ok",
-      title: `Could not submit your dataset to Curation Team`,
-      icon: "error",
-      reverseButtons: window.reverseSwalButtons,
-      text: userErrorMessage(error),
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    });
-
-    // stop execution
-    return;
-  }
-
-  // update the publishing status UI element
-  await window.showPublishingStatus("noClear", curationMode);
-
-  // track success
-  window.electron.ipcRenderer.send(
-    "track-kombucha",
-    kombuchaEnums.Category.DISSEMINATE_DATASETS,
-    kombuchaEnums.Action.SHARE_WITH_CURATION_TEAM,
-    kombuchaEnums.Label.SUBMISSION,
-    kombuchaEnums.Status.SUCCESS,
-    {
-      value: 1,
-      dataset_id: window.defaultBfDatasetId,
-      dataset_int_id: window.defaultBfDatasetIntId,
-    }
-  );
-
-  // alert the user the submission was successful
-  Swal.fire({
-    backdrop: "rgba(0,0,0, 0.4)",
-    heightAuto: false,
-    confirmButtonText: "Ok",
-    title: `Dataset has been submitted for review to the SPARC Curation Team!`,
-    icon: "success",
-    reverseButtons: window.reverseSwalButtons,
-    showClass: {
-      popup: "animate__animated animate__zoomIn animate__faster",
-    },
-    hideClass: {
-      popup: "animate__animated animate__zoomOut animate__faster",
-    },
-  });
-
-  if (curationMode != "guided") {
-    await window.resetffmPrepublishingUI();
-  } else {
-    // Update the UI again and hide the flow
-    $("#guided--prepublishing-checklist-container").addClass("hidden");
-    $("#guided-button-share-dataset-with-curation-team").removeClass("hidden");
-    $("#guided-button-share-dataset-with-curation-team").removeClass("loading");
-    $("#guided-button-share-dataset-with-curation-team").disabled = false;
-
-    window.guidedSetCurationTeamUI();
-  }
-};
-
-// // //Withdraw dataset from review
-// const withdrawDatasetSubmission = async (curationMode = "") => {
-//   // show a SWAL loading message until the submit for prepublishing flow is successful or fails
-
-//   if (curationMode != "guided") {
-//     document.getElementById("btn-withdraw-review-dataset").disabled = true;
-//     $("#btn-withdraw-review-dataset").addClass("loading");
-//     $("#btn-withdraw-review-dataset").addClass("text-transparent");
-
-//     const { value: withdraw } = await Swal.fire({
-//       title: "Withdraw this dataset from review?",
-//       icon: "warning",
-//       showDenyButton: true,
-//       confirmButtonText: "Yes",
-//       denyButtonText: "No",
-//       allowEscapeKey: false,
-//       allowOutsideClick: false,
-//       heightAuto: false,
-//       backdrop: "rgba(0,0,0, 0.4)",
-//       timerProgressBar: false,
-//     });
-
-//     if (!withdraw) {
-//       document.getElementById("btn-withdraw-review-dataset").disabled = false;
-//       $("#btn-withdraw-review-dataset").removeClass("loading");
-//       $("#btn-withdraw-review-dataset").removeClass("text-transparent");
-//       return false;
-//     }
-//   }
-
-//   // get the publishing status of the currently selected dataset
-//   // then check if it can be withdrawn, then withdraw it
-//   // catch any uncaught errors at this level (aka greacefully catch any exceptions to alert the user we cannot withdraw their dataset)
-//   let status = await window.showPublishingStatus(withdrawDatasetCheck, curationMode).catch((error) => {
-//     window.log.error(error);
-//     console.error(error);
-//     Swal.fire({
-//       title: "Could not withdraw dataset from publication!",
-//       text: `${userErrorMessage(error)}`,
-//       heightAuto: false,
-//       icon: "error",
-//       confirmButtonText: "Ok",
-//       backdrop: "rgba(0,0,0, 0.4)",
-//       confirmButtonText: "Ok",
-//       showClass: {
-//         popup: "animate__animated animate__fadeInDown animate__faster",
-//       },
-//       hideClass: {
-//         popup: "animate__animated animate__fadeOutUp animate__faster",
-//       },
-//     });
-
-//     // track the error for analysis
-//     window.logGeneralOperationsForAnalytics(
-//       "Error",
-//       window.DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
-//       window.AnalyticsGranularity.ALL_LEVELS,
-//       ["Withdraw dataset"]
-//     );
-//     // This helps signal guided mode to update the UI
-//     if (curationMode === "guided") {
-//       return false;
-//     }
-//   });
-
-//   // This helps signal guided mode to update the UI
-//   if (curationMode === "guided") {
-//     return true;
-//   } else {
-//     document.getElementById("btn-withdraw-review-dataset").disabled = false;
-//     $("#btn-withdraw-review-dataset").removeClass("loading");
-//     $("#btn-withdraw-review-dataset").removeClass("text-transparent");
-//   }
-// };
-
 // // TODO: Dorian -> Remove this feature as we don't allow withdraws anymore
 const withdrawDatasetCheck = async (res, curationMode) => {
-  let reviewstatus = res["publishing_status"];
   let requestStatus = res["review_request_status"];
   if (requestStatus != "requested") {
     Swal.fire({
@@ -3226,18 +2234,18 @@ const withdrawDatasetCheck = async (res, curationMode) => {
 const withdrawReviewDataset = async (curationMode) => {
   // bfWithdrawReviewDatasetBtn.disabled = true;
 
-  let currentAccount = $("#current-bf-account").text();
-  let currentDataset = $(".bf-dataset-span")
+  let currentAccount = $("#current-ps-account").text();
+  let currentDataset = $(".ps-dataset-span")
     .html()
     .replace(/^\s+|\s+$/g, "");
 
   if (curationMode == "guided") {
-    currentAccount = window.sodaJSONObj["bf-account-selected"]["account-name"];
-    currentDataset = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+    currentAccount = window.sodaJSONObj["ps-account-selected"]["account-name"];
+    currentDataset = window.sodaJSONObj["ps-dataset-selected"]["dataset-name"];
   }
 
   try {
-    await api.withdrawDatasetReviewSubmission(currentDataset, currentAccount);
+    await api.withdrawDatasetReviewSubmission(currentDataset);
 
     window.logGeneralOperationsForAnalytics(
       "Success",
@@ -3392,7 +2400,7 @@ const refreshBfTeamsList = async (teamList) => {
         );
         teamsThatCanBeGrantedPermissions = window.getSortedTeamStrings(teamsReq.data.teams);
       } catch (error) {
-        const emessage = userErrorMessage(error);
+        clientError(error);
       }
 
       // The window.removeOptions() wasn't working in some instances (creating a double list) so second removal for everything but the first element.
@@ -3439,7 +2447,6 @@ window.refreshDatasetList = () => {
   });
 
   populateDatasetDropdowns(filteredDatasets);
-  // parentDSTagify.settings.whitelist = getParentDatasets();
   return filteredDatasets.length;
 };
 
@@ -3456,7 +2463,6 @@ window.refreshOrganizationList = () => {
 
   populateOrganizationDropdowns(window.organizationList);
 
-  // parentDSTagify.settings.whitelist = getParentDatasets();
   return window.organizationList.length;
 };
 
@@ -3549,10 +2555,10 @@ window.loadDefaultAccount = async () => {
 
     // remove the N:organization from the account name
 
-    $("#current-bf-account").text(userEmail);
-    $("#current-bf-account-generate").text(userEmail);
+    $("#current-ps-account").text(userEmail);
+    $("#current-ps-account-generate").text(userEmail);
     $("#create_empty_dataset_BF_account_span").text(userEmail);
-    $(".bf-account-span").text(userEmail);
+    $(".ps-account-span").text(userEmail);
 
     showHideDropdownButtons("account", "show");
     refreshBfUsersList();
@@ -3561,7 +2567,6 @@ window.loadDefaultAccount = async () => {
 };
 
 const showPrePublishingPageElements = () => {
-  let selectedBfAccount = window.defaultBfAccount;
   let selectedBfDataset = window.defaultBfDataset;
 
   if (selectedBfDataset === "Select dataset") {
@@ -3577,131 +2582,78 @@ const showPrePublishingPageElements = () => {
   $(".pre-publishing-continue-container").hide();
 };
 
-// The callback argument is used to determine whether or not to publish or unpublish the dataset
-// If callback is empty then the dataset status will only be fetched and displayed
+// The callback argument determines whether to publish/unpublish the dataset.
+// If callback is empty, only the dataset status will be fetched and displayed.
 window.showPublishingStatus = async (callback, curationMode = "") => {
-  return new Promise(async function (resolve, reject) {
-    if (callback == "noClear") {
-      let nothing;
-    }
+  let curationModeID = "";
+  let currentAccount = $("#current-ps-account").text();
+  let currentDataset = $(".ps-dataset-span").html().trim();
 
-    let curationModeID = "";
-    let currentAccount = $("#current-bf-account").text();
-    let currentDataset = $(".bf-dataset-span")
-      .html()
-      .replace(/^\s+|\s+$/g, "");
-
-    if (curationMode === "guided") {
-      curationModeID = "guided--";
-      currentAccount = window.sodaJSONObj["bf-account-selected"]["account-name"];
-      currentDataset = window.sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-    }
-
-    if (currentDataset === "None") {
-      if (curationMode === "" || curationMode === "freeform") {
-        $("#button-refresh-publishing-status").addClass("hidden");
-        $("#curation-dataset-status-loading").addClass("hidden");
-      }
-      resolve();
-    } else {
-      try {
-        let get_publishing_status = await client.get(
-          `/disseminate_datasets/datasets/${currentDataset}/publishing_status`,
-          {
-            params: {
-              selected_account: currentAccount,
-            },
-          }
-        );
-        let res = get_publishing_status.data;
-
-        try {
-          //update the dataset's publication status and display
-          //onscreen for the user under their dataset name
-          $(`#${curationModeID}para-review-dataset-info-disseminate`).text(
-            publishStatusOutputConversion(res)
-          );
-
-          if (callback === window.submitReviewDatasetCheck || callback === withdrawDatasetCheck) {
-            return resolve(callback(res, curationMode));
-          }
-          if (curationMode === "" || curationMode === "freeform") {
-            $("#submit_prepublishing_review-question-2").removeClass("hidden");
-            $("#curation-dataset-status-loading").addClass("hidden");
-            // $("#button-refresh-publishing-status").removeClass("hidden");
-            $("#button-refresh-publishing-status").removeClass("fa-spin");
-          }
-          resolve();
-        } catch (error) {
-          // an exception will be caught and rejected
-          // if the executor function is not ready before an exception is found it is uncaught without the try catch
-          reject(error);
-        }
-      } catch (error) {
-        clientError(error);
-
-        Swal.fire({
-          title: "Could not get your publishing status!",
-          text: userErrorMessage(error),
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          confirmButtonText: "Ok",
-          reverseButtons: window.reverseSwalButtons,
-          showClass: {
-            popup: "animate__animated animate__fadeInDown animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__fadeOutUp animate__faster",
-          },
-        });
-
-        window.logGeneralOperationsForAnalytics(
-          "Error",
-          window.DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
-          window.AnalyticsGranularity.ALL_LEVELS,
-          ["Show publishing status"]
-        );
-
-        resolve();
-      }
-    }
-  });
-};
-
-const publishStatusOutputConversion = (res) => {
-  var reviewStatus = res["review_request_status"];
-  var publishStatus = res["publishing_status"];
-
-  var outputMessage = "";
-  if (reviewStatus === "draft" || reviewStatus === "cancelled") {
-    outputMessage += "Dataset is not under review currently";
-  } else if (reviewStatus === "requested") {
-    outputMessage += "Dataset is currently under review";
-  } else if (reviewStatus === "rejected") {
-    outputMessage += "Dataset has been rejected by your Publishing Team and may require revision";
-  } else if (reviewStatus === "accepted") {
-    outputMessage += "Dataset has been accepted for publication by your Publishing Team";
+  if (curationMode === "guided") {
+    curationModeID = "guided--";
+    currentAccount = window.sodaJSONObj["ps-account-selected"]["account-name"];
+    currentDataset = window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
   }
 
-  return outputMessage;
-};
+  if (currentDataset === "None") {
+    if (curationMode === "" || curationMode === "freeform") {
+      $("#button-refresh-publishing-status").addClass("hidden");
+      $("#curation-dataset-status-loading").addClass("hidden");
+    }
+    return;
+  }
+  try {
+    const { data: res } = await client.get(
+      `/disseminate_datasets/datasets/${currentDataset}/publishing_status`,
+      { params: { selected_account: currentAccount } }
+    );
+    // Inline publishStatusOutputConversion logic here
+    var reviewStatus = res["review_request_status"];
+    var outputMessage = "";
+    if (reviewStatus === "draft" || reviewStatus === "cancelled") {
+      outputMessage = "Dataset is not under review currently";
+    } else if (reviewStatus === "requested") {
+      outputMessage = "Dataset is currently under review";
+    } else if (reviewStatus === "rejected") {
+      outputMessage = "Dataset has been rejected by your Publishing Team and may require revision";
+    } else if (reviewStatus === "accepted") {
+      outputMessage = "Dataset has been accepted for publication by your Publishing Team";
+    }
 
-// const allowedMedataFiles = [
-//   "submission.xlsx",
-//   "submission.csv",
-//   "submission.json",
-//   "dataset_description.xlsx",
-//   "dataset_description.csv",
-//   "dataset_description.json",
-//   "subjects.xlsx",
-//   "subjects.csv",
-//   "subjects.json",
-//   "samples.xlsx",
-//   "samples.csv",
-//   "samples.json",
-//   "README.txt",
-//   "CHANGES.txt",
-// ];
+    // Update the dataset's publication status onscreen for the user
+    $(`#${curationModeID}para-review-dataset-info-disseminate`).text(outputMessage);
+
+    if (callback === window.submitReviewDatasetCheck || callback === withdrawDatasetCheck) {
+      return callback(res, curationMode);
+    }
+
+    if (curationMode === "" || curationMode === "freeform") {
+      $("#submit_prepublishing_review-question-2").removeClass("hidden");
+      $("#curation-dataset-status-loading").addClass("hidden");
+      $("#button-refresh-publishing-status").removeClass("fa-spin");
+    }
+  } catch (error) {
+    clientError(error);
+
+    Swal.fire({
+      title: "Could not get your publishing status!",
+      text: userErrorMessage(error),
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Ok",
+      reverseButtons: window.reverseSwalButtons,
+      showClass: { popup: "animate__animated animate__fadeInDown animate__faster" },
+      hideClass: { popup: "animate__animated animate__fadeOutUp animate__faster" },
+    });
+
+    window.logGeneralOperationsForAnalytics(
+      "Error",
+      window.DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
+      window.AnalyticsGranularity.ALL_LEVELS,
+      ["Show publishing status"]
+    );
+  }
+};
 
 // //////////////////////////////////////////////////////////////////////////////////////////
 // //////////////////////////////////////////////////////////////////////////////////////////
@@ -3709,23 +2661,7 @@ const publishStatusOutputConversion = (res) => {
 // //////////////////////////////////////////////////////////////////////////////////////////
 // //////////////////////////////////////////////////////////////////////////////////////////
 
-// var backFolder = [];
-// var forwardFolder = [];
-
 window.highLevelFolders = ["code", "derivative", "docs", "source", "primary", "protocol"];
-var highLevelFolderToolTip = {
-  code: "<b>code</b>: This folder contains all the source code used in the study (e.g., Python, MATLAB, etc.)",
-  derivative:
-    "<b>derivative</b>: This folder contains data files derived from raw data (e.g., processed image stacks that are annotated via the MBF tools, segmentation files, smoothed overlays of current and voltage that demonstrate a particular effect, etc.)",
-  docs: "<b>docs</b>: This folder contains all other supporting files that don't belong to any of the other folders (e.g., a representative image for the dataset, figures, etc.)",
-  source:
-    "<b>source</b>: This folder contains very raw data i.e. raw or untouched files from an experiment. For example, this folder may include the “truly” raw k-space data for an MR image that has not yet been reconstructed (the reconstructed DICOM or NIFTI files, for example, would be found within the primary folder). Another example is the unreconstructed images for a microscopy dataset.",
-  primary:
-    "<b>primary</b>: This folder contains all folders and files for experimental subjects and/or samples. All subjects will have a unique folder with a standardized name the same as the names or IDs as referenced in the subjects metadata file. Within each subject folder, the experimenter may choose to include an optional “session” folder if the subject took part in multiple experiments/ trials/ sessions. The resulting data is contained within data type-specific (Datatype) folders within the subject (or session) folders. The SPARC program’s Data Sharing Committee defines 'raw' (primary) data as one of the types of data that should be shared. This covers minimally processed raw data, e.g. time-series data, tabular data, clinical imaging data, genomic, metabolomic, microscopy data, which can also be included within their own folders.",
-  protocol:
-    "<b>protocol</b>: This folder contains supplementary files to accompany the experimental protocols submitted to Protocols.io. Please note that this is not a substitution for the experimental protocol which must be submitted to <b><a target='_blank' href='https://www.protocols.io/groups/sparc'> Protocols.io/sparc </a></b>.",
-};
-
 window.sodaJSONObj = {};
 
 /// back button Curate
@@ -3746,7 +2682,7 @@ organizeDSbackButton.addEventListener("click", function () {
     // construct UI with files and folders
     $("#items").empty();
     window.already_created_elem = [];
-    let items = window.loadFileFolder(myPath); //array -
+    window.loadFileFolder(myPath); //array -
     //we have some items to display
     window.listItems(myPath, "#items", 500, true);
     window.organizeLandingUIEffect();
@@ -3791,7 +2727,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
           let val = $("#add-new-folder-input").val();
           const folderNameIsValid = window.evaluateStringAgainstSdsRequirements(
             val,
-            "folder-and-file-name-is-valid"
+            "folder-or-file-name-is-valid"
           );
 
           if (folderNameIsValid) {
@@ -4008,15 +2944,6 @@ const showDetailsFile = () => {
   $(".div-display-details.file").toggleClass("show");
 };
 
-const pasteFromClipboard = (event, target_element) => {
-  event.preventDefault();
-  let key = Clipboard.readText();
-
-  if (target_element == "bootbox-api-key" || target_element == "bootbox-api-secret") {
-    $(`#${target_element}`).val(key);
-  }
-};
-
 var bfAddAccountBootboxMessage = `<form>
     <div class="form-group row" style="justify-content: center; margin-top: .5rem; margin-bottom: 2rem;">
       <div style="display: flex; width: 100%">
@@ -4037,77 +2964,6 @@ var bfAddAccountBootboxMessage = `<form>
 
 var bfaddaccountTitle = `<h3 style="text-align:center">Connect your Pennsieve account using an API key</h3>`;
 
-const initializePennsieveAccountList = async () => {
-  // Clear the bfAccountOptions array
-  bfAccountOptions.length = 0;
-  window.bfAccountOptionsStatus = "";
-
-  if (!hasConnectedAccountWithPennsieve()) {
-    window.bfAccountOptionsStatus = "No account connected";
-    return;
-  }
-
-  try {
-    const res = await client.get("manage_datasets/bf_account_list");
-    const accounts = res.data;
-    for (const myitem in accounts) {
-      bfAccountOptions[accounts[myitem]] = accounts[myitem];
-    }
-    await setDefaultPennsieveAccountUI();
-  } catch (error) {
-    window.bfAccountOptionsStatus = error;
-  }
-};
-
-const setDefaultPennsieveAccountUI = async () => {
-  try {
-    const bfDefaultAccRes = await client.get("manage_datasets/bf_default_account_load");
-    const accounts = bfDefaultAccRes.data.defaultAccounts;
-
-    if (accounts.length === 0) {
-      return;
-    }
-
-    const defaultAccount = accounts[0];
-    window.defaultBfAccount = defaultAccount;
-
-    try {
-      const bfAccountDetailsRes = await client.get("/manage_datasets/bf_account_details", {
-        params: { selected_account: defaultAccount },
-      });
-
-      const { email, organization } = bfAccountDetailsRes.data;
-
-      $("#current-bf-account").text(email);
-      $("#current-bf-account-generate").text(email);
-      $("#create_empty_dataset_BF_account_span").text(email);
-      $(".bf-account-span").text(email);
-      $(".bf-organization-span").text(organization);
-
-      $("#div-bf-account-load-progress").hide();
-      showHideDropdownButtons("account", "show");
-      window.refreshDatasetList();
-      updateDatasetList();
-      window.updateOrganizationList();
-    } catch (error) {
-      clientError(error);
-
-      $("#para-account-detail-curate").text("None");
-      $("#current-bf-account").text("None");
-      $("#current-bf-account-generate").text("None");
-      $("#create_empty_dataset_BF_account_span").text("None");
-      $(".bf-account-span").text("None");
-      $("#para-account-detail-curate-generate").text("None");
-      $("#para_create_empty_dataset_BF_account").text("None");
-      $(".bf-account-details-span").text("None");
-
-      $("#div-bf-account-load-progress").hide();
-      showHideDropdownButtons("account", "hide");
-    }
-  } catch (error) {
-    clientError(error);
-  }
-};
 ////// function to trigger action for each context menu option
 window.hideMenu = (category, menu1, menu2, menu3) => {
   if (category === "folder") {
@@ -4124,101 +2980,6 @@ window.hideMenu = (category, menu1, menu2, menu3) => {
     menu3.style.left = "-210%";
   }
 };
-
-const changeStepOrganize = (step) => {
-  if (step.id === "button-organize-prev") {
-    document.getElementById("div-step-1-organize").style.display = "block";
-    document.getElementById("div-step-2-organize").style.display = "none";
-    document.getElementById("dash-title").innerHTML =
-      "Organize dataset<i class='fas fa-caret-right' style='margin-left: 10px; margin-right: 10px'></i>High-level folders";
-    organizeNextStepBtn.style.display = "block";
-    organizePrevStepBtn.style.display = "none";
-  } else {
-    document.getElementById("div-step-1-organize").style.display = "none";
-    document.getElementById("div-step-2-organize").style.display = "block";
-    document.getElementById("dash-title").innerHTML =
-      "Organize dataset<i class='fas fa-caret-right' style='margin-left: 10px; margin-right: 10px'></i>Generate dataset";
-    organizePrevStepBtn.style.display = "block";
-    organizeNextStepBtn.style.display = "none";
-  }
-};
-
-// var newDSName;
-// const generateDataset = (button) => {
-//   document.getElementById("para-organize-datasets-success").style.display = "none";
-//   document.getElementById("para-organize-datasets-error").style.display = "none";
-//   if (button.id === "btn-generate-locally") {
-//     $("#btn-generate-BF").removeClass("active");
-//     $(button).toggleClass("active");
-//     Swal.fire({
-//       title: "Generate dataset locally",
-//       text: "Enter a name for the dataset:",
-//       input: "text",
-//       showCancelButton: true,
-//       cancelButtonText: "Cancel",
-//       confirmButtonText: "Confirm and Choose Location",
-//       heightAuto: false,
-//       backdrop: "rgba(0,0,0, 0.4)",
-//       reverseButtons: window.reverseSwalButtons,
-//       showClass: {
-//         popup: "animate__animated animate__zoomIn animate__faster",
-//       },
-//       hideClass: {
-//         popup: "animate__animated animate__zoomOut animate_fastest",
-//       },
-//     }).then((result) => {
-//       if (result.isConfirmed) {
-//         newDSName = result.value.trim();
-//         window.electron.ipcRenderer.send("open-file-dialog-newdataset");
-//       }
-//     });
-//   } else {
-//     $("#btn-generate-locally").removeClass("active");
-//     $(button).toggleClass("active");
-//   }
-// };
-
-// window.electron.ipcRenderer.on("selected-new-dataset", async (event, filepath) => {
-//   if (filepath.length > 0) {
-//     if (filepath != null) {
-//       document.getElementById("para-organize-datasets-loading").style.display = "block";
-//       document.getElementById("para-organize-datasets-loading").innerHTML =
-//         "<span>Please wait...</span>";
-
-//       window.log.info("Generating a new dataset organize datasets at ${filepath}");
-
-//       try {
-//         await client.post(
-//           `/organize_datasets/datasets`,
-
-//           {
-//             generation_type: "create-new",
-//             generation_destination_path: filepath[0],
-//             dataset_name: newDSName,
-//             soda_json_directory_structure: window.datasetStructureJSONObj,
-//           },
-//           {
-//             timeout: 0,
-//           },
-//           {
-//             timeout: 0,
-//           }
-//         );
-
-//         document.getElementById("para-organize-datasets-error").style.display = "none";
-//         document.getElementById("para-organize-datasets-success").style.display = "block";
-//         document.getElementById("para-organize-datasets-success").innerHTML =
-//           "<span>Generated successfully!</span>";
-//       } catch (error) {
-//         clientError(error);
-//         document.getElementById("para-organize-datasets-success").style.display = "none";
-//         document.getElementById("para-organize-datasets-error").style.display = "block";
-//         document.getElementById("para-organize-datasets-error").innerHTML =
-//           "<span> " + userErrorMessage(error) + "</span>";
-//       }
-//     }
-//   }
-// });
 
 window.CheckFileListForServerAccess = async (fileList) => {
   try {
@@ -4244,10 +3005,6 @@ organizeDSaddFiles.addEventListener("click", function () {
   window.electron.ipcRenderer.send("open-files-organize-datasets-dialog");
 });
 
-window.electron.ipcRenderer.on("selected-files-organize-datasets", async (event, importedFiles) => {
-  await addDataArrayToDatasetStructureAtPath(importedFiles);
-});
-
 organizeDSaddFolders.addEventListener("click", function () {
   window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog");
 });
@@ -4255,12 +3012,44 @@ organizeDSaddFolders.addEventListener("click", function () {
 // Event listener for when folder(s) are imported into the file explorer
 window.electron.ipcRenderer.on(
   "selected-folders-organize-datasets",
-  async (event, importedFolders) => {
-    // Add the imported folders to the dataset structure
-    await addDataArrayToDatasetStructureAtPath(importedFolders);
+  async (event, { filePaths: importedFolders, importRelativePath }) => {
+    try {
+      if (!importRelativePath) {
+        throw new Error("The 'importRelativePath' property is missing in the response.");
+      }
+
+      // Use the current file explorer path or the provided relative path
+      const currentFileExplorerPath = `dataset_root/${importRelativePath}`;
+      const builtDatasetStructureFromImportedFolders =
+        await window.buildDatasetStructureJsonFromImportedData(
+          importedFolders,
+          currentFileExplorerPath
+        );
+
+      // Add the imported folders to the dataset structure
+      await mergeLocalAndRemoteDatasetStructure(
+        builtDatasetStructureFromImportedFolders,
+        currentFileExplorerPath
+      );
+
+      // Show success message
+      window.notyf.open({
+        type: "success",
+        message: `Data successfully imported`,
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error("Error importing folders", error);
+
+      // Optionally show an error notification
+      window.notyf.open({
+        type: "error",
+        message: `Error importing data: ${error.message}`,
+        duration: 3000,
+      });
+    }
   }
 );
-
 /* ################################################################################## */
 /* ################################################################################## */
 /* ################################################################################## */
@@ -4301,7 +3090,7 @@ const localFolderPathAndSubFoldersHaveNoFiles = (localFolderPath) => {
 const removeHiddenFilesFromDatasetStructure = (datasetStructure) => {
   const currentFilesAtPath = Object.keys(datasetStructure.files);
   for (const fileKey of currentFilesAtPath) {
-    const fileIsHidden = window.evaluateStringAgainstSdsRequirements(fileKey, "file-is-hidden");
+    const fileIsHidden = window.evaluateStringAgainstSdsRequirements(fileKey, "is-hidden-file");
     if (fileIsHidden) {
       delete datasetStructure["files"][fileKey];
     }
@@ -4314,96 +3103,90 @@ const removeHiddenFilesFromDatasetStructure = (datasetStructure) => {
 };
 
 const replaceProblematicFoldersWithSDSCompliantNames = (datasetStructure) => {
-  const currentFoldersAtPath = Object.keys(datasetStructure.folders);
+  const currentFoldersAtPath = Object.keys(datasetStructure["folders"]);
+
   for (const folderKey of currentFoldersAtPath) {
     const folderNameIsValid = window.evaluateStringAgainstSdsRequirements(
       folderKey,
-      "folder-and-file-name-is-valid"
+      "folder-or-file-name-is-valid"
     );
-    // If the folder name is not valid, replace it with a valid name and then recurse through the
-    // renamed folder to check for any other problematic folders
+
     if (!folderNameIsValid) {
-      const newFolderName = folderKey.replace(invalidSparcFolderAndFileNameRegexReplacer, "-");
+      const newFolderName = folderKey.replace(validSparcFolderAndFileNameRegexReplacer, "-");
       const newFolderObj = { ...datasetStructure["folders"][folderKey] };
+
       if (!newFolderObj["action"].includes("renamed")) {
         newFolderObj["action"].push("renamed");
       }
-      newFolderObj["original-name"] = folderKey;
+      if (!newFolderObj["original-name"]) {
+        newFolderObj["original-name"] = folderKey;
+      }
       newFolderObj["new-name"] = newFolderName;
       datasetStructure["folders"][newFolderName] = newFolderObj;
       delete datasetStructure["folders"][folderKey];
+
       replaceProblematicFoldersWithSDSCompliantNames(datasetStructure["folders"][newFolderName]);
     } else {
-      // If the folder name is valid, recurse through the folder to check for any problematic folders
       replaceProblematicFoldersWithSDSCompliantNames(datasetStructure["folders"][folderKey]);
     }
   }
 };
+
 window.replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
-  const currentFilesAtPath = Object.keys(datasetStructure.files);
+  const currentFilesAtPath = Object.keys(datasetStructure["files"]);
+
   for (const fileKey of currentFilesAtPath) {
     const fileNameIsValid = window.evaluateStringAgainstSdsRequirements(
       fileKey,
-      "folder-and-file-name-is-valid"
+      "folder-or-file-name-is-valid"
     );
+
     if (!fileNameIsValid) {
-      const newFileName = fileKey.replace(invalidSparcFolderAndFileNameRegexReplacer, "-");
+      const newFileName = fileKey.replace(validSparcFolderAndFileNameRegexReplacer, "-");
       const newFileObj = { ...datasetStructure["files"][fileKey] };
+
       if (!newFileObj["action"].includes("renamed")) {
         newFileObj["action"].push("renamed");
       }
-      newFileObj["original-name"] = fileKey;
+      if (!newFileObj["original-name"]) {
+        newFileObj["original-name"] = fileKey;
+      }
       newFileObj["new-name"] = newFileName;
       datasetStructure["files"][newFileName] = newFileObj;
       delete datasetStructure["files"][fileKey];
     }
   }
+
   if (datasetStructure?.["folders"]) {
-    const currentFoldersAtPath = Object.keys(datasetStructure.folders);
+    const currentFoldersAtPath = Object.keys(datasetStructure["folders"]);
     for (const folderKey of currentFoldersAtPath) {
       window.replaceProblematicFilesWithSDSCompliantNames(datasetStructure["folders"][folderKey]);
     }
   }
 };
 
-// const deleteProblematicFilesFromDatasetStructure = (datasetStructure) => {
-//   const currentFilesAtPath = Object.keys(datasetStructure.files);
-//   for (const fileKey of currentFilesAtPath) {
-//     const fileNameIsValid = window.evaluateStringAgainstSdsRequirements(
-//       fileKey,
-//       "folder-and-file-name-is-valid"
-//     );
-//     if (!fileNameIsValid) {
-//       delete datasetStructure["files"][fileKey];
-//     }
-//   }
-
-//   const currentFoldersAtPath = Object.keys(datasetStructure.folders);
-//   for (const folderKey of currentFoldersAtPath) {
-//     deleteProblematicFilesFromDatasetStructure(datasetStructure["folders"][folderKey]);
-//   }
-// };
-
-const namesOfForbiddenFiles = {
-  ".DS_Store": true,
-  "Thumbs.db": true,
-};
-
-const invalidSparcFolderAndFileNameRegexMatcher = /[\+&\%#]/;
-const invalidSparcFolderAndFileNameRegexReplacer = /[\+&\%#]/g;
-const identifierConventionsRegex = /^[a-zA-Z0-9-_]+$/;
+const validSparcFolderAndFileNameRegexMatcher = /^[0-9A-Za-z,.\-_ ]*$/;
+const validSparcFolderAndFileNameRegexReplacer = /[^0-9A-Za-z,.\-_ ]/g;
+const identifierConventionsRegex = /^[A-Za-z0-9-]*$/;
+const forbiddenFileNameRegex = /^(CON|PRN|AUX|NUL|(COM|LPT)[0-9])$/;
+const forbiddenFiles = new Set([".DS_Store", "Thumbs.db"]);
+const forbiddenFilesRegex = /^(CON|PRN|AUX|NUL|(COM|LPT)[0-9])$/;
 const forbiddenCharacters = /[@#$%^&*()+=\/\\|"'~;:<>{}\[\]?]/;
 
-window.evaluateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
-  const testCases = {
-    "folder-and-file-name-is-valid": !invalidSparcFolderAndFileNameRegexMatcher.test(stringToTest), // returns true if the string is valid
-    "file-is-hidden": stringToTest.startsWith("."), // returns true if the string is hidden
-    "file-is-in-forbidden-files-list": namesOfForbiddenFiles?.[stringToTest], // returns true if the string is in the forbidden files list
-    "string-adheres-to-identifier-conventions": identifierConventionsRegex.test(stringToTest), // returns true if the string adheres to the identifier conventions
-    "string-contains-forbidden-characters": forbiddenCharacters.test(stringToTest), // returns true if the string contains forbidden characters
+window.evaluateStringAgainstSdsRequirements = (stringToTest, testType) => {
+  const tests = {
+    "folder-or-file-name-contains-forbidden-characters": !forbiddenFileNameRegex.test(stringToTest),
+    "folder-or-file-name-is-valid": validSparcFolderAndFileNameRegexMatcher.test(stringToTest),
+    "string-adheres-to-identifier-conventions": identifierConventionsRegex.test(stringToTest),
+    "is-hidden-file": stringToTest.startsWith("."),
+    "is-forbidden-file": forbiddenFiles.has(stringToTest) || forbiddenFilesRegex.test(stringToTest),
+    "string-contains-forbidden-characters": forbiddenCharacters.test(stringToTest),
   };
-  return testCases[stringCase];
+
+  return tests[testType];
 };
+
+// Create some test case examples
 let loadingSweetAlert;
 let loadingSweetAlertTimer;
 
@@ -4418,15 +3201,17 @@ const showFileImportLoadingSweetAlert = (delayBeforeShowingSweetAlert) => {
     loadingSweetAlert = Swal.fire({
       title: "Importing your files and folders into SODA...",
       html: `
-        <div class="lds-roller">
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
+        <div class="flex-center">
+          <div class="lds-roller">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
         </div>
       `,
       width: 900,
@@ -4464,6 +3249,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
   const problematicFolderNames = [];
   const problematicFileNames = [];
   const datasetStructure = {};
+  const manifestStructure = [];
   const hiddenItems = [];
   const emptyFolders = [];
   const emptyFiles = [];
@@ -4471,7 +3257,12 @@ window.buildDatasetStructureJsonFromImportedData = async (
   showFileImportLoadingSweetAlert(500);
 
   // Function to traverse and build JSON structure
-  const traverseAndBuildJson = async (pathToExplore, currentStructure, currentStructurePath) => {
+  const traverseAndBuildJson = async (
+    pathToExplore,
+    currentStructure,
+    manifestStructure,
+    currentStructurePath
+  ) => {
     // Initialize the current structure if it does not exist
     currentStructure["folders"] = currentStructure["folders"] || {};
     currentStructure["files"] = currentStructure["files"] || {};
@@ -4487,7 +3278,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
           const folderName = window.path.basename(pathToExplore);
           const folderNameIsValid = window.evaluateStringAgainstSdsRequirements(
             folderName,
-            "folder-and-file-name-is-valid"
+            "folder-or-file-name-is-valid"
           );
           if (!folderNameIsValid) {
             problematicFolderNames.push(`${currentStructurePath}${folderName}`);
@@ -4496,7 +3287,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
           // Add the folder to the JSON structure
           currentStructure["folders"][folderName] = {
             path: pathToExplore,
-            type: "local",
+            location: "local",
             files: {},
             folders: {},
             action: ["new"],
@@ -4510,6 +3301,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
               await traverseAndBuildJson(
                 itemPath,
                 currentStructure["folders"][folderName],
+                manifestStructure,
                 `${currentStructurePath}${folderName}/`
               );
             })
@@ -4541,7 +3333,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
           // Check if the file name has any characters that do not comply with SPARC naming requirements
           const fileNameIsValid = window.evaluateStringAgainstSdsRequirements(
             fileName,
-            "folder-and-file-name-is-valid"
+            "folder-or-file-name-is-valid"
           );
           if (!fileNameIsValid) {
             problematicFileNames.push(fileObject);
@@ -4549,16 +3341,22 @@ window.buildDatasetStructureJsonFromImportedData = async (
 
           const fileIsHidden = window.evaluateStringAgainstSdsRequirements(
             fileName,
-            "file-is-hidden"
+            "is-hidden-file"
           );
           if (fileIsHidden) {
-            hiddenItems.push(fileObject);
+            // Hidden files are allowed in the dataset_root/ and dataset_root/code/ directories
+            const allowedHiddenFilePaths = new Set(["dataset_root/", "dataset_root/code/"]);
+
+            // Check if the current path is not allowed for hidden files
+            if (!allowedHiddenFilePaths.has(currentStructurePath)) {
+              hiddenItems.push(fileObject);
+            }
           }
 
           // Add the file to the current structure
           currentStructure["files"][fileName] = {
             path: pathToExplore,
-            type: "local",
+            location: "local",
             description: "",
             "additional-metadata": "",
             action: ["new"],
@@ -4575,7 +3373,12 @@ window.buildDatasetStructureJsonFromImportedData = async (
   // Process itemPaths in parallel
   await Promise.all(
     itemPaths.map(async (itemPath) => {
-      await traverseAndBuildJson(itemPath, datasetStructure, currentFileExplorerPath);
+      await traverseAndBuildJson(
+        itemPath,
+        datasetStructure,
+        manifestStructure,
+        currentFileExplorerPath
+      );
     })
   );
 
@@ -4618,45 +3421,44 @@ window.buildDatasetStructureJsonFromImportedData = async (
   }
 
   if (problematicFolderNames.length > 0) {
-    const userResponse = await swalFileListTripleAction(
+    const replaceFoldersForUser = await swalFileListDoubleAction(
       problematicFolderNames,
-      "<p>Folder name modifications</p>",
-      `The folders listed below contain the special characters "#", "&", "%", or "+"
-      which are typically not recommended per the SPARC data standards.
-      You may choose to either keep them as is, or replace the characters with '-'.
+      "Folder names not compliant with SPARC data standards detected",
+      `
+        The SPARC data standards require folder names to only letters, numbers, spaces,
+        hyphens, underscores, commas, and periods.
+        <br /><br />
+        The following folders contain special characters that are not compliant with the SPARC data standards:
       `,
-      "Replace the special characters with '-'",
-      "Keep the folder names as they are",
-      "Cancel import",
-      "What would you like to do with the folders with special characters?"
+      "Have SODA replace the special characters with '-'",
+      "Cancel the import",
+      "What would you like to do with the non-compliant folder names?"
     );
-    if (userResponse === "confirm") {
+
+    if (replaceFoldersForUser) {
       replaceProblematicFoldersWithSDSCompliantNames(datasetStructure);
-    }
-    // If the userResponse is "deny", nothing needs to be done
-    if (userResponse === "cancel") {
+    } else {
       throw new Error("Importation cancelled");
     }
   }
 
   if (problematicFileNames.length > 0) {
-    const userResponse = await swalFileListTripleAction(
+    const replaceFilesForUser = await swalFileListDoubleAction(
       problematicFileNames.map((file) => file.relativePath),
-      "<p>File name modifications</p>",
-      `The files listed below contain the special characters "#", "&", "%", or "+"
-      which are typically not recommended per the SPARC data standards.
-      You may choose to either keep them as is, or replace the characters with '-'.
+      "File names not compliant with SPARC data standards detected",
+      `
+        The SPARC data standards require folder names to only letters, numbers, spaces,
+        hyphens, underscores, commas, and periods.
+        <br /><br />
+        The following files contain special characters that are not compliant with the SPARC data standards:
       `,
-      "Replace the special characters with '-'",
-      "Keep the file names as they are",
-      "Cancel import",
-      "What would you like to do with the files with special characters?"
+      "Have SODA replace the special characters with '-'",
+      "Cancel the import",
+      "What would you like to do with the non-compliant file names?"
     );
-    if (userResponse === "confirm") {
+    if (replaceFilesForUser) {
       window.replaceProblematicFilesWithSDSCompliantNames(datasetStructure);
-    }
-    // If the userResponse is "deny", nothing needs to be done
-    if (userResponse === "cancel") {
+    } else {
       throw new Error("Importation cancelled");
     }
   }
@@ -4706,12 +3508,11 @@ const mergeLocalAndRemoteDatasetStructure = async (
     const existingDatasetJsonAtPath = window.getRecursivePath(
       currentNestedPathArray.slice(1),
       window.datasetStructureJSONObj
-    ); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')
-
-    const ExistingFoldersAtPath = Object.keys(existingDatasetJsonAtPath["folders"]);
-    const ExistingFilesAtPath = Object.keys(existingDatasetJsonAtPath["files"]);
-    const foldersBeingMergedToPath = Object.keys(datasetStructureToMerge["folders"]);
-    const filesBeingMergedToPath = Object.keys(datasetStructureToMerge["files"]);
+    );
+    const ExistingFoldersAtPath = Object.keys(existingDatasetJsonAtPath["folders"]) || [];
+    const ExistingFilesAtPath = Object.keys(existingDatasetJsonAtPath["files"]) || [];
+    const foldersBeingMergedToPath = Object.keys(datasetStructureToMerge["folders"]) || [];
+    const filesBeingMergedToPath = Object.keys(datasetStructureToMerge["files"]) || [];
 
     for (const folder of foldersBeingMergedToPath) {
       if (ExistingFoldersAtPath.includes(folder)) {
@@ -4784,14 +3585,14 @@ const mergeLocalAndRemoteDatasetStructure = async (
         );
 
         const fileTypeOfObjectToOverwrite =
-          folderContainingFileToOverwrite["files"][file.fileName]?.["type"];
+          folderContainingFileToOverwrite["files"][file.fileName]?.["location"];
 
         // overwrite the existing file with the new file
         folderContainingFileToOverwrite["files"][file.fileName] = file.fileObject;
 
         // if the file being overwritten was from Pennsieve, add the "updated" action to the file
         if (
-          fileTypeOfObjectToOverwrite === "bf" &&
+          fileTypeOfObjectToOverwrite === "ps" &&
           !folderContainingFileToOverwrite["files"][file.fileName]["action"].includes("updated")
         ) {
           folderContainingFileToOverwrite["files"][file.fileName]["action"].push("updated");
@@ -4799,32 +3600,31 @@ const mergeLocalAndRemoteDatasetStructure = async (
       }
     }
   }
+  const currentPathArray = window.getGlobalPath(currentFileExplorerPath); // ['dataset_root', 'code']
+  const nestedJsonDatasetStructure = window.getRecursivePath(
+    currentPathArray.slice(1),
+    window.datasetStructureJSONObj
+  );
+  window.listItems(nestedJsonDatasetStructure, "#items", 500, true);
+  window.getInFolder(
+    ".single-item",
+    "#items",
+    window.organizeDSglobalPath,
+    window.datasetStructureJSONObj
+  );
+  setTreeViewDatasetStructure(window.datasetStructureJSONObj);
 };
 
-const addDataArrayToDatasetStructureAtPath = async (importedData) => {
-  // If no data was imported ()
-  const numberOfItemsToImport = importedData.length;
-  if (numberOfItemsToImport === 0) {
-    window.notyf.open({
-      type: "info",
-      message: "No folders/files were selected to import",
-      duration: 4000,
-    });
-    return;
-  }
+const mergeNewDatasetStructureToExistingDatasetStructureAtPath = async (
+  builtDatasetStructure,
+  relativePathToMergeObjectInto
+) => {
   try {
-    // STEP 1: Build the JSON object from the imported data
-    // (This function handles bad folders/files, inaccessible folders/files, etc and returns a clean dataset structure)
-    const currentFileExplorerPath = window.organizeDSglobalPath.value.trim();
-
-    const builtDatasetStructure = await window.buildDatasetStructureJsonFromImportedData(
-      importedData,
-      currentFileExplorerPath
-    );
-
     // Step 2: Add the imported data to the dataset structure (This function handles duplicate files, etc)
     await mergeLocalAndRemoteDatasetStructure(builtDatasetStructure, currentFileExplorerPath);
-
+    console.log(
+      "Successfully merged the new dataset structure into the existing dataset structure"
+    );
     // Step 3: Update the UI
     const currentPathArray = window.getGlobalPath(window.organizeDSglobalPath); // ['dataset_root', 'code']
     const nestedJsonDatasetStructure = window.getRecursivePath(
@@ -4838,6 +3638,7 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
       window.organizeDSglobalPath,
       window.datasetStructureJSONObj
     );
+    setTreeViewDatasetStructure(window.datasetStructureJSONObj);
 
     // Step 4: Update successful, show success message
     window.notyf.open({
@@ -4846,6 +3647,7 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
       duration: 3000,
     });
   } catch (error) {
+    console.error(error);
     closeFileImportLoadingSweetAlert();
     window.notyf.open({
       type: error.message === "Importation cancelled" ? "info-grey" : "error",
@@ -4923,7 +3725,7 @@ window.drop = async (ev) => {
   }
 
   // Add the items to the dataset structure (This handles problematic files/folders, duplicate files etc)
-  await addDataArrayToDatasetStructureAtPath(accessibleItems);
+  await mergeNewDatasetStructureToExistingDatasetStructureAtPath(accessibleItems);
 };
 
 window.irregularFolderArray = [];
@@ -4932,7 +3734,7 @@ window.detectIrregularFolders = (localFolderPath) => {
   const folderName = window.path.basename(localFolderPath);
   const folderNameIsValid = window.evaluateStringAgainstSdsRequirements(
     folderName,
-    "folder-and-file-name-is-valid"
+    "folder-or-file-name-is-valid"
   );
   if (!folderNameIsValid) {
     window.irregularFolderArray.push(localFolderPath);
@@ -4949,12 +3751,6 @@ window.detectIrregularFolders = (localFolderPath) => {
   }
 
   return window.irregularFolderArray;
-};
-
-const checkIrregularNameBoolean = (folderName) => {
-  //window.nonAllowedCharacters modified to only allow a-z A-z 0-9 and hyphen "-"
-  const nonAllowedFolderCharacters = /[^a-zA-Z0-9-]/;
-  return nonAllowedFolderCharacters.test(folderName);
 };
 
 /* The following functions aim at ignore folders with irregular characters, or replace the characters with (-),
@@ -4991,7 +3787,7 @@ window.removeIrregularFolders = (pathElement) => {
 const handleFileImport = (containerID, filePath) => {
   if (containerID === "guided-container-subjects-pools-samples-structure-import") {
     // read the contents of the first worksheet in the excel file at the path using excelToJson
-    const excelFile = excelToJson({
+    excelToJson({
       sourceFile: filePath,
     });
     // log the columnn headers of the first sheet
@@ -5207,7 +4003,6 @@ const showmenu = (ev, category, deleted = false) => {
 
   ev.preventDefault();
   var mouseX;
-  let element = "";
   if (ev.pageX <= 200) {
     mouseX = ev.pageX + 10;
   } else {
@@ -5356,7 +4151,7 @@ window.folderContextMenu = (event) => {
           window.datasetStructureJSONObj
         );
       } else if ($(this).attr("id") === "folder-move") {
-        window.moveItems(event, "folders");
+        window.moveItems(event);
       }
       // Hide it AFTER the action was triggered
       window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
@@ -5443,7 +4238,7 @@ window.fileContextMenu = (event) => {
             window.datasetStructureJSONObj
           );
         } else if ($(this).attr("id") === "file-move") {
-          window.moveItems(event, "files");
+          window.moveItems(event);
         } else if ($(this).attr("id") === "file-description") {
           manageDesc(event);
         }
@@ -5555,7 +4350,7 @@ $(document).bind("contextmenu", function (event) {
   }
 });
 
-const select_items_ctrl = (items, event, isDragging) => {
+const select_items_ctrl = (event) => {
   if (event["ctrlKey"]) {
   } else {
     $(".selected-item").removeClass("selected-item");
@@ -5563,7 +4358,7 @@ const select_items_ctrl = (items, event, isDragging) => {
   }
 };
 
-const select_items = (items, event, isDragging) => {
+const select_items = (items) => {
   let selected_class = "";
 
   items.forEach((event_item) => {
@@ -5645,154 +4440,10 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
   const rootFolders = ["primary", "source", "derivative"];
   const datasetPath = document.getElementById("guided-input-global-path");
   const pathDisplay = document.getElementById("datasetPathDisplay");
-  const fileExplorerBackButton = document.getElementById("guided-button-back");
   let hideSampleFolders = false;
   let hideSubjectFolders = false;
   let splitPath = datasetPath.value.split("/");
   let fullPath = datasetPath.value;
-
-  if (window.organizeDSglobalPath.id === "guided-input-global-path") {
-    const splitPathCheck = (num, button) => {
-      //based on the paths length we will determine if the back button should be disabled/hidden or not
-      if (splitPath.length > num) {
-        //button should be enabled
-        button.disabled = false;
-        button.style.display = "block";
-      } else {
-        //button should be disabled
-        button.disabled = true;
-        button.style.display = "none";
-      }
-    };
-
-    let currentPageID = window.CURRENT_PAGE.id;
-    //capsules need to determine if sample or subjects section
-    //subjects initially display two folder levels meanwhile samples will initially only show one folder level
-    let primarySampleCapsule = document.getElementById(
-      "guided-primary-samples-organization-page-capsule"
-    );
-    let primarySubjectCapsule = document.getElementById(
-      "guided-primary-subjects-organization-page-capsule"
-    );
-    let primaryPoolCapsule = document.getElementById(
-      "guided-primary-pools-organization-page-capsule"
-    );
-    let sourceSampleCapsule = document.getElementById(
-      "guided-source-samples-organization-page-capsule"
-    );
-    let sourceSubjectCapsule = document.getElementById(
-      "guided-source-subjects-organization-page-capsule"
-    );
-    let sourcePoolCapsule = document.getElementById(
-      "guided-source-pools-organization-page-capsule"
-    );
-
-    let derivativeSampleCapsule = document.getElementById(
-      "guided-derivative-samples-organization-page-capsule"
-    );
-    let derivativeSubjectCapsule = document.getElementById(
-      "guided-derivative-subjects-organization-page-capsule"
-    );
-    let derivativePoolCapsule = document.getElementById(
-      "guided-derivative-pools-organization-page-capsule"
-    );
-
-    //remove my_dataset_folder and if any of the ROOT FOLDER names is included
-    if (splitPath[0] === "dataset_root") splitPath.shift();
-    if (rootFolders.includes(splitPath[0])) splitPath.shift();
-    //remove the last element in array is it is always ''
-    splitPath.pop();
-
-    let trimmedPath = "";
-    if (currentPageID.includes("primary")) {
-      if (primarySampleCapsule.classList.contains("active")) {
-        if (splitPath[0].includes("pool-")) {
-          splitPathCheck(3, fileExplorerBackButton);
-        } else {
-          splitPathCheck(2, fileExplorerBackButton);
-        }
-      }
-      if (primarySubjectCapsule.classList.contains("active")) {
-        if (splitPath[0].includes("pool-")) {
-          splitPathCheck(2, fileExplorerBackButton);
-        } else {
-          splitPathCheck(1, fileExplorerBackButton);
-        }
-        hideSampleFolders = true;
-      }
-      if (primaryPoolCapsule.classList.contains("active")) {
-        if (splitPath[0].includes("pool-")) {
-          splitPathCheck(1, fileExplorerBackButton);
-        }
-        hideSubjectFolders = true;
-      }
-    }
-    if (currentPageID.includes("source")) {
-      if (sourceSubjectCapsule.classList.contains("active")) {
-        if (splitPath[0].includes("pool-")) {
-          splitPathCheck(2, fileExplorerBackButton);
-        } else {
-          splitPathCheck(1, fileExplorerBackButton);
-        }
-        hideSampleFolders = true;
-      }
-      if (sourceSampleCapsule.classList.contains("active")) {
-        if (splitPath[0].includes("pool-")) {
-          splitPathCheck(3, fileExplorerBackButton);
-        } else {
-          splitPathCheck(2, fileExplorerBackButton);
-        }
-      }
-      if (sourcePoolCapsule.classList.contains("active")) {
-        if (splitPath[0].includes("pool-")) {
-          splitPathCheck(1, fileExplorerBackButton);
-        }
-        hideSubjectFolders = true;
-      }
-    }
-    if (currentPageID.includes("derivative")) {
-      //check the active capsule
-      if (derivativeSubjectCapsule.classList.contains("active")) {
-        if (splitPath[0].includes("pool-")) {
-          splitPathCheck(2, fileExplorerBackButton);
-        } else {
-          splitPathCheck(1, fileExplorerBackButton);
-        }
-        hideSampleFolders = true;
-      }
-      if (derivativeSampleCapsule.classList.contains("active")) {
-        if (splitPath[0].includes("pool-")) {
-          splitPathCheck(3, fileExplorerBackButton);
-        } else {
-          splitPathCheck(2, fileExplorerBackButton);
-        }
-      }
-      if (derivativePoolCapsule.classList.contains("active")) {
-        if (splitPath[0].includes("pool-")) {
-          splitPathCheck(1, fileExplorerBackButton);
-        }
-        hideSubjectFolders = true;
-      }
-    }
-    if (
-      currentPageID.includes("code") ||
-      currentPageID.includes("protocol") ||
-      currentPageID.includes("docs") ||
-      currentPageID.includes("helpers")
-    ) {
-      //for code/protocols/docs we only initially display one folder lvl
-      splitPathCheck(1, fileExplorerBackButton);
-    }
-
-    for (let i = 0; i < splitPath.length; i++) {
-      if (splitPath[i] === "dataset_root" || splitPath[i] === undefined) continue;
-      trimmedPath += splitPath[i] + "/";
-    }
-
-    //append path to tippy and display path to the file explorer
-    pathDisplay.innerText = trimmedPath;
-    pathDisplay._tippy.setContent(fullPath);
-  }
 
   var appendString = "";
   var sortedObj = window.sortObjByKeys(jsonObj);
@@ -5806,81 +4457,6 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
   //start creating folder elements to be rendered
   if (Object.keys(sortedObj["folders"]).length > 0) {
     for (var item in sortedObj["folders"]) {
-      //hide samples when on the subjects page
-      if (hideSampleFolders) {
-        let currentSampleFolder = splitPath[0];
-        let allSamples = window.sodaJSONObj.getAllSamplesFromSubjects();
-        let noPoolSamples = [];
-        let poolSamples = [];
-        let skipSubjectFolder = false;
-        if (allSamples.length > 1) {
-          //subjects within pools and others not
-          poolSamples = allSamples[0];
-          noPoolSamples = allSamples[1];
-          for (let i = 0; i < poolSamples.length; i++) {
-            if (item === poolSamples[i]["sampleName"]) {
-              skipSubjectFolder = true;
-              break;
-            }
-          }
-          if (skipSubjectFolder) continue;
-          for (let i = 0; i < noPoolSamples.length; i++) {
-            if (item === noPoolSamples[i]["sampleName"]) {
-              skipSubjectFolder = true;
-              break;
-            }
-          }
-          if (skipSubjectFolder) continue;
-        }
-        if (allSamples.length === 1) {
-          poolSamples = allSamples[1];
-          for (let i = 0; i < poolSamples.length; i++) {
-            if (item === poolSamples[i]["sampleName"]) {
-              skipSubjectFolder = true;
-              break;
-            }
-          }
-          if (skipSubjectFolder) continue;
-        }
-      }
-      if (hideSubjectFolders) {
-        //hide subject folders when displaying pool page
-        const currentPoolName = splitPath[0];
-        let currentSubjects = window.sodaJSONObj.getAllSubjects();
-        let poolSubjects = [];
-        let noPoolSubjects = [];
-        let skipSubjectFolder = false;
-        if (currentSubjects.length === 1) {
-          poolSubjects = currentSubjects[0];
-          for (let i = 0; i < poolSubjects.length; i++) {
-            if (item === poolSubjects[i]["subjectName"]) {
-              skipSubjectFolder = true;
-              break;
-            }
-          }
-          if (skipSubjectFolder) continue;
-        }
-        if (currentSubjects.length > 1) {
-          //some subjects in pools and some not
-          poolSubjects = currentSubjects[0];
-          noPoolSubjects = currentSubjects[1];
-          for (let i = 0; i < noPoolSubjects.length; i++) {
-            if (item === noPoolSubjects[i]["subjectName"]) {
-              skipSubjectFolder = true;
-              break;
-            }
-          }
-          if (skipSubjectFolder) continue;
-          for (let i = 0; i < poolSubjects.length; i++) {
-            if (item === poolSubjects[i]["subjectName"]) {
-              skipSubjectFolder = true;
-              break;
-            }
-          }
-        }
-        if (skipSubjectFolder) continue;
-      }
-
       count += 1;
       var emptyFolder = "";
       if (!window.highLevelFolders.includes(item)) {
@@ -5908,7 +4484,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
         }
       }
 
-      if (sortedObj["folders"][item]["type"] == "bf") {
+      if (sortedObj["folders"][item]["location"] == "ps") {
         cloud_item = " pennsieve_folder";
         if (deleted_folder) {
           cloud_item = " pennsieve_folder_deleted";
@@ -5916,7 +4492,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
       }
 
       if (
-        sortedObj["folders"][item]["type"] == "local" &&
+        sortedObj["folders"][item]["location"] == "local" &&
         sortedObj["folders"][item]["action"].includes("existing")
       ) {
         cloud_item = " local_folder";
@@ -5985,7 +4561,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
         } else {
           var extension = "other";
         }
-        if (sortedObj["files"][item]["type"] == "bf") {
+        if (sortedObj["files"][item]["location"] == "ps") {
           if (sortedObj["files"][item]["action"].includes("deleted")) {
             let original_file_name = item.substring(0, item.lastIndexOf("-"));
             extension = original_file_name.split(".").pop();
@@ -6032,23 +4608,15 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
         }
       }
 
-      if (sortedObj["files"][item]["type"] == "bf") {
+      if (sortedObj["files"][item]["location"] == "ps") {
         cloud_item = " pennsieve_file";
         if (deleted_file) {
           cloud_item = " pennsieve_file_deleted";
         }
-        let element_creation =
-          '<div class="single-item" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 class="myFile ' +
-          extension +
-          '" oncontextmenu="window.fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
-          cloud_item +
-          '">' +
-          item +
-          "</div></div>";
       }
 
       if (
-        sortedObj["files"][item]["type"] == "local" &&
+        sortedObj["files"][item]["location"] == "local" &&
         sortedObj["files"][item]["action"].includes("existing")
       ) {
         cloud_item = " local_file";
@@ -6057,7 +4625,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
         }
       }
       if (
-        sortedObj["files"][item]["type"] == "local" &&
+        sortedObj["files"][item]["location"] == "local" &&
         sortedObj["files"][item]["action"].includes("updated")
       ) {
         cloud_item = " update-file";
@@ -6118,7 +4686,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
   if (amount_req != undefined) {
     //add items using a different function
     //want the initial files to be imported
-    let itemDisplay = new Promise(async (resolved) => {
+    new Promise(async (resolved) => {
       if (reset != undefined) {
         await window.add_items_to_view(items, amount_req, reset);
         resolved();
@@ -6129,7 +4697,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
     });
   } else {
     //load everything in place
-    let itemDisplay = new Promise(async (resolved) => {
+    new Promise(async (resolved) => {
       // $(uiItem).empty();
       await window.add_items_to_view(items, 500);
       resolved();
@@ -6148,8 +4716,8 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
     select_items(items, event, isDragging);
   });
 
-  dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
-    select_items_ctrl(items, event, isDragging);
+  dragselect_area.subscribe("dragstart", ({ event }) => {
+    select_items_ctrl(event);
   });
   drag_event_fired = false;
 
@@ -6208,7 +4776,7 @@ window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
 
     dragDropLottieContainer.innerHTML = ``;
 
-    let dragDropAnimation = lottie.loadAnimation({
+    lottie.loadAnimation({
       container: dragDropLottieContainer,
       animationData: dragDrop,
       renderer: "svg",
@@ -6434,10 +5002,10 @@ document.getElementById("button-generate-validate").addEventListener("click", fu
   //   document.getElementById("start-over-btn").style.display = "inline-block";
   //   window.showParentTab(window.currentTab, 1);
   //   if (
-  //     window.sodaJSONObj["starting-point"]["type"] == "new" &&
+  //     window.sodaJSONObj["starting-point"]["origin"] == "new" &&
   //     "local-path" in window.sodaJSONObj["starting-point"]
   //   ) {
-  //     window.sodaJSONObj["starting-point"]["type"] = "local";
+  //     window.sodaJSONObj["starting-point"]["origin"] = "local";ps-account
   //   }
   // }, window.delayAnimation);
 });
@@ -6461,9 +5029,9 @@ const divGenerateProgressBar = document.getElementById("div-new-curate-meter-pro
 const generateProgressBar = document.getElementById("progress-bar-new-curate");
 var progressStatus = document.getElementById("para-new-curate-progress-bar-status");
 
-window.setSodaJSONStartingPoint = (sodaJSONObj) => {
-  if (window.sodaJSONObj["starting-point"]["type"] === "local") {
-    window.sodaJSONObj["starting-point"]["type"] = "new";
+window.setSodaJSONStartingPoint = () => {
+  if (window.sodaJSONObj["starting-point"]["origin"] === "local") {
+    window.sodaJSONObj["starting-point"]["origin"] = "new";
   }
 };
 
@@ -6471,8 +5039,8 @@ const setDatasetNameAndDestination = (sodaJSONObj) => {
   let dataset_name = "";
   let dataset_destination = "";
 
-  if ("bf-dataset-selected" in sodaJSONObj) {
-    dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+  if ("ps-dataset-selected" in sodaJSONObj) {
+    dataset_name = sodaJSONObj["ps-dataset-selected"]["dataset-name"];
     dataset_destination = "Pennsieve";
   } else if ("generate-dataset" in sodaJSONObj) {
     if ("destination" in sodaJSONObj["generate-dataset"]) {
@@ -6481,7 +5049,7 @@ const setDatasetNameAndDestination = (sodaJSONObj) => {
         dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
         dataset_destination = "Local";
       }
-      if (destination == "bf") {
+      if (destination == "ps") {
         dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
         dataset_destination = "Pennsieve";
       }
@@ -6493,9 +5061,7 @@ const setDatasetNameAndDestination = (sodaJSONObj) => {
 
 const deleteTreeviewFiles = (sodaJSONObj) => {
   // delete datasetStructureObject["files"] value (with metadata files (if any)) that was added only for the Preview tree view
-  if ("files" in sodaJSONObj["dataset-structure"]) {
-    sodaJSONObj["dataset-structure"]["files"] = {};
-  }
+
   // delete manifest files added for treeview
   for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
     if (
@@ -6509,8 +5075,7 @@ const deleteTreeviewFiles = (sodaJSONObj) => {
   }
 };
 
-const preGenerateSetup = async (e, elementContext) => {
-  $($($(elementContext).parent().parent()[0]).parents()[0]).removeClass("tab-active");
+const setupCode = async (resume = false) => {
   // set tab-active to generate-progress-tab
   $("#generate-dataset-progress-tab").addClass("tab-active");
   document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
@@ -6532,21 +5097,21 @@ const preGenerateSetup = async (e, elementContext) => {
   // disable contact us view to be clicked again
   document.getElementById("contact-us-view").style.pointerEvents = "none";
 
+  document.getElementById("about-view").style.display = "block";
+
   // updateJSON structure after Generate dataset tab
-  window.updateJSONStructureGenerate(false, sodaJSONObj);
+  window.updateJSONStructureGenerate(window.sodaJSONObj);
 
-  window.setSodaJSONStartingPoint(sodaJSONObj);
+  window.setSodaJSONStartingPoint(window.sodaJSONObj);
 
-  let [dataset_name, dataset_destination] = setDatasetNameAndDestination(sodaJSONObj);
+  let dataset_destination = setDatasetNameAndDestination(window.sodaJSONObj)[1];
 
-  let resume = e.target.textContent.trim() == "Retry";
   if (!resume) {
     progressStatus.innerHTML = "Please wait while we verify a few things...";
     generateProgressBar.value = 0;
   } else {
     // NOTE: This only works if we got to the upload. SO add more code to check for this.
     progressStatus.innerHTML = `Please wait while we perform setup for retrying the upload...`;
-    // replace the first line with the following
   }
   document.getElementById("wrapper-wrap").style.display = "none";
 
@@ -6562,7 +5127,7 @@ const preGenerateSetup = async (e, elementContext) => {
       $("#sidebarCollapse").prop("disabled", false);
 
       // return to the prior page
-      $($($(this).parent()[0]).parents()[0]).addClass("tab-active");
+      // $($($(this).parent()[0]).parents()[0]).addClass("tab-active");
       document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
       document.getElementById("para-please-wait-new-curate").innerHTML = "";
       document.getElementById("prevBtn").style.display = "inline";
@@ -6583,8 +5148,6 @@ const preGenerateSetup = async (e, elementContext) => {
     }
   }
 
-  // from here you can modify
-
   if (!resume) {
     progressBarNewCurate.value = 0;
     progressStatus.innerHTML = "";
@@ -6594,9 +5157,15 @@ const preGenerateSetup = async (e, elementContext) => {
 
   document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
 
-  deleteTreeviewFiles(sodaJSONObj);
+  deleteTreeviewFiles(window.sodaJSONObj);
 
-  initiate_generate(e);
+  initiate_generate(resume);
+};
+
+const preGenerateSetup = async (e, elementContext) => {
+  $($($(elementContext).parent().parent()[0]).parents()[0]).removeClass("tab-active");
+  let resume = e.target.textContent.trim() == "Retry";
+  setupCode(resume);
 };
 
 document.getElementById("button-generate").addEventListener("click", async function (e) {
@@ -6624,8 +5193,8 @@ window.dismissStatus = (id) => {
   //document.getElementById("dismiss-status-bar").style = "display: none;";
 };
 
-let file_counter = 0;
-let folder_counter = 0;
+window.file_counter = 0;
+window.folder_counter = 0;
 window.uploadComplete = new Notyf({
   position: { x: "right", y: "bottom" },
   dismissible: true,
@@ -6644,10 +5213,10 @@ window.uploadComplete = new Notyf({
   ],
 });
 
-// Generates a dataset organized in the Organize Dataset feature locally, or on Pennsieve
-const initiate_generate = async (e) => {
-  let resume = e.target.textContent.trim() == "Retry";
+let amountOfTimesPennsieveUploadFailed = 0;
 
+// Generates a dataset organized in the Organize Dataset feature locally, or on Pennsieve
+const initiate_generate = async (resume = false) => {
   // Disable the Guided Mode sidebar button to prevent the sodaJSONObj from being modified
   document.getElementById("guided_mode_view").style.pointerEvents = "none";
   // Disable the Docs sidebar button to prevent the sodaJSONObj from being modified
@@ -6656,7 +5225,6 @@ const initiate_generate = async (e) => {
   document.getElementById("contact-us-view").style.pointerEvents = "none";
 
   // Initiate curation by calling Python function
-  let manifest_files_requested = false;
   var main_curate_status = "Solving";
   var main_total_generate_dataset_size;
 
@@ -6708,7 +5276,6 @@ const initiate_generate = async (e) => {
   returnButton.type = "button";
   returnButton.id = "returnButton";
   returnButton.innerHTML = "Return to progress";
-
   // Event handler for navigation menu's progress bar clone
   returnButton.onclick = function () {
     organizeDataset.disabled = false;
@@ -6738,32 +5305,12 @@ const initiate_generate = async (e) => {
     document.getElementById("sidebarCollapse").click();
   }
 
-  if ($("#generate-manifest-curate")[0].checked && !window.hasFiles) {
-    window.sodaJSONObj["manifest-files"]["auto-generated"] = true;
-  } else {
-    delete window.sodaJSONObj["manifest-files"];
-  }
-
-  if ("manifest-files" in window.sodaJSONObj) {
-    if (
-      "auto-generated" in window.sodaJSONObj["manifest-files"] &&
-      window.sodaJSONObj["manifest-files"]["auto-generated"] === true
-    ) {
-      window.delete_imported_manifest();
-    } else if (window.sodaJSONObj["manifest-files"]["destination"] === "generate-dataset") {
-      manifest_files_requested = true;
-      window.delete_imported_manifest();
-    }
-  }
-
   let dataset_destination = "";
   let dataset_name = "";
 
   // track the amount of files that have been uploaded/generated
   let uploadedFiles = 0;
   let uploadedBytes = 0;
-  let increaseInFileSize = 0;
-  let generated_dataset_id = undefined;
   let loggedDatasetNameToIdMapping = false;
 
   // determine where the dataset will be generated/uploaded
@@ -6772,12 +5319,17 @@ const initiate_generate = async (e) => {
   dataset_name = nameDestinationPair[0];
   dataset_destination = nameDestinationPair[1];
 
-  if (dataset_destination == "Pennsieve" || dataset_destination == "bf") {
+  if (dataset_destination == "Pennsieve" || dataset_destination == "ps") {
     // create a dataset upload session
     datasetUploadSession.startSession();
   }
 
-  let start = performance.now();
+  const manifestCheckbox = document.getElementById("generate-manifest-curate");
+  if (!manifestCheckbox.checked) {
+    // Checkbox is OFF (not checked)
+    delete window.sodaJSONObj["dataset_metadata"]["manifest_file"];
+  }
+
   client
     .post(
       `/curate_datasets/curation`,
@@ -6788,22 +5340,21 @@ const initiate_generate = async (e) => {
       { timeout: 0 }
     )
     .then(async (response) => {
-      let end = performance.now();
-      let time = (end - start) / 1000;
       let { data } = response;
+      amountOfTimesPennsieveUploadFailed = 0;
 
       $("#party-lottie").show();
 
       // check if we updated an existing dataset
-      const mergeSelectedCard = document
-        .querySelector("#dataset-upload-existing-dataset")
-        .classList.contains("checked");
-      if (mergeSelectedCard) {
-        await swalShowInfo(
-          "Manifest Files Not Updated With New Files",
-          "Please navigate to the `Advanced Features` tab and use the standalone manifest generator to update your manifest files with the new files."
-        );
-      }
+      // const mergeSelectedCard = document
+      //   .querySelector("#dataset-upload-existing-dataset")
+      //   .classList.contains("checked");
+      // if (mergeSelectedCard) {
+      //   await swalShowInfo(
+      //     "Manifest Files Not Updated With New Files",
+      //     "Please navigate to the `Advanced Features` tab and use the standalone manifest generator to update your manifest files with the new files."
+      //   );
+      // }
 
       main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
       uploadedFiles = data["main_curation_uploaded_files"];
@@ -6828,7 +5379,7 @@ const initiate_generate = async (e) => {
       // get the correct value for files and file size for analytics
       let fileValueToLog = 0;
       let fileSizeValueToLog = 0;
-      if (dataset_destination == "bf" || dataset_destination == "Pennsieve") {
+      if (dataset_destination == "ps" || dataset_destination == "Pennsieve") {
         // log the difference again to Google Analytics
         let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
         let differenceInBytes = main_total_generate_dataset_size - bytesOnPreviousLogPage;
@@ -6872,7 +5423,7 @@ const initiate_generate = async (e) => {
 
       // update dataset list; set the dataset id and int id
       try {
-        let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
+        let responseObject = await client.get(`manage_datasets/fetch_user_datasets`, {
           params: {
             selected_account: window.defaultBfAccount,
           },
@@ -6891,6 +5442,7 @@ const initiate_generate = async (e) => {
       document.getElementById("contact-us-view").style.pointerEvents = "";
     })
     .catch(async (error) => {
+      amountOfTimesPennsieveUploadFailed += 1;
       clearInterval(timerProgress);
 
       $("#party-lottie").hide();
@@ -6906,7 +5458,6 @@ const initiate_generate = async (e) => {
       }
 
       // show the retry button and hide the verify file status button
-      $("#button-retry").show();
       $("#button-generate-validate").hide();
 
       //Allow guided_mode_view to be clicked again
@@ -6930,7 +5481,7 @@ const initiate_generate = async (e) => {
       );
 
       // log the file and file size values to analytics for the amount that we managed to upload before we failed
-      if (dataset_destination == "bf" || dataset_destination == "Pennsieve") {
+      if (dataset_destination == "ps" || dataset_destination == "Pennsieve") {
         // log the difference again to Google Analytics
         let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
         let differenceInBytes = uploadedBytes - bytesOnPreviousLogPage;
@@ -7002,39 +5553,54 @@ const initiate_generate = async (e) => {
       document.getElementById("para-new-curate-progress-bar-error-status").innerHTML =
         `<span style='color: red;'>${emessage}</span>`;
 
-      Swal.fire({
-        icon: "error",
-        title: "An Error Occurred While Uploading Your Dataset",
-        html: "Check the error message on the progress page to learn more.",
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-        didOpen: () => {
-          document.getElementById("swal2-html-container").style.maxHeight = "19rem";
-          document.getElementById("swal2-html-container").style.overflowY = "auto";
-        },
-      }).then((result) => {
-        statusBarClone.remove();
-        sparc_container.style.display = "inline";
-        if (result.isConfirmed) {
-          let button = document.getElementById("button-generate");
-          $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
-          document.getElementById("prevBtn").style.display = "none";
-          document.getElementById("start-over-btn").style.display = "none";
-          document.getElementById("div-vertical-progress-bar").style.display = "none";
-          document.getElementById("wrapper-wrap").style.display = "flex";
-          document.getElementById("div-generate-comeback").style.display = "flex";
-          document.getElementById("generate-dataset-progress-tab").style.display = "flex";
-        }
-      });
+      if (amountOfTimesPennsieveUploadFailed > 3) {
+        Swal.fire({
+          icon: "error",
+          title: "An Error Occurred While Uploading Your Dataset",
+          html: "Check the error message on the progress page to learn more. If the  issue persists, please contact us by using the Contact Us page in the sidebar.",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+          didOpen: () => {
+            document.getElementById("swal2-html-container").style.maxHeight = "19rem";
+            document.getElementById("swal2-html-container").style.overflowY = "auto";
+          },
+        }).then((result) => {
+          statusBarClone.remove();
+          sparc_container.style.display = "inline";
+          if (result.isConfirmed) {
+            let button = document.getElementById("button-generate");
+            $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
+            document.getElementById("prevBtn").style.display = "none";
+            document.getElementById("start-over-btn").style.display = "none";
+            document.getElementById("div-vertical-progress-bar").style.display = "none";
+            document.getElementById("wrapper-wrap").style.display = "flex";
+            document.getElementById("div-generate-comeback").style.display = "flex";
+            document.getElementById("generate-dataset-progress-tab").style.display = "flex";
+          }
+        });
+        // show the retry button so the user can retry the upload manually or decide to contact us
+        $("#button-retry").show();
 
+        // do not update the dataset list or automaticallly retry the upload
+        return;
+      }
+
+      progressStatus.innerHTML = `Retrying the upload automatically ${amountOfTimesPennsieveUploadFailed} of 3 times...`;
+      statusBarClone.remove();
+
+      await window.wait(5000);
+
+      setupCode(true);
+
+      // update the dataset list
       try {
-        let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
+        let responseObject = await client.get(`manage_datasets/fetch_user_datasets`, {
           params: {
             selected_account: window.defaultBfAccount,
           },
@@ -7276,7 +5842,7 @@ const initiate_generate = async (e) => {
     }
 
     // if doing a pennsieve upload log as we go ( as well as at the end in failure or success case )
-    if (dataset_destination == "Pennsieve" || dataset_destination == "bf") {
+    if (dataset_destination == "Pennsieve" || dataset_destination == "ps") {
       logProgressToAnalytics(total_files_uploaded, main_generated_dataset_size);
     }
   }
@@ -7333,80 +5899,13 @@ const initiate_generate = async (e) => {
   };
 }; // end initiate_generate
 
-const show_curation_shortcut = async () => {
-  Swal.fire({
-    backdrop: "rgba(0,0,0, 0.4)",
-    cancelButtonText: "No. I'll do it later",
-    confirmButtonText: "Yes, I want to share it",
-    heightAuto: false,
-    icon: "success",
-    allowOutsideClick: false,
-    reverseButtons: window.reverseSwalButtons,
-    showCancelButton: true,
-    text: "Now that your dataset is uploaded, do you want to share it with the Curation Team?",
-    showClass: {
-      popup: "animate__animated animate__zoomIn animate__faster",
-    },
-    hideClass: {
-      popup: "animate__animated animate__zoomOut animate__faster",
-    },
-  }).then(async (result) => {
-    //window.dismissStatus("status-bar-curate-progress");
-    window.uploadComplete.open({
-      type: "success",
-      message: "Upload to Pennsieve completed",
-    });
-    let statusBarContainer = document.getElementById("status-bar-curate-progress");
-    //statusBarContainer.remove();
-
-    if (result.isConfirmed) {
-      let datasetName = "";
-      if (!sodaJSONObj["generate-dataset"].hasOwnProperty("dataset-name")) {
-        datasetName = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-      } else {
-        datasetName = sodaJSONObj["generate-dataset"]["dataset-name"];
-      }
-      $(".bf-dataset-span").html(datasetName);
-      $("#current-bf-dataset").text(datasetName);
-      $("#current-bf-dataset-generate").text(datasetName);
-      $(".bf-dataset-span").html(datasetName);
-      confirm_click_function();
-
-      window.defaultBfDataset = datasetName;
-      // document.getElementById("ds-description").innerHTML = "";
-      window.refreshDatasetList();
-      $("#dataset-loaded-message").hide();
-
-      // showHideDropdownButtons("dataset", "show");
-      confirm_click_function();
-      $("#guided_mode_view").click();
-      $(".swal2-confirm").click();
-      $(".vertical-progress-bar-step").removeClass("is-current");
-      $(".vertical-progress-bar-step").removeClass("done");
-      $(".getting-started").removeClass("prev");
-      $(".getting-started").removeClass("show");
-      $(".getting-started").removeClass("test2");
-      $("#Question-getting-started-1").addClass("show");
-      $("#generate-dataset-progress-tab").css("display", "none");
-
-      window.currentTab = 0;
-      window.wipeOutCurateProgress();
-      $("#guided-button-start-modify-component").click();
-      $("#disseminate_dataset_tab").click();
-      $("#submit_prepublishing_review_btn").click();
-    }
-  });
-};
-
 window.get_num_files_and_folders = (dataset_folders) => {
   if ("files" in dataset_folders) {
-    for (let file in dataset_folders["files"]) {
-      file_counter += 1;
-    }
+    window.file_counter += dataset_folders["files"].length;
   }
   if ("folders" in dataset_folders) {
     for (let folder in dataset_folders["folders"]) {
-      folder_counter += 1;
+      window.folder_counter += 1;
       window.get_num_files_and_folders(dataset_folders["folders"][folder]);
     }
   }
@@ -7417,10 +5916,10 @@ const determineDatasetDestination = () => {
   if (window.sodaJSONObj["generate-dataset"]) {
     if (window.sodaJSONObj["generate-dataset"]["destination"]) {
       let destination = window.sodaJSONObj["generate-dataset"]["destination"];
-      if (destination === "bf" || destination === "Pennsieve") {
+      if (destination === "ps" || destination === "Pennsieve") {
         // updating an existing dataset on Pennsieve
-        if (window.sodaJSONObj["bf-dataset-selected"]) {
-          return [window.sodaJSONObj["bf-dataset-selected"]["dataset-name"], "Pennsieve"];
+        if (window.sodaJSONObj["ps-dataset-selected"]) {
+          return [window.sodaJSONObj["ps-dataset-selected"]["dataset-name"], "Pennsieve"];
         } else {
           return [
             // get dataset name,
@@ -7431,26 +5930,17 @@ const determineDatasetDestination = () => {
       } else {
         // replacing files in an existing local dataset
         if (window.sodaJSONObj["generate-dataset"]["dataset-name"]) {
-          return [window.sodaJSONObj["generate-dataset"]["dataset-name"], "Local"];
+          return [window.sodaJSONObj["generate-dataset"]["dataset-name"], "local"];
         } else {
           // creating a new dataset from an existing local dataset
-          return [document.querySelector("#inputNewNameDataset-upload-dataset").value, "Local"];
+          return [document.querySelector("#inputNewNameDataset-upload-dataset").value, "local"];
         }
       }
     }
   } else {
-    return [document.querySelector("#inputNewNameDataset-upload-dataset").value, "Local"];
+    return [document.querySelector("#inputNewNameDataset-upload-dataset").value, "local"];
   }
 };
-
-function generateHtmlListFromArray(error_array) {
-  const htmlList = `
-    <ul>
-      ${error_array.map((error) => `<li>${error}</li>`).join("")}
-    </ul>
-  `;
-  return htmlList;
-}
 
 var metadataIndividualFile = "";
 var metadataAllowedExtensions = [];
@@ -7464,36 +5954,6 @@ window.importMetadataFiles = (ev, metadataFile, extensionList, paraEle, curation
   metadataParaElement = paraEle;
   metadataCurationMode = curationMode;
   window.electron.ipcRenderer.send("open-file-dialog-metadata-curate");
-};
-
-window.importPennsieveMetadataFiles = (ev, metadataFile, extensionList, paraEle) => {
-  extensionList.forEach((file_type) => {
-    let file_name = metadataFile + file_type;
-    if (
-      file_name in window.sodaJSONObj["metadata-files"] &&
-      window.sodaJSONObj["metadata-files"][file_name]["type"] != "bf"
-    ) {
-      delete window.sodaJSONObj["metadata-files"][file_name];
-    }
-    let deleted_file_name = file_name + "-DELETED";
-    if (
-      deleted_file_name in window.sodaJSONObj["metadata-files"] &&
-      window.sodaJSONObj["metadata-files"][deleted_file_name]["type"] === "bf"
-    ) {
-      // update Json object with the restored object
-      let index =
-        window.sodaJSONObj["metadata-files"][deleted_file_name]["action"].indexOf("deleted");
-      window.sodaJSONObj["metadata-files"][deleted_file_name]["action"].splice(index, 1);
-      let deleted_file_name_new_key = deleted_file_name.substring(
-        0,
-        deleted_file_name.lastIndexOf("-")
-      );
-      window.sodaJSONObj["metadata-files"][deleted_file_name_new_key] =
-        window.sodaJSONObj["metadata-files"][deleted_file_name];
-      delete window.sodaJSONObj["metadata-files"][deleted_file_name];
-    }
-  });
-  window.populate_existing_metadata(window.sodaJSONObj);
 };
 
 window.electron.ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
@@ -7545,7 +6005,7 @@ window.electron.ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
             //get the value of data-code-metadata-file-type from dragDropContainer
             const metadataFileType = dragDropContainer.dataset.codeMetadataFileType;
             //save the path of the metadata file to the json object
-            sodaJSONObj["dataset-metadata"]["code-metadata"][metadataFileType] = mypath[0];
+            sodaJSONObj["dataset_metadata"]["code-metadata"][metadataFileType] = mypath[0];
 
             const lottieContainer = dragDropContainer.querySelector(
               ".code-metadata-lottie-container"
@@ -7608,14 +6068,14 @@ window.showBFAddAccountSweetalert = async (ev) => {
               key: apiKey,
               secret: apiSecret,
             })
-            .then((response) => {
+            .then(() => {
               $("#bootbox-key-name").val("");
               $("#bootbox-api-key").val("");
               $("#bootbox-api-secret").val("");
               bfAccountOptions[name] = name;
               window.defaultBfAccount = name;
               window.defaultBfDataset = "Select dataset";
-              return new Promise((resolve, reject) => {
+              return new Promise(() => {
                 client
                   .get("/manage_datasets/bf_account_details", {
                     params: {
@@ -7624,17 +6084,17 @@ window.showBFAddAccountSweetalert = async (ev) => {
                   })
                   .then(async (response) => {
                     let user_email = response.data.email;
-                    $("#current-bf-account").text(user_email);
-                    $("#current-bf-account-generate").text(user_email);
+                    $("#current-ps-account").text(user_email);
+                    $("#current-ps-account-generate").text(user_email);
                     $("#create_empty_dataset_BF_account_span").text(user_email);
-                    $(".bf-account-span").text(user_email);
-                    $("#current-bf-dataset").text("None");
-                    $("#current-bf-dataset-generate").text("None");
-                    $(".bf-dataset-span").html("None");
-                    $("#para-continue-bf-dataset-getting-started").text("");
+                    $(".ps-account-span").text(user_email);
+                    $("#current-ps-dataset").text("None");
+                    $("#current-ps-dataset-generate").text("None");
+                    $(".ps-dataset-span").html("None");
+                    $("#para-continue-ps-dataset-getting-started").text("");
                     // set the workspace field values to the user's current workspace
                     let org = response.data.organization;
-                    $(".bf-organization-span").text(org);
+                    $(".ps-organization-span").text(org);
                     showHideDropdownButtons("account", "show");
                     confirm_click_account_function();
                     window.updateBfAccountList();
@@ -7650,7 +6110,7 @@ window.showBFAddAccountSweetalert = async (ev) => {
                     }
 
                     // reset the selected dataset to None
-                    $(".bf-dataset-span").html("None");
+                    $(".ps-dataset-span").html("None");
                     // reset the current owner span in the manage dataset make pi owner of a dataset tab
                     $(".current-permissions").html("None");
 
@@ -8049,229 +6509,6 @@ window.logGeneralOperationsForAnalytics = (category, analyticsPrefix, granularit
   }
 };
 
-// /*
-// ******************************************************
-// ******************************************************
-// Manage Datasets Add/Edit Banner Image With Nodejs
-// ******************************************************
-// ******************************************************
-// */
-
-// // I: Dataset name or id
-// // O: Presigned URL for the banner image or an empty string
-// const getDatasetBannerImageURL = async (datasetIdOrName) => {
-//   // check that a dataset name or id is provided
-//   if (!datasetIdOrName || datasetIdOrName === "") {
-//     throw new Error("Error: Must provide a valid dataset to pull tags from.");
-//   }
-
-//   // fetch the banner url from the Pennsieve API at the readme endpoint (this is because the description is the subtitle not readme )
-
-//   let { banner } = bannerResponse.data;
-
-//   return banner;
-// };
-
-// /*
-// ******************************************************
-// ******************************************************
-// Get User Dataset Permissions With Nodejs
-// ******************************************************
-// ******************************************************
-// */
-
-// // returns the user's permissions/role for the given dataset. Options are : owner, manager, editor, viewer
-// const getCurrentUserPermissions = async (datasetIdOrName) => {
-//   // check that a dataset name or id is provided
-//   if (!datasetIdOrName || datasetIdOrName === "") {
-//     throw new Error("Error: Must provide a valid dataset to check permissions for.");
-//   }
-
-//   // get access token for the current user
-//   let jwt = await get_access_token();
-
-//   // get the dataset the user wants to edit
-//   let dataset = await get_dataset_by_name_id(datasetIdOrName, jwt);
-
-//   // get the id out of the dataset
-//   let id = dataset.content.id;
-
-//   // get the user's permissions
-
-//   // get the status code out of the response
-//   let statusCode = dataset_roles.status;
-
-//   // check the status code of the response
-//   switch (statusCode) {
-//     case 200:
-//       // success do nothing
-//       break;
-//     case 404:
-//       throw new Error(
-//         `${statusCode} - The dataset you selected cannot be found. Please select a valid dataset to check your permissions.`
-//       );
-//     case 401:
-//       throw new Error(
-//         `${statusCode} - You cannot check your dataset permissions while unauthenticated. Please reauthenticate and try again.`
-//       );
-//     case 403:
-//       throw new Error(`${statusCode} - You do not have access to this dataset. `);
-
-//     default:
-//       // something unexpected happened
-//       let statusText = dataset_roles.statusText;
-//       throw new Error(`${statusCode} - ${statusText}`);
-//   }
-
-//   // get the permissions object
-//   const { role } = dataset_roles.data;
-
-//   // return the permissions
-//   return role;
-// };
-
-// // I: role: string - A user's permissions indicated by their role. Can be: owner, manager, editor, viewer.
-// // O: boolean - true if role is owner or manager, false otherwise
-// const userIsOwnerOrManager = (role) => {
-//   // check if the user permissions do not include "owner" or "manager"
-//   if (!["owner", "manager"].includes(role)) {
-//     // throw a permission error: "You don't have permissions for editing metadata on this Pennsieve dataset"
-//     return false;
-//   }
-
-//   return true;
-// };
-
-// const userIsOwner = (role) => {
-//   // check if the user permissions do not include "owner"
-//   if (role !== "owner") {
-//     // throw a permission error: "You don't have permissions for editing metadata on this Pennsieve dataset"
-//     return false;
-//   }
-
-//   return true;
-// };
-
-// const userIsDatasetOwner = async (datasetIdOrName) => {
-//   // check that a dataset name or id is provided
-//   if (!datasetIdOrName || datasetIdOrName === "") {
-//     throw new Error("Error: Must provide a valid dataset to check permissions for.");
-//   }
-
-//   // get the dataset the user wants to edit
-//   let role = await getCurrentUserPermissions(datasetIdOrName);
-
-//   return userIsOwner(role);
-// };
-
-// const create_validation_report = (error_report) => {
-//   // let accordion_elements = ` <div class="title active"> `;
-//   let accordion_elements = "";
-//   let elements = Object.keys(error_report).length;
-
-//   if ((elements = 0)) {
-//     accordion_elements += `<ul> <li>No errors found </li> </ul>`;
-//   } else if (elements == 1) {
-//     let key = Object.keys(error_report)[0];
-//     accordion_elements += `<ul> `;
-//     if ("messages" in error_report[key]) {
-//       for (let i = 0; i < error_report[key]["messages"].length; i++) {
-//         accordion_elements += `<li> <p> ${error_report[key]["messages"][i]} </li>`;
-//       }
-//     }
-//     accordion_elements += `</ul>`;
-//   } else {
-//     let keys = Object.keys(error_report);
-//     for (key_index in keys) {
-//       key = keys[key_index];
-//       if (key == keys[0]) {
-//         accordion_elements += `<ul> `;
-//         if ("messages" in error_report[key]) {
-//           for (let i = 0; i < error_report[key]["messages"].length; i++) {
-//             accordion_elements += `<li> <p> ${error_report[key]["messages"][i]} </p> </li>`;
-//           }
-//         }
-//         accordion_elements += `</ul> `;
-//       } else {
-//         accordion_elements += `<ul> `;
-//         if ("messages" in error_report[key]) {
-//           for (let i = 0; i < error_report[key]["messages"].length; i++) {
-//             accordion_elements += `<li> <p> ${error_report[key]["messages"][i]} </p></li>`;
-//           }
-//         }
-//         accordion_elements += `</ul>`;
-//       }
-//     }
-//     // accordion_elements += `</div>`;
-//   }
-//   $("#validation_error_accordion").html(accordion_elements);
-//   // $("#validation_error_accordion").accordion();
-// };
-
-// $("#validate_dataset_bttn").on("click", async () => {
-//   const axiosInstance = axios.create({
-//     baseURL: "http://127.0.0.1:5000/",
-//     timeout: 0,
-//   });
-
-//   window.log.info("validating dataset");
-//   window.log.info(window.bfDatasetSubtitle.value);
-
-//   $("#dataset_validator_status").text("Please wait while we retrieve the dataset...");
-//   $("#dataset_validator_spinner").show();
-
-//   let selectedBfAccount = window.defaultBfAccount;
-//   let selectedBfDataset = window.defaultBfDataset;
-
-//   temp_object = {
-//     "bf-account-selected": {
-//       "account-name": selectedBfAccount,
-//     },
-//     "bf-dataset-selected": {
-//       "dataset-name": selectedBfDataset,
-//     },
-//   };
-
-//   let datasetResponse;
-
-//   try {
-//     datasetResponse = await axiosInstance("api_ps_retrieve_dataset", {
-//       params: {
-//         obj: JSON.stringify(temp_object),
-//       },
-//       responseType: "json",
-//       method: "get",
-//     });
-//   } catch (err) {
-//     window.log.error(error);
-//     console.error(error);
-//     $("#dataset_validator_spinner").hide();
-//     $("#dataset_validator_status").html(`<span style='color: red;'> ${error}</span>`);
-//   }
-
-//   $("#dataset_validator_status").text("Please wait while we validate the dataset...");
-
-//   try {
-//     datasetResponse = axiosInstance("api_validate_dataset_pipeline", {
-//       params: {
-//         selectedBfAccount,
-//         selectedBfDataset,
-//       },
-//       responseType: "json",
-//       method: "get",
-//     });
-//   } catch (error) {
-//     window.log.error(error);
-//     console.error(error);
-//     $("#dataset_validator_spinner").hide();
-//     $("#dataset_validator_status").html(`<span style='color: red;'> ${error}</span>`);
-//   }
-
-//   create_validation_report(res);
-//   $("#dataset_validator_status").html("");
-//   $("#dataset_validator_spinner").hide();
-// });
-
 //function used to scale banner images
 window.scaleBannerImage = async (imagePath) => {
   try {
@@ -8293,6 +6530,11 @@ window.scaleBannerImage = async (imagePath) => {
     return error.response;
   }
 };
+
+document.getElementById("button-view-impact").addEventListener("click", () => {
+  // open a new tab pointed towards the following external link: https://docs.sodaforsparc.io/
+  window.open("https://docs.sodaforsparc.io#impact/", "_blank");
+});
 
 document.getElementById("button-gather-logs").addEventListener("click", () => {
   //function will be used to gather all logs on all OS's
@@ -8444,20 +6686,13 @@ document.getElementById("button-display-client-id").addEventListener("click", as
   });
 });
 
-const gettingStarted = () => {
-  let getting_started = document.getElementById("main_tabs_view");
-  getting_started.click();
-};
-
 const directToGuidedMode = () => {
   const guidedModeLinkButton = document.getElementById("guided_mode_view");
   guidedModeLinkButton.click();
 };
 window.directToFreeFormMode = () => {
-  const freeFormModeLinkButton = document.getElementById("main_tabs_view");
   const directToOrganize = document.getElementById("organize_dataset_btn");
   directToOrganize.click();
-  // freeFormModeLinkButton.click();
 };
 
 document
@@ -8465,7 +6700,7 @@ document
   .addEventListener("click", directToGuidedMode);
 document
   .getElementById("home-button-free-form-mode-link")
-  .addEventListener("click", directToFreeFormMode);
+  .addEventListener("click", window.directToFreeFormMode);
 
 tippy("#datasetPathDisplay", {
   placement: "top",
