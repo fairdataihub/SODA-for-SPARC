@@ -5,9 +5,7 @@ on:
   push:
     branches:
       - main
-      - staging
-      - pre-staging
-      - guest-contributor-fixes-ui-update
+      - create-perm-15.4.0-pre-sds3-build
 
 jobs:
   deploy-on-windows:
