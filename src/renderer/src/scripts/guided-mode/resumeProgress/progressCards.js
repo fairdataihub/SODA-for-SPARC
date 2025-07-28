@@ -96,8 +96,7 @@ export const guidedRenderProgressCards = async () => {
           Select the dataset that you would like to continue working with and click "Continue"
         </h2>
       `;
-    //Add the progress cards that have already been uploaded to Pennsieve
-    //to their container (datasets that have the window.sodaJSONObj["previous-guided-upload-dataset-name"] property)
+
     progressCardsContainer.innerHTML += progressFileData
       .map((progressFile) => generateProgressCardElement(progressFile))
       .join("\n");
@@ -166,7 +165,8 @@ const generateProgressCardElement = (progressFileJSONObj) => {
   const lastVersionOfSodaUsed = progressFileJSONObj?.["last-version-of-soda-used"] || "1.0.0";
 
   // True if the progress file has already been uploaded to Pennsieve
-  const alreadyUploadedToPennsieve = !!progressFileJSONObj["previous-guided-upload-dataset-name"];
+  const alreadyUploadedToPennsieve =
+    !!progressFileJSONObj?.["dataset-successfully-uploaded-to-pennsieve"];
 
   // Function to generate the button used to resume progress
   const generateProgressResumptionButton = (

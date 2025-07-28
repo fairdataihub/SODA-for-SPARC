@@ -193,9 +193,14 @@ window.openPage = async (targetPageID) => {
     setDeSelectedEntities(window.sodaJSONObj["deSelected-entities"] || []);
     setPerformanceList(window.sodaJSONObj["dataset_metadata"]?.["performance_metadata"] || []);
 
-    if (targetPageID === "guided-generate-dataset-locally") {
+    const pagesToShowMetadataPreview = [
+      "guided-generate-dataset-locally",
+      "guided-dataset-structure-review-tab",
+      "guided-dataset-generation-confirmation-tab",
+    ];
+    if (pagesToShowMetadataPreview.includes(targetPageID)) {
       // Set the dataset metadata to preview
-      setDataSetMetadataToPreview(window.sodaJSONObj["dataset_metadata"] || {});
+      setDataSetMetadataToPreview(Object.keys(window.sodaJSONObj["dataset_metadata"] || {}));
     } else {
       // Clear the dataset metadata preview if not on the generation page
       setDataSetMetadataToPreview(null);
