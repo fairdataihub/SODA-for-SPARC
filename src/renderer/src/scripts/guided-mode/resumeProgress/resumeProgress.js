@@ -88,68 +88,6 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
       }
     }
 
-    if (!datasetHasAlreadyBeenSuccessfullyUploaded) {
-      // If the dataset is being edited on Pensieve, check to make sure the folders and files are still the same.
-      if (datasetResumeJsonObj["starting-point"]?.["origin"] === "ps") {
-        // Check to make sure the dataset is not locked
-        const datasetIsLocked = await api.isDatasetLocked(
-          datasetResumeJsonObj["digital-metadata"]["pennsieve-dataset-id"]
-        );
-        if (datasetIsLocked) {
-          throw new Error(`
-              This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
-              <br />
-              <br />
-              If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a  target="_blank" rel="noopener noreferrer" href="mailto:curation@sparc.science">curation@sparc.science.</a>
-            `);
-        }
-
-        if (Object.keys(datasetResumeJsonObj["previously-uploaded-data"]).length > 0) {
-          await Swal.fire({
-            icon: "info",
-            title: "Resuming a Pennsieve dataset upload that previously failed",
-            html: `
-              Please note that any changes made to your dataset on Pennsieve since your last dataset upload
-              was interrupted may be overwritten.
-            `,
-            width: 500,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            confirmButtonText: `I understand`,
-            focusConfirm: true,
-            allowOutsideClick: false,
-          });
-        } else {
-          // Check to make sure the dataset structure on Pennsieve is the same as when the user started editing this dataset
-          let filesFoldersResponse = await client.post(
-            `/organize_datasets/dataset_files_and_folders`,
-            {
-              sodajsonobject: datasetResumeJsonObj,
-            },
-            { timeout: 0 }
-          );
-          let data = filesFoldersResponse.data;
-          const currentPennsieveDatasetStructure = data["soda_object"]["dataset-structure"];
-
-          const intitiallyPulledDatasetStructure =
-            datasetResumeJsonObj["initially-pulled-dataset-structure"];
-
-          // check to make sure current and initially pulled dataset structures are the same
-          if (
-            JSON.stringify(currentPennsieveDatasetStructure) !==
-            JSON.stringify(intitiallyPulledDatasetStructure)
-          ) {
-            throw new Error(
-              `The folders and/or files on Pennsieve have changed since you last edited this dataset in SODA.
-                <br />
-                <br />
-                If you would like to update this dataset, please delete this progress file and start over.
-                `
-            );
-          }
-        }
-      }
-    }
     window.sodaJSONObj = datasetResumeJsonObj;
 
     //patches the sodajsonobj if it was created in a previous version of guided mode

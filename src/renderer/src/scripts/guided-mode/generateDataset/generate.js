@@ -191,10 +191,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         // show verify files section
         document.getElementById("guided--verify-files").classList.remove("hidden");
       });
-<<<<<<< HEAD
-
-    trackPennsieveDatasetGenerationProgress(standardizedDatasetStructure);
-=======
     await trackPennsieveDatasetGenerationProgress(standardizedDatasetStructure);
 
     // ANYTHING THAT HAPPENS HERE IS AFTER THE UPLOAD IS COMPLETED SUCCESSFULLY
@@ -218,7 +214,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
 
     //Show the next button
     $("#guided-next-button").css("visibility", "visible");
->>>>>>> share-with-curation-team-flow
     guidedSetNavLoadingState(false);
   } catch (error) {
     clientError(error);

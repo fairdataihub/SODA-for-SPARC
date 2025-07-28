@@ -32,6 +32,7 @@ import {
   NumberInput,
   Notification,
   Accordion,
+  Space,
 } from "@mantine/core";
 import { IconCalendar } from "@tabler/icons-react";
 import { DateInput } from "@mantine/dates";
@@ -114,10 +115,9 @@ const EntityMetadataForm = () => {
       }
 
       // Special handling: Strip prefixes from ID fields for display
-      if (selectedHierarchyEntity && value && key.endsWith(" id")) {
+      if (selectedHierarchyEntity && value && key.endsWith("_id")) {
         const entityType = selectedHierarchyEntity.type;
         const prefix = entityPrefixes[entityType];
-
         if (prefix && value.startsWith(prefix)) {
           return value.substring(prefix.length);
         }
@@ -314,11 +314,13 @@ const EntityMetadataForm = () => {
                   : undefined
               }
               leftSection={
-                <Text size="sm" c="dimmed" mx="sm">
+                <Text size="sm" c="dimmed" ml="sm">
                   {entityPrefixes["subject"]}
                 </Text>
               }
               leftSectionWidth={50}
+              readOnly={!!selectedHierarchyEntity}
+              disabled={!!selectedHierarchyEntity}
             />
             <OptionalFieldsNotice />
 
@@ -684,11 +686,13 @@ const EntityMetadataForm = () => {
                   : undefined
               }
               leftSection={
-                <Text size="sm" c="dimmed" mx="sm">
+                <Text size="sm" c="dimmed" ml="sm">
                   {entityPrefixes["sample"]}
                 </Text>
               }
               leftSectionWidth={50}
+              readOnly={!!selectedHierarchyEntity}
+              disabled={!!selectedHierarchyEntity}
             />
             <OptionalFieldsNotice />
 
@@ -897,11 +901,13 @@ const EntityMetadataForm = () => {
                   : undefined
               }
               leftSection={
-                <Text size="sm" c="dimmed" mx="sm">
+                <Text size="sm" c="dimmed" ml="sm">
                   {entityPrefixes["site"]}
                 </Text>
               }
               leftSectionWidth={50}
+              readOnly={!!selectedHierarchyEntity}
+              disabled={!!selectedHierarchyEntity}
             />
             <OptionalFieldsNotice />
             <TextInput
@@ -944,7 +950,7 @@ const EntityMetadataForm = () => {
     <SodaPaper>
       <Stack spacing="lg">
         {/* Header section with entity type and title */}
-        <Group position="apart">
+        <Group justify="space-between">
           <Group>
             {getEntityIcon()}
             <Title order={4}>
@@ -953,6 +959,10 @@ const EntityMetadataForm = () => {
                 : `Add new ${activeFormType}`}
             </Title>
           </Group>
+
+          <Button color="blue" onClick={handleSave} leftIcon={<IconDeviceFloppy size={16} />}>
+            {selectedHierarchyEntity ? "Save Changes" : `Add ${activeFormType}`}
+          </Button>
         </Group>
 
         <Divider />
