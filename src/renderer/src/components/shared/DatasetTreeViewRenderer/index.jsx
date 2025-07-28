@@ -32,6 +32,7 @@ import {
   IconFileTypeSvg,
   IconFileTypeJpg,
   IconFileTypePng,
+  IconFileSpreadsheet,
 } from "@tabler/icons-react";
 
 import useGlobalStore from "../../../stores/globalStore";
@@ -45,6 +46,7 @@ import {
 import { useDebouncedValue } from "@mantine/hooks";
 import { naturalSort } from "../utils/util-functions";
 import SelectedEntityPreviewer from "../SelectedEntityPreviewer";
+import Icon from "../Icon";
 
 const getAssociatedEntities = (relativePath, currentEntityType) => {
   const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
@@ -114,6 +116,7 @@ const fileIcons = {
   jpg: <IconFileTypeJpg size={ICON_SETTINGS.fileSize} />,
   jpeg: <IconFileTypeJpg size={ICON_SETTINGS.fileSize} />,
   png: <IconFileTypePng size={ICON_SETTINGS.fileSize} />,
+  xlsx: <IconFileSpreadsheet size={ICON_SETTINGS.fileSize} />,
 };
 
 const getIconForFile = (fileName) => {
@@ -668,7 +671,35 @@ const DatasetTreeViewRenderer = ({
               )
             )}
 
-            {dataSetMetadataToPreview && <>{dataSetMetadataToPreview.join(", ")}</>}
+            {dataSetMetadataToPreview &&
+              dataSetMetadataToPreview.map((metadataKey) => {
+                const metadataKeyToFileNameMapping = {
+                  subjects: "subjects.xlsx",
+                  samples: "samples.xlsx",
+                  code_description: "code_description.xlsx",
+                  dataset_description: "dataset_description.xlsx",
+                  performances: "performances.xlsx",
+                  resources: "resources.xlsx",
+                  sites: "sites.xlsx",
+                  submission: "submission.xlsx",
+                  README: "README.TXT",
+                  CHANGES: "CHANGES.TXT",
+                  manifest_file: "manifest.xlsx",
+                };
+
+                const fileName = metadataKeyToFileNameMapping[metadataKey] || metadataKey;
+                return (
+                  <FileItem
+                    key={metadataKey}
+                    name={fileName}
+                    content={{ relativePath: metadataKey, type: "metadata" }}
+                    onFileClick={null}
+                    isFileSelected={null}
+                    allowStructureEditing={false}
+                    entityType={entityType}
+                  />
+                );
+              })}
           </>
         )}
       </Stack>
