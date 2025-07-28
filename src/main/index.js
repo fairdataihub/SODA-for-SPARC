@@ -174,8 +174,7 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
     try {
       spreadSheetModal.destroy();
       // spreadSheetModal.close();
-    } catch (e) {
-    }
+    } catch (e) {}
   });
 
   if (is.dev && process.env["ELECTRON_RENDERER_URL"]) {
@@ -198,8 +197,7 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
     try {
       spreadSheetModal.destroy();
       // spreadSheetModal.close();
-    } catch (e) {
-    }
+    } catch (e) {}
   });
 });
 
@@ -303,8 +301,7 @@ const createPyProc = async () => {
   let port = "" + selectPort();
   try {
     await killAllPreviousProcesses();
-  } catch (e) {
-  }
+  } catch (e) {}
   if (existsSync(script)) {
     log.info("Server exists at specified location", script);
   } else {
@@ -363,8 +360,7 @@ const createPyProc = async () => {
           stdio: "ignore",
         });
 
-        pyflaskProcess.on("data", function () {
-        });
+        pyflaskProcess.on("data", function () {});
 
         pyflaskProcess.on("error", function (err) {
           console.error("Failed to start pyflaskProcess:", err);
@@ -414,8 +410,7 @@ const exitPyProc = async () => {
   };
   try {
     await killAllPreviousProcesses();
-  } catch (e) {
-  }
+  } catch (e) {}
   // check if the platform is Windows
   if (process.platform === "win32") {
     if (pyflaskProcess != null) {
@@ -431,8 +426,7 @@ const exitPyProc = async () => {
       pyflaskProcess.kill();
       pyflaskProcess = null;
     }
-  } catch (e) {
-  }
+  } catch (e) {}
   PORT = null;
 };
 

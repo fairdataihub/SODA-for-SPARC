@@ -87,8 +87,7 @@ const userIdGeneratorForKombucha = async () => {
       nodeStorage.setItem("userId", res.data.uid);
       nodeStorage.setItem("kombuchaUserCreated", true);
       return res.data.token;
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   // return the current token
@@ -115,8 +114,7 @@ const sendKombuchaAnalyticsEvent = async (eventData, userToken) => {
         nodeStorage.setItem("kombuchaToken", res.data.token);
         // Retry sending the event data with the updated token
         sendKombuchaAnalyticsEvent(eventData, res.data.token);
-      } catch (e) {
-      }
+      } catch (e) {}
     }
   }
 };

@@ -151,8 +151,7 @@ const createPyProc = async () => {
       }
       selectedPort = port;
     })
-    .catch((err) => {
-    });
+    .catch((err) => {});
 };
 /**
  * Kill the python server process. Needs to be called before SODA closes.
@@ -490,8 +489,7 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
     try {
       spreadSheetModal.destroy();
       // spreadSheetModal.close();
-    } catch (e) {
-    }
+    } catch (e) {}
   });
   spreadSheetModal.loadFile("./sections/spreadSheetModal/spreadSheet.html");
   spreadSheetModal.once("ready-to-show", async () => {
@@ -507,8 +505,7 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
     try {
       spreadSheetModal.destroy();
       // spreadSheetModal.close();
-    } catch (e) {
-    }
+    } catch (e) {}
   });
 });
 
