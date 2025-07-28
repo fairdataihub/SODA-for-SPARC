@@ -42,6 +42,7 @@ window.getPrepublishingChecklistStatuses = async (currentDataset) => {
   // Dataset metadata
   try {
     const dataset = await api.getDataset(currentDataset);
+    console.log("[Prepublishing Checklist] Fetched dataset metadata:", dataset);
     const { description = "", tags = [], license = "" } = dataset.content || {};
     statuses.subtitle = description.trim().length > 0;
     statuses.tags = tags.length > 0;

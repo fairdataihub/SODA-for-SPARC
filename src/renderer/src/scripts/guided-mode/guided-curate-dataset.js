@@ -95,7 +95,6 @@ window.guidedSetCurationTeamUI = () => {
     $("#guided-unshare-dataset-with-curation-team-message").removeClass("hidden");
   } else {
     $("#guided--prepublishing-checklist-container").addClass("hidden");
-    $("#guided-button-share-dataset-with-curation-team").addClass("hidden");
     $("#guided-button-share-dataset-with-curation-team").removeClass("hidden");
     $("#guided-button-unshare-dataset-with-curation-team").addClass("hidden");
     $("#guided-unshare-dataset-with-curation-team-message").addClass("hidden");
@@ -168,39 +167,91 @@ const withdrawDatasetSubmission = async () => {
   }
 };
 
-const guidedSubmitDatasetForReview = async (embargoReleaseDate) => {
-  // Always guided mode: get account and dataset from sodaJSONObj
-  const currentAccount = window.sodaJSONObj["ps-account-selected"]["account-name"];
-  const currentDataset = window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
-
-  // show a SWAL loading message until the submit for prepublishing flow is successful or fails
-  Swal.fire({
-    title: "Submitting dataset to Curation Team",
-    html: "Please wait...",
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: false,
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  });
-
+/**
+ * Submits the current dataset for review by the SPARC Curation Team.
+ * @param {string} embargoReleaseDate - Optional embargo release date. Empty string means immediate publication.
+ */
+const guidedSubmitDatasetForReview = async (embargoReleaseDate = "") => {
   try {
-    console.log(
-      "Submitting dataset for publication review... Embargo release date:",
-      embargoReleaseDate
-    );
+    // Validate required data
+    const currentAccount = window?.sodaJSONObj?.["ps-account-selected"]?.["account-name"];
+    const currentDataset = window?.sodaJSONObj?.["digital-metadata"]?.["pennsieve-dataset-id"];
+
+    if (!currentAccount || !currentDataset) {
+      throw new Error("Missing account or dataset information for submission.");
+    }
+
+    // Show loading state
+    Swal.fire({
+      title: "Submitting dataset to Curation Team",
+      html: "Please wait...",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0,0.4)",
+      didOpen: () => Swal.showLoading(),
+    });
+
+    console.log("[Dataset Submission] Starting process", {
+      embargoReleaseDate,
+      account: currentAccount,
+      datasetId: currentDataset,
+    });
+
+    // Perform API call
+    const submissionType = embargoReleaseDate === "" ? "publication" : "embargo";
     const response = await api.submitDatasetForPublication(
       currentAccount,
       currentDataset,
       embargoReleaseDate,
-      embargoReleaseDate === "" ? "publication" : "embargo"
+      submissionType
     );
-    console.log("Dataset submitted for publication:", response);
+
+    console.log("[Dataset Submission] Success:", response);
+
+    // Update UI state
+    await window.showPublishingStatus("noClear", "guided");
+
+    // Track success
+    window.electron.ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.DISSEMINATE_DATASETS,
+      kombuchaEnums.Action.SHARE_WITH_CURATION_TEAM,
+      kombuchaEnums.Label.SUBMISSION,
+      kombuchaEnums.Status.SUCCESS,
+      {
+        value: 1,
+        dataset_id: window.defaultBfDatasetId,
+        dataset_int_id: window.defaultBfDatasetIntId,
+      }
+    );
+
+    // Show success message
+    Swal.fire({
+      backdrop: "rgba(0,0,0,0.4)",
+      heightAuto: false,
+      confirmButtonText: "Ok",
+      title: "Dataset submitted for review to the SPARC Curation Team!",
+      icon: "success",
+      reverseButtons: window.reverseSwalButtons,
+      showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+      hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
+    });
+
+    // Update UI buttons
+    const checklistContainer = document.getElementById("guided--prepublishing-checklist-container");
+    const shareButton = document.getElementById("guided-button-share-dataset-with-curation-team");
+    if (checklistContainer) checklistContainer.classList.add("hidden");
+    if (shareButton) {
+      shareButton.classList.remove("hidden", "loading");
+      shareButton.disabled = false;
+    }
+
+    window.guidedSetCurationTeamUI();
   } catch (error) {
-    clientError(error);
+    console.error("[Dataset Submission] Error:", error);
+
+    // Track failure
     window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.DISSEMINATE_DATASETS,
@@ -214,70 +265,29 @@ const guidedSubmitDatasetForReview = async (embargoReleaseDate) => {
       }
     );
 
-    // alert the user of an error
+    // Show error message
     Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
+      backdrop: "rgba(0,0,0,0.4)",
       heightAuto: false,
       confirmButtonText: "Ok",
-      title: `Could not submit your dataset to Curation Team`,
+      title: "Could not submit your dataset to the Curation Team",
       icon: "error",
       reverseButtons: window.reverseSwalButtons,
       text: userErrorMessage(error),
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
+      showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+      hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
     });
 
-    // stop execution
-    return;
+    clientError(error);
   }
-
-  // update the publishing status UI element
-  await window.showPublishingStatus("noClear", "guided");
-
-  // track success
-  window.electron.ipcRenderer.send(
-    "track-kombucha",
-    kombuchaEnums.Category.DISSEMINATE_DATASETS,
-    kombuchaEnums.Action.SHARE_WITH_CURATION_TEAM,
-    kombuchaEnums.Label.SUBMISSION,
-    kombuchaEnums.Status.SUCCESS,
-    {
-      value: 1,
-      dataset_id: window.defaultBfDatasetId,
-      dataset_int_id: window.defaultBfDatasetIntId,
-    }
-  );
-
-  // alert the user the submission was successful
-  Swal.fire({
-    backdrop: "rgba(0,0,0, 0.4)",
-    heightAuto: false,
-    confirmButtonText: "Ok",
-    title: `Dataset has been submitted for review to the SPARC Curation Team!`,
-    icon: "success",
-    reverseButtons: window.reverseSwalButtons,
-    showClass: {
-      popup: "animate__animated animate__zoomIn animate__faster",
-    },
-    hideClass: {
-      popup: "animate__animated animate__zoomOut animate__faster",
-    },
-  });
-
-  // Update the UI again and hide the flow
-  $("#guided--prepublishing-checklist-container").addClass("hidden");
-  $("#guided-button-share-dataset-with-curation-team").removeClass("hidden");
-  $("#guided-button-share-dataset-with-curation-team").removeClass("loading");
-  $("#guided-button-share-dataset-with-curation-team").disabled = false;
-
-  window.guidedSetCurationTeamUI();
 };
 
-// Handles sharing/unsharing the dataset with the curation team (requires published + locked dataset)
+export const guidedSetPublishingStatusUI = (sharedWithCurationTeam) => {};
+
+/**
+ * Handles sharing/unsharing the dataset with the Curation Team (guided mode).
+ * @param {"share" | "unshare"} action - Action to perform.
+ */
 window.guidedModifyCurationTeamAccess = async (action) => {
   const shareBtn = document.getElementById("guided-button-share-dataset-with-curation-team");
   const unshareBtn = document.getElementById("guided-button-unshare-dataset-with-curation-team");
@@ -286,153 +296,124 @@ window.guidedModifyCurationTeamAccess = async (action) => {
   );
   const curationMode = "guided";
 
+  // Helper: Set button state
   const setButtonState = (button, { disabled = false, loading = false, hidden = false }) => {
+    if (!button) return;
     button.disabled = disabled;
     button.classList.toggle("loading", loading);
     button.classList.toggle("hidden", hidden);
   };
 
-  const handleShare = async () => {
+  if (action === "share") {
     try {
       setButtonState(shareBtn, { disabled: true, loading: true });
-      const datasetId = window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
 
-      console.log("Starting prepublishing flow for sharing dataset with curation team...");
+      const datasetId = window?.sodaJSONObj?.["digital-metadata"]?.["pennsieve-dataset-id"];
+      if (!datasetId) throw new Error("Dataset ID is missing, cannot share with Curation Team.");
 
-      console.log("[PrepublishingFlow] Fetching user dataset role...");
-      let role = await api.getDatasetRole(datasetId);
-      console.log("[PrepublishingFlow] User role for dataset:", role);
+      console.log("[Curation Access] Starting share flow for dataset:", datasetId);
 
+      // Check role
+      const role = await api.getDatasetRole(datasetId);
+      console.log("[Curation Access] User role:", role);
       if (role !== "owner") {
-        console.warn("[PrepublishingFlow] User is not the dataset owner. Showing error popup.");
-        await Swal.fire({
-          title: "Only the dataset owner can submit a dataset to the Curation Team.",
-          icon: "error",
-          confirmButtonText: "Ok",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
-        return false;
+        await swalShowError(
+          "Insufficient Permissions",
+          "You must be the owner of the dataset to share it with the Curation Team."
+        );
+        setButtonState(shareBtn, { disabled: false, loading: false });
+        return;
       }
 
-      const statuses = await window.getPrepublishingChecklistStatuses(datasetId);
-      console.log("[PrepublishingFlow] Checklist statuses:", statuses);
+      const datasetInformation = await api.getDataset(datasetId);
+      console.log("[Curation Access] Dataset information:", datasetInformation);
 
-      // status is NOT_PUBLISHED
-      // embargo release date represents the time a dataset that has been reviewed for publication becomes public
-      // user sets this value in the UI otherwise it stays an empty string
+      const datasetIsPublishable = datasetInformation?.canPublish === true;
+      if (!datasetIsPublishable) {
+        await swalShowError(
+          "Your dataset is not ready for publication",
+          `
+            Open your dataset on Pennsieve, go to the "Publishing" section, and complete all required pre-publication steps.
+            Once done, return to SODA to share your dataset with the Curation Team.
+          `
+        );
+        setButtonState(shareBtn, { disabled: false, loading: false });
+        return;
+      }
+
+      // Prompt user for embargo date
       let embargoReleaseDate = "";
-
-      // confirm with the user that they will submit a dataset and check if they want to set an embargo date
-      let userResponse = await Swal.fire({
-        backdrop: "rgba(0,0,0, 0.4)",
+      const userResponse = await Swal.fire({
+        backdrop: "rgba(0,0,0,0.4)",
         heightAuto: false,
         confirmButtonText: "Submit",
         denyButtonText: "Cancel",
         showDenyButton: true,
-        title: `Submit your dataset for review`,
+        title: "Submit your dataset for review",
         reverseButtons: window.reverseSwalButtons,
         html: `
-          <div style="display: flex; flex-direction: column;  font-size: 15px;">
-            <p style="text-align:left">Your dataset will be submitted for review to the SPARC Curation Team. While under review, the dataset will become locked until it has either been approved or rejected for publication. </p>
-            <div style="text-align: left; margin-bottom: 5px; display: flex; ">
-              <input type="checkbox" id="confirm-to-awknowledge" name="publishing-options" value="immediate" style=" border: 0px; width: 18px; height: 18px;">
-              <div style="margin-left: 5px;"><label for="immediate">I understand that submitting to the Curation Team will lock this dataset</label></div>
+          <div style="display:flex; flex-direction:column; font-size:15px;">
+            <p style="text-align:left;">
+              Your dataset will be submitted for review to the SPARC Curation Team.
+              While under review, the dataset will be locked until approved or rejected.
+            </p>
+            <div style="display:flex; text-align:left; margin-bottom:5px;">
+              <input type="checkbox" id="confirm-to-acknowledge" style="width:18px; height:18px;">
+              <label style="margin-left:5px;">I understand that submitting will lock this dataset</label>
             </div>
-            <div style="text-align: left; margin-bottom: 5px; display: flex; ">
-              <input type="checkbox" id="embargo-date-check" name="publishing-options" value="embargo-date-check" style=" border: 0px; width: 22px; height: 22px;">
-              <div style="margin-left: 5px;"><label for="embargo-date-check" style="text-align:left">Place this dataset under embargo so that it is not made public immediately after publishing.</label> <br> <a href="https://docs.pennsieve.io/docs/what-is-an-embargoed-dataset" target="_blank">What is this?</a></div>
+            <div style="display:flex; text-align:left; margin-bottom:5px;">
+              <input type="checkbox" id="embargo-date-check" style="width:22px; height:22px;">
+              <div style="margin-left:5px;">
+                <label>Place this dataset under embargo so it is not made public immediately after publishing.</label>
+                <br><a href="https://docs.pennsieve.io/docs/what-is-an-embargoed-dataset" target="_blank">What is this?</a>
+              </div>
             </div>
-            <div style="visibility:hidden; flex-direction: column;  margin-top: 10px;" id="calendar-wrapper">
-            <label style="margin-bottom: 5px; font-size: 13px;">When would you like this dataset to become publicly available?<label>
-            <div class="tui-datepicker-input tui-datetime-input tui-has-focus" style="margin-top: 5px;">
-
-                <input
-                  type="text"
-                  id="tui-date-picker-target"
-                  aria-label="Date-Time"
-                  />
-
-                  <span class="tui-ico-date"></span>
-                </div>
-                <div
-                id="tui-date-picker-container"
-                style="margin-top: -1px; margin-left: 60px;"
-                ></div>
+            <div id="calendar-wrapper" style="visibility:hidden; flex-direction:column; margin-top:10px;">
+              <label style="margin-bottom:5px; font-size:13px;">When should this dataset become public?</label>
+              <div class="tui-datepicker-input tui-datetime-input">
+                <input type="text" id="tui-date-picker-target" aria-label="Date-Time"/>
+                <span class="tui-ico-date"></span>
+              </div>
+              <div id="tui-date-picker-container" style="margin-top:-1px; margin-left:60px;"></div>
             </div>
-          </div>
-        `,
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
+          </div>`,
         willOpen: () => {
-          // setup the calendar that is in the popup
           const container = document.getElementById("tui-date-picker-container");
           const target = document.getElementById("tui-date-picker-target");
+          if (container && target) {
+            let oneYearFromNow = new Date();
+            oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+            new DatePicker(container, {
+              input: { element: target },
+              date: new Date(),
+              selectableRanges: [[new Date(), oneYearFromNow]],
+            });
+          }
 
-          // calculate one year from now
-          let oneYearFromNow = new Date();
-          oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
-
-          // initialize the calendar
-          new DatePicker(container, {
-            input: {
-              element: target,
-            },
-            date: new Date(),
-            // a user can lift an embargo today or a year from now
-            selectableRanges: [[new Date(), oneYearFromNow]],
-          });
-
-          // display/hide calendar on toggle
-          $("input[id='embargo-date-check']").on("change", (e) => {
-            let tuiCalendarWrapper = document.getElementById("calendar-wrapper");
-            if ($(`#${e.target.value}`).is(":checked")) {
-              tuiCalendarWrapper.style.visibility = "visible";
-            } else {
-              tuiCalendarWrapper.style.visibility = "hidden";
-            }
-          });
-
-          // add a scroll effect
-          const input = document.getElementById("tui-date-picker-target");
-          let calendar = document.querySelector(".tui-calendar-body-inner");
-
-          input.addEventListener("click", () => {
-            setTimeout(() => {
-              calendar.scrollIntoView({
-                behavior: "smooth",
-                block: "center",
-              });
-            }, 200);
+          document.getElementById("embargo-date-check")?.addEventListener("change", (e) => {
+            const wrapper = document.getElementById("calendar-wrapper");
+            if (wrapper) wrapper.style.visibility = e.target.checked ? "visible" : "hidden";
           });
         },
         didOpen: () => {
-          // Add an event listener to id confirm-to-awknowledge
-          document.querySelector(".swal2-confirm").disabled = true;
-          document.getElementById("confirm-to-awknowledge").addEventListener("click", () => {
-            // if the checkbox is checked, enable the submit button
-            if (document.getElementById("confirm-to-awknowledge").checked) {
-              document.querySelector(".swal2-confirm").disabled = false;
-            } else {
-              // if the checkbox is not checked, disable the submit button
-              document.querySelector(".swal2-confirm").disabled = true;
-            }
-          });
+          const confirmBtn = document.querySelector(".swal2-confirm");
+          const checkbox = document.getElementById("confirm-to-acknowledge");
+          if (confirmBtn && checkbox) {
+            confirmBtn.disabled = true;
+            checkbox.addEventListener("change", () => {
+              confirmBtn.disabled = !checkbox.checked;
+            });
+          }
         },
         willClose: () => {
-          if (document.getElementById("embargo-date-check").checked) {
-            // set the embargoDate variable if so
+          if (document.getElementById("embargo-date-check")?.checked) {
             embargoReleaseDate = $("#tui-date-picker-target").val();
           }
         },
+        showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+        hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
       });
 
-      console.log("User response from prepublishing flow:", userResponse);
-      // check if the user cancelled
       if (!userResponse.isConfirmed) {
         setButtonState(shareBtn, { disabled: false, loading: false });
         return;
@@ -440,58 +421,66 @@ window.guidedModifyCurationTeamAccess = async (action) => {
 
       setButtonState(shareBtn, { hidden: true });
       await guidedSubmitDatasetForReview(embargoReleaseDate);
-      unshareMessage.classList.remove("hidden");
+
+      if (unshareMessage) unshareMessage.classList.remove("hidden");
 
       setButtonState(shareBtn, { disabled: false, loading: false });
     } catch (error) {
+      console.error("[Curation Access] Share flow error:", error);
       setButtonState(shareBtn, { disabled: false, loading: false });
-      console.error("Error during share flow:", error);
       await Swal.fire({
         title: "Failed to share dataset with Curation Team",
         text: userErrorMessage(error),
         icon: "error",
         confirmButtonText: "Ok",
         heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
+        backdrop: "rgba(0,0,0,0.4)",
       });
+      clientError(error);
     }
-  };
+  }
 
-  const handleUnshare = async () => {
-    setButtonState(unshareBtn, { disabled: true, loading: true });
+  if (action === "unshare") {
+    try {
+      setButtonState(unshareBtn, { disabled: true, loading: true });
 
-    const { value: withdraw } = await Swal.fire({
-      title: "Unshare this dataset from Curation Team?",
-      icon: "warning",
-      showDenyButton: true,
-      confirmButtonText: "Yes",
-      denyButtonText: "No",
-      allowEscapeKey: false,
-      allowOutsideClick: false,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-    });
+      const { value: withdraw } = await Swal.fire({
+        title: "Unshare this dataset from Curation Team?",
+        icon: "warning",
+        showDenyButton: true,
+        confirmButtonText: "Yes",
+        denyButtonText: "No",
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0,0.4)",
+      });
 
-    if (!withdraw) {
+      if (!withdraw) {
+        setButtonState(unshareBtn, { disabled: false, loading: false });
+        return;
+      }
+
+      const removeStatus = await withdrawDatasetSubmission(curationMode);
+      if (removeStatus) {
+        setButtonState(unshareBtn, { hidden: true });
+        if (shareBtn) shareBtn.classList.remove("hidden");
+      }
+
       setButtonState(unshareBtn, { disabled: false, loading: false });
-      return;
+    } catch (error) {
+      console.error("[Curation Access] Unshare flow error:", error);
+      setButtonState(unshareBtn, { disabled: false, loading: false });
+      await Swal.fire({
+        title: "Failed to unshare dataset from Curation Team",
+        text: userErrorMessage(error),
+        icon: "error",
+        confirmButtonText: "Ok",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0,0.4)",
+      });
+      clientError(error);
     }
-
-    const removeStatus = await withdrawDatasetSubmission(curationMode);
-
-    if (removeStatus) {
-      setButtonState(unshareBtn, { hidden: true });
-      shareBtn.classList.remove("hidden");
-    }
-
-    setButtonState(unshareBtn, { disabled: false, loading: false });
-  };
-
-  if (action === "share") {
-    await handleShare();
-  } else if (action === "unshare") {
-    await handleUnshare();
   }
 };
 // Adds the click handlers to the info drop downs in Guided Mode

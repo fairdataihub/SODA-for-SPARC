@@ -226,6 +226,10 @@ export const openPageGenerateDataset = async (targetPageID) => {
     const pennsieveDatasetDOI = await api.getDatasetDOI(pennsieveDatasetID);
     guidedSetDOIUI(pennsieveDatasetDOI);
 
+    const dataset = await api.getDataset(pennsieveDatasetID);
+    console.log("dataset fetched", dataset);
+    const datasetIsPblished = dataset?.publication?.status === "published";
+
     //Set the ui for curation team and DOI information
     await window.showPublishingStatus("", "guided");
     window.guidedSetCurationTeamUI();
