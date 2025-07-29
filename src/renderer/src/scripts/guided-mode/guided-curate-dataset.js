@@ -611,14 +611,22 @@ const deleteProgresFile = async (progressFileName) => {
 // Add event listener to open dataset link in new tab
 document
   .getElementById("guided-button-open-link-on-pennsieve")
-  .addEventListener("click", (event) => {
+  .addEventListener("click", async (event) => {
     event.preventDefault();
-    const pennsieveDatasetID = window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
-    let datasetLink = `https://app.pennsieve.io/N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0/datasets/${pennsieveDatasetID}/overview`;
+    const userInformation = await api.getUserInformation();
+    const preferredOrganization = userInformation.preferredOrganization;
+    const pennsieveDatasetID = window.sodaJSONObj?.["digital-metadata"]?.["pennsieve-dataset-id"];
 
-    if (datasetLink) {
-      window.open(datasetLink, "_blank");
+    // If the user has a preferred organization and a dataset ID, construct the dataset link
+    // Otherwise, default to the Pennsieve app homepage
+    let datasetLink;
+    if (preferredOrganization && pennsieveDatasetID) {
+      datasetLink = `https://app.pennsieve.io/${preferredOrganization}/datasets/${pennsieveDatasetID}/overview`;
+    } else {
+      datasetLink = "https://app.pennsieve.io";
     }
+
+    window.open(datasetLink, "_blank");
   });
 
 // Add event listener to Reserve DOI button "guided-button-reserve-doi"
