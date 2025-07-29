@@ -7,6 +7,7 @@ import {
 } from "../../../guided-mode/pages/navigationUtils/pageSkipping";
 import { isCheckboxCardChecked } from "../../../../stores/slices/checkboxCardSlice";
 import { getSodaTextInputValue } from "../../../../stores/slices/sodaTextInputSlice";
+import api from "../../../others/api/api";
 export const savePageGenerateDataset = async (pageBeingLeftID) => {
   const errorArray = [];
 
@@ -68,6 +69,22 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
       });
       throw errorArray;
     }
+
+    const pennsieveDatasetID = window.sodaJSONObj?.["digital-metadata"]?.["pennsieve-dataset-id"];
+    // If the datast has not been initially uploaded to Pennsieve,
+    // Make sure the user doesn't have a dataset with the same name already on Pennsieve
+    if (!pennsieveDatasetID) {
+      const datasetAlreadyExists = await api.checkDatasetNameExists(pennsieveDatasetName);
+      console.log("datasetAlreadyExists", datasetAlreadyExists);
+      if (datasetAlreadyExists) {
+        errorArray.push({
+          type: "notyf",
+          message: `A dataset with the name "${pennsieveDatasetName}" already exists on Pennsieve.`,
+        });
+        throw errorArray;
+      }
+    }
+
     window.sodaJSONObj["pennsieve-dataset-name"] = pennsieveDatasetName;
 
     // Handle saving the Pennsieve dataset subtitle
