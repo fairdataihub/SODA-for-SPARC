@@ -2479,9 +2479,9 @@ const populateDatasetDropdowns = (mylist) => {
 
     window.curateDatasetDropdown.appendChild(option2);
   }
-  metadataDatasetlistChange();
+  // metadataDatasetlistChange();
   permissionDatasetlistChange();
-  postCurationListChange();
+  // postCurationListChange();
   datasetStatusListChange();
 };
 
