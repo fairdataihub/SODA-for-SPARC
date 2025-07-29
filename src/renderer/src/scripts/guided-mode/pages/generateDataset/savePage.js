@@ -56,6 +56,18 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
       });
       throw errorArray;
     }
+
+    const datasetNameContainsForbiddenCharacters = window.evaluateStringAgainstSdsRequirements(
+      pennsieveDatasetName,
+      "string-contains-forbidden-characters"
+    );
+    if (datasetNameContainsForbiddenCharacters) {
+      errorArray.push({
+        type: "notyf",
+        message: `Your dataset name cannot contain any of the following characters: @#$%^&*()+=/\|"'~;:<>{}[]?`,
+      });
+      throw errorArray;
+    }
     window.sodaJSONObj["pennsieve-dataset-name"] = pennsieveDatasetName;
 
     // Handle saving the Pennsieve dataset subtitle
