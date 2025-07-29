@@ -39,6 +39,11 @@ export const openPageGenerateDataset = async (targetPageID) => {
     guidedResetLocalGenerationUI();
   }
 
+  if (targetPageID === "guided-pennsieve-generate-target-tab") {
+    // Ask the user if they want to generate on a new dataset or an existing one
+    console.log("Opening pennsieve target selection tab");
+  }
+
   if (targetPageID === "guided-pennsieve-settings-tab") {
     // Get the locally saved dataset name and subtitle to use as default values if they have not yet
     // set a dataset name or subtitle for Pennsieve

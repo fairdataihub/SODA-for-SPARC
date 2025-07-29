@@ -46,6 +46,10 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
     }
   }
 
+  if (pageBeingLeftID === "guided-pennsieve-generate-target-tab") {
+    console.log("saving the pennsieve target tab");
+  }
+
   if (pageBeingLeftID === "guided-pennsieve-settings-tab") {
     // Handle saving the Pennsieve dataset name
     const pennsieveDatasetName = getSodaTextInputValue("pennsieve-dataset-name");

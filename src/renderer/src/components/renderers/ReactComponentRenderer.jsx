@@ -11,6 +11,7 @@ import PennsieveAgentCheckDisplay from "../backgroundServices/PennsieveAgentChec
 import DatasetContentSelector from "../pages/DatasetContentSelector";
 import PerformanceIdManagementPage from "../pages/PerformanceIdManagement";
 import GenerateDatasetLocationSelectorPage from "../pages/GenerateDatasetLocationSelector";
+import GenerateDatasetPennsieveTargetPage from "../pages/GenerateDatasetPennsieveTarget";
 import ResourcesManagementPage from "../pages/ResourcesManagement";
 import ModalitySelectionPage from "../pages/ModalitySelection";
 import EntityMetadataPage from "../pages/EntityMetadataPage";
@@ -178,9 +179,11 @@ const componentTypeRenderers = {
   "dataset-content-selector": (componentSlot) => {
     renderComponent(componentSlot, <DatasetContentSelector />);
   },
-
   "generate-dataset-location-selector-page": (componentSlot) => {
     renderComponent(componentSlot, <GenerateDatasetLocationSelectorPage />);
+  },
+  "pennsieve-generate-target-page": (componentSlot) => {
+    renderComponent(componentSlot, <GenerateDatasetPennsieveTargetPage />);
   },
   divider: (componentSlot) => {
     renderComponent(componentSlot, <Divider my="xl" />);
