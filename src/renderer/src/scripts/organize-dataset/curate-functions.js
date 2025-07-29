@@ -2485,6 +2485,9 @@ $("#generate-manifest-curate").change(async function () {
 
     $("#ffm-manifest-generator").show();
     let manifestStructure = await window.ffmCreateManifest();
+    if (!window.sodaJSONObj["dataset_metadata"]) {
+      window.sodaJSONObj["dataset_metadata"] = {};
+    }
     window.sodaJSONObj["dataset_metadata"]["manifest_file"] = manifestStructure;
     // For the back end to know the manifest files have been created in $HOME/SODA/manifest-files/<highLvlFolder>
     // window.sodaJSONObj["manifest-files"]["auto-generated"] = true;
