@@ -200,7 +200,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     const guidedManifestData = window.sodaJSONObj["guided-manifest-file-data"];
     // console log the first 3 rows of data
     const headerToSchemaKey = {
-      filename: "file_name",
+      filename: "filename",
       timestamp: "timestamp",
       description: "description",
       "file type": "file_type",
