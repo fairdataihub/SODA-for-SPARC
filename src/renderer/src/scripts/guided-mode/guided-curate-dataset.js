@@ -3759,6 +3759,88 @@ const guidedSaveDescriptionContributorInformation = () => {
   };
 };
 
+$("#guided-select-pennsieve-dataset-to-resume").selectpicker();
+document
+  .getElementById("guided-button-resume-pennsieve-dataset")
+  .addEventListener("click", async () => {
+    // First hide the error div if it is showing
+    const errorDiv = document.getElementById("guided-panel-pennsieve-dataset-import-error");
+    const logInDiv = document.getElementById(
+      "guided-panel-log-in-before-resuming-pennsieve-dataset"
+    );
+    const loadingDiv = document.getElementById("guided-panel-pennsieve-dataset-import-loading");
+    const loadingDivText = document.getElementById(
+      "guided-panel-pennsieve-dataset-import-loading-para"
+    );
+    const pennsieveDatasetSelectDiv = document.getElementById(
+      "guided-panel-pennsieve-dataset-select"
+    );
+    // Hide all of the divs incase they were previously shown
+    errorDiv.classList.add("hidden");
+    logInDiv.classList.add("hidden");
+    loadingDiv.classList.add("hidden");
+    pennsieveDatasetSelectDiv.classList.add("hidden");
+
+    // If the user is not logged in, show the log in div and return
+    if (!window.defaultBfAccount) {
+      logInDiv.classList.remove("hidden");
+      return;
+    }
+
+    //Show the loading Div and hide the dropdown div while the datasets the user has access to are being retrieved
+    loadingDiv.classList.remove("hidden");
+
+    try {
+      loadingDivText.textContent = "Verifying account information";
+      await window.verifyProfile();
+      loadingDivText.textContent = "Verifying workspace information";
+      await window.synchronizePennsieveWorkspace();
+      loadingDivText.textContent = "Importing datasets from Pennsieve";
+    } catch (e) {
+      clientError(e);
+      await swalShowInfo(
+        "Something went wrong while verifying your profile",
+        "Please try again by clicking the 'Yes' button. If this issue persists please use our `Contact Us` page to report the issue."
+      );
+      loadingDiv.classList.add("hidden");
+      return;
+    }
+
+    const datasetSelectionSelectPicker = $("#guided-select-pennsieve-dataset-to-resume");
+    datasetSelectionSelectPicker.empty();
+    try {
+      let responseObject = await client.get(`manage_datasets/fetch_user_datasets`, {
+        params: {
+          selected_account: window.defaultBfAccount,
+        },
+      });
+      console.log(responseObject);
+      const datasets = responseObject.data.datasets;
+      //Add the datasets to the select picker
+      datasetSelectionSelectPicker.append(
+        `<option value="" selected>Select a dataset on Pennsieve to resume</option>`
+      );
+      for (const dataset of datasets) {
+        datasetSelectionSelectPicker.append(
+          `<option value="${dataset.id}">${dataset.name}</option>`
+        );
+      }
+      datasetSelectionSelectPicker.selectpicker("refresh");
+
+      //Hide the loading div and show the dropdown div
+      loadingDiv.classList.add("hidden");
+      pennsieveDatasetSelectDiv.classList.remove("hidden");
+    } catch (error) {
+      // Show the error div and hide the dropdown and loading divs
+      errorDiv.classList.remove("hidden");
+      loadingDiv.classList.add("hidden");
+      pennsieveDatasetSelectDiv.classList.add("hidden");
+      clientError(error);
+      document.getElementById("guided-pennsieve-dataset-import-error-message").innerHTML =
+        userErrorMessage(error);
+    }
+  });
+
 const doTheHack = async () => {
   // wait for a second
   await new Promise((resolve) => setTimeout(resolve, 5000));
@@ -3785,7 +3867,7 @@ const doTheHack = async () => {
 
 // If this variable is set to true, you will be taken back to the last guided mode page you were working on
 // (always set to false when making production builds)
-const continueHackGm = false;
+const continueHackGm = true;
 if (continueHackGm) {
   doTheHack();
 }

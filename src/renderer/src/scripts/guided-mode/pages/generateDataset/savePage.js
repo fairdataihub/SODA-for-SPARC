@@ -48,7 +48,7 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
 
   if (pageBeingLeftID === "guided-pennsieve-generate-target-tab") {
     console.log("saving the pennsieve target tab");
-    const pennsieveTargetCardChecked = isCheckboxCardChecked("generate-existing-dataset");
+    const pennsieveTargetCardChecked = true; // isCheckboxCardChecked("pennsieve-target-card");
     console.log("pennsieveTargetCardChecked", pennsieveTargetCardChecked);
     if (pennsieveTargetCardChecked) {
       // read dataset name from the Select component in the pennsieve target page tab
@@ -59,10 +59,6 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
 
       console.log("datasetName", datasetName);
 
-      if (!window.sodaJSONObj["generate-dataset"]) {
-        window.sodaJSONObj["generate-dataset"] = {};
-      }
-
       // set the window.sodaJSONObj to indicate that the user is generating an existing dataset
       window.sodaJSONObj["generate-dataset"] = {
         "dataset-name": datasetName,
@@ -72,9 +68,6 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
         "if-existing-files": "replace",
       };
     } else {
-      if (!window.sodaJSONObj["generate-dataset"]) {
-        window.sodaJSONObj["generate-dataset"] = {};
-      }
       // user is generating a new dataset on Pennsieve set options
       window.sodaJSONObj["generate-dataset"] = {
         "dataset-name": "temp_name",
