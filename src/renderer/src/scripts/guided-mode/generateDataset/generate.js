@@ -225,6 +225,61 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         document.querySelector("#guided--verify-files-button").disabled = false;
         document.querySelector("#guided--skip-verify-btn").disabled = false;
 
+        let fileValueToLog = 0;
+        let fileSizeValueToLog = 0;
+        let uploadedFiles = data["main_curation_uploaded_files"];
+        let mainTotalGenerateDatasetSize = data["main_total_generate_dataset_size"];
+        let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
+        let differenceInBytes = mainTotalGenerateDatasetSize - bytesOnPreviousLogPage;
+
+        fileValueToLog = finalFilesCount;
+        fileSizeValueToLog = differenceInBytes;
+
+        console.log("Files to log:", fileValueToLog);
+        console.log("File size to log:", fileSizeValueToLog);
+
+        // log the file and file size values to analytics
+        if (fileValueToLog > 0) {
+          console.log("Dataset name: ", window.sodaJSONObj["pennsieve-dataset-name"]);
+          console.log("Dataset ID: ", guidedGetDatasetId(window.sodaJSONObj));
+          console.log(
+            "Pennsieve int id: ",
+            window.sodaJSONObj["digital-metadata"]["pennsieve-int-id"]
+          );
+          console.log("Analytics for files called in");
+          window.electron.ipcRenderer.send(
+            "track-kombucha",
+            kombuchaEnums.Category.GUIDED_MODE,
+            kombuchaEnums.Action.GENERATE_DATASET,
+            kombuchaEnums.Label.FILES,
+            kombuchaEnums.Status.SUCCESS,
+            createEventData(
+              fileValueToLog,
+              "Pennsieve",
+              "Local",
+              window.sodaJSONObj["pennsieve-dataset-name"],
+              guidedGetDatasetId(window.sodaJSONObj)
+            )
+          );
+        }
+
+        if (fileSizeValueToLog > 0) {
+          window.electron.ipcRenderer.send(
+            "track-kombucha",
+            kombuchaEnums.Category.GUIDED_MODE,
+            kombuchaEnums.Action.GENERATE_DATASET,
+            kombuchaEnums.Label.SIZE,
+            kombuchaEnums.Status.SUCCESS,
+            createEventData(
+              fileSizeValueToLog,
+              "Pennsieve",
+              "Local",
+              window.sodaJSONObj["pennsieve-dataset-name"],
+              guidedGetDatasetId(window.sodaJSONObj)
+            )
+          );
+        }
+
         // Show the next button
         $("#guided-next-button").css("visibility", "visible");
 
@@ -317,6 +372,71 @@ const trackLocalDatasetGenerationProgress = async (standardizedDatasetStructure)
   }
 };
 
+const createEventData = (value, destination, origin, dataset_name, dataset_id) => {
+  if (destination === "Pennsieve") {
+    return {
+      value: value,
+      dataset_id: dataset_id,
+      dataset_name: dataset_name,
+      origin: origin,
+      destination: destination,
+      dataset_int_id: window.sodaJSONObj["digital-metadata"]["pennsieve-int-id"],
+    };
+  }
+
+  return {
+    value: value,
+    dataset_name: dataset_name,
+    origin: origin,
+    destination: destination,
+  };
+};
+
+// Used to properly track the Progress of the upload to Pennsieve
+let bytesOnPreviousLogPage = 0;
+let filesOnPreviousLogPage = 0;
+
+const logProgressToAnalyticsGM = (files, bytes) => {
+  // log every 500 files -- will log on success/failure as well so if there are less than 500 files we will log what we uploaded ( all in success case and some of them in failure case )
+  if (files >= filesOnPreviousLogPage + 500) {
+    filesOnPreviousLogPage += 500;
+    window.electron.ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.GENERATE_DATASET,
+      kombuchaEnums.Label.FILES,
+      kombuchaEnums.Status.SUCCESS,
+      createEventData(
+        500,
+        "Pennsieve",
+        "Local",
+        window.sodaJSONObj["pennsieve-dataset-name"],
+        guidedGetDatasetId(window.sodaJSONObj)
+      )
+    );
+
+    let differenceInBytes = bytes - bytesOnPreviousLogPage;
+    bytesOnPreviousLogPage = bytes;
+
+    if (differenceInBytes > 0) {
+      window.electron.ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.GUIDED_MODE,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.SIZE,
+        kombuchaEnums.Status.SUCCESS,
+        createEventData(
+          differenceInBytes,
+          "Pennsieve",
+          "Local",
+          window.sodaJSONObj["pennsieve-dataset-name"],
+          guidedGetDatasetId(window.sodaJSONObj)
+        )
+      );
+    }
+  }
+};
+
 // Track the status of Pennsieve dataset upload
 const trackPennsieveDatasetGenerationProgress = async (standardizedDatasetStructure) => {
   window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
@@ -357,6 +477,8 @@ const trackPennsieveDatasetGenerationProgress = async (standardizedDatasetStruct
         mainTotalGenerateDatasetSize,
         mainGeneratedDatasetSize,
       } = await fetchProgressData();
+
+      logProgressToAnalyticsGM(uploadedFiles, mainGeneratedDatasetSize);
 
       if (message && message.includes("Preparing files to be renamed")) {
         setGuidedProgressBarValue("pennsieve", 0);
@@ -663,6 +785,7 @@ const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
     window.defaultBfDatasetId = newId;
     window.defaultBfDatasetIntId = intId;
     window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] = newId;
+    window.sodaJSONObj["digital-metadata"]["pennsieve-int-id"] = intId;
 
     uploadText.innerHTML = `Successfully created dataset with name: ${datasetName}`;
     guidedUploadStatusIcon(statusId, "success");
