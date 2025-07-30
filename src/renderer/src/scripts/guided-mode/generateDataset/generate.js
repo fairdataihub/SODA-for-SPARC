@@ -175,13 +175,14 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
 
     // --- Ensure all required keys are set for initial upload ---
-    window.sodaJSONObj["generate-dataset"] = {
-      "dataset-name": window.sodaJSONObj["pennsieve-dataset-name"],
-      destination: "ps",
-      "generate-option": "new",
-      "if-existing": "new",
-      "if-existing-files": "new",
-    };
+    // Assume all information set from prior pages. TODO: Add code to double check this
+    // window.sodaJSONObj["generate-dataset"] = {
+    //   "dataset-name": window.sodaJSONObj["pennsieve-dataset-name"],
+    //   destination: "ps",
+    //   "generate-option": "new",
+    //   "if-existing": "new",
+    //   "if-existing-files": "new",
+    // };
     window.sodaJSONObj["ps-dataset-selected"] = {
       "dataset-name": window.sodaJSONObj["pennsieve-dataset-name"],
     };

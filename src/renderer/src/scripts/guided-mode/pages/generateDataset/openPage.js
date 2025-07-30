@@ -53,13 +53,11 @@ export const openPageGenerateDataset = async (targetPageID) => {
     const datasetName = getGuidedDatasetName();
     const datasetSubtitle = getGuidedDatasetSubtitle();
 
-    const pennsieveDatasetName = window.sodaJSONObj["pennsieve-dataset-name"];
     const pennsieveDatasetSubtitle = window.sodaJSONObj["pennsieve-dataset-subtitle"];
 
-    const datasetNameToSet = pennsieveDatasetName || datasetName;
     const datasetSubtitleToSet = pennsieveDatasetSubtitle || datasetSubtitle;
 
-    setSodaTextInputValue("pennsieve-dataset-name", datasetNameToSet);
+    setSodaTextInputValue("pennsieve-dataset-name", datasetName);
     setSodaTextInputValue("pennsieve-dataset-subtitle", datasetSubtitleToSet);
 
     // Handle the banner image preview

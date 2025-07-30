@@ -8,6 +8,7 @@ import {
 import { isCheckboxCardChecked } from "../../../../stores/slices/checkboxCardSlice";
 import { getSodaTextInputValue } from "../../../../stores/slices/sodaTextInputSlice";
 import api from "../../../others/api/api";
+import { getGuidedDatasetName } from "../curationPreparation/utils";
 export const savePageGenerateDataset = async (pageBeingLeftID) => {
   const errorArray = [];
 
@@ -49,6 +50,9 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
 
   if (pageBeingLeftID === "guided-pennsieve-generate-target-tab") {
     if (
+      document
+        .getElementById("guided-button-upload-to-existing-pennsieve-dataset")
+        .classList.contains("selected") &&
       !document
         .getElementById("guided-panel-pennsieve-dataset-import-loading")
         .classList.contains("hidden")
@@ -80,12 +84,15 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
     if (guidedButtonUploadToNewPennsieveDataset.classList.contains("selected")) {
       // User selected to upload to a new Pennsieve dataset
       window.sodaJSONObj["generate-dataset"] = {
-        "dataset-name": "temp_name",
+        "dataset-name": getGuidedDatasetName(),
         destination: "ps",
         "generate-option": "new",
         "if-existing": "merge",
         "if-existing-files": "skip",
       };
+
+      // if a dataset id already is selected remove it
+      delete window.sodaJSONObj["digital-metadata"]?.["pennsieve-dataset-id"];
     }
     if (guidedButtonUploadToExistingPennsieveDataset.classList.contains("selected")) {
       const selectedPennsieveDatasetToResume = $(
@@ -117,6 +124,13 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
       }
       window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] = selectedPennsieveDatasetID;
       window.sodaJSONObj["existing-dataset-name-to-upload-to"] = selectedPennsieveDataset;
+      // overwrite the name in the digital metadata
+      window.sodaJSONObj["digital-metadata"]["name"] = selectedPennsieveDataset;
+      window.sodaJSONObj["pennsieve-dataset-name"] = selectedPennsieveDataset;
+      // set the pennsieve dataset name in the sodaJSONObj
+      window.sodaJSONObj["ps-dataset-selected"] = {
+        "dataset-name": selectedPennsieveDataset,
+      };
 
       // set the window.sodaJSONObj to indicate that the user is generating an existing dataset
       window.sodaJSONObj["generate-dataset"] = {

@@ -3780,12 +3780,12 @@ document
     errorDiv.classList.add("hidden");
     loadingDiv.classList.add("hidden");
     pennsieveDatasetSelectDiv.classList.add("hidden");
-    if (window.sodaJSONObj["existing-dataset-name-to-upload-to"]) {
-      existingDatasetNameDisplayDiv.classList.remove("hidden");
-      existingDatasetNameDisplayDiv.textContent =
-        window.sodaJSONObj["existing-dataset-name-to-upload-to"];
-      return;
-    }
+    // if (window.sodaJSONObj["existing-dataset-name-to-upload-to"]) {
+    //   existingDatasetNameDisplayDiv.classList.remove("hidden");
+    //   existingDatasetNameDisplayDiv.textContent =
+    //     window.sodaJSONObj["existing-dataset-name-to-upload-to"];
+    //   return;
+    // }
     //Show the loading Div and hide the dropdown div while the datasets the user has access to are being retrieved
     loadingDiv.classList.remove("hidden");
 
