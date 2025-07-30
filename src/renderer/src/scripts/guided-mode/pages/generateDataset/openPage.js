@@ -41,7 +41,14 @@ export const openPageGenerateDataset = async (targetPageID) => {
 
   if (targetPageID === "guided-pennsieve-generate-target-tab") {
     // Ask the user if they want to generate on a new dataset or an existing one
-    console.log("Opening pennsieve target selection tab");
+    if (!window.sodaJSONObj["generate-dataset"]) {
+      return;
+    } else if (window.sodaJSONObj["generate-dataset"]["dataset-name"]) {
+      // Check if the dataset has already been set to the state object
+      // If it has, set the Select component value to the dataset name
+      const datasetName = window.sodaJSONObj["generate-dataset"]["dataset-name"];
+      document.querySelector("#guided-pennsieve-generate-target-tab select").value = datasetName;
+    }
   }
 
   if (targetPageID === "guided-pennsieve-settings-tab") {
