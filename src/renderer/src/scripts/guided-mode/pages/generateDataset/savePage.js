@@ -7,6 +7,7 @@ import {
 } from "../../../guided-mode/pages/navigationUtils/pageSkipping";
 import { isCheckboxCardChecked } from "../../../../stores/slices/checkboxCardSlice";
 import { getSodaTextInputValue } from "../../../../stores/slices/sodaTextInputSlice";
+import api from "../../../others/api/api";
 export const savePageGenerateDataset = async (pageBeingLeftID) => {
   const errorArray = [];
 
@@ -47,28 +48,37 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
   }
 
   if (pageBeingLeftID === "guided-pennsieve-generate-target-tab") {
-    console.log("saving the pennsieve target tab");
-    const pennsieveTargetCardChecked = true; // isCheckboxCardChecked("pennsieve-target-card");
-    console.log("pennsieveTargetCardChecked", pennsieveTargetCardChecked);
-    if (pennsieveTargetCardChecked) {
-      // read dataset name from the Select component in the pennsieve target page tab
-      const datasetSelectElement = document.querySelector(
-        "#guided-pennsieve-generate-target-tab input"
-      );
-      const datasetName = datasetSelectElement.value;
+    if (
+      !document
+        .getElementById("guided-panel-pennsieve-dataset-import-loading")
+        .classList.contains("hidden")
+    ) {
+      errorArray.push({
+        type: "notyf",
+        message: "Please wait for your datasets on Pennsieve to load",
+      });
+      throw errorArray;
+    }
+    const guidedButtonUploadToNewPennsieveDataset = document.getElementById(
+      "guided-button-upload-to-new-pennsieve-dataset"
+    );
+    const guidedButtonUploadToExistingPennsieveDataset = document.getElementById(
+      "guided-button-upload-to-existing-pennsieve-dataset"
+    );
 
-      console.log("datasetName", datasetName);
+    if (
+      !guidedButtonUploadToNewPennsieveDataset.classList.contains("selected") &&
+      !guidedButtonUploadToExistingPennsieveDataset.classList.contains("selected")
+    ) {
+      errorArray.push({
+        type: "notyf",
+        message: "Please select a dataset upload option",
+      });
+      throw errorArray;
+    }
 
-      // set the window.sodaJSONObj to indicate that the user is generating an existing dataset
-      window.sodaJSONObj["generate-dataset"] = {
-        "dataset-name": datasetName,
-        destination: "ps",
-        "generate-option": "existing-ps",
-        "if-existing": "merge",
-        "if-existing-files": "replace",
-      };
-    } else {
-      // user is generating a new dataset on Pennsieve set options
+    if (guidedButtonUploadToNewPennsieveDataset.classList.contains("selected")) {
+      // User selected to upload to a new Pennsieve dataset
       window.sodaJSONObj["generate-dataset"] = {
         "dataset-name": "temp_name",
         destination: "ps",
@@ -77,6 +87,50 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
         "if-existing-files": "skip",
       };
     }
+    if (guidedButtonUploadToExistingPennsieveDataset.classList.contains("selected")) {
+      const selectedPennsieveDatasetToResume = $(
+        "#guided-select-pennsieve-dataset-to-resume option:selected"
+      );
+      // Get the text currently in the dropdown
+      const selectedPennsieveDataset = selectedPennsieveDatasetToResume[0].innerHTML;
+      // Get the value of the dropdown (the dataset ID)
+      const selectedPennsieveDatasetID = selectedPennsieveDatasetToResume.val().trim();
+
+      if (!selectedPennsieveDatasetID) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please select a dataset on Pennsieve to resume from the dropdown above",
+        });
+        throw errorArray;
+      }
+      const packageTypes = await api.getNumberOfPackagesInDataset(selectedPennsieveDatasetID);
+      let packageCount = 0;
+      for (const packageType of Object.keys(packageTypes)) {
+        packageCount += packageTypes[packageType];
+      }
+      if (packageCount > 0) {
+        errorArray.push({
+          type: "notyf",
+          message: `You can only choose a dataset that does not have any folders or files on Pennsieve.`,
+        });
+        throw errorArray;
+      }
+      window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] = selectedPennsieveDatasetID;
+      window.sodaJSONObj["existing-dataset-name-to-upload-to"] = selectedPennsieveDataset;
+
+      // set the window.sodaJSONObj to indicate that the user is generating an existing dataset
+      window.sodaJSONObj["generate-dataset"] = {
+        "dataset-name": selectedPennsieveDataset,
+        destination: "ps",
+        "generate-option": "existing-ps",
+        "if-existing": "merge",
+        "if-existing-files": "replace",
+      };
+    }
+
+    console.log("saving the pennsieve target tab");
+    const pennsieveTargetCardChecked = true; // isCheckboxCardChecked("pennsieve-target-card");
+    console.log("pennsieveTargetCardChecked", pennsieveTargetCardChecked);
   }
 
   if (pageBeingLeftID === "guided-pennsieve-settings-tab") {

@@ -3761,13 +3761,11 @@ const guidedSaveDescriptionContributorInformation = () => {
 
 $("#guided-select-pennsieve-dataset-to-resume").selectpicker();
 document
-  .getElementById("guided-button-resume-pennsieve-dataset")
+  .getElementById("guided-button-upload-to-existing-pennsieve-dataset")
   .addEventListener("click", async () => {
     // First hide the error div if it is showing
     const errorDiv = document.getElementById("guided-panel-pennsieve-dataset-import-error");
-    const logInDiv = document.getElementById(
-      "guided-panel-log-in-before-resuming-pennsieve-dataset"
-    );
+
     const loadingDiv = document.getElementById("guided-panel-pennsieve-dataset-import-loading");
     const loadingDivText = document.getElementById(
       "guided-panel-pennsieve-dataset-import-loading-para"
@@ -3775,18 +3773,19 @@ document
     const pennsieveDatasetSelectDiv = document.getElementById(
       "guided-panel-pennsieve-dataset-select"
     );
+    const existingDatasetNameDisplayDiv = document.getElementById(
+      "guided-panel-existing-dataset-name-to-upload-to"
+    );
     // Hide all of the divs incase they were previously shown
     errorDiv.classList.add("hidden");
-    logInDiv.classList.add("hidden");
     loadingDiv.classList.add("hidden");
     pennsieveDatasetSelectDiv.classList.add("hidden");
-
-    // If the user is not logged in, show the log in div and return
-    if (!window.defaultBfAccount) {
-      logInDiv.classList.remove("hidden");
+    if (window.sodaJSONObj["existing-dataset-name-to-upload-to"]) {
+      existingDatasetNameDisplayDiv.classList.remove("hidden");
+      existingDatasetNameDisplayDiv.textContent =
+        window.sodaJSONObj["existing-dataset-name-to-upload-to"];
       return;
     }
-
     //Show the loading Div and hide the dropdown div while the datasets the user has access to are being retrieved
     loadingDiv.classList.remove("hidden");
 

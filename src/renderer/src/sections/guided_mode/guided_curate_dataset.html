@@ -651,7 +651,6 @@
               <button
                 class="guided--radio-button tile-button"
                 id="guided-button-add-entities-manually"
-                data-next-element="guided-section-start-new-curation"
                 data-button-config-value="entity-addition-method"
                 data-button-config-value-state="manual"
               >
@@ -665,7 +664,6 @@
               <button
                 class="guided--radio-button tile-button coming-soon"
                 id="guided-button-add-entities-via-spreadsheet"
-                data-next-element="guided-section-start-new-curation"
                 data-button-config-value="entity-addition-method"
                 data-button-config-value-state="spreadsheet"
                 disabled
@@ -2018,8 +2016,8 @@
           <div class="guided--radio-button-container mb-sm" style="margin-top: 1rem">
             <button
               class="guided--radio-button tile-button"
-              id="guided-button-start-new-curation2"
-              data-next-element="guided-section-start-new-curation"
+              id="guided-button-upload-to-new-pennsieve-dataset"
+              data-next-element="guided-section-upload-to-new-pennsieve-dataset"
             >
               <div class="tile-button-icon">
                 <svg
@@ -2049,7 +2047,7 @@
 
             <button
               class="guided--radio-button tile-button"
-              id="guided-button-resume-pennsieve-dataset"
+              id="guided-button-upload-to-existing-pennsieve-dataset"
               data-next-element="guided-section-select-pennsieve-dataset-to-resume"
             >
               <div class="tile-button-icon">
@@ -2088,18 +2086,14 @@
               </div>
             </button>
           </div>
-          <div class="guided--section" id="guided-section-start-new-curation">
+          <div class="guided--section" id="guided-section-upload-to-new-pennsieve-dataset">
             <h2 class="guided--text-user-directions">
               Click "<span class="next-button-span"></span>" to start the End to End curation
               process for preparing and submitting a new dataset.
             </h2>
           </div>
 
-          <div
-            class="guided--section"
-            id="guided-section-select-pennsieve-dataset-to-resume"
-            style="height: 76%"
-          >
+          <div class="guided--section" id="guided-section-select-pennsieve-dataset-to-resume">
             <div class="guided--panel mt-0" id="guided-panel-pennsieve-dataset-import-error">
               <label class="guided--form-label centered mb-sm mt-lg"
                 >There was an error importing datasets from Pennsieve
@@ -2108,36 +2102,6 @@
                 <b>Error message: </b
                 ><span id="guided-pennsieve-dataset-import-error-message"></span>
               </p>
-              <button
-                class="ui positive button"
-                style="
-                  background-color: var(--color-light-green) !important;
-                  width: 300px !important;
-                "
-                onclick="renderGuidedResumePennsieveDatasetSelectionDropdown()"
-              >
-                Retry fetching datasets from Pennsieve
-              </button>
-            </div>
-
-            <div
-              class="guided--panel mt-0"
-              id="guided-panel-log-in-before-resuming-pennsieve-dataset"
-            >
-              <h2 class="text-sub-step-title">
-                You must be logged in to Pennsieve to resume a dataset on Pennsieve
-              </h2>
-              <button
-                class="ui positive button mt-md"
-                data-reset-guided-mode-page="true"
-                onclick="window.openDropdownPrompt(this, 'bf')"
-                style="
-                  background-color: var(--color-light-green) !important;
-                  width: 200px !important;
-                "
-              >
-                Log in to Pennsieve
-              </button>
             </div>
 
             <div class="guided--panel mt-0" id="guided-panel-pennsieve-dataset-import-loading">
@@ -2156,6 +2120,11 @@
               </p>
             </div>
 
+            <div
+              class="guided--panel mt-0"
+              id="guided-panel-existing-dataset-name-to-upload-to"
+            ></div>
+
             <div class="guided--panel mt-0" id="guided-panel-pennsieve-dataset-select">
               <label class="guided--form-label centered mb-sm mt-lg"
                 >Select the dataset you would like to modify and click "Continue"
@@ -2170,7 +2139,7 @@
                 "
               >
                 <select
-                  class="selectpicker SODA-select-picker"
+                  class="selectpicker SODA-select-picker w-100"
                   data-live-search="true"
                   id="guided-select-pennsieve-dataset-to-resume"
                 ></select>
@@ -2201,33 +2170,6 @@
                     ></div>
                   </div>
                 </div>
-              </div>
-              <div class="info-dropdown mt-lg">
-                <p class="info-dropdown-text" data-dropdown-type="warning">
-                  I don't see my dataset on Pennsieve in the dropdown above
-                </p>
-                <i class="fas fa-chevron-right"></i>
-              </div>
-              <div class="info-container">
-                <p class="help-text mb-0">
-                  Your current workspace is
-                  <b><span class="bf-organization-span"></span></b>
-                  <br />
-                  If your dataset is not in this workspace, click the button below to switch to a
-                  different workspace.
-                  <br />
-                  <button
-                    class="ui positive button mt-md change-current-account ds-dd organization guided-change-workspace"
-                    id="guided-button-change-workspace-dataset-import"
-                    style="background-color: var(--color-light-green) !important"
-                  >
-                    Import datasets from a different workspace
-                  </button>
-                  <br />
-                  <br />
-                  If you are in the correct workspace but don't see your dataset, you do not have
-                  Owner or Manager permissions, therefore, you are not able to modify the dataset.
-                </p>
               </div>
             </div>
           </div>
