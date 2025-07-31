@@ -1,5 +1,5 @@
 import useGlobalStore from "../../../stores/globalStore";
-import { Checkbox, Text, UnstyledButton, Stack } from "@mantine/core";
+import { Checkbox, Text, UnstyledButton, Stack, Badge } from "@mantine/core";
 import pennsieveLogo from "../../../assets/img/pennsieveLogo.png";
 import {
   setCheckboxCardChecked,
@@ -13,21 +13,27 @@ const dataMap = {
     title: "Generate dataset locally",
     description: "Create a local copy of your dataset on your computer",
     Icon: IconDeviceDesktop,
+    mutuallyExclusiveWithCards: ["generate-dataset-on-pennsieve"],
   },
   "generate-dataset-on-pennsieve": {
     title: "Generate dataset on Pennsieve",
     description: "Pennsieve is the official data management platform for the SPARC program.",
     image: pennsieveLogo,
+    mutuallyExclusiveWithCards: ["generate-dataset-locally"],
   },
   "generate-on-existing-pennsieve-dataset": {
     title: "Generate existing dataset",
     description: "Use an existing dataset from Pennsieve.",
     Icon: IconDeviceDesktop,
+    mutuallyExclusiveWithCards: ["generate-on-new-pennsieve-dataset"],
+    comingSoonMessage: "This feature is coming soon! Stay tuned for updates.",
   },
+
   "generate-on-new-pennsieve-dataset": {
     title: "Generate new dataset",
     description: "Create a new dataset on Pennsieve.",
     Icon: IconDeviceDesktop,
+    mutuallyExclusiveWithCards: ["generate-on-existing-pennsieve-dataset"],
   },
 };
 
@@ -38,13 +44,28 @@ const CheckboxCard = ({ id }) => {
     return <div>Invalid id: {id}</div>;
   }
 
-  const { title, description, Icon, image } = data;
+  const {
+    title,
+    description,
+    Icon,
+    image,
+    mutuallyExclusiveWithCards = [],
+    comingSoonMessage,
+  } = data;
   const checked = useGlobalStore((state) => !!state.checkboxes[id]);
+  const isDisabled = !!comingSoonMessage;
 
   const handleCardClick = () => {
+    if (isDisabled) return; // Don't allow clicking if disabled
+
     if (checked) {
       setCheckboxCardUnchecked(id);
     } else {
+      // First uncheck any mutually exclusive cards
+      mutuallyExclusiveWithCards.forEach((cardId) => {
+        setCheckboxCardUnchecked(cardId);
+      });
+      // Then check this card
       setCheckboxCardChecked(id);
     }
   };
@@ -64,25 +85,55 @@ const CheckboxCard = ({ id }) => {
         border: checked
           ? "2px solid var(--mantine-color-blue-6)"
           : "2px solid var(--mantine-color-gray-3)",
-        background: checked ? "var(--mantine-color-blue-0)" : "#fff",
+        background: isDisabled
+          ? "var(--mantine-color-gray-1)"
+          : checked
+            ? "var(--mantine-color-blue-0)"
+            : "#fff",
         borderRadius: 12,
         boxSizing: "border-box",
         boxShadow: checked ? "0 2px 8px 0 rgba(34,139,230,0.08)" : "none",
         transition: "border 0.2s, background 0.2s",
+        opacity: isDisabled ? 0.6 : 1,
+        cursor: isDisabled ? "not-allowed" : "pointer",
       }}
     >
+      {comingSoonMessage && (
+        <Badge
+          color="blue"
+          variant="filled"
+          size="sm"
+          style={{
+            position: "absolute",
+            top: 8,
+            right: 8,
+            zIndex: 3,
+          }}
+        >
+          Coming Soon
+        </Badge>
+      )}
+
       <Checkbox
         checked={checked}
+        disabled={isDisabled}
         onChange={(e) => {
           e.stopPropagation();
+          if (isDisabled) return;
+
           if (checked) {
             setCheckboxCardUnchecked(id);
           } else {
+            // First uncheck any mutually exclusive cards
+            mutuallyExclusiveWithCards.forEach((cardId) => {
+              setCheckboxCardUnchecked(cardId);
+            });
+            // Then check this card
             setCheckboxCardChecked(id);
           }
         }}
         tabIndex={-1}
-        styles={{ input: { cursor: "pointer" } }}
+        styles={{ input: { cursor: isDisabled ? "not-allowed" : "pointer" } }}
         style={{
           position: "absolute",
           top: 16,
@@ -95,19 +146,38 @@ const CheckboxCard = ({ id }) => {
         <img
           src={image}
           alt={title}
-          style={{ width: 48, height: 48, marginBottom: 16, objectFit: "contain" }}
+          style={{
+            width: 48,
+            height: 48,
+            marginBottom: 16,
+            objectFit: "contain",
+            opacity: isDisabled ? 0.5 : 1,
+          }}
         />
       ) : (
         Icon && (
-          <Icon size={48} style={{ marginBottom: 16, color: checked ? "#228be6" : "#868e96" }} />
+          <Icon
+            size={48}
+            style={{
+              marginBottom: 16,
+              color: isDisabled ? "var(--mantine-color-gray-5)" : checked ? "#228be6" : "#868e96",
+            }}
+          />
         )
       )}
       <Stack align="center" gap={4} style={{ width: "100%" }}>
-        <Text fw={600} size="md" lh={1} align="center" mb="sm">
+        <Text
+          fw={600}
+          size="md"
+          lh={1}
+          align="center"
+          mb="sm"
+          c={isDisabled ? "dimmed" : undefined}
+        >
           {title}
         </Text>
         <Text c="dimmed" size="sm" lh={1.3} align="center">
-          {description}
+          {comingSoonMessage || description}
         </Text>
       </Stack>
     </UnstyledButton>
