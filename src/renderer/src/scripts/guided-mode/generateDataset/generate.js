@@ -86,7 +86,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         .post(
           `/curate_datasets/curation`,
           {
-            soda_json_structure: datasetUploadObj,
+            soda_json_structure: window.sodaJSONObj,
             resume: !!window.retryGuidedMode,
           },
           { timeout: 0 }
@@ -103,6 +103,8 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
           // show verify files section
           document.getElementById("guided--verify-files").classList.remove("hidden");
 
+          window.retryGuidedMode = false; // Reset the retry flag
+
           // Clear the saved upload progress data because the dataset has been successfully
           window.sodaJSONObj["previously-uploaded-data"] = {};
 
@@ -114,6 +116,15 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
           document.querySelector("#guided--verify-files-button").disabled = false;
           document.querySelector("#guided--skip-verify-btn").disabled = false;
 
+          let uploadedFiles = data["main_curation_uploaded_files"];
+          let mainTotalGenerateDatasetSize = data["main_total_generate_dataset_size"];
+
+          logProgressPostUpload(uploadedFiles, mainTotalGenerateDatasetSize);
+
+          // reset the log values
+          bytesOnPreviousLogPage = 0;
+          filesOnPreviousLogPage = 0;
+
           // Show the next button
           $("#guided-next-button").css("visibility", "visible");
 
@@ -123,6 +134,8 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         .catch((error) => {
           console.error("Dataset upload failed:", error);
         });
+
+      await window.wait(1000);
 
       await trackPennsieveDatasetGenerationProgress(standardizedDatasetStructure);
       guidedSetNavLoadingState(false);
@@ -210,6 +223,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         // Verify files setup section
         window.pennsieveManifestId = data["origin_manifest_id"];
         window.totalFilesCount = data["main_curation_total_files"];
+        window.retryGuidedMode = false; // Reset the retry flag
 
         // show verify files section
         document.getElementById("guided--verify-files").classList.remove("hidden");
@@ -225,50 +239,14 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         document.querySelector("#guided--verify-files-button").disabled = false;
         document.querySelector("#guided--skip-verify-btn").disabled = false;
 
-        let fileValueToLog = 0;
-        let fileSizeValueToLog = 0;
         let uploadedFiles = data["main_curation_uploaded_files"];
         let mainTotalGenerateDatasetSize = data["main_total_generate_dataset_size"];
-        let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
-        let differenceInBytes = mainTotalGenerateDatasetSize - bytesOnPreviousLogPage;
 
-        fileValueToLog = finalFilesCount;
-        fileSizeValueToLog = differenceInBytes;
+        logProgressPostUpload(uploadedFiles, mainTotalGenerateDatasetSize);
 
-        // log the file and file size values to analytics
-        if (fileValueToLog > 0) {
-          window.electron.ipcRenderer.send(
-            "track-kombucha",
-            kombuchaEnums.Category.GUIDED_MODE,
-            kombuchaEnums.Action.GENERATE_DATASET,
-            kombuchaEnums.Label.FILES,
-            kombuchaEnums.Status.SUCCESS,
-            createEventData(
-              fileValueToLog,
-              "Pennsieve",
-              "Local",
-              window.sodaJSONObj["pennsieve-dataset-name"],
-              guidedGetDatasetId(window.sodaJSONObj)
-            )
-          );
-        }
-
-        if (fileSizeValueToLog > 0) {
-          window.electron.ipcRenderer.send(
-            "track-kombucha",
-            kombuchaEnums.Category.GUIDED_MODE,
-            kombuchaEnums.Action.GENERATE_DATASET,
-            kombuchaEnums.Label.SIZE,
-            kombuchaEnums.Status.SUCCESS,
-            createEventData(
-              fileSizeValueToLog,
-              "Pennsieve",
-              "Local",
-              window.sodaJSONObj["pennsieve-dataset-name"],
-              guidedGetDatasetId(window.sodaJSONObj)
-            )
-          );
-        }
+        // reset the log values
+        bytesOnPreviousLogPage = 0;
+        filesOnPreviousLogPage = 0;
 
         // Show the next button
         $("#guided-next-button").css("visibility", "visible");
@@ -279,6 +257,8 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       .catch((error) => {
         console.error("Dataset upload failed:", error);
       });
+
+    await window.wait(1000);
 
     await trackPennsieveDatasetGenerationProgress(standardizedDatasetStructure);
 
@@ -385,6 +365,52 @@ const createEventData = (value, destination, origin, dataset_name, dataset_id) =
 // Used to properly track the Progress of the upload to Pennsieve
 let bytesOnPreviousLogPage = 0;
 let filesOnPreviousLogPage = 0;
+
+const logProgressPostUpload = (files, bytes) => {
+  let fileValueToLog = 0;
+  let fileSizeValueToLog = 0;
+
+  let finalFilesCount = files - filesOnPreviousLogPage;
+  let differenceInBytes = bytes - bytesOnPreviousLogPage;
+
+  fileValueToLog = finalFilesCount;
+  fileSizeValueToLog = differenceInBytes;
+
+  // log the file and file size values to analytics
+  if (fileValueToLog > 0) {
+    window.electron.ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.GENERATE_DATASET,
+      kombuchaEnums.Label.FILES,
+      kombuchaEnums.Status.SUCCESS,
+      createEventData(
+        fileValueToLog,
+        "Pennsieve",
+        "Local",
+        window.sodaJSONObj["pennsieve-dataset-name"],
+        guidedGetDatasetId(window.sodaJSONObj)
+      )
+    );
+  }
+
+  if (fileSizeValueToLog > 0) {
+    window.electron.ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.GENERATE_DATASET,
+      kombuchaEnums.Label.SIZE,
+      kombuchaEnums.Status.SUCCESS,
+      createEventData(
+        fileSizeValueToLog,
+        "Pennsieve",
+        "Local",
+        window.sodaJSONObj["pennsieve-dataset-name"],
+        guidedGetDatasetId(window.sodaJSONObj)
+      )
+    );
+  }
+};
 
 const logProgressToAnalyticsGM = (files, bytes) => {
   // log every 500 files -- will log on success/failure as well so if there are less than 500 files we will log what we uploaded ( all in success case and some of them in failure case )
