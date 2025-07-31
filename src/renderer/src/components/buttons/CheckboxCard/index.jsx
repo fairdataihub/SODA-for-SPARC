@@ -13,20 +13,18 @@ const dataMap = {
     title: "Generate dataset locally",
     description: "Create a local copy of your dataset on your computer",
     Icon: IconDeviceDesktop,
-    mutuallyExclusiveWithCards: ["generate-dataset-on-pennsieve"],
   },
   "generate-dataset-on-pennsieve": {
     title: "Generate dataset on Pennsieve",
     description: "Pennsieve is the official data management platform for the SPARC program.",
     image: pennsieveLogo,
-    mutuallyExclusiveWithCards: ["generate-dataset-locally"],
   },
   "generate-on-existing-pennsieve-dataset": {
     title: "Generate existing dataset",
     description: "Use an existing dataset from Pennsieve.",
     Icon: IconDeviceDesktop,
     mutuallyExclusiveWithCards: ["generate-on-new-pennsieve-dataset"],
-    comingSoonMessage: "This feature is coming soon! Stay tuned for updates.",
+    comingSoon: true,
   },
 
   "generate-on-new-pennsieve-dataset": {
@@ -44,16 +42,9 @@ const CheckboxCard = ({ id }) => {
     return <div>Invalid id: {id}</div>;
   }
 
-  const {
-    title,
-    description,
-    Icon,
-    image,
-    mutuallyExclusiveWithCards = [],
-    comingSoonMessage,
-  } = data;
+  const { title, description, Icon, image, mutuallyExclusiveWithCards = [], comingSoon } = data;
   const checked = useGlobalStore((state) => !!state.checkboxes[id]);
-  const isDisabled = !!comingSoonMessage;
+  const isDisabled = !!comingSoon;
 
   const handleCardClick = () => {
     if (isDisabled) return; // Don't allow clicking if disabled
@@ -98,7 +89,7 @@ const CheckboxCard = ({ id }) => {
         cursor: isDisabled ? "not-allowed" : "pointer",
       }}
     >
-      {comingSoonMessage && (
+      {comingSoon && (
         <Badge
           color="blue"
           variant="filled"
@@ -177,7 +168,7 @@ const CheckboxCard = ({ id }) => {
           {title}
         </Text>
         <Text c="dimmed" size="sm" lh={1.3} align="center">
-          {comingSoonMessage || description}
+          {description}
         </Text>
       </Stack>
     </UnstyledButton>
