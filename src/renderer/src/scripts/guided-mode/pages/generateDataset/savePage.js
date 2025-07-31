@@ -47,8 +47,25 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
   }
 
   if (pageBeingLeftID === "guided-pennsieve-generate-target-tab") {
-    const pennsieveTargetCardChecked = isCheckboxCardChecked("generate-existing-dataset");
-    if (pennsieveTargetCardChecked) {
+    const generateOnNewPennsieveDatasetCardChecked = isCheckboxCardChecked(
+      "generate-on-new-pennsieve-dataset"
+    );
+    const generateOnExistingPennsieveDatasetCardChecked = isCheckboxCardChecked(
+      "generate-on-existing-pennsieve-dataset"
+    );
+
+    if (
+      !generateOnNewPennsieveDatasetCardChecked &&
+      !generateOnExistingPennsieveDatasetCardChecked
+    ) {
+      errorArray.push({
+        type: "notyf",
+        message: "Please select where you would like to generate your dataset.",
+      });
+      throw errorArray;
+    }
+    /* Commented out until handled after initial SDS3 release
+    if (generateOnExistingPennsieveDatasetCardChecked) {
       // read dataset name from the Select component in the pennsieve target page tab
       const datasetSelectElement = document.querySelector(
         "#guided-pennsieve-generate-target-tab input"
@@ -67,18 +84,12 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
         "if-existing": "merge",
         "if-existing-files": "replace",
       };
-    } else {
-      if (!window.sodaJSONObj["generate-dataset"]) {
-        window.sodaJSONObj["generate-dataset"] = {};
-      }
-      // user is generating a new dataset on Pennsieve set options
-      window.sodaJSONObj["generate-dataset"] = {
-        "dataset-name": "temp_name",
-        destination: "ps",
-        "generate-option": "new",
-        "if-existing": "merge",
-        "if-existing-files": "skip",
-      };
+    }*/
+    if (generateOnNewPennsieveDatasetCardChecked) {
+      window.sodaJSONObj["pennsieve-generation-target"] = "new";
+    }
+    if (generateOnExistingPennsieveDatasetCardChecked) {
+      window.sodaJSONObj["pennsieve-generation-target"] = "existing";
     }
   }
 

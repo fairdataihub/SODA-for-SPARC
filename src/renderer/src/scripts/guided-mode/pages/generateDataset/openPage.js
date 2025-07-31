@@ -40,6 +40,7 @@ export const openPageGenerateDataset = async (targetPageID) => {
   }
 
   if (targetPageID === "guided-pennsieve-generate-target-tab") {
+    /* PAGE LOGIC COMMENTED OUT AND TO BE RESUMED AFTER SDS3 INITIAL RELEASE
     // Ask the user if they want to generate on a new dataset or an existing one
     if (!window.sodaJSONObj["generate-dataset"]) {
       return;
@@ -48,6 +49,17 @@ export const openPageGenerateDataset = async (targetPageID) => {
       // If it has, set the Select component value to the dataset name
       const datasetName = window.sodaJSONObj["generate-dataset"]["dataset-name"];
       document.querySelector("#guided-pennsieve-generate-target-tab select").value = datasetName;
+    }*/
+    const pennsieveGenerationTarget = window.sodaJSONObj["pennsieve-generation-target"];
+    if (pennsieveGenerationTarget === "new") {
+      // If the user selected to generate on a new Pennsieve dataset, check the corresponding checkbox card
+      setCheckboxCardChecked("generate-on-new-pennsieve-dataset");
+      setCheckboxCardUnchecked("generate-on-existing-pennsieve-dataset");
+    }
+    if (pennsieveGenerationTarget === "existing") {
+      // If the user selected to generate on an existing Pennsieve dataset, check the corresponding checkbox card
+      setCheckboxCardChecked("generate-on-existing-pennsieve-dataset");
+      setCheckboxCardUnchecked("generate-on-new-pennsieve-dataset");
     }
   }
 
