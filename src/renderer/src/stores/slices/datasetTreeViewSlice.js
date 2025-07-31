@@ -411,10 +411,6 @@ export const moveFolderToNewLocation = (targetRelativePath) => {
     const globalStore = useGlobalStore.getState();
     const { contextMenuItemName, contextMenuItemType, contextMenuItemData } = globalStore;
 
-    console.log("contextMenuItemName:", contextMenuItemName); // Debug log
-    console.log("contextMenuItemType:", contextMenuItemType); // Debug log
-    console.log("contextMenuItemData:", contextMenuItemData); // Debug log
-
     if (!contextMenuItemName || !contextMenuItemData) {
       throw new Error("Missing contextMenuItemName or contextMenuItemData.");
     }

@@ -235,18 +235,8 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         fileValueToLog = finalFilesCount;
         fileSizeValueToLog = differenceInBytes;
 
-        console.log("Files to log:", fileValueToLog);
-        console.log("File size to log:", fileSizeValueToLog);
-
         // log the file and file size values to analytics
         if (fileValueToLog > 0) {
-          console.log("Dataset name: ", window.sodaJSONObj["pennsieve-dataset-name"]);
-          console.log("Dataset ID: ", guidedGetDatasetId(window.sodaJSONObj));
-          console.log(
-            "Pennsieve int id: ",
-            window.sodaJSONObj["digital-metadata"]["pennsieve-int-id"]
-          );
-          console.log("Analytics for files called in");
           window.electron.ipcRenderer.send(
             "track-kombucha",
             kombuchaEnums.Category.GUIDED_MODE,
@@ -443,7 +433,6 @@ const trackPennsieveDatasetGenerationProgress = async (standardizedDatasetStruct
 
   const fetchProgressData = async () => {
     const { data } = await client.get(`/curate_datasets/curation/progress`);
-    // console.log("[Pennsieve Progress] Raw progress data:", data);
     return {
       status: data["main_curate_status"],
       message: data["main_curate_progress_message"],

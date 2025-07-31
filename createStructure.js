@@ -525,16 +525,3 @@ createFile(
     `## Documentation\n` +
     `All quality control measures should be documented in the results/notes.txt file.`
 );
-
-console.log(
-  `Experimental dataset structure created successfully with:\n` +
-    `- ${numSubjects} subjects\n` +
-    `- ${samplesPerSubject} tissue samples per subject (total: ${
-      numSubjects * samplesPerSubject
-    } tissue samples)\n` +
-    `- ${regionsPerSample} regions per sample (total: ${
-      numSubjects * samplesPerSubject * regionsPerSample
-    } regions)\n` +
-    `- Scripts directory with analysis scripts and utilities\n` +
-    `- Protocols directory with documentation for data collection and analysis`
-);

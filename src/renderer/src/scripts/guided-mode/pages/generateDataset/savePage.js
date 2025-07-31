@@ -47,17 +47,13 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
   }
 
   if (pageBeingLeftID === "guided-pennsieve-generate-target-tab") {
-    console.log("saving the pennsieve target tab");
     const pennsieveTargetCardChecked = isCheckboxCardChecked("generate-existing-dataset");
-    console.log("pennsieveTargetCardChecked", pennsieveTargetCardChecked);
     if (pennsieveTargetCardChecked) {
       // read dataset name from the Select component in the pennsieve target page tab
       const datasetSelectElement = document.querySelector(
         "#guided-pennsieve-generate-target-tab input"
       );
       const datasetName = datasetSelectElement.value;
-
-      console.log("datasetName", datasetName);
 
       if (!window.sodaJSONObj["generate-dataset"]) {
         window.sodaJSONObj["generate-dataset"] = {};

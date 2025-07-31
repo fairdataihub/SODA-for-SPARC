@@ -3622,9 +3622,7 @@ const mergeNewDatasetStructureToExistingDatasetStructureAtPath = async (
   try {
     // Step 2: Add the imported data to the dataset structure (This function handles duplicate files, etc)
     await mergeLocalAndRemoteDatasetStructure(builtDatasetStructure, currentFileExplorerPath);
-    console.log(
-      "Successfully merged the new dataset structure into the existing dataset structure"
-    );
+
     // Step 3: Update the UI
     const currentPathArray = window.getGlobalPath(window.organizeDSglobalPath); // ['dataset_root', 'code']
     const nestedJsonDatasetStructure = window.getRecursivePath(
