@@ -64,7 +64,7 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
       });
       throw errorArray;
     }
-
+    /* Commented out until handled after initial SDS3 release
     if (generateOnExistingPennsieveDatasetCardChecked) {
       // read dataset name from the Select component in the pennsieve target page tab
       const datasetSelectElement = document.querySelector(
@@ -84,18 +84,12 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
         "if-existing": "merge",
         "if-existing-files": "replace",
       };
-    } else {
-      if (!window.sodaJSONObj["generate-dataset"]) {
-        window.sodaJSONObj["generate-dataset"] = {};
-      }
-      // user is generating a new dataset on Pennsieve set options
-      window.sodaJSONObj["generate-dataset"] = {
-        "dataset-name": "temp_name",
-        destination: "ps",
-        "generate-option": "new",
-        "if-existing": "merge",
-        "if-existing-files": "skip",
-      };
+    }*/
+    if (generateOnNewPennsieveDatasetCardChecked) {
+      window.sodaJSONObj["pennsieve-generation-target"] = "new";
+    }
+    if (generateOnExistingPennsieveDatasetCardChecked) {
+      window.sodaJSONObj["pennsieve-generation-target"] = "existing";
     }
   }
 

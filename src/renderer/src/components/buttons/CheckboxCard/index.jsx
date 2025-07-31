@@ -20,16 +20,17 @@ const dataMap = {
     image: pennsieveLogo,
   },
   "generate-on-existing-pennsieve-dataset": {
-    title: "Generate existing dataset",
-    description: "Use an existing dataset from Pennsieve.",
+    title: "Upload to an existing dataset on Pennsieve",
+    description:
+      "Select this option if you already have a dataset on Pennsieve and are uploading data to it.",
     Icon: IconDeviceDesktop,
     mutuallyExclusiveWithCards: ["generate-on-new-pennsieve-dataset"],
     comingSoon: true,
   },
 
   "generate-on-new-pennsieve-dataset": {
-    title: "Generate new dataset",
-    description: "Create a new dataset on Pennsieve.",
+    title: "Create a new dataset on Pennsieve",
+    description: "Select this option if you do not have a dataset on Pennsieve yet.",
     Icon: IconDeviceDesktop,
     mutuallyExclusiveWithCards: ["generate-on-existing-pennsieve-dataset"],
   },
@@ -77,7 +78,7 @@ const CheckboxCard = ({ id }) => {
           ? "2px solid var(--mantine-color-blue-6)"
           : "2px solid var(--mantine-color-gray-3)",
         background: isDisabled
-          ? "var(--mantine-color-gray-1)"
+          ? "var(--mantine-color-gray-0)"
           : checked
             ? "var(--mantine-color-blue-0)"
             : "#fff",
@@ -85,7 +86,7 @@ const CheckboxCard = ({ id }) => {
         boxSizing: "border-box",
         boxShadow: checked ? "0 2px 8px 0 rgba(34,139,230,0.08)" : "none",
         transition: "border 0.2s, background 0.2s",
-        opacity: isDisabled ? 0.6 : 1,
+        opacity: isDisabled ? 0.8 : 1,
         cursor: isDisabled ? "not-allowed" : "pointer",
       }}
     >

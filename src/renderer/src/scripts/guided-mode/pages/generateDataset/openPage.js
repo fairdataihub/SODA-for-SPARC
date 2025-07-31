@@ -50,6 +50,17 @@ export const openPageGenerateDataset = async (targetPageID) => {
       const datasetName = window.sodaJSONObj["generate-dataset"]["dataset-name"];
       document.querySelector("#guided-pennsieve-generate-target-tab select").value = datasetName;
     }*/
+    const pennsieveGenerationTarget = window.sodaJSONObj["pennsieve-generation-target"];
+    if (pennsieveGenerationTarget === "new") {
+      // If the user selected to generate on a new Pennsieve dataset, check the corresponding checkbox card
+      setCheckboxCardChecked("generate-on-new-pennsieve-dataset");
+      setCheckboxCardUnchecked("generate-on-existing-pennsieve-dataset");
+    }
+    if (pennsieveGenerationTarget === "existing") {
+      // If the user selected to generate on an existing Pennsieve dataset, check the corresponding checkbox card
+      setCheckboxCardChecked("generate-on-existing-pennsieve-dataset");
+      setCheckboxCardUnchecked("generate-on-new-pennsieve-dataset");
+    }
   }
 
   if (targetPageID === "guided-pennsieve-settings-tab") {

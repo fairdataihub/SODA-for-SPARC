@@ -1,4 +1,4 @@
-import { Text, Group, Select, Collapse } from "@mantine/core";
+import { Text, Group, Select, Collapse, Center } from "@mantine/core";
 import { useState } from "react";
 import useGlobalStore from "../../../stores/globalStore";
 import GuidedModePage from "../../containers/GuidedModePage";
@@ -6,6 +6,8 @@ import GuidedModeSection from "../../containers/GuidedModeSection";
 import CheckboxCard from "../../buttons/CheckboxCard";
 import client from "../../../scripts/client";
 import Swal from "sweetalert2";
+import NavigationButton from "../../buttons/Navigation";
+import { isCheckboxCardChecked } from "../../../stores/slices/checkboxCardSlice";
 
 const GenerateDatasetPennsieveTargetPage = () => {
   /*
@@ -14,7 +16,6 @@ const GenerateDatasetPennsieveTargetPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
   */
-  // Read from global store instead of local state
   const isNewDatasetSelected = useGlobalStore(
     (state) => !!state.checkboxes["generate-on-new-pennsieve-dataset"]
   );
@@ -22,6 +23,8 @@ const GenerateDatasetPennsieveTargetPage = () => {
     (state) => !!state.checkboxes["generate-on-existing-pennsieve-dataset"]
   );
 
+  console.log("isNewDatasetSelected:", isNewDatasetSelected);
+  console.log("isExistingDatasetSelected:", isExistingDatasetSelected);
   /*
   const fetchDatasets = async () => {
     if (hasLoaded || isLoading) return; // Don't fetch if already loaded or loading
@@ -73,7 +76,7 @@ const GenerateDatasetPennsieveTargetPage = () => {
     <GuidedModePage pageHeader="Pennsieve Generation Location">
       <GuidedModeSection>
         <Text mb="md">
-          Decide if you want to create a new dataset or use an existing dataset on Pennsieve.
+          Select an option for how you would like SODA to generate your data on Pennsieve below.
         </Text>
         <Group align="stretch" gap="md" justify="center">
           <CheckboxCard id="generate-on-new-pennsieve-dataset" />
@@ -107,14 +110,23 @@ const GenerateDatasetPennsieveTargetPage = () => {
         </GuidedModeSection>
       </Collapse>
       */}
-      <Collapse in={isNewDatasetSelected}>
-        <GuidedModeSection>
-          <Text mb="md">
-            You have selected to create a new dataset on Pennsieve. Please proceed to the next step
-            to configure your new dataset.
-          </Text>
-        </GuidedModeSection>
-      </Collapse>
+      {isExistingDatasetSelected ||
+        (isNewDatasetSelected && (
+          <GuidedModeSection>
+            <Center mt="xl">
+              <NavigationButton
+                onClick={() => {
+                  // Pass the button click to the real next button
+                  document.getElementById("guided-next-button").click();
+                }}
+                buttonCustomWidth={"215px"}
+                buttonText={"Save and Continue"}
+                navIcon={"right-arrow"}
+                buttonSize={"md"}
+              ></NavigationButton>
+            </Center>
+          </GuidedModeSection>
+        ))}
     </GuidedModePage>
   );
 };
