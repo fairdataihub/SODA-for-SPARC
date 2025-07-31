@@ -40,6 +40,7 @@ export const openPageGenerateDataset = async (targetPageID) => {
   }
 
   if (targetPageID === "guided-pennsieve-generate-target-tab") {
+    /* PAGE LOGIC COMMENTED OUT AND TO BE RESUMED AFTER SDS3 INITIAL RELEASE
     // Ask the user if they want to generate on a new dataset or an existing one
     if (!window.sodaJSONObj["generate-dataset"]) {
       return;
@@ -48,7 +49,7 @@ export const openPageGenerateDataset = async (targetPageID) => {
       // If it has, set the Select component value to the dataset name
       const datasetName = window.sodaJSONObj["generate-dataset"]["dataset-name"];
       document.querySelector("#guided-pennsieve-generate-target-tab select").value = datasetName;
-    }
+    }*/
   }
 
   if (targetPageID === "guided-pennsieve-settings-tab") {

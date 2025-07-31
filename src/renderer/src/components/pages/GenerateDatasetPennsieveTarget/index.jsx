@@ -8,19 +8,21 @@ import client from "../../../scripts/client";
 import Swal from "sweetalert2";
 
 const GenerateDatasetPennsieveTargetPage = () => {
+  /*
   const [selectedDataset, setSelectedDataset] = useState(null);
   const [datasetOptions, setDatasetOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
-
+  */
   // Read from global store instead of local state
   const isNewDatasetSelected = useGlobalStore(
-    (state) => !!state.checkboxes["generate-new-dataset"]
+    (state) => !!state.checkboxes["generate-on-new-pennsieve-dataset"]
   );
   const isExistingDatasetSelected = useGlobalStore(
-    (state) => !!state.checkboxes["generate-existing-dataset"]
+    (state) => !!state.checkboxes["generate-on-existing-pennsieve-dataset"]
   );
 
+  /*
   const fetchDatasets = async () => {
     if (hasLoaded || isLoading) return; // Don't fetch if already loaded or loading
 
@@ -65,6 +67,7 @@ const GenerateDatasetPennsieveTargetPage = () => {
       setIsLoading(false);
     }
   };
+  */
 
   return (
     <GuidedModePage pageHeader="Pennsieve Generation Location">
@@ -73,12 +76,13 @@ const GenerateDatasetPennsieveTargetPage = () => {
           Decide if you want to create a new dataset or use an existing dataset on Pennsieve.
         </Text>
         <Group align="stretch" gap="md" justify="center">
-          <CheckboxCard id="generate-new-dataset" />
-          <CheckboxCard id="generate-existing-dataset" />
+          <CheckboxCard id="generate-on-new-pennsieve-dataset" />
+          <CheckboxCard id="generate-on-existing-pennsieve-dataset" />
         </Group>
       </GuidedModeSection>
 
       {/* Use global store state for the condition */}
+      {/*
       <Collapse in={isExistingDatasetSelected}>
         <GuidedModeSection>
           <Text mb="md">
@@ -100,6 +104,15 @@ const GenerateDatasetPennsieveTargetPage = () => {
               loading: isLoading, // Shows loading spinner in dropdown
             }}
           />
+        </GuidedModeSection>
+      </Collapse>
+      */}
+      <Collapse in={isNewDatasetSelected}>
+        <GuidedModeSection>
+          <Text mb="md">
+            You have selected to create a new dataset on Pennsieve. Please proceed to the next step
+            to configure your new dataset.
+          </Text>
         </GuidedModeSection>
       </Collapse>
     </GuidedModePage>

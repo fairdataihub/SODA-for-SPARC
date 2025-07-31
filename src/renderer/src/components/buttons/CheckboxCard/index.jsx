@@ -19,12 +19,12 @@ const dataMap = {
     description: "Pennsieve is the official data management platform for the SPARC program.",
     image: pennsieveLogo,
   },
-  "generate-existing-dataset": {
+  "generate-on-existing-pennsieve-dataset": {
     title: "Generate existing dataset",
     description: "Use an existing dataset from Pennsieve.",
     Icon: IconDeviceDesktop,
   },
-  "generate-new-dataset": {
+  "generate-on-new-pennsieve-dataset": {
     title: "Generate new dataset",
     description: "Create a new dataset on Pennsieve.",
     Icon: IconDeviceDesktop,
