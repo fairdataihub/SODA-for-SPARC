@@ -430,7 +430,12 @@ window.nextPrev = async (pageIndex) => {
     window.returnToGuided();
   }
 
-  if (parentTabs[window.currentTab].id === "getting-started-tab") {
+  if (pageIndex == -1 && window.currentTab === 1) {
+    // show the continue button
+    window.currentTab = window.currentTab + pageIndex;
+    window.showParentTab(window.currentTab, pageIndex);
+    $("#nextBtn").prop("disabled", false);
+    return;
   }
 
   // update JSON structure
