@@ -171,10 +171,12 @@ window.uploadDatasetDropHandler = async (ev) => {
       } else {
         Swal.fire({
           icon: "warning",
-          html: `2This dataset is not following the SPARC Dataset Structure (SDS). It is expected that each of the high-level folders in this dataset is named after one of the SDS folders.
-          <br/>
-          See the "Data Organization" section of the SPARC documentation for more 
-          <a target="_blank" href="https://docs.sparc.science/docs/overview-of-sparc-dataset-format">details</a>`,
+          html: `<div style="text-align: left;">
+                  This dataset is not following the SPARC Dataset Structure (SDS). It is expected that each of the high-level folders in this dataset is named after one of the SDS folders.
+                  <br/>
+                  See the "Data Organization" section of the SPARC documentation for more 
+                  <a target="_blank" href="https://docs.sparc.science/docs/sparc-dataset-structure">details</a>
+                  </div>`,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           showConfirmButton: false,
@@ -622,10 +624,12 @@ window.importLocalDataset = async (folderPath) => {
   } else {
     Swal.fire({
       icon: "warning",
-      html: `This dataset is not following the SPARC Dataset Structure (SDS). It is expected that each of the high-level folders in this dataset is named after one of the SDS folders.
-      <br/>
-      See the "Data Organization" section of the SPARC documentation for more 
-      <a target="_blank" href="https://docs.sparc.science/docs/overview-of-sparc-dataset-format">details</a>`,
+      html: `<div style="text-align: left;">
+              This dataset is not following the SPARC Dataset Structure (SDS). It is expected that each of the high-level folders in this dataset is named after one of the SDS folders.
+              <br/>
+              See the "Data Organization" section of the SPARC documentation for more 
+              <a target="_blank" href="https://docs.sparc.science/docs/sparc-dataset-structure">details</a>
+              </div>`,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showConfirmButton: false,
