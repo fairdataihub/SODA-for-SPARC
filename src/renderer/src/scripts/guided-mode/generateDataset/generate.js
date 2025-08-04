@@ -1027,13 +1027,92 @@ const guidedAddDatasetDescription = async (
 };
 
 const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePath) => {
+  const bannerRow = document.getElementById("guided-dataset-banner-image-upload-tr");
+  const bannerText = document.getElementById("guided-dataset-banner-image-upload-text");
+  const bannerStatusId = "guided-dataset-banner-image-upload-status";
+
+  bannerRow.classList.remove("hidden");
+
   if (!bannerImagePath) {
-    skipBannerImageUpload();
+    bannerText.innerHTML = "Skipped optional banner image...";
+    guidedUploadStatusIcon(bannerStatusId, "success");
     return;
   }
 
-  await uploadValidBannerImage(bfAccount, datasetName, bannerImagePath);
+  bannerText.innerHTML = "Adding dataset banner image...";
+  guidedUploadStatusIcon(bannerStatusId, "loading");
+
+  const previouslyUploadedBannerImagePath =
+    window.sodaJSONObj["previously-uploaded-data"]?.["banner-image-path"];
+
+  if (previouslyUploadedBannerImagePath === bannerImagePath) {
+    bannerText.innerHTML = "Dataset banner image already added on Pennsieve";
+    guidedUploadStatusIcon(bannerStatusId, "success");
+    return;
+  }
+
+  let bannerImageSize;
+  try {
+    bannerImageSize = window.fs.statSync(bannerImagePath).size;
+  } catch {
+    bannerImageSize = "Unable to retrieve size";
+  }
+
+  try {
+    await client.put(
+      `/manage_datasets/bf_banner_image`,
+      { input_banner_image_path: bannerImagePath },
+      {
+        params: {
+          selected_account: bfAccount,
+          selected_dataset: datasetName,
+        },
+      }
+    );
+
+    bannerText.innerHTML = "Successfully added dataset banner image!";
+    guidedUploadStatusIcon(bannerStatusId, "success");
+
+    window.sodaJSONObj["previously-uploaded-data"]["banner-image-path"] = bannerImagePath;
+    await guidedSaveProgress();
+
+    window.electron.ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+      kombuchaEnums.Label.BANNER_SIZE,
+      kombuchaEnums.Status.SUCCESS,
+      {
+        value: bannerImageSize,
+        dataset_name: guidedGetDatasetName(window.sodaJSONObj),
+        dataset_id: guidedGetDatasetId(window.sodaJSONObj),
+        dataset_int_id: window.defaultBfDatasetIntId,
+      }
+    );
+  } catch (error) {
+    console.error(error);
+
+    bannerText.innerHTML = "Failed to add a dataset banner image.";
+    guidedUploadStatusIcon(bannerStatusId, "error");
+
+    window.electron.ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+      kombuchaEnums.Label.BANNER_SIZE,
+      kombuchaEnums.Status.FAIL,
+      {
+        value: bannerImageSize,
+        dataset_name: guidedGetDatasetName(window.sodaJSONObj),
+        dataset_id: guidedGetDatasetId(window.sodaJSONObj),
+        dataset_int_id: window.defaultBfDatasetIntId,
+      }
+    );
+
+    throw new Error(userErrorMessage(error));
+  }
 };
+
 const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) => {
   document.getElementById("guided-dataset-license-upload-tr").classList.remove("hidden");
   const datasetLicenseUploadText = document.getElementById("guided-dataset-license-upload-text");
@@ -1203,97 +1282,7 @@ const openGuidedDatasetRenameSwal = async () => {
   }
 };
 
-const skipBannerImageUpload = () => {
-  document.getElementById("guided-dataset-banner-image-upload-tr").classList.remove("hidden");
-  const datasetBannerImageUploadText = document.getElementById(
-    "guided-dataset-banner-image-upload-text"
-  );
-  datasetBannerImageUploadText.innerHTML = "Skipped optional banner image...";
-  guidedUploadStatusIcon("guided-dataset-banner-image-upload-status", "success");
-};
-
-const uploadValidBannerImage = async (bfAccount, datasetName, bannerImagePath) => {
-  document.getElementById("guided-dataset-banner-image-upload-tr").classList.remove("hidden");
-  const datasetBannerImageUploadText = document.getElementById(
-    "guided-dataset-banner-image-upload-text"
-  );
-  datasetBannerImageUploadText.innerHTML = "Adding dataset banner image...";
-  guidedUploadStatusIcon("guided-dataset-banner-image-upload-status", "loading");
-
-  const previouslyUploadedBannerImagePath =
-    window.sodaJSONObj["previously-uploaded-data"]["banner-image-path"];
-
-  if (previouslyUploadedBannerImagePath === bannerImagePath) {
-    datasetBannerImageUploadText.innerHTML = "Dataset banner image already added on Pennsieve";
-    guidedUploadStatusIcon("guided-dataset-banner-image-upload-status", "success");
-    return;
-  }
-
-  // Get the banner image size for Kombucha
-  // If there is an error getting the banner image size, "Unable to retrieve size"
-  // will be sent to Kombucha
-  let bannerImageSize;
-  try {
-    bannerImageSize = window.fs.statSync(bannerImagePath).size;
-  } catch (error) {
-    bannerImageSize = "Unable to retrieve size";
-  }
-
-  try {
-    await client.put(
-      `/manage_datasets/bf_banner_image`,
-      {
-        input_banner_image_path: bannerImagePath,
-      },
-      {
-        params: {
-          selected_account: bfAccount,
-          selected_dataset: datasetName,
-        },
-      }
-    );
-    datasetBannerImageUploadText.innerHTML = `Successfully added dataset banner image!`;
-    guidedUploadStatusIcon("guided-dataset-banner-image-upload-status", "success");
-    window.sodaJSONObj["previously-uploaded-data"]["banner-image-path"] = bannerImagePath;
-    await guidedSaveProgress();
-
-    // Send successful banner image upload event to Kombucha
-    window.electron.ipcRenderer.send(
-      "track-kombucha",
-      kombuchaEnums.Category.GUIDED_MODE,
-      kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
-      kombuchaEnums.Label.BANNER_SIZE,
-      kombuchaEnums.Status.SUCCESS,
-      {
-        value: bannerImageSize,
-        dataset_name: guidedGetDatasetName(window.sodaJSONObj),
-        dataset_id: guidedGetDatasetId(window.sodaJSONObj),
-        dataset_int_id: window.defaultBfDatasetIntId,
-      }
-    );
-  } catch (error) {
-    console.error(error);
-    datasetBannerImageUploadText.innerHTML = "Failed to add a dataset banner image.";
-    guidedUploadStatusIcon("guided-dataset-banner-image-upload-status", "error");
-
-    // Send failed banner image upload event to Kombucha
-    window.electron.ipcRenderer.send(
-      "track-kombucha",
-      kombuchaEnums.Category.GUIDED_MODE,
-      kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
-      kombuchaEnums.Label.BANNER_SIZE,
-      kombuchaEnums.Status.FAIL,
-      {
-        value: bannerImageSize,
-        dataset_name: guidedGetDatasetName(window.sodaJSONObj),
-        dataset_id: guidedGetDatasetId(window.sodaJSONObj),
-        dataset_int_id: window.defaultBfDatasetIntId,
-      }
-    );
-
-    throw new Error(userErrorMessage(error));
-  }
-};
+const uploadValidBannerImage = async (bfAccount, datasetName, bannerImagePath) => {};
 
 const guidedGrantUserPermission = async (
   bfAccount,
