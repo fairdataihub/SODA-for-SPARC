@@ -71,7 +71,7 @@
   ],
   "codeRepository": "https://github.com/fairdataihub/SODA-for-SPARC",
   "dateCreated": "2021-10-08",
-  "dateModified": "2025-04-02",
+  "dateModified": "2025-08-02",
   "datePublished": "2024-10-11",
   "description": "Simplifying data curation for researchers funded by the NIH SPARC initiative",
   "developmentStatus": "active",
@@ -91,6 +91,6 @@
   "programmingLanguage": ["JavaScript", "HTML", "Python", "CSS"],
   "referencePublication": "https://doi.org/10.1101/2021.02.10.430563",
   "schema:releaseNotes": "## Feature additions:\n\n- Pennsieve Agent does not need to be at latest version to upload a dataset.",
-  "version": "15.3.2",
+  "version": "15.4.0",
   "type": "SoftwareSourceCode"
 }
