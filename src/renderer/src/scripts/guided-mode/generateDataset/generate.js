@@ -53,7 +53,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         "study_primary_conclusion"
       ] || "Not provided";
     const guidedBannerImagePath =
-      window.sodaJSONObj["dataset_metadata"]?.["banner-image-path"] || "";
+      window.sodaJSONObj["digital-metadata"]?.["banner-image-path"] || "";
     // Create standardized structure
     const standardizedDatasetStructure = createStandardizedDatasetStructure(
       window.datasetStructureJSONObj,
