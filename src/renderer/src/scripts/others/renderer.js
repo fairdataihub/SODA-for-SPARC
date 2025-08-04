@@ -7592,7 +7592,7 @@ window.showBFAddAccountSweetalert = async (ev) => {
     backdrop: "rgba(0,0,0, 0.4)",
     heightAuto: false,
     allowOutsideClick: false,
-    footer: `<a target="_blank" href="https://docs.sodaforsparc.io/docs/connecting-to-pennsieve/connecting-with-api-key" style="text-decoration: none;">Help me get an API key</a>`,
+    footer: `<a target="_blank" href="https://docs.sodaforsparc.io/docs/15.4.0/connecting-to-pennsieve/connecting-with-api-key" style="text-decoration: none;">Help me get an API key</a>`,
     didOpen: () => {
       let swal_container = document.getElementsByClassName("swal2-popup")[0];
       swal_container.style.width = "43rem";
