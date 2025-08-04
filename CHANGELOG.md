@@ -5,7 +5,7 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## v16.0.0
+## v16.0.0 - 2025-08-04
 
 ## Feature Additions:
 
@@ -18,11 +18,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Fixed a bug where users could import folders without any files by importing folders with only empty folders inside of them.
 
-## v15.4.0
+## v15.4.0 - 2025-08-04
 
 ## Feature Additions:
 
-- This version of SODA allows users to continue "Prepare Dataset Step-by-Step" progress files that were started before SDS3 was supported, so they can finish curating those datasets with the SDS2 workflow.
+- This version of SODA was created to allow users to continue "Prepare Dataset Step-by-Step" progress files that were started before SDS3 was supported, so they can finish curating those datasets with the SDS2 workflow.
 
 ## v.15.3.2 - 2025-04-02
 
