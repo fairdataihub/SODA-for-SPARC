@@ -684,7 +684,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         submitdatastatus = "Done"
         invalid_dataset_messages = (
             invalid_dataset_messages
-            + "<br>Please remove invalid files/folders from your dataset before uploading. If you have hidden files present please remove them before upload. You can find more details <a target='_blank' rel='noopener noreferrer' href='https://docs.sodaforsparc.io/docs/common-errors/issues-regarding-hidden-files-or-folders'>here </a> on how to fix this issue."
+            + "<br>Please remove invalid files/folders from your dataset before uploading. If you have hidden files present please remove them before upload. You can find more details <a target='_blank' rel='noopener noreferrer' href='https://docs.sodaforsparc.io/docs/15.4.0/common-errors/issues-regarding-hidden-files-or-folders'>here </a> on how to fix this issue."
         )
         did_fail = True
         did_upload = False
@@ -720,7 +720,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         except Exception as e:
             namespace_logger.error("Error uploading dataset files")
             namespace_logger.error(e)
-            raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a target='_blank' rel='noopener noreferrer' href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
+            raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a target='_blank' rel='noopener noreferrer' href='https://docs.sodaforsparc.io/docs/15.4.0/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
 
         submitdatastatus = "Done"
     except Exception as e:

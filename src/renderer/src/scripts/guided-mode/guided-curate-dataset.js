@@ -8046,6 +8046,18 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
   try {
     const datasetResumeJsonObj = await getProgressFileData(datasetNameToResume);
 
+    const lastVersionOfSodaUsed = datasetResumeJsonObj["last-version-of-soda-used"];
+    console.log("Last version of SODA used:", lastVersionOfSodaUsed);
+    if (lastVersionOfSodaUsed >= "16.0.0") {
+      await swalShowInfo(
+        "This dataset was created with a newer version of SODA",
+        `This progress file was created after SODA adopted the SDS3 workflow.<br><br>
+        To continue working on this dataset, download the lastest version of SODA:<br><br>
+        <a href='https://docs.sodaforsparc.io/' target='_blank'>Download the latest version of SODA</a>`
+      );
+      return;
+    }
+
     // Datasets successfully uploaded will have the "previous-guided-upload-dataset-name" key
     const datasetHasAlreadyBeenSuccessfullyUploaded =
       datasetResumeJsonObj["previous-guided-upload-dataset-name"];
@@ -13339,17 +13351,6 @@ document.getElementById("button-homepage-guided-mode").addEventListener("click",
 
   guidedUnSkipPage("guided-select-starting-point-tab");
   await window.openPage("guided-select-starting-point-tab");
-});
-
-// Free form mode event listener (from curate and share page)
-document.querySelector("#button-homepage-freeform-mode").addEventListener("click", async () => {
-  //Free form mode will open through here
-  window.guidedPrepareHomeScreen();
-
-  // guidedResetSkippedPages();
-
-  directToFreeFormMode();
-  document.getElementById("guided_mode_view").classList.add("is-selected");
 });
 
 $("#guided-button-add-permission-user-or-team").on("click", function () {

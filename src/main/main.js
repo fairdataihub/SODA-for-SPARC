@@ -255,7 +255,8 @@ function initialize() {
     });
     mainWindow.webContents.once("dom-ready", () => {
       if (updatechecked == false && !buildIsBeta) {
-        autoUpdater.checkForUpdatesAndNotify();
+        // Auto update check commented out as we do not want 15.4.0 to update
+        // autoUpdater.checkForUpdatesAndNotify();
       }
     });
     mainWindow.on("close", async (e) => {
@@ -344,7 +345,8 @@ function initialize() {
 
         start_pre_flight_checks();
         if (!buildIsBeta) {
-          autoUpdater.checkForUpdatesAndNotify();
+          // Auto update check commented out as we do not want 15.4.0 to update
+          // autoUpdater.checkForUpdatesAndNotify();
         }
         updatechecked = true;
       }, 6000);
