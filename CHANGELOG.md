@@ -5,6 +5,37 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v16.0.0
+
+## Feature Additions:
+
+- "Upload Dataset" feature now adheres to the SDS3, with the primary change being that only a single manifest file gets generated
+  instead of a manifest file in each high level folder
+- "Prepare dataset step-by-step" feature received a large overhaul, including a new data selection workflow, single file manifest generation, and new metadata form pages.
+- Removed "Advanced Features" from the homepage.
+
+## Bug Fixes:
+
+- Fixed a bug where users could import folders without any files by importing folders with only empty folders inside of them.
+
+## v15.4.0
+
+## Feature Additions:
+
+- This version of SODA allows users to continue "Prepare Dataset Step-by-Step" progress files that were started before SDS3 was supported, so they can finish curating those datasets with the SDS2 workflow.
+
+## v.15.3.2 - 2025-04-02
+
+## Feature Additions:
+
+- Added Mac release to 15.3.1
+
+## v.15.3.1 - 2025-04-01
+
+## Feature Additions:
+
+- Pennsieve Agent updates are now optional in some cases.
+
 ## v15.3.0 - 2024-12-03
 
 ## Feature Additions:
