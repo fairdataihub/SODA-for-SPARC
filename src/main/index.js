@@ -576,7 +576,8 @@ const initialize = () => {
         // start_pre_flight_checks();
         if (!buildIsBeta) {
           log.info("Checking for updates in initialize");
-          autoUpdater.checkForUpdatesAndNotify();
+          // Auto update check commented out as we do not want 15.4.0 to update
+          // autoUpdater.checkForUpdatesAndNotify();
         }
         updatechecked = true;
       }, 6000);
