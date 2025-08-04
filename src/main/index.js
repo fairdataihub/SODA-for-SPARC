@@ -27,7 +27,7 @@ app.showExitPrompt = true;
 
 const sodaVersion = app.getVersion();
 // If the version includes "beta", the app will not check for updates
-const buildIsBeta = sodaVersion.includes("beta") || sodaVersion === "15.4.0";
+const buildIsBeta = sodaVersion.includes("beta");
 if (buildIsBeta) {
   log.info("This is a beta build. Updates will not be checked.");
 }
@@ -576,7 +576,8 @@ const initialize = () => {
         // start_pre_flight_checks();
         if (!buildIsBeta) {
           log.info("Checking for updates in initialize");
-          autoUpdater.checkForUpdatesAndNotify();
+          // Auto update check commented out as we do not want 15.4.0 to auto update
+          // autoUpdater.checkForUpdatesAndNotify();
         }
         updatechecked = true;
       }, 6000);
