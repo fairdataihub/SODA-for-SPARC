@@ -23,8 +23,6 @@ const GenerateDatasetPennsieveTargetPage = () => {
     (state) => !!state.checkboxes["generate-on-existing-pennsieve-dataset"]
   );
 
-  console.log("isNewDatasetSelected:", isNewDatasetSelected);
-  console.log("isExistingDatasetSelected:", isExistingDatasetSelected);
   /*
   const fetchDatasets = async () => {
     if (hasLoaded || isLoading) return; // Don't fetch if already loaded or loading

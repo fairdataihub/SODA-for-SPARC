@@ -107,8 +107,6 @@ class Curation(Resource):
         soda_json_structure = data["soda_json_structure"]
         api.logger.info("/clean-dataset POST request")
 
-        api.logger.info("SODA JSON structure: ", soda_json_structure)
-
         try:
             return clean_json_structure(soda_json_structure)
         except Exception as e:
