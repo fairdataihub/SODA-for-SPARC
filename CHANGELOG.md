@@ -5,6 +5,12 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v15.4.0 - 2025-08-04
+
+## Feature Additions:
+
+- This version of SODA was created to allow users to continue "Prepare Dataset Step-by-Step" progress files that were started before SDS3 was supported, so they can finish curating those datasets with the SDS2 workflow.
+
 ## v.15.3.2 - 2025-04-02
 
 ## Feature Additions:
