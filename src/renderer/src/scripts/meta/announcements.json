@@ -1,4 +1,10 @@
 {
+  "16.0.0": {
+    "announcements": {
+      "bug-fixes": [],
+      "features": ["SODA has been updated to support SPARC Dataset Structure 3.0 (SDS3)."]
+    }
+  },
   "15.3.1": {
     "announcements": {
       "bug-fixes": [],
