@@ -1282,8 +1282,6 @@ const openGuidedDatasetRenameSwal = async () => {
   }
 };
 
-const uploadValidBannerImage = async (bfAccount, datasetName, bannerImagePath) => {};
-
 const guidedGrantUserPermission = async (
   bfAccount,
   datasetName,
