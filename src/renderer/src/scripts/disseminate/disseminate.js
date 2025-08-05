@@ -86,8 +86,8 @@ window.disseminatePublish = async (curationMode) => {
 };
 
 const refreshDatasetStatus = async (ev) => {
-  let account = $("#current-bf-account").text();
-  let dataset = $(".bf-dataset-span")
+  let account = $("#current-ps-account").text();
+  let dataset = $(".ps-dataset-span")
     .html()
     .replace(/^\s+|\s+$/g, "");
   if (dataset != "None") {
@@ -118,7 +118,7 @@ const disseminateShowCurrentPermission = async (bfAcct, bfDS) => {
 
   let permissions;
   try {
-    permissions = await api.getDatasetPermissions(bfAcct, bfDS, false);
+    permissions = await api.getDatasetPermissions(bfDS, false);
   } catch (error) {
     clientError(error);
     window.electron.ipcRenderer.send(
@@ -156,7 +156,7 @@ const disseminateShowCurrentPermission = async (bfAcct, bfDS) => {
 const disseminiateShowCurrentDatasetStatus = async (callback, account, dataset) => {
   if (dataset === "Select dataset") {
     $(window.bfCurrentDatasetStatusProgress).css("visbility", "hidden");
-    $("#bf-dataset-status-spinner").css("display", "none");
+    $("#ps-dataset-status-spinner").css("display", "none");
     window.removeOptions(window.bfListDatasetStatus);
     window.bfListDatasetStatus.style.color = "black";
   } else {
@@ -190,14 +190,14 @@ const disseminiateShowCurrentDatasetStatus = async (callback, account, dataset) 
       window.selectOptionColor(window.bfListDatasetStatus);
       //window.bfCurrentDatasetStatusProgress.style.display = "none";
       $(window.bfCurrentDatasetStatusProgress).css("visbility", "hidden");
-      $("#bf-dataset-status-spinner").css("display", "none");
+      $("#ps-dataset-status-spinner").css("display", "none");
       if (callback !== "") {
         callback();
       }
     } catch (error) {
       clientError(error);
       $(window.bfCurrentDatasetStatusProgress).css("visbility", "hidden");
-      $("#bf-dataset-status-spinner").css("display", "none");
+      $("#ps-dataset-status-spinner").css("display", "none");
       window.electron.ipcRenderer.send(
         "track-event",
         "Error",
@@ -209,7 +209,7 @@ const disseminiateShowCurrentDatasetStatus = async (callback, account, dataset) 
 };
 
 const checkDatasetDisseminate = () => {
-  let datasetDissmeniateStatus = $(".bf-dataset-span.disseminate")
+  let datasetDissmeniateStatus = $(".ps-dataset-span.disseminate")
     .html()
     .replace(/^\s+|\s+$/g, "");
   if (

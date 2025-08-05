@@ -482,20 +482,6 @@ ipcMain.on("open-folder-dialog-save-subjects", async (event, filename) => {
   }
 });
 
-// Generate samples file
-ipcMain.on("open-folder-dialog-save-samples", async (event, filename) => {
-  let mainWindow = BrowserWindow.getFocusedWindow();
-
-  let files = await dialog.showOpenDialog(mainWindow, {
-    properties: ["openDirectory"],
-    title: "Select a directory",
-  });
-
-  if (files) {
-    mainWindow.webContents.send("selected-generate-metadata-samples", files.filePaths, filename);
-  }
-});
-
 // Generate changes file
 ipcMain.on("open-folder-dialog-save-changes", async (event, filename) => {
   let mainWindow = BrowserWindow.getFocusedWindow();
@@ -593,17 +579,37 @@ ipcMain.on("open-files-organize-datasets-dialog", async (event) => {
   }
 });
 
-ipcMain.on("open-folders-organize-datasets-dialog", async (event) => {
-  let mainWindow = BrowserWindow.getFocusedWindow();
+ipcMain.on("file-explorer-dropped-datasets", (event, args) => {
+  const mainWindow = BrowserWindow.getFocusedWindow();
+  const importRelativePath = args.importRelativePath;
+  mainWindow.webContents.send("selected-folders-organize-datasets", {
+    filePaths: args.filePaths,
+    importRelativePath,
+  });
+});
 
+ipcMain.on("open-folders-organize-datasets-dialog", async (event, args) => {
+  if (!args?.importRelativePath) {
+    console.error(
+      "[main-process] The 'importRelativePath' property is required but was not provided."
+    );
+    throw new Error("The 'importRelativePath' property is required but was not provided.");
+  }
+
+  let mainWindow = BrowserWindow.getFocusedWindow();
+  const importRelativePath = args.importRelativePath;
   let folders = await dialog.showOpenDialog(mainWindow, {
     properties: ["openDirectory", "multiSelections"],
-    title: "Import a folder",
+    title: `Select folder(s) to import into SODA`,
   });
-
-  if (folders) {
-    mainWindow.webContents.send("selected-folders-organize-datasets", folders.filePaths);
+  if (folders.canceled) {
+    return; // Exit if the dialog is canceled
   }
+
+  mainWindow.webContents.send("selected-folders-organize-datasets", {
+    filePaths: folders.filePaths,
+    importRelativePath,
+  });
 });
 
 // Generate manifest file locally
@@ -690,14 +696,13 @@ ipcMain.handle("open-manifest-preview-location", async () => {
 
 ipcMain.on("guided-select-local-dataset-generation-path", (event) => {
   const mainWindow = BrowserWindow.getFocusedWindow();
-
-  // Get the path to the directory where the user wants to save the spreadsheet
-  const spreadsheetPath = dialog.showOpenDialogSync(mainWindow, {
+  // Open a dialog for the user to select a directory
+  const selectedPath = dialog.showOpenDialogSync(mainWindow, {
     properties: ["openDirectory"],
     title: "Select a folder to copy the dataset to",
   });
 
-  if (spreadsheetPath) {
-    event.sender.send("selected-guided-local-dataset-generation-path", spreadsheetPath[0]);
+  if (selectedPath && selectedPath[0]) {
+    event.sender.send("selected-guided-local-dataset-generation-path", selectedPath[0]);
   }
 });

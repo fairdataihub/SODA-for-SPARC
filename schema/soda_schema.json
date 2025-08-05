@@ -1,0 +1,663 @@
+{
+  "type": "object",
+  "properties": {
+    "starting-point": {
+      "type": "object",
+      "properties": {
+        "origin": {
+          "type": "string",
+          "enum": ["ps", "local", "new"]
+        }
+      }
+    },
+    "ps-dataset-selected": {
+      "type": "object",
+      "properties": {
+        "dataset-name": { "type": "string" }
+      }
+    },
+    "ps-account-selected": {
+      "type": "object",
+      "properties": {
+        "account-name": { "type": "string" }
+      }
+    },
+    "guided-manifest-file-data": {
+      "type": "object",
+      "properties": {
+        "headers": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minItems": 1,
+            "maxItems": 11,
+            "enum": [
+              "filename",
+              "timestamp",
+              "description",
+              "file type",
+              "entity",
+              "data modality",
+              "also in dataset",
+              "also in dataset path",
+              "data dictionary path",
+              "entity is transitive",
+              "Additional Metadata"
+            ]
+          }
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 11,
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "dataset-validated": {
+      "type": "boolean"
+    },
+    "dataset-validation-errors": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "dataset-structure": {
+      "type": "object",
+      "properties": {
+        "folders": {
+          "type": "object",
+          "patternProperties": {
+            ".*": {
+              "type": "object",
+              "properties": {
+                "folders": {
+                  "$ref": "#/properties/dataset-structure/properties/folders"
+                },
+                "files": {
+                  "type": "object",
+                  "patternProperties": {
+                    ".*": {
+                      "type": "object",
+                      "properties": {
+                        "timestamp": { "type": "string" },
+                        "size": { "type": "number" },
+                        "checksum": { "type": "string" },
+                        "description": { "type": "string" },
+                        "additional-metadata": { "type": "string" },
+                        "extra-columns": { "type": "string" },
+                        "extension": { "type": "string" },
+                        "action": {
+                          "type": "array",
+                          "items": { "type": "string" }
+                        },
+                        "relativePath": { "type": "string" },
+                        "path": { "type": "string" },
+                        "location": {
+                          "type": "string",
+                          "enum": ["local", "pennsieve"]
+                        }
+                      },
+                      "required": ["timestamp", "size", "checksum"]
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "files": {
+          "type": "object",
+          "patternProperties": {
+            ".*": {
+              "type": "object",
+              "properties": {
+                "timestamp": { "type": "string" },
+                "size": { "type": "number" },
+                "checksum": { "type": "string" },
+                "description": { "type": "string" },
+                "additional-metadata": { "type": "string" },
+                "extra-columns": { "type": "string" },
+                "extension": { "type": "string" },
+                "action": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "relativePath": { "type": "string" },
+                "path": { "type": "string" },
+                "location": { "type": "string", "enum": ["local", "pennsieve"] }
+              },
+              "required": ["timestamp", "size", "checksum"]
+            }
+          },
+          "additionalProperties": false
+        },
+        "relativePath": { "type": "string" }
+      }
+    },
+    "dataset-metadata": {
+      "type": "object",
+      "properties": {
+        "description-metadata": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "object",
+              "properties": {
+                "study-purpose": { "type": "string" },
+                "data-collectoin": { "type": "string" },
+                "primary-conclusion": { "type": "string" }
+              }
+            },
+            "additional-links": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "link": { "type": "string" },
+                  "relation": { "type": "string" },
+                  "description": { "type": "string" },
+                  "linkType": { "type": "string" },
+                  "isFair": { "type": "boolean" }
+                }
+              }
+            },
+            "contributors": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "conID": { "type": "string" },
+                  "conAffiliation": { "type": "string" },
+                  "conName": { "type": "string" },
+                  "conRole": { "type": "string" },
+                  "contributorFirstName": { "type": "string" },
+                  "contributorLastName": { "type": "string" }
+                }
+              }
+            },
+            "contributor-information": {
+              "type": "object",
+              "properties": {
+                "funding": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "acknowledgment": { "type": "string" }
+              }
+            },
+            "protocols": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "link": { "type": "string" },
+                  "relationType": { "type": "string" },
+                  "relation": { "type": "string" },
+                  "description": { "type": "string" },
+                  "additional-metadata": { "type": "boolean" }
+                }
+              }
+            },
+            "dataset-information": {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string" },
+                "description": { "type": "string" },
+                "studyType": { "type": "string" },
+                "keywords": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "number of samples": { "type": "number" },
+                "number of subjects": { "type": "number" },
+                "study organ system": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "study approach": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "study technique": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "study purpose": { "type": "string" },
+                "study data collection": { "type": "string" },
+                "study primary conclusion": { "type": "string" },
+                "study collection title": { "type": "string" }
+              }
+            },
+            "study-information": {
+              "type": "object",
+              "properties": {
+                "study purpose": { "type": "string" },
+                "study data collection": { "type": "string" },
+                "study primary conclusion": { "type": "string" }
+              }
+            }
+          }
+        },
+        "shared-metadata": {
+          "type": "object",
+          "properties": {
+            "sparc-award": { "type": "string" },
+            "award-number": { "type": "string" }
+          }
+        },
+        "protocol-data": {
+          "type": "array"
+        },
+        "subject-metadata": {
+          "type": "array",
+          "minItems": "1",
+          "maxItems": "28",
+          "items": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "subject id",
+                  "pool id",
+                  "subject experimental group",
+                  "age",
+                  "sex",
+                  "species",
+                  "strain",
+                  "RRID for strain",
+                  "age category",
+                  "also in dataset",
+                  "member of",
+                  "metadata only",
+                  "laboratory internal id",
+                  "date of birth",
+                  "age range (min)",
+                  "agre range (max)",
+                  "body mass",
+                  "genotype",
+                  "phenotype",
+                  "handedness",
+                  "reference atlas",
+                  "experimental log file path",
+                  "experiment date",
+                  "disease or disorder",
+                  "intervention",
+                  "disease model",
+                  "protocol title",
+                  "protocol uri or doi"
+                ]
+              }
+            }
+          ],
+          "additionalItems": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "sample-metadata": {
+          "type": "object",
+          "properties": {
+            "type": "array",
+            "minItems": "1",
+            "maxItems": "19",
+            "items": {
+              "type": "string",
+              "enum": [
+                "subject id",
+                "sample id",
+                "was derived from",
+                "pool id",
+                "sample experimental group",
+                "sample type",
+                "sample anatomical location",
+                "member of",
+                "also in dataset",
+                "protocol title",
+                "protocol url or doi",
+                "laboratory internal id",
+                "date of derivation",
+                "pathology",
+                "laterality",
+                "cell type",
+                "plane of section",
+                "reference atlas",
+                "experimental log file path"
+              ]
+            }
+          }
+        },
+        "submission-metadata": {
+          "$ref": "submission_schema.json"
+        },
+        "code-metadata": {
+          "type": "object",
+          "properties": {
+            "code_description": { "type": "string" }
+          }
+        },
+        "README": { "type": "string" },
+        "CHANGES": { "type": "string" },
+        "performances": {
+          "type": "array",
+          "items": [
+            {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 7,
+              "items": [
+                {
+                  "type": "string",
+                  "enum": ["performance id"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["protocol url or doi"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["date"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["start datetime"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["end datetime"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["participants"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["Additional Metadata"]
+                }
+              ]
+            }
+          ],
+          "additionalItems": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 7,
+            "items": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "sites": {
+          "type": "array",
+          "items": [
+            {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 7,
+              "items": [
+                {
+                  "type": "string",
+                  "enum": ["site id"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["specimen id"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["site type"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["laboratory internal id"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["coordinate system"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["coordinate system position"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["more..."]
+                }
+              ]
+            }
+          ],
+          "additionalItems": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 7,
+            "items": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "resources": {
+          "type": "array",
+          "items": [
+            {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 8,
+              "items": [
+                {
+                  "type": "string",
+                  "enum": ["RRID"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["Type"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["Name"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["URL"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["Vendor"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["Version"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["ID in protocol"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["Additional Metadata"]
+                }
+              ]
+            }
+          ],
+          "additionalItems": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 8,
+            "items": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "digital-metadata": {
+      "type": "object",
+      "properties": {
+        "description": { "type": "object" },
+        "pi-owner": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "userString": { "type": "string" },
+            "UUID": { "type": "string" }
+          }
+        },
+        "user-permissions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "userString": { "type": "string" },
+              "UUID": { "type": "string" },
+              "permission": { "type": "string" }
+            }
+          }
+        },
+        "team-permissions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "teamString": { "type": "string" },
+              "UUID": { "type": "string" },
+              "permission": { "type": "string" }
+            }
+          }
+        },
+        "license": { "type": "string" },
+        "name": { "type": "string" }
+      }
+    },
+    "generate-dataset": {
+      "type": "object",
+      "properties": {
+        "destination": { "type": "string", "enum": ["ps", "local"] },
+        "if-existing": {
+          "type": "string",
+          "enum": ["replace", "skip", "merge"]
+        },
+        "if-existing-files": { "type": "string", "enum": ["replace", "skip"] },
+        "generate-option": { "type": "string", "enum": ["new", "existing-ps"] },
+        "path": { "type": "string" },
+        "dataset-name": { "type": "string" }
+      }
+    },
+    "dataset-entity-structure": {
+      "type": "object",
+      "properties": {
+        "subjects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "subjectId": { "type": "string" },
+              "metadata": { "type": "object" },
+              "samples": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "sampleId": { "type": "string" },
+                    "metadata": { "type": "object" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "dataset-entity-obj": {
+      "type": "object",
+      "properties": {
+        "bucketed-data": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "array",
+              "items": { "type": "string", "format": "file-path" }
+            },
+            "experimental-data": {
+              "type": "array",
+              "items": { "type": "string", "format": "file-path" }
+            },
+            "other": {
+              "type": "array",
+              "items": { "type": "string", "format": "file-path" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

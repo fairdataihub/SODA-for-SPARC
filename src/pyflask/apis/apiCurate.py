@@ -1,14 +1,12 @@
 from flask_restx import Resource, fields, reqparse
 from namespaces import NamespaceEnum, get_namespace
 from flask import request
-import traceback
 from os.path import (
     expanduser,
     join,
 )
 
-from curate import (
-    create_folder_level_manifest,
+from pysoda.core.dataset_generation import (
     check_empty_files_folders,
     main_curate_function,
     main_curate_function_progress,
@@ -18,6 +16,10 @@ from curate import (
     clean_json_structure,
     check_server_access_to_files,
 )
+
+from pysoda.utils import validation_error_message
+from jsonschema import ValidationError
+from errorHandlers import handlePysodaErrors
 
 from manifest import create_high_level_manifest_files_existing_local_starting_point
 from errorHandlers.notBadRequestException import notBadRequestException
@@ -48,6 +50,10 @@ class CheckEmptyFilesFolders(Resource):
             return check_empty_files_folders(soda_json_structure)
         except Exception as e:
             api.logger.exception(e)
+            # throws an appropriate error if the error is a pysoda specific error
+            handlePysodaErrors(e, api)
+
+            # not a pysoda specific error
             if notBadRequestException(e):
                 # general exception that was unexpected and caused by our code
                 api.abort(500, str(e))
@@ -75,6 +81,8 @@ class Curation(Resource):
             return check_server_access_to_files(file_list_to_check)
         except Exception as e:
             api.logger.exception(e)
+            # throws an appropriate error if the error is a pysoda specific error
+            handlePysodaErrors(e, api)
             if notBadRequestException(e):
                 # general exception that was unexpected and caused by our code
                 api.abort(500, str(e))
@@ -94,7 +102,7 @@ class Curation(Resource):
         data = request.get_json()
 
         if "soda_json_structure" not in data:
-            api.abort(400, "Missing parameter: soda_json_structure")
+            api.abort(400, "Missing parameter: soda")
 
         soda_json_structure = data["soda_json_structure"]
         api.logger.info("/clean-dataset POST request")
@@ -103,6 +111,8 @@ class Curation(Resource):
             return clean_json_structure(soda_json_structure)
         except Exception as e:
             api.logger.exception(e)
+            # throws an appropriate error if the error is a pysoda specific error
+            handlePysodaErrors(e, api)
             if notBadRequestException(e):
                 # general exception that was unexpected and caused by our code
                 api.abort(500, str(e))
@@ -138,6 +148,7 @@ class Curation(Resource):
 
         if "soda_json_structure" not in data:
             api.abort(400, "Missing parameter: soda_json_structure")
+        
 
         if "resume" not in data:
             api.abort(400, "Missing parameter: resume")
@@ -151,6 +162,15 @@ class Curation(Resource):
             return main_curate_function(soda_json_structure, resume)
         except Exception as e:
             api.logger.exception(e)
+            # throws an appropriate error if the error is a pysoda specific error
+            handlePysodaErrors(e, api)
+            if isinstance(e, ValidationError):
+                # Extract properties from the ValidationError
+                validation_err_msg = validation_error_message(e)
+                # Return the ValidationError as JSON
+                api.abort(400, validation_err_msg)
+            
+            
             if notBadRequestException(e):
                 # general exception that was unexpected and caused by our code
                 api.abort(500, str(e))
@@ -229,6 +249,8 @@ class GenerateManifestFiles(Resource):
         try:
             return create_high_level_manifest_files_existing_local_starting_point(filepath, join(userpath, "SODA", "manifest_files"))
         except Exception as e:
+            # throws an appropriate error if the error is a pysoda specific error
+            handlePysodaErrors(e, api)
             api.abort(500, str(e))
 
 
@@ -260,6 +282,8 @@ class GenerateManifestLocally(Resource):
         try:
             return generate_manifest_file_locally(generate_purpose, soda_json_object)
         except Exception as e:
+            # throws an appropriate error if the error is a pysoda specific error
+            handlePysodaErrors(e, api)
             api.abort(500, str(e))
 
 
@@ -269,19 +293,21 @@ class GenerateManifestLocally(Resource):
 
 
 
-@api.route('/generate_high_level_folder_manifest_data')
+@api.route('/generate_manifest_file_data')
 class GenerateManifestData(Resource):
-    parser = reqparse.RequestParser()
-    parser.add_argument('dataset_structure_obj', type=dict, required=True, help='dataset structure used to generate manifest files for each high level folder', location='json')
+    # parser = reqparse.RequestParser()
+    # parser.add_argument('dataset_structure_obj', type=dict, required=True, help='dataset structure used to generate manifest files for each high level folder', location='json')
     @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request'}, description="Generate Manifest Data for each of the high level folders. Returns an array of arrays to be inserted into jspreadsheet.")
-    @api.expect(parser)
+    # @api.expect(parser)
     def post(self):
 
-        data = self.parser.parse_args()
+        data = request.get_json( )
         dataset_structure_obj = data.get("dataset_structure_obj")
         try:
             return generate_manifest_file_data(dataset_structure_obj)
         except Exception as e:
+            # throws an appropriate error if the error is a pysoda specific error
+            handlePysodaErrors(e, api)
             api.abort(500, str(e))
 
 

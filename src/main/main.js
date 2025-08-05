@@ -145,16 +145,13 @@ const createPyProc = async () => {
         });
       }
       if (pyflaskProcess != null) {
-        console.log("child process success on port " + port);
         log.info("child process success on port " + port);
       } else {
         console.error("child process failed to start on port" + port);
       }
       selectedPort = port;
     })
-    .catch((err) => {
-      console.log(err);
-    });
+    .catch((err) => {});
 };
 /**
  * Kill the python server process. Needs to be called before SODA closes.
@@ -171,7 +168,6 @@ const exitPyProc = async () => {
       "/t",
     ]);
   };
-  console.log("Killing the process");
   await killAllPreviousProcesses();
   // check if the platform is Windows
   if (process.platform === "win32") {
@@ -190,7 +186,6 @@ const exitPyProc = async () => {
   PORT = null;
 };
 const killAllPreviousProcesses = async () => {
-  console.log("Killing all previous processes");
   // kill all previous python processes that could be running.
   let promisesArray = [];
   let endRange = PORT + portRange;
@@ -300,10 +295,10 @@ function initialize() {
   app.on("ready", () => {
     createPyProc();
     const windowOptions = {
-      minWidth: 1121,
-      minHeight: 735,
-      width: 1121,
-      height: 735,
+      minWidth: 1200,
+      minHeight: 850,
+      width: 1200,
+      height: 850,
       center: true,
       show: false,
       icon: __dirname + "/assets/menu-icon/soda_icon.png",
@@ -472,7 +467,6 @@ ipcMain.on("restart_app", async () => {
 // passing in the spreadsheet data to pass to a modal
 // that will have a jspreadsheet for user edits
 ipcMain.handle("spreadsheet", (event, spreadsheet) => {
-  console.log("Spreadsheet invoked");
   const windowOptions = {
     minHeight: 450,
     width: 1120,
@@ -495,9 +489,7 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
     try {
       spreadSheetModal.destroy();
       // spreadSheetModal.close();
-    } catch (e) {
-      console.log(e);
-    }
+    } catch (e) {}
   });
   spreadSheetModal.loadFile("./sections/spreadSheetModal/spreadSheet.html");
   spreadSheetModal.once("ready-to-show", async () => {
@@ -513,9 +505,7 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
     try {
       spreadSheetModal.destroy();
       // spreadSheetModal.close();
-    } catch (e) {
-      console.log(e);
-    }
+    } catch (e) {}
   });
 });
 

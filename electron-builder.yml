@@ -19,7 +19,11 @@ win:
   extraResources:
     - from: ./file_templates
       to: ./file_templates
+    - from: ./metadata_templates
+      to: ./metadata_templates
     - from: ./pyflaskdist/app
+    - from: ./schema
+      to: ./schema
   asar: true
   target:
     - nsis
@@ -35,6 +39,10 @@ mac:
     - from: ./pyflaskdist/app
     - from: ./file_templates
       to: ./file_templates
+    - from: ./metadata_templates
+      to: ./metadata_templates
+    - from: ./schema
+      to: ./schema
     - from: ./pennsieve-io-chain.pem
       to: ./pennsieve-io-chain.pem
 dmg:

@@ -20,7 +20,6 @@ while (!window.baseHtmlLoaded) {
 
 window.createValidationReport = async (sodaJSONObj) => {
   const clientUUID = uuid();
-
   let manifestJSONResponse = await client.post(
     "/skeleton_dataset/manifest_json",
     {
@@ -148,18 +147,17 @@ const validateLocalDataset = async () => {
 
   // setup the sodaJSONObj for the import endpoint
   let localSodaJsonObject = {
-    "bf-account-selected": {
+    "ps-account-selected": {
       "account-name": {},
     },
-    "bf-dataset-selected": {
+    "ps-dataset-selected": {
       "dataset-name": {},
     },
     "dataset-structure": {},
-    "metadata-files": {},
-    "manifest-files": {},
+    dataset_metadata: {},
     "generate-dataset": {},
     "starting-point": {
-      type: "local",
+      location: "local",
       "local-path": datasetPath,
     },
   };
@@ -413,23 +411,22 @@ const validatePennsieveDatasetStandAlone = async () => {
 
   // create a local SODA JSON object to pass to the import endpoint
   let localSodaJSONObj = {
-    "bf-account-selected": {
+    "ps-account-selected": {
       "account-name": {},
     },
-    "bf-dataset-selected": {
+    "ps-dataset-selected": {
       "dataset-name": {},
     },
     "dataset-structure": {},
-    "metadata-files": {},
-    "manifest-files": {},
+    dataset_metadata: {},
     "generate-dataset": {},
     "starting-point": {
-      type: "bf",
+      origin: "ps",
     },
   };
 
-  localSodaJSONObj["bf-account-selected"]["account-name"] = $("#current-bf-account").text();
-  localSodaJSONObj["bf-dataset-selected"]["dataset-name"] = $("#bf_dataset_load_validator").text();
+  localSodaJSONObj["ps-account-selected"]["account-name"] = $("#current-ps-account").text();
+  localSodaJSONObj["ps-dataset-selected"]["dataset-name"] = $("#bf_dataset_load_validator").text();
 
   // import the dataset from Pennsieve
   let datasetPopulationResponse;
@@ -992,7 +989,7 @@ const questionTwoDatasetSelectionObserver = new MutationObserver(() => {
       document.querySelector("#validate_dataset-question-3").style.display = "none";
     }
   } else {
-    $("#div-check-bf-import-validator").css("display", "none");
+    $("#div-check-ps-import-validator").css("display", "none");
   }
 });
 

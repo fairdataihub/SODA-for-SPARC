@@ -4,7 +4,7 @@ from manageDatasets import (
     submit_dataset_progress,
     bf_add_account_api_key,
     bf_account_list,
-    bf_dataset_account,
+    fetch_user_datasets,
     bf_account_details,
     bf_submit_dataset,
     create_new_dataset,
@@ -350,16 +350,12 @@ class BfGetUsers(Resource):
 @api.route('/ps_get_teams')
 class BfGetTeams(Resource):
 
-  parser_get_teams = reqparse.RequestParser(bundle_errors=True)
-  parser_get_teams.add_argument('selected_account', type=str, required=True, location='args', help='The target account to retrieve inter-organization teams for.')
-
   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns JSON containing the teams for the given Pennsieve account.")
   def get(self):
     try:
-      # get the selected account out of the request args
-      selected_account = self.parser_get_teams.parse_args().get('selected_account')
+
       
-      return ps_get_teams(selected_account)
+      return ps_get_teams()
     except Exception as e:
       api.logger.exception(e)
       if notBadRequestException(e):
@@ -458,31 +454,29 @@ model_account_datasets_list_response = api.model('AccountDatasetsResponse', {
   'datasets': fields.List(fields.Nested(model_account_dataset), required=True, description="List of the datasets in the user's organization."),
 })
 
-@api.route('/bf_dataset_account')
+@api.route('/fetch_user_datasets')
 class BfDatasetAccount(Resource):
 
-  parser_dataset_account = reqparse.RequestParser(bundle_errors=True)
-  parser_dataset_account.add_argument('selected_account', type=str, required=True, location='args', help='The target account to retrieve datasets for.')
+  parser_fetch_user_datasets = reqparse.RequestParser(bundle_errors=True)
+  parser_fetch_user_datasets.add_argument('return_only_empty_datasets', type=bool, required=False, location='args', help='If true, only return datasets that are empty.')
 
+  
   @api.marshal_with(model_account_datasets_list_response, False, 200)
   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns a list of the datasets the given Pennsieve account has access to.")
-  @api.expect(parser_dataset_account)
+  @api.expect(parser_fetch_user_datasets)
   def get(self):
     try:
-      # get the selected account out of the request args
-      selected_account = self.parser_dataset_account.parse_args().get('selected_account')
-      return bf_dataset_account(selected_account)
+      args = self.parser_fetch_user_datasets.parse_args()
+      return_only_empty_datasets = args.get('return_only_empty_datasets', False)
+      return fetch_user_datasets(return_only_empty_datasets)
     except Exception as e:
       api.logger.exception(e)
       if notBadRequestException(e):
-          # general exception that was unexpected and caused by our code
           api.abort(500, str(e))
-      if e.response is not None:
-          # requests exeption
+      if hasattr(e, 'response') and e.response is not None:
           api.logger.info("Error message details: ", e.response.json().get('message'))
           api.abort(e.response.status_code, e.response.json().get('message'))
       else:
-          # custom werkzeug.exception that we raised
           api.abort(e.code, e.description)
 
 
@@ -509,11 +503,10 @@ class DatasetSubtitle(Resource):
   def get(self):
     data = self.parser_dataset_subtitle.parse_args()
 
-    selected_account = data.get('selected_account')
     selected_dataset = data.get('selected_dataset')
 
     try:
-      return bf_get_subtitle(selected_account, selected_dataset)
+      return bf_get_subtitle(selected_dataset)
     except Exception as e:
       api.logger.exception(e)
       if notBadRequestException(e):
@@ -639,11 +632,10 @@ class DatasetPermissions(Resource):
   def get(self):
     data = self.parser_dataset_permissions.parse_args()
 
-    selected_account = data.get('selected_account')
     selected_dataset = data.get('selected_dataset')
 
     try:
-      return ps_get_permission(selected_account, selected_dataset)
+      return ps_get_permission( selected_dataset)
     except Exception as e:
       if notBadRequestException(e):
         api.abort(500, str(e))
@@ -714,7 +706,6 @@ model_get_banner_image_response = api.model('GetBannerImageResponse', {
 @api.route("/bf_banner_image")
 class BfBannerImage(Resource):
   parser_banner_image = reqparse.RequestParser(bundle_errors=True)
-  parser_banner_image.add_argument('selected_account', type=str, required=True, location='args', help='The target account to retrieve the banner image for.')
   parser_banner_image.add_argument('selected_dataset', type=str, required=True, location='args', help='The name or id of the dataset to retrieve the banner image for.')
 
   @api.marshal_with(model_get_banner_image_response, False, 200)
@@ -723,11 +714,11 @@ class BfBannerImage(Resource):
   def get(self):
     data = self.parser_banner_image.parse_args()
 
-    selected_account = data.get('selected_account')
+
     selected_dataset = data.get('selected_dataset')
 
     try:
-      return bf_get_banner_image(selected_account, selected_dataset)
+      return bf_get_banner_image(selected_dataset)
     except Exception as e:
       if notBadRequestException(e):
         api.abort(500, str(e))
@@ -1041,7 +1032,6 @@ model_get_readme_response = api.model("GetReadmeResponse", {
 @api.route('/datasets/<string:dataset_name_or_id>/readme')
 class BfGetDatasetReadme(Resource):
   parser_readme = reqparse.RequestParser(bundle_errors=True)
-  parser_readme.add_argument('selected_account', type=str, required=True, location='args', help='The target account to rename the dataset for.')
   parser_readme.add_argument('updated_readme', type=str, required=True, location='json', help='The updated readme content to save.')
 
   @api.expect(parser_readme)
@@ -1050,11 +1040,10 @@ class BfGetDatasetReadme(Resource):
   def put(self, dataset_name_or_id):
     data = self.parser_readme.parse_args()
 
-    selected_account = data.get('selected_account')
     updated_readme = data.get('updated_readme')
 
     try:
-      return update_dataset_readme(selected_account, dataset_name_or_id , updated_readme)
+      return update_dataset_readme(dataset_name_or_id , updated_readme)
     except Exception as e:
       if notBadRequestException(e):
         api.abort(500, str(e))
@@ -1063,18 +1052,13 @@ class BfGetDatasetReadme(Resource):
 
 
   parser_readme_get = reqparse.RequestParser(bundle_errors=True)
-  parser_readme_get.add_argument('selected_account', type=str, required=True, location='args', help='The target account to rename the dataset for.')
 
   @api.expect(parser_readme_get)
   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Get the readme for a dataset.")
   @api.marshal_with(model_get_readme_response, False, 200)
   def get(self, dataset_name_or_id):
-    data = self.parser_readme_get.parse_args()
-
-    selected_account = data.get('selected_account')
-
     try:
-      return get_dataset_readme(selected_account, dataset_name_or_id)
+      return get_dataset_readme(dataset_name_or_id)
     except Exception as e:
       if notBadRequestException(e):
         api.abort(500, str(e))

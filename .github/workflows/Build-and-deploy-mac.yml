@@ -4,10 +4,14 @@ run-name: ${{ github.actor }} is building a MAC release for SODA
 on:
   push:
     branches:
+<<<<<<< HEAD
       - main
       - staging
       - pre-staging
       - guest-contributor-fixes-ui-update
+=======
+      - sds3
+>>>>>>> sds3
 
 jobs:
   deploy-on-mac:
@@ -54,7 +58,7 @@ jobs:
 
       - name: Deploy the app to GitHub
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           appleId: ${{ secrets.APPLE_ID }}
           appleIdPassword: ${{ secrets.APPLE_PASSWORD }}
         run: |

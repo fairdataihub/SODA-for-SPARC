@@ -22,7 +22,7 @@
     </header>
     <div style="display: flex; flex-direction: column; margin: auto">
       <div class="d-flex justify-center" style="gap: 2rem; padding: 20px">
-        <button
+        <!-- <button
           class="content-button"
           id="create_manifest_btn"
           data-original-title=""
@@ -122,8 +122,8 @@
             </g>
           </svg>
           <h2>Create manifest.xlsx</h2>
-        </button>
-        <button
+        </button> -->
+        <!-- <button
           class="content-button tippy-content-main"
           id="upload_banner_image_btn"
           data-tippy-content="Provide an image that will be used as the thumbnail for your dataset"
@@ -153,7 +153,7 @@
             />
           </svg>
           <h2>Upload a banner image</h2>
-        </button>
+        </button> -->
       </div>
       <div style="display: flex; flex-direction: row; gap: 2rem" class="justify-center">
         <button
@@ -549,10 +549,11 @@
                 >About</label
               >
               <p style="color: dimgray; text-align: justify">
-                The SPARC guidelines require all datasets to include metadata files called manifest
-                files. One manifest file must be included in each high level folder. Manifest files
-                are intended to contain information about all of the data files in its high level
-                folder. You can request SODA to generate manifest files automatically for you.
+                The SPARC Dataset Structure requires all datasets to include metadata files called
+                manifest files. One manifest file must be included in each high level folder.
+                Manifest files are intended to contain information about all of the data files in
+                its high level folder. You can request SODA to generate manifest files automatically
+                for you.
               </p>
             </div>
             <label style="font-size: 17px; color: var(--color-bg-plum); text-align: center"
@@ -738,7 +739,7 @@
                       <h5 class="card-left" style="text-align: left">Current account:</h5>
                       <div class="change-current-account manifest-change-current-account">
                         <h5
-                          class="card-right bf-account-span prepare-metadata-current-account-span"
+                          class="card-right ps-account-span prepare-metadata-current-account-span"
                         >
                           None
                         </h5>
@@ -765,7 +766,7 @@
                       <h5 class="card-left">Current workspace:</h5>
                       <div class="change-current-account ds-dd organization">
                         <h5
-                          class="card-right bf-organization-span prepare-metadata-organization-span"
+                          class="card-right ps-organization-span prepare-metadata-organization-span"
                           style="margin-left: 36px !important"
                         >
                           None
@@ -798,7 +799,7 @@
                       <div class="change-current-account manifest-change-current-ds">
                         <h5
                           id="bf_dataset_create_manifest"
-                          class="card-right bf-dataset-span prepare-metadata-dataset-span"
+                          class="card-right ps-dataset-span prepare-metadata-dataset-span"
                         >
                           None
                         </h5>
@@ -828,7 +829,7 @@
                   justify-content: center;
                   margin: 25px auto;
                 "
-                id="div-check-bf-create-manifest"
+                id="div-check-ps-create-manifest"
                 class="btn-confirm-ds-selection"
               >
                 <button
@@ -1189,7 +1190,7 @@
                   >About</label
                 >
                 <p class="about-text">
-                  SODA integrates with the SPARC Data Structure (SDS) validator tool. Use this
+                  SODA integrates with the SPARC Dataset Structure (SDS) validator tool. Use this
                   feature to validate your dataset against the SDS. The SDS validator tool is still
                   in beta, therefore it is possible to receive false negatives.
                 </p>
@@ -1343,7 +1344,7 @@
                         </h5>
                         <div class="change-current-account">
                           <h5
-                            class="card-right bf-account-span prepare-metadata-current-account-span"
+                            class="card-right ps-account-span prepare-metadata-current-account-span"
                           >
                             SODA-Pennsieve
                           </h5>
@@ -1373,7 +1374,7 @@
                           style="margin-left: 12px"
                         >
                           <h5
-                            class="card-right bf-organization-span prepare-metadata-organization-span"
+                            class="card-right ps-organization-span prepare-metadata-organization-span"
                           >
                             None
                           </h5>
@@ -1410,7 +1411,7 @@
                         >
                           <h5
                             id="bf_dataset_load_validator"
-                            class="card-right bf-dataset-span prepare-metadata-dataset-span"
+                            class="card-right ps-dataset-span prepare-metadata-dataset-span"
                           >
                             None
                           </h5>
@@ -1440,7 +1441,7 @@
                     justify-content: center;
                     margin-top: 30px;
                   "
-                  id="div-check-bf-import-validator"
+                  id="div-check-ps-import-validator"
                 >
                   <button
                     style="width: 120px"
@@ -1658,7 +1659,7 @@
                         </h5>
                         <div class="change-current-account">
                           <h5
-                            class="card-right bf-account-span prepare-metadata-current-account-span"
+                            class="card-right ps-account-span prepare-metadata-current-account-span"
                           >
                             SODA-Pennsieve
                           </h5>
@@ -1688,7 +1689,7 @@
                           style="margin-left: 12px"
                         >
                           <h5
-                            class="card-right bf-organization-span prepare-metadata-organization-span"
+                            class="card-right ps-organization-span prepare-metadata-organization-span"
                           >
                             None
                           </h5>
@@ -1722,7 +1723,7 @@
                         <div class="change-current-account">
                           <h5
                             id="bf_dataset_load_compare_local_remote"
-                            class="card-right bf-dataset-span prepare-metadata-dataset-span"
+                            class="card-right ps-dataset-span prepare-metadata-dataset-span"
                           >
                             None
                           </h5>

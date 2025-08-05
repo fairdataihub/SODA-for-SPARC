@@ -3,9 +3,16 @@ while (!window.baseHtmlLoaded) {
 }
 
 // Save the contributors array to the JSON file
-const saveStoredContributors = (contributors) => {
+window.saveStoredContributors = (contributors) => {
+  // Map contributors to schema before saving
+  const mappedContributors = contributors.map((contributor) => ({
+    contributor_orcid_id: contributor.contributor_orcid_id,
+    contributor_affiliation: contributor.contributor_affiliation,
+    contributor_name: contributor.contributor_name,
+    contributor_role: contributor.contributor_role,
+  }));
   try {
-    window.fs.writeFileSync(window.storedContributorsPath, JSON.stringify(contributors));
+    window.fs.writeFileSync(window.storedContributorsPath, JSON.stringify(mappedContributors));
   } catch (err) {
     window.log.info("Error saving stored contributors file: " + err);
   }
@@ -16,75 +23,13 @@ const saveStoredContributors = (contributors) => {
 window.loadStoredContributors = () => {
   try {
     const contributorFileData = window.fs.readFileSync(window.storedContributorsPath, "utf8");
-    return JSON.parse(contributorFileData);
+    const contributors = JSON.parse(contributorFileData);
+
+    // Only return contributors that have the contributor_orcid_id field
+    return contributors.filter((contributor) => contributor.contributor_orcid_id);
   } catch (err) {
     window.log.info("Error loading stored contributors file: " + err);
     window.log.info("Returning empty array instead");
     return [];
   }
-};
-
-// Add a new contributor to the JSON file
-// If a contributor with the same ORCiD already exists, update the existing contributor
-window.addOrUpdateStoredContributor = (
-  firstName,
-  lastName,
-  ORCiD,
-  affiliationsArray,
-  rolesArray
-) => {
-  if (typeof firstName !== "string" || !firstName.length > 0) {
-    window.log.info("Attempted to add contributor with invalid first name");
-    return;
-  }
-  if (typeof lastName !== "string" || !lastName.length > 0) {
-    window.log.info("Attempted to add contributor with invalid last name");
-    return;
-  }
-  if (typeof ORCiD !== "string" || !ORCiD.length > 0) {
-    window.log.info("Attempted to add contributor with invalid ORCiD");
-    return;
-  }
-  if (!Array.isArray(affiliationsArray) || affiliationsArray.length === 0) {
-    window.log.info("Invalid affiliations array");
-    return;
-  }
-  if (!Array.isArray(rolesArray) || rolesArray.length === 0) {
-    window.log.info("Invalid roles array");
-    return;
-  }
-
-  // If the stored contributors file doesn't exist, create it and write an empty array to it
-  if (!window.fs.existsSync(window.storedContributorsPath)) {
-    try {
-      window.fs.writeFileSync(window.storedContributorsPath, "[]");
-    } catch (err) {
-      window.log.info("Error creating stored contributors file: " + err);
-      return;
-    }
-  }
-
-  const contributorObj = {
-    firstName: firstName,
-    lastName: lastName,
-    ORCiD: ORCiD,
-    affiliations: affiliationsArray,
-    roles: rolesArray,
-  };
-
-  const storedContributorsArray = window.loadStoredContributors();
-
-  const existingStoredContributorWithSameORCiDIndex = storedContributorsArray.findIndex(
-    (contributorObj) => contributorObj.ORCiD === ORCiD
-  );
-
-  // If a contributor with the same ORCiD already exists, update the existing contributor
-  if (existingStoredContributorWithSameORCiDIndex >= 0) {
-    storedContributorsArray[existingStoredContributorWithSameORCiDIndex] = contributorObj;
-  } else {
-    // If a contributor with the same ORCiD doesn't exist, add the new contributor
-    storedContributorsArray.push(contributorObj);
-  }
-  // Write the updated array to the JSON file
-  saveStoredContributors(storedContributorsArray);
 };

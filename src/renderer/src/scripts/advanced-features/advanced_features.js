@@ -59,7 +59,7 @@ window.transitionToAdvancedFeature = (event) => {
 
 const transitionToAdvancedPage = () => {
   //Hide the home screen
-  document.getElementById("guided-home").classList.add("hidden");
+  document.getElementById("soda-home-page").classList.add("hidden");
   document.getElementById("guided_mode-section").classList.remove("is-shown");
   document.getElementById("guided_curate_dataset-tab").classList.remove("show");
   hideAllSectionsAndDeselectButtons();
@@ -97,7 +97,7 @@ $("#advanced-back-button").on("click", () => {
   // Transition back depending on what current page is being displayed
   if (current_advanced_page === "advanced-features-selection-page") {
     // Transition back to the home screen
-    document.getElementById("guided-home").classList.remove("hidden");
+    document.getElementById("soda-home-page").classList.remove("hidden");
     document.getElementById("guided_mode-section").classList.add("is-shown");
     document.getElementById("guided_curate_dataset-tab").classList.add("show");
 
@@ -366,7 +366,7 @@ document.querySelector("#btn-pull-ds-manifest").addEventListener("click", async 
 
 function createAgentCHeckObserver(targetDiv, successCallback) {
   const observer = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
+    mutations.forEach(() => {
       const textToCheck = "The Pennsieve Agent is running and ready to upload!";
       if (targetDiv.textContent.includes(textToCheck)) {
         successCallback();

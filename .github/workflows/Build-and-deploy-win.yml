@@ -4,10 +4,14 @@ run-name: ${{ github.actor }} is building a Windows release for SODA
 on:
   push:
     branches:
+<<<<<<< HEAD
       - main
       - staging
       - pre-staging
       - guest-contributor-fixes-ui-update
+=======
+      - sds3
+>>>>>>> sds3
 
 jobs:
   deploy-on-windows:

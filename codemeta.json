@@ -71,7 +71,7 @@
   ],
   "codeRepository": "https://github.com/fairdataihub/SODA-for-SPARC",
   "dateCreated": "2021-10-08",
-  "dateModified": "2024-12-31",
+  "dateModified": "2025-08-04",
   "datePublished": "2024-10-11",
   "description": "Simplifying data curation for researchers funded by the NIH SPARC initiative",
   "developmentStatus": "active",
@@ -94,6 +94,6 @@
   "runtimePlatform": [],
   "schema:releaseNotes": "## Bug Fixes:\n- Fixed an issue where Prepare Dataset Step-by-Step does not save sample files when using the save and exit button.",
   "softwareRequirements": [],
-  "version": "15.3.0",
+  "version": "16.0.0",
   "type": "SoftwareSourceCode"
 }

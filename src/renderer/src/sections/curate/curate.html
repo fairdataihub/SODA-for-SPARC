@@ -62,9 +62,9 @@
     <header class="section-header" style="margin-top: 1rem">
       <div class="container-tab-information-header" style="margin-bottom: 0 !important">
         <div class="need-help-div">
-          <h2>Upload Dataset</h2>
+          <h2 style="font-size: 16px">Upload Dataset</h2>
           <a target="_blank"
-            href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/prepare-dataset/organize-dataset">Need help?</a>
+            href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/prepare-dataset/organize-dataset" style="font-size: 16px;">Need help?</a>
         </div>
       </div>
     </header>
@@ -159,7 +159,7 @@
               style="text-align: -webkit-center; height: 100%">
               <div class="ui form" style="width: 100%; text-align: -webkit-center; height: 100%">
                 <div class="grouped fields" style="height: 90%; padding-top: 2rem">
-                  <label style="font-size: 17px; text-align: center; color: var(--color-bg-plum)">Where is the dataset folder located?</label>
+                  <label style="font-size: 18px; text-align: center; color: var(--color-bg-plum)">Step 1: Import data folder</label>
 
                   <div
                     id="drag-n-drop-container"
@@ -175,7 +175,7 @@
                         </svg>
                         <p style="text-align: center; font-size: 15px; color: black; font-weight: 600; margin-top: 2rem">Drag and drop the folder here <br> or </p>
                         <button
-                          style="border-radius: 4px; height: 30px; width: 150px; background-color: #13716D; color: white; border: none"
+                          style="border-radius: 4px; height: 30px; width: 150px; background-color: #13716D; color: white; border: none; font-size: 15px;"
                           onclick="window.uploadDatasetClickHandler()"
                         >Browse Computer</button>
                     </div>
@@ -198,133 +198,10 @@
                       </div>
                     </div>
                   </div>
-                  <!-- <div id="getting-started-1-radio-buttons"
-                    style="display: flex; flex-direction: row; justify-content: center">
-                    <div style="margin: 15px 0">
-                      <div class="option-card radio-button getting-started-1st-question"
-                        id="div-getting-started-prepare-new" data-next="Question-getting-started-final"
-                        onclick="window.transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
-                        <div class="card-head">
-                          <div class="folder-checkbox">
-                            <input class="folder-input-check" id="prepare-new" name="getting-started-1" type="radio" />
-                            <label for="prepare-new"></label>
-                          </div>
-                        </div>
-                        <div class="card-body">
-                          <svg width="35px" height="35px" viewBox="0 0 16 16" class="bi bi-folder-plus"
-                            fill="var(--color-bg-orange)" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                              d="M9.828 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91H9v1H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181L15.546 8H14.54l.265-2.91A1 1 0 0 0 13.81 4H9.828zm-2.95-1.707L7.587 3H2.19c-.24 0-.47.042-.684.12L1.5 2.98a1 1 0 0 1 1-.98h3.672a1 1 0 0 1 .707.293z"
-                              fill="#565E6B" />
-                            <path fill-rule="evenodd"
-                              d="M13.5 10a.5.5 0 0 1 .5.5V12h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V13h-1.5a.5.5 0 0 1 0-1H13v-1.5a.5.5 0 0 1 .5-.5z"
-                              fill="#13716D" />
-                          </svg>
-                          <h2>Prepare a new dataset</h2>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div style="margin: 15px 0">
-                      <div class="option-card radio-button getting-started-1st-question"
-                        id="div-getting-started-previous-progress"
-                        data-next="Question-getting-started-previously-initiated-SODA"
-                        onclick="window.transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
-                        <div class="card-head">
-                          <div class="folder-checkbox">
-                            <input class="folder-input-check" id="previous-progress" name="getting-started-1"
-                              type="radio" />
-                            <label for="previous-progress"></label>
-                          </div>
-                        </div>
-                        <div class="card-body">
-                          <i class="far fa-save" style="color: #13716d"></i>
-                          <h2>Continue with a previously saved progress in SODA</h2>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div style="margin: 15px 0">
-                      <div class="option-card radio-button getting-started-1st-question"
-                        id="div-getting-started-existing-local" data-next="Question-getting-started-locally-destination"
-                        onclick="window.transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
-                        <div class="card-head">
-                          <div class="folder-checkbox">
-                            <input class="folder-input-check" id="existing-local" name="getting-started-1"
-                              type="radio" />
-                            <label for="prepare-new"></label>
-                          </div>
-                        </div>
-                        <div class="card-body">
-                          <svg width="40px" height="40px" viewBox="0 0 16 16" class="bi bi-laptop"
-                            fill="var(--color-bg-plum)" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                              d="M13.5 3h-11a.5.5 0 0 0-.5.5V11h12V3.5a.5.5 0 0 0-.5-.5zm-11-1A1.5 1.5 0 0 0 1 3.5V12h14V3.5A1.5 1.5 0 0 0 13.5 2h-11z" />
-                            <path d="M0 12h16v.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5V12z" />
-                          </svg>
-                          <h2>Continue working on an existing local dataset</h2>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div style="margin: 15px 0">
-                      <div class="option-card radio-button getting-started-1st-question"
-                        data-next="Question-getting-started-BF-account"
-                        onclick="window.transitionSubQuestions(this, 'Question-getting-started-1', 'getting-started-tab', '', 'individual-question getting-started')">
-                        <div class="card-head">
-                          <div class="folder-checkbox">
-                            <input class="folder-input-check" id="existing-bf" name="getting-started-1" type="radio" />
-                            <label for="prepare-new"></label>
-                          </div>
-                        </div>
-                        <div class="card-body">
-                          <svg width="40px" height="40px" viewBox="0 0 16 16" class="bi bi-folder-check"
-                            fill="var(--tagify-dd-color-primary)" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                              d="M9.828 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91H9v1H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181L15.546 8H14.54l.265-2.91A1 1 0 0 0 13.81 4H9.828zm-2.95-1.707L7.587 3H2.19c-.24 0-.47.042-.684.12L1.5 2.98a1 1 0 0 1 1-.98h3.672a1 1 0 0 1 .707.293z"
-                              fill="#565E6B" />
-                            <path fill-rule="evenodd"
-                              d="M15.854 10.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708l1.146 1.147 2.646-2.647a.5.5 0 0 1 .708 0z"
-                              fill="#13716D" />
-                          </svg>
-                          <h2>Continue working on an existing Pennsieve dataset</h2>
-                        </div>
-                      </div>
-                    </div>
-                  </div> -->
                 </div>
               </div>
             </div>
-<!-- 
-            <div class="individual-question getting-started" id="Question-getting-started-locally-destination">
-              <div class="ui form" style="width: 450px">
-                <div class="grouped fields">
-                  <label style="font-size: 17px; color: var(--color-bg-plum); text-align: center">What is the location
-                    of the dataset?</label>
-                  <div class="field" style="margin: 15px auto; display: flex; justify-content: center">
-                    <input class="form-control" style="width: 450px !important"
-                      id="input-destination-getting-started-locally" type="text" readonly placeholder="Browse here" />
-                  </div>
-                </div>
-                <div id="loading_local_dataset" class="circular" style="display: none; top: -25%">
-                  <div class="inner" style="top: 90%; left: 20%"></div>
-                  <div id="local_dataset_number" class="number" style="top: 129%; left: 50%">
-                    0%
-                  </div>
-                  <div class="circle">
-                    <div class="bar left">
-                      <div id="left-side_less_than_50" class="progress"></div>
-                    </div>
-                    <div class="bar right">
-                      <div id="right-side_greater_than_50" class="progress"></div>
-                    </div>
-                  </div>
-                </div>
-                <br />
-                <p id="para-continue-location-dataset-getting-started"
-                  style="text-align: center; font-weight: 600; color: var(--color-light-green)"></p>
-              </div>
-            </div> -->
+
 
             <div class="individual-question getting-started" id="Question-getting-started-previously-initiated-SODA">
               <div class="ui form" style="width: 450px">
@@ -346,7 +223,7 @@
               </div>
             </div>
 
-            <div class="individual-question getting-started" id="Question-getting-started-BF-account" style="width: 800px;">
+            <div class="individual-question getting-started" id="Question-getting-started-ps-account" style="width: 800px;">
               <div class="ui form" style="width: 100%">
                 <div class="grouped fields">
                   <label style="font-size: 17px; color: var(--color-bg-plum); text-align: center">What is your Pennsieve
@@ -374,7 +251,7 @@
                           </h5>
                           <div class="change-current-account" style="width: 100%">
                             <span class="card-right prepare-metadata-current-account-span"
-                              style="margin-left: 72px !important" id="current-bf-account">None</span>
+                              style="margin-left: 72px !important" id="current-ps-account">None</span>
 
                             <svg class="svg-change-current-account bi bi-pencil-fill" xmlns="http://www.w3.org/2000/svg"
                               width="18" height="18" fill="#000" viewBox="0 0 16 16">
@@ -386,14 +263,14 @@
                       </div>
 
                       <div class="card-container prepare-metadata organize-dataset"
-                        id="bf-organization-curate-first-question-container">
+                        id="ps-organization-curate-first-question-container">
                         <div style="width: 100%; display: flex">
                           <h5 class="card-left" style="padding-right: 5px; width: 260px">
                             Current workspace:
                           </h5>
                           <div class="change-current-account ds-dd organization" style="width: 100%">
-                            <h5 class="card-right bf-organization-span prepare-metadata-organization-span"
-                              id="bf-organization-curate-first-question" style="margin-left: 16px !important">
+                            <h5 class="card-right ps-organization-span prepare-metadata-organization-span"
+                              id="ps-organization-curate-first-question" style="margin-left: 16px !important">
                               None
                             </h5>
 
@@ -409,15 +286,15 @@
                       </div>
                     </div>
                   </div>
-                  <div id="div-bf-account-btns-getting-started" style="
+                  <div id="div-ps-account-btns-getting-started" style="
                       display: none;
                       flex-direction: row;
                       justify-content: center;
                       margin: 10px auto;
                     ">
-                    <button id="btn-bf-account-getting-started" class="btn_animated"
-                      onclick="window.transitionSubQuestions(this, 'Question-getting-started-BF-account', 'getting-started-tab', 'delete', 'individual-question getting-started')"
-                      data-next="Question-getting-started-BF-dataset" style="
+                    <button id="btn-ps-account-getting-started" class="btn_animated"
+                      onclick="window.transitionSubQuestions(this, 'Question-getting-started-ps-account', 'getting-started-tab', 'delete', 'individual-question getting-started')"
+                      data-next="Question-getting-started-ps-dataset" style="
                         margin: 0 10px;
                         width: 110px;
                         border: none !important;
@@ -443,17 +320,18 @@
           </div>
           <div class="parent-tabs" id="high-level-folders-tab" style="
               flex-direction: column;
-              justify-content: center;
+              justify-content: flex-start;
               height: 100%;
               margin-right: 50px;
             ">
-            <div class="container-body condensed" style="height: 40%; flex-direction: column; align-items: center;">
-              <label id="help-text-account-workspace" style="font-size: 17px; text-align: center; font-weight: 700; color: var(--color-bg-plum)">Are these the Pennsieve account and workspace you would like to use for the upload?</label>
+              <label style="font-size: 18px; text-align: center; font-weight: 700; color: var(--color-bg-plum); margin-top: 2rem;">Step 2: Confirm Pennsieve account information</label>
+            <div class="container-body condensed" style="height: 40%; flex-direction: column; align-items: center; margin-top: 10rem;">
+              <label id="help-text-account-workspace" style="font-size: 18px; text-align: center; font-weight: 700; color: var(--color-bg-plum)">Are these the Pennsieve account and workspace you would like to use for the upload?</label>
               <div id="top-level-card-container--upload-dataset" class="top-level-card-container"></div>
               <div style="display: flex; flex-direction: row; justify-content: space-evenly; width: 550px;">
-                <button class="ui positive basic soda-green-border button guided--radio-button" style="min-width: 10rem;" id="confirm-account-workspace">Confirm</button>
-                <button class="ui negative basic button guided--radio-button" id="change-account-btn">Change Account</button>
-                <button class="ui negative basic button guided--radio-button" id="change-workspace-btn">Change Workspace</button>
+                <button class="ui positive basic soda-green-border button guided--radio-button" style="min-width: 10rem; font-size: 15px;" id="confirm-account-workspace">Confirm</button>
+                <button class="ui negative basic button guided--radio-button" id="change-account-btn" style="font-size: 15px;">Change Account</button>
+                <button class="ui negative basic button guided--radio-button" id="change-workspace-btn" style="font-size: 15px;">Change Workspace</button>
               </div>
             </div>
 
@@ -485,7 +363,7 @@
           <!-- 3. Upload Destination Selection Tab -->
           <div class="parent-tabs condensed" id="upload-destination-selection-tab"
             style="grid-template-rows: auto; padding-right: 10px">
-            <label style="margin-top: 2rem; font-size: 17px; text-align: center; font-weight: 700; color: var(--color-bg-plum)">Do you want to upload to a new or existing Pennsieve dataset?</label>
+            <label style="margin-top: 2rem; font-size: 18px; text-align: center; font-weight: 700; color: var(--color-bg-plum)">Step 4: Choose a new or existing dataset to upload your data to</label>
             <div style="display: flex; flex-direction: row; align-self: center; margin-top: 3rem;">
               <div id="dataset-upload-new-dataset" class="option-card radio-button getting-started-1st-question" style="margin-right: 5rem">
                 <div class="card-head">
@@ -498,7 +376,7 @@
                   <svg width="45" height="40" viewBox="0 0 45 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M23.4168 31.25C23.4168 31.9583 23.5001 32.6458 23.6043 33.3333H4.66679C3.56172 33.3333 2.50191 32.8943 1.72051 32.1129C0.939109 31.3315 0.500122 30.2717 0.500122 29.1667V4.16667C0.500122 1.85417 2.35429 0 4.66679 0H17.1668L21.3335 4.16667H38.0001C39.1052 4.16667 40.165 4.60565 40.9464 5.38705C41.7278 6.16846 42.1668 7.22826 42.1668 8.33333V20.4375C40.896 19.7083 39.5001 19.2083 38.0001 18.9375V8.33333H4.66679V29.1667H23.6043C23.5001 29.8542 23.4168 30.5417 23.4168 31.25ZM38.0001 29.1667V22.9167H33.8335V29.1667H27.5835V33.3333H33.8335V39.5833H38.0001V33.3333H44.2501V29.1667H38.0001Z" fill="#13716D"/>
                     </svg>
-                  <h2>New dataset</h2>
+                  <h2 style="font-size: 15px;">New dataset</h2>
                 </div>
               </div>
               <div id="dataset-upload-existing-dataset" class="option-card radio-button getting-started-1st-question">
@@ -512,7 +390,7 @@
                   <svg xmlns="http://www.w3.org/2000/svg" width="5rem" height="4rem" viewBox="0 0 24 24">
                     <path fill="#13716D" d="M3.616 19.77q-.667 0-1.141-.475T2 18.154V7.077h1v11.077q0 .269.173.442t.443.173H19v1zm3-3q-.667 0-1.141-.475T5 15.154V4.616q0-.667.475-1.142T6.615 3h4.962l2 2h6.808q.666 0 1.14.475T22 6.615v8.539q0 .666-.475 1.14t-1.14.475z"></path>
                   </svg>
-                  <h2>Existing dataset</h2>
+                  <h2 style="font-size: 15px;">Existing dataset</h2>
                 </div>
               </div>
             </div>
@@ -525,10 +403,10 @@
               style="margin-top: 5rem; display: flex; flex-direction: column;"
             >
               <!-- <div id="top-level-card-container--select-upload-dataset" class="top-level-card-container" style="margin-top: 1rem"></div> -->
-              <div class="individual-question generate-dataset test2 show" id="Question-generate-dataset-BF-dataset" style="width: 100%; margin: 0; align-self: center; display: flex !important">
+              <div class="individual-question generate-dataset test2 show" id="Question-generate-dataset-ps-dataset" style="width: 100%; margin: 0; align-self: center; display: flex !important">
                 <div class="ui form" style="width: 100%">
                   <div class="grouped fields">
-                    <label style="font-size: 17px; color: var(--color-bg-plum)">Which existing Pennsieve dataset
+                    <label style="font-size: 18px; color: var(--color-bg-plum)">Which existing Pennsieve dataset
                       would you like to use?</label>
                     <div class="field prepare-metadata-card-field">
                       <div style="
@@ -553,7 +431,7 @@
                                 font-weight: 600;
                                 margin-left: 80px;
                                 font-size: 15px;
-                              " id="current-bf-dataset-generate">None</span>
+                              " id="current-ps-dataset-generate">None</span>
 
                             <svg class="svg-change-current-account dataset bi bi-pencil-fill" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" viewBox="0 0 16 16">
                               <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"></path>
@@ -593,19 +471,19 @@
                             <div id="div-filter-datasets-progress-2" class="ui active green inline loader" style="display: none; margin: 10px auto"></div>
                             <p id="para-filter-datasets-status-2" style="font-size: 14px; display: none">0 dataset(s) where you have all permissions were loaded successfully below.</p>
 
-                            <h5 style="text-align: left; color: rgb(0, 0, 0); display: block;" id="bf-dataset-select-header">
+                            <h5 style="text-align: left; color: rgb(0, 0, 0); display: block;" id="ps-dataset-select-header">
                               Select your dataset
                             </h5>
-                            <div class="search-select-box" id="bf-dataset-select-div">
+                            <div class="search-select-box" id="ps-dataset-select-div">
                               <div class="dropdown bootstrap-select w-100"><select class="w-100" id="curatebfdatasetlist" data-live-search="true" name="Pennsieve dataset" style="width: 450px; border-radius: 7px; padding: 8px" data-none-selected-text="Loading datasets...">
                               <option value="Select dataset">Search here...</option></select>
                             </div>
                             </div>
 
-                            <h5 style="text-align: left; color: #000; display: none" id="bf-organization-select-header">
+                            <h5 style="text-align: left; color: #000; display: none" id="ps-organization-select-header">
                               Select your workspace
                             </h5>
-                            <div class="search-select-box" id="bf-organization-select-div" style="display: none">
+                            <div class="search-select-box" id="ps-organization-select-div" style="display: none">
                               <select class="w-100" id="curatebforganizationlist" data-live-search="true"
                                 name="Pennsieve organization" style="width: 450px; border-radius: 7px; padding: 8px"
                                 data-none-selected-text="Loading workspace...">
@@ -625,7 +503,7 @@
                   justify-content: center;
                   margin: 10px auto;
                 ">
-                  <button id="button-confirm-bf-dataset" onclick="window.transitionSubQuestionsButton(this, 'Question-generate-dataset-BF-dataset', 'upload-destination-selection-tab', 'delete', 'individual-question generate-dataset')" data-next="Question-generate-dataset-existing-folders-options" style="
+                  <button id="button-confirm-ps-dataset" onclick="window.transitionSubQuestionsButton(this, 'Question-generate-dataset-ps-dataset', 'upload-destination-selection-tab', 'delete', 'individual-question generate-dataset')" data-next="Question-generate-dataset-existing-folders-options" style="
                       display: none;
                       border-radius: 4px;
                       height: 30px;
@@ -649,12 +527,12 @@
               class="hidden"
               style="margin-top: 5rem; display: flex; flex-direction: column; align-self: center;"
             >
-              <label class="w-100 text-center" style="font-weight: 700; font-size: 17px; color: var(--color-bg-plum)">How would you like to name the new dataset?</label>
+              <label class="w-100 text-center" style="font-weight: 700; font-size: 18px; color: var(--color-bg-plum)">What would you like to name the new dataset?</label>
               <div class="field justify-center"
                 style="margin-top: 2rem; display: flex; flex-direction: column; align-items: center">
                 <input type="text" class="form-control"
                   style="background: #fff !important; width: 550px !important" id="inputNewNameDataset-upload-dataset"
-                  placeholder="Type here" />
+                  placeholder="Enter dataset name" />
 
                   <p style="color: red; width: 440px; text-align: center; margin-top: 10px;" id="para-new-name-dataset-message"></p>
 
@@ -663,7 +541,7 @@
                   style="
                     margin-top: 1rem;
                     font-weight: 600;
-                    font-size: 14px;
+                    font-size: 15px;
                   ">
                   Confirm
                 </button>
@@ -979,14 +857,14 @@
 
           <!-- 4. Manifest files -->
           <div class="parent-tabs condensed" id="manifest-file-tab" style="grid-template-rows: 10% 90%">
-            <label class="w-100 text-center" style="margin-top: 2.5rem; font-weight: 700; font-size: 17px; color: var(--color-bg-plum)">Would you like SODA to auto-generate your manifest files?</label>
+            <label class="w-100 text-center" style="margin-top: 2.5rem; font-weight: 700; font-size: 18px; color: var(--color-bg-plum)">Would you like SODA to auto-generate your manifest files?</label>
             <div id="manifest-intro-info" class="hidden" style="padding-left: 2rem; padding-right: 2rem; margin-top: 1rem; display: flex; place-content: center">
-              <p id="manifest-not-selected" class="guided--help-text">Manifest files are metadata files required in each of the high-level SDS folders. SODA can automatically generate them for your dataset.</p>
+              <p id="manifest-not-selected" class="guided--help-text" style="font-size: 15px; font-weight: 600;">Manifest files are metadata files required in each of the high-level SDS folders. SODA can automatically generate them for your dataset.</p>
             </div>
 
             <div style="height: 150px; text-align: center">
               <div style="margin-top: 30px; margin-bottom: 50px" id="pulse-manifest-checkbox">
-                <label class="labelradiocurate-manifest no" style="padding-left: 10px">
+                <label class="labelradiocurate-manifest no" style="padding-left: 10px; font-size: 16px;">
                   No
                 </label>
                 <label class="switch">
@@ -994,12 +872,11 @@
                     onclick="window.updateManifestLabelColor(this)" />
                   <span class="slider round manifest" style="width: 60px; height: 30px"></span>
                 </label>
-                <label class="labelradiocurate-manifest yes" style="padding-left: 10px" id="label-manifest">
+                <label class="labelradiocurate-manifest yes" style="padding-left: 10px; font-size: 16px;" id="label-manifest">
                   Yes
                 </label>
               </div>
               <div id="manifest-information-container" class="hidden" style="margin-left: 1rem; margin-right: 2rem; display: flex; place-content: center;">
-                <p id="manifest-selected" class="guided--help-text">You can preview below the manifest files that will be automatically included by SODA in each of the SDS folders. You can also suggest edits that will be incorporated by SODA</p>
               </div>
 
               <div class="guided--panel mt-0 hidden" id="manifest-creating-loading">
@@ -1017,14 +894,6 @@
               </div>
               <div id="manifest-items-container"
                 style="display: flex; flex-direction: column; justify-content: center">
-                
-                <div id="ffm-container-manifest-file-cards" style="
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    align-items: center;
-                    padding: 20px;
-                  "></div>
                 <div 
                   id="ffm-container-local-manifest-file-generation"
                   class="hidden"
@@ -1034,32 +903,12 @@
                   justify-content: center;
                   align-items: center;
                 ">
-                  <h5
-                    style="
-                      text-align: center;
-                      color: var(--color);
-                      font-size: 15px;
-                      margin-top: 20px;
-                      font-weight: 200;
-                    ">
-                    You can create a local copy of your manifest files for review. Click <a id="ffm-button-generate-manifest-files-locally">here</a> to do so if needed.
-                  </h5>
-                  <!-- <button
-                    class="ui primary button dataset-card-button-confirm"
-                    id="ffm-button-generate-manifest-files-locally"
-                    style="
-                      width: 263px !important;
-                      height: 2.5rem;
-                      font-weight: 600;
-                    "
-                  >
-                    Generate manifest files locally
-                  </button> -->
+                  <div
+                    data-component-type="manifest-file-preview-section"
+                    class="guided--section"
+                    id="ffm-manifest-file-preview"
+                  ></div>
                 </div>
-              </div>
-              <div id="manifest-creation-prohibited" class="info-dropdown mt-lg" style="justify-content: center;">
-                <p class="info-dropdown-text" data-dropdown-type="info" style="font-weight: 600; font-size: 16px;">Manifest files will not be generated</p>
-                <i class="fas fa-chevron-right"></i>
               </div>
               <div class="info-container" style="max-width: 740px; margin: auto;">
                 <p class="help-text mb-0">
@@ -1075,14 +924,14 @@
           <!-- 5. Preview dataset -->
           <div class="parent-tabs" id="preview-dataset-tab" style="overflow-y: scroll">
             <h3 class="question-title" style="
-                color: black;
-                font-weight: 600;
-                font-size: 15px;
+                color: var(--color-bg-plum);
+                font-weight: 700;
+                font-size: 18px;
                 text-align: center;
                 margin-top: 20px;
                 padding-bottom: 0px;
               ">
-              Step 5: Preview dataset and start upload
+              Step 5: Review dataset information and start upload
               <a target="_blank" style="padding: 0px 0px 0px 5px" class="github-wiki-link"
                 href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/prepare-dataset/step-7">
               </a>
@@ -1103,19 +952,9 @@
                         padding: 15px 25px;
                         border-radius: 5px;
                       " id="div-preview-dataset-details">
-                      <div style="margin-bottom: 10px" id="div-dataset-preview">
-                        <div style="display: flex; justify-content: center">
-                          <h4 style="width: 100%; text-align: center; color: #000">
-                            Current dataset structure
-                          </h4>
-                          <i class="far fa-edit jump-back" onclick="window.traverse_back(4)" style="color: #000"></i>
-                        </div>
-                        <br />
-                        <div id="div-dataset-tree-preview">js tree here.</div>
-                      </div>
                       <br />
-                      <h4 style="width: 100%; text-align: center; color: #000; margin-bottom: 30px">
-                        Other dataset information
+                      <h4 style="width: 100%; text-align: center; color: #000; margin-bottom: 30px; font-size: 16px; margin-top: 5px;">
+                        Dataset information
                       </h4>
                       <div id="other-dataset-information-container">
                         <div class="card-container generate-preview">

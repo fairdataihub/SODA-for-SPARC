@@ -4,7 +4,6 @@
 
 import platform
 import os
-import time
 from os.path import (
     isdir,
     join,
@@ -37,6 +36,10 @@ from docx import Document
 
 from flask import abort 
 from constants import PENNSIEVE_URL
+
+
+
+
 
 from manifest import update_existing_pennsieve_manifest_files, create_high_lvl_manifest_files_existing_ps_starting_point, recursive_item_path_create
 
@@ -141,67 +144,9 @@ def extract_milestone_info(datalist):
     return milestone
 
 
-### Create submission file
-def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, val_arr):
-
-    font_submission = Font(name="Calibri", size=14, bold=False)
-
-    source = join(TEMPLATE_PATH, "submission.xlsx")
-
-    destination = join(METADATA_UPLOAD_BF_PATH, "submission.xlsx") if upload_boolean else filepath
-
-    try:
-        shutil.copyfile(source, destination)
-    except FileNotFoundError as e:
-        raise e
-
-    # write to excel file
-    wb = load_workbook(destination)
-    ws1 = wb["Sheet1"]
-    for column, arr in zip(excel_columns(start_index=2), val_arr):
-        ws1[column + "2"] = arr["consortiumDataStandard"]
-        ws1[column + "3"] = arr["fundingConsortium"]
-        ws1[column + "4"] = arr["award"]
-        ws1[column + "5"] = arr["milestone"]
-        ws1[column + "6"] = arr["date"]
-
-        ws1[column + "2"].font = font_submission
-        ws1[column + "3"].font = font_submission
-        ws1[column + "4"].font = font_submission
-        ws1[column + "5"].font = font_submission
-        ws1[column + "6"].font = font_submission
-
-    rename_headers(ws1, len(val_arr), 2)
-
-    wb.save(destination)
-
-    wb.close()
-
-    # calculate the size of the metadata file
-    size = getsize(destination)
-
-    
-
-    ## if generating directly on Pennsieve, then call upload function and then delete the destination path
-    if upload_boolean:
-        upload_metadata_file("submission.xlsx", bfaccount, bfdataset, destination, True)
-
-    return {"size": size}
 
 
-# this function saves and uploads the README/CHANGES to Pennsieve, just when users choose to generate onto Pennsieve
-## (not used for generating locally)
-def upload_RC_file(text_string, file_type, bfaccount, bfdataset):
-    file_path = join(METADATA_UPLOAD_BF_PATH, file_type)
 
-    with open(file_path, "w") as f:
-        f.write(text_string)
-
-    size = getsize(file_path)
-
-    upload_metadata_file(file_type, bfaccount, bfdataset, file_path, True)
-
-    return { "size": size, "filepath": file_path }
 
 
 def subscriber_metadata(ps, events_dict):
@@ -269,410 +214,24 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
         os.remove(file_path)
 
 
-def excel_columns(start_index=0):
-    """
-    NOTE: does not support more than 699 contributors/links
-    """
-    single_letter = list(ascii_uppercase[start_index:])
-    two_letter = [a + b for a, b in itertools.product(ascii_uppercase, ascii_uppercase)]
-    return single_letter + two_letter
-
-def rename_headers(workbook, max_len, start_index):
-    """
-    Rename header columns if values exceed 3. Change Additional Values to Value 4, 5,...
-    Adds styling to the column headers as well.
-    """
-
-    columns_list = excel_columns(start_index=start_index)
-    if max_len >= start_index:
-        workbook[columns_list[0] + "1"] = "Value"
-        for i, column in zip(range(2, max_len + 1), columns_list[1:]):
-
-            workbook[column + "1"] = f"Value {str(i)}"
-            cell = workbook[column + "1"]
-
-            blueFill = PatternFill(
-                start_color="9CC2E5", end_color="9CC2E5", fill_type="solid"
-            )
-
-            font = Font(bold=True)
-            cell.fill = blueFill
-            cell.font = font
-
-    else:
-        delete_range = len(columns_list) - max_len
-        workbook.delete_cols(4 + max_len, delete_range)
 
 
-def grayout_subheaders(workbook, max_len, start_index):
-    """
-    Gray out sub-header rows for values exceeding 3 (SDS2.0).
-    """
-    headers_list = ["4", "10", "18", "23", "28"]
-    columns_list = excel_columns(start_index=start_index)
-
-    for (i, column), no in itertools.product(zip(range(2, max_len + 1), columns_list[1:]), headers_list):
-        cell = workbook[column + no]
-        fillColor("B2B2B2", cell)
 
 
-def grayout_single_value_rows(workbook, max_len, start_index):
-    """
-    Gray out rows where only single values are allowed. Row number: 2, 3, 5, 6, 9, 11, 12, 13, 17, 29, 30
-    """
 
-    columns_list = excel_columns(start_index=start_index)
-    row_list = ["2", "3", "5", "6", "9", "11", "12", "13", "17", "29", "30"]
-    for (i, column), no in itertools.product(zip(range(2, max_len + 1), columns_list[1:]), row_list):
-        cell = workbook[column + no]
-        fillColor("CCCCCC", cell)
-
-
-def fillColor(color, cell):
-    colorFill = PatternFill(start_color=color, end_color=color, fill_type="solid")
-
-    cell.fill = colorFill
 
 
 ### Prepare dataset-description file
 
-def populate_dataset_info(ws, ds_dict):
-    ## name, description, type, samples, subjects
-    ws["D5"] = ds_dict["name"]
-    ws["D6"] = ds_dict["description"]
-    ws["D3"] = ds_dict["type"]
-    ws["D29"] = ds_dict["number of subjects"]
-    ws["D30"] = ds_dict["number of samples"]
 
-    ## keywords
-    for i, column in zip(range(len(ds_dict["keywords"])), excel_columns(start_index=3)):
-        ws[column + "7"] = ds_dict["keywords"][i]
 
-    return ds_dict["keywords"]
 
 
-def populate_study_info(workbook, val_obj):
-    workbook["D11"] = val_obj["study purpose"]
-    workbook["D12"] = val_obj["study data collection"]
-    workbook["D13"] = val_obj["study primary conclusion"]
-    workbook["D17"] = val_obj["study collection title"]
 
-    ## get study organ system
-    for i, column in zip(
-        range(len(val_obj["study organ system"])), excel_columns(start_index=3)
-    ):
-        workbook[column + "14"] = val_obj["study organ system"][i]
-    ## get study approach
-    for i, column in zip(
-        range(len(val_obj["study approach"])), excel_columns(start_index=3)
-    ):
-        workbook[column + "15"] = val_obj["study approach"][i]
-    ## get study technique
-    for i, column in zip(
-        range(len(val_obj["study technique"])), excel_columns(start_index=3)
-    ):
-        workbook[column + "16"] = val_obj["study technique"][i]
 
-    return max(
-        len(val_obj["study organ system"]),
-        len(val_obj["study approach"]),
-        len(val_obj["study technique"]),
-    )
 
 
-def populate_contributor_info(workbook, val_array):
-    ## get award info
-    for i, column in zip(
-        range(len(val_array["funding"])), excel_columns(start_index=3)
-    ):
-        workbook[column + "8"] = val_array["funding"][i]
 
-    ### get Acknowledgments
-    workbook["D9"] = val_array["acknowledgment"]
-
-    ### get Contributors
-    for contributor, column in zip(
-        val_array["contributors"], excel_columns(start_index=3)
-    ):
-        workbook[column + "19"] = contributor["conName"]
-        workbook[column + "20"] = contributor["conID"]
-        workbook[column + "21"] = contributor["conAffliation"]
-        workbook[column + "22"] = contributor["conRole"]
-
-    return [val_array["funding"], val_array["contributors"]]
-
-
-def populate_related_info(workbook, val_array):
-    ## get related links including protocols
-
-    for i, column in zip(range(len(val_array)), excel_columns(start_index=3)):
-        workbook[column + "24"] = val_array[i]["description"]
-        workbook[column + "25"] = val_array[i]["relation"]
-        workbook[column + "26"] = val_array[i]["link"]
-        workbook[column + "27"] = val_array[i]["type"]
-
-    return len(val_array)
-
-
-### generate the dataset_description file
-
-
-def save_ds_description_file(
-    upload_boolean,
-    bfaccount,
-    bfdataset,
-    filepath,
-    dataset_dict,
-    study_info_dict,
-    constributor_info_dict,
-    additional_links_list,
-):
-    source = join(TEMPLATE_PATH, "dataset_description.xlsx")
-    destination = join(METADATA_UPLOAD_BF_PATH, "dataset_description.xlsx") if upload_boolean else filepath
-    shutil.copyfile(source, destination)
-    global namespace_logger
-
-    # write to excel file
-    wb = load_workbook(destination)
-    ws1 = wb["Sheet1"]
-
-    ws1["D22"] = ""
-    ws1["E22"] = ""
-    ws1["D24"] = ""
-    ws1["E24"] = ""
-    ws1["D25"] = ""
-    ws1["E25"] = ""
-
-    keyword_array = populate_dataset_info(ws1, dataset_dict)
-
-    study_array_len = populate_study_info(ws1, study_info_dict)
-
-    (funding_array, contributor_role_array) = populate_contributor_info(
-        ws1, constributor_info_dict
-    )
-
-    related_info_len = populate_related_info(ws1, additional_links_list)
-
-    # keywords length
-    keyword_len = len(keyword_array)
-
-    # contributors length
-    no_contributors = len(contributor_role_array)
-
-    # funding = SPARC award + other funding sources
-    funding_len = len(funding_array)
-
-    # obtain length for formatting compliance purpose
-    max_len = max(
-        keyword_len, funding_len, no_contributors, related_info_len, study_array_len
-    )
-
-    rename_headers(ws1, max_len, 3)
-    grayout_subheaders(ws1, max_len, 3)
-    grayout_single_value_rows(ws1, max_len, 3)
-
-    if ws1["G1"].value == "Value n":
-        ws1.delete_cols(7)
-
-    wb.save(destination)
-
-    size = getsize(destination)
-
-    ## if generating directly on Pennsieve, then call upload function and then delete the destination path
-    if upload_boolean:
-        upload_metadata_file(
-            "dataset_description.xlsx", bfaccount, bfdataset, destination, True
-        )
-
-    return {"size": size}
-
-subjectsTemplateHeaderList = [
-    "subject id",
-    "pool id",
-    "subject experimental group",
-    "age",
-    "sex",
-    "species",
-    "strain",
-    "rrid for strain",
-    "age category",
-    "also in dataset",
-    "member of",
-    "laboratory internal id",
-    "date of birth",
-    "age range (min)",
-    "age range (max)",
-    "body mass",
-    "genotype",
-    "phenotype",
-    "handedness",
-    "reference atlas",
-    "experimental log file path",
-    "experiment date",
-    "disease or disorder",
-    "intervention",
-    "disease model",
-    "protocol title",
-    "protocol url or doi",
-]
-samplesTemplateHeaderList = [
-    "sample id",
-    "subject id",
-    "was derived from",
-    "pool id",
-    "sample experimental group",
-    "sample type",
-    "sample anatomical location",
-    "also in dataset",
-    "member of",
-    "laboratory internal id",
-    "date of derivation",
-    "experimental log file path",
-    "reference atlas",
-    "pathology",
-    "laterality",
-    "cell type",
-    "plane of section",
-    "protocol title",
-    "protocol url or doi",
-]
-
-# This function could be removed and the upload_metadata_file could be called directly from the api
-def upload_code_description_metadata(filepath, bfAccount, bfDataset):
-    upload_metadata_file("code_description.xlsx", bfAccount, bfDataset, filepath, False)
-
-
-def save_subjects_file(upload_boolean, bfaccount, bfdataset, filepath, datastructure):
-    source = join(TEMPLATE_PATH, "subjects.xlsx")
-
-    if upload_boolean:
-        destination = join(METADATA_UPLOAD_BF_PATH, "subjects.xlsx")
-
-    else:
-        destination = filepath
-
-    shutil.copyfile(source, destination)
-    wb = load_workbook(destination)
-    ws1 = wb["Sheet1"]
-
-    transposeDatastructure = transposeMatrix(datastructure)
-
-    mandatoryFields = transposeDatastructure[:11]
-    optionalFields = transposeDatastructure[11:]
-    refinedOptionalFields = getMetadataCustomFields(optionalFields)
-
-    templateHeaderList = subjectsTemplateHeaderList
-    sortMatrix = sortedSubjectsTableData(mandatoryFields, templateHeaderList)
-
-    if refinedOptionalFields:
-        refinedDatastructure = transposeMatrix(
-            np.concatenate((sortMatrix, refinedOptionalFields))
-        )
-    else:
-        refinedDatastructure = transposeMatrix(sortMatrix)
-    
-    # delete all optional columns first (from the template)
-    ws1.delete_cols(12, 18)
-
-    # 1. see if the length of datastructure[0] == length of datastructure. If yes, go ahead. If no, add new columns from headers[n-1] onward.
-    headers_no = len(refinedDatastructure[0])
-    orangeFill = PatternFill(
-        start_color="FFD965", end_color="FFD965", fill_type="solid"
-    )
-
-    for column, header in zip(
-        excel_columns(start_index=11), refinedDatastructure[0][11:headers_no]
-    ):
-        cell = column + str(1)
-        ws1[cell] = header
-        ws1[cell].fill = orangeFill
-        ws1[cell].font = Font(bold=True, size=12, name="Calibri")
-
-    # 2. populate matrices
-    for i, item in enumerate(refinedDatastructure):
-        if i == 0:
-            continue
-        for column, j in zip(excel_columns(start_index=0), range(len(item))):
-            # import pdb; pdb.set_trace()
-            cell = column + str(i + 1)
-            ws1[cell] = refinedDatastructure[i][j] or ""
-            ws1[cell].font = Font(bold=False, size=11, name="Arial")
-
-    wb.save(destination)
-
-    size = getsize(destination)
-
-    ## if generating directly on Pennsieve, then call upload function and then delete the destination path
-    if upload_boolean:
-        upload_metadata_file("subjects.xlsx", bfaccount, bfdataset, destination, True)
-
-    return size
-
-
-def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastructure):
-    source = join(TEMPLATE_PATH, "samples.xlsx")
-
-    if upload_boolean:
-        destination = join(METADATA_UPLOAD_BF_PATH, "samples.xlsx")
-
-    else:
-        destination = filepath
-
-    shutil.copyfile(source, destination)
-
-    wb = load_workbook(destination)
-    ws1 = wb["Sheet1"]
-
-    transposeDatastructure = transposeMatrix(datastructure)
-
-    mandatoryFields = transposeDatastructure[:9]
-    optionalFields = transposeDatastructure[9:]
-    refinedOptionalFields = getMetadataCustomFields(optionalFields)
-
-    templateHeaderList = samplesTemplateHeaderList
-    sortMatrix = sortedSubjectsTableData(mandatoryFields, templateHeaderList)
-
-    if refinedOptionalFields:
-        refinedDatastructure = transposeMatrix(
-            np.concatenate((sortMatrix, refinedOptionalFields))
-        )
-    else:
-        refinedDatastructure = transposeMatrix(sortMatrix)
-
-    ws1.delete_cols(10, 15)
-
-    # 1. see if the length of datastructure[0] == length of datastructure. If yes, go ahead. If no, add new columns from headers[n-1] onward.
-    headers_no = len(refinedDatastructure[0])
-    orangeFill = PatternFill(
-        start_color="FFD965", end_color="FFD965", fill_type="solid"
-    )
-
-    for column, header in zip(
-        excel_columns(start_index=9), refinedDatastructure[0][9:headers_no]
-    ):
-        cell = column + str(1)
-        ws1[cell] = header
-        ws1[cell].fill = orangeFill
-        ws1[cell].font = Font(bold=True, size=12, name="Calibri")
-
-    # 2. populate matrices
-    for i, item in enumerate(refinedDatastructure):
-        if i == 0:
-            continue
-        for column, j in zip(excel_columns(start_index=0), range(len(item))):
-            cell = column + str(i + 1)
-            ws1[cell] = refinedDatastructure[i][j] or ""
-            ws1[cell].font = Font(bold=False, size=11, name="Arial")
-
-    wb.save(destination)
-
-    size = getsize(destination)
-
-    ## if generating directly on Pennsieve, call upload function
-    if upload_boolean:
-        upload_metadata_file("samples.xlsx", bfaccount, bfdataset, destination, True)
-
-    return {"size": size}
 
 
 
@@ -748,46 +307,6 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields, item_id=None,
     sortMatrix = sortedSubjectsTableData(transpose, ui_fields)
 
     return {"sample_file_rows": transposeMatrix(sortMatrix)} if type in ["samples.xlsx", "samples"] else {"subject_file_rows": transposeMatrix(sortMatrix)}
-
-
-def checkEmptyColumn(column):
-    for element in column:
-        if element:
-            break
-        return True
-    return False
-
-
-# needed to sort subjects and samples table data to match the UI fields
-def sortedSubjectsTableData(matrix, fields):
-    sortedMatrix = []
-    for field in fields:
-        for column in matrix:
-            if column[0].lower() == field:
-                sortedMatrix.append(column)
-                break
-
-    customHeaderMatrix = [
-        column for column in matrix if column[0].lower() not in fields
-    ]
-
-    return (
-        np.concatenate((sortedMatrix, customHeaderMatrix)).tolist()
-        if customHeaderMatrix
-        else sortedMatrix
-    )
-
-
-# transpose a matrix (array of arrays)
-# The transpose of a matrix is found by interchanging its rows into columns or columns into rows.
-# REFERENCE: https://byjus.com/maths/transpose-of-a-matrix/
-def transposeMatrix(matrix):
-    return [[matrix[j][i] for j in range(len(matrix))] for i in range(len(matrix[0]))]
-
-
-# helper function to process custom fields (users add and name them) for subjects and samples files
-def getMetadataCustomFields(matrix):
-    return [column for column in matrix if any(column[1:])]
 
 
 ## check if any whole column from Excel sheet is empty
@@ -896,8 +415,8 @@ def import_ps_metadata_file(file_type, ui_fields, bfdataset):
                 return load_existing_submission_file(url, item_id, get_access_token())
 
             elif file_type == "dataset_description.xlsx":
-                # bf is the old signifier for pennsieve
-                return load_existing_DD_file("bf", url, item_id, get_access_token())
+                # ps is the old signifier for pennsieve
+                return load_existing_DD_file("ps", url, item_id, get_access_token())
 
             elif file_type == "subjects.xlsx":
                 return convert_subjects_samples_file_to_df("subjects", url, ui_fields, item_id, get_access_token())
@@ -1011,8 +530,8 @@ def load_existing_DD_file(import_type, filepath, item_id=None, token=None):
     # open given workbook
     # and store in excel object
 
-     # bf is the old signifier for pennsieve
-    if import_type == "bf":
+     # ps is the old signifier for pennsieve
+    if import_type == "ps":
         try:
             DD_df = load_metadata_to_dataframe(item_id, "excel", token, column_check, 0)
         except Exception as e:
@@ -1147,9 +666,3 @@ def delete_manifest_dummy_folders(userpath_list):
         shutil.rmtree(userpath) if isdir(userpath) else 0
 
 
-def edit_ps_manifest_file(edit_action, manifest_type):
-    if manifest_type == "bf":
-        manifest_file_location = os.path.join(userpath, "SODA", "manifest_files")
-    else:
-        manifest_file_location = os.path.join(userpath, "SODA", "Manifest Files")
-    return
