@@ -1,21 +1,21 @@
 import { Text, Group, Select, Collapse, Center } from "@mantine/core";
-import { useState } from "react";
+import { swalShowError } from "../../../scripts/utils/swal-utils";
+import { useEffect, useState } from "react";
 import useGlobalStore from "../../../stores/globalStore";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import CheckboxCard from "../../buttons/CheckboxCard";
 import client from "../../../scripts/client";
-import Swal from "sweetalert2";
 import NavigationButton from "../../buttons/Navigation";
-import { isCheckboxCardChecked } from "../../../stores/slices/checkboxCardSlice";
+import { setCheckboxCardUnchecked } from "../../../stores/slices/checkboxCardSlice";
 
 const GenerateDatasetPennsieveTargetPage = () => {
-  /*
   const [selectedDataset, setSelectedDataset] = useState(null);
   const [datasetOptions, setDatasetOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
-  */
+  const [hasAttemptedFetch, setHasAttemptedFetch] = useState(false); // 🔁 added to avoid infinite loop
+
   const isNewDatasetSelected = useGlobalStore(
     (state) => !!state.checkboxes["generate-on-new-pennsieve-dataset"]
   );
@@ -23,52 +23,53 @@ const GenerateDatasetPennsieveTargetPage = () => {
     (state) => !!state.checkboxes["generate-on-existing-pennsieve-dataset"]
   );
 
-  /*
-  const fetchDatasets = async () => {
-    if (hasLoaded || isLoading) return; // Don't fetch if already loaded or loading
+  async function fetchDatasets() {
+    if (hasLoaded || isLoading || hasAttemptedFetch) return;
 
     setIsLoading(true);
+    setHasAttemptedFetch(true);
+
     try {
-      // TODO: Handle pennsieve login information being removed before this page is loaded but user is supposed to resume here
-      const responseObject = await client.get(`manage_datasets/fetch_user_datasets`, {
-        params: {
-          selected_account: window.defaultBfAccount,
-          return_only_empty_datasets: false,
-        },
+      console.log("🚀 Fetching empty datasets from Pennsieve...");
+
+      const response = await client.get("manage_datasets/fetch_user_dataets", {
+        params: { return_only_empty_datasets: "true" },
       });
 
-      let datasets = responseObject.data.datasets;
+      const datasets = response?.data?.datasets;
+      if (!datasets || !Array.isArray(datasets)) {
+        console.warn("⚠️ No datasets found or response structure invalid:", datasets);
+      }
 
-      // Transform the response data to match the Select component format
-      const formattedOptions = datasets.map((dataset) => ({
-        value: dataset.id, // Use appropriate identifier
-        label: dataset.name, // Use appropriate display name
+      const formattedOptions = (datasets || []).map((dataset) => ({
+        value: dataset.id,
+        label: dataset.name,
       }));
 
       setDatasetOptions(formattedOptions);
       setHasLoaded(true);
     } catch (error) {
-      console.error("Failed to fetch datasets:", error);
-      // Optionally show error message to user
+      console.error("❌ Failed to fetch datasets:", error?.response || error?.message || error);
       setDatasetOptions([]);
-      Swal.fire({
-        icon: "error",
-        title: "Failed to fetch datasets",
-        text: "Please try again later. If this issue persists, please use the Contact Us page to report the issue.",
-        confirmButtonText: "OK",
-        heightAuto: false,
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-      });
+      swalShowError(
+        "Failed to fetch datasets",
+        "Please try again later. If this issue persists, please use the Contact Us page to report the issue."
+      );
+      setCheckboxCardUnchecked("generate-on-existing-pennsieve-dataset");
     } finally {
       setIsLoading(false);
     }
-  };
-  */
+  }
+
+  useEffect(() => {
+    if (isExistingDatasetSelected) {
+      fetchDatasets();
+    } else {
+      setHasLoaded(false);
+      setHasAttemptedFetch(false); // ✅ reset so fetch can be retried if checkbox is toggled
+      setDatasetOptions([]);
+    }
+  }, [isExistingDatasetSelected]);
 
   return (
     <GuidedModePage pageHeader="Pennsieve Generation Location">
@@ -82,8 +83,6 @@ const GenerateDatasetPennsieveTargetPage = () => {
         </Group>
       </GuidedModeSection>
 
-      {/* Use global store state for the condition */}
-      {/*
       <Collapse in={isExistingDatasetSelected}>
         <GuidedModeSection>
           <Text mb="md">
@@ -95,36 +94,31 @@ const GenerateDatasetPennsieveTargetPage = () => {
             data={datasetOptions}
             value={selectedDataset}
             onChange={setSelectedDataset}
-            onDropdownOpen={fetchDatasets} // Fetch when dropdown opens
             searchable={!isLoading}
             clearable={!isLoading}
             disabled={isLoading}
             maxDropdownHeight={200}
             comboboxProps={{
               withinPortal: false,
-              loading: isLoading, // Shows loading spinner in dropdown
+              loading: isLoading,
             }}
           />
         </GuidedModeSection>
       </Collapse>
-      */}
-      {isExistingDatasetSelected ||
-        (isNewDatasetSelected && (
-          <GuidedModeSection>
-            <Center mt="xl">
-              <NavigationButton
-                onClick={() => {
-                  // Pass the button click to the real next button
-                  document.getElementById("guided-next-button").click();
-                }}
-                buttonCustomWidth={"215px"}
-                buttonText={"Save and Continue"}
-                navIcon={"right-arrow"}
-                buttonSize={"md"}
-              ></NavigationButton>
-            </Center>
-          </GuidedModeSection>
-        ))}
+
+      {(isExistingDatasetSelected || isNewDatasetSelected) && (
+        <GuidedModeSection>
+          <Center mt="xl">
+            <NavigationButton
+              onClick={() => document.getElementById("guided-next-button")?.click()}
+              buttonCustomWidth="215px"
+              buttonText="Save and Continue"
+              navIcon="right-arrow"
+              buttonSize="md"
+            />
+          </Center>
+        </GuidedModeSection>
+      )}
     </GuidedModePage>
   );
 };

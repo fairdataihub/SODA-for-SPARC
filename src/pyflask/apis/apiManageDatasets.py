@@ -458,7 +458,7 @@ model_account_datasets_list_response = api.model('AccountDatasetsResponse', {
 class BfDatasetAccount(Resource):
 
   parser_fetch_user_datasets = reqparse.RequestParser(bundle_errors=True)
-  parser_fetch_user_datasets.add_argument('return_only_empty_datasets', type=bool, required=False, location='args', help='If true, only return datasets that are empty.')
+  parser_fetch_user_datasets.add_argument('return_only_empty_datasets', type=str, required=False, location='args', help='If true, only return datasets that are empty.')
 
   
   @api.marshal_with(model_account_datasets_list_response, False, 200)
@@ -467,7 +467,9 @@ class BfDatasetAccount(Resource):
   def get(self):
     try:
       args = self.parser_fetch_user_datasets.parse_args()
-      return_only_empty_datasets = args.get('return_only_empty_datasets', False)
+      return_only_empty_datasets = args.get("return_only_empty_datasets", "false").lower() == "true"
+      api.logger.info(f"Fetching user datasets with args: {args}")
+      api.logger.info(f"Return only empty datasets: {return_only_empty_datasets}")
       return fetch_user_datasets(return_only_empty_datasets)
     except Exception as e:
       api.logger.exception(e)

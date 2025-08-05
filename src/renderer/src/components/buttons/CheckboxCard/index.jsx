@@ -25,7 +25,6 @@ const dataMap = {
       "Select this option if you already have a dataset on Pennsieve and are uploading data to it.",
     Icon: IconDeviceDesktop,
     mutuallyExclusiveWithCards: ["generate-on-new-pennsieve-dataset"],
-    comingSoon: true,
   },
 
   "generate-on-new-pennsieve-dataset": {
