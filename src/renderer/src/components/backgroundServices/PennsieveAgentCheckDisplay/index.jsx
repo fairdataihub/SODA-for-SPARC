@@ -217,14 +217,10 @@ const PennsieveAgentCheckDisplay = () => {
             icon={<IconAlertCircle />}
             style={{ width: "100%" }}
           >
-            <Text>
-              Installed Pennsieve Agent version: <b>{usersPennsieveAgentVersion}</b>
-            </Text>
-            <Text mt="sm">
-              Latest Pennsieve Agent version: <b>{latestPennsieveAgentVersion}</b>
-            </Text>
             <Text mt="sm" mb="sm">
-              Please download and install the latest version of the Pennsieve Agent below.
+              You currently have Pennsieve Agent v{usersPennsieveAgentVersion} installed. We
+              recommend that you install Pennsieve Agent v{latestPennsieveAgentVersion} before
+              continuing.
             </Text>
             <ExternalLink
               href={pennsieveAgentDownloadURL}

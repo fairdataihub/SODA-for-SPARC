@@ -2072,11 +2072,11 @@ const datasetStatusListChange = () => {
 // This function is called when the user selects a dataset from the dropdown list
 // It is called to update the UI elements that are related to the publishing status
 // of the dataset and displaying the correct UI elements
-const postCurationListChange = () => {
-  // display the pre-publishing page
-  showPrePublishingPageElements();
-  window.showPublishingStatus();
-};
+// const postCurationListChange = () => {
+//   // display the pre-publishing page
+//   showPrePublishingPageElements();
+//   window.showPublishingStatus();
+// };
 
 // // upload banner image //
 // const Cropper = require("cropperjs");
@@ -3214,9 +3214,9 @@ const showFileImportLoadingSweetAlert = (delayBeforeShowingSweetAlert) => {
           </div>
         </div>
       `,
-      width: 800,
+      width: 900,
       heightAuto: false,
-      width: 800,
+      width: 900,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       allowOutsideClick: false,

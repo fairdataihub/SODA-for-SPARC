@@ -4,7 +4,9 @@ run-name: ${{ github.actor }} is building a linux release for SODA
 on:
   push:
     branches:
-      - sds3
+      - main
+      - staging
+      - pre-staging
 
 jobs:
   deploy-on-linux:

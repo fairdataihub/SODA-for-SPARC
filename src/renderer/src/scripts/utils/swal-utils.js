@@ -45,7 +45,7 @@ export const swalShowLoading = (title, text) => {
     showCloseButton: false,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
-    width: 800,
+    width: 900,
     didOpen: () => {
       Swal.showLoading();
     },
@@ -60,7 +60,7 @@ export const swalShowError = async (title, errorText) => {
     title: title,
     html: errorText,
     icon: "error",
-    width: 800,
+    width: 900,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     showConfirmButton: true,
@@ -70,17 +70,30 @@ export const swalShowError = async (title, errorText) => {
 
 export const swalShowInfo = async (title, infoText) => {
   Swal.close();
-  await new Promise((resolve) => setTimeout(resolve, 500));
   await Swal.fire({
     title: title,
     html: infoText,
     icon: "info",
-    width: 800,
+    width: 900,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     showConfirmButton: true,
     confirmButtonText: "OK",
   });
+};
+
+export const swalAskQuestion = async (questionText, confirmButtonText, cancelButtonText) => {
+  const { value: action } = await Swal.fire({
+    html: questionText,
+    width: 900,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    showCancelButton: true,
+    showCloseButton: false,
+    confirmButtonText: confirmButtonText,
+    cancelButtonText: cancelButtonText,
+  });
+  return action;
 };
 
 export const swalFileListSingleAction = async (fileList, title, helpText, postActionText) => {
@@ -97,9 +110,9 @@ export const swalFileListSingleAction = async (fileList, title, helpText, postAc
       </div>
       ${postActionText ? `<b>${postActionText}</b>` : ""}
     `,
-    width: 800,
+    width: 900,
     heightAuto: false,
-    width: 800,
+    width: 900,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     allowOutsideClick: false,
@@ -158,7 +171,7 @@ export const swalFileListDoubleAction = async (
       </div>
       ${confirmationText ? `<b>${confirmationText}</b>` : ""}
     `,
-    width: 800,
+    width: 900,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     allowOutsideClick: false,
@@ -193,7 +206,7 @@ export const swalFileListTripleAction = async (
       </div>
       <b>${confirmationText}</b>
     `,
-    width: 800,
+    width: 900,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     allowOutsideClick: false,
@@ -224,7 +237,7 @@ export const swalConfirmAction = async (icon, title, text, confirmButtonText, ca
     icon: icon,
     title: title,
     html: text,
-    width: 800,
+    width: 900,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     allowOutsideClick: false,
@@ -244,7 +257,7 @@ export const swalShowSuccess = async (title, successText) => {
     title: title,
     html: successText,
     icon: "success",
-    width: 800,
+    width: 900,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     showConfirmButton: true,

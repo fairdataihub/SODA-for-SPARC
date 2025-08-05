@@ -28,8 +28,10 @@ import {
   swalFileListSingleAction,
   swalFileListDoubleAction,
   swalShowInfo,
+  swalAskQuestion,
 } from "../utils/swal-utils";
 import DatePicker from "tui-date-picker";
+import { guidedGetCurrentUserWorkSpace } from "./workspaces/workspaces";
 
 import { guidedCreateManifestFilesAndAddToDatasetStructure } from "./manifests/manifest";
 import { createStandardizedDatasetStructure } from "../utils/datasetStructure";
@@ -1194,7 +1196,7 @@ const guidedOpenEntityEditSwal = async (entityName) => {
         )}" id='input-new-entity-name' class='guided--input' type='text' placeholder='Enter new ${entityNameSingular} name and press edit'/>
       </div>
     `,
-    width: 800,
+    width: 900,
     heightAuto: false,
     backdrop: "rgba(0,0,0,0.4)",
     showConfirmButton: true,
@@ -1259,6 +1261,1289 @@ const removeAlertMessageIfExists = (elementToCheck) => {
     elementToCheck.next().remove();
   }
 };
+
+const guidedCheckIfUserNeedsToReconfirmAccountDetails = async () => {
+  if (!window.sodaJSONObj["completed-tabs"].includes("guided-pennsieve-intro-tab")) {
+    return false;
+  }
+  try {
+    // If the user has changed their Pennsieve account, they need to confirm their new Pennsieve account and workspace
+    if (window.sodaJSONObj?.["last-confirmed-bf-account-details"] !== window.defaultBfAccount) {
+      if (window.sodaJSONObj["button-config"]?.["pennsieve-account-has-been-confirmed"]) {
+        delete window.sodaJSONObj["button-config"]["pennsieve-account-has-been-confirmed"];
+      }
+      if (window.sodaJSONObj["button-config"]?.["organization-has-been-confirmed"]) {
+        delete window.sodaJSONObj["button-config"]["organization-has-been-confirmed"];
+      }
+      await swalShowInfo(
+        "Your Pennsieve account has changed",
+        "You will be taken back to the account details page"
+      );
+      return true;
+    }
+    // If the user has changed their Pennsieve workspace, they need to confirm their new workspace
+    if (
+      guidedGetCurrentUserWorkSpace() !=
+      window.sodaJSONObj?.["last-confirmed-pennsieve-workspace-details"]
+    ) {
+      if (window.sodaJSONObj["button-config"]?.["organization-has-been-confirmed"]) {
+        delete window.sodaJSONObj["button-config"]["organization-has-been-confirmed"];
+      }
+      await swalShowInfo(
+        "Your Pennsieve workspace has changed",
+        "You will be taken back to the account details page"
+      );
+      return true;
+    }
+
+    const currentGuestStatus = await window.isWorkspaceGuest();
+
+    // If the guest status was set and the user's guest status has changed, they need to reconfirm their account details
+    if (
+      window.sodaJSONObj?.["last-confirmed-organization-guest-status"] &&
+      currentGuestStatus !== window.sodaJSONObj?.["last-confirmed-organization-guest-status"]
+    ) {
+      log.info(
+        "The user's guest status has changed so we are returning to the account details page"
+      );
+      await swalShowInfo(
+        "Your guest status in the workspace has changed",
+        "You will be taken back to the account details page"
+      );
+      return true;
+    }
+    if (window.sodaJSONObj?.["starting-point"]?.["type"] === "bf") {
+      if (window.sodaJSONObj["last-confirmed-dataset-role"]) {
+        const { userRole, userCanModifyPennsieveMetadata } =
+          await api.getDatasetAccessDetails(currentDataset);
+        if (userRole !== window.sodaJSONObj["last-confirmed-dataset-role"]) {
+          await swalShowInfo(
+            "Your role in the dataset has changed",
+            "You will be taken back to the account details page"
+          );
+          return true;
+        }
+      }
+    }
+
+    return false;
+  } catch (error) {
+    log.error("Error checking if user needs to reconfirm account details", error);
+    log.info("Returning true to reconfirm account details");
+    return true;
+  }
+};
+
+const guidedGetPageToReturnTo = async (sodaJSONObj) => {
+  // Set by window.openPage function
+  const usersPageBeforeExit = window.sodaJSONObj["page-before-exit"];
+
+  //If the dataset was successfully uploaded, send the user to the share with curation team
+  if (window.sodaJSONObj["previous-guided-upload-dataset-name"]) {
+    return "guided-dataset-dissemination-tab";
+  }
+
+  // returns the id of the first page of guided mode
+  const firstPageID = getNonSkippedGuidedModePages(document)[0].id;
+
+  const currentSodaVersion = document.getElementById("version").innerHTML;
+  const lastVersionOfSodaUsedOnProgressFile = window.sodaJSONObj["last-version-of-soda-used"];
+
+  if (lastVersionOfSodaUsedOnProgressFile != currentSodaVersion) {
+    // If the progress file was last edited in a previous SODA version, reset to the first page
+    await swalShowInfo(
+      "SODA has been updated since you last worked on this dataset.",
+      "You'll be taken to the first page to ensure compatibility with the latest workflow. Your previous work is saved and accessible."
+    );
+    return firstPageID;
+  }
+
+  if ((await guidedCheckIfUserNeedsToReconfirmAccountDetails()) === true) {
+    return "guided-pennsieve-intro-tab";
+  }
+
+  // If the page the user was last on no longer exists, return them to the first page
+  if (!document.getElementById(usersPageBeforeExit)) {
+    return firstPageID;
+  }
+
+  // If the user left while the upload was in progress, send the user to the upload confirmation page
+  if (usersPageBeforeExit === "guided-dataset-generation-tab") {
+    return "guided-dataset-generation-confirmation-tab";
+  }
+  // If no special cases apply, return the user to the page they were on before they left
+  return usersPageBeforeExit;
+};
+
+const patchPreviousGuidedModeVersions = async () => {
+  //temp patch contributor affiliations if they are still a string (they were added in the previous version)
+
+  for (const highLevelFolderManifestData in window.sodaJSONObj["guided-manifest-files"]) {
+    if (
+      window.sodaJSONObj["guided-manifest-files"][highLevelFolderManifestData]["headers"][0] ===
+      "File Name"
+    ) {
+      // reset the manifest files
+      window.sodaJSONObj["guided-manifest-files"] = {};
+    }
+  }
+
+  //Add key to track status of Pennsieve uploads
+  if (!window.sodaJSONObj["pennsieve-upload-status"]) {
+    window.sodaJSONObj["pennsieve-upload-status"] = {
+      "dataset-metadata-pennsieve-genration-status": "not-started",
+    };
+  }
+
+  if (!window.sodaJSONObj["previously-uploaded-data"]) {
+    window.sodaJSONObj["previously-uploaded-data"] = {};
+  }
+
+  if (!window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"]) {
+    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] = [];
+  }
+
+  const contributors =
+    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+  if (contributors) {
+    for (const contributor of window.sodaJSONObj["dataset-metadata"]["description-metadata"][
+      "contributors"
+    ]) {
+      //if contributor is in old format (string), convert to new format (array)
+      if (!Array.isArray(contributor.conAffliation)) {
+        contributor.conAffliation = [contributor.conAffliation];
+      }
+      // Replace improperly named PrincipleInvestigator role with Principle Investigator
+      if (contributor?.["conRole"].includes("PrincipleInvestigator")) {
+        contributor["conRole"] = contributor["conRole"].filter(
+          (role) => role !== "PrincipleInvestigator"
+        );
+        contributor["conRole"].unshift("PrincipalInvestigator");
+      }
+    }
+  }
+
+  if (!window.sodaJSONObj["button-config"]) {
+    window.sodaJSONObj["button-config"] = {};
+  }
+
+  if (!window.sodaJSONObj["skipped-pages"]) {
+    window.sodaJSONObj["skipped-pages"] = [];
+  }
+
+  if (!window.sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"]) {
+    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"] = {};
+  }
+
+  if (!window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]) {
+    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"] = {};
+  }
+
+  if (!window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"]) {
+    window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = [];
+  }
+
+  // If the user was on the airtable award page (does not exist anymore), send them to the create submission metadata page
+  if (window.sodaJSONObj["page-before-exit"] === "guided-airtable-award-tab") {
+    window.sodaJSONObj["page-before-exit"] = "guided-create-submission-metadata-tab";
+  }
+
+  if (!window.sodaJSONObj["last-version-of-soda-used"]) {
+    // This is the first time the user has used SODA since the "last-version-of-soda-used" key was added
+    window.sodaJSONObj["last-version-of-soda-used"] = "10.0.4";
+  }
+
+  // If the user started a dataset after version 10.0.4, skip CHANGES metadata pages
+  if (!window.sodaJSONObj["skipped-pages"].includes("guided-create-changes-metadata-tab")) {
+    if (window.sodaJSONObj["starting-point"]["type"] === "new") {
+      window.sodaJSONObj["skipped-pages"].push("guided-create-changes-metadata-tab");
+    }
+  }
+
+  // If the the last time the user worked on the dataset was before v11.0.0, skip the changes page unless
+  // the dataset has already been published.
+  if (window.sodaJSONObj["last-version-of-soda-used"] <= "11.0.0") {
+    if (window.sodaJSONObj["starting-point"]["type"] === "bf") {
+      const datasetsPennsieveID = window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+
+      // Skip/unSkip the changes metadata page based on publishing status
+      // (if the changes file already exists, then still show it)
+      const changesCheckRes = await checkIfChangesMetadataPageShouldBeShown(datasetsPennsieveID);
+      if (changesCheckRes.shouldShow === true) {
+        window.sodaJSONObj["dataset-metadata"]["CHANGES"] = changesCheckRes.changesMetadata;
+        guidedUnSkipPage("guided-create-changes-metadata-tab");
+      } else {
+        window.sodaJSONObj["dataset-metadata"]["CHANGES"] = "";
+        guidedSkipPage("guided-create-changes-metadata-tab");
+      }
+
+      // Delete the saved button config for the code metadata page (The flow was slightly updated)
+      // The user will have to reselect their option If they do not have a code-description file, otherwise
+      // the new prompt will be shown.
+      if (window.sodaJSONObj?.["button-config"]?.["dataset-contains-code-data"]) {
+        delete window.sodaJSONObj["button-config"]["dataset-contains-code-data"];
+      }
+    }
+  }
+
+  // No longer skip pennsieve log in tab (even when starting from Pennsieve)
+  if (window.sodaJSONObj["skipped-pages"].includes("guided-pennsieve-intro-tab")) {
+    window.sodaJSONObj["skipped-pages"] = window.sodaJSONObj["skipped-pages"].filter(
+      (page) => page !== "guided-pennsieve-intro-tab"
+    );
+  }
+
+  // No longer skip validation page for non-sparc datasts ("page should always be unskipped")
+  if (window.sodaJSONObj["skipped-pages"].includes("guided-dataset-validation-tab")) {
+    window.sodaJSONObj["skipped-pages"] = window.sodaJSONObj["skipped-pages"].filter(
+      (page) => page !== "guided-dataset-validation-tab"
+    );
+  }
+
+  //If the dataset was successfully uploaded, send the user to the share with curation team
+  if (window.sodaJSONObj["previous-guided-upload-dataset-name"]) {
+    return "guided-dataset-dissemination-tab";
+  }
+
+  // Change the award number variable from sparc-award to award-number
+  if (window.sodaJSONObj?.["dataset-metadata"]?.["shared-metadata"]?.["sparc-award"]) {
+    window.sodaJSONObj["dataset-metadata"]["shared-metadata"]["award-number"] =
+      window.sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
+  }
+  // If the consortium data standard is not defined, set it to an empty string
+  if (
+    !window.sodaJSONObj["dataset-metadata"]["submission-metadata"]?.["consortium-data-standard"]
+  ) {
+    window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] = "";
+  }
+  // If the funding consortium is not defined, set it to an empty string
+  if (!window.sodaJSONObj["dataset-metadata"]["submission-metadata"]?.["funding-consortium"]) {
+    window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] = "";
+  }
+
+  if (!window.sodaJSONObj["digital-metadata"]?.["license"]) {
+    window.sodaJSONObj["digital-metadata"]["license"] = "";
+  }
+
+  if (!window.sodaJSONObj["curation-mode"]) {
+    window.sodaJSONObj["cuartion-mode"] = "guided";
+  }
+
+  if (window.sodaJSONObj["saved-datset-structure-json-obj"]) {
+    window.sodaJSONObj["dataset-structure"] = window.sodaJSONObj["saved-datset-structure-json-obj"];
+    delete window.sodaJSONObj["saved-datset-structure-json-obj"];
+  }
+
+  // If no other conditions are met, return the page the user was last on
+  return window.sodaJSONObj["page-before-exit"];
+};
+
+//Loads UI when continue curation button is pressed
+window.guidedResumeProgress = async (datasetNameToResume) => {
+  let userResumingProgressIsAGuest = false;
+  let userResumingProgressIsAnEditor = false;
+
+  const loadingSwal = Swal.fire({
+    title: "Resuming where you last left off",
+    html: `
+      <div class="guided--loading-div">
+        <div class="lds-roller">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>
+    `,
+    width: 500,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    allowOutsideClick: false,
+    showConfirmButton: false,
+    showCancelButton: false,
+  });
+
+  // Wait for 2 seconds so that the loading icon can at least kind of be seen (This can be removed)
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+  try {
+    const datasetResumeJsonObj = await getProgressFileData(datasetNameToResume);
+
+    // Datasets successfully uploaded will have the "previous-guided-upload-dataset-name" key
+    const datasetHasAlreadyBeenSuccessfullyUploaded =
+      datasetResumeJsonObj["previous-guided-upload-dataset-name"];
+
+    // If the dataset had been previously successfully uploaded, check to make sure it exists on Pennsieve still.
+    if (datasetHasAlreadyBeenSuccessfullyUploaded) {
+      const previouslyUploadedDatasetId =
+        datasetResumeJsonObj["digital-metadata"]["pennsieve-dataset-id"];
+      const datasetToResumeExistsOnPennsieve = await checkIfDatasetExistsOnPennsieve(
+        previouslyUploadedDatasetId
+      );
+      if (!datasetToResumeExistsOnPennsieve) {
+        throw new Error(`This dataset no longer exists on Pennsieve`);
+      }
+    }
+
+    if (!datasetHasAlreadyBeenSuccessfullyUploaded) {
+      // If the dataset is being edited on Pensieve, check to make sure the folders and files are still the same.
+      if (datasetResumeJsonObj["starting-point"]?.["type"] === "bf") {
+        // Check to make sure the dataset is not locked
+        const datasetIsLocked = await api.isDatasetLocked(
+          window.defaultBfAccount,
+          datasetResumeJsonObj["digital-metadata"]["pennsieve-dataset-id"]
+        );
+        if (datasetIsLocked) {
+          throw new Error(`
+            This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
+            <br />
+            <br />
+            If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a  target="_blank" rel="noopener noreferrer" href="mailto:curation@sparc.science">curation@sparc.science.</a>
+          `);
+        }
+
+        if (Object.keys(datasetResumeJsonObj["previously-uploaded-data"]).length > 0) {
+          await Swal.fire({
+            icon: "info",
+            title: "Resuming a Pennsieve dataset upload that previously failed",
+            html: `
+            Please note that any changes made to your dataset on Pennsieve since your last dataset upload
+            was interrupted may be overwritten.
+          `,
+            width: 500,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            confirmButtonText: `I understand`,
+            focusConfirm: true,
+            allowOutsideClick: false,
+          });
+        } else {
+          // Check to make sure the dataset structure on Pennsieve is the same as when the user started editing this dataset
+          let filesFoldersResponse = await client.post(
+            `/organize_datasets/dataset_files_and_folders`,
+            {
+              sodajsonobject: datasetResumeJsonObj,
+            },
+            { timeout: 0 }
+          );
+          let data = filesFoldersResponse.data;
+          const currentPennsieveDatasetStructure = data["soda_object"]["dataset-structure"];
+
+          const intitiallyPulledDatasetStructure =
+            datasetResumeJsonObj["initially-pulled-dataset-structure"];
+
+          // check to make sure current and initially pulled dataset structures are the same
+          if (
+            JSON.stringify(currentPennsieveDatasetStructure) !==
+            JSON.stringify(intitiallyPulledDatasetStructure)
+          ) {
+            throw new Error(
+              `The folders and/or files on Pennsieve have changed since you last edited this dataset in SODA.
+              <br />
+              <br />
+              If you would like to update this dataset, please delete this progress file and start over.
+              `
+            );
+          }
+        }
+      }
+    }
+
+    window.sodaJSONObj = datasetResumeJsonObj;
+    attachGuidedMethodsToSodaJSONObj();
+
+    //patches the sodajsonobj if it was created in a previous version of guided mode
+    await patchPreviousGuidedModeVersions();
+
+    window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
+    window.subjectsTableData = window.sodaJSONObj["subjects-table-data"];
+    window.samplesTableData = window.sodaJSONObj["samples-table-data"];
+
+    // Save the skipped pages in a temp variable since guidedTransitionFromHome will remove them
+    const prevSessionSkikppedPages = [...window.sodaJSONObj["skipped-pages"]];
+
+    guidedTransitionFromHome();
+    // Reskip the pages from a previous session
+    for (const pageID of prevSessionSkikppedPages) {
+      guidedSkipPage(pageID);
+    }
+
+    // Skip this page incase it was not skipped in a previous session
+    guidedSkipPage("guided-select-starting-point-tab");
+
+    //Hide the sub-page navigation and show the main page navigation footer
+    //If the user traverses to a page that requires the sub-page navigation,
+    //the sub-page will be shown during window.openPage() function
+    hideSubNavAndShowMainNav(false);
+
+    // pageToReturnTo will be set to the page the user will return to
+    const pageToReturnTo = await guidedGetPageToReturnTo(window.sodaJSONObj);
+
+    await window.openPage(pageToReturnTo);
+
+    // Close the loading screen, the user should be on the page they left off on now
+    loadingSwal.close();
+  } catch (error) {
+    clientError(error);
+    loadingSwal.close();
+    await Swal.fire({
+      icon: "info",
+      title: "This dataset is not able to be resumed",
+      html: `${error.message}`,
+      width: 500,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: `I understand`,
+      focusConfirm: true,
+      allowOutsideClick: false,
+    });
+  }
+};
+
+//Add  spinner to element
+const guidedUploadStatusIcon = (elementID, status) => {
+  let statusElement = document.getElementById(`${elementID}`);
+  statusElement.innerHTML = ``;
+  let spinner = `
+    <div class="spinner-border" role="status" style="
+      height: 24px;
+      width: 24px;
+    "></div>`;
+
+  if (status === "loading") {
+    statusElement.innerHTML = spinner;
+  }
+  if (status === "success") {
+    lottie.loadAnimation({
+      container: statusElement,
+      animationData: successCheck,
+      renderer: "svg",
+      loop: false,
+      autoplay: true,
+    });
+  }
+  if (status === "error") {
+    lottie.loadAnimation({
+      container: statusElement,
+      animationData: errorMark,
+      renderer: "svg",
+      loop: false,
+      autoplay: true,
+    });
+  }
+  if (status === "info") {
+    lottie.loadAnimation({
+      container: statusElement,
+      animationData: infoMark,
+      renderer: "svg",
+      loop: false,
+      autoplay: true,
+    });
+  }
+};
+
+//dataset description (first page) functions
+const guidedCreateSodaJSONObj = () => {
+  window.sodaJSONObj = {};
+
+  window.sodaJSONObj["guided-options"] = {};
+  window.sodaJSONObj["cuartion-mode"] = "guided";
+  window.sodaJSONObj["bf-account-selected"] = {};
+  window.sodaJSONObj["dataset-structure"] = { files: {}, folders: {} };
+  window.sodaJSONObj["generate-dataset"] = {};
+  window.sodaJSONObj["generate-dataset"]["destination"] = "bf";
+  window.sodaJSONObj["guided-manifest-files"] = {};
+  window.sodaJSONObj["starting-point"] = {};
+  window.sodaJSONObj["dataset-metadata"] = {};
+  window.sodaJSONObj["dataset-metadata"]["shared-metadata"] = {};
+  window.sodaJSONObj["dataset-metadata"]["protocol-data"] = [];
+  window.sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"] = {};
+  window.sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"] = {};
+  window.sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["subjects"] = {};
+  window.sodaJSONObj["dataset-metadata"]["subject-metadata"] = {};
+  window.sodaJSONObj["dataset-metadata"]["sample-metadata"] = {};
+  window.sodaJSONObj["dataset-metadata"]["submission-metadata"] = {};
+  window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] = "";
+  window.sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] = "";
+  window.sodaJSONObj["dataset-metadata"]["description-metadata"] = {};
+  window.sodaJSONObj["dataset-metadata"]["code-metadata"] = {};
+  window.sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"] = [];
+  window.sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] = [];
+  window.sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = [];
+  window.sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"] = {};
+  window.sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"] = {};
+  window.sodaJSONObj["dataset-metadata"]["README"] = "";
+  window.sodaJSONObj["dataset-metadata"]["CHANGES"] = "";
+  window.sodaJSONObj["digital-metadata"] = {};
+  window.sodaJSONObj["previously-uploaded-data"] = {};
+  window.sodaJSONObj["digital-metadata"]["description"] = {};
+  window.sodaJSONObj["digital-metadata"]["pi-owner"] = {};
+  window.sodaJSONObj["digital-metadata"]["user-permissions"] = [];
+  window.sodaJSONObj["digital-metadata"]["team-permissions"] = [];
+  window.sodaJSONObj["digital-metadata"]["license"] = "";
+  window.sodaJSONObj["completed-tabs"] = [];
+  window.sodaJSONObj["skipped-pages"] = [];
+  window.sodaJSONObj["last-modified"] = "";
+  window.sodaJSONObj["button-config"] = {};
+  window.sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] = "false";
+  window.datasetStructureJSONObj = { folders: {}, files: {} };
+  window.sodaJSONObj["dataset-validated"] = "false";
+};
+const guidedHighLevelFolders = ["primary", "source", "derivative"];
+const nonGuidedHighLevelFolders = ["code", "protocol", "docs"];
+
+const guidedWarnBeforeDeletingEntity = async (entityType, entityName) => {
+  let warningMessage;
+  if (entityType === "pool") {
+    warningMessage = `Are you sure you want to delete the pool '${entityName}'? After deleting this pool, all subject folders will be moved directly into their high level folders.`;
+  }
+  if (entityType === "subject") {
+    warningMessage = `Are you sure you want to delete the subject '${entityName}'? ${entityName} has folders and files associated with it, and if you continue with the deletion, the folders and files will be deleted as well.`;
+  }
+  if (entityType === "sample") {
+    warningMessage = `Are you sure you want to delete the sample '${entityName}'? ${entityName} has folders and files associated with it, and if you continue with the deletion, the folders and files will be deleted as well.`;
+  }
+
+  const continueWithDeletion = await Swal.fire({
+    icon: "warning",
+    title: "Are you sure?",
+    html: warningMessage,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    showCancelButton: true,
+    focusCancel: true,
+    confirmButtonText: `Delete ${entityType}`,
+    cancelButtonText: "Cancel deletion",
+    reverseButtons: window.reverseSwalButtons,
+  });
+
+  return continueWithDeletion.isConfirmed;
+};
+
+const attachGuidedMethodsToSodaJSONObj = () => {
+  window.sodaJSONObj.addPool = function (poolName, throwErrorIfPoolExists = true) {
+    if (this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName]) {
+      if (throwErrorIfPoolExists) {
+        throw new Error("Pool names must be unique.");
+      } else {
+        return;
+      }
+    }
+
+    this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName] = {};
+  };
+  window.sodaJSONObj.addSubject = function (subjectName, throwErrorIfSubjectExists = true) {
+    //check if subject with the same name already exists
+    if (
+      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][subjectName] ||
+      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName]
+    ) {
+      if (throwErrorIfSubjectExists) {
+        throw new Error("Subject names must be unique.");
+      } else {
+        return;
+      }
+    }
+    this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName] = {};
+  };
+  window.sodaJSONObj.addSampleToSubject = function (
+    sampleName,
+    subjectPoolName,
+    subjectName,
+    throwErrorIfSubjectAlreadyHasSample = true
+  ) {
+    const [samplesInPools, samplesOutsidePools] = window.sodaJSONObj.getAllSamplesFromSubjects();
+    //Combine sample data from samples in and out of pools
+    let samples = [...samplesInPools, ...samplesOutsidePools];
+
+    //Check samples already added and throw an error if a sample with the sample name already exists.
+    for (const sample of samples) {
+      if (sample.sampleName === sampleName) {
+        if (throwErrorIfSubjectAlreadyHasSample) {
+          throw new Error(
+            `Sample names must be unique. \n${sampleName} already exists in ${sample.subjectName}`
+          );
+        }
+      }
+    }
+
+    if (subjectPoolName) {
+      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][subjectPoolName][
+        subjectName
+      ][sampleName] = {};
+    } else {
+      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName][
+        sampleName
+      ] = {};
+    }
+  };
+
+  window.sodaJSONObj.renamePool = function (prevPoolName, newPoolName) {
+    //check if name already exists
+    if (prevPoolName != newPoolName) {
+      if (this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][newPoolName]) {
+        throw new Error("Pool names must be unique.");
+      }
+
+      //Rename the pool folder in the window.datasetStructureJSONObj
+      for (const highLevelFolder of guidedHighLevelFolders) {
+        const prevNamePoolInHighLevelFolder =
+          window.datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+            prevPoolName
+          ];
+
+        if (prevNamePoolInHighLevelFolder) {
+          if (folderImportedFromPennsieve(prevNamePoolInHighLevelFolder)) {
+            if (!prevNamePoolInHighLevelFolder["action"].includes["renamed"]) {
+              prevNamePoolInHighLevelFolder["action"].push("renamed");
+            }
+          }
+
+          window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][newPoolName] =
+            prevNamePoolInHighLevelFolder;
+          delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+            prevPoolName
+          ];
+        }
+      }
+
+      //Rename the pool in the pool-subject-sample-structure
+      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][newPoolName] =
+        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][prevPoolName];
+      delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][prevPoolName];
+
+      //Rename the pool in the window.subjectsTableData
+      for (const subjectDataArray of window.subjectsTableData.slice(1)) {
+        if (subjectDataArray[1] === prevPoolName) {
+          subjectDataArray[1] = newPoolName;
+        }
+      }
+
+      //Rename the pool in the window.samplesTableData
+      for (const sampleDataArray of window.samplesTableData.slice(1)) {
+        if (sampleDataArray[3] === prevPoolName) {
+          sampleDataArray[3] = newPoolName;
+        }
+      }
+    }
+  };
+  window.sodaJSONObj.renameSubject = function (prevSubjectName, newSubjectName) {
+    if (prevSubjectName === newSubjectName) {
+      return;
+    }
+
+    const [subjectsInPools, subjectsOutsidePools] = this.getAllSubjects();
+    const subjects = [...subjectsInPools, ...subjectsOutsidePools];
+
+    //Throw an error if the subject name that the user is changing the old subject name
+    //to already exists
+    if (subjects.filter((subject) => subject.subjectName === newSubjectName).length > 0) {
+      throw new Error("Subject names must be unique.");
+    }
+
+    for (const subject of subjects) {
+      if (subject.subjectName === prevSubjectName) {
+        //if the subject is in a pool
+        if (subject.poolName) {
+          //Rename the subjects folders in the datasetStructJSONObj
+          for (const highLevelFolder of guidedHighLevelFolders) {
+            const prevNameSubjectFolderInHighLevelFolder =
+              window.datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+                subject.poolName
+              ]?.["folders"]?.[prevSubjectName];
+
+            if (prevNameSubjectFolderInHighLevelFolder) {
+              if (folderImportedFromPennsieve(prevNameSubjectFolderInHighLevelFolder)) {
+                if (!prevNameSubjectFolderInHighLevelFolder["action"].includes["renamed"]) {
+                  prevNameSubjectFolderInHighLevelFolder["action"].push("renamed");
+                }
+              }
+              window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                subject.poolName
+              ]["folders"][newSubjectName] = prevNameSubjectFolderInHighLevelFolder;
+
+              delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                subject.poolName
+              ]["folders"][prevSubjectName];
+            }
+          }
+          //Update the pool-sub-sam structure to reflect the subject name change
+          this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][subject.poolName][
+            newSubjectName
+          ] =
+            this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][subject.poolName][
+              prevSubjectName
+            ];
+          delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+            subject.poolName
+          ][prevSubjectName];
+        } else {
+          //Rename the subjects folders in the datasetStructeJSONObj
+          for (const highLevelFolder of guidedHighLevelFolders) {
+            const prevNameSubjectFolderInHighLevelFolder =
+              window.datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+                prevSubjectName
+              ];
+
+            if (prevNameSubjectFolderInHighLevelFolder) {
+              if (folderImportedFromPennsieve(prevNameSubjectFolderInHighLevelFolder)) {
+                if (!prevNameSubjectFolderInHighLevelFolder["action"].includes["renamed"]) {
+                  prevNameSubjectFolderInHighLevelFolder["action"].push("renamed");
+                }
+
+                window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                  newSubjectName
+                ] = prevNameSubjectFolderInHighLevelFolder;
+
+                delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                  prevSubjectName
+                ];
+              }
+            }
+          }
+
+          //Update the pool-sub-sam structure to reflect the subject name change
+          this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][newSubjectName] =
+            this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][prevSubjectName];
+          delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+            prevSubjectName
+          ];
+        }
+        //Update the subjects name in the subjects metadata if it exists
+        for (let i = 1; i < window.subjectsTableData.length; i++) {
+          if (window.subjectsTableData[i][0] === prevSubjectName) {
+            window.subjectsTableData[i][0] = newSubjectName;
+          }
+        }
+
+        //Update the subjects name for all samples the subject had
+        for (let i = 1; i < window.samplesTableData.length; i++) {
+          if (window.samplesTableData[i][0] === prevSubjectName) {
+            window.samplesTableData[i][0] = newSubjectName;
+          }
+        }
+      }
+    }
+  };
+  window.sodaJSONObj.renameSample = function (prevSampleName, newSampleName) {
+    const [samplesInPools, samplesOutsidePools] = window.sodaJSONObj.getAllSamplesFromSubjects();
+    //Combine sample data from samples in and out of pools
+    let samples = [...samplesInPools, ...samplesOutsidePools];
+
+    if (prevSampleName != newSampleName) {
+      //Check samples already added and throw an error if a sample with the sample name already exists.
+      for (const sample of samples) {
+        if (sample.sampleName === newSampleName) {
+          throw new Error(
+            `Sample names must be unique. \n${newSampleName} already exists in ${sample.subjectName}`
+          );
+        }
+      }
+
+      //find the sample and rename it
+      for (const sample of samples) {
+        if (sample.sampleName === prevSampleName) {
+          if (sample.poolName) {
+            //Rename the samples folders in the datasetStructeJSONObj
+            for (const highLevelFolder of guidedHighLevelFolders) {
+              const prevNameSampleFolderInHighLevelFolder =
+                window.datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+                  sample.poolName
+                ]?.["folders"]?.[sample.subjectName]?.["folders"]?.[prevSampleName];
+
+              if (prevNameSampleFolderInHighLevelFolder) {
+                if (folderImportedFromPennsieve(prevNameSampleFolderInHighLevelFolder)) {
+                  if (!prevNameSampleFolderInHighLevelFolder["action"].includes["renamed"]) {
+                    prevNameSampleFolderInHighLevelFolder["action"].push("renamed");
+                  }
+                }
+
+                window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                  sample.poolName
+                ]["folders"][sample.subjectName]["folders"][newSampleName] =
+                  prevNameSampleFolderInHighLevelFolder;
+                delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                  sample.poolName
+                ]["folders"][sample.subjectName]["folders"][prevSampleName];
+              }
+            }
+
+            //Update the pool-sub-sam structure to reflect the sample name change
+            this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][sample.poolName][
+              sample.subjectName
+            ][newSampleName] =
+              this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][sample.poolName][
+                sample.subjectName
+              ][prevSampleName];
+            delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+              sample.poolName
+            ][sample.subjectName][prevSampleName];
+          } else {
+            //Rename the samples folders in the datasetStructeJSONObj
+            for (const highLevelFolder of guidedHighLevelFolders) {
+              const prevNameSampleFolderInHighLevelFolder =
+                window.datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+                  sample.subjectName
+                ]?.["folders"]?.[prevSampleName];
+
+              if (prevNameSampleFolderInHighLevelFolder) {
+                if (folderImportedFromPennsieve(prevNameSampleFolderInHighLevelFolder)) {
+                  if (!prevNameSampleFolderInHighLevelFolder["action"].includes["renamed"]) {
+                    prevNameSampleFolderInHighLevelFolder["action"].push("renamed");
+                  }
+                }
+
+                window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                  sample.subjectName
+                ]["folders"][newSampleName] = prevNameSampleFolderInHighLevelFolder;
+                delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                  sample.subjectName
+                ]["folders"][prevSampleName];
+              }
+            }
+
+            this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+              sample.subjectName
+            ][newSampleName] =
+              this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+                sample.subjectName
+              ][prevSampleName];
+            delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+              sample.subjectName
+            ][prevSampleName];
+          }
+
+          //Update the samples name in the samples metadata if it exists
+          for (let i = 1; i < window.samplesTableData.length; i++) {
+            if (window.samplesTableData[i][1] === prevSampleName) {
+              window.samplesTableData[i][1] = newSampleName;
+            }
+          }
+        }
+      }
+    }
+  };
+  window.sodaJSONObj.deletePool = function (poolName) {
+    //empty the subjects in the pool back into subjects
+    let pool = this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName];
+
+    //Loop through the subjects and remove their folders from the pool in the dataset structure
+    //this handles moving the subject folders back to the root of the high level folder
+    //and removes the pool from the subject/sample metadata arrays
+    for (let subject in pool) {
+      window.sodaJSONObj.moveSubjectOutOfPool(subject, poolName);
+    }
+
+    for (const highLevelFolder of guidedHighLevelFolders) {
+      const poolInHighLevelFolder =
+        window.datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[poolName];
+
+      if (poolInHighLevelFolder) {
+        if (folderImportedFromPennsieve(poolInHighLevelFolder)) {
+          guidedModifyPennsieveFolder(poolInHighLevelFolder, "delete");
+        } else {
+          delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName];
+        }
+      }
+    }
+
+    //delete the pool after copying the subjects back into subjects
+    delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName];
+  };
+  window.sodaJSONObj.deleteSubject = async function (subjectName) {
+    const [subjectsInPools, subjectsOutsidePools] = this.getAllSubjects();
+    const subjects = [...subjectsInPools, ...subjectsOutsidePools];
+    for (const subject of subjects) {
+      // Variable to track if the user has been warned about deleting a subject with folders
+      let warningBeforeDeletingSubjectWithFoldersSwalHasBeenShown = false;
+
+      if (subject.subjectName === subjectName) {
+        //if the subject is in a pool
+        if (subject.poolName) {
+          //Delete the subjects folders in the datasetStructeJSONObj
+          for (const highLevelFolder of guidedHighLevelFolders) {
+            const subjectFolderInHighLevelFolder =
+              window.datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+                subject.poolName
+              ]?.["folders"]?.[subjectName];
+
+            if (subjectFolderInHighLevelFolder) {
+              if (!warningBeforeDeletingSubjectWithFoldersSwalHasBeenShown) {
+                // Warn the user if they are deleting a subject with folders
+                // If they cancel the deletion, we return and the subject or its folders are not deleted
+                const continueWithSubjectDeletion = await guidedWarnBeforeDeletingEntity(
+                  "subject",
+                  subjectName
+                );
+                if (continueWithSubjectDeletion) {
+                  warningBeforeDeletingSubjectWithFoldersSwalHasBeenShown = true;
+                } else {
+                  return;
+                }
+              }
+
+              if (folderImportedFromPennsieve(subjectFolderInHighLevelFolder)) {
+                guidedModifyPennsieveFolder(subjectFolderInHighLevelFolder, "delete");
+              } else {
+                delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                  subject.poolName
+                ]["folders"][subjectName];
+              }
+            }
+          }
+
+          delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+            subject.poolName
+          ][subjectName];
+        } else {
+          //if the subject is not in a pool
+          //Delete the subjects folders in the datasetStructeJSONObj
+          for (const highLevelFolder of guidedHighLevelFolders) {
+            const subjectFolderInHighLevelFolder =
+              window.datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+                subjectName
+              ];
+
+            if (subjectFolderInHighLevelFolder) {
+              if (!warningBeforeDeletingSubjectWithFoldersSwalHasBeenShown) {
+                // Warn the user if they are deleting a subject with folders
+                // If they cancel the deletion, we return and the subject or its folders are not deleted
+                const continueWithSubjectDeletion = await guidedWarnBeforeDeletingEntity(
+                  "subject",
+                  subjectName
+                );
+                if (continueWithSubjectDeletion) {
+                  warningBeforeDeletingSubjectWithFoldersSwalHasBeenShown = true;
+                } else {
+                  return;
+                }
+              }
+
+              if (folderImportedFromPennsieve(subjectFolderInHighLevelFolder)) {
+                guidedModifyPennsieveFolder(subjectFolderInHighLevelFolder, "delete");
+              } else {
+                delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                  subjectName
+                ];
+              }
+            }
+          }
+          delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName];
+        }
+        // delete the subject's samples
+        for (const sample of subject.samples) {
+          await window.sodaJSONObj.deleteSample(sample.sampleName, false);
+        }
+      }
+    }
+    for (let i = 1; i < window.subjectsTableData.length; i++) {
+      if (window.subjectsTableData[i][0] === subjectName) {
+        window.subjectsTableData.splice(i, 1);
+      }
+    }
+  };
+  window.sodaJSONObj.deleteSample = async function (sampleName, showWarningIfSampleFoldersExist) {
+    const [samplesInPools, samplesOutsidePools] = window.sodaJSONObj.getAllSamplesFromSubjects();
+    //Combine sample data from samples in and out of pools
+    let samples = [...samplesInPools, ...samplesOutsidePools];
+
+    for (const sample of samples) {
+      // Variable to track if the user has been warned about deleting a subject with folders
+      let warningBeforeDeletingSampleWithFoldersSwalHasBeenShown = false;
+
+      if (sample.sampleName === sampleName) {
+        if (sample.poolName) {
+          //Delete the samples folder in the window.datasetStructureJSONObj
+          for (const highLevelFolder of guidedHighLevelFolders) {
+            const sampleFolderInHighLevelFolder =
+              window.datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+                sample.poolName
+              ]?.["folders"]?.[sample.subjectName]?.["folders"]?.[sampleName];
+
+            if (sampleFolderInHighLevelFolder) {
+              if (!warningBeforeDeletingSampleWithFoldersSwalHasBeenShown) {
+                // Warn the user if they are deleting a sample with folders
+                // If they cancel the deletion, we return and the sample or its folders are not deleted
+                const continueWithSampleDeletion = await guidedWarnBeforeDeletingEntity(
+                  "sample",
+                  sampleName
+                );
+                if (continueWithSampleDeletion) {
+                  warningBeforeDeletingSampleWithFoldersSwalHasBeenShown = true;
+                } else {
+                  return;
+                }
+              }
+
+              if (folderImportedFromPennsieve(sampleFolderInHighLevelFolder)) {
+                guidedModifyPennsieveFolder(sampleFolderInHighLevelFolder, "delete");
+              } else {
+                delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                  sample.poolName
+                ]["folders"][sample.subjectName]["folders"][sampleName];
+              }
+            }
+          }
+
+          // Remove the sample from the guided structure
+          delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+            sample.poolName
+          ][sample.subjectName][sampleName];
+        } else {
+          //Delete the samples folder in the window.datasetStructureJSONObj
+          for (const highLevelFolder of guidedHighLevelFolders) {
+            const sampleFolderInHighLevelFolder =
+              window.datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+                sample.subjectName
+              ]?.["folders"]?.[sampleName];
+
+            if (sampleFolderInHighLevelFolder) {
+              if (!warningBeforeDeletingSampleWithFoldersSwalHasBeenShown) {
+                // Warn the user if they are deleting a sample with folders
+                // If they cancel the deletion, we return and the sample or its folders are not deleted
+                const continueWithSampleDeletion = await guidedWarnBeforeDeletingEntity(
+                  "sample",
+                  sampleName
+                );
+                if (continueWithSampleDeletion) {
+                  warningBeforeDeletingSampleWithFoldersSwalHasBeenShown = true;
+                } else {
+                  return;
+                }
+              }
+
+              if (folderImportedFromPennsieve(sampleFolderInHighLevelFolder)) {
+                guidedModifyPennsieveFolder(sampleFolderInHighLevelFolder, "delete");
+              } else {
+                delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                  sample.subjectName
+                ]["folders"][sampleName];
+              }
+            }
+          }
+
+          // Remove the sample from the guided structure
+          delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+            sample.subjectName
+          ][sampleName];
+        }
+      }
+    }
+
+    // Remove the sample from the samples metadata
+    for (let i = 1; i < window.samplesTableData.length; i++) {
+      if (window.samplesTableData[i][1] === sampleName) {
+        window.samplesTableData.splice(i, 1);
+      }
+    }
+  };
+
+  window.sodaJSONObj.moveSubjectIntoPool = function (subjectName, poolName) {
+    //Move the subjects folders in the datasetStructeJSONObj
+    for (const highLevelFolder of guidedHighLevelFolders) {
+      const subjectFolderOutsidePool =
+        window.datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[subjectName];
+
+      if (subjectFolderOutsidePool) {
+        // If the target folder doesn't exist, create it
+        if (!window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]) {
+          window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName] =
+            newEmptyFolderObj();
+        }
+
+        if (folderImportedFromPennsieve(subjectFolderOutsidePool)) {
+          guidedMovePennsieveFolder(
+            subjectName,
+            window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName],
+            window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]
+          );
+        } else {
+          window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName][
+            "folders"
+          ][subjectName] = subjectFolderOutsidePool;
+        }
+        // Delete the subject folder outside the pool
+        delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName];
+      }
+    }
+
+    //Add the pool name to the window.subjectsTableData if if an entry exists
+    for (const subjectDataArray of window.subjectsTableData.slice(1)) {
+      if (subjectDataArray[0] === subjectName) {
+        subjectDataArray[1] = poolName;
+      }
+    }
+
+    this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName][subjectName] =
+      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName];
+    delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName];
+  };
+  window.sodaJSONObj.moveSubjectOutOfPool = function (subjectName, poolName) {
+    //Copy the subject folders from the pool into the root of the high level folder
+    for (const highLevelFolder of guidedHighLevelFolders) {
+      const subjectFolderInPoolFolder =
+        window.datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
+          "folders"
+        ]?.[subjectName];
+      if (subjectFolderInPoolFolder) {
+        if (folderImportedFromPennsieve(subjectFolderInPoolFolder)) {
+          guidedMovePennsieveFolder(
+            subjectName,
+            window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName][
+              "folders"
+            ][subjectName],
+            window.datasetStructureJSONObj["folders"][highLevelFolder]
+          );
+        } else {
+          window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName] =
+            subjectFolderInPoolFolder;
+        }
+        delete window.datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName][
+          "folders"
+        ][subjectName];
+      }
+    }
+
+    //Remove the pool from the subject's entry in the window.subjectsTableData
+    for (let i = 1; i < window.subjectsTableData.length; i++) {
+      if (window.subjectsTableData[i][0] === subjectName) {
+        window.subjectsTableData[i][1] = "";
+      }
+    }
+
+    //Remove the pool from the samples that belong to the subject
+    for (let i = 1; i < window.samplesTableData.length; i++) {
+      if (window.samplesTableData[i][0] === subjectName) {
+        window.samplesTableData[i][3] = "";
+      }
+    }
+
+    //Remove the subject from the pool in the guided structures
+    this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName] =
+      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName][subjectName];
+    delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName][
+      subjectName
+    ];
+  };
+  window.sodaJSONObj.getPools = function () {
+    return this["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
+  };
+  window.sodaJSONObj.getPoolSubjects = function (poolName) {
+    return Object.keys(
+      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName]
+    );
+  };
+  window.sodaJSONObj.getAllSamplesFromSubjects = function () {
+    let samplesInPools = [];
+    let samplesOutsidePools = [];
+
+    //get all the samples in subjects in pools
+    for (const [poolName, poolData] of Object.entries(
+      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"]
+    )) {
+      for (const [subjectName, subjectData] of Object.entries(poolData)) {
+        for (const sampleName of Object.keys(subjectData)) {
+          samplesInPools.push({
+            sampleName: sampleName,
+            subjectName: subjectName,
+            poolName: poolName,
+          });
+        }
+      }
+    }
+
+    //get all the samples in subjects not in pools
+    for (const [subjectName, subjectData] of Object.entries(
+      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
+    )) {
+      for (const sampleName of Object.keys(subjectData)) {
+        samplesOutsidePools.push({
+          sampleName: sampleName,
+          subjectName: subjectName,
+        });
+      }
+    }
+    return [samplesInPools, samplesOutsidePools];
+  };
+  window.sodaJSONObj.getAllSubjects = function () {
+    let subjectsInPools = [];
+    let subjectsOutsidePools = [];
+
+    for (const [poolName, pool] of Object.entries(
+      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"]
+    )) {
+      for (const [subjectName, subjectData] of Object.entries(pool)) {
+        subjectsInPools.push({
+          subjectName: subjectName,
+          poolName: poolName,
+          samples: Object.keys(subjectData),
+        });
+      }
+    }
+
+    for (const [subjectName, subjectData] of Object.entries(
+      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
+    )) {
+      subjectsOutsidePools.push({
+        subjectName: subjectName,
+        samples: Object.keys(subjectData),
+      });
+    }
+    return [subjectsInPools, subjectsOutsidePools];
+  };
+  window.sodaJSONObj.getSubjectsOutsidePools = function () {
+    let subjectsNotInPools = Object.keys(
+      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
+    );
+    return subjectsNotInPools;
+  };
+  window.sodaJSONObj.getSubjectsInPools = function () {
+    return this["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
+  };
+};
+
+const updateFolderStructureUI = (folderPath) => {
+  //If the pageDataObj has header and contents, set element text and hide
+  //If not, remove the elements from the screen
+  const fileExplorer = document.getElementById("guided-file-explorer-elements");
+
+  fileExplorer.classList.remove("file-explorer-transition");
+
+  $("#guided-input-global-path").val(`dataset_root/${folderPath}`);
+  window.organizeDSglobalPath = $("#guided-input-global-path")[0];
+  var filtered = window.getGlobalPath(window.organizeDSglobalPath);
+  window.organizeDSglobalPath.value = filtered.slice(0, filtered.length).join("/") + "/";
+
+  var myPath = window.datasetStructureJSONObj;
+  for (var item of filtered.slice(1, filtered.length)) {
+    myPath = myPath["folders"][item];
+  }
+  // construct UI with files and folders
+  //var appendString = window.loadFileFolder(myPath);
+
+  /// empty the div
+
+  // reconstruct div with new elements
+
+  //where folder section items will be created
+  window.listItems(myPath, "#items", 500, true);
+  window.getInFolder(
+    ".single-item",
+    "#items",
+    window.organizeDSglobalPath,
+    window.datasetStructureJSONObj
+  );
+};
+
+const getGuidedAdditionalLinks = () => {
+  return window.sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"].map(
+    (link) => link.link
+  );
+};
+//Description metadata functions
 
 window.deleteAdditionalLink = (linkName) => {
   const additionalLinks = window.sodaJSONObj["dataset_additional_links"];
@@ -3389,6 +4674,310 @@ const showCorrectSpreadsheetInstructionSection = (datasetEntities) => {
       .classList.remove("hidden");
   }
 };
+
+const handleMultipleSubSectionDisplay = async (controlledSectionID) => {
+  const controlledElementContainer = document.getElementById(controlledSectionID);
+  // Hide the children of the controlled element
+  // (There should be logic below that shows the correct child)
+  const controlledElementChildren = controlledElementContainer.querySelectorAll(".sub-section");
+  controlledElementChildren.forEach((child) => {
+    //console log the child id
+    child.classList.add("hidden");
+  });
+
+  if (controlledSectionID === "guided-section-dataset-type") {
+    const previouslySavedDatasetType = window.sodaJSONObj["saved-dataset-type"];
+
+    const buttonDatasetContainsSubjects = document.getElementById(
+      "guided-button-dataset-contains-subjects"
+    );
+    const buttonDatasetDoesNotContainSubjects = document.getElementById(
+      "guided-button-dataset-does-not-contain-subjects"
+    );
+    const buttonDatasetContainsCode = document.getElementById(
+      "guided-button-dataset-contains-code"
+    );
+    const buttonDatasetDoesNotContainCode = document.getElementById(
+      "guided-button-dataset-does-not-contain-code"
+    );
+
+    // If neither button is selected, return
+    if (
+      (!buttonDatasetContainsSubjects.classList.contains("selected") &&
+        !buttonDatasetDoesNotContainSubjects.classList.contains("selected")) ||
+      (!buttonDatasetContainsCode.classList.contains("selected") &&
+        !buttonDatasetDoesNotContainCode.classList.contains("selected"))
+    ) {
+      return;
+    }
+
+    let datasetHasSubjects = buttonDatasetContainsSubjects.classList.contains("selected");
+    let datasetHasCode = buttonDatasetContainsCode.classList.contains("selected");
+
+    window.sodaJSONObj["dataset-contains-subjects"] = datasetHasSubjects;
+    window.sodaJSONObj["dataset-contains-code"] = datasetHasCode;
+
+    let interpredDatasetType;
+
+    if (datasetHasCode && datasetHasSubjects) {
+      interpredDatasetType = "requires-manual-selection";
+    } else if (datasetHasCode && !datasetHasSubjects) {
+      interpredDatasetType = "computational";
+    } else if (!datasetHasCode && datasetHasSubjects) {
+      interpredDatasetType = "experimental";
+    } else {
+      interpredDatasetType = "selection-does-not-make-sense";
+    }
+
+    // set the dataset-type in the window.sodaJSONObj to be used by the page exit handler
+    window.sodaJSONObj["dataset-type"] = interpredDatasetType;
+
+    // If the determined dataset type is not computational or experimental, reset the buttons where the user selects it manually
+    if (window.sodaJSONObj["dataset-type"] === "requires-manual-selection") {
+      if (window.sodaJSONObj["button-config"]["dataset-type"]) {
+        delete window.sodaJSONObj["button-config"]["dataset-type"];
+      }
+    }
+    resetGuidedRadioButtons("guided-sub-section-manual-dataset-type-selection");
+
+    if (interpredDatasetType === "selection-does-not-make-sense") {
+      document.getElementById("guided-sub-section-configuration-error").classList.remove("hidden");
+    }
+    if (interpredDatasetType === "requires-manual-selection") {
+      if (
+        previouslySavedDatasetType === "computational" ||
+        previouslySavedDatasetType === "experimental"
+      ) {
+        document.getElementById(`guided-button-dataset-type-${previouslySavedDatasetType}`).click();
+      } else {
+        // If the user is updating a dataset from Pennsieve, try to get the dataset type from the dataset description file
+        // on Pennsieve and click the appropriate button
+        if (window.sodaJSONObj?.["starting-point"]?.["type"] === "bf") {
+          const pennsieveImportLoadingDiv = document.getElementById(
+            "guided-sub-section-loading-dataset-type-import"
+          );
+          // Show the loading div while the dataset type is attempted to be pulled from Pennsieve
+          pennsieveImportLoadingDiv.classList.remove("hidden");
+          try {
+            const descriptionMetadaRes = await client.get(
+              `/prepare_metadata/import_metadata_file`,
+              {
+                params: {
+                  selected_account: window.defaultBfAccount,
+                  selected_dataset:
+                    window.sodaJSONObj["bf-dataset-selected"]["pennsieve-dataset-id"],
+                  file_type: "dataset_description.xlsx",
+                },
+              }
+            );
+            const descriptionMetdataData = descriptionMetadaRes.data["Basic information"];
+            if (descriptionMetdataData[0][0] === "Type") {
+              const studyType = descriptionMetdataData[0][1];
+              if (studyType === "computational" || studyType === "experimental") {
+                document.getElementById(`guided-button-dataset-type-${studyType}`).click();
+              }
+            }
+          } catch (error) {
+            // Case where dataset type was not able to be found from Pennsieve so user must manually select
+            console.log(error);
+            clientError(error);
+          }
+          // Hide the loading div after the dataset type has been pulled from Pennsieve
+          pennsieveImportLoadingDiv.classList.add("hidden");
+        }
+      }
+      document
+        .getElementById("guided-sub-section-manual-dataset-type-selection")
+        .classList.remove("hidden");
+    }
+    if (interpredDatasetType === "computational") {
+      document
+        .getElementById("guided-sub-section-computational-confirmation")
+        .classList.remove("hidden");
+    }
+    if (interpredDatasetType === "experimental") {
+      document
+        .getElementById("guided-sub-section-experimental-confirmation")
+        .classList.remove("hidden");
+    }
+  }
+
+  if (controlledSectionID === "guided-section-spreadsheet-import") {
+    const datasetHasPools = document
+      .getElementById("guided-button-spreadsheet-subjects-are-pooled")
+      .classList.contains("selected");
+    const datasetDoesNotHavePools = document
+      .getElementById("guided-button-spreadsheet-subjects-are-not-pooled")
+      .classList.contains("selected");
+    if (!datasetHasPools && !datasetDoesNotHavePools) {
+      return;
+    }
+
+    const datasetHasSamples = document
+      .getElementById("guided-button-spreadsheet-subjects-have-samples")
+      .classList.contains("selected");
+    const datasetDoesNotHaveSamples = document
+      .getElementById("guided-button-spreadsheet-subjects-do-not-have-samples")
+      .classList.contains("selected");
+    if (!datasetHasSamples && !datasetDoesNotHaveSamples) {
+      return;
+    }
+
+    const datasetEntities = ["subjects"];
+    if (datasetHasPools) {
+      datasetEntities.push("pools");
+    }
+    if (datasetHasSamples) {
+      datasetEntities.push("samples");
+    }
+
+    showCorrectSpreadsheetInstructionSection(datasetEntities);
+
+    const textFormattedEntities = convertArrayToCommaSeparatedString(datasetEntities);
+
+    // If a spreadsheet has already been generated, notify the user that they will need to
+    // re-fill out the spreadsheet since the headers will be different.
+    if (window.sodaJSONObj["dataset-structure-spreadsheet-path"]) {
+      if (
+        window.sodaJSONObj["dataset-structure-entities"] &&
+        window.sodaJSONObj["dataset-structure-entities"] != textFormattedEntities
+      ) {
+        // Delete the spreadsheet path since it will need to be re-generated
+        delete window.sodaJSONObj["dataset-structure-spreadsheet-path"];
+        // Reset the UI to show that the dataset structure spreadsheet has not been generated
+        setUiBasedOnSavedDatasetStructurePath(false);
+      }
+    }
+    // Store the dataset entities in the sodaJSONObj to track if a new spreadsheet needs to be generated
+    // when the user changes the dataset structure
+    window.sodaJSONObj["dataset-structure-entities"] = textFormattedEntities;
+
+    const spansToInsertTextInto = document.querySelectorAll(
+      ".sub-pool-sample-structure-description-text"
+    );
+    spansToInsertTextInto.forEach((span) => {
+      span.innerHTML = textFormattedEntities;
+    });
+
+    // If the user has already added subjects but has not chosen to enter them manually
+    // (case for updating a dataset from Pennsieve or old progress files),
+    // Select the option for them
+    if (!sodaJSONObj["button-config"]["subject-addition-method"]) {
+      if (getExistingSubjectNames().length > 0) {
+        document.getElementById("guided-button-add-subject-structure-manually").click();
+      }
+    }
+  }
+};
+
+$(".guided--radio-button").on("click", async function () {
+  const selectedButton = $(this);
+  const notSelectedButton = $(this).siblings(".guided--radio-button");
+
+  if (selectedButton.data("warn-before-click") === true) {
+    const buttonId = selectedButton.attr("id");
+    if (buttonId === "guided-button-dataset-does-not-contain-code") {
+      const dataInCodeFolder = window.datasetStructureJSONObj?.["folders"]?.["code"];
+      if (dataInCodeFolder) {
+        if (!folderIsEmpty(dataInCodeFolder)) {
+          const folderIsFromPennsieve = folderImportedFromPennsieve(dataInCodeFolder);
+          let warningText;
+          if (folderIsFromPennsieve) {
+            warningText = `You have code in your code folder that was imported from Pennsieve.
+                <br><br>
+                If you select "delete my code folder" below, your code folder will be deleted when you update your dataset
+                on the last step of the guided process.`;
+          } else {
+            warningText = `
+                You previously added code to your code folder.
+                <br><br>
+                If you select "delete my code folder" below, the code in your code folder will be permanently deleted.
+              `;
+          }
+
+          const { value: confirmCodeFolderDeletion } = await Swal.fire({
+            icon: "warning",
+            title: "Are you sure?",
+            html: warningText,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            confirmButtonText: `Delete my code folder`,
+            showCancelButton: true,
+            cancelButtonText: "Cancel",
+            focusConfirm: true,
+            allowOutsideClick: false,
+          });
+          if (confirmCodeFolderDeletion) {
+            if (folderIsFromPennsieve) {
+              guidedModifyPennsieveFolder(dataInCodeFolder, "delete");
+            } else {
+              delete window.datasetStructureJSONObj["folders"]["code"];
+            }
+          } else {
+            // return and do nothing
+            return;
+          }
+        }
+      }
+    }
+  }
+
+  notSelectedButton.removeClass("selected");
+  notSelectedButton.addClass("not-selected basic");
+
+  //Hide all child containers of non-selected buttons
+  notSelectedButton.each(function () {
+    if ($(this).data("next-element")) {
+      window.nextQuestionID = $(this).data("next-element");
+      $(`#${window.nextQuestionID}`).addClass("hidden");
+    }
+  });
+
+  //If button has prevent-radio-handler data attribute, other buttons, will be deselected
+  //but all other radio button functions will be halted
+  if (selectedButton.data("prevent-radio-handler") === true) {
+    return;
+  }
+
+  //Store the button's config value in window.sodaJSONObj
+  if (selectedButton.data("button-config-value")) {
+    let buttonConfigValue = selectedButton.data("button-config-value");
+    let buttonConfigValueState = selectedButton.data("button-config-value-state");
+    window.sodaJSONObj["button-config"][buttonConfigValue] = buttonConfigValueState;
+  }
+
+  selectedButton.removeClass("not-selected basic");
+  selectedButton.addClass("selected");
+
+  //Display and scroll to selected element container if data-next-element exists
+  if (selectedButton.data("next-element")) {
+    window.nextQuestionID = selectedButton.data("next-element");
+    let nextQuestionElement = document.getElementById(window.nextQuestionID);
+    nextQuestionElement.classList.remove("hidden");
+
+    //Check to see if the button has the data attribute "controls-section"
+    //If it does, hide all other sections
+    if (selectedButton.data("controls-section")) {
+      const controlledSectionID = selectedButton.data("controls-section");
+      await handleMultipleSubSectionDisplay(controlledSectionID);
+    }
+
+    //slow scroll to the next question
+    //temp fix to prevent scrolling error
+    const elementsToNotScrollTo = [
+      "guided-add-samples-table",
+      "guided-add-pools-table",
+      "guided-div-add-subjects-table",
+      "guided-div-resume-progress-cards",
+      "guided-div-update-uploaded-cards",
+    ];
+    if (!elementsToNotScrollTo.includes(nextQuestionID)) {
+      nextQuestionElement.scrollIntoView({
+        behavior: "smooth",
+      });
+    }
+  }
+});
 
 $("#guided-button-samples-not-same").on("click", () => {
   $("#guided-button-generate-subjects-table").show();
