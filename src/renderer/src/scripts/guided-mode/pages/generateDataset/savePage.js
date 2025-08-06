@@ -91,6 +91,13 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
     if (generateOnNewPennsieveDatasetCardChecked) {
       window.sodaJSONObj["pennsieve-generation-target"] = "new";
       guidedUnSkipPageSet("new-pennsieve-dataset-config-page-set");
+      window.sodaJSONObj["generate-dataset"] = {
+        "dataset-name": null, // This will be set later in the new dataset config page
+        destination: "ps",
+        "generate-option": "new",
+        "if-existing": "new",
+        "if-existing-files": "new",
+      };
     }
     if (generateOnExistingPennsieveDatasetCardChecked) {
       // If the datasets are still loading, wait for them to finish loading
@@ -125,6 +132,8 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
     // is re-entered (this is necessary due to execution batching by React)
     setCheckboxCardUnchecked("generate-on-new-pennsieve-dataset");
     setCheckboxCardUnchecked("generate-on-existing-pennsieve-dataset");
+
+    console.log("Generate dataset after leaving page: ", window.sodaJSONObj["generate-dataset"]);
   }
 
   if (pageBeingLeftID === "guided-pennsieve-settings-tab") {
@@ -137,7 +146,7 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
       });
       throw errorArray;
     }
-    window.sodaJSONObj["pennsieve-dataset-name"] = pennsieveDatasetName;
+    window.sodaJSONObj["generate-dataset"]["dataset-name"] = pennsieveDatasetName;
 
     // Handle saving the Pennsieve dataset subtitle
     const pennsieveDatasetSubtitle = getSodaTextInputValue("pennsieve-dataset-subtitle");

@@ -65,7 +65,7 @@ export const openPageGenerateDataset = async (targetPageID) => {
     const datasetName = getGuidedDatasetName();
     const datasetSubtitle = getGuidedDatasetSubtitle();
 
-    const pennsieveDatasetName = window.sodaJSONObj["pennsieve-dataset-name"];
+    const pennsieveDatasetName = window.sodaJSONObj?.["generate-dataset"]?.["dataset-name"];
     const pennsieveDatasetSubtitle = window.sodaJSONObj["pennsieve-dataset-subtitle"];
 
     const datasetNameToSet = pennsieveDatasetName || datasetName;
@@ -113,7 +113,7 @@ export const openPageGenerateDataset = async (targetPageID) => {
       generateOrRetryDatasetUploadButton.innerHTML = generateButtonText;
       reviewGenerateButtonTextElement.innerHTML = generateButtonText;
     }
-    const pennsieveDatasetName = window.sodaJSONObj["pennsieve-dataset-name"];
+    const pennsieveDatasetName = window.sodaJSONObj?.["generate-dataset"]?.["dataset-name"];
     const pennsieveDatasetSubtitle = window.sodaJSONObj["pennsieve-dataset-subtitle"];
 
     const datasetLicense = window.sodaJSONObj["digital-metadata"]["license"];

@@ -37,7 +37,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
   try {
     // Gather all required dataset info from window.sodaJSONObj
     const guidedBfAccount = window.defaultBfAccount;
-    const pennsieveDatasetName = window.sodaJSONObj["pennsieve-dataset-name"];
+    const pennsieveDatasetName = window.sodaJSONObj["generate-dataset"]["dataset-name"];
     const pennsieveDatasetSubtitle = window.sodaJSONObj["pennsieve-dataset-subtitle"];
     const guidedLicense = window.sodaJSONObj["digital-metadata"]["license"];
     const guidedPennsieveStudyPurpose =
@@ -68,14 +68,14 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
       // --- Ensure all required keys are set for retry upload ---
       window.sodaJSONObj["generate-dataset"] = {
-        "dataset-name": window.sodaJSONObj["pennsieve-dataset-name"],
+        "dataset-name": window.sodaJSONObj["generate-dataset"]["dataset-name"],
         destination: "ps",
         "generate-option": "existing-ps",
         "if-existing": "merge",
         "if-existing-files": "skip",
       };
       window.sodaJSONObj["ps-dataset-selected"] = {
-        "dataset-name": window.sodaJSONObj["pennsieve-dataset-name"],
+        "dataset-name": window.sodaJSONObj["generate-dataset"]["dataset-name"],
       };
       window.sodaJSONObj["ps-account-selected"] = {
         "account-name": window.defaultBfAccount,
@@ -164,19 +164,28 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     window.unHideAndSmoothScrollToElement(
       "guided-div-pennsieve-metadata-pennsieve-generation-status-table"
     );
-
-    // Create or rename dataset, then add metadata
-    await guidedCreateOrRenameDataset(guidedBfAccount, pennsieveDatasetName);
-    await guidedAddDatasetSubtitle(guidedBfAccount, pennsieveDatasetName, pennsieveDatasetSubtitle);
-    await guidedAddDatasetDescription(
-      guidedBfAccount,
-      pennsieveDatasetName,
-      guidedPennsieveStudyPurpose,
-      guidedPennsieveDataCollection,
-      guidedPennsievePrimaryConclusion
-    );
-    await guidedAddDatasetBannerImage(guidedBfAccount, pennsieveDatasetName, guidedBannerImagePath);
-    await guidedAddDatasetLicense(guidedBfAccount, pennsieveDatasetName, guidedLicense);
+    if (window.sodaJSONObj["pennsieve-generation-target"] === "new") {
+      // Create or rename dataset, then add metadata
+      await guidedCreateOrRenameDataset(guidedBfAccount, pennsieveDatasetName);
+      await guidedAddDatasetSubtitle(
+        guidedBfAccount,
+        pennsieveDatasetName,
+        pennsieveDatasetSubtitle
+      );
+      await guidedAddDatasetDescription(
+        guidedBfAccount,
+        pennsieveDatasetName,
+        guidedPennsieveStudyPurpose,
+        guidedPennsieveDataCollection,
+        guidedPennsievePrimaryConclusion
+      );
+      await guidedAddDatasetBannerImage(
+        guidedBfAccount,
+        pennsieveDatasetName,
+        guidedBannerImagePath
+      );
+      await guidedAddDatasetLicense(guidedBfAccount, pennsieveDatasetName, guidedLicense);
+    }
 
     hideDatasetMetadataGenerationTableRows("pennsieve");
 
@@ -187,16 +196,16 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     });
     window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
 
-    // --- Ensure all required keys are set for initial upload ---
+    /* COMMENTED OUT FOR UPLOAD TO EXISTING // --- Ensure all required keys are set for initial upload ---
     window.sodaJSONObj["generate-dataset"] = {
       "dataset-name": window.sodaJSONObj["pennsieve-dataset-name"],
       destination: "ps",
       "generate-option": "new",
       "if-existing": "new",
       "if-existing-files": "new",
-    };
+    }; */
     window.sodaJSONObj["ps-dataset-selected"] = {
-      "dataset-name": window.sodaJSONObj["pennsieve-dataset-name"],
+      "dataset-name": window.sodaJSONObj["generate-dataset"]["dataset-name"],
     };
     window.sodaJSONObj["ps-account-selected"] = {
       "account-name": window.defaultBfAccount,
@@ -388,7 +397,7 @@ const logProgressPostUpload = (files, bytes) => {
         fileValueToLog,
         "Pennsieve",
         "Local",
-        window.sodaJSONObj["pennsieve-dataset-name"],
+        window.sodaJSONObj["generate-dataset"]["dataset-name"],
         guidedGetDatasetId(window.sodaJSONObj)
       )
     );
@@ -405,7 +414,7 @@ const logProgressPostUpload = (files, bytes) => {
         fileSizeValueToLog,
         "Pennsieve",
         "Local",
-        window.sodaJSONObj["pennsieve-dataset-name"],
+        window.sodaJSONObj["generate-dataset"]["dataset-name"],
         guidedGetDatasetId(window.sodaJSONObj)
       )
     );
@@ -426,7 +435,7 @@ const logProgressToAnalyticsGM = (files, bytes) => {
         500,
         "Pennsieve",
         "Local",
-        window.sodaJSONObj["pennsieve-dataset-name"],
+        window.sodaJSONObj["generate-dataset"]["dataset-name"],
         guidedGetDatasetId(window.sodaJSONObj)
       )
     );
@@ -445,7 +454,7 @@ const logProgressToAnalyticsGM = (files, bytes) => {
           differenceInBytes,
           "Pennsieve",
           "Local",
-          window.sodaJSONObj["pennsieve-dataset-name"],
+          window.sodaJSONObj["generate-dataset"]["dataset-name"],
           guidedGetDatasetId(window.sodaJSONObj)
         )
       );
