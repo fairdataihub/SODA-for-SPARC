@@ -1,20 +1,29 @@
+import useGlobalStore from "../../../stores/globalStore";
 import { Text, Group, Select, Collapse, Center } from "@mantine/core";
 import { swalShowError } from "../../../scripts/utils/swal-utils";
-import { useEffect, useState } from "react";
-import useGlobalStore from "../../../stores/globalStore";
+import { useEffect } from "react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import CheckboxCard from "../../buttons/CheckboxCard";
 import client from "../../../scripts/client";
 import NavigationButton from "../../buttons/Navigation";
 import { setCheckboxCardUnchecked } from "../../../stores/slices/checkboxCardSlice";
+import {
+  setSelectedDataset,
+  setDatasetOptions,
+  setIsLoading,
+  setHasLoaded,
+  setHasAttemptedFetch,
+  fetchDatasets,
+} from "../../../stores/slices/pennsieveDatasetSelectSlice";
 
 const GenerateDatasetPennsieveTargetPage = () => {
-  const [selectedDataset, setSelectedDataset] = useState(null);
-  const [datasetOptions, setDatasetOptions] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasLoaded, setHasLoaded] = useState(false);
-  const [hasAttemptedFetch, setHasAttemptedFetch] = useState(false); // 🔁 added to avoid infinite loop
+  const selectableDatasets = useGlobalStore((state) => state.selectableDatasets);
+  const selectedDataset = useGlobalStore((state) => state.selectedDataset);
+  const datasetOptions = useGlobalStore((state) => state.datasetOptions);
+  const isLoading = useGlobalStore((state) => state.isLoading);
+  const hasLoaded = useGlobalStore((state) => state.hasLoaded);
+  const hasAttemptedFetch = useGlobalStore((state) => state.hasAttemptedFetch); // 🔁 added to avoid infinite loop
 
   const isNewDatasetSelected = useGlobalStore(
     (state) => !!state.checkboxes["generate-on-new-pennsieve-dataset"]
@@ -22,44 +31,6 @@ const GenerateDatasetPennsieveTargetPage = () => {
   const isExistingDatasetSelected = useGlobalStore(
     (state) => !!state.checkboxes["generate-on-existing-pennsieve-dataset"]
   );
-
-  async function fetchDatasets() {
-    if (hasLoaded || isLoading || hasAttemptedFetch) return;
-
-    setIsLoading(true);
-    setHasAttemptedFetch(true);
-
-    try {
-      console.log("🚀 Fetching empty datasets from Pennsieve...");
-
-      const response = await client.get("manage_datasets/fetch_user_dataets", {
-        params: { return_only_empty_datasets: "true" },
-      });
-
-      const datasets = response?.data?.datasets;
-      if (!datasets || !Array.isArray(datasets)) {
-        console.warn("⚠️ No datasets found or response structure invalid:", datasets);
-      }
-
-      const formattedOptions = (datasets || []).map((dataset) => ({
-        value: dataset.id,
-        label: dataset.name,
-      }));
-
-      setDatasetOptions(formattedOptions);
-      setHasLoaded(true);
-    } catch (error) {
-      console.error("❌ Failed to fetch datasets:", error?.response || error?.message || error);
-      setDatasetOptions([]);
-      swalShowError(
-        "Failed to fetch datasets",
-        "Please try again later. If this issue persists, please use the Contact Us page to report the issue."
-      );
-      setCheckboxCardUnchecked("generate-on-existing-pennsieve-dataset");
-    } finally {
-      setIsLoading(false);
-    }
-  }
 
   useEffect(() => {
     if (isExistingDatasetSelected) {

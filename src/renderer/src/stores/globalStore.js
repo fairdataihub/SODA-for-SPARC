@@ -15,6 +15,7 @@ import { datasetMetadataSlice } from "./slices/datasetMetadataSlice";
 import { resourceMetadataSlice } from "./slices/resourceMetadataSlice";
 import { checkboxCardSlice } from "./slices/checkboxCardSlice";
 import { sodaTextInputSlice } from "./slices/sodaTextInputSlice";
+import { pennsieveDatasetSelectSlice } from "./slices/pennsieveDatasetSelectSlice";
 
 const useGlobalStore = create(
   immer((set, ...a) => ({
@@ -33,6 +34,7 @@ const useGlobalStore = create(
     ...resourceMetadataSlice(set, ...a),
     ...checkboxCardSlice(set, ...a),
     ...sodaTextInputSlice(set, ...a),
+    ...pennsieveDatasetSelectSlice(set, ...a),
   }))
 );
 
