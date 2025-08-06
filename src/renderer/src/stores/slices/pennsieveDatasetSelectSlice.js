@@ -22,10 +22,8 @@ export const setPreferredPennsieveDatasetId = (preferredPennsieveDatasetId) => {
 export const fetchDatasetsToUploadDataTo = async () => {
   // Reset the selected dataset to upload data to
   setSelectedDatasetToUploadDataTo(null, null);
-  const isLoadingPennsieveDatasets = useGlobalStore.getState().isLoadingPennsieveDatasets;
   const preferredPennsieveDatasetId = useGlobalStore.getState().preferredPennsieveDatasetId;
   console.log("preferredPennsieveDatasetId:", preferredPennsieveDatasetId);
-  if (isLoadingPennsieveDatasets) return;
 
   setIsLoadingPennsieveDatasets(true);
 

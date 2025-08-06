@@ -33,6 +33,9 @@ const GenerateDatasetPennsieveTargetPage = () => {
     (state) => !!state.checkboxes["generate-on-existing-pennsieve-dataset"]
   );
 
+  console.log("isNewDatasetSelected:", isNewDatasetSelected);
+  console.log("isExistingDatasetSelected:", isExistingDatasetSelected);
+
   // Use exported setter to set both id and name
   const handleSelectDataset = (id) => {
     const dataset = availableDatasetsToUploadDataTo.find((d) => d.value === id);
@@ -65,7 +68,7 @@ const GenerateDatasetPennsieveTargetPage = () => {
             <Stack align="center" mt="md">
               <Loader size="md" />
               <Text size="md" align="center" fw={500}>
-                Loading datasets...
+                Retrieving empty datasets from Pennsieve...
               </Text>
             </Stack>
           ) : (

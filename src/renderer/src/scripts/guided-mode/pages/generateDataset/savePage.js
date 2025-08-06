@@ -5,7 +5,10 @@ import {
   guidedSkipPageSet,
   guidedUnSkipPageSet,
 } from "../../../guided-mode/pages/navigationUtils/pageSkipping";
-import { isCheckboxCardChecked } from "../../../../stores/slices/checkboxCardSlice";
+import {
+  isCheckboxCardChecked,
+  setCheckboxCardUnchecked,
+} from "../../../../stores/slices/checkboxCardSlice";
 import { getSodaTextInputValue } from "../../../../stores/slices/sodaTextInputSlice";
 export const savePageGenerateDataset = async (pageBeingLeftID) => {
   const errorArray = [];
@@ -87,8 +90,14 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
     }*/
     if (generateOnNewPennsieveDatasetCardChecked) {
       window.sodaJSONObj["pennsieve-generation-target"] = "new";
+      guidedUnSkipPageSet("new-pennsieve-dataset-config-page-set");
     }
     if (generateOnExistingPennsieveDatasetCardChecked) {
+      // If the datasets are still loading, wait for them to finish loading
+      while (useGlobalStore.getState().isLoadingPennsieveDatasets) {
+        console.log("Waiting for Pennsieve datasets to load...");
+        await new Promise((resolve) => setTimeout(resolve, 300));
+      }
       const selectedDatasetIdToUploadDataTo =
         useGlobalStore.getState().selectedDatasetIdToUploadDataTo;
       const selectedDatasetNameToUploadDataTo =
@@ -110,7 +119,12 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
         "if-existing-files": "replace",
       };
       window.sodaJSONObj["pennsieve-generation-target"] = "existing";
+      guidedSkipPageSet("new-pennsieve-dataset-config-page-set");
     }
+    // (Hackish) Uncheck the checkboxes to make sure the events trigger when the page
+    // is re-entered (this is necessary due to execution batching by React)
+    setCheckboxCardUnchecked("generate-on-new-pennsieve-dataset");
+    setCheckboxCardUnchecked("generate-on-existing-pennsieve-dataset");
   }
 
   if (pageBeingLeftID === "guided-pennsieve-settings-tab") {
