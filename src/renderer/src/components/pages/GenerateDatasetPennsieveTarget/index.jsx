@@ -1,5 +1,5 @@
 import useGlobalStore from "../../../stores/globalStore";
-import { Text, Group, Select, Collapse, Center } from "@mantine/core";
+import { Text, Group, Select, Collapse, Center, Loader, Stack } from "@mantine/core";
 import { swalShowError } from "../../../scripts/utils/swal-utils";
 import { useEffect } from "react";
 import GuidedModePage from "../../containers/GuidedModePage";
@@ -9,8 +9,8 @@ import client from "../../../scripts/client";
 import NavigationButton from "../../buttons/Navigation";
 import { setCheckboxCardUnchecked } from "../../../stores/slices/checkboxCardSlice";
 import {
-  setSelectedDatasetIdToUploadDataTo,
-  setDatasetOptions,
+  setSelectedDatasetToUploadDataTo,
+  setAvailableDatasetsToUploadDataTo,
   fetchDatasetsToUploadDataTo,
 } from "../../../stores/slices/pennsieveDatasetSelectSlice";
 
@@ -18,7 +18,12 @@ const GenerateDatasetPennsieveTargetPage = () => {
   const selectedDatasetIdToUploadDataTo = useGlobalStore(
     (state) => state.selectedDatasetIdToUploadDataTo
   );
-  const datasetOptions = useGlobalStore((state) => state.datasetOptions);
+  const selectedDatasetNameToUploadDataTo = useGlobalStore(
+    (state) => state.selectedDatasetNameToUploadDataTo
+  );
+  const availableDatasetsToUploadDataTo = useGlobalStore(
+    (state) => state.availableDatasetsToUploadDataTo
+  );
   const isLoadingPennsieveDatasets = useGlobalStore((state) => state.isLoadingPennsieveDatasets);
 
   const isNewDatasetSelected = useGlobalStore(
@@ -28,11 +33,17 @@ const GenerateDatasetPennsieveTargetPage = () => {
     (state) => !!state.checkboxes["generate-on-existing-pennsieve-dataset"]
   );
 
+  // Use exported setter to set both id and name
+  const handleSelectDataset = (id) => {
+    const dataset = availableDatasetsToUploadDataTo.find((d) => d.value === id);
+    setSelectedDatasetToUploadDataTo(id, dataset ? dataset.label : null);
+  };
+
   useEffect(() => {
     if (isExistingDatasetSelected) {
       fetchDatasetsToUploadDataTo();
     } else {
-      setDatasetOptions([]);
+      setAvailableDatasetsToUploadDataTo([]);
     }
   }, [isExistingDatasetSelected]);
 
@@ -40,7 +51,7 @@ const GenerateDatasetPennsieveTargetPage = () => {
     <GuidedModePage pageHeader="Pennsieve Generation Location">
       <GuidedModeSection>
         <Text mb="md">
-          Select an option for how you would like SODA to generate your data on Pennsieve below.
+          Select an option for how you would like SODA to generate your data on Pennsieve.
         </Text>
         <Group align="stretch" gap="md" justify="center">
           <CheckboxCard id="generate-on-new-pennsieve-dataset" />
@@ -50,30 +61,37 @@ const GenerateDatasetPennsieveTargetPage = () => {
 
       <Collapse in={isExistingDatasetSelected}>
         <GuidedModeSection>
-          <Text mb="md">
-            Select an existing dataset from the dropdown below that you would like to upload your
-            data to.
-          </Text>
-          <Select
-            placeholder={
-              isLoadingPennsieveDatasets ? "Loading datasets..." : "Select an existing dataset"
-            }
-            data={datasetOptions}
-            value={selectedDatasetIdToUploadDataTo}
-            onChange={setSelectedDatasetIdToUploadDataTo}
-            searchable={!isLoadingPennsieveDatasets}
-            clearable={!isLoadingPennsieveDatasets}
-            disabled={isLoadingPennsieveDatasets}
-            maxDropdownHeight={200}
-            comboboxProps={{
-              withinPortal: false,
-              loading: isLoadingPennsieveDatasets,
-            }}
-          />
+          {isLoadingPennsieveDatasets ? (
+            <Stack align="center" mt="md">
+              <Loader size="md" />
+              <Text size="md" align="center" fw={500}>
+                Loading datasets...
+              </Text>
+            </Stack>
+          ) : (
+            <>
+              <Text mt="md" align="center" fw={500} size="lg">
+                Select an existing dataset to upload data to:
+              </Text>
+              <Select
+                placeholder={"Select a dataset"}
+                data={availableDatasetsToUploadDataTo}
+                value={selectedDatasetIdToUploadDataTo}
+                onChange={handleSelectDataset}
+                maxDropdownHeight={200}
+                comboboxProps={{
+                  withinPortal: false,
+                }}
+              />
+            </>
+          )}
         </GuidedModeSection>
       </Collapse>
 
-      {(isExistingDatasetSelected || isNewDatasetSelected) && (
+      {((isExistingDatasetSelected &&
+        selectedDatasetIdToUploadDataTo &&
+        selectedDatasetNameToUploadDataTo) ||
+        isNewDatasetSelected) && (
         <GuidedModeSection>
           <Center mt="xl">
             <NavigationButton

@@ -89,9 +89,10 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
       window.sodaJSONObj["pennsieve-generation-target"] = "new";
     }
     if (generateOnExistingPennsieveDatasetCardChecked) {
-      window.sodaJSONObj["pennsieve-generation-target"] = "existing";
       const selectedDatasetIdToUploadDataTo =
         useGlobalStore.getState().selectedDatasetIdToUploadDataTo;
+      const selectedDatasetNameToUploadDataTo =
+        useGlobalStore.getState().selectedDatasetNameToUploadDataTo;
       if (!selectedDatasetIdToUploadDataTo) {
         errorArray.push({
           type: "notyf",
@@ -99,10 +100,16 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
         });
         throw errorArray;
       }
-      console.log(
-        "Selected dataset for existing Pennsieve generation:",
-        selectedDatasetIdToUploadDataTo
-      );
+      window.sodaJSONObj["previously-selected-dataset-id-to-upload-data-to"] =
+        selectedDatasetIdToUploadDataTo;
+      window.sodaJSONObj["generate-dataset"] = {
+        "dataset-name": selectedDatasetNameToUploadDataTo,
+        destination: "ps",
+        "generate-option": "existing-ps",
+        "if-existing": "merge",
+        "if-existing-files": "replace",
+      };
+      window.sodaJSONObj["pennsieve-generation-target"] = "existing";
     }
   }
 

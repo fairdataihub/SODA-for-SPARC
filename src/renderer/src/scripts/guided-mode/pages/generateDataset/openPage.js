@@ -42,6 +42,8 @@ export const openPageGenerateDataset = async (targetPageID) => {
 
   if (targetPageID === "guided-pennsieve-generate-target-tab") {
     setPreferredPennsieveDatasetId(null);
+    setCheckboxCardUnchecked("generate-on-new-pennsieve-dataset");
+    setCheckboxCardUnchecked("generate-on-existing-pennsieve-dataset");
 
     const pennsieveGenerationTarget = window.sodaJSONObj["pennsieve-generation-target"];
     if (pennsieveGenerationTarget === "new") {
@@ -49,16 +51,11 @@ export const openPageGenerateDataset = async (targetPageID) => {
       setCheckboxCardChecked("generate-on-new-pennsieve-dataset");
     }
     if (pennsieveGenerationTarget === "existing") {
+      const previouslySelectedDatasetIdToUploadDataTo =
+        window.sodaJSONObj["previously-selected-dataset-id-to-upload-data-to"] || null;
       // If the user selected to generate on an existing Pennsieve dataset, check the corresponding checkbox card
-      setPreferredPennsieveDatasetId("1244124124124");
+      setPreferredPennsieveDatasetId(previouslySelectedDatasetIdToUploadDataTo);
       setCheckboxCardChecked("generate-on-existing-pennsieve-dataset");
-      // try {
-      //   const datasetList = await api.getUsersDatasetList(true);
-      //   console.log("Fetched datasets for Pennsieve generation:", datasetList);
-      // } catch (error) {
-      //   console.error("Error fetching datasets for Pennsieve generation:", error);
-      //   // Reset the checkbox if there's an error fetching datasets
-      // }
     }
   }
 

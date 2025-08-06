@@ -7,7 +7,8 @@ import useGlobalStore from "../globalStore";
 export const pennsieveDatasetSelectSlice = (set) => ({
   selectableDatasets: [],
   selectedDatasetIdToUploadDataTo: null,
-  datasetOptions: [],
+  selectedDatasetNameToUploadDataTo: null,
+  availableDatasetsToUploadDataTo: [],
   isLoadingPennsieveDatasets: false,
   preferredPennsieveDatasetId: null,
 });
@@ -19,8 +20,11 @@ export const setPreferredPennsieveDatasetId = (preferredPennsieveDatasetId) => {
 };
 
 export const fetchDatasetsToUploadDataTo = async () => {
+  // Reset the selected dataset to upload data to
+  setSelectedDatasetToUploadDataTo(null, null);
   const isLoadingPennsieveDatasets = useGlobalStore.getState().isLoadingPennsieveDatasets;
   const preferredPennsieveDatasetId = useGlobalStore.getState().preferredPennsieveDatasetId;
+  console.log("preferredPennsieveDatasetId:", preferredPennsieveDatasetId);
   if (isLoadingPennsieveDatasets) return;
 
   setIsLoadingPennsieveDatasets(true);
@@ -36,13 +40,22 @@ export const fetchDatasetsToUploadDataTo = async () => {
       label: dataset.name,
     }));
 
-    setDatasetOptions(formattedOptions);
+    setAvailableDatasetsToUploadDataTo(formattedOptions);
     if (preferredPennsieveDatasetId) {
-      // Optionally handle preferred selection here
+      const preferredDataset = datasets.find(
+        (dataset) => dataset.id === preferredPennsieveDatasetId
+      );
+      if (preferredDataset) {
+        setSelectedDatasetToUploadDataTo(preferredDataset.id, preferredDataset.name);
+      } else {
+        console.warn(
+          `Preferred dataset with ID ${preferredPennsieveDatasetId} not found in fetched datasets.`
+        );
+      }
     }
   } catch (error) {
     console.error("❌ Failed to fetch datasets:", error?.response || error?.message || error);
-    setDatasetOptions([]);
+    setAvailableDatasetsToUploadDataTo([]);
     swalShowError(
       "Failed to fetch datasets",
       "Please try again later. If this issue persists, please use the Contact Us page to report the issue."
@@ -53,9 +66,9 @@ export const fetchDatasetsToUploadDataTo = async () => {
   }
 };
 
-export const setDatasetOptions = (datasetOptions) => {
+export const setAvailableDatasetsToUploadDataTo = (availableDatasetsToUploadDataTo) => {
   useGlobalStore.setState({
-    datasetOptions,
+    availableDatasetsToUploadDataTo,
   });
 };
 
@@ -71,8 +84,12 @@ export const setSelectableDatasets = (selectableDatasets) => {
   });
 };
 
-export const setSelectedDatasetIdToUploadDataTo = (selectedDatasetIdToUploadDataTo) => {
+export const setSelectedDatasetToUploadDataTo = (
+  selectedDatasetIdToUploadDataTo,
+  selectedDatasetNameToUploadDataTo
+) => {
   useGlobalStore.setState({
     selectedDatasetIdToUploadDataTo,
+    selectedDatasetNameToUploadDataTo,
   });
 };
