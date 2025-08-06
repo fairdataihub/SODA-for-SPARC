@@ -20,6 +20,16 @@ const getDataset = async (datasetNameOrID) => {
   return datasetResponse.data;
 };
 
+const getUsersDatasetList = async (return_only_empty_datasets = false) => {
+  const response = await client.get("manage_datasets/fetch_user_datasets", {
+    params: { return_only_empty_datasets: return_only_empty_datasets ? "true" : "false" },
+  });
+  const datasets = response.data.datasets;
+  // Sort the datasets by name in ascending order
+  const sortedDatasets = datasets.sort((a, b) => a.name.localeCompare(b.name));
+  return sortedDatasets;
+};
+
 const getDatasetBannerImageURL = async (selected_dataset) => {
   let bannerResponse = await client.get(`/manage_datasets/bf_banner_image`, {
     params: {
@@ -500,6 +510,7 @@ const loadManifestToJSON = async (manifestPath) => {
 const api = {
   getUserInformation,
   getDataset,
+  getUsersDatasetList,
   getDatasetReadme,
   getDatasetBannerImageURL,
   getDatasetRole,

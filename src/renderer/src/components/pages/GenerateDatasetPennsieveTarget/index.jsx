@@ -9,21 +9,17 @@ import client from "../../../scripts/client";
 import NavigationButton from "../../buttons/Navigation";
 import { setCheckboxCardUnchecked } from "../../../stores/slices/checkboxCardSlice";
 import {
-  setSelectedDataset,
+  setSelectedDatasetIdToUploadDataTo,
   setDatasetOptions,
-  setIsLoading,
-  setHasLoaded,
-  setHasAttemptedFetch,
-  fetchDatasets,
+  fetchDatasetsToUploadDataTo,
 } from "../../../stores/slices/pennsieveDatasetSelectSlice";
 
 const GenerateDatasetPennsieveTargetPage = () => {
-  const selectableDatasets = useGlobalStore((state) => state.selectableDatasets);
-  const selectedDataset = useGlobalStore((state) => state.selectedDataset);
+  const selectedDatasetIdToUploadDataTo = useGlobalStore(
+    (state) => state.selectedDatasetIdToUploadDataTo
+  );
   const datasetOptions = useGlobalStore((state) => state.datasetOptions);
-  const isLoading = useGlobalStore((state) => state.isLoading);
-  const hasLoaded = useGlobalStore((state) => state.hasLoaded);
-  const hasAttemptedFetch = useGlobalStore((state) => state.hasAttemptedFetch); // 🔁 added to avoid infinite loop
+  const isLoadingPennsieveDatasets = useGlobalStore((state) => state.isLoadingPennsieveDatasets);
 
   const isNewDatasetSelected = useGlobalStore(
     (state) => !!state.checkboxes["generate-on-new-pennsieve-dataset"]
@@ -34,10 +30,8 @@ const GenerateDatasetPennsieveTargetPage = () => {
 
   useEffect(() => {
     if (isExistingDatasetSelected) {
-      fetchDatasets();
+      fetchDatasetsToUploadDataTo();
     } else {
-      setHasLoaded(false);
-      setHasAttemptedFetch(false); // ✅ reset so fetch can be retried if checkbox is toggled
       setDatasetOptions([]);
     }
   }, [isExistingDatasetSelected]);
@@ -61,17 +55,19 @@ const GenerateDatasetPennsieveTargetPage = () => {
             data to.
           </Text>
           <Select
-            placeholder={isLoading ? "Loading datasets..." : "Select an existing dataset"}
+            placeholder={
+              isLoadingPennsieveDatasets ? "Loading datasets..." : "Select an existing dataset"
+            }
             data={datasetOptions}
-            value={selectedDataset}
-            onChange={setSelectedDataset}
-            searchable={!isLoading}
-            clearable={!isLoading}
-            disabled={isLoading}
+            value={selectedDatasetIdToUploadDataTo}
+            onChange={setSelectedDatasetIdToUploadDataTo}
+            searchable={!isLoadingPennsieveDatasets}
+            clearable={!isLoadingPennsieveDatasets}
+            disabled={isLoadingPennsieveDatasets}
             maxDropdownHeight={200}
             comboboxProps={{
               withinPortal: false,
-              loading: isLoading,
+              loading: isLoadingPennsieveDatasets,
             }}
           />
         </GuidedModeSection>

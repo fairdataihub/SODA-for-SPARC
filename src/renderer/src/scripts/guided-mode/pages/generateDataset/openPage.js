@@ -13,6 +13,7 @@ import {
   guidedSetDOIUI,
   guidedSetPublishingStatusUI,
 } from "../../guided-curate-dataset.js";
+import { setPreferredPennsieveDatasetId } from "../../../../stores/slices/pennsieveDatasetSelectSlice.js";
 import api from "../../../others/api/api.js";
 
 export const openPageGenerateDataset = async (targetPageID) => {
@@ -40,26 +41,24 @@ export const openPageGenerateDataset = async (targetPageID) => {
   }
 
   if (targetPageID === "guided-pennsieve-generate-target-tab") {
-    /* PAGE LOGIC COMMENTED OUT AND TO BE RESUMED AFTER SDS3 INITIAL RELEASE
-    // Ask the user if they want to generate on a new dataset or an existing one
-    if (!window.sodaJSONObj["generate-dataset"]) {
-      return;
-    } else if (window.sodaJSONObj["generate-dataset"]["dataset-name"]) {
-      // Check if the dataset has already been set to the state object
-      // If it has, set the Select component value to the dataset name
-      const datasetName = window.sodaJSONObj["generate-dataset"]["dataset-name"];
-      document.querySelector("#guided-pennsieve-generate-target-tab select").value = datasetName;
-    }*/
+    setPreferredPennsieveDatasetId(null);
+
     const pennsieveGenerationTarget = window.sodaJSONObj["pennsieve-generation-target"];
     if (pennsieveGenerationTarget === "new") {
       // If the user selected to generate on a new Pennsieve dataset, check the corresponding checkbox card
       setCheckboxCardChecked("generate-on-new-pennsieve-dataset");
-      setCheckboxCardUnchecked("generate-on-existing-pennsieve-dataset");
     }
     if (pennsieveGenerationTarget === "existing") {
       // If the user selected to generate on an existing Pennsieve dataset, check the corresponding checkbox card
+      setPreferredPennsieveDatasetId("1244124124124");
       setCheckboxCardChecked("generate-on-existing-pennsieve-dataset");
-      setCheckboxCardUnchecked("generate-on-new-pennsieve-dataset");
+      // try {
+      //   const datasetList = await api.getUsersDatasetList(true);
+      //   console.log("Fetched datasets for Pennsieve generation:", datasetList);
+      // } catch (error) {
+      //   console.error("Error fetching datasets for Pennsieve generation:", error);
+      //   // Reset the checkbox if there's an error fetching datasets
+      // }
     }
   }
 

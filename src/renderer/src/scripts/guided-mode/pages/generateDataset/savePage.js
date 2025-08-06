@@ -90,6 +90,19 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
     }
     if (generateOnExistingPennsieveDatasetCardChecked) {
       window.sodaJSONObj["pennsieve-generation-target"] = "existing";
+      const selectedDatasetIdToUploadDataTo =
+        useGlobalStore.getState().selectedDatasetIdToUploadDataTo;
+      if (!selectedDatasetIdToUploadDataTo) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please select an existing Pennsieve dataset to upload data to.",
+        });
+        throw errorArray;
+      }
+      console.log(
+        "Selected dataset for existing Pennsieve generation:",
+        selectedDatasetIdToUploadDataTo
+      );
     }
   }
 

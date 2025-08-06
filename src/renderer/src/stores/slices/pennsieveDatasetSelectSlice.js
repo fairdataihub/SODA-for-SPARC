@@ -1,27 +1,35 @@
 import client from "../../scripts/client";
+import api from "../../scripts/others/api/api";
 import { swalShowError } from "../../scripts/utils/swal-utils";
 import { setCheckboxCardUnchecked } from "./checkboxCardSlice";
+import useGlobalStore from "../globalStore";
 
-export const fetchDatasets = async () => {
-  const hasLoaded = useGlobalStore.getState().hasLoaded;
-  const isLoading = useGlobalStore.getState().isLoading;
-  const hasAttemptedFetch = useGlobalStore.getState().hasAttemptedFetch;
-  if (hasLoaded || isLoading || hasAttemptedFetch) return;
+export const pennsieveDatasetSelectSlice = (set) => ({
+  selectableDatasets: [],
+  selectedDatasetIdToUploadDataTo: null,
+  datasetOptions: [],
+  isLoadingPennsieveDatasets: false,
+  preferredPennsieveDatasetId: null,
+});
 
-  setIsLoading(true);
-  setHasAttemptedFetch(true);
+export const setPreferredPennsieveDatasetId = (preferredPennsieveDatasetId) => {
+  useGlobalStore.setState({
+    preferredPennsieveDatasetId,
+  });
+};
+
+export const fetchDatasetsToUploadDataTo = async () => {
+  const isLoadingPennsieveDatasets = useGlobalStore.getState().isLoadingPennsieveDatasets;
+  const preferredPennsieveDatasetId = useGlobalStore.getState().preferredPennsieveDatasetId;
+  if (isLoadingPennsieveDatasets) return;
+
+  setIsLoadingPennsieveDatasets(true);
 
   try {
     console.log("🚀 Fetching empty datasets from Pennsieve...");
 
-    const response = await client.get("manage_datasets/fetch_user_datasets", {
-      params: { return_only_empty_datasets: "true" },
-    });
-
-    const datasets = response?.data?.datasets;
-    if (!datasets || !Array.isArray(datasets)) {
-      console.warn("⚠️ No datasets found or response structure invalid:", datasets);
-    }
+    const datasets = await api.getUsersDatasetList(true);
+    console.log("📦 Datasets fetched:", datasets);
 
     const formattedOptions = (datasets || []).map((dataset) => ({
       value: dataset.id,
@@ -29,7 +37,9 @@ export const fetchDatasets = async () => {
     }));
 
     setDatasetOptions(formattedOptions);
-    setHasLoaded(true);
+    if (preferredPennsieveDatasetId) {
+      // Optionally handle preferred selection here
+    }
   } catch (error) {
     console.error("❌ Failed to fetch datasets:", error?.response || error?.message || error);
     setDatasetOptions([]);
@@ -39,20 +49,9 @@ export const fetchDatasets = async () => {
     );
     setCheckboxCardUnchecked("generate-on-existing-pennsieve-dataset");
   } finally {
-    setIsLoading(false);
+    setIsLoadingPennsieveDatasets(false);
   }
 };
-import useGlobalStore from "../globalStore";
-import { produce } from "immer";
-
-export const pennsieveDatasetSelectSlice = (set) => ({
-  selectableDatasets: [],
-  selectedDataset: null,
-  datasetOptions: [],
-  isLoading: false,
-  hasLoaded: false,
-  hasAttemptedFetch: false,
-});
 
 export const setDatasetOptions = (datasetOptions) => {
   useGlobalStore.setState({
@@ -60,21 +59,9 @@ export const setDatasetOptions = (datasetOptions) => {
   });
 };
 
-export const setIsLoading = (isLoading) => {
+export const setIsLoadingPennsieveDatasets = (isLoadingPennsieveDatasets) => {
   useGlobalStore.setState({
-    isLoading,
-  });
-};
-
-export const setHasLoaded = (hasLoaded) => {
-  useGlobalStore.setState({
-    hasLoaded,
-  });
-};
-
-export const setHasAttemptedFetch = (hasAttemptedFetch) => {
-  useGlobalStore.setState({
-    hasAttemptedFetch,
+    isLoadingPennsieveDatasets,
   });
 };
 
@@ -84,8 +71,8 @@ export const setSelectableDatasets = (selectableDatasets) => {
   });
 };
 
-export const setSelectedDataset = (selectedDataset) => {
+export const setSelectedDatasetIdToUploadDataTo = (selectedDatasetIdToUploadDataTo) => {
   useGlobalStore.setState({
-    selectedDataset,
+    selectedDatasetIdToUploadDataTo,
   });
 };
