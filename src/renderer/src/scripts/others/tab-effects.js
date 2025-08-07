@@ -116,8 +116,6 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
       return;
     }
 
-    console.log("Yes we are here first");
-
     // enable continue button
     $("#nextBtn").prop("disabled", false);
 
@@ -125,14 +123,24 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     // show them a message detailing why they cannot create manifest files
     if (document.getElementById("dataset-upload-existing-dataset").classList.contains("checked")) {
       // check if the dataset has files already
-      let packageTypeCounts = await api.getNumberOfPackagesInDataset(window.defaultBfDataset);
-      // count the number of packages in the packgeTypeCounts dictionary
-      let packageCount = 0;
-      for (let packageType in packageTypeCounts) {
-        packageCount += packageTypeCounts[packageType];
+      let packageTypeCounts = {};
+      let gotPackageCount = true;
+      try {
+        packageTypeCounts = await api.getNumberOfPackagesInDataset(window.defaultBfDataset);
+      } catch (error) {
+        clientError(error);
+        gotPackageCount = false;
       }
 
-      if (packageCount > 0) {
+      // count the number of packages in the packgeTypeCounts dictionary
+      let packageCount = 0;
+      if (gotPackageCount) {
+        for (let packageType in packageTypeCounts) {
+          packageCount += packageTypeCounts[packageType];
+        }
+      }
+
+      if (packageCount > 0 || !gotPackageCount) {
         if ($("#generate-manifest-curate").prop("checked")) {
           $("#generate-manifest-curate").click();
         }
