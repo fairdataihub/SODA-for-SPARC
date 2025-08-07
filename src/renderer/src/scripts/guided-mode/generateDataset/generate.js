@@ -160,11 +160,11 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       }
     }
 
-    // Show Pennsieve metadata upload table
-    window.unHideAndSmoothScrollToElement(
-      "guided-div-pennsieve-metadata-pennsieve-generation-status-table"
-    );
     if (window.sodaJSONObj["pennsieve-generation-target"] === "new") {
+      // Show Pennsieve metadata upload table
+      window.unHideAndSmoothScrollToElement(
+        "guided-div-pennsieve-metadata-pennsieve-generation-status-table"
+      );
       // Create or rename dataset, then add metadata
       await guidedCreateOrRenameDataset(guidedBfAccount, pennsieveDatasetName);
       await guidedAddDatasetSubtitle(

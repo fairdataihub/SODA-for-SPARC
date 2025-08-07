@@ -1,10 +1,11 @@
 import useGlobalStore from "../../../stores/globalStore";
-import { Text, Group, Select, Collapse, Center, Loader, Stack } from "@mantine/core";
+import { Text, Group, Select, Collapse, Center, Loader, Stack, Button } from "@mantine/core";
 import { swalShowError } from "../../../scripts/utils/swal-utils";
 import { useEffect } from "react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import CheckboxCard from "../../buttons/CheckboxCard";
+import SodaPaper from "../../utils/ui/SodaPaper";
 import client from "../../../scripts/client";
 import NavigationButton from "../../buttons/Navigation";
 import { setCheckboxCardUnchecked } from "../../../stores/slices/checkboxCardSlice";
@@ -53,9 +54,11 @@ const GenerateDatasetPennsieveTargetPage = () => {
   return (
     <GuidedModePage pageHeader="Pennsieve Generation Location">
       <GuidedModeSection>
-        <Text mb="md">
-          Select an option for how you would like SODA to generate your data on Pennsieve.
+        <Text>
+          Select where you would like SODA to generate your data. If you are a guest contributor,
+          you should select the "Upload to an existing empty dataset on Pennsieve" option.
         </Text>
+
         <Group align="stretch" gap="md" justify="center">
           <CheckboxCard id="generate-on-new-pennsieve-dataset" />
           <CheckboxCard id="generate-on-existing-pennsieve-dataset" />
@@ -70,6 +73,13 @@ const GenerateDatasetPennsieveTargetPage = () => {
               <Text size="md" align="center" fw={500}>
                 Retrieving empty datasets from Pennsieve...
               </Text>
+            </Stack>
+          ) : availableDatasetsToUploadDataTo.length > 0 ? (
+            <Stack align="center" mt="md">
+              <Text size="md" align="center" fw={500}>
+                No empty datasets were found that you have permission to upload to.
+              </Text>
+              <Button onClick={fetchDatasetsToUploadDataTo}>Retry dataset retrieval</Button>
             </Stack>
           ) : (
             <>

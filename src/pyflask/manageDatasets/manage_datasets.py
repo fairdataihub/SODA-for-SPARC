@@ -294,6 +294,7 @@ def fetch_user_datasets(return_only_empty_datasets=False):
     global namespace_logger
 
     datasets = get_users_dataset_list()
+    namespace_logger.info(f"Fetched user datasets: {datasets}")
 
     datasets_list = []
     for ds in datasets:
@@ -329,11 +330,13 @@ def fetch_user_datasets(return_only_empty_datasets=False):
     if return_only_empty_datasets:
         filtered_datasets = []
         for ds in sorted_bf_datasets:
+            namespace_logger.info(f"Checking files for dataset {ds}")
             try:
                 r = requests.get(f"{PENNSIEVE_URL}/datasets/{ds['id']}/packages", headers=create_request_headers(get_access_token()))
                 r.raise_for_status()
                 packages_response = r.json()
                 dataset_packages = packages_response.get("packages", [])
+                namespace_logger.info(f"Dataset with name {ds['name']} has {dataset_packages} packages")
                 if not dataset_packages:
                     namespace_logger.info(f"Dataset {ds['id']} is empty, adding to filtered list")
                     filtered_datasets.append(ds)

@@ -114,21 +114,34 @@ export const openPageGenerateDataset = async (targetPageID) => {
       reviewGenerateButtonTextElement.innerHTML = generateButtonText;
     }
     const pennsieveDatasetName = window.sodaJSONObj?.["generate-dataset"]?.["dataset-name"];
-    const pennsieveDatasetSubtitle = window.sodaJSONObj["pennsieve-dataset-subtitle"];
-
-    const datasetLicense = window.sodaJSONObj["digital-metadata"]["license"];
-
     const pennsieveDatasetNameReviewText = document.getElementById("guided-review-dataset-name");
-    const pennsieveDatasetSubtitleReviewText = document.getElementById(
-      "guided-review-dataset-subtitle"
-    );
-
-    const datasetLicenseReviewText = document.getElementById("guided-review-dataset-license");
 
     pennsieveDatasetNameReviewText.innerHTML = pennsieveDatasetName;
-    pennsieveDatasetSubtitleReviewText.innerHTML = pennsieveDatasetSubtitle;
 
-    datasetLicenseReviewText.innerHTML = datasetLicense;
+    // Get all of the elements with class pennsieve-config-info'
+    const pennsieveConfigInfoElements = document.querySelectorAll(".pennsieve-config-info");
+
+    if (window.sodaJSONObj["pennsieve-generation-target"] === "new") {
+      // unhide the pennsieve config info elements
+      pennsieveConfigInfoElements.forEach((element) => {
+        element.classList.remove("hidden");
+      });
+      const pennsieveDatasetSubtitle = window.sodaJSONObj["generate-dataset"]["dataset-subtitle"];
+      const datasetLicense = window.sodaJSONObj["digital-metadata"]["license"];
+
+      const pennsieveDatasetSubtitleReviewText = document.getElementById(
+        "guided-review-dataset-subtitle"
+      );
+      const datasetLicenseReviewText = document.getElementById("guided-review-dataset-license");
+
+      pennsieveDatasetSubtitleReviewText.innerHTML = pennsieveDatasetSubtitle;
+      datasetLicenseReviewText.innerHTML = datasetLicense;
+    } else {
+      // Hide the pennsieve config info elements
+      pennsieveConfigInfoElements.forEach((element) => {
+        element.classList.add("hidden");
+      });
+    }
 
     // Hide the Pennsieve agent check section (unhidden if it requires user action)
     document

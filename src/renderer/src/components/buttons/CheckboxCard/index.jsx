@@ -20,9 +20,9 @@ const dataMap = {
     image: pennsieveLogo,
   },
   "generate-on-existing-pennsieve-dataset": {
-    title: "Upload to an existing dataset on Pennsieve",
+    title: "Upload to an existing empty dataset on Pennsieve",
     description:
-      "Select this option if you already have a dataset on Pennsieve and are uploading data to it.",
+      "Select this option if you already have a dataset created on Pennsieve you are uploading to.",
     image: pennsieveLogo,
     mutuallyExclusiveWithCards: ["generate-on-new-pennsieve-dataset"],
   },

@@ -67,27 +67,7 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
       });
       throw errorArray;
     }
-    /* Commented out until handled after initial SDS3 release
-    if (generateOnExistingPennsieveDatasetCardChecked) {
-      // read dataset name from the Select component in the pennsieve target page tab
-      const datasetSelectElement = document.querySelector(
-        "#guided-pennsieve-generate-target-tab input"
-      );
-      const datasetName = datasetSelectElement.value;
 
-      if (!window.sodaJSONObj["generate-dataset"]) {
-        window.sodaJSONObj["generate-dataset"] = {};
-      }
-
-      // set the window.sodaJSONObj to indicate that the user is generating an existing dataset
-      window.sodaJSONObj["generate-dataset"] = {
-        "dataset-name": datasetName,
-        destination: "ps",
-        "generate-option": "existing-ps",
-        "if-existing": "merge",
-        "if-existing-files": "replace",
-      };
-    }*/
     if (generateOnNewPennsieveDatasetCardChecked) {
       window.sodaJSONObj["pennsieve-generation-target"] = "new";
       guidedUnSkipPageSet("new-pennsieve-dataset-config-page-set");
@@ -98,6 +78,12 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
         "if-existing": "new",
         "if-existing-files": "new",
       };
+
+      // If the previous pennsieve generation target was set to "existing", we need to delete
+      // the previous pennsieve dataset id to ensure it's not used in the new dataset generation
+      if (window.sodaJSONObj["pennsieve-generation-target"] === "existing") {
+        delete window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+      }
     }
     if (generateOnExistingPennsieveDatasetCardChecked) {
       // If the datasets are still loading, wait for them to finish loading
@@ -109,6 +95,8 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
         useGlobalStore.getState().selectedDatasetIdToUploadDataTo;
       const selectedDatasetNameToUploadDataTo =
         useGlobalStore.getState().selectedDatasetNameToUploadDataTo;
+      console.log("Selected dataset name to upload data to: ", selectedDatasetNameToUploadDataTo);
+      console.log("Selected dataset ID to upload data to: ", selectedDatasetIdToUploadDataTo);
       if (!selectedDatasetIdToUploadDataTo) {
         errorArray.push({
           type: "notyf",
@@ -118,6 +106,7 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
       }
       window.sodaJSONObj["previously-selected-dataset-id-to-upload-data-to"] =
         selectedDatasetIdToUploadDataTo;
+      window.sodaJSONObj["digital-metadata"]["dataset-id"] = selectedDatasetIdToUploadDataTo;
       window.sodaJSONObj["generate-dataset"] = {
         "dataset-name": selectedDatasetNameToUploadDataTo,
         destination: "ps",

@@ -295,7 +295,6 @@ export const guidedSetPublishingStatusUI = async () => {
       { params: { selected_account: currentAccount } }
     );
 
-    const publishingStatus = res.data?.publishing_status;
     const reviewStatus = res.data?.review_request_status;
     const statusMessages = {
       draft: "Dataset is not under review currently",
