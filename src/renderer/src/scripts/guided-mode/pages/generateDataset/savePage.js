@@ -69,6 +69,13 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
     }
 
     if (generateOnNewPennsieveDatasetCardChecked) {
+      // If the previous pennsieve generation target was set to "existing", we need to delete
+      // the previous pennsieve dataset id to ensure it's not used in the new dataset generation
+      if (window.sodaJSONObj["pennsieve-generation-target"] === "existing") {
+        console.log("Removing old Pennsieve dataset ID from sodaJSONObj");
+        delete window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+      }
+
       window.sodaJSONObj["pennsieve-generation-target"] = "new";
       guidedUnSkipPageSet("new-pennsieve-dataset-config-page-set");
       window.sodaJSONObj["generate-dataset"] = {
@@ -78,12 +85,6 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
         "if-existing": "new",
         "if-existing-files": "new",
       };
-
-      // If the previous pennsieve generation target was set to "existing", we need to delete
-      // the previous pennsieve dataset id to ensure it's not used in the new dataset generation
-      if (window.sodaJSONObj["pennsieve-generation-target"] === "existing") {
-        delete window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
-      }
     }
     if (generateOnExistingPennsieveDatasetCardChecked) {
       // If the datasets are still loading, wait for them to finish loading
@@ -103,7 +104,8 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
       }
       window.sodaJSONObj["previously-selected-dataset-id-to-upload-data-to"] =
         selectedDatasetIdToUploadDataTo;
-      window.sodaJSONObj["digital-metadata"]["dataset-id"] = selectedDatasetIdToUploadDataTo;
+      window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] =
+        selectedDatasetIdToUploadDataTo;
       window.sodaJSONObj["generate-dataset"] = {
         "dataset-name": selectedDatasetNameToUploadDataTo,
         destination: "ps",
