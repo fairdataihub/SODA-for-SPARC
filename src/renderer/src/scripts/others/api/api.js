@@ -185,14 +185,6 @@ const getDatasetDOI = async (dataset) => {
   }
 };
 
-const getDatasetsForAccount = async () => {
-  let responseObject = await client.get(`manage_datasets/fetch_user_datasets`);
-
-  let { datasets } = responseObject.data;
-
-  return datasets;
-};
-
 const getDatasetSubtitle = async (selected_dataset) => {
   let getSubtitleResponse = await client.get(`/manage_datasets/bf_dataset_subtitle`, {
     params: {
@@ -517,7 +509,6 @@ const api = {
   withdrawDatasetReviewSubmission,
   getDatasetMetadataFiles,
   getDatasetPermissions,
-  getDatasetsForAccount,
   getDatasetSubtitle,
   submitDatasetForPublication,
   getAllCollectionTags,

@@ -5421,13 +5421,9 @@ const initiate_generate = async (resume = false) => {
 
       // update dataset list; set the dataset id and int id
       try {
-        let responseObject = await client.get(`manage_datasets/fetch_user_datasets`, {
-          params: {
-            selected_account: window.defaultBfAccount,
-          },
-        });
-        window.datasetList = [];
-        window.datasetList = responseObject.data.datasets;
+        const datasetList = await api.getUsersDatasetList(false);
+        window.datasetList = datasetList;
+        window.refreshDatasetList();
       } catch (error) {
         clientError(error);
       }
@@ -5598,13 +5594,10 @@ const initiate_generate = async (resume = false) => {
 
       // update the dataset list
       try {
-        let responseObject = await client.get(`manage_datasets/fetch_user_datasets`, {
-          params: {
-            selected_account: window.defaultBfAccount,
-          },
-        });
-        window.datasetList = [];
-        window.datasetList = responseObject.data.datasets;
+        const datasetList = await api.getUsersDatasetList(false);
+        window.datasetList = datasetList;
+        window.clearDatasetDropdowns();
+        window.refreshDatasetList();
       } catch (error) {
         clientError(error);
         emessage = userErrorMessage(error);

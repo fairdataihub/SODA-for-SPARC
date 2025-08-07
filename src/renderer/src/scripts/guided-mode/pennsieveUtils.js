@@ -4,7 +4,7 @@ export const checkIfDatasetExistsOnPennsieve = async (datasetNameOrID) => {
   if (!datasetNameOrID) {
     throw new Error("Dataset name or ID is required");
   }
-  const datasetList = await api.getDatasetsForAccount();
+  const datasetList = await api.getUsersDatasetList(false);
   return datasetList.some(
     (dataset) => dataset.name === datasetNameOrID || dataset.id === datasetNameOrID
   );
