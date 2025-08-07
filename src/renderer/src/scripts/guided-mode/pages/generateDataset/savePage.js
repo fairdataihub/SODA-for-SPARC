@@ -88,15 +88,12 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
     if (generateOnExistingPennsieveDatasetCardChecked) {
       // If the datasets are still loading, wait for them to finish loading
       while (useGlobalStore.getState().isLoadingPennsieveDatasets) {
-        console.log("Waiting for Pennsieve datasets to load...");
         await new Promise((resolve) => setTimeout(resolve, 300));
       }
       const selectedDatasetIdToUploadDataTo =
         useGlobalStore.getState().selectedDatasetIdToUploadDataTo;
       const selectedDatasetNameToUploadDataTo =
         useGlobalStore.getState().selectedDatasetNameToUploadDataTo;
-      console.log("Selected dataset name to upload data to: ", selectedDatasetNameToUploadDataTo);
-      console.log("Selected dataset ID to upload data to: ", selectedDatasetIdToUploadDataTo);
       if (!selectedDatasetIdToUploadDataTo) {
         errorArray.push({
           type: "notyf",
@@ -121,8 +118,6 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
     // is re-entered (this is necessary due to execution batching by React)
     setCheckboxCardUnchecked("generate-on-new-pennsieve-dataset");
     setCheckboxCardUnchecked("generate-on-existing-pennsieve-dataset");
-
-    console.log("Generate dataset after leaving page: ", window.sodaJSONObj["generate-dataset"]);
   }
 
   if (pageBeingLeftID === "guided-pennsieve-settings-tab") {

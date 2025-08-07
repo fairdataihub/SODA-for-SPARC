@@ -45,15 +45,12 @@ export const fetchDatasetsToUploadDataTo = async () => {
   setSelectedDatasetToUploadDataTo(null, null);
 
   const preferredPennsieveDatasetId = useGlobalStore.getState().preferredPennsieveDatasetId;
-  console.log("preferredPennsieveDatasetId:", preferredPennsieveDatasetId);
 
   setIsLoadingPennsieveDatasets(true);
   useGlobalStore.setState({ datasetFetchErrorMessage: null });
 
   try {
-    console.log("🚀 Fetching empty datasets from Pennsieve...");
     const datasets = await api.getUsersDatasetList(true);
-    console.log("📦 Datasets fetched:", datasets);
 
     const formattedOptions = (datasets || []).map((dataset) => ({
       value: dataset.id,
