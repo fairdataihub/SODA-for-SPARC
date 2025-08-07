@@ -1470,13 +1470,9 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       //account is signed in but no datasets have been fetched or created
       //invoke dataset request to ensure no datasets have been created
       if (window.datasetList.length === 0) {
-        let responseObject;
+        let datasets;
         try {
-          responseObject = await client.get(`manage_datasets/fetch_user_datasets`, {
-            params: {
-              selected_account: window.defaultBfAccount,
-            },
-          });
+          datasets = await api.getUsersDatasetList(false);
         } catch (error) {
           const emessage = userErrorMessage(error);
           await swalShowError("Failed to fetch datasets from Pennsieve", emessage);
@@ -1486,9 +1482,8 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           return;
         }
 
-        let result = responseObject.data.datasets;
         window.datasetList = [];
-        window.datasetList = result;
+        window.datasetList = datasets;
         window.refreshDatasetList();
       }
 
