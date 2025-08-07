@@ -5,6 +5,13 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## V16.1.0 - 2025-08-07
+
+## Feature Additions:
+
+- Prepare Dataset Step-by-Step feature has been updated to provide users with a streamlined approach for updating a Pennsieve dataset that is empty. This is especially useful for users who are a guest contributor to a Pennsieve workspace.
+- The Upload Dataset feature has been updated to provide users with a streamlined approach for updating an existing Pennsieve dataset. If the dataset is empty SODA will create metadata files for the dataset. If the dataset is not empty, SODA will not create metadata files for the dataset.
+
 ## v16.0.0 - 2025-08-04
 
 ## Feature Additions:
