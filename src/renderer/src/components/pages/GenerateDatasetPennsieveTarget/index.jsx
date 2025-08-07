@@ -1,19 +1,21 @@
-import useGlobalStore from "../../../stores/globalStore";
-import { Text, Group, Select, Collapse, Center, Loader, Stack, Button } from "@mantine/core";
-import { swalShowError } from "../../../scripts/utils/swal-utils";
 import { useEffect } from "react";
+import { Text, Group, Select, Collapse, Center, Loader, Stack, Button } from "@mantine/core";
+import DropDownNote from "../../utils/ui/DropDownNote";
+
+import useGlobalStore from "../../../stores/globalStore";
+
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import CheckboxCard from "../../buttons/CheckboxCard";
-import SodaPaper from "../../utils/ui/SodaPaper";
-import client from "../../../scripts/client";
 import NavigationButton from "../../buttons/Navigation";
-import { setCheckboxCardUnchecked } from "../../../stores/slices/checkboxCardSlice";
+
 import {
   setSelectedDatasetToUploadDataTo,
   setAvailableDatasetsToUploadDataTo,
   fetchDatasetsToUploadDataTo,
 } from "../../../stores/slices/pennsieveDatasetSelectSlice";
+
+import { setCheckboxCardUnchecked } from "../../../stores/slices/checkboxCardSlice";
 
 const GenerateDatasetPennsieveTargetPage = () => {
   const selectedDatasetIdToUploadDataTo = useGlobalStore(
@@ -26,7 +28,7 @@ const GenerateDatasetPennsieveTargetPage = () => {
     (state) => state.availableDatasetsToUploadDataTo
   );
   const isLoadingPennsieveDatasets = useGlobalStore((state) => state.isLoadingPennsieveDatasets);
-
+  const datasetFetchErrorMessage = useGlobalStore((state) => state.datasetFetchErrorMessage);
   const isNewDatasetSelected = useGlobalStore(
     (state) => !!state.checkboxes["generate-on-new-pennsieve-dataset"]
   );
@@ -34,10 +36,6 @@ const GenerateDatasetPennsieveTargetPage = () => {
     (state) => !!state.checkboxes["generate-on-existing-pennsieve-dataset"]
   );
 
-  console.log("isNewDatasetSelected:", isNewDatasetSelected);
-  console.log("isExistingDatasetSelected:", isExistingDatasetSelected);
-
-  // Use exported setter to set both id and name
   const handleSelectDataset = (id) => {
     const dataset = availableDatasetsToUploadDataTo.find((d) => d.value === id);
     setSelectedDatasetToUploadDataTo(id, dataset ? dataset.label : null);
@@ -50,6 +48,63 @@ const GenerateDatasetPennsieveTargetPage = () => {
       setAvailableDatasetsToUploadDataTo([]);
     }
   }, [isExistingDatasetSelected]);
+
+  const renderDatasetSection = () => {
+    if (isLoadingPennsieveDatasets) {
+      return (
+        <Stack align="center" mt="md">
+          <Loader size="md" />
+          <Text size="md" align="center" fw={500}>
+            Retrieving empty datasets from Pennsieve...
+          </Text>
+        </Stack>
+      );
+    }
+
+    if (datasetFetchErrorMessage) {
+      return (
+        <Stack mt="md">
+          <Text size="md" align="center" fw={500} c="red">
+            {datasetFetchErrorMessage}
+          </Text>
+          <Button onClick={fetchDatasetsToUploadDataTo} w="230px">
+            Retry dataset retrieval
+          </Button>
+        </Stack>
+      );
+    }
+
+    if (availableDatasetsToUploadDataTo.length > 0) {
+      return (
+        <>
+          <Text mt="md" align="center" fw={500} size="lg">
+            Select an existing dataset to upload data to:
+          </Text>
+          <Select
+            placeholder="Select a dataset"
+            data={availableDatasetsToUploadDataTo}
+            value={selectedDatasetIdToUploadDataTo}
+            onChange={handleSelectDataset}
+            maxDropdownHeight={200}
+            comboboxProps={{ withinPortal: false }}
+          />
+          <DropDownNote id="user-retrieved-datasets-but-missing-desired-dataset" />
+        </>
+      );
+    }
+
+    return (
+      <Stack mt="md" align="center">
+        <Text size="md" align="center" fw={500}>
+          No empty datasets were found that you have permission to upload to.
+        </Text>
+        <Button onClick={fetchDatasetsToUploadDataTo} w="230px">
+          Retry dataset retrieval
+        </Button>
+        <DropDownNote id="user-doesnt-have-any-empty-datasets" />
+      </Stack>
+    );
+  };
 
   return (
     <GuidedModePage pageHeader="Pennsieve Generation Location">
@@ -66,45 +121,13 @@ const GenerateDatasetPennsieveTargetPage = () => {
       </GuidedModeSection>
 
       <Collapse in={isExistingDatasetSelected}>
-        <GuidedModeSection>
-          {isLoadingPennsieveDatasets ? (
-            <Stack align="center" mt="md">
-              <Loader size="md" />
-              <Text size="md" align="center" fw={500}>
-                Retrieving empty datasets from Pennsieve...
-              </Text>
-            </Stack>
-          ) : availableDatasetsToUploadDataTo.length > 0 ? (
-            <Stack align="center" mt="md">
-              <Text size="md" align="center" fw={500}>
-                No empty datasets were found that you have permission to upload to.
-              </Text>
-              <Button onClick={fetchDatasetsToUploadDataTo}>Retry dataset retrieval</Button>
-            </Stack>
-          ) : (
-            <>
-              <Text mt="md" align="center" fw={500} size="lg">
-                Select an existing dataset to upload data to:
-              </Text>
-              <Select
-                placeholder={"Select a dataset"}
-                data={availableDatasetsToUploadDataTo}
-                value={selectedDatasetIdToUploadDataTo}
-                onChange={handleSelectDataset}
-                maxDropdownHeight={200}
-                comboboxProps={{
-                  withinPortal: false,
-                }}
-              />
-            </>
-          )}
-        </GuidedModeSection>
+        <GuidedModeSection>{renderDatasetSection()}</GuidedModeSection>
       </Collapse>
 
-      {((isExistingDatasetSelected &&
-        selectedDatasetIdToUploadDataTo &&
-        selectedDatasetNameToUploadDataTo) ||
-        isNewDatasetSelected) && (
+      {(isNewDatasetSelected ||
+        (isExistingDatasetSelected &&
+          selectedDatasetIdToUploadDataTo &&
+          selectedDatasetNameToUploadDataTo)) && (
         <GuidedModeSection>
           <Center mt="xl">
             <NavigationButton

@@ -1,6 +1,11 @@
 import { Stack, Button, Text, List } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
-import { IconChevronRight, IconChevronDown, IconInfoCircle } from "@tabler/icons-react";
+import {
+  IconChevronRight,
+  IconChevronDown,
+  IconInfoCircle,
+  IconQuestionMark,
+} from "@tabler/icons-react";
 import classes from "./DropDownNote.module.css";
 import SodaGreenPaper from "../SodaGreenPaper";
 import SodaPaper from "../SodaPaper";
@@ -8,6 +13,7 @@ import useGlobalStore from "../../../../stores/globalStore";
 
 const dropDownIcons = {
   info: <IconInfoCircle className={classes.dropDownIcon} color="black" />,
+  question: <IconQuestionMark className={classes.dropDownIcon} color="black" />,
 };
 
 const renderDataCategoriesNote = (datasetIncludesCode) => (
@@ -144,6 +150,39 @@ const DropDownNote = ({ id }) => {
               </List.Item>
             )}
           </List>
+        </>
+      ),
+    },
+    "user-retrieved-datasets-but-missing-desired-dataset": {
+      dropDownIcon: "question",
+      dropDownButtonText: "Why can't I find my dataset?",
+      dropDownNote: (
+        <>
+          <Text size="sm" mb="sm">
+            Only datasets that are empty (do not have any folders or files) are displayed in the
+            dropdown above. SODA does not currently support uploading to a dataset that is not
+            empty.
+          </Text>
+          <Text size="sm">
+            You must also be given the permission of <strong>"manager"</strong> or{" "}
+            <strong>"owner"</strong> of the dataset in order to upload data to it.
+          </Text>
+        </>
+      ),
+    },
+    "user-doesnt-have-any-empty-datasets": {
+      dropDownIcon: "question",
+      dropDownButtonText: "Why wasn't SODA able to retrieve any datasets",
+      dropDownNote: (
+        <>
+          <Text size="sm" mb="sm">
+            Only datasets that are empty (do not have any folders or files) can be retrieved at this
+            step. SODA does not currently support uploading to a dataset that is not empty.
+          </Text>
+          <Text size="sm">
+            You must also be given the permission of <strong>"manager"</strong> or{" "}
+            <strong>"owner"</strong> of the dataset in order to upload data to it.
+          </Text>
         </>
       ),
     },
