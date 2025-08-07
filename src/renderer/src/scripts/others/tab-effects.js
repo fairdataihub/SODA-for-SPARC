@@ -121,23 +121,46 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
 
     // if the user has files already on their dataset when starting from new/local and merging to existing pennsieve then
     // show them a message detailing why they cannot create manifest files
-    // if (document.getElementById("dataset-upload-existing-dataset").classList.contains("checked")) {
-    //   if ($("#generate-manifest-curate").prop("checked")) {
-    //     $("#generate-manifest-curate").click();
-    //   }
-    //   $("#generate-manifest-curate").prop("disabled", true);
-    //   $("#nextBtn").prop("disabled", false);
-    //   $("#generate-manifest-curate").prop("disabled", true);
-    //   document.getElementById("manifest-information-container").classList.add("hidden");
-    //   document.getElementById("manifest-intro-info").classList.add("hidden");
-    // }
-    document.getElementById("manifest-information-container").classList.remove("hidden");
-    document.getElementById("manifest-intro-info").classList.remove("hidden");
-    if (!document.getElementById("generate-manifest-curate").checked) {
-      document.getElementById("manifest-information-container").classList.add("hidden");
+    if (document.getElementById("dataset-upload-existing-dataset").classList.contains("checked")) {
+      // check if the dataset has files already
+      let packageTypeCounts = {};
+      let gotPackageCount = true;
+      try {
+        packageTypeCounts = await api.getNumberOfPackagesInDataset(window.defaultBfDataset);
+      } catch (error) {
+        clientError(error);
+        gotPackageCount = false;
+      }
+
+      // count the number of packages in the packgeTypeCounts dictionary
+      let packageCount = 0;
+      if (gotPackageCount) {
+        for (let packageType in packageTypeCounts) {
+          packageCount += packageTypeCounts[packageType];
+        }
+      }
+
+      if (packageCount > 0 || !gotPackageCount) {
+        if ($("#generate-manifest-curate").prop("checked")) {
+          $("#generate-manifest-curate").click();
+        }
+        $("#generate-manifest-curate").prop("disabled", true);
+        $("#nextBtn").prop("disabled", false);
+        $("#generate-manifest-curate").prop("disabled", true);
+        document.getElementById("manifest-information-container").classList.add("hidden");
+        document.getElementById("manifest-intro-info").classList.add("hidden");
+        document.getElementById("manifest-disabled-info-container").classList.remove("hidden");
+      }
+    } else {
+      document.getElementById("manifest-information-container").classList.remove("hidden");
+      document.getElementById("manifest-intro-info").classList.remove("hidden");
+      if (!document.getElementById("generate-manifest-curate").checked) {
+        document.getElementById("manifest-information-container").classList.add("hidden");
+      }
+      document.getElementById("manifest-disabled-info-container").classList.add("hidden");
+      document.getElementById("generate-manifest-curate").disabled = false;
+      $("#generate-manifest-curate").prop("disabled", false);
     }
-    document.getElementById("generate-manifest-curate").disabled = false;
-    $("#generate-manifest-curate").prop("disabled", false);
 
     if (document.getElementById("generate-manifest-curate").checked) {
       // need to run manifest creation
@@ -1894,11 +1917,6 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
     document.getElementById("existing-folders-merge").checked = false;
     document.getElementById("existing-files-replace").checked = false;
 
-    // alert the user that manifest files will not be uploaded
-    await swalShowInfo(
-      "Manifest files will not be uploaded to Pennsieve",
-      'The selected Pennsieve dataset already includes data files. To prevent conflicts, SODA will not generate manifest files. You can generate manifest files after the upload is complete by navigating to the home page, selecting "Advanced features", and then selecting the "Create manifest files" option.'
-    );
     // continue as usual otherwise
   }
 
