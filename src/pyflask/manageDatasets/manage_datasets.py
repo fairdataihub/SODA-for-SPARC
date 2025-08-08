@@ -294,7 +294,6 @@ def fetch_user_datasets(return_only_empty_datasets=False):
     global namespace_logger
 
     datasets = get_users_dataset_list()
-    namespace_logger.info(f"Fetched user datasets: {datasets}")
 
     datasets_list = []
     for ds in datasets:
@@ -461,7 +460,6 @@ def create_new_dataset(datasetname, accountname):
             if ds["content"]["name"] == datasetname:
                 abort(400, "Dataset name already exists")
 
-        namespace_logger.info("Creating new dataset")
         r = requests.post(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(get_access_token()), json={"name": datasetname})
         r.raise_for_status()
         ds_id = r.json()['content']['id']
@@ -1444,10 +1442,7 @@ def get_dataset_readme( selected_dataset):
     selected_dataset_id = get_dataset_id(selected_dataset)
 
     try:
-        namespace_logger.info(f"Getting readme for dataset {selected_dataset_id}")
         r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", headers=create_request_headers(get_access_token()))       
-        namespace_logger.info(f"Readme for dataset {selected_dataset_id} retrieved successfully")
-        namespace_logger.info(f"Readme response: {r.text}")
         r.raise_for_status()
 
         readme = r.json()
