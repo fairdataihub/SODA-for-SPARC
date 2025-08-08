@@ -113,11 +113,14 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
 
   if (tabNow == 3) {
     if (nextOrPrev === -1) {
-      return;
+      // enable continue button
+      $("#nextBtn").prop("disabled", false);
+        return;
     }
 
     // enable continue button
     $("#nextBtn").prop("disabled", false);
+
 
     // if the user has files already on their dataset when starting from new/local and merging to existing pennsieve then
     // show them a message detailing why they cannot create manifest files
