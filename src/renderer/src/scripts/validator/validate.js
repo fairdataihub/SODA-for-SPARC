@@ -1126,27 +1126,3 @@ const setCurationTeamAsManagers = async () => {
     clientError(error);
   }
 };
-
-const removeCurationTeamAsManagers = async () => {
-  var selectedTeam = "SPARC Data Curation Team";
-  var selectedRole = "viewer";
-
-  try {
-    await client.patch(
-      `/manage_datasets/bf_dataset_permissions`,
-      {
-        input_role: selectedRole,
-      },
-      {
-        params: {
-          selected_account: window.defaultBfDataset,
-          selected_dataset: window.defaultBfDataset,
-          scope: "team",
-          name: selectedTeam,
-        },
-      }
-    );
-  } catch (error) {
-    clientError(error);
-  }
-};
