@@ -76,6 +76,14 @@ const handleNextButtonVisibility = (targetPageID) => {
   }
 };
 
+const handleSaveAndExitButtonVisibility = (targetPageID) => {
+  if (targetPageID === "guided-select-starting-point-tab") {
+    $("#guided-button-save-and-exit").css("visibility", "hidden");
+  } else {
+    $("#guided-button-save-and-exit").css("visibility", "visible");
+  }
+};
+
 // Function that handles the validation state of the dataset
 // When the user goes back to before the validation tab, the dataset is no longer validated
 // This function will reset the dataset-validated value to false so validation will be retriggered
@@ -208,6 +216,7 @@ window.openPage = async (targetPageID) => {
 
     handleNextButtonVisibility(targetPageID);
     handleBackButtonVisibility(targetPageID);
+    handleSaveAndExitButtonVisibility(targetPageID);
     handleGuidedValidationState(targetPageID);
 
     // If the user has not saved the dataset name and subtitle, then the next button should say "Continue"
