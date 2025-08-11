@@ -25,7 +25,7 @@ from errorHandlers import notBadRequestException
 from utils import metadata_string_to_list
 from pysoda.core.metadata import submission
 from pysoda.core.metadata import dataset_description
-from pysoda.core.metadata import readme_changes
+from pysoda.core.metadata import text_metadata
 from pysoda.core.metadata import code_description
 from pysoda.core.metadata import subjects
 from pysoda.core.metadata import samples
@@ -120,7 +120,7 @@ model_get_RC_file_response = api.model('getRCFileResponse', {
     'text': fields.String(required=True, description='Text of the file'),
 })
 
-@api.route('/readme_changes_file')
+@api.route('/text_metadata_file')
 class RCFile(Resource):
 
     parser_get_RC_file = reqparse.RequestParser(bundle_errors=True)
@@ -160,7 +160,7 @@ class RCFile(Resource):
         soda = data.get("soda")
 
         try:
-            return readme_changes.create_excel(soda, file_type)
+            return text_metadata.create_excel(soda, file_type)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))
