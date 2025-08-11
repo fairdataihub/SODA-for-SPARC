@@ -71,9 +71,9 @@ const removeAccountInformationFromServer = (profileKey) => {
 window.disconnectPennsieveAccount = async (profileKey) => {
   removeAccountInformationFromServer(profileKey);
 
-  window.defaultBfAccount = null;
-  window.defaultBfDataset = null;
-  window.defaultBfDatasetId = null;
+  window.defaultBfAccount = undefined;
+  window.defaultBfDataset = undefined;
+  window.defaultBfDatasetId = undefined;
 
   // update the account cards so that all their values are None
   // reset the dataset field values

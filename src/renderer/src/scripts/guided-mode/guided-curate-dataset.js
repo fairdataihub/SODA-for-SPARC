@@ -574,12 +574,7 @@ window.CURRENT_PAGE;
 /////////////////////////////////////////////////////////
 /////////////       Util functions      /////////////////
 /////////////////////////////////////////////////////////
-const pulseNextButton = () => {
-  $("#guided-next-button").addClass("pulse-blue");
-};
-const unPulseNextButton = () => {
-  $("#guided-next-button").removeClass("pulse-blue");
-};
+
 const enableProgressButton = () => {
   $("#guided-next-button").prop("disabled", false);
 };
@@ -3528,7 +3523,6 @@ $("#guided-button-save-other-link-fields").on("click", () => {
   //switch button from save to edit
   document.getElementById("guided-button-save-other-link-fields").style.display = "none";
   document.getElementById("guided-button-edit-other-link-fields").style.display = "flex";
-  pulseNextButton();
 });
 $("#guided-button-add-additional-link").on("click", async () => {
   openAddAdditionLinkSwal();
@@ -3539,7 +3533,6 @@ $("#guided-button-edit-other-link-fields").on("click", () => {
   //switch button from edit to save
   document.getElementById("guided-button-edit-other-link-fields").style.display = "none";
   document.getElementById("guided-button-save-other-link-fields").style.display = "flex";
-  unPulseNextButton();
 });
 
 const guidedGenerateRCFilesHelper = (type) => {
@@ -3784,7 +3777,7 @@ const doTheHack = async () => {
 
 // If this variable is set to true, you will be taken back to the last guided mode page you were working on
 // (always set to false when making production builds)
-const continueHackGm = true;
+const continueHackGm = false;
 if (continueHackGm) {
   doTheHack();
 }

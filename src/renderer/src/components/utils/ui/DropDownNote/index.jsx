@@ -159,29 +159,29 @@ const DropDownNote = ({ id }) => {
       dropDownNote: (
         <>
           <Text size="sm" mb="sm">
-            Only datasets that are empty (do not have any folders or files) are displayed in the
-            dropdown above. SODA does not currently support uploading to a dataset that is not
-            empty.
+            Only datasets that are empty (have no folders or files) are shown in the dropdown above.
+            SODA does not currently support uploading to datasets that are not empty in the "Prepare
+            dataset step-by-step" because of potential conflicts with existing data.
           </Text>
           <Text size="sm">
-            You must also be given the permission of <strong>"manager"</strong> or{" "}
-            <strong>"owner"</strong> of the dataset in order to upload data to it.
+            You must also have <strong>"Owner"</strong> or <strong>"Manager"</strong> permissions on
+            the dataset in order for SODA to retrieve it.
           </Text>
         </>
       ),
     },
     "user-doesnt-have-any-empty-datasets": {
       dropDownIcon: "question",
-      dropDownButtonText: "Why wasn't SODA able to retrieve any datasets",
+      dropDownButtonText: "Why wasn't SODA able to retrieve any datasets?",
       dropDownNote: (
         <>
           <Text size="sm" mb="sm">
             Only datasets that are empty (do not have any folders or files) can be retrieved at this
-            step. SODA does not currently support uploading to a dataset that is not empty.
+            step. SODA does not currently support uploading to datasets that are not empty.
           </Text>
           <Text size="sm">
-            You must also be given the permission of <strong>"manager"</strong> or{" "}
-            <strong>"owner"</strong> of the dataset in order to upload data to it.
+            You must also have <strong>"Owner"</strong> or <strong>"Manager"</strong> permissions on
+            the dataset in order for SODA to retrieve it.
           </Text>
         </>
       ),

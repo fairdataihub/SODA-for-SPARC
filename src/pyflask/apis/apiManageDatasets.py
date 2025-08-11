@@ -468,8 +468,6 @@ class BfDatasetAccount(Resource):
     try:
       args = self.parser_fetch_user_datasets.parse_args()
       return_only_empty_datasets = args.get("return_only_empty_datasets", "false").lower() == "true"
-      api.logger.info(f"Fetching user datasets with args: {args}")
-      api.logger.info(f"Return only empty datasets: {return_only_empty_datasets}")
       return fetch_user_datasets(return_only_empty_datasets)
     except Exception as e:
       api.logger.exception(e)

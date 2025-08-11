@@ -267,14 +267,14 @@ $("#button-create-ps-new-dataset").click(async () => {
 
       window.log.info(`Requesting list of datasets`);
 
-      window.datasetList = [];
-      window.datasetList = await api.getDatasetsForAccount();
+      const datasetList = await api.getUsersDatasetList(false);
+      window.datasetList = datasetList;
+      window.clearDatasetDropdowns();
+      window.refreshDatasetList();
+
       window.log.info(`Requested list of datasets successfully`);
 
       $(".ps-dataset-span").html(bfNewDatasetName);
-
-      window.refreshDatasetList();
-      updateDatasetList();
 
       $(".confirm-button").click();
       $("#ps-new-dataset-name").val("");
@@ -453,8 +453,9 @@ $("#button-rename-dataset").on("click", async () => {
       window.log.info("Requesting list of datasets");
 
       try {
-        window.datasetList = [];
-        window.datasetList = await api.getDatasetsForAccount();
+        const datasetList = await api.getUsersDatasetList(false);
+        window.datasetList = datasetList;
+        window.clearDatasetDropdowns();
         window.refreshDatasetList();
       } catch (error) {
         clientError(error);

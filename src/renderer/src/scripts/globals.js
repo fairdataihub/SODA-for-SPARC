@@ -992,14 +992,8 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
         gettingStartedPennsieveBtn.children[1].style.display = "flex";
 
         try {
-          let responseObject = await client.get(`manage_datasets/fetch_user_datasets`, {
-            params: {
-              selected_account: bfacct,
-            },
-          });
-
-          window.datasetList = [];
-          window.datasetList = responseObject.data.datasets;
+          const datasetList = await api.getUsersDatasetList(false);
+          window.datasetList = datasetList;
           window.clearDatasetDropdowns();
           window.refreshDatasetList();
         } catch (error) {
@@ -1470,13 +1464,11 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       //account is signed in but no datasets have been fetched or created
       //invoke dataset request to ensure no datasets have been created
       if (window.datasetList.length === 0) {
-        let responseObject;
         try {
-          responseObject = await client.get(`manage_datasets/fetch_user_datasets`, {
-            params: {
-              selected_account: window.defaultBfAccount,
-            },
-          });
+          const datasetList = await api.getUsersDatasetList(false);
+          window.datasetList = datasetList;
+          window.clearDatasetDropdowns();
+          window.refreshDatasetList();
         } catch (error) {
           const emessage = userErrorMessage(error);
           await swalShowError("Failed to fetch datasets from Pennsieve", emessage);
@@ -1485,11 +1477,6 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           $(".svg-change-current-account.dataset").css("display", "block");
           return;
         }
-
-        let result = responseObject.data.datasets;
-        window.datasetList = [];
-        window.datasetList = result;
-        window.refreshDatasetList();
       }
 
       //after request check length again

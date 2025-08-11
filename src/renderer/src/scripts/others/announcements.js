@@ -6,7 +6,7 @@ import { announcement_laptop } from "../../assets/lotties/announcement-laptop";
 // To change what branch the announcements.json is fetched from, enter branch name between "SODA-for-SPARC/" and "/scripts" in the url below
 // state will be either "update" or "announcements"
 const checkForAnnouncements = async (state) => {
-  const url = `https://raw.githubusercontent.com/fairdataihub/SODA-for-SPARC/staging/src/renderer/src/scripts/meta/announcements.json?timestamp=${new Date().getTime()}`;
+  const url = `https://raw.githubusercontent.com/fairdataihub/SODA-for-SPARC/sds3/src/renderer/src/scripts/meta/announcements.json?timestamp=${new Date().getTime()}`;
 
   const axiosInstance = axios.create({
     baseURL: url,
