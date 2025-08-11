@@ -11,7 +11,7 @@ import { IconDeviceDesktop, IconSquarePlus } from "@tabler/icons-react";
 const dataMap = {
   "generate-dataset-locally": {
     title: "Generate dataset locally",
-    description: "Create a local copy of your dataset on your computer",
+    description: "Create a local copy of the dataset on your computer",
     Icon: IconDeviceDesktop,
   },
   "generate-dataset-on-pennsieve": {
