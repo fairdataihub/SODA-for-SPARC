@@ -277,7 +277,7 @@ const objectsHaveSameKeys = (...objects) => {
 
 const checkIfChangesMetadataPageShouldBeShown = async (pennsieveDatasetID) => {
   try {
-    const changesRes = await client.get(`/prepare_metadata/readme_changes_file`, {
+    const changesRes = await client.get(`/prepare_metadata/text_metadata_file`, {
       params: {
         file_type: "CHANGES",
         selected_account: window.defaultBfAccount,

@@ -36,6 +36,7 @@ import {
   setMilestones,
   setMilestoneDate,
 } from "../../../../stores/slices/datasetMetadataSlice";
+import { fetchLicenseOptionsFromSPDX } from "../../../../stores/slices/licenseSlice";
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
@@ -143,6 +144,11 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     const readMe = window.sodaJSONObj["dataset_metadata"]["README"] || "";
 
     readMeTextArea.value = readMe;
+  }
+
+  if (targetPageID === "guided-create-license-metadata-tab") {
+    const license = window.sodaJSONObj["dataset_metadata"]["LICENSE"] || "";
+    await fetchLicenseOptionsFromSPDX();
   }
 
   if (targetPageID === "guided-dataset-structure-review-tab") {

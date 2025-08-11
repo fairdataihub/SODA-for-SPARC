@@ -424,18 +424,6 @@ window.openPage = async (targetPageID) => {
     //         console.log("datasetEntityObj", useGlobalStore.getState().datasetEntityObj);
     //     }
 
-    //     if (targetPageID === "guided-create-changes-metadata-tab") {
-    //         const changesTextArea = document.getElementById("guided-textarea-create-changes");
-
-    //         const changes = window.sodaJSONObj["dataset_metadata"]["CHANGES"];
-
-    //         if (changes) {
-    //             changesTextArea.value = changes;
-    //         } else {
-    //             changesTextArea.value = "";
-    //         }
-    //     }
-
     let currentParentTab = window.CURRENT_PAGE.closest(".guided--parent-tab");
 
     //Set all capsules to grey and set capsule of page being traversed to green

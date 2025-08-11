@@ -13,6 +13,7 @@ import PerformanceIdManagementPage from "../pages/PerformanceIdManagement";
 import GenerateDatasetLocationSelectorPage from "../pages/GenerateDatasetLocationSelector";
 import GenerateDatasetPennsieveTargetPage from "../pages/GenerateDatasetPennsieveTarget";
 import ResourcesManagementPage from "../pages/ResourcesManagement";
+import LicenseSelectPage from "../pages/LicenseSelect";
 import ModalitySelectionPage from "../pages/ModalitySelection";
 import EntityMetadataPage from "../pages/EntityMetadataPage";
 import SpreadsheetImportDatasetEntityAdditionPage from "../pages/SpreadsheetImportDatasetEntityAdditionPage";
@@ -184,6 +185,9 @@ const componentTypeRenderers = {
   },
   "pennsieve-generate-target-page": (componentSlot) => {
     renderComponent(componentSlot, <GenerateDatasetPennsieveTargetPage />);
+  },
+  "license-select-page": (componentSlot) => {
+    renderComponent(componentSlot, <LicenseSelectPage />);
   },
   divider: (componentSlot) => {
     renderComponent(componentSlot, <Divider my="xl" />);
