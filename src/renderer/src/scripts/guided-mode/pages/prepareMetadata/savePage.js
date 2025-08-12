@@ -289,6 +289,6 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       throw errorArray;
     }
     // Save the README content to the sodaJSONObj
-    window.sodaJSONObj["dataset_metadata"]["README"] = readmeTextContent;
+    window.sodaJSONObj["dataset_metadata"]["README.md"] = readmeTextContent;
   }
 };

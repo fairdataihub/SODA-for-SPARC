@@ -12,6 +12,8 @@ import {
  * @param {string} [placeholder] - Optional placeholder text.
  */
 const SodaTextInput = ({ id, label, description, placeholder, textArea, maxLength }) => {
+  console.log("maxLength", maxLength);
+  console.log("typeof maxLength", typeof maxLength);
   const value = useGlobalStore((state) => state.sodaTextInputs?.[id] || "");
   const handleChange = (event) => {
     setSodaTextInputValue(id, event.target.value);
@@ -28,7 +30,7 @@ const SodaTextInput = ({ id, label, description, placeholder, textArea, maxLengt
         style={{ width: "100%" }}
         minRows={5}
         autosize
-        maxLength={typeof maxLength === "number" ? maxLength : undefined}
+        maxLength={maxLength ? Number(maxLength) : undefined}
       />
     );
   }
@@ -41,7 +43,7 @@ const SodaTextInput = ({ id, label, description, placeholder, textArea, maxLengt
       value={value}
       onChange={handleChange}
       style={{ width: "100%" }}
-      maxLength={typeof maxLength === "number" ? maxLength : undefined}
+      maxLength={maxLength ? Number(maxLength) : undefined}
     />
   );
 };

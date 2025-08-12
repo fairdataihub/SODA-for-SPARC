@@ -1,19 +1,11 @@
-import { Stack, Button, Text, List } from "@mantine/core";
-import { useToggle } from "@mantine/hooks";
-import {
-  IconChevronRight,
-  IconChevronDown,
-  IconInfoCircle,
-  IconQuestionMark,
-} from "@tabler/icons-react";
-import classes from "./DropDownNote.module.css";
-import SodaGreenPaper from "../SodaGreenPaper";
+import { Accordion, Text, List, Group } from "@mantine/core";
+import { IconInfoCircle } from "@tabler/icons-react";
 import SodaPaper from "../SodaPaper";
 import useGlobalStore from "../../../../stores/globalStore";
 
 const dropDownIcons = {
-  info: <IconInfoCircle className={classes.dropDownIcon} color="black" />,
-  question: <IconInfoCircle className={classes.dropDownIcon} color="black" />,
+  info: <IconInfoCircle size={18} color="gray" />,
+  question: <IconInfoCircle size={18} color="gray" />,
 };
 
 const renderDataCategoriesNote = (datasetIncludesCode) => (
@@ -52,7 +44,6 @@ const renderDataCategoriesNote = (datasetIncludesCode) => (
 );
 
 const DropDownNote = ({ id }) => {
-  const [isOpen, toggleOpen] = useToggle([false, true]);
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const datasetIncludesSubjects = selectedEntities.includes("subjects");
   const datasetIncludesSamples = selectedEntities.includes("samples");
@@ -193,20 +184,22 @@ const DropDownNote = ({ id }) => {
   if (!config) return null;
 
   return (
-    <Stack gap="xs">
-      <Button variant="subtle" justify="left" onClick={toggleOpen} className={classes.button}>
-        {dropDownIcons[config.dropDownIcon]}
-        <Text td="underline" className={classes.dropDownButtonText} sx={{ mx: 6 }} size="sm">
-          {config.dropDownButtonText}
-        </Text>
-        {isOpen ? (
-          <IconChevronDown className={classes.dropDownIcon} />
-        ) : (
-          <IconChevronRight className={classes.dropDownIcon} />
-        )}
-      </Button>
-      {isOpen && <SodaGreenPaper>{config.dropDownNote}</SodaGreenPaper>}
-    </Stack>
+    <Accordion
+      variant="separated"
+      multiple={false}
+      defaultValue={null} // closed by default
+      chevronPosition="right"
+    >
+      <Accordion.Item value="item-1">
+        <Accordion.Control>
+          <Group spacing="xs" noWrap align="center">
+            {dropDownIcons[config.dropDownIcon]}
+            <Text>{config.dropDownButtonText}</Text>
+          </Group>
+        </Accordion.Control>
+        <Accordion.Panel>{config.dropDownNote}</Accordion.Panel>
+      </Accordion.Item>
+    </Accordion>
   );
 };
 

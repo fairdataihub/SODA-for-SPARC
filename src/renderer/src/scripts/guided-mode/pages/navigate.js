@@ -269,35 +269,6 @@ const guidedResetProgressVariables = () => {
   window.datasetStructureJSONObj = {};
 };
 
-const objectsHaveSameKeys = (...objects) => {
-  const allKeys = objects.reduce((keys, object) => keys.concat(Object.keys(object)), []);
-  const union = new Set(allKeys);
-  return objects.every((object) => union.size === Object.keys(object).length);
-};
-
-const checkIfChangesMetadataPageShouldBeShown = async (pennsieveDatasetID) => {
-  try {
-    const changesRes = await client.get(`/prepare_metadata/readme_changes_file`, {
-      params: {
-        file_type: "CHANGES",
-        selected_account: window.defaultBfAccount,
-        selected_dataset: pennsieveDatasetID,
-      },
-    });
-    const changes_text = changesRes.data.text;
-    return { shouldShow: true, changesMetadata: changes_text };
-  } catch (error) {
-    const datasetInfo = await api.getDatasetInformation(pennsieveDatasetID);
-    const isPublished = datasetInfo?.publication?.status === "completed";
-
-    if (isPublished) {
-      return { shouldShow: true, changesMetadata: "" };
-    } else {
-      return { shouldShow: false };
-    }
-  }
-};
-
 export const scrollToBottomOfGuidedBody = () => {
   const elementToScrollTo = document.querySelector(".guided--body");
   elementToScrollTo.scrollTop = elementToScrollTo.scrollHeight;
