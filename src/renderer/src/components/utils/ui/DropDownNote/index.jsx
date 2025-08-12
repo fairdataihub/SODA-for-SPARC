@@ -176,8 +176,9 @@ const DropDownNote = ({ id }) => {
       dropDownNote: (
         <>
           <Text size="sm" mb="sm">
-            Only datasets that are empty (do not have any folders or files) can be retrieved at this
-            step. SODA does not currently support uploading to datasets that are not empty.
+            Only datasets that are empty (have no folders or files) are shown in the dropdown above.
+            SODA does not currently support uploading to datasets that are not empty in the "Prepare
+            dataset step-by-step" because of potential conflicts with existing data.
           </Text>
           <Text size="sm">
             You must also have <strong>"Owner"</strong> or <strong>"Manager"</strong> permissions on
