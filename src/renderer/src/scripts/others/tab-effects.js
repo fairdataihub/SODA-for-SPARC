@@ -113,6 +113,8 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
 
   if (tabNow == 3) {
     if (nextOrPrev === -1) {
+      // enable continue button
+      $("#nextBtn").prop("disabled", false);
       return;
     }
 
