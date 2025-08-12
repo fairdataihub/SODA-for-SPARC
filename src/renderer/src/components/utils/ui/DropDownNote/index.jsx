@@ -13,7 +13,7 @@ import useGlobalStore from "../../../../stores/globalStore";
 
 const dropDownIcons = {
   info: <IconInfoCircle className={classes.dropDownIcon} color="black" />,
-  question: <IconQuestionMark className={classes.dropDownIcon} color="black" />,
+  question: <IconInfoCircle className={classes.dropDownIcon} color="black" />,
 };
 
 const renderDataCategoriesNote = (datasetIncludesCode) => (

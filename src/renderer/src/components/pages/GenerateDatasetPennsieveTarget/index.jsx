@@ -78,7 +78,7 @@ const GenerateDatasetPennsieveTargetPage = () => {
       return (
         <>
           <Text mt="md" align="center" fw={500} size="lg">
-            Select an existing dataset to upload data to:
+            Select your Pennsieve dataset:
           </Text>
           <Select
             placeholder="Select a dataset"
@@ -107,11 +107,10 @@ const GenerateDatasetPennsieveTargetPage = () => {
   };
 
   return (
-    <GuidedModePage pageHeader="Pennsieve Generation Location">
+    <GuidedModePage pageHeader="Pennsieve Dataset">
       <GuidedModeSection>
-        <Text>
-          Select where you would like SODA to generate your data. If you are a guest contributor,
-          you should select the "Upload to an existing empty dataset on Pennsieve" option.
+        <Text align="center">
+          Select where on Pennsieve you would like SODA to generate your dataset.
         </Text>
 
         <Group align="stretch" gap="md" justify="center">

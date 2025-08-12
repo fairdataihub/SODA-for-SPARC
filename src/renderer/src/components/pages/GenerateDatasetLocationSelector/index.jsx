@@ -7,7 +7,7 @@ const GenerateDatasetLocationSelectorPage = () => {
   return (
     <GuidedModePage pageHeader="Options">
       <GuidedModeSection>
-        <Text mb="md">
+        <Text mb="md" align="center">
           Check the box for all of the locations you would like to generate your dataset to.
         </Text>
         <Group align="stretch" gap="md" justify="center">
