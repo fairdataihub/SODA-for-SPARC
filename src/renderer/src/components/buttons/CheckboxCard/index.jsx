@@ -11,7 +11,7 @@ import { IconDeviceDesktop, IconSquarePlus } from "@tabler/icons-react";
 const dataMap = {
   "generate-dataset-locally": {
     title: "Generate dataset locally",
-    description: "Create a local copy of your dataset on your computer",
+    description: "Create a local copy of the dataset on your computer",
     Icon: IconDeviceDesktop,
   },
   "generate-dataset-on-pennsieve": {
@@ -22,14 +22,15 @@ const dataMap = {
   "generate-on-existing-pennsieve-dataset": {
     title: "Upload to an existing empty dataset on Pennsieve",
     description:
-      "Select this option if you already have a dataset created on Pennsieve you are uploading to.",
+      "Select this option if you have an existing dataset on Pennsieve you would like to use.",
     image: pennsieveLogo,
     mutuallyExclusiveWithCards: ["generate-on-new-pennsieve-dataset"],
   },
 
   "generate-on-new-pennsieve-dataset": {
     title: "Create a new dataset on Pennsieve",
-    description: "Select this option if you do not have a dataset on Pennsieve yet.",
+    description:
+      "Select this option if you would like SODA to create a new dataset for you on Pennsieve.",
     Icon: IconSquarePlus,
     mutuallyExclusiveWithCards: ["generate-on-existing-pennsieve-dataset"],
   },

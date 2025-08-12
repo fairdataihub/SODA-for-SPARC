@@ -121,19 +121,18 @@ model_get_RC_file_response = api.model('getRCFileResponse', {
 })
 
 @api.route('/text_metadata_file')
-class RCFile(Resource):
-
-    parser_get_RC_file = reqparse.RequestParser(bundle_errors=True)
-    parser_get_RC_file.add_argument('file_type', type=str, help="Either README or CHANGES from the user\'s Pennsieve account and dataset.", location="args", required=True)
-    parser_get_RC_file.add_argument('selected_account', type=str, help='Pennsieve account name', location="args", required=True)
-    parser_get_RC_file.add_argument('selected_dataset', type=str, help='Pennsieve dataset name', location="args", required=True)
+class TextMetadataFile(Resource):
+    parser_get_text_metadata_file = reqparse.RequestParser(bundle_errors=True)
+    parser_get_text_metadata_file.add_argument('file_type', type=str, help="Either README.md, CHANGES, or LICENSE from the user\'s Pennsieve account and dataset.", location="args", required=True)
+    parser_get_text_metadata_file.add_argument('selected_account', type=str, help='Pennsieve account name', location="args", required=True)
+    parser_get_text_metadata_file.add_argument('selected_dataset', type=str, help='Pennsieve dataset name', location="args", required=True)
 
 
     @api.marshal_with(model_get_RC_file_response, 200, False)
-    @api.expect(parser_get_RC_file)
-    @api.doc(description='Get the readme or changes file from Pennsieve.', responses={500: "Internal Server Error", 400: "Bad Request"})
+    @api.expect(parser_get_text_metadata_file)
+    @api.doc(description='Get the README.md, CHANGES, or LICENSE file from Pennsieve.', responses={500: "Internal Server Error", 400: "Bad Request"})
     def get(self):
-        data = self.parser_get_RC_file.parse_args()
+        data = self.parser_get_text_metadata_file.parse_args()
 
         file_type = data.get('file_type')
         bfdataset = data.get('selected_dataset')
@@ -146,13 +145,13 @@ class RCFile(Resource):
             raise e
 
 
-    parser_create_RC_file = parser_get_RC_file.copy()
-    parser_create_RC_file.add_argument('text', type=str, help="Text of the file", location="json", required=True)
+    parser_create_text_metadata_file = parser_get_text_metadata_file.copy()
+    parser_create_text_metadata_file.add_argument('text', type=str, help="Text of the file", location="json", required=True)
 
 
-    @api.expect(parser_create_RC_file)
+    @api.expect(parser_create_text_metadata_file)
     @api.marshal_with(model_upload_RC_file_response, 200, False)
-    @api.doc(description='Create a readme or changes file on the given dataset for the given Pennsieve account.', responses={500: "Internal Server Error", 400: "Bad Request", 403: "Forbidden"})
+    @api.doc(description='Create a README.md, CHANGES, or LICENSE file on the given dataset for the given Pennsieve account.', responses={500: "Internal Server Error", 400: "Bad Request", 403: "Forbidden"})
     def post(self):
         data = request.get_json()
 
@@ -160,7 +159,7 @@ class RCFile(Resource):
         soda = data.get("soda")
 
         try:
-            return text_metadata.create_excel(soda, file_type)
+            return text_metadata.create_text_file(soda, file_type)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))

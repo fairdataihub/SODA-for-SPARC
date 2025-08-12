@@ -141,8 +141,15 @@ export const openPagePrepareMetadata = async (targetPageID) => {
   if (targetPageID === "guided-create-readme-metadata-tab") {
     const readMeTextArea = document.getElementById("guided-textarea-create-readme");
 
-    const readMe = window.sodaJSONObj["dataset_metadata"]["README"] || "";
+    // If a README was stored in the old format, convert it to the new format and delete the old one.
+    if (window.sodaJSONObj["dataset_metadata"]?.["README"]) {
+      window.sodaJSONObj["dataset_metadata"]["README.md"] =
+        window.sodaJSONObj["dataset_metadata"]["README"];
+      delete window.sodaJSONObj["dataset_metadata"]["README"];
+    }
 
+    // get the README content from the sodaJSONObj and set it in the textarea
+    const readMe = window.sodaJSONObj["dataset_metadata"]["README.md"] || "";
     readMeTextArea.value = readMe;
   }
 

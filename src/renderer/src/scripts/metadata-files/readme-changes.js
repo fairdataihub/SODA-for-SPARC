@@ -577,7 +577,7 @@ window.getRC = async (type) => {
 
   //pass in only CHANGES or README (the extension .txt is added in the backend)
   try {
-    let import_rc_file = await client.get(`/prepare_metadata/readme_changes_file`, {
+    let import_rc_file = await client.get(`/prepare_metadata/text_metadata_file`, {
       params: {
         file_type: window.path.parse(type).name,
         selected_account: window.defaultBfAccount,

@@ -126,7 +126,7 @@ export const openPageGenerateDataset = async (targetPageID) => {
       pennsieveConfigInfoElements.forEach((element) => {
         element.classList.remove("hidden");
       });
-      const pennsieveDatasetSubtitle = window.sodaJSONObj["generate-dataset"]["dataset-subtitle"];
+      const pennsieveDatasetSubtitle = window.sodaJSONObj?.["pennsieve-dataset-subtitle"] ?? "";
       const datasetLicense = window.sodaJSONObj["digital-metadata"]["license"];
 
       const pennsieveDatasetSubtitleReviewText = document.getElementById(

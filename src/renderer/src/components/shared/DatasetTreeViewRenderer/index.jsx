@@ -681,7 +681,7 @@ const DatasetTreeViewRenderer = ({
                   resources: "resources.xlsx",
                   sites: "sites.xlsx",
                   submission: "submission.xlsx",
-                  README: "README.md",
+                  "README.md": "README.md",
                   CHANGES: "CHANGES",
                   LICENSE: "LICENSE",
                   manifest_file: "manifest.xlsx",
