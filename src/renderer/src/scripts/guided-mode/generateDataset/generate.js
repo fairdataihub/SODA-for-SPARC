@@ -166,7 +166,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         "guided-div-pennsieve-metadata-pennsieve-generation-status-table"
       );
       // Create or rename dataset, then add metadata
-      await guidedCreateOrRenameDataset(guidedBfAccount, pennsieveDatasetName);
+      await guidedCreateDataset(guidedBfAccount, pennsieveDatasetName);
       await guidedAddDatasetSubtitle(
         guidedBfAccount,
         pennsieveDatasetName,
@@ -198,14 +198,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     });
     window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
 
-    /* COMMENTED OUT FOR UPLOAD TO EXISTING // --- Ensure all required keys are set for initial upload ---
-    window.sodaJSONObj["generate-dataset"] = {
-      "dataset-name": window.sodaJSONObj["pennsieve-dataset-name"],
-      destination: "ps",
-      "generate-option": "new",
-      "if-existing": "new",
-      "if-existing-files": "new",
-    }; */
     window.sodaJSONObj["ps-dataset-selected"] = {
       "dataset-name": window.sodaJSONObj["generate-dataset"]["dataset-name"],
     };
@@ -780,7 +772,7 @@ const userMadeItToLastStep = () => {
     .classList.contains("hidden");
 };
 
-const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
+const guidedCreateDataset = async (bfAccount, datasetName) => {
   const uploadRow = document.getElementById("guided-dataset-name-upload-tr");
   const uploadText = document.getElementById("guided-dataset-name-upload-text");
   const statusId = "guided-dataset-name-upload-status";
@@ -844,7 +836,7 @@ const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
     return newId;
   } catch (error) {
     const emessage = userErrorMessage(error);
-    console.error("[guidedCreateOrRenameDataset] Create failed:", emessage);
+    console.error("[guidedCreateDataset] Create failed:", emessage);
     uploadText.innerHTML = "Failed to create a new dataset.";
 
     if (emessage === "Dataset name already exists") {

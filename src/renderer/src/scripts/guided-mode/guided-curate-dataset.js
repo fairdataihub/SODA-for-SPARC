@@ -3467,7 +3467,7 @@ document
       // scroll to the upload status table
       window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
       // upload on the last step
-      await guidedUploadDatasetToPennsieve();
+      await guidedGenerateDatasetOnPennsieve();
     } else {
       // restart the whole process
       await guidedGenerateDatasetOnPennsieve();

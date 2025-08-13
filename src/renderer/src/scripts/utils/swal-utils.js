@@ -37,7 +37,7 @@ const swalGetUserTextInput = async (
 export const swalShowLoading = (title, text) => {
   Swal.fire({
     title: title,
-    html: text,
+    text: text,
     allowOutsideClick: false,
     allowEscapeKey: false,
     showConfirmButton: false,
