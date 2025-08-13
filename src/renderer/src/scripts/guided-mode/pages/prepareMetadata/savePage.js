@@ -284,10 +284,6 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
         number_of_performances: numPerformances,
       },
     };
-    console.log(
-      "Dataset description metadata saved:",
-      window.sodaJSONObj["dataset_metadata"]["dataset_description"]
-    );
   }
 
   if (pageBeingLeftID === "guided-create-readme-metadata-tab") {

@@ -36,7 +36,7 @@ import {
   setMilestones,
   setMilestoneDate,
 } from "../../../../stores/slices/datasetMetadataSlice";
-import { fetchLicenseOptionsFromSPDX } from "../../../../stores/slices/licenseSlice";
+
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }

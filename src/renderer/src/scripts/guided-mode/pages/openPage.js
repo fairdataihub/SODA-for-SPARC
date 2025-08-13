@@ -411,19 +411,6 @@ window.openPage = async (targetPageID) => {
     //         guidedUpdateFolderStructureUI("docs/");
     //     }
 
-    //     if (targetPageID === "guided-source-derivative-folders-and-files-selector-tab") {
-    //         addEntityToEntityList("source-derivative-folders-and-files", "source");
-    //         addEntityToEntityList("source-derivative-folders-and-files", "derivative");
-    //         setActiveEntity(null);
-    //         console.log("datasetEntityObj", useGlobalStore.getState().datasetEntityObj);
-    //     }
-    //     if (targetPageID === "guided-modalities-selection-tab") {
-    //         addEntityToEntityList("modalities", "microscopy");
-    //         addEntityToEntityList("modalities", "electrophysiology");
-    //         setActiveEntity(null);
-    //         console.log("datasetEntityObj", useGlobalStore.getState().datasetEntityObj);
-    //     }
-
     let currentParentTab = window.CURRENT_PAGE.closest(".guided--parent-tab");
 
     //Set all capsules to grey and set capsule of page being traversed to green
