@@ -180,7 +180,7 @@ const DropDownNote = ({ id }) => {
     },
     "license-explanations": {
       dropDownIcon: "info",
-      dropDownButtonText: "Learn more about the licenses",
+      dropDownButtonText: "Learn more about the available licenses",
       dropDownNote: (
         <List spacing="sm">
           <List.Item>
@@ -252,7 +252,7 @@ const DropDownNote = ({ id }) => {
 
   return (
     <Accordion
-      variant="contained"
+      variant="separated"
       defaultValue={null} // closed by default
       chevronPosition="right"
       mt="md"
