@@ -135,7 +135,7 @@ export const openPageGenerateDataset = async (targetPageID) => {
       const datasetLicenseReviewText = document.getElementById("guided-review-dataset-license");
 
       pennsieveDatasetSubtitleReviewText.innerHTML = pennsieveDatasetSubtitle;
-      datasetLicenseReviewText.innerHTML = datasetLicense;
+      datasetLicenseReviewText.innerHTML = datasetLicense ? datasetLicense : "No license selected";
     } else {
       // Hide the pennsieve config info elements
       pennsieveConfigInfoElements.forEach((element) => {

@@ -22,7 +22,7 @@ export const dropDownSlice = (set) => ({
       selectedValue: "",
     },
     "license-select": {
-      label: "Select a license for your dataset:",
+      label: "Select a license:",
       placeholder: "Select a license",
       options: [
         "CDLA-Permissive-1.0 – Community Data License Agreement – Permissive",

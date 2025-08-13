@@ -247,7 +247,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     // Populate dataset_metadata > dataset_description
     window.sodaJSONObj["dataset_metadata"]["dataset_description"] = {
       metadata_version: metadataVersion,
-      type: numSubjects > 0 ? "Experimental" : "Computational", // Per curation team, datasets with subjects are experimental, otherwise computational
+      type: numSubjects > 0 ? "experimental" : "computational", // Per curation team, datasets with subjects are experimental, otherwise computational
       standards_information: {
         data_standard: "SPARC",
         data_standard_version: "SODA Metadata Standards",
@@ -306,88 +306,85 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
 
   if (pageBeingLeftID === "guided-create-license-metadata-tab") {
     const datasetLicense = getDropDownState("license-select");
-    if (!datasetLicense) {
-      errorArray.push({
-        type: "notyf",
-        message: "Please select a license for your dataset.",
-      });
-      throw errorArray;
+    if (datasetLicense) {
+      // Save the selected license to the sodaJSONObj
+      window.sodaJSONObj["dataset-license"] = datasetLicense;
+
+      const licenseConfig = {
+        "CDLA-Permissive-1.0 – Community Data License Agreement – Permissive": {
+          licenseType: "CDLA-Permissive-1.0",
+          pennsieveString: "Community Data License Agreement – Permissive",
+        },
+        "CDLA-Sharing-1.0 – Community Data License Agreement – Sharing": {
+          licenseType: "CDLA-Sharing-1.0",
+          pennsieveString: "Community Data License Agreement – Sharing",
+        },
+        "ODbL – Open Data Commons Open Database License": {
+          licenseType: "ODbL-1.0",
+          pennsieveString: "Open Data Commons Open Database",
+        },
+        "ODC-By – Open Data Commons Attribution License": {
+          licenseType: "ODC-By-1.0",
+          pennsieveString: "Open Data Commons Attribution",
+        },
+        "PDDL – Open Data Commons Public Domain Dedication and License": {
+          licenseType: "PDDL-1.0",
+          pennsieveString: "Open Data Commons Public Domain Dedication and License",
+        },
+        "CC-0 – Creative Commons Zero 1.0 Universal": {
+          licenseType: "CC0-1.0",
+          pennsieveString: "Creative Commons Zero 1.0 Universal",
+        },
+        "CC-BY – Creative Commons Attribution": {
+          licenseType: "CC-BY-4.0",
+          pennsieveString: "Creative Commons Attribution",
+        },
+        "CC-BY-SA – Creative Commons Attribution-ShareAlike": {
+          licenseType: "CC-BY-SA-2.0",
+          pennsieveString: "Creative Commons Attribution - ShareAlike",
+        },
+        "CC-BY-NC-SA – Creative Commons Attribution-NonCommercial-ShareAlike": {
+          licenseType: "CC-BY-NC-SA-2.0",
+          pennsieveString: "Creative Commons Attribution - NonCommercial-ShareAlike",
+        },
+        "Apache-2.0 – Apache License 2.0": {
+          licenseType: "Apache-2.0",
+          pennsieveString: "Apache 2.0",
+        },
+        "GPL – GNU General Public License": {
+          licenseType: "GPL-3.0",
+          pennsieveString: "GNU General Public License v3.0",
+        },
+        "LGPL – GNU Lesser General Public License": {
+          licenseType: "LGPL-3.0",
+          pennsieveString: "GNU Lesser General Public License",
+        },
+        "MIT – MIT License": {
+          licenseType: "MIT",
+          pennsieveString: "MIT",
+        },
+        "MPL-2.0 – Mozilla Public License 2.0": {
+          licenseType: "MPL-2.0",
+          pennsieveString: "Mozilla Public License 2.0",
+        },
+      };
+
+      const datasetMetadataLicenseValue = licenseConfig?.[datasetLicense]?.["licenseType"] || "";
+      const pennsieveLicenseString = licenseConfig?.[datasetLicense]?.["pennsieveString"] || null;
+
+      // Overwrite the default value in the dataset_description metadata with the selected license
+      window.sodaJSONObj["dataset_metadata"]["dataset_description"]["basic_information"][
+        "license"
+      ] = datasetMetadataLicenseValue;
+
+      // Save the license string to the sodaJSONObj for Pennsieve upload
+      window.sodaJSONObj["digital-metadata"]["license"] = pennsieveLicenseString;
+    } else {
+      // Overwrite the default value in the dataset_description metadata with an empty string
+      window.sodaJSONObj["dataset_metadata"]["dataset_description"]["basic_information"][
+        "license"
+      ] = "";
+      window.sodaJSONObj["digital-metadata"]["license"] = null;
     }
-    // Save the selected license to the sodaJSONObj
-    window.sodaJSONObj["dataset-license"] = datasetLicense;
-
-    const licenseConfig = {
-      "CDLA-Permissive-1.0 – Community Data License Agreement – Permissive": {
-        licenseType: "CDLA-Permissive-1.0",
-        pennsieveString: "Community Data License Agreement – Permissive",
-      },
-      "CDLA-Sharing-1.0 – Community Data License Agreement – Sharing": {
-        licenseType: "CDLA-Sharing-1.0",
-        pennsieveString: "Community Data License Agreement – Sharing",
-      },
-      "ODbL – Open Data Commons Open Database License": {
-        licenseType: "ODbL-1.0",
-        pennsieveString: "Open Data Commons Open Database",
-      },
-      "ODC-By – Open Data Commons Attribution License": {
-        licenseType: "ODC-By-1.0",
-        pennsieveString: "Open Data Commons Attribution",
-      },
-      "PDDL – Open Data Commons Public Domain Dedication and License": {
-        licenseType: "PDDL-1.0",
-        pennsieveString: "Open Data Commons Public Domain Dedication and License",
-      },
-      "CC-0 – Creative Commons Zero 1.0 Universal": {
-        licenseType: "CC0-1.0",
-        pennsieveString: "Creative Commons Zero 1.0 Universal",
-      },
-      "CC-BY – Creative Commons Attribution": {
-        licenseType: "CC-BY-4.0",
-        pennsieveString: "Creative Commons Attribution",
-      },
-      "CC-BY-SA – Creative Commons Attribution-ShareAlike": {
-        licenseType: "CC-BY-SA-2.0",
-        pennsieveString: "Creative Commons Attribution - ShareAlike",
-      },
-      "CC-BY-NC-SA – Creative Commons Attribution-NonCommercial-ShareAlike": {
-        licenseType: "CC-BY-NC-SA-2.0",
-        pennsieveString: "Creative Commons Attribution - NonCommercial-ShareAlike",
-      },
-      "Apache-2.0 – Apache License 2.0": {
-        licenseType: "Apache-2.0",
-        pennsieveString: "Apache 2.0",
-      },
-      "GPL – GNU General Public License": {
-        licenseType: "GPL-3.0+",
-        pennsieveString: "GNU General Public License v3.0",
-      },
-      "LGPL – GNU Lesser General Public License": {
-        licenseType: "LGPL-3.0+",
-        pennsieveString: "GNU Lesser General Public License",
-      },
-      "MIT – MIT License": {
-        licenseType: "MIT",
-        pennsieveString: "MIT",
-      },
-      "MPL-2.0 – Mozilla Public License 2.0": {
-        licenseType: "MPL-2.0",
-        pennsieveString: "Mozilla Public License 2.0",
-      },
-    };
-
-    const datasetMetadataLicenseValue = licenseConfig?.[datasetLicense]?.["licenseType"] || "";
-    const pennsieveLicenseString = licenseConfig?.[datasetLicense]?.["pennsieveString"] || null;
-
-    // Overwrite the default value in the dataset_description metadata with the selected license
-    window.sodaJSONObj["dataset_metadata"]["dataset_description"]["basic_information"]["license"] =
-      datasetMetadataLicenseValue;
-    console.log(
-      "Basic_information",
-      window.sodaJSONObj["dataset_metadata"]["dataset_description"]["basic_information"]
-    );
-
-    // Save the license string to the sodaJSONObj for Pennsieve upload
-    window.sodaJSONObj["digital-metadata"]["license"] = pennsieveLicenseString;
-    console.log("Pennsieve License String:", pennsieveLicenseString);
   }
 };

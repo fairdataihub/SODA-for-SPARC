@@ -1,9 +1,6 @@
 import useGlobalStore from "../../../stores/globalStore";
 import { TextInput, Textarea } from "@mantine/core";
-import {
-  setSodaTextInputValue,
-  getSodaTextInputValue,
-} from "../../../stores/slices/sodaTextInputSlice";
+import { setSodaTextInputValue } from "../../../stores/slices/sodaTextInputSlice";
 
 /**
  * SodaTextInput - A controlled text input hooked to the global store by id.

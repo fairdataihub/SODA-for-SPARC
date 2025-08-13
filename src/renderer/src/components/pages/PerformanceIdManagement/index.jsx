@@ -283,19 +283,13 @@ const PerformanceIdManagement = () => {
 
                   {/* Action buttons */}
                   <Group position="right" mt="md">
-                    <Button
-                      variant="outline"
-                      color="gray"
-                      onClick={cancelForm}
-                      leftIcon={<IconX size={16} />}
-                    >
+                    <Button variant="outline" color="gray" onClick={cancelForm}>
                       Cancel
                     </Button>
 
                     <Button
                       color="blue"
                       onClick={isEditMode ? updatePerformance : addPerformance}
-                      leftIcon={<IconDeviceFloppy size={16} />}
                       disabled={!performance_id || !isPerformanceIdValid}
                     >
                       {isEditMode ? "Update Performance" : "Add Performance"}

@@ -253,7 +253,6 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
 
                         <Button
                           fullWidth
-                          leftIcon={<IconDownload size={16} />}
                           variant="light"
                           color={entityTypeConfig[entityType].color}
                           onClick={() => handleDownloadTemplate(entityType)}

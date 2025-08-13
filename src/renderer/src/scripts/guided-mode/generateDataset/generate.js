@@ -39,7 +39,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     const guidedBfAccount = window.defaultBfAccount;
     const pennsieveDatasetName = window.sodaJSONObj["generate-dataset"]["dataset-name"];
     const pennsieveDatasetSubtitle = window.sodaJSONObj["pennsieve-dataset-subtitle"];
-    const guidedLicense = window.sodaJSONObj["digital-metadata"]["license"];
+    const guidedLicense = window.sodaJSONObj?.["digital-metadata"]?.["license"];
     const guidedPennsieveStudyPurpose =
       window.sodaJSONObj["dataset_metadata"]?.["dataset_description"]?.["study_information"]?.[
         "study_purpose"
@@ -184,7 +184,9 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         pennsieveDatasetName,
         guidedBannerImagePath
       );
-      await guidedAddDatasetLicense(guidedBfAccount, pennsieveDatasetName, guidedLicense);
+      if (guidedLicense) {
+        await guidedAddDatasetLicense(guidedBfAccount, pennsieveDatasetName, guidedLicense);
+      }
     }
 
     hideDatasetMetadataGenerationTableRows("pennsieve");

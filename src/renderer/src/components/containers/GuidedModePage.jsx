@@ -14,7 +14,7 @@ const capitalizeFirstLetter = (str) => {
 
 const GuidedModePage = ({ pageHeader, pageDescription, children }) => {
   return (
-    <Stack gap="md" mt="lg" className={classes.guidedModePage}>
+    <Stack gap="md" mt="lg" mb="md" className={classes.guidedModePage}>
       <Text ta="center" fw={700} size="xl">
         {capitalizeFirstLetter(pageHeader)}
       </Text>

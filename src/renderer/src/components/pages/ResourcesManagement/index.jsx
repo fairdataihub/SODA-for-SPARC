@@ -318,7 +318,6 @@ const ResourcesManagementPage = () => {
                     <Button
                       color="blue"
                       onClick={isEditMode ? updateResource : addResource}
-                      leftIcon={<IconDeviceFloppy size={16} />}
                       disabled={!isResourceValid}
                     >
                       {isEditMode ? "Update Resource" : "Add Resource"}
@@ -332,19 +331,13 @@ const ResourcesManagementPage = () => {
 
                   {/* Action buttons */}
                   <Group position="right" mt="md">
-                    <Button
-                      variant="outline"
-                      color="gray"
-                      onClick={cancelForm}
-                      leftIcon={<IconX size={16} />}
-                    >
+                    <Button variant="outline" color="gray" onClick={cancelForm}>
                       Cancel
                     </Button>
 
                     <Button
                       color="blue"
                       onClick={isEditMode ? updateResource : addResource}
-                      leftIcon={<IconDeviceFloppy size={16} />}
                       disabled={!isResourceValid}
                     >
                       {isEditMode ? "Update Resource" : "Add Resource"}

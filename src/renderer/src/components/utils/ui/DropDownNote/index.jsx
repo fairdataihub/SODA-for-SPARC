@@ -1,4 +1,4 @@
-import { Accordion, Text, List, Group } from "@mantine/core";
+import { Accordion, Text, List, Group, Table } from "@mantine/core";
 import { IconInfoCircle } from "@tabler/icons-react";
 import SodaPaper from "../SodaPaper";
 import useGlobalStore from "../../../../stores/globalStore";
@@ -182,26 +182,67 @@ const DropDownNote = ({ id }) => {
       dropDownIcon: "info",
       dropDownButtonText: "Learn more about the licenses",
       dropDownNote: (
-        <>
-          <Text size="sm" mb="md">
-            Licenses are legal agreements that define how your dataset can be used by others. The
-            licenses you select will apply to all files in your dataset.
-          </Text>
-          <SodaPaper>
-            <Text fw={600}>SPARC License</Text>
-            <Text size="sm">
-              This license is required for all SPARC datasets and allows for broad sharing and use
-              of the data.
-            </Text>
-          </SodaPaper>
-          <SodaPaper>
-            <Text fw={600}>Custom License</Text>
-            <Text size="sm">
-              If you want to apply a different license to your dataset, you can select this option
-              and provide the license text.
-            </Text>
-          </SodaPaper>
-        </>
+        <List spacing="sm">
+          <List.Item>
+            <strong>CDLA-Permissive-1.0 – Community Data License Agreement – Permissive</strong> —
+            Allows data use, modification, and redistribution with minimal restrictions.
+          </List.Item>
+          <List.Item>
+            <strong>CDLA-Sharing-1.0 – Community Data License Agreement – Sharing</strong> — Allows
+            use and modification, but derivative works must be shared under the same license.
+          </List.Item>
+          <List.Item>
+            <strong>ODbL – Open Data Commons Open Database License</strong> — Allows sharing,
+            modification, and commercial use of databases, with attribution and share-alike
+            requirements.
+          </List.Item>
+          <List.Item>
+            <strong>ODC-By – Open Data Commons Attribution License</strong> — Allows reuse of
+            databases with attribution to the source.
+          </List.Item>
+          <List.Item>
+            <strong>PDDL – Open Data Commons Public Domain Dedication and License</strong> — Places
+            databases fully in the public domain for unrestricted use.
+          </List.Item>
+          <List.Item>
+            <strong>CC-0 – Creative Commons Zero 1.0 Universal</strong> — Waives all rights and
+            places the work in the public domain.
+          </List.Item>
+          <List.Item>
+            <strong>CC-BY – Creative Commons Attribution</strong> — Allows reuse and modification,
+            but credit to the original creator is required.
+          </List.Item>
+          <List.Item>
+            <strong>CC-BY-SA – Creative Commons Attribution-ShareAlike</strong> — Allows reuse and
+            modification with credit, but derivative works must use the same license.
+          </List.Item>
+          <List.Item>
+            <strong>CC-BY-NC-SA – Creative Commons Attribution-NonCommercial-ShareAlike</strong> —
+            Allows reuse and modification with credit, but derivative works must be non-commercial
+            and use the same license.
+          </List.Item>
+          <List.Item>
+            <strong>Apache-2.0 – Apache License 2.0</strong> — A permissive open-source license
+            allowing use, modification, and distribution, with attribution and patent grant.
+          </List.Item>
+          <List.Item>
+            <strong>GPL – GNU General Public License</strong> — A strong copyleft license requiring
+            derivative works to also be licensed under GPL.
+          </List.Item>
+          <List.Item>
+            <strong>LGPL – GNU Lesser General Public License</strong> — Similar to GPL but allows
+            linking to non-(L)GPL software under certain conditions.
+          </List.Item>
+          <List.Item>
+            <strong>MIT – MIT License</strong> — A permissive license allowing nearly unrestricted
+            reuse with attribution.
+          </List.Item>
+          <List.Item>
+            <strong>MPL-2.0 – Mozilla Public License 2.0</strong> — A weak copyleft license
+            requiring modifications to covered code to be shared under MPL, but allowing combination
+            with other licenses.
+          </List.Item>
+        </List>
       ),
     },
   };
