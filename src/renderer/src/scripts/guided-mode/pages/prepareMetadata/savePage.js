@@ -342,8 +342,8 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
         pennsieveString: "Creative Commons Zero 1.0 Universal",
       },
       "CC-BY – Creative Commons Attribution": {
-        licenseType: "CC-BY-2.0",
-        pennsieveString: "Creative Commons Attribution - ShareAlike",
+        licenseType: "CC-BY-4.0",
+        pennsieveString: "Creative Commons Attribution",
       },
       "CC-BY-SA – Creative Commons Attribution-ShareAlike": {
         licenseType: "CC-BY-SA-2.0",

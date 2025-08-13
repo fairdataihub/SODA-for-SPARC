@@ -211,10 +211,10 @@ const DropDownNote = ({ id }) => {
 
   return (
     <Accordion
-      variant="separated"
-      multiple={false}
+      variant="contained"
       defaultValue={null} // closed by default
       chevronPosition="right"
+      mt="md"
     >
       <Accordion.Item value="item-1">
         <Accordion.Control>
