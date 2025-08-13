@@ -114,7 +114,7 @@ const DropDownNote = ({ id }) => {
           <List type="ordered" mt="md">
             {datasetIncludesSubjects && (
               <List.Item>
-                <Text>
+                <Text size="sm">
                   <strong>Add subjects</strong> - Click the "Add Subject" button, enter some
                   metadata for the subject (at minimum the subject's ID), and click the "Add
                   subject" button at the bottom of the form.
@@ -123,7 +123,7 @@ const DropDownNote = ({ id }) => {
             )}
             {datasetIncludesSamples && (
               <List.Item>
-                <Text>
+                <Text size="sm">
                   <strong>Add samples</strong> - Click the "Add Sample" button underneath the
                   subject that the sample was taken from, enter some metadata for the sample (at
                   minimum the sample's ID), and click the "Add Sample" button at the bottom of the
@@ -133,7 +133,7 @@ const DropDownNote = ({ id }) => {
             )}
             {datasetIncludesSites && (
               <List.Item>
-                <Text>
+                <Text size="sm">
                   <strong>Add sites</strong> - Click the "Add site" button underneath the sample the
                   site is from, enter some metadata for the site (at minimum the site's ID), and
                   click the "Add site" button at the bottom of the form.
@@ -257,9 +257,9 @@ const DropDownNote = ({ id }) => {
       chevronPosition="right"
       mt="md"
     >
-      <Accordion.Item value="item-1">
+      <Accordion.Item value={id}>
         <Accordion.Control>
-          <Group spacing="xs" noWrap align="center">
+          <Group spacing="xs" align="center">
             {dropDownIcons[config.dropDownIcon]}
             <Text>{config.dropDownButtonText}</Text>
           </Group>

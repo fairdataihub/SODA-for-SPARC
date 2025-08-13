@@ -231,7 +231,6 @@ export const openPageDatasetStructure = async (targetPageID) => {
             if (paths?.[path]) {
               const entityData = getEntityDataById(entity);
               if (!entityData) {
-                console.error(`Entity data not found for ID: ${entity}`);
                 continue;
               }
               entityList.push(entityData.id);

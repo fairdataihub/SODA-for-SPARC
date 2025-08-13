@@ -25,6 +25,7 @@ export const dropDownSlice = (set) => ({
       label: "Select a license:",
       placeholder: "Select a license",
       options: [
+        "*section-divider* Better for Data",
         "CDLA-Permissive-1.0 – Community Data License Agreement – Permissive",
         "CDLA-Sharing-1.0 – Community Data License Agreement – Sharing",
         "ODbL – Open Data Commons Open Database License",
@@ -34,6 +35,7 @@ export const dropDownSlice = (set) => ({
         "CC-BY – Creative Commons Attribution",
         "CC-BY-SA – Creative Commons Attribution-ShareAlike",
         "CC-BY-NC-SA – Creative Commons Attribution-NonCommercial-ShareAlike",
+        "*section-divider* Better for Code",
         "Apache-2.0 – Apache License 2.0",
         "GPL – GNU General Public License",
         "LGPL – GNU Lesser General Public License",
