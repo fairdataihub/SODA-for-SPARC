@@ -154,8 +154,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
   }
 
   if (targetPageID === "guided-create-license-metadata-tab") {
-    const license = window.sodaJSONObj["dataset_metadata"]["LICENSE"] || "";
-    await fetchLicenseOptionsFromSPDX();
+    setDropdownState("license-select", window.sodaJSONObj["dataset-license"] || "");
   }
 
   if (targetPageID === "guided-dataset-structure-review-tab") {

@@ -178,6 +178,32 @@ const DropDownNote = ({ id }) => {
         </>
       ),
     },
+    "license-explanations": {
+      dropDownIcon: "info",
+      dropDownButtonText: "Learn more about the licenses",
+      dropDownNote: (
+        <>
+          <Text size="sm" mb="md">
+            Licenses are legal agreements that define how your dataset can be used by others. The
+            licenses you select will apply to all files in your dataset.
+          </Text>
+          <SodaPaper>
+            <Text fw={600}>SPARC License</Text>
+            <Text size="sm">
+              This license is required for all SPARC datasets and allows for broad sharing and use
+              of the data.
+            </Text>
+          </SodaPaper>
+          <SodaPaper>
+            <Text fw={600}>Custom License</Text>
+            <Text size="sm">
+              If you want to apply a different license to your dataset, you can select this option
+              and provide the license text.
+            </Text>
+          </SodaPaper>
+        </>
+      ),
+    },
   };
 
   const config = configMap[id];

@@ -30,6 +30,8 @@ import {
   TextInput,
 } from "@mantine/core";
 import useGlobalStore from "../../../stores/globalStore";
+import DropDownNote from "../../utils/ui/DropDownNote";
+import DropdownSelect from "../../common/DropdownSelect";
 
 import { fetchLicenseTextForSelectedLicense } from "../../../stores/slices/licenseSlice";
 
@@ -44,75 +46,12 @@ const LicenseSelectPage = () => {
     <GuidedModePage pageHeader="LICENSE">
       <GuidedModeSection>
         <Text>
-          If your dataset has a license, please select it from the list below. If your license is
-          not listed, choose "Other (custom license)" and enter the license type manually.
+          Please choose a License for your dataset. The license will dictate what future users can
+          and cannot do with your dataset.
         </Text>
-        <Select
-          label="Select a license"
-          placeholder="Search..."
-          searchable
-          nothingFoundMessage="No matches"
-          data={availableLicenses}
-          onChange={async (value) => {
-            console.log("Selected License:", value);
-            useGlobalStore.setState({ selectedLicense: value, licenseTextIsDirty: false });
-            await fetchLicenseTextForSelectedLicense(value);
-          }}
-        />
-        {selectedLicense == "Other (custom license)" && (
-          <TextInput
-            label="Custom License Type"
-            placeholder="e.g. CC BY 4.0, MIT, etc."
-            value={"Super Secret Special License"}
-            onChange={(event) => {}}
-          />
-        )}
+        <DropdownSelect id="license-select" />
+        <DropDownNote id="license-explanations" />
       </GuidedModeSection>
-      {selectedLicense && (
-        <GuidedModeSection>
-          <Text size="lg" fw={500} mt="lg">
-            License File
-          </Text>
-          <Text mb="md">
-            The SPARC Data Structure recommends including a LICENSE file to clarify data usage
-            terms, especially when uploading to platforms that do not provide license options.
-            Toggle the option below to have SODA add a LICENSE file to your dataset.
-          </Text>
-
-          <Switch
-            label="Include a license file in my generated dataset"
-            checked={!!includeLicenseFile}
-            size="md"
-            onChange={(event) => {
-              useGlobalStore.setState({ includeLicenseFile: event.currentTarget.checked });
-            }}
-            mb="md"
-          />
-          {includeLicenseFile && (
-            <>
-              <Text>
-                Review the license text below. Edit any placeholders or details as needed. When
-                finished, press "Save and Continue".
-              </Text>
-              <Textarea
-                label="LICENSE file text"
-                minRows={8}
-                maxRows={20}
-                autosize
-                value={licenseText}
-                onChange={(event) => {
-                  useGlobalStore.setState({
-                    licenseText: event.target.value,
-                    licenseTextIsDirty: true,
-                  });
-                }}
-                placeholder="License text will appear here..."
-                mb="md"
-              />
-            </>
-          )}
-        </GuidedModeSection>
-      )}
     </GuidedModePage>
   );
 };

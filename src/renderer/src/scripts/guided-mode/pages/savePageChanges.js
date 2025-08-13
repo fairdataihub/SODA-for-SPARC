@@ -581,24 +581,6 @@ export const savePageChanges = async (pageBeingLeftID) => {
     //   }
     // }
 
-    // if (pageBeingLeftID === "guided-assign-license-tab") {
-    //   const licenseRadioButtonContainer = document.getElementById(
-    //     "guided-license-radio-button-container"
-    //   );
-    //   // Get the button that contains the class selected
-    //   const selectedLicenseButton =
-    //     licenseRadioButtonContainer.getElementsByClassName("selected")[0];
-    //   if (!selectedLicenseButton) {
-    //     errorArray.push({
-    //       type: "notyf",
-    //       message: "Please select a license",
-    //     });
-    //     throw errorArray;
-    //   }
-    //   const selectedLicense = selectedLicenseButton.dataset.value;
-    //   window.sodaJSONObj["digital-metadata"]["license"] = selectedLicense;
-    // }
-
     // if (pageBeingLeftID === "guided-contributors-tab") {
     //   // Make sure the user has added at least one contributor
     //   const contributors =
