@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Prepare Dataset Step-by-Step feature has been updated to provide users with a streamlined approach for updating a Pennsieve dataset that is empty. This is especially useful for users who are a guest contributor to a Pennsieve workspace.
 - The Upload Dataset feature has been updated to provide users with a streamlined approach for updating an existing Pennsieve dataset. If the dataset is empty SODA will create metadata files for the dataset. If the dataset is not empty, SODA will not create metadata files for the dataset.
+- The Prepare Dataset Step-by-Step feature now includes a dedicated page for license selection, enabling users to choose a license for both the dataset_description metadata file and Pennsieve in one place.
+
+## Bug Fixes:
+
+-The Prepare Dataset Step-by-Step feature now generates a README.md instead of README.txt
 
 ## v16.0.0 - 2025-08-04
 
