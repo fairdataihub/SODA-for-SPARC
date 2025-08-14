@@ -60,7 +60,13 @@
               "description": "Text"
             }
           },
-          "required": ["Link", "Rating", "Target", "Target Justification", "Text"]
+          "required": [
+            "Link",
+            "Rating",
+            "Target",
+            "Target Justification",
+            "Text"
+          ]
         },
         "TSR2": {
           "type": "object",
@@ -87,7 +93,13 @@
               "description": "Text"
             }
           },
-          "required": ["Link", "Rating", "Target", "Target Justification", "Text"]
+          "required": [
+            "Link",
+            "Rating",
+            "Target",
+            "Target Justification",
+            "Text"
+          ]
         },
         "TSR3a": {
           "type": "object",
@@ -114,7 +126,13 @@
               "description": "Text"
             }
           },
-          "required": ["Link", "Rating", "Target", "Target Justification", "Text"]
+          "required": [
+            "Link",
+            "Rating",
+            "Target",
+            "Target Justification",
+            "Text"
+          ]
         },
         "TSR3b": {
           "type": "object",
@@ -125,7 +143,9 @@
               "description": "The URL or DOI of the publication that describes the tool or method."
             }
           },
-          "required": ["Link"]
+          "required": [
+            "Link"
+          ]
         },
         "TSR3c": {
           "type": "object",
@@ -136,7 +156,9 @@
               "description": "The URL or DOI of the publication that describes the tool or method."
             }
           },
-          "required": ["Link"]
+          "required": [
+            "Link"
+          ]
         },
         "TSR4": {
           "type": "object",
@@ -163,7 +185,13 @@
               "description": "Text"
             }
           },
-          "required": ["Link", "Rating", "Target", "Target Justification", "Text"]
+          "required": [
+            "Link",
+            "Rating",
+            "Target",
+            "Target Justification",
+            "Text"
+          ]
         },
         "TSR5": {
           "type": "object",
@@ -190,7 +218,13 @@
               "description": "Text"
             }
           },
-          "required": ["Link", "Rating", "Target", "Target Justification", "Text"]
+          "required": [
+            "Link",
+            "Rating",
+            "Target",
+            "Target Justification",
+            "Text"
+          ]
         },
         "TSR6": {
           "type": "object",
@@ -217,7 +251,13 @@
               "description": "Text"
             }
           },
-          "required": ["Link", "Rating", "Target", "Target Justification", "Text"]
+          "required": [
+            "Link",
+            "Rating",
+            "Target",
+            "Target Justification",
+            "Text"
+          ]
         },
         "TSR7a": {
           "type": "object",
@@ -244,7 +284,13 @@
               "description": "Text"
             }
           },
-          "required": ["Link", "Rating", "Target", "Target Justification", "Text"]
+          "required": [
+            "Link",
+            "Rating",
+            "Target",
+            "Target Justification",
+            "Text"
+          ]
         },
         "TSR7b": {
           "type": "object",
@@ -255,7 +301,9 @@
               "description": "The URL or DOI of the publication that describes the tool or method."
             }
           },
-          "required": ["Link"]
+          "required": [
+            "Link"
+          ]
         },
         "TSR7c": {
           "type": "object",
@@ -266,7 +314,9 @@
               "description": "The URL or DOI of the publication that describes the tool or method."
             }
           },
-          "required": ["Link"]
+          "required": [
+            "Link"
+          ]
         },
         "TSR7d": {
           "type": "object",
@@ -277,7 +327,9 @@
               "description": "The URL or DOI of the publication that describes the tool or method."
             }
           },
-          "required": ["Link"]
+          "required": [
+            "Link"
+          ]
         },
         "TSR7e": {
           "type": "object",
@@ -288,7 +340,9 @@
               "description": "The URL or DOI of the publication that describes the tool or method."
             }
           },
-          "required": ["Link"]
+          "required": [
+            "Link"
+          ]
         },
         "TSR8a": {
           "type": "object",
@@ -315,7 +369,13 @@
               "description": "Text"
             }
           },
-          "required": ["Link", "Rating", "Target", "Target Justification", "Text"]
+          "required": [
+            "Link",
+            "Rating",
+            "Target",
+            "Target Justification",
+            "Text"
+          ]
         },
         "TSR8b": {
           "type": "object",
@@ -326,7 +386,9 @@
               "description": "The URL or DOI of the publication that describes the tool or method."
             }
           },
-          "required": ["Link"]
+          "required": [
+            "Link"
+          ]
         },
         "TSR9": {
           "type": "object",
@@ -353,7 +415,13 @@
               "description": "Text"
             }
           },
-          "required": ["Link", "Rating", "Target", "Target Justification", "Text"]
+          "required": [
+            "Link",
+            "Rating",
+            "Target",
+            "Target Justification",
+            "Text"
+          ]
         },
         "TSR10a": {
           "type": "object",
@@ -380,7 +448,13 @@
               "description": "Text"
             }
           },
-          "required": ["Link", "Rating", "Target", "Target Justification", "Text"]
+          "required": [
+            "Link",
+            "Rating",
+            "Target",
+            "Target Justification",
+            "Text"
+          ]
         },
         "TSR10b": {
           "type": "object",
@@ -391,7 +465,9 @@
               "description": "The URL or DOI of the publication that describes the tool or method."
             }
           },
-          "required": ["Link"]
+          "required": [
+            "Link"
+          ]
         }
       },
       "required": [
@@ -533,7 +609,12 @@
           }
         }
       },
-      "required": ["number_of_inputs", "inputs", "number_of_outputs", "outputs"]
+      "required": [
+        "number_of_inputs",
+        "inputs",
+        "number_of_outputs",
+        "outputs"
+      ]
     }
   },
   "required": [

@@ -345,8 +345,9 @@
             "code_description": { "type": "string" }
           }
         },
-        "README": { "type": "string" },
+        "README.md": { "type": "string" },
         "CHANGES": { "type": "string" },
+        "LICENSE": { "type": "string" },
         "performances": {
           "type": "array",
           "items": [
