@@ -247,7 +247,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     // Populate dataset_metadata > dataset_description
     window.sodaJSONObj["dataset_metadata"]["dataset_description"] = {
       metadata_version: metadataVersion,
-      type: numSubjects > 0 ? "experimental" : "computational", // Per curation team, datasets with subjects are experimental, otherwise computational
+      dataset_type: numSubjects > 0 ? "experimental" : "computational", // Per curation team, datasets with subjects are experimental, otherwise computational
       standards_information: {
         data_standard: "SPARC",
         data_standard_version: "SODA Metadata Standards",
@@ -315,43 +315,39 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
           licenseType: "CDLA-Sharing-1.0",
           pennsieveString: "Community Data License Agreement – Sharing",
         },
-        "ODbL – Open Data Commons Open Database License": {
-          licenseType: "ODbL-1.0",
+        "ODC-ODbL – Open Data Commons Open Database License": {
+          licenseType: "ODC-ODbL",
           pennsieveString: "Open Data Commons Open Database",
         },
-        "ODC-By – Open Data Commons Attribution License": {
-          licenseType: "ODC-By-1.0",
+        "ODC-BY – Open Data Commons Attribution License": {
+          licenseType: "ODC-BY",
           pennsieveString: "Open Data Commons Attribution",
         },
-        "PDDL – Open Data Commons Public Domain Dedication and License": {
-          licenseType: "PDDL-1.0",
+        "ODC-PDDL – Open Data Commons Public Domain Dedication and License": {
+          licenseType: "ODC-PDDL",
           pennsieveString: "Open Data Commons Public Domain Dedication and License",
         },
-        "CC-0 – Creative Commons Zero 1.0 Universal": {
-          licenseType: "CC0-1.0",
+        "CC-0-1.0 – Creative Commons Zero 1.0 Universal": {
+          licenseType: "CC-0-1.0",
           pennsieveString: "Creative Commons Zero 1.0 Universal",
         },
-        "CC-BY – Creative Commons Attribution": {
+        "CC-BY-4.0 – Creative Commons Attribution": {
           licenseType: "CC-BY-4.0",
           pennsieveString: "Creative Commons Attribution",
         },
-        "CC-BY-SA – Creative Commons Attribution-ShareAlike": {
-          licenseType: "CC-BY-SA-2.0",
+        "CC-BY-SA-4.0 – Creative Commons Attribution-ShareAlike": {
+          licenseType: "CC-BY-SA-4.0",
           pennsieveString: "Creative Commons Attribution - ShareAlike",
-        },
-        "CC-BY-NC-SA – Creative Commons Attribution-NonCommercial-ShareAlike": {
-          licenseType: "CC-BY-NC-SA-2.0",
-          pennsieveString: "Creative Commons Attribution - NonCommercial-ShareAlike",
         },
         "Apache-2.0 – Apache License 2.0": {
           licenseType: "Apache-2.0",
           pennsieveString: "Apache 2.0",
         },
-        "GPL – GNU General Public License": {
+        "GPL-3.0 – GNU General Public License": {
           licenseType: "GPL-3.0",
           pennsieveString: "GNU General Public License v3.0",
         },
-        "LGPL – GNU Lesser General Public License": {
+        "LGPL-3.0 – GNU Lesser General Public License": {
           licenseType: "LGPL-3.0",
           pennsieveString: "GNU Lesser General Public License",
         },

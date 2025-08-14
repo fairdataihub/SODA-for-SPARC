@@ -6,7 +6,7 @@ import {
   setCheckboxCardUnchecked,
 } from "../../../stores/slices/checkboxCardSlice";
 
-import { IconDeviceDesktop, IconSquarePlus } from "@tabler/icons-react";
+import { IconDeviceDesktop, IconBrowserPlus, IconFolderSymlink } from "@tabler/icons-react";
 
 const dataMap = {
   "generate-dataset-locally": {
@@ -23,7 +23,7 @@ const dataMap = {
     title: "Upload to an existing empty dataset on Pennsieve",
     description:
       "Select this option if you have an existing dataset on Pennsieve you would like to use.",
-    image: pennsieveLogo,
+    Icon: IconFolderSymlink,
     mutuallyExclusiveWithCards: ["generate-on-new-pennsieve-dataset"],
   },
 
@@ -31,7 +31,7 @@ const dataMap = {
     title: "Create a new dataset on Pennsieve",
     description:
       "Select this option if you would like SODA to create a new dataset for you on Pennsieve.",
-    Icon: IconSquarePlus,
+    Icon: IconBrowserPlus,
     mutuallyExclusiveWithCards: ["generate-on-existing-pennsieve-dataset"],
   },
 };

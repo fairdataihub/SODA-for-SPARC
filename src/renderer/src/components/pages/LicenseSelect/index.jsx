@@ -14,6 +14,7 @@ const LicenseSelectPage = () => {
           and cannot do with your dataset.
         </Text>
         <DropdownSelect id="license-select" />
+        <DropDownNote id="license-selection-help" />
       </GuidedModeSection>
     </GuidedModePage>
   );
