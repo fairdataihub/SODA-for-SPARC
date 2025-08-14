@@ -17,7 +17,7 @@ import shutil
 from configparser import ConfigParser
 import re
 
-from pennsieve2.pennsieve import Pennsieve
+from pennsieve import Pennsieve
 from threading import Thread
 
 import requests
