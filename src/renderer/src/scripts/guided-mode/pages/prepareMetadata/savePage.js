@@ -327,8 +327,8 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
           licenseType: "ODC-PDDL",
           pennsieveString: "Open Data Commons Public Domain Dedication and License",
         },
-        "CC-0-1.0 – Creative Commons Zero 1.0 Universal": {
-          licenseType: "CC-0-1.0",
+        "CC0-1.0 – Creative Commons Zero 1.0 Universal": {
+          licenseType: "CC0-1.0",
           pennsieveString: "Creative Commons Zero 1.0 Universal",
         },
         "CC-BY-4.0 – Creative Commons Attribution": {
