@@ -1,0 +1,99 @@
+{
+  "name": "SODA (Software to Organize Data Automatically) for SPARC",
+  "@context": "https://w3id.org/codemeta/3.0",
+  "applicationCategory": "Scientific",
+  "author": [
+    {
+      "affiliation": {
+        "name": "FAIR Data Innovations Hub, California Medical Innovations Institute",
+        "type": "Organization"
+      },
+      "email": "cmarroquin@calmi2.org",
+      "familyName": "Marroquin",
+      "id": "_:author_1",
+      "givenName": "Aaron",
+      "type": "Person"
+    },
+    {
+      "affiliation": {
+        "name": "FAIR Data Innovations Hub, California Medical Innovations Institute",
+        "type": "Organization"
+      },
+      "email": "jclark@calmi2.org",
+      "familyName": "Clark",
+      "id": "_:author_2",
+      "givenName": "Jacob",
+      "type": "Person"
+    },
+    {
+      "affiliation": {
+        "name": "FAIR Data Innovations Hub, California Medical Innovations Institute",
+        "type": "Organization"
+      },
+      "email": "dportillo@calmi2.org",
+      "familyName": "Portillo",
+      "id": "_:author_3",
+      "givenName": "Dorian",
+      "type": "Person"
+    },
+    {
+      "affiliation": {
+        "name": "FAIR Data Innovations Hub, California Medical Innovations Institute",
+        "type": "Organization"
+      },
+      "email": "ssoundarajan@calmi2.org",
+      "familyName": "Soundarajan",
+      "id": "_:author_4",
+      "givenName": "Sanjay",
+      "type": "Person"
+    },
+    {
+      "affiliation": {
+        "name": "FAIR Data Innovations Hub, California Medical Innovations Institute",
+        "type": "Organization"
+      },
+      "familyName": "Ngo",
+      "id": "_:author_5",
+      "givenName": "Tram",
+      "type": "Person"
+    },
+    {
+      "affiliation": {
+        "name": "FAIR Data Innovations Hub, California Medical Innovations Institute",
+        "type": "Organization"
+      },
+      "email": "bpatel@calmi2.org",
+      "familyName": "Patel",
+      "id": "_:author_6",
+      "givenName": "Bhavesh",
+      "type": "Person"
+    }
+  ],
+  "codeRepository": "https://github.com/fairdataihub/SODA-for-SPARC",
+  "dateCreated": "2021-10-08",
+  "dateModified": "2025-08-14",
+  "datePublished": "2024-10-11",
+  "description": "Simplifying data curation for researchers funded by the NIH SPARC initiative",
+  "developmentStatus": "active",
+  "downloadUrl": "https://fairdataihub.org/sodaforsparc",
+  "funding": "OT2OD030213",
+  "isPartOf": "https://fairdataihub.org/",
+  "issueTracker": "https://github.com/fairdataihub/SODA-for-SPARC/issues",
+  "keywords": ["SPARC", "FAIR", "data", "curation", "mac", "sparc-dataset", "ubuntu", "windows"],
+  "license": "https://spdx.org/licenses/MIT",
+  "operatingSystem": [
+    "Windows 10",
+    "Big Sur (macOS 11)",
+    "Catalina (macOS 10.15)",
+    "Windows 11",
+    "Ubuntu"
+  ],
+  "programmingLanguage": ["JavaScript", "HTML", "Python", "CSS"],
+  "referencePublication": "https://doi.org/10.1101/2021.02.10.430563",
+  "relatedLink": [],
+  "runtimePlatform": [],
+  "schema:releaseNotes": "## Bug Fixes:\n- Fixed an issue where Prepare Dataset Step-by-Step does not save sample files when using the save and exit button.",
+  "softwareRequirements": [],
+  "version": "16.1.0",
+  "type": "SoftwareSourceCode"
+}

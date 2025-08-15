@@ -1,0 +1,50 @@
+/* Custom Properties */
+
+:root {
+  --color: hsl(0, 0%, 22%);
+  --color-subtle: hsl(0, 0%, 44%);
+  --color-strong: hsl(0, 0%, 11%);
+  --color-link: #0000ee;
+  --color-bg: hsl(0, 0%, 96%);
+  --color-sidebar: #e8e8e8;
+  --color-sidebar-hyperlink-hover: #292929;
+
+  --color-border: hsl(0, 0%, 88%);
+  --color-bg-plum: hsl(339, 86.8%, 38.6%);
+  --color-bg-plum-light: #dd1058;
+  --color-bg-plum-very-light: #fcdbe7;
+  --color-strong-white: hsl(0, 100%, 100%);
+  --color-light-green: #13716d;
+  --color-transparent-soda-green: #13716d1a;
+  --color-bg-white: #fff;
+  --color-teal: #258193;
+  --color-bg-light-green-button: #d2efee;
+  --color-bg-yellow: #eccb13;
+  --color-bg-yellow-light: #f9e8b3;
+  --color-bg-orange: #ec6713;
+
+  --color-section: hsla(0, 0%, 100%);
+
+  --color-accent: black; /* Fallback */
+}
+
+/* Category Colors */
+
+.u-category-windows {
+  --color-accent: hsl(190, 60%, 36%);
+}
+.u-category-menu {
+  --color-accent: hsl(190, 60%, 36%);
+}
+.u-category-native-ui {
+  --color-accent: hsl(222, 53%, 50%);
+}
+.u-category-communication {
+  --color-accent: hsl(285, 47%, 46%);
+}
+.u-category-system {
+  --color-accent: hsl(330, 65%, 48%);
+}
+.u-category-media {
+  --color-accent: hsl(36, 77%, 34%);
+}

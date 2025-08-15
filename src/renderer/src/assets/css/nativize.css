@@ -1,0 +1,54 @@
+/*
+** nativize.css
+** Makes the UI feel more native
+*/
+
+@import url("https://fonts.googleapis.com/css?family=Poppins:400,500,600,700");
+
+/* enable text selection */
+
+.is-selectable,
+pre,
+code {
+  -webkit-user-select: auto;
+  cursor: auto;
+}
+
+/* Buttons and links */
+
+button {
+  cursor: default;
+}
+
+/* Internal links */
+a {
+  cursor: pointer;
+  text-decoration: none;
+  outline: none;
+}
+
+/* For YouTube Video links */
+a[href^="https://www.youtube.com"]
+{
+  border-bottom: 0px solid;
+}
+
+.github-wiki-link {
+  text-decoration: none;
+  border: 0px !important;
+  outline: none;
+  border-width: 0px;
+  outline-width: 0px;
+  border-bottom: none;
+}
+
+a:hover,
+a:focus {
+  border-bottom: none;
+}
+
+/* Images */
+
+img {
+  -webkit-user-drag: none; /* disable dragging */
+}
