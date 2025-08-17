@@ -45,6 +45,7 @@ const DataImporter = ({ relativeFolderPathToImportDataInto }) => {
         allowStructureEditing={true}
         hideSearchBar={true}
         entityType={null}
+        fileExplorerId="initial-data-import"
       />
     </FullWidthContainer>
   );

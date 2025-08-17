@@ -3777,7 +3777,7 @@ const doTheHack = async () => {
 
 // If this variable is set to true, you will be taken back to the last guided mode page you were working on
 // (always set to false when making production builds)
-const continueHackGm = false;
+const continueHackGm = true;
 if (continueHackGm) {
   doTheHack();
 }

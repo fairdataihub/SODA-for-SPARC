@@ -9,7 +9,10 @@ import { guidedUpdateFolderStructureUI } from "./utils";
 import { swalFileListSingleAction } from "../../../utils/swal-utils";
 import { getEntityDataById } from "../../../../stores/slices/datasetEntityStructureSlice";
 import { createStandardizedDatasetStructure } from "../../../utils/datasetStructure";
-import { deleteEmptyFoldersFromStructure } from "../../../../stores/slices/datasetTreeViewSlice";
+import {
+  deleteEmptyFoldersFromStructure,
+  setActiveFileExplorer,
+} from "../../../../stores/slices/datasetTreeViewSlice";
 import client from "../../../client";
 
 while (!window.baseHtmlLoaded) {
@@ -21,6 +24,7 @@ export const openPageDatasetStructure = async (targetPageID) => {
   if (targetPageID === "guided-unstructured-data-import-tab") {
     setTreeViewDatasetStructure(window.datasetStructureJSONObj, []);
     guidedUpdateFolderStructureUI("data/");
+    setActiveFileExplorer("initial-data-import");
   }
 
   if (targetPageID === "guided-entity-addition-method-selection-tab") {

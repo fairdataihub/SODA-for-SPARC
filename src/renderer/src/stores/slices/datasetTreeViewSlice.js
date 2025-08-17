@@ -23,6 +23,7 @@ const initialState = {
     exclude: [], // Array of {type, names} objects for exclusion
   },
   dataSetMetadataToPreview: null, // Metadata to preview for the dataset
+  activeFileExplorer: null, // The ID of the currently active file explorer (so we don't render multiple at once)
 };
 
 // Create the dataset tree view slice for global state
@@ -506,5 +507,10 @@ export const clearEntityFilter = () => {
 export const setDataSetMetadataToPreview = (metadataKeys) => {
   useGlobalStore.setState({
     dataSetMetadataToPreview: metadataKeys,
+  });
+};
+export const setActiveFileExplorer = (fileExplorerId) => {
+  useGlobalStore.setState({
+    activeFileExplorer: fileExplorerId,
   });
 };

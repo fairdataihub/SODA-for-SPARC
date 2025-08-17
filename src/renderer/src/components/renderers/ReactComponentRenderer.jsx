@@ -162,12 +162,14 @@ const componentTypeRenderers = {
   },
 
   "data-categorization-page": (componentSlot) => {
+    console.log("data-file-explorer-id:", componentSlot.getAttribute("data-file-explorer-id"));
     const props = {
       pageName: componentSlot.getAttribute("data-page-name"),
       entityType: componentSlot.getAttribute("data-entity-type"),
       entityTypeStringSingular: componentSlot.getAttribute("data-entity-type-string-singular"),
       entityTypeStringPlural: componentSlot.getAttribute("data-entity-type-string-plural"),
       showProgress: componentSlot.getAttribute("data-show-progress") || false,
+      fileExplorerId: componentSlot.getAttribute("data-file-explorer-id"),
     };
     renderComponent(componentSlot, <EntityDataSelectorPage {...props} />);
   },

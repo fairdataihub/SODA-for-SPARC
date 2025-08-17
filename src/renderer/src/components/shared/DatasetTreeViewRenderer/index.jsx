@@ -288,6 +288,11 @@ const FolderItem = ({
   entityType,
   isTopLevelFolder = false,
 }) => {
+  const folderIsEmpty =
+    !content ||
+    (Object.keys(content.folders).length === 0 && Object.keys(content.files).length === 0);
+
+  if (folderIsEmpty) return null; // Don't render empty folders
   const contextMenuItemData = useGlobalStore((state) => state.contextMenuItemData);
   const contextMenuIsOpened = useGlobalStore((state) => state.contextMenuIsOpened);
 
@@ -316,14 +321,6 @@ const FolderItem = ({
     }
     openContextMenu({ x: e.clientX, y: e.clientY }, "folder", name, structuredClone(content));
   };
-
-  const folderIsEmpty =
-    !content ||
-    (Object.keys(content.folders).length === 0 && Object.keys(content.files).length === 0);
-  if (name === "left-ventricle") {
-  }
-
-  if (folderIsEmpty) return null; // Don't render empty folders
 
   const folderIsPassThrough = content.passThrough;
 
@@ -523,6 +520,7 @@ const FolderItem = ({
 
 // Main component - renders the entire dataset tree structure
 const DatasetTreeViewRenderer = ({
+  fileExplorerId,
   folderActions,
   fileActions,
   allowStructureEditing,
@@ -532,6 +530,12 @@ const DatasetTreeViewRenderer = ({
   entityType,
   allowFolderSelection = false, // Add new prop with default false
 }) => {
+  const activeFileExplorer = useGlobalStore((state) => state.activeFileExplorer);
+  console.log("fileExplorerId:", fileExplorerId);
+  if (activeFileExplorer !== fileExplorerId) {
+    console.log("Skipping rendering for inactive file explorer:", fileExplorerId);
+    return null; // Don't render if this explorer is not active
+  }
   const renderDatasetStructureJSONObj = useGlobalStore(
     (state) => state.renderDatasetStructureJSONObj
   );
