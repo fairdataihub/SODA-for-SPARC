@@ -9,9 +9,10 @@ import {
 import {
   externallySetSearchFilterValue,
   setTreeViewDatasetStructure,
-  clearEntityFilter, // Add this import
-  setEntityFilter, // Add this import
-  setDataSetMetadataToPreview, // Add this import
+  clearEntityFilter,
+  setEntityFilter,
+  setDataSetMetadataToPreview,
+  setActiveFileExplorer,
 } from "../../../stores/slices/datasetTreeViewSlice.js";
 import {
   addEntityToEntityList,
@@ -351,7 +352,6 @@ window.openPage = async (targetPageID) => {
             [{ type: "high-level-folder-data-categorization", names: ["Experimental"] }],
             []
           );
-        } else {
         }
 
         setDatasetEntityArray(datasetEntityArray);
@@ -382,34 +382,19 @@ window.openPage = async (targetPageID) => {
     await openPagePrepareMetadata(targetPageID);
     await openPageGenerateDataset(targetPageID);
 
-    //     if (targetPageID === "guided-subject-structure-spreadsheet-importation-tab") {
-    //         const savedSpreadSheetPath = window.sodaJSONObj["dataset-structure-spreadsheet-path"];
-    //         setUiBasedOnSavedDatasetStructurePath(savedSpreadSheetPath);
-    //     }
+    const showCorrectFileExplorerByPage = (pageID) => {
+      // Get the element for the pageId
+      const pageElement = document.getElementById(pageID);
 
-    //     if (targetPageID === "guided-subjects-addition-tab") {
-    //         // skip the spreadsheet importation page so the user can't go back to it
-    //         guidedSkipPage("guided-subject-structure-spreadsheet-importation-tab");
-    //         renderSubjectsTable();
-    //     }
+      // Special case for data categorization pages
+      if (pageElement.dataset.componentType === "data-categorization-page") {
+        setActiveFileExplorer("entity-data-selector");
+        return;
+      }
 
-    //     if (targetPageID === "guided-samples-addition-tab") {
-    //         renderSamplesTable();
-    //     }
-
-    //     if (targetPageID === "guided-denote-derivative-data-tab") {
-    //         // Set the folder structure as the primary folder since the user is
-    //         // denoting data as derivative which will be moved to the derivative folder
-    //         guidedUpdateFolderStructureUI("data/");
-    //     }
-
-    //     if (targetPageID === "guided-protocol-folder-tab") {
-    //         guidedUpdateFolderStructureUI("protocol/");
-    //     }
-
-    //     if (targetPageID === "guided-docs-folder-tab") {
-    //         guidedUpdateFolderStructureUI("docs/");
-    //     }
+      setActiveFileExplorer(pageID);
+    };
+    showCorrectFileExplorerByPage(targetPageID);
 
     let currentParentTab = window.CURRENT_PAGE.closest(".guided--parent-tab");
 

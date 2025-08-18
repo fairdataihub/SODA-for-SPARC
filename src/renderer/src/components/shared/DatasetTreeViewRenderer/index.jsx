@@ -531,11 +531,7 @@ const DatasetTreeViewRenderer = ({
   allowFolderSelection = false, // Add new prop with default false
 }) => {
   const activeFileExplorer = useGlobalStore((state) => state.activeFileExplorer);
-  console.log("fileExplorerId:", fileExplorerId);
-  if (activeFileExplorer !== fileExplorerId) {
-    console.log("Skipping rendering for inactive file explorer:", fileExplorerId);
-    return null; // Don't render if this explorer is not active
-  }
+
   const renderDatasetStructureJSONObj = useGlobalStore(
     (state) => state.renderDatasetStructureJSONObj
   );
@@ -566,6 +562,16 @@ const DatasetTreeViewRenderer = ({
   useEffect(() => {
     setInputSearchFilter(externallySetSearchFilterValue);
   }, [externallySetSearchFilterValue]);
+
+  if (activeFileExplorer !== fileExplorerId) {
+    console.log(
+      "Skipping rendering for inactive file explorer:",
+      fileExplorerId,
+      "because",
+      activeFileExplorer
+    );
+    return <Text>Inactive file explorer {fileExplorerId ? fileExplorerId : "NONE"}</Text>;
+  }
 
   const renderObjIsEmpty =
     !renderDatasetStructureJSONObj ||

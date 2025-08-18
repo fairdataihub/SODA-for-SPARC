@@ -45,7 +45,7 @@ const DataImporter = ({ relativeFolderPathToImportDataInto }) => {
         allowStructureEditing={true}
         hideSearchBar={true}
         entityType={null}
-        fileExplorerId="initial-data-import"
+        fileExplorerId="guided-unstructured-data-import-tab"
       />
     </FullWidthContainer>
   );

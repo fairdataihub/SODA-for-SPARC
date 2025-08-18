@@ -4,7 +4,6 @@ import GuidedModeSection from "../../containers/GuidedModeSection";
 import { IconSearch } from "@tabler/icons-react";
 import { Text, Grid, Stack, Group, Button, Paper, Progress, Box, Tooltip } from "@mantine/core";
 import useGlobalStore from "../../../stores/globalStore";
-import DatasetTreeViewRenderer from "../../shared/DatasetTreeViewRenderer";
 import EntityHierarchyRenderer from "../../shared/EntityHierarchyRenderer";
 
 import {
@@ -115,54 +114,7 @@ const DatasetEntityFileMapper = ({ entityType }) => {
           <Grid.Col span={8}>
             {selectedHierarchyEntity ? (
               <Paper shadow="sm" radius="md">
-                <DatasetTreeViewRenderer
-                  itemSelectInstructions={getInstructionalTextByEntityType(
-                    selectedHierarchyEntity.type
-                  )}
-                  mutuallyExclusiveSelection={false}
-                  folderActions={{
-                    "on-folder-click": (
-                      folderName,
-                      folderContents,
-                      folderIsSelected,
-                      mutuallyExclusive
-                    ) => {
-                      handleFolderClick(
-                        "entity-to-file-mapping",
-                        selectedEntityId,
-                        datasetEntityObj,
-                        folderContents,
-                        folderIsSelected,
-                        mutuallyExclusive
-                      );
-                    },
-                    "is-folder-selected": (folderName, folderContents) => {
-                      // Use the imported function from store
-                      return areAllFilesInFolderSelectedForEntity(
-                        selectedEntityId,
-                        folderContents,
-                        "entity-to-file-mapping"
-                      );
-                    },
-                  }}
-                  fileActions={{
-                    "on-file-click": (fileName, fileContents, fileIsSelected, mutuallyExclusive) =>
-                      handleFileClick(
-                        selectedHierarchyEntity,
-                        fileContents,
-                        fileIsSelected,
-                        mutuallyExclusive
-                      ),
-                    "is-file-selected": (fileName, fileContents) => {
-                      return checkIfRelativePathBelongsToEntity(
-                        selectedEntityId,
-                        fileContents.relativePath,
-                        "entity-to-file-mapping"
-                      );
-                    },
-                  }}
-                  entityType="entity-to-file-mapping"
-                />
+                <Text>if you see this check slack for code under rthis DatasetTreeViwRendeer</Text>
               </Paper>
             ) : (
               <Box p="xl">

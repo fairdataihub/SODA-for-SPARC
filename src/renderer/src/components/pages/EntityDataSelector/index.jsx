@@ -130,7 +130,6 @@ const EntityDataSelectorPage = ({
   entityTypeStringSingular,
   entityTypeStringPlural,
   showProgress = false,
-  fileExplorerId,
 }) => {
   const activeEntity = useGlobalStore((state) => state.activeEntity);
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
@@ -247,7 +246,7 @@ const EntityDataSelectorPage = ({
                     },
                   }}
                   entityType={entityType}
-                  fileExplorerId={fileExplorerId}
+                  fileExplorerId="entity-data-selector"
                 />
               </Paper>
             ) : (

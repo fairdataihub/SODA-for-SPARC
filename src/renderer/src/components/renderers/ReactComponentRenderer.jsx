@@ -106,10 +106,12 @@ const componentTypeRenderers = {
     renderComponent(componentSlot, <SingleColumnTable id={id} columnName={columnName} />);
   },
   "dataset-tree-view-renderer": (componentSlot) => {
-    renderComponent(
-      componentSlot,
-      <DatasetTreeViewRenderer hideSearchBar={true} entityType={null} />
-    );
+    const props = {
+      fileExplorerId: componentSlot.getAttribute("data-file-explorer-id"),
+      hideSearchBar: true,
+      entityType: null,
+    };
+    renderComponent(componentSlot, <DatasetTreeViewRenderer {...props} />);
   },
 
   "data-importer": (componentSlot) => {
@@ -169,7 +171,6 @@ const componentTypeRenderers = {
       entityTypeStringSingular: componentSlot.getAttribute("data-entity-type-string-singular"),
       entityTypeStringPlural: componentSlot.getAttribute("data-entity-type-string-plural"),
       showProgress: componentSlot.getAttribute("data-show-progress") || false,
-      fileExplorerId: componentSlot.getAttribute("data-file-explorer-id"),
     };
     renderComponent(componentSlot, <EntityDataSelectorPage {...props} />);
   },
