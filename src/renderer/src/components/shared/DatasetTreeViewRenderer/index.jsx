@@ -32,7 +32,6 @@ import {
   IconFileTypeSvg,
   IconFileTypeJpg,
   IconFileTypePng,
-  IconFileSpreadsheet,
 } from "@tabler/icons-react";
 
 import useGlobalStore from "../../../stores/globalStore";
@@ -46,7 +45,6 @@ import {
 import { useDebouncedValue } from "@mantine/hooks";
 import { naturalSort } from "../utils/util-functions";
 import SelectedEntityPreviewer from "../SelectedEntityPreviewer";
-import Icon from "../Icon";
 
 const getAssociatedEntities = (relativePath, currentEntityType) => {
   const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
@@ -116,13 +114,14 @@ const fileIcons = {
   jpg: <IconFileTypeJpg size={ICON_SETTINGS.fileSize} />,
   jpeg: <IconFileTypeJpg size={ICON_SETTINGS.fileSize} />,
   png: <IconFileTypePng size={ICON_SETTINGS.fileSize} />,
-  xlsx: <IconFileSpreadsheet size={ICON_SETTINGS.fileSize} />,
 };
 
 const getIconForFile = (fileName) => {
   const fileExtension = fileName.split(".").pop();
   return fileIcons[fileExtension] || <IconFile size={ICON_SETTINGS.fileSize} />;
 };
+
+let globalFileItemRenderCount = 0;
 
 // File item component - represents a single file in the dataset tree
 const FileItem = ({
@@ -133,6 +132,8 @@ const FileItem = ({
   allowStructureEditing,
   entityType,
 }) => {
+  // Increment global counter every render
+  globalFileItemRenderCount++;
   const { hovered, ref } = useHover();
   const contextMenuItemData = useGlobalStore((state) => state.contextMenuItemData);
   const contextMenuIsOpened = useGlobalStore((state) => state.contextMenuIsOpened);
@@ -165,6 +166,12 @@ const FileItem = ({
     if (isHoveredOrSelected) return "rgba(0, 0, 0, 0.05)";
     return undefined;
   };
+
+  useEffect(() => {
+    if (globalFileItemRenderCount % 100 === 0) {
+      console.log(`FileItem rendered ${globalFileItemRenderCount} times`);
+    }
+  });
 
   return (
     <Group
@@ -286,17 +293,11 @@ const FolderItem = ({
   allowFolderSelection,
   folderClickHoverText,
   entityType,
-  isTopLevelFolder = false,
 }) => {
-  const folderIsEmpty =
-    !content ||
-    (Object.keys(content.folders).length === 0 && Object.keys(content.files).length === 0);
-
-  if (folderIsEmpty) return null; // Don't render empty folders
   const contextMenuItemData = useGlobalStore((state) => state.contextMenuItemData);
   const contextMenuIsOpened = useGlobalStore((state) => state.contextMenuIsOpened);
 
-  const [isOpen, setIsOpen] = useState(isTopLevelFolder);
+  const [isOpen, setIsOpen] = useState(false);
   const { hovered, ref } = useHover();
 
   // Get associated entities for this folder, filtering by entityType
@@ -321,6 +322,15 @@ const FolderItem = ({
     }
     openContextMenu({ x: e.clientX, y: e.clientY }, "folder", name, structuredClone(content));
   };
+
+  const folderIsEmpty =
+    !content ||
+    (Object.keys(content.folders).length === 0 && Object.keys(content.files).length === 0);
+  if (name === "left-ventricle") {
+    console.log("FolderItem", content);
+  }
+
+  if (folderIsEmpty) return null; // Don't render empty folders
 
   const folderIsPassThrough = content.passThrough;
 
@@ -499,7 +509,6 @@ const FolderItem = ({
             allowFolderSelection={allowFolderSelection}
             folderClickHoverText={folderClickHoverText}
             entityType={entityType}
-            isTopLevelFolder={false}
           />
         ))}
         {naturalSort(Object.keys(content?.files || {})).map((fileName) => (
@@ -531,7 +540,6 @@ const DatasetTreeViewRenderer = ({
   allowFolderSelection = false, // Add new prop with default false
 }) => {
   const activeFileExplorer = useGlobalStore((state) => state.activeFileExplorer);
-
   const renderDatasetStructureJSONObj = useGlobalStore(
     (state) => state.renderDatasetStructureJSONObj
   );
@@ -545,7 +553,6 @@ const DatasetTreeViewRenderer = ({
   const externallySetSearchFilterValue = useGlobalStore(
     (state) => state.externallySetSearchFilterValue
   );
-  const dataSetMetadataToPreview = useGlobalStore((state) => state.dataSetMetadataToPreview);
 
   const [inputSearchFilter, setInputSearchFilter] = useState(datasetStructureSearchFilter);
   const [debouncedSearchFilter] = useDebouncedValue(inputSearchFilter, 300); // 300ms debounce
@@ -645,13 +652,12 @@ const DatasetTreeViewRenderer = ({
         ) : (
           <>
             {naturalSort(Object.keys(renderDatasetStructureJSONObj?.folders || {})).map(
-              (folderName, index) => (
+              (folderName) => (
                 <FolderItem
                   key={folderName}
                   name={folderName}
                   content={renderDatasetStructureJSONObj.folders[folderName]}
                   onFolderClick={allowFolderSelection ? folderActions?.["on-folder-click"] : null}
-                  isTopLevelFolder={true}
                   onFileClick={fileActions?.["on-file-click"] ? handleFileItemClick : null}
                   folderClickHoverText={
                     folderActions?.["folder-click-hover-text"] ||
@@ -679,37 +685,6 @@ const DatasetTreeViewRenderer = ({
                 />
               )
             )}
-
-            {dataSetMetadataToPreview &&
-              dataSetMetadataToPreview.map((metadataKey) => {
-                const metadataKeyToFileNameMapping = {
-                  subjects: "subjects.xlsx",
-                  samples: "samples.xlsx",
-                  code_description: "code_description.xlsx",
-                  dataset_description: "dataset_description.xlsx",
-                  performances: "performances.xlsx",
-                  resources: "resources.xlsx",
-                  sites: "sites.xlsx",
-                  submission: "submission.xlsx",
-                  "README.md": "README.md",
-                  CHANGES: "CHANGES",
-                  LICENSE: "LICENSE",
-                  manifest_file: "manifest.xlsx",
-                };
-
-                const fileName = metadataKeyToFileNameMapping[metadataKey] || metadataKey;
-                return (
-                  <FileItem
-                    key={metadataKey}
-                    name={fileName}
-                    content={{ relativePath: metadataKey, type: "metadata" }}
-                    onFileClick={null}
-                    isFileSelected={null}
-                    allowStructureEditing={false}
-                    entityType={entityType}
-                  />
-                );
-              })}
           </>
         )}
       </Stack>
