@@ -11,7 +11,7 @@ import {
   setTreeViewDatasetStructure,
   clearEntityFilter,
   setEntityFilter,
-  setDataSetMetadataToPreview,
+  setDatasetMetadataToPreview,
   setActiveFileExplorer,
 } from "../../../stores/slices/datasetTreeViewSlice.js";
 import {
@@ -209,10 +209,10 @@ window.openPage = async (targetPageID) => {
     ];
     if (pagesToShowMetadataPreview.includes(targetPageID)) {
       // Set the dataset metadata to preview
-      setDataSetMetadataToPreview(Object.keys(window.sodaJSONObj["dataset_metadata"] || {}));
+      setDatasetMetadataToPreview(Object.keys(window.sodaJSONObj["dataset_metadata"] || {}));
     } else {
       // Clear the dataset metadata preview if not on the generation page
-      setDataSetMetadataToPreview(null);
+      setDatasetMetadataToPreview(null);
     }
 
     handleNextButtonVisibility(targetPageID);

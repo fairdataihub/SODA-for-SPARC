@@ -395,135 +395,95 @@ const FolderItem = ({
   };
 
   return (
-    <Stack gap={1} ml="xs">
-      <Group
-        gap={3}
-        justify="flex-start"
-        onContextMenu={handleFolderContextMenuOpen}
-        ref={ref}
-        bg={getBackgroundColor()}
-        py="1px"
-        style={{ flexWrap: "nowrap" }}
-      >
-        {folderIsEmpty || !isOpen ? (
-          <IconFolder
-            size={ICON_SETTINGS.folderSize}
-            color={ICON_SETTINGS.folderColor}
-            onClick={toggleFolder}
-          />
-        ) : (
-          <IconFolderOpen
-            size={ICON_SETTINGS.folderSize}
-            color={ICON_SETTINGS.folderColor}
-            onClick={toggleFolder}
-          />
-        )}
-        {!folderIsPassThrough && onFileClick && typeof isFileSelected === "function" && (
-          <Tooltip
-            label={
-              folderCheckboxStatus
-                ? "Deselect all files in this folder"
-                : "Select all files in this folder"
-            }
-            zIndex={2999}
-          >
-            <Checkbox
-              readOnly
-              checked={folderCheckboxStatus}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleFolderCheckboxClick();
-              }}
-            />
-          </Tooltip>
-        )}
-        <Text
-          size="md"
-          px={5}
-          onClick={toggleFolder}
-          style={{
-            borderRadius: "4px",
-            cursor: "pointer",
-            transition: "background-color 0.2s ease-in-out",
-            flexGrow: 1,
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-          c={folderIsEmpty ? "gray" : folderIsPassThrough ? "silver" : "black"}
+    <Group
+      gap={3}
+      justify="flex-start"
+      onContextMenu={handleFolderContextMenuOpen}
+      ref={ref}
+      bg={getBackgroundColor()}
+      py="1px"
+      style={{ flexWrap: "nowrap" }}
+    >
+      {folderIsEmpty ? (
+        <IconFolder size={ICON_SETTINGS.folderSize} color={ICON_SETTINGS.folderColor} />
+      ) : (
+        <IconFolderOpen size={ICON_SETTINGS.folderSize} color={ICON_SETTINGS.folderColor} />
+      )}
+      {!folderIsPassThrough && onFileClick && typeof isFileSelected === "function" && (
+        <Tooltip
+          label={
+            folderCheckboxStatus
+              ? "Deselect all files in this folder"
+              : "Select all files in this folder"
+          }
+          zIndex={2999}
         >
-          {name}
-        </Text>
+          <Checkbox
+            readOnly
+            checked={folderCheckboxStatus}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleFolderCheckboxClick();
+            }}
+          />
+        </Tooltip>
+      )}
+      <Text
+        size="md"
+        px={5}
+        style={{
+          borderRadius: "4px",
+          cursor: "pointer",
+          transition: "background-color 0.2s ease-in-out",
+          flexGrow: 1,
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+        }}
+        c={folderIsEmpty ? "gray" : folderIsPassThrough ? "silver" : "black"}
+      >
+        {name}
+      </Text>
 
-        {/* Entity association badges for folder */}
-        {associations.length > 0 && (
-          <Group
-            gap="xs"
-            wrap="nowrap"
-            style={{ marginLeft: "auto", marginRight: 10, overflow: "hidden" }}
-          >
-            {associations.slice(0, 3).map((assoc, index) => (
-              <Tooltip
-                key={index}
-                label={`${assoc.entityId} (${assoc.entityType})`}
-                position="top"
-                withArrow
+      {/* Entity association badges for folder */}
+      {associations.length > 0 && (
+        <Group
+          gap="xs"
+          wrap="nowrap"
+          style={{ marginLeft: "auto", marginRight: 10, overflow: "hidden" }}
+        >
+          {associations.slice(0, 3).map((assoc, index) => (
+            <Tooltip
+              key={index}
+              label={`${assoc.entityId} (${assoc.entityType})`}
+              position="top"
+              withArrow
+            >
+              <Badge
+                color={getBadgeColor(assoc.entityId)}
+                variant="light"
+                size="xs"
+                style={{
+                  whiteSpace: "nowrap",
+                  maxWidth: "100px", // Constrain badge width for layout consistency
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
               >
-                <Badge
-                  color={getBadgeColor(assoc.entityId)}
-                  variant="light"
-                  size="xs"
-                  style={{
-                    whiteSpace: "nowrap",
-                    maxWidth: "100px", // Constrain badge width for layout consistency
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {formatEntityId(assoc.entityId)}
-                </Badge>
-              </Tooltip>
-            ))}
-            {associations.length > 3 && (
-              <Tooltip label={`${associations.length - 3} more entities`} position="top" withArrow>
-                <Badge color="gray" variant="outline" size="xs">
-                  +{associations.length - 3}
-                </Badge>
-              </Tooltip>
-            )}
-          </Group>
-        )}
-      </Group>
-      <Collapse in={isOpen}>
-        {naturalSort(Object.keys(content?.folders || {})).map((folderName) => (
-          <FolderItem
-            key={folderName}
-            name={folderName}
-            content={content.folders[folderName]}
-            onFolderClick={onFolderClick}
-            onFileClick={onFileClick}
-            datasetStructureSearchFilter={datasetStructureSearchFilter}
-            isFolderSelected={isFolderSelected}
-            isFileSelected={isFileSelected}
-            allowStructureEditing={allowStructureEditing}
-            allowFolderSelection={allowFolderSelection}
-            folderClickHoverText={folderClickHoverText}
-            entityType={entityType}
-          />
-        ))}
-        {naturalSort(Object.keys(content?.files || {})).map((fileName) => (
-          <FileItem
-            key={fileName}
-            name={fileName}
-            content={content.files[fileName]}
-            onFileClick={onFileClick}
-            isFileSelected={isFileSelected}
-            allowStructureEditing={allowStructureEditing}
-            entityType={entityType}
-          />
-        ))}
-      </Collapse>
-    </Stack>
+                {formatEntityId(assoc.entityId)}
+              </Badge>
+            </Tooltip>
+          ))}
+          {associations.length > 3 && (
+            <Tooltip label={`${associations.length - 3} more entities`} position="top" withArrow>
+              <Badge color="gray" variant="outline" size="xs">
+                +{associations.length - 3}
+              </Badge>
+            </Tooltip>
+          )}
+        </Group>
+      )}
+    </Group>
   );
 };
 
@@ -540,12 +500,9 @@ const DatasetTreeViewRenderer = ({
   allowFolderSelection = false, // Add new prop with default false
 }) => {
   const activeFileExplorer = useGlobalStore((state) => state.activeFileExplorer);
-  const renderDatasetStructureJSONObj = useGlobalStore(
-    (state) => state.renderDatasetStructureJSONObj
-  );
-  const renderDatasetStructureJSONObjIsLoading = useGlobalStore(
-    (state) => state.renderDatasetStructureJSONObjIsLoading
-  );
+  const datasetRenderArray = useGlobalStore((state) => state.datasetRenderArray);
+  console.log("datasetRenderArray:", datasetRenderArray);
+  const datasetRenderArrayIsLoading = useGlobalStore((state) => state.datasetRenderArrayIsLoading);
   const datasetStructureSearchFilter = useGlobalStore(
     (state) => state.datasetStructureSearchFilter
   );
@@ -571,19 +528,11 @@ const DatasetTreeViewRenderer = ({
   }, [externallySetSearchFilterValue]);
 
   if (activeFileExplorer !== fileExplorerId) {
-    console.log(
-      "Skipping rendering for inactive file explorer:",
-      fileExplorerId,
-      "because",
-      activeFileExplorer
-    );
     return <Text>Inactive file explorer {fileExplorerId ? fileExplorerId : "NONE"}</Text>;
   }
-
   const renderObjIsEmpty =
-    !renderDatasetStructureJSONObj ||
-    (Object.keys(renderDatasetStructureJSONObj?.folders).length === 0 &&
-      Object.keys(renderDatasetStructureJSONObj?.files).length === 0);
+    !datasetRenderArray || (Array.isArray(datasetRenderArray) && datasetRenderArray.length === 0);
+  console.log("renderObjIsEmpty:", renderObjIsEmpty);
 
   if (renderObjIsEmpty) {
     return (
@@ -645,46 +594,49 @@ const DatasetTreeViewRenderer = ({
         />
       )}
       <Stack gap={1} style={{ maxHeight: 700, overflowY: "auto" }} py={3}>
-        {renderDatasetStructureJSONObjIsLoading ? (
+        {datasetRenderArrayIsLoading ? (
           <Center w="100%">
             <Loader size="md" m="xs" />
           </Center>
         ) : (
           <>
-            {naturalSort(Object.keys(renderDatasetStructureJSONObj?.folders || {})).map(
-              (folderName) => (
-                <FolderItem
-                  key={folderName}
-                  name={folderName}
-                  content={renderDatasetStructureJSONObj.folders[folderName]}
-                  onFolderClick={allowFolderSelection ? folderActions?.["on-folder-click"] : null}
-                  onFileClick={fileActions?.["on-file-click"] ? handleFileItemClick : null}
-                  folderClickHoverText={
-                    folderActions?.["folder-click-hover-text"] ||
-                    "Select this folder and its contents"
-                  }
-                  datasetStructureSearchFilter={datasetStructureSearchFilter}
-                  isFolderSelected={folderActions?.["is-folder-selected"]}
-                  isFileSelected={fileActions?.["is-file-selected"]}
-                  allowStructureEditing={allowStructureEditing}
-                  allowFolderSelection={allowFolderSelection}
-                  entityType={entityType}
-                />
-              )
-            )}
-            {naturalSort(Object.keys(renderDatasetStructureJSONObj?.files || {})).map(
-              (fileName) => (
-                <FileItem
-                  key={fileName}
-                  name={fileName}
-                  content={renderDatasetStructureJSONObj.files[fileName]}
-                  onFileClick={fileActions?.["on-file-click"] ? handleFileItemClick : null}
-                  isFileSelected={fileActions?.["is-file-selected"]}
-                  allowStructureEditing={allowStructureEditing}
-                  entityType={entityType} // Pass to FileItem
-                />
-              )
-            )}
+            {datasetRenderArray.map((item) => {
+              console.log("datasetRenderArray item:", item);
+              if (item.itemType === "folder") {
+                return (
+                  <FolderItem
+                    key={item.itemIndex}
+                    name={item.name}
+                    content={item}
+                    onFolderClick={allowFolderSelection ? folderActions?.["on-folder-click"] : null}
+                    onFileClick={fileActions?.["on-file-click"] ? handleFileItemClick : null}
+                    folderClickHoverText={
+                      folderActions?.["folder-click-hover-text"] ||
+                      "Select this folder and its contents"
+                    }
+                    datasetStructureSearchFilter={datasetStructureSearchFilter}
+                    isFolderSelected={folderActions?.["is-folder-selected"]}
+                    isFileSelected={fileActions?.["is-file-selected"]}
+                    allowStructureEditing={allowStructureEditing}
+                    allowFolderSelection={allowFolderSelection}
+                    entityType={entityType}
+                  />
+                );
+              } else if (item.itemType === "file") {
+                return (
+                  <FileItem
+                    key={item.itemIndex}
+                    name={item.relativePath}
+                    content={item}
+                    onFileClick={fileActions?.["on-file-click"] ? handleFileItemClick : null}
+                    isFileSelected={fileActions?.["is-file-selected"]}
+                    allowStructureEditing={allowStructureEditing}
+                    entityType={entityType} // Pass to FileItem
+                  />
+                );
+              }
+              return null;
+            })}
           </>
         )}
       </Stack>

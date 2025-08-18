@@ -1,446 +1,320 @@
 import useGlobalStore from "../globalStore";
 import { produce } from "immer";
 
-// Initial state for managing dataset structure and filters
 const initialState = {
-  datasetStructureJSONObj: null, // The main dataset structure object
-  datasetStructureJSONObjHistory: [], // History of dataset structure changes
-  datasetstructureJSONObjHistoryIndex: -1, // Index for undo/redo functionality
-  renderDatasetStructureJSONObj: null, // The dataset structure currently being rendered
-  renderDatasetStructureJSONObjIsLoading: false, // Loading state for rendering
-  datasetStructureSearchFilter: "", // Current search filter for the dataset structure
-  pathToRender: [], // Path to the folder currently being rendered
-  contextMenuIsOpened: false, // Whether the context menu is open
-  contextMenuPosition: { x: 0, y: 0 }, // Position of the context menu
-  contextMenuItemName: null, // Name of the item for the context menu
-  contextMenuItemType: null, // Type of the item for the context menu
-  contextMenuItemData: null, // Data associated with the context menu item
-  externallySetSearchFilterValue: "", // Search filter value set externally
-  entityFilterActive: false, // Flag to indicate if entity filtering is active
-  entityFilters: {
-    // Complex entity filter configuration
-    include: [], // Array of {type, names} objects for inclusion
-    exclude: [], // Array of {type, names} objects for exclusion
-  },
-  dataSetMetadataToPreview: null, // Metadata to preview for the dataset
-  activeFileExplorer: null, // The ID of the currently active file explorer (so we don't render multiple at once)
+  datasetStructureJSONObj: null,
+  datasetStructureJSONObjHistory: [],
+  datasetstructureJSONObjHistoryIndex: -1,
+  datasetRenderArray: null,
+  datasetRenderArrayIsLoading: false,
+  datasetStructureSearchFilter: "",
+  pathToRender: [],
+  contextMenuIsOpened: false,
+  contextMenuPosition: { x: 0, y: 0 },
+  contextMenuItemName: null,
+  contextMenuItemType: null,
+  contextMenuItemData: null,
+  externallySetSearchFilterValue: "",
+  entityFilterActive: false,
+  entityFilters: { include: [], exclude: [] },
+  datasetMetadataToPreview: null,
+  activeFileExplorer: null,
 };
 
-// Create the dataset tree view slice for global state
 export const datasetTreeViewSlice = (set) => ({
   ...initialState,
 });
 
-// Traverses the dataset structure using the specified path
+const safeDeepCopy = (obj) => {
+  try {
+    return JSON.parse(JSON.stringify(obj));
+  } catch {
+    return obj;
+  }
+};
+
 const traverseStructureByPath = (structure, pathToRender) => {
-  let structureRef = structure;
-  pathToRender.forEach((subFolder) => {
-    structureRef = structureRef?.folders?.[subFolder];
-  });
-  return structureRef;
+  let ref = structure;
+  for (const subFolder of pathToRender) {
+    ref = ref?.folders?.[subFolder];
+  }
+  return ref;
 };
 
-// Sets the loading state for rendering the dataset structure
 export const setRenderDatasetStructureJSONObjIsLoading = (isLoading) => {
-  useGlobalStore.setState({
-    renderDatasetStructureJSONObjIsLoading: isLoading,
-  });
+  useGlobalStore.setState({ datasetRenderArrayIsLoading: isLoading });
 };
 
-// Check if a file passes the entity filter criteria based on the complex filter configuration
 const checkIfFilePassesEntityFilter = (filePath, entityFilters) => {
   const { datasetEntityObj } = useGlobalStore.getState();
-
-  if (!datasetEntityObj) {
-    return false;
-  }
+  if (!datasetEntityObj) return false;
 
   const { include, exclude } = entityFilters;
 
-  // If no filters, pass all
   if (include.length === 0 && exclude.length === 0) return true;
 
-  // Helper: check if file associated with any entities in filters
   const isAssociatedWithFilters = (filters) => {
     for (const { type, names } of filters) {
       if (!type || !Array.isArray(names) || names.length === 0) continue;
       const entities = datasetEntityObj[type];
-      if (!entities) {
-        continue;
-      }
+      if (!entities) continue;
       for (const name of names) {
-        if (name && entities[name] && entities[name][filePath]) {
-          return true;
-        }
+        if (entities[name]?.[filePath]) return true;
       }
     }
     return false;
   };
 
-  // Exclude check: if associated with any exclude, reject immediately
-  if (isAssociatedWithFilters(exclude)) {
-    return false;
-  }
-
-  // Include check: if include list is empty, pass since no includes to check
+  if (isAssociatedWithFilters(exclude)) return false;
   if (include.length === 0) return true;
-
-  // If associated with any include, accept
-  if (isAssociatedWithFilters(include)) {
-    return true;
-  }
-
-  // Otherwise, no include matches
-  return false;
+  return isAssociatedWithFilters(include);
 };
 
-// Prunes the folder structure based on the search filter and optional entity filter
 const pruneFolder = (folder, searchFilter, entityFilterConfig = null) => {
   if (!folder) return null;
 
-  const lowerCaseSearchFilter = searchFilter.toLowerCase();
-  const folderMatches =
-    folder.relativePath && folder.relativePath.toLowerCase().includes(lowerCaseSearchFilter);
+  const search = searchFilter.toLowerCase();
+  const folderMatches = folder.relativePath?.toLowerCase().includes(search);
 
-  // Check if any files match the search filter
-  const files = folder.files || {};
-  let matchingFiles = {};
+  const matchingFiles = {};
+  for (const [key, file] of Object.entries(folder.files || {})) {
+    const matchesSearch = !search || file.relativePath?.toLowerCase().includes(search);
 
-  // Filter files by search term AND entity filter if active
-  Object.keys(files).forEach((key) => {
-    const file = files[key];
-    const filePathMatches =
-      file.relativePath && file.relativePath.toLowerCase().includes(lowerCaseSearchFilter);
-
-    // Apply combined filtering:
-    // 1. File matches search filter (or no search filter)
-    // 2. File passes the entity filter criteria (if entity filter is active)
-    const matchesSearch = !lowerCaseSearchFilter || filePathMatches;
-
-    if (entityFilterConfig && entityFilterConfig.active) {
-      // Use the new entity filter checking function with the complex filter config
-      const passesEntityFilter = checkIfFilePassesEntityFilter(
-        file.relativePath,
-        entityFilterConfig.filters
-      );
-
-      // Log filtering results for debugging
-      if (matchesSearch && passesEntityFilter) {
+    if (entityFilterConfig?.active) {
+      if (
+        matchesSearch &&
+        checkIfFilePassesEntityFilter(file.relativePath, entityFilterConfig.filters)
+      ) {
         matchingFiles[key] = file;
       }
     } else if (matchesSearch) {
       matchingFiles[key] = file;
     }
-  });
+  }
 
-  const hasMatchingFiles = Object.keys(matchingFiles).length > 0;
-
-  // Recursively prune subfolders first to determine if any contain matches
-  const subfolders = folder.folders || {};
   const prunedSubfolders = {};
+  for (const [key, subfolder] of Object.entries(folder.folders || {})) {
+    const pruned = pruneFolder(subfolder, searchFilter, entityFilterConfig);
+    if (pruned) prunedSubfolders[key] = pruned;
+  }
 
-  let hasMatchingSubfolders = false;
-
-  Object.entries(subfolders).forEach(([key, subfolder]) => {
-    const prunedSubfolder = pruneFolder(subfolder, searchFilter, entityFilterConfig);
-    if (prunedSubfolder !== null) {
-      prunedSubfolders[key] = prunedSubfolder;
-      hasMatchingSubfolders = true;
-    }
-  });
-
-  // Keep this folder if:
-  // 1. It directly matches the search filter, OR
-  // 2. It has files that match both search and entity filter, OR
-  // 3. It has subfolders that contain matching content
-  if (folderMatches || hasMatchingFiles || hasMatchingSubfolders) {
+  if (
+    folderMatches ||
+    Object.keys(matchingFiles).length > 0 ||
+    Object.keys(prunedSubfolders).length > 0
+  ) {
     return {
       ...folder,
-      passThrough: !folderMatches && !hasMatchingFiles, // Mark as pass-through if kept only for subfolders
+      passThrough: !folderMatches && Object.keys(matchingFiles).length === 0,
       folders: prunedSubfolders,
       files: matchingFiles,
     };
   }
 
-  // If we get here, this folder and all its contents don't match the criteria
   return null;
 };
 
-// Filters the dataset structure based on the search filter
 export const filterStructure = (structure, searchFilter) => {
-  if (!searchFilter) return structure; // Return the original structure if no filter is applied
-
-  const result = pruneFolder(structure, searchFilter);
-
-  return result;
+  if (!searchFilter) return structure;
+  return pruneFolder(structure, searchFilter);
 };
 
-// Updates the dataset search filter and modifies the rendered structure
 export const setDatasetStructureSearchFilter = (searchFilter) => {
+  useGlobalStore.setState({
+    datasetStructureSearchFilter: searchFilter || "",
+    datasetRenderArrayIsLoading: false,
+  });
+  /*
   try {
     useGlobalStore.setState({
       datasetStructureSearchFilter: searchFilter || "",
-      renderDatasetStructureJSONObjIsLoading: true,
+      datasetRenderArrayIsLoading: true,
     });
 
-    const globalStore = useGlobalStore.getState();
+    const { datasetStructureJSONObj, pathToRender, entityFilterActive, entityFilters } =
+      useGlobalStore.getState();
 
-    const originalStructure = globalStore.datasetStructureJSONObj;
-    if (!originalStructure) {
-      console.warn("Original structure is null or undefined");
-      useGlobalStore.setState({
-        renderDatasetStructureJSONObj: null,
-        renderDatasetStructureJSONObjIsLoading: false,
+    if (!datasetStructureJSONObj) {
+      console.warn("Original structure is missing");
+      return useGlobalStore.setState({
+        datasetRenderArray: null,
+        datasetRenderArrayIsLoading: false,
       });
-      return;
     }
 
-    let structureToFilter = traverseStructureByPath(originalStructure, globalStore.pathToRender);
-
+    let structureToFilter = traverseStructureByPath(datasetStructureJSONObj, pathToRender);
     if (!structureToFilter) {
-      console.warn("Structure to filter is null or undefined");
-      useGlobalStore.setState({
-        renderDatasetStructureJSONObj: null,
-        renderDatasetStructureJSONObjIsLoading: false,
+      console.warn("Path to filter not found");
+      return useGlobalStore.setState({
+        datasetRenderArray: null,
+        datasetRenderArrayIsLoading: false,
       });
-      return;
     }
 
-    // Create a deep copy to avoid proxy-related issues, but safely
-    try {
-      structureToFilter = JSON.parse(JSON.stringify(structureToFilter));
-    } catch (error) {
-      console.error("Error creating deep copy of structure:", error);
-      // Continue with original reference if parsing fails
-    }
+    structureToFilter = safeDeepCopy(structureToFilter);
+    const entityFilterConfig = entityFilterActive ? { active: true, filters: entityFilters } : null;
+    let filtered = pruneFolder(structureToFilter, searchFilter, entityFilterConfig);
+    filtered = deleteEmptyFoldersFromStructure(filtered);
 
-    // Always create entity filter config if entity filtering is active
-    const entityFilterConfig = globalStore.entityFilterActive
-      ? {
-          active: true,
-          filters: globalStore.entityFilters,
-        }
-      : null;
-
-    // Pass entity filter config to pruneFolder function
-    let filteredStructure = pruneFolder(structureToFilter, searchFilter, entityFilterConfig);
-
-    // Delete any empty folders that might have been created during filtering
-    filteredStructure = deleteEmptyFoldersFromStructure(filteredStructure);
-
-    // Update the global store with the filtered structure
     useGlobalStore.setState({
-      renderDatasetStructureJSONObj: filteredStructure,
-      renderDatasetStructureJSONObjIsLoading: false,
+      datasetRenderArray: filtered,
+      datasetRenderArrayIsLoading: false,
     });
   } catch (error) {
     console.error("Error in setDatasetStructureSearchFilter:", error);
-    // Reset to safe values in case of error
-    useGlobalStore.setState({
-      renderDatasetStructureJSONObj: null,
-      renderDatasetStructureJSONObjIsLoading: false,
-    });
-  }
+    useGlobalStore.setState({ datasetRenderArray: null, datasetRenderArrayIsLoading: false });
+  }*/
 };
 
-export const externallySetSearchFilterValue = (searchFilterValue) => {
-  try {
-    useGlobalStore.setState({
-      externallySetSearchFilterValue: searchFilterValue || "",
-    });
-  } catch (error) {
-    console.error("Error in externallySetSearchFilterValue:", error);
-    useGlobalStore.setState({
-      externallySetSearchFilterValue: "",
-    });
-  }
+export const externallySetSearchFilterValue = (value) => {
+  useGlobalStore.setState({ externallySetSearchFilterValue: value || "" });
 };
 
 export const addRelativePaths = (obj, currentPath = []) => {
-  if (!obj) {
-    return;
-  }
+  if (!obj) return;
+
   obj.relativePath = currentPath.join("/") + "/";
-  for (const folderName in obj?.folders || {}) {
-    const folderPath = [...currentPath, folderName].join("/") + "/";
-    obj.folders[folderName].relativePath = folderPath;
-    addRelativePaths(obj.folders[folderName], [...currentPath, folderName]);
+
+  for (const [folderName, folder] of Object.entries(obj.folders || {})) {
+    folder.relativePath = [...currentPath, folderName].join("/") + "/";
+    addRelativePaths(folder, [...currentPath, folderName]);
   }
 
-  for (const fileName in obj?.files || {}) {
-    const filePath = [...currentPath, fileName].join("/");
-    obj.files[fileName].relativePath = filePath;
+  for (const [fileName, file] of Object.entries(obj.files || {})) {
+    file.relativePath = [...currentPath, fileName].join("/");
   }
 };
 
-/**
- * Recursively removes all empty folders from a nested folder structure.
- * A folder is empty if it has:
- * - no files
- * - no non-empty subfolders
- *
- * @param {object} structure - The folder structure object
- * @returns {object|null} - Cleaned structure, or null if empty
- */
 export const deleteEmptyFoldersFromStructure = (structure) => {
   if (!structure) return null;
 
   const cleanedFolders = {};
   for (const [name, folder] of Object.entries(structure.folders || {})) {
     const cleaned = deleteEmptyFoldersFromStructure(folder);
-    if (cleaned !== null) {
-      cleanedFolders[name] = cleaned;
-    }
+    if (cleaned) cleanedFolders[name] = cleaned;
   }
 
   const hasFiles = Object.keys(structure.files || {}).length > 0;
   const hasFolders = Object.keys(cleanedFolders).length > 0;
 
-  if (!hasFiles && !hasFolders) {
-    return null;
-  }
-
-  return {
-    ...structure,
-    folders: cleanedFolders,
-    files: hasFiles ? structure.files : {},
-  };
+  return hasFiles || hasFolders
+    ? { ...structure, folders: cleanedFolders, files: hasFiles ? structure.files : {} }
+    : null;
 };
 
-// Set the dataset structure and prepare it for rendering
 export const setTreeViewDatasetStructure = (datasetStructure, pathToRender) => {
   try {
-    pathToRender = pathToRender ? pathToRender : useGlobalStore.getState().pathToRender;
+    const path = pathToRender || useGlobalStore.getState().pathToRender;
+    if (!datasetStructure) return console.warn("Dataset structure missing");
 
-    if (!datasetStructure) {
-      console.warn("Dataset structure is null or undefined");
-      return;
-    }
-
-    // Ensure immutability of the updated structure
-    let updatedStructure;
-    try {
-      updatedStructure = JSON.parse(JSON.stringify(datasetStructure)); // Avoid direct mutation
-    } catch (error) {
-      console.error("Error creating deep copy of dataset structure:", error);
-      updatedStructure = datasetStructure; // Fall back to original if stringify fails
-    }
-
-    // Add relative paths to the structure
+    const updatedStructure = safeDeepCopy(datasetStructure);
     addRelativePaths(updatedStructure);
 
-    // Traverse to the folder structure to be rendered and add relative paths
-    const renderStructureRef = traverseStructureByPath(updatedStructure, pathToRender);
-    if (renderStructureRef) {
-      addRelativePaths(renderStructureRef, pathToRender);
-    }
+    const convertDatasetStructureToArray = (structure) => {
+      const result = [];
+      let itemIndex = 0;
 
-    // Add relative path to the window dataset structure
-    if (window.datasetStructureJSONObj) {
-      addRelativePaths(window.datasetStructureJSONObj, []);
-    }
+      const traverse = (node, depth = 0) => {
+        // Add folder itself
+        for (const folder of Object.values(node.folders || {})) {
+          result.push({
+            itemType: "folder",
+            itemIndex: itemIndex++,
+            itemIndent: depth,
+            ...folder,
+          });
+          // Add files in this folder
+          for (const file of Object.values(folder.files || {})) {
+            result.push({
+              itemType: "file",
+              itemIndex: itemIndex++,
+              itemIndent: depth + 1,
+              ...file,
+            });
+          }
+          // Recurse into subfolders
+          traverse(folder, depth + 1);
+        }
+      };
 
-    // Update global store safely
+      traverse(structure, 0);
+      return result;
+    };
+    const datasetRenderArray = convertDatasetStructureToArray(updatedStructure);
+    console.log("datasetRenderArray", datasetRenderArray);
+
+    const renderStructure = traverseStructureByPath(updatedStructure, path);
+    if (renderStructure) addRelativePaths(renderStructure, path);
+
+    if (window.datasetStructureJSONObj) addRelativePaths(window.datasetStructureJSONObj, []);
+
     useGlobalStore.setState({
       datasetStructureJSONObj: updatedStructure,
-      pathToRender,
-      renderDatasetStructureJSONObj: renderStructureRef || { folders: {}, files: {} },
+      pathToRender: path,
+      datasetRenderArray: datasetRenderArray,
     });
   } catch (error) {
     console.error("Error in setTreeViewDatasetStructure:", error);
   }
 };
 
-// Opens the context menu
-export const openContextMenu = (itemPosition, itemType, itemName, itemContent) => {
-  try {
-    let safeItemContent;
-    try {
-      safeItemContent = JSON.parse(JSON.stringify(itemContent));
-    } catch (error) {
-      console.error("Error stringifying context menu item content:", error);
-      safeItemContent = {}; // Fallback to empty object if serialization fails
-    }
-
-    useGlobalStore.setState({
-      contextMenuIsOpened: true,
-      contextMenuPosition: itemPosition,
-      contextMenuItemName: itemName,
-      contextMenuItemType: itemType,
-      contextMenuItemData: safeItemContent,
-    });
-  } catch (error) {
-    console.error("Error in openContextMenu:", error);
-  }
-};
-
-// Closes the context menu
-export const closeContextMenu = () => {
+export const openContextMenu = (pos, type, name, content) => {
   useGlobalStore.setState({
-    contextMenuIsOpened: false,
+    contextMenuIsOpened: true,
+    contextMenuPosition: pos,
+    contextMenuItemName: name,
+    contextMenuItemType: type,
+    contextMenuItemData: safeDeepCopy(content) || {},
   });
 };
 
-// Retrieves folder structure by path
+export const closeContextMenu = () => {
+  useGlobalStore.setState({ contextMenuIsOpened: false });
+};
+
 export const getFolderStructureJsonByPath = (path) => {
   try {
     const globalStore = useGlobalStore.getState();
     const pathArray = typeof path === "string" ? path.split("/").filter(Boolean) : path;
     let structure = globalStore.datasetStructureJSONObj;
 
-    pathArray.forEach((folder) => {
+    for (const folder of pathArray) {
       structure = structure?.folders?.[folder];
       if (!structure) throw new Error(`Folder "${folder}" does not exist`);
-    });
+    }
 
-    return JSON.parse(JSON.stringify(structure)); // Avoid proxy-related issues
+    return safeDeepCopy(structure);
   } catch (error) {
     console.error("Error in getFolderStructureJsonByPath:", error);
-    return { folders: {}, files: {} }; // Return empty structure on error
+    return { folders: {}, files: {} };
   }
 };
 
-// Folder move operations
-export const setFolderMoveMode = (moveMode) => {
-  useGlobalStore.setState({
-    folderMoveModeIsActive: moveMode,
-  });
+export const setFolderMoveMode = (active) => {
+  useGlobalStore.setState({ folderMoveModeIsActive: active });
 };
 
-export const moveFolderToNewLocation = (targetRelativePath) => {
+export const moveFolderToNewLocation = (targetPath) => {
   try {
     const globalStore = useGlobalStore.getState();
-    const { contextMenuItemName, contextMenuItemType, contextMenuItemData } = globalStore;
+    const { contextMenuItemName, contextMenuItemData } = globalStore;
+    if (!contextMenuItemName || !contextMenuItemData) throw new Error("Invalid context menu data");
 
-    if (!contextMenuItemName || !contextMenuItemData) {
-      throw new Error("Missing contextMenuItemName or contextMenuItemData.");
-    }
+    const targetFolder = getFolderStructureJsonByPath(targetPath);
+    if (!targetFolder) throw new Error(`Target folder "${targetPath}" not found`);
 
-    // Get the stringified JSON object of the target folder (where we will be moving the folder)
-    const targetFolder = getFolderStructureJsonByPath(targetRelativePath);
-
-    if (!targetFolder) {
-      throw new Error(`Target folder at path "${targetRelativePath}" not found.`);
-    }
-
-    const originalStructure = globalStore.datasetStructureJSONObj;
-    const folderToDeletePathSegments = contextMenuItemData.relativePath.split("/").filter(Boolean);
-    const parentFolder = traverseStructureByPath(
-      originalStructure,
-      folderToDeletePathSegments.slice(0, -1)
-    );
-
-    if (!parentFolder || !parentFolder.folders[contextMenuItemName]) {
-      throw new Error(`Folder "${contextMenuItemName}" not found in the original location.`);
-    }
+    const original = globalStore.datasetStructureJSONObj;
+    const segments = contextMenuItemData.relativePath.split("/").filter(Boolean);
+    const parentFolder = traverseStructureByPath(original, segments.slice(0, -1));
+    if (!parentFolder?.folders?.[contextMenuItemName])
+      throw new Error(`Folder "${contextMenuItemName}" not found`);
 
     useGlobalStore.setState(
       produce((state) => {
         delete parentFolder.folders[contextMenuItemName];
         targetFolder.folders[contextMenuItemName] = contextMenuItemData;
         targetFolder.folders[contextMenuItemName].relativePath =
-          `${targetRelativePath}/${contextMenuItemName}`;
-
+          `${targetPath}/${contextMenuItemName}`;
         setTreeViewDatasetStructure(state.datasetStructureJSONObj, globalStore.pathToRender);
       })
     );
@@ -449,68 +323,43 @@ export const moveFolderToNewLocation = (targetRelativePath) => {
   }
 };
 
-/**
- * Set entity filter with multi-type include/exclude capabilities
- *
- * @param {Array} include - Array of {type, names} objects for inclusion
- * @param {Array} exclude - Array of {type, names} objects for exclusion
- */
 export const setEntityFilter = (include = [], exclude = []) => {
-  // Create the entityFilters object directly
-  const entityFilters = {
-    include,
-    exclude,
-  };
-
-  // Log what we're filtering
-  // Only activate filter if we have valid filters
-  const isFilterActive = include.length > 0 || exclude.length > 0;
-
-  // Update state
+  const active = include.length > 0 || exclude.length > 0;
   useGlobalStore.setState({
-    renderDatasetStructureJSONObjIsLoading: true,
-    entityFilterActive: isFilterActive,
-    entityFilters,
+    datasetRenderArrayIsLoading: true,
+    entityFilterActive: active,
+    entityFilters: { include, exclude },
   });
 
-  // Re-apply the current search filter to update the view with the entity filter
-  setTimeout(() => {
-    const currentSearchFilter = useGlobalStore.getState().datasetStructureSearchFilter;
-    setDatasetStructureSearchFilter(currentSearchFilter);
-  }, 0);
+  setTimeout(
+    () => setDatasetStructureSearchFilter(useGlobalStore.getState().datasetStructureSearchFilter),
+    0
+  );
 };
 
-// For backward compatibility - filter by a single entity type
-export const setSimpleEntityFilter = (entityType, includeNames = [], excludeNames = []) => {
-  // Convert to the new format for direct parameters
-  const includeFilter = includeNames.length > 0 ? [{ type: entityType, names: includeNames }] : [];
-  const excludeFilter = excludeNames.length > 0 ? [{ type: entityType, names: excludeNames }] : [];
-
-  setEntityFilter(includeFilter, excludeFilter);
+export const setSimpleEntityFilter = (type, includeNames = [], excludeNames = []) => {
+  setEntityFilter(
+    includeNames.length ? [{ type, names: includeNames }] : [],
+    excludeNames.length ? [{ type, names: excludeNames }] : []
+  );
 };
 
-// Clear the entity filter
 export const clearEntityFilter = () => {
   useGlobalStore.setState({
-    renderDatasetStructureJSONObjIsLoading: true,
+    datasetRenderArrayIsLoading: true,
     entityFilterActive: false,
     entityFilters: { include: [], exclude: [] },
   });
-
-  // Re-apply the current search filter without entity filtering
-  setTimeout(() => {
-    const currentSearchFilter = useGlobalStore.getState().datasetStructureSearchFilter;
-    setDatasetStructureSearchFilter(currentSearchFilter);
-  }, 0);
+  setTimeout(
+    () => setDatasetStructureSearchFilter(useGlobalStore.getState().datasetStructureSearchFilter),
+    0
+  );
 };
 
-export const setDataSetMetadataToPreview = (metadataKeys) => {
-  useGlobalStore.setState({
-    dataSetMetadataToPreview: metadataKeys,
-  });
+export const setDatasetMetadataToPreview = (metadataKeys) => {
+  useGlobalStore.setState({ datasetMetadataToPreview: metadataKeys });
 };
-export const setActiveFileExplorer = (fileExplorerId) => {
-  useGlobalStore.setState({
-    activeFileExplorer: fileExplorerId,
-  });
+
+export const setActiveFileExplorer = (id) => {
+  useGlobalStore.setState({ activeFileExplorer: id });
 };

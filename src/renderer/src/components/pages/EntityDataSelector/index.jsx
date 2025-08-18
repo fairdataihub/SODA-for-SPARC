@@ -135,11 +135,9 @@ const EntityDataSelectorPage = ({
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const datasetIncludesCode = selectedEntities.includes("code");
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
-  const renderDatasetStructureJSONObj = useGlobalStore(
-    (state) => state.renderDatasetStructureJSONObj
-  );
+  const datasetRenderArray = useGlobalStore((state) => state.datasetRenderArray);
 
-  const itemCount = countFilesInDatasetStructure(renderDatasetStructureJSONObj);
+  const itemCount = countFilesInDatasetStructure(datasetRenderArray);
   const countItemsSelected = countSelectedFilesByEntityType(entityType);
 
   return (
