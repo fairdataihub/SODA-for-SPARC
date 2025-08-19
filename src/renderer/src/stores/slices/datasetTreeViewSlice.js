@@ -215,24 +215,26 @@ export const setTreeViewDatasetStructure = (datasetStructure, pathToRender) => {
       let itemIndex = 0;
 
       const traverse = (node, depth = 0) => {
-        // Add folder itself
-        for (const folder of Object.values(node.folders || {})) {
+        // Files first
+        for (const [fileKey, file] of Object.entries(node.files || {})) {
+          result.push({
+            itemType: "file",
+            itemIndex: itemIndex++,
+            itemIndent: depth + 1,
+            fileName: fileKey,
+            ...file,
+          });
+        }
+
+        // Then folders
+        for (const [folderKey, folder] of Object.entries(node.folders || {})) {
           result.push({
             itemType: "folder",
             itemIndex: itemIndex++,
             itemIndent: depth,
+            folderName: folderKey,
             ...folder,
           });
-          // Add files in this folder
-          for (const file of Object.values(folder.files || {})) {
-            result.push({
-              itemType: "file",
-              itemIndex: itemIndex++,
-              itemIndent: depth + 1,
-              ...file,
-            });
-          }
-          // Recurse into subfolders
           traverse(folder, depth + 1);
         }
       };

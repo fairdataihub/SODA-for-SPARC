@@ -1,3 +1,6 @@
+import { enableMapSet } from "immer";
+enableMapSet();
+
 import "./assets/imports";
 
 // Render React Components into their respective slots in the DOM

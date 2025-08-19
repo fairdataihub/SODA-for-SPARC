@@ -1,3 +1,4 @@
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { useState, useEffect, useRef } from "react";
 import {
   Collapse,
@@ -41,6 +42,11 @@ import {
   setDatasetStructureSearchFilter,
   openContextMenu,
 } from "../../../stores/slices/datasetTreeViewSlice";
+import {
+  isFolderOpen,
+  openFolder,
+  closeFolder,
+} from "../../../stores/slices/fileExplorerStateSlice";
 
 import { useDebouncedValue } from "@mantine/hooks";
 import { naturalSort } from "../utils/util-functions";
@@ -183,6 +189,7 @@ const FileItem = ({
       pl="xs"
       py="1px"
       style={{ flexWrap: "nowrap" }}
+      h="24px"
     >
       {/* Checkbox for selection appears first */}
       {onFileClick && (
@@ -297,17 +304,20 @@ const FolderItem = ({
   const contextMenuItemData = useGlobalStore((state) => state.contextMenuItemData);
   const contextMenuIsOpened = useGlobalStore((state) => state.contextMenuIsOpened);
 
-  const [isOpen, setIsOpen] = useState(false);
   const { hovered, ref } = useHover();
 
   // Get associated entities for this folder, filtering by entityType
   const associations = getAssociatedEntities(content.relativePath, entityType);
 
-  useEffect(() => {
-    if (datasetStructureSearchFilter) setIsOpen(true);
-  }, [datasetStructureSearchFilter]);
+  // Use global openFolders state
+  const folderPath = content.relativePath;
+  const isOpen = isFolderOpen(folderPath);
 
-  const toggleFolder = () => setIsOpen((prev) => !prev);
+  useEffect(() => {
+    if (datasetStructureSearchFilter && !isOpen) {
+      openFolder(folderPath);
+    }
+  }, [datasetStructureSearchFilter, isOpen, folderPath]);
 
   const handleFolderContextMenuOpen = (e) => {
     e.preventDefault();
@@ -394,6 +404,15 @@ const FolderItem = ({
     return undefined;
   };
 
+  const folderIsOpen = isFolderOpen(name);
+  const handleFolderClick = () => {
+    if (folderIsOpen) {
+      closeFolder(name);
+    } else {
+      openFolder(name);
+    }
+  };
+
   return (
     <Group
       gap={3}
@@ -403,8 +422,10 @@ const FolderItem = ({
       bg={getBackgroundColor()}
       py="1px"
       style={{ flexWrap: "nowrap" }}
+      onClick={handleFolderClick}
+      h="24px"
     >
-      {folderIsEmpty ? (
+      {folderIsOpen ? (
         <IconFolder size={ICON_SETTINGS.folderSize} color={ICON_SETTINGS.folderColor} />
       ) : (
         <IconFolderOpen size={ICON_SETTINGS.folderSize} color={ICON_SETTINGS.folderColor} />
@@ -501,6 +522,22 @@ const DatasetTreeViewRenderer = ({
 }) => {
   const activeFileExplorer = useGlobalStore((state) => state.activeFileExplorer);
   const datasetRenderArray = useGlobalStore((state) => state.datasetRenderArray);
+  const datasetRenderArrayFolders = datasetRenderArray
+    ? datasetRenderArray.filter((item) => item.itemType === "folder")
+    : [];
+  const datasetRenderArrayFiles = datasetRenderArray
+    ? datasetRenderArray.filter((item) => item.itemType === "file")
+    : [];
+
+  const parentRef = useRef(null);
+
+  const count = datasetRenderArray ? datasetRenderArray.length : 0;
+  const rowVirtualizer = useVirtualizer({
+    count,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 26, // 24px height + 2px total margin
+    overscan: 30,
+  });
   console.log("datasetRenderArray:", datasetRenderArray);
   const datasetRenderArrayIsLoading = useGlobalStore((state) => state.datasetRenderArrayIsLoading);
   const datasetStructureSearchFilter = useGlobalStore(
@@ -526,6 +563,15 @@ const DatasetTreeViewRenderer = ({
   useEffect(() => {
     setInputSearchFilter(externallySetSearchFilterValue);
   }, [externallySetSearchFilterValue]);
+
+  useEffect(() => {
+    const virtualItems = rowVirtualizer.getVirtualItems();
+    console.log(
+      `Virtualizer update: total=${datasetRenderArray?.length ?? 0}, virtualized=${
+        virtualItems.length
+      }`
+    );
+  }, [datasetRenderArray, rowVirtualizer.getVirtualItems()]);
 
   if (activeFileExplorer !== fileExplorerId) {
     return <Text>Inactive file explorer {fileExplorerId ? fileExplorerId : "NONE"}</Text>;
@@ -593,53 +639,79 @@ const DatasetTreeViewRenderer = ({
           mb="xs"
         />
       )}
-      <Stack gap={1} style={{ maxHeight: 700, overflowY: "auto" }} py={3}>
+      <div
+        ref={parentRef}
+        style={{
+          maxHeight: 700,
+          overflowY: "auto",
+          position: "relative",
+        }}
+      >
         {datasetRenderArrayIsLoading ? (
           <Center w="100%">
             <Loader size="md" m="xs" />
           </Center>
         ) : (
-          <>
-            {datasetRenderArray.map((item) => {
-              console.log("datasetRenderArray item:", item);
-              if (item.itemType === "folder") {
-                return (
-                  <FolderItem
-                    key={item.itemIndex}
-                    name={item.name}
-                    content={item}
-                    onFolderClick={allowFolderSelection ? folderActions?.["on-folder-click"] : null}
-                    onFileClick={fileActions?.["on-file-click"] ? handleFileItemClick : null}
-                    folderClickHoverText={
-                      folderActions?.["folder-click-hover-text"] ||
-                      "Select this folder and its contents"
-                    }
-                    datasetStructureSearchFilter={datasetStructureSearchFilter}
-                    isFolderSelected={folderActions?.["is-folder-selected"]}
-                    isFileSelected={fileActions?.["is-file-selected"]}
-                    allowStructureEditing={allowStructureEditing}
-                    allowFolderSelection={allowFolderSelection}
-                    entityType={entityType}
-                  />
-                );
-              } else if (item.itemType === "file") {
-                return (
-                  <FileItem
-                    key={item.itemIndex}
-                    name={item.relativePath}
-                    content={item}
-                    onFileClick={fileActions?.["on-file-click"] ? handleFileItemClick : null}
-                    isFileSelected={fileActions?.["is-file-selected"]}
-                    allowStructureEditing={allowStructureEditing}
-                    entityType={entityType} // Pass to FileItem
-                  />
-                );
-              }
-              return null;
+          <div
+            style={{
+              height: rowVirtualizer.getTotalSize(),
+              width: "100%",
+              position: "relative",
+            }}
+          >
+            {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+              const item = datasetRenderArray[virtualRow.index];
+              if (!item) return null;
+
+              return (
+                <div
+                  key={virtualRow.key}
+                  ref={rowVirtualizer.measureElement}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    transform: `translateY(${virtualRow.start}px)`,
+                  }}
+                >
+                  {item.itemType === "folder" ? (
+                    <FolderItem
+                      key={item.itemIndex}
+                      name={item.folderName}
+                      content={item}
+                      onFolderClick={
+                        allowFolderSelection ? folderActions?.["on-folder-click"] : null
+                      }
+                      onFileClick={fileActions?.["on-file-click"] ? handleFileItemClick : null}
+                      folderClickHoverText={
+                        folderActions?.["folder-click-hover-text"] ||
+                        "Select this folder and its contents"
+                      }
+                      datasetStructureSearchFilter={datasetStructureSearchFilter}
+                      isFolderSelected={folderActions?.["is-folder-selected"]}
+                      isFileSelected={fileActions?.["is-file-selected"]}
+                      allowStructureEditing={allowStructureEditing}
+                      allowFolderSelection={allowFolderSelection}
+                      entityType={entityType}
+                    />
+                  ) : (
+                    <FileItem
+                      key={item.itemIndex}
+                      name={item.fileName}
+                      content={item}
+                      onFileClick={fileActions?.["on-file-click"] ? handleFileItemClick : null}
+                      isFileSelected={fileActions?.["is-file-selected"]}
+                      allowStructureEditing={allowStructureEditing}
+                      entityType={entityType}
+                    />
+                  )}
+                </div>
+              );
             })}
-          </>
+          </div>
         )}
-      </Stack>
+      </div>
       <ContextMenu />
     </Paper>
   );
