@@ -522,12 +522,6 @@ const DatasetTreeViewRenderer = ({
 }) => {
   const activeFileExplorer = useGlobalStore((state) => state.activeFileExplorer);
   const datasetRenderArray = useGlobalStore((state) => state.datasetRenderArray);
-  const datasetRenderArrayFolders = datasetRenderArray
-    ? datasetRenderArray.filter((item) => item.itemType === "folder")
-    : [];
-  const datasetRenderArrayFiles = datasetRenderArray
-    ? datasetRenderArray.filter((item) => item.itemType === "file")
-    : [];
 
   const parentRef = useRef(null);
 
@@ -536,7 +530,7 @@ const DatasetTreeViewRenderer = ({
     count,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 26, // 24px height + 2px total margin
-    overscan: 30,
+    overscan: 70,
   });
   console.log("datasetRenderArray:", datasetRenderArray);
   const datasetRenderArrayIsLoading = useGlobalStore((state) => state.datasetRenderArrayIsLoading);
@@ -571,6 +565,7 @@ const DatasetTreeViewRenderer = ({
         virtualItems.length
       }`
     );
+    console.log(virtualItems);
   }, [datasetRenderArray, rowVirtualizer.getVirtualItems()]);
 
   if (activeFileExplorer !== fileExplorerId) {
@@ -620,6 +615,9 @@ const DatasetTreeViewRenderer = ({
 
   return (
     <Paper padding="md" shadow="sm" radius="md" p="sm" flex={1} w="100%" withBorder>
+      <Text>{`Total files virtualized: ${
+        rowVirtualizer.getVirtualItems().length
+      } out of ${count}`}</Text>
       {itemSelectInstructions && (
         <Stack gap="xs">
           <Text size="lg" fw={500}>
