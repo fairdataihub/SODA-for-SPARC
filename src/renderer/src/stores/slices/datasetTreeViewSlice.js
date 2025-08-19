@@ -202,7 +202,7 @@ export const deleteEmptyFoldersFromStructure = (structure) => {
     : null;
 };
 
-export const setTreeViewDatasetStructure = (datasetStructure, pathToRender) => {
+export const generateTreeViewRenderArray = (datasetStructure, pathToRender) => {
   try {
     const path = pathToRender || useGlobalStore.getState().pathToRender;
     if (!datasetStructure) return console.warn("Dataset structure missing");
@@ -210,32 +210,57 @@ export const setTreeViewDatasetStructure = (datasetStructure, pathToRender) => {
     const updatedStructure = safeDeepCopy(datasetStructure);
     addRelativePaths(updatedStructure);
 
+    // Natural sort helper
+    const naturalSort = (a, b) =>
+      a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
+
     const convertDatasetStructureToArray = (structure) => {
       const result = [];
       let itemIndex = 0;
 
       const traverse = (node, depth = 0) => {
-        // Files first
-        for (const [fileKey, file] of Object.entries(node.files || {})) {
-          result.push({
-            itemType: "file",
-            itemIndex: itemIndex++,
-            itemIndent: depth + 1,
-            fileName: fileKey,
-            ...file,
-          });
-        }
-
-        // Then folders
-        for (const [folderKey, folder] of Object.entries(node.folders || {})) {
+        // Folders first, natural order
+        const folderNames = Object.keys(node.folders || {}).sort(naturalSort);
+        for (const folderName of folderNames) {
+          const folder = node.folders[folderName];
           result.push({
             itemType: "folder",
             itemIndex: itemIndex++,
             itemIndent: depth,
-            folderName: folderKey,
+            folderName,
             ...folder,
           });
+
+          // ✅ Add files inside THIS folder before traversing subfolders
+          const fileNames = Object.keys(folder.files || {}).sort(naturalSort);
+          for (const fileName of fileNames) {
+            const file = folder.files[fileName];
+            result.push({
+              itemType: "file",
+              itemIndex: itemIndex++,
+              itemIndent: depth + 1,
+              fileName,
+              ...file,
+            });
+          }
+
+          // Now traverse subfolders
           traverse(folder, depth + 1);
+        }
+
+        // ✅ Handle files in the root node if any
+        if (depth === 0) {
+          const rootFileNames = Object.keys(node.files || {}).sort(naturalSort);
+          for (const fileName of rootFileNames) {
+            const file = node.files[fileName];
+            result.push({
+              itemType: "file",
+              itemIndex: itemIndex++,
+              itemIndent: depth + 1,
+              fileName,
+              ...file,
+            });
+          }
         }
       };
 
@@ -256,7 +281,7 @@ export const setTreeViewDatasetStructure = (datasetStructure, pathToRender) => {
       datasetRenderArray: datasetRenderArray,
     });
   } catch (error) {
-    console.error("Error in setTreeViewDatasetStructure:", error);
+    console.error("Error in generateTreeViewRenderArray:", error);
   }
 };
 
@@ -317,7 +342,7 @@ export const moveFolderToNewLocation = (targetPath) => {
         targetFolder.folders[contextMenuItemName] = contextMenuItemData;
         targetFolder.folders[contextMenuItemName].relativePath =
           `${targetPath}/${contextMenuItemName}`;
-        setTreeViewDatasetStructure(state.datasetStructureJSONObj, globalStore.pathToRender);
+        generateTreeViewRenderArray(state.datasetStructureJSONObj, globalStore.pathToRender);
       })
     );
   } catch (error) {

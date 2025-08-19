@@ -8,7 +8,7 @@ import {
 } from "../buttons/radioButtons.js";
 import {
   externallySetSearchFilterValue,
-  setTreeViewDatasetStructure,
+  generateTreeViewRenderArray,
   clearEntityFilter,
   setEntityFilter,
   setDatasetMetadataToPreview,
@@ -325,7 +325,7 @@ window.openPage = async (targetPageID) => {
             []
           );
         }
-        setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["data"]);
+        generateTreeViewRenderArray(window.datasetStructureJSONObj, ["data"]);
       }
 
       if (targetPageComponentType === "entity-file-mapping-page") {
@@ -355,7 +355,7 @@ window.openPage = async (targetPageID) => {
         }
 
         setDatasetEntityArray(datasetEntityArray);
-        setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["data"]);
+        generateTreeViewRenderArray(window.datasetStructureJSONObj, ["data"]);
       }
 
       if (

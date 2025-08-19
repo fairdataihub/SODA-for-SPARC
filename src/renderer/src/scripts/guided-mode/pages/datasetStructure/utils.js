@@ -1,4 +1,4 @@
-import { setTreeViewDatasetStructure } from "../../../../stores/slices/datasetTreeViewSlice";
+import { generateTreeViewRenderArray } from "../../../../stores/slices/datasetTreeViewSlice";
 import { newEmptyFolderObj } from "../../../utils/datasetStructure";
 
 const getDatasetStructureJsonFolderContentsAtNestedArrayPath = (folderPathArray) => {
@@ -40,5 +40,5 @@ export const guidedUpdateFolderStructureUI = (folderPathSeperatedBySlashes) => {
     window.datasetStructureJSONObj
   );
   // Refresh the tree view to match the current folder structure
-  setTreeViewDatasetStructure(window.datasetStructureJSONObj, arrayPathToNestedJsonToRender);
+  generateTreeViewRenderArray(window.datasetStructureJSONObj, arrayPathToNestedJsonToRender);
 };

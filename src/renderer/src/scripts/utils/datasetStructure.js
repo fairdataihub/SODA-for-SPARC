@@ -1,5 +1,5 @@
 import useGlobalStore from "../../stores/globalStore";
-import { setTreeViewDatasetStructure } from "../../stores/slices/datasetTreeViewSlice";
+import { generateTreeViewRenderArray } from "../../stores/slices/datasetTreeViewSlice";
 import { setFolderMoveMode } from "../../stores/slices/datasetTreeViewSlice";
 import { deleteEmptyFoldersFromStructure } from "../../stores/slices/datasetTreeViewSlice";
 
@@ -96,7 +96,7 @@ export const deleteFoldersByRelativePath = (arrayOfRelativePaths) => {
   }
 
   // Update the tree view structure to reflect the changes.
-  setTreeViewDatasetStructure(window.datasetStructureJSONObj);
+  generateTreeViewRenderArray(window.datasetStructureJSONObj);
 };
 
 export const deleteFilesByRelativePath = (arrayOfRelativePaths) => {
@@ -113,48 +113,7 @@ export const deleteFilesByRelativePath = (arrayOfRelativePaths) => {
   }
 
   // Update the tree view structure to reflect the changes.
-  setTreeViewDatasetStructure(window.datasetStructureJSONObj);
-};
-
-export const moveFoldersToTargetLocation = (
-  arrayOfRelativePathsToMove,
-  destionationRelativePath
-) => {
-  const {
-    parentFolder: destinationParentFolder,
-    itemName: destinationItemName,
-    itemObject: destinationItemObject,
-  } = getItemAtPath(destionationRelativePath, "folder");
-  for (const relativePathToMove of arrayOfRelativePathsToMove) {
-    const { parentFolder, itemName, itemObject } = getItemAtPath(relativePathToMove, "folder");
-    // Move the folder to the destination folder.
-    destinationItemObject["folders"][itemName] = itemObject;
-    // Remove the folder from its original location.
-    delete parentFolder["folders"][itemName];
-  }
-
-  // Update the tree view structure to reflect the changes.
-  setTreeViewDatasetStructure(window.datasetStructureJSONObj);
-};
-
-export const moveFilesToTargetLocation = (arrayOfRelativePathsToMove, destionationRelativePath) => {
-  const {
-    parentFolder: destinationParentFolder,
-    itemName: destinationItemName,
-    itemObject: destinationItemObject,
-  } = getItemAtPath(destionationRelativePath, "folder");
-
-  for (const relativePathToMove of arrayOfRelativePathsToMove) {
-    const { parentFolder, itemName, itemObject } = getItemAtPath(relativePathToMove, "file");
-    // Move the file to the destination folder.
-    destinationItemObject["files"][itemName] = itemObject;
-
-    // Remove the file from its original location.
-    delete parentFolder["files"][itemName];
-  }
-
-  // Update the tree view structure to reflect the changes.
-  setTreeViewDatasetStructure(window.datasetStructureJSONObj);
+  generateTreeViewRenderArray(window.datasetStructureJSONObj);
 };
 
 export const moveFileToTargetLocation = (relativePathToMove, destionationRelativeFolderPath) => {
@@ -192,7 +151,7 @@ export const moveFileToTargetLocation = (relativePathToMove, destionationRelativ
   delete parentFolder["files"][itemName];
 
   // Update the tree view structure to reflect the changes.
-  setTreeViewDatasetStructure(window.datasetStructureJSONObj);
+  generateTreeViewRenderArray(window.datasetStructureJSONObj);
 };
 
 export const createStandardizedDatasetStructure = (datasetStructure, datasetEntityObj) => {

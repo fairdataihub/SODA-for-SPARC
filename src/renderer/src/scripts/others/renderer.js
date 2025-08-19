@@ -65,7 +65,7 @@ import {
 } from "../utils/swal-utils";
 
 import useGlobalStore from "../../stores/globalStore";
-import { setTreeViewDatasetStructure } from "../../stores/slices/datasetTreeViewSlice";
+import { generateTreeViewRenderArray } from "../../stores/slices/datasetTreeViewSlice";
 import {
   resetPennsieveAgentCheckState,
   setPennsieveAgentCheckSuccessful,
@@ -3612,7 +3612,7 @@ const mergeLocalAndRemoteDatasetStructure = async (
     window.organizeDSglobalPath,
     window.datasetStructureJSONObj
   );
-  setTreeViewDatasetStructure(window.datasetStructureJSONObj);
+  generateTreeViewRenderArray(window.datasetStructureJSONObj);
 };
 
 const mergeNewDatasetStructureToExistingDatasetStructureAtPath = async (
@@ -3636,7 +3636,7 @@ const mergeNewDatasetStructureToExistingDatasetStructureAtPath = async (
       window.organizeDSglobalPath,
       window.datasetStructureJSONObj
     );
-    setTreeViewDatasetStructure(window.datasetStructureJSONObj);
+    generateTreeViewRenderArray(window.datasetStructureJSONObj);
 
     // Step 4: Update successful, show success message
     window.notyf.open({

@@ -4,7 +4,7 @@ import {
   setGuidedDatasetName,
   setGuidedDatasetSubtitle,
 } from "../../../../stores/slices/guidedModeSlice";
-import { setTreeViewDatasetStructure } from "../../../../stores/slices/datasetTreeViewSlice";
+import { generateTreeViewRenderArray } from "../../../../stores/slices/datasetTreeViewSlice";
 import { guidedUpdateFolderStructureUI } from "./utils";
 import { swalFileListSingleAction } from "../../../utils/swal-utils";
 import { getEntityDataById } from "../../../../stores/slices/datasetEntityStructureSlice";
@@ -22,9 +22,9 @@ while (!window.baseHtmlLoaded) {
 export const openPageDatasetStructure = async (targetPageID) => {
   // Add handlers for other pages without componentType
   if (targetPageID === "guided-unstructured-data-import-tab") {
-    setTreeViewDatasetStructure(window.datasetStructureJSONObj, []);
+    generateTreeViewRenderArray(window.datasetStructureJSONObj, []);
     guidedUpdateFolderStructureUI("data/");
-    setActiveFileExplorer("initial-data-import");
+    setActiveFileExplorer("guided-unstructured-data-import-tab");
   }
 
   if (targetPageID === "guided-entity-addition-method-selection-tab") {
@@ -147,7 +147,7 @@ export const openPageDatasetStructure = async (targetPageID) => {
       window.sodaJSONObj["dataset-entity-obj"]
     );
 
-    setTreeViewDatasetStructure(standardizedStructure, []);
+    generateTreeViewRenderArray(standardizedStructure, []);
 
     const sodaCopy = {
       ...window.sodaJSONObj,

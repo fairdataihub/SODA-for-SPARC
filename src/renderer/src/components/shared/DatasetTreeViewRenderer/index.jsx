@@ -137,6 +137,7 @@ const FileItem = ({
   isFileSelected,
   allowStructureEditing,
   entityType,
+  indent,
 }) => {
   // Increment global counter every render
   globalFileItemRenderCount++;
@@ -190,6 +191,7 @@ const FileItem = ({
       py="1px"
       style={{ flexWrap: "nowrap" }}
       h="24px"
+      ml={`${indent * 10 + 5}px`}
     >
       {/* Checkbox for selection appears first */}
       {onFileClick && (
@@ -300,6 +302,8 @@ const FolderItem = ({
   allowFolderSelection,
   folderClickHoverText,
   entityType,
+  checked,
+  indent,
 }) => {
   const contextMenuItemData = useGlobalStore((state) => state.contextMenuItemData);
   const contextMenuIsOpened = useGlobalStore((state) => state.contextMenuIsOpened);
@@ -361,9 +365,6 @@ const FolderItem = ({
     return selectedCount === totalFiles;
   };
 
-  // Calculate if folder checkbox should be checked
-  const folderCheckboxStatus = areAllFilesSelected();
-
   // Handler for when folder checkbox is clicked
   const handleFolderCheckboxClick = () => {
     if (!onFileClick || !isFileSelected || typeof isFileSelected !== "function") return;
@@ -424,6 +425,7 @@ const FolderItem = ({
       style={{ flexWrap: "nowrap" }}
       onClick={handleFolderClick}
       h="24px"
+      ml={`${indent * 10}px`}
     >
       {folderIsOpen ? (
         <IconFolder size={ICON_SETTINGS.folderSize} color={ICON_SETTINGS.folderColor} />
@@ -432,16 +434,12 @@ const FolderItem = ({
       )}
       {!folderIsPassThrough && onFileClick && typeof isFileSelected === "function" && (
         <Tooltip
-          label={
-            folderCheckboxStatus
-              ? "Deselect all files in this folder"
-              : "Select all files in this folder"
-          }
+          label={checked ? "Deselect all files in this folder" : "Select all files in this folder"}
           zIndex={2999}
         >
           <Checkbox
             readOnly
-            checked={folderCheckboxStatus}
+            checked={checked}
             onClick={(e) => {
               e.stopPropagation();
               handleFolderCheckboxClick();
@@ -692,6 +690,7 @@ const DatasetTreeViewRenderer = ({
                       allowStructureEditing={allowStructureEditing}
                       allowFolderSelection={allowFolderSelection}
                       entityType={entityType}
+                      indent={item.itemIndent}
                     />
                   ) : (
                     <FileItem
@@ -702,6 +701,7 @@ const DatasetTreeViewRenderer = ({
                       isFileSelected={fileActions?.["is-file-selected"]}
                       allowStructureEditing={allowStructureEditing}
                       entityType={entityType}
+                      indent={item.itemIndent}
                     />
                   )}
                 </div>

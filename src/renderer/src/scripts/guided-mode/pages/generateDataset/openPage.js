@@ -7,7 +7,7 @@ import { getGuidedDatasetName, getGuidedDatasetSubtitle } from "../curationPrepa
 import { setSodaTextInputValue } from "../../../../stores/slices/sodaTextInputSlice.js";
 import { guidedShowBannerImagePreview } from "../../bannerImage/bannerImage";
 import { createStandardizedDatasetStructure } from "../../../utils/datasetStructure.js";
-import { setTreeViewDatasetStructure } from "../../../../stores/slices/datasetTreeViewSlice.js";
+import { generateTreeViewRenderArray } from "../../../../stores/slices/datasetTreeViewSlice.js";
 import {
   guidedResetLocalGenerationUI,
   guidedSetDOIUI,
@@ -33,7 +33,7 @@ export const openPageGenerateDataset = async (targetPageID) => {
       window.datasetStructureJSONObj,
       datasetEntityObj
     );
-    setTreeViewDatasetStructure(standardizedDatasetStructure, []);
+    generateTreeViewRenderArray(standardizedDatasetStructure, []);
 
     // Restore the original dataset structure
     window.datasetStructureJSONObj = datasetStructureJSONObjCopy;
@@ -94,7 +94,7 @@ export const openPageGenerateDataset = async (targetPageID) => {
       window.datasetStructureJSONObj,
       datasetEntityObj
     );
-    setTreeViewDatasetStructure(standardizedDatasetStructure, []);
+    generateTreeViewRenderArray(standardizedDatasetStructure, []);
     //Set the inner text of the generate/retry pennsieve dataset button depending on
     //whether a dataset has bee uploaded from this progress file
     const generateOrRetryDatasetUploadButton = document.getElementById(

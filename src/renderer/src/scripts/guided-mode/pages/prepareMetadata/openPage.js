@@ -8,7 +8,7 @@ import api from "../../../others/api/api";
 import { clientError, userErrorMessage } from "../../../others/http-error-handler/error-handler";
 import { guidedShowOptionalRetrySwal } from "../../swals/helperSwals";
 import { createParsedReadme } from "../../../metadata-files/datasetDescription";
-import { setTreeViewDatasetStructure } from "../../../../stores/slices/datasetTreeViewSlice";
+import { generateTreeViewRenderArray } from "../../../../stores/slices/datasetTreeViewSlice";
 import {
   setEntityType,
   setEntityListForEntityType,
@@ -165,7 +165,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     );
 
     // Set the dataset structure in the Redux store
-    setTreeViewDatasetStructure(standardizedDatasetStructure);
+    generateTreeViewRenderArray(standardizedDatasetStructure);
   }
 
   if (targetPageID === "guided-add-code-metadata-tab") {
