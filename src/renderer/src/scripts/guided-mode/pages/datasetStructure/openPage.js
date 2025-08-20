@@ -4,11 +4,7 @@ import {
   setGuidedDatasetName,
   setGuidedDatasetSubtitle,
 } from "../../../../stores/slices/guidedModeSlice";
-import {
-  generateTreeViewRenderArray,
-  setPathToRender,
-} from "../../../../stores/slices/datasetTreeViewSlice";
-import { guidedUpdateFolderStructureUI } from "./utils";
+import { reRenderTreeView, setPathToRender } from "../../../../stores/slices/datasetTreeViewSlice";
 import { swalFileListSingleAction } from "../../../utils/swal-utils";
 import { getEntityDataById } from "../../../../stores/slices/datasetEntityStructureSlice";
 import { createStandardizedDatasetStructure } from "../../../utils/datasetStructure";
@@ -25,56 +21,7 @@ while (!window.baseHtmlLoaded) {
 export const openPageDatasetStructure = async (targetPageID) => {
   // Add handlers for other pages without componentType
   if (targetPageID === "guided-unstructured-data-import-tab") {
-    setPathToRender(["data"]);
-    generateTreeViewRenderArray(window.datasetStructureJSONObj);
-    guidedUpdateFolderStructureUI("data/");
     setActiveFileExplorer("guided-unstructured-data-import-tab");
-  }
-
-  if (targetPageID === "guided-entity-addition-method-selection-tab") {
-  }
-
-  if (targetPageID === "guided-dataset-content-tab") {
-    // Component with type "dataset-content-selector" will handle most of the logic
-  }
-
-  if (targetPageID === "data-categorization-tab") {
-    // Component with type "data-categorization-page" will handle most of the logic
-  }
-
-  if (targetPageID === "guided-manual-dataset-entity-and-metadata-tab") {
-    // Component with type "entity-metadata-page" will handle most of the logic
-  }
-
-  if (targetPageID === "guided-spreadsheet-import-dataset-entity-and-metadata-tab") {
-    // Component with type "entity-spreadsheet-import-page" will handle most of the logic
-  }
-
-  if (targetPageID === "guided-sites-selection-tab") {
-    // Component with type "data-categorization-page" will handle most of the logic
-  }
-
-  if (targetPageID === "guided-samples-selection-tab") {
-    // Component with type "data-categorization-page" will handle most of the logic
-  }
-
-  if (targetPageID === "guided-subjects-selection-tab") {
-    // Component with type "data-categorization-page" will handle most of the logic
-  }
-
-  if (targetPageID === "guided-performances-entity-addition-tab") {
-    // Component with type "performance-id-management-page" will handle most of the logic
-  }
-
-  if (targetPageID === "guided-Performances-selection-tab") {
-    // Component with type "data-categorization-page" will handle most of the logic
-  }
-
-  if (targetPageID === "guided-modalities-selection-tab") {
-  }
-
-  if (targetPageID === "guided-modalities-data-selection-tab") {
-    // Component with type "data-categorization-page" will handle most of the logic
   }
 
   if (targetPageID === "guided-dataset-structure-and-manifest-review-tab") {
@@ -144,15 +91,6 @@ export const openPageDatasetStructure = async (targetPageID) => {
     window.datasetStructureJSONObj = deleteEmptyFoldersFromStructure(
       window.datasetStructureJSONObj
     );
-
-    // Create a standardized SODA JSON object for the clean-dataset endpoint
-    const standardizedStructure = createStandardizedDatasetStructure(
-      window.datasetStructureJSONObj,
-      window.sodaJSONObj["dataset-entity-obj"]
-    );
-
-    setPathToRender([]);
-    generateTreeViewRenderArray(standardizedStructure);
 
     const sodaCopy = {
       ...window.sodaJSONObj,

@@ -65,10 +65,7 @@ import {
 } from "../utils/swal-utils";
 
 import useGlobalStore from "../../stores/globalStore";
-import {
-  generateTreeViewRenderArray,
-  setPathToRender,
-} from "../../stores/slices/datasetTreeViewSlice";
+import { reRenderTreeView, setPathToRender } from "../../stores/slices/datasetTreeViewSlice";
 import {
   resetPennsieveAgentCheckState,
   setPennsieveAgentCheckSuccessful,
@@ -3615,13 +3612,11 @@ const mergeLocalAndRemoteDatasetStructure = async (
     window.organizeDSglobalPath,
     window.datasetStructureJSONObj
   );
-  generateTreeViewRenderArray(window.datasetStructureJSONObj);
+  useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
+  reRenderTreeView();
 };
 
-const mergeNewDatasetStructureToExistingDatasetStructureAtPath = async (
-  builtDatasetStructure,
-  relativePathToMergeObjectInto
-) => {
+const mergeNewDatasetStructureToExistingDatasetStructureAtPath = async (builtDatasetStructure) => {
   try {
     // Step 2: Add the imported data to the dataset structure (This function handles duplicate files, etc)
     await mergeLocalAndRemoteDatasetStructure(builtDatasetStructure, currentFileExplorerPath);
@@ -3639,7 +3634,8 @@ const mergeNewDatasetStructureToExistingDatasetStructureAtPath = async (
       window.organizeDSglobalPath,
       window.datasetStructureJSONObj
     );
-    generateTreeViewRenderArray(window.datasetStructureJSONObj);
+    useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
+    reRenderTreeView();
 
     // Step 4: Update successful, show success message
     window.notyf.open({

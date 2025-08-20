@@ -24,7 +24,6 @@ import "./scripts/guided-mode/guided-curate-dataset";
 import "./scripts/guided-mode/pages/navigate";
 import ".//scripts/guided-mode/bannerImage/bannerImage";
 import "./scripts/guided-mode/pages/curationPreparation/utils";
-import "./scripts/guided-mode/pages/datasetStructure/utils";
 import "./scripts/guided-mode/pages/prepareMetadata/utils";
 import "./scripts/guided-mode/pages/generateDataset/utils";
 import "./scripts/guided-mode/generateDataset/generate";

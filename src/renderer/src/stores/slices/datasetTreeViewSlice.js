@@ -203,9 +203,10 @@ export const deleteEmptyFoldersFromStructure = (structure) => {
     : null;
 };
 
-export const generateTreeViewRenderArray = (datasetStructure) => {
+export const reRenderTreeView = () => {
   try {
     const path = useGlobalStore.getState().pathToRender;
+    const datasetStructure = useGlobalStore.getState().datasetStructureJSONObj;
     if (!datasetStructure) return console.warn("Dataset structure missing");
 
     const updatedStructure = safeDeepCopy(datasetStructure);
@@ -229,6 +230,7 @@ export const generateTreeViewRenderArray = (datasetStructure) => {
             itemIndex: itemIndex++,
             itemIndent: depth,
             folderName,
+            itemContent: folder,
             ...folder,
           });
 
@@ -240,6 +242,7 @@ export const generateTreeViewRenderArray = (datasetStructure) => {
               itemType: "file",
               itemIndex: itemIndex++,
               itemIndent: depth + 1,
+              itemContent: file,
               fileName,
               ...file,
             });
@@ -253,11 +256,13 @@ export const generateTreeViewRenderArray = (datasetStructure) => {
           const rootFileNames = Object.keys(node.files || {}).sort(naturalSort);
           for (const fileName of rootFileNames) {
             const file = node.files[fileName];
+            console.log("content", file);
             result.push({
               itemType: "file",
               itemIndex: itemIndex++,
               itemIndent: depth + 1,
               fileName,
+              content: file,
               ...file,
             });
           }
@@ -277,11 +282,10 @@ export const generateTreeViewRenderArray = (datasetStructure) => {
 
     useGlobalStore.setState({
       datasetStructureJSONObj: updatedStructure,
-      pathToRender: path,
       datasetRenderArray: datasetRenderArray,
     });
   } catch (error) {
-    console.error("Error in generateTreeViewRenderArray:", error);
+    console.error("Error in reRenderTreeView:", error);
   }
 };
 
@@ -342,7 +346,7 @@ export const moveFolderToNewLocation = (targetPath) => {
         targetFolder.folders[contextMenuItemName] = contextMenuItemData;
         targetFolder.folders[contextMenuItemName].relativePath =
           `${targetPath}/${contextMenuItemName}`;
-        generateTreeViewRenderArray(state.datasetStructureJSONObj);
+        reRenderTreeView();
       })
     );
   } catch (error) {

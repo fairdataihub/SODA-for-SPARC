@@ -8,7 +8,7 @@ import {
 } from "../buttons/radioButtons.js";
 import {
   externallySetSearchFilterValue,
-  generateTreeViewRenderArray,
+  reRenderTreeView,
   clearEntityFilter,
   setEntityFilter,
   setDatasetMetadataToPreview,
@@ -47,8 +47,7 @@ import useGlobalStore from "../../../stores/globalStore.js";
 import { setPerformanceList } from "../../../stores/slices/performancesSlice.js";
 import { setSelectedModalities } from "../../../stores/slices/modalitiesSlice.js";
 import { guidedSaveProgress } from "./savePageChanges.js";
-import { getItemAtPath } from "../../utils/datasetStructure.js";
-
+import { createStandardizedDatasetStructure } from "../../utils/datasetStructure.js";
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
@@ -327,7 +326,7 @@ window.openPage = async (targetPageID) => {
           );
         }
         setPathToRender(["data"]);
-        generateTreeViewRenderArray(window.datasetStructureJSONObj);
+        reRenderTreeView();
       }
 
       if (targetPageComponentType === "entity-file-mapping-page") {
@@ -358,7 +357,7 @@ window.openPage = async (targetPageID) => {
 
         setDatasetEntityArray(datasetEntityArray);
         setPathToRender(["data"]);
-        generateTreeViewRenderArray(window.datasetStructureJSONObj);
+        reRenderTreeView();
       }
 
       if (
@@ -398,6 +397,42 @@ window.openPage = async (targetPageID) => {
       setActiveFileExplorer(pageID);
     };
     showCorrectFileExplorerByPage(targetPageID);
+
+    const renderCorrectFileExplorerByPage = (pageID) => {
+      // List of pages where the file explorer should render the dataset structure
+      // as it will get generated
+      const reviewPages = [
+        "guided-dataset-structure-and-manifest-review-tab",
+        "guided-generate-dataset-locally",
+        "guided-dataset-generation-confirmation-tab",
+        "guided-dataset-structure-review-tab",
+      ];
+
+      // Check if the current page is one of the review pages
+      if (reviewPages.includes(pageID)) {
+        console.log("Rendering standardized dataset structure");
+        const standardizedDatasetStructure = createStandardizedDatasetStructure(
+          window.datasetStructureJSONObj,
+          window.sodaJSONObj["dataset-entity-obj"]
+        );
+        setPathToRender([]);
+        useGlobalStore.setState({ datasetStructureJSONObj: standardizedDatasetStructure });
+        reRenderTreeView();
+      } else {
+        console.log("Rendering default dataset structure");
+        setPathToRender(["data"]);
+        useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
+        reRenderTreeView();
+      }
+
+      // Special case for data categorization pages
+      if (pageElement.dataset.componentType === "data-categorization-page") {
+        setActiveFileExplorer("entity-data-selector");
+        return;
+      }
+
+      setActiveFileExplorer(pageID);
+    };
 
     let currentParentTab = window.CURRENT_PAGE.closest(".guided--parent-tab");
 

@@ -71,16 +71,7 @@ const ContextMenu = () => {
             </Text>
           </Group>
           <Divider my={3} />
-          {/*
-          <Menu.Item
-            onClick={() => {
-              setFolderMoveMode(true);
-              closeContextMenu();
-            }}
-          >
-            Move {contextMenuItemType}
-          </Menu.Item>
-          */}
+
           <Menu.Item
             onClick={() => {
               if (contextMenuItemType === "file") {
@@ -97,6 +88,7 @@ const ContextMenu = () => {
           {contextMenuItemType === "folder" && (
             <Menu.Item
               onClick={(e) => {
+                console.log("contextMenuItemData.relativePath", contextMenuItemData.relativePath);
                 e.preventDefault();
                 window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog", {
                   importRelativePath: contextMenuItemData.relativePath,

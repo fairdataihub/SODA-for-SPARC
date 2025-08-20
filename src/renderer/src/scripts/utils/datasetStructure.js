@@ -1,5 +1,5 @@
 import useGlobalStore from "../../stores/globalStore";
-import { generateTreeViewRenderArray } from "../../stores/slices/datasetTreeViewSlice";
+import { reRenderTreeView } from "../../stores/slices/datasetTreeViewSlice";
 import { setFolderMoveMode } from "../../stores/slices/datasetTreeViewSlice";
 import { deleteEmptyFoldersFromStructure } from "../../stores/slices/datasetTreeViewSlice";
 
@@ -96,7 +96,8 @@ export const deleteFoldersByRelativePath = (arrayOfRelativePaths) => {
   }
 
   // Update the tree view structure to reflect the changes.
-  generateTreeViewRenderArray(window.datasetStructureJSONObj);
+  useGlobalStore.setState({ datasetStructure: window.datasetStructureJSONObj });
+  reRenderTreeView();
 };
 
 export const deleteFilesByRelativePath = (arrayOfRelativePaths) => {
@@ -113,7 +114,8 @@ export const deleteFilesByRelativePath = (arrayOfRelativePaths) => {
   }
 
   // Update the tree view structure to reflect the changes.
-  generateTreeViewRenderArray(window.datasetStructureJSONObj);
+  useGlobalStore.setState({ datasetStructure: window.datasetStructureJSONObj });
+  reRenderTreeView();
 };
 
 export const moveFileToTargetLocation = (relativePathToMove, destionationRelativeFolderPath) => {
@@ -151,7 +153,8 @@ export const moveFileToTargetLocation = (relativePathToMove, destionationRelativ
   delete parentFolder["files"][itemName];
 
   // Update the tree view structure to reflect the changes.
-  generateTreeViewRenderArray(window.datasetStructureJSONObj);
+  useGlobalStore.setState({ datasetStructure: window.datasetStructureJSONObj });
+  reRenderTreeView();
 };
 
 export const createStandardizedDatasetStructure = (datasetStructure, datasetEntityObj) => {

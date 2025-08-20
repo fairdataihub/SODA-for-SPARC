@@ -1,4 +1,5 @@
 import { setPageLoadingState } from "../navigationUtils/pageLoading";
+import useGlobalStore from "../../../../stores/globalStore";
 import { addContributor, renderContributorsTable } from "../../metadata/contributors";
 import { addGuidedProtocol } from "../../metadata/protocols";
 import Swal from "sweetalert2";
@@ -8,10 +9,7 @@ import api from "../../../others/api/api";
 import { clientError, userErrorMessage } from "../../../others/http-error-handler/error-handler";
 import { guidedShowOptionalRetrySwal } from "../../swals/helperSwals";
 import { createParsedReadme } from "../../../metadata-files/datasetDescription";
-import {
-  generateTreeViewRenderArray,
-  setPathToRender,
-} from "../../../../stores/slices/datasetTreeViewSlice";
+import { reRenderTreeView, setPathToRender } from "../../../../stores/slices/datasetTreeViewSlice";
 import {
   setEntityType,
   setEntityListForEntityType,
@@ -158,17 +156,6 @@ export const openPagePrepareMetadata = async (targetPageID) => {
 
   if (targetPageID === "guided-create-license-metadata-tab") {
     setDropdownState("license-select", window.sodaJSONObj["dataset-license"] || "");
-  }
-
-  if (targetPageID === "guided-dataset-structure-review-tab") {
-    // Create standardized structure
-    const standardizedDatasetStructure = createStandardizedDatasetStructure(
-      window.datasetStructureJSONObj,
-      window.sodaJSONObj["dataset-entity-obj"]
-    );
-
-    setPathToRender([]);
-    generateTreeViewRenderArray(standardizedDatasetStructure);
   }
 
   if (targetPageID === "guided-add-code-metadata-tab") {

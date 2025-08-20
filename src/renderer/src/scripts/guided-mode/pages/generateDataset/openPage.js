@@ -8,7 +8,7 @@ import { setSodaTextInputValue } from "../../../../stores/slices/sodaTextInputSl
 import { guidedShowBannerImagePreview } from "../../bannerImage/bannerImage";
 import { createStandardizedDatasetStructure } from "../../../utils/datasetStructure.js";
 import {
-  generateTreeViewRenderArray,
+  reRenderTreeView,
   setPathToRender,
 } from "../../../../stores/slices/datasetTreeViewSlice.js";
 import {
@@ -31,15 +31,6 @@ export const openPageGenerateDataset = async (targetPageID) => {
   if (targetPageID === "guided-generate-dataset-locally") {
     // Create a deep copy of the dataset structure JSON object
     const datasetStructureJSONObjCopy = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
-    const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
-    const standardizedDatasetStructure = createStandardizedDatasetStructure(
-      window.datasetStructureJSONObj,
-      datasetEntityObj
-    );
-
-    setPathToRender([]);
-    generateTreeViewRenderArray(standardizedDatasetStructure);
-
     // Restore the original dataset structure
     window.datasetStructureJSONObj = datasetStructureJSONObjCopy;
     guidedResetLocalGenerationUI();
@@ -94,13 +85,6 @@ export const openPageGenerateDataset = async (targetPageID) => {
     }
   }
   if (targetPageID === "guided-dataset-generation-confirmation-tab") {
-    const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
-    const standardizedDatasetStructure = createStandardizedDatasetStructure(
-      window.datasetStructureJSONObj,
-      datasetEntityObj
-    );
-    setPathToRender([]);
-    generateTreeViewRenderArray(standardizedDatasetStructure);
     //Set the inner text of the generate/retry pennsieve dataset button depending on
     //whether a dataset has bee uploaded from this progress file
     const generateOrRetryDatasetUploadButton = document.getElementById(

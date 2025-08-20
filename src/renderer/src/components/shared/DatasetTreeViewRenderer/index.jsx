@@ -675,7 +675,7 @@ const DatasetTreeViewRenderer = ({
                     <FolderItem
                       key={item.itemIndex}
                       name={item.folderName}
-                      content={item}
+                      content={item.itemContent}
                       onFolderClick={
                         allowFolderSelection ? folderActions?.["on-folder-click"] : null
                       }
@@ -696,7 +696,7 @@ const DatasetTreeViewRenderer = ({
                     <FileItem
                       key={item.itemIndex}
                       name={item.fileName}
-                      content={item}
+                      content={item.itemContent}
                       onFileClick={fileActions?.["on-file-click"] ? handleFileItemClick : null}
                       isFileSelected={fileActions?.["is-file-selected"]}
                       allowStructureEditing={allowStructureEditing}
