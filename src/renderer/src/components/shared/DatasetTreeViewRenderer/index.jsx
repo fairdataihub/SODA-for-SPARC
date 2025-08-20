@@ -296,7 +296,6 @@ const FolderItem = ({
   onFolderClick,
   onFileClick,
   datasetStructureSearchFilter,
-  isFolderSelected,
   isFileSelected,
   allowStructureEditing,
   allowFolderSelection,
@@ -386,16 +385,11 @@ const FolderItem = ({
     });
   };
 
-  // Check if the folder is selected - simplified to just true/false
-  const folderIsSelected = isFolderSelected ? isFolderSelected(name, content) : false;
-
   const folderRelativePathEqualsContextMenuItemRelativePath =
     contextMenuIsOpened && contextMenuItemData?.relativePath === content.relativePath;
 
   // Helper function for determining background color
   const getBackgroundColor = () => {
-    if (folderIsSelected) return "var(--color-transparent-soda-green)";
-
     if (
       hovered ||
       (contextMenuIsOpened && contextMenuItemData?.relativePath === content.relativePath)
@@ -685,7 +679,6 @@ const DatasetTreeViewRenderer = ({
                         "Select this folder and its contents"
                       }
                       datasetStructureSearchFilter={datasetStructureSearchFilter}
-                      isFolderSelected={folderActions?.["is-folder-selected"]}
                       isFileSelected={fileActions?.["is-file-selected"]}
                       allowStructureEditing={allowStructureEditing}
                       allowFolderSelection={allowFolderSelection}
