@@ -1,5 +1,6 @@
 import useGlobalStore from "../globalStore";
 import { produce } from "immer";
+import { isFolderOpen } from "./fileExplorerStateSlice";
 
 const initialState = {
   datasetStructureJSONObj: null,
@@ -202,9 +203,9 @@ export const deleteEmptyFoldersFromStructure = (structure) => {
     : null;
 };
 
-export const generateTreeViewRenderArray = (datasetStructure, pathToRender) => {
+export const generateTreeViewRenderArray = (datasetStructure) => {
   try {
-    const path = pathToRender || useGlobalStore.getState().pathToRender;
+    const path = useGlobalStore.getState().pathToRender;
     if (!datasetStructure) return console.warn("Dataset structure missing");
 
     const updatedStructure = safeDeepCopy(datasetStructure);
@@ -231,7 +232,7 @@ export const generateTreeViewRenderArray = (datasetStructure, pathToRender) => {
             ...folder,
           });
 
-          // ✅ Add files inside THIS folder before traversing subfolders
+          // Only add files if folder is open
           const fileNames = Object.keys(folder.files || {}).sort(naturalSort);
           for (const fileName of fileNames) {
             const file = folder.files[fileName];
@@ -243,12 +244,11 @@ export const generateTreeViewRenderArray = (datasetStructure, pathToRender) => {
               ...file,
             });
           }
-
-          // Now traverse subfolders
+          // Traverse subfolders if open
           traverse(folder, depth + 1);
         }
 
-        // ✅ Handle files in the root node if any
+        // Handle files in the root node if any
         if (depth === 0) {
           const rootFileNames = Object.keys(node.files || {}).sort(naturalSort);
           for (const fileName of rootFileNames) {
@@ -342,7 +342,7 @@ export const moveFolderToNewLocation = (targetPath) => {
         targetFolder.folders[contextMenuItemName] = contextMenuItemData;
         targetFolder.folders[contextMenuItemName].relativePath =
           `${targetPath}/${contextMenuItemName}`;
-        generateTreeViewRenderArray(state.datasetStructureJSONObj, globalStore.pathToRender);
+        generateTreeViewRenderArray(state.datasetStructureJSONObj);
       })
     );
   } catch (error) {
@@ -389,4 +389,8 @@ export const setDatasetMetadataToPreview = (metadataKeys) => {
 
 export const setActiveFileExplorer = (id) => {
   useGlobalStore.setState({ activeFileExplorer: id });
+};
+
+export const setPathToRender = (pathToRender) => {
+  useGlobalStore.setState({ pathToRender });
 };

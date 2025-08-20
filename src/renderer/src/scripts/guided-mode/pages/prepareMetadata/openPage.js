@@ -8,7 +8,10 @@ import api from "../../../others/api/api";
 import { clientError, userErrorMessage } from "../../../others/http-error-handler/error-handler";
 import { guidedShowOptionalRetrySwal } from "../../swals/helperSwals";
 import { createParsedReadme } from "../../../metadata-files/datasetDescription";
-import { generateTreeViewRenderArray } from "../../../../stores/slices/datasetTreeViewSlice";
+import {
+  generateTreeViewRenderArray,
+  setPathToRender,
+} from "../../../../stores/slices/datasetTreeViewSlice";
 import {
   setEntityType,
   setEntityListForEntityType,
@@ -164,7 +167,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
       window.sodaJSONObj["dataset-entity-obj"]
     );
 
-    // Set the dataset structure in the Redux store
+    setPathToRender([]);
     generateTreeViewRenderArray(standardizedDatasetStructure);
   }
 

@@ -3,39 +3,55 @@ import useGlobalStore from "../globalStore";
 export const fileExplorerStateSlice = (set) => ({
   fileExplorerState: {
     selectedFile: null,
-    openFolders: new Set(),
+    folderState: {}, // Stores open/closed state per folder path
     searchQuery: "",
   },
 });
 
-// Utility functions for openFolders
-export const openFolder = (folderPath) => {
+export const toggleFolder = (folderPath) => {
   useGlobalStore.setState((state) => {
-    const openFolders = new Set(state.fileExplorerState.openFolders);
-    openFolders.add(folderPath);
+    const current = state.fileExplorerState.folderState[folderPath]?.isOpen || false;
     return {
       fileExplorerState: {
         ...state.fileExplorerState,
-        openFolders,
+        folderState: {
+          ...state.fileExplorerState.folderState,
+          [folderPath]: { isOpen: !current },
+        },
       },
     };
   });
+};
+
+export const openFolder = (folderPath) => {
+  useGlobalStore.setState((state) => ({
+    fileExplorerState: {
+      ...state.fileExplorerState,
+      folderState: {
+        ...state.fileExplorerState.folderState,
+        [folderPath]: { isOpen: true },
+      },
+    },
+  }));
 };
 
 export const closeFolder = (folderPath) => {
-  useGlobalStore.setState((state) => {
-    const openFolders = new Set(state.fileExplorerState.openFolders);
-    openFolders.delete(folderPath);
-    return {
-      fileExplorerState: {
-        ...state.fileExplorerState,
-        openFolders,
+  useGlobalStore.setState((state) => ({
+    fileExplorerState: {
+      ...state.fileExplorerState,
+      folderState: {
+        ...state.fileExplorerState.folderState,
+        [folderPath]: { isOpen: false },
       },
-    };
-  });
+    },
+  }));
 };
 
 export const isFolderOpen = (folderPath) => {
-  const openFolders = useGlobalStore.getState().fileExplorerState.openFolders;
-  return openFolders.has(folderPath);
+  if (folderPath === "data/" || folderPath == "data") {
+    return true;
+  }
+  const { folderState } = useGlobalStore.getState().fileExplorerState;
+  console.log(`${folderPath} is open ${folderState[folderPath]?.isOpen || false}`);
+  return folderState[folderPath]?.isOpen || false;
 };

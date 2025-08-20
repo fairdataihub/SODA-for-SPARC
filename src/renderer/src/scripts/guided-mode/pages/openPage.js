@@ -13,6 +13,7 @@ import {
   setEntityFilter,
   setDatasetMetadataToPreview,
   setActiveFileExplorer,
+  setPathToRender,
 } from "../../../stores/slices/datasetTreeViewSlice.js";
 import {
   addEntityToEntityList,
@@ -325,7 +326,8 @@ window.openPage = async (targetPageID) => {
             []
           );
         }
-        generateTreeViewRenderArray(window.datasetStructureJSONObj, ["data"]);
+        setPathToRender(["data"]);
+        generateTreeViewRenderArray(window.datasetStructureJSONObj);
       }
 
       if (targetPageComponentType === "entity-file-mapping-page") {
@@ -355,7 +357,8 @@ window.openPage = async (targetPageID) => {
         }
 
         setDatasetEntityArray(datasetEntityArray);
-        generateTreeViewRenderArray(window.datasetStructureJSONObj, ["data"]);
+        setPathToRender(["data"]);
+        generateTreeViewRenderArray(window.datasetStructureJSONObj);
       }
 
       if (

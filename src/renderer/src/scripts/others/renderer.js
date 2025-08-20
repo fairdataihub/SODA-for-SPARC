@@ -65,7 +65,10 @@ import {
 } from "../utils/swal-utils";
 
 import useGlobalStore from "../../stores/globalStore";
-import { generateTreeViewRenderArray } from "../../stores/slices/datasetTreeViewSlice";
+import {
+  generateTreeViewRenderArray,
+  setPathToRender,
+} from "../../stores/slices/datasetTreeViewSlice";
 import {
   resetPennsieveAgentCheckState,
   setPennsieveAgentCheckSuccessful,

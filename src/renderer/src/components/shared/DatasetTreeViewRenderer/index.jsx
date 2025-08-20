@@ -405,12 +405,12 @@ const FolderItem = ({
     return undefined;
   };
 
-  const folderIsOpen = isFolderOpen(name);
   const handleFolderClick = () => {
-    if (folderIsOpen) {
-      closeFolder(name);
+    console.log(`Folder ${isOpen ? "closed" : "opened"}: ${folderPath}`);
+    if (isOpen) {
+      closeFolder(folderPath);
     } else {
-      openFolder(name);
+      openFolder(folderPath);
     }
   };
 
@@ -427,10 +427,10 @@ const FolderItem = ({
       h="24px"
       ml={`${indent * 10}px`}
     >
-      {folderIsOpen ? (
-        <IconFolder size={ICON_SETTINGS.folderSize} color={ICON_SETTINGS.folderColor} />
-      ) : (
+      {isOpen ? (
         <IconFolderOpen size={ICON_SETTINGS.folderSize} color={ICON_SETTINGS.folderColor} />
+      ) : (
+        <IconFolder size={ICON_SETTINGS.folderSize} color={ICON_SETTINGS.folderColor} />
       )}
       {!folderIsPassThrough && onFileClick && typeof isFileSelected === "function" && (
         <Tooltip
