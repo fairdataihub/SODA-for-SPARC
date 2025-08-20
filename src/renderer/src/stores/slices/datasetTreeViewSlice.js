@@ -1,6 +1,7 @@
 import useGlobalStore from "../globalStore";
 import { produce } from "immer";
 import { isFolderOpen } from "./fileExplorerStateSlice";
+import { newEmptyFolderObj } from "../../scripts/utils/datasetStructure";
 
 const initialState = {
   datasetStructureJSONObj: null,
@@ -205,7 +206,7 @@ export const deleteEmptyFoldersFromStructure = (structure) => {
 
 export const reRenderTreeView = () => {
   try {
-    const path = useGlobalStore.getState().pathToRender;
+    const pathToRender = useGlobalStore.getState().pathToRender || [];
     const datasetStructure = useGlobalStore.getState().datasetStructureJSONObj;
     if (!datasetStructure) return console.warn("Dataset structure missing");
 
@@ -220,11 +221,18 @@ export const reRenderTreeView = () => {
       const result = [];
       let itemIndex = 0;
 
+      // Traverse to the folder specified by pathToRender
+      let node = structure;
+      for (const folderName of pathToRender) {
+        node = node?.folders?.[folderName];
+      }
+
       const traverse = (node, depth = 0) => {
         // Folders first, natural order
         const folderNames = Object.keys(node.folders || {}).sort(naturalSort);
         for (const folderName of folderNames) {
           const folder = node.folders[folderName];
+          const relativePath = folder.relativePath;
           result.push({
             itemType: "folder",
             itemIndex: itemIndex++,
@@ -235,20 +243,22 @@ export const reRenderTreeView = () => {
           });
 
           // Only add files if folder is open
-          const fileNames = Object.keys(folder.files || {}).sort(naturalSort);
-          for (const fileName of fileNames) {
-            const file = folder.files[fileName];
-            result.push({
-              itemType: "file",
-              itemIndex: itemIndex++,
-              itemIndent: depth + 1,
-              itemContent: file,
-              fileName,
-              ...file,
-            });
+          if (isFolderOpen(relativePath)) {
+            const fileNames = Object.keys(folder.files || {}).sort(naturalSort);
+            for (const fileName of fileNames) {
+              const file = folder.files[fileName];
+              result.push({
+                itemType: "file",
+                itemIndex: itemIndex++,
+                itemIndent: depth + 1,
+                itemContent: file,
+                fileName,
+                ...file,
+              });
+            }
+            // Traverse subfolders if open
+            traverse(folder, depth + 1);
           }
-          // Traverse subfolders if open
-          traverse(folder, depth + 1);
         }
 
         // Handle files in the root node if any
@@ -256,7 +266,6 @@ export const reRenderTreeView = () => {
           const rootFileNames = Object.keys(node.files || {}).sort(naturalSort);
           for (const fileName of rootFileNames) {
             const file = node.files[fileName];
-            console.log("content", file);
             result.push({
               itemType: "file",
               itemIndex: itemIndex++,
@@ -269,14 +278,14 @@ export const reRenderTreeView = () => {
         }
       };
 
-      traverse(structure, 0);
+      traverse(node, 0);
       return result;
     };
     const datasetRenderArray = convertDatasetStructureToArray(updatedStructure);
     console.log("datasetRenderArray", datasetRenderArray);
 
-    const renderStructure = traverseStructureByPath(updatedStructure, path);
-    if (renderStructure) addRelativePaths(renderStructure, path);
+    const renderStructure = traverseStructureByPath(updatedStructure, pathToRender);
+    if (renderStructure) addRelativePaths(renderStructure, pathToRender);
 
     if (window.datasetStructureJSONObj) addRelativePaths(window.datasetStructureJSONObj, []);
 
@@ -396,5 +405,14 @@ export const setActiveFileExplorer = (id) => {
 };
 
 export const setPathToRender = (pathToRender) => {
+  // First make sure the path exists in the window.datasetStructureJSONObj
+  let currentStructure = window.datasetStructureJSONObj;
+  for (const folderName of pathToRender) {
+    if (!currentStructure?.["folders"]?.[folderName]) {
+      console.log("Folder not found, creating:", folderName);
+      currentStructure["folders"][folderName] = newEmptyFolderObj();
+    }
+    currentStructure = currentStructure["folders"][folderName];
+  }
   useGlobalStore.setState({ pathToRender });
 };

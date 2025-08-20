@@ -613,9 +613,9 @@ const DatasetTreeViewRenderer = ({
 
   return (
     <Paper padding="md" shadow="sm" radius="md" p="sm" flex={1} w="100%" withBorder>
-      <Text>{`Total files virtualized: ${
+      <Text>{`Total files in DOM: ${
         rowVirtualizer.getVirtualItems().length
-      } out of ${count}`}</Text>
+      } out of ${count} files open`}</Text>
       {itemSelectInstructions && (
         <Stack gap="xs">
           <Text size="lg" fw={500}>

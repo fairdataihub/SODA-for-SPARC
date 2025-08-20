@@ -325,8 +325,8 @@ window.openPage = async (targetPageID) => {
             []
           );
         }
-        setPathToRender(["data"]);
-        reRenderTreeView();
+        // setPathToRender(["data"]);
+        // reRenderTreeView();
       }
 
       if (targetPageComponentType === "entity-file-mapping-page") {
@@ -356,8 +356,8 @@ window.openPage = async (targetPageID) => {
         }
 
         setDatasetEntityArray(datasetEntityArray);
-        setPathToRender(["data"]);
-        reRenderTreeView();
+        // setPathToRender(["data"]);
+        // reRenderTreeView();
       }
 
       if (
@@ -424,15 +424,8 @@ window.openPage = async (targetPageID) => {
         useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
         reRenderTreeView();
       }
-
-      // Special case for data categorization pages
-      if (pageElement.dataset.componentType === "data-categorization-page") {
-        setActiveFileExplorer("entity-data-selector");
-        return;
-      }
-
-      setActiveFileExplorer(pageID);
     };
+    renderCorrectFileExplorerByPage(targetPageID);
 
     let currentParentTab = window.CURRENT_PAGE.closest(".guided--parent-tab");
 

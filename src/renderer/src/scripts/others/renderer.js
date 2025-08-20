@@ -3616,7 +3616,10 @@ const mergeLocalAndRemoteDatasetStructure = async (
   reRenderTreeView();
 };
 
-const mergeNewDatasetStructureToExistingDatasetStructureAtPath = async (builtDatasetStructure) => {
+const mergeNewDatasetStructureToExistingDatasetStructureAtPath = async (
+  builtDatasetStructure,
+  relativePathToMergeObjectInto
+) => {
   try {
     // Step 2: Add the imported data to the dataset structure (This function handles duplicate files, etc)
     await mergeLocalAndRemoteDatasetStructure(builtDatasetStructure, currentFileExplorerPath);
@@ -3634,15 +3637,14 @@ const mergeNewDatasetStructureToExistingDatasetStructureAtPath = async (builtDat
       window.organizeDSglobalPath,
       window.datasetStructureJSONObj
     );
-    useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
-    reRenderTreeView();
-
     // Step 4: Update successful, show success message
     window.notyf.open({
       type: "success",
       message: `Data successfully imported`,
       duration: 3000,
     });
+    useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
+    reRenderTreeView();
   } catch (error) {
     console.error(error);
     closeFileImportLoadingSweetAlert();

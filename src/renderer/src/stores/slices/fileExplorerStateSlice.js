@@ -1,4 +1,5 @@
 import useGlobalStore from "../globalStore";
+import { reRenderTreeView } from "./datasetTreeViewSlice";
 
 export const fileExplorerStateSlice = (set) => ({
   fileExplorerState: {
@@ -33,6 +34,8 @@ export const openFolder = (folderPath) => {
       },
     },
   }));
+  // ReRender the file explorer
+  reRenderTreeView();
 };
 
 export const closeFolder = (folderPath) => {
@@ -45,6 +48,8 @@ export const closeFolder = (folderPath) => {
       },
     },
   }));
+  // ReRender the file explorer
+  reRenderTreeView();
 };
 
 export const isFolderOpen = (folderPath) => {
