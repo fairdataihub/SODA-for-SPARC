@@ -725,6 +725,14 @@ document
       if (!confirmSwitch) return;
     }
 
+    if (window.isWorkspaceGuest()) {
+      swalShowInfo(
+        "You are currently in guest mode",
+        "Please switch to a registered account to access this feature."
+      );
+      return;
+    }
+
     // reset the dataset name input field
     document.getElementById("inputNewNameDataset-upload-dataset").value = "";
     //hide the confirm button
