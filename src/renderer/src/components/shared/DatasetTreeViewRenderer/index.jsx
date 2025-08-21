@@ -336,15 +336,6 @@ const FolderItem = ({
     openContextMenu({ x: e.clientX, y: e.clientY }, "folder", name, structuredClone(content));
   };
 
-  const folderIsEmpty =
-    !content ||
-    (Object.keys(content.folders).length === 0 && Object.keys(content.files).length === 0);
-  if (name === "left-ventricle") {
-    console.log("FolderItem", content);
-  }
-
-  if (folderIsEmpty) return null; // Don't render empty folders
-
   const folderIsPassThrough = content.passThrough;
 
   // Determines if all files in this folder and its subfolders are selected
@@ -453,7 +444,7 @@ const FolderItem = ({
           overflow: "hidden",
           textOverflow: "ellipsis",
         }}
-        c={folderIsEmpty ? "gray" : folderIsPassThrough ? "silver" : "black"}
+        c={folderIsPassThrough ? "silver" : "black"}
       >
         {name}
       </Text>
@@ -632,7 +623,7 @@ const DatasetTreeViewRenderer = ({
       <div
         ref={parentRef}
         style={{
-          maxHeight: 700,
+          maxHeight: 600,
           overflowY: "auto",
           position: "relative",
         }}

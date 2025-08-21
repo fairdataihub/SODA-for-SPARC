@@ -57,6 +57,5 @@ export const isFolderOpen = (folderPath) => {
     return true;
   }
   const { folderState } = useGlobalStore.getState().fileExplorerState;
-  console.log(`${folderPath} is open ${folderState[folderPath]?.isOpen || false}`);
   return folderState[folderPath]?.isOpen || false;
 };

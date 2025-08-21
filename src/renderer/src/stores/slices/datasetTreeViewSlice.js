@@ -21,6 +21,7 @@ const initialState = {
   entityFilters: { include: [], exclude: [] },
   datasetMetadataToPreview: null,
   activeFileExplorer: null,
+  allowDatasetStructureEditing: false,
 };
 
 export const datasetTreeViewSlice = (set) => ({
@@ -415,4 +416,8 @@ export const setPathToRender = (pathToRender) => {
     currentStructure = currentStructure["folders"][folderName];
   }
   useGlobalStore.setState({ pathToRender });
+};
+
+export const setAllowDatasetStructureEditing = (allow) => {
+  useGlobalStore.setState({ allowDatasetStructureEditing: allow });
 };

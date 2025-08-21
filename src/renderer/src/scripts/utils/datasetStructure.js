@@ -64,11 +64,13 @@ export const getItemAtPath = (relativePath, itemType) => {
   const itemName = pathSegments.pop();
 
   // Get the parent folder by traversing the path segments.
+  console.log("getItemAtPath called with path:", relativePath);
   const parentFolder = getNestedObjectAtPathArray(pathSegments);
   if (!parentFolder) {
-    console.error(`Parent folder not found for path: ${relativePath}`);
+    console.error(`getItemAtPath: parentFolder not found for path: ${relativePath}`);
     return null;
   }
+  console.log("getItemAtPath: parentFolder found for path:", relativePath, parentFolder);
 
   // Retrieve the target item from the parent folder based on its type.
   const itemObject =
@@ -84,6 +86,7 @@ export const getItemAtPath = (relativePath, itemType) => {
 
 export const deleteFoldersByRelativePath = (arrayOfRelativePaths) => {
   for (const relativePathToDelete of arrayOfRelativePaths) {
+    console.log("deleteFoldersByRelativePath called for path:", relativePathToDelete);
     const { parentFolder, itemName, itemObject } = getItemAtPath(relativePathToDelete, "folder");
 
     if (itemObject?.["location"] === "ps") {
@@ -93,10 +96,11 @@ export const deleteFoldersByRelativePath = (arrayOfRelativePaths) => {
       // Directly delete folders not originating from Pennsieve.
       delete parentFolder["folders"][itemName];
     }
+    console.log("Delete Folder: parentFolder found for path:", relativePathToDelete, parentFolder);
   }
 
   // Update the tree view structure to reflect the changes.
-  useGlobalStore.setState({ datasetStructure: window.datasetStructureJSONObj });
+  useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
   reRenderTreeView();
 };
 
@@ -114,7 +118,7 @@ export const deleteFilesByRelativePath = (arrayOfRelativePaths) => {
   }
 
   // Update the tree view structure to reflect the changes.
-  useGlobalStore.setState({ datasetStructure: window.datasetStructureJSONObj });
+  useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
   reRenderTreeView();
 };
 
@@ -153,7 +157,7 @@ export const moveFileToTargetLocation = (relativePathToMove, destionationRelativ
   delete parentFolder["files"][itemName];
 
   // Update the tree view structure to reflect the changes.
-  useGlobalStore.setState({ datasetStructure: window.datasetStructureJSONObj });
+  useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
   reRenderTreeView();
 };
 
