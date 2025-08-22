@@ -499,6 +499,48 @@ const loadManifestToJSON = async (manifestPath) => {
   return response.data;
 };
 
+const userIsWorkspaceGuest = async () => {
+  console.log("[userIsWorkspaceGuest] Starting check...");
+
+  const userInfo = await getUserInformation();
+  const preferredOrgId = userInfo.preferredOrganization;
+  console.log("[userIsWorkspaceGuest] Preferred organization ID:", preferredOrgId);
+
+  let orgResponse;
+  try {
+    console.log("[userIsWorkspaceGuest] Fetching organizations...");
+    orgResponse = await client.get("user/organizations", {
+      params: { selected_account: window.defaultBfAccount },
+    });
+    console.log(
+      "[userIsWorkspaceGuest] Successfully fetched organizations:",
+      orgResponse?.data?.organizations?.length ?? 0
+    );
+  } catch (error) {
+    clientError(error);
+    console.error("[userIsWorkspaceGuest] Error fetching organizations:", error);
+    // TODO: Decide how to handle this (e.g., return false or rethrow)
+    return false;
+  }
+
+  const currentWorkspaceObj = orgResponse?.data?.organizations?.find(
+    (org) => org.organization.id === preferredOrgId
+  );
+
+  if (!currentWorkspaceObj) {
+    console.warn(
+      "[userIsWorkspaceGuest] Preferred organization not found among fetched organizations."
+    );
+    return false;
+  }
+
+  console.log(
+    `[userIsWorkspaceGuest] Found organization '${currentWorkspaceObj.organization.name}' (ID: ${currentWorkspaceObj.organization.id}) | isGuest: ${currentWorkspaceObj.isGuest}`
+  );
+
+  return currentWorkspaceObj.isGuest;
+};
+
 const api = {
   getUserInformation,
   getDataset,
@@ -537,6 +579,7 @@ const api = {
   getLocalRemoteComparisonResults,
   deleteFilesFromDataset,
   loadManifestToJSON,
+  userIsWorkspaceGuest,
 };
 
 export default api;

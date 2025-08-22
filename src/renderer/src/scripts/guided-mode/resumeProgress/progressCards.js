@@ -119,25 +119,28 @@ export const guidedRenderProgressCards = async () => {
 };
 
 const generateProgressCardElement = (progressFileJSONObj) => {
-  let progressFileImage = progressFileJSONObj["digital-metadata"]["banner-image-path"] || "";
+  // Get the banner image path from JSON
+  const bannerImagePath = progressFileJSONObj?.["digital-metadata"]?.["banner-image-path"] || "";
 
-  if (progressFileImage === "") {
-    progressFileImage = `
-        <img
-          src="https://images.unsplash.com/photo-1502082553048-f009c37129b9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80"
-          alt="Dataset banner image placeholder"
-          style="height: 80px; width: 80px"
-        />
-      `;
-  } else {
-    progressFileImage = `
-        <img
-          src='file://${progressFileImage}'
-          alt="Dataset banner image"
-          style="height: 80px; width: 80px"
-        />
-      `;
-  }
+  // Check if the local file exists
+  const bannerImageExists = bannerImagePath && window.fs.existsSync(bannerImagePath);
+
+  // Build the HTML image element
+  const progressFileImage = bannerImageExists
+    ? `
+      <img
+        src="file://${bannerImagePath}"
+        alt="Dataset banner image"
+        style="height: 80px; width: 80px"
+      />
+    `
+    : `
+      <img
+        src="https://images.unsplash.com/photo-1502082553048-f009c37129b9?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80"
+        alt="Dataset banner image placeholder"
+        style="height: 80px; width: 80px"
+      />
+    `;
   const progressFileName = progressFileJSONObj["digital-metadata"]["name"] || "";
   const progressFileSubtitle =
     progressFileJSONObj["digital-metadata"]["subtitle"] || "No designated subtitle";

@@ -740,6 +740,13 @@ document
   });
 
 document.getElementById("dataset-upload-new-dataset").addEventListener("click", async function () {
+  if (await api.userIsWorkspaceGuest()) {
+    swalShowInfo(
+      "Guests cannot create datasets on Pennsieve",
+      "You are currently a guest user in your workspace and do not have permission to create new datasets. If an empty dataset has already been created for you, select the 'Existing dataset' option."
+    );
+    return;
+  }
   const dsName = document.getElementById("current-ps-dataset-generate").innerText;
   const existingCardChecked = document
     .getElementById("dataset-upload-existing-dataset")
