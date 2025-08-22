@@ -1,0 +1,97 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "array",
+  "maxItems": 19,
+  "items": [
+    {
+      "type": "object",
+      "properties": {
+        "sample_id": {
+          "type": "string",
+          "description": "Unique identifier for the sample within the dataset."
+        },
+        "subject_id": {
+          "type": "string",
+          "description": "Unique identifier for the subject from which the sample was derived."
+        },
+        "was_derived_from": {
+          "type": "string",
+          "description": "Unique identifier for the sample from which this sample was derived."
+        },
+        "pool_id": {
+          "type": "string",
+          "description": "Unique identifier for the pool to which this sample belongs."
+        },
+        "sample_experimental_group": {
+          "type": "string",
+          "description": "Experimental group associated with the sample."
+        },
+        "sample_type": {
+          "type": "string",
+          "description": "Type of sample (e.g., blood, tissue, etc.)."
+        },
+        "sample_anatomical_location": {
+          "type": "string",
+          "description": "Anatomical location of the sample."
+        },
+        "also_in_dataset": {
+          "type": "string",
+          "description": "Indicates if the sample is also part of another dataset."
+        },
+        "member_of": {
+          "type": "string",
+          "description": "Group or cohort the sample is a member of."
+        },
+        "metadata_only": {
+          "type": "string",
+          "description": "Indicates whether this sample is metadata only (true or false)."
+        },
+        "laboratory_internal_id": {
+          "type": "string",
+          "description": "Internal identifier used by the laboratory for the sample."
+        },
+        "date_of_derivation": {
+          "type": "string",
+          "description": "Date when the sample was derived."
+        },
+        "experimental_log_file_path": {
+          "type": "string",
+          "description": "Path to the experimental log file for the sample."
+        },
+        "reference_atlas": {
+          "type": "string",
+          "description": "Reference atlas used in the experiment."
+        },
+        "pathology": {
+          "type": "string",
+          "description": "Pathology associated with the sample."
+        },
+        "laterality": {
+          "type": "string",
+          "description": "Laterality of the sample (e.g., left, right, bilateral)."
+        },
+        "cell_type": {
+          "type": "string",
+          "description": "Cell type of the sample."
+        },
+        "plane_of_section": {
+          "type": "string",
+          "description": "Plane of section of the sample."
+        },
+        "protocol_title": {
+          "type": "string",
+          "description": "Title of the protocol used in the experiment."
+        },
+        "protocol_url_or_doi": {
+          "type": "string",
+          "description": "URL or DOI of the protocol used in the experiment."
+        }
+      },
+      "required": ["sample_id", "subject_id"],
+      "additionalProperties": {
+        "type": "string",
+        "description": "Additional properties for the sample. This can include any other relevant information about the sample that is not covered by the predefined fields."
+      }
+    }
+  ]
+}
