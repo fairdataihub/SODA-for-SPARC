@@ -725,14 +725,6 @@ document
       if (!confirmSwitch) return;
     }
 
-    if (window.isWorkspaceGuest()) {
-      swalShowInfo(
-        "You are currently in guest mode",
-        "Please switch to a registered account to access this feature."
-      );
-      return;
-    }
-
     // reset the dataset name input field
     document.getElementById("inputNewNameDataset-upload-dataset").value = "";
     //hide the confirm button
@@ -748,6 +740,13 @@ document
   });
 
 document.getElementById("dataset-upload-new-dataset").addEventListener("click", async function () {
+  if (await api.userIsWorkspaceGuest()) {
+    swalShowInfo(
+      "You are currently in guest mode",
+      "Please switch to a registered account to access this feature."
+    );
+    return;
+  }
   const dsName = document.getElementById("current-ps-dataset-generate").innerText;
   const existingCardChecked = document
     .getElementById("dataset-upload-existing-dataset")
