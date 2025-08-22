@@ -1,0 +1,38 @@
+name: Release on Zenodo
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  upload-to-zenodo:
+    runs-on: ubuntu-latest
+    name: A job to update metadata and push a release to Zenodo
+
+    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Upload to Zenodo
+        id: release
+        uses: megasanjay/upload-to-zenodo@v2.0.1
+        with:
+          github_token: ${{ secrets.BOT_ACTIONS }}
+          zenodo_token: ${{ secrets.ZENODO_TOKEN }}
+          zenodo_deposition_id: 5565456
+          zenodo_publish: true
+          zenodo_sandbox: false
+          committer_name: "fairdataihub-bot"
+          committer_email: "fairdataihub@gmail.com"
+          commit_message: "chore: update ${file_name} for Zenodo release"
+          update_metadata_files: true
+          codemeta_json: true
+          citation_cff: true
+          zenodo_json: true
+          docs_compatibility_json: false
+
+      # Get the doi from the `release` step
+      - name: Get the output doi
+        run: echo "The released doi was  ${{ steps.release.outputs.doi }}"

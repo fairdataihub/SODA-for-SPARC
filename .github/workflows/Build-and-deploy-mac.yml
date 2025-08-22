@@ -1,0 +1,58 @@
+name: Build-and-deploy-mac
+run-name: ${{ github.actor }} is building a MAC release for SODA
+
+on:
+  push:
+    branches:
+      - sds3
+
+jobs:
+  deploy-on-mac:
+    runs-on: macos-latest
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          miniconda-version: "latest"
+          activate-environment: env-electron-python
+          environment-file: tools/anaconda-env/environment-MAC.yml
+          auto-update-conda: true
+          auto-activate-base: false
+      - run: |
+          conda activate  env-electron-python
+          conda info
+          conda list
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "lts/hydrogen"
+
+      - name: Install package.json modules and their dependencies
+        run: npm install --ignore-scripts
+
+      - name: Install macOS-specific dependencies
+        run: |
+          npm install dmg-license --save-dev
+
+      - uses: apple-actions/import-codesign-certs@v1
+        with:
+          p12-file-base64: ${{ secrets.MACOS_CERTIFICATE }}
+          p12-password: ${{ secrets.MACOS_CERTIFICATE_PWD }}
+
+      - name: Deploy the app to GitHub
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          appleId: ${{ secrets.APPLE_ID }}
+          appleIdPassword: ${{ secrets.APPLE_PASSWORD }}
+        run: |
+          npm run deploy-mac

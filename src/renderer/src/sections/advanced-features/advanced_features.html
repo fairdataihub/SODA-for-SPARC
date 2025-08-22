@@ -1,0 +1,1939 @@
+<section
+  id="advanced_mode-section"
+  class="advanced-section section js-section u-category-windows hidden"
+  style="left: 186px; top: -5px; padding-left: 0 !important; padding-top: 0 !important"
+>
+  <div
+    id="advanced-features-selection-page"
+    class="advanced-section hidden"
+    style="width: 100%; display: flex; flex-direction: column; height: calc(100% - 5rem)"
+  >
+    <header style="margin-top: 1rem; margin-bottom: 2rem">
+      <div
+        class="container-tab-information-header"
+        style="margin-bottom: 0 !important; width: 100%; margin-left: 0"
+      >
+        <div class="need-help-div" style="text-align-last: center">
+          <h2 style="font-size: 20px; width: 100%; margin-bottom: 0.5rem; margin-top: -1rem">
+            Advanced features
+          </h2>
+        </div>
+      </div>
+    </header>
+    <div style="display: flex; flex-direction: column; margin: auto">
+      <div class="d-flex justify-center" style="gap: 2rem; padding: 20px">
+        <!-- <button
+          class="content-button"
+          id="create_manifest_btn"
+          data-original-title=""
+          title=""
+          data-tippy-content="Prepare manifest files for all high-level folders"
+          rel="popover"
+          data-trigger="hover"
+          data-tippy-placement="bottom"
+          onclick="window.transitionToAdvancedFeature(event)"
+        >
+          <svg height="48" width="48" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80.48 98.35">
+            <defs>
+              <style>
+                .cls-1,
+                .cls-2 {
+                  fill: none;
+                }
+
+                .cls-1,
+                .cls-2,
+                .cls-3 {
+                  stroke-miterlimit: 10;
+                }
+
+                .cls-1 {
+                  stroke-width: 6px;
+                }
+
+                .cls-2 {
+                  stroke-width: 8px;
+                }
+              </style>
+            </defs>
+            <g id="Layer_2" data-name="Layer 2">
+              <g id="Layer_2-2" data-name="Layer 2">
+                <rect
+                  class="cls-1"
+                  x="65.2"
+                  y="70.64"
+                  width="0.17"
+                  height="25.22"
+                  stroke="#B80D49"
+                ></rect>
+                <rect
+                  class="cls-1"
+                  x="65.29"
+                  y="70.64"
+                  width="0.17"
+                  height="25.22"
+                  transform="translate(148.62 17.88) rotate(90)"
+                  stroke="#B80D49"
+                ></rect>
+                <path
+                  class="cls-2"
+                  d="M43.72,83.16l-32.67.09a7.83,7.83,0,0,1-8-7.58V10.58A7.82,7.82,0,0,1,11.05,3H48.81L65.54,17.54V64.8"
+                  stroke="#565E6B"
+                ></path>
+                <path
+                  class="cls-3"
+                  d="M65.54,17.54v3.23H52.61a7.31,7.31,0,0,1-7.52-7.09V3h3.72Z"
+                  stroke="#565E6B"
+                  fill="#565E6B"
+                ></path>
+                <line
+                  class="cls-1"
+                  x1="4.4"
+                  y1="46.35"
+                  x2="63.26"
+                  y2="46.35"
+                  stroke="#13716D"
+                ></line>
+                <line
+                  class="cls-1"
+                  x1="4.4"
+                  y1="62.64"
+                  x2="63.26"
+                  y2="62.64"
+                  stroke="#13716D"
+                ></line>
+                <line
+                  class="cls-1"
+                  x1="22.4"
+                  y1="46.35"
+                  x2="22.4"
+                  y2="80.5"
+                  stroke="#13716D"
+                ></line>
+                <line
+                  class="cls-1"
+                  x1="40.4"
+                  y1="46.35"
+                  x2="40.4"
+                  y2="80.5"
+                  stroke="#13716D"
+                ></line>
+              </g>
+            </g>
+          </svg>
+          <h2>Create manifest.xlsx</h2>
+        </button> -->
+        <!-- <button
+          class="content-button tippy-content-main"
+          id="upload_banner_image_btn"
+          data-tippy-content="Provide an image that will be used as the thumbnail for your dataset"
+          rel="popover"
+          data-tippy-placement="bottom"
+          data-trigger="hover"
+          onclick="window.transitionToAdvancedFeature(event)"
+        >
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 43 42"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M4.3 4.42105H32.25V19.8947H36.55V4.42105C36.55 1.98284 34.6214 0 32.25 0H4.3C1.92855 0 0 1.98284 0 4.42105V30.9474C0 33.3856 1.92855 35.3684 4.3 35.3684H21.5V30.9474H4.3V4.42105Z"
+              fill="#565E6B"
+            />
+            <path
+              d="M12.9002 17.6838L6.4502 26.5259H30.1002L21.5002 13.2627L15.0502 22.1048L12.9002 17.6838Z"
+              fill="#13716D"
+            />
+            <path
+              d="M36.5498 24.3154H32.2498V30.947H25.7998V35.3681H32.2498V41.9996H36.5498V35.3681H42.9998V30.947H36.5498V24.3154Z"
+              fill="#13716D"
+            />
+          </svg>
+          <h2>Upload a banner image</h2>
+        </button> -->
+      </div>
+      <div style="display: flex; flex-direction: row; gap: 2rem" class="justify-center">
+        <button
+          class="content-button tippy-content-main"
+          id="validate_dataset_btn"
+          style="width: 150px; height: 150px"
+          data-tippy-content="Validate your SPARC dataset on Pennsieve."
+          rel="popover"
+          data-tippy-placement="bottom"
+          data-trigger="hover"
+          onclick="window.transitionToAdvancedFeature(event)"
+        >
+          <svg
+            width="48px"
+            height="48px"
+            viewBox="0 0 16 16"
+            class="bi bi-clipboard-check"
+            fill="#585858"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              fill="#13716D"
+              d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"
+            />
+            <path
+              fill-rule="evenodd"
+              fill="#B80D49"
+              d="M9.5 1h-3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3zm4.354 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0z"
+            />
+          </svg>
+          <h2>Validate dataset</h2>
+        </button>
+        <button
+          class="content-button"
+          id="compare_local_remote_btn"
+          data-original-title=""
+          title=""
+          data-tippy-content="Compare a local and remote dataset for differences."
+          rel="popover"
+          data-trigger="hover"
+          data-tippy-placement="bottom"
+          onclick="window.transitionToAdvancedFeature(event)"
+        >
+          <svg
+            viewBox="-2.4 -2.4 28.80 28.80"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="#13716D"
+            stroke="#13716D"
+            transform="matrix(1, 0, 0, 1, 0, 0)rotate(0)"
+          >
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g
+              id="SVGRepo_tracerCarrier"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke="#CCCCCC"
+              stroke-width="0.384"
+            ></g>
+            <g id="SVGRepo_iconCarrier">
+              <path d="M9,5a7,7,0,1,0,7,7A7,7,0,0,0,9,5ZM9,17a5,5,0,1,1,5-5A5,5,0,0,1,9,17Z"></path>
+              <path
+                d="M15,5a7,7,0,1,0,7,7A7,7,0,0,0,15,5Zm0,12a5,5,0,1,1,5-5A5,5,0,0,1,15,17Z"
+              ></path>
+              <rect width="24" height="24" fill="none"></rect>
+            </g>
+          </svg>
+          <h2>Compare Local and Pennsieve Dataset</h2>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div
+    id="banner-image-feature"
+    class="advanced-section hidden"
+    style="width: 100%; display: flex; flex-direction: column; height: calc(100% - 5rem)"
+  >
+    <div
+      class="main-tabs show"
+      id="add_edit_banner_parent-tabc"
+      style="display: flex; height: 100%; overflow-y: hidden"
+    >
+      <header class="section-header">
+        <div class="container-tab-information-header" style="width: 97%; margin-left: 0">
+          <div style="width: 100%; border-bottom: 3px solid #b80d49; margin-bottom: -5px">
+            <div class="need-help-div" style="margin-top: 0.6rem">
+              <h2>Upload a banner image</h2>
+              <a
+                target="_blank"
+                href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/manage-dataset/upload-a-banner-image"
+                >Need help?</a
+              >
+            </div>
+          </div>
+        </div>
+        <!-- <div class="tab-info">
+      <p class="tab-info-p" style="margin-bottom: 2em">
+        Some helpful text here
+      </p>
+    </div> -->
+      </header>
+
+      <div id="add_edit_banner_parent-tab" style="overflow-y: auto; margin-left: -70px">
+        <div
+          class="individual-question manage-dataset show"
+          id="add_edit_banner_tab"
+          style="height: auto"
+        >
+          <div class="ui form" style="width: 100%">
+            <div class="grouped fields">
+              <div class="about-container">
+                <label class="about-title" style="color: var(--color-bg-plum) !important"
+                  >About</label
+                >
+                <p class="about-text">
+                  Use this feature to add a banner image to your dataset on Pennsieve. This image
+                  will be used as a thumbnail once the dataset is published on the SPARC data
+                  portal.
+                </p>
+              </div>
+              <label style="font-size: 17px; color: var(--color-bg-plum)"
+                >Which Pennsieve dataset would you like to work on?
+              </label>
+
+              <div
+                id="top-level-card-container--add-edit-banner"
+                class="top-level-card-container"
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="individual-question manage-dataset"
+          id="div_add_edit_banner_image_agent_check"
+          data-next="div_add_edit_banner"
+        >
+          <div
+            data-component-type="pennsieve-agent-check-display"
+            id="advanced-features-banner-image-pennsieve-agent-check"
+          ></div>
+        </div>
+
+        <div
+          class="individual-question manage-dataset"
+          id="div_add_edit_banner"
+          style="height: auto"
+        >
+          <div class="ui form" style="min-width: 450px">
+            <div class="grouped fields" style="display: flex; justify-content: center">
+              <label
+                id="add_edit_banner_label"
+                style="
+                  font-size: 17px;
+                  color: var(--color-bg-plum);
+                  width: 100%;
+                  text-align: center;
+                "
+                >Current banner image of selected dataset:
+              </label>
+              <div class="field" style="display: flex; justify-content: center; margin: auto">
+                <div
+                  style="
+                    margin-top: 15px;
+                    height: auto;
+                    box-shadow: 0px 0px 10px #d5d5d5;
+                    padding: 15px 25px;
+                    border-radius: 5px;
+                    min-width: 450px;
+                  "
+                >
+                  <div id="div-current-banner-img" style="color: black">
+                    <p
+                      style="text-align: center; height: 2em; margin: auto"
+                      id="para-current-banner-img"
+                    >
+                      None
+                    </p>
+                    <div
+                      id="banner_image_loader"
+                      class="ui active green inline loader medium"
+                      style="display: none; margin-left: 46%"
+                    ></div>
+                    <img id="current-banner-img" />
+                  </div>
+                </div>
+              </div>
+              <div
+                id="div-button-edit-banner-image"
+                style="flex-direction: row; justify-content: center; margin: 0 auto"
+              >
+                <button
+                  id="edit_banner_image_button"
+                  class="ui positive button soda-green-background"
+                  style="
+                    margin: 20px 10px 30px 0;
+                    font-size: 15px;
+                    width: 200px;
+                    height: 40px;
+                    margin-top: 2.5rem;
+                    padding-left: 28px;
+                  "
+                >
+                  Edit banner image
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- <div class="footer-div">
+        <div style="display: flex; flex-direction: row; width: 120px">
+          <button type="button" class="transition-btn prev" data-section="main_tabs">
+            <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
+          </button>
+        </div>
+        <button
+          type="button"
+          class="transition-btn prev"
+          data-section="add_license"
+          style="width: auto"
+        >
+          Assign a license to the dataset<i
+            class="fas fa-arrow-right"
+            style="margin-left: 10px"
+          ></i>
+        </button>
+      </div> -->
+
+      <!-- Modal -->
+      <div
+        class="modal fade"
+        id="edit_banner_image_modal"
+        tabindex="-1"
+        role="dialog"
+        data-backdrop="false"
+        style="background-color: rgba(0, 0, 0, 0.5); width: 100%; height: 100%"
+      >
+        <div
+          class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable"
+          role="document"
+        >
+          <div id="banner-modal" class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title" id="edit_banner_image_title">
+                Update banner image
+                <i
+                  class="fas fa-info-circle popover-tooltip"
+                  data-content="This image will be associated with the dataset and used as a thumbnail once the dataset is published.
+                <br/><br/>
+                This interface will help you make sure the uploaded image is square as per SPARC dataset requirements. Final image dimensions must be at least 512x512 px and over 1024x1024 px is highly recommended. The final image size must not exceed 5MB as per Pennsieve's restriction."
+                  rel="popover"
+                  data-html="true"
+                  data-placement="bottom"
+                  data-trigger="hover"
+                ></i>
+              </h4>
+              <button type="button" class="close" data-dismiss="modal">
+                <i style="color: red; font-size: 25px" class="far fa-window-close"></i>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div id="div-editbanner-img" style="display: flex; flex-direction: row">
+                <div id="div-img-container-holder" class="img-container">
+                  Imported image will be shown here. <br />You will be able to crop it before
+                  uploading.
+                </div>
+
+                <div
+                  id="div-img-container"
+                  class="img-container"
+                  style="display: none; flex-direction: column"
+                >
+                  <img id="image-banner" class="banner-img" width="100%" />
+                  <p
+                    id="para-path-image"
+                    style="margin-top: 0.5em; text-align: center; display: none"
+                  ></p>
+                </div>
+              </div>
+              <p
+                id="para-dataset-banner-image-status"
+                style="
+                  text-align: center;
+                  font-weight: 400;
+                  color: var(--color-light-green);
+                  font-size: 15px;
+                "
+              ></p>
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: space-between">
+              <div style="display: flex; flex-direction: row; justify-content: center">
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    width: 100%;
+                  "
+                >
+                  <button
+                    id="button-import-banner-image"
+                    type="button"
+                    class="btn btn-primary"
+                    style="border-radius: 4px"
+                  >
+                    Import image
+                  </button>
+                </div>
+              </div>
+
+              <div class="container-cropped-image">
+                <div class="banner-image-size" style="width: 380px; text-align: right">
+                  <span class="crop-image-text" style="margin-right: 2rem"
+                    >Cropped dimensions (must be greater than 512px):
+                  </span>
+                </div>
+                <input
+                  class="banner-image-size input"
+                  style="width: 70px; text-align: center; pointer-events: none"
+                  id="form-banner-height"
+                  type="text"
+                  readonly="readonly"
+                  size="7"
+                />
+                <div class="banner-image-size" style="width: 30px; text-align: center">
+                  <span class="crop-image-text">px</span>
+                </div>
+              </div>
+
+              <button
+                id="save-banner-image"
+                type="button"
+                class="btn btn-primary"
+                style="border-radius: 4px; visibility: hidden"
+              >
+                Save changes
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    id="manifest-creation-feature"
+    class="advanced-section hidden"
+    style="width: 100%; display: flex; flex-direction: column; height: calc(100% - 5rem)"
+  >
+    <div
+      class="main-tabs show"
+      id="create_manifest-tab"
+      style="overflow-y: auto; display: flex; flex-direction: column"
+    >
+      <header class="section-header">
+        <div class="container-tab-information-header" style="margin-left: 0; width: 97%">
+          <div style="width: 100%; border-bottom: 3px solid #b80d49; margin-bottom: -5px">
+            <div class="need-help-div" style="margin-top: 0.6rem">
+              <h2>Create manifest.xlsx</h2>
+              <a
+                target="_blank"
+                href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/prepare-metadata/create-manifest-files"
+                >Need help?</a
+              >
+            </div>
+          </div>
+        </div>
+      </header>
+      <div class="individual-question prepare-manifest show" id="Question-prepare-manifest-1">
+        <div class="ui form" style="width: 100%">
+          <div class="grouped fields">
+            <div
+              style="
+                border-radius: 0.5rem;
+                margin-top: 7px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                width: 550px;
+                margin-bottom: 20px;
+                align-self: center;
+              "
+            >
+              <label
+                style="
+                  font-size: 17px;
+                  font-weight: 700;
+                  color: var(--color-bg-plum) !important;
+                  margin-bottom: 10px;
+                "
+                >About</label
+              >
+              <p style="color: dimgray; text-align: justify">
+                The SPARC Dataset Structure requires all datasets to include metadata files called
+                manifest files. One manifest file must be included in each high level folder.
+                Manifest files are intended to contain information about all of the data files in
+                its high level folder. You can request SODA to generate manifest files automatically
+                for you.
+              </p>
+            </div>
+            <label style="font-size: 17px; color: var(--color-bg-plum); text-align: center"
+              >For which of the below do you want to create manifest.xlsx files?
+              <br />
+              <p class="sub-text">Please select one:</p></label
+            >
+
+            <div style="display: flex; flex-direction: row; justify-content: center">
+              <div style="margin: 15px 0">
+                <div
+                  id="local-option-create-manifest"
+                  class="option-card radio-button"
+                  data-next="Question-prepare-manifest-2"
+                  data-current="Question-prepare-manifest-1"
+                  onclick="window.transitionFreeFormMode(this, 'Question-prepare-manifest-1', 'create_manifest-tab', '', 'prepare-manifest')"
+                >
+                  <div class="card-head">
+                    <div class="folder-checkbox">
+                      <input
+                        class="folder-input-check"
+                        name="generate-manifest-1"
+                        id="generate-manifest-from-local"
+                        type="radio"
+                      />
+                      <label for="generate-manifest-from-local"></label>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <svg
+                      width="40px"
+                      height="40px"
+                      viewBox="0 0 16 16"
+                      class="bi bi-laptop"
+                      fill="var(--color-bg-plum)"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M13.5 3h-11a.5.5 0 0 0-.5.5V11h12V3.5a.5.5 0 0 0-.5-.5zm-11-1A1.5 1.5 0 0 0 1 3.5V12h14V3.5A1.5 1.5 0 0 0 13.5 2h-11z"
+                      />
+                      <path d="M0 12h16v.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5V12z" />
+                    </svg>
+                    <h2>A local dataset on my computer</h2>
+                  </div>
+                </div>
+              </div>
+
+              <div style="margin: 15px 0">
+                <div
+                  id="pennsieve-option-create-manifest"
+                  class="option-card radio-button"
+                  data-next="Question-prepare-manifest-3"
+                  data-current="Question-prepare-manifest-1"
+                  onclick="window.transitionFreeFormMode(this, 'Question-prepare-manifest-1', 'create_manifest-tab', '', 'prepare-manifest')"
+                >
+                  <div class="card-head">
+                    <div class="folder-checkbox">
+                      <input
+                        class="folder-input-check"
+                        name="generate-manifest-1"
+                        id="generate-manifest-from-Penn"
+                        type="radio"
+                      />
+                      <label for="generate-manifest-from-Penn"></label>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <svg
+                      width="50px"
+                      height="50px"
+                      viewBox="0 0 16 16"
+                      class="bi bi-cloud-arrow-up"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"
+                        fill="#565E6B"
+                      />
+                      <path
+                        fill-rule="evenodd"
+                        d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2z"
+                        fill="#B80D49"
+                      />
+                    </svg>
+                    <h2 style="margin-top: 15px">An existing dataset from Pennsieve</h2>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="individual-question prepare-manifest" id="Question-prepare-manifest-2">
+        <div class="ui form" style="width: 450px">
+          <div class="grouped fields">
+            <label style="font-size: 17px; color: var(--color-bg-plum); text-align: center"
+              >Where is the local dataset located at?</label
+            >
+            <div class="field" style="margin: 15px auto; display: flex; justify-content: center">
+              <input
+                class="form-control"
+                style="width: 450px !important"
+                onclick="window.showLocalDatasetManifest()"
+                id="input-manifest-local-folder-dataset"
+                type="text"
+                readonly
+                placeholder="Browse here"
+              />
+            </div>
+          </div>
+          <div
+            id="div-confirm-manifest-local-folder-dataset"
+            style="display: none; flex-direction: row; justify-content: center; margin: 10px auto"
+          >
+            <button
+              id="confirm-local-manifest-folder-adv-feature"
+              onclick="window.generateManifestFolderLocallyForEdit(this)"
+              class="btn_animated"
+              style="
+                border: none !important;
+                border-radius: 4px;
+                margin: 0.5rem auto;
+                width: 110px;
+                height: 35px;
+                background: var(--color-light-green);
+                color: #fff;
+                font-size: 14px;
+                font-weight: 600;
+                padding-left: 7px;
+              "
+              data-next="Question-prepare-manifest-5"
+            >
+              Confirm
+            </button>
+            <button
+              class="btn_question"
+              data-next="Question-prepare-manifest-5"
+              id="preview-manifest-fake-confirm-local"
+              onclick="window.transitionFreeFormMode(this, 'Question-prepare-manifest-2', 'create_manifest-tab', '', 'individual-question prepare-manifest')"
+              style="
+                cursor: pointer;
+                border-radius: 8px;
+                background: #fff;
+                color: var(--color-light-green);
+                font-weight: 600;
+                border: 1px solid var(--color-light-green);
+                width: 160px;
+                padding: 10px;
+                display: none;
+                visibility: hidden;
+              "
+            >
+              Fake confirm
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="individual-question prepare-manifest" id="Question-prepare-manifest-3">
+        <div class="ui form" style="width: 100%">
+          <div class="grouped fields">
+            <label style="font-size: 17px; color: var(--color-bg-plum)"
+              >Is this the Pennsieve dataset you want to create the manifest files for?
+            </label>
+            <div class="field prepare-metadata-card-field">
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: space-between;
+                  margin-top: 15px;
+                  height: auto;
+                  box-shadow: 0px 0px 10px #d5d5d5;
+                  padding: 15px 25px;
+                  border-radius: 5px;
+                "
+              >
+                <div style="display: flex; flex-direction: row; justify-content: space-between">
+                  <div class="card-container prepare-manifest prepare-metadata">
+                    <div style="width: 100%">
+                      <h5 class="card-left" style="text-align: left">Current account:</h5>
+                      <div class="change-current-account manifest-change-current-account">
+                        <h5
+                          class="card-right ps-account-span prepare-metadata-current-account-span"
+                        >
+                          None
+                        </h5>
+
+                        <svg
+                          class="svg-change-current-account bi bi-pencil-fill"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="18"
+                          height="18"
+                          fill="#000"
+                          viewBox="0 0 16 16"
+                        >
+                          <path
+                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div style="display: flex; flex-direction: row; margin-bottom: 15px">
+                  <div class="card-container prepare-manifest prepare-metadata">
+                    <div style="width: 100%">
+                      <h5 class="card-left">Current workspace:</h5>
+                      <div class="change-current-account ds-dd organization">
+                        <h5
+                          class="card-right ps-organization-span prepare-metadata-organization-span"
+                          style="margin-left: 36px !important"
+                        >
+                          None
+                        </h5>
+
+                        <svg
+                          class="svg-change-current-account organization bi bi-pencil-fill"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="18"
+                          height="18"
+                          fill="#000"
+                          viewBox="0 0 16 16"
+                        >
+                          <path
+                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                    <div
+                      class="ui active green inline loader small organization-loader"
+                      style="display: none"
+                    ></div>
+                  </div>
+                </div>
+                <div style="display: flex; flex-direction: row; justify-content: space-between">
+                  <div class="card-container prepare-manifest prepare-metadata">
+                    <div style="width: 100%">
+                      <h5 class="card-left" style="text-align: left">Current dataset:</h5>
+                      <div class="change-current-account manifest-change-current-ds">
+                        <h5
+                          id="bf_dataset_create_manifest"
+                          class="card-right ps-dataset-span prepare-metadata-dataset-span"
+                        >
+                          None
+                        </h5>
+
+                        <svg
+                          class="svg-change-current-account dataset bi bi-pencil-fill"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="18"
+                          height="18"
+                          fill="#000"
+                          viewBox="0 0 16 16"
+                        >
+                          <path
+                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="ui active green inline loader small" style="display: none"></div>
+                </div>
+              </div>
+              <div
+                style="
+                  display: none;
+                  flex-direction: row;
+                  justify-content: center;
+                  margin: 25px auto;
+                "
+                id="div-check-ps-create-manifest"
+                class="btn-confirm-ds-selection"
+              >
+                <button
+                  id="btn-confirm-dataset-manifest-page"
+                  class="btn_animated"
+                  style="
+                    border: none !important;
+                    border-radius: 4px;
+                    margin: 0.5rem auto;
+                    width: 110px;
+                    height: 35px;
+                    background: var(--color-light-green);
+                    color: #fff;
+                    font-size: 14px;
+                    font-weight: 600;
+                    padding-left: 9px;
+                  "
+                >
+                  Confirm
+                </button>
+                <button
+                  class="btn_question"
+                  data-next="Question-prepare-manifest-5"
+                  id="preview-manifest-fake-confirm-pennsieve"
+                  onclick="window.transitionFreeFormMode(this, 'Question-prepare-manifest-3', 'create_manifest-tab', '', 'individual-question prepare-manifest')"
+                  style="
+                    cursor: pointer;
+                    border-radius: 8px;
+                    background: #fff;
+                    color: var(--color-light-green);
+                    font-weight: 600;
+                    border: 1px solid var(--color-light-green);
+                    width: 160px;
+                    padding: 10px;
+                    display: none;
+                  "
+                >
+                  Fake confirm
+                </button>
+              </div>
+              <div
+                data-component-type="pennsieve-agent-check-display"
+                class="hidden"
+                id="advanced-features-manifest-generation-pennsieve-agent-check"
+              ></div>
+              <div
+                id="div-btn-pull-ds-manifest"
+                style="
+                  flex-direction: row;
+                  justify-content: center;
+                  margin: 25px auto;
+                  display: flex;
+                "
+                class="hidden"
+              >
+                <div
+                  data-component-type="generic-button"
+                  data-text="Pull Manifest Information"
+                  id="btn-pull-ds-manifest"
+                ></div>
+              </div>
+            </div>
+
+            <div class="field" style="margin: auto; width: 550px" id="manifest-progress-container">
+              <div style="display: flex; justify-content: center; flex-direction: column">
+                <div
+                  id="loading_pennsieve_dataset_manifest"
+                  class="circular"
+                  style="
+                    align-self: center;
+                    visibility: hidden;
+                    margin-top: -80px;
+                    margin-bottom: 20px;
+                  "
+                >
+                  <div class="inner"></div>
+                  <div
+                    class="pennsieve_loading_dataset_percentage fix"
+                    id="pennsieve_loading_dataset_percentage_manifest"
+                    class="number"
+                  >
+                    0%
+                  </div>
+                  <div class="circle">
+                    <div class="bar left">
+                      <div
+                        class="pennsieve_left-side_less_than_50 progress"
+                        style="transform: rotate(0deg)"
+                      ></div>
+                    </div>
+                    <div class="bar right">
+                      <div
+                        class="pennsieve_right-side_greater_than_50 progress"
+                        style="transform: rotate(0deg)"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+                <span
+                  id="loading_pennsieve_dataset_manifest_span"
+                  style="
+                    margin: auto;
+                    visibility: hidden;
+                    position: relative;
+                    top: 55px;
+                    margin-bottom: 20px;
+                  "
+                  >Importing your Pennsieve dataset...</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="individual-question prepare-manifest" id="Question-prepare-manifest-5">
+        <div class="ui form" style="width: 100%">
+          <div class="grouped fields" style="align-items: center">
+            <label style="font-size: 17px; color: var(--color-bg-plum); margin: 10px; width: 550px">
+              Preview/Edit manifest files <br />
+              <p class="about-text" style="text-align: justify; margin-top: 10px">
+                Click on any manifest file below to preview it or add additional metadata. SODA will
+                automatically include the "filename", "timestamp", and "file type" in your manifest
+                files. Any additional data from existing manifest files in the dataset will be
+                imported and editable as well.
+              </p>
+            </label>
+            <div class="field" style="margin: 0 auto; width: fit-content; margin-top: 10px">
+              <div
+                style="
+                  width: 550px;
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: space-between;
+                  margin-top: 15px;
+                  height: auto;
+                  box-shadow: 0px 0px 10px #d5d5d5;
+                  padding: 15px 25px;
+                  border-radius: 5px;
+                "
+              >
+                <div id="div-dataset-tree-preview-manifest"></div>
+              </div>
+            </div>
+
+            <!-- A continue button for moving on to generate a dataset on Pennsieve or preview it locally-->
+            <div
+              style="
+                width: fit-content;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin-top: 15px;
+              "
+              class="field"
+              id="btn-continue-pennsieve-question-6"
+            >
+              <div style="display: flex; flex-direction: row; margin-top: 5px">
+                <button
+                  style="
+                    cursor: pointer;
+                    border-radius: 4px;
+                    margin-right: 15px;
+                    background: var(--color-light-green);
+                    color: #fff;
+                    font-weight: 600;
+                    border: none;
+                    width: 160px;
+                    height: 40px;
+                    padding: 10px;
+                    font-size: 15px;
+                  "
+                  id="show-manifest-gen-on-pennsieve-section-btn"
+                >
+                  Continue
+                </button>
+              </div>
+            </div>
+
+            <div
+              style="
+                width: fit-content;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin-top: 60px;
+              "
+              class="field"
+              id="manifest-gen-on-pennsieve-section"
+            >
+              <label
+                style="
+                  font-size: 17px;
+                  color: var(--color-bg-plum);
+                  margin: 10px;
+                  width: 550px;
+                  text-align: center;
+                "
+              >
+                Generate manifest files <br />
+                <p class="about-text" style="text-align: justify">
+                  Click "Generate now" to generate your manifest files directly on Pennsieve. Click
+                  "Preview Manifest Files Locally" to view your finalized manifest files locally
+                  before you upload to Pennsieve.
+                </p>
+              </label>
+
+              <div style="display: flex; flex-direction: row; margin-top: 5px">
+                <button
+                  style="
+                    background: rgb(255, 255, 255);
+                    color: var(--color-light-green);
+                    border: 1px solid var(--color-light-green);
+                    padding: 8px 10px;
+                    width: 240px !important;
+                    height: 38px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    margin-right: 15px;
+                    border-radius: 5px;
+                    width: 220px;
+                  "
+                  class="transition-btn"
+                  onclick="window.generateManifestPreview(this)"
+                  id="generate-local-preview-manifest"
+                >
+                  Preview Manifest Files Locally
+                </button>
+
+                <button
+                  onclick="window.generateManifestPrecheck(true, this)"
+                  class="btn_question"
+                  id="generate_step_5-manifest"
+                  style="
+                    cursor: pointer;
+                    border-radius: 4px;
+                    margin-right: 15px;
+                    background: var(--color-light-green);
+                    color: #fff;
+                    font-weight: 600;
+                    border: none;
+                    width: 160px;
+                    padding: 10px;
+                    font-size: 15px;
+                  "
+                >
+                  Generate now
+                </button>
+              </div>
+            </div>
+
+            <!-- A continue button for step; appears during Local manifest file generation only-->
+            <div style="display: flex; justify-content: center; margin-top: 25px">
+              <button
+                onclick="window.transitionFreeFormMode(this, 'Question-prepare-manifest-5', 'create_manifest-tab', '', 'individual-question prepare-manifest')"
+                class="btn_question"
+                id="continue_step_5-manifest"
+                data-next="Question-prepare-manifest-6"
+                style="
+                  cursor: pointer;
+                  border-radius: 8px;
+                  margin-right: 15px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-weight: 600;
+                  border: none;
+                  width: 160px;
+                  padding: 10px;
+                  font-size: 14px;
+                "
+              >
+                Continue
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="individual-question prepare-manifest" id="Question-prepare-manifest-6">
+        <div class="ui form" style="width: 100%">
+          <div class="grouped fields" style="align-items: center">
+            <label style="font-size: 17px; color: var(--color-bg-plum); margin: 10px; width: 550px">
+              Generate manifest files <br />
+              <p class="about-text">
+                SODA will generate your manifest files in your dataset directory by default. You can
+                generate the manifest files in a separate location by clicking on the url below.
+              </p>
+            </label>
+
+            <div class="field" style="margin: 0 auto; width: fit-content; margin-top: 10px">
+              <input
+                class="form-control"
+                style="width: 450px !important"
+                onclick="selectManifestGenerationLocation()"
+                id="input-manifest-local-gen-location"
+                type="text"
+                readonly
+                placeholder="Browse here"
+              />
+
+              <div style="display: flex; justify-content: center; margin-top: 25px">
+                <button
+                  onclick="window.generateManifestPrecheck(true, this)"
+                  class="btn_question"
+                  style="
+                    cursor: pointer;
+                    border-radius: 8px;
+                    margin-right: 15px;
+                    background: var(--color-light-green);
+                    color: #fff;
+                    font-weight: 600;
+                    border: none;
+                    width: 160px;
+                    padding: 10px;
+                    font-size: 14px;
+                  "
+                  id="btn-local-manifest-gen"
+                >
+                  Generate
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--END of question 6-->
+    </div>
+  </div>
+  <div
+    id="validate-dataset-feature"
+    class="advanced-section hidden"
+    style="width: 100%; display: flex; flex-direction: column; height: calc(100% - 5rem)"
+  >
+    <div class="main-tabs show" style="display: flex; overflow-y: hidden">
+      <header class="section-header">
+        <div class="container-tab-information-header" style="width: 97%; margin-left: 0">
+          <div class="need-help-div" style="margin-top: 0.6rem">
+            <h2>Validate Dataset</h2>
+            <a
+              target="_blank"
+              href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/prepare-dataset/validate-your-dataset"
+              >Need help?</a
+            >
+          </div>
+        </div>
+      </header>
+
+      <div id="validate_dataset-tab" style="overflow-y: auto">
+        <div
+          class="individual-question validate_dataset show"
+          id="validate_dataset-question-1"
+          style="height: auto"
+        >
+          <div class="ui form" style="width: 100%">
+            <div class="grouped fields">
+              <div class="about-container">
+                <label class="about-title" style="color: var(--color-bg-plum) !important"
+                  >About</label
+                >
+                <p class="about-text">
+                  SODA integrates with the SPARC Dataset Structure (SDS) validator tool. Use this
+                  feature to validate your dataset against the SDS. The SDS validator tool is still
+                  in beta, therefore it is possible to receive false negatives.
+                </p>
+              </div>
+
+              <!--Select how you wish to validate the dataset-->
+              <label style="font-size: 17px; color: var(--color-bg-plum)"
+                >Please select an option below:
+              </label>
+              <div style="display: flex; flex-direction: row; justify-content: center">
+                <div style="margin: 15px 0">
+                  <div
+                    class="option-card radio-button"
+                    id="validate_dataset-1-local"
+                    data-current="validate_dataset-question-1"
+                    data-next="validate_dataset-question-2"
+                    style="max-width: 180px; height: 220px !important; width: 180px !important"
+                  >
+                    <div class="card-head">
+                      <div class="folder-checkbox">
+                        <input
+                          class="folder-input-check"
+                          name="validate-1-Local"
+                          type="radio"
+                          id="validate-1-Local"
+                        />
+                        <label for="validate-1-Local"></label>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="40px"
+                        height="40px"
+                        fill="var(--color-accent)"
+                        class="bi bi-file-earmark-plus"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
+                        ></path>
+                        <path
+                          d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"
+                        ></path>
+                      </svg>
+                      <h2>I want to validate a local dataset</h2>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="option-card radio-button popover-tooltip"
+                  data-current="validate_dataset-question-1"
+                  id="validate_dataset-1-pennsieve"
+                  data-next="validate_dataset-question-2"
+                  rel="popover"
+                  data-placement="right"
+                  data-html="true"
+                  data-trigger="hover"
+                  style="
+                    max-width: 180px;
+                    height: 220px !important;
+                    width: 180px !important;
+                    margin-top: 25px;
+                  "
+                >
+                  <div class="card-head" style="pointer-events: none">
+                    <div class="folder-checkbox">
+                      <input
+                        class="folder-input-check"
+                        name="validate-1-Pennsieve"
+                        type="radio"
+                        id="validate-1-Pennsieve"
+                      />
+                      <label for="validate-1-Pennsieve"></label>
+                    </div>
+                  </div>
+                  <div class="card-body" style="pointer-events: none">
+                    <i class="far fa-save" style="color: var(--color-bg-orange)"></i>
+                    <h2>I want to validate a Pennsieve dataset</h2>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="individual-question validate_dataset"
+          id="validate_dataset-question-2"
+          style="height: auto"
+        >
+          <div class="ui form">
+            <!--Validating a local dataset-->
+            <div
+              class="grouped fields"
+              id="validate_dataset-question-1-local-container"
+              style="margin-bottom: -2rem"
+            >
+              <label style="font-size: 17px; color: var(--color-bg-plum)"
+                >Where is the local dataset located?</label
+              >
+              <div class="field" style="margin: 15px auto; display: flex; justify-content: center">
+                <input
+                  class="form-control"
+                  style="width: 450px !important"
+                  id="validate-local-dataset-path"
+                  type="text"
+                  readonly=""
+                  placeholder="Browse here"
+                />
+              </div>
+
+              <div class="field" style="margin: 15px auto; display: flex; justify-content: center">
+                <button
+                  style="width: 120px; display: none"
+                  class="btn_animated"
+                  id="validator-confirm-local-dataset-btn"
+                  data-next="validate_dataset-question-3"
+                  data-current="validate_dataset-question-2"
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
+
+            <!--Selecting a Pennsieve dataset-->
+            <!--Shown when user transitions to this question by clicking the Pennsieve dataset radio card-->
+            <div class="grouped fields" id="pennsieve-question-2-container">
+              <label style="font-size: 17px; color: var(--color-bg-plum)"
+                >Which Pennsieve dataset would you like to validate?
+              </label>
+              <div class="field prepare-metadata-card-field">
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    margin-top: 15px;
+                    height: auto;
+                    box-shadow: 0px 0px 10px #d5d5d5;
+                    padding: 15px 25px;
+                    border-radius: 5px;
+                  "
+                >
+                  <div style="display: flex; flex-direction: row; justify-content: space-between">
+                    <div class="card-container prepare-validation prepare-metadata">
+                      <div style="width: 100%">
+                        <h5 class="card-left" style="text-align: left; padding-right: 5px">
+                          Current account:
+                        </h5>
+                        <div class="change-current-account">
+                          <h5
+                            class="card-right ps-account-span prepare-metadata-current-account-span"
+                          >
+                            SODA-Pennsieve
+                          </h5>
+
+                          <svg
+                            class="svg-change-current-account bi bi-pencil-fill"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            ></path>
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="display: flex; flex-direction: row; margin-bottom: 15px">
+                    <div class="card-container prepare-validation prepare-metadata">
+                      <div style="width: 100%">
+                        <h5 class="card-left" style="padding-right: 5px">Current workspace:</h5>
+                        <div
+                          class="change-current-account ds-dd organization"
+                          style="margin-left: 12px"
+                        >
+                          <h5
+                            class="card-right ps-organization-span prepare-metadata-organization-span"
+                          >
+                            None
+                          </h5>
+
+                          <svg
+                            class="svg-change-current-account organization bi bi-pencil-fill"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                      <div
+                        class="ui active green inline loader small organization-loader"
+                        style="display: none"
+                      ></div>
+                    </div>
+                  </div>
+                  <div style="display: flex; flex-direction: row; justify-content: space-between">
+                    <div class="card-container prepare-validation prepare-metadata">
+                      <div style="width: 100%">
+                        <h5 class="card-left" style="text-align: left; padding-right: 5px">
+                          Current dataset:
+                        </h5>
+                        <div
+                          class="change-current-account"
+                          id="select-dataset-container--validator"
+                        >
+                          <h5
+                            id="bf_dataset_load_validator"
+                            class="card-right ps-dataset-span prepare-metadata-dataset-span"
+                          >
+                            None
+                          </h5>
+
+                          <svg
+                            class="svg-change-current-account dataset bi bi-pencil-fill"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            ></path>
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="ui active green inline loader small" style="display: none"></div>
+                  </div>
+                </div>
+                <div
+                  style="
+                    display: none;
+                    flex-direction: row;
+                    justify-content: center;
+                    margin-top: 30px;
+                  "
+                  id="div-check-ps-import-validator"
+                >
+                  <button
+                    style="width: 120px"
+                    id="confirm-dataset-selection--validator"
+                    data-next="validate_dataset-question-3"
+                    data-current="validate_dataset-question-2"
+                    class="btn_animated"
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="individual-question validate_dataset"
+          id="validate_dataset-question-3"
+          style="height: auto; margin-bottom: 84px; margin-top: 0"
+        >
+          <div class="ui form" style="width: 450px">
+            <div class="grouped fields">
+              <div
+                id="div-confirm-validate_dataset"
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                  align-items: center;
+                  margin: 0 auto;
+                "
+              >
+                <div style="display: flex; justify-content: center">
+                  <button
+                    id="run_validator_btn"
+                    class="btn_animated md"
+                    style="
+                      cursor: pointer;
+                      border-radius: 4px;
+                      margin: 0px auto;
+                      width: 190px;
+                      height: 40px;
+                      border: none !important;
+                      font-size: 15px;
+                      text-align: center;
+                      position: absolute;
+                      padding-left: 17px;
+                      margin-top: 1rem;
+                    "
+                    data-next="validate_dataset-question-4"
+                  >
+                    Validate Dataset
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="individual-question validate_dataset"
+          id="validate_dataset-question-4"
+          style="height: auto"
+        >
+          <div class="ui form" style="width: 450px">
+            <div class="grouped fields">
+              <div
+                id="validation-errors-container"
+                style="
+                  visibility: hidden;
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+                "
+              >
+                <label style="font-size: 17px; color: var(--color-bg-plum)">
+                  Validation Errors
+                </label>
+                <div
+                  style="border-radius: 0.5rem; margin-top: 10px; width: 550px; align-self: center"
+                >
+                  <p class="tip-content">
+                    The path column indicates where the errors occurred in your dataset. The message
+                    column provides an explanation of what the errors are. For updated validation
+                    results you can re-run validation. You can view your raw validation report by
+                    clicking <button class="validate-raw-report_btn">here</button>.
+                  </p>
+                </div>
+
+                <table class="ui celled padded table">
+                  <thead>
+                    <tr>
+                      <th>Path</th>
+                      <th>Message</th>
+                      <!-- <th>Fix Here</th> -->
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    id="compare-local-remote-feature"
+    class="advanced-section hidden"
+    style="width: 100%; display: flex; flex-direction: column; height: calc(100% - 5rem)"
+  >
+    <div class="main-tabs show" style="display: flex; overflow-y: hidden">
+      <header class="section-header">
+        <div class="container-tab-information-header" style="width: 97%; margin-left: 0">
+          <div class="need-help-div" style="margin-top: 0.6rem">
+            <h2>Compare Local and Pennsieve Dataset</h2>
+            <a
+              target="_blank"
+              href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/prepare-dataset/compare-local-and-pennsieve-dataset"
+              >Need help?</a
+            >
+          </div>
+        </div>
+      </header>
+
+      <div id="compare_local_remote_dataset-tab" style="overflow-y: auto">
+        <div
+          class="individual-question compare_local_remote_dataset show"
+          id="compare-local-remote-dataset-question-1"
+          style="height: auto"
+        >
+          <div class="ui form" style="width: 100%">
+            <div class="grouped fields">
+              <div class="about-container">
+                <label class="about-title" style="color: var(--color-bg-plum) !important"
+                  >About</label
+                >
+                <p class="about-text">
+                  This tool compare your local dataset with a dataset you have uploaded on to
+                  Pennsieve and shows you the differences between the two datasets that exist, if
+                  any.
+                </p>
+              </div>
+
+              <div
+                class="grouped fields"
+                id="compare_local_remote_dataset-question-1-local-container"
+                style="margin-bottom: -2rem"
+              >
+                <label style="font-size: 17px; color: var(--color-bg-plum)"
+                  >Where is the local dataset located?</label
+                >
+                <div
+                  class="field"
+                  style="margin: 15px auto; display: flex; justify-content: center"
+                >
+                  <input
+                    class="form-control"
+                    style="width: 450px !important"
+                    id="compare-local-remote-dataset-local-path"
+                    type="text"
+                    readonly=""
+                    placeholder="Browse here"
+                  />
+                </div>
+
+                <div
+                  class="field"
+                  style="margin: 15px auto; display: flex; justify-content: center"
+                >
+                  <button
+                    style="width: 120px; display: none"
+                    class="btn_animated"
+                    id="compare-local-remote-confirm-local-dataset-btn"
+                    data-next="compare-local-remote-dataset-question-2"
+                    data-current="compare-local-remote-dataset-question-1"
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="individual-question"
+          id="compare-local-remote-dataset-question-2"
+          style="height: auto; margin-bottom: 84px; margin-top: 0"
+        >
+          <div class="ui form" style="width: 450px">
+            <div class="grouped fields">
+              <label style="font-size: 17px; color: var(--color-bg-plum)"
+                >Select a Pennsieve dataset to compare your local dataset against
+              </label>
+              <div class="field prepare-metadata-card-field">
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    margin-top: 15px;
+                    height: auto;
+                    box-shadow: 0px 0px 10px #d5d5d5;
+                    padding: 15px 25px;
+                    border-radius: 5px;
+                  "
+                >
+                  <div style="display: flex; flex-direction: row; justify-content: space-between">
+                    <div class="card-container prepare-metadata">
+                      <div style="width: 100%">
+                        <h5 class="card-left" style="text-align: left; padding-right: 5px">
+                          Current account:
+                        </h5>
+                        <div class="change-current-account">
+                          <h5
+                            class="card-right ps-account-span prepare-metadata-current-account-span"
+                          >
+                            SODA-Pennsieve
+                          </h5>
+
+                          <svg
+                            class="svg-change-current-account bi bi-pencil-fill"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            ></path>
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="display: flex; flex-direction: row; margin-bottom: 15px">
+                    <div class="card-container prepare-metadata">
+                      <div style="width: 100%">
+                        <h5 class="card-left" style="padding-right: 5px">Current workspace:</h5>
+                        <div
+                          class="change-current-account ds-dd organization"
+                          style="margin-left: 12px"
+                        >
+                          <h5
+                            class="card-right ps-organization-span prepare-metadata-organization-span"
+                          >
+                            None
+                          </h5>
+
+                          <svg
+                            class="svg-change-current-account organization bi bi-pencil-fill"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                      <div
+                        class="ui active green inline loader small organization-loader"
+                        style="display: none"
+                      ></div>
+                    </div>
+                  </div>
+                  <div style="display: flex; flex-direction: row; justify-content: space-between">
+                    <div class="card-container prepare-comparison prepare-metadata">
+                      <div style="width: 100%">
+                        <h5 class="card-left" style="text-align: left; padding-right: 5px">
+                          Current dataset:
+                        </h5>
+                        <div class="change-current-account">
+                          <h5
+                            id="bf_dataset_load_compare_local_remote"
+                            class="card-right ps-dataset-span prepare-metadata-dataset-span"
+                          >
+                            None
+                          </h5>
+
+                          <svg
+                            class="svg-change-current-account dataset bi bi-pencil-fill"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="#000"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                            ></path>
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="ui active green inline loader small" style="display: none"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="individual-question validate_dataset"
+          id="compare-local-remote-dataset-question-3"
+          style="height: auto"
+        >
+          <div class="ui form" style="width: 450px">
+            <div class="grouped fields">
+              <div style="margin: auto">
+                <div
+                  data-component-type="generic-button"
+                  id="compare-local-remote-begin-comparison-btn"
+                  variant="filled"
+                  color="green"
+                  data-text="Compare Local and Pennsieve Dataset"
+                ></div>
+              </div>
+
+              <div class="guided--panel mt-0 hidden" id="comparing-local-remote-dataset-roller">
+                <div class="lds-roller">
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                </div>
+                Comparing Local and Pennsieve Dataset
+              </div>
+
+              <div
+                id="comparison-results-container"
+                style="display: flex; flex-direction: column; margin-top: 55px"
+              >
+                <div id="comparison-results-only-on-pennsieve-table">
+                  <label style="font-size: 17px; color: var(--color-bg-plum)">
+                    Files that are on Pennsieve and not in your local dataset
+                  </label>
+                  <div style="border-radius: 0.5rem; margin-top: 10px; align-self: center">
+                    <p class="tip-content">
+                      These folders and files are only on Pennsieve and not in your local dataset.
+                      You have the option of deleting these files from Pennsieve to make them match
+                      your local dataset. You can also download the list of files so that you may
+                      manually delete them yourself. Note: If you do not see any results in the
+                      table it means this Pennsieve dataset does not have any files or folders that
+                      are not in your local dataset.
+                    </p>
+                  </div>
+                  <div
+                    data-component-type="single-column-table"
+                    data-column-name="File Path"
+                    id="comparison-results-only-on-pennsieve-table"
+                  ></div>
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      margin-top: 2%;
+                      justify-content: space-evenly;
+                    "
+                    id="only-on-pennsieve-btn-div"
+                  >
+                    <div
+                      data-component-type="generic-button"
+                      data-text="Get File List in CSV"
+                      id="only-on-pennsieve-get-list"
+                    ></div>
+                    <div
+                      data-component-type="generic-button"
+                      data-text="Delete Files from Pennsieve"
+                      id="only-on-pennsieve-delete-selected"
+                    ></div>
+                  </div>
+                </div>
+
+                <div id="comparison-results-only-on-local-table" style="margin-top: 15px">
+                  <label style="font-size: 17px; color: var(--color-bg-plum)">
+                    Files that are local and not in your Pennsieve dataset
+                  </label>
+                  <div style="border-radius: 0.5rem; margin-top: 10px; align-self: center">
+                    <p class="tip-content">
+                      These folders and files are only found locally and are not in your Pennsieve
+                      dataset. You may upload these files to Pennsieve to make them match your
+                      Pennsieve dataset. You can also download a list of the files that are only
+                      represented locally to manually upload them to Pennsieve. Note: If you do not
+                      see any results in the table it means this local dataset does not have any
+                      files or folders that are not in your Pennsieve dataset.
+                    </p>
+                  </div>
+                  <div
+                    data-component-type="single-column-table"
+                    data-column-name="File Path"
+                    id="comparison-results-only-on-local-table"
+                  ></div>
+                  <div
+                    id="only-on-local-btn-div"
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      margin-top: 2%;
+                      justify-content: space-evenly;
+                    "
+                  >
+                    <div
+                      data-component-type="generic-button"
+                      data-text="Get File List in CSV"
+                      id="only-on-local-get-list"
+                    ></div>
+                    <div
+                      data-component-type="generic-button"
+                      data-text="Upload Selected Files from Pennsieve"
+                      id="only-on-local-upload-selected"
+                    ></div>
+                  </div>
+                </div>
+
+                <div id="compare-local-remote-dataset-no-differences">
+                  <label style="font-size: 17px; color: var(--color-bg-plum)">
+                    No differences found between the two datasets
+                  </label>
+                  <div style="border-radius: 0.5rem; margin-top: 10px; align-self: center">
+                    <p class="tip-content">
+                      There are no differences between the two datasets. Your local dataset and
+                      Pennsieve dataset are identical.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                id="validation-errors-container"
+                style="
+                  visibility: hidden;
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+                "
+              >
+                <label style="font-size: 17px; color: var(--color-bg-plum)">
+                  Validation Errors
+                </label>
+                <div
+                  style="border-radius: 0.5rem; margin-top: 10px; width: 550px; align-self: center"
+                >
+                  <p class="tip-content">
+                    The path column indicates where the errors occurred in your dataset. The message
+                    column provides an explanation of what the errors are. For updated validation
+                    results you can re-run validation. You can view your raw validation report by
+                    clicking <button class="validate-raw-report_btn">here</button>.
+                  </p>
+                </div>
+
+                <table class="ui celled padded table">
+                  <thead>
+                    <tr>
+                      <th>Path</th>
+                      <th>Message</th>
+                      <!-- <th>Fix Here</th> -->
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer class="footer-container hidden" id="advanced-footer" style="width: calc(100% - 1.5rem)">
+    <div class="guided--container-footer-buttons" style="margin-left: 1rem; width: 100%">
+      <div
+        data-component-type="navigation-button"
+        data-button-id="advanced-back-button"
+        data-button-text="Back"
+        data-nav-icon="left-arrow"
+        data-button-size="md"
+      ></div>
+      <button id="advanced-start-over-button" class="start-over hidden" style="margin-right: 1rem">
+        <i class="fas fa-sync-alt" style="margin-right: 10px; font-size: inherit"></i>
+        Start over
+      </button>
+    </div>
+  </footer>
+</section>

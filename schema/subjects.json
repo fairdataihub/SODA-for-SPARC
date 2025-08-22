@@ -1,0 +1,131 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "array",
+  "minItems": 1,
+  "maxItems": 28,
+  "items": [
+    {
+      "type": "object",
+      "properties": {
+        "subject_id": {
+          "type": "string",
+          "description": "Unique identifier for the subject. This should be a unique identifier for the subject within the dataset.",
+          "minLength": 1
+        },
+        "pool_id": {
+          "type": "string",
+          "description": "Unique identifier for the pool associated with the subject. This should be a unique identifier for the pool within the dataset."
+        },
+        "subject_experimental_group": {
+          "type": "string",
+          "description": "Experimental group associated with the subject. This should provide information about the experimental conditions or treatment groups to which the subject belongs."
+        },
+        "age": {
+          "type": "string",
+          "description": "Age of the subject. This should be a numeric value representing the age of the subject at the time of data collection."
+        },
+        "sex": {
+          "type": "string",
+          "description": "Sex of the subject."
+        },
+        "species": {
+          "type": "string",
+          "description": "Species of the subject. This should be the scientific name of the species."
+        },
+        "strain": {
+          "type": "string",
+          "description": "Strain of the subject. This should provide information about the genetic background of the subject."
+        },
+        "rrid_for_strain": {
+          "type": "string",
+          "description": "RRID for strain. This should be a unique identifier for the strain in the Research Resource Identifier (RRID) database."
+        },
+        "age_category": {
+          "type": "string",
+          "description": "Age category of the subject. This should provide information about the age range of the subject."
+        },
+        "also_in_dataset": {
+          "type": "string",
+          "description": "Indicates if the subject is also part of another dataset."
+        },
+        "member_of": {
+          "type": "string",
+          "description": "Indicates the group or pool the subject is a member of."
+        },
+        "metadata_only": {
+          "type": "string",
+          "description": "Indicates if this entry is metadata only."
+        },
+        "laboratory_internal_id": {
+          "type": "string",
+          "description": "Internal identifier used by the laboratory for the subject."
+        },
+        "date_of_birth": {
+          "type": "string",
+          "description": "Date of birth of the subject."
+        },
+        "age_range_min": {
+          "type": "string",
+          "description": "Minimum age range of the subject."
+        },
+        "age_range_max": {
+          "type": "string",
+          "description": "Maximum age range of the subject."
+        },
+        "body_mass": {
+          "type": "string",
+          "description": "Body mass of the subject."
+        },
+        "genotype": {
+          "type": "string",
+          "description": "Genotype of the subject."
+        },
+        "phenotype": {
+          "type": "string",
+          "description": "Phenotype of the subject."
+        },
+        "handedness": {
+          "type": "string",
+          "description": "Handedness of the subject."
+        },
+        "reference_atlas": {
+          "type": "string",
+          "description": "Reference atlas used for the subject."
+        },
+        "experimental_log_file_path": {
+          "type": "string",
+          "description": "Path to the experimental log file for the subject."
+        },
+        "experiment_date": {
+          "type": "string",
+          "description": "Date of the experiment involving the subject."
+        },
+        "disease_or_disorder": {
+          "type": "string",
+          "description": "Disease or disorder associated with the subject."
+        },
+        "intervention": {
+          "type": "string",
+          "description": "Intervention applied to the subject."
+        },
+        "disease_model": {
+          "type": "string",
+          "description": "Disease model associated with the subject."
+        },
+        "protocol_title": {
+          "type": "string",
+          "description": "Title of the protocol used for the subject."
+        },
+        "protocol_url_or_doi": {
+          "type": "string",
+          "description": "URL or DOI of the protocol used for the subject."
+        }
+      },
+      "required": ["subject_id"],
+      "additionalProperties": {
+        "type": "string",
+        "description": "Additional properties for the subject. This can include any other relevant information about the subject that is not covered by the predefined fields."
+      }
+    }
+  ]
+}
