@@ -742,8 +742,8 @@ document
 document.getElementById("dataset-upload-new-dataset").addEventListener("click", async function () {
   if (await api.userIsWorkspaceGuest()) {
     swalShowInfo(
-      "You are currently in guest mode",
-      "Please switch to a registered account to access this feature."
+      "Guests cannot create datasets on Pennsieve",
+      "You are currently a guest user in your workspace and do not have permission to create new datasets. If an empty dataset has already been created for you, select the 'Existing dataset' option."
     );
     return;
   }
