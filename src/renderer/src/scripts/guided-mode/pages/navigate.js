@@ -14,6 +14,7 @@ import { existingDataset, modifyDataset } from "../../../assets/lotties/lotties"
 import Swal from "sweetalert2";
 import { clientError } from "../../others/http-error-handler/error-handler";
 import client from "../../client";
+import { swalShowError } from "../../utils/swal-utils";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -52,7 +53,7 @@ export const handleNextButtonClick = async () => {
   } catch (error) {
     window.log.error(error);
     if (Array.isArray(error)) {
-      error.forEach((err) => {
+      for (const err of error) {
         if (err.type === "notyf") {
           window.notyf.open({
             duration: "7000",
@@ -60,21 +61,10 @@ export const handleNextButtonClick = async () => {
             message: err.message,
           });
         }
-
         if (err.type === "swal") {
-          Swal.fire({
-            icon: "error",
-            title: err.title,
-            html: err.message,
-            width: 600,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            confirmButtonText: `OK`,
-            focusConfirm: true,
-            allowOutsideClick: false,
-          });
+          await swalShowError(err.errorTitle, err.errorText);
         }
-      });
+      }
     }
   }
 };
