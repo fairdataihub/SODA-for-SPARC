@@ -500,22 +500,14 @@ const loadManifestToJSON = async (manifestPath) => {
 };
 
 const userIsWorkspaceGuest = async () => {
-  console.log("[userIsWorkspaceGuest] Starting check...");
-
   const userInfo = await getUserInformation();
   const preferredOrgId = userInfo.preferredOrganization;
-  console.log("[userIsWorkspaceGuest] Preferred organization ID:", preferredOrgId);
 
   let orgResponse;
   try {
-    console.log("[userIsWorkspaceGuest] Fetching organizations...");
     orgResponse = await client.get("user/organizations", {
       params: { selected_account: window.defaultBfAccount },
     });
-    console.log(
-      "[userIsWorkspaceGuest] Successfully fetched organizations:",
-      orgResponse?.data?.organizations?.length ?? 0
-    );
   } catch (error) {
     clientError(error);
     console.error("[userIsWorkspaceGuest] Error fetching organizations:", error);
@@ -528,15 +520,8 @@ const userIsWorkspaceGuest = async () => {
   );
 
   if (!currentWorkspaceObj) {
-    console.warn(
-      "[userIsWorkspaceGuest] Preferred organization not found among fetched organizations."
-    );
     return false;
   }
-
-  console.log(
-    `[userIsWorkspaceGuest] Found organization '${currentWorkspaceObj.organization.name}' (ID: ${currentWorkspaceObj.organization.id}) | isGuest: ${currentWorkspaceObj.isGuest}`
-  );
 
   return currentWorkspaceObj.isGuest;
 };
