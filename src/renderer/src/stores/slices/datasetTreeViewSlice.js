@@ -236,11 +236,11 @@ export const reRenderTreeView = () => {
           const relativePath = folder.relativePath;
           result.push({
             itemType: "folder",
-            itemIndex: itemIndex++,
-            itemIndent: depth,
             folderName,
             itemContent: folder,
             ...folder,
+            itemIndent: depth,
+            itemIndex: itemIndex++,
           });
 
           // Only add files if folder is open
@@ -250,11 +250,12 @@ export const reRenderTreeView = () => {
               const file = folder.files[fileName];
               result.push({
                 itemType: "file",
-                itemIndex: itemIndex++,
-                itemIndent: depth + 1,
-                itemContent: file,
                 fileName,
-                ...file,
+                relativePath: file.relativePath,
+                fileIsSelected: Math.random() < 0.5, // random true or false
+                entitiesAssociatedWithFile: ["sub-1"],
+                itemIndent: depth + 1,
+                itemIndex: itemIndex++,
               });
             }
             // Traverse subfolders if open

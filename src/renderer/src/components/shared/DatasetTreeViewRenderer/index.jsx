@@ -76,6 +76,7 @@ const getAssociatedEntities = (relativePath, currentEntityType) => {
 };
 // Get badge color based on entity type
 const getBadgeColor = (entityId) => {
+  console.log("Determining badge color for entityId:", entityId);
   if (entityId.startsWith("sub-")) return "indigo";
   if (entityId.startsWith("sam-")) return "green";
   if (entityId.startsWith("site-")) return "orange";
@@ -131,25 +132,18 @@ let globalFileItemRenderCount = 0;
 
 // File item component - represents a single file in the dataset tree
 const FileItem = ({
-  name,
-  content,
+  fileName,
+  relativePath,
+  fileIsSelected,
+  entitiesAssociatedWithFile = [],
   onFileClick,
-  isFileSelected,
   allowStructureEditing,
-  entityType,
   indent,
 }) => {
-  // Increment global counter every render
   globalFileItemRenderCount++;
   const { hovered, ref } = useHover();
   const contextMenuItemData = useGlobalStore((state) => state.contextMenuItemData);
   const contextMenuIsOpened = useGlobalStore((state) => state.contextMenuIsOpened);
-
-  // Get associated entities for this file, filtering by entityType
-  const associations = getAssociatedEntities(content.relativePath, entityType);
-
-  // Determine file selection status (true or false only, no null)
-  const fileIsSelected = isFileSelected ? isFileSelected(name, content) : false;
 
   const handleFileContextMenuOpen = (e) => {
     e.preventDefault();
@@ -162,11 +156,11 @@ const FileItem = ({
       });
       return;
     }
-    openContextMenu({ x: e.clientX, y: e.clientY }, "file", name, structuredClone(content));
+    openContextMenu({ x: e.clientX, y: e.clientY }, "file", fileName, relativePath); // UO update last param from structuredClone(metadata)
   };
 
   const isHoveredOrSelected =
-    hovered || (contextMenuIsOpened && contextMenuItemData?.relativePath === content.relativePath);
+    hovered || (contextMenuIsOpened && contextMenuItemData?.relativePath === relativePath);
 
   const getFileColor = () => {
     if (fileIsSelected) return "var(--color-transparent-soda-green)";
@@ -193,21 +187,19 @@ const FileItem = ({
       h="24px"
       ml={`${indent * 10 + 5}px`}
     >
-      {/* Checkbox for selection appears first */}
       {onFileClick && (
         <Tooltip label="Select this file" zIndex={2999}>
           <Checkbox
             readOnly
             checked={fileIsSelected}
             onClick={(e) => {
-              e.stopPropagation(); // Prevent any other click events
-              onFileClick?.(name, content, fileIsSelected);
+              e.stopPropagation();
+              onFileClick?.(fileName, relativePath, fileIsSelected);
             }}
           />
         </Tooltip>
       )}
-      {getIconForFile(name)}
-      {/* File name text */}
+      {getIconForFile(fileName)}
       <Text
         size="sm"
         style={{
@@ -220,39 +212,42 @@ const FileItem = ({
           textOverflow: "ellipsis",
         }}
       >
-        {name}
+        {fileName}
       </Text>
 
-      {/* Entity association badges - show which entities this file belongs to */}
-      {associations.length > 0 && (
+      {/* Render association badges */}
+      {entitiesAssociatedWithFile.length > 0 && (
         <Group gap="xs" wrap="nowrap" style={{ marginLeft: "auto", overflow: "hidden" }}>
-          {associations.slice(0, 3).map((assoc, index) => (
+          {entitiesAssociatedWithFile.slice(0, 3).map((entity, index) => (
             <Tooltip
               key={index}
-              label={`${assoc.entityId} (${assoc.entityType})`}
+              label={`${entity.entityId} (${entity.entityType})`}
               position="top"
               withArrow
             >
               <Badge
-                color={getBadgeColor(assoc.entityId)}
+                color={getBadgeColor(entity.entityId)}
                 variant="light"
                 size="xs"
                 style={{
                   whiteSpace: "nowrap",
-                  maxWidth: "100px", // Prevent oversized badges from disrupting layout
+                  maxWidth: "100px",
                   overflow: "hidden",
                   textOverflow: "ellipsis",
                 }}
               >
-                {formatEntityId(assoc.entityId)}
+                {formatEntityId(entity.entityId)}
               </Badge>
             </Tooltip>
           ))}
-          {/* "More" indicator for when a file has many associations */}
-          {associations.length > 3 && (
-            <Tooltip label={`${associations.length - 3} more entities`} position="top" withArrow>
+          {entitiesAssociatedWithFile.length > 3 && (
+            <Tooltip
+              label={`${entitiesAssociatedWithFile.length - 3} more entities`}
+              position="top"
+              withArrow
+            >
               <Badge color="gray" variant="outline" size="xs">
-                +{associations.length - 3}
+                +{entitiesAssociatedWithFile.length - 3}
               </Badge>
             </Tooltip>
           )}
@@ -357,7 +352,10 @@ const FolderItem = ({
 
   // Handler for when folder checkbox is clicked
   const handleFolderCheckboxClick = () => {
-    if (!onFileClick || !isFileSelected || typeof isFileSelected !== "function") return;
+    if (!onFileClick || !isFileSelected || typeof isFileSelected !== "function") {
+      console.error("Missing required props for folder checkbox click handler");
+      return;
+    }
 
     const allFiles = collectAllFilesRecursively(content);
     const currentlyAllSelected = areAllFilesSelected();
@@ -642,6 +640,7 @@ const DatasetTreeViewRenderer = ({
           >
             {rowVirtualizer.getVirtualItems().map((virtualRow) => {
               const item = datasetRenderArray[virtualRow.index];
+              console.log("item:", item);
               if (!item) return null;
 
               return (
@@ -678,13 +677,22 @@ const DatasetTreeViewRenderer = ({
                     />
                   ) : (
                     <FileItem
+                      /*{
+                        fileName,
+                        relativePath,
+                        fileIsSelected,
+                        entitiesAssociatedWithFile = [],
+                        onFileClick,
+                        allowStructureEditing,
+                        indent,
+                      }*/
                       key={item.itemIndex}
-                      name={item.fileName}
-                      content={item.itemContent}
+                      fileName={item.fileName}
+                      relativePath={item.relativePath}
+                      fileIsSelected={item.fileIsSelected}
+                      entitiesAssociatedWithFile={item.entitiesAssociatedWithFile}
                       onFileClick={fileActions?.["on-file-click"] ? handleFileItemClick : null}
-                      isFileSelected={fileActions?.["is-file-selected"]}
                       allowStructureEditing={allowStructureEditing}
-                      entityType={entityType}
                       indent={item.itemIndent}
                     />
                   )}
