@@ -499,6 +499,33 @@ const loadManifestToJSON = async (manifestPath) => {
   return response.data;
 };
 
+const userIsWorkspaceGuest = async () => {
+  const userInfo = await getUserInformation();
+  const preferredOrgId = userInfo.preferredOrganization;
+
+  let orgResponse;
+  try {
+    orgResponse = await client.get("user/organizations", {
+      params: { selected_account: window.defaultBfAccount },
+    });
+  } catch (error) {
+    clientError(error);
+    console.error("[userIsWorkspaceGuest] Error fetching organizations:", error);
+    // TODO: Decide how to handle this (e.g., return false or rethrow)
+    return false;
+  }
+
+  const currentWorkspaceObj = orgResponse?.data?.organizations?.find(
+    (org) => org.organization.id === preferredOrgId
+  );
+
+  if (!currentWorkspaceObj) {
+    return false;
+  }
+
+  return currentWorkspaceObj.isGuest;
+};
+
 const api = {
   getUserInformation,
   getDataset,
@@ -537,6 +564,7 @@ const api = {
   getLocalRemoteComparisonResults,
   deleteFilesFromDataset,
   loadManifestToJSON,
+  userIsWorkspaceGuest,
 };
 
 export default api;

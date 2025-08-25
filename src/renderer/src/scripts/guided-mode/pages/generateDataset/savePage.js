@@ -10,6 +10,8 @@ import {
   setCheckboxCardUnchecked,
 } from "../../../../stores/slices/checkboxCardSlice";
 import { getSodaTextInputValue } from "../../../../stores/slices/sodaTextInputSlice";
+import api from "../../../others/api/api";
+import { userErrorMessage } from "../../../others/http-error-handler/error-handler";
 export const savePageGenerateDataset = async (pageBeingLeftID) => {
   const errorArray = [];
 
@@ -69,6 +71,18 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
     }
 
     if (generateOnNewPennsieveDatasetCardChecked) {
+      // Check if the user is a guest
+      const userIsGuest = await api.userIsWorkspaceGuest();
+      if (userIsGuest) {
+        errorArray.push({
+          type: "swal",
+          errorTitle: "Guests cannot create datasets on Pennsieve",
+          errorText:
+            "You are currently a guest user in your workspace and do not have permission to create new datasets. If an empty dataset has already been created for you, select 'Upload to an existing empty dataset on Pennsieve'.",
+        });
+        throw errorArray;
+      }
+      console.log("userIsGuest", userIsGuest);
       // If the previous pennsieve generation target was set to "existing", we need to delete
       // the previous pennsieve dataset id to ensure it's not used in the new dataset generation
       if (window.sodaJSONObj["pennsieve-generation-target"] === "existing") {

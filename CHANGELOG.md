@@ -5,6 +5,17 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## V16.1.1 - 2025-08-22
+
+## Feature Additions:
+
+- Both curation modes now added a blocker to prevent guest contributors from creating a dataset on Pennsieve
+- Added a check in Prepare Dataset Step-by-Step to let users know that they are in the "Welcome" workspace and must change workspaces before continuing.
+
+## Bug Fixes:
+
+- Removed the ability to create a new dataset in Upload Dataset if the user does not have any datasets on Pennsieve which lead to a breaking UI bug.
+
 ## V16.1.0 - 2025-08-14
 
 ## Feature Additions:

@@ -95,7 +95,10 @@ export const openPageDatasetStructure = async (targetPageID) => {
     const sodaCopy = {
       ...window.sodaJSONObj,
       "metadata-files": {},
-      "dataset-structure": standardizedStructure,
+      "dataset-structure": createStandardizedDatasetStructure(
+        window.datasetStructureJSONObj,
+        window.sodaJSONObj["dataset-entity-obj"]
+      ),
     };
     delete sodaCopy["generate-dataset"];
 

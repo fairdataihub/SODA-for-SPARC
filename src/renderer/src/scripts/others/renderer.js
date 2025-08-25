@@ -5592,7 +5592,6 @@ const initiate_generate = async (resume = false) => {
       await window.wait(5000);
 
       setupCode(true);
-      console.log("Rerun builds");
 
       // update the dataset list
       try {

@@ -54,8 +54,8 @@ export const swalShowLoading = (title, text) => {
 
 export const swalShowError = async (title, errorText) => {
   Swal.close();
-  // wait half second
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  // wait 200 milliseconds
+  await new Promise((resolve) => setTimeout(resolve, 200));
   await Swal.fire({
     title: title,
     html: errorText,

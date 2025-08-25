@@ -1484,17 +1484,16 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       if (window.datasetList.length === 0) {
         Swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",
-          cancelButtonText: "Cancel",
-          confirmButtonText: "Create new dataset",
+          confirmButtonText: "Ok",
           focusCancel: false,
           focusConfirm: true,
           showCloseButton: true,
-          showCancelButton: true,
+          showCancelButton: false,
           heightAuto: false,
           allowOutsideClick: false,
           allowEscapeKey: true,
           title: "<h3 style='margin-bottom:20px !important'>No dataset found</h3>",
-          html: "It appears that your don't have any datasets on Pennsieve with owner or manage permission.<br><br>Please create one to get started.",
+          html: "It appears that you don't have any datasets on Pennsieve. Please use the 'New dataset' option instead.",
           showClass: {
             popup: "animate__animated animate__fadeInDown animate__faster",
           },
@@ -1505,18 +1504,9 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             $(".ui.active.green.inline.loader.small").css("display", "none");
             $(".svg-change-current-account.dataset").css("display", "block");
           },
-        }).then((result) => {
-          if (result.isConfirmed) {
-            $("#create_new_bf_dataset_btn").click();
-          }
         });
-        window.electron.ipcRenderer.send(
-          "track-event",
-          "Error",
-          "Selecting dataset",
-          "User has not created any datasets",
-          1
-        );
+
+        return;
       }
 
       //datasets do exist so display popup with dataset options
