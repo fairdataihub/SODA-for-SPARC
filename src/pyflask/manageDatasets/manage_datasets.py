@@ -335,12 +335,13 @@ def fetch_user_datasets(return_only_empty_datasets=False):
         filtered_datasets = []
         for ds in sorted_bf_datasets:
             try:
-                r = requests.get(f"{PENNSIEVE_URL}/datasets/{ds['id']}/packages", headers=create_request_headers(get_access_token()))
+                r = requests.get(f"{PENNSIEVE_URL}/datasets/{ds['id']}", headers=create_request_headers(get_access_token()))
                 r.raise_for_status()
-                packages_response = r.json()
-                dataset_packages = packages_response.get("packages", [])
-                if not dataset_packages:
-                    filtered_datasets.append(ds)
+                dataset = r.json()
+                dataset_packages = dataset.get("packageTypeCounts", {})
+                if dataset_packages:
+                    pass
+                filtered_datasets.append(ds)
                 
             except Exception as e:
                 namespace_logger.error(f"Error checking files for dataset {ds['id']}: {e}")
