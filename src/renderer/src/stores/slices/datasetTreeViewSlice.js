@@ -208,6 +208,7 @@ export const reRenderTreeView = () => {
   try {
     const pathToRender = useGlobalStore.getState().pathToRender || [];
     const datasetStructure = useGlobalStore.getState().datasetStructureJSONObj;
+    const datasetStructureSearchFilter = useGlobalStore.getState().datasetStructureSearchFilter;
     if (!datasetStructure) return console.warn("Dataset structure missing");
 
     const updatedStructure = safeDeepCopy(datasetStructure);
@@ -240,9 +241,13 @@ export const reRenderTreeView = () => {
       }
 
       const traverse = (node, depth = 0) => {
-        // Folders first, natural order
-        const folderNames = Object.keys(node.folders || {}).sort(naturalSort);
-        for (const folderName of folderNames) {
+        // Filter and sort folder names in one step
+        const filteredFolderNames = Object.keys(node.folders || {})
+          .filter((folderName) =>
+            folderName.toLowerCase().includes(datasetStructureSearchFilter.toLowerCase())
+          )
+          .sort(naturalSort);
+        for (const folderName of filteredFolderNames) {
           const folder = node.folders[folderName];
           const relativePath = folder.relativePath;
           const { childrenFileRelativePathSet } = getFolderDetailsByRelativePath(relativePath);
@@ -254,33 +259,19 @@ export const reRenderTreeView = () => {
             relativePath,
             folderIsSelected: Math.random() < 0.5, // random true or false
             entitiesAssociatedWithFolder: ["sub-1", "sub-2"],
-            itemIndent: itemIndex++,
+            itemIndent: depth,
+            itemIndex: itemIndex++,
           });
 
           // Only add files if folder is open
           if (isFolderOpen(relativePath)) {
-            const getAssociatedEntities = (relativePath) => {
-              const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
-              const activeEntity = useGlobalStore.getState().activeEntity;
-              if (!datasetEntityObj) return [];
-              if (!activeEntity) return [];
-
-              const entityTypes = [currentEntityType];
-              const associatedEntities = [];
-
-              for (const entityType of entityTypes) {
-                const entities = datasetEntityObj[entityType] || {};
-                for (const [entityId, paths] of Object.entries(entities)) {
-                  if (paths?.[relativePath]) {
-                    associatedEntities.push({ entityId, entityType });
-                  }
-                }
-              }
-
-              return associatedEntities;
-            };
-            const fileNames = Object.keys(folder.files || {}).sort(naturalSort);
-            for (const fileName of fileNames) {
+            // ...existing getAssociatedEntities code...
+            const filteredFileNames = Object.keys(folder.files || {})
+              .filter((fileName) =>
+                fileName.toLowerCase().includes(datasetStructureSearchFilter.toLowerCase())
+              )
+              .sort(naturalSort);
+            for (const fileName of filteredFileNames) {
               const file = folder.files[fileName];
               result.push({
                 itemType: "file",
@@ -296,7 +287,6 @@ export const reRenderTreeView = () => {
             traverse(folder, depth + 1);
           }
         }
-
         // Handle files in the root node if any
         if (depth === 0) {
           const rootFileNames = Object.keys(node.files || {}).sort(naturalSort);
