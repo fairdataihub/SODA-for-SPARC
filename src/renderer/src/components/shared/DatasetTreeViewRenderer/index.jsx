@@ -52,28 +52,6 @@ import { useDebouncedValue } from "@mantine/hooks";
 import { naturalSort } from "../utils/util-functions";
 import SelectedEntityPreviewer from "../SelectedEntityPreviewer";
 
-const getAssociatedEntities = (relativePath, currentEntityType) => {
-  const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
-  if (!datasetEntityObj) return [];
-
-  if (!currentEntityType) {
-    return [];
-  }
-
-  const entityTypes = [currentEntityType];
-  const associatedEntities = [];
-
-  for (const entityType of entityTypes) {
-    const entities = datasetEntityObj[entityType] || {};
-    for (const [entityId, paths] of Object.entries(entities)) {
-      if (paths?.[relativePath]) {
-        associatedEntities.push({ entityId, entityType });
-      }
-    }
-  }
-
-  return associatedEntities;
-};
 // Get badge color based on entity type
 const getBadgeColor = (entityId) => {
   console.log("Determining badge color for entityId:", entityId);
@@ -135,7 +113,7 @@ const FileItem = ({
   fileName,
   relativePath,
   fileIsSelected,
-  entitiesAssociatedWithFile = [],
+  entitiesAssociatedWithFile = [], // now array of strings
   onFileClick,
   allowStructureEditing,
   indent,
@@ -218,15 +196,10 @@ const FileItem = ({
       {/* Render association badges */}
       {entitiesAssociatedWithFile.length > 0 && (
         <Group gap="xs" wrap="nowrap" style={{ marginLeft: "auto", overflow: "hidden" }}>
-          {entitiesAssociatedWithFile.slice(0, 3).map((entity, index) => (
-            <Tooltip
-              key={index}
-              label={`${entity.entityId} (${entity.entityType})`}
-              position="top"
-              withArrow
-            >
+          {entitiesAssociatedWithFile.slice(0, 3).map((entityId, index) => (
+            <Tooltip key={index} label={entityId} position="top" withArrow>
               <Badge
-                color={getBadgeColor(entity.entityId)}
+                color={getBadgeColor(entityId)}
                 variant="light"
                 size="xs"
                 style={{
@@ -236,7 +209,7 @@ const FileItem = ({
                   textOverflow: "ellipsis",
                 }}
               >
-                {formatEntityId(entity.entityId)}
+                {formatEntityId(entityId)}
               </Badge>
             </Tooltip>
           ))}
@@ -285,37 +258,41 @@ const collectAllFilesRecursively = (content) => {
   return allFiles;
 };
 
-const FolderItem = ({
-  name,
-  content,
-  onFolderClick,
+/* fileName,
+  relativePath,
+  fileIsSelected,
+  entitiesAssociatedWithFile = [], // now array of strings
   onFileClick,
-  datasetStructureSearchFilter,
-  isFileSelected,
   allowStructureEditing,
-  allowFolderSelection,
-  folderClickHoverText,
-  entityType,
-  checked,
   indent,
+  */
+
+const FolderItem = ({
+  folderName,
+  relativePath,
+  folderIsSelected,
+  entitiesAssociatedWithFolder = [], // now array of strings
+  onFolderClick,
+  allowStructureEditing,
+  indent,
+  datasetStructureSearchFilter,
 }) => {
+  console.log("RelativePath", relativePath);
   const contextMenuItemData = useGlobalStore((state) => state.contextMenuItemData);
   const contextMenuIsOpened = useGlobalStore((state) => state.contextMenuIsOpened);
 
   const { hovered, ref } = useHover();
 
   // Get associated entities for this folder, filtering by entityType
-  const associations = getAssociatedEntities(content.relativePath, entityType);
+  const associations = entitiesAssociatedWithFolder;
 
-  // Use global openFolders state
-  const folderPath = content.relativePath;
-  const isOpen = isFolderOpen(folderPath);
+  const isOpen = isFolderOpen(relativePath);
 
   useEffect(() => {
     if (datasetStructureSearchFilter && !isOpen) {
-      openFolder(folderPath);
+      openFolder(relativePath);
     }
-  }, [datasetStructureSearchFilter, isOpen, folderPath]);
+  }, [datasetStructureSearchFilter, isOpen, relativePath]);
 
   const handleFolderContextMenuOpen = (e) => {
     e.preventDefault();
@@ -328,7 +305,7 @@ const FolderItem = ({
       });
       return;
     }
-    openContextMenu({ x: e.clientX, y: e.clientY }, "folder", name, structuredClone(content));
+    openContextMenu({ x: e.clientX, y: e.clientY }, "folder", folderName, structuredClone(content));
   };
 
   const folderIsPassThrough = content.passThrough;
@@ -389,11 +366,11 @@ const FolderItem = ({
   };
 
   const handleFolderClick = () => {
-    console.log(`Folder ${isOpen ? "closed" : "opened"}: ${folderPath}`);
+    console.log(`Folder ${isOpen ? "closed" : "opened"}: ${relativePath}`);
     if (isOpen) {
-      closeFolder(folderPath);
+      closeFolder(relativePath);
     } else {
-      openFolder(folderPath);
+      openFolder(relativePath);
     }
   };
 
@@ -415,14 +392,14 @@ const FolderItem = ({
       ) : (
         <IconFolder size={ICON_SETTINGS.folderSize} color={ICON_SETTINGS.folderColor} />
       )}
-      {!folderIsPassThrough && onFileClick && typeof isFileSelected === "function" && (
+      {!folderIsPassThrough && typeof isFileSelected === "function" && (
         <Tooltip
           label={checked ? "Deselect all files in this folder" : "Select all files in this folder"}
           zIndex={2999}
         >
           <Checkbox
             readOnly
-            checked={checked}
+            checked={folderIsSelected}
             onClick={(e) => {
               e.stopPropagation();
               handleFolderCheckboxClick();
@@ -444,7 +421,7 @@ const FolderItem = ({
         }}
         c={folderIsPassThrough ? "silver" : "black"}
       >
-        {name}
+        {folderName}
       </Text>
 
       {/* Entity association badges for folder */}
@@ -454,15 +431,10 @@ const FolderItem = ({
           wrap="nowrap"
           style={{ marginLeft: "auto", marginRight: 10, overflow: "hidden" }}
         >
-          {associations.slice(0, 3).map((assoc, index) => (
-            <Tooltip
-              key={index}
-              label={`${assoc.entityId} (${assoc.entityType})`}
-              position="top"
-              withArrow
-            >
+          {associations.slice(0, 3).map((entityId, index) => (
+            <Tooltip key={index} label={entityId} position="top" withArrow>
               <Badge
-                color={getBadgeColor(assoc.entityId)}
+                color={getBadgeColor(entityId)}
                 variant="light"
                 size="xs"
                 style={{
@@ -472,7 +444,7 @@ const FolderItem = ({
                   textOverflow: "ellipsis",
                 }}
               >
-                {formatEntityId(assoc.entityId)}
+                {formatEntityId(entityId)}
               </Badge>
             </Tooltip>
           ))}
@@ -599,6 +571,7 @@ const DatasetTreeViewRenderer = ({
       <Text>{`Total files in DOM: ${
         rowVirtualizer.getVirtualItems().length
       } out of ${count} files open`}</Text>
+      <Text>{`Entity type: ${entityType}`}</Text>
       {itemSelectInstructions && (
         <Stack gap="xs">
           <Text size="lg" fw={500}>
@@ -658,34 +631,19 @@ const DatasetTreeViewRenderer = ({
                   {item.itemType === "folder" ? (
                     <FolderItem
                       key={item.itemIndex}
-                      name={item.folderName}
-                      content={item.itemContent}
+                      folderName={item.folderName}
+                      relativePath={item.relativePath}
+                      folderIsSelected={item.folderIsSelected}
+                      entitiesAssociatedWithFolder={item.entitiesAssociatedWithFolder}
                       onFolderClick={
                         allowFolderSelection ? folderActions?.["on-folder-click"] : null
                       }
-                      onFileClick={fileActions?.["on-file-click"] ? handleFileItemClick : null}
-                      folderClickHoverText={
-                        folderActions?.["folder-click-hover-text"] ||
-                        "Select this folder and its contents"
-                      }
                       datasetStructureSearchFilter={datasetStructureSearchFilter}
-                      isFileSelected={fileActions?.["is-file-selected"]}
                       allowStructureEditing={allowStructureEditing}
-                      allowFolderSelection={allowFolderSelection}
-                      entityType={entityType}
                       indent={item.itemIndent}
                     />
                   ) : (
                     <FileItem
-                      /*{
-                        fileName,
-                        relativePath,
-                        fileIsSelected,
-                        entitiesAssociatedWithFile = [],
-                        onFileClick,
-                        allowStructureEditing,
-                        indent,
-                      }*/
                       key={item.itemIndex}
                       fileName={item.fileName}
                       relativePath={item.relativePath}

@@ -5,8 +5,6 @@ import { newEmptyFolderObj } from "../../scripts/utils/datasetStructure";
 
 const initialState = {
   datasetStructureJSONObj: null,
-  datasetStructureJSONObjHistory: [],
-  datasetstructureJSONObjHistoryIndex: -1,
   datasetRenderArray: null,
   datasetRenderArrayIsLoading: false,
   datasetStructureSearchFilter: "",
@@ -234,17 +232,40 @@ export const reRenderTreeView = () => {
         for (const folderName of folderNames) {
           const folder = node.folders[folderName];
           const relativePath = folder.relativePath;
+
           result.push({
             itemType: "folder",
             folderName,
-            itemContent: folder,
-            ...folder,
-            itemIndent: depth,
-            itemIndex: itemIndex++,
+            relativePath,
+            folderIsSelected: Math.random() < 0.5, // random true or false
+            entitiesAssociatedWithFolder: ["sub-1", "sub-2"],
+            itemIndent: itemIndex++,
           });
 
           // Only add files if folder is open
           if (isFolderOpen(relativePath)) {
+            const getAssociatedEntities = (relativePath, currentEntityType) => {
+              const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
+              if (!datasetEntityObj) return [];
+
+              if (!currentEntityType) {
+                return [];
+              }
+
+              const entityTypes = [currentEntityType];
+              const associatedEntities = [];
+
+              for (const entityType of entityTypes) {
+                const entities = datasetEntityObj[entityType] || {};
+                for (const [entityId, paths] of Object.entries(entities)) {
+                  if (paths?.[relativePath]) {
+                    associatedEntities.push({ entityId, entityType });
+                  }
+                }
+              }
+
+              return associatedEntities;
+            };
             const fileNames = Object.keys(folder.files || {}).sort(naturalSort);
             for (const fileName of fileNames) {
               const file = folder.files[fileName];
