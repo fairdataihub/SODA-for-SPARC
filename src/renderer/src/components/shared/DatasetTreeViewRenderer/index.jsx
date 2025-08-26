@@ -54,7 +54,6 @@ import SelectedEntityPreviewer from "../SelectedEntityPreviewer";
 
 // Get badge color based on entity type
 const getBadgeColor = (entityId) => {
-  console.log("Determining badge color for entityId:", entityId);
   if (entityId.startsWith("sub-")) return "indigo";
   if (entityId.startsWith("sam-")) return "green";
   if (entityId.startsWith("site-")) return "orange";
@@ -283,9 +282,6 @@ const FolderItem = ({
 
   const { hovered, ref } = useHover();
 
-  // Get associated entities for this folder, filtering by entityType
-  const associations = entitiesAssociatedWithFolder;
-
   const isOpen = isFolderOpen(relativePath);
 
   useEffect(() => {
@@ -351,9 +347,6 @@ const FolderItem = ({
     });
   };
 
-  const folderRelativePathEqualsContextMenuItemRelativePath =
-    contextMenuIsOpened && contextMenuItemData?.relativePath === content.relativePath;
-
   // Helper function for determining background color
   const getBackgroundColor = () => {
     if (
@@ -392,9 +385,13 @@ const FolderItem = ({
       ) : (
         <IconFolder size={ICON_SETTINGS.folderSize} color={ICON_SETTINGS.folderColor} />
       )}
-      {!folderIsPassThrough && typeof isFileSelected === "function" && (
+      {!folderIsPassThrough && typeof onFolderClick === "function" && (
         <Tooltip
-          label={checked ? "Deselect all files in this folder" : "Select all files in this folder"}
+          label={
+            folderIsSelected
+              ? "Deselect all files in this folder"
+              : "Select all files in this folder"
+          }
           zIndex={2999}
         >
           <Checkbox
@@ -425,13 +422,13 @@ const FolderItem = ({
       </Text>
 
       {/* Entity association badges for folder */}
-      {associations.length > 0 && (
+      {entitiesAssociatedWithFolder.length > 0 && (
         <Group
           gap="xs"
           wrap="nowrap"
           style={{ marginLeft: "auto", marginRight: 10, overflow: "hidden" }}
         >
-          {associations.slice(0, 3).map((entityId, index) => (
+          {entitiesAssociatedWithFolder.slice(0, 3).map((entityId, index) => (
             <Tooltip key={index} label={entityId} position="top" withArrow>
               <Badge
                 color={getBadgeColor(entityId)}
@@ -448,10 +445,14 @@ const FolderItem = ({
               </Badge>
             </Tooltip>
           ))}
-          {associations.length > 3 && (
-            <Tooltip label={`${associations.length - 3} more entities`} position="top" withArrow>
+          {entitiesAssociatedWithFolder.length > 3 && (
+            <Tooltip
+              label={`${entitiesAssociatedWithFolder.length - 3} more entities`}
+              position="top"
+              withArrow
+            >
               <Badge color="gray" variant="outline" size="xs">
-                +{associations.length - 3}
+                +{entitiesAssociatedWithFolder.length - 3}
               </Badge>
             </Tooltip>
           )}
@@ -636,7 +637,7 @@ const DatasetTreeViewRenderer = ({
                       folderIsSelected={item.folderIsSelected}
                       entitiesAssociatedWithFolder={item.entitiesAssociatedWithFolder}
                       onFolderClick={
-                        allowFolderSelection ? folderActions?.["on-folder-click"] : null
+                        folderActions?.["on-folder-click"] ? handleFileItemClick : null
                       }
                       datasetStructureSearchFilter={datasetStructureSearchFilter}
                       allowStructureEditing={allowStructureEditing}

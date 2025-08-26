@@ -225,6 +225,20 @@ const EntityDataSelectorPage = ({
                     },
                   }}
                   fileActions={{
+                    "on-folder-click": (
+                      fileName,
+                      fileContents,
+                      fileIsSelected,
+                      mutuallyExclusive
+                    ) =>
+                      handleFileClick(
+                        entityType,
+                        activeEntity,
+                        datasetEntityObj,
+                        fileContents,
+                        mutuallyExclusive
+                      ),
+
                     "on-file-click": (fileName, fileContents, fileIsSelected, mutuallyExclusive) =>
                       handleFileClick(
                         entityType,

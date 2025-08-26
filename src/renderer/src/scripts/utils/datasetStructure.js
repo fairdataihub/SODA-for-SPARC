@@ -47,97 +47,96 @@ export const countSelectedFilesByEntityType = (entityType) => {
 
 const getNestedObjectAtPathArray = (pathArray) => {
   let current = window.datasetStructureJSONObj;
-
   for (const folder of pathArray) {
     if (!current || !current.folders || !current.folders[folder]) {
-      return null; // or undefined, or throw new Error(...) depending on your needs
+      return null;
     }
     current = current.folders[folder];
   }
-
   return current;
 };
 
-export const getItemAtPath = (relativePath, itemType) => {
-  // Split the relative path into segments and isolate the item name.
+export const getFolderDetailsByRelativePath = (relativePath) => {
   const pathSegments = relativePath.split("/").filter((segment) => segment !== "");
-  const itemName = pathSegments.pop();
-
-  // Get the parent folder by traversing the path segments.
-  console.log("getItemAtPath called with path:", relativePath);
+  const folderName = pathSegments.pop();
   const parentFolder = getNestedObjectAtPathArray(pathSegments);
-  if (!parentFolder) {
-    console.error(`getItemAtPath: parentFolder not found for path: ${relativePath}`);
-    return null;
+  const folderObject = parentFolder?.folders?.[folderName];
+
+  // Recursively collect all fileObj.relativePath values in this folder and subfolders as an array
+  const collectFileRelativePathsRecursively = (folderObj) => {
+    let result = [];
+    if (folderObj?.files) {
+      Object.values(folderObj.files).forEach((fileObj) => {
+        if (fileObj.relativePath) result.push(fileObj.relativePath);
+      });
+    }
+    if (folderObj?.folders) {
+      Object.values(folderObj.folders).forEach((subfolderObj) => {
+        result = result.concat(collectFileRelativePathsRecursively(subfolderObj));
+      });
+    }
+    return result;
+  };
+
+  let childrenFileRelativePaths = [];
+  if (folderObject) {
+    childrenFileRelativePaths = collectFileRelativePathsRecursively(folderObject);
   }
-  console.log("getItemAtPath: parentFolder found for path:", relativePath, parentFolder);
 
-  // Retrieve the target item from the parent folder based on its type.
-  const itemObject =
-    itemType === "folder" ? parentFolder["folders"][itemName] : parentFolder["files"][itemName];
+  return {
+    parentFolder,
+    itemName: folderName,
+    itemObject: folderObject,
+    childrenFileRelativePaths,
+  };
+};
 
-  if (!itemObject) {
-    console.error(`Item not found at path: ${relativePath}`);
-    return null;
-  }
-
-  return { parentFolder, itemName, itemObject };
+export const getFileDetailsByRelativePath = (relativePath) => {
+  const pathSegments = relativePath.split("/").filter((segment) => segment !== "");
+  const fileName = pathSegments.pop();
+  const parentFolder = getNestedObjectAtPathArray(pathSegments);
+  const fileObject = parentFolder?.files?.[fileName];
+  return { parentFolder, itemName: fileName, itemObject: fileObject };
 };
 
 export const deleteFoldersByRelativePath = (arrayOfRelativePaths) => {
   for (const relativePathToDelete of arrayOfRelativePaths) {
     console.log("deleteFoldersByRelativePath called for path:", relativePathToDelete);
-    const { parentFolder, itemName, itemObject } = getItemAtPath(relativePathToDelete, "folder");
-
-    if (itemObject?.["location"] === "ps") {
-      // Mark folders from Pennsieve for deletion instead of directly deleting them.
-      parentFolder["folders"][itemName]["action"].push("deleted");
+    const { parentFolder, itemName, itemObject } =
+      getFolderDetailsByRelativePath(relativePathToDelete);
+    if (itemObject["location"] === "ps") {
+      itemObject["action"].push("deleted");
     } else {
-      // Directly delete folders not originating from Pennsieve.
       delete parentFolder["folders"][itemName];
     }
     console.log("Delete Folder: parentFolder found for path:", relativePathToDelete, parentFolder);
   }
-
-  // Update the tree view structure to reflect the changes.
   useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
   reRenderTreeView();
 };
 
 export const deleteFilesByRelativePath = (arrayOfRelativePaths) => {
   for (const relativePathToDelete of arrayOfRelativePaths) {
-    const { parentFolder, itemName, itemObject } = getItemAtPath(relativePathToDelete, "file");
-
-    if (itemObject?.["location"] === "ps") {
-      // Mark files from Pennsieve for deletion instead of directly deleting them.
-      parentFolder["files"][itemName]["action"].push("deleted");
+    const { parentFolder, itemName, itemObject } =
+      getFileDetailsByRelativePath(relativePathToDelete);
+    if (itemObject["location"] === "ps") {
+      itemObject["action"].push("deleted");
     } else {
-      // Directly delete files not originating from Pennsieve.
       delete parentFolder["files"][itemName];
     }
   }
-
-  // Update the tree view structure to reflect the changes.
   useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
   reRenderTreeView();
 };
 
 export const moveFileToTargetLocation = (relativePathToMove, destionationRelativeFolderPath) => {
-  // Get the file's path segments and file name
   const filePathSegments = relativePathToMove.split("/").filter(Boolean);
-  // Don't pop fileName here, use itemName from getItemAtPath
-  // Build the destination path: destination folder + file's subfolders (excluding the root folder of the file path)
-  // For example, if relativePathToMove is data/experiment/Subject01/Tissue02/RegionB/metadata.txt
-  // and destionationRelativeFolderPath is primary/,
-  // the destination should be primary/experiment/Subject01/Tissue02/RegionB/metadata.txt
-  // So, skip the first segment (e.g., 'data')
-  const subfolders = filePathSegments.slice(1, -1); // skip the root folder and file name
+  const subfolders = filePathSegments.slice(1, -1);
   const destinationPathSegments = destionationRelativeFolderPath
     .split("/")
     .filter(Boolean)
     .concat(subfolders);
 
-  // Ensure the destination folder path exists, create if missing
   let currentFolder = window.datasetStructureJSONObj;
   for (const segment of destinationPathSegments) {
     if (!currentFolder.folders) currentFolder.folders = {};
@@ -147,16 +146,10 @@ export const moveFileToTargetLocation = (relativePathToMove, destionationRelativ
     currentFolder = currentFolder.folders[segment];
   }
 
-  // Now get the file object from the original location
-  const { parentFolder, itemName, itemObject } = getItemAtPath(relativePathToMove, "file");
+  const { parentFolder, itemName, itemObject } = getFileDetailsByRelativePath(relativePathToMove);
 
-  // Move the file to the destination folder.
   currentFolder["files"][itemName] = itemObject;
-
-  // Remove the file from its original location.
   delete parentFolder["files"][itemName];
-
-  // Update the tree view structure to reflect the changes.
   useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
   reRenderTreeView();
 };

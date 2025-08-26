@@ -2,6 +2,7 @@ import useGlobalStore from "../globalStore";
 import { produce } from "immer";
 import { isFolderOpen } from "./fileExplorerStateSlice";
 import { newEmptyFolderObj } from "../../scripts/utils/datasetStructure";
+import { getFolderDetailsByRelativePath } from "../../scripts/utils/datasetStructure";
 
 const initialState = {
   datasetStructureJSONObj: null,
@@ -216,6 +217,18 @@ export const reRenderTreeView = () => {
     const naturalSort = (a, b) =>
       a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
 
+    const isFileSelected = (relativePath) => {
+      const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
+      if (!datasetEntityObj) return false;
+      const activeEntity = useGlobalStore.getState().activeEntity;
+      console.log("activeEntity", activeEntity);
+      if (!entityType) return false;
+
+      const activeEntityFiles =
+        datasetEntityObj?.[activeEntity.entityType]?.[activeEntity.entityId] || {};
+      return !!activeEntityFiles[relativePath];
+    };
+
     const convertDatasetStructureToArray = (structure) => {
       const result = [];
       let itemIndex = 0;
@@ -232,6 +245,8 @@ export const reRenderTreeView = () => {
         for (const folderName of folderNames) {
           const folder = node.folders[folderName];
           const relativePath = folder.relativePath;
+          const { childrenFileRelativePathSet } = getFolderDetailsByRelativePath(relativePath);
+          console.log("Children File Relative Paths:", childrenFileRelativePathSet);
 
           result.push({
             itemType: "folder",
@@ -244,13 +259,11 @@ export const reRenderTreeView = () => {
 
           // Only add files if folder is open
           if (isFolderOpen(relativePath)) {
-            const getAssociatedEntities = (relativePath, currentEntityType) => {
+            const getAssociatedEntities = (relativePath) => {
               const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
+              const activeEntity = useGlobalStore.getState().activeEntity;
               if (!datasetEntityObj) return [];
-
-              if (!currentEntityType) {
-                return [];
-              }
+              if (!activeEntity) return [];
 
               const entityTypes = [currentEntityType];
               const associatedEntities = [];
@@ -389,34 +402,16 @@ export const moveFolderToNewLocation = (targetPath) => {
 export const setEntityFilter = (include = [], exclude = []) => {
   const active = include.length > 0 || exclude.length > 0;
   useGlobalStore.setState({
-    datasetRenderArrayIsLoading: true,
     entityFilterActive: active,
     entityFilters: { include, exclude },
   });
-
-  setTimeout(
-    () => setDatasetStructureSearchFilter(useGlobalStore.getState().datasetStructureSearchFilter),
-    0
-  );
-};
-
-export const setSimpleEntityFilter = (type, includeNames = [], excludeNames = []) => {
-  setEntityFilter(
-    includeNames.length ? [{ type, names: includeNames }] : [],
-    excludeNames.length ? [{ type, names: excludeNames }] : []
-  );
 };
 
 export const clearEntityFilter = () => {
   useGlobalStore.setState({
-    datasetRenderArrayIsLoading: true,
     entityFilterActive: false,
     entityFilters: { include: [], exclude: [] },
   });
-  setTimeout(
-    () => setDatasetStructureSearchFilter(useGlobalStore.getState().datasetStructureSearchFilter),
-    0
-  );
 };
 
 export const setDatasetMetadataToPreview = (metadataKeys) => {
