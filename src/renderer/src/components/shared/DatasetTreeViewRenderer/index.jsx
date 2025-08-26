@@ -41,6 +41,7 @@ import SodaGreenPaper from "../../utils/ui/SodaGreenPaper";
 import {
   setDatasetStructureSearchFilter,
   openContextMenu,
+  reRenderTreeView,
 } from "../../../stores/slices/datasetTreeViewSlice";
 import {
   isFolderOpen,
@@ -119,7 +120,7 @@ const FileItem = ({
 }) => {
   globalFileItemRenderCount++;
   const { hovered, ref } = useHover();
-  const contextMenuItemData = useGlobalStore((state) => state.contextMenuItemData);
+  const contextMenuRelativePath = useGlobalStore((state) => state.contextMenuRelativePath);
   const contextMenuIsOpened = useGlobalStore((state) => state.contextMenuIsOpened);
 
   const handleFileContextMenuOpen = (e) => {
@@ -137,7 +138,7 @@ const FileItem = ({
   };
 
   const isHoveredOrSelected =
-    hovered || (contextMenuIsOpened && contextMenuItemData?.relativePath === relativePath);
+    hovered || (contextMenuIsOpened && contextMenuRelativePath === relativePath);
 
   const getFileColor = () => {
     if (fileIsSelected) return "var(--color-transparent-soda-green)";
@@ -161,7 +162,7 @@ const FileItem = ({
       pl="xs"
       py="1px"
       style={{ flexWrap: "nowrap" }}
-      h="24px"
+      h="20px"
       ml={`${indent * 10 + 5}px`}
     >
       {onFileClick && (
@@ -277,7 +278,7 @@ const FolderItem = ({
   datasetStructureSearchFilter,
 }) => {
   console.log("RelativePath", relativePath);
-  const contextMenuItemData = useGlobalStore((state) => state.contextMenuItemData);
+  const contextMenuRelativePath = useGlobalStore((state) => state.contextMenuRelativePath);
   const contextMenuIsOpened = useGlobalStore((state) => state.contextMenuIsOpened);
 
   const { hovered, ref } = useHover();
@@ -301,7 +302,7 @@ const FolderItem = ({
       });
       return;
     }
-    openContextMenu({ x: e.clientX, y: e.clientY }, "folder", folderName, structuredClone(content));
+    openContextMenu({ x: e.clientX, y: e.clientY }, "folder", folderName, relativePath);
   };
 
   const folderIsPassThrough = content.passThrough;
@@ -349,10 +350,7 @@ const FolderItem = ({
 
   // Helper function for determining background color
   const getBackgroundColor = () => {
-    if (
-      hovered ||
-      (contextMenuIsOpened && contextMenuItemData?.relativePath === content.relativePath)
-    ) {
+    if (hovered || (contextMenuIsOpened && contextMenuRelativePath === content.relativePath)) {
       return "rgba(0, 0, 0, 0.05)";
     }
     return undefined;
@@ -377,7 +375,7 @@ const FolderItem = ({
       py="1px"
       style={{ flexWrap: "nowrap" }}
       onClick={handleFolderClick}
-      h="24px"
+      h="20px"
       ml={`${indent * 10}px`}
     >
       {isOpen ? (
@@ -483,7 +481,7 @@ const DatasetTreeViewRenderer = ({
   const rowVirtualizer = useVirtualizer({
     count,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 26, // 24px height + 2px total margin
+    estimateSize: () => 22, // 24px height + 2px total margin
     overscan: 70,
   });
   console.log("datasetRenderArray:", datasetRenderArray);
@@ -505,6 +503,7 @@ const DatasetTreeViewRenderer = ({
 
   const handleSearchChange = (event) => {
     setInputSearchFilter(event.target.value);
+    reRenderTreeView();
   };
 
   // Update local state when the store changes

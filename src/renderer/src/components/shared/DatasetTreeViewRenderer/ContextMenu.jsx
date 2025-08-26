@@ -19,7 +19,7 @@ const ContextMenu = () => {
   const contextMenuPosition = useGlobalStore((state) => state.contextMenuPosition);
   const contextMenuItemName = useGlobalStore((state) => state.contextMenuItemName);
   const contextMenuItemType = useGlobalStore((state) => state.contextMenuItemType);
-  const contextMenuItemData = useGlobalStore((state) => state.contextMenuItemData);
+  const contextMenuRelativePath = useGlobalStore((state) => state.contextMenuRelativePath); // now a string
 
   const handleClickOutside = useCallback((event) => {
     const menuElement = document.getElementById("context-menu");
@@ -75,10 +75,10 @@ const ContextMenu = () => {
           <Menu.Item
             onClick={() => {
               if (contextMenuItemType === "file") {
-                deleteFilesByRelativePath([contextMenuItemData.relativePath]);
+                deleteFilesByRelativePath([contextMenuRelativePath]);
               }
               if (contextMenuItemType === "folder") {
-                deleteFoldersByRelativePath([contextMenuItemData.relativePath]);
+                deleteFoldersByRelativePath([contextMenuRelativePath]);
               }
               closeContextMenu();
             }}
@@ -88,10 +88,10 @@ const ContextMenu = () => {
           {contextMenuItemType === "folder" && (
             <Menu.Item
               onClick={(e) => {
-                console.log("contextMenuItemData.relativePath", contextMenuItemData.relativePath);
+                console.log("contextMenuRelativePath", contextMenuRelativePath);
                 e.preventDefault();
                 window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog", {
-                  importRelativePath: contextMenuItemData.relativePath,
+                  importRelativePath: contextMenuRelativePath,
                 });
                 closeContextMenu();
               }}

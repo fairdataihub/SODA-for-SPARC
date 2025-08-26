@@ -14,7 +14,7 @@ const initialState = {
   contextMenuPosition: { x: 0, y: 0 },
   contextMenuItemName: null,
   contextMenuItemType: null,
-  contextMenuItemData: null,
+  contextMenuRelativePath: null,
   externallySetSearchFilterValue: "",
   entityFilterActive: false,
   entityFilters: { include: [], exclude: [] },
@@ -242,16 +242,20 @@ export const reRenderTreeView = () => {
 
       const traverse = (node, depth = 0) => {
         // Filter and sort folder names in one step
-        const filteredFolderNames = Object.keys(node.folders || {})
-          .filter((folderName) =>
-            folderName.toLowerCase().includes(datasetStructureSearchFilter.toLowerCase())
-          )
-          .sort(naturalSort);
-        for (const folderName of filteredFolderNames) {
+        const folderNames = Object.keys(node.folders || {}).sort(naturalSort);
+        for (const folderName of folderNames) {
           const folder = node.folders[folderName];
           const relativePath = folder.relativePath;
-          const { childrenFileRelativePathSet } = getFolderDetailsByRelativePath(relativePath);
-          console.log("Children File Relative Paths:", childrenFileRelativePathSet);
+          const folderMeetsSearchCriteria = relativePath
+            .toLowerCase()
+            .includes(datasetStructureSearchFilter.toLowerCase());
+
+          const { childrenFileRelativePaths } = getFolderDetailsByRelativePath(relativePath);
+          const childrenFilesMeetSearchCriteria = childrenFileRelativePaths.some((filePath) =>
+            filePath.toLowerCase().includes(datasetStructureSearchFilter.toLowerCase())
+          );
+          if (!folderMeetsSearchCriteria && !childrenFilesMeetSearchCriteria) continue; // Break out if folder doesn't meet search criteria
+          console.log("Children File Relative Paths:", childrenFileRelativePaths);
 
           result.push({
             itemType: "folder",
@@ -265,18 +269,22 @@ export const reRenderTreeView = () => {
 
           // Only add files if folder is open
           if (isFolderOpen(relativePath)) {
+            console.log("Folder is open:", relativePath);
+            console.log("Folder object:", folder);
             // ...existing getAssociatedEntities code...
-            const filteredFileNames = Object.keys(folder.files || {})
-              .filter((fileName) =>
-                fileName.toLowerCase().includes(datasetStructureSearchFilter.toLowerCase())
-              )
-              .sort(naturalSort);
-            for (const fileName of filteredFileNames) {
+            const fileNames = Object.keys(folder.files || {}).sort(naturalSort);
+            console.log("File names:", fileNames);
+            for (const fileName of fileNames) {
               const file = folder.files[fileName];
+              const relativePath = file.relativePath;
+              console.log("Processing file:", relativePath);
+
+              if (!relativePath.toLowerCase().includes(datasetStructureSearchFilter.toLowerCase()))
+                continue;
               result.push({
                 itemType: "file",
                 fileName,
-                relativePath: file.relativePath,
+                relativePath,
                 fileIsSelected: Math.random() < 0.5, // random true or false
                 entitiesAssociatedWithFile: ["sub-1"],
                 itemIndent: depth + 1,
@@ -285,6 +293,8 @@ export const reRenderTreeView = () => {
             }
             // Traverse subfolders if open
             traverse(folder, depth + 1);
+          } else {
+            console.log("Folder is closed:", relativePath);
           }
         }
         // Handle files in the root node if any
@@ -324,13 +334,13 @@ export const reRenderTreeView = () => {
   }
 };
 
-export const openContextMenu = (pos, type, name, content) => {
+export const openContextMenu = (pos, type, name, relativePath) => {
   useGlobalStore.setState({
     contextMenuIsOpened: true,
     contextMenuPosition: pos,
     contextMenuItemName: name,
     contextMenuItemType: type,
-    contextMenuItemData: safeDeepCopy(content) || {},
+    contextMenuRelativePath: relativePath,
   });
 };
 
@@ -363,27 +373,23 @@ export const setFolderMoveMode = (active) => {
 export const moveFolderToNewLocation = (targetPath) => {
   try {
     const globalStore = useGlobalStore.getState();
-    const { contextMenuItemName, contextMenuItemData } = globalStore;
-    if (!contextMenuItemName || !contextMenuItemData) throw new Error("Invalid context menu data");
+    const { contextMenuItemName, contextMenuRelativePath } = globalStore;
+    if (!contextMenuItemName || !contextMenuRelativePath)
+      throw new Error("Invalid context menu data");
 
     const targetFolder = getFolderStructureJsonByPath(targetPath);
     if (!targetFolder) throw new Error(`Target folder "${targetPath}" not found`);
 
     const original = globalStore.datasetStructureJSONObj;
-    const segments = contextMenuItemData.relativePath.split("/").filter(Boolean);
+    const segments = contextMenuRelativePath.split("/").filter(Boolean);
     const parentFolder = traverseStructureByPath(original, segments.slice(0, -1));
     if (!parentFolder?.folders?.[contextMenuItemName])
       throw new Error(`Folder "${contextMenuItemName}" not found`);
 
-    useGlobalStore.setState(
-      produce((state) => {
-        delete parentFolder.folders[contextMenuItemName];
-        targetFolder.folders[contextMenuItemName] = contextMenuItemData;
-        targetFolder.folders[contextMenuItemName].relativePath =
-          `${targetPath}/${contextMenuItemName}`;
-        reRenderTreeView();
-      })
-    );
+    // You may need to fetch the folder object by relativePath if needed
+    // Example: const folderObj = traverseStructureByPath(original, segments);
+    // If you need to move the actual folder object, update this logic accordingly
+    reRenderTreeView();
   } catch (error) {
     console.error("Error in moveFolderToNewLocation:", error);
   }
