@@ -200,6 +200,8 @@ window.openPage = async (targetPageID) => {
 
     if (targetPageDataset.entityType) {
       setEntityType(targetPageDataset.entityType);
+    } else {
+      setEntityType(null);
     }
 
     // Synchronize state between the SODA JSON object and the zustand store
