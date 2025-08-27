@@ -4,9 +4,7 @@ run-name: ${{ github.actor }} is building a MAC release for SODA
 on:
   push:
     branches:
-      - main
-      - staging
-
+      - file-explorer-rendering-optimization-virtualization
 jobs:
   deploy-on-mac:
     runs-on: macos-latest

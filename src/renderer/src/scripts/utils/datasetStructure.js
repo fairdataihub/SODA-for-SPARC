@@ -136,6 +136,9 @@ export const deleteFilesByRelativePath = (arrayOfRelativePaths) => {
 };
 
 export const moveFileToTargetLocation = (relativePathToMove, destionationRelativeFolderPath) => {
+  console.log(
+    `[moveFileToTargetLocation] Moving file: ${relativePathToMove} to ${destionationRelativeFolderPath}`
+  );
   const filePathSegments = relativePathToMove.split("/").filter(Boolean);
   const subfolders = filePathSegments.slice(1, -1);
   const destinationPathSegments = destionationRelativeFolderPath
@@ -158,9 +161,11 @@ export const moveFileToTargetLocation = (relativePathToMove, destionationRelativ
   delete parentFolder["files"][itemName];
   useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
   reRenderTreeView();
+  console.log(`[moveFileToTargetLocation] Finished moving file: ${relativePathToMove}`);
 };
 
 export const createStandardizedDatasetStructure = (datasetStructure, datasetEntityObj) => {
+  console.log("Creating standardized dataset structure...");
   // --- Step 1: Preserve the original global structure ---
   let originalStructure = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
 
@@ -171,30 +176,45 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
   const moveFilesByCategory = (categoryObj, destFolder) => {
     if (!categoryObj) return;
     const files = Object.keys(categoryObj);
-    for (const file of files) {
+    console.log(`[moveFilesByCategory] Moving ${files.length} files to ${destFolder}`);
+    const startTime = performance.now();
+    for (const [i, file] of files.entries()) {
+      if (i % 100 === 0) {
+        console.log(`[moveFilesByCategory] Moving file ${i + 1} of ${files.length}: ${file}`);
+      }
       moveFileToTargetLocation(file, destFolder);
     }
+    const endTime = performance.now();
+    console.log(
+      `[moveFilesByCategory] Finished moving ${files.length} files to ${destFolder} in ${(
+        endTime - startTime
+      ).toFixed(2)} ms`
+    );
   };
 
   try {
     // Move Code files into the code/ folder
+    console.log("high-level-folder-data-categorization - Code");
     moveFilesByCategory(
       datasetEntityObj?.["high-level-folder-data-categorization"]?.["Code"],
       "code/"
     );
 
+    console.log("high-level-folder-data-categorization - Experimental");
     // Move Experimental files into the primary/ folder
     moveFilesByCategory(
       datasetEntityObj?.["high-level-folder-data-categorization"]?.["Experimental"],
       "primary/"
     );
 
+    console.log("high-level-folder-data-categorization - Documentation");
     // Move Documentation files into the docs/ folder
     moveFilesByCategory(
       datasetEntityObj?.["high-level-folder-data-categorization"]?.["Documentation"],
       "docs/"
     );
 
+    console.log("high-level-folder-data-categorization - Protocol");
     // Move Protocol files into the protocols/ folder
     moveFilesByCategory(
       datasetEntityObj?.["high-level-folder-data-categorization"]?.["Protocol"],
