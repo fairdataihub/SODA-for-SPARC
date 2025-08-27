@@ -332,8 +332,6 @@ window.openPage = async (targetPageID) => {
             []
           );
         }
-        // setPathToRender(["data"]);
-        // reRenderTreeView();
       }
 
       if (targetPageComponentType === "entity-file-mapping-page") {
@@ -363,8 +361,6 @@ window.openPage = async (targetPageID) => {
         }
 
         setDatasetEntityArray(datasetEntityArray);
-        // setPathToRender(["data"]);
-        // reRenderTreeView();
       }
 
       if (
@@ -415,6 +411,8 @@ window.openPage = async (targetPageID) => {
         "guided-dataset-structure-review-tab",
       ];
 
+      console.log("Rendering dataset structure for page:", pageID);
+
       // Check if the current page is one of the review pages
       if (reviewPages.includes(pageID)) {
         console.log("Rendering standardized dataset structure");
@@ -422,6 +420,7 @@ window.openPage = async (targetPageID) => {
           window.datasetStructureJSONObj,
           window.sodaJSONObj["dataset-entity-obj"]
         );
+        console.log("Standardized dataset structure created:", standardizedDatasetStructure);
         setPathToRender([]);
         useGlobalStore.setState({ datasetStructureJSONObj: standardizedDatasetStructure });
         reRenderTreeView();

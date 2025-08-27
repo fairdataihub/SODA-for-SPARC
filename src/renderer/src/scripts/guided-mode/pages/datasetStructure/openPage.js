@@ -4,7 +4,7 @@ import {
   setGuidedDatasetName,
   setGuidedDatasetSubtitle,
 } from "../../../../stores/slices/guidedModeSlice";
-import { reRenderTreeView, setPathToRender } from "../../../../stores/slices/datasetTreeViewSlice";
+import { reRenderTreeView } from "../../../../stores/slices/datasetTreeViewSlice";
 import { swalFileListSingleAction } from "../../../utils/swal-utils";
 import { getEntityDataById } from "../../../../stores/slices/datasetEntityStructureSlice";
 import { createStandardizedDatasetStructure } from "../../../utils/datasetStructure";

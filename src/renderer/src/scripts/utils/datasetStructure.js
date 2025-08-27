@@ -136,9 +136,6 @@ export const deleteFilesByRelativePath = (arrayOfRelativePaths) => {
 };
 
 export const moveFileToTargetLocation = (relativePathToMove, destionationRelativeFolderPath) => {
-  console.log(
-    `[moveFileToTargetLocation] Moving file: ${relativePathToMove} to ${destionationRelativeFolderPath}`
-  );
   const filePathSegments = relativePathToMove.split("/").filter(Boolean);
   const subfolders = filePathSegments.slice(1, -1);
   const destinationPathSegments = destionationRelativeFolderPath
@@ -159,9 +156,6 @@ export const moveFileToTargetLocation = (relativePathToMove, destionationRelativ
 
   currentFolder["files"][itemName] = itemObject;
   delete parentFolder["files"][itemName];
-  useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
-  reRenderTreeView();
-  console.log(`[moveFileToTargetLocation] Finished moving file: ${relativePathToMove}`);
 };
 
 export const createStandardizedDatasetStructure = (datasetStructure, datasetEntityObj) => {
@@ -176,20 +170,9 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
   const moveFilesByCategory = (categoryObj, destFolder) => {
     if (!categoryObj) return;
     const files = Object.keys(categoryObj);
-    console.log(`[moveFilesByCategory] Moving ${files.length} files to ${destFolder}`);
-    const startTime = performance.now();
     for (const [i, file] of files.entries()) {
-      if (i % 100 === 0) {
-        console.log(`[moveFilesByCategory] Moving file ${i + 1} of ${files.length}: ${file}`);
-      }
       moveFileToTargetLocation(file, destFolder);
     }
-    const endTime = performance.now();
-    console.log(
-      `[moveFilesByCategory] Finished moving ${files.length} files to ${destFolder} in ${(
-        endTime - startTime
-      ).toFixed(2)} ms`
-    );
   };
 
   try {
@@ -229,6 +212,9 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
 
     // --- Step 6: Capture the modified structure before reverting changes ---
     const standardizedStructure = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
+    console.log("Standardized structure created:", standardizedStructure);
+    useGlobalStore.setState({ datasetStructureJSONObj: standardizedStructure });
+    reRenderTreeView();
     // --- Step 7: Revert any global changes to window.datasetStructureJSONObj ---
     window.datasetStructureJSONObj = originalStructure;
 

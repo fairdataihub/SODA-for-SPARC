@@ -6,6 +6,7 @@ import { getFolderDetailsByRelativePath } from "../../scripts/utils/datasetStruc
 
 const initialState = {
   datasetStructureJSONObj: null,
+  calculateEntities: false,
   datasetRenderArray: null,
   datasetRenderArrayIsLoading: false,
   datasetStructureSearchFilter: "",
@@ -114,19 +115,25 @@ export const deleteEmptyFoldersFromStructure = (structure) => {
 };
 
 export const reRenderTreeView = () => {
+  console.log("RENDER TREE VIEW CALLED");
   try {
-    const state = useGlobalStore.getState();
-    const {
-      pathToRender,
-      datasetStructureJSONObj,
-      datasetStructureSearchFilter,
-      datasetEntityObj,
-      entityFilterActive,
-      entityFilters,
-    } = state;
+    const pathToRender = useGlobalStore.getState().pathToRender;
+    const datasetStructureJSONObj = useGlobalStore.getState().datasetStructureJSONObj;
+    const datasetStructureSearchFilter = useGlobalStore.getState().datasetStructureSearchFilter;
+    const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
+    const entityFilterActive = useGlobalStore.getState().entityFilterActive;
+    const entityFilters = useGlobalStore.getState().entityFilters;
+    const calculateEntities = useGlobalStore.getState().calculateEntities;
+
+    console.log("Path to render:", pathToRender);
+    console.log("Dataset structure JSON object:", JSON.stringify(datasetStructureJSONObj));
+    console.log("Entity filter active:", entityFilterActive);
+    console.log("Entity filters:", entityFilters);
 
     const updatedStructure = safeDeepCopy(datasetStructureJSONObj);
+    console.log("Updated structure before adding relative paths:", updatedStructure);
     addRelativePaths(updatedStructure);
+    console.log("Updated structure after adding relative paths:", updatedStructure);
 
     const naturalSort = (a, b) =>
       a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
@@ -146,8 +153,8 @@ export const reRenderTreeView = () => {
       }
       return inverted;
     };
-
     const invertedDatasetEntityObj = invertDatasetEntityObj(datasetEntityObj);
+    console.log("Inverted datasetEntityObj:", invertedDatasetEntityObj);
 
     const getFileEntitySet = (relativePath, entityType) =>
       invertedDatasetEntityObj[relativePath]?.[entityType];
@@ -177,25 +184,41 @@ export const reRenderTreeView = () => {
 
       // Traverse to starting folder
       let node = structure;
+      console.log("ogNode", node);
+      console.log("pathToRender", pathToRender);
+
       for (const folderName of pathToRender) node = node?.folders?.[folderName];
+      console.log("Node after traversing pathToRender:", node);
+      console.log("Node af");
 
       const traverse = (node, depth = 0, allFolderChildrenAreSelected = false) => {
         const folderNames = Object.keys(node.folders || {}).sort(naturalSort);
         const { entityType, activeEntity } = useGlobalStore.getState();
+        console.log(`Traversing depth ${depth}, folderNames:`, folderNames);
 
         for (const folderName of folderNames) {
           const folder = node.folders[folderName];
           const relativePath = folder.relativePath;
+          console.log(`Processing folder: ${folderName}, relativePath: ${relativePath}`);
 
           // Skip folders that don't match search
-          if (!relativePath.toLowerCase().includes(datasetStructureSearchFilter.toLowerCase()))
+          if (!relativePath.toLowerCase().includes(datasetStructureSearchFilter.toLowerCase())) {
+            console.log(`Skipping folder ${folderName} due to search filter`);
             continue;
+          }
 
-          const { childrenFileRelativePaths } = getFolderDetailsByRelativePath(relativePath);
+          const { childrenFileRelativePaths } = calculateEntities
+            ? getFolderDetailsByRelativePath(relativePath)
+            : { childrenFileRelativePaths: [] };
+          console.log(`childrenFileRelativePaths for ${folderName}:`, childrenFileRelativePaths);
 
           // Filter children based on entity filters
           const filteredChildrenFileRelativePaths =
             childrenFileRelativePaths.filter(localCheckFileFilter);
+          console.log(
+            `filteredChildrenFileRelativePaths for ${folderName}:`,
+            filteredChildrenFileRelativePaths
+          );
 
           const allFilesSelected =
             allFolderChildrenAreSelected ||
@@ -204,13 +227,17 @@ export const reRenderTreeView = () => {
                 const entitySet = getFileEntitySet(filePath, entityType);
                 return entitySet && activeEntity ? entitySet.has(activeEntity) : false;
               }));
+          console.log(`allFilesSelected for ${folderName}:`, allFilesSelected);
 
           // Skip folders that don't have matching files
           const childrenFilesMeetSearchCriteria = filteredChildrenFileRelativePaths.some(
             (filePath) =>
               filePath.toLowerCase().includes(datasetStructureSearchFilter.toLowerCase())
           );
-          if (!childrenFilesMeetSearchCriteria) continue;
+          if (!childrenFilesMeetSearchCriteria && calculateEntities) {
+            console.log(`Skipping folder ${folderName} due to no matching files`);
+            continue;
+          }
 
           const folderEntityNames = new Set();
           filteredChildrenFileRelativePaths.forEach((filePath) => {
@@ -218,6 +245,7 @@ export const reRenderTreeView = () => {
             const entitySet = fileAssociations?.[entityType];
             if (entitySet) entitySet.forEach((entityName) => folderEntityNames.add(entityName));
           });
+          console.log(`folderEntityNames for ${folderName}:`, Array.from(folderEntityNames));
 
           result.push({
             itemType: "folder",
@@ -231,18 +259,31 @@ export const reRenderTreeView = () => {
 
           if (isFolderOpen(relativePath)) {
             const fileNames = Object.keys(folder.files || {}).sort(naturalSort);
+            console.log(`Files in folder ${folderName}:`, fileNames);
             for (const fileName of fileNames) {
               const file = folder.files[fileName];
               const relativePath = file.relativePath;
+              console.log(`Processing file: ${fileName}, relativePath: ${relativePath}`);
 
-              if (!relativePath.toLowerCase().includes(datasetStructureSearchFilter.toLowerCase()))
+              if (
+                !relativePath.toLowerCase().includes(datasetStructureSearchFilter.toLowerCase())
+              ) {
+                console.log(`Skipping file ${fileName} due to search filter`);
                 continue;
-              if (!localCheckFileFilter(relativePath)) continue;
+              }
+              if (!localCheckFileFilter(relativePath)) {
+                console.log(`Skipping file ${fileName} due to entity filter`);
+                continue;
+              }
 
               const entitySet = getFileEntitySet(relativePath, entityType);
               const fileIsSelected =
                 entitySet && activeEntity ? entitySet.has(activeEntity) : false;
               const entitiesAssociatedWithFile = entitySet ? Array.from(entitySet) : [];
+              console.log(
+                `entitiesAssociatedWithFile for ${fileName}:`,
+                entitiesAssociatedWithFile
+              );
 
               result.push({
                 itemType: "file",
@@ -261,9 +302,13 @@ export const reRenderTreeView = () => {
         // Handle files at root level
         if (depth === 0) {
           const rootFileNames = Object.keys(node.files || {}).sort(naturalSort);
+          console.log(`Root files:`, rootFileNames);
           for (const fileName of rootFileNames) {
             const file = node.files[fileName];
-            if (!localCheckFileFilter(file.relativePath)) continue;
+            if (!localCheckFileFilter(file.relativePath)) {
+              console.log(`Skipping root file ${fileName} due to entity filter`);
+              continue;
+            }
             result.push({
               itemType: "file",
               itemIndex: itemIndex++,
@@ -277,12 +322,15 @@ export const reRenderTreeView = () => {
       };
 
       traverse(node, 0);
+      console.log("Resulting datasetRenderArray:", result);
       return result;
     };
 
     const datasetRenderArray = convertDatasetStructureToArray(updatedStructure);
+    console.log("Final datasetRenderArray:", datasetRenderArray);
 
     const renderStructure = traverseStructureByPath(updatedStructure, pathToRender);
+    console.log("Render structure after traverseStructureByPath:", renderStructure);
     if (renderStructure) addRelativePaths(renderStructure, pathToRender);
     if (window.datasetStructureJSONObj) addRelativePaths(window.datasetStructureJSONObj, []);
 
@@ -291,6 +339,7 @@ export const reRenderTreeView = () => {
       datasetRenderArray,
       datasetRenderArrayIsLoading: false,
     });
+    console.log("Global store updated with new datasetRenderArray and structure.");
   } catch (error) {
     console.error("Error in reRenderTreeView:", error);
   }
@@ -378,6 +427,7 @@ export const setActiveFileExplorer = (id) => {
 };
 
 export const setPathToRender = (pathToRender) => {
+  console.log("setPathToRender called with ", pathToRender);
   // Ensure the path exists in window.datasetStructureJSONObj
   let currentStructure = window.datasetStructureJSONObj;
   for (const folderName of pathToRender) {

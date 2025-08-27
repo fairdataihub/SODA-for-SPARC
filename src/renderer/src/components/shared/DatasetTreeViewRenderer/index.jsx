@@ -587,21 +587,6 @@ const DatasetTreeViewRenderer = ({
               console.log("item:", item);
               if (!item) return null;
 
-              // Only show entities matching current entityType for folders
-              let filteredEntitiesAssociatedWithFolder = item.entitiesAssociatedWithFolder;
-              if (item.itemType === "folder" && entityType) {
-                filteredEntitiesAssociatedWithFolder = filteredEntitiesAssociatedWithFolder.filter(
-                  (entityId) => {
-                    // Match prefix for subject, sample, site, perf, etc.
-                    if (entityType === "subject") return entityId.startsWith("sub-");
-                    if (entityType === "sample") return entityId.startsWith("sam-");
-                    if (entityType === "site") return entityId.startsWith("site-");
-                    if (entityType === "performance") return entityId.startsWith("perf-");
-                    // Add more entityType logic as needed
-                    return true; // fallback: show all
-                  }
-                );
-              }
               return (
                 <div
                   key={virtualRow.key}
@@ -620,7 +605,7 @@ const DatasetTreeViewRenderer = ({
                       folderName={item.folderName}
                       relativePath={item.relativePath}
                       folderIsSelected={item.folderIsSelected}
-                      entitiesAssociatedWithFolder={filteredEntitiesAssociatedWithFolder}
+                      entitiesAssociatedWithFolder={item.entitiesAssociatedWithFolder}
                       onFolderClick={
                         folderActions?.["on-folder-click"] ? handleFolderItemClick : null
                       }

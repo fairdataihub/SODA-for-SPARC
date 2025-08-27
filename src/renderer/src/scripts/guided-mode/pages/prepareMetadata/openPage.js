@@ -9,7 +9,7 @@ import api from "../../../others/api/api";
 import { clientError, userErrorMessage } from "../../../others/http-error-handler/error-handler";
 import { guidedShowOptionalRetrySwal } from "../../swals/helperSwals";
 import { createParsedReadme } from "../../../metadata-files/datasetDescription";
-import { reRenderTreeView, setPathToRender } from "../../../../stores/slices/datasetTreeViewSlice";
+import { reRenderTreeView } from "../../../../stores/slices/datasetTreeViewSlice";
 import {
   setEntityType,
   setEntityListForEntityType,
