@@ -224,6 +224,8 @@ export const reRenderTreeView = () => {
     const datasetStructure = useGlobalStore.getState().datasetStructureJSONObj;
     const datasetStructureSearchFilter = useGlobalStore.getState().datasetStructureSearchFilter;
     const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
+    const entityFilterActive = useGlobalStore.getState().entityFilterActive;
+    const entityFilters = useGlobalStore.getState().entityFilters;
     const updatedStructure = safeDeepCopy(datasetStructure);
     addRelativePaths(updatedStructure);
 
@@ -265,6 +267,26 @@ export const reRenderTreeView = () => {
       return fileAssociations[entityType]; // May be undefined or a Set
     };
 
+    // Helper to check if a file passes the entity filter
+    const checkIfFilePassesEntityFilter = (filePath) => {
+      if (!entityFilterActive) return true;
+      const { include, exclude } = entityFilters;
+      const isAssociatedWithFilters = (filters) => {
+        for (const { type, names } of filters) {
+          if (!type || !Array.isArray(names) || names.length === 0) continue;
+          const entities = datasetEntityObj[type];
+          if (!entities) continue;
+          for (const name of names) {
+            if (entities[name]?.[filePath]) return true;
+          }
+        }
+        return false;
+      };
+      if (isAssociatedWithFilters(exclude)) return false;
+      if (include.length === 0) return true;
+      return isAssociatedWithFilters(include);
+    };
+
     // log the current filters
 
     console.log("Inverted Dataset Entity Object:", invertedDatasetEntityObj);
@@ -293,23 +315,29 @@ export const reRenderTreeView = () => {
 
           const { childrenFileRelativePaths } = getFolderDetailsByRelativePath(relativePath);
 
+          // Filter childrenFileRelativePaths by entity filter
+          const filteredChildrenFileRelativePaths = childrenFileRelativePaths.filter(
+            checkIfFilePassesEntityFilter
+          );
+
           const allFilesSelected =
             allFolderChildrenAreSelected ||
-            (childrenFileRelativePaths.length > 0 &&
-              childrenFileRelativePaths.every((filePath) => {
+            (filteredChildrenFileRelativePaths.length > 0 &&
+              filteredChildrenFileRelativePaths.every((filePath) => {
                 const entitySet = getFileEntitySet(filePath, entityType);
                 return entitySet && activeEntity ? entitySet.has(activeEntity) : false;
               }));
 
-          const childrenFilesMeetSearchCriteria = childrenFileRelativePaths.some((filePath) =>
-            filePath.toLowerCase().includes(datasetStructureSearchFilter.toLowerCase())
+          const childrenFilesMeetSearchCriteria = filteredChildrenFileRelativePaths.some(
+            (filePath) =>
+              filePath.toLowerCase().includes(datasetStructureSearchFilter.toLowerCase())
           );
           if (!childrenFilesMeetSearchCriteria) continue; // Break out if folder doesn't meet search criteria
-          console.log("Children File Relative Paths:", childrenFileRelativePaths);
+          console.log("Children File Relative Paths:", filteredChildrenFileRelativePaths);
 
           // Collect all entity names associated with any file in this folder
           const folderEntityNames = new Set();
-          childrenFileRelativePaths.forEach((filePath) => {
+          filteredChildrenFileRelativePaths.forEach((filePath) => {
             const fileAssociations = invertedDatasetEntityObj[filePath];
             if (fileAssociations) {
               Object.values(fileAssociations).forEach((entitySet) => {
@@ -344,6 +372,7 @@ export const reRenderTreeView = () => {
 
               if (!relativePath.toLowerCase().includes(datasetStructureSearchFilter.toLowerCase()))
                 continue;
+              if (!checkIfFilePassesEntityFilter(relativePath)) continue;
               const entitySet = getFileEntitySet(relativePath, entityType);
               const fileIsSelected =
                 entitySet && activeEntity ? entitySet.has(activeEntity) : false;
@@ -374,6 +403,7 @@ export const reRenderTreeView = () => {
           const rootFileNames = Object.keys(node.files || {}).sort(naturalSort);
           for (const fileName of rootFileNames) {
             const file = node.files[fileName];
+            if (!checkIfFilePassesEntityFilter(file.relativePath)) continue;
             result.push({
               itemType: "file",
               itemIndex: itemIndex++,

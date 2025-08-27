@@ -198,6 +198,10 @@ window.openPage = async (targetPageID) => {
     setSelectedHierarchyEntity(null);
     setActiveEntity(null);
 
+    if (targetPageDataset.entityType) {
+      setEntityType(targetPageDataset.entityType);
+    }
+
     // Synchronize state between the SODA JSON object and the zustand store
     setSelectedEntities(window.sodaJSONObj["selected-entities"] || []);
     setDeSelectedEntities(window.sodaJSONObj["deSelected-entities"] || []);
@@ -398,18 +402,6 @@ window.openPage = async (targetPageID) => {
       setActiveFileExplorer(pageID);
     };
     showCorrectFileExplorerByPage(targetPageID);
-
-    const setEntityTypeByPage = (pageID) => {
-      // Map page IDs to entity types
-      const pageEntityTypeMap = {
-        "guided-manual-dataset-entity-and-metadata-tab": "high-level-folder-data-categorization",
-        "guided-manual-modality-entity-and-metadata-tab": "modalities",
-        // Add more mappings as needed
-      };
-
-      setEntityType("high-level-folder-data-categorization");
-    };
-    setEntityTypeByPage(targetPageID);
 
     const renderCorrectFileExplorerByPage = (pageID) => {
       // List of pages where the file explorer should render the dataset structure
