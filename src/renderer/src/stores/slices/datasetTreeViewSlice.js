@@ -229,7 +229,27 @@ export const reRenderTreeView = () => {
         datasetEntityObj?.[activeEntity.entityType]?.[activeEntity.entityId] || {};
       return !!activeEntityFiles[relativePath];
     };
+    const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
+    function invertDatasetEntityObj(datasetEntityObj) {
+      const inverted = {};
+      for (const entityType in datasetEntityObj) {
+        const entityGroup = datasetEntityObj[entityType];
+        for (const entityName in entityGroup) {
+          const fileMap = entityGroup[entityName];
+          for (const fileRelativePath in fileMap) {
+            if (fileMap[fileRelativePath]) {
+              if (!inverted[fileRelativePath]) inverted[fileRelativePath] = [];
+              inverted[fileRelativePath].push({ entityType, entityName });
+            }
+          }
+        }
+      }
+      return inverted;
+    }
 
+    const invertedDatasetEntityObj = invertDatasetEntityObj(datasetEntityObj);
+
+    console.log("Inverted Dataset Entity Object:", invertedDatasetEntityObj);
     const convertDatasetStructureToArray = (structure) => {
       const result = [];
       let itemIndex = 0;

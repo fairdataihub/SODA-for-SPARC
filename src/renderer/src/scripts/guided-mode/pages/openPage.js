@@ -35,6 +35,7 @@ import {
 import {
   setDatasetEntityObj,
   filterRemovedFilesFromDatasetEntityObj,
+  setEntityType,
 } from "../../../stores/slices/datasetEntitySelectorSlice.js";
 import { setSelectedHierarchyEntity } from "../../../stores/slices/datasetContentSelectorSlice.js";
 import { guidedSetNavLoadingState } from "./navigationUtils/pageLoading.js";
@@ -397,6 +398,18 @@ window.openPage = async (targetPageID) => {
       setActiveFileExplorer(pageID);
     };
     showCorrectFileExplorerByPage(targetPageID);
+
+    const setEntityTypeByPage = (pageID) => {
+      // Map page IDs to entity types
+      const pageEntityTypeMap = {
+        "guided-manual-dataset-entity-and-metadata-tab": "high-level-folder-data-categorization",
+        "guided-manual-modality-entity-and-metadata-tab": "modalities",
+        // Add more mappings as needed
+      };
+
+      setEntityType("high-level-folder-data-categorization");
+    };
+    setEntityTypeByPage(targetPageID);
 
     const renderCorrectFileExplorerByPage = (pageID) => {
       // List of pages where the file explorer should render the dataset structure

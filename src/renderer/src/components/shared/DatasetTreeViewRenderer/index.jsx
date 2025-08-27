@@ -172,7 +172,7 @@ const FileItem = ({
             checked={fileIsSelected}
             onClick={(e) => {
               e.stopPropagation();
-              onFileClick?.(fileName, relativePath, fileIsSelected);
+              onFileClick?.(relativePath, fileIsSelected);
             }}
           />
         </Tooltip>
@@ -558,11 +558,10 @@ const DatasetTreeViewRenderer = ({
     );
   }
 
-  const handleFileItemClick = (fileName, fileContents) => {
-    if (fileActions && typeof fileActions["is-file-selected"] === "function") {
-      const isSelected = fileActions["is-file-selected"](fileName, fileContents);
-      // Pass the mutuallyExclusiveSelection parameter
-      fileActions["on-file-click"](fileName, fileContents, isSelected, mutuallyExclusiveSelection);
+  const handleFileItemClick = (relativePath, fileIsSelected) => {
+    console.log("File item clicked:", relativePath);
+    if (fileActions && typeof fileActions["on-file-click"] === "function") {
+      fileActions["on-file-click"](relativePath, fileIsSelected, mutuallyExclusiveSelection);
     }
   };
 
