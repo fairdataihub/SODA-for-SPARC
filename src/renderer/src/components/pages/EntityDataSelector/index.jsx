@@ -78,14 +78,23 @@ const EntityDataSelectorPage = ({
   entityTypeStringPlural,
   showProgress = false,
 }) => {
+  const activeEntity = useGlobalStore((state) => state.activeEntity);
+  const entityType = useGlobalStore((state) => state.entityType); // e.g. 'high-level-folder-data-categorization'
+  console.log("ENTITY TYPE:", entityType);
+  const selectedEntities = useGlobalStore((state) => state.selectedEntities);
+  const datasetIncludesCode = selectedEntities.includes("code");
+  const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
+  const datasetRenderArray = useGlobalStore((state) => state.datasetRenderArray);
+
+  const itemCount = countFilesInDatasetStructure(datasetRenderArray);
+  const countItemsSelected = countSelectedFilesByEntityType(entityType);
+
   const handleFileClick = (relativePath, fileIsSelected, mutuallyExclusiveSelection) => {
-    console.log("File clicked:", relativePath);
-    console.log("File is selected:", fileIsSelected);
-    console.log("Mutually exclusive selection:", mutuallyExclusiveSelection);
     modifyDatasetEntityForRelativeFilePath(
       entityType,
+      activeEntity,
       relativePath,
-      fileIsSelected,
+      fileIsSelected ? "remove" : "add",
       mutuallyExclusiveSelection
     );
   };
@@ -112,16 +121,6 @@ const EntityDataSelectorPage = ({
       handleFolderClick(subFolder, folderWasSelectedBeforeClick, mutuallyExclusive);
     });
   };
-  const activeEntity = useGlobalStore((state) => state.activeEntity);
-  const entityType = useGlobalStore((state) => state.entityType); // e.g. 'high-level-folder-data-categorization'
-  console.log("ENTITY TYPE:", entityType);
-  const selectedEntities = useGlobalStore((state) => state.selectedEntities);
-  const datasetIncludesCode = selectedEntities.includes("code");
-  const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
-  const datasetRenderArray = useGlobalStore((state) => state.datasetRenderArray);
-
-  const itemCount = countFilesInDatasetStructure(datasetRenderArray);
-  const countItemsSelected = countSelectedFilesByEntityType(entityType);
 
   return (
     <GuidedModePage pageHeader={pageName}>

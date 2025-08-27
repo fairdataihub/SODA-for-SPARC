@@ -209,8 +209,7 @@ export const reRenderTreeView = () => {
     const pathToRender = useGlobalStore.getState().pathToRender || [];
     const datasetStructure = useGlobalStore.getState().datasetStructureJSONObj;
     const datasetStructureSearchFilter = useGlobalStore.getState().datasetStructureSearchFilter;
-    if (!datasetStructure) return console.warn("Dataset structure missing");
-
+    const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
     const updatedStructure = safeDeepCopy(datasetStructure);
     addRelativePaths(updatedStructure);
 
@@ -218,19 +217,8 @@ export const reRenderTreeView = () => {
     const naturalSort = (a, b) =>
       a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
 
-    const isFileSelected = (relativePath) => {
-      const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
-      if (!datasetEntityObj) return false;
-      const activeEntity = useGlobalStore.getState().activeEntity;
-      console.log("activeEntity", activeEntity);
-      if (!entityType) return false;
-
-      const activeEntityFiles =
-        datasetEntityObj?.[activeEntity.entityType]?.[activeEntity.entityId] || {};
-      return !!activeEntityFiles[relativePath];
-    };
-    const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
-    function invertDatasetEntityObj(datasetEntityObj) {
+    const invertDatasetEntityObj = (datasetEntityObj) => {
+      // Output format: { relativePath: { entityType: Set(entityName, ...) } }
       const inverted = {};
       for (const entityType in datasetEntityObj) {
         const entityGroup = datasetEntityObj[entityType];
@@ -238,16 +226,35 @@ export const reRenderTreeView = () => {
           const fileMap = entityGroup[entityName];
           for (const fileRelativePath in fileMap) {
             if (fileMap[fileRelativePath]) {
-              if (!inverted[fileRelativePath]) inverted[fileRelativePath] = [];
-              inverted[fileRelativePath].push({ entityType, entityName });
+              if (!inverted[fileRelativePath]) inverted[fileRelativePath] = {};
+              if (!inverted[fileRelativePath][entityType])
+                inverted[fileRelativePath][entityType] = new Set();
+              inverted[fileRelativePath][entityType].add(entityName);
             }
           }
         }
       }
       return inverted;
-    }
-
+    };
+    console.log("datasetEntityObj:", datasetEntityObj);
     const invertedDatasetEntityObj = invertDatasetEntityObj(datasetEntityObj);
+    console.log("Inverted Dataset Entity Object:", invertedDatasetEntityObj);
+
+    // Use invertedDatasetEntityObj to determine if a file is selected for the active entity
+    const isFileSelected = (relativePath) => {
+      const entityType = useGlobalStore.getState().entityType;
+      const activeEntity = useGlobalStore.getState().activeEntity;
+      if (!entityType || !activeEntity) return false;
+      // Check if the file has an entry for the current entityType
+      const fileAssociations = invertedDatasetEntityObj[relativePath];
+      if (!fileAssociations) return false;
+      // Check if the Set for this entityType contains the active entity
+      const entitySet = fileAssociations[entityType];
+      if (!entitySet) return false;
+      return entitySet.has(activeEntity);
+    };
+
+    // log the current filters
 
     console.log("Inverted Dataset Entity Object:", invertedDatasetEntityObj);
     const convertDatasetStructureToArray = (structure) => {
@@ -260,7 +267,7 @@ export const reRenderTreeView = () => {
         node = node?.folders?.[folderName];
       }
 
-      const traverse = (node, depth = 0) => {
+      const traverse = (node, depth = 0, allFolderChildrenAreSelected = false) => {
         // Filter and sort folder names in one step
         const folderNames = Object.keys(node.folders || {}).sort(naturalSort);
         for (const folderName of folderNames) {
@@ -271,6 +278,11 @@ export const reRenderTreeView = () => {
             .includes(datasetStructureSearchFilter.toLowerCase());
 
           const { childrenFileRelativePaths } = getFolderDetailsByRelativePath(relativePath);
+
+          const allFilesSelected =
+            allFolderChildrenAreSelected ||
+            (childrenFileRelativePaths.length > 0 &&
+              childrenFileRelativePaths.every((filePath) => isFileSelected(filePath)));
           const childrenFilesMeetSearchCriteria = childrenFileRelativePaths.some((filePath) =>
             filePath.toLowerCase().includes(datasetStructureSearchFilter.toLowerCase())
           );
@@ -281,7 +293,7 @@ export const reRenderTreeView = () => {
             itemType: "folder",
             folderName,
             relativePath,
-            folderIsSelected: Math.random() < 0.5, // random true or false
+            folderIsSelected: allFilesSelected,
             entitiesAssociatedWithFolder: ["sub-1", "sub-2"],
             itemIndent: depth,
             itemIndex: itemIndex++,
@@ -305,14 +317,14 @@ export const reRenderTreeView = () => {
                 itemType: "file",
                 fileName,
                 relativePath,
-                fileIsSelected: Math.random() < 0.5, // random true or false
+                fileIsSelected: isFileSelected(relativePath),
                 entitiesAssociatedWithFile: ["sub-1"],
                 itemIndent: depth + 1,
                 itemIndex: itemIndex++,
               });
             }
             // Traverse subfolders if open
-            traverse(folder, depth + 1);
+            traverse(folder, depth + 1, allFilesSelected);
           } else {
             console.log("Folder is closed:", relativePath);
           }

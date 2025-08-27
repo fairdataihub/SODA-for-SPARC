@@ -559,9 +559,14 @@ const DatasetTreeViewRenderer = ({
   }
 
   const handleFileItemClick = (relativePath, fileIsSelected) => {
-    console.log("File item clicked:", relativePath);
     if (fileActions && typeof fileActions["on-file-click"] === "function") {
       fileActions["on-file-click"](relativePath, fileIsSelected, mutuallyExclusiveSelection);
+    }
+  };
+
+  const handleFolderItemClick = (relativePath, folderIsSelected) => {
+    if (folderActions && typeof folderActions["on-folder-click"] === "function") {
+      folderActions["on-folder-click"](relativePath, folderIsSelected, mutuallyExclusiveSelection);
     }
   };
 
@@ -635,7 +640,7 @@ const DatasetTreeViewRenderer = ({
                       folderIsSelected={item.folderIsSelected}
                       entitiesAssociatedWithFolder={item.entitiesAssociatedWithFolder}
                       onFolderClick={
-                        folderActions?.["on-folder-click"] ? handleFileItemClick : null
+                        folderActions?.["on-folder-click"] ? handleFolderItemClick : null
                       }
                       datasetStructureSearchFilter={datasetStructureSearchFilter}
                       allowStructureEditing={allowStructureEditing}
