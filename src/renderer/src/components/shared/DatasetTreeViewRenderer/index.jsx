@@ -307,47 +307,6 @@ const FolderItem = ({
 
   const folderIsPassThrough = content.passThrough;
 
-  // Determines if all files in this folder and its subfolders are selected
-  // Used to drive the folder checkbox state (checked, unchecked)
-  const areAllFilesSelected = () => {
-    if (!isFileSelected || typeof isFileSelected !== "function") return false;
-
-    const allFiles = collectAllFilesRecursively(content);
-    if (allFiles.length === 0) return false;
-
-    // Diagnostic information to help trace selection states
-    const totalFiles = allFiles.length;
-    const selectedFiles = allFiles.filter((file) => isFileSelected(file.name, file.content));
-    const selectedCount = selectedFiles.length;
-
-    // Only return true if ALL files are selected (complete folder selection)
-    return selectedCount === totalFiles;
-  };
-
-  // Handler for when folder checkbox is clicked
-  const handleFolderCheckboxClick = () => {
-    if (!onFileClick || !isFileSelected || typeof isFileSelected !== "function") {
-      console.error("Missing required props for folder checkbox click handler");
-      return;
-    }
-
-    const allFiles = collectAllFilesRecursively(content);
-    const currentlyAllSelected = areAllFilesSelected();
-
-    // Toggle all files to the opposite of current state
-    allFiles.forEach((file) => {
-      try {
-        const fileIsSelected = isFileSelected(file.name, file.content);
-        // Only toggle if needed (all selected -> deselect all, or not all selected -> select all)
-        if (currentlyAllSelected === fileIsSelected) {
-          onFileClick(file.name, file.content, fileIsSelected);
-        }
-      } catch (err) {
-        console.error("Error checking file selection status:", err);
-      }
-    });
-  };
-
   // Helper function for determining background color
   const getBackgroundColor = () => {
     if (hovered || (contextMenuIsOpened && contextMenuRelativePath === content.relativePath)) {
@@ -397,7 +356,8 @@ const FolderItem = ({
             checked={folderIsSelected}
             onClick={(e) => {
               e.stopPropagation();
-              handleFolderCheckboxClick();
+              console.log("Folder checkbox clicked:", { relativePath, folderIsSelected });
+              onFolderClick?.(relativePath, folderIsSelected);
             }}
           />
         </Tooltip>
@@ -559,12 +519,18 @@ const DatasetTreeViewRenderer = ({
   }
 
   const handleFileItemClick = (relativePath, fileIsSelected) => {
+    console.log("File item clicked:", relativePath, "Selected:", fileIsSelected);
     if (fileActions && typeof fileActions["on-file-click"] === "function") {
       fileActions["on-file-click"](relativePath, fileIsSelected, mutuallyExclusiveSelection);
     }
   };
 
   const handleFolderItemClick = (relativePath, folderIsSelected) => {
+    console.log("handleFolderItemClick called:", {
+      relativePath,
+      folderIsSelected,
+      mutuallyExclusiveSelection,
+    });
     if (folderActions && typeof folderActions["on-folder-click"] === "function") {
       folderActions["on-folder-click"](relativePath, folderIsSelected, mutuallyExclusiveSelection);
     }

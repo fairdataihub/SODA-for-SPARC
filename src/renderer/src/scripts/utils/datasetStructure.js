@@ -4,6 +4,12 @@ import { setFolderMoveMode } from "../../stores/slices/datasetTreeViewSlice";
 import { deleteEmptyFoldersFromStructure } from "../../stores/slices/datasetTreeViewSlice";
 
 export const countFilesInDatasetStructure = (datasetStructure) => {
+  // If datasetStructure is an array (datasetRenderArray), count file items
+  if (Array.isArray(datasetStructure)) {
+    return datasetStructure.filter((item) => item.itemType === "file").length;
+  }
+
+  // Otherwise, fallback to legacy recursive count
   if (!datasetStructure || typeof datasetStructure !== "object") return 0;
 
   let totalFiles = 0;
