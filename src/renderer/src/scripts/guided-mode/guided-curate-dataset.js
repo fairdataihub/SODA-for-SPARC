@@ -1138,14 +1138,13 @@ const handleValidationTableUi = (errors) => {
   }
 };
 
-window.deleteContributor = (clickedDelContribuButton, contributorOrcid) => {
-  const contributorField = clickedDelContribuButton.parentElement.parentElement;
-  const contributorsBeforeDelete = window.sodaJSONObj["dataset_contributors"];
+window.deleteContributor = (contributorOrcid) => {
+  const contributors = window.sodaJSONObj?.dataset_contributors || [];
 
-  window.sodaJSONObj["dataset_contributors"] = contributorsBeforeDelete.filter((contributor) => {
-    return contributor.contributor_orcid_id !== contributorOrcid;
-  });
-  //rerender the table after deleting a contributor
+  window.sodaJSONObj.dataset_contributors = contributors.filter(
+    (contributor) => contributor.contributor_orcid_id !== contributorOrcid
+  );
+
   renderContributorsTable();
 };
 
