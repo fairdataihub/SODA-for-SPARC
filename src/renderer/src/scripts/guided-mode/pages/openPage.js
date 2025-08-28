@@ -389,15 +389,11 @@ window.openPage = async (targetPageID) => {
 
     const showCorrectFileExplorerByPage = (pageID) => {
       // Get the element for the pageId
-      const pageElement = document.getElementById(pageID);
-      console.log("Page element:", pageElement);
 
       // Special case for data categorization pages
-      if (pageElement.dataset.componentType === "data-categorization-page") {
-        console.log("Data categorization page detected");
+      if (targetPageDataset.componentType === "data-categorization-page") {
         setActiveFileExplorer("entity-data-selector");
       } else {
-        console.log("Setting active file explorer to page ID:", pageID);
         setActiveFileExplorer(pageID);
       }
     };
@@ -413,30 +409,30 @@ window.openPage = async (targetPageID) => {
         "guided-dataset-structure-review-tab",
       ];
 
-      console.log("Rendering dataset structure for page:", pageID);
-
       // Check if the current page is one of the review pages
       if (reviewPages.includes(pageID)) {
-        console.log("Rendering standardized dataset structure");
         const standardizedDatasetStructure = createStandardizedDatasetStructure(
           window.datasetStructureJSONObj,
           window.sodaJSONObj["dataset-entity-obj"]
         );
-        console.log("Standardized dataset structure created:", standardizedDatasetStructure);
         setPathToRender([]);
         useGlobalStore.setState({
           datasetStructureJSONObj: standardizedDatasetStructure,
           calculateEntities: false,
         });
-        reRenderTreeView();
       } else {
-        console.log("Rendering default dataset structure");
-        setPathToRender(["data"]);
-        useGlobalStore.setState({
-          datasetStructureJSONObj: window.datasetStructureJSONObj,
-          calculateEntities: true,
-        });
-        reRenderTreeView();
+        // If the page has component-type of "data-categorization-page"
+        if (
+          targetPageDataset.componentType === "data-categorization-page" ||
+          pageID === "guided-unstructured-data-import-tab"
+        ) {
+          setPathToRender(["data"]);
+          useGlobalStore.setState({
+            datasetStructureJSONObj: window.datasetStructureJSONObj,
+            calculateEntities: true,
+          });
+          reRenderTreeView();
+        }
       }
     };
     renderCorrectFileExplorerByPage(targetPageID);

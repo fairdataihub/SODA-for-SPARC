@@ -34,7 +34,6 @@ const handleEntityClick = (entity) => {
 
 const renderEntityList = (entityType, activeEntity, datasetEntityObj) => {
   if (!datasetEntityObj?.[entityType]) return null;
-  console.log("Rendering entity list for type:", entityType);
 
   return naturalSort(Object.keys(datasetEntityObj[entityType])).map((entity) => {
     const isActive = entity === activeEntity;
@@ -87,7 +86,6 @@ const EntityDataSelectorPage = ({
 }) => {
   const activeEntity = useGlobalStore((state) => state.activeEntity);
   const entityType = useGlobalStore((state) => state.entityType); // e.g. 'high-level-folder-data-categorization'
-  console.log("ENTITY TYPE:", entityType);
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const datasetIncludesCode = selectedEntities.includes("code");
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
@@ -109,7 +107,6 @@ const EntityDataSelectorPage = ({
 
   const handleFolderClick = (relativePath, folderIsSelected, mutuallyExclusiveSelection) => {
     const action = folderIsSelected ? "remove" : "add";
-    console.log("folderContents", relativePath);
     const { childrenFileRelativePaths } = getFolderDetailsByRelativePath(relativePath);
     const t0 = performance.now();
     childrenFileRelativePaths.forEach((filePath) => {
@@ -122,15 +119,10 @@ const EntityDataSelectorPage = ({
       );
     });
     const t1 = performance.now();
-    console.log(
-      `handleFolderClick: forEach took ${(t1 - t0).toFixed(2)} ms for ${
-        childrenFileRelativePaths.length
-      } files`
-    );
+
     const t2 = performance.now();
     reRenderTreeView();
     const t3 = performance.now();
-    console.log(`handleFolderClick: reRenderTreeView call took ${(t3 - t2).toFixed(2)} ms`);
   };
 
   return (
@@ -194,11 +186,6 @@ const EntityDataSelectorPage = ({
                   mutuallyExclusiveSelection={true}
                   folderActions={{
                     "on-folder-click": (relativePath, folderIsSelected, mutuallyExclusive) => {
-                      console.log("Folder clicked:", {
-                        relativePath,
-                        folderIsSelected,
-                        mutuallyExclusive,
-                      });
                       handleFolderClick(relativePath, folderIsSelected, mutuallyExclusive);
                     },
                     "is-folder-selected": (folderName, folderContents) => {

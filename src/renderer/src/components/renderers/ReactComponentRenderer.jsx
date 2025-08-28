@@ -163,7 +163,6 @@ const componentTypeRenderers = {
   },
 
   "data-categorization-page": (componentSlot) => {
-    console.log("data-file-explorer-id:", componentSlot.getAttribute("data-file-explorer-id"));
     const props = {
       pageName: componentSlot.getAttribute("data-page-name"),
       entityTypeStringSingular: componentSlot.getAttribute("data-entity-type-string-singular"),

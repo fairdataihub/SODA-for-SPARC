@@ -10,7 +10,6 @@ const DataImporter = () => {
       <Box w="100%" m={0} p={0} id="data-importer-dropzone">
         <Dropzone
           onDrop={(event) => {
-            console.log(event);
             event.preventDefault();
           }}
           onReject={(event) => {
