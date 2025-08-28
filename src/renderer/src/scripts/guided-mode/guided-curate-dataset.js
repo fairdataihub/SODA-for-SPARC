@@ -3792,7 +3792,6 @@ if (continueHackGm) {
 // Add the event listener for the Data importation component
 const dragDropElementId = document.getElementById("data-importer-dropzone");
 dragDropElementId.addEventListener("click", (event) => {
-  console.log("File explorer clicked");
   event.preventDefault();
   window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog", {
     importRelativePath: "data/",
@@ -3800,7 +3799,6 @@ dragDropElementId.addEventListener("click", (event) => {
 });
 // Add a drop listener that handles the drop event
 dragDropElementId.addEventListener("drop", (event) => {
-  console.log("Files dropped:", event.dataTransfer.files);
   event.preventDefault();
   const itemsDroppedInFileExplorer = Array.from(event.dataTransfer.files).map((file) => file.path);
   window.electron.ipcRenderer.send("file-explorer-dropped-datasets", {

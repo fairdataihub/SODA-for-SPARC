@@ -88,7 +88,6 @@ const ContextMenu = () => {
           {contextMenuItemType === "folder" && (
             <Menu.Item
               onClick={(e) => {
-                console.log("contextMenuRelativePath", contextMenuRelativePath);
                 e.preventDefault();
                 window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog", {
                   importRelativePath: contextMenuRelativePath,

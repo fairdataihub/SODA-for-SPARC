@@ -107,7 +107,6 @@ export const getFileDetailsByRelativePath = (relativePath) => {
 
 export const deleteFoldersByRelativePath = (arrayOfRelativePaths) => {
   for (const relativePathToDelete of arrayOfRelativePaths) {
-    console.log("deleteFoldersByRelativePath called for path:", relativePathToDelete);
     const { parentFolder, itemName, itemObject } =
       getFolderDetailsByRelativePath(relativePathToDelete);
     if (itemObject["location"] === "ps") {
@@ -115,7 +114,6 @@ export const deleteFoldersByRelativePath = (arrayOfRelativePaths) => {
     } else {
       delete parentFolder["folders"][itemName];
     }
-    console.log("Delete Folder: parentFolder found for path:", relativePathToDelete, parentFolder);
   }
   useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
   reRenderTreeView();
@@ -159,7 +157,6 @@ export const moveFileToTargetLocation = (relativePathToMove, destionationRelativ
 };
 
 export const createStandardizedDatasetStructure = (datasetStructure, datasetEntityObj) => {
-  console.log("Creating standardized dataset structure...");
   // --- Step 1: Preserve the original global structure ---
   let originalStructure = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
 
@@ -177,27 +174,23 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
 
   try {
     // Move Code files into the code/ folder
-    console.log("high-level-folder-data-categorization - Code");
     moveFilesByCategory(
       datasetEntityObj?.["high-level-folder-data-categorization"]?.["Code"],
       "code/"
     );
 
-    console.log("high-level-folder-data-categorization - Experimental");
     // Move Experimental files into the primary/ folder
     moveFilesByCategory(
       datasetEntityObj?.["high-level-folder-data-categorization"]?.["Experimental"],
       "primary/"
     );
 
-    console.log("high-level-folder-data-categorization - Documentation");
     // Move Documentation files into the docs/ folder
     moveFilesByCategory(
       datasetEntityObj?.["high-level-folder-data-categorization"]?.["Documentation"],
       "docs/"
     );
 
-    console.log("high-level-folder-data-categorization - Protocol");
     // Move Protocol files into the protocols/ folder
     moveFilesByCategory(
       datasetEntityObj?.["high-level-folder-data-categorization"]?.["Protocol"],
@@ -212,7 +205,6 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
 
     // --- Step 6: Capture the modified structure before reverting changes ---
     const standardizedStructure = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
-    console.log("Standardized structure created:", standardizedStructure);
     useGlobalStore.setState({ datasetStructureJSONObj: standardizedStructure });
     reRenderTreeView();
     // --- Step 7: Revert any global changes to window.datasetStructureJSONObj ---

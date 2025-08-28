@@ -146,12 +146,6 @@ const FileItem = ({
     return undefined;
   };
 
-  useEffect(() => {
-    if (globalFileItemRenderCount % 100 === 0) {
-      console.log(`FileItem rendered ${globalFileItemRenderCount} times`);
-    }
-  });
-
   return (
     <Group
       ref={ref}
@@ -277,8 +271,6 @@ const FolderItem = ({
   indent,
   datasetStructureSearchFilter,
 }) => {
-  console.log("RelativePath", relativePath);
-
   const contextMenuRelativePath = useGlobalStore((state) => state.contextMenuRelativePath);
   const contextMenuIsOpened = useGlobalStore((state) => state.contextMenuIsOpened);
 
@@ -317,7 +309,6 @@ const FolderItem = ({
   };
 
   const handleFolderClick = () => {
-    console.log(`Folder ${isOpen ? "closed" : "opened"}: ${relativePath}`);
     if (isOpen) {
       closeFolder(relativePath);
     } else {
@@ -357,7 +348,6 @@ const FolderItem = ({
             checked={folderIsSelected}
             onClick={(e) => {
               e.stopPropagation();
-              console.log("Folder checkbox clicked:", { relativePath, folderIsSelected });
               onFolderClick?.(relativePath, folderIsSelected);
             }}
           />
@@ -444,7 +434,6 @@ const DatasetTreeViewRenderer = ({
     estimateSize: () => 22, // 24px height + 2px total margin
     overscan: 70,
   });
-  console.log("datasetRenderArray:", datasetRenderArray);
   const datasetRenderArrayIsLoading = useGlobalStore((state) => state.datasetRenderArrayIsLoading);
   const datasetStructureSearchFilter = useGlobalStore(
     (state) => state.datasetStructureSearchFilter
@@ -473,12 +462,6 @@ const DatasetTreeViewRenderer = ({
 
   useEffect(() => {
     const virtualItems = rowVirtualizer.getVirtualItems();
-    console.log(
-      `Virtualizer update: total=${datasetRenderArray?.length ?? 0}, virtualized=${
-        virtualItems.length
-      }`
-    );
-    console.log(virtualItems);
   }, [datasetRenderArray, rowVirtualizer.getVirtualItems()]);
 
   if (activeFileExplorer !== fileExplorerId) {
@@ -486,7 +469,6 @@ const DatasetTreeViewRenderer = ({
   }
   const renderObjIsEmpty =
     !datasetRenderArray || (Array.isArray(datasetRenderArray) && datasetRenderArray.length === 0);
-  console.log("renderObjIsEmpty:", renderObjIsEmpty);
 
   if (renderObjIsEmpty) {
     return (
@@ -519,18 +501,12 @@ const DatasetTreeViewRenderer = ({
   }
 
   const handleFileItemClick = (relativePath, fileIsSelected) => {
-    console.log("File item clicked:", relativePath, "Selected:", fileIsSelected);
     if (fileActions && typeof fileActions["on-file-click"] === "function") {
       fileActions["on-file-click"](relativePath, fileIsSelected, mutuallyExclusiveSelection);
     }
   };
 
   const handleFolderItemClick = (relativePath, folderIsSelected) => {
-    console.log("handleFolderItemClick called:", {
-      relativePath,
-      folderIsSelected,
-      mutuallyExclusiveSelection,
-    });
     if (folderActions && typeof folderActions["on-folder-click"] === "function") {
       folderActions["on-folder-click"](relativePath, folderIsSelected, mutuallyExclusiveSelection);
     }
@@ -579,7 +555,6 @@ const DatasetTreeViewRenderer = ({
           >
             {rowVirtualizer.getVirtualItems().map((virtualRow) => {
               const item = datasetRenderArray[virtualRow.index];
-              console.log("item:", item);
               if (!item) return null;
 
               return (
