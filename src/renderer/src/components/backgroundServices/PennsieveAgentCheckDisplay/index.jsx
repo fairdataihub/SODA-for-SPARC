@@ -74,7 +74,7 @@ const PennsieveAgentErrorMessageDisplay = ({ errorMessage }) => {
                   This is a known issue with the Pennsieve Agent. It can typically be resolved by
                   deleting the local Pennsieve Agent database files. You can refer to the
                   <ExternalLink
-                    href="https://docs.sodaforsparc.io/docs/common-errors/trouble-starting-the-pennsieve-agent-in-soda"
+                    href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/trouble-starting-the-pennsieve-agent-in-soda"
                     buttonText="SODA documentation"
                     buttonType="anchor"
                   />
@@ -93,7 +93,7 @@ const PennsieveAgentErrorMessageDisplay = ({ errorMessage }) => {
                 <Text my="sm">
                   Please view the
                   <ExternalLink
-                    href="https://docs.sodaforsparc.io/docs/common-errors/trouble-starting-the-pennsieve-agent-in-soda"
+                    href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/trouble-starting-the-pennsieve-agent-in-soda"
                     buttonText="SODA documentation"
                     buttonType="anchor"
                   />
