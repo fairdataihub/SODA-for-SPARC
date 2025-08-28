@@ -30,6 +30,7 @@ import {
   swalShowInfo,
 } from "../utils/swal-utils";
 import DatePicker from "tui-date-picker";
+import { loadStoredContributors } from "../others/contributor-storage";
 
 import { guidedCreateManifestFilesAndAddToDatasetStructure } from "./manifests/manifest";
 import { createStandardizedDatasetStructure } from "../utils/datasetStructure";
@@ -1354,7 +1355,6 @@ const editContributorByOrcid = (
 
 const handleAddOrEditContributorHeaderUI = (boolEditingContributor) => {
   // This is a WIP return empty string for now
-  return "";
   // When editing a contributor, simply display the header for editing
   if (boolEditingContributor) {
     return `
@@ -1362,22 +1362,27 @@ const handleAddOrEditContributorHeaderUI = (boolEditingContributor) => {
         Edit the contributor's information below.
       </label>
     `;
-  }
-  const existingContributorORCiDs = getExistingContributorORCiDs();
-  const locallyStoredContributorArray = window.loadStoredContributors().filter((contributor) => {
-    return !existingContributorORCiDs.includes(contributor["contributor_orcid_id"]);
-  });
-  // If no stored contributors are found, use the default header
-  if (locallyStoredContributorArray.length === 0) {
-    return `
+  } else {
+    const existingContributorORCiDs = getExistingContributorORCiDs();
+    console.log("existingContributorORCiDs:", existingContributorORCiDs);
+    const locallyStoredContributorArray = loadStoredContributors();
+    console.log("locallyStoredContributorArray:", locallyStoredContributorArray);
+    const locallyStoredContributorsThatArentInDataset = locallyStoredContributorArray.filter(
+      (contributor) => {
+        return !existingContributorORCiDs.includes(contributor["contributor_orcid_id"]);
+      }
+    );
+    // If no stored contributors are found, use the default header
+    if (locallyStoredContributorsThatArentInDataset.length === 0) {
+      return `
       <label class="guided--form-label centered mb-md" style="font-size: 1em !important;">
         Enter the contributor's information below.
       </label>
     `;
-  }
+    }
 
-  const contributorOptions = locallyStoredContributorArray.map((contributor) => {
-    return `
+    const contributorOptions = locallyStoredContributorArray.map((contributor) => {
+      return `
         <option
           value="${contributor.contributor_last_name}, ${contributor.contributor_first_name}"
           data-first-name="${contributor.contributor_first_name ?? ""}"
@@ -1389,9 +1394,9 @@ const handleAddOrEditContributorHeaderUI = (boolEditingContributor) => {
           ${contributor.lastName}, ${contributor.firstName}
         </option>
       `;
-  });
+    });
 
-  return `
+    return `
     <label class="guided--form-label centered mb-2" style="font-size: 1em !important;">
       If the contributor has been previously added, select them from the dropdown below.
     </label>
@@ -1417,6 +1422,7 @@ const handleAddOrEditContributorHeaderUI = (boolEditingContributor) => {
       Otherwise, enter the contributor's information below.
     </label>
   `;
+  }
 };
 
 window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) => {
@@ -1436,6 +1442,7 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
     defaultRole = contributorData["contributor_role"] || "";
     contributorSwalTitle = `Edit contributor ${defaultLastName}, ${defaultFirstName}`;
   }
+  console.log("contributorIdToEdit:", !!contributorIdToEdit);
 
   await Swal.fire({
     allowOutsideClick: false,
