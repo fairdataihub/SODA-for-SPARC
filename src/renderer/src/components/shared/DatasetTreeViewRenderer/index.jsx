@@ -431,7 +431,6 @@ const DatasetTreeViewRenderer = ({
   hideSearchBar,
   mutuallyExclusiveSelection,
   entityType,
-  allowFolderSelection = false, // Add new prop with default false
 }) => {
   const activeFileExplorer = useGlobalStore((state) => state.activeFileExplorer);
   const datasetRenderArray = useGlobalStore((state) => state.datasetRenderArray);
@@ -539,10 +538,6 @@ const DatasetTreeViewRenderer = ({
 
   return (
     <Paper padding="md" shadow="sm" radius="md" p="sm" flex={1} w="100%" withBorder>
-      <Text>{`Total files in DOM: ${
-        rowVirtualizer.getVirtualItems().length
-      } out of ${count} files open`}</Text>
-      <Text>{`Entity type: ${entityType}`}</Text>
       {itemSelectInstructions && (
         <Stack gap="xs">
           <Text size="lg" fw={500}>

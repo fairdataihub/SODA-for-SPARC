@@ -390,14 +390,16 @@ window.openPage = async (targetPageID) => {
     const showCorrectFileExplorerByPage = (pageID) => {
       // Get the element for the pageId
       const pageElement = document.getElementById(pageID);
+      console.log("Page element:", pageElement);
 
       // Special case for data categorization pages
       if (pageElement.dataset.componentType === "data-categorization-page") {
+        console.log("Data categorization page detected");
         setActiveFileExplorer("entity-data-selector");
-        return;
+      } else {
+        console.log("Setting active file explorer to page ID:", pageID);
+        setActiveFileExplorer(pageID);
       }
-
-      setActiveFileExplorer(pageID);
     };
     showCorrectFileExplorerByPage(targetPageID);
 
@@ -422,12 +424,18 @@ window.openPage = async (targetPageID) => {
         );
         console.log("Standardized dataset structure created:", standardizedDatasetStructure);
         setPathToRender([]);
-        useGlobalStore.setState({ datasetStructureJSONObj: standardizedDatasetStructure });
+        useGlobalStore.setState({
+          datasetStructureJSONObj: standardizedDatasetStructure,
+          calculateEntities: false,
+        });
         reRenderTreeView();
       } else {
         console.log("Rendering default dataset structure");
         setPathToRender(["data"]);
-        useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
+        useGlobalStore.setState({
+          datasetStructureJSONObj: window.datasetStructureJSONObj,
+          calculateEntities: true,
+        });
         reRenderTreeView();
       }
     };

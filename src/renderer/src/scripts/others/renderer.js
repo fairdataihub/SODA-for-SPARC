@@ -3032,6 +3032,9 @@ window.electron.ipcRenderer.on(
         currentFileExplorerPath
       );
 
+      // Refresh the dataset tree view to reflect the newly imported data
+      reRenderTreeView();
+
       // Show success message
       window.notyf.open({
         type: "success",

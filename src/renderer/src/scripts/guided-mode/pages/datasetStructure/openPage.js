@@ -8,10 +8,7 @@ import { reRenderTreeView } from "../../../../stores/slices/datasetTreeViewSlice
 import { swalFileListSingleAction } from "../../../utils/swal-utils";
 import { getEntityDataById } from "../../../../stores/slices/datasetEntityStructureSlice";
 import { createStandardizedDatasetStructure } from "../../../utils/datasetStructure";
-import {
-  deleteEmptyFoldersFromStructure,
-  setActiveFileExplorer,
-} from "../../../../stores/slices/datasetTreeViewSlice";
+import { deleteEmptyFoldersFromStructure } from "../../../../stores/slices/datasetTreeViewSlice";
 import client from "../../../client";
 
 while (!window.baseHtmlLoaded) {
@@ -20,9 +17,6 @@ while (!window.baseHtmlLoaded) {
 
 export const openPageDatasetStructure = async (targetPageID) => {
   // Add handlers for other pages without componentType
-  if (targetPageID === "guided-unstructured-data-import-tab") {
-    setActiveFileExplorer("guided-unstructured-data-import-tab");
-  }
 
   if (targetPageID === "guided-dataset-structure-and-manifest-review-tab") {
     // Delete existing manifest files in the dataset structure
