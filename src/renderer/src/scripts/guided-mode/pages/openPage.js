@@ -400,8 +400,6 @@ window.openPage = async (targetPageID) => {
     showCorrectFileExplorerByPage(targetPageID);
 
     const renderCorrectFileExplorerByPage = (pageID) => {
-      // List of pages where the file explorer should render the dataset structure
-      // as it will get generated
       const reviewPages = [
         "guided-dataset-structure-and-manifest-review-tab",
         "guided-generate-dataset-locally",
@@ -409,30 +407,33 @@ window.openPage = async (targetPageID) => {
         "guided-dataset-structure-review-tab",
       ];
 
-      // Check if the current page is one of the review pages
+      // For review-related pages: use standardized structure
       if (reviewPages.includes(pageID)) {
         const standardizedDatasetStructure = createStandardizedDatasetStructure(
           window.datasetStructureJSONObj,
           window.sodaJSONObj["dataset-entity-obj"]
         );
+
         setPathToRender([]);
         useGlobalStore.setState({
           datasetStructureJSONObj: standardizedDatasetStructure,
           calculateEntities: false,
         });
-      } else {
-        // If the page has component-type of "data-categorization-page"
-        if (
-          targetPageDataset.componentType === "data-categorization-page" ||
-          pageID === "guided-unstructured-data-import-tab"
-        ) {
-          setPathToRender(["data"]);
-          useGlobalStore.setState({
-            datasetStructureJSONObj: window.datasetStructureJSONObj,
-            calculateEntities: true,
-          });
-          reRenderTreeView();
-        }
+        reRenderTreeView();
+        return;
+      }
+
+      // For categorization or unstructured import pages: use raw structure
+      if (
+        targetPageDataset.componentType === "data-categorization-page" ||
+        pageID === "guided-unstructured-data-import-tab"
+      ) {
+        setPathToRender(["data"]);
+        useGlobalStore.setState({
+          datasetStructureJSONObj: window.datasetStructureJSONObj,
+          calculateEntities: true,
+        });
+        reRenderTreeView();
       }
     };
     renderCorrectFileExplorerByPage(targetPageID);
