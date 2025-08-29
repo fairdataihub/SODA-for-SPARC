@@ -26,8 +26,6 @@ authors:
 cff-version: 1.2.0
 message: If you use this software, please cite it using the metadata from this file.
 type: software
-identifiers:
-  - type: doi
 abstract: Simplifying data curation for researchers funded by the NIH SPARC initiative
 keywords:
   - SPARC
@@ -40,6 +38,6 @@ keywords:
   - windows
 license: MIT
 repository-code: https://github.com/fairdataihub/SODA-for-SPARC
-version: 16.1.0
-date-released: "2025-08-14"
-doi: 10.5281/zenodo.16879039
+version: 16.1.1
+date-released: '2025-08-22'
+doi: 10.5281/zenodo.16930096
