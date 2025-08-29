@@ -157,7 +157,7 @@ window.uploadDatasetDropHandler = async (ev) => {
         "manifest-files": {},
         "generate-dataset": {},
         "starting-point": {
-          location: "local",
+          origin: "local",
           "local-path": "",
         },
       };
