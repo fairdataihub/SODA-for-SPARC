@@ -82,7 +82,6 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
         });
         throw errorArray;
       }
-      console.log("userIsGuest", userIsGuest);
       // If the previous pennsieve generation target was set to "existing", we need to delete
       // the previous pennsieve dataset id to ensure it's not used in the new dataset generation
       if (window.sodaJSONObj["pennsieve-generation-target"] === "existing") {
