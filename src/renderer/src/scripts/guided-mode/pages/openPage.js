@@ -209,19 +209,6 @@ window.openPage = async (targetPageID) => {
     setDeSelectedEntities(window.sodaJSONObj["deSelected-entities"] || []);
     setPerformanceList(window.sodaJSONObj["dataset_metadata"]?.["performance_metadata"] || []);
 
-    const pagesToShowMetadataPreview = [
-      "guided-generate-dataset-locally",
-      "guided-dataset-structure-review-tab",
-      "guided-dataset-generation-confirmation-tab",
-    ];
-    if (pagesToShowMetadataPreview.includes(targetPageID)) {
-      // Set the dataset metadata to preview
-      setDatasetMetadataToPreview(Object.keys(window.sodaJSONObj["dataset_metadata"] || {}));
-    } else {
-      // Clear the dataset metadata preview if not on the generation page
-      setDatasetMetadataToPreview(null);
-    }
-
     handleNextButtonVisibility(targetPageID);
     handleBackButtonVisibility(targetPageID);
     handleSaveAndExitButtonVisibility(targetPageID);
@@ -413,6 +400,7 @@ window.openPage = async (targetPageID) => {
           window.datasetStructureJSONObj,
           window.sodaJSONObj["dataset-entity-obj"]
         );
+        setDatasetMetadataToPreview(Object.keys(window.sodaJSONObj["dataset_metadata"] || {}));
 
         setPathToRender([]);
         useGlobalStore.setState({
@@ -421,6 +409,9 @@ window.openPage = async (targetPageID) => {
         });
         reRenderTreeView();
         return;
+      } else {
+        // Clear the dataset metadata preview if not on the generation page
+        setDatasetMetadataToPreview(null);
       }
 
       // For categorization or unstructured import pages: use raw structure

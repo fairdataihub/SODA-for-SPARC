@@ -15,7 +15,7 @@ const EntityListContainer = ({
           <Divider my="xs" />
         </>
       )}
-      <Box style={{ maxHeight: "300px", overflowY: "auto" }}>{children}</Box>
+      <Box style={{ maxHeight: "600px", overflowY: "auto" }}>{children}</Box>
     </Paper>
   );
 };

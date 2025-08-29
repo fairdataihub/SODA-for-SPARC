@@ -123,6 +123,7 @@ export const reRenderTreeView = () => {
     const entityFilterActive = useGlobalStore.getState().entityFilterActive;
     const entityFilters = useGlobalStore.getState().entityFilters;
     const calculateEntities = useGlobalStore.getState().calculateEntities;
+    const datasetMetadataToPreview = useGlobalStore.getState().datasetMetadataToPreview;
 
     const updatedStructure = safeDeepCopy(datasetStructureJSONObj);
     addRelativePaths(updatedStructure);
@@ -296,6 +297,38 @@ export const reRenderTreeView = () => {
     const renderStructure = traverseStructureByPath(updatedStructure, pathToRender);
     if (renderStructure) addRelativePaths(renderStructure, pathToRender);
     if (window.datasetStructureJSONObj) addRelativePaths(window.datasetStructureJSONObj, []);
+
+    console.log("datasetMetadataToPreview:", datasetMetadataToPreview);
+    // Only iterate if datasetMetadataToPreview is a non-null array
+    if (Array.isArray(datasetMetadataToPreview)) {
+      const metadataKeyToFileNameMapping = {
+        subjects: "subjects.xlsx",
+        samples: "samples.xlsx",
+        code_description: "code_description.xlsx",
+        dataset_description: "dataset_description.xlsx",
+        performances: "performances.xlsx",
+        resources: "resources.xlsx",
+        sites: "sites.xlsx",
+        submission: "submission.xlsx",
+        "README.md": "README.md",
+        CHANGES: "CHANGES",
+        LICENSE: "LICENSE",
+        manifest_file: "manifest.xlsx",
+      };
+      let metadataItemIndex = datasetRenderArray.length;
+      for (const metadataKey of datasetMetadataToPreview) {
+        const fileName = metadataKeyToFileNameMapping[metadataKey] || metadataKey;
+        datasetRenderArray.push({
+          itemType: "metadataFile",
+          fileName,
+          relativePath: `metadata/${metadataKey}`,
+          fileIsSelected: false,
+          entitiesAssociatedWithFile: [],
+          itemIndent: 0,
+          itemIndex: metadataItemIndex++,
+        });
+      }
+    }
 
     useGlobalStore.setState({
       datasetStructureJSONObj: updatedStructure,

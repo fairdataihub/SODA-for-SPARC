@@ -33,6 +33,7 @@ import {
   IconFileTypeSvg,
   IconFileTypeJpg,
   IconFileTypePng,
+  IconFileSpreadsheet,
 } from "@tabler/icons-react";
 
 import useGlobalStore from "../../../stores/globalStore";
@@ -99,6 +100,7 @@ const fileIcons = {
   jpg: <IconFileTypeJpg size={ICON_SETTINGS.fileSize} />,
   jpeg: <IconFileTypeJpg size={ICON_SETTINGS.fileSize} />,
   png: <IconFileTypePng size={ICON_SETTINGS.fileSize} />,
+  xlsx: <IconFileSpreadsheet size={ICON_SETTINGS.fileSize} />,
 };
 
 const getIconForFile = (fileName) => {
@@ -153,10 +155,9 @@ const FileItem = ({
       justify="flex-start"
       bg={getFileColor()}
       onContextMenu={handleFileContextMenuOpen}
-      pl="xs"
-      py="1px"
+      my="1px"
       style={{ flexWrap: "nowrap" }}
-      h="20px"
+      h="23px"
       ml={`${indent * 10 + 5}px`}
     >
       {onFileClick && (
@@ -252,15 +253,6 @@ const collectAllFilesRecursively = (content) => {
   return allFiles;
 };
 
-/* fileName,
-  relativePath,
-  fileIsSelected,
-  entitiesAssociatedWithFile = [], // now array of strings
-  onFileClick,
-  allowStructureEditing,
-  indent,
-  */
-
 const FolderItem = ({
   folderName,
   relativePath,
@@ -323,10 +315,10 @@ const FolderItem = ({
       onContextMenu={handleFolderContextMenuOpen}
       ref={ref}
       bg={getBackgroundColor()}
-      py="1px"
+      my="1px"
       style={{ flexWrap: "nowrap" }}
       onClick={handleFolderClick}
-      h="20px"
+      h="23px"
       ml={`${indent * 10}px`}
     >
       {isOpen ? (
@@ -431,7 +423,7 @@ const DatasetTreeViewRenderer = ({
   const rowVirtualizer = useVirtualizer({
     count,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 22, // 24px height + 2px total margin
+    estimateSize: () => 25, // 24px height + 2px total margin
     overscan: 70,
   });
   const datasetRenderArrayIsLoading = useGlobalStore((state) => state.datasetRenderArrayIsLoading);
@@ -557,10 +549,62 @@ const DatasetTreeViewRenderer = ({
               const item = datasetRenderArray[virtualRow.index];
               if (!item) return null;
 
+              const renderItem = () => {
+                switch (item.itemType) {
+                  case "folder":
+                    return (
+                      <FolderItem
+                        key={item.itemIndex}
+                        folderName={item.folderName}
+                        relativePath={item.relativePath}
+                        folderIsSelected={item.folderIsSelected}
+                        entitiesAssociatedWithFolder={item.entitiesAssociatedWithFolder}
+                        onFolderClick={
+                          folderActions?.["on-folder-click"] ? handleFolderItemClick : null
+                        }
+                        datasetStructureSearchFilter={datasetStructureSearchFilter}
+                        allowStructureEditing={allowStructureEditing}
+                        indent={item.itemIndent}
+                      />
+                    );
+                  case "metadataFile":
+                    return (
+                      <FileItem
+                        key={item.itemIndex}
+                        fileName={item.fileName}
+                        relativePath={item.relativePath}
+                        fileIsSelected={item.fileIsSelected}
+                        entitiesAssociatedWithFile={item.entitiesAssociatedWithFile}
+                        onFileClick={fileActions?.["on-file-click"] ? handleFileItemClick : null}
+                        allowStructureEditing={allowStructureEditing}
+                        indent={item.itemIndent}
+                        // Add extra props/styles for metadata files here
+                      />
+                    );
+                  case "file":
+                    return (
+                      <FileItem
+                        key={item.itemIndex}
+                        fileName={item.fileName}
+                        relativePath={item.relativePath}
+                        fileIsSelected={item.fileIsSelected}
+                        entitiesAssociatedWithFile={item.entitiesAssociatedWithFile}
+                        onFileClick={fileActions?.["on-file-click"] ? handleFileItemClick : null}
+                        allowStructureEditing={allowStructureEditing}
+                        indent={item.itemIndent}
+                      />
+                    );
+                  default:
+                    console.error("Unknown item type:", item.itemType);
+                    return null;
+                }
+              };
+
               return (
                 <div
                   key={virtualRow.key}
                   ref={rowVirtualizer.measureElement}
+                  data-index={virtualRow.index}
                   style={{
                     position: "absolute",
                     top: 0,
@@ -569,32 +613,7 @@ const DatasetTreeViewRenderer = ({
                     transform: `translateY(${virtualRow.start}px)`,
                   }}
                 >
-                  {item.itemType === "folder" ? (
-                    <FolderItem
-                      key={item.itemIndex}
-                      folderName={item.folderName}
-                      relativePath={item.relativePath}
-                      folderIsSelected={item.folderIsSelected}
-                      entitiesAssociatedWithFolder={item.entitiesAssociatedWithFolder}
-                      onFolderClick={
-                        folderActions?.["on-folder-click"] ? handleFolderItemClick : null
-                      }
-                      datasetStructureSearchFilter={datasetStructureSearchFilter}
-                      allowStructureEditing={allowStructureEditing}
-                      indent={item.itemIndent}
-                    />
-                  ) : (
-                    <FileItem
-                      key={item.itemIndex}
-                      fileName={item.fileName}
-                      relativePath={item.relativePath}
-                      fileIsSelected={item.fileIsSelected}
-                      entitiesAssociatedWithFile={item.entitiesAssociatedWithFile}
-                      onFileClick={fileActions?.["on-file-click"] ? handleFileItemClick : null}
-                      allowStructureEditing={allowStructureEditing}
-                      indent={item.itemIndent}
-                    />
-                  )}
+                  {renderItem()}
                 </div>
               );
             })}
