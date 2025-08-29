@@ -157,7 +157,7 @@ window.uploadDatasetDropHandler = async (ev) => {
         "manifest-files": {},
         "generate-dataset": {},
         "starting-point": {
-          location: "local",
+          origin: "local",
           "local-path": "",
         },
       };
@@ -674,6 +674,35 @@ document.getElementById("confirm-account-workspace").addEventListener("click", a
   const pennsieveAgentCheckDiv = document.getElementById(pennsieveAgentCheckDivId);
   // Hide the Pennsieve Agent check div
   pennsieveAgentCheckDiv.classList.add("hidden");
+
+  try {
+    let userInfo = await api.getUserInformation();
+    let currentWorkspace = userInfo["preferredOrganization"];
+
+    // check if we are in welcome workspace
+    if (currentWorkspace === "N:organization:9ae9659b-2311-4d75-963e-0000aa055627") {
+      await swalShowInfo(
+        "Cannot Use the Welcome Workspace",
+        "Please switch to a different workspace."
+      );
+      // If the user confirms the workspace and account, proceed to the next step
+      document.getElementById("confirm-account-workspace").classList.add("soda-green-border");
+      document
+        .getElementById("confirm-account-workspace")
+        .classList.remove("soda-green-background");
+      document.getElementById("confirm-account-workspace").classList.remove("selected");
+      document.getElementById("confirm-account-workspace").classList.add("not-selected");
+      document.getElementById("confirm-account-workspace").classList.add("basic");
+
+      return;
+    }
+  } catch (e) {
+    await swalShowInfo(
+      "Something went wrong while verifying your profile",
+      "Please try again by clicking the 'Yes' button. If this issue persists please use our `Contact Us` page to report the issue."
+    );
+    clientError(e);
+  }
 
   try {
     loadingDiv.classList.remove("hidden");
