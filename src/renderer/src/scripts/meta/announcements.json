@@ -1,4 +1,15 @@
 {
+  "16.1.2": {
+    "announcements": {
+      "bug-fixes": [
+        "Fixed an issue in Upload Dataset feature where datasets imported by drag and drop cannot be used to update an existing Pennsieve dataset.",
+        "Fixed an issue in Upload Dataset feature where the skip folder option for updating an existing dataset was not working as expected.",
+        "Fixed an issue in Prepare Dataset Step-by-Step where an empty Pennsieve dataset cannot be imported if it at one point had files or folders.",
+        "SODA was allowing users to upload datasets to Pennsieve in the Welcome workspace. This is no longer allowed."
+      ],
+      "features": []
+    }
+  },
   "16.1.0": {
     "announcements": {
       "bug-fixes": [],

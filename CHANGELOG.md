@@ -5,6 +5,15 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## V16.1.2 - 2025-08-29
+
+## Bug Fixes:
+
+- Fixed an issue in Upload Dataset feature where the origin key was not set when importing by drag and drop.
+- Fixed an issue by importing the latest version of pysoda that makes it so that when the skip option is selected new folders created in the same session are not also skipped.
+- Fixed an issue in Prepare Dataset Step-by-Step where an empty Pennsieve dataset cannot be imported if it at one point had files or folders.
+- SODA was allowing users to upload datasets to Pennsieve in the Welcome workspace. This is no longer allowed.
+
 ## V16.1.1 - 2025-08-22
 
 ## Feature Additions:
