@@ -407,7 +407,7 @@ window.openPage = async (targetPageID) => {
           datasetStructureJSONObj: standardizedDatasetStructure,
           calculateEntities: false,
         });
-        reRenderTreeView();
+        reRenderTreeView(true);
         return;
       } else {
         // Clear the dataset metadata preview if not on the generation page
@@ -424,7 +424,7 @@ window.openPage = async (targetPageID) => {
           datasetStructureJSONObj: window.datasetStructureJSONObj,
           calculateEntities: true,
         });
-        reRenderTreeView();
+        reRenderTreeView(true);
       }
     };
     renderCorrectFileExplorerByPage(targetPageID);

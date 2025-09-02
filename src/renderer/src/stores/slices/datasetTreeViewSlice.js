@@ -1,6 +1,6 @@
 import useGlobalStore from "../globalStore";
 import { produce } from "immer";
-import { isFolderOpen } from "./fileExplorerStateSlice";
+import { isFolderOpen, resetOpenFoldersState } from "./fileExplorerStateSlice";
 import { newEmptyFolderObj } from "../../scripts/utils/datasetStructure";
 import { getFolderDetailsByRelativePath } from "../../scripts/utils/datasetStructure";
 
@@ -34,7 +34,7 @@ const safeDeepCopy = (obj) => {
   }
 };
 
-const traverseStructureByPath = (structure, pathToRender) => {
+export const traverseStructureByPath = (structure, pathToRender) => {
   let ref = structure;
   for (const subFolder of pathToRender) {
     ref = ref?.folders?.[subFolder];
@@ -114,7 +114,7 @@ export const deleteEmptyFoldersFromStructure = (structure) => {
     : null;
 };
 
-export const reRenderTreeView = () => {
+export const reRenderTreeView = (resetOpenFolders = false) => {
   try {
     const pathToRender = useGlobalStore.getState().pathToRender;
     const datasetStructureJSONObj = useGlobalStore.getState().datasetStructureJSONObj;
@@ -127,6 +127,10 @@ export const reRenderTreeView = () => {
 
     const updatedStructure = safeDeepCopy(datasetStructureJSONObj);
     addRelativePaths(updatedStructure);
+
+    if (resetOpenFolders) {
+      resetOpenFoldersState(pathToRender, updatedStructure);
+    }
 
     const naturalSort = (a, b) =>
       a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });

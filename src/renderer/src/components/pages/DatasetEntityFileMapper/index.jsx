@@ -30,43 +30,6 @@ const handleFileClick = (
   );
 };
 
-const handleFolderClick = (
-  entityType,
-  activeEntity,
-  datasetEntityObj,
-  folderContents,
-  folderWasSelectedBeforeClick,
-  mutuallyExclusive // Remove default value - require explicit parameter
-) => {
-  const action = folderWasSelectedBeforeClick ? "remove" : "add";
-
-  // IMPORTANT: We only map individual files to entities, never the folder paths themselves.
-  // This ensures the entity mapping only contains actual files, not folders.
-
-  // Process all files in the folder
-  Object.values(folderContents.files).forEach((file) => {
-    modifyDatasetEntityForRelativeFilePath(
-      entityType,
-      activeEntity,
-      file.relativePath,
-      action,
-      mutuallyExclusive
-    );
-  });
-
-  // Recursively process subfolders (only their contained files)
-  Object.values(folderContents.folders).forEach((subFolder) => {
-    handleFolderClick(
-      entityType,
-      activeEntity,
-      datasetEntityObj,
-      subFolder,
-      folderWasSelectedBeforeClick,
-      mutuallyExclusive
-    );
-  });
-};
-
 const getInstructionalTextByEntityType = (entityType) => {
   const instructionalText = {
     subject: "Select all files that belong to the subject with the following attributes:",

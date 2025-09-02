@@ -1,10 +1,3 @@
-import { guidedSkipPage, guidedUnSkipPage } from "../navigationUtils/pageSkipping";
-import { getGuidedDatasetName, getGuidedDatasetSubtitle } from "../curationPreparation/utils";
-import {
-  setGuidedDatasetName,
-  setGuidedDatasetSubtitle,
-} from "../../../../stores/slices/guidedModeSlice";
-import { reRenderTreeView } from "../../../../stores/slices/datasetTreeViewSlice";
 import { swalFileListSingleAction } from "../../../utils/swal-utils";
 import { getEntityDataById } from "../../../../stores/slices/datasetEntityStructureSlice";
 import { createStandardizedDatasetStructure } from "../../../utils/datasetStructure";
