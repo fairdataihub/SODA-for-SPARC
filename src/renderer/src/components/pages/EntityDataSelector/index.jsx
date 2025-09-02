@@ -14,7 +14,6 @@ import {
   modifyDatasetEntityForRelativeFilePath,
   checkIfRelativePathBelongsToEntity,
   checkIfFolderBelongsToEntity,
-  setLargeFolderSelectionProgressValue,
 } from "../../../stores/slices/datasetEntitySelectorSlice";
 import { naturalSort } from "../../shared/utils/util-functions";
 import {
