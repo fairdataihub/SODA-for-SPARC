@@ -5,7 +5,10 @@ import { IconSearch } from "@tabler/icons-react";
 import { Text, Grid, Stack, Group, Paper, Tooltip, Box, Progress } from "@mantine/core";
 import useGlobalStore from "../../../stores/globalStore";
 import DatasetTreeViewRenderer from "../../shared/DatasetTreeViewRenderer";
-import { externallySetSearchFilterValue } from "../../../stores/slices/datasetTreeViewSlice";
+import {
+  externallySetSearchFilterValue,
+  reRenderTreeView,
+} from "../../../stores/slices/datasetTreeViewSlice";
 import {
   setActiveEntity,
   modifyDatasetEntityForRelativeFilePath,
@@ -16,66 +19,19 @@ import { naturalSort } from "../../shared/utils/util-functions";
 import {
   countFilesInDatasetStructure,
   countSelectedFilesByEntityType,
+  getFolderDetailsByRelativePath,
 } from "../../../scripts/utils/datasetStructure";
 import InstructionsTowardsLeftContainer from "../../utils/ui/InstructionsTowardsLeftContainer";
 import SodaPaper from "../../utils/ui/SodaPaper";
 import DropDownNote from "../../utils/ui/DropDownNote";
+import { swalShowLoading } from "../../../scripts/utils/swal-utils";
+import Swal from "sweetalert2";
 
 const ENTITY_PREFIXES = ["sub-", "sam-", "perf-"];
 
-const handleEntityClick = (entity) => setActiveEntity(entity);
-
-const handleFileClick = (
-  entityType,
-  activeEntity,
-  datasetEntityObj,
-  fileContents,
-  mutuallyExclusive
-) => {
-  modifyDatasetEntityForRelativeFilePath(
-    entityType,
-    activeEntity,
-    fileContents.relativePath,
-    "toggle",
-    mutuallyExclusive
-  );
-};
-
-const handleFolderClick = (
-  entityType,
-  activeEntity,
-  datasetEntityObj,
-  folderContents,
-  folderWasSelectedBeforeClick,
-  mutuallyExclusive = true
-) => {
-  // Simple folder click handler with no special cases
-
-  const action = folderWasSelectedBeforeClick ? "remove" : "add";
-
-  // Skip processing the folder itself - only process files
-  // Process all files in the folder
-  Object.values(folderContents.files || {}).forEach((file) => {
-    modifyDatasetEntityForRelativeFilePath(
-      entityType,
-      activeEntity,
-      file.relativePath,
-      action,
-      mutuallyExclusive
-    );
-  });
-
-  // Process all subfolders recursively
-  Object.values(folderContents.folders || {}).forEach((subFolder) => {
-    handleFolderClick(
-      entityType,
-      activeEntity,
-      datasetEntityObj,
-      subFolder,
-      folderWasSelectedBeforeClick,
-      mutuallyExclusive
-    );
-  });
+const handleEntityClick = (entity) => {
+  setActiveEntity(entity);
+  reRenderTreeView();
 };
 
 const renderEntityList = (entityType, activeEntity, datasetEntityObj) => {
@@ -126,21 +82,65 @@ const getInstructionalTextByEntityType = (entityType) => {
 
 const EntityDataSelectorPage = ({
   pageName,
-  entityType,
   entityTypeStringSingular,
   entityTypeStringPlural,
   showProgress = false,
 }) => {
   const activeEntity = useGlobalStore((state) => state.activeEntity);
+  const entityType = useGlobalStore((state) => state.entityType); // e.g. 'high-level-folder-data-categorization'
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const datasetIncludesCode = selectedEntities.includes("code");
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
-  const renderDatasetStructureJSONObj = useGlobalStore(
-    (state) => state.renderDatasetStructureJSONObj
-  );
+  const datasetRenderArray = useGlobalStore((state) => state.datasetRenderArray);
 
-  const itemCount = countFilesInDatasetStructure(renderDatasetStructureJSONObj);
+  const itemCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
   const countItemsSelected = countSelectedFilesByEntityType(entityType);
+
+  const handleFileClick = (relativePath, fileIsSelected, mutuallyExclusiveSelection) => {
+    modifyDatasetEntityForRelativeFilePath(
+      entityType,
+      activeEntity,
+      relativePath,
+      fileIsSelected ? "remove" : "add",
+      mutuallyExclusiveSelection
+    );
+    reRenderTreeView();
+  };
+
+  const handleFolderClick = async (relativePath, folderIsSelected, mutuallyExclusiveSelection) => {
+    const action = folderIsSelected ? "remove" : "add";
+    const { childrenFileRelativePaths } = getFolderDetailsByRelativePath(relativePath);
+    if (childrenFileRelativePaths.length && childrenFileRelativePaths.length > 400) {
+      swalShowLoading(
+        folderIsSelected
+          ? `Deselecting ${childrenFileRelativePaths.length} file${
+              childrenFileRelativePaths.length > 1 ? "s" : ""
+            } within the selected folder...`
+          : `Selecting ${childrenFileRelativePaths.length} file${
+              childrenFileRelativePaths.length > 1 ? "s" : ""
+            } within the selected folder...`,
+        `Please wait while SODA processes your ${folderIsSelected ? "deselection" : "selection"}.`
+      );
+    }
+    for (let index = 0; index < childrenFileRelativePaths.length; index++) {
+      const filePath = childrenFileRelativePaths[index];
+      modifyDatasetEntityForRelativeFilePath(
+        entityType,
+        activeEntity,
+        filePath,
+        action,
+        mutuallyExclusiveSelection
+      );
+      // If the index divided by 50 equals 0, yield control to the event loop
+      if (index % 50 === 0) {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      }
+    }
+
+    Swal.close();
+
+    reRenderTreeView();
+  };
 
   return (
     <GuidedModePage pageHeader={pageName}>
@@ -202,20 +202,8 @@ const EntityDataSelectorPage = ({
                   itemSelectInstructions={getInstructionalTextByEntityType(activeEntity)}
                   mutuallyExclusiveSelection={true}
                   folderActions={{
-                    "on-folder-click": (
-                      folderName,
-                      folderContents,
-                      folderIsSelected,
-                      mutuallyExclusive
-                    ) => {
-                      handleFolderClick(
-                        entityType,
-                        activeEntity,
-                        datasetEntityObj,
-                        folderContents,
-                        folderIsSelected,
-                        mutuallyExclusive
-                      );
+                    "on-folder-click": (relativePath, folderIsSelected, mutuallyExclusive) => {
+                      handleFolderClick(relativePath, folderIsSelected, mutuallyExclusive);
                     },
                     "is-folder-selected": (folderName, folderContents) => {
                       // Only check if all file contents belong to the entity
@@ -227,14 +215,9 @@ const EntityDataSelectorPage = ({
                     },
                   }}
                   fileActions={{
-                    "on-file-click": (fileName, fileContents, fileIsSelected, mutuallyExclusive) =>
-                      handleFileClick(
-                        entityType,
-                        activeEntity,
-                        datasetEntityObj,
-                        fileContents,
-                        mutuallyExclusive
-                      ),
+                    "on-file-click": (relativePath, fileIsSelected, mutuallyExclusiveSelection) => {
+                      handleFileClick(relativePath, fileIsSelected, mutuallyExclusiveSelection);
+                    },
                     "is-file-selected": (fileName, fileContents) => {
                       return (
                         checkIfRelativePathBelongsToEntity(
@@ -246,6 +229,7 @@ const EntityDataSelectorPage = ({
                     },
                   }}
                   entityType={entityType}
+                  fileExplorerId="entity-data-selector"
                 />
               </Paper>
             ) : (

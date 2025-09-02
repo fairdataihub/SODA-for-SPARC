@@ -65,7 +65,7 @@ import {
 } from "../utils/swal-utils";
 
 import useGlobalStore from "../../stores/globalStore";
-import { setTreeViewDatasetStructure } from "../../stores/slices/datasetTreeViewSlice";
+import { reRenderTreeView } from "../../stores/slices/datasetTreeViewSlice";
 import {
   resetPennsieveAgentCheckState,
   setPennsieveAgentCheckSuccessful,
@@ -3032,6 +3032,9 @@ window.electron.ipcRenderer.on(
         currentFileExplorerPath
       );
 
+      // Refresh the dataset tree view to reflect the newly imported data
+      reRenderTreeView();
+
       // Show success message
       window.notyf.open({
         type: "success",
@@ -3612,7 +3615,8 @@ const mergeLocalAndRemoteDatasetStructure = async (
     window.organizeDSglobalPath,
     window.datasetStructureJSONObj
   );
-  setTreeViewDatasetStructure(window.datasetStructureJSONObj);
+  useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
+  reRenderTreeView();
 };
 
 const mergeNewDatasetStructureToExistingDatasetStructureAtPath = async (
@@ -3636,14 +3640,14 @@ const mergeNewDatasetStructureToExistingDatasetStructureAtPath = async (
       window.organizeDSglobalPath,
       window.datasetStructureJSONObj
     );
-    setTreeViewDatasetStructure(window.datasetStructureJSONObj);
-
     // Step 4: Update successful, show success message
     window.notyf.open({
       type: "success",
       message: `Data successfully imported`,
       duration: 3000,
     });
+    useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
+    reRenderTreeView();
   } catch (error) {
     console.error(error);
     closeFileImportLoadingSweetAlert();

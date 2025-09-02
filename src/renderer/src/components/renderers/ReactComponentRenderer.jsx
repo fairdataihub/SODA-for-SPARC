@@ -106,10 +106,12 @@ const componentTypeRenderers = {
     renderComponent(componentSlot, <SingleColumnTable id={id} columnName={columnName} />);
   },
   "dataset-tree-view-renderer": (componentSlot) => {
-    renderComponent(
-      componentSlot,
-      <DatasetTreeViewRenderer hideSearchBar={true} entityType={null} />
-    );
+    const props = {
+      fileExplorerId: componentSlot.getAttribute("data-file-explorer-id"),
+      hideSearchBar: true,
+      entityType: null,
+    };
+    renderComponent(componentSlot, <DatasetTreeViewRenderer {...props} />);
   },
 
   "data-importer": (componentSlot) => {
@@ -123,7 +125,6 @@ const componentTypeRenderers = {
   "performance-id-management-page": (componentSlot) => {
     const props = {
       pageName: componentSlot.getAttribute("data-page-name"),
-      entityType: componentSlot.getAttribute("data-entity-type"),
       entityTypeStringSingular: componentSlot.getAttribute("data-entity-type-string-singular"),
       entityTypeStringPlural: componentSlot.getAttribute("data-entity-type-string-plural"),
       entityTypePrefix: componentSlot.getAttribute("data-entity-type-prefix"),
@@ -164,7 +165,6 @@ const componentTypeRenderers = {
   "data-categorization-page": (componentSlot) => {
     const props = {
       pageName: componentSlot.getAttribute("data-page-name"),
-      entityType: componentSlot.getAttribute("data-entity-type"),
       entityTypeStringSingular: componentSlot.getAttribute("data-entity-type-string-singular"),
       entityTypeStringPlural: componentSlot.getAttribute("data-entity-type-string-plural"),
       showProgress: componentSlot.getAttribute("data-show-progress") || false,

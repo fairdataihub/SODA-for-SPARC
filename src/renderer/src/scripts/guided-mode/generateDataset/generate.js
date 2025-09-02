@@ -160,6 +160,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       }
     }
 
+    // Only update Pennsieve Metadata if the user is creating a new dataset
     if (window.sodaJSONObj["pennsieve-generation-target"] === "new") {
       // Show Pennsieve metadata upload table
       window.unHideAndSmoothScrollToElement(
