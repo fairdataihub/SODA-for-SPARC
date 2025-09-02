@@ -71,6 +71,12 @@ const EntityMetadataForm = () => {
 
   // Subscribe to global store state with individual selectors for optimal re-renders
   const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
+  const currentSelectedHierarchyEntityParentSubject = useGlobalStore(
+    (state) => state.currentSelectedHierarchyEntityParentSubject
+  );
+  const currentSelectedHierarchyEntityParentSample = useGlobalStore(
+    (state) => state.currentSelectedHierarchyEntityParentSample
+  );
   const activeFormType = useGlobalStore((state) => state.activeFormType);
   const temporaryEntityMetadata = useGlobalStore((state) => state.temporaryEntityMetadata || {});
   const entityBeingAddedParentSubject = useGlobalStore(
@@ -80,7 +86,6 @@ const EntityMetadataForm = () => {
     (state) => state.entityBeingAddedParentSample
   );
   const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
-  const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const showFullMetadataFormFields = useGlobalStore((state) => state.showFullMetadataFormFields);
   // Define standard prefixes for entity IDs
   const entityPrefixes = {
@@ -660,11 +665,13 @@ const EntityMetadataForm = () => {
       case "sample":
         return (
           <Stack spacing="md">
-            <TextInput
-              label="Subject this sample belongs to"
-              disabled
-              value={entityBeingAddedParentSubject}
-            />
+            {currentSelectedHierarchyEntityParentSubject && (
+              <TextInput
+                label="Subject this sample belongs to"
+                disabled
+                value={currentSelectedHierarchyEntityParentSubject}
+              />
+            )}
             <TextInput
               label="Sample Identifier"
               required
@@ -691,7 +698,6 @@ const EntityMetadataForm = () => {
               disabled={!!selectedHierarchyEntity}
             />
             <OptionalFieldsNotice />
-
             <TextInput
               label="Sample Experimental Group"
               description="The experimental group this sample belongs to"
@@ -845,18 +851,18 @@ const EntityMetadataForm = () => {
             {selectedHierarchyEntity ? (
               // When editing an existing site
               <>
-                {selectedHierarchyEntity.parentSubject && (
+                {currentSelectedHierarchyEntityParentSubject && (
                   <TextInput
                     label="Subject this site belongs to"
                     disabled
-                    value={selectedHierarchyEntity.parentSubject}
+                    value={currentSelectedHierarchyEntityParentSubject}
                   />
                 )}
-                {selectedHierarchyEntity.parentSample && (
+                {currentSelectedHierarchyEntityParentSample && (
                   <TextInput
                     label="Sample this site belongs to"
                     disabled
-                    value={selectedHierarchyEntity.parentSample}
+                    value={currentSelectedHierarchyEntityParentSample}
                   />
                 )}
               </>

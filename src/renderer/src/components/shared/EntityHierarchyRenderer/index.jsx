@@ -1,39 +1,23 @@
 import { Stack, Text, Box, Flex, ScrollArea, ActionIcon, Group } from "@mantine/core";
-import {
-  IconUser,
-  IconFlask,
-  IconClipboard,
-  IconPin,
-  IconEdit,
-  IconPlus,
-  IconTrash,
-} from "@tabler/icons-react";
+import { IconUser, IconFlask, IconPin, IconEdit, IconPlus, IconTrash } from "@tabler/icons-react";
 import { useMemo, useCallback, useState, memo } from "react";
 import {
-  addSubject,
   deleteSubject,
-  modifySubjectId,
   deleteSampleFromSubject,
-  modifySampleId,
-  addSiteToSubject,
-  deleteSiteFromSubject,
-  modifySubjectSiteId,
   deleteSiteFromSample,
   modifySampleSiteId,
-  getAllEntityIds,
   setActiveFormType,
   setEntityBeingAddedParentSubject,
   setEntityBeingAddedParentSample,
 } from "../../../stores/slices/datasetEntityStructureSlice";
 import useGlobalStore from "../../../stores/globalStore";
-import { guidedOpenEntityAdditionSwal, guidedOpenEntityEditSwal } from "./utils";
+import { guidedOpenEntityEditSwal } from "./utils";
 import { setSelectedHierarchyEntity } from "../../../stores/slices/datasetContentSelectorSlice";
 import {
   getExistingSubjects,
   getExistingSamples,
   getExistingSites,
 } from "../../../stores/slices/datasetEntityStructureSlice";
-import { naturalSort } from "../utils/util-functions";
 
 // Returns the appropriate icon component based on entity type
 // Used for visual differentiation between different entity types
@@ -179,9 +163,14 @@ const EntityHierarchyRenderer = ({
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
   const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
+  console.log("Selected Hierarchy Entity:", selectedHierarchyEntity);
   const selectedEntityId = selectedHierarchyEntity ? selectedHierarchyEntity.id : null;
-  const selectedEntityParentSubjectId = selectedHierarchyEntity?.parentSubject;
-  const selectedEntityParentSampleId = selectedHierarchyEntity?.parentSample;
+  const currentSelectedHierarchyEntityParentSubject = useGlobalStore(
+    (state) => state.currentSelectedHierarchyEntityParentSubject
+  );
+  const currentSelectedHierarchyEntityParentSample = useGlobalStore(
+    (state) => state.currentSelectedHierarchyEntityParentSample
+  );
 
   const activeEntity = useGlobalStore((state) => state.activeEntity);
   // Memoize the entity select handler to prevent recreation on each render
@@ -195,10 +184,6 @@ const EntityHierarchyRenderer = ({
     setActiveFormType("subject");
   }, []);
 
-  const handleEditSubject = useCallback((subject) => {
-    return guidedOpenEntityEditSwal("subject", subject);
-  }, []);
-
   const handleDeleteSubject = useCallback((subject) => {
     return deleteSubject(subject.id);
   }, []);
@@ -206,21 +191,10 @@ const EntityHierarchyRenderer = ({
   // ----- SAMPLE OPERATIONS -----
   const handleAddSampleButtonClick = useCallback((subject) => {
     const subjectId = subject["metadata"]["subject_id"];
+    console.log("Adding sample to subject:", subjectId);
     setSelectedHierarchyEntity(null);
     setEntityBeingAddedParentSubject(subjectId);
     setActiveFormType("sample");
-  }, []);
-
-  const handleEditSample = useCallback(async (sample, subject) => {
-    const result = await guidedOpenEntityEditSwal({
-      entityType: "sample",
-      entityData: sample,
-      parentEntityData: subject,
-    });
-
-    if (result) {
-      modifySampleId(subject.id, result.oldName, result.newName);
-    }
   }, []);
 
   const handleDeleteSample = useCallback((sample, subject) => {
@@ -235,18 +209,6 @@ const EntityHierarchyRenderer = ({
     setEntityBeingAddedParentSample(sampleId);
     setEntityBeingAddedParentSubject(subjectId);
     setActiveFormType("site");
-  }, []);
-
-  const handleEditSampleSite = useCallback(async (site, { sample, subject }) => {
-    const result = await guidedOpenEntityEditSwal({
-      entityType: "site",
-      entityData: site,
-      parentEntityData: { sample, subject },
-    });
-
-    if (result) {
-      modifySampleSiteId(subject.id, sample.id, result.oldName, result.newName);
-    }
   }, []);
 
   const handleDeleteSampleSite = useCallback((site, { sample, subject }) => {
@@ -387,7 +349,7 @@ const EntityHierarchyRenderer = ({
                     backgroundColor:
                       allowEntitySelection && selectedEntityId === subject.id
                         ? "#bbdefb"
-                        : selectedEntityParentSubjectId === subject.id
+                        : currentSelectedHierarchyEntityParentSubject === subject.id
                           ? "#f0f0f0"
                           : "",
                   }}
@@ -445,7 +407,7 @@ const EntityHierarchyRenderer = ({
                       onEdit={handleEntitySelect}
                       onDelete={() => handleDeleteSample(sample, subject)}
                       onSelect={handleEntitySelect}
-                      isSampleParent={sample.id === selectedEntityParentSampleId}
+                      isSampleParent={sample.id === currentSelectedHierarchyEntityParentSample}
                     >
                       {/* Sample Sites */}
                       {allowEntityStructureEditing && showSampleSites && (
