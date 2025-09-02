@@ -68,6 +68,59 @@ const getBadgeColor = (entityId) => {
   if (entityId === "Docs") return "cyan";
 };
 
+const EntityBadges = ({ entities }) => {
+  if (!entities || entities.length === 0) return null;
+
+  if (entities.length <= 3) {
+    // Show individual colored badges with tooltips
+    return (
+      <Group gap="xs" wrap="nowrap" style={{ marginLeft: "auto", overflow: "hidden" }}>
+        {entities.map((entityId, index) => (
+          <Tooltip key={index} label={entityId} position="top" withArrow>
+            <Badge
+              color={getBadgeColor(entityId)}
+              variant="light"
+              size="xs"
+              style={{
+                whiteSpace: "nowrap",
+                maxWidth: "100px",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {formatEntityId(entityId)}
+            </Badge>
+          </Tooltip>
+        ))}
+      </Group>
+    );
+  }
+
+  // If more than 3, show a single badge with tooltip listing all entities
+  return (
+    <Tooltip
+      label={entities.join(", ")}
+      multiline
+      width={250}
+      position="top"
+      withArrow
+      zIndex={2999}
+    >
+      <Badge
+        color="gray"
+        variant="outline"
+        size="xs"
+        style={{
+          whiteSpace: "nowrap",
+          marginLeft: "auto",
+        }}
+      >
+        {entities.length} entities
+      </Badge>
+    </Tooltip>
+  );
+};
+
 const formatEntityId = (entityId) => {
   let displayText = entityId;
 
@@ -188,39 +241,7 @@ const FileItem = ({
         {fileName}
       </Text>
 
-      {/* Render association badges */}
-      {entitiesAssociatedWithFile.length > 0 && (
-        <Group gap="xs" wrap="nowrap" style={{ marginLeft: "auto", overflow: "hidden" }}>
-          {entitiesAssociatedWithFile.slice(0, 3).map((entityId, index) => (
-            <Tooltip key={index} label={entityId} position="top" withArrow>
-              <Badge
-                color={getBadgeColor(entityId)}
-                variant="light"
-                size="xs"
-                style={{
-                  whiteSpace: "nowrap",
-                  maxWidth: "100px",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
-                {formatEntityId(entityId)}
-              </Badge>
-            </Tooltip>
-          ))}
-          {entitiesAssociatedWithFile.length > 3 && (
-            <Tooltip
-              label={`${entitiesAssociatedWithFile.length - 3} more entities`}
-              position="top"
-              withArrow
-            >
-              <Badge color="gray" variant="outline" size="xs">
-                +{entitiesAssociatedWithFile.length - 3}
-              </Badge>
-            </Tooltip>
-          )}
-        </Group>
-      )}
+      <EntityBadges entities={entitiesAssociatedWithFile} />
     </Group>
   );
 };
@@ -361,44 +382,7 @@ const FolderItem = ({
       >
         {folderName}
       </Text>
-
-      {/* Entity association badges for folder */}
-      {entitiesAssociatedWithFolder.length > 0 && (
-        <Group
-          gap="xs"
-          wrap="nowrap"
-          style={{ marginLeft: "auto", marginRight: 10, overflow: "hidden" }}
-        >
-          {entitiesAssociatedWithFolder.slice(0, 3).map((entityId, index) => (
-            <Tooltip key={index} label={entityId} position="top" withArrow>
-              <Badge
-                color={getBadgeColor(entityId)}
-                variant="light"
-                size="xs"
-                style={{
-                  whiteSpace: "nowrap",
-                  maxWidth: "100px", // Constrain badge width for layout consistency
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
-                {formatEntityId(entityId)}
-              </Badge>
-            </Tooltip>
-          ))}
-          {entitiesAssociatedWithFolder.length > 3 && (
-            <Tooltip
-              label={`${entitiesAssociatedWithFolder.length - 3} more entities`}
-              position="top"
-              withArrow
-            >
-              <Badge color="gray" variant="outline" size="xs">
-                +{entitiesAssociatedWithFolder.length - 3}
-              </Badge>
-            </Tooltip>
-          )}
-        </Group>
-      )}
+      <EntityBadges entities={entitiesAssociatedWithFolder} />
     </Group>
   );
 };
