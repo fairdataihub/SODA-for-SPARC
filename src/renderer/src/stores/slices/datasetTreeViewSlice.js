@@ -156,19 +156,9 @@ export const filePassesAllFilters = ({
   // Search filter logic first
   if (searchFilter) {
     if (!filePath.toLowerCase().includes(searchFilter.toLowerCase())) {
-      console.log(
-        `[filePassesAllFilters] File does NOT match search filter. filePath: "${filePath}", searchFilter: "${searchFilter}"`
-      );
       return false;
-    } else {
-      console.log(
-        `[filePassesAllFilters] File matches search filter. filePath: "${filePath}", searchFilter: "${searchFilter}"`
-      );
     }
-  } else {
-    console.log(`[filePassesAllFilters] No search filter applied. filePath: "${filePath}"`);
   }
-
   // Entity filter logic
   let passesEntityFilters = true;
   if (entityFilters) {

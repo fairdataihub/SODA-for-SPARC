@@ -116,6 +116,9 @@ export const savePageChanges = async (pageBeingLeftID) => {
               for (const [entityId, entityFiles] of Object.entries(entities)) {
                 if (sharesAtLeastOneKey(entityFiles, performanceFiles)) {
                   performanceParticipants.push(entityId);
+                  console.log(
+                    `[savePageChanges] Added participant to performanceParticipants: entityId="${entityId}", performanceId="${performanceId}", entityType="${entityType}"`
+                  );
                 }
               }
             }

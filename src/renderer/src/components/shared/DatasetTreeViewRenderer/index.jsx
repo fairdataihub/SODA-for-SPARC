@@ -462,43 +462,6 @@ const DatasetTreeViewRenderer = ({
   }
   const renderObjIsEmpty =
     !datasetRenderArray || (Array.isArray(datasetRenderArray) && datasetRenderArray.length === 0);
-  if (renderObjIsEmpty) {
-    if (!datasetRenderArray) {
-      console.warn("renderObjIsEmpty: datasetRenderArray is null or undefined", datasetRenderArray);
-    } else if (Array.isArray(datasetRenderArray) && datasetRenderArray.length === 0) {
-      console.warn("renderObjIsEmpty: datasetRenderArray is an empty array", datasetRenderArray);
-    }
-  }
-
-  if (renderObjIsEmpty) {
-    return (
-      <Paper padding="md" shadow="sm" radius="md" mih={80} p="sm" flex={1} w="100%" withBorder>
-        {itemSelectInstructions && (
-          <SodaGreenPaper>
-            <Text>{itemSelectInstructions}</Text>
-          </SodaGreenPaper>
-        )}
-        <SelectedEntityPreviewer />
-        {!hideSearchBar && (
-          <TextInput
-            placeholder="Search files and folders..."
-            value={inputSearchFilter}
-            onChange={handleSearchChange}
-            leftSection={<IconSearch stroke={1.5} />}
-            mt="md"
-            mb="xs"
-          />
-        )}
-        <Center mt="md">
-          <Text size="sm" c="gray">
-            {debouncedSearchFilter.length > 0
-              ? "No files or folders found matching the search criteria."
-              : "No folders or files to display."}
-          </Text>
-        </Center>
-      </Paper>
-    );
-  }
 
   const handleFileItemClick = (relativePath, fileIsSelected) => {
     if (fileActions && typeof fileActions["on-file-click"] === "function") {
@@ -541,7 +504,15 @@ const DatasetTreeViewRenderer = ({
           position: "relative",
         }}
       >
-        {datasetRenderArrayIsLoading ? (
+        {renderObjIsEmpty ? (
+          <Center mt="md">
+            <Text size="sm" c="gray">
+              {debouncedSearchFilter.length > 0
+                ? "No files or folders found matching the search criteria."
+                : "No folders or files to display."}
+            </Text>
+          </Center>
+        ) : datasetRenderArrayIsLoading ? (
           <Center w="100%">
             <Loader size="md" m="xs" />
           </Center>

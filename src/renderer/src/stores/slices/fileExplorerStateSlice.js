@@ -44,10 +44,7 @@ export const closeFolder = (folderPath) => {
 
 // Reset all folders to closed, then open those at the current render path
 export const resetOpenFoldersState = (pathToRender, datasetStructureJSONObj) => {
-  console.log("datasetStructureJSONObj:", datasetStructureJSONObj);
-  console.log("pathToRender:", pathToRender);
   const renderStructure = traverseStructureByPath(datasetStructureJSONObj, pathToRender);
-  console.log("resetOpenFoldersState → renderStructure:", renderStructure);
 
   // Close all folders
   useGlobalStore.setState((state) => ({
@@ -59,7 +56,6 @@ export const resetOpenFoldersState = (pathToRender, datasetStructureJSONObj) => 
 
   // Open folders that are at the first level of the renderStructure
   for (const folderName of Object.keys(renderStructure?.folders || {})) {
-    console.log("Relative path:", renderStructure.folders[folderName]?.relativePath);
     setFolderOpenState(renderStructure.folders[folderName]?.relativePath, true);
   }
 };

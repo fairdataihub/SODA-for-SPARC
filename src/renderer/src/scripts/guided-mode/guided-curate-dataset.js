@@ -1226,9 +1226,7 @@ const handleAddOrEditContributorHeaderUI = (boolEditingContributor) => {
     return ``;
   }
   const existingContributorORCiDs = getExistingContributorORCiDs();
-  console.log("existingContributorORCiDs:", existingContributorORCiDs);
   const locallyStoredContributorArray = loadStoredContributors();
-  console.log("locallyStoredContributorArray:", locallyStoredContributorArray);
   const locallyStoredContributorsThatArentInDataset = locallyStoredContributorArray.filter(
     (contributor) => {
       return !existingContributorORCiDs.includes(contributor["contributor_orcid_id"]);
@@ -1441,7 +1439,6 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
 
       try {
         if (contributorIdToEdit) {
-          console.log("Editing contributor with ORCID:", storedOrcid);
           editContributorByOrcid(
             contributorIdToEdit,
             contributorLastNameValue,
