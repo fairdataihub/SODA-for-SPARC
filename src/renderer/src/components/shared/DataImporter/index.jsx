@@ -4,7 +4,7 @@ import { IconUpload, IconFile, IconX } from "@tabler/icons-react";
 import FullWidthContainer from "../../containers/FullWidthContainer";
 import DatasetTreeViewRenderer from "../DatasetTreeViewRenderer";
 
-const DataImporter = ({ relativeFolderPathToImportDataInto }) => {
+const DataImporter = () => {
   return (
     <FullWidthContainer>
       <Box w="100%" m={0} p={0} id="data-importer-dropzone">
@@ -45,6 +45,7 @@ const DataImporter = ({ relativeFolderPathToImportDataInto }) => {
         allowStructureEditing={true}
         hideSearchBar={true}
         entityType={null}
+        fileExplorerId="guided-unstructured-data-import-tab"
       />
     </FullWidthContainer>
   );

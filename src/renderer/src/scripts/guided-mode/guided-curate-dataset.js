@@ -1,10 +1,9 @@
-// // sourcery skip: merge-nested-ifs
-
 import { guidedSetNavLoadingState } from "./pages/navigationUtils/pageLoading";
 import { guidedSaveProgress } from "./pages/savePageChanges";
 import {
   getContributorByOrcid,
   addContributor,
+  editContributorByOrcid,
   renderContributorsTable,
 } from "./metadata/contributors";
 import { generateAlertElement } from "./metadata/utils";
@@ -30,6 +29,8 @@ import {
   swalShowInfo,
 } from "../utils/swal-utils";
 import DatePicker from "tui-date-picker";
+import { loadStoredContributors } from "../others/contributor-storage";
+import { ORCID } from "orcid-utils";
 
 import { guidedCreateManifestFilesAndAddToDatasetStructure } from "./manifests/manifest";
 import { createStandardizedDatasetStructure } from "../utils/datasetStructure";
@@ -1137,114 +1138,14 @@ const handleValidationTableUi = (errors) => {
   }
 };
 
-window.deleteContributor = (clickedDelContribuButton, contributorOrcid) => {
-  const contributorField = clickedDelContribuButton.parentElement.parentElement;
-  const contributorsBeforeDelete = window.sodaJSONObj["dataset_contributors"];
+window.deleteContributor = (contributorOrcid) => {
+  const contributors = window.sodaJSONObj?.dataset_contributors || [];
 
-  window.sodaJSONObj["dataset_contributors"] = contributorsBeforeDelete.filter((contributor) => {
-    return contributor.contributor_orcid_id !== contributorOrcid;
-  });
-  //rerender the table after deleting a contributor
+  window.sodaJSONObj.dataset_contributors = contributors.filter(
+    (contributor) => contributor.contributor_orcid_id !== contributorOrcid
+  );
+
   renderContributorsTable();
-};
-
-// end imported openPage stuff
-
-const guidedOpenEntityEditSwal = async (entityName) => {
-  let preExistingEntities;
-  let entityNameSingular;
-  let entityPrefix;
-
-  if (entityName.startsWith("sub-")) {
-    preExistingEntities = window.getExistingSubjectNames();
-    entityNameSingular = "subject";
-    entityPrefix = "sub-";
-  }
-  if (entityName.startsWith("pool-")) {
-    preExistingEntities = getExistingPoolNames();
-    entityNameSingular = "pool";
-    entityPrefix = "pool-";
-  }
-  if (entityName.startsWith("sam-")) {
-    preExistingEntities = getExistingSampleNames();
-    entityNameSingular = "sample";
-    entityPrefix = "sam-";
-  }
-
-  let newEntityName;
-
-  const entityEditConfirmed = await Swal.fire({
-    title: `Editing ${entityNameSingular} ${entityName}`,
-    html: `
-      <p class="help-text text-center">
-        Enter the new name for the ${entityNameSingular} below and press edit.
-        <br />
-      </p>
-      <div class="space-between w-100 align-flex-center">
-        <p class="help-text m-0 mr-1 no-text-wrap">${entityPrefix}</p>
-        <input value="${entityName.replace(
-          entityPrefix,
-          ""
-        )}" id='input-new-entity-name' class='guided--input' type='text' placeholder='Enter new ${entityNameSingular} name and press edit'/>
-      </div>
-    `,
-    width: 800,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0,0.4)",
-    showConfirmButton: true,
-    showCancelButton: true,
-    showCloseButton: false,
-    confirmButtonText: `Edit`,
-    cancelButtonText: `Cancel`,
-    didOpen: () => {
-      // Add event listener to the input to enable the confirm button when the input is changed
-      document.getElementById("input-new-entity-name").addEventListener("keyup", () => {
-        Swal.resetValidationMessage();
-        Swal.enableButtons();
-      });
-    },
-    preConfirm: () => {
-      let newEntityInputValue = document.getElementById("input-new-entity-name").value;
-      if (newEntityInputValue.length === 0) {
-        Swal.showValidationMessage(`Please enter a new ${entityNameSingular} name`);
-        return;
-      }
-
-      newEntityName = `${entityPrefix}${newEntityInputValue}`;
-      if (newEntityName === entityName) {
-        Swal.close();
-      }
-      const entityNameIsValid = window.evaluateStringAgainstSdsRequirements(
-        newEntityName,
-        "string-adheres-to-identifier-conventions"
-      );
-      if (!entityNameIsValid) {
-        Swal.showValidationMessage(
-          `${entityNameSingular} names can not contain spaces or special characters`
-        );
-        return;
-      }
-      if (preExistingEntities.includes(newEntityName)) {
-        Swal.showValidationMessage(`A ${entityNameSingular} with that name already exists`);
-        return;
-      }
-    },
-  });
-
-  if (entityEditConfirmed.isConfirmed) {
-    if (entityName.startsWith("sub-")) {
-      window.sodaJSONObj.renameSubject(entityName, newEntityName);
-      renderSubjectsTable();
-    }
-    if (entityName.startsWith("pool-")) {
-      window.sodaJSONObj.renamePool(entityName, newEntityName);
-      renderPoolsTable();
-    }
-    if (entityName.startsWith("sam-")) {
-      window.sodaJSONObj.renameSample(entityName, newEntityName);
-      renderSamplesTable();
-    }
-  }
 };
 
 const removeAlertMessageIfExists = (elementToCheck) => {
@@ -1319,61 +1220,21 @@ const getExistingContributorORCiDs = () => {
   });
 };
 
-const editContributorByOrcid = (
-  prevContributorOrcid,
-  contributorLastName,
-  contributorFirstName,
-  newContributorOrcid,
-  contributor_affiliation,
-  contributor_role
-) => {
-  // Get the index of the contributor to edit
-  const contributorsIndex = window.sodaJSONObj["dataset_contributors"].findIndex(
-    (contributor) => contributor["contributor_orcid_id"] === prevContributorOrcid
-  );
-
-  if (contributorsIndex === -1) {
-    throw new Error("No contributor with the entered ORCID exists");
-  }
-
-  if (prevContributorOrcid !== newContributorOrcid) {
-    if (getContributorByOrcid(newContributorOrcid)) {
-      throw new Error("A contributor with the entered ORCID already exists");
-    }
-  }
-
-  // Update the contributor's information
-  window.sodaJSONObj["dataset_contributors"][contributorsIndex] = {
-    contributor_orcid_id: newContributorOrcid,
-    contributor_first_name: contributorFirstName,
-    contributor_last_name: contributorLastName,
-    contributor_affiliation: contributor_affiliation,
-    contributor_role: contributor_role,
-  };
-};
-
 const handleAddOrEditContributorHeaderUI = (boolEditingContributor) => {
-  // This is a WIP return empty string for now
-  return "";
-  // When editing a contributor, simply display the header for editing
+  // If editing a contributor, no need to display anything
   if (boolEditingContributor) {
-    return `
-      <label class="guided--form-label centered mb-md" style="font-size: 1em !important;">
-        Edit the contributor's information below.
-      </label>
-    `;
+    return ``;
   }
   const existingContributorORCiDs = getExistingContributorORCiDs();
-  const locallyStoredContributorArray = window.loadStoredContributors().filter((contributor) => {
-    return !existingContributorORCiDs.includes(contributor["contributor_orcid_id"]);
-  });
-  // If no stored contributors are found, use the default header
-  if (locallyStoredContributorArray.length === 0) {
-    return `
-      <label class="guided--form-label centered mb-md" style="font-size: 1em !important;">
-        Enter the contributor's information below.
-      </label>
-    `;
+  const locallyStoredContributorArray = loadStoredContributors();
+  const locallyStoredContributorsThatArentInDataset = locallyStoredContributorArray.filter(
+    (contributor) => {
+      return !existingContributorORCiDs.includes(contributor["contributor_orcid_id"]);
+    }
+  );
+  // If no stored contributors are found, no need to display anything
+  if (locallyStoredContributorsThatArentInDataset.length === 0) {
+    return ``;
   }
 
   const contributorOptions = locallyStoredContributorArray.map((contributor) => {
@@ -1386,7 +1247,7 @@ const handleAddOrEditContributorHeaderUI = (boolEditingContributor) => {
           data-affiliation="${contributor.contributor_affiliation ?? ""}"
           data-roles="${contributor.contributor_role ?? ""}"
         >
-          ${contributor.lastName}, ${contributor.firstName}
+          ${contributor.contributor_last_name}, ${contributor.contributor_first_name}
         </option>
       `;
   });
@@ -1429,11 +1290,11 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
 
   if (contributorIdToEdit) {
     const contributorData = getContributorByOrcid(contributorIdToEdit);
-    defaultFirstName = contributorData["contributor_first_name"] || "";
-    defaultLastName = contributorData["contributor_last_name"] || "";
-    defaultOrcid = contributorData["contributor_orcid_id"] || "";
-    defaultAffiliation = contributorData["contributor_affiliation"] || "";
-    defaultRole = contributorData["contributor_role"] || "";
+    defaultFirstName = contributorData.contributor_first_name || "";
+    defaultLastName = contributorData.contributor_last_name || "";
+    defaultOrcid = contributorData.contributor_orcid_id || "";
+    defaultAffiliation = contributorData.contributor_affiliation || "";
+    defaultRole = contributorData.contributor_role || "";
     contributorSwalTitle = `Edit contributor ${defaultLastName}, ${defaultFirstName}`;
   }
 
@@ -1449,61 +1310,24 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
         ${handleAddOrEditContributorHeaderUI(!!contributorIdToEdit)}
         <div class="space-between w-100">
           <div class="guided--flex-center mt-sm" style="width: 45%">
-            <label class="guided--form-label required" style="font-size: 1em !important;">Last name: </label>
-            <input
-              class="guided--input"
-              id="guided-contributor-last-name"
-              type="text"
-              placeholder="Contributor's last name"
-              value="${defaultLastName}"
-            />
+            <label class="guided--form-label required">Last name:</label>
+            <input class="guided--input" id="guided-contributor-last-name" type="text" placeholder="Contributor's last name" value="${defaultLastName}" />
           </div>
           <div class="guided--flex-center mt-sm" style="width: 45%">
-            <label class="guided--form-label required" style="font-size: 1em !important;">First name: </label>
-            <input
-              class="guided--input"
-              id="guided-contributor-first-name"
-              type="text"
-              placeholder="Contributor's first name"
-              value="${defaultFirstName}"
-            />
+            <label class="guided--form-label required">First name:</label>
+            <input class="guided--input" id="guided-contributor-first-name" type="text" placeholder="Contributor's first name" value="${defaultFirstName}" />
           </div>
         </div>
-        <label class="guided--form-label mt-md required" style="font-size: 1em !important;">ORCID: </label>
-        <input
-          class="guided--input"
-          id="guided-contributor-orcid"
-          type="text"
-          placeholder="https://orcid.org/0000-0000-0000-0000"
-          value="${defaultOrcid}"
-        />
+        <label class="guided--form-label mt-md required">ORCID:</label>
+        <input class="guided--input" id="guided-contributor-orcid" type="text" placeholder="https://orcid.org/0000-0000-0000-0000 OR 0000-0000-0000-0000" value="${defaultOrcid}" />
         <p class="guided--text-input-instructions mb-0 text-left">
-          If your contributor does not have an ORCID, have the contributor <a
-          target="_blank"
-          href="https://orcid.org/register"
-          >sign up for one on orcid.org</a>.
+          If your contributor does not have an ORCID, have the contributor <a target="_blank" href="https://orcid.org/register">sign up for one here</a>.
         </p>
-
-        <label class="guided--form-label mt-md required" style="font-size: 1em !important;">Affiliation: </label>
-        <input
-          class="guided--input"
-          id="guided-contributor-affiliation-input"
-          type="text"
-          placeholder="Institution name"
-          value="${defaultAffiliation}"
-        />
-        <p class="guided--text-input-instructions mb-0 text-left">
-          Institution the contributor is affiliated with.
-        </p>
-
-        <label class="guided--form-label mt-md required" style="font-size: 1em !important;">Role: </label>
-        <select
-          id="guided-contributor-role-select"
-          class="w-100 SODA-select-picker"
-          title="Select a role"
-          data-live-search="true"
-          name="Dataset contributor role"
-        >
+        <label class="guided--form-label mt-md required">Affiliation:</label>
+        <input class="guided--input" id="guided-contributor-affiliation-input" type="text" placeholder="Institution name" value="${defaultAffiliation}" />
+        <p class="guided--text-input-instructions mb-0 text-left">Institution the contributor is affiliated with.</p>
+        <label class="guided--form-label mt-md required">Role:</label>
+        <select id="guided-contributor-role-select" class="w-100 SODA-select-picker" title="Select a role" data-live-search="true">
           <option value="">Select a role</option>
           <option value="ContactPerson">Contact Person</option>
           <option value="CoInvestigator">Co-Investigator</option>
@@ -1532,9 +1356,7 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
           <option value="Other">Other</option>
         </select>
         <p class="guided--text-input-instructions mb-0 text-left">
-          Role the contributor played in the creation of the dataset. Visit <a target="_blank" rel="noopener noreferrer" href="https://schema.datacite.org/meta/kernel-4.4/doc/DataCite-MetadataKernel_v4.4.pdf">DataCite</a> for a definition of the roles.
-          <br />
-          <b>Select a role from the dropdown.</b>
+          Role the contributor played in the creation of the dataset. Visit <a target="_blank" href="https://schema.datacite.org/meta/kernel-4.4/doc/DataCite-MetadataKernel_v4.4.pdf">DataCite</a> for definitions.<br /><b>Select a role from the dropdown.</b>
         </p>
       </div>
     `,
@@ -1542,38 +1364,28 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
     confirmButtonText: contributorIdToEdit ? "Edit contributor" : "Add contributor",
     confirmButtonColor: "#3085d6 !important",
     willOpen: () => {
-      // Initialize selectpicker on stored contributors dropdown
-      $("#guided-stored-contributors-select").selectpicker({ style: "SODA-select-picker" });
-      $("#guided-stored-contributors-select").selectpicker("refresh");
+      $("#guided-stored-contributors-select")
+        .selectpicker({ style: "SODA-select-picker" })
+        .selectpicker("refresh");
+      $("#guided-contributor-role-select")
+        .selectpicker({ style: "SODA-select-picker" })
+        .selectpicker("refresh");
+      if (defaultRole) $("#guided-contributor-role-select").selectpicker("val", defaultRole);
 
-      // Initialize selectpicker on role select dropdown
-      $("#guided-contributor-role-select").selectpicker({ style: "SODA-select-picker" });
-      $("#guided-contributor-role-select").selectpicker("refresh");
-
-      // If editing, set default role in role select
-      if (defaultRole) {
-        $("#guided-contributor-role-select").selectpicker("val", defaultRole);
-      }
-
-      // When selecting a stored contributor, populate fields including role select
       $("#guided-stored-contributors-select").on("change", function () {
-        const selectedFirstName =
-          $("#guided-stored-contributors-select option:selected").data("first-name") || "";
-        const selectedLastName =
-          $("#guided-stored-contributors-select option:selected").data("last-name") || "";
-        const selectedOrcid =
-          $("#guided-stored-contributors-select option:selected").data("orcid") || "";
-        const selectedAffiliation =
-          $("#guided-stored-contributors-select option:selected").data("affiliation") || "";
-        const selectedRole =
-          $("#guided-stored-contributors-select option:selected").data("roles") || "";
-
-        document.getElementById("guided-contributor-first-name").value = selectedFirstName;
-        document.getElementById("guided-contributor-last-name").value = selectedLastName;
-        document.getElementById("guided-contributor-orcid").value = selectedOrcid;
-        document.getElementById("guided-contributor-affiliation-input").value = selectedAffiliation;
-
-        $("#guided-contributor-role-select").selectpicker("val", selectedRole);
+        const selectedOption = $("#guided-stored-contributors-select option:selected");
+        document.getElementById("guided-contributor-first-name").value =
+          selectedOption.data("first-name") || "";
+        document.getElementById("guided-contributor-last-name").value =
+          selectedOption.data("last-name") || "";
+        document.getElementById("guided-contributor-orcid").value =
+          selectedOption.data("orcid") || "";
+        document.getElementById("guided-contributor-affiliation-input").value =
+          selectedOption.data("affiliation") || "";
+        $("#guided-contributor-role-select").selectpicker(
+          "val",
+          selectedOption.data("roles") || ""
+        );
       });
     },
     preConfirm: () => {
@@ -1583,73 +1395,65 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
       const contributorLastNameValue = document
         .getElementById("guided-contributor-last-name")
         .value.trim();
-      const contributorOrcid = document.getElementById("guided-contributor-orcid").value.trim();
+      const contributorOrcidInput = document
+        .getElementById("guided-contributor-orcid")
+        .value.trim();
       const contributorAffiliation = document
         .getElementById("guided-contributor-affiliation-input")
         .value.trim();
       const contributorRole = document.getElementById("guided-contributor-role-select").value;
+
       if (
         !contributorFirstNameValue ||
         !contributorLastNameValue ||
-        !contributorOrcid ||
+        !contributorOrcidInput ||
         !contributorAffiliation ||
         !contributorRole
       ) {
         return Swal.showValidationMessage("Please fill out all required fields");
       }
 
-      if (contributorOrcid.length !== 37) {
-        return Swal.showValidationMessage(
-          "Please enter ORCID ID in the format: https://orcid.org/0000-0000-0000-0000"
-        );
-      }
-
       if (contributorFirstNameValue.includes(",") || contributorLastNameValue.includes(",")) {
         return Swal.showValidationMessage("Please remove commas from the name fields");
       }
 
-      const orcidSite = contributorOrcid.substr(0, 18);
-      if (orcidSite !== "https://orcid.org/") {
+      // Regex to check ORCID format (plain or full URL)
+      const orcidFormatRegex = /^(https:\/\/orcid\.org\/)?\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/i;
+      if (!orcidFormatRegex.test(contributorOrcidInput)) {
         return Swal.showValidationMessage(
-          "Please enter your ORCID ID with https://orcid.org/ in the beginning"
+          "ORCID must be in the format https://orcid.org/0000-0000-0000-0000 OR 0000-0000-0000-0000"
         );
       }
 
-      const orcidDigits = contributorOrcid.substr(18);
-      let total = 0;
-      for (let i = 0; i < orcidDigits.length - 1; i++) {
-        const digit = parseInt(orcidDigits.substr(i, 1));
-        if (isNaN(digit)) continue;
-        total = (total + digit) * 2;
+      // Normalize ORCID (remove URL prefix if present)
+      const normalizedOrcid = contributorOrcidInput.replace(/^https?:\/\/orcid\.org\//i, "");
+
+      // Validate ORCID using ORCID library (checksum + structure)
+      if (!ORCID.isValid(normalizedOrcid)) {
+        return Swal.showValidationMessage(
+          "ORCID iD is not valid. Please check the number and try again."
+        );
       }
 
-      const remainder = total % 11;
-      const result = (12 - remainder) % 11;
-      const checkDigit = result === 10 ? "X" : String(result);
-
-      if (checkDigit !== contributorOrcid.substr(-1)) {
-        return Swal.showValidationMessage("ORCID iD does not exist");
-      }
+      const storedOrcid = ORCID.toUriWithProtocol(normalizedOrcid);
 
       try {
         if (contributorIdToEdit) {
-          // If editing an existing contributor, update their data
           editContributorByOrcid(
             contributorIdToEdit,
             contributorLastNameValue,
             contributorFirstNameValue,
-            contributorOrcid,
+            storedOrcid,
             contributorAffiliation,
             contributorRole
           );
         } else {
-          // If adding a new contributor, add them to the dataset
           addContributor(
             contributorLastNameValue,
             contributorFirstNameValue,
-            contributorOrcid,
+            storedOrcid,
             contributorAffiliation,
-            contributorRole // keep role as an array for compatibility
+            contributorRole
           );
         }
       } catch (error) {
@@ -3640,116 +3444,6 @@ $("#guided-generate-readme-file").on("click", () => {
 $("#guided-generate-changes-file").on("click", () => {
   guidedSaveRCFile("changes");
 });
-
-// /**************************************/
-
-//tagify initializations
-
-const guidedSaveDescriptionDatasetInformation = () => {
-  const title = window.sodaJSONObj["digital-metadata"]["name"];
-  const subtitle = window.sodaJSONObj["digital-metadata"]["subtitle"];
-  let studyType = window.sodaJSONObj["dataset-type"] || "";
-  //get the keywords from the keywords textarea
-  const keywordArray = window.getTagsFromTagifyElement(guidedDatasetKeywordsTagify);
-  if (keywordArray.length < 3) {
-    throw "Please enter at least 3 keywords";
-  }
-
-  //Get the count of all subjects in and outside of pools
-  const [subjectsInPools, subjectsOutsidePools] = window.sodaJSONObj.getAllSubjects();
-  const numSubjects = [...subjectsInPools, ...subjectsOutsidePools].length;
-
-  //Get the count of all samples
-  const [samplesInPools, samplesOutsidePools] = window.sodaJSONObj.getAllSamplesFromSubjects();
-  //Combine sample data from samples in and out of pools
-  const numSamples = [...samplesInPools, ...samplesOutsidePools].length;
-
-  window.sodaJSONObj["dataset_metadata"]["description-metadata"]["dataset-information"] = {
-    name: title,
-    description: subtitle,
-    type: studyType,
-    keywords: keywordArray,
-    "number of samples": numSamples,
-    "number of subjects": numSubjects,
-  };
-
-  // Save keywords as the tags to be uploaded as the Pennsieve dataset tags
-  window.sodaJSONObj["digital-metadata"]["dataset-tags"] = keywordArray;
-};
-
-const guidedSaveDescriptionStudyInformation = () => {
-  const studyOrganSystemTags = window.getTagsFromTagifyElement(guidedStudyOrganSystemsTagify);
-  const studyApproachTags = window.getTagsFromTagifyElement(guidedStudyApproachTagify);
-  const studyTechniqueTags = window.getTagsFromTagifyElement(guidedStudyTechniquesTagify);
-
-  const studyPurposeInput = document.getElementById("guided-ds-study-purpose");
-  const studyDataCollectionInput = document.getElementById("guided-ds-study-data-collection");
-  const studyPrimaryConclusionInput = document.getElementById("guided-ds-study-primary-conclusion");
-  const studyCollectionTitleInput = document.getElementById("guided-ds-study-collection-title");
-  //Initialize the study information variables
-  let studyPurpose = null;
-  let studyDataCollection = null;
-  let studyPrimaryConclusion = null;
-  let studyCollectionTitle = null;
-
-  //Throw an error if any study information variables are not filled out
-  if (!studyPurposeInput.value.trim()) {
-    throw "Please add a study purpose";
-  } else {
-    studyPurpose = studyPurposeInput.value.trim();
-  }
-  if (!studyDataCollectionInput.value.trim()) {
-    throw "Please add a study data collection";
-  } else {
-    studyDataCollection = studyDataCollectionInput.value.trim();
-  }
-  if (!studyPrimaryConclusionInput.value.trim()) {
-    throw "Please add a study primary conclusion";
-  } else {
-    studyPrimaryConclusion = studyPrimaryConclusionInput.value.trim();
-  }
-  if (studyOrganSystemTags.length < 1) {
-    throw "Please add at least one study organ system";
-  }
-  if (studyApproachTags.length < 1) {
-    throw "Please add at least one study approach";
-  }
-  if (studyTechniqueTags.length < 1) {
-    throw "Please add at least one study technique";
-  }
-
-  studyCollectionTitle = studyCollectionTitleInput.value.trim();
-
-  //After validation, add the study information to the JSON object
-  window.sodaJSONObj["dataset_metadata"]["description-metadata"]["study-information"] = {
-    "study organ system": studyOrganSystemTags,
-    "study approach": studyApproachTags,
-    "study technique": studyTechniqueTags,
-    "study purpose": studyPurpose,
-    "study data collection": studyDataCollection,
-    "study primary conclusion": studyPrimaryConclusion,
-    "study collection title": studyCollectionTitle,
-  };
-
-  // Generate the dataset description to be added to Pennsieve based off of the dd metadata
-  window.sodaJSONObj["digital-metadata"]["description"] = {
-    "study-purpose": studyPurpose,
-    "data-collection": studyDataCollection,
-    "primary-conclusion": studyPrimaryConclusion,
-  };
-};
-const guidedSaveDescriptionContributorInformation = () => {
-  const acknowledgmentsInput = document.getElementById("guided-ds-acknowledgments");
-  const acknowledgments = acknowledgmentsInput.value.trim();
-
-  // Get tags from other funding tagify
-  const otherFunding = window.getTagsFromTagifyElement(guidedOtherFundingsourcesTagify);
-
-  window.sodaJSONObj["dataset_metadata"]["description-metadata"]["contributor-information"] = {
-    funding: otherFunding,
-    acknowledgment: acknowledgments,
-  };
-};
 
 const doTheHack = async () => {
   // wait for a second

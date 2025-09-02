@@ -90,39 +90,13 @@ export const savePageChanges = async (pageBeingLeftID) => {
           throw errorArray;
         }
 
-        const sharesAtLeastOneKey = (a, b) => {
-          return Object.keys(a).some((key) => {
-            return key in b;
-          });
-        };
-
         window.sodaJSONObj["dataset_performances"] = performanceList;
 
         // Deep copy to avoid mutating the original list in the global store
         const performanceListCopy = structuredClone(performanceList);
-        const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
 
+        // Set the date property for each performance based on start_datetime
         performanceListCopy.forEach((performance) => {
-          const performanceId = performance.performance_id;
-          const performanceParticipants = [];
-
-          if (datasetEntityObj?.performances?.[performanceId]) {
-            const performanceFiles = datasetEntityObj.performances[performanceId];
-
-            for (const entityType of ["subjects", "samples", "sites"]) {
-              const entities = datasetEntityObj[entityType];
-              if (!entities) continue;
-
-              for (const [entityId, entityFiles] of Object.entries(entities)) {
-                if (sharesAtLeastOneKey(entityFiles, performanceFiles)) {
-                  performanceParticipants.push(entityId);
-                }
-              }
-            }
-          }
-
-          performance.participants = performanceParticipants;
-
           if (performance.start_datetime) {
             performance.date = performance.start_datetime.split("T")[0];
           }
@@ -190,6 +164,50 @@ export const savePageChanges = async (pageBeingLeftID) => {
             });
             throw errorArray;
           }
+        }
+
+        if (entityType === "performances") {
+          // Clone current performances metadata to avoid mutating the original reference
+          const performanceMetadata = structuredClone(
+            window.sodaJSONObj.dataset_metadata.performances
+          );
+
+          // Utility: check if two objects share at least one common key
+          const sharesAtLeastOneKey = (objA, objB) => Object.keys(objA).some((key) => key in objB);
+
+          performanceMetadata.forEach((performance) => {
+            const performanceId = performance.performance_id;
+            const performanceFiles = datasetEntityObj?.performances?.[performanceId];
+
+            if (!performanceFiles) {
+              performance.participants = [];
+              return;
+            }
+
+            const performanceParticipants = [];
+
+            // Iterate over each relevant entity type
+            for (const type of ["subjects", "samples", "sites"]) {
+              const entities = datasetEntityObj[type];
+
+              if (!entities) {
+                continue;
+              }
+
+              // Check which entities share files with this performance
+              for (const [entityId, entityFiles] of Object.entries(entities)) {
+                if (sharesAtLeastOneKey(entityFiles, performanceFiles)) {
+                  performanceParticipants.push(entityId);
+                }
+              }
+            }
+
+            // Deduplicate participants before saving them
+            performance.participants = [...new Set(performanceParticipants)];
+          });
+
+          // Update the dataset metadata with the modified performances
+          window.sodaJSONObj.dataset_metadata.performances = performanceMetadata;
         }
 
         // Save the dataset entity object to the progress file

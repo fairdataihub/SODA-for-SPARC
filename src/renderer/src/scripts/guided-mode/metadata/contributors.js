@@ -1,3 +1,5 @@
+import { addOrUpdateStoredContributor } from "../../others/contributor-storage";
+
 export const addContributor = (
   contributor_last_name, // string: last name
   contributor_first_name, // string: first name
@@ -9,58 +11,60 @@ export const addContributor = (
   if (getContributorByOrcid(contributor_orcid_id)) {
     throw new Error("A contributor with the entered ORCID already exists");
   }
-
-  // Add to dataset_contributors using new schema
-  window.sodaJSONObj["dataset_contributors"].push({
-    contributor_last_name: contributor_last_name,
-    contributor_first_name: contributor_first_name,
+  const contributorObj = {
+    contributor_last_name,
+    contributor_first_name,
     contributor_orcid_id,
     contributor_affiliation,
     contributor_role,
-  });
+  };
+
+  // Add to dataset_contributors using new schema
+  window.sodaJSONObj["dataset_contributors"].push(contributorObj);
 
   // Store the contributor locally so they can import the contributor's data in the future
   try {
-    window.addOrUpdateStoredContributor(
-      contributor_first_name,
-      contributor_last_name,
-      contributor_orcid_id,
-      contributor_affiliation,
-      contributor_role
-    );
+    addOrUpdateStoredContributor(contributorObj);
   } catch (error) {
     console.error("Failed to store contributor: " + error);
   }
 };
 
-export const editContributorByID = (
-  prev_contributor_orcid_id, // string: ORCID of the contributor to edit
-  contributor_first_name, // string: first name
-  contributor_last_name, // string: last name
-  contributor_orcid_id, // string: ORCID
-  contributor_affiliation, // string: affiliation
-  contributor_role // string: role (not array)
+export const editContributorByOrcid = (
+  prevContributorOrcid,
+  contributorLastName,
+  contributorFirstName,
+  newContributorOrcid,
+  contributor_affiliation,
+  contributor_role
 ) => {
-  // Find the contributor by ORCID
-  const contributor = getContributorByOrcid(prev_contributor_orcid_id);
-  if (!contributor) {
-    throw new Error("Contributor with the specified ORCID does not exist");
+  // Get the index of the contributor to edit
+  const contributorsIndex = window.sodaJSONObj["dataset_contributors"].findIndex(
+    (contributor) => contributor["contributor_orcid_id"] === prevContributorOrcid
+  );
+
+  if (contributorsIndex === -1) {
+    throw new Error("No contributor with the entered ORCID exists");
   }
-  // Update the contributor's details
-  contributor.contributor_first_name = contributor_first_name;
-  contributor.contributor_last_name = contributor_last_name;
-  contributor.contributor_orcid_id = contributor_orcid_id;
-  contributor.contributor_affiliation = contributor_affiliation;
-  contributor.contributor_role = contributor_role;
-  // Update the stored contributor data
+
+  if (prevContributorOrcid !== newContributorOrcid) {
+    if (getContributorByOrcid(newContributorOrcid)) {
+      throw new Error("A contributor with the entered ORCID already exists");
+    }
+  }
+
+  // Update the contributor's information
+  const updatedContributorObj = {
+    contributor_orcid_id: newContributorOrcid,
+    contributor_first_name: contributorFirstName,
+    contributor_last_name: contributorLastName,
+    contributor_affiliation: contributor_affiliation,
+    contributor_role: contributor_role,
+  };
+  window.sodaJSONObj["dataset_contributors"][contributorsIndex] = updatedContributorObj;
+  // Update local storage for the contributor
   try {
-    window.addOrUpdateStoredContributor(
-      contributor_first_name,
-      contributor_last_name,
-      contributor_orcid_id,
-      contributor_affiliation,
-      contributor_role
-    );
+    addOrUpdateStoredContributor(updatedContributorObj);
   } catch (error) {
     console.error("Failed to update stored contributor: " + error);
   }
