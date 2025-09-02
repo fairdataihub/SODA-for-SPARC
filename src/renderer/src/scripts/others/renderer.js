@@ -103,14 +103,12 @@ window.datasetStructureJSONObj = {
 window.log.setupRendererLogOptions();
 window.homeDirectory = await window.electron.ipcRenderer.invoke("get-app-path", "home");
 
+let osType = window.os.type();
+let osPlatform = window.os.platform();
+let osRelease = window.os.release();
+
 //log user's OS version //
-window.log.info(
-  "User OS:",
-  window.os.type(),
-  window.os.platform(),
-  "version:",
-  window.os.release()
-);
+window.log.info(`User OS: ${osType} ${osPlatform} version: ${osRelease}`);
 
 // utility function for async style set timeout
 window.wait = async (delay) => {
@@ -119,7 +117,7 @@ window.wait = async (delay) => {
 
 // // Check current app version //
 const appVersion = await window.electron.ipcRenderer.invoke("app-version");
-window.log.info("Current SODA version:", appVersion);
+window.log.info(`Current SODA version: ${appVersion}`);
 
 document.getElementById("guided_mode_view").click();
 
