@@ -153,7 +153,24 @@ export const filePassesAllFilters = ({
   searchFilter,
   datasetEntityObj,
 }) => {
+  // Search filter logic first
+  if (searchFilter) {
+    if (!filePath.toLowerCase().includes(searchFilter.toLowerCase())) {
+      console.log(
+        `[filePassesAllFilters] File does NOT match search filter. filePath: "${filePath}", searchFilter: "${searchFilter}"`
+      );
+      return false;
+    } else {
+      console.log(
+        `[filePassesAllFilters] File matches search filter. filePath: "${filePath}", searchFilter: "${searchFilter}"`
+      );
+    }
+  } else {
+    console.log(`[filePassesAllFilters] No search filter applied. filePath: "${filePath}"`);
+  }
+
   // Entity filter logic
+  let passesEntityFilters = true;
   if (entityFilters) {
     const { include, exclude } = entityFilters;
     const isAssociatedWithFilters = (filters) => {
@@ -167,15 +184,10 @@ export const filePassesAllFilters = ({
       }
       return false;
     };
-    if (isAssociatedWithFilters(exclude)) return false;
-    if (!include.length) return true;
-    if (!isAssociatedWithFilters(include)) return false;
+    if (isAssociatedWithFilters(exclude)) passesEntityFilters = false;
+    if (include.length > 0 && !isAssociatedWithFilters(include)) passesEntityFilters = false;
   }
-  // Search filter logic
-  if (searchFilter) {
-    if (!filePath.toLowerCase().includes(searchFilter.toLowerCase())) return false;
-  }
-  return true;
+  return passesEntityFilters;
 };
 
 export const reRenderTreeView = (resetOpenFolders = false) => {
@@ -218,11 +230,6 @@ export const reRenderTreeView = (resetOpenFolders = false) => {
           const folder = node.folders[folderName];
           const relativePath = folder.relativePath;
 
-          // Skip folders that don't match search
-          if (!relativePath.toLowerCase().includes(datasetStructureSearchFilter.toLowerCase())) {
-            continue;
-          }
-
           const { childrenFileRelativePaths } = calculateEntities
             ? getFolderDetailsByRelativePath(relativePath)
             : { childrenFileRelativePaths: [] };
@@ -236,6 +243,14 @@ export const reRenderTreeView = (resetOpenFolders = false) => {
               datasetEntityObj,
             })
           );
+
+          // Skip folders that don't match search that have no matching children
+          if (
+            !relativePath.toLowerCase().includes(datasetStructureSearchFilter.toLowerCase()) &&
+            filteredChildrenFileRelativePaths.length === 0
+          ) {
+            continue;
+          }
 
           const allFilesSelected =
             allFolderChildrenAreSelected ||
@@ -353,7 +368,6 @@ export const reRenderTreeView = (resetOpenFolders = false) => {
     if (renderStructure) addRelativePaths(renderStructure, pathToRender);
     if (window.datasetStructureJSONObj) addRelativePaths(window.datasetStructureJSONObj, []);
 
-    console.log("datasetMetadataToPreview:", datasetMetadataToPreview);
     // Only iterate if datasetMetadataToPreview is a non-null array
     if (Array.isArray(datasetMetadataToPreview)) {
       const metadataKeyToFileNameMapping = {

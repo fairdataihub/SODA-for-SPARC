@@ -436,15 +436,16 @@ const DatasetTreeViewRenderer = ({
   );
 
   const [inputSearchFilter, setInputSearchFilter] = useState(datasetStructureSearchFilter);
-  const [debouncedSearchFilter] = useDebouncedValue(inputSearchFilter, 300); // 300ms debounce
+  const [debouncedSearchFilter] = useDebouncedValue(inputSearchFilter, 500); // 500ms debounce
 
+  // Only update store and trigger re-render when debounced value changes
   useEffect(() => {
-    setDatasetStructureSearchFilter(inputSearchFilter);
-  }, [inputSearchFilter]);
+    setDatasetStructureSearchFilter(debouncedSearchFilter);
+    reRenderTreeView();
+  }, [debouncedSearchFilter]);
 
   const handleSearchChange = (event) => {
     setInputSearchFilter(event.target.value);
-    reRenderTreeView();
   };
 
   // Update local state when the store changes
@@ -490,7 +491,7 @@ const DatasetTreeViewRenderer = ({
         )}
         <Center mt="md">
           <Text size="sm" c="gray">
-            {inputSearchFilter.length > 0
+            {debouncedSearchFilter.length > 0
               ? "No files or folders found matching the search criteria."
               : "No folders or files to display."}
           </Text>
