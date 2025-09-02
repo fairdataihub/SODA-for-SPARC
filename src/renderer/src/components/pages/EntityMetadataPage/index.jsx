@@ -71,6 +71,7 @@ const EntityMetadataForm = () => {
 
   // Subscribe to global store state with individual selectors for optimal re-renders
   const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
+
   const currentSelectedHierarchyEntityParentSubject = useGlobalStore(
     (state) => state.currentSelectedHierarchyEntityParentSubject
   );
@@ -94,6 +95,12 @@ const EntityMetadataForm = () => {
     site: "site-",
     performance: "perf-",
   };
+
+  // Reset temporary metadata when selectedHierarchyEntity changes
+  useEffect(() => {
+    clearTemporaryMetadata(activeFormType);
+    console.log("CLEARED TEMPORARY METADATA");
+  }, [selectedHierarchyEntity, activeFormType]);
 
   /**
    * Retrieves formatted metadata value for display in the form

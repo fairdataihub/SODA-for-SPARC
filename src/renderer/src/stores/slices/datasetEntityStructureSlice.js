@@ -825,7 +825,6 @@ export const setActiveFormType = (formType) => {
 
 // Add these missing functions as well
 export const setEntityBeingAddedParentSubject = (subjectId) => {
-  console.log("Setting entityBeingAddedParentSubject to:", subjectId);
   useGlobalStore.setState(
     produce((state) => {
       state.entityBeingAddedParentSubject = subjectId;
@@ -834,7 +833,6 @@ export const setEntityBeingAddedParentSubject = (subjectId) => {
 };
 
 export const setEntityBeingAddedParentSample = (sampleId) => {
-  console.log("Setting entityBeingAddedParentSample to:", sampleId);
   useGlobalStore.setState(
     produce((state) => {
       state.entityBeingAddedParentSample = sampleId;

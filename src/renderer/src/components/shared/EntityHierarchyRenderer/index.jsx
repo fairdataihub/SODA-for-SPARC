@@ -163,7 +163,6 @@ const EntityHierarchyRenderer = ({
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
   const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
-  console.log("Selected Hierarchy Entity:", selectedHierarchyEntity);
   const selectedEntityId = selectedHierarchyEntity ? selectedHierarchyEntity.id : null;
   const currentSelectedHierarchyEntityParentSubject = useGlobalStore(
     (state) => state.currentSelectedHierarchyEntityParentSubject
@@ -191,7 +190,6 @@ const EntityHierarchyRenderer = ({
   // ----- SAMPLE OPERATIONS -----
   const handleAddSampleButtonClick = useCallback((subject) => {
     const subjectId = subject["metadata"]["subject_id"];
-    console.log("Adding sample to subject:", subjectId);
     setSelectedHierarchyEntity(null);
     setEntityBeingAddedParentSubject(subjectId);
     setActiveFormType("sample");

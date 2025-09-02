@@ -27,7 +27,6 @@ export const setSelectedHierarchyEntity = (entityObj) => {
       break;
 
     case "sample":
-      console.log("entityObj for sample", entityObj);
       setCurrentSelectedHierarchyEntityParentSubject(entityObj?.metadata?.subject_id);
       setCurrentSelectedHierarchyEntityParentSample(null);
       break;
@@ -38,19 +37,17 @@ export const setSelectedHierarchyEntity = (entityObj) => {
       break;
 
     default:
-      console.log("Unknown entity type:", entityObj?.type);
+      console.error("Unknown entity type:", entityObj?.type);
   }
 };
 
 export const setCurrentSelectedHierarchyEntityParentSubject = (subjectId) => {
-  console.log("Setting currentSelectedHierarchyEntityParentSubject to:", subjectId);
   useGlobalStore.setState({
     currentSelectedHierarchyEntityParentSubject: subjectId,
   });
 };
 
 export const setCurrentSelectedHierarchyEntityParentSample = (sampleId) => {
-  console.log("Setting currentSelectedHierarchyEntityParentSample to:", sampleId);
   useGlobalStore.setState({
     currentSelectedHierarchyEntityParentSample: sampleId,
   });
