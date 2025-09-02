@@ -120,7 +120,7 @@ const EntityDataSelectorPage = ({
           : `Selecting ${childrenFileRelativePaths.length} file${
               childrenFileRelativePaths.length > 1 ? "s" : ""
             } within the selected folder...`,
-        "Please wait while SODA processes your changes."
+        `Please wait while SODA processes your ${folderIsSelected ? "deselection" : "selection"}.`
       );
     }
     for (let index = 0; index < childrenFileRelativePaths.length; index++) {

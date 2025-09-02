@@ -149,16 +149,12 @@ export const isAssociatedWithFilters = (filters) => {
 
 export const filePassesAllFilters = ({
   filePath,
-  entityFilterActive,
   entityFilters,
   searchFilter,
-  entityType,
-  activeEntity,
-  invertedDatasetEntityObj,
   datasetEntityObj,
 }) => {
   // Entity filter logic
-  if (entityFilterActive) {
+  if (entityFilters) {
     const { include, exclude } = entityFilters;
     const isAssociatedWithFilters = (filters) => {
       for (const { type, names } of filters) {
@@ -174,11 +170,6 @@ export const filePassesAllFilters = ({
     if (isAssociatedWithFilters(exclude)) return false;
     if (!include.length) return true;
     if (!isAssociatedWithFilters(include)) return false;
-  }
-  // Entity selection logic
-  if (entityType && activeEntity) {
-    const entitySet = invertedDatasetEntityObj[filePath]?.[entityType];
-    if (!entitySet || !entitySet.has(activeEntity)) return false;
   }
   // Search filter logic
   if (searchFilter) {
@@ -240,12 +231,8 @@ export const reRenderTreeView = (resetOpenFolders = false) => {
           const filteredChildrenFileRelativePaths = childrenFileRelativePaths.filter((filePath) =>
             filePassesAllFilters({
               filePath,
-              entityFilterActive,
               entityFilters,
               searchFilter: datasetStructureSearchFilter,
-              entityType,
-              activeEntity,
-              invertedDatasetEntityObj,
               datasetEntityObj,
             })
           );
@@ -298,12 +285,8 @@ export const reRenderTreeView = (resetOpenFolders = false) => {
               if (
                 !filePassesAllFilters({
                   filePath: relativePath,
-                  entityFilterActive,
                   entityFilters,
                   searchFilter: datasetStructureSearchFilter,
-                  entityType,
-                  activeEntity,
-                  invertedDatasetEntityObj,
                   datasetEntityObj,
                 })
               ) {
@@ -341,12 +324,8 @@ export const reRenderTreeView = (resetOpenFolders = false) => {
             if (
               !filePassesAllFilters({
                 filePath: file.relativePath,
-                entityFilterActive,
                 entityFilters,
                 searchFilter: datasetStructureSearchFilter,
-                entityType,
-                activeEntity,
-                invertedDatasetEntityObj,
                 datasetEntityObj,
               })
             ) {

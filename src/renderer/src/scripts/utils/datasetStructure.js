@@ -3,6 +3,7 @@ import { reRenderTreeView } from "../../stores/slices/datasetTreeViewSlice";
 import {
   deleteEmptyFoldersFromStructure,
   getInvertedDatasetEntityObj,
+  filePassesAllFilters,
 } from "../../stores/slices/datasetTreeViewSlice";
 
 export const countFilesInDatasetStructure = (datasetStructure) => {
@@ -69,51 +70,24 @@ export const getFolderDetailsByRelativePath = (relativePath) => {
   const folderName = pathSegments.pop();
   const parentFolder = getNestedObjectAtPathArray(pathSegments);
   const folderObject = parentFolder?.folders?.[folderName];
-  const invertedDatasetEntityObj = getInvertedDatasetEntityObj();
   const datasetStructureSearchFilter = useGlobalStore.getState().datasetStructureSearchFilter;
-  const entityFilterActive = useGlobalStore.getState().entityFilterActive;
   const entityFilters = useGlobalStore.getState().entityFilters;
-  const entityType = useGlobalStore.getState().entityType;
-  const activeEntity = useGlobalStore.getState().activeEntity;
-
-  // Local file filter logic (matches current entity and search filter)
-  const localCheckFileFilter = (filePath) => {
-    // Entity filter logic
-    if (entityFilterActive) {
-      const { include, exclude } = entityFilters;
-      const isAssociatedWithFilters = (filters) => {
-        for (const { type, names } of filters) {
-          if (!type || !Array.isArray(names) || names.length === 0) continue;
-          const entities = useGlobalStore.getState().datasetEntityObj[type];
-          if (!entities) continue;
-          for (const name of names) {
-            if (entities[name]?.[filePath]) return true;
-          }
-        }
-        return false;
-      };
-      if (isAssociatedWithFilters(exclude)) return false;
-      if (!include.length) return true;
-      if (!isAssociatedWithFilters(include)) return false;
-    }
-    // Entity selection logic
-    if (entityType && activeEntity) {
-      const entitySet = invertedDatasetEntityObj[filePath]?.[entityType];
-      if (!entitySet || !entitySet.has(activeEntity)) return false;
-    }
-    // Search filter logic
-    if (datasetStructureSearchFilter) {
-      if (!filePath.toLowerCase().includes(datasetStructureSearchFilter.toLowerCase())) return false;
-    }
-    return true;
-  };
+  const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
 
   // Recursively collect all fileObj.relativePath values in this folder and subfolders as an array, filtered
   const collectFileRelativePathsRecursively = (folderObj) => {
     let result = [];
     if (folderObj?.files) {
       Object.values(folderObj.files).forEach((fileObj) => {
-        if (fileObj.relativePath && localCheckFileFilter(fileObj.relativePath)) {
+        if (
+          fileObj.relativePath &&
+          filePassesAllFilters({
+            filePath: fileObj.relativePath,
+            entityFilters,
+            searchFilter: datasetStructureSearchFilter,
+            datasetEntityObj,
+          })
+        ) {
           result.push(fileObj.relativePath);
         }
       });
