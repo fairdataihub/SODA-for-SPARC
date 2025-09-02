@@ -14,6 +14,7 @@ import {
   modifyDatasetEntityForRelativeFilePath,
   checkIfRelativePathBelongsToEntity,
   checkIfFolderBelongsToEntity,
+  setLargeFolderSelectionProgressValue,
 } from "../../../stores/slices/datasetEntitySelectorSlice";
 import { naturalSort } from "../../shared/utils/util-functions";
 import {
@@ -24,6 +25,8 @@ import {
 import InstructionsTowardsLeftContainer from "../../utils/ui/InstructionsTowardsLeftContainer";
 import SodaPaper from "../../utils/ui/SodaPaper";
 import DropDownNote from "../../utils/ui/DropDownNote";
+import { swalShowLoading } from "../../../scripts/utils/swal-utils";
+import Swal from "sweetalert2";
 
 const ENTITY_PREFIXES = ["sub-", "sam-", "perf-"];
 
@@ -105,11 +108,23 @@ const EntityDataSelectorPage = ({
     reRenderTreeView();
   };
 
-  const handleFolderClick = (relativePath, folderIsSelected, mutuallyExclusiveSelection) => {
+  const handleFolderClick = async (relativePath, folderIsSelected, mutuallyExclusiveSelection) => {
     const action = folderIsSelected ? "remove" : "add";
     const { childrenFileRelativePaths } = getFolderDetailsByRelativePath(relativePath);
-    const t0 = performance.now();
-    childrenFileRelativePaths.forEach((filePath) => {
+    if (childrenFileRelativePaths.length && childrenFileRelativePaths.length > 400) {
+      swalShowLoading(
+        folderIsSelected
+          ? `Deselecting ${childrenFileRelativePaths.length} file${
+              childrenFileRelativePaths.length > 1 ? "s" : ""
+            } within the selected folder...`
+          : `Selecting ${childrenFileRelativePaths.length} file${
+              childrenFileRelativePaths.length > 1 ? "s" : ""
+            } within the selected folder...`,
+        "Please wait while SODA processes your changes."
+      );
+    }
+    for (let index = 0; index < childrenFileRelativePaths.length; index++) {
+      const filePath = childrenFileRelativePaths[index];
       modifyDatasetEntityForRelativeFilePath(
         entityType,
         activeEntity,
@@ -117,12 +132,15 @@ const EntityDataSelectorPage = ({
         action,
         mutuallyExclusiveSelection
       );
-    });
-    const t1 = performance.now();
+      // If the index divided by 50 equals 0, yield control to the event loop
+      if (index % 50 === 0) {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      }
+    }
 
-    const t2 = performance.now();
+    Swal.close();
+
     reRenderTreeView();
-    const t3 = performance.now();
   };
 
   return (

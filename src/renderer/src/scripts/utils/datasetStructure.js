@@ -1,7 +1,9 @@
 import useGlobalStore from "../../stores/globalStore";
 import { reRenderTreeView } from "../../stores/slices/datasetTreeViewSlice";
-import { setFolderMoveMode } from "../../stores/slices/datasetTreeViewSlice";
-import { deleteEmptyFoldersFromStructure } from "../../stores/slices/datasetTreeViewSlice";
+import {
+  deleteEmptyFoldersFromStructure,
+  getInvertedDatasetEntityObj,
+} from "../../stores/slices/datasetTreeViewSlice";
 
 export const countFilesInDatasetStructure = (datasetStructure) => {
   // If datasetStructure is an array (datasetRenderArray), count file items
@@ -67,13 +69,53 @@ export const getFolderDetailsByRelativePath = (relativePath) => {
   const folderName = pathSegments.pop();
   const parentFolder = getNestedObjectAtPathArray(pathSegments);
   const folderObject = parentFolder?.folders?.[folderName];
+  const invertedDatasetEntityObj = getInvertedDatasetEntityObj();
+  const datasetStructureSearchFilter = useGlobalStore.getState().datasetStructureSearchFilter;
+  const entityFilterActive = useGlobalStore.getState().entityFilterActive;
+  const entityFilters = useGlobalStore.getState().entityFilters;
+  const entityType = useGlobalStore.getState().entityType;
+  const activeEntity = useGlobalStore.getState().activeEntity;
 
-  // Recursively collect all fileObj.relativePath values in this folder and subfolders as an array
+  // Local file filter logic (matches current entity and search filter)
+  const localCheckFileFilter = (filePath) => {
+    // Entity filter logic
+    if (entityFilterActive) {
+      const { include, exclude } = entityFilters;
+      const isAssociatedWithFilters = (filters) => {
+        for (const { type, names } of filters) {
+          if (!type || !Array.isArray(names) || names.length === 0) continue;
+          const entities = useGlobalStore.getState().datasetEntityObj[type];
+          if (!entities) continue;
+          for (const name of names) {
+            if (entities[name]?.[filePath]) return true;
+          }
+        }
+        return false;
+      };
+      if (isAssociatedWithFilters(exclude)) return false;
+      if (!include.length) return true;
+      if (!isAssociatedWithFilters(include)) return false;
+    }
+    // Entity selection logic
+    if (entityType && activeEntity) {
+      const entitySet = invertedDatasetEntityObj[filePath]?.[entityType];
+      if (!entitySet || !entitySet.has(activeEntity)) return false;
+    }
+    // Search filter logic
+    if (datasetStructureSearchFilter) {
+      if (!filePath.toLowerCase().includes(datasetStructureSearchFilter.toLowerCase())) return false;
+    }
+    return true;
+  };
+
+  // Recursively collect all fileObj.relativePath values in this folder and subfolders as an array, filtered
   const collectFileRelativePathsRecursively = (folderObj) => {
     let result = [];
     if (folderObj?.files) {
       Object.values(folderObj.files).forEach((fileObj) => {
-        if (fileObj.relativePath) result.push(fileObj.relativePath);
+        if (fileObj.relativePath && localCheckFileFilter(fileObj.relativePath)) {
+          result.push(fileObj.relativePath);
+        }
       });
     }
     if (folderObj?.folders) {

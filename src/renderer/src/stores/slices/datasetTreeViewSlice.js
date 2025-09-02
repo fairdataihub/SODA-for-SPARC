@@ -113,17 +113,90 @@ export const deleteEmptyFoldersFromStructure = (structure) => {
     ? { ...structure, folders: cleanedFolders, files: hasFiles ? structure.files : {} }
     : null;
 };
+export const getInvertedDatasetEntityObj = () => {
+  const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
+  const inverted = {};
+  if (!datasetEntityObj) return inverted;
+  for (const entityType in datasetEntityObj) {
+    for (const entityName in datasetEntityObj[entityType]) {
+      for (const fileRelativePath in datasetEntityObj[entityType][entityName]) {
+        if (!datasetEntityObj[entityType][entityName][fileRelativePath]) continue;
+        if (!inverted[fileRelativePath]) inverted[fileRelativePath] = {};
+        if (!inverted[fileRelativePath][entityType])
+          inverted[fileRelativePath][entityType] = new Set();
+        inverted[fileRelativePath][entityType].add(entityName);
+      }
+    }
+  }
+  return inverted;
+};
+
+export const getFileEntitySet = (relativePath, entityType, invertedDatasetEntityObj) => {
+  return invertedDatasetEntityObj[relativePath]?.[entityType];
+};
+
+export const isAssociatedWithFilters = (filters) => {
+  for (const { type, names } of filters) {
+    if (!type || !Array.isArray(names) || names.length === 0) continue;
+    const entities = datasetEntityObj[type];
+    if (!entities) continue;
+    for (const name of names) {
+      if (entities[name]?.[filePath]) return true;
+    }
+  }
+  return false;
+};
+
+export const filePassesAllFilters = ({
+  filePath,
+  entityFilterActive,
+  entityFilters,
+  searchFilter,
+  entityType,
+  activeEntity,
+  invertedDatasetEntityObj,
+  datasetEntityObj,
+}) => {
+  // Entity filter logic
+  if (entityFilterActive) {
+    const { include, exclude } = entityFilters;
+    const isAssociatedWithFilters = (filters) => {
+      for (const { type, names } of filters) {
+        if (!type || !Array.isArray(names) || names.length === 0) continue;
+        const entities = datasetEntityObj[type];
+        if (!entities) continue;
+        for (const name of names) {
+          if (entities[name]?.[filePath]) return true;
+        }
+      }
+      return false;
+    };
+    if (isAssociatedWithFilters(exclude)) return false;
+    if (!include.length) return true;
+    if (!isAssociatedWithFilters(include)) return false;
+  }
+  // Entity selection logic
+  if (entityType && activeEntity) {
+    const entitySet = invertedDatasetEntityObj[filePath]?.[entityType];
+    if (!entitySet || !entitySet.has(activeEntity)) return false;
+  }
+  // Search filter logic
+  if (searchFilter) {
+    if (!filePath.toLowerCase().includes(searchFilter.toLowerCase())) return false;
+  }
+  return true;
+};
 
 export const reRenderTreeView = (resetOpenFolders = false) => {
   try {
     const pathToRender = useGlobalStore.getState().pathToRender;
     const datasetStructureJSONObj = useGlobalStore.getState().datasetStructureJSONObj;
     const datasetStructureSearchFilter = useGlobalStore.getState().datasetStructureSearchFilter;
-    const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
     const entityFilterActive = useGlobalStore.getState().entityFilterActive;
     const entityFilters = useGlobalStore.getState().entityFilters;
     const calculateEntities = useGlobalStore.getState().calculateEntities;
     const datasetMetadataToPreview = useGlobalStore.getState().datasetMetadataToPreview;
+    const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
 
     const updatedStructure = safeDeepCopy(datasetStructureJSONObj);
     addRelativePaths(updatedStructure);
@@ -135,44 +208,7 @@ export const reRenderTreeView = (resetOpenFolders = false) => {
     const naturalSort = (a, b) =>
       a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
 
-    const invertDatasetEntityObj = (datasetEntityObj) => {
-      const inverted = {};
-      for (const entityType in datasetEntityObj) {
-        for (const entityName in datasetEntityObj[entityType]) {
-          for (const fileRelativePath in datasetEntityObj[entityType][entityName]) {
-            if (!datasetEntityObj[entityType][entityName][fileRelativePath]) continue;
-            if (!inverted[fileRelativePath]) inverted[fileRelativePath] = {};
-            if (!inverted[fileRelativePath][entityType])
-              inverted[fileRelativePath][entityType] = new Set();
-            inverted[fileRelativePath][entityType].add(entityName);
-          }
-        }
-      }
-      return inverted;
-    };
-    const invertedDatasetEntityObj = invertDatasetEntityObj(datasetEntityObj);
-
-    const getFileEntitySet = (relativePath, entityType) =>
-      invertedDatasetEntityObj[relativePath]?.[entityType];
-
-    const localCheckFileFilter = (filePath) => {
-      if (!entityFilterActive) return true;
-      const { include, exclude } = entityFilters;
-      const isAssociatedWithFilters = (filters) => {
-        for (const { type, names } of filters) {
-          if (!type || !Array.isArray(names) || names.length === 0) continue;
-          const entities = datasetEntityObj[type];
-          if (!entities) continue;
-          for (const name of names) {
-            if (entities[name]?.[filePath]) return true;
-          }
-        }
-        return false;
-      };
-      if (isAssociatedWithFilters(exclude)) return false;
-      if (!include.length) return true;
-      return isAssociatedWithFilters(include);
-    };
+    const invertedDatasetEntityObj = getInvertedDatasetEntityObj();
 
     const convertDatasetStructureToArray = (structure) => {
       const result = [];
@@ -201,14 +237,24 @@ export const reRenderTreeView = (resetOpenFolders = false) => {
             : { childrenFileRelativePaths: [] };
 
           // Filter children based on entity filters
-          const filteredChildrenFileRelativePaths =
-            childrenFileRelativePaths.filter(localCheckFileFilter);
+          const filteredChildrenFileRelativePaths = childrenFileRelativePaths.filter((filePath) =>
+            filePassesAllFilters({
+              filePath,
+              entityFilterActive,
+              entityFilters,
+              searchFilter: datasetStructureSearchFilter,
+              entityType,
+              activeEntity,
+              invertedDatasetEntityObj,
+              datasetEntityObj,
+            })
+          );
 
           const allFilesSelected =
             allFolderChildrenAreSelected ||
             (filteredChildrenFileRelativePaths.length > 0 &&
               filteredChildrenFileRelativePaths.every((filePath) => {
-                const entitySet = getFileEntitySet(filePath, entityType);
+                const entitySet = getFileEntitySet(filePath, entityType, invertedDatasetEntityObj);
                 return entitySet && activeEntity ? entitySet.has(activeEntity) : false;
               }));
 
@@ -249,11 +295,26 @@ export const reRenderTreeView = (resetOpenFolders = false) => {
               ) {
                 continue;
               }
-              if (!localCheckFileFilter(relativePath)) {
+              if (
+                !filePassesAllFilters({
+                  filePath: relativePath,
+                  entityFilterActive,
+                  entityFilters,
+                  searchFilter: datasetStructureSearchFilter,
+                  entityType,
+                  activeEntity,
+                  invertedDatasetEntityObj,
+                  datasetEntityObj,
+                })
+              ) {
                 continue;
               }
 
-              const entitySet = getFileEntitySet(relativePath, entityType);
+              const entitySet = getFileEntitySet(
+                relativePath,
+                entityType,
+                invertedDatasetEntityObj
+              );
               const fileIsSelected =
                 entitySet && activeEntity ? entitySet.has(activeEntity) : false;
               const entitiesAssociatedWithFile = entitySet ? Array.from(entitySet) : [];
@@ -277,7 +338,18 @@ export const reRenderTreeView = (resetOpenFolders = false) => {
           const rootFileNames = Object.keys(node.files || {}).sort(naturalSort);
           for (const fileName of rootFileNames) {
             const file = node.files[fileName];
-            if (!localCheckFileFilter(file.relativePath)) {
+            if (
+              !filePassesAllFilters({
+                filePath: file.relativePath,
+                entityFilterActive,
+                entityFilters,
+                searchFilter: datasetStructureSearchFilter,
+                entityType,
+                activeEntity,
+                invertedDatasetEntityObj,
+                datasetEntityObj,
+              })
+            ) {
               continue;
             }
             result.push({

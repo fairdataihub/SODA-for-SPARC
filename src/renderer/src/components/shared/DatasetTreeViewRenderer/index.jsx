@@ -461,6 +461,13 @@ const DatasetTreeViewRenderer = ({
   }
   const renderObjIsEmpty =
     !datasetRenderArray || (Array.isArray(datasetRenderArray) && datasetRenderArray.length === 0);
+  if (renderObjIsEmpty) {
+    if (!datasetRenderArray) {
+      console.warn("renderObjIsEmpty: datasetRenderArray is null or undefined", datasetRenderArray);
+    } else if (Array.isArray(datasetRenderArray) && datasetRenderArray.length === 0) {
+      console.warn("renderObjIsEmpty: datasetRenderArray is an empty array", datasetRenderArray);
+    }
+  }
 
   if (renderObjIsEmpty) {
     return (
