@@ -103,7 +103,8 @@ export const getFolderDetailsByRelativePath = (relativePath) => {
     }
     // Search filter logic
     if (datasetStructureSearchFilter) {
-      if (!filePath.toLowerCase().includes(datasetStructureSearchFilter.toLowerCase())) return false;
+      if (!filePath.toLowerCase().includes(datasetStructureSearchFilter.toLowerCase()))
+        return false;
     }
     return true;
   };
