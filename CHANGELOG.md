@@ -5,6 +5,13 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v16.2.0 - 2025-09-02
+
+## Feature Additions:
+
+- The `Prepare Dataset Step-by-Step` feature handles larger datasets more efficiently.
+- The `Prepare Dataset Step-by-Step` page for adding a contributor has been improved by more flexible orcid addition.
+
 ## V16.1.2 - 2025-08-29
 
 ## Bug Fixes:
