@@ -18,7 +18,6 @@ export const datasetEntitySelectorSlice = (set) => ({
     subjects: {},
   }, // Example structure: { sub-01: { samples: { sam-01: { performances: [], sites: [] } } } }
   showFullMetadataFormFields: false, // Flag to show full metadata form fields
-  largeFolderSelectionProgressValue: null,
 });
 
 // Add an entity to the specified entity type's list
@@ -399,8 +398,4 @@ export const areAllFilesInFolderSelectedForEntity = (entityId, folderContents, e
 
   // If we got here, all files in this folder and subfolders are selected
   return true;
-};
-
-export const setLargeFolderSelectionProgressValue = (value) => {
-  useGlobalStore.setState({ largeFolderSelectionProgressValue: value });
 };
