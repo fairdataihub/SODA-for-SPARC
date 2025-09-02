@@ -179,10 +179,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
             const performanceId = performance.performance_id;
             const performanceFiles = datasetEntityObj?.performances?.[performanceId];
 
-            console.log("Processing performance:", performance);
-
             if (!performanceFiles) {
-              console.log(`[savePageChanges] No files found for performanceId="${performanceId}"`);
               performance.participants = [];
               return;
             }
@@ -194,7 +191,6 @@ export const savePageChanges = async (pageBeingLeftID) => {
               const entities = datasetEntityObj[type];
 
               if (!entities) {
-                console.log(`[savePageChanges] No entities found for entityType="${type}"`);
                 continue;
               }
 
@@ -202,9 +198,6 @@ export const savePageChanges = async (pageBeingLeftID) => {
               for (const [entityId, entityFiles] of Object.entries(entities)) {
                 if (sharesAtLeastOneKey(entityFiles, performanceFiles)) {
                   performanceParticipants.push(entityId);
-                  console.log(
-                    `[savePageChanges] Added participant: entityId="${entityId}", performanceId="${performanceId}", entityType="${type}"`
-                  );
                 }
               }
             }
