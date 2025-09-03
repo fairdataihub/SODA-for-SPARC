@@ -228,10 +228,6 @@ export const savePageChanges = async (pageBeingLeftID) => {
 
           // Update dataset metadata
           window.sodaJSONObj.dataset_metadata.performances = performanceMetadata;
-          console.log(
-            "Updated performances metadata:",
-            window.sodaJSONObj.dataset_metadata.performances
-          );
         }
 
         // Save the dataset entity object to the progress file

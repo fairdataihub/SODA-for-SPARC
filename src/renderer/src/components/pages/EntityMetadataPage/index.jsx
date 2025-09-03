@@ -116,15 +116,9 @@ const EntityMetadataForm = () => {
       // If editing, always show selected entity's value
       if (selectedHierarchyEntity) {
         value = getEntityMetadataValue(selectedHierarchyEntity, key, null, defaultValue);
-        if (key === "sex") {
-          console.log("Value above:", value);
-        }
       } else if (activeFormType) {
         // If adding, show temporary metadata (which is cleared on add mode switch)
         value = getEntityMetadataValue(null, key, activeFormType, defaultValue);
-        if (key === "sex") {
-          console.log("Value below:", value);
-        }
       }
       // Special handling: Strip prefixes from ID fields for display
       if (selectedHierarchyEntity && value && key.endsWith("_id")) {
@@ -133,11 +127,6 @@ const EntityMetadataForm = () => {
         if (prefix && value.startsWith(prefix)) {
           return value.substring(prefix.length);
         }
-      }
-
-      if (key === "sex") {
-        console.log("Returning value for sex:", value);
-        console.log("Type of value:", typeof value);
       }
 
       return value;
