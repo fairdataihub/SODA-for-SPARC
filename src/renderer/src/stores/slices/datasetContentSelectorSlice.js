@@ -37,7 +37,7 @@ export const setSelectedHierarchyEntity = (entityObj) => {
       break;
 
     default:
-      console.error("Unknown entity type:", entityObj?.type);
+    // No action needed for unknown types
   }
 };
 
