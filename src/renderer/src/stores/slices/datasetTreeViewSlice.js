@@ -213,7 +213,7 @@ export const reRenderTreeView = (resetOpenFolders = false) => {
       for (const folderName of pathToRender) node = node?.folders?.[folderName];
 
       const traverse = (node, depth = 0, allFolderChildrenAreSelected = false) => {
-        const folderNames = Object.keys(node.folders || {}).sort(naturalSort);
+        const folderNames = Object.keys(node?.folders || {}).sort(naturalSort);
         const { entityType, activeEntity } = useGlobalStore.getState();
 
         for (const folderName of folderNames) {
@@ -323,7 +323,7 @@ export const reRenderTreeView = (resetOpenFolders = false) => {
 
         // Handle files at root level
         if (depth === 0) {
-          const rootFileNames = Object.keys(node.files || {}).sort(naturalSort);
+          const rootFileNames = Object.keys(node?.files || {}).sort(naturalSort);
           for (const fileName of rootFileNames) {
             const file = node.files[fileName];
             if (

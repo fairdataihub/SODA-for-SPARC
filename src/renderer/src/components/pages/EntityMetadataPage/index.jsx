@@ -71,6 +71,13 @@ const EntityMetadataForm = () => {
 
   // Subscribe to global store state with individual selectors for optimal re-renders
   const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
+
+  const currentSelectedHierarchyEntityParentSubject = useGlobalStore(
+    (state) => state.currentSelectedHierarchyEntityParentSubject
+  );
+  const currentSelectedHierarchyEntityParentSample = useGlobalStore(
+    (state) => state.currentSelectedHierarchyEntityParentSample
+  );
   const activeFormType = useGlobalStore((state) => state.activeFormType);
   const temporaryEntityMetadata = useGlobalStore((state) => state.temporaryEntityMetadata || {});
   const entityBeingAddedParentSubject = useGlobalStore(
@@ -80,7 +87,6 @@ const EntityMetadataForm = () => {
     (state) => state.entityBeingAddedParentSample
   );
   const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
-  const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const showFullMetadataFormFields = useGlobalStore((state) => state.showFullMetadataFormFields);
   // Define standard prefixes for entity IDs
   const entityPrefixes = {
@@ -90,6 +96,13 @@ const EntityMetadataForm = () => {
     performance: "perf-",
   };
 
+  // Only clear temporary metadata when switching to add mode (not when editing)
+  useEffect(() => {
+    for (const entityType of ["subject", "sample", "site"]) {
+      clearTemporaryMetadata(entityType);
+    }
+  }, [selectedHierarchyEntity, activeFormType]);
+
   /**
    * Retrieves formatted metadata value for display in the form
    * Handles special cases like ID prefixes (removing prefixes for edit fields)
@@ -98,18 +111,15 @@ const EntityMetadataForm = () => {
    * @returns {string} Formatted value for display
    */
   const getMetadataValue = useCallback(
-    (key) => {
-      let value = "";
-
-      // Source value from appropriate location based on context
+    (key, defaultValue) => {
+      let value = defaultValue;
+      // If editing, always show selected entity's value
       if (selectedHierarchyEntity) {
-        // Get from existing entity
-        value = getEntityMetadataValue(selectedHierarchyEntity, key);
+        value = getEntityMetadataValue(selectedHierarchyEntity, key, null, defaultValue);
       } else if (activeFormType) {
-        // Get from temporary storage for new entities
-        value = getEntityMetadataValue(null, key, activeFormType);
+        // If adding, show temporary metadata (which is cleared on add mode switch)
+        value = getEntityMetadataValue(null, key, activeFormType, defaultValue);
       }
-
       // Special handling: Strip prefixes from ID fields for display
       if (selectedHierarchyEntity && value && key.endsWith("_id")) {
         const entityType = selectedHierarchyEntity.type;
@@ -298,12 +308,12 @@ const EntityMetadataForm = () => {
               description="Enter a unique identifier for this subject."
               placeholder="Enter subject ID"
               required
-              value={getMetadataValue("subject_id")}
+              value={getMetadataValue("subject_id", "")}
               onChange={(e) => handleChange("subject_id", e.target.value)}
               error={
-                getMetadataValue("subject_id") &&
+                getMetadataValue("subject_id", "") &&
                 !window.evaluateStringAgainstSdsRequirements(
-                  getMetadataValue("subject_id"),
+                  getMetadataValue("subject_id", ""),
                   "string-adheres-to-identifier-conventions"
                 )
                   ? "Subject IDs can only contain letters, numbers, and hyphens."
@@ -325,7 +335,7 @@ const EntityMetadataForm = () => {
               description="Subject's biological sex"
               placeholder="Select sex"
               data={["Male", "Female", "Unknown"]}
-              value={getMetadataValue("sex")}
+              value={getMetadataValue("sex", null)}
               onChange={(value) => handleChange("sex", value)}
             />
             <Select
@@ -374,7 +384,7 @@ const EntityMetadataForm = () => {
                 "post-embryonic stage",
                 "fully formed stage",
               ]}
-              value={getMetadataValue("age_category")}
+              value={getMetadataValue("age_category", null)}
               onChange={(value) => handleChange("age_category", value)}
             />
             <Group grow justify="space-between">
@@ -387,7 +397,7 @@ const EntityMetadataForm = () => {
                 </Text>
                 <NumberInput
                   placeholder="e.g., 12"
-                  value={getMetadataValue("age_numeric_value")}
+                  value={getMetadataValue("age_numeric_value", "")}
                   onChange={(value) => handleChange("age_numeric_value", value)}
                   min={0}
                   defaultValue={0}
@@ -410,7 +420,7 @@ const EntityMetadataForm = () => {
                     { value: "months", label: "Months" },
                     { value: "years", label: "Years" },
                   ]}
-                  value={getMetadataValue("age_unit")}
+                  value={getMetadataValue("age_unit", null)}
                   onChange={(value) => handleChange("age_unit", value)}
                   defaultValue={"Select unit"}
                 />
@@ -420,28 +430,28 @@ const EntityMetadataForm = () => {
               label="Species"
               description="The species of the subject"
               placeholder="e.g., Homo sapiens, Mus musculus"
-              value={getMetadataValue("species")}
+              value={getMetadataValue("species", "")}
               onChange={(e) => handleChange("species", e.target.value)}
             />
             <TextInput
               label="Strain"
               description="The strain of the subject"
               placeholder="e.g., C57BL/6J"
-              value={getMetadataValue("strain")}
+              value={getMetadataValue("strain", "")}
               onChange={(e) => handleChange("strain", e.target.value)}
             />
             <TextInput
               label="RRID for strain"
               description="Research Resource Identifier for the strain"
               placeholder="e.g., RRID:IMSR_JAX:000664"
-              value={getMetadataValue("rrid_for_strain")}
+              value={getMetadataValue("rrid_for_strain", "")}
               onChange={(e) => handleChange("rrid_for_strain", e.target.value)}
             />
             <TextInput
               label="Subject Experimental Group"
               description="The experimental group this subject belongs to"
               placeholder="e.g., Control, Treatment A"
-              value={getMetadataValue("subject_experimental_group")}
+              value={getMetadataValue("subject_experimental_group", "")}
               onChange={(e) => handleChange("subject_experimental_group", e.target.value)}
             />
             {showFullMetadataFormFields && (
@@ -450,14 +460,14 @@ const EntityMetadataForm = () => {
                   label="Also in dataset"
                   description="Other datasets that include this subject"
                   placeholder="e.g., dataset-1, dataset-2"
-                  value={getMetadataValue("also_in_dataset")}
+                  value={getMetadataValue("also_in_dataset", "")}
                   onChange={(e) => handleChange("also_in_dataset", e.target.value)}
                 />
                 <TextInput
                   label="Member of"
                   description="Group memberships for this subject"
                   placeholder="e.g., group-1, cohort-A"
-                  value={getMetadataValue("member_of")}
+                  value={getMetadataValue("member_of", "")}
                   onChange={(e) => handleChange("member_of", e.target.value)}
                 />
                 <Select
@@ -465,20 +475,20 @@ const EntityMetadataForm = () => {
                   description="Whether this subject has metadata only"
                   placeholder="Select option"
                   data={["yes", "no"]}
-                  value={getMetadataValue("metadata_only")}
+                  value={getMetadataValue("metadata_only", null)}
                   onChange={(value) => handleChange("metadata_only", value)}
                 />
                 <TextInput
                   label="Laboratory internal id"
                   description="The internal ID used by the laboratory for this subject"
                   placeholder="e.g., LAB-123"
-                  value={getMetadataValue("laboratory_internal_id")}
+                  value={getMetadataValue("laboratory_internal_id", "")}
                   onChange={(e) => handleChange("laboratory_internal_id", e.target.value)}
                 />
                 <DateInput
                   value={
-                    getMetadataValue("date_of_birth")
-                      ? new Date(getMetadataValue("date_of_birth"))
+                    getMetadataValue("date_of_birth", null)
+                      ? new Date(getMetadataValue("date_of_birth", null))
                       : null
                   }
                   onChange={(date) => handleChange("date_of_birth", date)}
@@ -502,7 +512,7 @@ const EntityMetadataForm = () => {
                     <NumberInput
                       label="Minimum"
                       placeholder="Min age"
-                      value={getMetadataValue("age_range_min_numeric_value")}
+                      value={getMetadataValue("age_range_min_numeric_value", "")}
                       onChange={(value) => handleChange("age_range_min_numeric_value", value)}
                       min={0}
                     />
@@ -510,7 +520,7 @@ const EntityMetadataForm = () => {
                     <NumberInput
                       label="Maximum"
                       placeholder="Max age"
-                      value={getMetadataValue("age_range_max_numeric_value")}
+                      value={getMetadataValue("age_range_max_numeric_value", "")}
                       onChange={(value) => handleChange("age_range_max_numeric_value", value)}
                       min={0}
                     />
@@ -525,7 +535,7 @@ const EntityMetadataForm = () => {
                         { value: "months", label: "Months" },
                         { value: "years", label: "Years" },
                       ]}
-                      value={getMetadataValue("age_range_unit")}
+                      value={getMetadataValue("age_range_unit", null)}
                       onChange={(value) => handleChange("age_range_unit", value)}
                     />
                   </Group>
@@ -543,7 +553,7 @@ const EntityMetadataForm = () => {
                     <NumberInput
                       label="Mass value"
                       placeholder="Enter mass"
-                      value={getMetadataValue("body_mass_numeric_value")}
+                      value={getMetadataValue("body_mass_numeric_value", "")}
                       onChange={(value) => handleChange("body_mass_numeric_value", value)}
                       min={0}
                       precision={3}
@@ -557,7 +567,7 @@ const EntityMetadataForm = () => {
                         { value: "kg", label: "kilograms (kg)" },
                         { value: "lb", label: "pounds (lb)" },
                       ]}
-                      value={getMetadataValue("body_mass_unit")}
+                      value={getMetadataValue("body_mass_unit", null)}
                       onChange={(value) => handleChange("body_mass_unit", value)}
                     />
                   </Group>
@@ -567,7 +577,7 @@ const EntityMetadataForm = () => {
                   label="Genotype"
                   description="The genetic background of the subject"
                   placeholder="e.g., C57BL/6J"
-                  value={getMetadataValue("genotype")}
+                  value={getMetadataValue("genotype", "")}
                   onChange={(e) => handleChange("genotype", e.target.value)}
                 />
                 {/* Phenotype Input */}
@@ -575,7 +585,7 @@ const EntityMetadataForm = () => {
                   label="Phenotype"
                   description="The observable characteristics of the subject"
                   placeholder="e.g., Blue eyes"
-                  value={getMetadataValue("phenotype")}
+                  value={getMetadataValue("phenotype", "")}
                   onChange={(e) => handleChange("phenotype", e.target.value)}
                 />
                 {/* Handedness Input */}
@@ -584,7 +594,7 @@ const EntityMetadataForm = () => {
                   description="The subject's handedness (if applicable)"
                   placeholder="Select handedness"
                   data={["Right", "Left"]}
-                  value={getMetadataValue("handedness")}
+                  value={getMetadataValue("handedness", null)}
                   onChange={(value) => handleChange("handedness", value)}
                 />
                 {/* Reference Atlas Input */}
@@ -592,20 +602,20 @@ const EntityMetadataForm = () => {
                   label="Reference Atlas"
                   description="The reference atlas used for this subject"
                   placeholder="e.g., Allen Brain Atlas"
-                  value={getMetadataValue("reference_atlas")}
+                  value={getMetadataValue("reference_atlas", "")}
                   onChange={(e) => handleChange("reference_atlas", e.target.value)}
                 />
                 <TextInput
                   label="Experimental log file path"
                   description="Path to the experimental log file for this subject"
                   placeholder="e.g., /path/to/log.txt"
-                  value={getMetadataValue("experimental_log_file_path")}
+                  value={getMetadataValue("experimental_log_file_path", "")}
                   onChange={(e) => handleChange("experimental_log_file_path", e.target.value)}
                 />
                 <DateInput
                   value={
-                    getMetadataValue("experiment_date")
-                      ? new Date(getMetadataValue("experiment_date"))
+                    getMetadataValue("experiment_date", null)
+                      ? new Date(getMetadataValue("experiment_date", null))
                       : null
                   }
                   onChange={(date) => handleChange("experiment_date", date)}
@@ -620,7 +630,7 @@ const EntityMetadataForm = () => {
                   label="Disease or Disorder"
                   description="Any known disease or disorder affecting the subject"
                   placeholder="e.g., Diabetes"
-                  value={getMetadataValue("disease_or_disorder")}
+                  value={getMetadataValue("disease_or_disorder", "")}
                   onChange={(e) => handleChange("disease_or_disorder", e.target.value)}
                 />
                 {/* Intervention Input */}
@@ -628,7 +638,7 @@ const EntityMetadataForm = () => {
                   label="Intervention"
                   description="Any intervention applied to the subject"
                   placeholder="e.g., Drug treatment"
-                  value={getMetadataValue("intervention")}
+                  value={getMetadataValue("intervention", "")}
                   onChange={(e) => handleChange("intervention", e.target.value)}
                 />
                 {/* Disease Model Input */}
@@ -636,21 +646,21 @@ const EntityMetadataForm = () => {
                   label="Disease Model"
                   description="The disease model used for this subject"
                   placeholder="e.g., Alzheimer's model"
-                  value={getMetadataValue("disease_model")}
+                  value={getMetadataValue("disease_model", "")}
                   onChange={(e) => handleChange("disease_model", e.target.value)}
                 />
                 <TextInput
                   label="Protocol Title"
                   description="Title of the protocol used for this subject"
                   placeholder="e.g., Protocol 1"
-                  value={getMetadataValue("protocol_title")}
+                  value={getMetadataValue("protocol_title", "")}
                   onChange={(e) => handleChange("protocol_title", e.target.value)}
                 />
                 <TextInput
                   label="Protocol URL or DOI"
                   description="URL or DOI of the protocol used for this subject"
                   placeholder="e.g., https://doi.org/10.1234/abcd"
-                  value={getMetadataValue("protocol_url_or_doi")}
+                  value={getMetadataValue("protocol_url_or_doi", "")}
                   onChange={(e) => handleChange("protocol_url_or_doi", e.target.value)}
                 />
               </>
@@ -660,22 +670,24 @@ const EntityMetadataForm = () => {
       case "sample":
         return (
           <Stack spacing="md">
-            <TextInput
-              label="Subject this sample belongs to"
-              disabled
-              value={entityBeingAddedParentSubject}
-            />
+            {currentSelectedHierarchyEntityParentSubject && (
+              <TextInput
+                label="Subject this sample belongs to"
+                disabled
+                value={currentSelectedHierarchyEntityParentSubject}
+              />
+            )}
             <TextInput
               label="Sample Identifier"
               required
               description="Enter a unique identifier for this biological sample."
               placeholder="Enter sample ID"
-              value={getMetadataValue("sample_id")}
+              value={getMetadataValue("sample_id", "")}
               onChange={(e) => handleChange("sample_id", e.target.value)}
               error={
-                getMetadataValue("sample_id") &&
+                getMetadataValue("sample_id", "") &&
                 !window.evaluateStringAgainstSdsRequirements(
-                  getMetadataValue("sample_id"),
+                  getMetadataValue("sample_id", ""),
                   "string-adheres-to-identifier-conventions"
                 )
                   ? "Sample IDs can only contain letters, numbers, and hyphens."
@@ -691,15 +703,17 @@ const EntityMetadataForm = () => {
               disabled={!!selectedHierarchyEntity}
             />
             <OptionalFieldsNotice />
-
             <TextInput
               label="Sample Experimental Group"
               description="The experimental group this sample belongs to"
               placeholder="e.g., Control, Treatment A"
-              value={getMetadataValue("sample_experimental_group")}
+              value={getMetadataValue("sample_experimental_group", "")}
               onChange={(e) => handleChange("sample_experimental_group", e.target.value)}
             />
             <Select
+              key={`sample_type-${
+                selectedHierarchyEntity ? selectedHierarchyEntity.id : activeFormType
+              }`}
               label="Sample Type"
               placeholder="Select sample type"
               data={[
@@ -712,26 +726,29 @@ const EntityMetadataForm = () => {
                 "Stem Cell",
                 "Other",
               ]}
-              value={getMetadataValue("sample_type")}
+              value={getMetadataValue("sample_type", null)}
               onChange={(value) => handleChange("sample_type", value)}
             />
             <TextInput
               label="Anatomical Location"
               description="The anatomical location this sample was taken from"
               placeholder="e.g., Dorsal root ganglion"
-              value={getMetadataValue("sample_anatomical_location")}
+              value={getMetadataValue("sample_anatomical_location", "")}
               onChange={(e) => handleChange("sample_anatomical_location", e.target.value)}
             />
             {showFullMetadataFormFields && (
               <>
                 <Select
+                  key={`was_derived_from-${
+                    selectedHierarchyEntity ? selectedHierarchyEntity.id : activeFormType
+                  }`}
                   label="Was derived from"
                   description="The entity this sample was derived from"
                   placeholder="Select entity"
                   data={getExistingSamples()
                     .map((sample) => sample.id)
-                    .filter((id) => id !== `sam-${getMetadataValue("sample_id")}`)}
-                  value={getMetadataValue("was_derived_from")}
+                    .filter((id) => id !== `sam-${getMetadataValue("sample_id", "")}`)}
+                  value={getMetadataValue("was_derived_from", "")}
                   onChange={(value) => handleChange("was_derived_from", value)}
                 />
                 {/* Also in dataset TextInput */}
@@ -739,35 +756,38 @@ const EntityMetadataForm = () => {
                   label="Also in dataset"
                   description="Other datasets that include this sample"
                   placeholder="e.g., dataset-1, dataset-2"
-                  value={getMetadataValue("also_in_dataset")}
+                  value={getMetadataValue("also_in_dataset", "")}
                   onChange={(e) => handleChange("also_in_dataset", e.target.value)}
                 />
                 <TextInput
                   label="Member of"
                   description="Group or cohort the sample is a member of"
                   placeholder="e.g., group-1, cohort-A"
-                  value={getMetadataValue("member_of")}
+                  value={getMetadataValue("member_of", "")}
                   onChange={(e) => handleChange("member_of", e.target.value)}
                 />
                 <Select
+                  key={`metadata_only-${
+                    selectedHierarchyEntity ? selectedHierarchyEntity.id : activeFormType
+                  }`}
                   label="Metadata only"
                   description="Whether this sample is metadata only"
                   placeholder="Select option"
                   data={["yes", "no"]}
-                  value={getMetadataValue("metadata_only")}
+                  value={getMetadataValue("metadata_only", null)}
                   onChange={(value) => handleChange("metadata_only", value)}
                 />
                 <TextInput
                   label="Laboratory internal id"
                   description="The internal ID used by the laboratory for this sample"
                   placeholder="e.g., LAB-123"
-                  value={getMetadataValue("laboratory_internal_id")}
+                  value={getMetadataValue("laboratory_internal_id", "")}
                   onChange={(e) => handleChange("laboratory_internal_id", e.target.value)}
                 />
                 <DateInput
                   value={
-                    getMetadataValue("date_of_derivation")
-                      ? new Date(getMetadataValue("date_of_derivation"))
+                    getMetadataValue("date_of_derivation", null)
+                      ? new Date(getMetadataValue("date_of_derivation", null))
                       : null
                   }
                   onChange={(date) => handleChange("date_of_derivation", date)}
@@ -782,56 +802,56 @@ const EntityMetadataForm = () => {
                   label="Experimental log file path"
                   description="Path to the experimental log file for this sample"
                   placeholder="e.g., /path/to/log.txt"
-                  value={getMetadataValue("experimental_log_file_path")}
+                  value={getMetadataValue("experimental_log_file_path", "")}
                   onChange={(e) => handleChange("experimental_log_file_path", e.target.value)}
                 />
                 <TextInput
                   label="Reference Atlas"
                   description="Reference atlas used in the experiment"
                   placeholder="e.g., Allen Brain Atlas"
-                  value={getMetadataValue("reference_atlas")}
+                  value={getMetadataValue("reference_atlas", "")}
                   onChange={(e) => handleChange("reference_atlas", e.target.value)}
                 />
                 <TextInput
                   label="Pathology"
                   description="Pathology associated with the sample"
                   placeholder="e.g., Tumor"
-                  value={getMetadataValue("pathology")}
+                  value={getMetadataValue("pathology", "")}
                   onChange={(e) => handleChange("pathology", e.target.value)}
                 />
                 <TextInput
                   label="Laterality"
                   description="Laterality of the sample (e.g., left, right, bilateral)"
                   placeholder="e.g., left"
-                  value={getMetadataValue("laterality")}
+                  value={getMetadataValue("laterality", "")}
                   onChange={(e) => handleChange("laterality", e.target.value)}
                 />
                 <TextInput
                   label="Cell Type"
                   description="Cell type of the sample"
                   placeholder="e.g., Neuron"
-                  value={getMetadataValue("cell_type")}
+                  value={getMetadataValue("cell_type", "")}
                   onChange={(e) => handleChange("cell_type", e.target.value)}
                 />
                 <TextInput
                   label="Plane of Section"
                   description="Plane of section of the sample"
                   placeholder="e.g., sagittal"
-                  value={getMetadataValue("plane_of_section")}
+                  value={getMetadataValue("plane_of_section", "")}
                   onChange={(e) => handleChange("plane_of_section", e.target.value)}
                 />
                 <TextInput
                   label="Protocol Title"
                   description="Title of the protocol used in the experiment"
                   placeholder="e.g., Protocol 1"
-                  value={getMetadataValue("protocol_title")}
+                  value={getMetadataValue("protocol_title", "")}
                   onChange={(e) => handleChange("protocol_title", e.target.value)}
                 />
                 <TextInput
                   label="Protocol URL or DOI"
                   description="URL or DOI of the protocol used in the experiment"
                   placeholder="e.g., https://doi.org/10.1234/abcd"
-                  value={getMetadataValue("protocol_url_or_doi")}
+                  value={getMetadataValue("protocol_url_or_doi", "")}
                   onChange={(e) => handleChange("protocol_url_or_doi", e.target.value)}
                 />
               </>
@@ -845,18 +865,18 @@ const EntityMetadataForm = () => {
             {selectedHierarchyEntity ? (
               // When editing an existing site
               <>
-                {selectedHierarchyEntity.parentSubject && (
+                {currentSelectedHierarchyEntityParentSubject && (
                   <TextInput
                     label="Subject this site belongs to"
                     disabled
-                    value={selectedHierarchyEntity.parentSubject}
+                    value={currentSelectedHierarchyEntityParentSubject}
                   />
                 )}
-                {selectedHierarchyEntity.parentSample && (
+                {currentSelectedHierarchyEntityParentSample && (
                   <TextInput
                     label="Sample this site belongs to"
                     disabled
-                    value={selectedHierarchyEntity.parentSample}
+                    value={currentSelectedHierarchyEntityParentSample}
                   />
                 )}
               </>

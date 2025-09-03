@@ -10,6 +10,7 @@ import { countFilesInDatasetStructure } from "../../utils/datasetStructure";
 import { guidedSkipPage, guidedUnSkipPage } from "./navigationUtils/pageSkipping";
 import useGlobalStore from "../../../stores/globalStore";
 import {
+  getExistingSubjects,
   getExistingSamples,
   getExistingSites,
 } from "../../../stores/slices/datasetEntityStructureSlice";
@@ -175,6 +176,11 @@ export const savePageChanges = async (pageBeingLeftID) => {
           // Utility: check if two objects share at least one common key
           const sharesAtLeastOneKey = (objA, objB) => Object.keys(objA).some((key) => key in objB);
 
+          // Get existing entities
+          const sites = getExistingSites();
+          const samples = getExistingSamples();
+          const subjects = getExistingSubjects();
+
           performanceMetadata.forEach((performance) => {
             const performanceId = performance.performance_id;
             const performanceFiles = datasetEntityObj?.performances?.[performanceId];
@@ -186,27 +192,41 @@ export const savePageChanges = async (pageBeingLeftID) => {
 
             const performanceParticipants = [];
 
-            // Iterate over each relevant entity type
-            for (const type of ["subjects", "samples", "sites"]) {
-              const entities = datasetEntityObj[type];
-
-              if (!entities) {
-                continue;
-              }
-
-              // Check which entities share files with this performance
-              for (const [entityId, entityFiles] of Object.entries(entities)) {
-                if (sharesAtLeastOneKey(entityFiles, performanceFiles)) {
-                  performanceParticipants.push(entityId);
-                }
+            // Add sites and their parents
+            for (const site of sites) {
+              const siteId = site.metadata.site_id;
+              const siteFiles = datasetEntityObj?.sites?.[siteId] || {};
+              if (sharesAtLeastOneKey(performanceFiles, siteFiles)) {
+                performanceParticipants.push(siteId);
+                if (site.parentSample) performanceParticipants.push(site.parentSample);
+                if (site.parentSubject) performanceParticipants.push(site.parentSubject);
               }
             }
 
-            // Deduplicate participants before saving them
-            performance.participants = [...new Set(performanceParticipants)];
+            // Add samples and their parents
+            for (const sample of samples) {
+              const sampleId = sample.metadata.sample_id;
+              const sampleFiles = datasetEntityObj?.samples?.[sampleId] || {};
+              if (sharesAtLeastOneKey(performanceFiles, sampleFiles)) {
+                performanceParticipants.push(sampleId);
+                if (sample.parentSubject) performanceParticipants.push(sample.parentSubject);
+              }
+            }
+
+            // Add subjects
+            for (const subject of subjects) {
+              const subjectId = subject.metadata.subject_id;
+              const subjectFiles = datasetEntityObj?.subjects?.[subjectId] || {};
+              if (sharesAtLeastOneKey(performanceFiles, subjectFiles)) {
+                performanceParticipants.push(subjectId);
+              }
+            }
+
+            // Assign participants as array (duplicates allowed)
+            performance.participants = performanceParticipants;
           });
 
-          // Update the dataset metadata with the modified performances
+          // Update dataset metadata
           window.sodaJSONObj.dataset_metadata.performances = performanceMetadata;
         }
 
@@ -304,7 +324,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
           const sitesCopy = structuredClone(sites);
           const sitesMetadata = sitesCopy.map((site) => ({
             ...site.metadata,
-            specimen_id: `${site.metadata.subject_id} ${site.metadata.sample_id}`,
+            specimen_id: `${site.metadata.sample_id} ${site.metadata.subject_id}`,
           }));
           window.sodaJSONObj["dataset_metadata"]["sites"] = sitesMetadata;
         } else {
