@@ -212,8 +212,10 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
 
     // If the user is uploading to an existing dataset, set the dataset title
     // in the dataset_description file to the title of the existing dataset
-    if (window.sodaJSONObj["pennsieve-generation-target"] === "existing") {
-      // Set the title value in the dataset_description file to the title of the existing dataset
+    if (
+      window.sodaJSONObj["pennsieve-generation-target"] === "existing" &&
+      datasetUploadObj?.["dataset_metadata"]?.["dataset_description"]?.["basic_information"]
+    ) {
       datasetUploadObj["dataset_metadata"]["dataset_description"]["basic_information"]["title"] =
         pennsieveDatasetName;
     }
