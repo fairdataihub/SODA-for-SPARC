@@ -1,3 +1,4 @@
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { useState, useEffect, useRef } from "react";
 import {
   Collapse,
@@ -41,35 +42,18 @@ import SodaGreenPaper from "../../utils/ui/SodaGreenPaper";
 import {
   setDatasetStructureSearchFilter,
   openContextMenu,
+  reRenderTreeView,
 } from "../../../stores/slices/datasetTreeViewSlice";
+import {
+  isFolderOpen,
+  openFolder,
+  closeFolder,
+} from "../../../stores/slices/fileExplorerStateSlice";
 
 import { useDebouncedValue } from "@mantine/hooks";
 import { naturalSort } from "../utils/util-functions";
 import SelectedEntityPreviewer from "../SelectedEntityPreviewer";
-import Icon from "../Icon";
 
-const getAssociatedEntities = (relativePath, currentEntityType) => {
-  const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
-  if (!datasetEntityObj) return [];
-
-  if (!currentEntityType) {
-    return [];
-  }
-
-  const entityTypes = [currentEntityType];
-  const associatedEntities = [];
-
-  for (const entityType of entityTypes) {
-    const entities = datasetEntityObj[entityType] || {};
-    for (const [entityId, paths] of Object.entries(entities)) {
-      if (paths?.[relativePath]) {
-        associatedEntities.push({ entityId, entityType });
-      }
-    }
-  }
-
-  return associatedEntities;
-};
 // Get badge color based on entity type
 const getBadgeColor = (entityId) => {
   if (entityId.startsWith("sub-")) return "indigo";
@@ -82,6 +66,59 @@ const getBadgeColor = (entityId) => {
   if (entityId === "Experimental") return "green";
   if (entityId === "Protocol") return "gray";
   if (entityId === "Docs") return "cyan";
+};
+
+const EntityBadges = ({ entities }) => {
+  if (!entities || entities.length === 0) return null;
+
+  if (entities.length <= 3) {
+    // Show individual colored badges with tooltips
+    return (
+      <Group gap="xs" wrap="nowrap" style={{ marginLeft: "auto", overflow: "hidden" }}>
+        {entities.map((entityId, index) => (
+          <Tooltip key={index} label={entityId} position="top" withArrow>
+            <Badge
+              color={getBadgeColor(entityId)}
+              variant="light"
+              size="xs"
+              style={{
+                whiteSpace: "nowrap",
+                maxWidth: "100px",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {formatEntityId(entityId)}
+            </Badge>
+          </Tooltip>
+        ))}
+      </Group>
+    );
+  }
+
+  // If more than 3, show a single badge with tooltip listing all entities
+  return (
+    <Tooltip
+      label={entities.join(", ")}
+      multiline
+      width={250}
+      position="top"
+      withArrow
+      zIndex={2999}
+    >
+      <Badge
+        color="gray"
+        variant="outline"
+        size="xs"
+        style={{
+          whiteSpace: "nowrap",
+          marginLeft: "auto",
+        }}
+      >
+        {entities.length} entities
+      </Badge>
+    </Tooltip>
+  );
 };
 
 const formatEntityId = (entityId) => {
@@ -124,24 +161,22 @@ const getIconForFile = (fileName) => {
   return fileIcons[fileExtension] || <IconFile size={ICON_SETTINGS.fileSize} />;
 };
 
+let globalFileItemRenderCount = 0;
+
 // File item component - represents a single file in the dataset tree
 const FileItem = ({
-  name,
-  content,
+  fileName,
+  relativePath,
+  fileIsSelected,
+  entitiesAssociatedWithFile = [], // now array of strings
   onFileClick,
-  isFileSelected,
   allowStructureEditing,
-  entityType,
+  indent,
 }) => {
+  globalFileItemRenderCount++;
   const { hovered, ref } = useHover();
-  const contextMenuItemData = useGlobalStore((state) => state.contextMenuItemData);
+  const contextMenuRelativePath = useGlobalStore((state) => state.contextMenuRelativePath);
   const contextMenuIsOpened = useGlobalStore((state) => state.contextMenuIsOpened);
-
-  // Get associated entities for this file, filtering by entityType
-  const associations = getAssociatedEntities(content.relativePath, entityType);
-
-  // Determine file selection status (true or false only, no null)
-  const fileIsSelected = isFileSelected ? isFileSelected(name, content) : false;
 
   const handleFileContextMenuOpen = (e) => {
     e.preventDefault();
@@ -154,11 +189,11 @@ const FileItem = ({
       });
       return;
     }
-    openContextMenu({ x: e.clientX, y: e.clientY }, "file", name, structuredClone(content));
+    openContextMenu({ x: e.clientX, y: e.clientY }, "file", fileName, relativePath); // UO update last param from structuredClone(metadata)
   };
 
   const isHoveredOrSelected =
-    hovered || (contextMenuIsOpened && contextMenuItemData?.relativePath === content.relativePath);
+    hovered || (contextMenuIsOpened && contextMenuRelativePath === relativePath);
 
   const getFileColor = () => {
     if (fileIsSelected) return "var(--color-transparent-soda-green)";
@@ -173,25 +208,24 @@ const FileItem = ({
       justify="flex-start"
       bg={getFileColor()}
       onContextMenu={handleFileContextMenuOpen}
-      pl="xs"
-      py="1px"
+      my="1px"
       style={{ flexWrap: "nowrap" }}
+      h="23px"
+      ml={`${indent * 10 + 5}px`}
     >
-      {/* Checkbox for selection appears first */}
       {onFileClick && (
         <Tooltip label="Select this file" zIndex={2999}>
           <Checkbox
             readOnly
             checked={fileIsSelected}
             onClick={(e) => {
-              e.stopPropagation(); // Prevent any other click events
-              onFileClick?.(name, content, fileIsSelected);
+              e.stopPropagation();
+              onFileClick?.(relativePath, fileIsSelected);
             }}
           />
         </Tooltip>
       )}
-      {getIconForFile(name)}
-      {/* File name text */}
+      {getIconForFile(fileName)}
       <Text
         size="sm"
         style={{
@@ -204,44 +238,10 @@ const FileItem = ({
           textOverflow: "ellipsis",
         }}
       >
-        {name}
+        {fileName}
       </Text>
 
-      {/* Entity association badges - show which entities this file belongs to */}
-      {associations.length > 0 && (
-        <Group gap="xs" wrap="nowrap" style={{ marginLeft: "auto", overflow: "hidden" }}>
-          {associations.slice(0, 3).map((assoc, index) => (
-            <Tooltip
-              key={index}
-              label={`${assoc.entityId} (${assoc.entityType})`}
-              position="top"
-              withArrow
-            >
-              <Badge
-                color={getBadgeColor(assoc.entityId)}
-                variant="light"
-                size="xs"
-                style={{
-                  whiteSpace: "nowrap",
-                  maxWidth: "100px", // Prevent oversized badges from disrupting layout
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
-                {formatEntityId(assoc.entityId)}
-              </Badge>
-            </Tooltip>
-          ))}
-          {/* "More" indicator for when a file has many associations */}
-          {associations.length > 3 && (
-            <Tooltip label={`${associations.length - 3} more entities`} position="top" withArrow>
-              <Badge color="gray" variant="outline" size="xs">
-                +{associations.length - 3}
-              </Badge>
-            </Tooltip>
-          )}
-        </Group>
-      )}
+      <EntityBadges entities={entitiesAssociatedWithFile} />
     </Group>
   );
 };
@@ -275,33 +275,27 @@ const collectAllFilesRecursively = (content) => {
 };
 
 const FolderItem = ({
-  name,
-  content,
+  folderName,
+  relativePath,
+  folderIsSelected,
+  entitiesAssociatedWithFolder = [], // now array of strings
   onFolderClick,
-  onFileClick,
-  datasetStructureSearchFilter,
-  isFolderSelected,
-  isFileSelected,
   allowStructureEditing,
-  allowFolderSelection,
-  folderClickHoverText,
-  entityType,
-  isTopLevelFolder = false,
+  indent,
+  datasetStructureSearchFilter,
 }) => {
-  const contextMenuItemData = useGlobalStore((state) => state.contextMenuItemData);
+  const contextMenuRelativePath = useGlobalStore((state) => state.contextMenuRelativePath);
   const contextMenuIsOpened = useGlobalStore((state) => state.contextMenuIsOpened);
 
-  const [isOpen, setIsOpen] = useState(isTopLevelFolder);
   const { hovered, ref } = useHover();
 
-  // Get associated entities for this folder, filtering by entityType
-  const associations = getAssociatedEntities(content.relativePath, entityType);
+  const isOpen = isFolderOpen(relativePath);
 
   useEffect(() => {
-    if (datasetStructureSearchFilter) setIsOpen(true);
-  }, [datasetStructureSearchFilter]);
-
-  const toggleFolder = () => setIsOpen((prev) => !prev);
+    if (datasetStructureSearchFilter && !isOpen) {
+      openFolder(relativePath);
+    }
+  }, [datasetStructureSearchFilter, isOpen, relativePath]);
 
   const handleFolderContextMenuOpen = (e) => {
     e.preventDefault();
@@ -314,215 +308,88 @@ const FolderItem = ({
       });
       return;
     }
-    openContextMenu({ x: e.clientX, y: e.clientY }, "folder", name, structuredClone(content));
+    openContextMenu({ x: e.clientX, y: e.clientY }, "folder", folderName, relativePath);
   };
-
-  const folderIsEmpty =
-    !content ||
-    (Object.keys(content.folders).length === 0 && Object.keys(content.files).length === 0);
-  if (name === "left-ventricle") {
-  }
-
-  if (folderIsEmpty) return null; // Don't render empty folders
 
   const folderIsPassThrough = content.passThrough;
 
-  // Determines if all files in this folder and its subfolders are selected
-  // Used to drive the folder checkbox state (checked, unchecked)
-  const areAllFilesSelected = () => {
-    if (!isFileSelected || typeof isFileSelected !== "function") return false;
-
-    const allFiles = collectAllFilesRecursively(content);
-    if (allFiles.length === 0) return false;
-
-    // Diagnostic information to help trace selection states
-    const totalFiles = allFiles.length;
-    const selectedFiles = allFiles.filter((file) => isFileSelected(file.name, file.content));
-    const selectedCount = selectedFiles.length;
-
-    // Only return true if ALL files are selected (complete folder selection)
-    return selectedCount === totalFiles;
-  };
-
-  // Calculate if folder checkbox should be checked
-  const folderCheckboxStatus = areAllFilesSelected();
-
-  // Handler for when folder checkbox is clicked
-  const handleFolderCheckboxClick = () => {
-    if (!onFileClick || !isFileSelected || typeof isFileSelected !== "function") return;
-
-    const allFiles = collectAllFilesRecursively(content);
-    const currentlyAllSelected = areAllFilesSelected();
-
-    // Toggle all files to the opposite of current state
-    allFiles.forEach((file) => {
-      try {
-        const fileIsSelected = isFileSelected(file.name, file.content);
-        // Only toggle if needed (all selected -> deselect all, or not all selected -> select all)
-        if (currentlyAllSelected === fileIsSelected) {
-          onFileClick(file.name, file.content, fileIsSelected);
-        }
-      } catch (err) {
-        console.error("Error checking file selection status:", err);
-      }
-    });
-  };
-
-  // Check if the folder is selected - simplified to just true/false
-  const folderIsSelected = isFolderSelected ? isFolderSelected(name, content) : false;
-
-  const folderRelativePathEqualsContextMenuItemRelativePath =
-    contextMenuIsOpened && contextMenuItemData?.relativePath === content.relativePath;
-
   // Helper function for determining background color
   const getBackgroundColor = () => {
-    if (folderIsSelected) return "var(--color-transparent-soda-green)";
-
-    if (
-      hovered ||
-      (contextMenuIsOpened && contextMenuItemData?.relativePath === content.relativePath)
-    ) {
+    if (hovered || (contextMenuIsOpened && contextMenuRelativePath === content.relativePath)) {
       return "rgba(0, 0, 0, 0.05)";
     }
     return undefined;
   };
 
-  return (
-    <Stack gap={1} ml="xs">
-      <Group
-        gap={3}
-        justify="flex-start"
-        onContextMenu={handleFolderContextMenuOpen}
-        ref={ref}
-        bg={getBackgroundColor()}
-        py="1px"
-        style={{ flexWrap: "nowrap" }}
-      >
-        {folderIsEmpty || !isOpen ? (
-          <IconFolder
-            size={ICON_SETTINGS.folderSize}
-            color={ICON_SETTINGS.folderColor}
-            onClick={toggleFolder}
-          />
-        ) : (
-          <IconFolderOpen
-            size={ICON_SETTINGS.folderSize}
-            color={ICON_SETTINGS.folderColor}
-            onClick={toggleFolder}
-          />
-        )}
-        {!folderIsPassThrough && onFileClick && typeof isFileSelected === "function" && (
-          <Tooltip
-            label={
-              folderCheckboxStatus
-                ? "Deselect all files in this folder"
-                : "Select all files in this folder"
-            }
-            zIndex={2999}
-          >
-            <Checkbox
-              readOnly
-              checked={folderCheckboxStatus}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleFolderCheckboxClick();
-              }}
-            />
-          </Tooltip>
-        )}
-        <Text
-          size="md"
-          px={5}
-          onClick={toggleFolder}
-          style={{
-            borderRadius: "4px",
-            cursor: "pointer",
-            transition: "background-color 0.2s ease-in-out",
-            flexGrow: 1,
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-          c={folderIsEmpty ? "gray" : folderIsPassThrough ? "silver" : "black"}
-        >
-          {name}
-        </Text>
+  const handleFolderClick = () => {
+    if (isOpen) {
+      closeFolder(relativePath);
+    } else {
+      openFolder(relativePath);
+    }
+  };
 
-        {/* Entity association badges for folder */}
-        {associations.length > 0 && (
-          <Group
-            gap="xs"
-            wrap="nowrap"
-            style={{ marginLeft: "auto", marginRight: 10, overflow: "hidden" }}
-          >
-            {associations.slice(0, 3).map((assoc, index) => (
-              <Tooltip
-                key={index}
-                label={`${assoc.entityId} (${assoc.entityType})`}
-                position="top"
-                withArrow
-              >
-                <Badge
-                  color={getBadgeColor(assoc.entityId)}
-                  variant="light"
-                  size="xs"
-                  style={{
-                    whiteSpace: "nowrap",
-                    maxWidth: "100px", // Constrain badge width for layout consistency
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {formatEntityId(assoc.entityId)}
-                </Badge>
-              </Tooltip>
-            ))}
-            {associations.length > 3 && (
-              <Tooltip label={`${associations.length - 3} more entities`} position="top" withArrow>
-                <Badge color="gray" variant="outline" size="xs">
-                  +{associations.length - 3}
-                </Badge>
-              </Tooltip>
-            )}
-          </Group>
-        )}
-      </Group>
-      <Collapse in={isOpen}>
-        {naturalSort(Object.keys(content?.folders || {})).map((folderName) => (
-          <FolderItem
-            key={folderName}
-            name={folderName}
-            content={content.folders[folderName]}
-            onFolderClick={onFolderClick}
-            onFileClick={onFileClick}
-            datasetStructureSearchFilter={datasetStructureSearchFilter}
-            isFolderSelected={isFolderSelected}
-            isFileSelected={isFileSelected}
-            allowStructureEditing={allowStructureEditing}
-            allowFolderSelection={allowFolderSelection}
-            folderClickHoverText={folderClickHoverText}
-            entityType={entityType}
-            isTopLevelFolder={false}
+  return (
+    <Group
+      gap={3}
+      justify="flex-start"
+      onContextMenu={handleFolderContextMenuOpen}
+      ref={ref}
+      bg={getBackgroundColor()}
+      my="1px"
+      style={{ flexWrap: "nowrap" }}
+      onClick={handleFolderClick}
+      h="23px"
+      ml={`${indent * 10}px`}
+    >
+      {isOpen ? (
+        <IconFolderOpen size={ICON_SETTINGS.folderSize} color={ICON_SETTINGS.folderColor} />
+      ) : (
+        <IconFolder size={ICON_SETTINGS.folderSize} color={ICON_SETTINGS.folderColor} />
+      )}
+      {!folderIsPassThrough && typeof onFolderClick === "function" && (
+        <Tooltip
+          label={
+            folderIsSelected
+              ? "Deselect all files in this folder"
+              : "Select all files in this folder"
+          }
+          zIndex={2999}
+        >
+          <Checkbox
+            readOnly
+            checked={folderIsSelected}
+            onClick={(e) => {
+              e.stopPropagation();
+              onFolderClick?.(relativePath, folderIsSelected);
+            }}
           />
-        ))}
-        {naturalSort(Object.keys(content?.files || {})).map((fileName) => (
-          <FileItem
-            key={fileName}
-            name={fileName}
-            content={content.files[fileName]}
-            onFileClick={onFileClick}
-            isFileSelected={isFileSelected}
-            allowStructureEditing={allowStructureEditing}
-            entityType={entityType}
-          />
-        ))}
-      </Collapse>
-    </Stack>
+        </Tooltip>
+      )}
+      <Text
+        size="md"
+        px={5}
+        style={{
+          borderRadius: "4px",
+          cursor: "pointer",
+          transition: "background-color 0.2s ease-in-out",
+          flexGrow: 1,
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+        }}
+        c={folderIsPassThrough ? "silver" : "black"}
+      >
+        {folderName}
+      </Text>
+      <EntityBadges entities={entitiesAssociatedWithFolder} />
+    </Group>
   );
 };
 
 // Main component - renders the entire dataset tree structure
 const DatasetTreeViewRenderer = ({
+  fileExplorerId,
   folderActions,
   fileActions,
   allowStructureEditing,
@@ -530,14 +397,20 @@ const DatasetTreeViewRenderer = ({
   hideSearchBar,
   mutuallyExclusiveSelection,
   entityType,
-  allowFolderSelection = false, // Add new prop with default false
 }) => {
-  const renderDatasetStructureJSONObj = useGlobalStore(
-    (state) => state.renderDatasetStructureJSONObj
-  );
-  const renderDatasetStructureJSONObjIsLoading = useGlobalStore(
-    (state) => state.renderDatasetStructureJSONObjIsLoading
-  );
+  const activeFileExplorer = useGlobalStore((state) => state.activeFileExplorer);
+  const datasetRenderArray = useGlobalStore((state) => state.datasetRenderArray);
+
+  const parentRef = useRef(null);
+
+  const count = datasetRenderArray ? datasetRenderArray.length : 0;
+  const rowVirtualizer = useVirtualizer({
+    count,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 25, // 24px height + 2px total margin
+    overscan: 70,
+  });
+  const datasetRenderArrayIsLoading = useGlobalStore((state) => state.datasetRenderArrayIsLoading);
   const datasetStructureSearchFilter = useGlobalStore(
     (state) => state.datasetStructureSearchFilter
   );
@@ -545,14 +418,15 @@ const DatasetTreeViewRenderer = ({
   const externallySetSearchFilterValue = useGlobalStore(
     (state) => state.externallySetSearchFilterValue
   );
-  const dataSetMetadataToPreview = useGlobalStore((state) => state.dataSetMetadataToPreview);
 
   const [inputSearchFilter, setInputSearchFilter] = useState(datasetStructureSearchFilter);
-  const [debouncedSearchFilter] = useDebouncedValue(inputSearchFilter, 300); // 300ms debounce
+  const [debouncedSearchFilter] = useDebouncedValue(inputSearchFilter, 500); // 500ms debounce
 
+  // Only update store and trigger re-render when debounced value changes
   useEffect(() => {
-    setDatasetStructureSearchFilter(inputSearchFilter);
-  }, [inputSearchFilter]);
+    setDatasetStructureSearchFilter(debouncedSearchFilter);
+    reRenderTreeView();
+  }, [debouncedSearchFilter]);
 
   const handleSearchChange = (event) => {
     setInputSearchFilter(event.target.value);
@@ -563,46 +437,25 @@ const DatasetTreeViewRenderer = ({
     setInputSearchFilter(externallySetSearchFilterValue);
   }, [externallySetSearchFilterValue]);
 
-  const renderObjIsEmpty =
-    !renderDatasetStructureJSONObj ||
-    (Object.keys(renderDatasetStructureJSONObj?.folders).length === 0 &&
-      Object.keys(renderDatasetStructureJSONObj?.files).length === 0);
+  useEffect(() => {
+    const virtualItems = rowVirtualizer.getVirtualItems();
+  }, [datasetRenderArray, rowVirtualizer.getVirtualItems()]);
 
-  if (renderObjIsEmpty) {
-    return (
-      <Paper padding="md" shadow="sm" radius="md" mih={80} p="sm" flex={1} w="100%" withBorder>
-        {itemSelectInstructions && (
-          <SodaGreenPaper>
-            <Text>{itemSelectInstructions}</Text>
-          </SodaGreenPaper>
-        )}
-        <SelectedEntityPreviewer />
-        {!hideSearchBar && (
-          <TextInput
-            placeholder="Search files and folders..."
-            value={inputSearchFilter}
-            onChange={handleSearchChange}
-            leftSection={<IconSearch stroke={1.5} />}
-            mt="md"
-            mb="xs"
-          />
-        )}
-        <Center mt="md">
-          <Text size="sm" c="gray">
-            {inputSearchFilter.length > 0
-              ? "No files or folders found matching the search criteria."
-              : "No folders or files to display."}
-          </Text>
-        </Center>
-      </Paper>
-    );
+  if (activeFileExplorer !== fileExplorerId) {
+    return <Text>Inactive file explorer {fileExplorerId ? fileExplorerId : "NONE"}</Text>;
   }
+  const renderObjIsEmpty =
+    !datasetRenderArray || (Array.isArray(datasetRenderArray) && datasetRenderArray.length === 0);
 
-  const handleFileItemClick = (fileName, fileContents) => {
-    if (fileActions && typeof fileActions["is-file-selected"] === "function") {
-      const isSelected = fileActions["is-file-selected"](fileName, fileContents);
-      // Pass the mutuallyExclusiveSelection parameter
-      fileActions["on-file-click"](fileName, fileContents, isSelected, mutuallyExclusiveSelection);
+  const handleFileItemClick = (relativePath, fileIsSelected) => {
+    if (fileActions && typeof fileActions["on-file-click"] === "function") {
+      fileActions["on-file-click"](relativePath, fileIsSelected, mutuallyExclusiveSelection);
+    }
+  };
+
+  const handleFolderItemClick = (relativePath, folderIsSelected) => {
+    if (folderActions && typeof folderActions["on-folder-click"] === "function") {
+      folderActions["on-folder-click"](relativePath, folderIsSelected, mutuallyExclusiveSelection);
     }
   };
 
@@ -627,82 +480,109 @@ const DatasetTreeViewRenderer = ({
           mb="xs"
         />
       )}
-      <Stack gap={1} style={{ maxHeight: 700, overflowY: "auto" }} py={3}>
-        {renderDatasetStructureJSONObjIsLoading ? (
+      <div
+        ref={parentRef}
+        style={{
+          maxHeight: 600,
+          overflowY: "auto",
+          position: "relative",
+        }}
+      >
+        {renderObjIsEmpty ? (
+          <Center mt="md">
+            <Text size="sm" c="gray">
+              {debouncedSearchFilter.length > 0
+                ? "No files or folders found matching the search criteria."
+                : "No folders or files to display."}
+            </Text>
+          </Center>
+        ) : datasetRenderArrayIsLoading ? (
           <Center w="100%">
             <Loader size="md" m="xs" />
           </Center>
         ) : (
-          <>
-            {naturalSort(Object.keys(renderDatasetStructureJSONObj?.folders || {})).map(
-              (folderName, index) => (
-                <FolderItem
-                  key={folderName}
-                  name={folderName}
-                  content={renderDatasetStructureJSONObj.folders[folderName]}
-                  onFolderClick={allowFolderSelection ? folderActions?.["on-folder-click"] : null}
-                  isTopLevelFolder={true}
-                  onFileClick={fileActions?.["on-file-click"] ? handleFileItemClick : null}
-                  folderClickHoverText={
-                    folderActions?.["folder-click-hover-text"] ||
-                    "Select this folder and its contents"
-                  }
-                  datasetStructureSearchFilter={datasetStructureSearchFilter}
-                  isFolderSelected={folderActions?.["is-folder-selected"]}
-                  isFileSelected={fileActions?.["is-file-selected"]}
-                  allowStructureEditing={allowStructureEditing}
-                  allowFolderSelection={allowFolderSelection}
-                  entityType={entityType}
-                />
-              )
-            )}
-            {naturalSort(Object.keys(renderDatasetStructureJSONObj?.files || {})).map(
-              (fileName) => (
-                <FileItem
-                  key={fileName}
-                  name={fileName}
-                  content={renderDatasetStructureJSONObj.files[fileName]}
-                  onFileClick={fileActions?.["on-file-click"] ? handleFileItemClick : null}
-                  isFileSelected={fileActions?.["is-file-selected"]}
-                  allowStructureEditing={allowStructureEditing}
-                  entityType={entityType} // Pass to FileItem
-                />
-              )
-            )}
+          <div
+            style={{
+              height: rowVirtualizer.getTotalSize(),
+              width: "100%",
+              position: "relative",
+            }}
+          >
+            {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+              const item = datasetRenderArray[virtualRow.index];
+              if (!item) return null;
 
-            {dataSetMetadataToPreview &&
-              dataSetMetadataToPreview.map((metadataKey) => {
-                const metadataKeyToFileNameMapping = {
-                  subjects: "subjects.xlsx",
-                  samples: "samples.xlsx",
-                  code_description: "code_description.xlsx",
-                  dataset_description: "dataset_description.xlsx",
-                  performances: "performances.xlsx",
-                  resources: "resources.xlsx",
-                  sites: "sites.xlsx",
-                  submission: "submission.xlsx",
-                  "README.md": "README.md",
-                  CHANGES: "CHANGES",
-                  LICENSE: "LICENSE",
-                  manifest_file: "manifest.xlsx",
-                };
+              const renderItem = () => {
+                switch (item.itemType) {
+                  case "folder":
+                    return (
+                      <FolderItem
+                        key={item.itemIndex}
+                        folderName={item.folderName}
+                        relativePath={item.relativePath}
+                        folderIsSelected={item.folderIsSelected}
+                        entitiesAssociatedWithFolder={item.entitiesAssociatedWithFolder}
+                        onFolderClick={
+                          folderActions?.["on-folder-click"] ? handleFolderItemClick : null
+                        }
+                        datasetStructureSearchFilter={datasetStructureSearchFilter}
+                        allowStructureEditing={allowStructureEditing}
+                        indent={item.itemIndent}
+                      />
+                    );
+                  case "metadataFile":
+                    return (
+                      <FileItem
+                        key={item.itemIndex}
+                        fileName={item.fileName}
+                        relativePath={item.relativePath}
+                        fileIsSelected={item.fileIsSelected}
+                        entitiesAssociatedWithFile={item.entitiesAssociatedWithFile}
+                        onFileClick={fileActions?.["on-file-click"] ? handleFileItemClick : null}
+                        allowStructureEditing={allowStructureEditing}
+                        indent={item.itemIndent}
+                        // Add extra props/styles for metadata files here
+                      />
+                    );
+                  case "file":
+                    return (
+                      <FileItem
+                        key={item.itemIndex}
+                        fileName={item.fileName}
+                        relativePath={item.relativePath}
+                        fileIsSelected={item.fileIsSelected}
+                        entitiesAssociatedWithFile={item.entitiesAssociatedWithFile}
+                        onFileClick={fileActions?.["on-file-click"] ? handleFileItemClick : null}
+                        allowStructureEditing={allowStructureEditing}
+                        indent={item.itemIndent}
+                      />
+                    );
+                  default:
+                    console.error("Unknown item type:", item.itemType);
+                    return null;
+                }
+              };
 
-                const fileName = metadataKeyToFileNameMapping[metadataKey] || metadataKey;
-                return (
-                  <FileItem
-                    key={metadataKey}
-                    name={fileName}
-                    content={{ relativePath: metadataKey, type: "metadata" }}
-                    onFileClick={null}
-                    isFileSelected={null}
-                    allowStructureEditing={false}
-                    entityType={entityType}
-                  />
-                );
-              })}
-          </>
+              return (
+                <div
+                  key={virtualRow.key}
+                  ref={rowVirtualizer.measureElement}
+                  data-index={virtualRow.index}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    transform: `translateY(${virtualRow.start}px)`,
+                  }}
+                >
+                  {renderItem()}
+                </div>
+              );
+            })}
+          </div>
         )}
-      </Stack>
+      </div>
       <ContextMenu />
     </Paper>
   );

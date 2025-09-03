@@ -8,10 +8,12 @@ import {
 } from "../buttons/radioButtons.js";
 import {
   externallySetSearchFilterValue,
-  setTreeViewDatasetStructure,
-  clearEntityFilter, // Add this import
-  setEntityFilter, // Add this import
-  setDataSetMetadataToPreview, // Add this import
+  reRenderTreeView,
+  clearEntityFilter,
+  setEntityFilter,
+  setDatasetMetadataToPreview,
+  setActiveFileExplorer,
+  setPathToRender,
 } from "../../../stores/slices/datasetTreeViewSlice.js";
 import {
   addEntityToEntityList,
@@ -33,6 +35,7 @@ import {
 import {
   setDatasetEntityObj,
   filterRemovedFilesFromDatasetEntityObj,
+  setEntityType,
 } from "../../../stores/slices/datasetEntitySelectorSlice.js";
 import { setSelectedHierarchyEntity } from "../../../stores/slices/datasetContentSelectorSlice.js";
 import { guidedSetNavLoadingState } from "./navigationUtils/pageLoading.js";
@@ -45,8 +48,7 @@ import useGlobalStore from "../../../stores/globalStore.js";
 import { setPerformanceList } from "../../../stores/slices/performancesSlice.js";
 import { setSelectedModalities } from "../../../stores/slices/modalitiesSlice.js";
 import { guidedSaveProgress } from "./savePageChanges.js";
-import { getItemAtPath } from "../../utils/datasetStructure.js";
-
+import { createStandardizedDatasetStructure } from "../../utils/datasetStructure.js";
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
@@ -196,23 +198,16 @@ window.openPage = async (targetPageID) => {
     setSelectedHierarchyEntity(null);
     setActiveEntity(null);
 
+    if (targetPageDataset.entityType) {
+      setEntityType(targetPageDataset.entityType);
+    } else {
+      setEntityType(null);
+    }
+
     // Synchronize state between the SODA JSON object and the zustand store
     setSelectedEntities(window.sodaJSONObj["selected-entities"] || []);
     setDeSelectedEntities(window.sodaJSONObj["deSelected-entities"] || []);
     setPerformanceList(window.sodaJSONObj["dataset_metadata"]?.["performance_metadata"] || []);
-
-    const pagesToShowMetadataPreview = [
-      "guided-generate-dataset-locally",
-      "guided-dataset-structure-review-tab",
-      "guided-dataset-generation-confirmation-tab",
-    ];
-    if (pagesToShowMetadataPreview.includes(targetPageID)) {
-      // Set the dataset metadata to preview
-      setDataSetMetadataToPreview(Object.keys(window.sodaJSONObj["dataset_metadata"] || {}));
-    } else {
-      // Clear the dataset metadata preview if not on the generation page
-      setDataSetMetadataToPreview(null);
-    }
 
     handleNextButtonVisibility(targetPageID);
     handleBackButtonVisibility(targetPageID);
@@ -324,7 +319,6 @@ window.openPage = async (targetPageID) => {
             []
           );
         }
-        setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["data"]);
       }
 
       if (targetPageComponentType === "entity-file-mapping-page") {
@@ -351,11 +345,9 @@ window.openPage = async (targetPageID) => {
             [{ type: "high-level-folder-data-categorization", names: ["Experimental"] }],
             []
           );
-        } else {
         }
 
         setDatasetEntityArray(datasetEntityArray);
-        setTreeViewDatasetStructure(window.datasetStructureJSONObj, ["data"]);
       }
 
       if (
@@ -382,34 +374,60 @@ window.openPage = async (targetPageID) => {
     await openPagePrepareMetadata(targetPageID);
     await openPageGenerateDataset(targetPageID);
 
-    //     if (targetPageID === "guided-subject-structure-spreadsheet-importation-tab") {
-    //         const savedSpreadSheetPath = window.sodaJSONObj["dataset-structure-spreadsheet-path"];
-    //         setUiBasedOnSavedDatasetStructurePath(savedSpreadSheetPath);
-    //     }
+    const showCorrectFileExplorerByPage = (pageID) => {
+      // Get the element for the pageId
 
-    //     if (targetPageID === "guided-subjects-addition-tab") {
-    //         // skip the spreadsheet importation page so the user can't go back to it
-    //         guidedSkipPage("guided-subject-structure-spreadsheet-importation-tab");
-    //         renderSubjectsTable();
-    //     }
+      // Special case for data categorization pages
+      if (targetPageDataset.componentType === "data-categorization-page") {
+        setActiveFileExplorer("entity-data-selector");
+      } else {
+        setActiveFileExplorer(pageID);
+      }
+    };
+    showCorrectFileExplorerByPage(targetPageID);
 
-    //     if (targetPageID === "guided-samples-addition-tab") {
-    //         renderSamplesTable();
-    //     }
+    const renderCorrectFileExplorerByPage = (pageID) => {
+      const reviewPages = [
+        "guided-dataset-structure-and-manifest-review-tab",
+        "guided-generate-dataset-locally",
+        "guided-dataset-generation-confirmation-tab",
+        "guided-dataset-structure-review-tab",
+      ];
 
-    //     if (targetPageID === "guided-denote-derivative-data-tab") {
-    //         // Set the folder structure as the primary folder since the user is
-    //         // denoting data as derivative which will be moved to the derivative folder
-    //         guidedUpdateFolderStructureUI("data/");
-    //     }
+      // For review-related pages: use standardized structure
+      if (reviewPages.includes(pageID)) {
+        const standardizedDatasetStructure = createStandardizedDatasetStructure(
+          window.datasetStructureJSONObj,
+          window.sodaJSONObj["dataset-entity-obj"]
+        );
+        setDatasetMetadataToPreview(Object.keys(window.sodaJSONObj["dataset_metadata"] || {}));
 
-    //     if (targetPageID === "guided-protocol-folder-tab") {
-    //         guidedUpdateFolderStructureUI("protocol/");
-    //     }
+        setPathToRender([]);
+        useGlobalStore.setState({
+          datasetStructureJSONObj: standardizedDatasetStructure,
+          calculateEntities: false,
+        });
+        reRenderTreeView(true);
+        return;
+      } else {
+        // Clear the dataset metadata preview if not on the generation page
+        setDatasetMetadataToPreview(null);
+      }
 
-    //     if (targetPageID === "guided-docs-folder-tab") {
-    //         guidedUpdateFolderStructureUI("docs/");
-    //     }
+      // For categorization or unstructured import pages: use raw structure
+      if (
+        targetPageDataset.componentType === "data-categorization-page" ||
+        pageID === "guided-unstructured-data-import-tab"
+      ) {
+        setPathToRender(["data"]);
+        useGlobalStore.setState({
+          datasetStructureJSONObj: window.datasetStructureJSONObj,
+          calculateEntities: true,
+        });
+        reRenderTreeView(true);
+      }
+    };
+    renderCorrectFileExplorerByPage(targetPageID);
 
     let currentParentTab = window.CURRENT_PAGE.closest(".guided--parent-tab");
 

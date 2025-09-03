@@ -1,4 +1,13 @@
 {
+  "16.2.0": {
+    "announcements": {
+      "bug-fixes": [],
+      "features": [
+        "The `Prepare Dataset Step-by-Step` feature handles larger datasets more efficiently.",
+        "The `Prepare Dataset Step-by-Step` page for adding a contributor has been improved by more flexible orcid addition."
+      ]
+    }
+  },
   "16.1.2": {
     "announcements": {
       "bug-fixes": [

@@ -1,9 +1,18 @@
 import useGlobalStore from "../../stores/globalStore";
-import { setTreeViewDatasetStructure } from "../../stores/slices/datasetTreeViewSlice";
-import { setFolderMoveMode } from "../../stores/slices/datasetTreeViewSlice";
-import { deleteEmptyFoldersFromStructure } from "../../stores/slices/datasetTreeViewSlice";
+import { reRenderTreeView } from "../../stores/slices/datasetTreeViewSlice";
+import {
+  deleteEmptyFoldersFromStructure,
+  getInvertedDatasetEntityObj,
+  filePassesAllFilters,
+} from "../../stores/slices/datasetTreeViewSlice";
 
 export const countFilesInDatasetStructure = (datasetStructure) => {
+  // If datasetStructure is an array (datasetRenderArray), count file items
+  if (Array.isArray(datasetStructure)) {
+    return datasetStructure.filter((item) => item.itemType === "file").length;
+  }
+
+  // Otherwise, fallback to legacy recursive count
   if (!datasetStructure || typeof datasetStructure !== "object") return 0;
 
   let totalFiles = 0;
@@ -47,132 +56,107 @@ export const countSelectedFilesByEntityType = (entityType) => {
 
 const getNestedObjectAtPathArray = (pathArray) => {
   let current = window.datasetStructureJSONObj;
-
   for (const folder of pathArray) {
     if (!current || !current.folders || !current.folders[folder]) {
-      return null; // or undefined, or throw new Error(...) depending on your needs
+      return null;
     }
     current = current.folders[folder];
   }
-
   return current;
 };
 
-export const getItemAtPath = (relativePath, itemType) => {
-  // Split the relative path into segments and isolate the item name.
+export const getFolderDetailsByRelativePath = (relativePath) => {
   const pathSegments = relativePath.split("/").filter((segment) => segment !== "");
-  const itemName = pathSegments.pop();
-
-  // Get the parent folder by traversing the path segments.
+  const folderName = pathSegments.pop();
   const parentFolder = getNestedObjectAtPathArray(pathSegments);
-  if (!parentFolder) {
-    console.error(`Parent folder not found for path: ${relativePath}`);
-    return null;
+  const folderObject = parentFolder?.folders?.[folderName];
+  const datasetStructureSearchFilter = useGlobalStore.getState().datasetStructureSearchFilter;
+  const entityFilters = useGlobalStore.getState().entityFilters;
+  const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
+
+  // Recursively collect all fileObj.relativePath values in this folder and subfolders as an array, filtered
+  const collectFileRelativePathsRecursively = (folderObj) => {
+    let result = [];
+    if (folderObj?.files) {
+      Object.values(folderObj.files).forEach((fileObj) => {
+        if (
+          fileObj.relativePath &&
+          filePassesAllFilters({
+            filePath: fileObj.relativePath,
+            entityFilters,
+            searchFilter: datasetStructureSearchFilter,
+            datasetEntityObj,
+          })
+        ) {
+          result.push(fileObj.relativePath);
+        }
+      });
+    }
+    if (folderObj?.folders) {
+      Object.values(folderObj.folders).forEach((subfolderObj) => {
+        result = result.concat(collectFileRelativePathsRecursively(subfolderObj));
+      });
+    }
+    return result;
+  };
+
+  let childrenFileRelativePaths = [];
+  if (folderObject) {
+    childrenFileRelativePaths = collectFileRelativePathsRecursively(folderObject);
   }
 
-  // Retrieve the target item from the parent folder based on its type.
-  const itemObject =
-    itemType === "folder" ? parentFolder["folders"][itemName] : parentFolder["files"][itemName];
+  return {
+    parentFolder,
+    itemName: folderName,
+    itemObject: folderObject,
+    childrenFileRelativePaths,
+  };
+};
 
-  if (!itemObject) {
-    console.error(`Item not found at path: ${relativePath}`);
-    return null;
-  }
-
-  return { parentFolder, itemName, itemObject };
+export const getFileDetailsByRelativePath = (relativePath) => {
+  const pathSegments = relativePath.split("/").filter((segment) => segment !== "");
+  const fileName = pathSegments.pop();
+  const parentFolder = getNestedObjectAtPathArray(pathSegments);
+  const fileObject = parentFolder?.files?.[fileName];
+  return { parentFolder, itemName: fileName, itemObject: fileObject };
 };
 
 export const deleteFoldersByRelativePath = (arrayOfRelativePaths) => {
   for (const relativePathToDelete of arrayOfRelativePaths) {
-    const { parentFolder, itemName, itemObject } = getItemAtPath(relativePathToDelete, "folder");
-
-    if (itemObject?.["location"] === "ps") {
-      // Mark folders from Pennsieve for deletion instead of directly deleting them.
-      parentFolder["folders"][itemName]["action"].push("deleted");
+    const { parentFolder, itemName, itemObject } =
+      getFolderDetailsByRelativePath(relativePathToDelete);
+    if (itemObject["location"] === "ps") {
+      itemObject["action"].push("deleted");
     } else {
-      // Directly delete folders not originating from Pennsieve.
       delete parentFolder["folders"][itemName];
     }
   }
-
-  // Update the tree view structure to reflect the changes.
-  setTreeViewDatasetStructure(window.datasetStructureJSONObj);
+  useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
+  reRenderTreeView();
 };
 
 export const deleteFilesByRelativePath = (arrayOfRelativePaths) => {
   for (const relativePathToDelete of arrayOfRelativePaths) {
-    const { parentFolder, itemName, itemObject } = getItemAtPath(relativePathToDelete, "file");
-
-    if (itemObject?.["location"] === "ps") {
-      // Mark files from Pennsieve for deletion instead of directly deleting them.
-      parentFolder["files"][itemName]["action"].push("deleted");
+    const { parentFolder, itemName, itemObject } =
+      getFileDetailsByRelativePath(relativePathToDelete);
+    if (itemObject["location"] === "ps") {
+      itemObject["action"].push("deleted");
     } else {
-      // Directly delete files not originating from Pennsieve.
       delete parentFolder["files"][itemName];
     }
   }
-
-  // Update the tree view structure to reflect the changes.
-  setTreeViewDatasetStructure(window.datasetStructureJSONObj);
-};
-
-export const moveFoldersToTargetLocation = (
-  arrayOfRelativePathsToMove,
-  destionationRelativePath
-) => {
-  const {
-    parentFolder: destinationParentFolder,
-    itemName: destinationItemName,
-    itemObject: destinationItemObject,
-  } = getItemAtPath(destionationRelativePath, "folder");
-  for (const relativePathToMove of arrayOfRelativePathsToMove) {
-    const { parentFolder, itemName, itemObject } = getItemAtPath(relativePathToMove, "folder");
-    // Move the folder to the destination folder.
-    destinationItemObject["folders"][itemName] = itemObject;
-    // Remove the folder from its original location.
-    delete parentFolder["folders"][itemName];
-  }
-
-  // Update the tree view structure to reflect the changes.
-  setTreeViewDatasetStructure(window.datasetStructureJSONObj);
-};
-
-export const moveFilesToTargetLocation = (arrayOfRelativePathsToMove, destionationRelativePath) => {
-  const {
-    parentFolder: destinationParentFolder,
-    itemName: destinationItemName,
-    itemObject: destinationItemObject,
-  } = getItemAtPath(destionationRelativePath, "folder");
-
-  for (const relativePathToMove of arrayOfRelativePathsToMove) {
-    const { parentFolder, itemName, itemObject } = getItemAtPath(relativePathToMove, "file");
-    // Move the file to the destination folder.
-    destinationItemObject["files"][itemName] = itemObject;
-
-    // Remove the file from its original location.
-    delete parentFolder["files"][itemName];
-  }
-
-  // Update the tree view structure to reflect the changes.
-  setTreeViewDatasetStructure(window.datasetStructureJSONObj);
+  useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
+  reRenderTreeView();
 };
 
 export const moveFileToTargetLocation = (relativePathToMove, destionationRelativeFolderPath) => {
-  // Get the file's path segments and file name
   const filePathSegments = relativePathToMove.split("/").filter(Boolean);
-  // Don't pop fileName here, use itemName from getItemAtPath
-  // Build the destination path: destination folder + file's subfolders (excluding the root folder of the file path)
-  // For example, if relativePathToMove is data/experiment/Subject01/Tissue02/RegionB/metadata.txt
-  // and destionationRelativeFolderPath is primary/,
-  // the destination should be primary/experiment/Subject01/Tissue02/RegionB/metadata.txt
-  // So, skip the first segment (e.g., 'data')
-  const subfolders = filePathSegments.slice(1, -1); // skip the root folder and file name
+  const subfolders = filePathSegments.slice(1, -1);
   const destinationPathSegments = destionationRelativeFolderPath
     .split("/")
     .filter(Boolean)
     .concat(subfolders);
 
-  // Ensure the destination folder path exists, create if missing
   let currentFolder = window.datasetStructureJSONObj;
   for (const segment of destinationPathSegments) {
     if (!currentFolder.folders) currentFolder.folders = {};
@@ -182,17 +166,10 @@ export const moveFileToTargetLocation = (relativePathToMove, destionationRelativ
     currentFolder = currentFolder.folders[segment];
   }
 
-  // Now get the file object from the original location
-  const { parentFolder, itemName, itemObject } = getItemAtPath(relativePathToMove, "file");
+  const { parentFolder, itemName, itemObject } = getFileDetailsByRelativePath(relativePathToMove);
 
-  // Move the file to the destination folder.
   currentFolder["files"][itemName] = itemObject;
-
-  // Remove the file from its original location.
   delete parentFolder["files"][itemName];
-
-  // Update the tree view structure to reflect the changes.
-  setTreeViewDatasetStructure(window.datasetStructureJSONObj);
 };
 
 export const createStandardizedDatasetStructure = (datasetStructure, datasetEntityObj) => {
@@ -206,7 +183,7 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
   const moveFilesByCategory = (categoryObj, destFolder) => {
     if (!categoryObj) return;
     const files = Object.keys(categoryObj);
-    for (const file of files) {
+    for (const [i, file] of files.entries()) {
       moveFileToTargetLocation(file, destFolder);
     }
   };
@@ -244,6 +221,8 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
 
     // --- Step 6: Capture the modified structure before reverting changes ---
     const standardizedStructure = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
+    useGlobalStore.setState({ datasetStructureJSONObj: standardizedStructure });
+    reRenderTreeView();
     // --- Step 7: Revert any global changes to window.datasetStructureJSONObj ---
     window.datasetStructureJSONObj = originalStructure;
 

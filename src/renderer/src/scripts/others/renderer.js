@@ -65,7 +65,7 @@ import {
 } from "../utils/swal-utils";
 
 import useGlobalStore from "../../stores/globalStore";
-import { setTreeViewDatasetStructure } from "../../stores/slices/datasetTreeViewSlice";
+import { reRenderTreeView } from "../../stores/slices/datasetTreeViewSlice";
 import {
   resetPennsieveAgentCheckState,
   setPennsieveAgentCheckSuccessful,
@@ -103,14 +103,12 @@ window.datasetStructureJSONObj = {
 window.log.setupRendererLogOptions();
 window.homeDirectory = await window.electron.ipcRenderer.invoke("get-app-path", "home");
 
+let osType = window.os.type();
+let osPlatform = window.os.platform();
+let osRelease = window.os.release();
+
 //log user's OS version //
-window.log.info(
-  "User OS:",
-  window.os.type(),
-  window.os.platform(),
-  "version:",
-  window.os.release()
-);
+window.log.info(`User OS: ${osType} ${osPlatform} version: ${osRelease}`);
 
 // utility function for async style set timeout
 window.wait = async (delay) => {
@@ -119,7 +117,7 @@ window.wait = async (delay) => {
 
 // // Check current app version //
 const appVersion = await window.electron.ipcRenderer.invoke("app-version");
-window.log.info("Current SODA version:", appVersion);
+window.log.info(`Current SODA version: ${appVersion}`);
 
 document.getElementById("guided_mode_view").click();
 
@@ -3032,6 +3030,9 @@ window.electron.ipcRenderer.on(
         currentFileExplorerPath
       );
 
+      // Refresh the dataset tree view to reflect the newly imported data
+      reRenderTreeView();
+
       // Show success message
       window.notyf.open({
         type: "success",
@@ -3612,7 +3613,8 @@ const mergeLocalAndRemoteDatasetStructure = async (
     window.organizeDSglobalPath,
     window.datasetStructureJSONObj
   );
-  setTreeViewDatasetStructure(window.datasetStructureJSONObj);
+  useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
+  reRenderTreeView();
 };
 
 const mergeNewDatasetStructureToExistingDatasetStructureAtPath = async (
@@ -3636,14 +3638,14 @@ const mergeNewDatasetStructureToExistingDatasetStructureAtPath = async (
       window.organizeDSglobalPath,
       window.datasetStructureJSONObj
     );
-    setTreeViewDatasetStructure(window.datasetStructureJSONObj);
-
     // Step 4: Update successful, show success message
     window.notyf.open({
       type: "success",
       message: `Data successfully imported`,
       duration: 3000,
     });
+    useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
+    reRenderTreeView();
   } catch (error) {
     console.error(error);
     closeFileImportLoadingSweetAlert();

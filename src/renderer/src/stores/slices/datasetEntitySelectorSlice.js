@@ -7,7 +7,7 @@ import {
   getExistingPerformancesR,
 } from "./datasetEntityStructureSlice";
 import { setEntityFilter } from "./datasetTreeViewSlice";
-import { getItemAtPath } from "../../scripts/utils/datasetStructure";
+import { getFileDetailsByRelativePath } from "../../scripts/utils/datasetStructure";
 
 // Slice initialization for the entity selector state
 export const datasetEntitySelectorSlice = (set) => ({
@@ -214,9 +214,9 @@ export const filterRemovedFilesFromDatasetEntityObj = (entityObj) => {
     for (const [entityName, entityData] of Object.entries(entities)) {
       // Loop through the files and if they exist re-add them to the filteredEntityObj
       for (const fileName of Object.keys(entityData)) {
-        const itemAtPath = getItemAtPath(fileName, "file");
+        const { itemObject } = getFileDetailsByRelativePath(fileName);
         // If the file still exists in the dataset structure, add it to the filteredEntityObj
-        if (itemAtPath) {
+        if (itemObject) {
           if (!filteredEntityObj[entityType][entityName]) {
             filteredEntityObj[entityType][entityName] = {};
           }
