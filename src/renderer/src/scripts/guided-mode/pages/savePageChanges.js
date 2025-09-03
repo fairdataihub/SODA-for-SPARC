@@ -232,7 +232,6 @@ export const savePageChanges = async (pageBeingLeftID) => {
 
         // Save the dataset entity object to the progress file
         window.sodaJSONObj["dataset-entity-obj"] = datasetEntityObj;
-        const datasetFileCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
         const categorizedData = datasetEntityObj?.["high-level-folder-data-categorization"];
 
         let categorizedFileCount = 0;
