@@ -338,9 +338,10 @@ def fetch_user_datasets(return_only_empty_datasets=False):
                 r = requests.get(f"{PENNSIEVE_URL}/datasets/{ds['id']}", headers=create_request_headers(get_access_token()))
                 r.raise_for_status()
                 dataset = r.json()
+                namespace_logger.info(f"Package type counts is {dataset.get('packageTypeCounts', {})}")
                 dataset_packages = dataset.get("packageTypeCounts", {})
-                if dataset_packages:
-                    pass
+                if dataset_packages != {}:
+                    continue
                 filtered_datasets.append(ds)
                 
             except Exception as e:
