@@ -37,7 +37,9 @@ export const setSelectedHierarchyEntity = (entityObj) => {
       break;
 
     default:
-    // No action needed for unknown types
+      setCurrentSelectedHierarchyEntityParentSubject(null);
+      setCurrentSelectedHierarchyEntityParentSample(null);
+      break;
   }
 };
 
