@@ -49,7 +49,7 @@ const GenerateDatasetPennsieveTargetPage = () => {
     }
   }, [isExistingDatasetSelected]);
 
-  const renderDatasetSection = () => {
+  const renderDatasetSection = async () => {
     if (isLoadingPennsieveDatasets) {
       return (
         <Stack align="center" mt="md">
@@ -90,6 +90,34 @@ const GenerateDatasetPennsieveTargetPage = () => {
           />
           <DropDownNote id="user-retrieved-datasets-but-missing-desired-dataset" />
         </>
+      );
+    }
+
+    let isGuest = await api.userIsWorkspaceGuest();
+
+    if (isGuest) {
+      return (
+        <Stack mt="md" align="center">
+          <Text size="md" align="center" fw={500}>
+            No empty datasets were found that you have permission to upload to. Since you are a
+            guest in the current workspace and trying to upload a dataset it is likely someone
+            should have created one for you. Please contact them to confirm that it has been made
+            and that you are in the correct workspace to access it. You can check the documentation
+            for more information on uploading datasets in SODA as a guest
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://docs.sodaforsparc.io/docs/miscellaneous/how-to/how-to-upload-as-pennsieve-guest"
+            >
+              here
+            </a>
+            .
+          </Text>
+          <Button onClick={fetchDatasetsToUploadDataTo} w="230px">
+            Retry dataset retrieval
+          </Button>
+          <DropDownNote id="user-doesnt-have-any-empty-datasets" />
+        </Stack>
       );
     }
 
