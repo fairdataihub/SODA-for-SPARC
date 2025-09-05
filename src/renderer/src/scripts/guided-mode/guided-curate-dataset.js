@@ -3469,12 +3469,6 @@ const doTheHack = async () => {
   document.querySelector(".primary-selection-aside-item.selection-aside-item").click();
 };
 
-// If this variable is set to true, you will be taken back to the last guided mode page you were working on
-// (always set to false when making production builds)
-const continueHackGm = true;
-if (continueHackGm) {
-  // doTheHack();
-}
 
 // Add the event listener for the Data importation component
 const dragDropElementId = document.getElementById("data-importer-dropzone");
