@@ -3473,7 +3473,7 @@ const doTheHack = async () => {
 // (always set to false when making production builds)
 const continueHackGm = true;
 if (continueHackGm) {
-  doTheHack();
+  // doTheHack();
 }
 
 // Add the event listener for the Data importation component

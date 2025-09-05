@@ -772,7 +772,10 @@ document.getElementById("dataset-upload-new-dataset").addEventListener("click", 
   if (await api.userIsWorkspaceGuest()) {
     swalShowInfo(
       "Guests cannot create datasets on Pennsieve",
-      "You are currently a guest user in your workspace and do not have permission to create new datasets. If an empty dataset has already been created for you, select the 'Existing dataset' option."
+      `You are currently a guest user in your workspace and do not have permission to create new datasets. 
+       It is very likely that a member of the K-Core team has created a dataset for you on Pennsieve already.
+       To access it, you should click the 'Existing dataset' button instead then follow the on screen instructions for uploading to your dataset.
+       If there are no dataset available please inform the K-Core team.`
     );
     return;
   }

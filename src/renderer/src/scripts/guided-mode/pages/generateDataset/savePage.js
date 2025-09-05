@@ -77,8 +77,8 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
         errorArray.push({
           type: "swal",
           errorTitle: "Guests cannot create datasets on Pennsieve",
-          errorText:
-            "You are currently a guest user in your workspace and do not have permission to create new datasets. If an empty dataset has already been created for you, select 'Upload to an existing empty dataset on Pennsieve'.",
+          errorText: `You are currently a guest user in your workspace and do not have permission to create new datasets. 
+            If an empty dataset has already been created for you, select 'Upload to an existing empty dataset on Pennsieve'.`,
         });
         throw errorArray;
       }

@@ -1482,29 +1482,58 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       //after request check length again
       //if 0 then no datasets have been created
       if (window.datasetList.length === 0) {
-        Swal.fire({
-          backdrop: "rgba(0,0,0, 0.4)",
-          confirmButtonText: "Ok",
-          focusCancel: false,
-          focusConfirm: true,
-          showCloseButton: true,
-          showCancelButton: false,
-          heightAuto: false,
-          allowOutsideClick: false,
-          allowEscapeKey: true,
-          title: "<h3 style='margin-bottom:20px !important'>No dataset found</h3>",
-          html: "It appears that you don't have any datasets on Pennsieve. Please use the 'New dataset' option instead.",
-          showClass: {
-            popup: "animate__animated animate__fadeInDown animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__fadeOutUp animate__faster animate_fastest",
-          },
-          didOpen: () => {
-            $(".ui.active.green.inline.loader.small").css("display", "none");
-            $(".svg-change-current-account.dataset").css("display", "block");
-          },
-        });
+        let isGuest = await api.userIsWorkspaceGuest();
+        if (isGuest) {
+          Swal.fire({
+            backdrop: "rgba(0,0,0, 0.4)",
+            confirmButtonText: "Ok",
+            focusCancel: false,
+            focusConfirm: true,
+            showCloseButton: true,
+            showCancelButton: false,
+            heightAuto: false,
+            allowOutsideClick: false,
+            allowEscapeKey: true,
+            title: "<h3 style='margin-bottom:20px !important'>No dataset found</h3>",
+            html: `
+            Since you are a guest in the current workspace, it is likely that the K-Core team made a dataset for you to upload data to. 
+            Please contact them to confirm that it has been made and that you are in the correct workspace to access it.`,
+            showClass: {
+              popup: "animate__animated animate__fadeInDown animate__faster",
+            },
+            hideClass: {
+              popup: "animate__animated animate__fadeOutUp animate__faster animate_fastest",
+            },
+            didOpen: () => {
+              $(".ui.active.green.inline.loader.small").css("display", "none");
+              $(".svg-change-current-account.dataset").css("display", "block");
+            },
+          });
+        } else {
+          Swal.fire({
+            backdrop: "rgba(0,0,0, 0.4)",
+            confirmButtonText: "Ok",
+            focusCancel: false,
+            focusConfirm: true,
+            showCloseButton: true,
+            showCancelButton: false,
+            heightAuto: false,
+            allowOutsideClick: false,
+            allowEscapeKey: true,
+            title: "<h3 style='margin-bottom:20px !important'>No dataset found</h3>",
+            html: "It appears that you don't have any datasets on Pennsieve. Please use the 'New dataset' option instead.",
+            showClass: {
+              popup: "animate__animated animate__fadeInDown animate__faster",
+            },
+            hideClass: {
+              popup: "animate__animated animate__fadeOutUp animate__faster animate_fastest",
+            },
+            didOpen: () => {
+              $(".ui.active.green.inline.loader.small").css("display", "none");
+              $(".svg-change-current-account.dataset").css("display", "block");
+            },
+          });
+        }
 
         return;
       }
