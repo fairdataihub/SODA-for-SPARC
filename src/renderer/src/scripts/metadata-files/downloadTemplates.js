@@ -23,7 +23,6 @@ let templateArray = [
   "resources.xlsx",
   "performances.xlsx",
   "code_description.xlsx",
-  "code_parameters.xlsx",
   "CHANGES",
   "README.md",
   ".dss",
