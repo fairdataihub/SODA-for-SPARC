@@ -1496,8 +1496,9 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             allowEscapeKey: true,
             title: "<h3 style='margin-bottom:20px !important'>No dataset found</h3>",
             html: `
-            Since you are a guest in the current workspace, it is likely that the K-Core team made a dataset for you to upload data to. 
-            Please contact them to confirm that it has been made and that you are in the correct workspace to access it.`,
+            Since you are a guest in the current workspace and trying to upload a dataset it is likely someone should have created one for you. 
+            Please contact them to confirm that it has been made and that you are in the correct workspace to access it. You can check the documentation 
+            for more information on uploading datasets in SODA as a guest <a target='_blank' rel='noopener noreferrer' href="https://docs.sodaforsparc.io/docs/miscellaneous/how-to/how-to-upload-as-pennsieve-guest">here</a>.`,
             showClass: {
               popup: "animate__animated animate__fadeInDown animate__faster",
             },

@@ -773,9 +773,8 @@ document.getElementById("dataset-upload-new-dataset").addEventListener("click", 
     swalShowInfo(
       "Guests cannot create datasets on Pennsieve",
       `You are currently a guest user in your workspace and do not have permission to create new datasets. 
-       It is very likely that a member of the K-Core team has created a dataset for you on Pennsieve already.
-       To access it, you should click the 'Existing dataset' button instead then follow the on screen instructions for uploading to your dataset.
-       If there are no dataset available please inform the K-Core team.`
+       You can use the 'Update existing dataset' option to upload data to a dataset if you have been given access to one.
+       You can check the documentation for more information on uploading datasets in SODA as a workspace guest <a target='_blank' rel='noopener noreferrer' href="https://docs.sodaforsparc.io/docs/miscellaneous/how-to/how-to-upload-as-pennsieve-guest">here</a>.`
     );
     return;
   }
