@@ -38,6 +38,9 @@ keywords:
   - windows
 license: MIT
 repository-code: https://github.com/fairdataihub/SODA-for-SPARC
-version: 16.1.1
-date-released: '2025-08-22'
-doi: 10.5281/zenodo.16930096
+version: 16.2.0
+date-released: '2025-09-03'
+doi: 10.5281/zenodo.17050553
+identifiers:
+  - description: DOI for this application's record on Zenodo
+    type: doi
