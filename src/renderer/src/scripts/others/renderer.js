@@ -5775,6 +5775,36 @@ const initiate_generate = async (resume = false) => {
       Progress: ${value.toFixed(2)}%`;
     }
 
+    if (
+      main_curate_status == "Done" &&
+      main_curate_progress_message.includes("No files were uploaded in this session")
+    ) {
+      generateProgressBar.value = 100;
+      statusMeter.value = 100;
+      progressStatus.innerHTML = main_curate_status;
+      statusText.innerHTML = main_curate_status;
+      successful = true;
+      $("#sidebarCollapse").prop("disabled", false);
+      statusBarClone.remove();
+      sparc_container.style.display = "inline";
+      organizeDataset.disabled = false;
+      guidedModeHomePageButton.disabled = false;
+      uploadLocally.disabled = false;
+      document.getElementById("wrapper-wrap").style.display = "flex";
+      // organizeDataset_option_buttons.style.display = "flex";
+      guidedModeHomePageButton.className = "button-prompt-container";
+      organizeDataset.className = "content-button is-selected";
+      organizeDataset.style = "background-color: #fff";
+      uploadLocally.className = "content-button is-selected";
+      uploadLocally.style = "background-color: #fff";
+      clearInterval(timerProgress);
+      swalShowInfo(
+        "No files were uploaded in this session",
+        "This happens when trying to update an existing dataset while using the skip options (selected on step 3) in a way that unintentionally ask SODA to skip files you want to upload to Pennsieve. Please try again by clicking the Curate and Share button in the sidebar."
+      );
+      return;
+    }
+
     if (main_curate_status === "Done") {
       $("#please-wait-new-curate-div").hide();
 
