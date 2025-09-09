@@ -25,7 +25,14 @@ import {
 } from "@mantine/core";
 import { Dropzone, MIME_TYPES } from "@mantine/dropzone";
 import useGlobalStore from "../../../stores/globalStore";
-import { importEntitiesFromExcel, entityConfigs, saveEntities } from "./excelImport";
+import {
+  importEntitiesFromExcel,
+  entityConfigs,
+  saveEntities,
+  handleEntityFileImport,
+  handleDownloadTemplate,
+  handleFileRejection,
+} from "./excelImport";
 import { swalFileListDoubleAction, swalConfirmAction } from "../../../scripts/utils/swal-utils";
 import {
   getExistingSubjects,
@@ -35,6 +42,16 @@ import {
 import { normalizeEntityId } from "../../../stores/slices/datasetEntityStructureSlice";
 
 const SpreadsheetImportDatasetEntityAdditionPage = () => {
+  const entityIdStepHasBeenCompleted = useGlobalStore(
+    (state) => state.entityIdStepHasBeenCompleted
+  );
+  const entityMetadataStepHasBeenCompleted = useGlobalStore(
+    (state) => state.entityMetadataStepHasBeenCompleted
+  );
+
+  console.log("🚀 entityIdStepHasBeenCompleted:", entityIdStepHasBeenCompleted);
+  console.log("🚀 entityMetadataStepHasBeenCompleted:", entityMetadataStepHasBeenCompleted);
+
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const [importResults, setImportResults] = useState({
     subjects: null,
@@ -45,99 +62,7 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
   const entityTypes = {
     subjects: selectedEntities?.includes("subjects"),
     samples: selectedEntities?.includes("samples"),
-  };
-
-  /**
-   * Generic entity import handler
-   */
-  const handleEntityFileImport = async (files, entityType) => {
-    if (!files?.length) return;
-
-    const config = entityConfigs[entityType];
-    if (!config) {
-      window.notyf.open({
-        type: "error",
-        message: `Unsupported entity type: ${entityType}`,
-      });
-      return;
-    }
-
-    try {
-      // Process file and get formatted entities
-      const result = await importEntitiesFromExcel(files[0], entityType);
-      if (!result.success) {
-        window.notyf.open({
-          type: "error",
-          message: result.message,
-        });
-        return;
-      }
-
-      // Show confirmation with processed entities
-      const entityList = result.entities.map((entity) => config.formatDisplayId(entity));
-
-      const confirmed = await swalFileListDoubleAction(
-        entityList,
-        `Confirm ${entityType.charAt(0).toUpperCase() + entityType.slice(1)} Import`,
-        `The following ${entityList.length} ${entityType} were detected in your spreadsheet and will be imported into SODA:`,
-        "Import",
-        "Cancel"
-      );
-
-      if (!confirmed) {
-        window.notyf.open({
-          type: "info",
-          message: `${entityType} import cancelled`,
-        });
-        return;
-      }
-
-      // Save the entities to the data store
-      const saveResult = saveEntities(result.entities, entityType);
-      setImportResults((prev) => ({ ...prev, [entityType]: saveResult }));
-
-      if (saveResult.success) {
-        window.notyf.open({
-          type: "success",
-          message: saveResult.message,
-        });
-      } else {
-        window.notyf.open({
-          type: "error",
-          message: saveResult.message,
-        });
-      }
-    } catch (error) {
-      window.notyf.open({
-        type: "error",
-        message: `Error importing ${entityType}: ${error.message}`,
-      });
-    }
-  };
-
-  // Download template
-  const handleDownloadTemplate = (entityType) => {
-    const config = entityConfigs[entityType];
-    if (!config) {
-      window.notyf.open({
-        type: "error",
-        message: `No template available for entity type: ${entityType}`,
-      });
-      return;
-    }
-
-    try {
-      window.electron.ipcRenderer.send("open-folder-dialog-save-metadata", config.templateFileName);
-    } catch (error) {
-      console.error(`Error sending IPC message for ${entityType} template:`, error);
-    }
-  };
-
-  const handleFileRejection = () => {
-    window.notyf.open({
-      type: "error",
-      message: "Invalid file format. Please upload an Excel file (.xlsx or .xls)",
-    });
+    sites: selectedEntities?.includes("sites"),
   };
 
   useEffect(() => {
@@ -203,162 +128,212 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
   return (
     <GuidedModePage pageHeader="Designate entity IDs using spreadsheets">
       <GuidedModeSection>
-        <Text mb="xl">
-          Follow the instructions below to import the IDs and metadata for the entities in your
-          dataset using spreadsheets.
-        </Text>
+        {/* Step 1: Entity ID step not completed */}
+        {!entityIdStepHasBeenCompleted && (
+          <Box p="xl" style={{ textAlign: "center" }}>
+            <IconFileSpreadsheet size={48} color="blue" style={{ marginBottom: 16 }} />
+            <Title order={3} mb="md">
+              Step 1: Assign Entity IDs
+            </Title>
+            <Text>
+              You are currently on the first step. Please assign unique IDs to your entities before
+              proceeding to import them using a spreadsheet.
+            </Text>
+            <Text size="md" color="dimmed" mb="xl">
+              Once you have assigned IDs, you can return here to continue the import process.
+            </Text>
+          </Box>
+        )}
 
-        {/* Entity Import Sections - only show those whose dependencies are met */}
-        {Object.keys(entityTypes)
-          .filter((type) => entityTypes[type] && shouldShowEntityType(type))
-          .sort((a, b) => entityTypeConfig[a].sequence - entityTypeConfig[b].sequence)
-          .map((entityType) => (
-            <Paper key={entityType} shadow="xs" p="lg" radius="md" withBorder mb="xl">
-              <Stack>
-                <Text size="lg" fw={600}>
-                  {entityTypeConfig[entityType].title}
-                </Text>
-                {!importResults[entityType]?.success && (
-                  <Text>{entityTypeConfig[entityType].description}</Text>
-                )}
-                <Divider />
-                {!importResults[entityType]?.success ? (
-                  // Show normal import UI for entities that can be imported
-                  <Grid gutter={32} mt="sm">
-                    {/* Download Template Card */}
-                    <Grid.Col span={6}>
-                      <Card shadow="sm" p="md" radius="md" withBorder>
-                        <Card.Section
-                          withBorder
-                          inheritPadding
-                          py="xs"
-                          bg={`${entityTypeConfig[entityType].color}.0`}
-                        >
-                          <Group position="apart">
-                            <Text fw={600}>Step 1: Fill out the {entityType} template</Text>
-                          </Group>
-                        </Card.Section>
+        {/* Step 2: Entity Metadata step not completed */}
+        {entityIdStepHasBeenCompleted && !entityMetadataStepHasBeenCompleted && (
+          <Box p="xl" style={{ textAlign: "center" }}>
+            <IconFileSpreadsheet size={48} color="green" style={{ marginBottom: 16 }} />
+            <Title order={3} mb="md">
+              Step 2: Complete Entity Metadata
+            </Title>
+            <Text size="lg" mb="md">
+              Please complete the metadata for your entities before proceeding to the spreadsheet
+              import step.
+            </Text>
+            <Text size="md" color="dimmed" mb="xl">
+              Once you have completed the metadata, you can return here to continue the import
+              process.
+            </Text>
+          </Box>
+        )}
 
-                        <Box mt="md" mb="lg" h={130}>
-                          <List type="ordered" spacing="sm" withPadding>
-                            <List.Item>Download the {entityType}.xlsx template</List.Item>
-                            <List.Item>
-                              Assign every {entityTypeConfig[entityType].singularString} a unique ID
-                              in the {entityTypeConfig[entityType].singularString} ID column in the
-                              spreadsheet.
-                            </List.Item>
-                            <List.Item>Save the file and continue to step 2.</List.Item>
-                          </List>
-                        </Box>
+        {/* Step 3: Both steps completed, show import UI */}
+        {entityIdStepHasBeenCompleted && entityMetadataStepHasBeenCompleted && (
+          <>
+            <Text mb="xl">
+              Follow the instructions below to import the IDs and metadata for the entities in your
+              dataset using spreadsheets.
+            </Text>
 
-                        <Button
-                          fullWidth
-                          variant="light"
-                          color={entityTypeConfig[entityType].color}
-                          onClick={() => handleDownloadTemplate(entityType)}
-                        >
-                          Download{" "}
-                          {entityConfigs[entityType]?.templateFileName || `${entityType}.xlsx`}
-                        </Button>
-                      </Card>
-                    </Grid.Col>
+            {/* Entity Import Sections - only show those whose dependencies are met */}
+            {Object.keys(entityTypes)
+              .filter((type) => entityTypes[type] && shouldShowEntityType(type))
+              .sort((a, b) => entityTypeConfig[a].sequence - entityTypeConfig[b].sequence)
+              .map((entityType) => (
+                <Paper key={entityType} shadow="xs" p="lg" radius="md" withBorder mb="xl">
+                  <Stack>
+                    <Text size="lg" fw={600}>
+                      {entityTypeConfig[entityType].title}
+                    </Text>
+                    {!importResults[entityType]?.success && (
+                      <Text>{entityTypeConfig[entityType].description}</Text>
+                    )}
+                    <Divider />
+                    {!importResults[entityType]?.success ? (
+                      // Show normal import UI for entities that can be imported
+                      <Grid gutter={32} mt="sm">
+                        {/* Download Template Card */}
+                        <Grid.Col span={6}>
+                          <Card shadow="sm" p="md" radius="md" withBorder>
+                            <Card.Section
+                              withBorder
+                              inheritPadding
+                              py="xs"
+                              bg={`${entityTypeConfig[entityType].color}.0`}
+                            >
+                              <Group position="apart">
+                                <Text fw={600}>Step 1: Fill out the {entityType} template</Text>
+                              </Group>
+                            </Card.Section>
 
-                    {/* Import File Card */}
-                    <Grid.Col span={6}>
-                      <Card shadow="sm" p="md" radius="md" withBorder>
-                        <Card.Section
-                          withBorder
-                          inheritPadding
-                          py="xs"
-                          bg={`${entityTypeConfig[entityType].color}.0`}
-                        >
-                          <Group position="apart">
-                            <Text fw={600}>Step 2: Import Completed {entityType}.xlsx File</Text>
-                          </Group>
-                        </Card.Section>
-
-                        <Box mt="md" h={185}>
-                          <Dropzone
-                            onDrop={(files) => handleEntityFileImport(files, entityType)}
-                            onReject={handleFileRejection}
-                            maxSize={5 * 1024 * 1024}
-                            accept={[MIME_TYPES.xlsx, MIME_TYPES.xls]}
-                            h={140}
-                            mt="md"
-                          >
-                            <Stack align="center" spacing="sm" style={{ pointerEvents: "none" }}>
-                              <Dropzone.Accept>
-                                <IconCheck size={32} color={entityTypeConfig[entityType].color} />
-                              </Dropzone.Accept>
-                              <Dropzone.Reject>
-                                <IconAlertCircle size={32} color="red" />
-                              </Dropzone.Reject>
-                              <Dropzone.Idle>
-                                <IconFileSpreadsheet
-                                  size={32}
-                                  color={entityTypeConfig[entityType].color}
-                                />
-                              </Dropzone.Idle>
-                              <Text size="md" ta="center" fw={500}>
-                                Drop your {entityType}.xlsx file here
-                              </Text>
-                              <Text size="xs" c="dimmed" ta="center">
-                                Or click to import from your computer
-                              </Text>
-                            </Stack>
-                          </Dropzone>
-
-                          {importResults[entityType] && !importResults[entityType].success && (
-                            <Box mt="md" p="xs" bg="red.0" style={{ borderRadius: "4px" }}>
-                              <Text fw={500} c="red.8">
-                                {importResults[entityType].message}
-                              </Text>
+                            <Box mt="md" mb="lg" h={130}>
+                              <List type="ordered" spacing="sm" withPadding>
+                                <List.Item>Download the {entityType}.xlsx template</List.Item>
+                                <List.Item>
+                                  Assign every {entityTypeConfig[entityType].singularString} a
+                                  unique ID in the {entityTypeConfig[entityType].singularString} ID
+                                  column in the spreadsheet.
+                                </List.Item>
+                                <List.Item>Save the file and continue to step 2.</List.Item>
+                              </List>
                             </Box>
-                          )}
-                        </Box>
-                      </Card>
-                    </Grid.Col>
-                  </Grid>
-                ) : (
-                  // Simplified success UI
-                  <Box mt="md">
-                    <Paper p="md" radius="md" withBorder bg="green.0">
-                      <Group position="apart" align="center">
-                        <Group spacing="md">
-                          <IconCheck size={20} color="green" />
-                          <Text fw={600}>
-                            {importResults[entityType].imported} {entityType} imported successfully
-                          </Text>
-                        </Group>
 
-                        <Group spacing="xs">
-                          <Button
-                            variant="light"
-                            color="blue"
-                            onClick={() =>
-                              swalConfirmAction(
-                                "warning",
-                                "Replace imported data?",
-                                `This will remove the existing ${importResults[entityType].imported} ${entityType} and let you import new ones.`,
-                                "Replace",
-                                "Cancel"
-                              ).then((confirmed) => {
-                                if (confirmed) {
-                                  setImportResults((prev) => ({ ...prev, [entityType]: null }));
+                            <Button
+                              fullWidth
+                              variant="light"
+                              color={entityTypeConfig[entityType].color}
+                              onClick={() => handleDownloadTemplate(entityType)}
+                            >
+                              Download{" "}
+                              {entityConfigs[entityType]?.templateFileName || `${entityType}.xlsx`}
+                            </Button>
+                          </Card>
+                        </Grid.Col>
+
+                        {/* Import File Card */}
+                        <Grid.Col span={6}>
+                          <Card shadow="sm" p="md" radius="md" withBorder>
+                            <Card.Section
+                              withBorder
+                              inheritPadding
+                              py="xs"
+                              bg={`${entityTypeConfig[entityType].color}.0`}
+                            >
+                              <Group position="apart">
+                                <Text fw={600}>
+                                  Step 2: Import Completed {entityType}.xlsx File
+                                </Text>
+                              </Group>
+                            </Card.Section>
+
+                            <Box mt="md" h={185}>
+                              <Dropzone
+                                onDrop={(files) => handleEntityFileImport(files, entityType)}
+                                onReject={handleFileRejection}
+                                maxSize={5 * 1024 * 1024}
+                                accept={[MIME_TYPES.xlsx, MIME_TYPES.xls]}
+                                h={140}
+                                mt="md"
+                              >
+                                <Stack
+                                  align="center"
+                                  spacing="sm"
+                                  style={{ pointerEvents: "none" }}
+                                >
+                                  <Dropzone.Accept>
+                                    <IconCheck
+                                      size={32}
+                                      color={entityTypeConfig[entityType].color}
+                                    />
+                                  </Dropzone.Accept>
+                                  <Dropzone.Reject>
+                                    <IconAlertCircle size={32} color="red" />
+                                  </Dropzone.Reject>
+                                  <Dropzone.Idle>
+                                    <IconFileSpreadsheet
+                                      size={32}
+                                      color={entityTypeConfig[entityType].color}
+                                    />
+                                  </Dropzone.Idle>
+                                  <Text size="md" ta="center" fw={500}>
+                                    Drop your {entityType}.xlsx file here
+                                  </Text>
+                                  <Text size="xs" c="dimmed" ta="center">
+                                    Or click to import from your computer
+                                  </Text>
+                                </Stack>
+                              </Dropzone>
+
+                              {importResults[entityType] && !importResults[entityType].success && (
+                                <Box mt="md" p="xs" bg="red.0" style={{ borderRadius: "4px" }}>
+                                  <Text fw={500} c="red.8">
+                                    {importResults[entityType].message}
+                                  </Text>
+                                </Box>
+                              )}
+                            </Box>
+                          </Card>
+                        </Grid.Col>
+                      </Grid>
+                    ) : (
+                      // Simplified success UI
+                      <Box mt="md">
+                        <Paper p="md" radius="md" withBorder bg="green.0">
+                          <Group position="apart" align="center">
+                            <Group spacing="md">
+                              <IconCheck size={20} color="green" />
+                              <Text fw={600}>
+                                {importResults[entityType].imported} {entityType} imported
+                                successfully
+                              </Text>
+                            </Group>
+
+                            <Group spacing="xs">
+                              <Button
+                                variant="light"
+                                color="blue"
+                                onClick={() =>
+                                  swalConfirmAction(
+                                    "warning",
+                                    "Replace imported data?",
+                                    `This will remove the existing ${importResults[entityType].imported} ${entityType} and let you import new ones.`,
+                                    "Replace",
+                                    "Cancel"
+                                  ).then((confirmed) => {
+                                    if (confirmed) {
+                                      setImportResults((prev) => ({ ...prev, [entityType]: null }));
+                                    }
+                                  })
                                 }
-                              })
-                            }
-                          >
-                            Re-import {entityType}
-                          </Button>
-                        </Group>
-                      </Group>
-                    </Paper>
-                  </Box>
-                )}
-              </Stack>
-            </Paper>
-          ))}
+                              >
+                                Re-import {entityType}
+                              </Button>
+                            </Group>
+                          </Group>
+                        </Paper>
+                      </Box>
+                    )}
+                  </Stack>
+                </Paper>
+              ))}
+          </>
+        )}
       </GuidedModeSection>
     </GuidedModePage>
   );

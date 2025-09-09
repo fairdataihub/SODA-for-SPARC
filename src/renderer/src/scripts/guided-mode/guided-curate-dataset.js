@@ -3446,6 +3446,15 @@ $("#guided-generate-changes-file").on("click", () => {
 });
 
 const doTheHack = async () => {
+  // Check if the dth.json progress file exists in the guidedProgressFilePath
+  const files = window.fs.readdirSync(guidedProgressFilePath);
+
+  if (!files.includes("dth.json")) {
+    console.log("No dth.json progress file found. Exiting hack.");
+    return;
+  }
+
+  console.log("dth.json progress file found.");
   // wait for a second
   await new Promise((resolve) => setTimeout(resolve, 5000));
   document.getElementById("button-homepage-guided-mode").click();
@@ -3473,7 +3482,7 @@ const doTheHack = async () => {
 // (always set to false when making production builds)
 const continueHackGm = true;
 if (continueHackGm) {
-  // doTheHack();
+  doTheHack();
 }
 
 // Add the event listener for the Data importation component

@@ -1,3 +1,93 @@
+import { swalFileListDoubleAction, swalConfirmAction } from "../../../scripts/utils/swal-utils";
+
+export const handleEntityFileImport = async (files, entityType, setImportResults) => {
+  if (!files?.length) return;
+
+  const config = entityConfigs[entityType];
+  if (!config) {
+    window.notyf.open({
+      type: "error",
+      message: `Unsupported entity type: ${entityType}`,
+    });
+    return;
+  }
+
+  try {
+    // Process file and get formatted entities
+    const result = await importEntitiesFromExcel(files[0], entityType);
+    if (!result.success) {
+      window.notyf.open({
+        type: "error",
+        message: result.message,
+      });
+      return;
+    }
+
+    // Show confirmation with processed entities
+    const entityList = result.entities.map((entity) => config.formatDisplayId(entity));
+
+    const confirmed = await swalFileListDoubleAction(
+      entityList,
+      `Confirm ${entityType.charAt(0).toUpperCase() + entityType.slice(1)} Import`,
+      `The following ${entityList.length} ${entityType} were detected in your spreadsheet and will be imported into SODA:`,
+      "Import",
+      "Cancel"
+    );
+
+    if (!confirmed) {
+      window.notyf.open({
+        type: "info",
+        message: `${entityType} import cancelled`,
+      });
+      return;
+    }
+
+    // Save the entities to the data store
+    const saveResult = saveEntities(result.entities, entityType);
+    setImportResults((prev) => ({ ...prev, [entityType]: saveResult }));
+
+    if (saveResult.success) {
+      window.notyf.open({
+        type: "success",
+        message: saveResult.message,
+      });
+    } else {
+      window.notyf.open({
+        type: "error",
+        message: saveResult.message,
+      });
+    }
+  } catch (error) {
+    window.notyf.open({
+      type: "error",
+      message: `Error importing ${entityType}: ${error.message}`,
+    });
+  }
+};
+
+export const handleDownloadTemplate = (entityType) => {
+  const config = entityConfigs[entityType];
+  if (!config) {
+    window.notyf.open({
+      type: "error",
+      message: `No template available for entity type: ${entityType}`,
+    });
+    return;
+  }
+
+  try {
+    window.electron.ipcRenderer.send("open-folder-dialog-save-metadata", config.templateFileName);
+  } catch (error) {
+    console.error(`Error sending IPC message for ${entityType} template:`, error);
+  }
+};
+
+export const handleFileRejection = () => {
+  window.notyf.open({
+    type: "error",
+    message: "Invalid file format. Please upload an Excel file (.xlsx or .xls)",
+  });
+};
 import * as XLSX from "xlsx";
 import {
   addSubject,

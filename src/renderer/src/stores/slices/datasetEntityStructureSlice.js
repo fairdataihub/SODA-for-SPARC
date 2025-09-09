@@ -2,7 +2,6 @@ import { produce } from "immer";
 import useGlobalStore from "../globalStore";
 
 export const datasetEntityStructureSlice = (set) => ({
-  speciesList: [],
   datasetEntityArray: [],
   activeFormType: null, // Add this line for form type tracking
   temporaryEntityMetadata: {
@@ -13,12 +12,6 @@ export const datasetEntityStructureSlice = (set) => ({
     performance: {},
   },
 });
-
-export const setSpeciesList = (speciesList) => {
-  useGlobalStore.setState({
-    speciesList,
-  });
-};
 
 export const setDatasetEntityArray = (datasetEntityArray) => {
   useGlobalStore.setState({

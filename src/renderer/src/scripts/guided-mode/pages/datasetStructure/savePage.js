@@ -165,6 +165,10 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
   }
 
   if (pageBeingLeftID === "guided-spreadsheet-import-dataset-entity-and-metadata-tab") {
+    // Add validation logic for guided-manual-dataset-entity-and-metadata-tab if needed
+  }
+
+  if (pageBeingLeftID === "guided-spreadsheet-import-dataset-entity-and-metadata-tab") {
     // Add validation logic for guided-spreadsheet-import-dataset-entity-and-metadata-tab if needed
   }
 
