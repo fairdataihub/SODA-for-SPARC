@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Text, Group, Select, Collapse, Center, Loader, Stack, Button } from "@mantine/core";
 import DropDownNote from "../../utils/ui/DropDownNote";
+import api from "../../../scripts/others/api/api";
 
 import useGlobalStore from "../../../stores/globalStore";
 
@@ -49,7 +50,7 @@ const GenerateDatasetPennsieveTargetPage = () => {
     }
   }, [isExistingDatasetSelected]);
 
-  const renderDatasetSection = async () => {
+  const renderDatasetSection = () => {
     if (isLoadingPennsieveDatasets) {
       return (
         <Stack align="center" mt="md">
@@ -74,6 +75,30 @@ const GenerateDatasetPennsieveTargetPage = () => {
       );
     }
 
+    return (
+      <Stack mt="md" align="center">
+        <Text size="md" align="center" fw={500}>
+          No empty datasets were found that you have permission to upload to. Since you are a guest
+          in the current workspace and trying to upload a dataset it is likely someone should have
+          created one for you. Please contact them to confirm that it has been made and that you are
+          in the correct workspace to access it. You can check the documentation for more
+          information on uploading datasets in SODA as a guest
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://docs.sodaforsparc.io/docs/miscellaneous/how-to/how-to-upload-as-pennsieve-guest"
+          >
+            here
+          </a>
+          .
+        </Text>
+        <Button onClick={fetchDatasetsToUploadDataTo} w="230px">
+          Retry dataset retrieval
+        </Button>
+        <DropDownNote id="user-doesnt-have-any-empty-datasets" />
+      </Stack>
+    );
+
     if (availableDatasetsToUploadDataTo.length > 0) {
       return (
         <>
@@ -93,7 +118,7 @@ const GenerateDatasetPennsieveTargetPage = () => {
       );
     }
 
-    let isGuest = await api.userIsWorkspaceGuest();
+    let isGuest = window.isGuest;
 
     if (isGuest) {
       return (

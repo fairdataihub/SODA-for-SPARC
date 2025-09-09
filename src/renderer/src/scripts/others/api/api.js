@@ -512,6 +512,7 @@ const userIsWorkspaceGuest = async () => {
     clientError(error);
     console.error("[userIsWorkspaceGuest] Error fetching organizations:", error);
     // TODO: Decide how to handle this (e.g., return false or rethrow)
+    window.isGuest = false;
     return false;
   }
 
@@ -520,9 +521,11 @@ const userIsWorkspaceGuest = async () => {
   );
 
   if (!currentWorkspaceObj) {
+    window.isGuest = false;
     return false;
   }
 
+  window.isGuest = currentWorkspaceObj.isGuest;
   return currentWorkspaceObj.isGuest;
 };
 
