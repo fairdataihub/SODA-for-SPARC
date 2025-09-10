@@ -55,11 +55,11 @@ window.disseminatePublish = async (curationMode) => {
       window.resetffmPrepublishingUI();
     }
   } catch (error) {
-    log.error(error);
+    window.log.error(error);
     console.error(error);
     Swal.fire({
       title: "Could not submit dataset for publication",
-      text: `${userErrorMessage(error)}`,
+      html: `${userErrorMessage(error)}`,
       heightAuto: false,
       icon: "error",
       confirmButtonText: "Ok",

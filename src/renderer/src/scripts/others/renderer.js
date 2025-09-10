@@ -5628,7 +5628,9 @@ const initiate_generate = async (resume = false) => {
       }
 
       document.getElementById("para-new-curate-progress-bar-error-status").innerHTML =
-        `<span style='color: red;'>${emessage}</span>`;
+        `<span style='color: red;'>${emessage}</span>
+          
+        `;
       window.log.error(error);
 
       //Enable the buttons (organize datasets, upload locally, curate existing dataset, curate new dataset)

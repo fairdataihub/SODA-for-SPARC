@@ -269,7 +269,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     guidedSetNavLoadingState(false);
   } catch (error) {
     clientError(error);
-    let emessage = userErrorMessage(error);
+    let emessage = userErrorMessage(error, false);
     amountOfTimesPennsieveUploadFailed += 1;
     window.retryGuidedMode = true;
     let supplementaryChecks = false;
@@ -601,13 +601,23 @@ const automaticRetry = async (supplementaryChecks = false, errorMessage = "") =>
       icon: "error",
       title: "An error occurred during your upload",
       html: `
-        <p>Error message: ${errorMessage}</p>
-        <p>
-        SODA has retried the upload three times but was not successful. You may manually retry the upload now or save and exit.
-        If you choose to save and exit you will be able to resume your upload by returning to Prepare Dataset Step-by-Step and clicking the "Resume Upload"
-        button on your dataset's progress card. If this issue persists, please contact support by using the Contact Us page in the sidebar
-        after you Save and Exit.
-        </p>
+          <div style="text-align: left;">
+            <p>Error: ${errorMessage}</p>
+            <p>
+              SODA has retried the upload three times without success. You have three options: 
+              <br/>
+              <ol> 
+                <li>Manually retry the upload now</li>
+                <li>Save and exit then try again later</li>
+                <li>Save and exit then contact the SODA team for help using the 'Contact Us' page in the sidebar</li>
+              </ol>
+            </p>
+            <p>
+              If you choose to save and exit you will be able to resume your upload by returning to Prepare Dataset Step-by-Step and clicking the "Resume Upload"
+              button on your dataset's progress card. If you choose to contact our team for support we recommend reaching us per the instructions found
+              on our documentation page <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here.</a>
+            </p>
+          </div>
       `,
       showCancelButton: true,
       cancelButtonText: "Save and Exit",
