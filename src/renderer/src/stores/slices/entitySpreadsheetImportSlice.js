@@ -1,22 +1,24 @@
 import useGlobalStore from "../globalStore";
 
 const initialState = {
-  entityIdStepHasBeenCompleted: false,
-  entityMetadataStepHasBeenCompleted: false,
+  entityImportCompletionStatus: {
+    entityIds: false,
+    subjectsMetadata: false,
+    samplesMetadata: false,
+    sitesMetadata: false,
+  },
 };
 
 export const entitySpreadsheetImportSlice = (set) => ({
   ...initialState,
 });
 
-export const setEntityIdStepHasBeenCompleted = (hasBeenCompleted) => {
-  useGlobalStore.setState({
-    entityIdStepHasBeenCompleted: hasBeenCompleted,
-  });
-};
-
-export const setEntityMetadataStepHasBeenCompleted = (hasBeenCompleted) => {
-  useGlobalStore.setState({
-    entityMetadataStepHasBeenCompleted: hasBeenCompleted,
-  });
+// Set completion for a specific step
+export const setEntityImportStepCompleted = (stepKey, completed) => {
+  useGlobalStore.setState((state) => ({
+    entityImportCompletionStatus: {
+      ...state.entityImportCompletionStatus,
+      [stepKey]: completed,
+    },
+  }));
 };
