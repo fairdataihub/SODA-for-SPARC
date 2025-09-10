@@ -66,6 +66,7 @@ export const handleEntityFileImport = async (files, entityType, setImportResults
 };
 
 export const handleDownloadTemplate = (entityType) => {
+  console.log("Downloading template for:", entityType);
   const config = entityConfigs[entityType];
   if (!config) {
     window.notyf.open({

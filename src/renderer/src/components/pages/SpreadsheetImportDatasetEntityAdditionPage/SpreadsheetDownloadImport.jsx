@@ -9,13 +9,13 @@ import {
 } from "./excelImport";
 
 export const DownloadCard = ({ entityType, config }) => {
-  const templateFileName = entityConfigs[entityType]?.templateFileName || `${entityType}.xlsx`;
+  console.log("config in DownloadCard:", config);
 
   return (
     <Card shadow="sm" p="md" radius="md" withBorder>
       <Card.Section withBorder inheritPadding py="xs" bg={`${config.color}.0`}>
         <Group position="apart">
-          <Text fw={600}>Step 1: Fill out the {entityType} template</Text>
+          <Text fw={600}>1: Fill out the {config["metadataFileName"]} template</Text>
         </Group>
       </Card.Section>
 
@@ -35,7 +35,7 @@ export const DownloadCard = ({ entityType, config }) => {
         color={config.color}
         onClick={() => handleDownloadTemplate(entityType)}
       >
-        Download {templateFileName}
+        Download {config["metadataFileName"]}
       </Button>
     </Card>
   );
@@ -45,7 +45,7 @@ export const ImportCard = ({ entityType, config, importResult }) => (
   <Card shadow="sm" p="md" radius="md" withBorder>
     <Card.Section withBorder inheritPadding py="xs" bg={`${config.color}.0`}>
       <Group position="apart">
-        <Text fw={600}>Step 2: Import Completed {entityType}.xlsx File</Text>
+        <Text fw={600}>2: Import Completed {entityType}.xlsx File</Text>
       </Group>
     </Card.Section>
 
@@ -69,7 +69,7 @@ export const ImportCard = ({ entityType, config, importResult }) => (
             <IconFileSpreadsheet size={32} color="var(--color-light-green)" />
           </Dropzone.Idle>
           <Text size="md" ta="center" fw={500}>
-            Drop your {entityType}.xlsx file here
+            Drop your {config["metadataFileName"]} file here
           </Text>
           <Text size="xs" c="dimmed" ta="center">
             Or click to import from your computer
@@ -86,4 +86,22 @@ export const ImportCard = ({ entityType, config, importResult }) => (
       )}
     </Box>
   </Card>
+);
+
+export const EntityImportCompleteCard = ({ entityType, importResult, onReimport }) => (
+  <Box mt="md">
+    <Paper p="md" radius="md" withBorder bg="green.0">
+      <Group position="apart" align="center">
+        <Group spacing="md">
+          <IconCheck size={20} color="green" />
+          <Text fw={600}>
+            {importResult.imported} {entityType} imported successfully
+          </Text>
+        </Group>
+        <Button variant="light" color="blue" onClick={onReimport}>
+          Re-import {entityType}
+        </Button>
+      </Group>
+    </Paper>
+  </Box>
 );
