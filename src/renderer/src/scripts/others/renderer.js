@@ -2635,7 +2635,7 @@ window.showPublishingStatus = async (callback, curationMode = "") => {
 
     Swal.fire({
       title: "Could not get your publishing status!",
-      text: userErrorMessage(error),
+      html: userErrorMessage(error),
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Ok",

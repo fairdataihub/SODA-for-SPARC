@@ -1048,7 +1048,7 @@ window.dropHandler = async (
             backdrop: "rgba(0,0,0, 0.4)",
             heightAuto: false,
             icon: "error",
-            text: userErrorMessage(error),
+            html: userErrorMessage(error),
           });
         }
       } else {
