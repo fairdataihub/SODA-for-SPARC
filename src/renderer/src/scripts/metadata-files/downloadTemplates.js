@@ -172,8 +172,6 @@ downloadHighLvlFolders.addEventListener("click", (event) => {
   window.electron.ipcRenderer.send("open-folder-dialog-save-metadata", combinedArray);
 });
 
-// Rest of the code...
-
 downloadMetadataFiles.addEventListener("click", (event) => {
   window.electron.ipcRenderer.send("open-folder-dialog-save-metadata", templateArray);
 });

@@ -30,10 +30,13 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
     "entity-structure": {
       title: "Assign IDs to all entities in your dataset",
       singular: "entity",
+      spreadsheetInstructions: [
+        "Save the entity-structure.xlsx file by clicking the button below.",
+      ],
       icon: <IconFileSpreadsheet size={24} />,
       color: "teal",
       description:
-        "Assign unique IDs to each entity in your dataset using the template below. This is required before importing any metadata.",
+        "Assign unique IDs to each entity in your dataset using the template below. Once you have filled out the template and re-import it into SODA, you will be able to provide metadata for each entity.",
       dependsOn: [],
       metadataFileName: "entity-structure.xlsx",
     },
