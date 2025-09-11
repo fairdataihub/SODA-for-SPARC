@@ -6027,6 +6027,11 @@ window.electron.ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
 });
 
 window.showBFAddAccountSweetalert = async (ev) => {
+  let additionalHelpText = `
+                    If you are adding information as per the documentation available by clicking the 'Help me get an API Key' button and the issue is persisting
+                    reach out to the SODA team by following the instructions
+                    <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here</a> 
+                    `;
   let target = ev.target;
   await Swal.fire({
     title: bfaddaccountTitle,
@@ -6039,11 +6044,12 @@ window.showBFAddAccountSweetalert = async (ev) => {
     reverseButtons: window.reverseSwalButtons,
     backdrop: "rgba(0,0,0, 0.4)",
     heightAuto: false,
+    width: "80rem",
     allowOutsideClick: false,
     footer: `<a target="_blank" href="https://docs.sodaforsparc.io/docs/soda-features/connecting-to-pennsieve/connecting-with-api-key" style="text-decoration: none;">Help me get an API key</a>`,
     didOpen: () => {
       let swal_container = document.getElementsByClassName("swal2-popup")[0];
-      swal_container.style.width = "43rem";
+      swal_container.style.width = "50rem";
     },
     showClass: {
       popup: "animate__animated animate__fadeInDown animate__faster",
@@ -6122,9 +6128,20 @@ window.showBFAddAccountSweetalert = async (ev) => {
                     window.datasetList = [];
                     window.defaultBfDataset = null;
                     window.clearDatasetDropdowns();
+
+                    Swal.fire({
+                      icon: "success",
+                      title: "Successfully added! <br/>Loading your account details...",
+                      timer: 3000,
+                      timerProgressBar: true,
+                      allowEscapeKey: false,
+                      heightAuto: false,
+                      backdrop: "rgba(0,0,0, 0.4)",
+                      showConfirmButton: false,
+                    });
                   })
                   .catch((error) => {
-                    Swal.showValidationMessage(userErrorMessage(error));
+                    Swal.showValidationMessage(userErrorMessage(error, false) + additionalHelpText);
                     document.getElementsByClassName("swal2-actions")[0].children[1].disabled =
                       false;
                     document.getElementsByClassName("swal2-actions")[0].children[3].disabled =
@@ -6136,22 +6153,11 @@ window.showBFAddAccountSweetalert = async (ev) => {
                     showHideDropdownButtons("account", "hide");
                     confirm_click_account_function();
                   });
-
-                Swal.fire({
-                  icon: "success",
-                  title: "Successfully added! <br/>Loading your account details...",
-                  timer: 3000,
-                  timerProgressBar: true,
-                  allowEscapeKey: false,
-                  heightAuto: false,
-                  backdrop: "rgba(0,0,0, 0.4)",
-                  showConfirmButton: false,
-                });
               });
             })
             .catch((error) => {
               clientError(error);
-              Swal.showValidationMessage(userErrorMessage(error));
+              Swal.showValidationMessage(userErrorMessage(error, false) + additionalHelpText);
               document.getElementsByClassName("swal2-actions")[0].children[1].disabled = false;
               document.getElementsByClassName("swal2-actions")[0].children[3].disabled = false;
               document.getElementsByClassName("swal2-actions")[0].children[0].style.display =
