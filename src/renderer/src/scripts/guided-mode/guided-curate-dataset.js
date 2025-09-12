@@ -3068,17 +3068,6 @@ const renderSubjectsMetadataAsideItems = async () => {
 
 // Guided mode event listener (from curate and share page)
 
-// Free form mode event listener (from curate and share page)
-document.querySelector("#button-homepage-freeform-mode").addEventListener("click", async () => {
-  //Free form mode will open through here
-  window.guidedPrepareHomeScreen();
-
-  // guidedResetSkippedPages();
-
-  directToFreeFormMode();
-  document.getElementById("guided_mode_view").classList.add("is-selected");
-});
-
 $("#guided-button-add-permission-user-or-team").on("click", function () {
   try {
     //get the selected permission element

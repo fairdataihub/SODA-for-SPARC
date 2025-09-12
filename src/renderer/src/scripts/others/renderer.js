@@ -117,9 +117,11 @@ window.wait = async (delay) => {
 
 // // Check current app version //
 const appVersion = await window.electron.ipcRenderer.invoke("app-version");
+console.log("appVersion", appVersion);
 window.log.info(`Current SODA version: ${appVersion}`);
 
-document.getElementById("guided_mode_view").click();
+// REMOVED FOR NAVBAR
+// document.getElementById("guided_mode_view").click();
 
 window.notyf = new Notyf({
   position: { x: "right", y: "bottom" },
@@ -6718,12 +6720,15 @@ window.directToFreeFormMode = () => {
   directToOrganize.click();
 };
 
+// REMOVED FOR NAVBAR
+/*
 document
   .getElementById("home-button-guided-mode-link")
   .addEventListener("click", directToGuidedMode);
 document
   .getElementById("home-button-free-form-mode-link")
   .addEventListener("click", window.directToFreeFormMode);
+*/
 
 tippy("#datasetPathDisplay", {
   placement: "top",

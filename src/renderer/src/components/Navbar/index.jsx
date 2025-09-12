@@ -109,7 +109,9 @@ const Navbar = () => {
       <div className={navbarClasses.header}>
         <Group justify="space-between">
           {/* <Logo style={{ width: 120 }} /> */}
-          <Code fw={700}>v3.1.2</Code>
+          <Code fw={700}>
+            <span id="version"></span>
+          </Code>
         </Group>
       </div>
 
