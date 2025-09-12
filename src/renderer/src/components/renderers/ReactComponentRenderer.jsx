@@ -25,6 +25,7 @@ import Icon from "../shared/Icon";
 import SodaTextInput from "../common/SodaTextInput";
 import ManifestFilePreviewSection from "../shared/ManifestFilePreviewSection";
 import DropDownNote from "../utils/ui/DropDownNote";
+import Navbar from "../Navbar";
 import { Divider } from "@mantine/core";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
@@ -40,6 +41,9 @@ const renderComponent = (componentSlot, component) => {
 
 // Mapping of component types to their render functions
 const componentTypeRenderers = {
+  navbar: (componentSlot) => {
+    renderComponent(componentSlot, <Navbar />);
+  },
   "guided-mode-page": (componentSlot) => {
     const pageIdToPageComponentMap = {
       "guided-name-subtitle-tab": <NameAndSubtitlePage />,
