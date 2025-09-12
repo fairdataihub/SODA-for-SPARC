@@ -65,6 +65,19 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
 
     // If retrying upload, skip to upload step
     if (window.retryGuidedMode) {
+      if (window.sodaJSONObj["pennsieve-generation-target"] === "new") {
+        // Show Pennsieve metadata upload table
+        await uploadPennsieveMetadata(
+          window.defaultBfAccount,
+          window.sodaJSONObj["generate-dataset"]["dataset-name"],
+          window.sodaJSONObj["generate-dataset"]["dataset-subtitle"],
+          window.sodaJSONObj["generate-dataset"]["banner-image"],
+          window.sodaJSONObj["generate-dataset"]["license"],
+          window.sodaJSONObj["generate-dataset"]["study-purpose"],
+          window.sodaJSONObj["generate-dataset"]["data-collection"],
+          window.sodaJSONObj["generate-dataset"]["primary-conclusion"]
+        );
+      }
       window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
       // --- Ensure all required keys are set for retry upload ---
       window.sodaJSONObj["generate-dataset"] = {
@@ -163,31 +176,16 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     // Only update Pennsieve Metadata if the user is creating a new dataset
     if (window.sodaJSONObj["pennsieve-generation-target"] === "new") {
       // Show Pennsieve metadata upload table
-      window.unHideAndSmoothScrollToElement(
-        "guided-div-pennsieve-metadata-pennsieve-generation-status-table"
+      await uploadPennsieveMetadata(
+        window.defaultBfAccount,
+        window.sodaJSONObj["generate-dataset"]["dataset-name"],
+        window.sodaJSONObj["generate-dataset"]["dataset-subtitle"],
+        window.sodaJSONObj["generate-dataset"]["banner-image"],
+        window.sodaJSONObj["generate-dataset"]["license"],
+        window.sodaJSONObj["generate-dataset"]["study-purpose"],
+        window.sodaJSONObj["generate-dataset"]["data-collection"],
+        window.sodaJSONObj["generate-dataset"]["primary-conclusion"]
       );
-      // Create or rename dataset, then add metadata
-      await guidedCreateDataset(guidedBfAccount, pennsieveDatasetName);
-      await guidedAddDatasetSubtitle(
-        guidedBfAccount,
-        pennsieveDatasetName,
-        pennsieveDatasetSubtitle
-      );
-      await guidedAddDatasetDescription(
-        guidedBfAccount,
-        pennsieveDatasetName,
-        guidedPennsieveStudyPurpose,
-        guidedPennsieveDataCollection,
-        guidedPennsievePrimaryConclusion
-      );
-      await guidedAddDatasetBannerImage(
-        guidedBfAccount,
-        pennsieveDatasetName,
-        guidedBannerImagePath
-      );
-      if (guidedLicense) {
-        await guidedAddDatasetLicense(guidedBfAccount, pennsieveDatasetName, guidedLicense);
-      }
     }
 
     hideDatasetMetadataGenerationTableRows("pennsieve");
@@ -277,6 +275,36 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     guidedSetNavLoadingState(false);
   }
   guidedSetNavLoadingState(false);
+};
+
+const uploadPennsieveMetadata = async (
+  guidedBfAccount,
+  pennsieveDatasetName,
+  pennsieveDatasetSubtitle,
+  guidedBannerImagePath,
+  guidedLicense,
+  guidedPennsieveStudyPurpose,
+  guidedPennsieveDataCollection,
+  guidedPennsievePrimaryConclusion
+) => {
+  // Show Pennsieve metadata upload table
+  window.unHideAndSmoothScrollToElement(
+    "guided-div-pennsieve-metadata-pennsieve-generation-status-table"
+  );
+  // Create or rename dataset, then add metadata
+  await guidedCreateDataset(guidedBfAccount, pennsieveDatasetName);
+  await guidedAddDatasetSubtitle(guidedBfAccount, pennsieveDatasetName, pennsieveDatasetSubtitle);
+  await guidedAddDatasetDescription(
+    guidedBfAccount,
+    pennsieveDatasetName,
+    guidedPennsieveStudyPurpose,
+    guidedPennsieveDataCollection,
+    guidedPennsievePrimaryConclusion
+  );
+  await guidedAddDatasetBannerImage(guidedBfAccount, pennsieveDatasetName, guidedBannerImagePath);
+  if (guidedLicense) {
+    await guidedAddDatasetLicense(guidedBfAccount, pennsieveDatasetName, guidedLicense);
+  }
 };
 
 const roundToHundredth = (num) => {
