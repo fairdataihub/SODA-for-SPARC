@@ -25,6 +25,7 @@ import Icon from "../shared/Icon";
 import SodaTextInput from "../common/SodaTextInput";
 import ManifestFilePreviewSection from "../shared/ManifestFilePreviewSection";
 import DropDownNote from "../utils/ui/DropDownNote";
+import { CardButton } from "../buttons/CardButton";
 import { Divider } from "@mantine/core";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
@@ -33,7 +34,7 @@ while (!window.htmlSectionsAdded) {
 }
 
 // Helper function to create a React root and render the component inside SodaComponentWrapper
-const renderComponent = (componentSlot, component) => {
+export const renderComponent = (componentSlot, component) => {
   const root = createRoot(componentSlot);
   root.render(<SodaComponentWrapper>{component}</SodaComponentWrapper>);
 };
@@ -84,6 +85,12 @@ const componentTypeRenderers = {
       buttonCustomClass: componentSlot.getAttribute("data-button-custom-class"),
     };
     renderComponent(componentSlot, <NavigationButton {...props} />);
+  },
+  "card-button": (componentSlot) => {
+    const props = {
+      id: componentSlot.id,
+    };
+    renderComponent(componentSlot, <CardButton {...props} />);
   },
   "generic-button": (componentSlot) => {
     const props = {
