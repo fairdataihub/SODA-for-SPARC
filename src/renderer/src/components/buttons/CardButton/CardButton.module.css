@@ -18,14 +18,22 @@
 .modernCard {
   border-radius: 16px !important;
   background: var(--mantine-color-blue-0, #f8fbff);
-  box-shadow: 0 2px 12px 0 rgba(44, 62, 80, 0.06), 0 1.5px 6px 0 rgba(44, 62, 80, 0.04);
-  transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s, background 0.2s;
+  box-shadow:
+    0 2px 12px 0 rgba(44, 62, 80, 0.06),
+    0 1.5px 6px 0 rgba(44, 62, 80, 0.04);
+  transition:
+    box-shadow 0.2s,
+    transform 0.2s,
+    border-color 0.2s,
+    background 0.2s;
 }
 
 .modernCard:hover {
   border-color: var(--color-light-green);
   background: var(--mantine-color-blue-1, #e6f4ff);
-  box-shadow: 0 6px 32px 0 rgba(44, 62, 80, 0.14), 0 2.5px 12px 0 rgba(44, 62, 80, 0.10);
+  box-shadow:
+    0 6px 32px 0 rgba(44, 62, 80, 0.14),
+    0 2.5px 12px 0 rgba(44, 62, 80, 0.1);
   transform: translateY(-2px) scale(1.04);
   cursor: pointer;
 }
