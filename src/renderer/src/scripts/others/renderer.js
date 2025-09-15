@@ -5464,7 +5464,7 @@ const initiate_generate = async (resume = false) => {
       document.getElementById("contact-us-view").style.pointerEvents = "";
 
       clientError(error);
-      let emessage = userErrorMessage(error);
+      let emessage = userErrorMessage(error, false);
 
       // log high level confirmation that a dataset was generation run failed
       window.electron.ipcRenderer.send(
@@ -5547,7 +5547,12 @@ const initiate_generate = async (resume = false) => {
       uploadLocally.style = "background-color: #fff";
 
       document.getElementById("para-new-curate-progress-bar-error-status").innerHTML =
-        `<span style='color: red;'>${emessage}</span>`;
+        `<span style='color: red;'>
+        ${emessage}
+        SODA was unable to successfully upload your dataset after three automatic attempts. If you would like you can use the 'Retry' button 
+        to manually try again. Sometimes this can resolve the issue in the case of temporary network problems.
+        However, if the issue persists please reach out to the SODA team by following the documentation <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here</a>.</span>
+        `;
 
       if (amountOfTimesPennsieveUploadFailed > 3) {
         Swal.fire({
@@ -5616,7 +5621,7 @@ const initiate_generate = async (resume = false) => {
       mainCurationProgressResponse = await client.get(`/curate_datasets/curation/progress`);
     } catch (error) {
       clientError(error);
-      let emessage = userErrorMessage(error);
+      let emessage = userErrorMessage(error, false);
 
       if (progressStatus.innerHTML.split("<br>").length > 1) {
         progressStatus.innerHTML = `Upload Failed<br>${progressStatus.innerHTML
@@ -5628,8 +5633,11 @@ const initiate_generate = async (resume = false) => {
       }
 
       document.getElementById("para-new-curate-progress-bar-error-status").innerHTML =
-        `<span style='color: red;'>${emessage}</span>
-          
+        `<span style='color: red;'>
+        ${emessage}
+        SODA was unable to successfully upload your dataset after three automatic attempts. If you would like you can use the 'Retry' button 
+        to manually try again. Sometimes this can resolve the issue in the case of temporary network problems.
+        However, if the issue persists please reach out to the SODA team by following the documentation <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here</a>.</span>
         `;
       window.log.error(error);
 
@@ -6027,11 +6035,6 @@ window.electron.ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
 });
 
 window.showBFAddAccountSweetalert = async (ev) => {
-  let additionalHelpText = `
-                    If you are adding information as per the documentation available by clicking the 'Help me get an API Key' button and the issue is persisting
-                    reach out to the SODA team by following the instructions
-                    <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here</a> 
-                    `;
   let target = ev.target;
   await Swal.fire({
     title: bfaddaccountTitle,
@@ -6141,7 +6144,16 @@ window.showBFAddAccountSweetalert = async (ev) => {
                     });
                   })
                   .catch((error) => {
-                    Swal.showValidationMessage(userErrorMessage(error, false) + additionalHelpText);
+                    let message = `
+                    <div style="text-align: left;">
+                      <p>
+                          ${userErrorMessage(error, false)}
+                          If you are adding your API Key and Secret as per the documentation available <a href="https://docs.sodaforsparc.io/docs/soda-features/connecting-to-pennsieve/connecting-with-api-key" target="_blank">here</a> and the issue persists
+                          reach out to the SODA team by following the instructions
+                          <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here</a>
+                      </p>
+                    </div>`;
+                    Swal.showValidationMessage(message);
                     document.getElementsByClassName("swal2-actions")[0].children[1].disabled =
                       false;
                     document.getElementsByClassName("swal2-actions")[0].children[3].disabled =
@@ -6156,8 +6168,17 @@ window.showBFAddAccountSweetalert = async (ev) => {
               });
             })
             .catch((error) => {
+              let message = `
+                    <div style="text-align: left;">
+                      <p>
+                          ${userErrorMessage(error, false)}
+                          If you are adding your API Key and Secret per the documentation available <a href="https://docs.sodaforsparc.io/docs/soda-features/connecting-to-pennsieve/connecting-with-api-key" target="_blank">here</a> and the issue persists
+                          reach out to the SODA team by following the instructions
+                          <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here</a>
+                      </p>
+                    </div>`;
               clientError(error);
-              Swal.showValidationMessage(userErrorMessage(error, false) + additionalHelpText);
+              Swal.showValidationMessage(message);
               document.getElementsByClassName("swal2-actions")[0].children[1].disabled = false;
               document.getElementsByClassName("swal2-actions")[0].children[3].disabled = false;
               document.getElementsByClassName("swal2-actions")[0].children[0].style.display =
