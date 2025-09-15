@@ -772,10 +772,13 @@ document.getElementById("dataset-upload-new-dataset").addEventListener("click", 
   if (await api.userIsWorkspaceGuest()) {
     swalShowInfo(
       "Guests cannot create datasets on Pennsieve",
-      `You are currently a guest user in your workspace and do not have permission to create new datasets. 
+      `
+      <div style="text-align: left">You are currently a guest user in your workspace and do not have permission to create new datasets. 
        You can use the 'Update existing dataset' option to upload data to a dataset if you have been given access to one.
        Check the documentation for more information on uploading datasets in SODA as a workspace guest 
-       <a target='_blank' rel='noopener noreferrer' href="https://docs.sodaforsparc.io/docs/miscellaneous/how-to/how-to-upload-as-pennsieve-guest">here</a>.`
+       <a target='_blank' rel='noopener noreferrer' href="https://docs.sodaforsparc.io/docs/miscellaneous/how-to/how-to-upload-as-pennsieve-guest">here</a>.
+       If you believe you should have permissions to create datasets in your workspace please reach out to the SODA team as described in the 
+       documentation <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here</a>.</div>`
     );
     return;
   }

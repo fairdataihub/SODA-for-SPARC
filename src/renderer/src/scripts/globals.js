@@ -1409,11 +1409,13 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             heightAuto: false,
             allowOutsideClick: false,
             allowEscapeKey: true,
-            title: "<h3 style='margin-bottom:20px !important'>No dataset found</h3>",
-            html: `
-            Since you are a guest in the current workspace and trying to upload a dataset it is likely someone should have created one for you. 
-            Please contact them to confirm that it has been made and that you are in the correct workspace to access it. You can check the documentation 
-            for more information on uploading datasets in SODA as a guest <a target='_blank' rel='noopener noreferrer' href="https://docs.sodaforsparc.io/docs/miscellaneous/how-to/how-to-upload-as-pennsieve-guest">here</a>.`,
+            title: "<h3 style='margin-bottom:20px !important'>No datasets found</h3>",
+            html: ` 
+            <div style="text-align: left; margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">
+            Please contact the collaborator that created the dataset and shared it with you to confirm that you are in the correct workspace and that you have been given one of the following 
+            permissions: Editor, Manager. You can check the documentation for more information on uploading datasets in SODA as a workspace guest <a target='_blank' rel='noopener noreferrer' href="https://docs.sodaforsparc.io/docs/miscellaneous/how-to/how-to-upload-as-pennsieve-guest">here</a>.
+            If you believe you should have access to a Pennsieve dataset that was shared with you, please contact the SODA team for assistance by following our instructions found <a target='_blank' rel='noopener noreferrer' href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team">here</a>.
+            </div>`,
             showClass: {
               popup: "animate__animated animate__fadeInDown animate__faster",
             },
