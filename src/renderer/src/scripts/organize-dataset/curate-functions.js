@@ -809,8 +809,6 @@ document.getElementById("dataset-upload-new-dataset").addEventListener("click", 
       element.checked = false;
     });
     // Reset the merge option cards
-    document.getElementById("skip-folder-card").classList.remove("checked");
-    document.getElementById("skip-folder-card").classList.remove("non-selected");
     document.getElementById("merge-folder-card").classList.remove("checked");
     document.getElementById("merge-folder-card").classList.remove("non-selected");
     document.getElementById("replace-folder-card").classList.remove("checked");
@@ -927,8 +925,6 @@ document.getElementById("change-workspace-btn").addEventListener("click", async 
     element.checked = false;
   });
   // Remove checks from all the cards in step 3 (merge option cards)
-  document.getElementById("skip-folder-card").classList.remove("checked");
-  document.getElementById("skip-folder-card").classList.remove("non-selected");
   document.getElementById("merge-folder-card").classList.remove("checked");
   document.getElementById("merge-folder-card").classList.remove("non-selected");
   document.getElementById("replace-folder-card").classList.remove("checked");
