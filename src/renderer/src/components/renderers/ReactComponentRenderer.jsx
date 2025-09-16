@@ -23,8 +23,10 @@ import DataImporter from "../shared/DataImporter";
 import SubmissionMetadataForm from "../pages/SubmissionMetadataForm";
 import Icon from "../shared/Icon";
 import SodaTextInput from "../common/SodaTextInput";
+import SodaStepper from "../common/SodaStepper";
 import ManifestFilePreviewSection from "../shared/ManifestFilePreviewSection";
 import DropDownNote from "../utils/ui/DropDownNote";
+import SidebarLinks from "../common/SidebarLinks";
 import { CardButton } from "../buttons/CardButton";
 import { Divider } from "@mantine/core";
 
@@ -91,6 +93,15 @@ const componentTypeRenderers = {
       id: componentSlot.id,
     };
     renderComponent(componentSlot, <CardButton {...props} />);
+  },
+  stepper: (componentSlot) => {
+    const props = {
+      id: componentSlot.id,
+    };
+    renderComponent(componentSlot, <SodaStepper {...props} />);
+  },
+  "sidebar-links": (componentSlot) => {
+    renderComponent(componentSlot, <SidebarLinks />);
   },
   "generic-button": (componentSlot) => {
     const props = {

@@ -4,8 +4,12 @@ import { useHover } from "@mantine/hooks";
 
 const cardData = {
   "start-new-card": {
-    icon: <IconCirclePlus size={48} />,
-    text: "Prepare and optionally share a new dataset",
+    icon: <IconCirclePlus size={40} />,
+    text: "Prepare and share a new dataset",
+  },
+  "import-existing-card": {
+    icon: <IconCirclePlus size={40} />,
+    text: "Import and manage an existing dataset",
   },
 };
 
@@ -41,7 +45,7 @@ export function CardButton({ id }) {
       }}
     >
       <Center mb="sm">{icon}</Center>
-      <Text size="sm" lh={1.3}>
+      <Text size="md" lh={1.3}>
         {text}
       </Text>
     </Card>
