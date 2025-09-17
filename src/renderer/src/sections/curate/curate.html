@@ -503,7 +503,7 @@
                   justify-content: center;
                   margin: 10px auto;
                 ">
-                  <button id="button-confirm-ps-dataset" onclick="window.transitionSubQuestionsButton(this, 'Question-generate-dataset-ps-dataset', 'upload-destination-selection-tab', 'delete', 'individual-question generate-dataset')" data-next="Question-generate-dataset-existing-folders-options" style="
+                  <button id="button-confirm-ps-dataset" onclick="window.transitionSubQuestionsButton(this, 'Question-generate-dataset-ps-dataset', 'upload-destination-selection-tab', 'delete', 'individual-question generate-dataset')" data-next="Question-generate-dataset-existing-files-options" style="
                       display: none;
                       border-radius: 4px;
                       height: 30px;
@@ -545,77 +545,6 @@
                   ">
                   Confirm
                 </button>
-              </div>
-            </div>
-
-            <div class="individual-question generate-dataset" id="Question-generate-dataset-existing-folders-options">
-              <div class="ui form" style="width: 100%">
-                <div class="grouped fields">
-                  <label style="font-size: 17px; color: var(--color-bg-plum); text-align: center">How would you like to
-                    handle existing folders?
-                    <br /><span style="color: #898989; font-size: 12px">Please select one:</span>
-                  </label>
-                  <div class="info-dropdown mt-lg" style="margin:auto;">
-                    <p class="info-dropdown-text" data-dropdown-type="info">What do these options do?</p>
-                    <i class="fas fa-chevron-right"></i>
-                  </div>
-                  <div class="info-container">
-                    <p class="help-text mb-0">
-                      Tell SODA how to handle folders imported in step 1 that already
-                      exist (same name, same relative location) on your Pennsieve dataset:
-                    </p>
-                      <ul>
-                        <li>
-                          Merge: Upload new files into the existing folders. Also allows for adding new folders to the dataset. 
-                          Existing files will be handled as instructed in the next step.
-                        </li>
-                        <li>
-                          Replace: Delete existing folders on Pennsieve then upload new ones. Also allows for adding new folders to the dataset.
-                        </li>
-                      </ul>
-                  </div>
-                  <div style="display: flex; flex-direction: row; justify-content: center">
-                    <div style="margin: 15px 0">
-                      <!-- <button> -->
-                      <div id="merge-folder-card" class="option-card radio-button" data-next="Question-generate-dataset-existing-files-options"
-                        onclick="window.transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'upload-destination-selection-tab', '', 'generate-dataset')">
-                        <div class="card-head">
-                          <div class="folder-checkbox">
-                            <input class="folder-input-check" name="generate-5" id="existing-folders-merge"
-                              type="radio" />
-                            <label for="existing-folders-merge"></label>
-                          </div>
-                        </div>
-                        <div class="card-body">
-                          <svg width="45px" height="45px" viewBox="0 0 16 16" class="bi bi-intersect" fill="#13716D"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                              d="M0 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2H2a2 2 0 0 1-2-2V2zm5 10v2a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-2v5a2 2 0 0 1-2 2H5zm6-8H6a2 2 0 0 0-2 2v5H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v2z" />
-                          </svg>
-                          <h2>Merge</h2>
-                        </div>
-                      </div>
-                    </div>
-                    <div style="margin: 15px 0">
-                      <!-- <button> -->
-                      <div id="replace-folder-card" class="option-card radio-button" data-next="Question-generate-dataset-existing-files-options"
-                        onclick="window.transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'upload-destination-selection-tab', '', 'generate-dataset')">
-                        <div class="card-head">
-                          <div class="folder-checkbox">
-                            <input class="folder-input-check" name="generate-5" id="existing-folders-replace"
-                              type="radio" />
-                            <label for="existing-folders-replace"></label>
-                          </div>
-                        </div>
-                        <div class="card-body">
-                          <i class="fas fa-eraser" style="color: #b80d49; font-size: 43px"></i>
-                          <h2>Replace</h2>
-                        </div>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
               </div>
             </div>
 
