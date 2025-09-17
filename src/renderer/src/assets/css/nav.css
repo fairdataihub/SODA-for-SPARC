@@ -132,10 +132,6 @@ a[data-toggle="collapse"] {
   border-left: 4px solid transparent;
 }
 
-#main-nav ul li a svg {
-  fill: #000;
-}
-
 #main-nav ul li a a {
   padding-left: 10px;
   text-align: left;
@@ -164,10 +160,6 @@ a[data-toggle="collapse"] {
 
 #main-nav ul li a.is-selected i {
   color: var(--color-light-green);
-}
-
-#main-nav ul li a.is-selected svg {
-  fill: var(--color-light-green);
 }
 
 .help-section {

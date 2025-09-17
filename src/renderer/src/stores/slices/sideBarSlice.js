@@ -1,12 +1,20 @@
-import { produce } from "immer";
+import useGlobalStore from "../globalStore";
+
 export const sideBarSlice = (set) => ({
   isSidebarOpen: true,
+  activeTab: null,
 });
 
 export const setSidebarOpenState = (boolTrueOrFalse) => {
-  useGlobalStore.setState(
-    produce((state) => {
-      state.isSidebarOpen = boolTrueOrFalse;
-    })
-  );
+  useGlobalStore.setState((state) => ({
+    ...state,
+    isSidebarOpen: boolTrueOrFalse,
+  }));
+};
+
+export const setActiveSidebarTab = (tabName) => {
+  useGlobalStore.setState((state) => ({
+    ...state,
+    activeTab: tabName,
+  }));
 };

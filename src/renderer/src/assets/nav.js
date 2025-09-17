@@ -2,6 +2,7 @@ import Swal from "sweetalert2";
 import { swalConfirmAction } from "../scripts/utils/swal-utils";
 import lottie from "lottie-web";
 import { existingDataset, modifyDataset } from "../assets/lotties/lotties";
+import { setActiveSidebarTab } from "../stores/slices/sideBarSlice";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -61,9 +62,6 @@ document.body.addEventListener("click", async (event) => {
   }
 });
 
-document.body.addEventListener("custom-back", (e) => {
-  handleSectionTrigger(e);
-});
 // Variable used to determine the disabled status of the organize datasets next button
 let boolNextButtonDisabled = true;
 
@@ -103,38 +101,15 @@ const guidedUnLockSideBar = () => {
   guidedNav.style.display = "none";
 };
 
-const handleSectionTriggerOrganize = async (
-  event,
-  sectionId,
-  freeFormItemsContainer,
-  freeFormButtons
-) => {};
-
 const handleSectionTrigger = async (event) => {
   // Display the current section
-  const sectionId = `${event.target.dataset.section}-section`;
-  const itemsContainer = document.getElementById("items");
+  const clickedSection = event.target.dataset.section;
+  setActiveSidebarTab(clickedSection);
+  const sectionId = `${clickedSection}-section`;
+  console.log("Navigating to section:", sectionId);
   const freeFormItemsContainer = document.getElementById("free-form-folder-structure-container");
   const freeFormButtons = document.getElementById("organize-path-and-back-button-div");
   const sectionRenderFileExplorer = event.target.dataset.render;
-
-  // In Free Form Mode -> Organize dataset, the sodaJSONObj has
-  // keys if the user has started the first step. The user must
-  // be warned because Guided Mode uses shared variables and FF progress
-  // must be wiped out.
-  //Update: Swal will only pop up if user is on organize datasets page only
-  // Update 2: If user has not selected any of the radio buttons in step 1, then swal
-  // will not pop up
-  let boolRadioButtonsSelected = false;
-  let organizeDatasetRadioButtons = Array.from(
-    document.querySelectorAll(".getting-started-1st-question")
-  );
-
-  organizeDatasetRadioButtons.forEach((radioButton) => {
-    if (radioButton.classList.contains("checked")) {
-      boolRadioButtonsSelected = true;
-    }
-  });
 
   // check if we are entering the organize datasets section
   if (sectionId === "organize-section") {
@@ -184,7 +159,6 @@ const handleSectionTrigger = async (event) => {
     window.organizeDSglobalPath.value = "";
     window.dataset_path = document.getElementById("guided-input-global-path");
     window.scroll_box = document.querySelector("#guided-body");
-    itemsContainer.innerHTML = "";
     resetLazyLoading();
     freeFormItemsContainer.classList.remove("freeform-file-explorer"); //add styling for free form mode
     freeFormButtons.classList.remove("freeform-file-explorer-buttons");
@@ -255,11 +229,10 @@ const handleSectionTrigger = async (event) => {
 
   let showSidebarSections = [
     "main_tabs-section", //Free form mode
-    "getting_started-section", //Overview page
     "guided_mode-section", //Guided Mode
     "documentation-section", //Documentation
     "contact-us-section", //Contact us
-    "about-us-section",
+    "about-us-section", //About us
   ];
 
   if (showSidebarSections.includes(sectionId)) {
@@ -289,7 +262,6 @@ const handleSectionTrigger = async (event) => {
 };
 
 function showMainContent() {
-  document.querySelector(".js-nav").classList.add("is-shown");
   document.querySelector(".js-content").classList.add("is-shown");
 }
 
@@ -344,7 +316,6 @@ document.querySelector("#button-homepage-freeform-mode").addEventListener("click
 $(document).ready(() => {
   $("#sidebarCollapse").on("click", function () {
     $("#main-nav").toggleClass("active");
-    $(this).toggleClass("active");
     $(".section").toggleClass("fullShown");
   });
 
