@@ -5,6 +5,12 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## c16.2.1 - 2025-09-05
+
+## Bug Fixes:
+
+- The SDS templates downloadable from the homepage were out of date. They have been made current with SDS3.
+
 ## v16.2.0 - 2025-09-03
 
 ## Feature Additions:
