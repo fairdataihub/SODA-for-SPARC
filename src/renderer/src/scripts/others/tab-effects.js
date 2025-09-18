@@ -864,6 +864,7 @@ window.handleValidateCardSelection = async (ev) => {
 };
 
 window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, category) => {
+  console.log("wowza here");
   if (currentDiv === "Question-getting-started-1") {
     window.globalGettingStarted1stQuestionBool = await raiseWarningGettingStarted(ev);
     if (window.globalGettingStarted1stQuestionBool) {
@@ -885,11 +886,14 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
     return;
   }
 
+  console.log(currentDiv);
+
   if (currentDiv === "Question-generate-dataset-existing-files-options") {
     // activate the continue button
     $("#nextBtn").prop("disabled", false);
     // show the continue para text
     $("#para-continue-existing-files-generate").show();
+    $("#Question-generate-dataset-existing-files-options").removeClass("hidden");
     $("#para-continue-existing-files-generate").text("Please continue to the next step");
   }
 
@@ -1850,6 +1854,10 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
 
   if (ev.getAttribute("data-next") === "Question-generate-dataset-ps-workspace") {
     document.getElementById("btn-ps-workspace").style.display = "block";
+  }
+
+  if (ev.getAttribute("data-next") === "Question-generate-dataset-existing-files-options") {
+    $("#Question-generate-dataset-existing-files-options").removeClass("hidden");
   }
 
   document.getElementById(currentDiv).classList.add("prev");
