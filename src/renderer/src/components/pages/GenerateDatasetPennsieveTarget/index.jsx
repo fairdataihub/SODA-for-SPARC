@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Text, Group, Select, Collapse, Center, Loader, Stack, Button } from "@mantine/core";
 import DropDownNote from "../../utils/ui/DropDownNote";
+import api from "../../../scripts/others/api/api";
 
 import useGlobalStore from "../../../stores/globalStore";
 
@@ -90,6 +91,40 @@ const GenerateDatasetPennsieveTargetPage = () => {
           />
           <DropDownNote id="user-retrieved-datasets-but-missing-desired-dataset" />
         </>
+      );
+    }
+
+    let isGuest = window.isGuest;
+
+    if (isGuest) {
+      return (
+        <Stack mt="md" align="center">
+          <Text size="md" align="left" fw={500}>
+            Please contact the collaborator who shared the dataset to confirm you are in the correct
+            workspace and have Editor or Manager permissions. For more information on uploading as a
+            workspace guest, see the documentation{" "}
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://docs.sodaforsparc.io/docs/miscellaneous/how-to/how-to-upload-as-pennsieve-guest"
+            >
+              here.
+            </a>
+            If you think you should have access to a shared Pennsieve dataset, contact the SODA team
+            for help{" "}
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team"
+            >
+              here.
+            </a>
+          </Text>
+          <Button onClick={fetchDatasetsToUploadDataTo} w="230px">
+            Retry dataset retrieval
+          </Button>
+          <DropDownNote id="user-doesnt-have-any-empty-datasets" />
+        </Stack>
       );
     }
 

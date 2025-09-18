@@ -512,7 +512,9 @@ const userIsWorkspaceGuest = async () => {
     clientError(error);
     console.error("[userIsWorkspaceGuest] Error fetching organizations:", error);
     // TODO: Decide how to handle this (e.g., return false or rethrow)
-    window.log.info("User is guest in workspace; Could not fetch workspace");
+
+    window.isGuest = false;
+
     return false;
   }
 
@@ -521,13 +523,11 @@ const userIsWorkspaceGuest = async () => {
   );
 
   if (!currentWorkspaceObj) {
-    window.log.info("User is guest in workspace; Could not fetch workspace name");
+    window.isGuest = false;
     return false;
   }
 
-  window.log.info(
-    `User guest status ${currentWorkspaceObj.isGuest}; Current workspace ID: ${preferredOrgId}`
-  );
+  window.isGuest = currentWorkspaceObj.isGuest;
 
   return currentWorkspaceObj.isGuest;
 };

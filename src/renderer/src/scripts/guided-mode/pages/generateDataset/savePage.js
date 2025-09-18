@@ -77,8 +77,18 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
         errorArray.push({
           type: "swal",
           errorTitle: "Guests cannot create datasets on Pennsieve",
-          errorText:
-            "You are currently a guest user in your workspace and do not have permission to create new datasets. If an empty dataset has already been created for you, select 'Upload to an existing empty dataset on Pennsieve'.",
+          errorText: `
+                    <div style="text-align: left;">
+                      You are currently a guest user and do not have permission to create new datasets. You have the following options:
+                      <ul> 
+                          <li>You can use the 'Upload to an existing empty dataset on Pennsieve' option if you have access to one.</li>
+                          <li>Read the documentation on how to upload as a guest
+                          <a target='_blank' rel='noopener noreferrer' href="https://docs.sodaforsparc.io/docs/miscellaneous/how-to/how-to-upload-as-pennsieve-guest">here.</a></li>
+                          <li>Reach out to the SODA team if you should have permission to create datasets by following the instructions found
+                          <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here.</a></li>
+                      </ul>
+                    </div>
+                      `,
         });
         throw errorArray;
       }

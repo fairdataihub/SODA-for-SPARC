@@ -11,7 +11,7 @@ import client from "../../client";
 const clientError = (error) => {
   // Handles gneral errors and getting basic information from Axios errors
   console.error(error);
-  log.error(JSON.stringify(error));
+  window.log.error(JSON.stringify(error));
 
   // Handle logging for Axios errors in greater detail
   if (error.response) {
@@ -19,15 +19,15 @@ const clientError = (error) => {
     let error_status = error.response.status;
     let error_headers = error.response.headers;
 
-    log.error("Error message: " + JSON.stringify(error_message));
-    log.error("Response Status: " + JSON.stringify(error_status));
-    log.error("Request config: ");
-    log.error(JSON.stringify(error.config));
-    log.error("Response Headers: ");
-    log.error(JSON.stringify(error_headers));
+    window.log.error("Error message: " + JSON.stringify(error_message));
+    window.log.error("Response Status: " + JSON.stringify(error_status));
+    window.log.error("Request config: ");
+    window.log.error(JSON.stringify(error.config));
+    window.log.error("Response Headers: ");
+    window.log.error(JSON.stringify(error_headers));
   } else if (error.request) {
     // The request was made but no response was received
-    log.error(error.request);
+    window.log.error(error.request);
   }
 };
 
@@ -35,24 +35,29 @@ const clientError = (error) => {
  * Given an error object, take the message out of the appropriate error property and present it in a readable format.
  * Useful for getting a useful error message out of both Axios and general errors.
  * @param {Error} error - The error object. Can be a general Error or an Axios subclass.
+ * @param {boolean} includeContactAddendum - Whether to include a message about contacting the SODA team for support
  * @returns {string} - The error message to display to the user
  */
-const userErrorMessage = (error) => {
+const userErrorMessage = (error, includeContactAddendum = true) => {
   let errorMessage = "";
+  let contactSODATeamAddendum = `If this issue persists, please follow our instructions on how best to contact our team for support <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">using our documentation page here.</a>`;
+  if (!includeContactAddendum) {
+    contactSODATeamAddendum = "";
+  }
+
   if (error.response) {
     // The request was made and the server responded with a status code
     // that falls out of the range of 2xx
-    errorMessage = `${error.response.data.message}`;
+    errorMessage = `${error.response.data.message}<br>${contactSODATeamAddendum}`;
   } else if (error.request) {
     // The request was made but no response was received
     // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
     // http.ClientRequest in node.js
     console.error(error);
-    errorMessage =
-      "The server did not respond to the request. Please try again later or contact the soda team at help@fairdataihub.org if this issue persits.";
+    errorMessage = "The server did not respond to the request. <br>" + contactSODATeamAddendum;
   } else {
     // Something happened in setting up the request that triggered an Error
-    errorMessage = error.message;
+    errorMessage = error.message + "<br>" + contactSODATeamAddendum;
   }
 
   // If the error message contains a 423, it means the dataset is locked.

@@ -142,7 +142,7 @@ const withdrawDatasetSubmission = async () => {
 
     Swal.fire({
       title: "Could not withdraw dataset from publication!",
-      text: `${userErrorMessage(error)}`,
+      html: `${userErrorMessage(error)}`,
       icon: "error",
       heightAuto: false,
       confirmButtonText: "Ok",
@@ -249,7 +249,7 @@ const guidedSubmitDatasetForReview = async (embargoReleaseDate = "") => {
       title: "Could not submit your dataset to the Curation Team",
       icon: "error",
       reverseButtons: window.reverseSwalButtons,
-      text: userErrorMessage(error),
+      html: userErrorMessage(error),
       showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
       hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
     });
@@ -321,7 +321,7 @@ export const guidedSetPublishingStatusUI = async () => {
     console.error("[PrepublishingFlow] Error fetching publishing status:", error);
     await Swal.fire({
       title: "Error fetching publishing status",
-      text: userErrorMessage(error),
+      html: userErrorMessage(error),
       icon: "error",
       confirmButtonText: "Ok",
       heightAuto: false,
@@ -470,7 +470,7 @@ window.guidedModifyCurationTeamAccess = async (action) => {
       setButtonState(shareBtn, { disabled: false, loading: false });
       await Swal.fire({
         title: "Failed to share dataset with Curation Team",
-        text: userErrorMessage(error),
+        html: userErrorMessage(error),
         icon: "error",
         confirmButtonText: "Ok",
         heightAuto: false,
@@ -521,7 +521,7 @@ window.guidedModifyCurationTeamAccess = async (action) => {
       setButtonState(unshareBtn, { disabled: false, loading: false });
       await Swal.fire({
         title: "Failed to unshare dataset from Curation Team",
-        text: userErrorMessage(error),
+        html: userErrorMessage(error),
         icon: "error",
         confirmButtonText: "Ok",
         heightAuto: false,
@@ -3468,6 +3468,7 @@ const doTheHack = async () => {
   await new Promise((resolve) => setTimeout(resolve, 4000));
   document.querySelector(".primary-selection-aside-item.selection-aside-item").click();
 };
+
 
 // Add the event listener for the Data importation component
 const dragDropElementId = document.getElementById("data-importer-dropzone");
