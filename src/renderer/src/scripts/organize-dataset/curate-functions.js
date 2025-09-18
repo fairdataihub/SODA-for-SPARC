@@ -829,12 +829,6 @@ document.getElementById("dataset-upload-new-dataset").addEventListener("click", 
       element.checked = false;
     });
     // Reset the merge option cards
-    document.getElementById("skip-folder-card").classList.remove("checked");
-    document.getElementById("skip-folder-card").classList.remove("non-selected");
-    document.getElementById("merge-folder-card").classList.remove("checked");
-    document.getElementById("merge-folder-card").classList.remove("non-selected");
-    document.getElementById("replace-folder-card").classList.remove("checked");
-    document.getElementById("replace-folder-card").classList.remove("non-selected");
 
     document.getElementById("replace-file-card").classList.remove("non-selected");
     document.getElementById("replace-file-card").classList.remove("checked");
@@ -849,7 +843,6 @@ document.getElementById("dataset-upload-new-dataset").addEventListener("click", 
   document.getElementById("Question-new-dataset-upload-name").classList.add("checked");
 
   // hide the existing folder options
-  $("#Question-generate-dataset-existing-folders-options").addClass("hidden");
   $("#Question-generate-dataset-existing-files-options").addClass("hidden");
 
   // disable the continue btn
@@ -947,12 +940,6 @@ document.getElementById("change-workspace-btn").addEventListener("click", async 
     element.checked = false;
   });
   // Remove checks from all the cards in step 3 (merge option cards)
-  document.getElementById("skip-folder-card").classList.remove("checked");
-  document.getElementById("skip-folder-card").classList.remove("non-selected");
-  document.getElementById("merge-folder-card").classList.remove("checked");
-  document.getElementById("merge-folder-card").classList.remove("non-selected");
-  document.getElementById("replace-folder-card").classList.remove("checked");
-  document.getElementById("replace-folder-card").classList.remove("non-selected");
 
   document.getElementById("replace-file-card").classList.remove("non-selected");
   document.getElementById("replace-file-card").classList.remove("checked");
@@ -994,7 +981,6 @@ document.getElementById("change-workspace-btn").addEventListener("click", async 
   });
   document.getElementById("current-ps-dataset-generate").textContent = "None";
   // hide the existing folder/files options
-  $("#Question-generate-dataset-existing-folders-options").addClass("hidden");
   $("#Question-generate-dataset-existing-files-options").addClass("hidden");
   $("#please-wait-new-curate-div").show();
 

@@ -5810,7 +5810,13 @@ const initiate_generate = async (resume = false) => {
       clearInterval(timerProgress);
       swalShowInfo(
         "No files were uploaded in this session",
-        "This happens when trying to update an existing dataset while using the skip options (selected on step 3) in a way that unintentionally ask SODA to skip files you want to upload to Pennsieve. Please try again by clicking the Curate and Share button in the sidebar."
+        `
+        <div style="text-align: left;">
+          This happens when updating an existing dataset with the 'merge' option for folders and the 'skip' option for files selected, and not adding new files to your local dataset.
+          You may try the upload again by clicking the Curate and Share button in the sidebar to get back to the upload process. If you believe this is an error, please contact us using the Contact Us page available in the side bar.
+          For more instructions on how to do that you may reference our documentation page <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here.</a>
+         </div>
+         `
       );
       return;
     }

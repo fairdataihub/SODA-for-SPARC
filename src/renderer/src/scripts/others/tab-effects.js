@@ -234,50 +234,14 @@ const fill_info_details = () => {
     true
   );
 
-  // check if the user is generating on an existing dataset
-
-  if ($('input[name="generate-5"]:checked')[0]?.id === "existing-folders-duplicate") {
-    addCardDetail(
-      "For existing folders",
-      "Create a duplicate",
-      2,
-      "Question-generate-dataset-existing-folders-options",
-      true
-    );
-  } else if ($('input[name="generate-5"]:checked')[0]?.id === "existing-folders-replace") {
-    addCardDetail(
-      "For existing folders",
-      "Replace",
-      2,
-      "Question-generate-dataset-existing-folders-options",
-      true
-    );
-  } else if ($('input[name="generate-5"]:checked')[0]?.id === "existing-folders-merge") {
-    addCardDetail(
-      "For existing folders",
-      "Merge",
-      2,
-      "Question-generate-dataset-existing-folders-options",
-      true
-    );
-  } else if ($('input[name="generate-5"]:checked')[0]?.id === "existing-folders-skip") {
-    addCardDetail(
-      "For existing folders",
-      "Skip",
-      2,
-      "Question-generate-dataset-existing-folders-options",
-      true
-    );
-  } else {
-    // generating a new dataset show local dataset path
-    addCardDetail(
-      "Local dataset path",
-      document.getElementById("org-dataset-folder-path").innerHTML,
-      4,
-      "Question-getting-started-1",
-      true
-    );
-  }
+  // generating a new dataset show local dataset path
+  addCardDetail(
+    "Local dataset path",
+    document.getElementById("org-dataset-folder-path").innerHTML,
+    4,
+    "Question-getting-started-1",
+    true
+  );
 
   if (window.manifestFileCheck.checked) {
     addCardDetail("Manifest files", "Requested from SODA", 2, "pulse-manifest-checkbox", true);
@@ -292,10 +256,6 @@ const fill_info_details = () => {
 // element => element to scroll to in the page
 // pulse_animation => whether to pulse the element
 window.traverse_back = (amount, element = "", pulse_animation = false) => {
-  if (element === "Question-generate-dataset-existing-folders-options") {
-    $("#button-confirm-ps-dataset").click();
-    $("nextBtn").prop("disabled", true);
-  }
   for (i = 0; i < amount; i++) {
     window.nextPrev(-1);
   }
@@ -923,12 +883,6 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
     $("#nextBtn").prop("disabled", true);
     $(ev).hide();
     return;
-  }
-
-  if (currentDiv === "Question-generate-dataset-existing-folders-options") {
-    // show the existing file options div
-    $("#Question-generate-dataset-existing-files-options").show();
-    $("#Question-generate-dataset-existing-files-options").removeClass("hidden");
   }
 
   if (currentDiv === "Question-generate-dataset-existing-files-options") {
@@ -1889,39 +1843,6 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
     target.classList.add("show");
   }
 
-  // Step 6 - The Merge/Skip/Replace options for selecting how to upload data to an existing Pennsieve dataset
-  if (ev.getAttribute("data-next") === "Question-generate-dataset-existing-folders-options") {
-    if (!window.hasFiles) {
-      // select the Merge option for Folders
-      document.getElementById("existing-folders-merge").checked = true;
-      $("#existing-folders-merge").hide();
-      $("#Question-generate-dataset-existing-folders-options").hide();
-      // select the Skip option for Files
-      document.getElementById("existing-files-replace").checked = true;
-
-      // enable the continue button
-      $("#nextBtn").prop("disabled", false);
-
-      $("#para-continue-empty-ds-selected").text("Please continue below.");
-      $("#para-continue-empty-ds-selected").show();
-
-      // hide the confirm button
-      $("#button-confirm-ps-dataset").hide();
-
-      return;
-    }
-
-    // hide the confirm button
-    $("#button-confirm-ps-dataset").hide();
-
-    $("#Question-generate-dataset-existing-folders-options").show();
-    $("#Question-generate-dataset-existing-folders-options").removeClass("hidden");
-    document.getElementById("existing-folders-merge").checked = false;
-    document.getElementById("existing-files-replace").checked = false;
-
-    // continue as usual otherwise
-  }
-
   // if buttons: Add account and Confirm account were hidden, show them again here
   if (ev.getAttribute("data-next") === "Question-generate-dataset-ps-account") {
     $("#" + ev.getAttribute("data-next") + " button").show();
@@ -2823,48 +2744,6 @@ const hidePrevDivs = (currentDiv, category) => {
   // hide all other div siblings
   for (var i = 0; i < individualQuestions.length; i++) {
     if (currentDiv === individualQuestions[i].id) {
-      if (!(currentDiv === "Question-generate-dataset-existing-folders-options")) {
-        $(`#${currentDiv}`).nextAll().removeClass("show");
-        $(`#${currentDiv}`).nextAll().removeClass("prev");
-        $(`#${currentDiv}`).nextAll().removeClass("test2");
-
-        // /// remove all checkmarks and previous data input
-        $(`#${currentDiv}`).nextAll().find(".option-card.radio-button").removeClass("checked");
-        $(`#${currentDiv}`).nextAll().find(".option-card.radio-button").removeClass("non-selected");
-        $(`#${currentDiv}`).nextAll().find(".folder-input-check").prop("checked", false);
-        $(`#${currentDiv}`).nextAll().find("#curatebfdatasetlist").prop("selectedIndex", 0);
-
-        var childElements2 = $(`#${currentDiv}`).nextAll().find(".form-control");
-
-        for (var child of childElements2) {
-          if (child.id === "inputNewNameDataset" || child.id === "ps-rename-dataset-name") {
-            if (child.id === "ps-rename-dataset-name") {
-              if (
-                $(".ps-dataset-span")
-                  .html()
-                  .replace(/^\s+|\s+$/g, "") == "None" ||
-                $(".ps-dataset-span")
-                  .html()
-                  .replace(/^\s+|\s+$/g, "") == ""
-              ) {
-                $("#ps-rename-dataset-name").val(
-                  `${$(".ps-dataset-span")
-                    .html()
-                    .replace(/^\s+|\s+$/g, "")}`
-                );
-              }
-            } else {
-              $(`${child.id}`).val("");
-              $(`${child.id}`).attr("placeholder", "Type here");
-            }
-          } else {
-            if (document.getElementById(child.id)) {
-              $(`${child.id}`).val("");
-              $(`${child.id}`).attr("placeholder", "Browse here");
-            }
-          }
-        }
-      }
       break;
     }
   }
@@ -3039,6 +2918,7 @@ const updateJSONStructureBfDestination = () => {
     window.sodaJSONObj["generate-dataset"] = {
       destination: "ps",
       "generate-option": "existing-ps",
+      "if-existing": "merge",
     };
 
     if (window.sodaJSONObj["ps-dataset-selected"]) {
@@ -3051,25 +2931,9 @@ const updateJSONStructureBfDestination = () => {
       };
     }
 
-    // folder selection options
-    // answer to Question if generate on ps, then: how to handle existing files and folders
-    // The user selected to generate to an existing dataset on Pennsieve
-    // Set the generate option to existing-ps
-    if ($('input[name="generate-5"]:checked').length > 0) {
-      if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-duplicate") {
-        window.sodaJSONObj["generate-dataset"]["if-existing"] = "create-duplicate";
-      } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-replace") {
-        window.sodaJSONObj["generate-dataset"]["if-existing"] = "replace";
-      } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-merge") {
-        window.sodaJSONObj["generate-dataset"]["if-existing"] = "merge";
-      } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-skip") {
-        window.sodaJSONObj["generate-dataset"]["if-existing"] = "skip";
-      }
-    }
+    // file option selection
     if ($('input[name="generate-6"]:checked').length > 0) {
-      if ($('input[name="generate-6"]:checked')[0].id === "existing-files-duplicate") {
-        window.sodaJSONObj["generate-dataset"]["if-existing-files"] = "create-duplicate";
-      } else if ($('input[name="generate-6"]:checked')[0].id === "existing-files-replace") {
+      if ($('input[name="generate-6"]:checked')[0].id === "existing-files-replace") {
         window.sodaJSONObj["generate-dataset"]["if-existing-files"] = "replace";
       } else if ($('input[name="generate-6"]:checked')[0].id === "existing-files-skip") {
         window.sodaJSONObj["generate-dataset"]["if-existing-files"] = "skip";
@@ -3196,12 +3060,6 @@ window.resetCurationTabs = () => {
     element.checked = false;
   });
   // Remove checks from all the cards in step 3 (merge option cards)
-  document.getElementById("skip-folder-card").classList.remove("checked");
-  document.getElementById("skip-folder-card").classList.remove("non-selected");
-  document.getElementById("merge-folder-card").classList.remove("checked");
-  document.getElementById("merge-folder-card").classList.remove("non-selected");
-  document.getElementById("replace-folder-card").classList.remove("checked");
-  document.getElementById("replace-folder-card").classList.remove("non-selected");
 
   document.getElementById("replace-file-card").classList.remove("non-selected");
   document.getElementById("replace-file-card").classList.remove("checked");
@@ -3281,7 +3139,6 @@ window.wipeOutCurateProgress = () => {
   });
   document.getElementById("current-ps-dataset-generate").textContent = "None";
   // hide the existing folder/files options
-  $("#Question-generate-dataset-existing-folders-options").addClass("hidden");
   $("#Question-generate-dataset-existing-files-options").addClass("hidden");
   $("#please-wait-new-curate-div").show();
 
