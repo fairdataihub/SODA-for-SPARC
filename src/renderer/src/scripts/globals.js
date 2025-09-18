@@ -1394,6 +1394,36 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         }
       }
 
+      await Swal.fire({
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "Ok",
+        focusCancel: false,
+        focusConfirm: true,
+        showCloseButton: true,
+        showCancelButton: false,
+        heightAuto: false,
+        allowOutsideClick: false,
+        width: 800,
+        allowEscapeKey: true,
+        title: "<h3 style='margin-bottom:20px !important'>No datasets found</h3>",
+        html: ` 
+            <div style="text-align: left; margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">
+             Please contact the collaborator who shared the dataset to confirm you are in the correct workspace and have Editor or Manager permissions.  
+             For more information on uploading as a workspace guest, see the documentation <a target='_blank' rel='noopener noreferrer' href="https://docs.sodaforsparc.io/docs/miscellaneous/how-to/how-to-upload-as-pennsieve-guest">here.</a>  
+             If you think you should have access to a shared Pennsieve dataset, contact the SODA team for help <a target='_blank' rel='noopener noreferrer' href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team">here.</a>
+            </div>`,
+        showClass: {
+          popup: "animate__animated animate__fadeInDown animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__fadeOutUp animate__faster animate_fastest",
+        },
+        didOpen: () => {
+          $(".ui.active.green.inline.loader.small").css("display", "none");
+          $(".svg-change-current-account.dataset").css("display", "block");
+        },
+      });
+
       //after request check length again
       //if 0 then no datasets have been created
       if (window.datasetList.length === 0) {
@@ -1412,9 +1442,9 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             title: "<h3 style='margin-bottom:20px !important'>No datasets found</h3>",
             html: ` 
             <div style="text-align: left; margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">
-            Please contact the collaborator that created the dataset and shared it with you to confirm that you are in the correct workspace and that you have been given one of the following 
-            permissions: Editor, Manager. You can check the documentation for more information on uploading datasets in SODA as a workspace guest <a target='_blank' rel='noopener noreferrer' href="https://docs.sodaforsparc.io/docs/miscellaneous/how-to/how-to-upload-as-pennsieve-guest">here</a>.
-            If you believe you should have access to a Pennsieve dataset that was shared with you, please contact the SODA team for assistance by following our instructions found <a target='_blank' rel='noopener noreferrer' href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team">here</a>.
+             Please contact the collaborator who shared the dataset to confirm you are in the correct workspace and have Editor or Manager permissions.  
+             For more information on uploading as a workspace guest, see the documentation <a target='_blank' rel='noopener noreferrer' href="https://docs.sodaforsparc.io/docs/miscellaneous/how-to/how-to-upload-as-pennsieve-guest">here.</a>  
+             If you think you should have access to a shared Pennsieve dataset, contact the SODA team for help <a target='_blank' rel='noopener noreferrer' href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team">here.</a>
             </div>`,
             showClass: {
               popup: "animate__animated animate__fadeInDown animate__faster",

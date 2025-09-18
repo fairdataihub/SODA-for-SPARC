@@ -79,12 +79,14 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
           errorTitle: "Guests cannot create datasets on Pennsieve",
           errorText: `
                     <div style="text-align: left;">
-                      You are currently a guest user in your workspace and do not have permission to create new datasets.
-                      You can use the 'Upload to an existing empty dataset on Pennsieve' option to upload data to a dataset if you have been given access to one.
-                      You can check the documentation for more information on uploading datasets in SODA as a workspace guest 
-                      <a target='_blank' rel='noopener noreferrer' href="https://docs.sodaforsparc.io/docs/miscellaneous/how-to/how-to-upload-as-pennsieve-guest">here</a>.
-                      If you believe you should have permissions to create datasets in your workspace please reach out to the SODA team as described in the 
-                      documentation <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here</a>.
+                      You are currently a guest user and do not have permission to create new datasets. You have the following options:
+                      <ul> 
+                          <li>You can use the 'Upload to an existing empty dataset on Pennsieve' option if you have access to one.</li>
+                          <li>Read the documentation on how to upload as a guest
+                          <a target='_blank' rel='noopener noreferrer' href="https://docs.sodaforsparc.io/docs/miscellaneous/how-to/how-to-upload-as-pennsieve-guest">here.</a></li>
+                          <li>Reach out to the SODA team if you should have permission to create datasets by following the instructions found
+                          <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here.</a></li>
+                      </ul>
                     </div>
                       `,
         });

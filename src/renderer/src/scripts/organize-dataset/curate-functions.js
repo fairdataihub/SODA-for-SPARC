@@ -770,16 +770,30 @@ document
 
 document.getElementById("dataset-upload-new-dataset").addEventListener("click", async function () {
   if (await api.userIsWorkspaceGuest()) {
-    swalShowInfo(
-      "Guests cannot create datasets on Pennsieve",
-      `
-      <div style="text-align: left">You are currently a guest user in your workspace and do not have permission to create new datasets. 
-       You can use the 'Update existing dataset' option to upload data to a dataset if you have been given access to one.
-       Check the documentation for more information on uploading datasets in SODA as a workspace guest 
-       <a target='_blank' rel='noopener noreferrer' href="https://docs.sodaforsparc.io/docs/miscellaneous/how-to/how-to-upload-as-pennsieve-guest">here</a>.
-       If you believe you should have permissions to create datasets in your workspace please reach out to the SODA team as described in the 
-       documentation <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here</a>.</div>`
-    );
+    await Swal.fire({
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      width: 800,
+      title: "Guests cannot create datasets on Pennsieve",
+      html: `
+                    <div style="text-align: left;">
+        You are currently a guest user and do not have permission to create new datasets. You have the following options:
+        <ul> 
+            <li>You can use the 'Existing dataset' option if you have access to one.</li>
+            <li>Read the documentation on how to upload as a guest
+            <a target='_blank' rel='noopener noreferrer' href="https://docs.sodaforsparc.io/docs/miscellaneous/how-to/how-to-upload-as-pennsieve-guest">here.</a></li>
+            <li>Reach out to the SODA team if you should have permission to create datasets by following the instructions found
+            <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here.</a></li>
+        </ul>
+      </div>
+          `,
+      showCancelButton: false,
+      confirmButtonText: "Ok",
+      showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+      hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
+    });
     return;
   }
   const dsName = document.getElementById("current-ps-dataset-generate").innerText;

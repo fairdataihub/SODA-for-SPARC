@@ -626,24 +626,19 @@ const automaticRetry = async (supplementaryChecks = false, errorMessage = "") =>
       allowEscapeKey: false,
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
+      width: 800,
       icon: "error",
       title: "An error occurred during your upload",
       html: `
           <div style="text-align: left;">
-            <p>Error: ${errorMessage}</p>
+           <p style="overflow-y: auto; max-height: 120px; text-align: left; margin-bottom: 10px;">Error: ${errorMessage}</p>
             <p>
-              SODA has retried the upload three times without success. You have three options: 
+              SODA has retried the upload three times without success. You have two options: 
               <br/>
               <ol> 
-                <li>Manually retry the upload now</li>
-                <li>Save and exit then try again later</li>
-                <li>Save and exit then contact the SODA team for help using the 'Contact Us' page in the sidebar</li>
+                <li>Manually retry the upload now - may resolve the problem if the issue was temporary (e.g., network issue)</li>
+                <li>Save and exit and optionally contact the SODA team for help by following the instructions found <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here.</a></li>
               </ol>
-            </p>
-            <p>
-              If you choose to save and exit you will be able to resume your upload by returning to Prepare Dataset Step-by-Step and clicking the "Resume Upload"
-              button on your dataset's progress card. If you choose to contact our team for support we recommend reaching us per the instructions found
-              on our documentation page <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here.</a>
             </p>
           </div>
       `,

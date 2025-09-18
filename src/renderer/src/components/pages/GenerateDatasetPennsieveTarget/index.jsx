@@ -100,21 +100,23 @@ const GenerateDatasetPennsieveTargetPage = () => {
       return (
         <Stack mt="md" align="center">
           <Text size="md" align="left" fw={500}>
-            No empty datasets were found that you have permission to upload to. Since you are a
-            guest in the current workspace someone should have created one for you. Please contact
-            them to confirm that you are in the correct workspace and have been given one of the
-            following permission levels: Editor, Manager. You can check the documentation for more
-            information on uploading datasets in SODA as a guest{" "}
+            Please contact the collaborator who shared the dataset to confirm you are in the correct
+            workspace and have Editor or Manager permissions. For more information on uploading as a
+            workspace guest, see the documentation{" "}
             <a
               target="_blank"
               rel="noopener noreferrer"
               href="https://docs.sodaforsparc.io/docs/miscellaneous/how-to/how-to-upload-as-pennsieve-guest"
             >
               here.
-            </a>{" "}
-            If you believe you should have access to a Pennsieve dataset that was shared with you,
-            please contact the SODA team for assistance by following our instructions found here{" "}
-            <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team">
+            </a>
+            If you think you should have access to a shared Pennsieve dataset, contact the SODA team
+            for help{" "}
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team"
+            >
               here.
             </a>
           </Text>

@@ -5547,11 +5547,11 @@ const initiate_generate = async (resume = false) => {
       uploadLocally.style = "background-color: #fff";
 
       document.getElementById("para-new-curate-progress-bar-error-status").innerHTML =
-        `<span style='color: red;'>
-        ${emessage}
-        SODA was unable to successfully upload your dataset after three automatic attempts. If you would like you can use the 'Retry' button 
-        to manually try again. Sometimes this can resolve the issue in the case of temporary network problems.
-        However, if the issue persists please reach out to the SODA team by following the documentation <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here</a>.</span>
+        `<div style='color: red; text-align: left;'>
+        <p style="overflow-y: auto; max-height: 120px; color: red;">Error: ${emessage}</p>
+        SODA could not upload your dataset after three automatic attempts. You can use the 'Retry' button to try again—this sometimes fixes temporary network issues.  
+        If the problem continues, please contact the SODA team by following the documentation 
+        <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here.</a></div>
         `;
 
       if (amountOfTimesPennsieveUploadFailed > 3) {
