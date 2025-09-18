@@ -27,7 +27,9 @@ import SodaStepper from "../common/SodaStepper";
 import ManifestFilePreviewSection from "../shared/ManifestFilePreviewSection";
 import DropDownNote from "../utils/ui/DropDownNote";
 import SidebarLinks from "../common/SidebarLinks";
+import HomePageCards from "../buttons/HomePageCards";
 import { CardButton } from "../buttons/CardButton";
+import CheckboxCard from "../buttons/CheckboxCard";
 import { Divider } from "@mantine/core";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
@@ -43,6 +45,9 @@ export const renderComponent = (componentSlot, component) => {
 
 // Mapping of component types to their render functions
 const componentTypeRenderers = {
+  "home-page-cards": (componentSlot) => {
+    renderComponent(componentSlot, <HomePageCards />);
+  },
   "guided-mode-page": (componentSlot) => {
     const pageIdToPageComponentMap = {
       "guided-name-subtitle-tab": <NameAndSubtitlePage />,
@@ -93,6 +98,12 @@ const componentTypeRenderers = {
       id: componentSlot.id,
     };
     renderComponent(componentSlot, <CardButton {...props} />);
+  },
+  "checkbox-card": (componentSlot) => {
+    const props = {
+      id: componentSlot.id,
+    };
+    renderComponent(componentSlot, <CheckboxCard {...props} />);
   },
   stepper: (componentSlot) => {
     const props = {

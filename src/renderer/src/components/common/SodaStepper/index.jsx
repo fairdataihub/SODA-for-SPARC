@@ -9,14 +9,9 @@ const SodaStepper = () => {
 
   return (
     <Stepper active={active} onStepClick={setActive} size="sm">
-      <Stepper.Step label="Import data" />
-      <Stepper.Step
-        label="Pennsieve Information"
-        color={active === errorStep ? "red" : undefined}
-        completedIcon={active === errorStep ? <IconCircleX size={20} /> : undefined}
-      />
-      <Stepper.Step label="Select Dataset" />
-      <Stepper.Step label="Manifest Files" />
+      <Stepper.Step label="Getting Started"></Stepper.Step>
+      <Stepper.Step label="Dataset Structure" />
+      <Stepper.Step label="Dataset Metadata" />
       <Stepper.Step label="Generate Dataset" />
     </Stepper>
   );

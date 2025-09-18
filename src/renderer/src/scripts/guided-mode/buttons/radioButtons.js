@@ -1,3 +1,9 @@
+import {
+  resetProgressCheckboxCard,
+  getCheckboxDataByKey,
+  setCheckboxCardChecked,
+} from "../../../stores/slices/checkboxCardSlice";
+
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
@@ -7,93 +13,84 @@ while (!window.baseHtmlLoaded) {
  *              The click handlers make the buttons appear selected and deselects the other radio buttons in grouped to the active button.
  *              The clicked radio button also stores its config value in window.sodaJSONObj for reference when resuming progress.
  */
-$(".guided--radio-button").on("click", async function () {
-  const selectedButton = $(this);
-  const notSelectedButton = $(this).siblings(".guided--radio-button");
+document.querySelectorAll(".guided--radio-button").forEach((button) => {
+  button.addEventListener("click", async function () {
+    const selectedButton = this;
+    const notSelectedButtons = [
+      ...selectedButton.parentElement.querySelectorAll(".guided--radio-button"),
+    ].filter((btn) => btn !== selectedButton);
 
-  notSelectedButton.removeClass("selected");
-  notSelectedButton.addClass("not-selected basic");
+    // Reset other buttons
+    notSelectedButtons.forEach((btn) => {
+      btn.classList.remove("selected");
+      btn.classList.add("not-selected", "basic");
 
-  //Hide all child containers of non-selected buttons
-  notSelectedButton.each(function () {
-    if ($(this).data("next-element")) {
-      window.nextQuestionID = $(this).data("next-element");
-      $(`#${window.nextQuestionID}`).addClass("hidden");
+      const nextElementId = btn.dataset.nextElement;
+      if (nextElementId) {
+        window.nextQuestionID = nextElementId;
+        const el = document.getElementById(nextElementId);
+        if (el) el.classList.add("hidden");
+      }
+    });
+
+    // If handler should be prevented, stop here
+    if (selectedButton.dataset.preventRadioHandler === "true") {
+      return;
+    }
+
+    // Save button config to sodaJSONObj if available
+    if (selectedButton.dataset.buttonConfigValue) {
+      const buttonConfigValue = selectedButton.dataset.buttonConfigValue;
+      const buttonConfigValueState = selectedButton.dataset.buttonConfigValueState;
+      window.sodaJSONObj["button-config"][buttonConfigValue] = buttonConfigValueState;
+    }
+
+    // Mark selected button
+    selectedButton.classList.remove("not-selected", "basic");
+    selectedButton.classList.add("selected");
+
+    // Show linked next element if it exists
+    const nextElementId = selectedButton.dataset.nextElement;
+    if (nextElementId) {
+      window.nextQuestionID = nextElementId;
+      const nextElement = document.getElementById(nextElementId);
+      if (nextElement) {
+        nextElement.classList.remove("hidden");
+        nextElement.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     }
   });
-
-  //If button has prevent-radio-handler data attribute, other buttons, will be deselected
-  //but all other radio button functions will be halted
-  if (selectedButton.data("prevent-radio-handler") === true) {
-    return;
-  }
-
-  //Store the button's config value in window.sodaJSONObj
-  if (selectedButton.data("button-config-value")) {
-    let buttonConfigValue = selectedButton.data("button-config-value");
-    let buttonConfigValueState = selectedButton.data("button-config-value-state");
-    window.sodaJSONObj["button-config"][buttonConfigValue] = buttonConfigValueState;
-  }
-
-  selectedButton.removeClass("not-selected basic");
-  selectedButton.addClass("selected");
-
-  //Display and scroll to selected element container if data-next-element exists
-  if (selectedButton.data("next-element")) {
-    window.nextQuestionID = selectedButton.data("next-element");
-    let nextQuestionElement = document.getElementById(window.nextQuestionID);
-    nextQuestionElement.classList.remove("hidden");
-
-    //slow scroll to the next question
-    //temp fix to prevent scrolling error
-    const elementsToNotScrollTo = [
-      "guided-add-samples-table",
-      "guided-add-pools-table",
-      "guided-div-add-subjects-table",
-      "guided-div-resume-progress-cards",
-      "guided-div-update-uploaded-cards",
-    ];
-    if (!elementsToNotScrollTo.includes(nextQuestionID)) {
-      nextQuestionElement.scrollIntoView({
-        behavior: "smooth",
-      });
-    }
-  }
 });
 
 export const resetGuidedRadioButtons = (parentPageID) => {
   const parentPage = document.getElementById(parentPageID);
-  const guidedRadioButtons = parentPage.querySelectorAll(".guided--radio-button");
-  for (const guidedRadioButton of guidedRadioButtons) {
-    guidedRadioButton.classList.remove("selected");
-    guidedRadioButton.classList.remove("not-selected");
-    guidedRadioButton.classList.add("basic");
 
-    //get the data-next-element attribute
-    const elementButtonControls = guidedRadioButton.getAttribute("data-next-element");
-    if (elementButtonControls) {
-      const elementToHide = document.getElementById(elementButtonControls);
-      if (!elementToHide) {
-        console.error(`Element with id ${elementButtonControls} does not exist`);
-      }
-      elementToHide.classList.add("hidden");
+  const guidedRadioButtons = parentPage.querySelectorAll('[data-component-type="checkbox-card"]');
+  for (const guidedRadioButton of guidedRadioButtons) {
+    // Get the id of the button
+    const buttonId = guidedRadioButton.id;
+    if (buttonId) {
+      resetProgressCheckboxCard(buttonId);
+    } else {
+      console.warn("🚨 Guided Radio Button is missing an ID:", guidedRadioButton);
     }
   }
 };
 
 export const updateGuidedRadioButtonsFromJSON = (parentPageID) => {
   const parentPage = document.getElementById(parentPageID);
-  const guidedRadioButtons = parentPage.querySelectorAll(".guided--radio-button");
+  const guidedRadioButtons = parentPage.querySelectorAll('[data-component-type="checkbox-card"]');
   for (const guidedRadioButton of guidedRadioButtons) {
     //Get the button config value from the UI
-    const buttonConfigValue = guidedRadioButton.getAttribute("data-button-config-value");
+    const buttonId = guidedRadioButton.id;
+    const checkboxData = getCheckboxDataByKey(buttonId);
+    console.log("Checkbox Data for", buttonId, ":", checkboxData);
+    const buttonConfigValue = checkboxData?.configValue;
+    const buttonConfigValueState = checkboxData?.configValueState;
+
     if (buttonConfigValue) {
-      const buttonConfigValueState = guidedRadioButton.getAttribute(
-        "data-button-config-value-state"
-      );
       if (window.sodaJSONObj["button-config"][buttonConfigValue] === buttonConfigValueState) {
-        //click the button
-        guidedRadioButton.click();
+        setCheckboxCardChecked(buttonId);
       }
     }
   }

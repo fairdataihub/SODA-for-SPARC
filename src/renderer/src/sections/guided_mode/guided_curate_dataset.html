@@ -55,7 +55,7 @@
         </div>
       </div>
     </header>
-    <div data-component-type="stepper" class="w-100"></div>
+    <div data-component-type="stepper" class="w-100 hidden"></div>
 
     <div id="guided-body" class="guided--body">
       <div id="soda-home-page" class="guided--main-tab justify-center">
@@ -73,6 +73,8 @@
             SODA - Your one stop tool for sharing FAIR data and models
           </h2>
           <h2 class="mt-2 mb-3" style="font-size: 16px">What would you like to do today?</h2>
+          <!-- <div data-component-type="home-page-cards"></div> -->
+
           <div
             class="justify-center align-items-center h-100"
             id="curate-new-home"
@@ -107,6 +109,7 @@
               ></div>
             </div>
           </div>
+
           <div
             id="additional-option-buttons"
             style="flex-direction: row; justify-content: center; max-width: 600px"
@@ -155,72 +158,10 @@
             </label>
 
             <div class="guided--radio-button-container mt-4">
-              <button
-                class="guided--radio-button tile-button"
-                id="guided-button-start-new-curation"
-                data-next-element="guided-section-start-new-curation"
-              >
-                <div class="tile-button-icon">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="var(--color-light-green)"
-                    width="50px"
-                    height="50px"
-                    viewBox="0 0 32 32"
-                    version="1.1"
-                    stroke="var(--color-light-green)"
-                    stroke-width="0.1"
-                  >
-                    <g stroke-linecap="round" stroke-linejoin="round" />
-
-                    <g>
-                      <title>plus-frame</title>
-                      <path
-                        d="M0 26.016q0 2.496 1.76 4.224t4.256 1.76h20q2.464 0 4.224-1.76t1.76-4.224v-20q0-2.496-1.76-4.256t-4.224-1.76h-20q-2.496 0-4.256 1.76t-1.76 4.256v20zM4 26.016v-20q0-0.832 0.576-1.408t1.44-0.608h20q0.8 0 1.408 0.608t0.576 1.408v20q0 0.832-0.576 1.408t-1.408 0.576h-20q-0.832 0-1.44-0.576t-0.576-1.408zM8 16q0 0.832 0.576 1.44t1.44 0.576h4v4q0 0.832 0.576 1.408t1.408 0.576 1.408-0.576 0.608-1.408v-4h4q0.8 0 1.408-0.576t0.576-1.44-0.576-1.408-1.408-0.576h-4v-4q0-0.832-0.608-1.408t-1.408-0.608-1.408 0.608-0.576 1.408v4h-4q-0.832 0-1.44 0.576t-0.576 1.408z"
-                      />
-                    </g>
-                  </svg>
-                </div>
-                <div class="tile-button-text">
-                  <h2>Prepare and optionally share a new dataset</h2>
-                </div>
-              </button>
-
-              <button
-                class="guided--radio-button tile-button"
-                id="guided-button-resume-progress-file"
-                data-next-element="guided-section-resume-progress-cards"
-              >
-                <div class="tile-button-icon">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill=""
-                    width="50px"
-                    height="50px"
-                    viewBox="-3.2 -3.2 38.40 38.40"
-                    version="1.1"
-                    transform="matrix(1, 0, 0, 1, 0, 0)rotate(0)"
-                  >
-                    <g stroke-linecap="round" stroke-linejoin="round" />
-
-                    <g>
-                      <title>floppy-disk</title>
-                      <path
-                        stroke="black"
-                        stroke-width="1.5"
-                        d="M30.885 9.116l-8-8c-0.226-0.226-0.539-0.366-0.885-0.366-0 0-0 0-0 0h-20c-0.69 0-1.25 0.56-1.25 1.25v0 28c0 0.69 0.56 1.25 1.25 1.25h28c0.69-0.001 1.249-0.56 1.25-1.25v-20c0-0 0-0.001 0-0.001 0-0.345-0.14-0.657-0.365-0.883l0 0zM18.75 3.25v4.5h-11.5v-4.5zM28.75 28.75h-25.5v-25.5h1.5v5.75c0 0.69 0.56 1.25 1.25 1.25v0h14c0.69-0 1.25-0.56 1.25-1.25v-5.75h0.232l7.268 7.268zM16 14.75c-2.347 0-4.25 1.903-4.25 4.25s1.903 4.25 4.25 4.25c2.347 0 4.25-1.903 4.25-4.25v0c-0.003-2.346-1.904-4.247-4.25-4.25h-0zM16 20.75c-0.966 0-1.75-0.784-1.75-1.75s0.784-1.75 1.75-1.75c0.966 0 1.75 0.784 1.75 1.75v0c-0.001 0.966-0.784 1.749-1.75 1.75h-0z"
-                      />
-                    </g>
-                  </svg>
-                </div>
-                <div class="tile-button-text">
-                  <h2>Continue a dataset saved in SODA</h2>
-                </div>
-              </button>
+              <div id="guided-button-start-new-curation" data-component-type="checkbox-card"></div>
               <div
-                id="start-new-card"
-                data-component-type="card-button"
-                style="height: 150px; width: 150px"
+                id="guided-button-resume-progress-file"
+                data-component-type="checkbox-card"
               ></div>
             </div>
           </div>
@@ -655,34 +596,14 @@
               >How would you like to assign IDs to the entities in your dataset?
             </label>
             <div class="guided--radio-button-container">
-              <button
-                class="guided--radio-button tile-button"
+              <div
                 id="guided-button-add-entities-manually"
-                data-next-element="guided-section-start-new-curation"
-                data-button-config-value="entity-addition-method"
-                data-button-config-value-state="manual"
-              >
-                <div class="tile-button-icon">
-                  <div data-component-type="icon" data-icon-type="keyboard"></div>
-                </div>
-                <div class="tile-button-text">
-                  <h2>Enter entity IDs manually in the SODA UI</h2>
-                </div>
-              </button>
-              <button
-                class="guided--radio-button tile-button"
+                data-component-type="checkbox-card"
+              ></div>
+              <div
                 id="guided-button-add-entities-via-spreadsheet"
-                data-next-element="guided-section-start-new-curation"
-                data-button-config-value="entity-addition-method"
-                data-button-config-value-state="spreadsheet"
-              >
-                <div class="tile-button-icon">
-                  <div data-component-type="icon" data-icon-type="spreadsheet-import"></div>
-                </div>
-                <div class="tile-button-text">
-                  <h2>Import entity IDs using a spreadsheet</h2>
-                </div>
-              </button>
+                data-component-type="checkbox-card"
+              ></div>
             </div>
           </div>
         </div>

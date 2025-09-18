@@ -316,6 +316,7 @@ document.querySelector("#button-homepage-freeform-mode").addEventListener("click
 $(document).ready(() => {
   $("#sidebarCollapse").on("click", function () {
     $("#main-nav").toggleClass("active");
+    $(this).toggleClass("active");
     $(".section").toggleClass("fullShown");
   });
 

@@ -5,28 +5,6 @@ import { Tooltip } from "bootstrap";
 import { root } from "postcss";
 
 const theme = createTheme({
-  colors: {
-    SodaGreen: [
-      "#13716d",
-      "#13716d",
-      "#13716d",
-      "#13716d",
-      "#13716d",
-      "#13716d",
-      "#13716d",
-      "#13716d",
-      "#13716d",
-      "#13716d",
-    ],
-  },
-  primaryColor: "SodaGreen",
-  fontSizes: {
-    xs: "0.8rem",
-    sm: "0.9rem",
-    md: "1rem", // (default)
-    lg: "1.2rem",
-    xl: "1.4rem",
-  },
   components: {
     Tooltip: {
       styles: {

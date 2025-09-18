@@ -4,6 +4,7 @@ import hasConnectedAccountWithPennsieve from "../../others/authentication/auth";
 import { swalShowInfo } from "../../utils/swal-utils";
 import tippy from "tippy.js";
 import { clientError } from "../../others/http-error-handler/error-handler";
+import { renderComponent } from "../../../components/renderers/ReactComponentRenderer";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));

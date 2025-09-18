@@ -15,7 +15,7 @@ import {
   fetchDatasetsToUploadDataTo,
 } from "../../../stores/slices/pennsieveDatasetSelectSlice";
 
-import { setCheckboxCardUnchecked } from "../../../stores/slices/checkboxCardSlice";
+import { isCheckboxCardChecked } from "../../../stores/slices/checkboxCardSlice";
 
 const GenerateDatasetPennsieveTargetPage = () => {
   const selectedDatasetIdToUploadDataTo = useGlobalStore(
@@ -30,10 +30,10 @@ const GenerateDatasetPennsieveTargetPage = () => {
   const isLoadingPennsieveDatasets = useGlobalStore((state) => state.isLoadingPennsieveDatasets);
   const datasetFetchErrorMessage = useGlobalStore((state) => state.datasetFetchErrorMessage);
   const isNewDatasetSelected = useGlobalStore(
-    (state) => !!state.checkboxes["generate-on-new-pennsieve-dataset"]
+    (state) => state.cardData["generate-on-new-pennsieve-dataset"].checked
   );
   const isExistingDatasetSelected = useGlobalStore(
-    (state) => !!state.checkboxes["generate-on-existing-pennsieve-dataset"]
+    (state) => state.cardData["generate-on-existing-pennsieve-dataset"].checked
   );
 
   const handleSelectDataset = (id) => {

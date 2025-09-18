@@ -8,6 +8,7 @@ import { savePagePennsieveDetails } from "./pennsieveDetails/savePage";
 import { savePageGenerateDataset } from "./generateDataset/savePage";
 import { countFilesInDatasetStructure } from "../../utils/datasetStructure";
 import { guidedSkipPage, guidedUnSkipPage } from "./navigationUtils/pageSkipping";
+import { isCheckboxCardChecked } from "../../../stores/slices/checkboxCardSlice";
 import useGlobalStore from "../../../stores/globalStore";
 import {
   getExistingSubjects,
@@ -346,13 +347,16 @@ export const savePageChanges = async (pageBeingLeftID) => {
     await savePageGenerateDataset(pageBeingLeftID);
 
     if (pageBeingLeftID === "guided-entity-addition-method-selection-tab") {
-      const userSelectedAddEntitiesFromSpreadsheet = document
-        .getElementById("guided-button-add-entities-via-spreadsheet")
-        .classList.contains("selected");
-      const userSelectedAddEntitiesManually = document
-        .getElementById("guided-button-add-entities-manually")
-        .classList.contains("selected");
-
+      console.log(
+        "userSelectedAddEntitiesFromSpreadsheet",
+        document.getElementById("guided-button-add-entities-via-spreadsheet")
+      );
+      const userSelectedAddEntitiesFromSpreadsheet = isCheckboxCardChecked(
+        "guided-button-add-entities-via-spreadsheet"
+      );
+      const userSelectedAddEntitiesManually = isCheckboxCardChecked(
+        "guided-button-add-entities-manually"
+      );
       if (!userSelectedAddEntitiesFromSpreadsheet && !userSelectedAddEntitiesManually) {
         errorArray.push({
           type: "notyf",
