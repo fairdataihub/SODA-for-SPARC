@@ -101,7 +101,7 @@ const componentTypeRenderers = {
   },
   "checkbox-card": (componentSlot) => {
     const props = {
-      id: componentSlot.id,
+      id: componentSlot.getAttribute("data-button-id") || componentSlot.id,
     };
     renderComponent(componentSlot, <CheckboxCard {...props} />);
   },

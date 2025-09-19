@@ -7,6 +7,8 @@ import {
   IconDeviceDesktop,
   IconFolderSymlink,
   IconBrowserPlus,
+  IconCheckupList,
+  IconReport,
 } from "@tabler/icons-react";
 import pennsieveLogo from "../../assets/img/pennsieveLogo.png";
 
@@ -75,6 +77,96 @@ export const checkboxCardSlice = (set) => ({
       mutuallyExclusiveWithCards: ["generate-on-existing-pennsieve-dataset"],
       checked: false,
     },
+    "guided-button-user-has-protocols": {
+      title: "Yes, my dataset's protocols are ready to enter",
+      description: null,
+      Icon: IconCheckupList,
+      mutuallyExclusiveWithCards: ["guided-button-delay-protocol-entry"],
+      nextElementID: "guided-div-protocols-import",
+      checked: false,
+      configValue: "user-has-protocols-to-enter",
+      configValueState: "yes",
+    },
+    "guided-button-delay-protocol-entry": {
+      title: "No, my protocols are not ready yet",
+      description: null,
+      Icon: IconReport,
+      mutuallyExclusiveWithCards: ["guided-button-user-has-protocols"],
+      nextElementID: "guided-div-wait-for-protocols",
+      checked: false,
+      configValue: "user-has-protocols-to-enter",
+      configValueState: "no",
+    },
+    "modality-selection-yes": {
+      simpleButtonType: "Positive",
+      title: "Yes",
+      description: null,
+      Icon: null,
+      mutuallyExclusiveWithCards: ["modality-selection-no"],
+      nextElementID: "dataset-selection",
+      checked: false,
+      configValue: "multiple-modalities",
+      configValueState: "yes",
+    },
+    "modality-selection-no": {
+      simpleButtonType: "Negative",
+      title: "No",
+      description: null,
+      Icon: null,
+      mutuallyExclusiveWithCards: ["modality-selection-yes"],
+      nextElementID: "no-modalities",
+      checked: false,
+      configValue: "multiple-modalities",
+      configValueState: "no",
+    },
+    "guided-confirm-pennsieve-account-button": {
+      simpleButtonType: "Positive",
+      title: "Yes, this is the account",
+      description: null,
+      Icon: null,
+      mutuallyExclusiveWithCards: ["guided-button-switch-account"],
+      nextElementID: "guided-section-select-organization",
+      checked: false,
+      configValue: "pennsieve-account-has-been-confirmed",
+      configValueState: "yes",
+    },
+    "guided-button-switch-account": {
+      simpleButtonType: "Negative",
+      title: "No, connect another account",
+      description: null,
+      Icon: null,
+      mutuallyExclusiveWithCards: ["guided-confirm-pennsieve-account-button"],
+      nextElementID: null,
+      checked: false,
+      configValue: null,
+      configValueState: null,
+      preventRadioHandler: true,
+      customOnClick: "window.openDropdownPrompt(this, 'ps')",
+    },
+    "guided-confirm-pennsieve-organization-button": {
+      simpleButtonType: "Positive",
+      title: "Yes, this is the organization",
+      description: null,
+      Icon: null,
+      mutuallyExclusiveWithCards: ["guided-button-switch-organization"],
+      checked: false,
+      configValue: "pennsieve-organization-has-been-confirmed",
+      configValueState: "yes",
+      customOnClick: "window.checkPennsieveAgent('guided-mode-post-log-in-pennsieve-agent-check')",
+    },
+    "guided-button-switch-organization": {
+      simpleButtonType: "Negative",
+      title: "No, switch organization",
+      description: null,
+      Icon: null,
+      mutuallyExclusiveWithCards: ["guided-confirm-pennsieve-organization-button"],
+      nextElementID: null,
+      checked: false,
+      configValue: null,
+      configValueState: null,
+      preventRadioHandler: true,
+      additionalClasses: "change-current-account ds-dd organization guided-change-workspace",
+    },
   },
 });
 
@@ -83,21 +175,43 @@ export const getCheckboxDataByKey = (key) => {
 };
 
 export const setCheckboxCardChecked = (key) => {
-  useGlobalStore.setState((state) => {
-    state.cardData[key].checked = true;
-  });
-  // If the card has a config value, set it in sodaJSONObj
+  console.log("Checking card:", key);
   const cardData = useGlobalStore.getState().cardData;
   const card = cardData[key];
-  if (card && card.configValue && card.configValueState) {
-    console.log(
-      `Setting sodaJSONObj["button-config"][${card.configValue}] = ${card.configValueState}`
-    );
+  useGlobalStore.setState((state) => {
+    // Check this card
+    state.cardData[key].checked = true;
+
+    // Uncheck mutually exclusive cards and hide their next elements
+    card.mutuallyExclusiveWithCards?.forEach((cardId) => {
+      if (state.cardData[cardId]) {
+        setCheckboxCardUnchecked(cardId);
+        // Hide their next element if defined
+        const otherData = state.cardData[cardId];
+        if (otherData.nextElementID) {
+          const el = document.getElementById(otherData.nextElementID);
+          if (el) el.classList.add("hidden");
+        }
+      }
+    });
+
+    // Show this card's next element if defined
+    if (card.nextElementID) {
+      const el = document.getElementById(card.nextElementID);
+      if (el) el.classList.remove("hidden");
+    }
+  });
+  // If the card has a config value, set it in sodaJSONObj (only if not preventRadioHandler)
+  if (card.configValue && card.configValueState) {
     window.sodaJSONObj["button-config"][card.configValue] = card.configValueState;
+  }
+  if (card.customOnClick) {
+    eval(card.customOnClick);
   }
 };
 
 export const setCheckboxCardUnchecked = (key) => {
+  console.log("Unchecking card:", key);
   useGlobalStore.setState((state) => {
     state.cardData[key].checked = false;
   });

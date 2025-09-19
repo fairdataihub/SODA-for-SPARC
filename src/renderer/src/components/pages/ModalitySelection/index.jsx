@@ -15,6 +15,7 @@ import {
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import GuidedSimpleButton from "../../buttons/GuidedButtons/GuidedSimpleButton";
+import CheckboxCard from "../../buttons/CheckboxCard";
 import NavigationButton from "../../buttons/Navigation";
 
 import {
@@ -36,24 +37,8 @@ const ModalitySelectionPage = () => {
         </label>
 
         <Center>
-          <div className="guided--radio-button-container">
-            <GuidedSimpleButton
-              id="modality-selection-yes"
-              nextElementId="dataset-selection"
-              buttonText="Yes"
-              configValue="yes"
-              configValueState="yes"
-              buttonType="positive"
-            />
-            <GuidedSimpleButton
-              id="modality-selection-no"
-              nextElementId="no-modalities"
-              buttonText="No"
-              configValue="no"
-              configValueState="no"
-              buttonType="negative"
-            />
-          </div>
+          <CheckboxCard id="modality-selection-yes" />
+          <CheckboxCard id="modality-selection-no" />
         </Center>
       </GuidedModeSection>
       {/* Section that appears when user selects "Yes" */}

@@ -1,5 +1,5 @@
 import useGlobalStore from "../../../stores/globalStore";
-import { Checkbox, Text, Stack, Badge, Card, Center, ActionIcon } from "@mantine/core";
+import { Checkbox, Text, Stack, Badge, Card, Center, ActionIcon, Button } from "@mantine/core";
 import { useHover } from "@mantine/hooks";
 import classes from "./CheckboxCard.module.css";
 import pennsieveLogo from "../../../assets/img/pennsieveLogo.png";
@@ -16,41 +16,46 @@ const CheckboxCard = ({ id }) => {
     description,
     Icon,
     image,
-    mutuallyExclusiveWithCards = [],
     comingSoon,
     checked,
-    nextElementID,
+    simpleButtonType,
+    additionalClasses,
   } = cardData[id];
   const isDisabled = !!comingSoon;
   const { hovered, ref } = useHover();
 
   const handleClick = () => {
     if (isDisabled) return;
-    if (checked) {
-      setCheckboxCardUnchecked(id);
-    } else {
-      // Uncheck mutually exclusive cards
-      mutuallyExclusiveWithCards.forEach((cardId) => {
-        setCheckboxCardUnchecked(cardId);
-        // Hide their next element if defined
-        const otherData = cardData[cardId];
-        if (otherData && otherData.nextElementID) {
-          const el = document.getElementById(otherData.nextElementID);
-          if (el) el.classList.add("hidden");
-        }
-      });
+
+    if (!checked) {
       setCheckboxCardChecked(id);
-      // Show this card's next element if defined
-      if (nextElementID) {
-        const el = document.getElementById(nextElementID);
-        if (el) el.classList.remove("hidden");
-      }
+    } else {
+      console.info("Card is already checked:", id);
     }
   };
 
   const isCompact = !description;
+  if (simpleButtonType) {
+    // Use green for Yes, red for No
+    const color = simpleButtonType === "Positive" ? "green" : "red";
+    return (
+      <Button
+        id={id}
+        variant={checked ? "filled" : "outline"}
+        color={color}
+        onClick={handleClick}
+        disabled={isDisabled}
+        m="xs"
+        size="md"
+        className={additionalClasses}
+      >
+        {title}
+      </Button>
+    );
+  }
   return (
     <Card
+      id={id}
       ref={ref}
       onClick={handleClick}
       shadow={checked ? "sm" : "xs"}
@@ -59,7 +64,7 @@ const CheckboxCard = ({ id }) => {
       mx="sm"
       my="xs"
       withBorder
-      className={checked ? "selected" : ""}
+      className={`${checked ? "selected" : ""} ${additionalClasses}`}
       style={{
         width: isCompact ? 180 : 270,
         height: isCompact ? 150 : "auto",
@@ -134,5 +139,4 @@ const CheckboxCard = ({ id }) => {
     </Card>
   );
 };
-
 export default CheckboxCard;

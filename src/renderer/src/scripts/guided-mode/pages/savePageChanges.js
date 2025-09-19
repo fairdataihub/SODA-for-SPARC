@@ -108,13 +108,10 @@ export const savePageChanges = async (pageBeingLeftID) => {
       }
 
       if (pageBeingLeftComponentType === "modality-selection-page") {
-        const userSelectedTheyHaveMultipleModalities = document
-          .getElementById("modality-selection-yes")
-          .classList.contains("selected");
-        const userSelectedTheyDoNotHaveMultipleModalities = document
-          .getElementById("modality-selection-no")
-          .classList.contains("selected");
-
+        const userSelectedTheyHaveMultipleModalities =
+          isCheckboxCardChecked("modality-selection-yes");
+        const userSelectedTheyDoNotHaveMultipleModalities =
+          isCheckboxCardChecked("modality-selection-no");
         if (
           !userSelectedTheyDoNotHaveMultipleModalities &&
           !userSelectedTheyHaveMultipleModalities

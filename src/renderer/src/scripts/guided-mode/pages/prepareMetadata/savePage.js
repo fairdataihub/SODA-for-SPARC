@@ -17,6 +17,7 @@ import {
 
 import { getDropDownState } from "../../../../stores/slices/dropDownSlice";
 import { pennsieveDatasetSelectSlice } from "../../../../stores/slices/pennsieveDatasetSelectSlice";
+import { isCheckboxCardChecked } from "../../../../stores/slices/checkboxCardSlice";
 
 export const savePagePrepareMetadata = async (pageBeingLeftID) => {
   const errorArray = [];
@@ -152,15 +153,14 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
   }
 
   if (pageBeingLeftID === "guided-protocols-tab") {
-    const buttonYesUserHasProtocols = document.getElementById("guided-button-user-has-protocols");
-    const buttonNoDelayProtocolEntry = document.getElementById(
+    const userIndicatedTheirProtocolsAreReady = isCheckboxCardChecked(
+      "guided-button-user-has-protocols"
+    );
+    const userIndicatedTheyWillAddProtocolsLater = isCheckboxCardChecked(
       "guided-button-delay-protocol-entry"
     );
 
-    if (
-      !buttonYesUserHasProtocols.classList.contains("selected") &&
-      !buttonNoDelayProtocolEntry.classList.contains("selected")
-    ) {
+    if (!userIndicatedTheirProtocolsAreReady && !userIndicatedTheyWillAddProtocolsLater) {
       errorArray.push({
         type: "notyf",
         message: "Please indicate if protocols are ready to be added to your dataset",
@@ -168,7 +168,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       throw errorArray;
     }
 
-    if (buttonYesUserHasProtocols.classList.contains("selected")) {
+    if (userIndicatedTheirProtocolsAreReady) {
       const protocols = window.sodaJSONObj["related_resources"] || [];
 
       if (protocols.length === 0) {
@@ -180,7 +180,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       }
     }
 
-    if (buttonNoDelayProtocolEntry.classList.contains("selected")) {
+    if (userIndicatedTheyWillAddProtocolsLater) {
       window.sodaJSONObj["related_resources"] = []; // Clear protocols if user says they will add later
     }
   }
