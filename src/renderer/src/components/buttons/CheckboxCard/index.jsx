@@ -1,5 +1,5 @@
 import useGlobalStore from "../../../stores/globalStore";
-import { Checkbox, Text, UnstyledButton, Stack, Badge } from "@mantine/core";
+import { Checkbox, Text, UnstyledButton, Stack, Badge, Tooltip } from "@mantine/core";
 import pennsieveLogo from "../../../assets/img/pennsieveLogo.png";
 import {
   setCheckboxCardChecked,
@@ -36,7 +36,7 @@ const dataMap = {
   },
 };
 
-const CheckboxCard = ({ id }) => {
+const CheckboxCard = ({ id, disabled = false }) => {
   const data = dataMap[id];
 
   if (!data) {
@@ -45,7 +45,7 @@ const CheckboxCard = ({ id }) => {
 
   const { title, description, Icon, image, mutuallyExclusiveWithCards = [], comingSoon } = data;
   const checked = useGlobalStore((state) => !!state.checkboxes[id]);
-  const isDisabled = !!comingSoon;
+  const isDisabled = !!comingSoon || disabled;
 
   const handleCardClick = () => {
     if (isDisabled) return; // Don't allow clicking if disabled
@@ -62,7 +62,7 @@ const CheckboxCard = ({ id }) => {
     }
   };
 
-  return (
+  const cardContent = (
     <UnstyledButton
       onClick={handleCardClick}
       style={{
@@ -90,6 +90,7 @@ const CheckboxCard = ({ id }) => {
         cursor: isDisabled ? "not-allowed" : "pointer",
       }}
     >
+      {/* ...existing children... */}
       {comingSoon && (
         <Badge
           color="blue"
@@ -116,11 +117,9 @@ const CheckboxCard = ({ id }) => {
           if (checked) {
             setCheckboxCardUnchecked(id);
           } else {
-            // First uncheck any mutually exclusive cards
             mutuallyExclusiveWithCards.forEach((cardId) => {
               setCheckboxCardUnchecked(cardId);
             });
-            // Then check this card
             setCheckboxCardChecked(id);
           }
         }}
@@ -173,6 +172,15 @@ const CheckboxCard = ({ id }) => {
         </Text>
       </Stack>
     </UnstyledButton>
+  );
+
+  // Wrap with Tooltip if disabled
+  return isDisabled ? (
+    <Tooltip label="Guests cannot create datasets" withArrow position="top" openDelay={200}>
+      <div style={{ width: 270, display: "inline-block" }}>{cardContent}</div>
+    </Tooltip>
+  ) : (
+    cardContent
   );
 };
 

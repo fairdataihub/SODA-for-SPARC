@@ -51,6 +51,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     const elementsToShowWhenLoggedInToPennsieve = document.querySelectorAll(".show-when-logged-in");
     const elementsToShowWhenNotLoggedInToPennsieve =
       document.querySelectorAll(".show-when-logged-out");
+
     if (!window.defaultBfAccount) {
       elementsToShowWhenLoggedInToPennsieve.forEach((element) => {
         element.classList.add("hidden");
@@ -71,6 +72,8 @@ export const openPagePrepareMetadata = async (targetPageID) => {
       const userInformation = await api.getUserInformation();
       const userEmail = userInformation.email;
       pennsieveIntroText.innerHTML = userEmail;
+      let isGuest = await api.userIsWorkspaceGuest();
+      useGlobalStore.setState({ isGuest: isGuest });
 
       try {
         if (window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"]) {

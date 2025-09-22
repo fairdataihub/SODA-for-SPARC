@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Text, Group, Select, Collapse, Center, Loader, Stack, Button } from "@mantine/core";
 import DropDownNote from "../../utils/ui/DropDownNote";
-import api from "../../../scripts/others/api/api";
 
 import useGlobalStore from "../../../stores/globalStore";
 
@@ -30,12 +29,17 @@ const GenerateDatasetPennsieveTargetPage = () => {
   );
   const isLoadingPennsieveDatasets = useGlobalStore((state) => state.isLoadingPennsieveDatasets);
   const datasetFetchErrorMessage = useGlobalStore((state) => state.datasetFetchErrorMessage);
+  const guestUser = useGlobalStore((state) => state.isGuest);
   const isNewDatasetSelected = useGlobalStore(
     (state) => !!state.checkboxes["generate-on-new-pennsieve-dataset"]
   );
   const isExistingDatasetSelected = useGlobalStore(
     (state) => !!state.checkboxes["generate-on-existing-pennsieve-dataset"]
   );
+
+  if (guestUser) {
+    setCheckboxCardUnchecked("generate-on-new-pennsieve-dataset");
+  }
 
   const handleSelectDataset = (id) => {
     const dataset = availableDatasetsToUploadDataTo.find((d) => d.value === id);
@@ -94,9 +98,7 @@ const GenerateDatasetPennsieveTargetPage = () => {
       );
     }
 
-    let isGuest = window.isGuest;
-
-    if (isGuest) {
+    if (guestUser) {
       return (
         <Stack mt="md" align="center">
           <Text size="md" align="left" fw={500}>
@@ -149,7 +151,7 @@ const GenerateDatasetPennsieveTargetPage = () => {
         </Text>
 
         <Group align="stretch" gap="md" justify="center">
-          <CheckboxCard id="generate-on-new-pennsieve-dataset" />
+          <CheckboxCard id="generate-on-new-pennsieve-dataset" disabled={true} />
           <CheckboxCard id="generate-on-existing-pennsieve-dataset" />
         </Group>
       </GuidedModeSection>
