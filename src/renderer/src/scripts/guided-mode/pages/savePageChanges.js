@@ -123,13 +123,22 @@ export const savePageChanges = async (pageBeingLeftID) => {
           throw errorArray;
         }
 
-        const selectedModalities = useGlobalStore.getState()["selectedModalities"];
-        if (selectedModalities.length === 0) {
-          guidedSkipPage("guided-modalities-data-selection-tab");
-        } else {
+        if (userSelectedTheyHaveMultipleModalities) {
+          const selectedModalities = useGlobalStore.getState()["selectedModalities"];
+          if (selectedModalities.length === 0) {
+            errorArray.push({
+              type: "notyf",
+              message:
+                "Please select at least one modality in the list above. If your modality(s) are not listed, indicate that your dataset does not have multiple modalities.",
+            });
+            throw errorArray;
+          }
+          window.sodaJSONObj["selected-modalities"] = selectedModalities;
           guidedUnSkipPage("guided-modalities-data-selection-tab");
+        } else {
+          window.sodaJSONObj["selected-modalities"] = [];
+          guidedSkipPage("guided-modalities-data-selection-tab");
         }
-        window.sodaJSONObj["selected-modalities"] = selectedModalities;
       }
 
       if (pageBeingLeftComponentType === "data-categorization-page") {
