@@ -6071,7 +6071,7 @@ window.electron.ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
 });
 
 window.showBFAddAccountSweetalert = async (ev) => {
-  let target = ev.target;
+  console.log("Child ev: ", ev);
   await Swal.fire({
     title: bfaddaccountTitle,
     html: bfAddAccountBootboxMessage,
@@ -6141,7 +6141,7 @@ window.showBFAddAccountSweetalert = async (ev) => {
 
                     // If the clicked button has the data attribute "reset-guided-mode-page" and the value is "true"
                     // then reset the guided mode page
-                    if (target?.getAttribute("data-reset-guided-mode-page") == "true") {
+                    if (ev?.getAttribute("data-reset-guided-mode-page") == "true") {
                       // Get the current page that the user is on in the guided mode
                       const currentPage = window.CURRENT_PAGE.id;
                       if (currentPage) {
@@ -6160,9 +6160,9 @@ window.showBFAddAccountSweetalert = async (ev) => {
                     // guided-change-workspace (from guided mode), handle changes based on the ev id
                     // otherwise, reset the FFM UI based on the ev class
                     // NOTE: For API Key sign in flow it is more simple to just reset the UI as the new user may be in a separate workspace than the prior user.
-                    target?.classList.contains("data-reset-guided-mode-page")
-                      ? window.handleGuidedModeOrgSwitch(target)
-                      : window.resetFFMUI(target);
+                    ev.target?.classList.contains("data-reset-guided-mode-page")
+                      ? window.handleGuidedModeOrgSwitch(ev.target)
+                      : window.resetFFMUI(ev.target);
 
                     window.datasetList = [];
                     window.defaultBfDataset = null;

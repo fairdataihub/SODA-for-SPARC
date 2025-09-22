@@ -151,7 +151,7 @@ const GenerateDatasetPennsieveTargetPage = () => {
         </Text>
 
         <Group align="stretch" gap="md" justify="center">
-          <CheckboxCard id="generate-on-new-pennsieve-dataset" disabled={true} />
+          <CheckboxCard id="generate-on-new-pennsieve-dataset" disabled={guestUser} />
           <CheckboxCard id="generate-on-existing-pennsieve-dataset" />
         </Group>
       </GuidedModeSection>

@@ -944,7 +944,7 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
   }
 
   let addingAccountViaApiKey = false;
-  let addingAccountViaApiKeyEvent = null;
+  let addingAccountViaApiKeyEvent = ev;
 
   let { value: result } = await Swal.fire({
     allowOutsideClick: false,
@@ -999,7 +999,6 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
         swal_actions.parentElement.insertBefore(helpText, div_footer);
         api_button.addEventListener("click", async (e) => {
           addingAccountViaApiKey = true;
-          addingAccountViaApiKeyEvent = e;
           Swal.close();
         });
       } else {
@@ -1071,6 +1070,7 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
     },
   });
 
+  console.log("Outer context: ", addingAccountViaApiKeyEvent);
   if (addingAccountViaApiKey) {
     await window.showBFAddAccountSweetalert(addingAccountViaApiKeyEvent);
   }
