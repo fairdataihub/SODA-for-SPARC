@@ -63,34 +63,7 @@ const CheckboxCard = ({ id, disabled = false }) => {
   };
 
   const cardContent = (
-    <UnstyledButton
-      onClick={handleCardClick}
-      style={{
-        position: "relative",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        width: "270px",
-        minHeight: "180px",
-        padding: "var(--mantine-spacing-lg)",
-        border: checked
-          ? "2px solid var(--mantine-color-blue-6)"
-          : "2px solid var(--mantine-color-gray-3)",
-        background: isDisabled
-          ? "var(--mantine-color-gray-0)"
-          : checked
-            ? "var(--mantine-color-blue-0)"
-            : "#fff",
-        borderRadius: 12,
-        boxSizing: "border-box",
-        boxShadow: checked ? "0 2px 8px 0 rgba(34,139,230,0.08)" : "none",
-        transition: "border 0.2s, background 0.2s",
-        opacity: isDisabled ? 0.8 : 1,
-        cursor: isDisabled ? "not-allowed" : "pointer",
-      }}
-    >
-      {/* ...existing children... */}
+    <>
       {comingSoon && (
         <Badge
           color="blue"
@@ -113,7 +86,6 @@ const CheckboxCard = ({ id, disabled = false }) => {
         onChange={(e) => {
           e.stopPropagation();
           if (isDisabled) return;
-
           if (checked) {
             setCheckboxCardUnchecked(id);
           } else {
@@ -171,16 +143,72 @@ const CheckboxCard = ({ id, disabled = false }) => {
           {description}
         </Text>
       </Stack>
-    </UnstyledButton>
+    </>
   );
 
-  // Wrap with Tooltip if disabled
-  return isDisabled ? (
-    <Tooltip label="Guests cannot create datasets" withArrow position="top" openDelay={200}>
-      <div style={{ width: 270, display: "inline-block" }}>{cardContent}</div>
-    </Tooltip>
-  ) : (
-    cardContent
+  // Use a div (not a button) when disabled, so tooltip works
+  if (isDisabled) {
+    return (
+      <Tooltip label="Guest users cannot create datasets" withArrow position="top" openDelay={200}>
+        <div
+          style={{
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "270px",
+            minHeight: "180px",
+            padding: "var(--mantine-spacing-lg)",
+            border: checked
+              ? "2px solid var(--mantine-color-blue-6)"
+              : "2px solid var(--mantine-color-gray-3)",
+            background: "var(--mantine-color-gray-0)",
+            borderRadius: 12,
+            boxSizing: "border-box",
+            boxShadow: checked ? "0 2px 8px 0 rgba(34,139,230,0.08)" : "none",
+            transition: "border 0.2s, background 0.2s",
+            opacity: 0.8,
+            cursor: "not-allowed",
+            userSelect: "none",
+          }}
+        >
+          {cardContent}
+          <Text size="sm" c="red" mt="sm" style={{ textAlign: "center", fontWeight: 500 }}>
+            Guest users cannot create datasets
+          </Text>
+        </div>
+      </Tooltip>
+    );
+  }
+
+  // Use button when enabled
+  return (
+    <UnstyledButton
+      onClick={handleCardClick}
+      style={{
+        position: "relative",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        width: "270px",
+        minHeight: "180px",
+        padding: "var(--mantine-spacing-lg)",
+        border: checked
+          ? "2px solid var(--mantine-color-blue-6)"
+          : "2px solid var(--mantine-color-gray-3)",
+        background: checked ? "var(--mantine-color-blue-0)" : "#fff",
+        borderRadius: 12,
+        boxSizing: "border-box",
+        boxShadow: checked ? "0 2px 8px 0 rgba(34,139,230,0.08)" : "none",
+        transition: "border 0.2s, background 0.2s",
+        opacity: 1,
+        cursor: "pointer",
+      }}
+    >
+      {cardContent}
+    </UnstyledButton>
   );
 };
 

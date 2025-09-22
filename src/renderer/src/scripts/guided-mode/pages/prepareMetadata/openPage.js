@@ -72,8 +72,6 @@ export const openPagePrepareMetadata = async (targetPageID) => {
       const userInformation = await api.getUserInformation();
       const userEmail = userInformation.email;
       pennsieveIntroText.innerHTML = userEmail;
-      let isGuest = await api.userIsWorkspaceGuest();
-      useGlobalStore.setState({ isGuest: isGuest });
 
       try {
         if (window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"]) {
