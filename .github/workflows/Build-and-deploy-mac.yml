@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - staging
+      - pre-staging-2
 
 jobs:
   deploy-on-mac:
