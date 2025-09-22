@@ -3,6 +3,7 @@ import {
   IconCirclePlus,
   IconDeviceFloppy,
   IconKeyboard,
+  IconCloudUp,
   IconFileSpreadsheet,
   IconDeviceDesktop,
   IconFolderSymlink,
@@ -15,7 +16,7 @@ import pennsieveLogo from "../../assets/img/pennsieveLogo.png";
 export const checkboxCardSlice = (set) => ({
   cardData: {
     "guided-button-start-new-curation": {
-      title: "Prepare and share a new dataset",
+      title: "Prepare and share a new dataset test",
       description: null,
       Icon: IconCirclePlus,
       mutuallyExclusiveWithCards: ["guided-button-resume-progress-file"],
@@ -46,7 +47,7 @@ export const checkboxCardSlice = (set) => ({
       mutuallyExclusiveWithCards: ["guided-button-add-entities-manually"],
       configValue: "entity-addition-method",
       configValueState: "spreadsheet",
-      // comingSoon: true,
+      comingSoon: true,
       checked: false,
     },
     "generate-dataset-locally": {
@@ -58,7 +59,7 @@ export const checkboxCardSlice = (set) => ({
     "generate-dataset-on-pennsieve": {
       title: "Generate dataset on Pennsieve",
       description: "Pennsieve is the official data management platform for the SPARC program.",
-      image: pennsieveLogo,
+      Icon: IconCloudUp,
       checked: false,
     },
     "generate-on-existing-pennsieve-dataset": {
@@ -167,6 +168,32 @@ export const checkboxCardSlice = (set) => ({
       preventRadioHandler: true,
       additionalClasses: "change-current-account ds-dd organization guided-change-workspace",
     },
+    "dataset-upload-new-dataset": {
+      title: "New dataset",
+      description: null,
+      Icon: IconCirclePlus,
+      mutuallyExclusiveWithCards: ["dataset-upload-existing-dataset"],
+      checked: false,
+      additionalClasses: "option-card radio-button",
+    },
+    "dataset-upload-existing-dataset": {
+      title: "Existing dataset",
+      description: null,
+      Icon: IconCirclePlus,
+      mutuallyExclusiveWithCards: ["dataset-upload-new-dataset"],
+      checked: false,
+      additionalClasses: "option-card radio-button",
+    },
+    /*
+     <div
+      data-component-type="checkbox-card"
+      data-button-id="dataset-upload-new-dataset"
+    ></div>
+    <div
+      data-component-type="checkbox-card"
+      data-button-id="dataset-upload-existing-dataset"
+    ></div>
+    */
   },
 });
 
@@ -185,7 +212,7 @@ export const setCheckboxCardChecked = (key) => {
     // Uncheck mutually exclusive cards and hide their next elements
     card.mutuallyExclusiveWithCards?.forEach((cardId) => {
       if (state.cardData[cardId]) {
-        setCheckboxCardUnchecked(cardId);
+        state.cardData[cardId].checked = false;
         // Hide their next element if defined
         const otherData = state.cardData[cardId];
         if (otherData.nextElementID) {
@@ -215,6 +242,13 @@ export const setCheckboxCardUnchecked = (key) => {
   useGlobalStore.setState((state) => {
     state.cardData[key].checked = false;
   });
+
+  const card = useGlobalStore.getState().cardData[key];
+  // Hide this card's next element if defined
+  if (card.nextElementID) {
+    const el = document.getElementById(card.nextElementID);
+    if (el) el.classList.add("hidden");
+  }
 };
 
 export const clearAllCheckboxCardChecked = () => {

@@ -17,6 +17,7 @@ import { checkboxCardSlice } from "./slices/checkboxCardSlice";
 import { sodaTextInputSlice } from "./slices/sodaTextInputSlice";
 import { pennsieveDatasetSelectSlice } from "./slices/pennsieveDatasetSelectSlice";
 import { fileExplorerStateSlice } from "./slices/fileExplorerStateSlice";
+import { stepperSlice } from "./slices/stepperSlice";
 
 const useGlobalStore = create(
   immer((set, ...a) => ({
@@ -37,6 +38,7 @@ const useGlobalStore = create(
     ...sodaTextInputSlice(set, ...a),
     ...pennsieveDatasetSelectSlice(set, ...a),
     ...fileExplorerStateSlice(set, ...a),
+    ...stepperSlice(set, ...a),
   }))
 );
 

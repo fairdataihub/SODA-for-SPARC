@@ -30,7 +30,7 @@ const CheckboxCard = ({ id }) => {
     if (!checked) {
       setCheckboxCardChecked(id);
     } else {
-      console.info("Card is already checked:", id);
+      setCheckboxCardUnchecked(id);
     }
   };
 
@@ -45,7 +45,8 @@ const CheckboxCard = ({ id }) => {
         color={color}
         onClick={handleClick}
         disabled={isDisabled}
-        m="xs"
+        mx="xs"
+        my="sm"
         size="md"
         className={additionalClasses}
       >
@@ -61,15 +62,13 @@ const CheckboxCard = ({ id }) => {
       shadow={checked ? "sm" : "xs"}
       radius="md"
       padding="lg"
-      mx="sm"
-      my="xs"
+      m="sm"
       withBorder
       className={`${checked ? "selected" : ""} ${additionalClasses}`}
       style={{
         width: isCompact ? 180 : 270,
         height: isCompact ? 150 : "auto",
         minHeight: isCompact ? 150 : 180,
-        cursor: isDisabled ? "not-allowed" : "pointer",
         borderColor: checked ? "var(--mantine-color-blue-6)" : "var(--mantine-color-gray-3)",
         backgroundColor: isDisabled
           ? "var(--mantine-color-gray-0)"
@@ -85,8 +84,54 @@ const CheckboxCard = ({ id }) => {
         alignItems: "center",
         textAlign: "center",
         position: "relative",
+        cursor: isDisabled ? "not-allowed" : "pointer",
       }}
     >
+      {comingSoon && (
+        <Badge
+          color="blue"
+          variant="filled"
+          size="sm"
+          style={{
+            position: "absolute",
+            top: 8,
+            right: 8,
+            zIndex: 3,
+          }}
+        >
+          Coming Soon
+        </Badge>
+      )}
+      {!isCompact && (
+        <Checkbox
+          checked={checked}
+          disabled={isDisabled}
+          onChange={(e) => {
+            e.stopPropagation();
+            if (isDisabled) return;
+
+            if (checked) {
+              setCheckboxCardUnchecked(id);
+            } else {
+              // First uncheck any mutually exclusive cards
+              mutuallyExclusiveWithCards.forEach((cardId) => {
+                setCheckboxCardUnchecked(cardId);
+              });
+              // Then check this card
+              setCheckboxCardChecked(id);
+            }
+          }}
+          tabIndex={-1}
+          styles={{ input: { cursor: isDisabled ? "not-allowed" : "pointer" } }}
+          style={{
+            position: "absolute",
+            top: 16,
+            left: 16,
+            marginBottom: 0,
+            zIndex: 2,
+          }}
+        />
+      )}
       {image ? (
         <img
           src={image}
@@ -109,16 +154,18 @@ const CheckboxCard = ({ id }) => {
                   ? "var(--mantine-color-gray-5)"
                   : checked
                     ? "var(--mantine-color-blue-6)"
-                    : "var(--mantine-color-gray-6)",
+                    : "var(--mantine-color-black)",
               }}
             />
           </Center>
         )
       )}
       {isCompact ? (
-        <Text size="md" lh={1.3} fw={450}>
-          {title}
-        </Text>
+        <Center h={50}>
+          <Text size="md" lh={1.3} fw={450} h={50}>
+            {title}
+          </Text>
+        </Center>
       ) : (
         <Stack align="center" gap={4} style={{ width: "100%" }}>
           <Text

@@ -1,5 +1,5 @@
 import Swal from "sweetalert2";
-import { swalConfirmAction } from "../scripts/utils/swal-utils";
+import { swalConfirmAction, swalShowInfo } from "../scripts/utils/swal-utils";
 import lottie from "lottie-web";
 import { existingDataset, modifyDataset } from "../assets/lotties/lotties";
 import { setActiveSidebarTab } from "../stores/slices/sideBarSlice";
@@ -55,10 +55,6 @@ document.body.addEventListener("click", async (event) => {
       window.resetCurationTabs();
     }
     handleSectionTrigger(event);
-  } else if (event.target.dataset.modal) {
-    handleModalTrigger(event);
-  } else if (event.target.classList.contains("modal-hide")) {
-    hideAllModals();
   }
 });
 
@@ -104,30 +100,37 @@ const guidedUnLockSideBar = () => {
 const handleSectionTrigger = async (event) => {
   // Display the current section
   const clickedSection = event.target.dataset.section;
+  await swalShowInfo("HandleSelectionTrigger called", `Clicked section: ${clickedSection}`);
+
   setActiveSidebarTab(clickedSection);
   const sectionId = `${clickedSection}-section`;
   console.log("Navigating to section:", sectionId);
+
   const freeFormItemsContainer = document.getElementById("free-form-folder-structure-container");
   const freeFormButtons = document.getElementById("organize-path-and-back-button-div");
   const sectionRenderFileExplorer = event.target.dataset.render;
 
   // check if we are entering the organize datasets section
   if (sectionId === "organize-section") {
-    //reset lazyloading values
+    // reset lazyloading values
     resetLazyLoading();
     window.hasFiles = false;
-    //Transition file explorer elements to freeform mode
+
+    // Transition file explorer elements to freeform mode
     window.scroll_box = document.querySelector("#organize-dataset-tab");
-    $(".shared-folder-structure-element").appendTo($("#free-form-folder-structure-container"));
-    freeFormItemsContainer.classList.add("freeform-file-explorer"); //add styling for free form mode
+    document.querySelectorAll(".shared-folder-structure-element").forEach((el) => {
+      freeFormItemsContainer.appendChild(el);
+    });
+
+    freeFormItemsContainer.classList.add("freeform-file-explorer");
     freeFormButtons.classList.add("freeform-file-explorer-buttons");
+
     window.organizeDSglobalPath = document.getElementById("input-global-path");
     window.dataset_path = document.getElementById("input-global-path");
     document.getElementById("nextBtn").disabled = boolNextButtonDisabled;
   }
 
   if (sectionId === "guided_mode-section") {
-    // check if the
     // Disallow the transition if an upload is in progress
     if (document.getElementById("returnButton") !== null) {
       Swal.fire({
@@ -147,23 +150,25 @@ const handleSectionTrigger = async (event) => {
       document.getElementById("organize_dataset_btn").click();
     }
 
-    if (sectionRenderFileExplorer != "file-explorer") {
+    if (sectionRenderFileExplorer !== "file-explorer") {
       window.sodaJSONObj = {};
       window.datasetStructureJSONObj = {};
       window.subjectsTableData = [];
       window.samplesTableData = [];
     }
 
-    //Transition file explorer elements to guided mode
+    // Transition file explorer elements to guided mode
     window.organizeDSglobalPath = document.getElementById("guided-input-global-path");
     window.organizeDSglobalPath.value = "";
     window.dataset_path = document.getElementById("guided-input-global-path");
     window.scroll_box = document.querySelector("#guided-body");
     resetLazyLoading();
-    freeFormItemsContainer.classList.remove("freeform-file-explorer"); //add styling for free form mode
+
+    freeFormItemsContainer.classList.remove("freeform-file-explorer");
     freeFormButtons.classList.remove("freeform-file-explorer-buttons");
-    document.querySelectorAll(".shared-folder-structure-element").forEach((folderElement) => {
-      document.querySelector("#guided-folder-structure-container").appendChild(folderElement);
+
+    document.querySelectorAll(".shared-folder-structure-element").forEach((el) => {
+      document.querySelector("#guided-folder-structure-container").appendChild(el);
     });
 
     let guidedModeSection = document.getElementById("guided_mode-section");
@@ -176,25 +181,28 @@ const handleSectionTrigger = async (event) => {
     document.getElementById("guided_mode-section").classList.add("is-shown");
     document.getElementById("guided_curate_dataset-tab").classList.add("show");
 
-    // Remove hidden class from the advanced features page to display it
-    document.getElementById("advanced-features-selection-page").classList.add("hidden");
-    document.getElementById("advanced-features-selection-page").classList.remove("is-shown");
-    document.getElementById("advanced_mode-section").classList.remove("is-shown");
-    document.getElementById("advanced_mode-section").classList.remove("fullShown");
-    document.getElementById("advanced_mode-section").classList.add("hidden");
+    // Hide advanced features
+    const advancedFeaturesPage = document.getElementById("advanced-features-selection-page");
+    advancedFeaturesPage.classList.add("hidden");
+    advancedFeaturesPage.classList.remove("is-shown");
+
+    const advancedModeSection = document.getElementById("advanced_mode-section");
+    advancedModeSection.classList.remove("is-shown", "fullShown");
+    advancedModeSection.classList.add("hidden");
+
     document.getElementById("advanced-footer").classList.add("hidden");
 
-    // Ensure all sections are hidden and buttons are deselected
-    document.getElementById("validate-dataset-feature").classList.add("hidden");
-    document.getElementById("validate-dataset-feature").classList.remove("is-shown");
-    document.getElementById("banner-image-feature").classList.add("hidden");
-    document.getElementById("banner-image-feature").classList.remove("is-shown");
-    document.getElementById("manifest-creation-feature").classList.add("hidden");
-    document.getElementById("manifest-creation-feature").classList.remove("is-shown");
+    // Ensure all sections are hidden
+    ["validate-dataset-feature", "banner-image-feature", "manifest-creation-feature"].forEach(
+      (id) => {
+        const el = document.getElementById(id);
+        el.classList.add("hidden");
+        el.classList.remove("is-shown");
+      }
+    );
 
-    // Remove lotties from the home screen to prevent double lotties
-    if (document.getElementById("existing-dataset-lottie").innerHTML == "") {
-      // Add the lotties back to the home screen
+    // Re-add lotties if missing
+    if (document.getElementById("existing-dataset-lottie").innerHTML === "") {
       lottie.loadAnimation({
         container: document.getElementById("existing-dataset-lottie"),
         animationData: existingDataset,
@@ -204,7 +212,7 @@ const handleSectionTrigger = async (event) => {
       });
     }
 
-    if (document.getElementById("edit-dataset-component-lottie").innerHTML == "") {
+    if (document.getElementById("edit-dataset-component-lottie").innerHTML === "") {
       lottie.loadAnimation({
         container: document.getElementById("edit-dataset-component-lottie"),
         animationData: modifyDataset,
@@ -218,21 +226,22 @@ const handleSectionTrigger = async (event) => {
   }
 
   hideAllSectionsAndDeselectButtons();
+
   if (event.detail.target) {
-    let previous_section = `${event.detail.target.dataset.section}-section`;
-    document.getElementById(previous_section).classList.add("is-shown");
+    let previousSection = `${event.detail.target.dataset.section}-section`;
+    document.getElementById(previousSection).classList.add("is-shown");
     forceActionSidebar("show");
     return;
   }
 
   document.getElementById(sectionId).classList.add("is-shown");
 
-  let showSidebarSections = [
-    "main_tabs-section", //Free form mode
-    "guided_mode-section", //Guided Mode
-    "documentation-section", //Documentation
-    "contact-us-section", //Contact us
-    "about-us-section", //About us
+  const showSidebarSections = [
+    "main_tabs-section",
+    "guided_mode-section",
+    "documentation-section",
+    "contact-us-section",
+    "about-us-section",
   ];
 
   if (showSidebarSections.includes(sectionId)) {
@@ -244,8 +253,8 @@ const handleSectionTrigger = async (event) => {
   boolNextButtonDisabled = document.getElementById("nextBtn").disabled;
 
   if (sectionId === "validate_dataset-section") {
-    let localDatasetButton = document.getElementById("validate_dataset-1-local");
-    let pennsieveDatasetButton = document.getElementById("validate_dataset-1-pennsieve");
+    const localDatasetButton = document.getElementById("validate_dataset-1-local");
+    const pennsieveDatasetButton = document.getElementById("validate_dataset-1-pennsieve");
 
     if (
       !localDatasetButton.classList.contains("checked") &&
@@ -253,30 +262,15 @@ const handleSectionTrigger = async (event) => {
       !pennsieveDatasetButton.classList.contains("checked") &&
       !pennsieveDatasetButton.classList.contains("non-selected")
     ) {
-      $("#validate_dataset-question-2").removeClass("show");
-      $("#validate_dataset-question-1").removeClass("prev");
-      $("#validate_dataset-question-2").removeClass("prev");
-      $("#validate_dataset-question-3").removeClass("show");
+      document.getElementById("validate_dataset-question-2").classList.remove("show", "prev");
+      document.getElementById("validate_dataset-question-1").classList.remove("prev");
+      document.getElementById("validate_dataset-question-3").classList.remove("show");
     }
   }
 };
 
 function showMainContent() {
   document.querySelector(".js-content").classList.add("is-shown");
-}
-
-function handleModalTrigger(event) {
-  hideAllModals();
-  const modalId = `${event.target.dataset.modal}-modal`;
-  document.getElementById(modalId).classList.add("is-shown");
-}
-
-function hideAllModals() {
-  const modals = document.querySelectorAll(".modal.is-shown");
-  Array.prototype.forEach.call(modals, (modal) => {
-    modal.classList.remove("is-shown");
-  });
-  showMainContent();
 }
 
 function hideAllSectionsAndDeselectButtons() {

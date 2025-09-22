@@ -4,13 +4,18 @@
   class="section js-section u-category-windows is-shown"
   style="padding-left: 5px; overflow-y: hidden; margin-left: -15px"
 >
-  <!-- Another husky test -->
   <div
     class="main-tabs show"
     id="guided_curate_dataset-tab"
     style="height: 100%; overflow-y: hidden"
   >
     <header id="guided-header-div" class="guided--header hidden">
+      <div
+        data-component-type="progress-stepper"
+        data-stepper-id="guided-mode-progress-stepper"
+        class="w-100"
+      ></div>
+      <!--
       <div class="guided--progression-tab-container">
         <div
           class="guided--progression-tab guided--progression-tab-triangle selected-tab"
@@ -54,8 +59,8 @@
           </div>
         </div>
       </div>
+      -->
     </header>
-    <div data-component-type="stepper" class="w-100 hidden"></div>
 
     <div id="guided-body" class="guided--body">
       <div id="soda-home-page" class="guided--main-tab justify-center">
@@ -157,7 +162,7 @@
               >Select the task you would like to perform below:
             </label>
 
-            <div class="guided--radio-button-container mt-4">
+            <div class="guided--radio-button-container">
               <div
                 data-component-type="checkbox-card"
                 data-button-id="guided-button-start-new-curation"
@@ -1699,7 +1704,10 @@
                 data-button-id="guided-confirm-pennsieve-account-button"
                 data-component-type="checkbox-card"
               ></div>
-              <div id="guided-button-switch-account" data-component-type="checkbox-card"></div>
+              <div
+                data-button-id="guided-button-switch-account"
+                data-component-type="checkbox-card"
+              ></div>
             </div>
           </div>
 

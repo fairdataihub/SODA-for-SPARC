@@ -23,7 +23,7 @@ import DataImporter from "../shared/DataImporter";
 import SubmissionMetadataForm from "../pages/SubmissionMetadataForm";
 import Icon from "../shared/Icon";
 import SodaTextInput from "../common/SodaTextInput";
-import SodaStepper from "../common/SodaStepper";
+import ProgressStepper from "../common/ProgressStepper";
 import ManifestFilePreviewSection from "../shared/ManifestFilePreviewSection";
 import DropDownNote from "../utils/ui/DropDownNote";
 import SidebarLinks from "../common/SidebarLinks";
@@ -87,7 +87,7 @@ const componentTypeRenderers = {
       buttonText: componentSlot.getAttribute("data-button-text"),
       navIcon: componentSlot.getAttribute("data-nav-icon"),
       buttonSize: componentSlot.getAttribute("data-button-size"),
-      buttonColor: componentSlot.getAttribute("data-button-color"),
+      buttonColor: componentSlot.getAttribute("data-button-color") || "var(--color-light-green)",
       buttonCustomWidth: componentSlot.getAttribute("data-button-custom-width"),
       buttonCustomClass: componentSlot.getAttribute("data-button-custom-class"),
     };
@@ -105,11 +105,11 @@ const componentTypeRenderers = {
     };
     renderComponent(componentSlot, <CheckboxCard {...props} />);
   },
-  stepper: (componentSlot) => {
+  "progress-stepper": (componentSlot) => {
     const props = {
-      id: componentSlot.id,
+      id: componentSlot.getAttribute("data-stepper-id"),
     };
-    renderComponent(componentSlot, <SodaStepper {...props} />);
+    renderComponent(componentSlot, <ProgressStepper {...props} />);
   },
   "sidebar-links": (componentSlot) => {
     renderComponent(componentSlot, <SidebarLinks />);

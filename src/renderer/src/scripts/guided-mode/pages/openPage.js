@@ -49,6 +49,7 @@ import { setPerformanceList } from "../../../stores/slices/performancesSlice.js"
 import { setSelectedModalities } from "../../../stores/slices/modalitiesSlice.js";
 import { guidedSaveProgress } from "./savePageChanges.js";
 import { createStandardizedDatasetStructure } from "../../utils/datasetStructure.js";
+import { setCurrentStep } from "../../../stores/slices/stepperSlice.js";
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
@@ -153,11 +154,13 @@ const hideAndShowElementsDependingOnStartType = (pageElement) => {
 };
 
 const setActiveProgressionTab = (targetPageID) => {
-  $(".guided--progression-tab").removeClass("selected-tab");
   let targetPageParentID = $(`#${targetPageID}`).parent().attr("id");
-  let targetProgressionTabID = targetPageParentID.replace("parent-tab", "progression-tab");
-  let targetProgressionTab = $(`#${targetProgressionTabID}`);
-  targetProgressionTab.addClass("selected-tab");
+  console.log("Target page parent ID:", targetPageParentID);
+  console.log("parent element of target page:", document.getElementById(targetPageParentID));
+  // Get the text for the current step from the target page's data attribute
+  const stepText = document.getElementById(targetPageParentID).getAttribute("data-parent-tab-name");
+  console.log("Setting step to:", stepText);
+  setCurrentStep("guided-mode-progress-stepper", stepText);
 };
 
 /**

@@ -14,6 +14,7 @@ const NavigationButton = ({
   onClick,
 }) => {
   const { hovered, ref } = useHover();
+  console.log("buttonColor:", buttonColor);
   return (
     <Button
       variant="outline"

@@ -364,7 +364,19 @@
           <div class="parent-tabs condensed" id="upload-destination-selection-tab"
             style="grid-template-rows: auto; padding-right: 10px">
             <label style="margin-top: 2rem; font-size: 18px; text-align: center; font-weight: 700; color: var(--color-bg-plum)">Step 3: Choose a new or existing dataset to upload your data to</label>
-            <div style="display: flex; flex-direction: row; align-self: center; margin-top: 3rem;">
+            
+            <div class="guided--radio-button-container" style="align-self: center;">
+              <div
+                data-component-type="checkbox-card"
+                data-button-id="dataset-upload-new-dataset"
+              ></div>
+              <div
+                data-component-type="checkbox-card"
+                data-button-id="dataset-upload-existing-dataset"
+              ></div>
+            </div>
+            <!--
+            <div style="display: flex; flex-direction: row; align-self: center; margin-top: 3rem;">      
               <div id="dataset-upload-new-dataset" class="option-card radio-button getting-started-1st-question" style="margin-right: 5rem">
                 <div class="card-head">
                   <div class="folder-checkbox">
@@ -394,6 +406,7 @@
                 </div>
               </div>
             </div>
+            -->
 
 
 

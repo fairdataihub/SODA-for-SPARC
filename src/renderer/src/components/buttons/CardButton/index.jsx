@@ -1,4 +1,4 @@
-import { Card, Center, Text } from "@mantine/core";
+import { Card, Center, Text, Tooltip } from "@mantine/core";
 import { IconCirclePlus, IconFolderDown, IconFileDownload } from "@tabler/icons-react";
 import { useHover } from "@mantine/hooks";
 
@@ -6,10 +6,14 @@ const cardData = {
   "download-high-level-folders-btn": {
     icon: <IconFolderDown size={50} color="teal" />,
     text: "Download folder structure and metadata files",
+    tooltip:
+      "This will download a template folder structure and templates for all the high-level metadata fields prescribed in the SPARC Dataset Structure (SDS)",
   },
   "download-manifest-only-btn": {
     icon: <IconFileDownload size={50} color="teal" />,
     text: "Download metadata files",
+    tooltip:
+      "This will download the templates for all the high-level metadata files prescribed in the SPARC Dataset Structure (SDS)",
   },
   "start-new-card": {
     icon: <IconCirclePlus size={50} />,
@@ -22,14 +26,14 @@ const cardData = {
 };
 
 export function CardButton({ id }) {
-  const { icon, text } = cardData[id];
+  const { icon, text, tooltip } = cardData[id];
   const { hovered, ref } = useHover();
 
   const handleClick = () => {
     console.log("Card clicked:", id);
   };
 
-  return (
+  const cardContent = (
     <Card
       withBorder
       radius="md"
@@ -58,5 +62,13 @@ export function CardButton({ id }) {
         {text}
       </Text>
     </Card>
+  );
+
+  return tooltip ? (
+    <Tooltip label={tooltip} position="top" withArrow zIndex={2999} w={400} multiline>
+      {cardContent}
+    </Tooltip>
+  ) : (
+    cardContent
   );
 }
