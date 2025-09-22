@@ -1237,7 +1237,7 @@ const moveManifestFilesPreview = async (sourceFolder, destinationFolder) => {
     clientError(error);
     Swal.fire({
       title: "Failed to generate manifest files for preview",
-      text: userErrorMessage(error),
+      html: userErrorMessage(error),
       icon: "error",
       showConfirmButton: true,
       heightAuto: false,
@@ -1254,7 +1254,7 @@ const moveManifestFilesPreview = async (sourceFolder, destinationFolder) => {
     clientError(error);
     Swal.fire({
       title: "Failed to generate manifest files for preview",
-      text: userErrorMessage(error),
+      html: userErrorMessage(error),
       icon: "error",
       showConfirmButton: true,
       heightAuto: false,
@@ -1280,7 +1280,7 @@ const moveManifestFilesPreview = async (sourceFolder, destinationFolder) => {
       clientError(error);
       Swal.fire({
         title: "Failed to generate manifest files for preview",
-        text: userErrorMessage(error),
+        html: userErrorMessage(error),
         icon: "error",
         showConfirmButton: true,
         heightAuto: false,
@@ -1310,7 +1310,7 @@ const createDuplicateManifestDirectory = async (destination) => {
     clientError(error);
     Swal.fire({
       title: "Failed to generate manifest files for preview",
-      text: userErrorMessage(error),
+      html: userErrorMessage(error),
       icon: "error",
       showConfirmButton: true,
       heightAuto: false,

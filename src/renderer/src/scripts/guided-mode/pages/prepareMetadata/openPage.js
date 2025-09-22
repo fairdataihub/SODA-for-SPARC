@@ -51,6 +51,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     const elementsToShowWhenLoggedInToPennsieve = document.querySelectorAll(".show-when-logged-in");
     const elementsToShowWhenNotLoggedInToPennsieve =
       document.querySelectorAll(".show-when-logged-out");
+
     if (!window.defaultBfAccount) {
       elementsToShowWhenLoggedInToPennsieve.forEach((element) => {
         element.classList.add("hidden");

@@ -29,12 +29,17 @@ const GenerateDatasetPennsieveTargetPage = () => {
   );
   const isLoadingPennsieveDatasets = useGlobalStore((state) => state.isLoadingPennsieveDatasets);
   const datasetFetchErrorMessage = useGlobalStore((state) => state.datasetFetchErrorMessage);
+  const guestUser = useGlobalStore((state) => state.isGuest);
   const isNewDatasetSelected = useGlobalStore(
     (state) => !!state.checkboxes["generate-on-new-pennsieve-dataset"]
   );
   const isExistingDatasetSelected = useGlobalStore(
     (state) => !!state.checkboxes["generate-on-existing-pennsieve-dataset"]
   );
+
+  if (guestUser) {
+    setCheckboxCardUnchecked("generate-on-new-pennsieve-dataset");
+  }
 
   const handleSelectDataset = (id) => {
     const dataset = availableDatasetsToUploadDataTo.find((d) => d.value === id);
@@ -93,6 +98,38 @@ const GenerateDatasetPennsieveTargetPage = () => {
       );
     }
 
+    if (guestUser) {
+      return (
+        <Stack mt="md" align="center">
+          <Text size="md" align="left" fw={500}>
+            Please contact the collaborator who shared the dataset to confirm you are in the correct
+            workspace and have Editor or Manager permissions. For more information on uploading as a
+            workspace guest, see the documentation{" "}
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://docs.sodaforsparc.io/docs/miscellaneous/how-to/how-to-upload-as-pennsieve-guest"
+            >
+              here.
+            </a>
+            If you think you should have access to a shared Pennsieve dataset, contact the SODA team
+            for help{" "}
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team"
+            >
+              here.
+            </a>
+          </Text>
+          <Button onClick={fetchDatasetsToUploadDataTo} w="230px">
+            Retry dataset retrieval
+          </Button>
+          <DropDownNote id="user-doesnt-have-any-empty-datasets" />
+        </Stack>
+      );
+    }
+
     return (
       <Stack mt="md" align="center">
         <Text size="md" align="center" fw={500}>
@@ -114,7 +151,7 @@ const GenerateDatasetPennsieveTargetPage = () => {
         </Text>
 
         <Group align="stretch" gap="md" justify="center">
-          <CheckboxCard id="generate-on-new-pennsieve-dataset" />
+          <CheckboxCard id="generate-on-new-pennsieve-dataset" disabled={guestUser} />
           <CheckboxCard id="generate-on-existing-pennsieve-dataset" />
         </Group>
       </GuidedModeSection>

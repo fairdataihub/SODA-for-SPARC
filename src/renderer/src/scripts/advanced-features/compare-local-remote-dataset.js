@@ -211,10 +211,6 @@ document.querySelector("#only-on-local-upload-selected").addEventListener("click
   document.querySelector("#confirm-account-workspace").click();
 
   document.querySelector("#dataset-upload-existing-dataset").click();
-  document.querySelector("#Question-generate-dataset-existing-folders-options").style.display =
-    "flex";
-  document.querySelector("#merge-folder-card").click();
-  document.querySelector("#replace-file-card").click();
 });
 
 document.querySelector("#only-on-pennsieve-delete-selected").addEventListener("click", async () => {
