@@ -864,7 +864,6 @@ window.handleValidateCardSelection = async (ev) => {
 };
 
 window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, category) => {
-  console.log("wowza here");
   if (currentDiv === "Question-getting-started-1") {
     window.globalGettingStarted1stQuestionBool = await raiseWarningGettingStarted(ev);
     if (window.globalGettingStarted1stQuestionBool) {
@@ -885,8 +884,6 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
     $(ev).hide();
     return;
   }
-
-  console.log(currentDiv);
 
   if (currentDiv === "Question-generate-dataset-existing-files-options") {
     // activate the continue button

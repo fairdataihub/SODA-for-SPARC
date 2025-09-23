@@ -43,7 +43,6 @@ export const openPageGenerateDataset = async (targetPageID) => {
     setCheckboxCardUnchecked("generate-on-existing-pennsieve-dataset");
 
     let isGuest = await api.userIsWorkspaceGuest();
-    console.log(isGuest);
     useGlobalStore.setState({ isGuest: isGuest });
 
     const pennsieveGenerationTarget = window.sodaJSONObj["pennsieve-generation-target"];

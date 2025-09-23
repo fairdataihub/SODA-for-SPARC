@@ -1045,7 +1045,6 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
           password,
           machineUsernameSpecifier
         );
-        console.log(response);
         if (response[0] == "failed") {
           let error_message = response[1];
           if (error_message === "exceptions must derive from BaseException") {
@@ -1070,7 +1069,6 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
     },
   });
 
-  console.log("Outer context: ", addingAccountViaApiKeyEvent);
   if (addingAccountViaApiKey) {
     await window.showBFAddAccountSweetalert(addingAccountViaApiKeyEvent);
   }

@@ -6071,7 +6071,6 @@ window.electron.ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
 });
 
 window.showBFAddAccountSweetalert = async (ev) => {
-  console.log("Child ev: ", ev);
   await Swal.fire({
     title: bfaddaccountTitle,
     html: bfAddAccountBootboxMessage,
