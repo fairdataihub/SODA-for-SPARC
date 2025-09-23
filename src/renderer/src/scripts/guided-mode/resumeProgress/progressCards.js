@@ -5,6 +5,10 @@ import { swalShowInfo } from "../../utils/swal-utils";
 import tippy from "tippy.js";
 import { clientError } from "../../others/http-error-handler/error-handler";
 import { renderComponent } from "../../../components/renderers/ReactComponentRenderer";
+import {
+  setGuidedModeProgressCardsLoading,
+  setGuidedModeProgressCardsDataArray,
+} from "../../../stores/slices/guidedModeProgressCardsSlice";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -37,6 +41,8 @@ export const guidedRenderProgressCards = async () => {
   const progressCardLoadingDivText = document.getElementById(
     "guided-section-loading-progress-cards-para"
   );
+  setGuidedModeProgressCardsLoading(true);
+  setGuidedModeProgressCardsDataArray([]);
 
   // Show the loading div and hide the progress cards container
   progressCardsContainer.classList.add("hidden");
@@ -117,6 +123,7 @@ export const guidedRenderProgressCards = async () => {
   // Hide the loading div and show the progress cards container
   progressCardsContainer.classList.remove("hidden");
   progressCardLoadingDiv.classList.add("hidden");
+  setGuidedModeProgressCardsLoading(false);
 };
 
 const generateProgressCardElement = (progressFileJSONObj) => {

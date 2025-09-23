@@ -129,7 +129,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
             errorArray.push({
               type: "notyf",
               message:
-                "Please select at least one modality in the list above. If your modality(s) are not listed, indicate that your dataset does not have multiple modalities.",
+                "Please select at least one modality in the list above. If your modalities are not listed, indicate that your dataset does not have multiple modalities.",
             });
             throw errorArray;
           }
