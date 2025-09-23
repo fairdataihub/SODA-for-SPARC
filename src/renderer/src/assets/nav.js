@@ -201,27 +201,6 @@ const handleSectionTrigger = async (event) => {
       }
     );
 
-    // Re-add lotties if missing
-    if (document.getElementById("existing-dataset-lottie").innerHTML === "") {
-      lottie.loadAnimation({
-        container: document.getElementById("existing-dataset-lottie"),
-        animationData: existingDataset,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
-    }
-
-    if (document.getElementById("edit-dataset-component-lottie").innerHTML === "") {
-      lottie.loadAnimation({
-        container: document.getElementById("edit-dataset-component-lottie"),
-        animationData: modifyDataset,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
-    }
-
     guidedUnLockSideBar();
   }
 

@@ -1,8 +1,11 @@
-import { Button, Card, Text, Stack, Title, ActionIcon } from "@mantine/core";
+import { Button, Card, Text, Stack, Center, ActionIcon } from "@mantine/core";
 import { IconArrowRight, IconDatabase, IconUpload } from "@tabler/icons-react";
+import { useHover } from "@mantine/hooks";
+import classes from "../CheckboxCard/CheckboxCard.module.css";
 
 const cardData = [
   {
+    id: "button-homepage-guided-mode",
     icon: <IconDatabase size={32} />,
     title: "Prepare a Dataset Step-by-Step",
     description:
@@ -12,55 +15,61 @@ const cardData = [
     onClick: () => console.log("Starting Dataset Preparation"),
   },
   {
+    id: "button-homepage-freeform-mode",
     icon: <IconUpload size={32} />,
     title: "Upload a SDS Compliant Dataset",
     description: "Use this option to submit your dataset for publication on the SPARC portal.",
     buttonLabel: "Start Upload",
-    buttonColor: "green",
+    buttonColor: "blue",
     onClick: () => console.log("Starting Dataset Upload"),
   },
 ];
 
-const HomeCard = ({ icon, title, description, buttonLabel, buttonColor, onClick }) => (
-  <Card
-    shadow="sm"
-    padding="lg"
-    radius="md"
-    w="700px"
-    withBorder
-    style={{
-      height: "100%",
-      cursor: "pointer",
-      transition: "all 0.3s ease",
-      "&:hover": {
-        transform: "translateY(-2px)",
-        boxShadow: "var(--mantine-shadow-lg)",
-      },
-    }}
-  >
-    <Stack align="center" gap="md">
-      <ActionIcon size={64} variant="light">
-        {icon}
-      </ActionIcon>
-      <Text size="lg" fw={600} ta="center">
-        {title}
-      </Text>
-      <Text size="sm" c="dimmed" ta="center">
-        {description}
-      </Text>
-      <Button
-        size="md"
-        variant="light"
-        color={buttonColor}
-        fullWidth
-        rightSection={<IconArrowRight size={20} />}
-        onClick={onClick}
-      >
-        {buttonLabel}
-      </Button>
-    </Stack>
-  </Card>
-);
+const HomeCard = ({ id, icon, title, description, buttonLabel, buttonColor, onClick }) => {
+  const { hovered, ref } = useHover();
+  return (
+    <Card
+      id={id}
+      ref={ref}
+      shadow={hovered ? "md" : "xs"}
+      radius="md"
+      padding="lg"
+      m="sm"
+      withBorder
+      className={hovered ? classes.selected : ""}
+      w="700px"
+      style={{
+        minHeight: 220,
+        borderColor: hovered ? "var(--mantine-color-blue-6)" : "var(--mantine-color-gray-3)",
+        backgroundColor: hovered ? "var(--mantine-color-blue-0)" : "#fff",
+        opacity: 1,
+        transition: "border 0.2s, background 0.2s, transform 0.2s, box-shadow 0.2s",
+        transform: hovered ? "translateY(-2px)" : "none",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        textAlign: "center",
+        position: "relative",
+        cursor: "pointer",
+      }}
+    >
+      <Center mb={16}>
+        <ActionIcon size={64} variant="light" color={buttonColor} radius="xl">
+          {icon}
+        </ActionIcon>
+      </Center>
+      <Stack align="center" gap={4} style={{ width: "100%" }}>
+        <Text size="lg" fw={600} ta="center">
+          {title}
+        </Text>
+        <Text size="md" c="dimmed" ta="center" mt="md">
+          {description}
+        </Text>
+      </Stack>
+    </Card>
+  );
+};
 
 const HomePageCards = () => (
   <Stack align="center" gap="md" my="lg">

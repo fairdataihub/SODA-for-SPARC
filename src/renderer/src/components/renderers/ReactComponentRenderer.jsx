@@ -28,6 +28,7 @@ import ManifestFilePreviewSection from "../shared/ManifestFilePreviewSection";
 import DropDownNote from "../utils/ui/DropDownNote";
 import SidebarLinks from "../common/SidebarLinks";
 import HomePageCards from "../buttons/HomePageCards";
+import GuidedModeProgressCards from "../guided/GuidedModeProgressCards";
 import { CardButton } from "../buttons/CardButton";
 import CheckboxCard from "../buttons/CheckboxCard";
 import { Divider } from "@mantine/core";
@@ -58,6 +59,9 @@ const componentTypeRenderers = {
     } else {
       renderComponent(componentSlot, pageComponent);
     }
+  },
+  "guided-mode-progress-cards": (componentSlot) => {
+    renderComponent(componentSlot, <GuidedModeProgressCards />);
   },
   "external-link": (componentSlot) => {
     const props = {

@@ -31,10 +31,6 @@ const transitionToSDSPage = () => {
   document.getElementById("sds_templates-selection-page").classList.remove("hidden");
   document.getElementById("sds_templates-selection-page").classList.add("is-shown");
   document.getElementById("sds-templates-footer").classList.remove("hidden");
-
-  // Remove lotties from the home screen to preserve memory
-  document.getElementById("existing-dataset-lottie").innerHTML = "";
-  document.getElementById("edit-dataset-component-lottie").innerHTML = "";
 };
 
 $("#sds-templates").on("click", () => {
@@ -61,21 +57,4 @@ $("#sds-templates-back-button").on("click", () => {
   document.getElementById("sds_templates-section").classList.remove("fullShown");
   document.getElementById("sds_templates-section").classList.add("hidden");
   document.getElementById("sds-templates-footer").classList.add("hidden");
-
-  // Add the lotties back to the home screen
-  lottie.loadAnimation({
-    container: document.getElementById("existing-dataset-lottie"),
-    animationData: existingDataset,
-    renderer: "svg",
-    loop: true,
-    autoplay: true,
-  });
-
-  lottie.loadAnimation({
-    container: document.getElementById("edit-dataset-component-lottie"),
-    animationData: modifyDataset,
-    renderer: "svg",
-    loop: true,
-    autoplay: true,
-  });
 });

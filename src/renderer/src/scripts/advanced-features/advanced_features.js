@@ -73,10 +73,6 @@ const transitionToAdvancedPage = () => {
   document.getElementById("advanced-footer").classList.remove("hidden");
   document.getElementById("advanced-start-over-button").classList.add("hidden");
 
-  // Remove lotties from the home screen to preserve memory
-  document.getElementById("existing-dataset-lottie").innerHTML = "";
-  document.getElementById("edit-dataset-component-lottie").innerHTML = "";
-
   current_advanced_page = "advanced-features-selection-page";
 };
 
@@ -117,23 +113,6 @@ $("#advanced-back-button").on("click", () => {
     document.getElementById("banner-image-feature").classList.remove("is-shown");
     document.getElementById("manifest-creation-feature").classList.add("hidden");
     document.getElementById("manifest-creation-feature").classList.remove("is-shown");
-
-    // Add the lotties back to the home screen
-    lottie.loadAnimation({
-      container: document.getElementById("existing-dataset-lottie"),
-      animationData: existingDataset,
-      renderer: "svg",
-      loop: true,
-      autoplay: true,
-    });
-
-    lottie.loadAnimation({
-      container: document.getElementById("edit-dataset-component-lottie"),
-      animationData: modifyDataset,
-      renderer: "svg",
-      loop: true,
-      autoplay: true,
-    });
   }
 
   if (

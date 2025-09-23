@@ -432,6 +432,8 @@ window.openPage = async (targetPageID) => {
     };
     renderCorrectFileExplorerByPage(targetPageID);
 
+    console.log("Current page before opening new page:", window.CURRENT_PAGE);
+
     let currentParentTab = window.CURRENT_PAGE.closest(".guided--parent-tab");
 
     //Set all capsules to grey and set capsule of page being traversed to green

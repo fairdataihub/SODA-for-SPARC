@@ -191,25 +191,6 @@ window.guidedPrepareHomeScreen = async () => {
   //Wipe out existing progress if it exists
   guidedResetProgressVariables();
 
-  document.getElementById("existing-dataset-lottie").innerHTML = "";
-  document.getElementById("edit-dataset-component-lottie").innerHTML = "";
-
-  lottie.loadAnimation({
-    container: document.getElementById("existing-dataset-lottie"),
-    animationData: existingDataset,
-    renderer: "svg",
-    loop: true,
-    autoplay: true,
-  });
-
-  lottie.loadAnimation({
-    container: document.getElementById("edit-dataset-component-lottie"),
-    animationData: modifyDataset,
-    renderer: "svg",
-    loop: true,
-    autoplay: true,
-  });
-
   guidedUnLockSideBar();
 };
 
@@ -238,10 +219,6 @@ export const guidedTransitionFromHome = async () => {
   document.getElementById("soda-home-page").classList.add("hidden");
   document.getElementById("curation-preparation-parent-tab").classList.remove("hidden");
   document.getElementById("guided-header-div").classList.remove("hidden");
-
-  //Remove the lotties (will be added again upon visting the home page)
-  document.getElementById("existing-dataset-lottie").innerHTML = "";
-  document.getElementById("edit-dataset-component-lottie").innerHTML = "";
 
   //Hide all guided pages (first one will be unHidden automatically)
   const guidedPages = document.querySelectorAll(".guided--page");

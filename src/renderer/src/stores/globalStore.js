@@ -18,6 +18,7 @@ import { sodaTextInputSlice } from "./slices/sodaTextInputSlice";
 import { pennsieveDatasetSelectSlice } from "./slices/pennsieveDatasetSelectSlice";
 import { fileExplorerStateSlice } from "./slices/fileExplorerStateSlice";
 import { stepperSlice } from "./slices/stepperSlice";
+import { guidedModeProgressCardsSlice } from "./slices/guidedModeProgressCardsSlice";
 
 const useGlobalStore = create(
   immer((set, ...a) => ({
@@ -39,6 +40,7 @@ const useGlobalStore = create(
     ...pennsieveDatasetSelectSlice(set, ...a),
     ...fileExplorerStateSlice(set, ...a),
     ...stepperSlice(set, ...a),
+    ...guidedModeProgressCardsSlice(set, ...a),
   }))
 );
 
