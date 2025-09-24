@@ -90,12 +90,9 @@ window.handleSideBarTabClick = async (id, section) => {
     window.resetCurationTabs();
   }
 
-  // Display the current section
-  const clickedSection = event.target.dataset.section;
-  await swalShowInfo("HandleSelectionTrigger called", `Clicked section: ${clickedSection}`);
-
-  setActiveSidebarTab(clickedSection);
-  const sectionId = `${clickedSection}-section`;
+  console.log("Setting active sidebar tab to:", id);
+  setActiveSidebarTab(section);
+  const sectionId = `${section}-section`;
 
   const freeFormItemsContainer = document.getElementById("free-form-folder-structure-container");
   const freeFormButtons = document.getElementById("organize-path-and-back-button-div");
@@ -187,7 +184,7 @@ window.handleSideBarTabClick = async (id, section) => {
   hideAllSectionsAndDeselectButtons();
 
   if (event.detail.target) {
-    const previousSection = `${event.detail.target.dataset.section}-section`;
+    const previousSection = sectionId;
     document.getElementById(previousSection).classList.add("is-shown");
     forceActionSidebar("show");
     return;

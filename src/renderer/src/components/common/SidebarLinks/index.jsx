@@ -38,6 +38,7 @@ const links = [
 
 const SidebarLinks = () => {
   const activeTab = useGlobalStore((state) => state.activeTab);
+  console.log("Active tab in SidebarLinks:", activeTab);
   return (
     <nav className={classes.sidebar}>
       {links.map((link) => {
