@@ -53,6 +53,7 @@ const HomeCard = ({ id, icon, title, description, buttonLabel, buttonColor, onCl
         position: "relative",
         cursor: "pointer",
       }}
+      onClick={onClick}
     >
       <Center mb={16}>
         <ActionIcon size={64} variant="light" color={buttonColor} radius="xl">

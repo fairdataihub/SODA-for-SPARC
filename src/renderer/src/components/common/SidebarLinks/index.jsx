@@ -1,6 +1,6 @@
 import useGlobalStore from "../../../stores/globalStore";
 import { IconScreenShare, IconBook, IconUser, IconMail, IconInfoCircle } from "@tabler/icons-react";
-import { ActionIcon, Text } from "@mantine/core";
+import { Text, UnstyledButton, Group, ThemeIcon, Box } from "@mantine/core";
 import classes from "./sidebar.module.css";
 
 const links = [
@@ -38,29 +38,31 @@ const links = [
 
 const SidebarLinks = () => {
   const activeTab = useGlobalStore((state) => state.activeTab);
-  console.log("Active Tab:", activeTab); // Debugging line
   return (
     <nav className={classes.sidebar}>
       {links.map((link) => {
         const isActive = activeTab === link.section;
+        console.log("Rendering link:", link.id, "section:", link.section);
         return (
-          <a
-            href="#"
+          <UnstyledButton
+            key={link.id}
             data-section={link.section}
             id={link.id}
             className={isActive ? `${classes.link} ${classes.linkActive}` : classes.link}
-            onClick={(e) => {
-              e.preventDefault();
-              window.handleSideBarTabClick(link.id, link.section);
-            }}
+            onClick={() => window.handleSideBarTabClick(link.id, link.section)}
+            style={{ width: "100%", padding: "8px 12px", borderRadius: 8, marginBottom: 4 }}
           >
-            <ActionIcon variant="light" aria-label={link.label} mr="md" size={35}>
-              {link.icon}
-            </ActionIcon>
-            <Text component="span" fw={600} ml="xs">
-              {link.label}
-            </Text>
-          </a>
+            <Group justify="flex-start" gap={12}>
+              <ThemeIcon variant="light" size={30} radius="md">
+                {link.icon}
+              </ThemeIcon>
+              <Box ml="md">
+                <Text fw={600} size="md" c="black">
+                  {link.label}
+                </Text>
+              </Box>
+            </Group>
+          </UnstyledButton>
         );
       })}
     </nav>

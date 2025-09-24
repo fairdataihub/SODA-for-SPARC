@@ -2,7 +2,72 @@ import React from "react";
 import useGlobalStore from "../../../stores/globalStore";
 import { Card, Text, Stack, Group, Image, Button, Badge, Tooltip } from "@mantine/core";
 import { IconClock, IconTrash } from "@tabler/icons-react";
+import Avvvatars from "avvvatars-react";
+import { guidedGetCurrentUserWorkSpace } from "../../../scripts/guided-mode/workspaces/workspaces";
 
+const generateProgressResumptionButton = (
+  datasetStartingPoint,
+  boolAlreadyUploadedToPennsieve,
+  progressFileName,
+  workspaceUserNeedsToSwitchTo,
+  lastVersionOfSodaUsed
+) => {
+  let buttonText;
+  let color = "blue";
+  let variant = "filled";
+
+  if (workspaceUserNeedsToSwitchTo) {
+    if (!window.defaultBfAccount) {
+      return (
+        <Button
+          size="md"
+          color="gray"
+          variant="light"
+          onClick={() => window.openDropdownPrompt?.(null, "ps")}
+        >
+          Log in to Pennsieve to resume curation
+        </Button>
+      );
+    }
+    return (
+      <Button
+        size="md"
+        color="blue"
+        variant="light"
+        onClick={() => window.openDropdownPrompt?.(null, "organization")}
+      >
+        Switch to {workspaceUserNeedsToSwitchTo} workspace to resume curation
+      </Button>
+    );
+  }
+
+  if (boolAlreadyUploadedToPennsieve) {
+    buttonText = "Share with the Curation Team";
+    color = "teal";
+  } else if (datasetStartingPoint === "new") {
+    buttonText = "Resume curation";
+    color = "blue";
+  } else {
+    buttonText = "Continue updating Pennsieve Dataset";
+    color = "orange";
+  }
+
+  if (lastVersionOfSodaUsed < "16.0.0") {
+    buttonText = "Continue using a previous version of SODA";
+    color = "gray";
+  }
+
+  return (
+    <Button
+      size="md"
+      color={color}
+      variant={variant}
+      onClick={() => window.guidedResumeProgress?.(progressFileName)}
+    >
+      {buttonText}
+    </Button>
+  );
+};
 const GuidedModeProgressCards = () => {
   const guidedModeProgressCardsLoading = useGlobalStore(
     (state) => state.guidedModeProgressCardsLoading
@@ -24,7 +89,8 @@ const GuidedModeProgressCards = () => {
       ) : (
         <>
           <Text fw={600} size="lg" ta="center" mb="sm">
-            Select the dataset that you would like to continue working with and click "Continue"
+            Select the dataset that you would like to continue working with and click "Resume
+            Curation"
           </Text>
 
           <Stack gap="md" align="center" w="100%">
@@ -50,6 +116,19 @@ const GuidedModeProgressCards = () => {
                   ? `${progressFileSubtitle.substring(0, 70)}...`
                   : progressFileSubtitle;
 
+              const datasetStartingPoint = progressFile?.["starting-point"]?.["origin"];
+              // True if the progress file has already been uploaded to Pennsieve
+              const alreadyUploadedToPennsieve =
+                !!progressFile?.["dataset-successfully-uploaded-to-pennsieve"];
+
+              let workspaceUserNeedsToSwitchTo = false;
+              const datasetWorkspace = progressFile?.["digital-metadata"]?.["dataset-workspace"];
+              const currentWorkspace = guidedGetCurrentUserWorkSpace();
+              if (datasetWorkspace && datasetWorkspace !== currentWorkspace) {
+                workspaceUserNeedsToSwitchTo = datasetWorkspace;
+              }
+              const lastVersionOfSodaUsed = progressFile?.["last-version-of-soda-used"] || "1.0.0";
+
               return (
                 <Card
                   key={progressFileName}
@@ -64,20 +143,24 @@ const GuidedModeProgressCards = () => {
                 >
                   <Group w="100%" align="stretch" gap={0}>
                     {/* Section 1: Image */}
-                    <Image
-                      src={
-                        bannerImagePath ||
-                        "https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=1000&q=80"
-                      }
-                      alt="Dataset banner image"
-                      w={100}
-                      h={100}
-                      radius="md"
-                      fit="cover"
-                    />
+                    {bannerImagePath ? (
+                      <Image
+                        src={
+                          bannerImagePath ||
+                          "https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=1000&q=80"
+                        }
+                        alt="Dataset banner image"
+                        w={100}
+                        h={100}
+                        radius="md"
+                        fit="cover"
+                      />
+                    ) : (
+                      <Avvvatars value={progressFileName} size={100} style="shape" />
+                    )}
 
                     {/* Section 2: Text */}
-                    <Stack gap={4} flex={1} ml="md" justify="center" align="start">
+                    <Stack gap={4} flex={1} ml="lg" justify="center" align="start">
                       <Text
                         fw={700}
                         size="md"
@@ -128,18 +211,13 @@ const GuidedModeProgressCards = () => {
                       ml="md"
                       style={{ minWidth: 180 }}
                     >
-                      <Button
-                        size="md"
-                        variant="light"
-                        color="black"
-                        onClick={() => {
-                          if (window.guidedResumeProgress) {
-                            window.guidedResumeProgress(progressFileName);
-                          }
-                        }}
-                      >
-                        Resume curation
-                      </Button>
+                      {generateProgressResumptionButton(
+                        datasetStartingPoint,
+                        alreadyUploadedToPennsieve,
+                        progressFileName,
+                        workspaceUserNeedsToSwitchTo,
+                        lastVersionOfSodaUsed
+                      )}
 
                       <Button
                         size="xs"
