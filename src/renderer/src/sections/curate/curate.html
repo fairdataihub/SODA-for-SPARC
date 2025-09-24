@@ -60,13 +60,11 @@
   style="padding-left: 15px; overflow-y: hidden; margin-left: -25px">
   <main class="dash-content" id="organize_main" style="flex-direction: column; justify-content: center">
     <header class="section-header" style="margin-top: 1rem">
-      <div class="container-tab-information-header" style="margin-bottom: 0 !important">
-        <div class="need-help-div">
-          <h2 style="font-size: 16px">Upload Dataset</h2>
-          <a target="_blank"
-            href="https://docs.sodaforsparc.io/docs/soda-features/upload-dataset/organize-dataset" style="font-size: 16px;">Need help?</a>
-        </div>
-      </div>
+      <div
+        data-component-type="progress-stepper"
+        data-stepper-id="freeform-mode-progress-stepper"
+        class="w-100"
+      ></div>
     </header>
 
     <!-- These are the main tab for each step -->
@@ -88,7 +86,7 @@
           padding-top: 15px;
           height: 90vh;
         ">
-        <div id="div-vertical-progress-bar" class="vertical-progress-bar">
+        <div id="div-vertical-progress-bar" class="vertical-progress-bar hidden">
           <div class="vertical-progress-bar-step">
             <span>1</span>
             <span>
@@ -159,8 +157,7 @@
               style="text-align: -webkit-center; height: 100%">
               <div class="ui form" style="width: 100%; text-align: -webkit-center; height: 100%">
                 <div class="grouped fields" style="height: 90%; padding-top: 2rem">
-                  <label style="font-size: 18px; text-align: center; color: var(--color-bg-plum)">Step 1: Import data folder</label>
-
+                  <h1 class="text-sub-step-title">Step 1: Import data folder</h1>
                   <div
                     id="drag-n-drop-container"
                     class="dashed-border"
@@ -324,9 +321,11 @@
               height: 100%;
               margin-right: 50px;
             ">
-              <label style="font-size: 18px; text-align: center; font-weight: 700; color: var(--color-bg-plum); margin-top: 2rem;">Step 2: Confirm Pennsieve account information</label>
+              <h1 class="text-sub-step-title" >Step 2: Confirm Pennsieve Account Information</h1>
             <div class="container-body condensed" style="height: 40%; flex-direction: column; align-items: center; margin-top: 10rem;">
-              <label id="help-text-account-workspace" style="font-size: 18px; text-align: center; font-weight: 700; color: var(--color-bg-plum)">Are these the Pennsieve account and workspace you would like to use for the upload?</label>
+              <label id="help-text-account-workspace" class="guided--form-label centered mb-0" style="margin-bottom: -25px !important;">
+                Are these the Pennsieve account and workspace you would like to use for the upload?
+              </label>
               <div id="top-level-card-container--upload-dataset" class="top-level-card-container"></div>
               <div style="display: flex; flex-direction: row; justify-content: space-evenly; width: 550px;">
                 <button class="ui positive basic soda-green-border button guided--radio-button" style="min-width: 10rem; font-size: 15px;" id="confirm-account-workspace">Confirm</button>
@@ -363,8 +362,8 @@
           <!-- 3. Upload Destination Selection Tab -->
           <div class="parent-tabs condensed" id="upload-destination-selection-tab"
             style="grid-template-rows: auto; padding-right: 10px">
-            <label style="margin-top: 2rem; font-size: 18px; text-align: center; font-weight: 700; color: var(--color-bg-plum)">Step 3: Choose a new or existing dataset to upload your data to</label>
-            
+            <h1 class="text-sub-step-title" >Step 3: Choose a new or existing dataset to upload your data to</h1>
+            <!--
             <div class="guided--radio-button-container" style="align-self: center;">
               <div
                 data-component-type="checkbox-card"
@@ -375,7 +374,7 @@
                 data-button-id="dataset-upload-existing-dataset"
               ></div>
             </div>
-            <!--
+            -->
             <div style="display: flex; flex-direction: row; align-self: center; margin-top: 3rem;">      
               <div id="dataset-upload-new-dataset" class="option-card radio-button getting-started-1st-question" style="margin-right: 5rem">
                 <div class="card-head">
@@ -406,7 +405,6 @@
                 </div>
               </div>
             </div>
-            -->
 
 
 
@@ -870,11 +868,12 @@
 
           <!-- 4. Manifest files -->
           <div class="parent-tabs condensed" id="manifest-file-tab" style="grid-template-rows: 10% 90%">
-            <label class="w-100 text-center" style="margin-top: 2.5rem; font-weight: 700; font-size: 18px; color: var(--color-bg-plum)">Would you like SODA to auto-generate your manifest file?</label>
+            <h1 class="text-sub-step-title" >Would you like SODA to auto-generate your manifest file?</h1>
             <div id="manifest-intro-info" class="hidden" style="padding-left: 2rem; padding-right: 2rem; margin-top: 1rem; display: flex; place-content: center">
-              <p id="manifest-not-selected" class="guided--help-text" style="font-size: 15px; font-weight: 600;">The manifest file is a metadata file that contains a list of all of the folders and files in your dataset along with information about them. SODA can automatically generate it for your dataset.</p>
+              <p id="manifest-not-selected" class="help-text">The manifest file is a metadata file that contains a list of all of the folders and files in your dataset along with information about them. SODA can automatically generate it for your dataset.</p>
             </div>
 
+            
             <div style="height: 150px; text-align: center">
               <div style="margin-top: 30px; margin-bottom: 50px" id="pulse-manifest-checkbox">
                 <label class="labelradiocurate-manifest no" style="padding-left: 10px; font-size: 16px;">
@@ -942,20 +941,8 @@
   
           <!-- 5. Preview dataset -->
           <div class="parent-tabs" id="preview-dataset-tab" style="overflow-y: scroll">
-            <h3 class="question-title" style="
-                color: var(--color-bg-plum);
-                font-weight: 700;
-                font-size: 18px;
-                text-align: center;
-                margin-top: 20px;
-                padding-bottom: 0px;
-              ">
-              Step 5: Review dataset information and start upload
-              <a target="_blank" style="padding: 0px 0px 0px 5px" class="github-wiki-link"
-                href="https://docs.sodaforsparc.io/docs/soda-features/upload-dataset/step-5">
-              </a>
-              <br /><br />
-            </h3>
+            <h1 class="text-sub-step-title" >Step 5: Review dataset information and generate dataset</h1>
+
 
             <div class="individual-question generate-dataset" id="Question-preview-dataset-details" style="width: 70%">
               <div class="ui form" style="width: 100%">
@@ -1006,16 +993,14 @@
                   class="guided--section hidden"
                   id="freeform-mode-pre-generate-pennsieve-agent-check"
                 ></div>
-                <button id="button-generate" class="btn_animated generate-btn" style="
-                    padding-left: 0.7rem;
-                    margin: 5px;
-                    width: 160px;
-                    height: 40px;
-                    font-size: 15px;
-                    border: none !important;
-                  ">
-                  Upload
-                </button>
+                <div
+                  data-component-type="generic-button"
+                  data-button-id="button-generate"
+                  data-variant="filled"
+                  data-size="md"
+                  data-text="Generate Dataset on Pennsieve"
+                  class="mb-md mt-md"
+                ></div>
               </div>
             </div>
           </div>
@@ -1281,6 +1266,7 @@
           justify-content: space-between;
           height: 67px;
           margin-right: 3.7rem;
+          margin-bottom: 10px;
         ">
         <div style="display: flex; flex-direction: row">
           <button type="button" onclick="window.nextPrev(-1)" id="prevBtn" class="transition-btn back">

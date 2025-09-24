@@ -1,6 +1,6 @@
 import React from "react";
 import useGlobalStore from "../../../stores/globalStore";
-import { Card, Text, Stack, Group, Image, Button, Badge, Tooltip } from "@mantine/core";
+import { Card, Text, Stack, Group, Image, Button, Badge, Tooltip, Loader } from "@mantine/core";
 import { IconClock, IconTrash } from "@tabler/icons-react";
 import Avvvatars from "avvvatars-react";
 import { guidedGetCurrentUserWorkSpace } from "../../../scripts/guided-mode/workspaces/workspaces";
@@ -69,15 +69,23 @@ const generateProgressResumptionButton = (
   );
 };
 const GuidedModeProgressCards = () => {
-  const guidedModeProgressCardsLoading = useGlobalStore(
-    (state) => state.guidedModeProgressCardsLoading
+  const guidedModeProgressCardsLoadingText = useGlobalStore(
+    (state) => state.guidedModeProgressCardsLoadingText
   );
   const guidedModeProgressCardsDataArray = useGlobalStore(
     (state) => state.guidedModeProgressCardsDataArray || []
   );
 
-  if (guidedModeProgressCardsLoading) {
-    return <Text>Loading...</Text>;
+  if (guidedModeProgressCardsLoadingText) {
+    return (
+      <Stack align="center" gap="md">
+        <Loader color="blue" type="bars" />
+
+        <Text size="md" fw={500}>
+          {guidedModeProgressCardsLoadingText}
+        </Text>
+      </Stack>
+    );
   }
 
   return (
@@ -163,7 +171,7 @@ const GuidedModeProgressCards = () => {
                     <Stack gap={4} flex={1} ml="lg" justify="center" align="start">
                       <Text
                         fw={700}
-                        size="md"
+                        size="lg"
                         lineClamp={1}
                         title={progressFileName}
                         style={{ wordBreak: "break-all" }}

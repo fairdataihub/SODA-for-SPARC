@@ -1,13 +1,13 @@
 import useGlobalStore from "../globalStore";
 
 export const guidedModeProgressCardsSlice = (set) => ({
-  guidedModeProgressCardsLoading: false,
+  guidedModeProgressCardsLoadingText: null,
   guidedModeProgressCardsDataArray: [],
 });
 
-export const setGuidedModeProgressCardsLoading = (isLoading) => {
+export const setGuidedModeProgressCardsText = (loadingText) => {
   useGlobalStore.setState({
-    guidedModeProgressCardsLoading: isLoading,
+    guidedModeProgressCardsLoadingText: loadingText,
   });
 };
 export const setGuidedModeProgressCardsDataArray = (dataArray) => {

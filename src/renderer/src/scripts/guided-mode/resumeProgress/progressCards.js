@@ -6,7 +6,7 @@ import tippy from "tippy.js";
 import { clientError } from "../../others/http-error-handler/error-handler";
 import { renderComponent } from "../../../components/renderers/ReactComponentRenderer";
 import {
-  setGuidedModeProgressCardsLoading,
+  setGuidedModeProgressCardsText,
   setGuidedModeProgressCardsDataArray,
 } from "../../../stores/slices/guidedModeProgressCardsSlice";
 
@@ -41,12 +41,11 @@ export const guidedRenderProgressCards = async () => {
   const progressCardLoadingDivText = document.getElementById(
     "guided-section-loading-progress-cards-para"
   );
-  setGuidedModeProgressCardsLoading(true);
   setGuidedModeProgressCardsDataArray([]);
 
   // Show the loading div and hide the progress cards container
   progressCardsContainer.classList.add("hidden");
-  progressCardLoadingDiv.classList.remove("hidden");
+  progressCardLoadingDiv.classList.add("hidden");
 
   // if the user has an account connected with Pennsieve then verify the profile and workspace
   if (
@@ -54,8 +53,10 @@ export const guidedRenderProgressCards = async () => {
     (window.defaultBfAccount === undefined && hasConnectedAccountWithPennsieve())
   ) {
     try {
+      setGuidedModeProgressCardsText("Verifying account information");
       progressCardLoadingDivText.textContent = "Verifying account information";
       await window.verifyProfile();
+      setGuidedModeProgressCardsText("Verifying workspace information");
       progressCardLoadingDivText.textContent = "Verifying workspace information";
       await window.synchronizePennsieveWorkspace();
     } catch (e) {
@@ -85,6 +86,7 @@ export const guidedRenderProgressCards = async () => {
   // If the workspace hasn't loaded yet, wait for it to load
   // This will stop after 6 seconds
   if (!guidedGetCurrentUserWorkSpace()) {
+    setGuidedModeProgressCardsText("Waiting for workspace to load");
     for (let i = 0; i < 60; i++) {
       // If the workspace loaded, break out of the loop
       if (guidedGetCurrentUserWorkSpace()) {
@@ -123,9 +125,9 @@ export const guidedRenderProgressCards = async () => {
   }
 
   // Hide the loading div and show the progress cards container
-  progressCardsContainer.classList.remove("hidden");
+  progressCardsContainer.classList.add("hidden");
   progressCardLoadingDiv.classList.add("hidden");
-  setGuidedModeProgressCardsLoading(false);
+  setGuidedModeProgressCardsText(null);
 };
 
 const generateProgressCardElement = (progressFileJSONObj) => {

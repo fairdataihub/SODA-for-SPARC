@@ -6,6 +6,16 @@ export const stepperSlice = (set) => ({
       steps: ["Getting Started", "Dataset Structure", "Dataset Metadata", "Generate Dataset"],
       currentStep: 0,
     },
+    "freeform-mode-progress-stepper": {
+      steps: [
+        "Import Data",
+        "Pennsieve Account",
+        "Select Dataset",
+        "Manifest Files",
+        "Generate Dataset",
+      ],
+      currentStep: 0,
+    },
   },
 });
 

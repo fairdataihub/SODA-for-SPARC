@@ -37,8 +37,11 @@ const links = [
 ];
 
 const SidebarLinks = () => {
-  const activeTab = useGlobalStore((state) => state.activeTab);
-  console.log("Active tab in SidebarLinks:", activeTab);
+  let activeTab = useGlobalStore((state) => state.activeTab);
+  // Map "organize" to "guided_mode" for active tab highlighting
+  if (activeTab === "organize") {
+    activeTab = "guided_mode";
+  }
   return (
     <nav className={classes.sidebar}>
       {links.map((link) => {
