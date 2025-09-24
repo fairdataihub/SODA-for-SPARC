@@ -452,7 +452,7 @@ window.nextPrev = async (pageIndex) => {
   let parentTabs = document.getElementsByClassName("parent-tabs");
 
   if (pageIndex == -1 && parentTabs[window.currentTab].id === "getting-started-tab") {
-    window.returnToGuided();
+    window.clickGuidedModeButton();
   }
 
   if (pageIndex == -1 && window.currentTab === 1) {
@@ -3209,7 +3209,7 @@ window.resetCurationTabs = () => {
 
 window.exitCurate = async (resetProgressTabs) => {
   $("#dataset-loaded-message").hide();
-  document.getElementById("guided_mode_view").click();
+  window.clickGuidedModeButton();
 };
 
 window.wipeOutCurateProgress = () => {

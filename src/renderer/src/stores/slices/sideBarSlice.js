@@ -2,7 +2,7 @@ import useGlobalStore from "../globalStore";
 
 export const sideBarSlice = (set) => ({
   isSidebarOpen: true,
-  activeTab: null,
+  activeTab: "guided_mode",
 });
 
 export const setSidebarOpenState = (boolTrueOrFalse) => {

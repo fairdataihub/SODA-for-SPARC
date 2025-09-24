@@ -57,8 +57,8 @@ if (!window.fs.existsSync(guidedProgressFilePath)) {
   window.fs.mkdirSync(guidedProgressFilePath, { recursive: true });
 }
 
-window.returnToGuided = () => {
-  console.log("window.returnToGuided called");
+window.clickGuidedModeButton = () => {
+  console.log("window.clickGuidedModeButton called");
   document.getElementById("guided_mode_view").click();
 };
 

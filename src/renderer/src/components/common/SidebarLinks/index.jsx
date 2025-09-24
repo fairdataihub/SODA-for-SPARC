@@ -49,7 +49,10 @@ const SidebarLinks = () => {
             data-section={link.section}
             id={link.id}
             className={isActive ? `${classes.link} ${classes.linkActive}` : classes.link}
-            key={link.label}
+            onClick={(e) => {
+              e.preventDefault();
+              window.handleSideBarTabClick(link.id, link.section);
+            }}
           >
             <ActionIcon variant="light" aria-label={link.label} mr="md" size={35}>
               {link.icon}

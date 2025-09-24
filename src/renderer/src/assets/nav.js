@@ -30,15 +30,6 @@ window.uploadComplete = () => {
   return $("#wrapper-wrap").is(":visible") && $("#validate-upload-status-tab").is(":visible");
 };
 
-// this variable is here to keep track of when the Organize datasets/Continue button is enabled or disabled
-document.body.addEventListener("click", async (event) => {
-  // console log the id of the clicked element
-  console.log("Clicked element ID:", event.target.id);
-  if (event.target.dataset.section) {
-    handleSectionTrigger(event);
-  }
-});
-
 // Variable used to determine the disabled status of the organize datasets next button
 let boolNextButtonDisabled = true;
 
@@ -78,7 +69,8 @@ const guidedUnLockSideBar = () => {
   guidedNav.style.display = "none";
 };
 
-const handleSectionTrigger = async (event) => {
+window.handleSideBarTabClick = async (id, section) => {
+  console.log("HandleSectionTrigger called with id:", id, "and section:", section);
   const leavingUpload = window.leavingUploadDatasets();
   const hasProgress = window.sodaJSONHasProgress();
   const uploadDone = window.uploadComplete();
@@ -104,7 +96,6 @@ const handleSectionTrigger = async (event) => {
 
   setActiveSidebarTab(clickedSection);
   const sectionId = `${clickedSection}-section`;
-  console.log("Navigating to section:", sectionId);
 
   const freeFormItemsContainer = document.getElementById("free-form-folder-structure-container");
   const freeFormButtons = document.getElementById("organize-path-and-back-button-div");
