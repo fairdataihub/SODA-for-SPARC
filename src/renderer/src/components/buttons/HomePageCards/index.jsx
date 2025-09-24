@@ -6,7 +6,7 @@ import classes from "../CheckboxCard/CheckboxCard.module.css";
 const cardData = [
   {
     id: "button-homepage-guided-mode",
-    icon: <IconDatabase size={32} />,
+    icon: <IconDatabase size={32} color="black" />,
     title: "Prepare a Dataset Step-by-Step",
     description:
       "Use this option to organize your dataset step by step according to the SPARC Dataset Structure.",
@@ -16,7 +16,7 @@ const cardData = [
   },
   {
     id: "button-homepage-freeform-mode",
-    icon: <IconUpload size={32} />,
+    icon: <IconUpload size={32} color="black" />,
     title: "Upload a SDS Compliant Dataset",
     description: "Use this option to submit your dataset for publication on the SPARC portal.",
     buttonLabel: "Start Upload",

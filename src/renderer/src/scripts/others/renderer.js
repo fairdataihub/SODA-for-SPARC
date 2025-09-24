@@ -119,7 +119,7 @@ window.wait = async (delay) => {
 const appVersion = await window.electron.ipcRenderer.invoke("app-version");
 window.log.info(`Current SODA version: ${appVersion}`);
 
-document.getElementById("guided_mode_view").click();
+// document.getElementById("guided_mode_view").click();
 
 window.notyf = new Notyf({
   position: { x: "right", y: "bottom" },
@@ -5195,23 +5195,6 @@ window.dismissStatus = (id) => {
 
 window.file_counter = 0;
 window.folder_counter = 0;
-window.uploadComplete = new Notyf({
-  position: { x: "right", y: "bottom" },
-  dismissible: true,
-  ripple: false,
-  types: [
-    {
-      type: "success",
-      background: "#13716D",
-      icon: {
-        className: "fas fa-check-circle",
-        tagName: "i",
-        color: "white",
-      },
-      duration: 4000,
-    },
-  ],
-});
 
 let amountOfTimesPennsieveUploadFailed = 0;
 
@@ -5829,7 +5812,7 @@ const initiate_generate = async (resume = false) => {
         uploadLocally.className = "content-button is-selected";
         uploadLocally.style = "background-color: #fff";
 
-        window.uploadComplete.open({
+        window.notyf.open({
           type: "success",
           message: "Dataset created successfully",
         });

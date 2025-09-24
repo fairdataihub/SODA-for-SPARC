@@ -91,7 +91,7 @@ const componentTypeRenderers = {
       buttonText: componentSlot.getAttribute("data-button-text"),
       navIcon: componentSlot.getAttribute("data-nav-icon"),
       buttonSize: componentSlot.getAttribute("data-button-size"),
-      buttonColor: componentSlot.getAttribute("data-button-color") || "var(--color-light-green)",
+      buttonColor: componentSlot.getAttribute("data-button-color") || "black",
       buttonCustomWidth: componentSlot.getAttribute("data-button-custom-width"),
       buttonCustomClass: componentSlot.getAttribute("data-button-custom-class"),
     };

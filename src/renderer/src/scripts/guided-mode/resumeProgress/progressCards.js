@@ -95,6 +95,8 @@ export const guidedRenderProgressCards = async () => {
     }
   }
 
+  setGuidedModeProgressCardsDataArray(progressFileData);
+
   // If there are progress cards to display, display them
   if (progressFileData.length > 0) {
     // Add the title to the container

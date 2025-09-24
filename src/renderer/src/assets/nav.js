@@ -8,7 +8,7 @@ while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
-const leavingUploadDatasets = () => {
+window.leavingUploadDatasets = () => {
   let activeTabs = document.querySelectorAll(".tab-active");
   for (const tab of activeTabs) {
     if (
@@ -26,34 +26,15 @@ const leavingUploadDatasets = () => {
   return false;
 };
 
-const uploadComplete = () => {
+window.uploadComplete = () => {
   return $("#wrapper-wrap").is(":visible") && $("#validate-upload-status-tab").is(":visible");
 };
 
 // this variable is here to keep track of when the Organize datasets/Continue button is enabled or disabled
 document.body.addEventListener("click", async (event) => {
+  // console log the id of the clicked element
+  console.log("Clicked element ID:", event.target.id);
   if (event.target.dataset.section) {
-    if (leavingUploadDatasets() && window.sodaJSONHasProgress() && !uploadComplete()) {
-      let leaveUploadDataset = await swalConfirmAction(
-        "warning",
-        "Are you sure you want to exit?",
-        "Any progress made importing your dataset and creating manifest files will not be saved. Do you want to continue?",
-        "Yes",
-        "Cancel"
-      );
-      if (!leaveUploadDataset) return;
-      window.resetCurationTabs();
-    } else if (leavingUploadDatasets() && window.sodaJSONHasProgress() && uploadComplete()) {
-      let leaveUploadDataset = await swalConfirmAction(
-        "warning",
-        "Are you sure you want to exit?",
-        "",
-        "Yes",
-        "Cancel"
-      );
-      if (!leaveUploadDataset) return;
-      window.resetCurationTabs();
-    }
     handleSectionTrigger(event);
   }
 });
@@ -98,6 +79,25 @@ const guidedUnLockSideBar = () => {
 };
 
 const handleSectionTrigger = async (event) => {
+  const leavingUpload = window.leavingUploadDatasets();
+  const hasProgress = window.sodaJSONHasProgress();
+  const uploadDone = window.uploadComplete();
+
+  // Handle confirmation when leaving upload datasets
+  if (leavingUpload && hasProgress) {
+    const leaveUploadDataset = await swalConfirmAction(
+      "warning",
+      "Are you sure you want to exit?",
+      uploadDone
+        ? "" // after upload complete
+        : "Any progress made importing your dataset and creating manifest files will not be saved. Do you want to continue?", // during upload
+      "Yes",
+      "Cancel"
+    );
+    if (!leaveUploadDataset) return;
+    window.resetCurationTabs();
+  }
+
   // Display the current section
   const clickedSection = event.target.dataset.section;
   await swalShowInfo("HandleSelectionTrigger called", `Clicked section: ${clickedSection}`);
@@ -110,13 +110,11 @@ const handleSectionTrigger = async (event) => {
   const freeFormButtons = document.getElementById("organize-path-and-back-button-div");
   const sectionRenderFileExplorer = event.target.dataset.render;
 
-  // check if we are entering the organize datasets section
+  // --- Organize section ---
   if (sectionId === "organize-section") {
-    // reset lazyloading values
     resetLazyLoading();
     window.hasFiles = false;
 
-    // Transition file explorer elements to freeform mode
     window.scroll_box = document.querySelector("#organize-dataset-tab");
     document.querySelectorAll(".shared-folder-structure-element").forEach((el) => {
       freeFormItemsContainer.appendChild(el);
@@ -126,12 +124,13 @@ const handleSectionTrigger = async (event) => {
     freeFormButtons.classList.add("freeform-file-explorer-buttons");
 
     window.organizeDSglobalPath = document.getElementById("input-global-path");
-    window.dataset_path = document.getElementById("input-global-path");
+    window.dataset_path = window.organizeDSglobalPath;
     document.getElementById("nextBtn").disabled = boolNextButtonDisabled;
   }
 
+  // --- Guided mode section ---
   if (sectionId === "guided_mode-section") {
-    // Disallow the transition if an upload is in progress
+    // Block transition if upload in progress
     if (document.getElementById("returnButton") !== null) {
       Swal.fire({
         icon: "warning",
@@ -139,17 +138,14 @@ const handleSectionTrigger = async (event) => {
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         confirmButtonText: "OK",
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
+        showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+        hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
       });
       document.getElementById("main_tabs_view").click();
       document.getElementById("organize_dataset_btn").click();
     }
 
+    // Reset objects if not rendering file explorer
     if (sectionRenderFileExplorer !== "file-explorer") {
       window.sodaJSONObj = {};
       window.datasetStructureJSONObj = {};
@@ -157,10 +153,9 @@ const handleSectionTrigger = async (event) => {
       window.samplesTableData = [];
     }
 
-    // Transition file explorer elements to guided mode
     window.organizeDSglobalPath = document.getElementById("guided-input-global-path");
     window.organizeDSglobalPath.value = "";
-    window.dataset_path = document.getElementById("guided-input-global-path");
+    window.dataset_path = window.organizeDSglobalPath;
     window.scroll_box = document.querySelector("#guided-body");
     resetLazyLoading();
 
@@ -171,17 +166,11 @@ const handleSectionTrigger = async (event) => {
       document.querySelector("#guided-folder-structure-container").appendChild(el);
     });
 
-    let guidedModeSection = document.getElementById("guided_mode-section");
-    if (!guidedModeSection.classList.contains("is-shown")) {
-      guidedModeSection.classList.add("is-shown");
-    }
-
-    // Transition back to the home screen
+    // UI visibility updates
     document.getElementById("soda-home-page").classList.remove("hidden");
     document.getElementById("guided_mode-section").classList.add("is-shown");
     document.getElementById("guided_curate_dataset-tab").classList.add("show");
 
-    // Hide advanced features
     const advancedFeaturesPage = document.getElementById("advanced-features-selection-page");
     advancedFeaturesPage.classList.add("hidden");
     advancedFeaturesPage.classList.remove("is-shown");
@@ -192,7 +181,6 @@ const handleSectionTrigger = async (event) => {
 
     document.getElementById("advanced-footer").classList.add("hidden");
 
-    // Ensure all sections are hidden
     ["validate-dataset-feature", "banner-image-feature", "manifest-creation-feature"].forEach(
       (id) => {
         const el = document.getElementById(id);
@@ -204,10 +192,11 @@ const handleSectionTrigger = async (event) => {
     guidedUnLockSideBar();
   }
 
+  // --- Handle section switching ---
   hideAllSectionsAndDeselectButtons();
 
   if (event.detail.target) {
-    let previousSection = `${event.detail.target.dataset.section}-section`;
+    const previousSection = `${event.detail.target.dataset.section}-section`;
     document.getElementById(previousSection).classList.add("is-shown");
     forceActionSidebar("show");
     return;
@@ -222,15 +211,11 @@ const handleSectionTrigger = async (event) => {
     "contact-us-section",
     "about-us-section",
   ];
-
-  if (showSidebarSections.includes(sectionId)) {
-    forceActionSidebar("show");
-  } else {
-    forceActionSidebar("hide");
-  }
+  forceActionSidebar(showSidebarSections.includes(sectionId) ? "show" : "hide");
 
   boolNextButtonDisabled = document.getElementById("nextBtn").disabled;
 
+  // --- Validate dataset section ---
   if (sectionId === "validate_dataset-section") {
     const localDatasetButton = document.getElementById("validate_dataset-1-local");
     const pennsieveDatasetButton = document.getElementById("validate_dataset-1-pennsieve");
@@ -291,11 +276,6 @@ $(document).ready(() => {
     $("#main-nav").toggleClass("active");
     $(this).toggleClass("active");
     $(".section").toggleClass("fullShown");
-  });
-
-  $("a").on("click", function () {
-    $($(this).parents()[1]).find("a").removeClass("is-selected");
-    $(this).addClass("is-selected");
   });
 });
 

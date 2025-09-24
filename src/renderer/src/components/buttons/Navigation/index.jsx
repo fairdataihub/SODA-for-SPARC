@@ -18,7 +18,7 @@ const NavigationButton = ({
   return (
     <Button
       variant="outline"
-      color={buttonColor}
+      color={buttonColor || "black"}
       id={buttonId}
       size={buttonSize}
       ref={ref}

@@ -58,6 +58,7 @@ if (!window.fs.existsSync(guidedProgressFilePath)) {
 }
 
 window.returnToGuided = () => {
+  console.log("window.returnToGuided called");
   document.getElementById("guided_mode_view").click();
 };
 
