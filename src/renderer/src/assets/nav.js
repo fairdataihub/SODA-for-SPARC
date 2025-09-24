@@ -90,7 +90,8 @@ window.handleSideBarTabClick = async (id, section) => {
     window.resetCurationTabs();
   }
 
-  console.log("Setting active sidebar tab to:", id);
+  // Always set activeTab to section, not id
+  console.log("Setting active sidebar tab to section:", section);
   setActiveSidebarTab(section);
   const sectionId = `${section}-section`;
 
@@ -183,15 +184,6 @@ window.handleSideBarTabClick = async (id, section) => {
   // --- Handle section switching ---
   hideAllSectionsAndDeselectButtons();
 
-  if (event.detail.target) {
-    const previousSection = sectionId;
-    document.getElementById(previousSection).classList.add("is-shown");
-    forceActionSidebar("show");
-    return;
-  }
-
-  document.getElementById(sectionId).classList.add("is-shown");
-
   const showSidebarSections = [
     "main_tabs-section",
     "guided_mode-section",
@@ -219,6 +211,8 @@ window.handleSideBarTabClick = async (id, section) => {
       document.getElementById("validate_dataset-question-3").classList.remove("show");
     }
   }
+
+  document.getElementById(sectionId).classList.add("is-shown");
 };
 
 function showMainContent() {

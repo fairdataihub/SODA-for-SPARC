@@ -21,7 +21,7 @@ const cardData = [
     description: "Use this option to submit your dataset for publication on the SPARC portal.",
     buttonLabel: "Start Upload",
     buttonColor: "blue",
-    onClick: () => window.handleSideBarTabClick("upload-dataset-view", "upload"),
+    onClick: () => window.handleSideBarTabClick("upload-dataset-view", "organize"),
   },
 ];
 
