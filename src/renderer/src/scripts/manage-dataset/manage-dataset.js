@@ -2690,7 +2690,7 @@ $("#button-submit-dataset").click(async () => {
             "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
 
           // Announce success to User
-          window.uploadComplete.open({
+          window.notyf.open({
             type: "success",
             message: "Upload to Pennsieve completed",
           });
