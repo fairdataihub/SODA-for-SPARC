@@ -2273,37 +2273,6 @@ $(window.jstreePreview).on("close_node.jstree", function (event, data) {
   data.instance.set_type(data.node, "folder closed");
 });
 
-window.showTreeViewPreview = (
-  disabledBoolean,
-  selectedBoolean,
-  manifestFileBoolean,
-  new_dataset_name,
-  previewDiv,
-  datasetStructure
-) => {
-  if (manifestFileBoolean) {
-    if (window.manifestFileCheck.checked) {
-      window.addManifestFilesForTreeView();
-    } else {
-      revertManifestForTreeView();
-    }
-  }
-
-  var jsTreePreviewDataManifest = window.create_child_node(
-    datasetStructure,
-    new_dataset_name,
-    "folder",
-    "",
-    new_dataset_name,
-    selectedBoolean,
-    disabledBoolean,
-    "",
-    "preview"
-  );
-  $(previewDiv).jstree(true).settings.core.data = jsTreePreviewDataManifest;
-  $(previewDiv).jstree(true).refresh();
-};
-
 // if checked
 window.addManifestFilesForTreeView = () => {
   for (var key in datasetStructureJSONObj["folders"]) {

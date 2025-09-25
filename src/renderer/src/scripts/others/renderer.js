@@ -1582,21 +1582,6 @@ window.loadSamplesFileToDataframe = async (filePath) => {
   }
 };
 
-// load and parse json file
-window.parseJson = (path) => {
-  if (!window.fs.existsSync(path)) {
-    return {};
-  }
-  try {
-    var content = window.fs.readFileSync(path, "utf8");
-    let contentJson = JSON.parse(content);
-    return contentJson;
-  } catch (error) {
-    window.log.error(error);
-    return {};
-  }
-};
-
 // function to make directory if metadata path does not exist
 window.createMetadataDir = () => {
   try {
@@ -6456,27 +6441,6 @@ window.logCurationForAnalytics = (
       window.electron.ipcRenderer.send("track-event", `${category}`, actionName, location, 1);
     }
   }
-};
-
-window.getMetadataFileNameFromStatus = (metadataFileStatus) => {
-  // get the UI text that displays the file path
-  let filePath = metadataFileStatus.text();
-
-  let fileName = window.path.basename(filePath);
-
-  // remove the extension
-  fileName = fileName.slice(0, fileName.indexOf("."));
-
-  return fileName;
-};
-
-window.determineLocationFromStatus = (metadataFileStatus) => {
-  let filePath = metadataFileStatus.text();
-
-  // determine if the user imported from Pennsieve or Locally
-  let pennsieveFile = filePath.toUpperCase().includes("Pennsieve".toUpperCase());
-
-  return pennsieveFile;
 };
 
 window.logGeneralOperationsForAnalytics = (category, analyticsPrefix, granularity, actions) => {

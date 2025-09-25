@@ -9,15 +9,6 @@ while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
-window.downloadTemplate = (template) => {
-  if (template === "manifest-only") {
-    // Create a zip file with the metadata files only
-  }
-  if (template === "high-level-folders") {
-    // Create a zip file with the high level folders and the metadata files
-  }
-};
-
 const transitionToSDSPage = () => {
   //Hide the home screen
   document.getElementById("soda-home-page").classList.add("hidden");

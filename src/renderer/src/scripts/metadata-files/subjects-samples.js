@@ -848,18 +848,6 @@ const addSampleIDtoJSON = () => {
   }
 };
 
-// associated with the edit icon (edit a subject)
-window.edit_current_subject_id = (ev) => {
-  var currentRow = $(ev).parents()[2];
-  var subjectID = $(currentRow)[0].cells[1].innerText;
-  loadSubjectInformation(ev, subjectID);
-};
-window.edit_current_sample_id = (ev) => {
-  var currentRow = $(ev).parents()[2];
-  var subjectID = $(currentRow)[0].cells[1].innerText;
-  var sampleID = $(currentRow)[0].cells[2].innerText;
-  loadSampleInformation(ev, subjectID, sampleID);
-};
 window.edit_current_protocol_id = async (ev) => {
   let oldProtocolLink = "";
   var currentRow = $(ev).parents()[2];
@@ -1372,66 +1360,6 @@ const editSample = (ev, sampleID) => {
   window.samplesFileData = [];
 };
 
-window.delete_current_subject_id = (ev) => {
-  Swal.fire({
-    title: "Are you sure you want to delete this subject?",
-    showCancelButton: true,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    cancelButtonText: `No!`,
-    cancelButtonColor: "#f44336",
-    confirmButtonColor: "#3085d6",
-    reverseButtons: window.reverseSwalButtons,
-    confirmButtonText: "Yes",
-  }).then((boolean) => {
-    if (boolean.isConfirmed) {
-      // 1. Delete from table
-      var currentRow = $(ev).parents()[2];
-      var currentRowid = $(currentRow).prop("id");
-      document.getElementById(currentRowid).outerHTML = "";
-      window.updateIndexForTable(document.getElementById("table-subjects"));
-      // 2. Delete from JSON
-      var subjectID = $(currentRow)[0].cells[1].innerText;
-      for (var i = 1; i < window.subjectsTableData.length; i++) {
-        if (window.subjectsTableData[i][0] === subjectID) {
-          window.subjectsTableData.splice(i, 1);
-          break;
-        }
-      }
-    }
-  });
-};
-
-window.delete_current_sample_id = (ev) => {
-  Swal.fire({
-    title: "Are you sure you want to delete this sample?",
-    showCancelButton: true,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    cancelButtonText: `No!`,
-    cancelButtonColor: "#f44336",
-    confirmButtonColor: "#3085d6",
-    reverseButtons: window.reverseSwalButtons,
-    confirmButtonText: "Yes",
-  }).then((boolean) => {
-    if (boolean.isConfirmed) {
-      // 1. Delete from table
-      var currentRow = $(ev).parents()[2];
-      var currentRowid = $(currentRow).prop("id");
-      document.getElementById(currentRowid).outerHTML = "";
-      window.updateIndexForTable(document.getElementById("table-samples"));
-      // 2. Delete from JSON
-      var sampleId = $(currentRow)[0].cells[1].innerText;
-      for (var i = 1; i < window.samplesTableData.length; i++) {
-        if (window.samplesTableData[i][1] === sampleId) {
-          window.samplesTableData.splice(i, 1);
-          break;
-        }
-      }
-    }
-  });
-};
-
 window.delete_current_protocol_id = (ev) => {
   Swal.fire({
     title: "Are you sure you want to delete this protocol?",
@@ -1452,113 +1380,6 @@ window.delete_current_protocol_id = (ev) => {
       window.updateIndexForTable(document.getElementById("protocol-link-table-dd"));
     }
   });
-};
-
-window.delete_current_additional_link_id = (ev) => {
-  Swal.fire({
-    title: "Are you sure you want to delete this link?",
-    showCancelButton: true,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    cancelButtonText: `No!`,
-    cancelButtonColor: "#f44336",
-    confirmButtonColor: "#3085d6",
-    confirmButtonText: "Yes",
-    reverseButtons: window.reverseSwalButtons,
-  }).then((boolean) => {
-    if (boolean.isConfirmed) {
-      // 1. Delete from table
-      var currentRow = $(ev).parents()[2];
-      var currentRowid = $(currentRow).prop("id");
-      document.getElementById(currentRowid).outerHTML = "";
-      window.updateIndexForTable(document.getElementById("other-link-table-dd"));
-    }
-  });
-};
-
-window.copy_current_subject_id = async (ev) => {
-  const { value: newSubject } = await Swal.fire({
-    title: "Enter an ID for the new subject:",
-    input: "text",
-    showCancelButton: true,
-    reverseButtons: window.reverseSwalButtons,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    inputValidator: (value) => {
-      if (!value) {
-        return "Please enter an ID";
-      }
-    },
-  });
-  if (newSubject && newSubject !== "") {
-    // // add new row to table
-    var message = addNewIDToTableStrict(newSubject, null, "subjects");
-    if (message !== "") {
-      Swal.fire(message, "", "warning");
-    } else {
-      var res = addNewIDToTable(newSubject, null, "subjects");
-      // add new subject_id to JSON
-      // 1. copy from current ev.id (the whole array)
-      var currentRow = $(ev).parents()[2];
-      var id = currentRow.cells[1].innerText;
-      // 2. append that to the end of matrix
-      for (var subArr of window.subjectsTableData.slice(1)) {
-        if (subArr[0] === id) {
-          var ind = window.subjectsTableData.indexOf(subArr);
-          var newArr = [...window.subjectsTableData[ind]];
-          window.subjectsTableData.push(newArr);
-          // 3. change first entry of that array
-          window.subjectsTableData[window.subjectsTableData.length - 1][0] = newSubject;
-          break;
-        }
-      }
-    }
-  }
-};
-
-window.copy_current_sample_id = async (ev) => {
-  const { value: newSubSam } = await Swal.fire({
-    title: "Enter an ID for the new subject and sample: ",
-    html:
-      '<input id="new-subject" class="swal2-input" placeholder="Subject ID">' +
-      '<input id="new-sample" class="swal2-input" placeholder="Sample ID">',
-    focusConfirm: false,
-    showCancelButton: true,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    preConfirm: () => {
-      return [
-        document.getElementById("new-subject").value,
-        document.getElementById("new-sample").value,
-      ];
-    },
-  });
-  if (newSubSam && (newSubSam[0] !== "") & (newSubSam[1] !== "")) {
-    var message = addNewIDToTableStrict(newSubSam[1], newSubSam[0], "samples");
-    if (message !== "") {
-      Swal.fire(message, "", "warning");
-    } else {
-      var res = addNewIDToTable(newSubSam[1], newSubSam[0], "samples");
-      // // add new row to table
-      // add new subject_id to JSON
-      // 1. copy from current ev.id (the whole array)
-      var currentRow = $(ev).parents()[2];
-      var id1 = currentRow.cells[1].innerText;
-      var id2 = currentRow.cells[2].innerText;
-      // 2. append that to the end of matrix
-      for (var samArr of window.samplesTableData.slice(1)) {
-        if (samArr[0] === id1 && samArr[1] === id2) {
-          var ind = window.samplesTableData.indexOf(samArr);
-          var newArr = [...window.samplesTableData[ind]];
-          window.samplesTableData.push(newArr);
-          // 3. change first entry of that array
-          window.samplesTableData[window.samplesTableData.length - 1][0] = newSubSam[0];
-          window.samplesTableData[window.samplesTableData.length - 1][1] = newSubSam[1];
-          break;
-        }
-      }
-    }
-  }
 };
 
 window.updateIndexForTable = (table, boolUpdateIndex) => {
@@ -2714,9 +2535,6 @@ window.addAdditionalLink = async () => {
       ];
     },
   });
-  if (values) {
-    window.addAdditionalLinktoTableDD(values[0], values[1], values[2], values[3]);
-  }
 };
 
 window.checkLinkDuplicate = (link, table) => {

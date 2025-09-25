@@ -1192,29 +1192,6 @@ const generateadditionalLinkRowElement = (link, linkType, linkRelation) => {
   `;
 };
 
-window.removeContributorField = (contributorDeleteButton) => {
-  const contributorField = contributorDeleteButton.parentElement;
-  const { contributorFirstName, contributorLastName } = contributorField.dataset;
-
-  const contributorsBeforeDelete = window.sodaJSONObj["dataset_contributors"];
-  //If the contributor has data-first-name and data-last-name, then it is a contributor that
-  //already been added. Delete it from the contributors array.
-  if (contributorFirstName && contributorLastName) {
-    const filteredContributors = contributorsBeforeDelete.filter((contributor) => {
-      //remove contributors with matching first and last name
-      return !(
-        contributor.contributorFirstName == contributorFirstName &&
-        contributor.contributorLastName == contributorLastName
-      );
-    });
-
-    window.sodaJSONObj["dataset_contributors"];
-    filteredContributors;
-  }
-
-  contributorField.remove();
-};
-
 const getExistingContributorORCiDs = () => {
   return window.sodaJSONObj["dataset_contributors"].map((contributor) => {
     return contributor.contributor_orcid_id;
@@ -1864,31 +1841,6 @@ const updatePoolDropdown = (poolDropDown, poolName) => {
   }
 };
 
-//On edit button click, creates a new subject ID rename input box
-window.openSubjectRenameInput = (subjectNameEditButton) => {
-  const subjectIdCellToRename = subjectNameEditButton.closest("td");
-  const prevSubjectName = subjectIdCellToRename.find(".subject-id").text();
-  let prevSubjectInput = prevSubjectName.substr(prevSubjectName.search("-") + 1);
-  const subjectRenameElement = `
-    <div class="space-between w-100" style="align-items: center">
-      <span style="margin-right: 5px;">sub-</span>
-      <input
-        class="guided--input"
-        type="text"
-        name="guided-subject-id"
-        value=${prevSubjectInput}
-        placeholder="Enter subject ID and press enter"
-        onkeyup="specifySubject(event, window.$(this))"
-        data-alert-message="Subject IDs may not contain spaces or special characters"
-        data-alert-type="danger"
-        data-prev-name="${prevSubjectName}"
-      />
-      <i class="far fa-check-circle fa-solid" style="cursor: pointer; margin-left: 15px; color: var(--color-light-green); font-size: 1.24rem;" onclick="window.confirmEnter(this)"></i>
-    </div>
-  `;
-  subjectIdCellToRename.html(subjectRenameElement);
-};
-
 const generateSampleSpecificationRowElement = () => {
   return `
     <tr>
@@ -2525,31 +2477,6 @@ window.deleteSample = async (sampleDeleteButton) => {
 
   //Rerender the samples table
   renderSamplesTable();
-};
-
-//SAMPLE TABLE FUNCTIONS
-window.openSampleRenameInput = (subjectNameEditButton) => {
-  const sampleIdCellToRename = subjectNameEditButton.closest("td");
-  const prevSampleName = sampleIdCellToRename.find(".sample-id").text();
-  const prevSampleInput = prevSampleName.substr(prevSampleName.search("-") + 1);
-  const sampleRenameElement = `
-    <div class="space-between w-100" style="align-items: center">
-      <span style="margin-right: 5px;">sam-</span>
-      <input
-        class="guided--input"
-        type="text"
-        value=${prevSampleInput}
-        name="guided-sample-id"
-        placeholder="Enter new sample ID"
-        onkeyup="specifySample(event, window.$(this))"
-        data-alert-message="Sample IDs may not contain spaces or special characters"
-        data-alert-type="danger"
-        data-prev-name="${prevSampleName}"
-      />
-      <i class="far fa-check-circle fa-solid" style="cursor: pointer; margin-left: 15px; color: var(--color-light-green); font-size: 1.24rem;" onclick="window.confirmEnter(this)"></i>
-    </div>
-  `;
-  sampleIdCellToRename.html(sampleRenameElement);
 };
 
 window.removePennsievePermission = (clickedPermissionRemoveButton) => {

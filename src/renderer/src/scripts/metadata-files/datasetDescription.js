@@ -544,35 +544,6 @@ const addProtocolLinktoTableDD = (protocolLink, protocolType, protocolRelation, 
     "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='window.edit_current_protocol_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='window.delete_current_protocol_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>";
 };
 
-window.addAdditionalLinktoTableDD = (link, linkType, linkRelation, description) => {
-  let linkTable = document.getElementById("other-link-table-dd");
-  linkTable.style.display = "block";
-  document.getElementById("div-other-link-table-dd").style.display = "block";
-  let rowcount = linkTable.rows.length;
-  /// append row to table from the bottom
-  let rowIndex = rowcount;
-  linkTable.rows[linkTable.rows.length];
-  // check for unique row id in case users delete old rows and append new rows (same IDs!)
-  let newRowIndex = window.checkForUniqueRowID("row-current-additional-link", rowIndex);
-  let indexNumber = rowIndex;
-  linkTable.insertRow(rowIndex).outerHTML =
-    "<tr id='row-current-other" +
-    newRowIndex +
-    "' class='row-protocol'><td class='contributor-table-row'>" +
-    indexNumber +
-    "</td><td><a href='" +
-    link +
-    "' target='_blank'>" +
-    link +
-    "</a></td><td class='contributor-table-row' style='display:none'>" +
-    linkType +
-    "</td><td class='contributor-table-row'>" +
-    linkRelation +
-    "</td><td class='contributor-table-row' style='display:none'>" +
-    description +
-    "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='window.edit_current_additional_link_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_additional_link_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>";
-};
-
 const changeAward = (award) => {
   Swal.fire({
     title: "Loading your award and contributor information.",
@@ -598,36 +569,6 @@ var contributorElementRaw =
 
 window.contributorArray = [];
 var affiliationSuggestions = [];
-
-window.delete_current_con_id = (ev) => {
-  Swal.fire({
-    title: "Are you sure you want to delete this contributor?",
-    showCancelButton: true,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    cancelButtonText: `No!`,
-    cancelButtonColor: "#f44336",
-    confirmButtonColor: "#3085d6",
-    confirmButtonText: "Yes",
-    reverseButtons: window.reverseSwalButtons,
-  }).then((boolean) => {
-    if (boolean.isConfirmed) {
-      // 1. Delete from table
-      var currentRow = $(ev).parents()[2];
-
-      currentRow.remove();
-      window.updateIndexForTable(document.getElementById("contributor-table-dd"), false);
-      // 2. Delete from JSON
-      var contributorName = $(currentRow)[0].cells[0].innerText;
-      for (var i = 0; i < window.contributorArray.length; i++) {
-        if (window.contributorArray[i].conName.trim() === contributorName.trim()) {
-          window.contributorArray.splice(i, 1);
-          break;
-        }
-      }
-    }
-  });
-};
 
 window.checkAtLeastOneContactPerson = () => {
   let contactPersonExists = false;
@@ -929,23 +870,6 @@ const populateTagifyDD = (tagify, values) => {
   for (var value of values) {
     if (value.trim() !== "") {
       tagify.addTags(value.trim());
-    }
-  }
-};
-
-const loadRelatedInfoToTable = (array) => {
-  $("#protocol-link-table-dd tr:gt(0)").remove();
-  $("#div-protocol-link-table-dd").css("display", "none");
-  $("#other-link-table-dd tr:gt(0)").remove();
-  $("#div-other-link-table-dd").css("display", "none");
-  for (var arr of array.splice(1)) {
-    if (arr[2].trim() !== "") {
-      var protocolBoolean = protocolCheck(arr);
-      if (protocolBoolean) {
-        addProtocolLinktoTableDD(arr[2], arr[3], arr[1], arr[0]);
-      } else {
-        window.addAdditionalLinktoTableDD(arr[2], arr[3], arr[1], arr[0]);
-      }
     }
   }
 };

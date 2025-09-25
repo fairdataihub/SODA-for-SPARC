@@ -17,13 +17,10 @@ const NavigationButton = ({
   onClick,
 }) => {
   const { hovered, ref } = useHover();
-  // Register the button in the global state on mount and set its state to true (enabled)
-  useEffect(() => {
-    // setNavButtonState(buttonId, true);
-  }, []);
+
   const navigationButtonStates = useGlobalStore((state) => state.navigationButtonStates);
   console.log("Navigation Button States:", navigationButtonStates);
-  const isDisabled = navigationButtonStates[buttonId] === false;
+  const isDisabled = navigationButtonStates?.[buttonId] === false;
 
   return (
     <Button
