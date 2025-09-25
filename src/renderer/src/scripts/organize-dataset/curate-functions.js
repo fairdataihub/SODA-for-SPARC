@@ -20,6 +20,7 @@ import {
   swalFileListTripleAction,
   swalShowInfo,
 } from "../utils/swal-utils";
+import { setNavButtonState } from "../../stores/slices/navButtonStateSlice";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -48,73 +49,6 @@ $(".button-individual-metadata.remove").click(function () {
   $($(this).parents()[1]).find(".div-metadata-confirm").css("display", "none");
   $($(this).parents()[1]).find(".div-metadata-go-back").css("display", "flex");
 });
-
-// Where metadata files are imported through free form mode
-$(".metadata-button").click(function () {
-  metadataFile = $(this);
-  $(".div-organize-generate-dataset.metadata").addClass("hide");
-  let target = $(this).attr("data-next");
-  $("#" + target).toggleClass("show");
-  document.getElementById("nextBtn").style.display = "none";
-  document.getElementById("prevBtn").style.display = "none";
-});
-
-window.confirmMetadataFilePath = (ev) => {
-  $($(ev).parents()[1]).removeClass("show");
-  $(".div-organize-generate-dataset.metadata").removeClass("hide");
-  document.getElementById("nextBtn").style.display = "inline";
-  document.getElementById("prevBtn").style.display = "inline";
-
-  // Checking if metadata files are imported
-  //// once users click "Confirm" or "Cancel", check if file is specified
-  //// if yes: addClass 'done'
-  //// if no: removeClass 'done'
-  let errorMetadataFileMessages = [
-    "",
-    "Please only drag and drop a file!",
-    "Your SPARC metadata file must be in one of the formats listed above!",
-    "Your SPARC metadata file must be named and formatted exactly as listed above!",
-  ];
-  let metadataFileStatus = $($(ev).parents()[1]).find(".para-metadata-file-status");
-
-  if (!errorMetadataFileMessages.includes($(metadataFileStatus).text())) {
-    $(metadataFile).addClass("done");
-
-    // log the import to analytics
-    window.logCurationForAnalytics(
-      "Success",
-      window.PrepareDatasetsAnalyticsPrefix.CURATE,
-      window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-      [
-        "Step 4",
-        "Import",
-        `${window.getMetadataFileNameFromStatus(metadataFileStatus)}`,
-        window.determineLocationFromStatus(metadataFileStatus)
-          ? Destinations.PENNSIEVE
-          : Destinations.LOCAL,
-      ],
-      determineDatasetLocation()
-    );
-  } else {
-    $(metadataFile).removeClass("done");
-    $(metadataFileStatus).text("");
-    // log the import attempt to analytics
-    window.logCurationForAnalytics(
-      "Error",
-      window.PrepareDatasetsAnalyticsPrefix.CURATE,
-      window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-      [
-        "Step 4",
-        "Import",
-        `${window.getMetadataFileNameFromStatus(metadataFileStatus)}`,
-        window.determineLocationFromStatus(metadataFileStatus)
-          ? Destinations.PENNSIEVE
-          : Destinations.LOCAL,
-      ],
-      determineDatasetLocation()
-    );
-  }
-};
 
 // Two vars with the same name
 $(".button-individual-metadata.go-back").click(function () {
@@ -765,7 +699,7 @@ document
     document.getElementById("dataset-upload-new-dataset").classList.remove("checked");
     document.getElementById("dataset-upload-existing-dataset").classList.add("checked");
 
-    $("#nextBtn").prop("disabled", true);
+    setNavButtonState("nextBtn", true);
   });
 
 document.getElementById("dataset-upload-new-dataset").addEventListener("click", async function () {
@@ -833,7 +767,7 @@ document.getElementById("dataset-upload-new-dataset").addEventListener("click", 
   $("#Question-generate-dataset-existing-files-options").addClass("hidden");
 
   // disable the continue btn
-  $("#nextBtn").prop("disabled", true);
+  setNavButtonState("nextBtn", true);
 });
 
 document
@@ -1338,7 +1272,7 @@ window.loadProgressFile = (ev) => {
   let jsonContent = progressFileParse(ev);
 
   $("#para-progress-file-status").html("");
-  // $("#nextBtn").prop("disabled", true);
+  // setNavButtonState("nextBtn", true)
 
   // create loading effect
   $("#div-progress-file-loader").css("display", "block");

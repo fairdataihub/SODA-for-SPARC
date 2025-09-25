@@ -183,7 +183,7 @@ const EntityDataSelectorPage = ({
             <Text size="sm" c="gray">
               Progress: {countItemsSelected} of {itemCount} files categorized
             </Text>
-            <Progress color="green" size="xl" value={100 * (countItemsSelected / itemCount)} />
+            <Progress size="xl" value={100 * (countItemsSelected / itemCount)} />
           </Paper>
         </GuidedModeSection>
       )}

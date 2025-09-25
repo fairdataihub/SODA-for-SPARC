@@ -5,14 +5,14 @@ import api from "./others/api/api";
 import { clientError, userErrorMessage } from "./others/http-error-handler/error-handler";
 import client from "./client";
 import { swalShowError, swalShowInfo } from "./utils/swal-utils";
-// // Purpose: Will become preload.js in the future. For now it is a place to put global variables/functions that are defined in javascript files
-// //          needed by the renderer process in order to run.
-import { clientBlockedByExternalFirewall, blockedMessage } from "./check-firewall/checkFirewall";
 
-// // Contributors table for the dataset description editing page
+import { clientBlockedByExternalFirewall, blockedMessage } from "./check-firewall/checkFirewall";
+import { setNavButtonState } from "../stores/slices/navButtonStateSlice";
+
+// Contributors table for the dataset description editing page
 const currentConTable = document.getElementById("table-current-contributors");
 
-// // function to show dataset or account Confirm buttons
+// function to show dataset or account Confirm buttons
 const showHideDropdownButtons = (category, action) => {
   if (category === "dataset") {
     if (action === "show") {
@@ -1378,7 +1378,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
     setTimeout(async function () {
       // disable the Continue btn first
-      $("#nextBtn").prop("disabled", true);
+      setNavButtonState("nextBtn", true);
       var bfDataset = "";
 
       // if users edit Current dataset
@@ -1792,7 +1792,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     await window.wait(10);
 
     // disable the Continue btn first
-    $("#nextBtn").prop("disabled", true);
+    setNavButtonState("nextBtn", true);
 
     // disable the dropdown until the list of organizations is loaded - which happens elsewhere
     initializeBootstrapSelect("#curatebforganizationlist", "disabled");

@@ -11,7 +11,6 @@ import {
   IconCheckupList,
   IconReport,
 } from "@tabler/icons-react";
-import pennsieveLogo from "../../assets/img/pennsieveLogo.png";
 
 export const checkboxCardSlice = (set) => ({
   cardData: {

@@ -3,6 +3,7 @@ import { swalConfirmAction, swalShowInfo } from "../scripts/utils/swal-utils";
 import lottie from "lottie-web";
 import { existingDataset, modifyDataset } from "../assets/lotties/lotties";
 import { setActiveSidebarTab } from "../stores/slices/sideBarSlice";
+import { setNavButtonState } from "../stores/slices/navButtonStateSlice";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -29,9 +30,6 @@ window.leavingUploadDatasets = () => {
 window.uploadComplete = () => {
   return $("#wrapper-wrap").is(":visible") && $("#validate-upload-status-tab").is(":visible");
 };
-
-// Variable used to determine the disabled status of the organize datasets next button
-let boolNextButtonDisabled = true;
 
 // function to hide the sidebar and disable the sidebar expand button
 function forceActionSidebar(action) {
@@ -114,7 +112,7 @@ window.handleSideBarTabClick = async (id, section) => {
 
     window.organizeDSglobalPath = document.getElementById("input-global-path");
     window.dataset_path = window.organizeDSglobalPath;
-    document.getElementById("nextBtn").disabled = boolNextButtonDisabled;
+    setNavButtonState("nextBtn", true);
   }
 
   // --- Guided mode section ---
@@ -192,8 +190,6 @@ window.handleSideBarTabClick = async (id, section) => {
     "about-us-section",
   ];
   forceActionSidebar(showSidebarSections.includes(sectionId) ? "show" : "hide");
-
-  boolNextButtonDisabled = document.getElementById("nextBtn").disabled;
 
   // --- Validate dataset section ---
   if (sectionId === "validate_dataset-section") {

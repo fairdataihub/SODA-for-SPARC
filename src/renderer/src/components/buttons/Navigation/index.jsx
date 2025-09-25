@@ -2,6 +2,9 @@ import { Button, Group } from "@mantine/core";
 import { useHover } from "@mantine/hooks";
 import { IconArrowLeft, IconArrowRight, IconDeviceFloppy } from "@tabler/icons-react";
 import classes from "./NavigationButton.module.css";
+import { useEffect } from "react";
+
+import useGlobalStore from "../../../stores/globalStore";
 
 const NavigationButton = ({
   buttonId,
@@ -14,7 +17,14 @@ const NavigationButton = ({
   onClick,
 }) => {
   const { hovered, ref } = useHover();
-  console.log("buttonColor:", buttonColor);
+  // Register the button in the global state on mount and set its state to true (enabled)
+  useEffect(() => {
+    // setNavButtonState(buttonId, true);
+  }, []);
+  const navigationButtonStates = useGlobalStore((state) => state.navigationButtonStates);
+  console.log("Navigation Button States:", navigationButtonStates);
+  const isDisabled = navigationButtonStates[buttonId] === false;
+
   return (
     <Button
       variant="outline"
@@ -25,6 +35,7 @@ const NavigationButton = ({
       style={{ width: buttonCustomWidth }}
       className={classes[buttonCustomClass]}
       onClick={onClick}
+      disabled={isDisabled}
     >
       <Group>
         {navIcon === "save" && <IconDeviceFloppy />}

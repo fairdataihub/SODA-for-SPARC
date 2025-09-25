@@ -1269,9 +1269,14 @@
           margin-bottom: 10px;
         ">
         <div style="display: flex; flex-direction: row">
-          <button type="button" onclick="window.nextPrev(-1)" id="prevBtn" class="transition-btn back">
-            <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
-          </button>
+          <div
+            data-component-type="navigation-button"
+            data-button-id="prevBtn"
+            data-button-text="Back"
+            data-nav-icon="left-arrow"
+            data-button-size="md"
+            data-button-custom-width="215px"
+          ></div>
           <button id="start-over-btn" type="button" class="start-over-button transition-btn popover-tooltip"
             rel="popover" data-placement="top" data-trigger="hover"
             data-content="Reset your progress and go back to Step 1" style="padding-left: 1.8rem">
@@ -1279,16 +1284,21 @@
           </button>
         </div>
         <div style="display: flex; flex-direction: row">
+          
           <button type="button" class="ui secondary basic button save-and-exit-button transition-btn popover-tooltip"
             data-content="Save your progress and pick up from here later through Step 1 - Option 2: Continue with a previously saved progress in SODA."
             rel="popover" data-placement="top" data-trigger="hover" id="save-progress-btn"
             onclick="window.saveOrganizeProgressPrompt()" style="padding: 8px 10px">
             <i class="far fa-save" style="margin-right: 10px"></i>Save progress
           </button>
-          <button style="float: right; width: 135px" onclick="window.nextPrev(1)" id="nextBtn" type="button"
-            class="transition-btn" disabled>
-            Continue
-          </button>
+          <div
+            data-component-type="navigation-button"
+            data-button-id="nextBtn"
+            data-button-text="Continue"
+            data-nav-icon="right-arrow"
+            data-button-size="md"
+            data-button-custom-width="215px"
+          ></div>
         </div>
       </div>
     </div>

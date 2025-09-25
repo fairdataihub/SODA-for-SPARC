@@ -8,6 +8,7 @@ import { clientError, userErrorMessage } from "./http-error-handler/error-handle
 import Swal from "sweetalert2";
 import api from "../others/api/api";
 import { swalShowInfo } from "../utils/swal-utils";
+import { setNavButtonState } from "../../stores/slices/navButtonStateSlice";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -32,7 +33,7 @@ const delay = 250;
 window.showParentTab = async (tabNow, nextOrPrev) => {
   // tabNow represent the current tab
   // nextOrPrev represent the direction of the tab (1 or -1)
-  $("#nextBtn").prop("disabled", true);
+  setNavButtonState("nextBtn", true);
   if (tabNow == -1) {
     // When exiting upload dataset workflow, the tabNow state changes to -1 which will cause an error
     // Reset the tabNow state to 0
@@ -88,7 +89,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
   if (tabNow === 1 && continueBtnYes) {
     $("#nextBtn").prop("disabled", false);
   } else {
-    $("#nextBtn").prop("disabled", true);
+    setNavButtonState("nextBtn", true);
   }
 
   if (tabNow == 2) {
@@ -353,7 +354,7 @@ const addCardDetail = (card_left, card_right, parent_tab = -1, element_id = "", 
 };
 
 const checkHighLevelFoldersInput = () => {
-  $("#nextBtn").prop("disabled", true);
+  setNavButtonState("nextBtn", true);
   var optionCards = document.getElementsByClassName("option-card high-level-folders");
   var checked = false;
   for (var card of optionCards) {
@@ -680,7 +681,7 @@ window.nextPrev = async (pageIndex) => {
       $("#generate-dataset-replace-existing").hide();
       $("#generate-dataset-replace-existing").children().hide();
     }
-    $("#nextBtn").prop("disabled", true);
+    setNavButtonState("nextBtn", true);
     window.showParentTab(window.currentTab, pageIndex);
   } else if (
     parentTabs[window.currentTab].id === "validate-dataset-tab" &&
@@ -733,6 +734,13 @@ window.nextPrev = async (pageIndex) => {
     window.showParentTab(window.currentTab, pageIndex);
   }
 };
+
+document.getElementById("prevBtn").addEventListener("click", function () {
+  window.nextPrev(-1);
+});
+document.getElementById("nextBtn").addEventListener("click", function () {
+  window.nextPrev(1);
+});
 
 const fixStepIndicator = (pageIndex) => {
   // This function removes the "is-current" class of all steps...
@@ -886,7 +894,7 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
     if (window.globalGettingStarted1stQuestionBool) {
       $("#progress-files-dropdown").val("Select");
       $("#para-progress-file-status").text("");
-      $("#nextBtn").prop("disabled", true);
+      setNavButtonState("nextBtn", true);
       window.exitCurate(false);
       window.globalGettingStarted1stQuestionBool = false;
     } else {
@@ -897,7 +905,7 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
 
   if (currentDiv === "Question-new-dataset-upload-name") {
     // TODO: Ensure the dataset name is valid with the character list we have
-    $("#nextBtn").prop("disabled", true);
+    setNavButtonState("nextBtn", true);
     $(ev).hide();
     return;
   }
@@ -979,9 +987,9 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
   // under Step 6
   let step6 = document.getElementById("generate-dataset-tab");
   if (ev.getAttribute("data-next") === "Question-generate-dataset-ps-dataset") {
-    // $("#nextBtn").prop("disabled", true);
+    // setNavButtonState("nextBtn", true)
     if (step6.classList.contains("tab-active")) {
-      $("#nextBtn").prop("disabled", true);
+      setNavButtonState("nextBtn", true);
     }
 
     // hide the para para-continue-empty-ds-selected
@@ -1001,7 +1009,7 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
   }
   if (ev.getAttribute("data-next") === "Question-generate-dataset-choose-ds-name") {
     if (step6.classList.contains("tab-active")) {
-      $("#nextBtn").prop("disabled", true);
+      setNavButtonState("nextBtn", true);
       if (document.getElementById("inputNewNameDataset").val != "") {
         document.getElementById("btn-confirm-new-dataset-name").style.display = "inline-block";
       }
@@ -1051,7 +1059,7 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
   if (ev.getAttribute("data-next") === "Question-getting-started-final") {
     $("#progress-files-dropdown").val("Select");
     $("#para-progress-file-status").text("");
-    $("#nextBtn").prop("disabled", true);
+    setNavButtonState("nextBtn", true);
     $("#para-continue-prepare-new-getting-started").text("");
     if ($("#prepare-new").prop("checked")) {
       window.exitCurate(false);
@@ -1071,7 +1079,7 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
         $("#para-continue-prepare-new-getting-started").text("Please continue below.");
       }, 600);
     } else if ($("#existing-ps").is(":checked")) {
-      $("#nextBtn").prop("disabled", true);
+      setNavButtonState("nextBtn", true);
       // this window.exitCurate function gets called in the beginning here
       // in case users have existing, non-empty SODA object structure due to previous progress option was selected prior to this "existing-ps" option
       $("#Question-getting-started-existing-ps-account").show();
@@ -1099,7 +1107,7 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
       };
       // reset the UI back to fresh new
       reset_ui();
-      $("#nextBtn").prop("disabled", true);
+      setNavButtonState("nextBtn", true);
     }
   }
 };
@@ -1654,7 +1662,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
 
   if (currentDiv === "Question-getting-started-ps-dataset") {
     let selectedDataset = $("#current-ps-dataset").text();
-    $("#nextBtn").prop("disabled", true);
+    setNavButtonState("nextBtn", true);
     window.sodaJSONObj = {
       "ps-account-selected": {
         "account-name": {},
@@ -1702,7 +1710,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
         allowOutsideClick: false,
       });
 
-      $("#nextBtn").prop("disabled", true);
+      setNavButtonState("nextBtn", true);
       $("#para-continue-ps-dataset-getting-started").text("");
       $("body").removeClass("waiting");
       showHideDropdownButtons("dataset", "hide");
@@ -1745,7 +1753,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
       });
-      $("#nextBtn").prop("disabled", true);
+      setNavButtonState("nextBtn", true);
       $("#para-continue-ps-dataset-getting-started").text("");
       $("body").removeClass("waiting");
       // $("#ps-dataset-spinner").css("visibility", "hidden");
@@ -1932,7 +1940,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
     ev.getAttribute("data-next") === "Question-getting-started-final" &&
     $("#existing-ps").is(":checked")
   ) {
-    $("#nextBtn").prop("disabled", true);
+    setNavButtonState("nextBtn", true);
     if (window.sodaJSONObj["dataset-structure"] != {}) {
       $("#nextBtn").prop("disabled", false);
     }
@@ -1958,7 +1966,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
 
     // this should run after a folder is selected
     reset_ui();
-    $("#nextBtn").prop("disabled", true);
+    setNavButtonState("nextBtn", true);
   }
 };
 
@@ -2566,7 +2574,7 @@ const reset_ui = () => {
   $("#Question-getting-started-existing-ps-account").children().hide();
   $("#Question-getting-started-existing-ps-dataset").hide();
   $("#Question-getting-started-existing-ps-dataset").children().hide();
-  $("#nextBtn").prop("disabled", true);
+  setNavButtonState("nextBtn", true);
 
   // clear the validation table results
   let validationErrorsTable = document.querySelector("#organize--table-validation-errors tbody");
@@ -3197,7 +3205,7 @@ window.resetCurationTabs = () => {
   }
 
   // Disable continue button
-  $("#nextBtn").prop("disabled", true);
+  setNavButtonState("nextBtn", true);
 
   window.hasFiles = false;
 

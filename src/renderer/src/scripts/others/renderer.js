@@ -77,6 +77,7 @@ import {
   setPennsieveAgentCheckInProgress,
   setPostPennsieveAgentCheckAction,
 } from "../../stores/slices/backgroundServicesSlice";
+import { setNavButtonState } from "../../stores/slices/navButtonStateSlice";
 
 // add jquery to the window object
 window.$ = jQuery;
@@ -4921,14 +4922,14 @@ window.addDetailsForFile = (ev) => {
 };
 
 $("#inputNewNameDataset").on("click", () => {
-  $("#nextBtn").prop("disabled", true);
+  setNavButtonState("nextBtn", true);
   $("#inputNewNameDataset").keyup();
 });
 
 $("#inputNewNameDataset").keyup(function () {
   let step6 = document.getElementById("generate-dataset-tab");
   if (step6.classList.contains("tab-active")) {
-    $("#nextBtn").prop("disabled", true);
+    setNavButtonState("nextBtn", true);
   }
 
   var newName = $("#inputNewNameDataset").val().trim();
