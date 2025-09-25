@@ -1,8 +1,9 @@
 import React from "react";
-import { MantineProvider, createTheme, Stack } from "@mantine/core";
-import FullWidthContainer from "../../containers/FullWidthContainer";
-import { Tooltip } from "bootstrap";
-import { root } from "postcss";
+import { MantineProvider } from "@mantine/core";
+import { shadcnCssVariableResolver } from "./cssVariableResolver.ts";
+import { shadcnTheme } from "./theme.ts";
+import { createTheme } from "@mantine/core";
+import "./style.css";
 
 const theme = createTheme({
   colors: {
@@ -46,7 +47,15 @@ const theme = createTheme({
 });
 
 const SodaComponentWrapper = ({ children }) => {
-  return <MantineProvider theme={theme}>{children}</MantineProvider>;
+  return (
+    <MantineProvider
+      theme={shadcnTheme}
+      cssVariablesResolver={shadcnCssVariableResolver}
+      forceColorScheme="light"
+    >
+      {children}
+    </MantineProvider>
+  );
 };
 
 export default SodaComponentWrapper;
