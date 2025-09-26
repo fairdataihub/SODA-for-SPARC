@@ -7,7 +7,7 @@ import client from "./client";
 import { swalShowError, swalShowInfo } from "./utils/swal-utils";
 
 import { clientBlockedByExternalFirewall, blockedMessage } from "./check-firewall/checkFirewall";
-import { setNavButtonState } from "../stores/slices/navButtonStateSlice";
+import { setNavButtonDisabled } from "../stores/slices/navButtonStateSlice";
 
 // Contributors table for the dataset description editing page
 const currentConTable = document.getElementById("table-current-contributors");
@@ -1378,7 +1378,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
     setTimeout(async function () {
       // disable the Continue btn first
-      setNavButtonState("nextBtn", true);
+      setNavButtonDisabled("nextBtn", true);
       var bfDataset = "";
 
       // if users edit Current dataset
@@ -1792,7 +1792,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     await window.wait(10);
 
     // disable the Continue btn first
-    setNavButtonState("nextBtn", true);
+    setNavButtonDisabled("nextBtn", true);
 
     // disable the dropdown until the list of organizations is loaded - which happens elsewhere
     initializeBootstrapSelect("#curatebforganizationlist", "disabled");

@@ -19,8 +19,12 @@ const NavigationButton = ({
   const { hovered, ref } = useHover();
 
   const navigationButtonStates = useGlobalStore((state) => state.navigationButtonStates);
-  console.log("Navigation Button States:", navigationButtonStates);
-  const isDisabled = navigationButtonStates?.[buttonId] === false;
+
+  const buttonState = navigationButtonStates?.[buttonId] || {};
+  const isDisabled = buttonState.disabled || false;
+  const isHidden = buttonState.hidden || false;
+
+  if (isHidden) return null; // completely hide the button if hidden is true
 
   return (
     <Button

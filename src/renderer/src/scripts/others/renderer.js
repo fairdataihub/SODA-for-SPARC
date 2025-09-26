@@ -77,7 +77,7 @@ import {
   setPennsieveAgentCheckInProgress,
   setPostPennsieveAgentCheckAction,
 } from "../../stores/slices/backgroundServicesSlice";
-import { setNavButtonState } from "../../stores/slices/navButtonStateSlice";
+import { setNavButtonDisabled, setNavButtonHidden } from "../../stores/slices/navButtonStateSlice";
 
 // add jquery to the window object
 window.$ = jQuery;
@@ -87,8 +87,6 @@ window.select2 = select2;
 document.addEventListener("DOMContentLoaded", function () {
   $("select").select2();
 });
-
-window.nextBtnDisabledVariable = true;
 
 window.datasetStructureJSONObj = {
   folders: {},
@@ -4907,14 +4905,14 @@ window.addDetailsForFile = (ev) => {
 };
 
 $("#inputNewNameDataset").on("click", () => {
-  setNavButtonState("nextBtn", true);
+  setNavButtonDisabled("nextBtn", true);
   $("#inputNewNameDataset").keyup();
 });
 
 $("#inputNewNameDataset").keyup(function () {
   let step6 = document.getElementById("generate-dataset-tab");
   if (step6.classList.contains("tab-active")) {
-    setNavButtonState("nextBtn", true);
+    setNavButtonDisabled("nextBtn", true);
   }
 
   var newName = $("#inputNewNameDataset").val().trim();
@@ -4934,7 +4932,6 @@ $("#inputNewNameDataset").keyup(function () {
       document.getElementById("para-new-name-dataset-message").innerHTML =
         "Error: A Pennsieve dataset name cannot contain any of the following characters: \\/:*?'<>.,";
 
-      // $("#nextBtn").prop("disabled", true)
       $("#Question-generate-dataset-generate-div-old").removeClass("show");
       $("#div-confirm-inputNewNameDataset").css("display", "none");
       $("#btn-confirm-new-dataset-name").hide();
@@ -4963,7 +4960,7 @@ window.electron.ipcRenderer.on(
         document.getElementById("input-destination-generate-dataset-locally").placeholder =
           filepath[0];
         document.getElementById("input-destination-generate-dataset-locally").value = filepath[0];
-        document.getElementById("nextBtn").disabled = true;
+        setNavButtonDisabled("nextBtn", true);
       } else {
         $("#div-confirm-destination-locally").css("display", "none");
         $("#div-confirm-destination-locally button").hide();
@@ -4978,37 +4975,6 @@ window.electron.ipcRenderer.on(
     }
   }
 );
-
-document.getElementById("button-generate-validate").addEventListener("click", function () {
-  // setTimeout(function () {
-  //   document.getElementById("generate-dataset-progress-tab").style.display = "none";
-  //   document.getElementById("div-vertical-progress-bar").style.display = "flex";
-  //   document.getElementById("prevBtn").style.display = "inline";
-  //   document.getElementById("nextBtn").style.display = "inline";
-  //   document.getElementById("start-over-btn").style.display = "inline-block";
-  //   window.showParentTab(window.currentTab, 1);
-  //   if (
-  //     window.sodaJSONObj["starting-point"]["origin"] == "new" &&
-  //     "local-path" in window.sodaJSONObj["starting-point"]
-  //   ) {
-  //     window.sodaJSONObj["starting-point"]["origin"] = "local";ps-account
-  //   }
-  // }, window.delayAnimation);
-});
-
-// function to hide the sidebar and disable the sidebar expand button
-// function forceActionSidebar(action) {
-//   if (action === "show") {
-//     $("#sidebarCollapse").removeClass("active");
-//     $("#main-nav").removeClass("active");
-//   } else {
-//     $("#sidebarCollapse").addClass("active");
-//     $("#main-nav").addClass("active");
-//     // $("#sidebarCollapse").prop("disabled", false);
-//   }
-// }
-
-// /// MAIN CURATE NEW ///
 
 const progressBarNewCurate = document.getElementById("progress-bar-new-curate");
 const divGenerateProgressBar = document.getElementById("div-new-curate-meter-progress");
@@ -5066,7 +5032,7 @@ const setupCode = async (resume = false) => {
   $("#generate-dataset-progress-tab").addClass("tab-active");
   document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
   document.getElementById("para-please-wait-new-curate").innerHTML = "";
-  document.getElementById("prevBtn").style.display = "none";
+  setNavButtonHidden("prevBtn", true);
   document.getElementById("start-over-btn").style.display = "none";
   document.getElementById("div-vertical-progress-bar").style.display = "none";
   document.getElementById("div-generate-comeback").style.display = "none";
@@ -5116,7 +5082,7 @@ const setupCode = async (resume = false) => {
       // $($($(this).parent()[0]).parents()[0]).addClass("tab-active");
       document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
       document.getElementById("para-please-wait-new-curate").innerHTML = "";
-      document.getElementById("prevBtn").style.display = "inline";
+      setNavButtonHidden("prevBtn", false);
       document.getElementById("start-over-btn").style.display = "inline-block";
       document.getElementById("div-vertical-progress-bar").style.display = "flex";
       document.getElementById("div-generate-comeback").style.display = "flex";
@@ -5256,7 +5222,7 @@ const initiate_generate = async (resume = false) => {
     organizeDataset.click();
     let button = document.getElementById("button-generate");
     $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
-    document.getElementById("prevBtn").style.display = "none";
+    setNavButtonHidden("prevBtn", true);
     document.getElementById("start-over-btn").style.display = "none";
     document.getElementById("div-vertical-progress-bar").style.display = "none";
     document.getElementById("div-generate-comeback").style.display = "none";
@@ -5541,7 +5507,7 @@ const initiate_generate = async (resume = false) => {
           if (result.isConfirmed) {
             let button = document.getElementById("button-generate");
             $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
-            document.getElementById("prevBtn").style.display = "none";
+            setNavButtonHidden("prevBtn", true);
             document.getElementById("start-over-btn").style.display = "none";
             document.getElementById("div-vertical-progress-bar").style.display = "none";
             document.getElementById("wrapper-wrap").style.display = "flex";
@@ -5634,7 +5600,7 @@ const initiate_generate = async (resume = false) => {
         if (result.isConfirmed) {
           let button = document.getElementById("button-generate");
           $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
-          document.getElementById("prevBtn").style.display = "none";
+          setNavButtonHidden("prevBtn", true);
           document.getElementById("start-over-btn").style.display = "none";
           document.getElementById("div-vertical-progress-bar").style.display = "none";
           document.getElementById("wrapper-wrap").style.display = "flex";

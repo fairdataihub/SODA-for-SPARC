@@ -20,7 +20,7 @@ import {
   swalFileListTripleAction,
   swalShowInfo,
 } from "../utils/swal-utils";
-import { setNavButtonState } from "../../stores/slices/navButtonStateSlice";
+import { setNavButtonDisabled, setNavButtonHidden } from "../../stores/slices/navButtonStateSlice";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -56,8 +56,7 @@ $(".button-individual-metadata.go-back").click(function () {
   $(metadataFileStatus).text("");
   $($(this).parents()[1]).removeClass("show");
   $(".div-organize-generate-dataset.metadata").removeClass("hide");
-  document.getElementById("nextBtn").style.display = "inline";
-  document.getElementById("prevBtn").style.display = "inline";
+  setNavButtonHidden("prevBtn", false);
   let errorMetadataFileMessages = [
     "",
     "Please only drag and drop a file!",
@@ -129,7 +128,7 @@ window.uploadDatasetDropHandler = async (ev) => {
 
       if (moveForward) {
         document.getElementById("org-dataset-folder-path").innerHTML = folderPath;
-        document.getElementById("nextBtn").disabled = false;
+        setNavButtonDisabled("nextBtn", false);
       }
     } else {
       document.getElementById("para-org-dataset-path").classList.remove("hidden");
@@ -582,7 +581,7 @@ window.importLocalDataset = async (folderPath) => {
 
   if (moveForward) {
     document.getElementById("org-dataset-folder-path").innerHTML = folderPath;
-    document.getElementById("nextBtn").disabled = false;
+    setNavButtonDisabled("nextBtn", false);
   }
 };
 
@@ -659,7 +658,7 @@ document.getElementById("confirm-account-workspace").addEventListener("click", a
     pennsieveAgentCheckDiv.classList.remove("hidden");
     // Check to make sure the Pennsieve agent is installed
     let passed = await window.checkPennsieveAgent(pennsieveAgentCheckDivId);
-    if (passed) document.getElementById("nextBtn").disabled = false;
+    if (passed) setNavButtonDisabled("nextBtn", false);
   } catch (e) {
     console.error("Error with agent" + e);
   }
@@ -699,7 +698,7 @@ document
     document.getElementById("dataset-upload-new-dataset").classList.remove("checked");
     document.getElementById("dataset-upload-existing-dataset").classList.add("checked");
 
-    setNavButtonState("nextBtn", true);
+    setNavButtonDisabled("nextBtn", true);
   });
 
 document.getElementById("dataset-upload-new-dataset").addEventListener("click", async function () {
@@ -767,7 +766,7 @@ document.getElementById("dataset-upload-new-dataset").addEventListener("click", 
   $("#Question-generate-dataset-existing-files-options").addClass("hidden");
 
   // disable the continue btn
-  setNavButtonState("nextBtn", true);
+  setNavButtonDisabled("nextBtn", true);
 });
 
 document
@@ -823,7 +822,7 @@ document
       document
         .getElementById("upload-dataset-btn-confirm-new-dataset-name")
         .classList.add("hidden");
-      document.getElementById("nextBtn").disabled = false;
+      setNavButtonDisabled("nextBtn", false);
     }
     document
       .getElementById("upload-dataset-btn-confirm-new-dataset-name")
@@ -1272,7 +1271,7 @@ window.loadProgressFile = (ev) => {
   let jsonContent = progressFileParse(ev);
 
   $("#para-progress-file-status").html("");
-  // setNavButtonState("nextBtn", true)
+  setNavButtonDisabled("nextBtn", true);
 
   // create loading effect
   $("#div-progress-file-loader").css("display", "block");
@@ -1291,10 +1290,7 @@ window.loadProgressFile = (ev) => {
       } else {
         document.getElementById("div-progress-file-loader").style.display = "none";
         $("body").removeClass("waiting");
-        let nextBtn = document.getElementById("nextBtn");
-        if (nextBtn.disabled) {
-          nextBtn.removeAttribute("disabled");
-        }
+        setNavButtonDisabled("nextBtn", false);
         document.getElementById("para-progress-file-status").innerHTML =
           "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>";
 
@@ -1368,7 +1364,7 @@ const verify_missing_files = (mode) => {
       if (mode === "pre-existing") {
         document.getElementById("div-progress-file-loader").style.display = "none";
         $("body").removeClass("waiting");
-        document.getElementById("nextBtn").disabled = false;
+        setNavButtonDisabled("nextBtn", false);
         document.getElementById("para-progress-file-status").innerHTML =
           "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>";
 

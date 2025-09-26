@@ -3,7 +3,7 @@ import { swalConfirmAction, swalShowInfo } from "../scripts/utils/swal-utils";
 import lottie from "lottie-web";
 import { existingDataset, modifyDataset } from "../assets/lotties/lotties";
 import { setActiveSidebarTab } from "../stores/slices/sideBarSlice";
-import { setNavButtonState } from "../stores/slices/navButtonStateSlice";
+import { setNavButtonDisabled } from "../stores/slices/navButtonStateSlice";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -112,7 +112,7 @@ window.handleSideBarTabClick = async (id, section) => {
 
     window.organizeDSglobalPath = document.getElementById("input-global-path");
     window.dataset_path = window.organizeDSglobalPath;
-    setNavButtonState("nextBtn", true);
+    setNavButtonDisabled("nextBtn", true);
   }
 
   // --- Guided mode section ---

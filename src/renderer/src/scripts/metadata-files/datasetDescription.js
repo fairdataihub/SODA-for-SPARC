@@ -9,6 +9,7 @@ import Tagify from "@yaireo/tagify/dist/tagify.esm.js";
 import tippy from "tippy.js";
 import doiRegex from "doi-regex";
 import validator from "validator";
+import { setNavButtonHidden } from "../../stores/slices/navButtonStateSlice";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -63,7 +64,7 @@ $(document).ready(function () {
     $("create_dataset_description-tab").removeClass("show");
     let target = $(this).attr("data-next");
     $("#" + target).toggleClass("show");
-    document.getElementById("prevBtn").style.display = "none";
+    setNavButtonHidden("prevBtn", true);
   });
 
   $("#bf_dataset_load_dd").on("DOMSubtreeModified", function () {
