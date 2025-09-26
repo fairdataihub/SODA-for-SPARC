@@ -17,6 +17,7 @@ import checkForAnnouncements from "../others/announcements";
 import kombuchaEnums from "../analytics/analytics-enums";
 import { v4 as uuidv4 } from "uuid";
 import Swal from "sweetalert2";
+import { setAppVersion } from "../../stores/slices/appConfigSlice";
 
 // check for announcements on startup; if the user is in the auto update workflow do not check for announcements
 // Rationale: The auto update workflow involves refreshing the DOM which will cause a re-run of
@@ -363,8 +364,7 @@ const setTemplatePaths = async () => {
 
 const setSidebarAppVersion = async () => {
   let currentAppVersion = await window.electron.ipcRenderer.invoke("app-version");
-  const version = document.getElementById("version");
-  version.innerText = currentAppVersion;
+  setAppVersion(currentAppVersion);
 };
 
 // Warn the user if they are on a beta version of the app

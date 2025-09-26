@@ -9,6 +9,7 @@ import Swal from "sweetalert2";
 import api from "../others/api/api";
 import { swalShowInfo } from "../utils/swal-utils";
 import { setNavButtonDisabled, setNavButtonHidden } from "../../stores/slices/navButtonStateSlice";
+import { setCurrentStep } from "../../stores/slices/stepperSlice";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -43,8 +44,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
 
   // This function will display the specified tab of the form ...
   var x = document.getElementsByClassName("parent-tabs");
-  fixStepIndicator(tabNow);
-  fixStepDone(tabNow);
+  setCurrentStep("freeform-mode-progress-stepper", tabNow);
 
   $(x[tabNow]).addClass("tab-active");
   setTimeout(() => {
@@ -739,22 +739,6 @@ document.getElementById("prevBtn").addEventListener("click", function () {
 document.getElementById("nextBtn").addEventListener("click", function () {
   window.nextPrev(1);
 });
-
-const fixStepIndicator = (pageIndex) => {
-  // This function removes the "is-current" class of all steps...
-  let progressSteps = document.getElementsByClassName("vertical-progress-bar-step");
-  if (progressSteps != undefined) {
-    for (let step of progressSteps) {
-      step.className = step.className.replace(" is-current", "");
-    }
-    progressSteps[pageIndex].className += " is-current";
-  }
-};
-
-const fixStepDone = (pageIndex) => {
-  let progressSteps = document.getElementsByClassName("vertical-progress-bar-step");
-  $(progressSteps[pageIndex]).addClass("done");
-};
 
 //// High level folders check mark effect
 $(".option-card.high-level-folders").click(function () {
@@ -3087,8 +3071,6 @@ const updateOverallJSONStructure = (id) => {
 
 window.resetCuration = () => {
   $("#dataset-loaded-message").hide();
-  $(".vertical-progress-bar-step").removeClass("is-current");
-  $(".vertical-progress-bar-step").removeClass("done");
   $(".getting-started").removeClass("prev");
   $(".getting-started").removeClass("show");
   $(".getting-started").removeClass("test2");
@@ -3142,8 +3124,6 @@ window.resetCuration = () => {
 };
 
 window.resetCurationTabs = () => {
-  $(".vertical-progress-bar-step").removeClass("is-current");
-  $(".vertical-progress-bar-step").removeClass("done");
   $(".getting-started").removeClass("prev");
   $(".getting-started").removeClass("show");
   $(".getting-started").removeClass("test2");
@@ -3305,13 +3285,11 @@ window.wipeOutCurateProgress = () => {
 
 // once users click on option card: Organize dataset
 document.getElementById("button-section-organize-dataset").addEventListener("click", () => {
-  $(".vertical-progress-bar").css("display", "flex");
   document.getElementById("generate-dataset-progress-tab").style.display = "none";
   window.showParentTab(window.currentTab, 1);
 });
 
 document.getElementById("organize_dataset_btn").addEventListener("click", () => {
-  $(".vertical-progress-bar").css("display", "flex");
   document.getElementById("generate-dataset-progress-tab").style.display = "none";
   $("#save-progress-btn").css("display", "none");
   $("#start-over-btn").css("display", "none");

@@ -20,9 +20,11 @@ import { fileExplorerStateSlice } from "./slices/fileExplorerStateSlice";
 import { stepperSlice } from "./slices/stepperSlice";
 import { guidedModeProgressCardsSlice } from "./slices/guidedModeProgressCardsSlice";
 import { navButtonStateSlice } from "./slices/navButtonStateSlice";
+import { appConfigSlice } from "./slices/appConfigSlice";
 
 const useGlobalStore = create(
   immer((set, ...a) => ({
+    ...appConfigSlice(set, ...a),
     ...guidedModeSlice(set, ...a),
     ...sideBarSlice(set, ...a),
     ...dropDownSlice(set, ...a),

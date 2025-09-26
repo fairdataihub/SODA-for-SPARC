@@ -26,7 +26,7 @@ import SodaTextInput from "../common/SodaTextInput";
 import ProgressStepper from "../common/ProgressStepper";
 import ManifestFilePreviewSection from "../shared/ManifestFilePreviewSection";
 import DropDownNote from "../utils/ui/DropDownNote";
-import SidebarLinks from "../common/SidebarLinks";
+import Sidebar from "../common/Sidebar";
 import HomePageCards from "../buttons/HomePageCards";
 import GuidedModeProgressCards from "../guided/GuidedModeProgressCards";
 import { CardButton } from "../buttons/CardButton";
@@ -115,8 +115,8 @@ const componentTypeRenderers = {
     };
     renderComponent(componentSlot, <ProgressStepper {...props} />);
   },
-  "sidebar-links": (componentSlot) => {
-    renderComponent(componentSlot, <SidebarLinks />);
+  "main-sidebar": (componentSlot) => {
+    renderComponent(componentSlot, <Sidebar />);
   },
   "generic-button": (componentSlot) => {
     const props = {

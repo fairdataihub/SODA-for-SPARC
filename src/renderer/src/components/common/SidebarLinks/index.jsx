@@ -43,7 +43,6 @@ const SidebarLinks = () => {
     activeTab = "guided_mode";
   }
   return (
-    <nav className={classes.sidebar}>
       {links.map((link) => {
         const isActive = activeTab === link.section;
         console.log("Rendering link:", link.id, "section:", link.section);
@@ -69,7 +68,6 @@ const SidebarLinks = () => {
           </UnstyledButton>
         );
       })}
-    </nav>
   );
 };
 

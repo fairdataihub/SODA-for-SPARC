@@ -51,7 +51,6 @@
   min-width: 240px;
   max-width: 240px;
   background: var(--color-sidebar);
-  border-top: 1px solid #d5d5d5;
   color: #f0f0f0;
   font-family: "Poppins", sans-serif;
   transition: all 0.25s linear;

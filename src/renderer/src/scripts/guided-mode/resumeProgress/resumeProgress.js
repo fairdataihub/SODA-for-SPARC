@@ -14,6 +14,7 @@ import { clientError } from "../../others/http-error-handler/error-handler";
 import { swalShowInfo } from "../../utils/swal-utils";
 import { setDatasetEntityObj } from "../../../stores/slices/datasetEntitySelectorSlice";
 import { setDatasetEntityArray } from "../../../stores/slices/datasetEntityStructureSlice";
+import useGlobalStore from "../../../stores/globalStore";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -144,11 +145,10 @@ const guidedGetPageToReturnTo = async () => {
 
   // returns the id of the first page of guided mode
   const firstPageID = getNonSkippedGuidedModePages(document)[0].id;
-
-  const currentSodaVersion = document.getElementById("version").innerHTML;
+  const appVersion = useGlobalStore.getState().appVersion;
   const lastVersionOfSodaUsedOnProgressFile = window.sodaJSONObj["last-version-of-soda-used"];
 
-  if (lastVersionOfSodaUsedOnProgressFile != currentSodaVersion) {
+  if (lastVersionOfSodaUsedOnProgressFile != appVersion) {
     // If the progress file was last edited in a previous SODA version, reset to the first page
     await swalShowInfo(
       "SODA has been updated since you last worked on this dataset.",

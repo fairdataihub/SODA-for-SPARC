@@ -19,22 +19,28 @@ export const stepperSlice = (set) => ({
   },
 });
 
-// Helper to get stepper and step index
+// Internal helper to resolve stepper state
 const resolveStep = (stepperId, step) => {
-  const state = useGlobalStore.getState();
-  const stepper = state.steppers[stepperId];
+  const { steppers } = useGlobalStore.getState();
+  const stepper = steppers[stepperId];
   if (!stepper) return {};
-  const steps = stepper.steps;
-  const index = typeof step === "number" ? step : steps.indexOf(step);
+
+  const index = typeof step === "number" ? step : stepper.steps.indexOf(step);
   if (index === -1) return {};
-  return { stepper, index, steps, state };
+
+  return { stepper, index, steps: stepper.steps };
 };
 
 export const setCurrentStep = (stepperId, step) => {
   console.log("setCurrentStep", stepperId, step);
+
   useGlobalStore.setState((state) => {
-    const { stepper, index } = resolveStep(stepperId, step);
+    const stepper = state.steppers[stepperId];
     if (!stepper) return {};
+
+    const index = typeof step === "number" ? step : stepper.steps.indexOf(step);
+    if (index === -1 || index == null) return {};
+
     return {
       steppers: {
         ...state.steppers,
@@ -48,8 +54,10 @@ export const setCurrentStep = (stepperId, step) => {
 };
 
 export const getStepInfo = (stepperId, step) => {
-  const { stepper, index, steps } = resolveStep(stepperId, step);
-  if (!stepper) return null;
+  const resolved = resolveStep(stepperId, step);
+  if (!resolved.stepper) return null;
+
+  const { stepper, index, steps } = resolved;
   return {
     id: steps[index],
     index,
@@ -59,9 +67,10 @@ export const getStepInfo = (stepperId, step) => {
 };
 
 export const getAllStepsInfo = (stepperId) => {
-  const state = useGlobalStore.getState();
-  const stepper = state.steppers[stepperId];
+  const { steppers } = useGlobalStore.getState();
+  const stepper = steppers[stepperId];
   if (!stepper) return [];
+
   return stepper.steps.map((id, index) => ({
     id,
     index,

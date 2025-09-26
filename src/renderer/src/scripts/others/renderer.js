@@ -5034,7 +5034,6 @@ const setupCode = async (resume = false) => {
   document.getElementById("para-please-wait-new-curate").innerHTML = "";
   setNavButtonHidden("prevBtn", true);
   document.getElementById("start-over-btn").style.display = "none";
-  document.getElementById("div-vertical-progress-bar").style.display = "none";
   document.getElementById("div-generate-comeback").style.display = "none";
   document.getElementById("wrapper-wrap").style.display = "none";
   document.getElementById("generate-dataset-progress-tab").style.display = "flex";
@@ -5084,7 +5083,6 @@ const setupCode = async (resume = false) => {
       document.getElementById("para-please-wait-new-curate").innerHTML = "";
       setNavButtonHidden("prevBtn", false);
       document.getElementById("start-over-btn").style.display = "inline-block";
-      document.getElementById("div-vertical-progress-bar").style.display = "flex";
       document.getElementById("div-generate-comeback").style.display = "flex";
       document.getElementById("generate-dataset-progress-tab").style.display = "none";
       $("#generate-dataset-progress-tab").removeClass("tab-active");
@@ -5224,7 +5222,6 @@ const initiate_generate = async (resume = false) => {
     $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
     setNavButtonHidden("prevBtn", true);
     document.getElementById("start-over-btn").style.display = "none";
-    document.getElementById("div-vertical-progress-bar").style.display = "none";
     document.getElementById("div-generate-comeback").style.display = "none";
     document.getElementById("generate-dataset-progress-tab").style.display = "flex";
     organizeDataset.disabled = true;
@@ -5509,7 +5506,6 @@ const initiate_generate = async (resume = false) => {
             $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
             setNavButtonHidden("prevBtn", true);
             document.getElementById("start-over-btn").style.display = "none";
-            document.getElementById("div-vertical-progress-bar").style.display = "none";
             document.getElementById("wrapper-wrap").style.display = "flex";
             document.getElementById("div-generate-comeback").style.display = "flex";
             document.getElementById("generate-dataset-progress-tab").style.display = "flex";
@@ -5602,7 +5598,6 @@ const initiate_generate = async (resume = false) => {
           $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
           setNavButtonHidden("prevBtn", true);
           document.getElementById("start-over-btn").style.display = "none";
-          document.getElementById("div-vertical-progress-bar").style.display = "none";
           document.getElementById("wrapper-wrap").style.display = "flex";
           document.getElementById("div-generate-comeback").style.display = "none";
           document.getElementById("generate-dataset-progress-tab").style.display = "flex";

@@ -54,8 +54,8 @@ export const guidedSaveProgress = async () => {
   window.sodaJSONObj["samples-table-data"] = window.samplesTableData;
 
   // Save the current version of SODA as the user should be taken back to the first page when the app is updated
-  const currentAppVersion = document.getElementById("version").innerHTML;
-  window.sodaJSONObj["last-version-of-soda-used"] = currentAppVersion;
+  const appVersion = useGlobalStore.getState().appVersion;
+  window.sodaJSONObj["last-version-of-soda-used"] = appVersion;
 
   window.fs.writeFileSync(guidedFilePath, JSON.stringify(window.sodaJSONObj, null, 2));
 };

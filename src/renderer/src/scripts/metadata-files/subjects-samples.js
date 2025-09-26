@@ -46,30 +46,6 @@ window.samplesFileData = [];
 var headersArrSubjects = [];
 var headersArrSamples = [];
 
-window.showForm = (type) => {
-  if (type !== "edit") {
-    window.clearAllSubjectFormFields(subjectsFormDiv);
-  }
-  subjectsFormDiv.style.display = "flex";
-  $("#create_subjects-tab").removeClass("show");
-  $("#create_subjects-tab").css("display", "none");
-  $("#footer-div-subjects").css("display", "none");
-  $("#btn-add-custom-field").show();
-  $("#sidebarCollapse").prop("disabled", "true");
-};
-
-window.showFormSamples = (type) => {
-  if (type !== "edit") {
-    window.clearAllSubjectFormFields(samplesFormDiv);
-  }
-  samplesFormDiv.style.display = "flex";
-  $("#create_samples-tab").removeClass("show");
-  $("#create_samples-tab").css("display", "none");
-  $("#footer-div-samples").css("display", "none");
-  $("#btn-add-custom-field-samples").show();
-  $("#sidebarCollapse").prop("disabled", "true");
-};
-
 var prevSubID = "";
 var prevSubIDSingle = "";
 var selectHTMLSubjects =
@@ -995,27 +971,6 @@ window.edit_current_additional_link_id = async (ev) => {
   }
 };
 
-const loadSubjectInformation = (ev, subjectID) => {
-  // 1. load fields for form
-  window.showForm("display", true);
-  $("#btn-edit-subject").css("display", "inline-block");
-  $("#btn-add-subject").css("display", "none");
-  window.clearAllSubjectFormFields(subjectsFormDiv);
-  window.populateForms(subjectID, "", "free-form");
-  $("#btn-edit-subject").unbind("click");
-  $("#btn-edit-subject").click(function () {
-    editSubject(ev, subjectID);
-  });
-  $("#new-custom-header-name").keyup(function () {
-    var customName = $(this).val().trim();
-    if (customName !== "") {
-      $("#button-confirm-custom-header-name").show();
-    } else {
-      $("#button-confirm-custom-header-name").hide();
-    }
-  });
-};
-
 window.populateForms = (subjectID, type, curationMode) => {
   // Initialize variables shared between different curation modes and set them
   // based on curationMode passed in as parameter
@@ -1229,135 +1184,6 @@ window.populateFormsSamples = (subjectID, sampleID, type, curationMode) => {
       }
     });
   }
-};
-
-const loadSampleInformation = (ev, subjectID, sampleID) => {
-  // 1. load fields for form
-  window.showFormSamples("display", true);
-  $("#btn-edit-sample").css("display", "inline-block");
-  $("#btn-add-sample").css("display", "none");
-  window.clearAllSubjectFormFields(samplesFormDiv);
-  window.populateFormsSamples(subjectID, sampleID, "", "free-form");
-  $("#btn-edit-sample").unbind("click");
-  $("#btn-edit-sample").click(function () {
-    editSample(ev, sampleID);
-  });
-  $("#new-custom-header-name-samples").keyup(function () {
-    var customName = $(this).val().trim();
-    if (customName !== "") {
-      $("#button-confirm-custom-header-name-samples").show();
-    } else {
-      $("#button-confirm-custom-header-name-samples").hide();
-    }
-  });
-};
-
-const editSubject = (ev, subjectID) => {
-  for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
-    if (field.value.trim() !== "" && field.value !== undefined && field.value !== "Select") {
-      // if it's age, then add age info input (day/week/month/year)
-      if (field.name === "Age") {
-        if ($("#bootbox-subject-age-info").val() !== "Select") {
-          field.value = field.value + " " + $("#bootbox-subject-age-info").val();
-        }
-      }
-      if (field.name === "Sex") {
-        if ($("#bootbox-subject-sex").val() === "Unknown") {
-          field.value = "";
-        } else {
-          field.value = field.value;
-        }
-      }
-      window.subjectsFileData.push(field.value);
-    } else {
-      window.subjectsFileData.push("");
-    }
-  }
-  var currentRow = $(ev).parents()[2];
-  var newID = $("#bootbox-subject-id").val();
-  if (newID === subjectID) {
-    for (var i = 1; i < window.subjectsTableData.length; i++) {
-      if (window.subjectsTableData[i][0] === subjectID) {
-        window.subjectsTableData[i] = window.subjectsFileData;
-        break;
-      }
-    }
-    hideForm("subject");
-  } else {
-    var table = document.getElementById("table-subjects");
-    var duplicate = false;
-    var error = "";
-    var rowcount = table.rows.length;
-    for (var i = 1; i < rowcount; i++) {
-      if (newID === table.rows[i].cells[1].innerText) {
-        duplicate = true;
-        break;
-      }
-    }
-    if (duplicate) {
-      error =
-        "A similar subject_id already exists. Please either delete the existing subject_id or choose a different subject_id.";
-      Swal.fire("Duplicate subject_id", error, "error");
-    } else {
-      for (var i = 1; i < window.subjectsTableData.length; i++) {
-        if (window.subjectsTableData[i][0] === subjectID) {
-          window.subjectsTableData[i] = window.subjectsFileData;
-          break;
-        }
-      }
-      $(currentRow)[0].cells[1].innerText = newID;
-      hideForm("subject");
-    }
-  }
-  window.subjectsFileData = [];
-};
-
-const editSample = (ev, sampleID) => {
-  for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
-    if (field.value.trim() !== "" && field.value !== undefined && field.value !== "Select") {
-      window.samplesFileData.push(field.value);
-    } else {
-      window.samplesFileData.push("");
-    }
-  }
-  var currentRow = $(ev).parents()[2];
-  var newID = $("#bootbox-sample-id").val();
-  if (newID === sampleID) {
-    for (var i = 1; i < window.samplesTableData.length; i++) {
-      if (window.samplesTableData[i][1] === sampleID) {
-        window.samplesTableData[i] = window.samplesFileData;
-        break;
-      }
-    }
-    $(currentRow)[0].cells[1].innerText = window.samplesFileData[0];
-    hideForm("sample");
-  } else {
-    var table = document.getElementById("table-samples");
-    var duplicate = false;
-    var error = "";
-    var rowcount = table.rows.length;
-    for (var i = 1; i < rowcount; i++) {
-      if (newID === table.rows[i].cells[1].innerText) {
-        duplicate = true;
-        break;
-      }
-    }
-    if (duplicate) {
-      error =
-        "A similar sample_id already exists. Please either delete the existing sample_id or choose a different sample_id.";
-      Swal.fire("Duplicate sample_id", error, "error");
-    } else {
-      for (var i = 1; i < window.samplesTableData.length; i++) {
-        if (window.samplesTableData[i][1] === sampleID) {
-          window.samplesTableData[i] = window.samplesFileData;
-          break;
-        }
-      }
-      $(currentRow)[0].cells[1].innerText = newID;
-      hideForm("sample");
-    }
-  }
-  window.samplesFileData = [];
 };
 
 window.delete_current_protocol_id = (ev) => {
