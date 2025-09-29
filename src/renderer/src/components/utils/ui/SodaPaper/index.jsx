@@ -1,3 +1,4 @@
+import React from "react";
 import { Paper } from "@mantine/core";
 
 const SodaPaper = ({ children }) => {

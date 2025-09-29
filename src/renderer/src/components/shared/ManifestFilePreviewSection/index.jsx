@@ -1,6 +1,7 @@
+import React from "react";
 import SodaPaper from "../../utils/ui/SodaPaper";
 import { Text, Center, Button, Stack } from "@mantine/core";
-import { handleOrganizeDsGenerateLocalManifestCopyButtonClick } from "./utils";
+// import { handleOrganizeDsGenerateLocalManifestCopyButtonClick } from "./utils";
 
 const ManifestFilePreviewSection = ({ id }) => {
   const handleClick = () => {
@@ -13,7 +14,8 @@ const ManifestFilePreviewSection = ({ id }) => {
   };
 
   const handleGenerateLocalCopy = async () => {
-    await handleOrganizeDsGenerateLocalManifestCopyButtonClick();
+    // await handleOrganizeDsGenerateLocalManifestCopyButtonClick();
+    console.log("TEst event");
   };
 
   return (

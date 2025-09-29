@@ -175,7 +175,7 @@ window.uploadDatasetDropHandler = async (ev) => {
                   This dataset is not following the SPARC Dataset Structure (SDS). It is expected that each of the high-level folders in this dataset is named after one of the SDS folders.
                   <br/>
                   See the "Data Organization" section of the SPARC documentation for more 
-                  <a target="_blank" href="https://docs.sparc.science/docs/sparc-dataset-structure">details</a>
+                  <a target="_blank" href="https://docs.sparc.science/docs/folders-and-files#data-folders">details</a>
                   </div>`,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
@@ -628,7 +628,7 @@ window.importLocalDataset = async (folderPath) => {
               This dataset is not following the SPARC Dataset Structure (SDS). It is expected that each of the high-level folders in this dataset is named after one of the SDS folders.
               <br/>
               See the "Data Organization" section of the SPARC documentation for more 
-              <a target="_blank" href="https://docs.sparc.science/docs/sparc-dataset-structure">details</a>
+              <a target="_blank" href="https://docs.sparc.science/docs/folders-and-files#data-folders">details</a>
               </div>`,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
