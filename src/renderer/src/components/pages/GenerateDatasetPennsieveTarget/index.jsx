@@ -6,7 +6,7 @@ import useGlobalStore from "../../../stores/globalStore";
 
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
-import CheckboxCard from "../../buttons/CheckboxCard";
+import CheckboxCard from "../../cards/CheckboxCard";
 import NavigationButton from "../../buttons/Navigation";
 
 import {

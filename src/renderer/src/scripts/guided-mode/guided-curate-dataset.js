@@ -3231,19 +3231,29 @@ const doTheHack = async () => {
 };
 // doTheHack();
 // Add the event listener for the Data importation component
-const dragDropElementId = document.getElementById("data-importer-dropzone");
-dragDropElementId.addEventListener("click", (event) => {
+const gmDragDropElementId = document.getElementById("gm-data-importer-dropzone");
+gmDragDropElementId.addEventListener("click", (event) => {
   event.preventDefault();
   window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog", {
     importRelativePath: "data/",
   });
 });
 // Add a drop listener that handles the drop event
-dragDropElementId.addEventListener("drop", (event) => {
+gmDragDropElementId.addEventListener("drop", (event) => {
   event.preventDefault();
   const itemsDroppedInFileExplorer = Array.from(event.dataTransfer.files).map((file) => file.path);
   window.electron.ipcRenderer.send("file-explorer-dropped-datasets", {
     filePaths: itemsDroppedInFileExplorer,
     importRelativePath: "data/",
   });
+});
+
+const ffmDragDropElementId = document.getElementById("ffm-data-importer-dropzone");
+ffmDragDropElementId.addEventListener("click", (event) => {
+  event.preventDefault();
+  window.uploadDatasetClickHandler();
+});
+ffmDragDropElementId.addEventListener("drop", (event) => {
+  event.preventDefault();
+  window.uploadDatasetDropHandler(event);
 });

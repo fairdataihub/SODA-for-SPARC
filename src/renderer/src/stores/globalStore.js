@@ -21,6 +21,7 @@ import { stepperSlice } from "./slices/stepperSlice";
 import { guidedModeProgressCardsSlice } from "./slices/guidedModeProgressCardsSlice";
 import { navButtonStateSlice } from "./slices/navButtonStateSlice";
 import { appConfigSlice } from "./slices/appConfigSlice";
+import { stateDisplaySlice } from "./slices/stateDisplaySlice";
 
 const useGlobalStore = create(
   immer((set, ...a) => ({
@@ -45,6 +46,7 @@ const useGlobalStore = create(
     ...stepperSlice(set, ...a),
     ...guidedModeProgressCardsSlice(set, ...a),
     ...navButtonStateSlice(set, ...a),
+    ...stateDisplaySlice(set, ...a),
   }))
 );
 

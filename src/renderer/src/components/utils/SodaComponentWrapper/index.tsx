@@ -1,6 +1,6 @@
 import { MantineProvider, createTheme, MantineColorsTuple } from "@mantine/core";
 
-const myColor: MantineColorsTuple = [
+const primary: MantineColorsTuple = [
   "#ecf4ff",
   "#dce4f5",
   "#b9c7e2",
@@ -15,21 +15,21 @@ const myColor: MantineColorsTuple = [
 
 const theme = createTheme({
   colors: {
-    SodaGreen: [
-      "#13716d",
-      "#13716d",
-      "#13716d",
-      "#13716d",
-      "#13716d",
-      "#13716d",
-      "#13716d",
-      "#13716d",
-      "#13716d",
-      "#13716d",
-    ],
-    myColor,
+    // SodaGreen: [
+    //   "#13716d",
+    //   "#13716d",
+    //   "#13716d",
+    //   "#13716d",
+    //   "#13716d",
+    //   "#13716d",
+    //   "#13716d",
+    //   "#13716d",
+    //   "#13716d",
+    //   "#13716d",
+    // ],
+    primary, // ✅ register palette as "primary"
   },
-  primaryColor: "myColor",
+  primaryColor: "primary", // ✅ Mantine now uses this as the main brand color
   fontSizes: {
     xs: "0.8rem",
     sm: "0.9rem",
@@ -38,6 +38,14 @@ const theme = createTheme({
     xl: "1.4rem",
   },
   components: {
+    Paper: {
+      styles: {
+        root: {
+          backgroundColor: "var(--mantine-color-primary-0)",
+          border: "1px solid var(--mantine-color-primary-4)",
+        },
+      },
+    },
     Tooltip: {
       styles: {
         root: {

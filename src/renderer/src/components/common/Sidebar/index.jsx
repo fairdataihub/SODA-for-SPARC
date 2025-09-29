@@ -8,7 +8,17 @@ import {
   IconLogout,
   IconSwitchHorizontal,
 } from "@tabler/icons-react";
-import { Code, Group, Text, UnstyledButton, ThemeIcon, Box, Image, Stack } from "@mantine/core";
+import {
+  Code,
+  Group,
+  Text,
+  UnstyledButton,
+  ThemeIcon,
+  Box,
+  Image,
+  Stack,
+  Divider,
+} from "@mantine/core";
 import classes from "./Sidebar.module.css";
 
 const links = [
@@ -55,7 +65,7 @@ const Sidebar = () => {
   return (
     <nav className={classes.navbar}>
       <div className={classes.navbarMain}>
-        <Stack align="center" mb="lg" gap="xs">
+        <Stack align="center" mb="xl" gap="xs">
           <Image src="./img/logo-new-green.png" alt="Logo" w={90} gap="0px" />
           <Text fw={600} size="xl" c="var(--color-light-green)">
             SODA
@@ -63,6 +73,7 @@ const Sidebar = () => {
           <Code fw={700} id="version">
             {`${appVersion}`}
           </Code>
+          <Divider my="sm" />
         </Stack>
 
         {links.map((link) => {

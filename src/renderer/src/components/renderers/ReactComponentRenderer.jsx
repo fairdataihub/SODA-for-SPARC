@@ -27,10 +27,10 @@ import ProgressStepper from "../common/ProgressStepper";
 import ManifestFilePreviewSection from "../shared/ManifestFilePreviewSection";
 import DropDownNote from "../utils/ui/DropDownNote";
 import Sidebar from "../common/Sidebar";
-import HomePageCards from "../buttons/HomePageCards";
+import HomePageCards from "../cards/HomePageCards";
 import GuidedModeProgressCards from "../guided/GuidedModeProgressCards";
-import { CardButton } from "../buttons/CardButton";
-import CheckboxCard from "../buttons/CheckboxCard";
+import { CardButton } from "../cards/CardButton";
+import CheckboxCard from "../cards/CheckboxCard";
 import { Divider } from "@mantine/core";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
@@ -149,10 +149,12 @@ const componentTypeRenderers = {
 
   "data-importer": (componentSlot) => {
     const props = {
+      dataImporterId: componentSlot.getAttribute("data-importer-id"),
       relativeFolderPathToImportDataInto: componentSlot.getAttribute(
         "data-relative-folder-path-to-import-data-into"
       ),
     };
+    console.log("Rendering DataImporter with props:", props);
     renderComponent(componentSlot, <DataImporter {...props} />);
   },
   "performance-id-management-page": (componentSlot) => {

@@ -102,14 +102,18 @@
               justify-content: flex-start;
               height: 100%;
             ">
-
             <div class="individual-question getting-started show" id="Question-getting-started-1"
               style="text-align: -webkit-center; height: 100%">
               <div class="ui form" style="width: 100%; text-align: -webkit-center; height: 100%">
                 <div class="grouped fields" style="height: 90%; padding-top: 2rem">
                   <h1 class="text-sub-step-title">Step 1: Import data folder</h1>
                   <div
-                    id="drag-n-drop-container"
+                    data-component-type="data-importer"
+                    data-importer-id="ffm-data-importer-dropzone"
+                    data-relative-folder-path-to-import-data-into="data/"
+                    class="guided--section"
+                  ></div>
+                  <div
                     class="dashed-border"
                     style="border-color: #13716D; border-style: dashed; flex-direction: column; height: 100%; margin-top: 2rem; background-color: #13716d14; display: flex; justify-content: space-evenly; align-items: center; border-radius: 4px;"
                     droppable="true"
@@ -127,23 +131,6 @@
                         >Browse Computer</button>
                     </div>
                     <p id="org-dataset-folder-path" style="padding-left: 1rem; padding-right: 1rem;"></p>
-                    <span class="hidden" id="para-org-dataset-path" style="color: red;">Please only drag and drop a folder!</span>
-                  </div>
-                  <div>
-                    <div id="loading_local_dataset" class="circular" style="visibility: hidden; top: -25%;">
-                      <div class="inner" style="top: 90%; left: 20%"></div>
-                      <div id="local_dataset_number" class="number" style="top: 129%; left: 50%">
-                        0%
-                      </div>
-                      <div class="circle">
-                        <div class="bar left">
-                          <div id="left-side_less_than_50" class="progress"></div>
-                        </div>
-                        <div class="bar right">
-                          <div id="right-side_greater_than_50" class="progress"></div>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>

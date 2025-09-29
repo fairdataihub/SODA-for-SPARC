@@ -40,8 +40,8 @@ const HomeCard = ({ id, icon, title, description, buttonLabel, buttonColor, onCl
       w="700px"
       style={{
         minHeight: 220,
-        borderColor: hovered ? "var(--mantine-color-blue-6)" : "var(--mantine-color-gray-3)",
-        backgroundColor: hovered ? "var(--mantine-color-blue-0)" : "#fff",
+        borderColor: hovered ? "var(--mantine-color-primary-6)" : "var(--mantine-color-gray-3)",
+        backgroundColor: hovered ? "var(--mantine-color-primary-0)" : "#fff",
         opacity: 1,
         transition: "border 0.2s, background 0.2s, transform 0.2s, box-shadow 0.2s",
         transform: hovered ? "translateY(-2px)" : "none",

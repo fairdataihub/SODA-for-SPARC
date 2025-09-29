@@ -3,11 +3,13 @@ import { Dropzone } from "@mantine/dropzone";
 import { IconUpload, IconFile, IconX } from "@tabler/icons-react";
 import FullWidthContainer from "../../containers/FullWidthContainer";
 import DatasetTreeViewRenderer from "../DatasetTreeViewRenderer";
+import StateDisplayContainer from "../../containers/StateDisplayContainer";
 
-const DataImporter = () => {
+const DataImporter = ({ dataImporterId }) => {
+  console.log("dataImporterId:", dataImporterId);
   return (
     <FullWidthContainer>
-      <Box w="100%" m={0} p={0} id="data-importer-dropzone">
+      <Box w="100%" m={0} p={0} id={dataImporterId}>
         <Dropzone
           onDrop={(event) => {
             event.preventDefault();
@@ -41,12 +43,17 @@ const DataImporter = () => {
           </Group>
         </Dropzone>
       </Box>
-      <DatasetTreeViewRenderer
-        allowStructureEditing={true}
-        hideSearchBar={true}
-        entityType={null}
-        fileExplorerId="guided-unstructured-data-import-tab"
-      />
+      {dataImporterId === "gm-data-importer-dropzone" && (
+        <DatasetTreeViewRenderer
+          allowStructureEditing={true}
+          hideSearchBar={true}
+          entityType={null}
+          fileExplorerId="guided-unstructured-data-import-tab"
+        />
+      )}
+      {dataImporterId === "ffm-data-importer-dropzone" && (
+        <StateDisplayContainer id="ffm-data-importer-dropzone" />
+      )}
     </FullWidthContainer>
   );
 };

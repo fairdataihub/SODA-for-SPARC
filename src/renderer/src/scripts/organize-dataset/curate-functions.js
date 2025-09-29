@@ -21,6 +21,7 @@ import {
   swalShowInfo,
 } from "../utils/swal-utils";
 import { setNavButtonDisabled, setNavButtonHidden } from "../../stores/slices/navButtonStateSlice";
+import { setStateDisplayData } from "../../stores/slices/stateDisplaySlice";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -96,7 +97,6 @@ window.uploadDatasetDropHandler = async (ev) => {
       };
 
       let moveForward = false;
-      document.getElementById("para-org-dataset-path").classList.add("hidden");
       let valid_dataset = window.verifySparcFolder(folderPath, "local");
 
       if (valid_dataset) {
@@ -127,11 +127,11 @@ window.uploadDatasetDropHandler = async (ev) => {
       }
 
       if (moveForward) {
+        console.log("Moving forward with folder path1:", folderPath);
         document.getElementById("org-dataset-folder-path").innerHTML = folderPath;
+        setStateDisplayData("org-dataset-folder-path", folderPath);
         setNavButtonDisabled("nextBtn", false);
       }
-    } else {
-      document.getElementById("para-org-dataset-path").classList.remove("hidden");
     }
   }
 };
@@ -417,7 +417,7 @@ window.addManifestDetailsToDatasetStructure = async (
   return datasetStructure;
 };
 
-window.uploadDatasetClickHandler = async (ev) => {
+window.uploadDatasetClickHandler = async () => {
   window.electron.ipcRenderer.send("open-file-dialog-upload-dataset");
 };
 
@@ -580,7 +580,10 @@ window.importLocalDataset = async (folderPath) => {
   }
 
   if (moveForward) {
+    console.log("Moving forward with folder path2:", folderPath);
+
     document.getElementById("org-dataset-folder-path").innerHTML = folderPath;
+    setStateDisplayData("org-dataset-folder-path", folderPath);
     setNavButtonDisabled("nextBtn", false);
   }
 };

@@ -1,7 +1,7 @@
 import { Text, Group } from "@mantine/core";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
-import CheckboxCard from "../../buttons/CheckboxCard";
+import CheckboxCard from "../../cards/CheckboxCard";
 
 const GenerateDatasetLocationSelectorPage = () => {
   return (

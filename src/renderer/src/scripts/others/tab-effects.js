@@ -10,6 +10,7 @@ import api from "../others/api/api";
 import { swalShowInfo } from "../utils/swal-utils";
 import { setNavButtonDisabled, setNavButtonHidden } from "../../stores/slices/navButtonStateSlice";
 import { setCurrentStep } from "../../stores/slices/stepperSlice";
+import { setStateDisplayData } from "../../stores/slices/stateDisplaySlice";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -3132,6 +3133,7 @@ window.resetCurationTabs = () => {
 
   // step 1
   $("#org-dataset-folder-path").text("");
+  setStateDisplayData("org-dataset-folder-path", null);
 
   // step 2
   $("#confirm-account-workspace").removeClass("selected");
@@ -3192,7 +3194,7 @@ window.resetCurationTabs = () => {
   window.globalGettingStarted1stQuestionBool = false;
 };
 
-window.exitCurate = async (resetProgressTabs) => {
+window.exitCurate = async () => {
   $("#dataset-loaded-message").hide();
   window.clickGuidedModeButton();
 };
@@ -3208,6 +3210,7 @@ window.wipeOutCurateProgress = () => {
 
   // reset imported dataset path
   document.querySelector("#org-dataset-folder-path").textContent = "";
+  setStateDisplayData("org-dataset-folder-path", null);
 
   // reset page 2 button selections
   $("#confirm-account-workspace").removeClass("selected");

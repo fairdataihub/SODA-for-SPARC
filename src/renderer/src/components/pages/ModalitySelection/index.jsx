@@ -14,8 +14,7 @@ import {
 } from "@mantine/core";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
-import GuidedSimpleButton from "../../buttons/GuidedButtons/GuidedSimpleButton";
-import CheckboxCard from "../../buttons/CheckboxCard";
+import CheckboxCard from "../../cards/CheckboxCard";
 import NavigationButton from "../../buttons/Navigation";
 
 import {
