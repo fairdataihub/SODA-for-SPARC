@@ -859,7 +859,7 @@ const guidedCreateDataset = async (bfAccount, datasetName) => {
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.CREATE_NEW_DATASET,
       datasetName,
-      kombuchaEnums.Status.SUCCCESS,
+      kombuchaEnums.Status.SUCCESS,
       {
         value: 1,
         dataset_id: newId,

@@ -103,10 +103,13 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
         });
         throw errorArray;
       }
+
       window.sodaJSONObj["previously-selected-dataset-id-to-upload-data-to"] =
         selectedDatasetIdToUploadDataTo;
       window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] =
         selectedDatasetIdToUploadDataTo;
+      window.sodaJSONObj["digital-metadata"]["pennsieve-int-id"] =
+        useGlobalStore.getState().selectedDatasetIntIdToUploadTo;
       window.sodaJSONObj["generate-dataset"] = {
         "dataset-name": selectedDatasetNameToUploadDataTo,
         destination: "ps",
