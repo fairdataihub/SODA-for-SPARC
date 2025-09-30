@@ -216,7 +216,6 @@ document.getElementById("button-homepage-guided-mode").addEventListener("click",
 
 export const guidedTransitionFromHome = async () => {
   //Hide the home screen
-  await swalShowInfo("Transitioning from home...", "to guided mode");
   document.getElementById("soda-home-page").classList.add("hidden");
   document.getElementById("curation-preparation-parent-tab").classList.remove("hidden");
   document.getElementById("guided-header-div").classList.remove("hidden");
