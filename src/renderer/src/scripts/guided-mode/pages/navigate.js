@@ -14,7 +14,7 @@ import { existingDataset, modifyDataset } from "../../../assets/lotties/lotties"
 import Swal from "sweetalert2";
 import { clientError } from "../../others/http-error-handler/error-handler";
 import client from "../../client";
-import { swalShowError } from "../../utils/swal-utils";
+import { swalShowError, swalShowInfo } from "../../utils/swal-utils";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -216,6 +216,7 @@ document.getElementById("button-homepage-guided-mode").addEventListener("click",
 
 export const guidedTransitionFromHome = async () => {
   //Hide the home screen
+  await swalShowInfo("Transitioning from home...", "to guided mode");
   document.getElementById("soda-home-page").classList.add("hidden");
   document.getElementById("curation-preparation-parent-tab").classList.remove("hidden");
   document.getElementById("guided-header-div").classList.remove("hidden");
@@ -227,6 +228,7 @@ export const guidedTransitionFromHome = async () => {
   });
 
   window.CURRENT_PAGE = document.getElementById("guided-select-starting-point-tab");
+  await window.openPage("guided-select-starting-point-tab");
 
   document.getElementById("guided-footer-div").classList.remove("hidden");
 };

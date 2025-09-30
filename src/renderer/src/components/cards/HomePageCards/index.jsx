@@ -1,7 +1,7 @@
 import { Button, Card, Text, Stack, Center, ActionIcon } from "@mantine/core";
 import { IconArrowRight, IconDatabase, IconUpload } from "@tabler/icons-react";
 import { useHover } from "@mantine/hooks";
-import classes from "../CheckboxCard/CheckboxCard.module.css";
+import classes from "../cards.module.css";
 
 const cardData = [
   {
@@ -31,27 +31,18 @@ const HomeCard = ({ id, icon, title, description, buttonLabel, buttonColor, onCl
     <Card
       id={id}
       ref={ref}
-      shadow={hovered ? "md" : "xs"}
-      radius="md"
       padding="lg"
       m="sm"
-      withBorder
-      className={hovered ? classes.selected : ""}
+      className={classes.card}
       w="700px"
+      h="220px"
       style={{
-        minHeight: 220,
-        borderColor: hovered ? "var(--mantine-color-primary-6)" : "var(--mantine-color-gray-3)",
-        backgroundColor: hovered ? "var(--mantine-color-primary-0)" : "#fff",
-        opacity: 1,
-        transition: "border 0.2s, background 0.2s, transform 0.2s, box-shadow 0.2s",
-        transform: hovered ? "translateY(-2px)" : "none",
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
         textAlign: "center",
         position: "relative",
-        cursor: "pointer",
       }}
       onClick={onClick}
     >

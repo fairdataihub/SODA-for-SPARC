@@ -40,10 +40,7 @@ const theme = createTheme({
   components: {
     Paper: {
       styles: {
-        root: {
-          backgroundColor: "var(--mantine-color-primary-0)",
-          border: "1px solid var(--mantine-color-primary-4)",
-        },
+        root: {},
       },
     },
     Tooltip: {

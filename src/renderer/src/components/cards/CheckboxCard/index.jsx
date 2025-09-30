@@ -1,7 +1,7 @@
 import useGlobalStore from "../../../stores/globalStore";
 import { Checkbox, Text, Stack, Badge, Card, Center, ActionIcon, Button } from "@mantine/core";
 import { useHover } from "@mantine/hooks";
-import classes from "./CheckboxCard.module.css";
+import classes from "../cards.module.css";
 import pennsieveLogo from "../../../assets/img/pennsieveLogo.png";
 import {
   setCheckboxCardChecked,
@@ -54,6 +54,10 @@ const CheckboxCard = ({ id }) => {
       </Button>
     );
   }
+  if (checked) {
+    console.log("classes.cardSelected:", classes.cardSelected);
+    console.log("checked:", checked);
+  }
   return (
     <Card
       id={id}
@@ -64,21 +68,12 @@ const CheckboxCard = ({ id }) => {
       padding="lg"
       m="sm"
       withBorder
-      className={`${checked ? "selected" : ""} ${additionalClasses}`}
+      className={`${classes.card} ${checked ? classes.cardSelected : ""} ${additionalClasses}`}
       style={{
         width: isCompact ? 180 : 270,
         height: isCompact ? 150 : "auto",
         minHeight: isCompact ? 150 : 180,
-        borderColor: checked ? "var(--mantine-color-blue-6)" : "var(--mantine-color-gray-3)",
-        backgroundColor: isDisabled
-          ? "var(--mantine-color-gray-0)"
-          : checked
-            ? "var(--mantine-color-blue-0)"
-            : "#fff",
         opacity: isDisabled ? 0.8 : 1,
-        transition: "border 0.2s, background 0.2s, transform 0.2s, box-shadow 0.2s",
-        transform: hovered && isCompact ? "translateY(-2px)" : "none",
-        display: "flex",
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",

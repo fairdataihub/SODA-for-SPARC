@@ -1,4 +1,5 @@
 import { Card, Center, Text, Tooltip } from "@mantine/core";
+import classes from "../cards.module.css";
 import { IconCirclePlus, IconFolderDown, IconFileDownload } from "@tabler/icons-react";
 import { useHover } from "@mantine/hooks";
 
@@ -42,20 +43,7 @@ export function CardButton({ id }) {
       onClick={handleClick}
       shadow={hovered ? "sm" : "xs"}
       id={id}
-      style={{
-        width: 180,
-        height: 150,
-        cursor: "pointer",
-        borderColor: hovered ? "var(--mantine-color-blue-6)" : "var(--mantine-color-gray-4)",
-        backgroundColor: hovered ? "var(--mantine-color-blue-0)" : "#fff",
-        transition: "border 0.2s, background 0.2s, transform 0.2s, box-shadow 0.2s",
-        transform: hovered ? "translateY(-2px)" : "none",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        textAlign: "center",
-      }}
+      className={classes.card}
     >
       <Center mb="sm">{icon}</Center>
       <Text size="md" lh={1.3} fw={450}>

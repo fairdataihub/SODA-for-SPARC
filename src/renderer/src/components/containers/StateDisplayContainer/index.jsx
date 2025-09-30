@@ -1,5 +1,6 @@
-import React, { useEffect, useMemo } from "react";
-import { Stack, Text, Paper, Group } from "@mantine/core";
+import React, { useMemo } from "react";
+import { Stack, Text, Paper, Group, ActionIcon, Tooltip } from "@mantine/core";
+import { IconEdit } from "@tabler/icons-react";
 import useGlobalStore from "../../../stores/globalStore";
 
 // Example config: each id maps to an array of row configs
@@ -8,6 +9,8 @@ const dataConfig = {
     {
       rowKey: "org-dataset-folder-path",
       isEditable: false,
+      rowDisplayName: "Dataset Folder Path",
+      editable: false,
     },
   ],
   // Add more ids and their row configs here
@@ -25,21 +28,16 @@ const StateDisplayContainer = ({ id }) => {
   // Calculate the longest left label for alignment
   const maxLabelLength = useMemo(() => {
     return rowConfigs.reduce((max, row) => {
-      return row.rowKey.length > max ? row.rowKey.length : max;
+      const label = row.rowDisplayName || row.rowKey;
+      return label.length > max ? label.length : max;
     }, 0);
   }, [rowConfigs]);
 
   // If all of the row values are undefined, show placeholder
   if (rowValues.every((value) => value === undefined)) {
     return (
-      <Paper
-        shadow="md"
-        radius={12}
-        p={24}
-        withBorder
-        style={{ background: "#f8fafc", width: "100%" }}
-      >
-        <Text align="center" color="gray.6" fw={500}>
+      <Paper radius="md" p="lg" withBorder>
+        <Text ta="center" c="gray.6" fw={500}>
           No Data Available
         </Text>
       </Paper>
@@ -47,33 +45,54 @@ const StateDisplayContainer = ({ id }) => {
   }
 
   return (
-    <Paper>
-      <Stack spacing="md" align="center" justify="center">
+    <Paper withBorder radius="md" p="sm">
+      <Stack gap="md" align="stretch">
         {rowConfigs.map((row, idx) => (
           <Group
             key={row.rowKey}
-            position="apart"
-            noWrap
-            style={{
-              width: "100%",
-              padding: "8px 0",
-              borderBottom: idx !== rowConfigs.length - 1 ? "1px solid #e0e0e0" : "none",
-            }}
+            justify="space-between"
+            wrap="nowrap"
+            w="100%"
+            px="sm"
+            py="xs"
+            bd={
+              idx !== rowConfigs.length - 1
+                ? "0 0 1px solid var(--mantine-color-gray-3)"
+                : undefined
+            }
           >
             <Text
               fw={600}
               c="gray.8"
+              ta="right"
+              mr="md"
               style={{
                 minWidth: `${maxLabelLength + 2}ch`,
-                textAlign: "right",
-                marginRight: 16,
               }}
             >
-              {row.rowKey}:
+              {(row.rowDisplayName || row.rowKey) + ":"}
             </Text>
-            <Text fw={500} c="gray.7" style={{ textAlign: "left", flex: 1 }}>
-              {rowValues[idx] ?? <span style={{ color: "#bdbdbd" }}>No Value</span>}
+            <Text fw={500} c="gray.7" ta="left" flex={1}>
+              {rowValues[idx] ?? (
+                <Text component="span" c="gray.4">
+                  No Value
+                </Text>
+              )}
             </Text>
+            {row.isEditable && (
+              <Tooltip label="Edit" position="right" withArrow>
+                <ActionIcon
+                  variant="light"
+                  size="sm"
+                  onClick={() => {
+                    // TODO: Implement edit logic for this row
+                    console.log("Edit clicked for", row.rowKey);
+                  }}
+                >
+                  <IconEdit size={18} />
+                </ActionIcon>
+              </Tooltip>
+            )}
           </Group>
         ))}
       </Stack>

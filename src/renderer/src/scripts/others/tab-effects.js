@@ -11,6 +11,7 @@ import { swalShowInfo } from "../utils/swal-utils";
 import { setNavButtonDisabled, setNavButtonHidden } from "../../stores/slices/navButtonStateSlice";
 import { setCurrentStep } from "../../stores/slices/stepperSlice";
 import { setStateDisplayData } from "../../stores/slices/stateDisplaySlice";
+import useGlobalStore from "../../stores/globalStore";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -272,7 +273,7 @@ const fill_info_details = () => {
     // generating a new dataset show local dataset path
     addCardDetail(
       "Local dataset path",
-      document.getElementById("org-dataset-folder-path").innerHTML,
+      useGlobalStore.getState()?.stateDisplay?.["org-dataset-folder-path"],
       4,
       "Question-getting-started-1",
       true
@@ -3132,7 +3133,6 @@ window.resetCurationTabs = () => {
   $("#generate-dataset-progress-tab").css("display", "none");
 
   // step 1
-  $("#org-dataset-folder-path").text("");
   setStateDisplayData("org-dataset-folder-path", null);
 
   // step 2
@@ -3209,7 +3209,6 @@ window.wipeOutCurateProgress = () => {
   };
 
   // reset imported dataset path
-  document.querySelector("#org-dataset-folder-path").textContent = "";
   setStateDisplayData("org-dataset-folder-path", null);
 
   // reset page 2 button selections

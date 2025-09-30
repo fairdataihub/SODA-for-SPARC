@@ -128,7 +128,6 @@ window.uploadDatasetDropHandler = async (ev) => {
 
       if (moveForward) {
         console.log("Moving forward with folder path1:", folderPath);
-        document.getElementById("org-dataset-folder-path").innerHTML = folderPath;
         setStateDisplayData("org-dataset-folder-path", folderPath);
         setNavButtonDisabled("nextBtn", false);
       }
@@ -582,7 +581,6 @@ window.importLocalDataset = async (folderPath) => {
   if (moveForward) {
     console.log("Moving forward with folder path2:", folderPath);
 
-    document.getElementById("org-dataset-folder-path").innerHTML = folderPath;
     setStateDisplayData("org-dataset-folder-path", folderPath);
     setNavButtonDisabled("nextBtn", false);
   }

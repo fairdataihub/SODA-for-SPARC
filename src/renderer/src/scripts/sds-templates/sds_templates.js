@@ -25,7 +25,7 @@ const transitionToSDSPage = () => {
 };
 
 $("#sds-templates").on("click", () => {
-  window.organizeDSglobalPath.value = "";
+  // window.organizeDSglobalPath.value = "";
 
   // Reset lazy loading
   resetLazyLoading();

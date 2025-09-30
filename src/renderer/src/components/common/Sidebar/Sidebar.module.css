@@ -61,8 +61,7 @@
 
 .link[data-active],
 .link.linkActive {
-  background: var(--mantine-color-blue-light);
-  color: var(--mantine-color-blue-7);
+  background: var(--mantine-color-primary-2);
   border-radius: var(--mantine-radius-md);
   font-weight: 600;
   box-shadow: 0 2px 8px 0 rgba(34, 139, 230, 0.08);
