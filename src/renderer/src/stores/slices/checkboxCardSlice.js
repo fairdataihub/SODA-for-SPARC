@@ -183,16 +183,6 @@ export const checkboxCardSlice = (set) => ({
       checked: false,
       additionalClasses: "option-card radio-button",
     },
-    /*
-     <div
-      data-component-type="checkbox-card"
-      data-button-id="dataset-upload-new-dataset"
-    ></div>
-    <div
-      data-component-type="checkbox-card"
-      data-button-id="dataset-upload-existing-dataset"
-    ></div>
-    */
   },
 });
 

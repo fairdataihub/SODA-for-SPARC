@@ -817,12 +817,12 @@
 }
 
 #generate-manifest-curate:checked .labelradiocurate-manifest.yes {
-  color: var(--color-light-green) !important;
+  color: var(--mantine-color-primary-6) !important;
 }
 
 .ui.icon.button {
   background: transparent;
-  color: var(--color-light-green);
+  color: var(--mantine-color-primary-6);
   padding: 2px !important;
   height: 20px;
 }

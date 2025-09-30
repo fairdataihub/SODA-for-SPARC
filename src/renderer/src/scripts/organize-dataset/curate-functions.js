@@ -2119,7 +2119,7 @@ const moveItemsHelper = (item, destination, category, currentDatasetPath) => {
 
 window.updateManifestLabelColor = (el) => {
   document.getElementById("label-manifest").style.color = el.checked
-    ? "var(--color-light-green)"
+    ? "var(--mantine-color-primary-6)"
     : "#303030";
   document.getElementById("label-manifest").style.fontWeight = el.checked ? "bold" : "normal";
 };

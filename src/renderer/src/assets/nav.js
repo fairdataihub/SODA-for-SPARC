@@ -95,7 +95,6 @@ window.handleSideBarTabClick = async (id, section) => {
 
   const freeFormItemsContainer = document.getElementById("free-form-folder-structure-container");
   const freeFormButtons = document.getElementById("organize-path-and-back-button-div");
-  const sectionRenderFileExplorer = event.target.dataset.render;
 
   // --- Organize section ---
   if (sectionId === "organize-section") {
@@ -132,13 +131,10 @@ window.handleSideBarTabClick = async (id, section) => {
       document.getElementById("organize_dataset_btn").click();
     }
 
-    // Reset objects if not rendering file explorer
-    if (sectionRenderFileExplorer !== "file-explorer") {
-      window.sodaJSONObj = {};
-      window.datasetStructureJSONObj = {};
-      window.subjectsTableData = [];
-      window.samplesTableData = [];
-    }
+    window.sodaJSONObj = {};
+    window.datasetStructureJSONObj = {};
+    window.subjectsTableData = [];
+    window.samplesTableData = [];
 
     window.organizeDSglobalPath = document.getElementById("guided-input-global-path");
     window.organizeDSglobalPath.value = "";

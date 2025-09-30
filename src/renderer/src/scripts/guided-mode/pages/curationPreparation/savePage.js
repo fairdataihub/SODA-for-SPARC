@@ -1,5 +1,6 @@
 import { error } from "jquery";
 import useGlobalStore from "../../../../stores/globalStore";
+import { isCheckboxCardChecked } from "../../../../stores/slices/checkboxCardSlice";
 
 const homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
 const guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
@@ -35,12 +36,8 @@ const updateGuidedDatasetName = (newDatasetName) => {
 export const savePageCurationPreparation = async (pageBeingLeftID) => {
   const errorArray = [];
   if (pageBeingLeftID === "guided-select-starting-point-tab") {
-    const startingNewCuration = document
-      .getElementById("guided-button-start-new-curation")
-      .classList.contains("selected");
-    const resumingExistingProgress = document
-      .getElementById("guided-button-resume-progress-file")
-      .classList.contains("selected");
+    const startingNewCuration = isCheckboxCardChecked("guided-button-start-new-curation");
+    const resumingExistingProgress = isCheckboxCardChecked("guided-button-resume-progress-file");
 
     if (!startingNewCuration && !resumingExistingProgress) {
       errorArray.push({

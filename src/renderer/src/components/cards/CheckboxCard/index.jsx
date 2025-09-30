@@ -29,8 +29,6 @@ const CheckboxCard = ({ id }) => {
 
     if (!checked) {
       setCheckboxCardChecked(id);
-    } else {
-      setCheckboxCardUnchecked(id);
     }
   };
 

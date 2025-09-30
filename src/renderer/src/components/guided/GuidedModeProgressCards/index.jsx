@@ -15,6 +15,9 @@ const generateProgressResumptionButton = (
   let buttonText;
   let color = "blue";
   let variant = "filled";
+  console.log("progressFileName:", progressFileName);
+  const appVersion = useGlobalStore.getState().appVersion;
+  console.log("App version:", appVersion);
 
   if (workspaceUserNeedsToSwitchTo) {
     if (!window.defaultBfAccount) {
@@ -43,7 +46,7 @@ const generateProgressResumptionButton = (
 
   if (boolAlreadyUploadedToPennsieve) {
     buttonText = "Share with the Curation Team";
-    color = "teal";
+    color = "green";
   } else if (datasetStartingPoint === "new") {
     buttonText = "Resume curation";
     color = "blue";
@@ -62,7 +65,7 @@ const generateProgressResumptionButton = (
       size="md"
       color={color}
       variant={variant}
-      onClick={() => window.guidedResumeProgress?.(progressFileName)}
+      onClick={() => window.guidedResumeProgress(progressFileName)}
     >
       {buttonText}
     </Button>
@@ -79,7 +82,7 @@ const GuidedModeProgressCards = () => {
   if (guidedModeProgressCardsLoadingText) {
     return (
       <Stack align="center" gap="md">
-        <Loader color="blue" type="bars" />
+        <Loader color="primary" type="bars" />
 
         <Text size="md" fw={500}>
           {guidedModeProgressCardsLoadingText}
@@ -140,7 +143,6 @@ const GuidedModeProgressCards = () => {
               return (
                 <Card
                   key={progressFileName}
-                  shadow="sm"
                   radius="md"
                   p="md"
                   w="100%"
@@ -158,13 +160,13 @@ const GuidedModeProgressCards = () => {
                           "https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=1000&q=80"
                         }
                         alt="Dataset banner image"
-                        w={100}
-                        h={100}
+                        w={80}
+                        h={80}
                         radius="md"
                         fit="cover"
                       />
                     ) : (
-                      <Avvvatars value={progressFileName} size={100} style="shape" />
+                      <Avvvatars value={progressFileName} size={80} style="shape" />
                     )}
 
                     {/* Section 2: Text */}

@@ -53,7 +53,7 @@ const GenerateDatasetPennsieveTargetPage = () => {
     if (isLoadingPennsieveDatasets) {
       return (
         <Stack align="center" mt="md">
-          <Loader size="md" />
+          <Loader size="md" color="primary" type="bars" />
           <Text size="md" align="center" fw={500}>
             Retrieving empty datasets from Pennsieve...
           </Text>

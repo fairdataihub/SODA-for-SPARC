@@ -1377,7 +1377,7 @@ input::-webkit-calendar-picker-indicator {
 }
 
 input:checked + .slider {
-  background-color: var(--color-light-green);
+  background-color: var(--mantine-color-primary-6);
 }
 
 input:focus + .slider {

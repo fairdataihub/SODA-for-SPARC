@@ -44,6 +44,18 @@ export function CardButton({ id }) {
       shadow={hovered ? "sm" : "xs"}
       id={id}
       className={classes.card}
+      style={{
+        width: 180,
+        height: 150,
+        minHeight: 150,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        textAlign: "center",
+        position: "relative",
+        cursor: "pointer",
+      }}
     >
       <Center mb="sm">{icon}</Center>
       <Text size="md" lh={1.3} fw={450}>

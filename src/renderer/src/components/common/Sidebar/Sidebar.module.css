@@ -48,8 +48,7 @@
 }
 
 .link:hover {
-  background: var(--mantine-color-blue-0, #f0f6ff);
-  color: var(--mantine-color-blue-7, #1971c2);
+  background: var(--mantine-color-primary-0, #f0f6ff);
   font-weight: 600;
   box-shadow: 0 2px 8px 0 rgba(34, 139, 230, 0.1);
   transform: translateY(-2px) scale(1.01);

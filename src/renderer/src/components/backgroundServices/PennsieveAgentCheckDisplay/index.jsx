@@ -133,7 +133,7 @@ const PennsieveAgentCheckDisplay = () => {
           <Text size="xl" fw={700}>
             Checking the status of the Pennsieve agent
           </Text>
-          <Loader color="blue" type="bars" />
+          <Loader color="primary" type="bars" />
         </Stack>
       </FullWidthContainer>
     );

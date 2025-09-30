@@ -23,7 +23,7 @@ const DataImporter = ({ dataImporterId }) => {
         >
           <Group justify="center" gap="xl" mih={140} style={{ pointerEvents: "none" }}>
             <Dropzone.Accept>
-              <IconUpload size={52} color="var(--mantine-color-blue-6)" stroke={1.5} />
+              <IconUpload size={52} color="var(--mantine-color-primary-6)" stroke={1.5} />
             </Dropzone.Accept>
             <Dropzone.Reject>
               <IconX size={52} color="var(--mantine-color-red-6)" stroke={1.5} />

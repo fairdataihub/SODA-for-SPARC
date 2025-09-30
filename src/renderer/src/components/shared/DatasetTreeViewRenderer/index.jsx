@@ -196,7 +196,7 @@ const FileItem = ({
     hovered || (contextMenuIsOpened && contextMenuRelativePath === relativePath);
 
   const getFileColor = () => {
-    if (fileIsSelected) return "var(--color-transparent-soda-green)";
+    if (fileIsSelected) return "var(--mantine-color-primary-0)";
     if (isHoveredOrSelected) return "rgba(0, 0, 0, 0.05)";
     return undefined;
   };
@@ -498,7 +498,7 @@ const DatasetTreeViewRenderer = ({
           </Center>
         ) : datasetRenderArrayIsLoading ? (
           <Center w="100%">
-            <Loader size="md" m="xs" />
+            <Loader size="md" color="primary" type="bars" m="xs" />
           </Center>
         ) : (
           <div

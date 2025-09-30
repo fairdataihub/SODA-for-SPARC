@@ -17,8 +17,12 @@ const NavigationButton = ({
   onClick,
 }) => {
   const { hovered, ref } = useHover();
+  if (hovered) {
+    console.log(`[NavigationButton] Hovered over buttonId: ${buttonId}`);
+  }
 
   const navigationButtonStates = useGlobalStore((state) => state.navigationButtonStates);
+  console.log("[NavigationButton] navigationButtonStates:", navigationButtonStates);
 
   const buttonState = navigationButtonStates?.[buttonId] || {};
   const isDisabled = buttonState.disabled || false;

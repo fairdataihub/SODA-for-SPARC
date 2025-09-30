@@ -80,6 +80,7 @@ const handleNextButtonVisibility = (targetPageID) => {
 };
 
 const handleSaveAndExitButtonVisibility = (targetPageID) => {
+  console.log("Target page ID for save and exit visibility:", targetPageID);
   if (targetPageID === "guided-select-starting-point-tab") {
     $("#guided-button-save-and-exit").css("visibility", "hidden");
   } else {

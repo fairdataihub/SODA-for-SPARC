@@ -47,10 +47,9 @@ const renderEntityList = (entityType, activeEntity, datasetEntityObj) => {
         p="xs"
         style={{
           width: "100%",
-          backgroundColor: isActive ? "#e3f2fd" : "transparent",
-          color: isActive ? "#0d47a1" : "#333",
+          backgroundColor: isActive ? "var(--mantine-color-primary-0)" : "transparent",
           border: "none",
-          borderLeft: `3px solid ${isActive ? "#2196f3" : "transparent"}`,
+          borderLeft: `3px solid ${isActive ? "var(--mantine-color-primary-6)" : "transparent"}`,
           cursor: "pointer",
           transition: "background-color 0.2s ease, border-color 0.2s ease",
           wordBreak: "break-word", // Apply word break for better wrapping
