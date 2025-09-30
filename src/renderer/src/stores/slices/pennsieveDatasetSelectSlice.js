@@ -68,8 +68,6 @@ export const fetchDatasetsToUploadDataTo = async () => {
         (dataset) => dataset.id === preferredPennsieveDatasetId
       );
 
-      console.log(preferredDataset);
-
       if (preferredDataset) {
         setSelectedDatasetToUploadDataTo(
           preferredDataset.id,

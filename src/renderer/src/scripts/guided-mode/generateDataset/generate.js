@@ -387,7 +387,6 @@ const trackLocalDatasetGenerationProgress = async (standardizedDatasetStructure)
 };
 
 const createEventData = (value, destination, origin, dataset_name, dataset_id) => {
-  console.log("Dataset int id is ", window.sodaJSONObj["digital-metadata"]["pennsieve-int-id"]);
   if (destination === "Pennsieve") {
     return {
       value: value,
@@ -851,8 +850,6 @@ const guidedCreateDataset = async (bfAccount, datasetName) => {
     window.defaultBfDatasetIntId = intId;
     window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] = newId;
     window.sodaJSONObj["digital-metadata"]["pennsieve-int-id"] = intId;
-
-    console.log("[guidedCreateDataset] Created new dataset with ID:", intId);
 
     uploadText.innerHTML = `Successfully created dataset with name: ${datasetName}`;
     guidedUploadStatusIcon(statusId, "success");
