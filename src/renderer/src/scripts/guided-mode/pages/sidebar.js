@@ -205,7 +205,7 @@ export const renderSideBar = (activePage) => {
   if (nextPagetoComplete) {
     nextPagetoComplete.classList.remove("not-completed");
     //Add pulse blue animation for 3 seconds
-    nextPagetoComplete.style.borderLeft = "3px solid #007bff";
+    nextPagetoComplete.style.borderLeft = "3px solid gray";
     nextPagetoComplete.style.animation = "pulse-blue 3s Infinity";
   }
 };

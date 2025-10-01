@@ -494,21 +494,21 @@ a[data-toggle="collapse"] {
 }
 
 .guided--nav-bar-section-page.completed {
-  border-left: 3px solid green;
+  border-left: 3px solid var(--mantine-color-primary-6);
 }
 
 .guided--nav-bar-section-page.not-completed {
-  border-left: 3px solid var(--color-transparent-soda-green);
+  border-left: 3px solid var(--mantine-color-primary-2);
   pointer-events: none;
   opacity: 0.5;
 }
 
 .guided--nav-bar-section-page.active {
-  background-color: var(--mantine-color-blue-light);
+  background-color: var(--mantine-color-primary-2);
 }
 
 .guided--nav-bar-section-page:hover {
-  border-left: 5px solid var(--color-light-green);
+  border-left: 5px solid var(--mantine-color-primary-8);
   cursor: pointer;
 }
 

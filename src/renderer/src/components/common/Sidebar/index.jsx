@@ -65,15 +65,14 @@ const Sidebar = () => {
   return (
     <nav className={classes.navbar}>
       <div className={classes.navbarMain}>
-        <Stack align="center" mb="xl" gap="xs">
-          <Image src="./img/logo-new-green.png" alt="Logo" w={90} gap="0px" />
-          <Text fw={600} size="xl" c="var(--color-light-green)">
+        <Stack align="center" mb={50} gap="xs">
+          <Image src="./img/logo-new-green.png" alt="Logo" w={80} gap="0px" />
+          <Text fw={600} size="xl" c="var(--color-light-green)" mt="-8px">
             SODA
           </Text>
           <Code fw={700} id="version">
             {`${appVersion}`}
           </Code>
-          <Divider my="sm" />
         </Stack>
 
         {links.map((link) => {
