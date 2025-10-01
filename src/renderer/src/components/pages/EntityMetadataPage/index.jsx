@@ -976,7 +976,7 @@ const EntityMetadataForm = () => {
             </Title>
           </Group>
 
-          <Button color="blue" onClick={handleSave}>
+          <Button color="primary" onClick={handleSave}>
             {selectedHierarchyEntity ? "Save Changes" : `Add ${activeFormType}`}
           </Button>
         </Group>
@@ -992,7 +992,7 @@ const EntityMetadataForm = () => {
             Cancel
           </Button>
 
-          <Button color="blue" onClick={handleSave}>
+          <Button color="primary" onClick={handleSave}>
             {selectedHierarchyEntity ? "Save Changes" : `Add ${activeFormType}`}
           </Button>
         </Group>

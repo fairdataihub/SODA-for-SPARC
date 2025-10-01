@@ -35,7 +35,7 @@ const generateProgressResumptionButton = (
     return (
       <Button
         size="md"
-        color="blue"
+        color="gray"
         variant="light"
         onClick={() => window.openDropdownPrompt?.(null, "organization")}
       >
