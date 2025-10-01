@@ -115,8 +115,11 @@ const componentTypeRenderers = {
     };
     renderComponent(componentSlot, <ProgressStepper {...props} />);
   },
-  "main-sidebar": (componentSlot) => {
-    renderComponent(componentSlot, <Sidebar />);
+  sidebar: (componentSlot) => {
+    const props = {
+      id: componentSlot.getAttribute("data-sidebar-id"),
+    };
+    renderComponent(componentSlot, <Sidebar {...props} />);
   },
   "generic-button": (componentSlot) => {
     const props = {

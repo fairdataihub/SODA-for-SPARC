@@ -1,7 +1,7 @@
 import { getNonSkippedGuidedModePages } from "../pages/navigationUtils/pageSkipping";
 import { savePageChanges } from "../pages/savePageChanges";
 import Swal from "sweetalert2";
-
+import { setGuidedModePageStructureObject } from "../../../stores/slices/sideBarSlice";
 /**
  *
  * @param {string} activePage - The id of the html page open in the current Prepare Dataset Step-by-Step workflow.
@@ -42,6 +42,9 @@ export const renderSideBar = (activePage) => {
       };
     }
   }
+  console.log("pageStructureObject:", pageStructureObject);
+  //Set the page structure object in the zustand store
+  setGuidedModePageStructureObject(pageStructureObject);
   let navBarHTML = "";
   for (const [highLevelStepName, highLevelStepObject] of Object.entries(pageStructureObject)) {
     // Add the high level drop down to the nav bar

@@ -50,6 +50,8 @@ import { setSelectedModalities } from "../../../stores/slices/modalitiesSlice.js
 import { guidedSaveProgress } from "./savePageChanges.js";
 import { createStandardizedDatasetStructure } from "../../utils/datasetStructure.js";
 import { setCurrentStep } from "../../../stores/slices/stepperSlice.js";
+import { setGuidedModeSidebarDatasetName } from "../../../stores/slices/sideBarSlice.js";
+
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
@@ -232,11 +234,13 @@ window.openPage = async (targetPageID) => {
       nextButtonSpans.forEach((span) => {
         span.innerHTML = "Continue";
       });
+      setGuidedModeSidebarDatasetName(null);
       guidedLockSideBar(false);
     } else {
       // Set the dataset name display in the side bar
       const datasetNameDisplay = document.getElementById("guided-navbar-dataset-name-display");
       datasetNameDisplay.innerHTML = datasetName;
+      setGuidedModeSidebarDatasetName(datasetName);
 
       nextButton.querySelector("span.nav-button-text").innerHTML = "Save and Continue";
       nextButtonSpans.forEach((span) => {

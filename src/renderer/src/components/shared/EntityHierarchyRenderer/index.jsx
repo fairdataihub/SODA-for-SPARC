@@ -297,15 +297,15 @@ const EntityHierarchyRenderer = ({
           style={{
             border: "1px solid #ddd",
             borderRadius: "8px",
-            backgroundColor: "#f0f9ff",
+            backgroundColor: "var(--mantine-color-primary-1)",
             cursor: "pointer",
           }}
           p="sm"
           onClick={handleAddSubjectButtonClick}
         >
           <Flex align="center" gap="xs">
-            <IconPlus size={15} color="#1c7ed6" />
-            <Text fw={500} c="#1c7ed6">
+            <IconPlus size={15} color="var(--mantine-color-primary-6)" />
+            <Text fw={500} c="var(--mantine-color-primary-6)">
               Add Subject
             </Text>
           </Flex>
