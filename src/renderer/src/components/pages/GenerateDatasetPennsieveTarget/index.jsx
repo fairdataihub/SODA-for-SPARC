@@ -43,7 +43,6 @@ const GenerateDatasetPennsieveTargetPage = () => {
 
   const handleSelectDataset = (id) => {
     const dataset = availableDatasetsToUploadDataTo.find((d) => d.value === id);
-    console.log(dataset);
     setSelectedDatasetToUploadDataTo(
       id,
       dataset ? dataset.label : null,
