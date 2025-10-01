@@ -17,7 +17,10 @@ import {
   guidedSetDOIUI,
   guidedSetPublishingStatusUI,
 } from "../../guided-curate-dataset.js";
-import { setPreferredPennsieveDatasetId } from "../../../../stores/slices/pennsieveDatasetSelectSlice.js";
+import {
+  setPreferredPennsieveDatasetId,
+  setPreferredPennsieveDatasetIntId,
+} from "../../../../stores/slices/pennsieveDatasetSelectSlice.js";
 import api from "../../../others/api/api.js";
 
 export const openPageGenerateDataset = async (targetPageID) => {
