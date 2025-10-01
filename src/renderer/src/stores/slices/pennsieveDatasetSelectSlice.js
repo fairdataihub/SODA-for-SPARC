@@ -48,7 +48,6 @@ export const setSelectedDatasetToUploadDataTo = (
 
 // Fetch logic
 export const fetchDatasetsToUploadDataTo = async () => {
-  console.log("Fetching data");
   // Reset selection
   setSelectedDatasetToUploadDataTo(null, null, null);
 
