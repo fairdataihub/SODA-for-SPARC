@@ -1,4 +1,10 @@
 {
+  "16.3.1": {
+    "announcements": {
+      "features": [],
+      "bug-fixes": ["Minor adjustment for Prepare Dataset Step-by-Step."]
+    }
+  },
   "16.3.0": {
     "announcements": {
       "features": [
