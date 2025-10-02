@@ -241,8 +241,3 @@ export const scrollToBottomOfGuidedBody = () => {
   const elementToScrollTo = document.querySelector(".guided--body");
   elementToScrollTo.scrollTop = elementToScrollTo.scrollHeight;
 };
-
-export const transitionToPage = async (pageID) => {
-  // Replicate guided sidebar navigation logic
-  await window.openPage(pageID);
-};

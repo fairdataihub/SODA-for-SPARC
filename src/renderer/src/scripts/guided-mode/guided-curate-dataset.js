@@ -1,4 +1,3 @@
-import { guidedSetNavLoadingState } from "./pages/navigationUtils/pageLoading";
 import { guidedSaveProgress } from "./pages/savePageChanges";
 import {
   getContributorByOrcid,
@@ -7,45 +6,33 @@ import {
   renderContributorsTable,
 } from "./metadata/contributors";
 import { generateAlertElement } from "./metadata/utils";
-import determineDatasetLocation from "../analytics/analytics-utils";
 import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
 import api from "../others/api/api";
 import kombuchaEnums from "../analytics/analytics-enums";
 import Swal from "sweetalert2";
-import Tagify from "@yaireo/tagify/dist/tagify.esm.js";
-import { v4 as uuid } from "uuid";
+
 import client from "../client";
 import {
   guidedGenerateDatasetLocally,
   guidedGenerateDatasetOnPennsieve,
 } from "./generateDataset/generate";
-import { guidedDatasetKeywordsTagify } from "./tagifies/tagifies";
-import { updateDatasetUploadProgressTable } from "./generateDataset/uploadProgressBar";
+
 import {
   swalConfirmAction,
   swalShowError,
   swalFileListSingleAction,
   swalFileListDoubleAction,
-  swalShowInfo,
 } from "../utils/swal-utils";
 import DatePicker from "tui-date-picker";
 import { loadStoredContributors } from "../others/contributor-storage";
 import { ORCID } from "orcid-utils";
 
-import { guidedCreateManifestFilesAndAddToDatasetStructure } from "./manifests/manifest";
-import { createStandardizedDatasetStructure } from "../utils/datasetStructure";
 import { guidedRenderProgressCards } from "./resumeProgress/progressCards";
-
-import { guidedGetDatasetName } from "./utils/sodaJSONObj";
-
-import { getDatasetEntityObj } from "../../stores/slices/datasetEntitySelectorSlice";
 
 import "bootstrap-select";
 import Cropper from "cropperjs";
 
 import "jstree";
-
-import { newEmptyFolderObj } from "../utils/datasetStructure";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));

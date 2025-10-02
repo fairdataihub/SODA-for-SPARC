@@ -40,8 +40,12 @@ while (!window.htmlSectionsAdded) {
 
 // Helper function to create a React root and render the component inside SodaComponentWrapper
 export const renderComponent = (componentSlot, component) => {
-  const root = createRoot(componentSlot);
-  root.render(<SodaComponentWrapper>{component}</SodaComponentWrapper>);
+  try {
+    const root = createRoot(componentSlot);
+    root.render(<SodaComponentWrapper>{component}</SodaComponentWrapper>);
+  } catch (error) {
+    console.error("Error rendering component:", error);
+  }
 };
 
 // Mapping of component types to their render functions
@@ -251,6 +255,7 @@ const componentTypeRenderers = {
 // Query all DOM nodes with the data attribute "data-component-type" and render the appropriate component
 document.querySelectorAll("[data-component-type]").forEach((componentSlot) => {
   const componentType = componentSlot.getAttribute("data-component-type");
+  console.log(`Rendering component of type: ${componentType} in slot with ID: ${componentSlot.id}`);
   const renderFunction = componentTypeRenderers[componentType];
 
   if (renderFunction) {
