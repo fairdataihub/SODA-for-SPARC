@@ -24,12 +24,14 @@ export const renderSideBar = (activePage) => {
   const completedTabs = window.sodaJSONObj["completed-tabs"];
 
   const pageStructureObject = {};
+  const newPageStructureObject = {};
 
   const highLevelStepElements = Array.from(document.querySelectorAll(".guided--parent-tab"));
 
   for (const element of highLevelStepElements) {
     const highLevelStepName = element.getAttribute("data-parent-tab-name");
     pageStructureObject[highLevelStepName] = {};
+    newPageStructureObject[highLevelStepName] = [];
 
     const notSkippedPages = getNonSkippedGuidedModePages(element);
 
@@ -40,11 +42,17 @@ export const renderSideBar = (activePage) => {
         pageName: pageName,
         completed: completedTabs.includes(pageID),
       };
+      newPageStructureObject[highLevelStepName].push({
+        pageID: pageID,
+        pageName: pageName,
+        completed: completedTabs.includes(pageID),
+      });
     }
   }
   console.log("pageStructureObject:", pageStructureObject);
+  console.log("newPageStructureObject:", newPageStructureObject);
   //Set the page structure object in the zustand store
-  setGuidedModePageStructureObject(pageStructureObject);
+  setGuidedModePageStructureObject(newPageStructureObject);
   let navBarHTML = "";
   for (const [highLevelStepName, highLevelStepObject] of Object.entries(pageStructureObject)) {
     // Add the high level drop down to the nav bar
@@ -208,7 +216,7 @@ export const renderSideBar = (activePage) => {
   if (nextPagetoComplete) {
     nextPagetoComplete.classList.remove("not-completed");
     //Add pulse blue animation for 3 seconds
-    nextPagetoComplete.style.borderLeft = "3px solid #007bff";
+    nextPagetoComplete.style.borderLeft = "3px solid gray";
     nextPagetoComplete.style.animation = "pulse-blue 3s Infinity";
   }
 };

@@ -254,7 +254,11 @@ document.querySelectorAll("[data-component-type]").forEach((componentSlot) => {
   const renderFunction = componentTypeRenderers[componentType];
 
   if (renderFunction) {
-    renderFunction(componentSlot);
+    try {
+      renderFunction(componentSlot);
+    } catch (error) {
+      console.error(`Error rendering component of type: ${componentType}`, error);
+    }
   } else {
     console.error(`No render function found for component type: ${componentType}`);
   }

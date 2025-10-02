@@ -1,4 +1,4 @@
-import { Button, Card, Text, Stack, Center, ActionIcon } from "@mantine/core";
+import { Button, Card, Text, Stack, Center, ThemeIcon } from "@mantine/core";
 import { IconArrowRight, IconDatabase, IconUpload } from "@tabler/icons-react";
 import { useHover } from "@mantine/hooks";
 import classes from "../cards.module.css";
@@ -47,9 +47,9 @@ const HomeCard = ({ id, icon, title, description, buttonLabel, buttonColor, onCl
       onClick={onClick}
     >
       <Center mb={16}>
-        <ActionIcon size={64} variant="light" color={buttonColor} radius="xl">
+        <ThemeIcon size={64} variant="light" radius="xl">
           {icon}
-        </ActionIcon>
+        </ThemeIcon>
       </Center>
       <Stack align="center" gap={4} style={{ width: "100%" }}>
         <Text size="lg" fw={600} ta="center">

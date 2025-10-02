@@ -1,4 +1,5 @@
 import useGlobalStore from "../../../stores/globalStore";
+
 import { IconScreenShare, IconBook, IconUser, IconMail, IconInfoCircle } from "@tabler/icons-react";
 import {
   Code,
@@ -13,7 +14,7 @@ import {
   ScrollArea,
 } from "@mantine/core";
 import classes from "./Sidebar.module.css";
-import { LinksGroup } from "../LinksGroup";
+import LinksGroup from "./LinksGroup.jsx";
 
 const links = [
   {
@@ -64,6 +65,9 @@ const Sidebar = ({ id }) => {
   const guidedModePageStructureObject = useGlobalStore(
     (state) => state.guidedModePageStructureObject
   );
+  console.log("guidedModePageStructureObject:", guidedModePageStructureObject);
+  const guidedModePageStructureKeys = Object.keys(guidedModePageStructureObject);
+  console.log("guidedModePageStructureKeys:", guidedModePageStructureKeys);
 
   return (
     <nav className={classes.navbar}>
@@ -81,16 +85,23 @@ const Sidebar = ({ id }) => {
           </Stack>
         )}
         {id === "guided-sidebar" && (
-          <Stack align="center" mb="xl" gap="xs">
-            <Group>
-              <Image src="./img/logo-new-green.png" alt="Logo" w={50} />
-              <Text fw={600} size="xl" c="var(--color-light-green)">
-                SODA
-              </Text>
-            </Group>
-
-            <Divider my="sm" />
-          </Stack>
+          <>
+            <label
+              className="guided--form-label centered mt-lg"
+              style={{
+                borderBottom: "1px solid var(--color-light-green)",
+                width: "auto",
+              }}
+            >
+              Current dataset
+            </label>
+            <p
+              className="help-text text-center ellipsis-after-two-lines"
+              id="guided-navbar-dataset-name-display"
+            >
+              {guidedModeSidebarDatasetName}
+            </p>
+          </>
         )}
 
         {id === "main-sidebar" &&
@@ -130,21 +141,6 @@ const Sidebar = ({ id }) => {
               className="guided--form-label centered mt-lg"
               style={{
                 borderBottom: "1px solid var(--color-light-green)",
-                width: "auto",
-              }}
-            >
-              Current dataset
-            </label>
-            <p
-              className="help-text text-center ellipsis-after-two-lines"
-              id="guided-navbar-dataset-name-display"
-            >
-              {guidedModeSidebarDatasetName}
-            </p>
-            <label
-              className="guided--form-label centered mt-lg"
-              style={{
-                borderBottom: "1px solid var(--color-light-green)",
                 marginBottom: "0.5rem",
                 width: "auto",
               }}
@@ -154,13 +150,19 @@ const Sidebar = ({ id }) => {
             </label>
             <ul id="guided-nav-items" className="guided--container-nav-items"></ul>
             <div>
-              {Object.entries(guidedModePageStructureObject).map(([key, value]) => (
-                <Stack spacing={4} key={key} mb="sm">
-                  <div key={key}>
-                    <strong>{key}:</strong> {JSON.stringify(value)}
-                  </div>
-                </Stack>
-              ))}
+              {Object.entries(guidedModePageStructureObject).map(
+                ([pageKey, pageChildren]) => (
+                  console.log("pageChildren:", pageChildren),
+                  (
+                    <LinksGroup
+                      key={pageKey}
+                      label={pageKey}
+                      initiallyOpened={false}
+                      pages={pageChildren}
+                    />
+                  )
+                )
+              )}
             </div>
           </>
         )}

@@ -660,10 +660,7 @@ document.querySelectorAll(".guided-curation-team-task-button").forEach((button) 
   });
 });
 
-window.deleteProgressCard = async (progressCardDeleteButton) => {
-  const progressCard = progressCardDeleteButton.parentElement.parentElement;
-  const progressCardNameToDelete = progressCard.querySelector(".progress-file-name").textContent;
-
+window.deleteProgressCard = async (progressCardNameToDelete) => {
   const result = await Swal.fire({
     title: `Are you sure you would like to delete SODA progress made on the dataset: ${progressCardNameToDelete}?`,
     text: "Your progress file will be deleted permanently, and all existing progress will be lost.",
@@ -679,9 +676,6 @@ window.deleteProgressCard = async (progressCardDeleteButton) => {
   if (result.isConfirmed) {
     //delete the progress file
     deleteProgresFile(progressCardNameToDelete);
-
-    //remove the progress card from the DOM
-    progressCard.remove();
   }
 };
 
@@ -3229,7 +3223,7 @@ const doTheHack = async () => {
   await new Promise((resolve) => setTimeout(resolve, 4000));
   document.querySelector(".primary-selection-aside-item.selection-aside-item").click();
 };
-doTheHack();
+// doTheHack();
 // Add the event listener for the Data importation component
 const gmDragDropElementId = document.getElementById("gm-data-importer-dropzone");
 gmDragDropElementId.addEventListener("click", (event) => {
