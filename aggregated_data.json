@@ -1,10 +1,10 @@
 {
-  "Number of total users": 1263,
-  "Number of new users": 638,
-  "Number of times app launched": 6870,
-  "Amount (GB) of data files processed": 36178.01397632521,
-  "Number of files processed": 458270,
-  "Number of unique dataset touched": 399,
-  "Number of published datasets touched": 234,
-  "Number of asset downloads": 3147
+    "Number of total users": 1263,
+    "Number of new users": 638,
+    "Number of times app launched": 6870,
+    "Amount (GB) of data files processed": 36178.01397632521,
+    "Number of files processed": 458270,
+    "Number of unique dataset touched": 399,
+    "Number of published datasets touched": 234,
+    "Number of asset downloads": 3148
 }
