@@ -4,8 +4,8 @@ export const sideBarSlice = (set) => ({
   isSidebarOpen: true,
   activeTab: "guided_mode",
   guidedModeSidebarDatasetName: null,
-  guidedModePageNavigationVisible: true,
   guidedModePageStructureObject: {},
+  showGuidedModePageNavigation: true,
 });
 
 export const setSidebarOpenState = (boolTrueOrFalse) => {
@@ -29,16 +29,23 @@ export const setGuidedModeSidebarDatasetName = (datasetName) => {
   }));
 };
 
-export const setGuidedModePageNavigationVisible = (isVisible) => {
-  useGlobalStore.setState((state) => ({
-    ...state,
-    guidedModePageNavigationVisible: isVisible,
-  }));
-};
-
 export const setGuidedModePageStructureObject = (structureObject) => {
   useGlobalStore.setState((state) => ({
     ...state,
     guidedModePageStructureObject: structureObject,
+  }));
+};
+
+export const setShowGuidedModePageNavigation = (showNavigation) => {
+  useGlobalStore.setState((state) => ({
+    ...state,
+    showGuidedModePageNavigation: showNavigation,
+  }));
+};
+
+export const setOpenSidebarTab = (tabName) => {
+  useGlobalStore.setState((state) => ({
+    ...state,
+    openSidebarTab: tabName,
   }));
 };

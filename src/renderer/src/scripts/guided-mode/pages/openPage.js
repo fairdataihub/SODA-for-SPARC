@@ -237,9 +237,6 @@ window.openPage = async (targetPageID) => {
       setGuidedModeSidebarDatasetName(null);
       guidedLockSideBar(false);
     } else {
-      // Set the dataset name display in the side bar
-      const datasetNameDisplay = document.getElementById("guided-navbar-dataset-name-display");
-      datasetNameDisplay.innerHTML = datasetName;
       setGuidedModeSidebarDatasetName(datasetName);
 
       nextButton.querySelector("span.nav-button-text").innerHTML = "Save and Continue";

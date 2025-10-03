@@ -1,6 +1,9 @@
 import { getNonSkippedGuidedModePages } from "../pages/navigationUtils/pageSkipping";
 import Swal from "sweetalert2";
-import { setGuidedModePageStructureObject } from "../../../stores/slices/sideBarSlice";
+import {
+  setGuidedModePageStructureObject,
+  setShowGuidedModePageNavigation,
+} from "../../../stores/slices/sideBarSlice";
 /**
  *
  * @param {string} activePage - The id of the html page open in the current Prepare Dataset Step-by-Step workflow.
@@ -9,16 +12,12 @@ import { setGuidedModePageStructureObject } from "../../../stores/slices/sideBar
  */
 export const renderSideBar = (activePage) => {
   const guidedNavItemsContainer = document.getElementById("guided-nav-items");
-  const guidedPageNavigationHeader = document.getElementById("guided-page-navigation-header");
 
   if (activePage === "guided-dataset-dissemination-tab") {
-    //Hide the side bar navigawtion and navigation header
-    guidedPageNavigationHeader.classList.add("hidden");
-    guidedNavItemsContainer.innerHTML = ``;
+    setShowGuidedModePageNavigation(false);
     return;
   }
-  //Show the page navigation header if it had been previously hidden
-  guidedPageNavigationHeader.classList.remove("hidden");
+  setShowGuidedModePageNavigation(true);
 
   const completedTabs = window.sodaJSONObj["completed-tabs"];
 

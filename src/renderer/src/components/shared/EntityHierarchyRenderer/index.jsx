@@ -297,7 +297,7 @@ const EntityHierarchyRenderer = ({
           style={{
             border: "1px solid #ddd",
             borderRadius: "8px",
-            backgroundColor: "var(--mantine-color-primary-1)",
+            backgroundColor: "var(--mantine-color-primary-3)",
             cursor: "pointer",
           }}
           p="sm"

@@ -12,6 +12,7 @@ import {
   Stack,
   Divider,
   ScrollArea,
+  Paper,
 } from "@mantine/core";
 import classes from "./Sidebar.module.css";
 import LinksGroup from "./LinksGroup.jsx";
@@ -58,9 +59,7 @@ const Sidebar = ({ id }) => {
   const guidedModeSidebarDatasetName = useGlobalStore(
     (state) => state.guidedModeSidebarDatasetName
   );
-  const guidedModePageNavigationVisible = useGlobalStore(
-    (state) => state.guidedModePageNavigationVisible
-  );
+
   console.log("guidedModeSidebarDatasetName:", guidedModeSidebarDatasetName);
   const guidedModePageStructureObject = useGlobalStore(
     (state) => state.guidedModePageStructureObject
@@ -68,6 +67,9 @@ const Sidebar = ({ id }) => {
   console.log("guidedModePageStructureObject:", guidedModePageStructureObject);
   const guidedModePageStructureKeys = Object.keys(guidedModePageStructureObject);
   console.log("guidedModePageStructureKeys:", guidedModePageStructureKeys);
+  const showGuidedModePageNavigation = useGlobalStore(
+    (state) => state.showGuidedModePageNavigation
+  );
 
   return (
     <nav className={classes.navbar}>
@@ -83,25 +85,6 @@ const Sidebar = ({ id }) => {
             </Code>
             <Divider my="sm" />
           </Stack>
-        )}
-        {id === "guided-sidebar" && (
-          <>
-            <label
-              className="guided--form-label centered mt-lg"
-              style={{
-                borderBottom: "1px solid var(--color-light-green)",
-                width: "auto",
-              }}
-            >
-              Current dataset
-            </label>
-            <p
-              className="help-text text-center ellipsis-after-two-lines"
-              id="guided-navbar-dataset-name-display"
-            >
-              {guidedModeSidebarDatasetName}
-            </p>
-          </>
         )}
 
         {id === "main-sidebar" &&
@@ -137,33 +120,29 @@ const Sidebar = ({ id }) => {
 
         {id === "guided-sidebar" && (
           <>
-            <label
-              className="guided--form-label centered mt-lg"
-              style={{
-                borderBottom: "1px solid var(--color-light-green)",
-                marginBottom: "0.5rem",
-                width: "auto",
-              }}
-              id="guided-page-navigation-header"
-            >
-              Page navigation
-            </label>
-            <ul id="guided-nav-items" className="guided--container-nav-items"></ul>
-            <div>
-              {Object.entries(guidedModePageStructureObject).map(
-                ([pageKey, pageChildren]) => (
-                  console.log("pageChildren:", pageChildren),
-                  (
-                    <LinksGroup
-                      key={pageKey}
-                      label={pageKey}
-                      initiallyOpened={false}
-                      pages={pageChildren}
-                    />
+            <Stack gap={2} align="center">
+              <Text size="md" fw={500}>
+                Current Dataset
+              </Text>
+              <Text size="lg" fw={600}>
+                {guidedModeSidebarDatasetName}
+              </Text>
+              <Text size="md" fw={500} mt="xl" mb="xs">
+                Page Navigation
+              </Text>
+            </Stack>
+
+            <ul id="guided-nav-items" className="guided--container-nav-items hidden"></ul>
+            {showGuidedModePageNavigation && (
+              <div>
+                {Object.entries(guidedModePageStructureObject).map(
+                  ([pageKey, pageChildren]) => (
+                    console.log("pageChildren:", pageChildren),
+                    (<LinksGroup key={pageKey} label={pageKey} pages={pageChildren} />)
                   )
-                )
-              )}
-            </div>
+                )}
+              </div>
+            )}
           </>
         )}
       </div>

@@ -46,10 +46,10 @@ const generateProgressResumptionButton = (
 
   if (boolAlreadyUploadedToPennsieve) {
     buttonText = "Share with the Curation Team";
-    color = "purple";
+    color = "violet";
   } else if (datasetStartingPoint === "new") {
     buttonText = "Resume Curation";
-    color = "var(--mantine-color-primary-6)";
+    color = "primary";
   } else {
     buttonText = "Continue updating Pennsieve Dataset";
     color = "orange";
