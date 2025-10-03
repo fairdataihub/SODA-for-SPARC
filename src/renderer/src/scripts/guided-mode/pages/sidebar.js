@@ -4,6 +4,7 @@ import {
   setGuidedModePageStructureObject,
   setShowGuidedModePageNavigation,
 } from "../../../stores/slices/sideBarSlice";
+import { setOpenSidebarTab } from "../../../stores/slices/sideBarSlice";
 /**
  *
  * @param {string} activePage - The id of the html page open in the current Prepare Dataset Step-by-Step workflow.
@@ -21,14 +22,15 @@ export const renderSideBar = (activePage) => {
 
   const completedTabs = window.sodaJSONObj["completed-tabs"];
 
-  const pageStructureObject = {};
   const newPageStructureObject = {};
 
   const highLevelStepElements = Array.from(document.querySelectorAll(".guided--parent-tab"));
 
+  // Track parent tab for the active page
+  let parentTabOfActivePage = null;
+
   for (const element of highLevelStepElements) {
     const highLevelStepName = element.getAttribute("data-parent-tab-name");
-    pageStructureObject[highLevelStepName] = {};
     newPageStructureObject[highLevelStepName] = [];
 
     const notSkippedPages = getNonSkippedGuidedModePages(element);
@@ -36,63 +38,21 @@ export const renderSideBar = (activePage) => {
     for (const page of notSkippedPages) {
       const pageName = page.getAttribute("data-page-name");
       const pageID = page.getAttribute("id");
-      pageStructureObject[highLevelStepName][pageID] = {
-        pageName: pageName,
-        completed: completedTabs.includes(pageID),
-      };
+
       newPageStructureObject[highLevelStepName].push({
         pageID: pageID,
         pageName: pageName,
         completed: completedTabs.includes(pageID),
       });
+      if (pageID === activePage) {
+        setOpenSidebarTab(highLevelStepName);
+      }
     }
   }
-  console.log("pageStructureObject:", pageStructureObject);
+
   console.log("newPageStructureObject:", newPageStructureObject);
   //Set the page structure object in the zustand store
   setGuidedModePageStructureObject(newPageStructureObject);
-  let navBarHTML = "";
-  for (const [highLevelStepName, highLevelStepObject] of Object.entries(pageStructureObject)) {
-    // Add the high level drop down to the nav bar
-    const dropdDown = `
-          <div class="guided--nav-bar-dropdown">
-            <p class="help-text mb-0">
-              ${highLevelStepName}
-            </p>
-            <i class="fas fa-chevron-right"></i>
-          </div>
-        `;
-
-    // Add the high level drop down's children links to the nav bar
-    let dropDownContent = ``;
-    for (const [pageID, pageObject] of Object.entries(highLevelStepObject)) {
-      //add but keep hidden for now!!!!!!!!!!!!!!!!!!
-      dropDownContent += `
-            <div
-              class="
-                guided--nav-bar-section-page
-                hidden
-                ${pageObject.completed ? " completed" : " not-completed"}
-                ${pageID === activePage ? "active" : ""}"
-              data-target-page="${pageID}"
-            >
-              <div class="guided--nav-bar-section-page-title">
-                ${pageObject.pageName}
-              </div>
-            </div>
-          `;
-    }
-
-    // Add each section to the nav bar element
-    const dropDownContainer = `
-            <div class="guided--nav-bar-section">
-              ${dropdDown}
-              ${dropDownContent}
-            </div>
-          `;
-    navBarHTML += dropDownContainer;
-  }
-  guidedNavItemsContainer.innerHTML = navBarHTML;
 
   const guidedNavBarDropdowns = Array.from(document.querySelectorAll(".guided--nav-bar-dropdown"));
   for (const guidedNavBarDropdown of guidedNavBarDropdowns) {

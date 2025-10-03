@@ -14,10 +14,10 @@ import { setOpenSidebarTab } from "../../../stores/slices/sideBarSlice";
 import useGlobalStore from "../../../stores/globalStore";
 
 const icons = {
-  "Getting Started": <IconPlayerPlay />,
-  "Dataset Structure": <IconBlocks />,
-  "Dataset Metadata": <IconListDetails />,
-  "Generate Dataset": <IconUpload />,
+  "Getting Started": <IconPlayerPlay color="black" />,
+  "Dataset Structure": <IconBlocks color="black" />,
+  "Dataset Metadata": <IconListDetails color="black" />,
+  "Generate Dataset": <IconUpload color="black" />,
 };
 
 /**
@@ -119,7 +119,14 @@ function PageButton({ page, isActive }) {
       }}
       onClick={() => handlePageNavigation(page, window.CURRENT_PAGE?.id)}
     >
-      <Text style={{ whiteSpace: "normal", wordBreak: "break-word", textAlign: "left" }}>
+      <Text
+        style={{
+          whiteSpace: "normal",
+          wordBreak: "break-word",
+          textAlign: "left",
+          fontWeight: isActive ? 600 : 400,
+        }}
+      >
         {page.pageName}
       </Text>
     </Button>

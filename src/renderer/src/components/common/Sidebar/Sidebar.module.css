@@ -10,9 +10,10 @@
     background 0.15s,
     color 0.15s;
   white-space: normal !important;
+  line-height: 1.2 !important;
   word-break: break-word !important;
   text-align: left;
-  height: auto;
+  height: auto !important;
 }
 .pageButton:hover {
   background: #f6f8fa;
