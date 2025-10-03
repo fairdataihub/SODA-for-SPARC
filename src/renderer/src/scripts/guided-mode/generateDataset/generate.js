@@ -65,6 +65,19 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
 
     // If retrying upload, skip to upload step
     if (window.retryGuidedMode) {
+      if (window.sodaJSONObj["pennsieve-generation-target"] === "new") {
+        // Show Pennsieve metadata upload table
+        await uploadPennsieveMetadata(
+          window.defaultBfAccount,
+          window.sodaJSONObj["generate-dataset"]["dataset-name"],
+          window.sodaJSONObj["generate-dataset"]["dataset-subtitle"],
+          window.sodaJSONObj["generate-dataset"]["banner-image"],
+          window.sodaJSONObj["generate-dataset"]["license"],
+          window.sodaJSONObj["generate-dataset"]["study-purpose"],
+          window.sodaJSONObj["generate-dataset"]["data-collection"],
+          window.sodaJSONObj["generate-dataset"]["primary-conclusion"]
+        );
+      }
       window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
       // --- Ensure all required keys are set for retry upload ---
       window.sodaJSONObj["generate-dataset"] = {
@@ -163,31 +176,16 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     // Only update Pennsieve Metadata if the user is creating a new dataset
     if (window.sodaJSONObj["pennsieve-generation-target"] === "new") {
       // Show Pennsieve metadata upload table
-      window.unHideAndSmoothScrollToElement(
-        "guided-div-pennsieve-metadata-pennsieve-generation-status-table"
+      await uploadPennsieveMetadata(
+        window.defaultBfAccount,
+        window.sodaJSONObj["generate-dataset"]["dataset-name"],
+        window.sodaJSONObj["generate-dataset"]["dataset-subtitle"],
+        window.sodaJSONObj["generate-dataset"]["banner-image"],
+        window.sodaJSONObj["generate-dataset"]["license"],
+        window.sodaJSONObj["generate-dataset"]["study-purpose"],
+        window.sodaJSONObj["generate-dataset"]["data-collection"],
+        window.sodaJSONObj["generate-dataset"]["primary-conclusion"]
       );
-      // Create or rename dataset, then add metadata
-      await guidedCreateDataset(guidedBfAccount, pennsieveDatasetName);
-      await guidedAddDatasetSubtitle(
-        guidedBfAccount,
-        pennsieveDatasetName,
-        pennsieveDatasetSubtitle
-      );
-      await guidedAddDatasetDescription(
-        guidedBfAccount,
-        pennsieveDatasetName,
-        guidedPennsieveStudyPurpose,
-        guidedPennsieveDataCollection,
-        guidedPennsievePrimaryConclusion
-      );
-      await guidedAddDatasetBannerImage(
-        guidedBfAccount,
-        pennsieveDatasetName,
-        guidedBannerImagePath
-      );
-      if (guidedLicense) {
-        await guidedAddDatasetLicense(guidedBfAccount, pennsieveDatasetName, guidedLicense);
-      }
     }
 
     hideDatasetMetadataGenerationTableRows("pennsieve");
@@ -281,7 +279,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     guidedSetNavLoadingState(false);
   } catch (error) {
     clientError(error);
-    let emessage = userErrorMessage(error);
+    let emessage = userErrorMessage(error, false);
     amountOfTimesPennsieveUploadFailed += 1;
     window.retryGuidedMode = true;
     let supplementaryChecks = false;
@@ -289,6 +287,36 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     guidedSetNavLoadingState(false);
   }
   guidedSetNavLoadingState(false);
+};
+
+const uploadPennsieveMetadata = async (
+  guidedBfAccount,
+  pennsieveDatasetName,
+  pennsieveDatasetSubtitle,
+  guidedBannerImagePath,
+  guidedLicense,
+  guidedPennsieveStudyPurpose,
+  guidedPennsieveDataCollection,
+  guidedPennsievePrimaryConclusion
+) => {
+  // Show Pennsieve metadata upload table
+  window.unHideAndSmoothScrollToElement(
+    "guided-div-pennsieve-metadata-pennsieve-generation-status-table"
+  );
+  // Create or rename dataset, then add metadata
+  await guidedCreateDataset(guidedBfAccount, pennsieveDatasetName);
+  await guidedAddDatasetSubtitle(guidedBfAccount, pennsieveDatasetName, pennsieveDatasetSubtitle);
+  await guidedAddDatasetDescription(
+    guidedBfAccount,
+    pennsieveDatasetName,
+    guidedPennsieveStudyPurpose,
+    guidedPennsieveDataCollection,
+    guidedPennsievePrimaryConclusion
+  );
+  await guidedAddDatasetBannerImage(guidedBfAccount, pennsieveDatasetName, guidedBannerImagePath);
+  if (guidedLicense) {
+    await guidedAddDatasetLicense(guidedBfAccount, pennsieveDatasetName, guidedLicense);
+  }
 };
 
 const roundToHundredth = (num) => {
@@ -610,16 +638,21 @@ const automaticRetry = async (supplementaryChecks = false, errorMessage = "") =>
       allowEscapeKey: false,
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
+      width: 800,
       icon: "error",
       title: "An error occurred during your upload",
       html: `
-        <p>Error message: ${errorMessage}</p>
-        <p>
-        SODA has retried the upload three times but was not successful. You may manually retry the upload now or save and exit.
-        If you choose to save and exit you will be able to resume your upload by returning to Prepare Dataset Step-by-Step and clicking the "Resume Upload"
-        button on your dataset's progress card. If this issue persists, please contact support by using the Contact Us page in the sidebar
-        after you Save and Exit.
-        </p>
+          <div style="text-align: left;">
+           <p style="overflow-y: auto; max-height: 120px; text-align: left; margin-bottom: 10px;">Error: ${errorMessage}</p>
+            <p>
+              SODA has retried the upload three times without success. You have two options: 
+              <br/>
+              <ol> 
+                <li>Manually retry the upload now - may resolve the problem if the issue was temporary (e.g., network issue)</li>
+                <li>Save and exit and optionally contact the SODA team for help by following the instructions found <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here.</a></li>
+              </ol>
+            </p>
+          </div>
       `,
       showCancelButton: true,
       cancelButtonText: "Save and Exit",
@@ -826,7 +859,7 @@ const guidedCreateDataset = async (bfAccount, datasetName) => {
       kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.CREATE_NEW_DATASET,
       datasetName,
-      kombuchaEnums.Status.SUCCCESS,
+      kombuchaEnums.Status.SUCCESS,
       {
         value: 1,
         dataset_id: newId,

@@ -6,6 +6,7 @@ export const pennsieveDatasetSelectSlice = (set) => ({
   selectableDatasets: [],
   selectedDatasetIdToUploadDataTo: null,
   selectedDatasetNameToUploadDataTo: null,
+  selectedDatasetIntIdToUploadTo: null,
   availableDatasetsToUploadDataTo: [],
   isLoadingPennsieveDatasets: false,
   preferredPennsieveDatasetId: null,
@@ -31,18 +32,20 @@ export const setPreferredPennsieveDatasetId = (preferredPennsieveDatasetId) => {
 
 export const setSelectedDatasetToUploadDataTo = (
   selectedDatasetIdToUploadDataTo,
-  selectedDatasetNameToUploadDataTo
+  selectedDatasetNameToUploadDataTo,
+  selectedDatasetIntIdToUploadTo
 ) => {
   useGlobalStore.setState({
     selectedDatasetIdToUploadDataTo,
     selectedDatasetNameToUploadDataTo,
+    selectedDatasetIntIdToUploadTo,
   });
 };
 
 // Fetch logic
 export const fetchDatasetsToUploadDataTo = async () => {
   // Reset selection
-  setSelectedDatasetToUploadDataTo(null, null);
+  setSelectedDatasetToUploadDataTo(null, null, null);
 
   const preferredPennsieveDatasetId = useGlobalStore.getState().preferredPennsieveDatasetId;
 
@@ -66,7 +69,11 @@ export const fetchDatasetsToUploadDataTo = async () => {
       );
 
       if (preferredDataset) {
-        setSelectedDatasetToUploadDataTo(preferredDataset.id, preferredDataset.name);
+        setSelectedDatasetToUploadDataTo(
+          preferredDataset.id,
+          preferredDataset.name,
+          preferredDataset.intId
+        );
       } else {
         console.warn(
           `⚠️ Preferred dataset with ID ${preferredPennsieveDatasetId} not found in fetched datasets.`

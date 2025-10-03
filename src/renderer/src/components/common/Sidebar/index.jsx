@@ -124,7 +124,7 @@ const Sidebar = ({ id }) => {
               <Text size="md" fw={500}>
                 Current Dataset
               </Text>
-              <Text size="lg" fw={600}>
+              <Text size="lg" fw={550} mt={-5}>
                 {guidedModeSidebarDatasetName}
               </Text>
               <Text size="md" fw={500} mt="xl" mb="xs">

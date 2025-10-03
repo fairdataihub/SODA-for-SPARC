@@ -1,4 +1,15 @@
 {
+  "16.3.0": {
+    "announcements": {
+      "features": [
+        "The `Prepare Dataset Step-by-Step` feature is now easier to use for users that are Pennsieve workspace guests.",
+        "The `Upload Dataset` page now always merges existing folders when updating a dataset. The option to choose how to handle existing folders has been removed."
+      ],
+      "bug-fixes": [
+        "The `Prepare Dataset Step-by-Step` Pennsieve Log In page now responds to API Key and Secret sign-ins without needing a Save and Exit action."
+      ]
+    }
+  },
   "16.2.0": {
     "announcements": {
       "bug-fixes": [],

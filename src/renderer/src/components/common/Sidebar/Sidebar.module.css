@@ -9,6 +9,10 @@
   transition:
     background 0.15s,
     color 0.15s;
+  white-space: normal !important;
+  word-break: break-word !important;
+  text-align: left;
+  height: auto;
 }
 .pageButton:hover {
   background: #f6f8fa;

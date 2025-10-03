@@ -115,14 +115,13 @@ function PageButton({ page, isActive }) {
         page.disabled ? classes.disabled : ""
       }`}
       style={{
-        fontWeight: isActive ? "bold" : "normal",
-        whiteSpace: "normal !important",
-        wordBreak: "break-word",
-        textAlign: "left",
+        fontWeight: isActive ? 600 : 400,
       }}
       onClick={() => handlePageNavigation(page, window.CURRENT_PAGE?.id)}
     >
-      {page.pageName}
+      <Text style={{ whiteSpace: "normal", wordBreak: "break-word", textAlign: "left" }}>
+        {page.pageName}
+      </Text>
     </Button>
   );
 }
