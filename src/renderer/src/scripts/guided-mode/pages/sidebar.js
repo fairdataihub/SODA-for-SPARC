@@ -1,5 +1,4 @@
 import { getNonSkippedGuidedModePages } from "../pages/navigationUtils/pageSkipping";
-import { savePageChanges } from "../pages/savePageChanges";
 import Swal from "sweetalert2";
 import { setGuidedModePageStructureObject } from "../../../stores/slices/sideBarSlice";
 /**
@@ -135,7 +134,7 @@ export const renderSideBar = (activePage) => {
       }
 
       try {
-        await savePageChanges(currentPageUserIsLeaving);
+        await window.savePageChanges(currentPageUserIsLeaving);
         const allNonSkippedPages = getNonSkippedGuidedModePages(document).map(
           (element) => element.id
         );
@@ -224,7 +223,7 @@ export const renderSideBar = (activePage) => {
 const checkIfPageIsValid = async (pageID) => {
   try {
     await window.openPage(pageID);
-    await savePageChanges(pageID);
+    await window.savePageChanges(pageID);
   } catch (error) {
     throw error;
   }

@@ -66,7 +66,7 @@ export const guidedSaveProgress = async () => {
  * @description Validate and save user progress for the page being left in the Prepare Dataset Step-by-Step workflow.
  *              Progress is saved in a progress file the user can access to resume their work after exiting their active workflow.
  */
-export const savePageChanges = async (pageBeingLeftID) => {
+window.savePageChanges = async (pageBeingLeftID) => {
   // This function is used by both the navigation bar and the side buttons,
   // and whenever it is being called, we know that the user is trying to save the changes on the current page.
   // this function is async because we sometimes need to make calls to validate data before the page is ready to be left.

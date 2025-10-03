@@ -2,7 +2,7 @@ import { setGuidedProgressBarValue, updateDatasetUploadProgressTable } from "./u
 import { guidedSetNavLoadingState } from "../pages/navigationUtils/pageLoading";
 import { clientError, userErrorMessage } from "../../others/http-error-handler/error-handler";
 import { guidedTransitionToHome } from "../pages/navigate";
-import { savePageChanges, guidedSaveProgress } from "../pages/savePageChanges";
+import { guidedSaveProgress } from "../pages/savePageChanges";
 import client from "../../client";
 import { checkIfDatasetExistsOnPennsieve } from "../pennsieveUtils";
 import { successCheck, errorMark } from "../../../assets/lotties/lotties";
@@ -630,7 +630,7 @@ const automaticRetry = async (supplementaryChecks = false, errorMessage = "") =>
     if (!res.isConfirmed) {
       const currentPageID = window.CURRENT_PAGE.id;
       try {
-        await savePageChanges(currentPageID);
+        await window.savePageChanges(currentPageID);
       } catch (error) {
         window.log.error("Error saving page changes", error);
       }
@@ -655,7 +655,7 @@ const automaticRetry = async (supplementaryChecks = false, errorMessage = "") =>
     });
     const currentPageID = window.CURRENT_PAGE.id;
     try {
-      await savePageChanges(currentPageID);
+      await window.savePageChanges(currentPageID);
     } catch (error) {
       window.log.error("Error saving page changes", error);
     }
