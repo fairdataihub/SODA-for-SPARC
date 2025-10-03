@@ -10,7 +10,7 @@ import { clientError, userErrorMessage } from "../others/http-error-handler/erro
 import api from "../others/api/api";
 import kombuchaEnums from "../analytics/analytics-enums";
 import Swal from "sweetalert2";
-
+import Tagify from "@yaireo/tagify/dist/tagify.esm.js";
 import client from "../client";
 import {
   guidedGenerateDatasetLocally,
