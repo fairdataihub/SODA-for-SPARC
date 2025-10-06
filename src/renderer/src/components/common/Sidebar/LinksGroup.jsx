@@ -103,6 +103,7 @@ function PageButton({ page, isActive }) {
   if (isActive) {
     console.log("[PageButton] Rendering active page button for:", page.pageName);
   }
+  console.log("!page.completed", !page.completed);
   return (
     <Button
       variant="subtle"
@@ -112,7 +113,7 @@ function PageButton({ page, isActive }) {
       key={page.pageID || page.pageName}
       color="black"
       className={`${classes.pageButton} ${isActive ? classes.pageButtonActive : ""} ${
-        page.disabled ? classes.disabled : ""
+        !page.completed && !isActive ? classes.disabled : ""
       }`}
       style={{
         fontWeight: isActive ? 600 : 400,
@@ -138,6 +139,8 @@ const LinksGroup = ({ label, pages }) => {
   const opened = openSidebarTab === label;
   const hasPages = Array.isArray(pages);
   const currentPage = window.CURRENT_PAGE?.id;
+  console.log("[LinksGroup] currentPage:", currentPage);
+  console.log("[LinksGroup] pages:", pages);
 
   const items = hasPages
     ? pages.map((page) => (
