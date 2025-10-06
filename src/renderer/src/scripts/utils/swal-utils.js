@@ -219,8 +219,9 @@ export const swalFileListTripleAction = async (
   }
 };
 
-export const swalConfirmAction = async (title, html, confirmButtonText, cancelButtonText) => {
+export const swalConfirmAction = async (icon, title, html, confirmButtonText, cancelButtonText) => {
   const { value: action } = await Swal.fire({
+    icon: icon,
     title: title,
     html: html,
     width: 800,

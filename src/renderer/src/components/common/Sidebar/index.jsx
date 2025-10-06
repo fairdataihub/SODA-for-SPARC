@@ -63,7 +63,6 @@ const Sidebar = ({ id }) => {
   const guidedModePageStructureObject = useGlobalStore(
     (state) => state.guidedModePageStructureObject
   );
-  const guidedModePageStructureKeys = Object.keys(guidedModePageStructureObject);
   const showGuidedModePageNavigation = useGlobalStore(
     (state) => state.showGuidedModePageNavigation
   );
