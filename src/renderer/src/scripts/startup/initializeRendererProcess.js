@@ -283,7 +283,7 @@ export const initializeSODARenderer = async () => {
   // Set the app version in the sidebar for the user to see
   setSidebarAppVersion();
 
-  await warnUserIfBetaVersionAndDntNotEnabled();
+  // await warnUserIfBetaVersionAndDntNotEnabled();
 
   // Launch announcements if the user has not seen them yet
   await launchAnnouncements();
