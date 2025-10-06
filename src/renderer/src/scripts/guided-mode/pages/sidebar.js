@@ -50,7 +50,6 @@ export const renderSideBar = (activePage) => {
     }
   }
 
-  console.log("newPageStructureObject:", newPageStructureObject);
   //Set the page structure object in the zustand store
   setGuidedModePageStructureObject(newPageStructureObject);
 

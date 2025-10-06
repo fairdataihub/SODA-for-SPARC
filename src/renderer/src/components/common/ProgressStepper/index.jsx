@@ -5,11 +5,8 @@ import { getAllStepsInfo } from "../../../stores/slices/stepperSlice";
 
 const SodaStepper = ({ id }) => {
   const stepperState = useGlobalStore((state) => state.steppers[id]);
-  console.log("stepperState", stepperState);
   const currentStep = stepperState?.["currentStep"] ?? 69;
-  console.log("currentStep", currentStep);
   const steps = useGlobalStore((state) => state.steppers[id]?.steps || []);
-  console.log("steps", steps);
 
   // Mantine Stepper expects the index of the active step
   const activeIndex = stepperState?.currentStep ?? 0;

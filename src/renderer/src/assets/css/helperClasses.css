@@ -917,7 +917,7 @@
 }
 
 .text-soda-green {
-  color: var(--color-light-green);
+  color: var(--color-soda-green);
 }
 
 .text-soda-plum {
@@ -972,16 +972,16 @@
 }
 
 .soda-green-background {
-  background-color: var(--color-light-green) !important;
+  background-color: var(--color-soda-green) !important;
   color: white !important;
   font-weight: 600 !important;
 }
 
 .soda-green-border {
-  border: 0px solid var(--color-light-green) !important;
+  border: 0px solid var(--color-soda-green) !important;
   background: 0 0;
-  box-shadow: 0 0 0 1px var(--color-light-green) inset !important;
-  color: var(--color-light-green) !important;
+  box-shadow: 0 0 0 1px var(--color-soda-green) inset !important;
+  color: var(--color-soda-green) !important;
 }
 
 .required:after {
@@ -1083,7 +1083,7 @@ body.swal2-shown > [aria-hidden="true"] {
 
 .swal2-footer a {
   text-decoration: underline;
-  /* color: var(--color-light-green) !important; */
+  /* color: var(--color-soda-green) !important; */
 }
 
 .swal-left-align {
@@ -1106,7 +1106,7 @@ body.swal2-shown > [aria-hidden="true"] {
 }
 
 .swal2-confirm {
-  background-color: var(--color-light-green) !important;
+  background-color: var(--color-soda-green) !important;
 }
 
 .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {

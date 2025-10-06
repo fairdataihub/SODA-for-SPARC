@@ -55,13 +55,11 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
 
   try {
     const datasetResumeJsonObj = await getProgressFileData(datasetNameToResume);
-    console.log("Resuming progress for dataset:", datasetResumeJsonObj);
     // Datasets successfully uploaded will have the "dataset-successfully-uploaded-to-pennsieve" key
     const datasetHasAlreadyBeenSuccessfullyUploaded =
       datasetResumeJsonObj["dataset-successfully-uploaded-to-pennsieve"];
 
     const lastVersionOfSodaUsed = datasetResumeJsonObj["last-version-of-soda-used"];
-    console.log("Last version of SODA used on progress file:", lastVersionOfSodaUsed);
     if (lastVersionOfSodaUsed < "16.0.0") {
       await swalShowInfo(
         "This dataset requires an older version of SODA to resume.",
@@ -86,24 +84,18 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
     }
 
     window.sodaJSONObj = datasetResumeJsonObj;
-    console.log("window.sodaJSONObj set to:", window.sodaJSONObj);
-    console.log("1Dataset name: ", window.sodaJSONObj["digital-metadata"]["name"]);
 
     //patches the sodajsonobj if it was created in a previous version of guided mode
     await patchPreviousGuidedModeVersions();
-    console.log("2Dataset name: ", window.sodaJSONObj["digital-metadata"]["name"]);
 
     window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
     const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
     setDatasetEntityObj(savedDatasetEntityObj);
     const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
     setDatasetEntityArray(datasetEntityArray);
-    console.log("3Dataset name: ", window.sodaJSONObj["digital-metadata"]["name"]);
 
     // Save the skipped pages in a temp variable since guidedTransitionFromHome will remove them
     const prevSessionSkikppedPages = [...window.sodaJSONObj["skipped-pages"]];
-
-    console.log("4Dataset name: ", window.sodaJSONObj["digital-metadata"]["name"]);
 
     // Reskip the pages from a previous session
     for (const pageID of prevSessionSkikppedPages) {
@@ -113,7 +105,6 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
     // Skip this page incase it was not skipped in a previous session
     guidedSkipPage("guided-select-starting-point-tab");
 
-    console.log("window.sodaJSONObj after transition from home:", window.sodaJSONObj);
     // pageToReturnTo will be set to the page the user will return to
     const pageToReturnTo = await guidedGetPageToReturnTo(window.sodaJSONObj);
 
@@ -155,8 +146,6 @@ const guidedGetPageToReturnTo = async () => {
   const firstPageID = getNonSkippedGuidedModePages(document)[0].id;
   const appVersion = await useGlobalStore.getState().appVersion;
   const lastVersionOfSodaUsedOnProgressFile = window.sodaJSONObj["last-version-of-soda-used"];
-  console.log("App version:", appVersion);
-  console.log("Last version of SODA used on progress file:", lastVersionOfSodaUsedOnProgressFile);
 
   if (lastVersionOfSodaUsedOnProgressFile != appVersion) {
     // If the progress file was last edited in a previous SODA version, reset to the first page

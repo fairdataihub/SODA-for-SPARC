@@ -6,7 +6,6 @@ import DatasetTreeViewRenderer from "../DatasetTreeViewRenderer";
 import StateDisplayContainer from "../../containers/StateDisplayContainer";
 
 const DataImporter = ({ dataImporterId }) => {
-  console.log("dataImporterId:", dataImporterId);
   return (
     <FullWidthContainer>
       <Box w="100%" m={0} p={0} id={dataImporterId}>

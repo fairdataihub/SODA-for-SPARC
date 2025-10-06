@@ -68,7 +68,6 @@ const guidedUnLockSideBar = () => {
 };
 
 window.handleSideBarTabClick = async (id, section) => {
-  console.log("HandleSectionTrigger called with id:", id, "and section:", section);
   const leavingUpload = window.leavingUploadDatasets();
   const hasProgress = window.sodaJSONHasProgress();
   const uploadDone = window.uploadComplete();
@@ -89,7 +88,6 @@ window.handleSideBarTabClick = async (id, section) => {
   }
 
   // Always set activeTab to section, not id
-  console.log("Setting active sidebar tab to section:", section);
   setActiveSidebarTab(section);
   const sectionId = `${section}-section`;
 

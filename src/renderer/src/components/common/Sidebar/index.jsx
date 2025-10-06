@@ -60,13 +60,10 @@ const Sidebar = ({ id }) => {
     (state) => state.guidedModeSidebarDatasetName
   );
 
-  console.log("guidedModeSidebarDatasetName:", guidedModeSidebarDatasetName);
   const guidedModePageStructureObject = useGlobalStore(
     (state) => state.guidedModePageStructureObject
   );
-  console.log("guidedModePageStructureObject:", guidedModePageStructureObject);
   const guidedModePageStructureKeys = Object.keys(guidedModePageStructureObject);
-  console.log("guidedModePageStructureKeys:", guidedModePageStructureKeys);
   const showGuidedModePageNavigation = useGlobalStore(
     (state) => state.showGuidedModePageNavigation
   );
@@ -77,7 +74,7 @@ const Sidebar = ({ id }) => {
         {id === "main-sidebar" && (
           <Stack align="center" mb="xl" gap="xs">
             <Image src="./img/logo-new-green.png" alt="Logo" w={90} />
-            <Text fw={600} size="xl" c="var(--color-light-green)">
+            <Text fw={600} size="xl" c="var(--color-soda-green)">
               SODA
             </Text>
             <Code fw={700} id="version">
@@ -135,12 +132,9 @@ const Sidebar = ({ id }) => {
             <ul id="guided-nav-items" className="guided--container-nav-items hidden"></ul>
             {showGuidedModePageNavigation && (
               <div>
-                {Object.entries(guidedModePageStructureObject).map(
-                  ([pageKey, pageChildren]) => (
-                    console.log("pageChildren:", pageChildren),
-                    (<LinksGroup key={pageKey} label={pageKey} pages={pageChildren} />)
-                  )
-                )}
+                {Object.entries(guidedModePageStructureObject).map(([pageKey, pageChildren]) => (
+                  <LinksGroup key={pageKey} label={pageKey} pages={pageChildren} />
+                ))}
               </div>
             )}
           </>

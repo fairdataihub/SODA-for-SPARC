@@ -82,7 +82,6 @@ const handleNextButtonVisibility = (targetPageID) => {
 };
 
 const handleSaveAndExitButtonVisibility = (targetPageID) => {
-  console.log("Target page ID for save and exit visibility:", targetPageID);
   if (targetPageID === "guided-select-starting-point-tab") {
     $("#guided-button-save-and-exit").css("visibility", "hidden");
   } else {
@@ -158,11 +157,8 @@ const hideAndShowElementsDependingOnStartType = (pageElement) => {
 
 const setActiveProgressionTab = (targetPageID) => {
   let targetPageParentID = $(`#${targetPageID}`).parent().attr("id");
-  console.log("Target page parent ID:", targetPageParentID);
-  console.log("parent element of target page:", document.getElementById(targetPageParentID));
   // Get the text for the current step from the target page's data attribute
   const stepText = document.getElementById(targetPageParentID).getAttribute("data-parent-tab-name");
-  console.log("Setting step to:", stepText);
   setCurrentStep("guided-mode-progress-stepper", stepText);
 };
 
@@ -433,8 +429,6 @@ window.openPage = async (targetPageID) => {
       }
     };
     renderCorrectFileExplorerByPage(targetPageID);
-
-    console.log("Current page before opening new page:", window.CURRENT_PAGE);
 
     let currentParentTab = window.CURRENT_PAGE.closest(".guided--parent-tab");
 

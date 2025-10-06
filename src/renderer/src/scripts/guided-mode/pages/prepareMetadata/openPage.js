@@ -79,7 +79,6 @@ export const openPagePrepareMetadata = async (targetPageID) => {
             window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"] ===
             guidedGetCurrentUserWorkSpace()
           ) {
-            console.log("Clicking the confirm button automatically");
             document.getElementById("guided-confirm-pennsieve-organization-button").click();
           }
         }

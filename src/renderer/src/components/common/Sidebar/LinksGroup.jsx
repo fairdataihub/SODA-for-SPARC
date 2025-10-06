@@ -24,8 +24,8 @@ const icons = {
  * Handles navigation logic when clicking on a page button.
  */
 async function handlePageNavigation(page, currentPage) {
+  // No action if clicking on the current page
   if (page.pageID === currentPage) {
-    console.log("[LinksGroup] Current page is already active:", page.pageName);
     return;
   }
 
@@ -37,12 +37,8 @@ async function handlePageNavigation(page, currentPage) {
 
   const intermediatePages = allPages.slice(currentIndex + 1, targetIndex);
 
-  console.log("[LinksGroup] User is navigating forward:", userIsNavigatingForward);
-  console.log("[LinksGroup] Pages between current and target:", intermediatePages);
-
   try {
     await window.savePageChanges(currentPage);
-    console.log("[LinksGroup] Current page saved successfully:", currentPage);
   } catch (errorArray) {
     if (userIsNavigatingForward) {
       await Swal.fire({
@@ -100,10 +96,6 @@ async function handlePageNavigation(page, currentPage) {
  * Renders a button for a given page.
  */
 function PageButton({ page, isActive }) {
-  if (isActive) {
-    console.log("[PageButton] Rendering active page button for:", page.pageName);
-  }
-  console.log("!page.completed", !page.completed);
   return (
     <Button
       variant="subtle"
@@ -139,8 +131,6 @@ const LinksGroup = ({ label, pages }) => {
   const opened = openSidebarTab === label;
   const hasPages = Array.isArray(pages);
   const currentPage = window.CURRENT_PAGE?.id;
-  console.log("[LinksGroup] currentPage:", currentPage);
-  console.log("[LinksGroup] pages:", pages);
 
   const items = hasPages
     ? pages.map((page) => (

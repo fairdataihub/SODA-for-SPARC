@@ -15,9 +15,6 @@ const generateProgressResumptionButton = (
   let buttonText;
   let color = "blue";
   let variant = "filled";
-  console.log("progressFileName:", progressFileName);
-  const appVersion = useGlobalStore.getState().appVersion;
-  console.log("App version:", appVersion);
 
   if (workspaceUserNeedsToSwitchTo) {
     if (!window.defaultBfAccount) {
@@ -236,9 +233,7 @@ const GuidedModeProgressCards = () => {
                         leftSection={<IconTrash size={18} />}
                         onClick={() => {
                           if (window.deleteProgressCard) {
-                            window.deleteProgressCard({
-                              datasetName: progressFileName,
-                            });
+                            window.deleteProgressCard(progressFileName);
                           }
                         }}
                       >

@@ -161,7 +161,6 @@ const componentTypeRenderers = {
         "data-relative-folder-path-to-import-data-into"
       ),
     };
-    console.log("Rendering DataImporter with props:", props);
     renderComponent(componentSlot, <DataImporter {...props} />);
   },
   "performance-id-management-page": (componentSlot) => {
@@ -255,7 +254,6 @@ const componentTypeRenderers = {
 // Query all DOM nodes with the data attribute "data-component-type" and render the appropriate component
 document.querySelectorAll("[data-component-type]").forEach((componentSlot) => {
   const componentType = componentSlot.getAttribute("data-component-type");
-  console.log(`Rendering component of type: ${componentType} in slot with ID: ${componentSlot.id}`);
   const renderFunction = componentTypeRenderers[componentType];
 
   if (renderFunction) {

@@ -353,10 +353,6 @@ window.savePageChanges = async (pageBeingLeftID) => {
     await savePageGenerateDataset(pageBeingLeftID);
 
     if (pageBeingLeftID === "guided-entity-addition-method-selection-tab") {
-      console.log(
-        "userSelectedAddEntitiesFromSpreadsheet",
-        document.getElementById("guided-button-add-entities-via-spreadsheet")
-      );
       const userSelectedAddEntitiesFromSpreadsheet = isCheckboxCardChecked(
         "guided-button-add-entities-via-spreadsheet"
       );

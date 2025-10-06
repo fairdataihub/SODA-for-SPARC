@@ -191,7 +191,6 @@ export const getCheckboxDataByKey = (key) => {
 };
 
 export const setCheckboxCardChecked = (key) => {
-  console.log("Checking card:", key);
   const cardData = useGlobalStore.getState().cardData;
   const card = cardData[key];
   useGlobalStore.setState((state) => {
@@ -227,7 +226,6 @@ export const setCheckboxCardChecked = (key) => {
 };
 
 export const setCheckboxCardUnchecked = (key) => {
-  console.log("Unchecking card:", key);
   useGlobalStore.setState((state) => {
     state.cardData[key].checked = false;
   });

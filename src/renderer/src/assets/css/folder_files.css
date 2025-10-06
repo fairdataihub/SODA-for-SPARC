@@ -67,10 +67,10 @@
 }
 
 .div-file-import-button:hover {
-  background: var(--color-light-green);
+  background: var(--color-soda-green);
   color: #fff;
   font-weight: 600;
-  border: 1px solid var(--color-light-green);
+  border: 1px solid var(--color-soda-green);
 }
 
 .myFile {
