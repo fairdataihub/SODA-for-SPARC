@@ -5,6 +5,12 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v16.3.2 - 2025-10-03
+
+## Bug fixes:
+
+- Dataset Metadata Entity section now properly scrolls.
+
 ## v 16.3.1 - 2025-10-01
 
 ## Bug fixes:
