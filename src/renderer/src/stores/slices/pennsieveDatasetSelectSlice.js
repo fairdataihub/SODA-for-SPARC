@@ -30,6 +30,10 @@ export const setPreferredPennsieveDatasetId = (preferredPennsieveDatasetId) => {
   useGlobalStore.setState({ preferredPennsieveDatasetId });
 };
 
+export const setPreferredPennsieveDatasetIntId = (preferredPennsieveDatasetIntId) => {
+  useGlobalStore.setState({ preferredPennsieveDatasetIntId });
+};
+
 export const setSelectedDatasetToUploadDataTo = (
   selectedDatasetIdToUploadDataTo,
   selectedDatasetNameToUploadDataTo,
@@ -58,6 +62,7 @@ export const fetchDatasetsToUploadDataTo = async () => {
     const formattedOptions = (datasets || []).map((dataset) => ({
       value: dataset.id,
       label: dataset.name,
+      intId: dataset.intId,
     }));
 
     setAvailableDatasetsToUploadDataTo(formattedOptions);

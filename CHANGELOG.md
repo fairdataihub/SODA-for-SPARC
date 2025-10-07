@@ -5,6 +5,12 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v 16.3.1 - 2025-10-01
+
+## Bug fixes:
+
+- Fixed an issue where the Pennsieve intId was not being saved when selecting an existing Pennsieve dataset to upload to in the `Prepare Dataset Step-by-Step` feature.
+
 ## v16.3.0 - 2025-09-23
 
 ## Feature Additions:

@@ -1,6 +1,6 @@
-import { Stack, Text, Box, Flex, ScrollArea, ActionIcon, Group } from "@mantine/core";
+import { Stack, Text, Box, Flex, ActionIcon, Group } from "@mantine/core";
 import { IconUser, IconFlask, IconPin, IconEdit, IconPlus, IconTrash } from "@tabler/icons-react";
-import { useMemo, useCallback, useState, memo } from "react";
+import { useMemo, useCallback, memo } from "react";
 import {
   deleteSubject,
   deleteSampleFromSubject,
@@ -271,20 +271,18 @@ const EntityHierarchyRenderer = ({
   if (onlyRenderEntityType) {
     return (
       <Stack gap="xs">
-        <ScrollArea mah={650} type="auto">
-          {entitiesToRender.length > 0 ? (
-            <Stack gap="xs">{renderEntityList(entitiesToRender)}</Stack>
-          ) : (
-            <Box
-              style={{ border: "1px solid #ddd", borderRadius: "8px", backgroundColor: "#f9f9f9" }}
-              p="md"
-            >
-              <Text c="dimmed" ta="center">
-                No {onlyRenderEntityType} to display
-              </Text>
-            </Box>
-          )}
-        </ScrollArea>
+        {entitiesToRender.length > 0 ? (
+          <Stack gap="xs">{renderEntityList(entitiesToRender)}</Stack>
+        ) : (
+          <Box
+            style={{ border: "1px solid #ddd", borderRadius: "8px", backgroundColor: "#f9f9f9" }}
+            p="md"
+          >
+            <Text c="dimmed" ta="center">
+              No {onlyRenderEntityType} to display
+            </Text>
+          </Box>
+        )}
       </Stack>
     );
   }
@@ -311,135 +309,133 @@ const EntityHierarchyRenderer = ({
           </Flex>
         </Box>
       )}
-      <ScrollArea mah={650} type="auto">
-        <Stack gap="xs">
-          {!datasetEntityArray?.length ? (
+      <Stack gap="xs">
+        {!datasetEntityArray?.length ? (
+          <Box
+            style={{
+              border: "1px solid #ddd",
+              borderRadius: "8px",
+              backgroundColor: "#f9f9f9",
+            }}
+            p="md"
+          >
+            <Text c="dimmed" ta="center">
+              No subjects to display
+            </Text>
+          </Box>
+        ) : (
+          datasetEntityArray.map((subject) => (
             <Box
+              key={subject.id}
               style={{
                 border: "1px solid #ddd",
                 borderRadius: "8px",
                 backgroundColor: "#f9f9f9",
               }}
-              p="md"
+              p="sm"
             >
-              <Text c="dimmed" ta="center">
-                No subjects to display
-              </Text>
-            </Box>
-          ) : (
-            datasetEntityArray.map((subject) => (
-              <Box
-                key={subject.id}
+              <Flex
+                align="center"
+                justify="space-between"
+                gap="xs"
+                onClick={() => allowEntitySelection && handleEntitySelect(subject)}
                 style={{
-                  border: "1px solid #ddd",
-                  borderRadius: "8px",
-                  backgroundColor: "#f9f9f9",
+                  cursor: allowEntitySelection ? "pointer" : "default",
+                  backgroundColor:
+                    allowEntitySelection && selectedEntityId === subject.id
+                      ? "#bbdefb"
+                      : currentSelectedHierarchyEntityParentSubject === subject.id
+                        ? "#f0f0f0"
+                        : "",
                 }}
-                p="sm"
               >
-                <Flex
-                  align="center"
-                  justify="space-between"
-                  gap="xs"
-                  onClick={() => allowEntitySelection && handleEntitySelect(subject)}
-                  style={{
-                    cursor: allowEntitySelection ? "pointer" : "default",
-                    backgroundColor:
-                      allowEntitySelection && selectedEntityId === subject.id
-                        ? "#bbdefb"
-                        : currentSelectedHierarchyEntityParentSubject === subject.id
-                          ? "#f0f0f0"
-                          : "",
-                  }}
-                >
-                  <Group gap="xs">
-                    <IconUser size={15} />
-                    <Text fw={600}>{subject.id}</Text>
+                <Group gap="xs">
+                  <IconUser size={15} />
+                  <Text fw={600}>{subject.id}</Text>
+                </Group>
+                {allowEntityStructureEditing && (
+                  <Group gap="3px">
+                    <IconEdit
+                      color="blue"
+                      size={18}
+                      style={{ marginLeft: "4px", opacity: 0.6, cursor: "pointer" }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEntitySelect(subject);
+                      }}
+                    />
+                    <IconTrash
+                      color="red"
+                      size={16}
+                      style={{ opacity: 0.6, cursor: "pointer" }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteSubject(subject);
+                      }}
+                    />
                   </Group>
-                  {allowEntityStructureEditing && (
-                    <Group gap="3px">
-                      <IconEdit
-                        color="blue"
-                        size={18}
-                        style={{ marginLeft: "4px", opacity: 0.6, cursor: "pointer" }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEntitySelect(subject);
-                        }}
-                      />
-                      <IconTrash
-                        color="red"
-                        size={16}
-                        style={{ opacity: 0.6, cursor: "pointer" }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteSubject(subject);
-                        }}
-                      />
-                    </Group>
-                  )}
-                </Flex>
-
-                {allowEntityStructureEditing && showSamples && (
-                  <HierarchyItem
-                    label={`Add sample`}
-                    icon="add"
-                    level={2}
-                    parentEntityData={subject}
-                    onAdd={handleAddSampleButtonClick}
-                  />
                 )}
+              </Flex>
 
-                {/* Samples */}
-                {showSamples &&
-                  subject.samples?.map((sample) => (
-                    <HierarchyItem
-                      key={sample.id}
-                      icon="sample"
-                      label={sample.id}
-                      level={2}
-                      allowEntityStructureEditing={allowEntityStructureEditing}
-                      allowEntitySelection={allowEntitySelection}
-                      entityData={sample}
-                      parentEntityData={subject}
-                      onEdit={handleEntitySelect}
-                      onDelete={() => handleDeleteSample(sample, subject)}
-                      onSelect={handleEntitySelect}
-                      isSampleParent={sample.id === currentSelectedHierarchyEntityParentSample}
-                    >
-                      {/* Sample Sites */}
-                      {allowEntityStructureEditing && showSampleSites && (
+              {allowEntityStructureEditing && showSamples && (
+                <HierarchyItem
+                  label={`Add sample`}
+                  icon="add"
+                  level={2}
+                  parentEntityData={subject}
+                  onAdd={handleAddSampleButtonClick}
+                />
+              )}
+
+              {/* Samples */}
+              {showSamples &&
+                subject.samples?.map((sample) => (
+                  <HierarchyItem
+                    key={sample.id}
+                    icon="sample"
+                    label={sample.id}
+                    level={2}
+                    allowEntityStructureEditing={allowEntityStructureEditing}
+                    allowEntitySelection={allowEntitySelection}
+                    entityData={sample}
+                    parentEntityData={subject}
+                    onEdit={handleEntitySelect}
+                    onDelete={() => handleDeleteSample(sample, subject)}
+                    onSelect={handleEntitySelect}
+                    isSampleParent={sample.id === currentSelectedHierarchyEntityParentSample}
+                  >
+                    {/* Sample Sites */}
+                    {allowEntityStructureEditing && showSampleSites && (
+                      <HierarchyItem
+                        label={`Add site`}
+                        icon="add"
+                        level={3}
+                        parentEntityData={{ sample, subject }}
+                        onAdd={handleAddSampleSiteButtonClick}
+                      />
+                    )}
+                    {showSampleSites &&
+                      sample.sites?.map((site) => (
                         <HierarchyItem
-                          label={`Add site`}
-                          icon="add"
+                          key={site.id}
+                          icon="site"
+                          label={site.id}
                           level={3}
+                          allowEntityStructureEditing={allowEntityStructureEditing}
+                          allowEntitySelection={allowEntitySelection}
+                          entityData={site}
                           parentEntityData={{ sample, subject }}
-                          onAdd={handleAddSampleSiteButtonClick}
+                          onEdit={handleEntitySelect}
+                          onDelete={() => handleDeleteSampleSite(site, { sample, subject })}
+                          onSelect={handleEntitySelect}
                         />
-                      )}
-                      {showSampleSites &&
-                        sample.sites?.map((site) => (
-                          <HierarchyItem
-                            key={site.id}
-                            icon="site"
-                            label={site.id}
-                            level={3}
-                            allowEntityStructureEditing={allowEntityStructureEditing}
-                            allowEntitySelection={allowEntitySelection}
-                            entityData={site}
-                            parentEntityData={{ sample, subject }}
-                            onEdit={handleEntitySelect}
-                            onDelete={() => handleDeleteSampleSite(site, { sample, subject })}
-                            onSelect={handleEntitySelect}
-                          />
-                        ))}
-                    </HierarchyItem>
-                  ))}
-              </Box>
-            ))
-          )}
-        </Stack>
-      </ScrollArea>
+                      ))}
+                  </HierarchyItem>
+                ))}
+            </Box>
+          ))
+        )}
+      </Stack>
     </Stack>
   );
 };
