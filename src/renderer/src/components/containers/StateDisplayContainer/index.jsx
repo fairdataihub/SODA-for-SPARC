@@ -40,38 +40,56 @@ const StateDisplayContainer = ({ id }) => {
   return (
     <Paper withBorder radius="md" p="sm">
       <Stack gap={0}>
-        {rowConfigs.map((row, idx) => (
-          <React.Fragment key={row.rowKey}>
-            <Group gap="md" justify="space-between" wrap="nowrap" w="100%">
-              {/* Label */}
-              <Text fw={600} c="gray.8" ta="right" w={`${maxLabelLength + 1}ch`} truncate>
-                {(row.rowDisplayName || row.rowKey) + ":"}
-              </Text>
+        {rowConfigs.map((row, idx) => {
+          const value = rowValues[idx];
+          const valueStr = value === undefined || value === null ? "No Value" : String(value);
+          // Show tooltip if value is long
+          const maxValueLength = 45;
+          const isLong = valueStr.length > maxValueLength;
+          const displayValue = isLong ? valueStr.slice(0, maxValueLength - 3) + "..." : valueStr;
+          return (
+            <React.Fragment key={row.rowKey}>
+              <Group gap="md" justify="space-between" wrap="nowrap" w="100%">
+                {/* Label (no colon) */}
+                <Text fw={600} c="gray.8" ta="right" w={`${maxLabelLength + 1}ch`} truncate>
+                  {row.rowDisplayName || row.rowKey}:
+                </Text>
 
-              {/* Value */}
-              <Text fw={500} c="gray.7" flex={1} ta="left">
-                {rowValues[idx] ?? (
-                  <Text component="span" c="gray.4">
-                    No Value
+                {/* Value with tooltip if long */}
+                {isLong ? (
+                  <Tooltip label={valueStr} position="top" withArrow zIndex={2999}>
+                    <Text fw={500} c="gray.7" flex={1} ta="left" truncate>
+                      {displayValue}
+                    </Text>
+                  </Tooltip>
+                ) : (
+                  <Text
+                    fw={500}
+                    c={valueStr === "No Value" ? "gray.4" : "gray.7"}
+                    flex={1}
+                    ta="left"
+                    truncate
+                  >
+                    {displayValue}
                   </Text>
                 )}
-              </Text>
 
-              {/* Edit button if onEdit is defined */}
-              {row.onEdit && (
-                <Tooltip label="Edit" position="right" withArrow>
-                  <ActionIcon
-                    variant="light"
-                    size="sm"
-                    onClick={() => row.onEdit(rowValues[idx], row)}
-                  >
-                    <IconEdit size={18} />
-                  </ActionIcon>
-                </Tooltip>
-              )}
-            </Group>
-          </React.Fragment>
-        ))}
+                {/* Edit button if onEdit is defined */}
+                {row.onEdit && (
+                  <Tooltip label="Edit" position="right" withArrow>
+                    <ActionIcon
+                      variant="light"
+                      size="sm"
+                      onClick={() => row.onEdit(rowValues[idx], row)}
+                    >
+                      <IconEdit size={18} />
+                    </ActionIcon>
+                  </Tooltip>
+                )}
+              </Group>
+            </React.Fragment>
+          );
+        })}
       </Stack>
     </Paper>
   );
