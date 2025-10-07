@@ -127,7 +127,7 @@ const generateContributorTableRow = (contributorObj, contributorIndex) => {
          <button
           type="button"
           class="btn btn-sm"
-          style="color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);"
+          style="color: white; background-color: var(--color-soda-green); border-color: var(--color-soda-green);"
           onclick="window.guidedOpenAddOrEditContributorSwal('${contributorOrcid}')"
         >
           Edit

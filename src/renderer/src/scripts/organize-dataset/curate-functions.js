@@ -127,7 +127,6 @@ window.uploadDatasetDropHandler = async (ev) => {
       }
 
       if (moveForward) {
-        console.log("Moving forward with folder path1:", folderPath);
         setStateDisplayData("org-dataset-folder-path", folderPath);
         setNavButtonDisabled("nextBtn", false);
       }
@@ -579,8 +578,6 @@ window.importLocalDataset = async (folderPath) => {
   }
 
   if (moveForward) {
-    console.log("Moving forward with folder path2:", folderPath);
-
     setStateDisplayData("org-dataset-folder-path", folderPath);
     setNavButtonDisabled("nextBtn", false);
   }
@@ -704,10 +701,30 @@ document
 
 document.getElementById("dataset-upload-new-dataset").addEventListener("click", async function () {
   if (await api.userIsWorkspaceGuest()) {
-    swalShowInfo(
-      "Guests cannot create datasets on Pennsieve",
-      "You are currently a guest user in your workspace and do not have permission to create new datasets. If an empty dataset has already been created for you, select the 'Existing dataset' option."
-    );
+    await Swal.fire({
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      width: 800,
+      title: "Guests cannot create datasets on Pennsieve",
+      html: `
+                    <div style="text-align: left;">
+        You are currently a guest user and do not have permission to create new datasets. You have the following options:
+        <ul> 
+            <li>You can use the 'Existing dataset' option if you have access to one.</li>
+            <li>Read the documentation on how to upload as a guest
+            <a target='_blank' rel='noopener noreferrer' href="https://docs.sodaforsparc.io/docs/miscellaneous/how-to/how-to-upload-as-pennsieve-guest">here.</a></li>
+            <li>Reach out to the SODA team if you should have permission to create datasets by following the instructions found
+            <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here.</a></li>
+        </ul>
+      </div>
+          `,
+      showCancelButton: false,
+      confirmButtonText: "Ok",
+      showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+      hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
+    });
     return;
   }
   const dsName = document.getElementById("current-ps-dataset-generate").innerText;
@@ -743,12 +760,6 @@ document.getElementById("dataset-upload-new-dataset").addEventListener("click", 
       element.checked = false;
     });
     // Reset the merge option cards
-    document.getElementById("skip-folder-card").classList.remove("checked");
-    document.getElementById("skip-folder-card").classList.remove("non-selected");
-    document.getElementById("merge-folder-card").classList.remove("checked");
-    document.getElementById("merge-folder-card").classList.remove("non-selected");
-    document.getElementById("replace-folder-card").classList.remove("checked");
-    document.getElementById("replace-folder-card").classList.remove("non-selected");
 
     document.getElementById("replace-file-card").classList.remove("non-selected");
     document.getElementById("replace-file-card").classList.remove("checked");
@@ -763,7 +774,6 @@ document.getElementById("dataset-upload-new-dataset").addEventListener("click", 
   document.getElementById("Question-new-dataset-upload-name").classList.add("checked");
 
   // hide the existing folder options
-  $("#Question-generate-dataset-existing-folders-options").addClass("hidden");
   $("#Question-generate-dataset-existing-files-options").addClass("hidden");
 
   // disable the continue btn
@@ -861,12 +871,6 @@ document.getElementById("change-workspace-btn").addEventListener("click", async 
     element.checked = false;
   });
   // Remove checks from all the cards in step 3 (merge option cards)
-  document.getElementById("skip-folder-card").classList.remove("checked");
-  document.getElementById("skip-folder-card").classList.remove("non-selected");
-  document.getElementById("merge-folder-card").classList.remove("checked");
-  document.getElementById("merge-folder-card").classList.remove("non-selected");
-  document.getElementById("replace-folder-card").classList.remove("checked");
-  document.getElementById("replace-folder-card").classList.remove("non-selected");
 
   document.getElementById("replace-file-card").classList.remove("non-selected");
   document.getElementById("replace-file-card").classList.remove("checked");
@@ -908,7 +912,6 @@ document.getElementById("change-workspace-btn").addEventListener("click", async 
   });
   document.getElementById("current-ps-dataset-generate").textContent = "None";
   // hide the existing folder/files options
-  $("#Question-generate-dataset-existing-folders-options").addClass("hidden");
   $("#Question-generate-dataset-existing-files-options").addClass("hidden");
   $("#please-wait-new-curate-div").show();
 
@@ -979,7 +982,7 @@ window.dropHandler = async (
             backdrop: "rgba(0,0,0, 0.4)",
             heightAuto: false,
             icon: "error",
-            text: userErrorMessage(error),
+            html: userErrorMessage(error),
           });
         }
       } else {
@@ -1293,7 +1296,7 @@ window.loadProgressFile = (ev) => {
         $("body").removeClass("waiting");
         setNavButtonDisabled("nextBtn", false);
         document.getElementById("para-progress-file-status").innerHTML =
-          "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>";
+          "<span style='color:var(--color-soda-green)'>Previous work loaded successfully! Continue below.</span>";
 
         // log the success at the action and action with destination granularity levels
         window.logMetadataForAnalytics(
@@ -1367,7 +1370,7 @@ const verify_missing_files = (mode) => {
         $("body").removeClass("waiting");
         setNavButtonDisabled("nextBtn", false);
         document.getElementById("para-progress-file-status").innerHTML =
-          "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>";
+          "<span style='color:var(--color-soda-green)'>Previous work loaded successfully! Continue below.</span>";
 
         // log the success at the action and action with destination granularith levels
         window.logMetadataForAnalytics(

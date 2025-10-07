@@ -30,9 +30,7 @@ export function CardButton({ id }) {
   const { icon, text, tooltip } = cardData[id];
   const { hovered, ref } = useHover();
 
-  const handleClick = () => {
-    console.log("Card clicked:", id);
-  };
+  const handleClick = () => {};
 
   const cardContent = (
     <Card

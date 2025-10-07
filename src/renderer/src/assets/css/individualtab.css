@@ -24,15 +24,15 @@
 }
 
 .option-card:hover {
-  /* border: 1px solid var(--color-light-green); */
-  box-shadow: 0px 0px 10px 0px var(--color-light-green);
+  /* border: 1px solid var(--color-soda-green); */
+  box-shadow: 0px 0px 10px 0px var(--color-soda-green);
   transition: all 0.25s linear;
   -webkit-transition: all 0.25s linear;
 }
 
 .option-card.checked {
-  border: 1px solid var(--color-light-green);
-  box-shadow: 0px 0px 3px 0px var(--color-light-green);
+  border: 1px solid var(--color-soda-green);
+  box-shadow: 0px 0px 3px 0px var(--color-soda-green);
   opacity: 1;
   transition: all 0.25s linear;
   -webkit-transition: all 0.25s linear;
@@ -80,8 +80,8 @@
 .option-card.radio-button:hover,
 .option-card.radio-button:focus,
 .option-card.radio-button:active {
-  color: var(--color-light-green);
-  /* border: 1px solid var(--color-light-green); */
+  color: var(--color-soda-green);
+  /* border: 1px solid var(--color-soda-green); */
   transition: all 0.25s linear;
   -webkit-transition: all 0.25s linear;
 }
@@ -89,14 +89,14 @@
 .option-card.radio-button:hover,
 .option-card.radio-button:focus,
 .option-card.radio-button:active i {
-  color: var(--color-light-green);
+  color: var(--color-soda-green);
   transition: all 0.25s linear;
   -webkit-transition: all 0.25s linear;
 }
 
 .option-card.radio-button.checked {
-  border: 1px solid var(--color-light-green);
-  box-shadow: 0px 0px 3px 0px var(--color-light-green);
+  border: 1px solid var(--color-soda-green);
+  box-shadow: 0px 0px 3px 0px var(--color-soda-green);
   opacity: 1;
   pointer-events: none;
 }
@@ -181,8 +181,8 @@
 }
 
 .option-card.radio-button .folder-input-check:checked + label:before {
-  background-color: var(--color-light-green) !important;
-  border-color: var(--color-light-green) !important;
+  background-color: var(--color-soda-green) !important;
+  border-color: var(--color-soda-green) !important;
   color: #fff !important;
   font-size: 16px;
 }
@@ -222,8 +222,8 @@
 }
 
 .folder-input-check:checked + label:before {
-  background-color: var(--color-light-green);
-  border-color: var(--color-light-green);
+  background-color: var(--color-soda-green);
+  border-color: var(--color-soda-green);
   color: #fff;
 }
 
@@ -266,7 +266,7 @@
 }
 
 .main-buttons:hover {
-  background: var(--color-light-green);
+  background: var(--color-soda-green);
   /* transform: scale(1.1) !important; */
   font-size: 16px;
 }
@@ -278,7 +278,7 @@
 }
 
 .main-buttons.add-folders.is-selected {
-  background: var(--color-light-green) !important;
+  background: var(--color-soda-green) !important;
   outline: none;
 }
 
@@ -309,7 +309,7 @@
 }
 
 .transition-btn {
-  background: var(--color-light-green);
+  background: var(--color-soda-green);
   font-size: 14px;
   font-weight: 600;
   width: 160px;
@@ -492,17 +492,17 @@
 }
 
 .multi-steps > li.is-done:before {
-  background-color: var(--color-light-green);
-  border-color: var(--color-light-green);
+  background-color: var(--color-soda-green);
+  border-color: var(--color-soda-green);
   color: #fff;
   content: "\2713";
   font-size: 18px;
-  box-shadow: 0 0 4px 0 var(--color-light-green);
+  box-shadow: 0 0 4px 0 var(--color-soda-green);
 }
 
 .multi-steps > li.is-current:before {
-  border-color: var(--color-light-green) !important;
-  color: var(--color-light-green) !important;
+  border-color: var(--color-soda-green) !important;
+  color: var(--color-soda-green) !important;
   background-color: #fff !important;
 }
 
@@ -511,11 +511,11 @@
 }
 
 .multi-steps > li.is-current strong {
-  color: var(--color-light-green);
+  color: var(--color-soda-green);
 }
 
 .multi-steps > li.is-done:after {
-  background-color: var(--color-light-green);
+  background-color: var(--color-soda-green);
 }
 
 .multi-steps > li.disabled:after {
@@ -527,7 +527,7 @@
 }
 
 .multi-steps > li.is-done strong {
-  color: var(--color-light-green);
+  color: var(--color-soda-green);
 }
 
 .circle-icon {
@@ -653,7 +653,7 @@
 }
 
 .ui.radio.checkbox input:checked ~ label:after {
-  background-color: var(--color-light-green) !important;
+  background-color: var(--color-soda-green) !important;
 }
 
 .ui.radio.checkbox label:after {
@@ -725,7 +725,7 @@
 }
 
 .button-active-now.active {
-  background: var(--color-light-green) !important;
+  background: var(--color-soda-green) !important;
   color: #fff !important;
   font-weight: 600 !important;
 }
@@ -785,7 +785,7 @@
 }
 
 .ui.input.modified > input:focus {
-  border-bottom: 1px solid var(--color-light-green) !important;
+  border-bottom: 1px solid var(--color-soda-green) !important;
 }
 
 .ui.styled.accordion .title {
@@ -869,8 +869,8 @@
 .prepare-dd-cards:active,
 .prepare-dd-cards:focus {
   outline: none;
-  border: 1px solid var(--color-light-green);
-  box-shadow: 0px 0px 3px 0px var(--color-light-green);
+  border: 1px solid var(--color-soda-green);
+  box-shadow: 0px 0px 3px 0px var(--color-soda-green);
 }
 .prepare-dd-cards p {
   color: #000;
@@ -1355,7 +1355,7 @@
 }
 
 #gather-logs-btn {
-  background: var(--color-light-green);
+  background: var(--color-soda-green);
   font-size: 14px;
   font-weight: 600;
   color: #fff;

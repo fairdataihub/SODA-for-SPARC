@@ -11,6 +11,7 @@ import {
   reRenderTreeView,
   setPathToRender,
 } from "../../../../stores/slices/datasetTreeViewSlice.js";
+import useGlobalStore from "../../../../stores/globalStore";
 import {
   guidedResetLocalGenerationUI,
   guidedSetDOIUI,
@@ -39,6 +40,9 @@ export const openPageGenerateDataset = async (targetPageID) => {
     setPreferredPennsieveDatasetId(null);
     setCheckboxCardUnchecked("generate-on-new-pennsieve-dataset");
     setCheckboxCardUnchecked("generate-on-existing-pennsieve-dataset");
+
+    let isGuest = await api.userIsWorkspaceGuest();
+    useGlobalStore.setState({ isGuest: isGuest });
 
     const pennsieveGenerationTarget = window.sodaJSONObj["pennsieve-generation-target"];
     if (pennsieveGenerationTarget === "new") {

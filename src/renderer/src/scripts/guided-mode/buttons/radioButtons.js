@@ -31,12 +31,6 @@ export const updateGuidedRadioButtonsFromJSON = (parentPageID) => {
     // Get the button id from data-button-id attribute
     const buttonId = guidedRadioButton.getAttribute("data-button-id");
     const checkboxData = getCheckboxDataByKey(buttonId);
-    console.log(
-      "[updateGuidedRadioButtonsFromJSON] Checkbox Data for",
-      buttonId,
-      ":",
-      checkboxData
-    );
     if (!buttonId) {
       console.error(
         "[updateGuidedRadioButtonsFromJSON] data-button-id missing for element:",

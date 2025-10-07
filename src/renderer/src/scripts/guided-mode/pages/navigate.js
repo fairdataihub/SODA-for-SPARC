@@ -1,4 +1,3 @@
-import { savePageChanges } from "./savePageChanges";
 import { getGuidedProgressFileNames } from "./curationPreparation/savePage";
 import {
   guidedUnSkipPage,
@@ -34,7 +33,7 @@ export const handleNextButtonClick = async () => {
   window.pageBeingLeftID = window.CURRENT_PAGE.id;
 
   try {
-    await savePageChanges(window.pageBeingLeftID);
+    await window.savePageChanges(window.pageBeingLeftID);
     if (!window.sodaJSONObj["completed-tabs"].includes(window.pageBeingLeftID)) {
       window.sodaJSONObj["completed-tabs"].push(window.pageBeingLeftID);
     }
@@ -76,7 +75,7 @@ export const handleBackButtonClick = async () => {
   window.pageBeingLeftID = window.CURRENT_PAGE.id;
 
   try {
-    await savePageChanges(window.pageBeingLeftID);
+    await window.savePageChanges(window.pageBeingLeftID);
   } catch (error) {
     console.error("Error saving page changes during back button click", error);
   }
@@ -133,7 +132,7 @@ const guidedSaveAndExit = async () => {
     const currentPageID = window.CURRENT_PAGE.id;
 
     try {
-      await savePageChanges(currentPageID);
+      await window.savePageChanges(currentPageID);
     } catch (error) {
       const pageWithErrorName = window.CURRENT_PAGE.dataset.pageName;
 

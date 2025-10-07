@@ -5,7 +5,20 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## c16.2.1 - 2025-09-05
+## v16.3.0 - 2025-09-23
+
+## Feature Additions:
+
+- The `Prepare Dataset Step-by-Step` feature is now easier to use for users that are Pennsieve workspace guests - more common user error messages + links to docs + updates to the UI.
+- Every error message now has an addendum that helps users reach out to the SODA team for assistance.
+- The `Upload Dataset` page now always merges existing folders when updating a dataset. The option to choose how to handle existing folders has been removed.
+
+## Bug fixes
+
+- The `Prepare Dataset Step-by-Step` Pennsieve Log In page now responds to API Key and Secret sign-ins without needing a Save and Exit action.
+- The `Prepare Dataset Step-by-Step` feature now handles the modalities page case where a user says they have modalities but selects none of the options.
+
+## v16.2.1 - 2025-09-05
 
 ## Bug Fixes:
 

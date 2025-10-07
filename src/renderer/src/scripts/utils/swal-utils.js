@@ -219,11 +219,11 @@ export const swalFileListTripleAction = async (
   }
 };
 
-export const swalConfirmAction = async (icon, title, text, confirmButtonText, cancelButtonText) => {
+export const swalConfirmAction = async (icon, title, html, confirmButtonText, cancelButtonText) => {
   const { value: action } = await Swal.fire({
     icon: icon,
     title: title,
-    html: text,
+    html: html,
     width: 800,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",

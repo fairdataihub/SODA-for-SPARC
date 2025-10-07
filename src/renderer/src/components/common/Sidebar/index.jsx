@@ -1,13 +1,6 @@
 import useGlobalStore from "../../../stores/globalStore";
-import {
-  IconScreenShare,
-  IconBook,
-  IconUser,
-  IconMail,
-  IconInfoCircle,
-  IconLogout,
-  IconSwitchHorizontal,
-} from "@tabler/icons-react";
+
+import { IconScreenShare, IconBook, IconUser, IconMail, IconInfoCircle } from "@tabler/icons-react";
 import {
   Code,
   Group,
@@ -18,8 +11,11 @@ import {
   Image,
   Stack,
   Divider,
+  ScrollArea,
+  Paper,
 } from "@mantine/core";
 import classes from "./Sidebar.module.css";
+import LinksGroup from "./LinksGroup.jsx";
 
 const links = [
   {
@@ -54,67 +50,95 @@ const links = [
   },
 ];
 
-const Sidebar = () => {
+const Sidebar = ({ id }) => {
   let activeTab = useGlobalStore((state) => state.activeTab);
-  // Map "organize" to "guided_mode" for active tab highlighting
   if (activeTab === "organize") {
     activeTab = "guided_mode";
   }
   const appVersion = useGlobalStore((state) => state.appVersion);
+  const guidedModeSidebarDatasetName = useGlobalStore(
+    (state) => state.guidedModeSidebarDatasetName
+  );
+
+  const guidedModePageStructureObject = useGlobalStore(
+    (state) => state.guidedModePageStructureObject
+  );
+  const showGuidedModePageNavigation = useGlobalStore(
+    (state) => state.showGuidedModePageNavigation
+  );
 
   return (
     <nav className={classes.navbar}>
       <div className={classes.navbarMain}>
-        <Stack align="center" mb={50} gap="xs">
-          <Image src="./img/logo-new-green.png" alt="Logo" w={80} gap="0px" />
-          <Text fw={600} size="xl" c="var(--color-light-green)" mt="-8px">
-            SODA
-          </Text>
-          <Code fw={700} id="version">
-            {`${appVersion}`}
-          </Code>
-        </Stack>
+        {id === "main-sidebar" && (
+          <Stack align="center" mb="xl" gap="xs">
+            <Image src="./img/logo-new-green.png" alt="Logo" w={90} />
+            <Text fw={600} size="xl" c="var(--color-soda-green)">
+              SODA
+            </Text>
+            <Code fw={700} id="version">
+              {appVersion}
+            </Code>
+            <Divider my="sm" />
+          </Stack>
+        )}
 
-        {links.map((link) => {
-          const isActive = activeTab === link.section;
-          console.log("Rendering link:", link.id, "section:", link.section);
-          return (
-            <UnstyledButton
-              key={link.id}
-              data-section={link.section}
-              id={link.id}
-              className={isActive ? `${classes.link} ${classes.linkActive}` : classes.link}
-              onClick={() => window.handleSideBarTabClick(link.id, link.section)}
-              style={{ width: "100%", padding: "8px 12px", borderRadius: 8, marginBottom: 4 }}
-            >
-              <Group justify="flex-start" gap={12}>
-                <ThemeIcon variant="light" size={30} radius="md">
-                  {link.icon}
-                </ThemeIcon>
-                <Box ml="md">
-                  <Text fw={600} size="md" c="black">
-                    {link.label}
-                  </Text>
-                </Box>
-              </Group>
-            </UnstyledButton>
-          );
-        })}
+        {id === "main-sidebar" &&
+          links.map((link) => {
+            const isActive = activeTab === link.section;
+            return (
+              <UnstyledButton
+                key={link.id}
+                data-section={link.section}
+                id={link.id}
+                className={isActive ? `${classes.link} ${classes.linkActive}` : classes.link}
+                onClick={() => window.handleSideBarTabClick(link.id, link.section)}
+                style={{
+                  width: "100%",
+                  padding: "8px 12px",
+                  borderRadius: 8,
+                  marginBottom: 4,
+                }}
+              >
+                <Group justify="flex-start" gap={12}>
+                  <ThemeIcon variant="light" size={30} radius="md">
+                    {link.icon}
+                  </ThemeIcon>
+                  <Box ml="md">
+                    <Text fw={600} size="md" c="black">
+                      {link.label}
+                    </Text>
+                  </Box>
+                </Group>
+              </UnstyledButton>
+            );
+          })}
+
+        {id === "guided-sidebar" && (
+          <>
+            <Stack gap={2} align="center">
+              <Text size="md" fw={500}>
+                Current Dataset
+              </Text>
+              <Text size="lg" fw={550} mt={-5}>
+                {guidedModeSidebarDatasetName}
+              </Text>
+              <Text size="md" fw={500} mt="xl" mb="xs">
+                Page Navigation
+              </Text>
+            </Stack>
+
+            <ul id="guided-nav-items" className="guided--container-nav-items hidden"></ul>
+            {showGuidedModePageNavigation && (
+              <div>
+                {Object.entries(guidedModePageStructureObject).map(([pageKey, pageChildren]) => (
+                  <LinksGroup key={pageKey} label={pageKey} pages={pageChildren} />
+                ))}
+              </div>
+            )}
+          </>
+        )}
       </div>
-
-      {/*
-      <div className={classes.footer}>
-        <a href="#" className={classes.link} onClick={(event) => event.preventDefault()}>
-          <IconSwitchHorizontal className={classes.linkIcon} stroke={1.5} />
-          <span>Change account</span>
-        </a>
-
-        <a href="#" className={classes.link} onClick={(event) => event.preventDefault()}>
-          <IconLogout className={classes.linkIcon} stroke={1.5} />
-          <span>Logout</span>
-        </a>
-      </div>
-      */}
     </nav>
   );
 };

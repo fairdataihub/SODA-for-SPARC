@@ -32,8 +32,6 @@ const resolveStep = (stepperId, step) => {
 };
 
 export const setCurrentStep = (stepperId, step) => {
-  console.log("setCurrentStep", stepperId, step);
-
   useGlobalStore.setState((state) => {
     const stepper = state.steppers[stepperId];
     if (!stepper) return {};

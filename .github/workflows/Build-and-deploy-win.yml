@@ -6,6 +6,8 @@ on:
     branches:
       - main
       - staging
+      - pre-staging-2
+      - gm-sidebar-update-temp
 
 jobs:
   deploy-on-windows:

@@ -14,6 +14,22 @@ import {
 
 export const checkboxCardSlice = (set) => ({
   cardData: {
+    "dataset-upload-new-dataset": {
+      title: "Create a new Pennsieve Dataset",
+      description: null,
+      Icon: IconCirclePlus,
+      mutuallyExclusiveWithCards: ["dataset-upload-existing-dataset"],
+      checked: false,
+    },
+
+    "dataset-upload-existing-dataset": {
+      title: "Upload to an existing Pennsieve Dataset",
+      description: null,
+      Icon: IconCirclePlus,
+      mutuallyExclusiveWithCards: ["dataset-upload-new-dataset"],
+      checked: false,
+      additionalClasses: "option-card radio-button",
+    },
     "guided-button-start-new-curation": {
       title: "Prepare and share a new dataset test",
       description: null,
@@ -167,22 +183,6 @@ export const checkboxCardSlice = (set) => ({
       preventRadioHandler: true,
       additionalClasses: "change-current-account ds-dd organization guided-change-workspace",
     },
-    "dataset-upload-new-dataset": {
-      title: "New dataset",
-      description: null,
-      Icon: IconCirclePlus,
-      mutuallyExclusiveWithCards: ["dataset-upload-existing-dataset"],
-      checked: false,
-      additionalClasses: "option-card radio-button",
-    },
-    "dataset-upload-existing-dataset": {
-      title: "Existing dataset",
-      description: null,
-      Icon: IconCirclePlus,
-      mutuallyExclusiveWithCards: ["dataset-upload-new-dataset"],
-      checked: false,
-      additionalClasses: "option-card radio-button",
-    },
   },
 });
 
@@ -191,7 +191,6 @@ export const getCheckboxDataByKey = (key) => {
 };
 
 export const setCheckboxCardChecked = (key) => {
-  console.log("Checking card:", key);
   const cardData = useGlobalStore.getState().cardData;
   const card = cardData[key];
   useGlobalStore.setState((state) => {
@@ -227,7 +226,6 @@ export const setCheckboxCardChecked = (key) => {
 };
 
 export const setCheckboxCardUnchecked = (key) => {
-  console.log("Unchecking card:", key);
   useGlobalStore.setState((state) => {
     state.cardData[key].checked = false;
   });

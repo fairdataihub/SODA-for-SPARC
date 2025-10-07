@@ -1,4 +1,3 @@
-import { guidedSetNavLoadingState } from "./pages/navigationUtils/pageLoading";
 import { guidedSaveProgress } from "./pages/savePageChanges";
 import {
   getContributorByOrcid,
@@ -7,45 +6,33 @@ import {
   renderContributorsTable,
 } from "./metadata/contributors";
 import { generateAlertElement } from "./metadata/utils";
-import determineDatasetLocation from "../analytics/analytics-utils";
 import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
 import api from "../others/api/api";
 import kombuchaEnums from "../analytics/analytics-enums";
 import Swal from "sweetalert2";
 import Tagify from "@yaireo/tagify/dist/tagify.esm.js";
-import { v4 as uuid } from "uuid";
 import client from "../client";
 import {
   guidedGenerateDatasetLocally,
   guidedGenerateDatasetOnPennsieve,
 } from "./generateDataset/generate";
 import { guidedDatasetKeywordsTagify } from "./tagifies/tagifies";
-import { updateDatasetUploadProgressTable } from "./generateDataset/uploadProgressBar";
 import {
   swalConfirmAction,
   swalShowError,
   swalFileListSingleAction,
   swalFileListDoubleAction,
-  swalShowInfo,
 } from "../utils/swal-utils";
 import DatePicker from "tui-date-picker";
 import { loadStoredContributors } from "../others/contributor-storage";
 import { ORCID } from "orcid-utils";
 
-import { guidedCreateManifestFilesAndAddToDatasetStructure } from "./manifests/manifest";
-import { createStandardizedDatasetStructure } from "../utils/datasetStructure";
 import { guidedRenderProgressCards } from "./resumeProgress/progressCards";
-
-import { guidedGetDatasetName } from "./utils/sodaJSONObj";
-
-import { getDatasetEntityObj } from "../../stores/slices/datasetEntitySelectorSlice";
 
 import "bootstrap-select";
 import Cropper from "cropperjs";
 
 import "jstree";
-
-import { newEmptyFolderObj } from "../utils/datasetStructure";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -58,7 +45,6 @@ if (!window.fs.existsSync(guidedProgressFilePath)) {
 }
 
 window.clickGuidedModeButton = () => {
-  console.log("window.clickGuidedModeButton called");
   document.getElementById("guided_mode_view").click();
 };
 
@@ -143,7 +129,7 @@ const withdrawDatasetSubmission = async () => {
 
     Swal.fire({
       title: "Could not withdraw dataset from publication!",
-      text: `${userErrorMessage(error)}`,
+      html: `${userErrorMessage(error)}`,
       icon: "error",
       heightAuto: false,
       confirmButtonText: "Ok",
@@ -250,7 +236,7 @@ const guidedSubmitDatasetForReview = async (embargoReleaseDate = "") => {
       title: "Could not submit your dataset to the Curation Team",
       icon: "error",
       reverseButtons: window.reverseSwalButtons,
-      text: userErrorMessage(error),
+      html: userErrorMessage(error),
       showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
       hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
     });
@@ -322,7 +308,7 @@ export const guidedSetPublishingStatusUI = async () => {
     console.error("[PrepublishingFlow] Error fetching publishing status:", error);
     await Swal.fire({
       title: "Error fetching publishing status",
-      text: userErrorMessage(error),
+      html: userErrorMessage(error),
       icon: "error",
       confirmButtonText: "Ok",
       heightAuto: false,
@@ -471,7 +457,7 @@ window.guidedModifyCurationTeamAccess = async (action) => {
       setButtonState(shareBtn, { disabled: false, loading: false });
       await Swal.fire({
         title: "Failed to share dataset with Curation Team",
-        text: userErrorMessage(error),
+        html: userErrorMessage(error),
         icon: "error",
         confirmButtonText: "Ok",
         heightAuto: false,
@@ -522,7 +508,7 @@ window.guidedModifyCurationTeamAccess = async (action) => {
       setButtonState(unshareBtn, { disabled: false, loading: false });
       await Swal.fire({
         title: "Failed to unshare dataset from Curation Team",
-        text: userErrorMessage(error),
+        html: userErrorMessage(error),
         icon: "error",
         confirmButtonText: "Ok",
         heightAuto: false,
@@ -594,7 +580,7 @@ document.querySelectorAll(".pass-button-click-to-next-button").forEach((element)
   });
 });
 
-const deleteProgresFile = async (progressFileName) => {
+const deleteProgressFile = async (progressFileName) => {
   //Get the path of the progress file to delete
   const progressFilePathToDelete = window.path.join(
     guidedProgressFilePath,
@@ -660,10 +646,7 @@ document.querySelectorAll(".guided-curation-team-task-button").forEach((button) 
   });
 });
 
-window.deleteProgressCard = async (progressCardDeleteButton) => {
-  const progressCard = progressCardDeleteButton.parentElement.parentElement;
-  const progressCardNameToDelete = progressCard.querySelector(".progress-file-name").textContent;
-
+window.deleteProgressCard = async (progressCardNameToDelete) => {
   const result = await Swal.fire({
     title: `Are you sure you would like to delete SODA progress made on the dataset: ${progressCardNameToDelete}?`,
     text: "Your progress file will be deleted permanently, and all existing progress will be lost.",
@@ -678,10 +661,8 @@ window.deleteProgressCard = async (progressCardDeleteButton) => {
   });
   if (result.isConfirmed) {
     //delete the progress file
-    deleteProgresFile(progressCardNameToDelete);
-
-    //remove the progress card from the DOM
-    progressCard.remove();
+    deleteProgressFile(progressCardNameToDelete);
+    await guidedRenderProgressCards();
   }
 };
 
@@ -1858,7 +1839,7 @@ const generateSampleSpecificationRowElement = () => {
             data-alert-type="danger"
             style="margin-right: 5px;"
           />
-          <i class="far fa-check-circle fa-solid" style="cursor: pointer; margin-left: 15px; color: var(--color-light-green); font-size: 1.24rem;" onclick="window.confirmEnter(this)"></i>
+          <i class="far fa-check-circle fa-solid" style="cursor: pointer; margin-left: 15px; color: var(--color-soda-green); font-size: 1.24rem;" onclick="window.confirmEnter(this)"></i>
         </div>
       </td>
       <td class="middle aligned collapsing text-center remove-left-border">
@@ -2610,7 +2591,7 @@ const createPennsievePermissionsTableRowElement = (entityType, name, permission,
       <td style="opacity: 0.5" class="middle aligned remove-left-border permission-type-cell">${permission}</td>
       <td class="middle aligned text-center remove-left-border" style="width: 20px">
         <button type="button" style="display: none" class="btn btn-danger btn-sm" onclick="window.removePennsievePermission($(this))">Delete</button>
-        <button type="button" class="btn btn-sm" style="display: inline-block;color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);" onclick="window.removePennsievePermission($(this))">Restore</button>
+        <button type="button" class="btn btn-sm" style="display: inline-block;color: white; background-color: var(--color-soda-green); border-color: var(--color-soda-green);" onclick="window.removePennsievePermission($(this))">Restore</button>
       </td>
     </tr>
   `;
@@ -2621,7 +2602,7 @@ const createPennsievePermissionsTableRowElement = (entityType, name, permission,
         <td class="middle aligned remove-left-border permission-type-cell">${permission}</td>
         <td class="middle aligned text-center remove-left-border" style="width: 20px">
           <button type="button" class="btn btn-danger btn-sm" onclick="window.removePennsievePermission($(this))">Delete</button>
-          <button type="button" class="btn btn-sm" style="display: none;color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);" onclick="window.removePennsievePermission($(this))">Restore</button>
+          <button type="button" class="btn btn-sm" style="display: none;color: white; background-color: var(--color-soda-green); border-color: var(--color-soda-green);" onclick="window.removePennsievePermission($(this))">Restore</button>
         </td>
       </tr>
     `;

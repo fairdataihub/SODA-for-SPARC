@@ -111,7 +111,7 @@
                     data-component-type="data-importer"
                     data-importer-id="ffm-data-importer-dropzone"
                     data-relative-folder-path-to-import-data-into="data/"
-                    class="guided--section"
+                    class="w-100"
                   ></div>
                 </div>
               </div>
@@ -228,7 +228,7 @@
             <div class="individual-question getting-started" id="Question-getting-started-final"
               style="margin-top: 25px; justify-content: flex-start">
               <p id="para-continue-prepare-new-getting-started"
-                style="text-align: center; font-weight: 600; color: var(--color-light-green)"></p>
+                style="text-align: center; font-weight: 600; color: var(--color-soda-green)"></p>
             </div>
 
             <!-- 2. Specify high Level folders -->
@@ -281,7 +281,6 @@
           <div class="parent-tabs condensed" id="upload-destination-selection-tab"
             style="grid-template-rows: auto; padding-right: 10px">
             <h1 class="text-sub-step-title" >Step 3: Choose a new or existing dataset to upload your data to</h1>
-            <!--
             <div class="guided--radio-button-container" style="align-self: center;">
               <div
                 data-component-type="checkbox-card"
@@ -292,7 +291,6 @@
                 data-button-id="dataset-upload-existing-dataset"
               ></div>
             </div>
-            -->
             <div style="display: flex; flex-direction: row; align-self: center; margin-top: 3rem;">      
               <div id="dataset-upload-new-dataset" class="option-card radio-button getting-started-1st-question" style="margin-right: 5rem">
                 <div class="card-head">
@@ -432,7 +430,7 @@
                   justify-content: center;
                   margin: 10px auto;
                 ">
-                  <button id="button-confirm-ps-dataset" onclick="window.transitionSubQuestionsButton(this, 'Question-generate-dataset-ps-dataset', 'upload-destination-selection-tab', 'delete', 'individual-question generate-dataset')" data-next="Question-generate-dataset-existing-folders-options" style="
+                  <button id="button-confirm-ps-dataset" onclick="window.transitionSubQuestionsButton(this, 'Question-generate-dataset-ps-dataset', 'upload-destination-selection-tab', 'delete', 'individual-question generate-dataset')" data-next="Question-generate-dataset-existing-files-options" style="
                       display: none;
                       border-radius: 4px;
                       height: 30px;
@@ -444,7 +442,7 @@
 
                       <p style="margin:auto; color:white; font-size: small; font-weight: 700">Confirm</p>
                   </button>
-                <p id="para-continue-empty-ds-selected" style="text-align: center; font-weight: 600; color: var(--color-light-green); display: none;"></p>
+                <p id="para-continue-empty-ds-selected" style="text-align: center; font-weight: 600; color: var(--color-soda-green); display: none;"></p>
                 </div>
                 </div>
               </div>
@@ -456,7 +454,7 @@
               class="hidden"
               style="margin-top: 5rem; display: flex; flex-direction: column; align-self: center;"
             >
-              <label class="w-100 text-center" style="font-weight: 700; font-size: 18px; color: var(--color-bg-plum)">What would you like to name the new dataset?</label>
+              <label class="w-100 text-center" style="font-weight: 700; font-size: 18px;">What would you like to name the new dataset?</label>
               <div class="field justify-center"
                 style="margin-top: 2rem; display: flex; flex-direction: column; align-items: center">
                 <input type="text" class="form-control"
@@ -477,99 +475,6 @@
               </div>
             </div>
 
-            <div class="individual-question generate-dataset" id="Question-generate-dataset-existing-folders-options">
-              <div class="ui form" style="width: 100%">
-                <div class="grouped fields">
-                  <label style="font-size: 17px; color: var(--color-bg-plum); text-align: center">How would you like to
-                    handle existing folders?
-                    <br /><span style="color: #898989; font-size: 12px">Please select one:</span>
-                  </label>
-                  <div class="info-dropdown mt-lg" style="margin:auto;">
-                    <p class="info-dropdown-text" data-dropdown-type="info">What do these options do?</p>
-                    <i class="fas fa-chevron-right"></i>
-                  </div>
-                  <div class="info-container">
-                    <p class="help-text mb-0">
-                      Tell SODA how to handle folders specified during Step 3 that already
-                      exist (same name, same relative location) on your Pennsieve dataset:
-                    </p>
-                      <ul>
-                        <li>
-                          Replace: Delete existing folders on Pennsieve then upload new ones
-                        </li>
-                        <li>
-                          Merge: Upload new files into the existing folders. Existing files will
-                          be handled as intructed in the next step.
-                        </li>
-                        <li>Skip: Existing folders will not be uploaded.</li>
-                      </ul>
-                  </div>
-                  <div style="display: flex; flex-direction: row; justify-content: center">
-                    <div style="margin: 15px 0">
-                      <!-- <button> -->
-                      <div id="replace-folder-card" class="option-card radio-button" data-next="Question-generate-dataset-existing-files-options"
-                        onclick="window.transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'upload-destination-selection-tab', '', 'generate-dataset')">
-                        <div class="card-head">
-                          <div class="folder-checkbox">
-                            <input class="folder-input-check" name="generate-5" id="existing-folders-replace"
-                              type="radio" />
-                            <label for="existing-folders-replace"></label>
-                          </div>
-                        </div>
-                        <div class="card-body">
-                          <i class="fas fa-eraser" style="color: #b80d49; font-size: 43px"></i>
-                          <h2>Replace</h2>
-                        </div>
-                      </div>
-                    </div>
-                    <div style="margin: 15px 0">
-                      <!-- <button> -->
-                      <div id="merge-folder-card" class="option-card radio-button" data-next="Question-generate-dataset-existing-files-options"
-                        onclick="window.transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'upload-destination-selection-tab', '', 'generate-dataset')">
-                        <div class="card-head">
-                          <div class="folder-checkbox">
-                            <input class="folder-input-check" name="generate-5" id="existing-folders-merge"
-                              type="radio" />
-                            <label for="existing-folders-merge"></label>
-                          </div>
-                        </div>
-                        <div class="card-body">
-                          <svg width="45px" height="45px" viewBox="0 0 16 16" class="bi bi-intersect" fill="#13716D"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                              d="M0 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2H2a2 2 0 0 1-2-2V2zm5 10v2a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-2v5a2 2 0 0 1-2 2H5zm6-8H6a2 2 0 0 0-2 2v5H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v2z" />
-                          </svg>
-                          <h2>Merge</h2>
-                        </div>
-                      </div>
-                    </div>
-                    <div style="margin: 15px 0">
-                      <!-- <button> -->
-                      <div id="skip-folder-card" class="option-card radio-button" data-next="Question-generate-dataset-existing-files-options"
-                        onclick="window.transitionSubQuestions(this, 'Question-generate-dataset-existing-folders-options', 'upload-destination-selection-tab', '', 'generate-dataset')">
-                        <div class="card-head">
-                          <div class="folder-checkbox">
-                            <input class="folder-input-check" name="generate-5" id="existing-folders-skip"
-                              type="radio" />
-                            <label for="existing-folders-skip"></label>
-                          </div>
-                        </div>
-                        <div class="card-body">
-                          <svg width="45px" height="45px" viewBox="0 0 16 16" class="bi bi-skip-forward" fill="#B80D49"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                              d="M15.5 3.5a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V8.752l-6.267 3.636c-.52.302-1.233-.043-1.233-.696v-2.94l-6.267 3.636C.713 12.69 0 12.345 0 11.692V4.308c0-.653.713-.998 1.233-.696L7.5 7.248v-2.94c0-.653.713-.998 1.233-.696L15 7.248V4a.5.5 0 0 1 .5-.5zM1 4.633v6.734L6.804 8 1 4.633zm7.5 0v6.734L14.304 8 8.5 4.633z" />
-                          </svg>
-                          <!-- <i class="fas fa-forward" style="color: ;font-size:43px"></i> -->
-                          <h2>Skip</h2>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
             <div class="individual-question generate-dataset" id="Question-generate-dataset-existing-files-options">
               <div class="ui form" style="width: 100%">
                 <div class="grouped fields">
@@ -583,8 +488,8 @@
                     </div>
                     <div class="info-container">
                       <p class="help-text mb-0">
-                        Tell SODA how to handle files specified during Step 3 and metadata files
-                        specified during Step 4 that already exist (same name, same relative
+                        Tell SODA how to handle files imported in step 1
+                        that already exist (same name, same relative
                         location) on your Pennsieve dataset:
                       </p>
                         <ul>
@@ -632,7 +537,7 @@
                     </div>
                   </div>
                   <p id="para-continue-existing-files-generate"
-                    style="text-align: center; font-weight: 600; color: var(--color-light-green)"></p>
+                    style="text-align: center; font-weight: 600; color: var(--color-soda-green)"></p>
                 </div>
               </div>
             </div>

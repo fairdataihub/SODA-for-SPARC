@@ -40,8 +40,12 @@ while (!window.htmlSectionsAdded) {
 
 // Helper function to create a React root and render the component inside SodaComponentWrapper
 export const renderComponent = (componentSlot, component) => {
-  const root = createRoot(componentSlot);
-  root.render(<SodaComponentWrapper>{component}</SodaComponentWrapper>);
+  try {
+    const root = createRoot(componentSlot);
+    root.render(<SodaComponentWrapper>{component}</SodaComponentWrapper>);
+  } catch (error) {
+    console.error("Error rendering component:", error);
+  }
 };
 
 // Mapping of component types to their render functions
@@ -115,8 +119,11 @@ const componentTypeRenderers = {
     };
     renderComponent(componentSlot, <ProgressStepper {...props} />);
   },
-  "main-sidebar": (componentSlot) => {
-    renderComponent(componentSlot, <Sidebar />);
+  sidebar: (componentSlot) => {
+    const props = {
+      id: componentSlot.getAttribute("data-sidebar-id"),
+    };
+    renderComponent(componentSlot, <Sidebar {...props} />);
   },
   "generic-button": (componentSlot) => {
     const props = {
@@ -154,7 +161,6 @@ const componentTypeRenderers = {
         "data-relative-folder-path-to-import-data-into"
       ),
     };
-    console.log("Rendering DataImporter with props:", props);
     renderComponent(componentSlot, <DataImporter {...props} />);
   },
   "performance-id-management-page": (componentSlot) => {
@@ -251,7 +257,11 @@ document.querySelectorAll("[data-component-type]").forEach((componentSlot) => {
   const renderFunction = componentTypeRenderers[componentType];
 
   if (renderFunction) {
-    renderFunction(componentSlot);
+    try {
+      renderFunction(componentSlot);
+    } catch (error) {
+      console.error(`Error rendering component of type: ${componentType}`, error);
+    }
   } else {
     console.error(`No render function found for component type: ${componentType}`);
   }

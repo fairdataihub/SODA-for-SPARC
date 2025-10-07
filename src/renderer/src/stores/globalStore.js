@@ -22,6 +22,7 @@ import { guidedModeProgressCardsSlice } from "./slices/guidedModeProgressCardsSl
 import { navButtonStateSlice } from "./slices/navButtonStateSlice";
 import { appConfigSlice } from "./slices/appConfigSlice";
 import { stateDisplaySlice } from "./slices/stateDisplaySlice";
+import { isGuestSlice } from "./slices/isGuestSlice";
 
 const useGlobalStore = create(
   immer((set, ...a) => ({
@@ -47,6 +48,7 @@ const useGlobalStore = create(
     ...guidedModeProgressCardsSlice(set, ...a),
     ...navButtonStateSlice(set, ...a),
     ...stateDisplaySlice(set, ...a),
+    ...isGuestSlice(set, ...a),
   }))
 );
 

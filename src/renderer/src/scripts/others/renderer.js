@@ -2619,7 +2619,7 @@ window.showPublishingStatus = async (callback, curationMode = "") => {
 
     Swal.fire({
       title: "Could not get your publishing status!",
-      text: userErrorMessage(error),
+      html: userErrorMessage(error),
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Ok",
@@ -5396,7 +5396,7 @@ const initiate_generate = async (resume = false) => {
       document.getElementById("contact-us-view").style.pointerEvents = "";
 
       clientError(error);
-      let emessage = userErrorMessage(error);
+      let emessage = userErrorMessage(error, false);
 
       // log high level confirmation that a dataset was generation run failed
       window.electron.ipcRenderer.send(
@@ -5479,7 +5479,12 @@ const initiate_generate = async (resume = false) => {
       uploadLocally.style = "background-color: #fff";
 
       document.getElementById("para-new-curate-progress-bar-error-status").innerHTML =
-        `<span style='color: red;'>${emessage}</span>`;
+        `<div style='color: red; text-align: left;'>
+        <p style="overflow-y: auto; max-height: 120px; color: red;">Error: ${emessage}</p>
+        SODA could not upload your dataset after three automatic attempts. You can use the 'Retry' button to try again—this sometimes fixes temporary network issues.  
+        If the problem continues, please contact the SODA team by following the documentation 
+        <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here.</a></div>
+        `;
 
       if (amountOfTimesPennsieveUploadFailed > 3) {
         Swal.fire({
@@ -5547,7 +5552,7 @@ const initiate_generate = async (resume = false) => {
       mainCurationProgressResponse = await client.get(`/curate_datasets/curation/progress`);
     } catch (error) {
       clientError(error);
-      let emessage = userErrorMessage(error);
+      let emessage = userErrorMessage(error, false);
 
       if (progressStatus.innerHTML.split("<br>").length > 1) {
         progressStatus.innerHTML = `Upload Failed<br>${progressStatus.innerHTML
@@ -5559,7 +5564,12 @@ const initiate_generate = async (resume = false) => {
       }
 
       document.getElementById("para-new-curate-progress-bar-error-status").innerHTML =
-        `<span style='color: red;'>${emessage}</span>`;
+        `<span style='color: red;'>
+        ${emessage}
+        SODA was unable to successfully upload your dataset after three automatic attempts. If you would like you can use the 'Retry' button 
+        to manually try again. Sometimes this can resolve the issue in the case of temporary network problems.
+        However, if the issue persists please reach out to the SODA team by following the documentation <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here</a>.</span>
+        `;
       window.log.error(error);
 
       //Enable the buttons (organize datasets, upload locally, curate existing dataset, curate new dataset)
@@ -5730,7 +5740,13 @@ const initiate_generate = async (resume = false) => {
       clearInterval(timerProgress);
       swalShowInfo(
         "No files were uploaded in this session",
-        "This happens when trying to update an existing dataset while using the skip options (selected on step 3) in a way that unintentionally ask SODA to skip files you want to upload to Pennsieve. Please try again by clicking the Curate and Share button in the sidebar."
+        `
+        <div style="text-align: left;">
+          This happens when updating an existing dataset with the 'merge' option for folders and the 'skip' option for files selected, and not adding new files to your local dataset.
+          You may try the upload again by clicking the Curate and Share button in the sidebar to get back to the upload process. If you believe this is an error, please contact us using the Contact Us page available in the side bar.
+          For more instructions on how to do that you may reference our documentation page <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here.</a>
+         </div>
+         `
       );
       return;
     }
@@ -5985,7 +6001,6 @@ window.electron.ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
 });
 
 window.showBFAddAccountSweetalert = async (ev) => {
-  let target = ev.target;
   await Swal.fire({
     title: bfaddaccountTitle,
     html: bfAddAccountBootboxMessage,
@@ -5997,11 +6012,12 @@ window.showBFAddAccountSweetalert = async (ev) => {
     reverseButtons: window.reverseSwalButtons,
     backdrop: "rgba(0,0,0, 0.4)",
     heightAuto: false,
+    width: "80rem",
     allowOutsideClick: false,
     footer: `<a target="_blank" href="https://docs.sodaforsparc.io/docs/soda-features/connecting-to-pennsieve/connecting-with-api-key" style="text-decoration: none;">Help me get an API key</a>`,
     didOpen: () => {
       let swal_container = document.getElementsByClassName("swal2-popup")[0];
-      swal_container.style.width = "43rem";
+      swal_container.style.width = "50rem";
     },
     showClass: {
       popup: "animate__animated animate__fadeInDown animate__faster",
@@ -6054,7 +6070,7 @@ window.showBFAddAccountSweetalert = async (ev) => {
 
                     // If the clicked button has the data attribute "reset-guided-mode-page" and the value is "true"
                     // then reset the guided mode page
-                    if (target?.getAttribute("data-reset-guided-mode-page") == "true") {
+                    if (ev?.getAttribute("data-reset-guided-mode-page") == "true") {
                       // Get the current page that the user is on in the guided mode
                       const currentPage = window.CURRENT_PAGE.id;
                       if (currentPage) {
@@ -6073,16 +6089,36 @@ window.showBFAddAccountSweetalert = async (ev) => {
                     // guided-change-workspace (from guided mode), handle changes based on the ev id
                     // otherwise, reset the FFM UI based on the ev class
                     // NOTE: For API Key sign in flow it is more simple to just reset the UI as the new user may be in a separate workspace than the prior user.
-                    target?.classList.contains("data-reset-guided-mode-page")
-                      ? window.handleGuidedModeOrgSwitch(target)
-                      : window.resetFFMUI(target);
+                    ev.target?.classList.contains("data-reset-guided-mode-page")
+                      ? window.handleGuidedModeOrgSwitch(ev.target)
+                      : window.resetFFMUI(ev.target);
 
                     window.datasetList = [];
                     window.defaultBfDataset = null;
                     window.clearDatasetDropdowns();
+
+                    Swal.fire({
+                      icon: "success",
+                      title: "Successfully added! <br/>Loading your account details...",
+                      timer: 3000,
+                      timerProgressBar: true,
+                      allowEscapeKey: false,
+                      heightAuto: false,
+                      backdrop: "rgba(0,0,0, 0.4)",
+                      showConfirmButton: false,
+                    });
                   })
                   .catch((error) => {
-                    Swal.showValidationMessage(userErrorMessage(error));
+                    let message = `
+                    <div style="text-align: left;">
+                      <p>
+                          ${userErrorMessage(error, false)}
+                          If you are adding your API Key and Secret as per the documentation available <a href="https://docs.sodaforsparc.io/docs/soda-features/connecting-to-pennsieve/connecting-with-api-key" target="_blank">here</a> and the issue persists
+                          reach out to the SODA team by following the instructions
+                          <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here</a>
+                      </p>
+                    </div>`;
+                    Swal.showValidationMessage(message);
                     document.getElementsByClassName("swal2-actions")[0].children[1].disabled =
                       false;
                     document.getElementsByClassName("swal2-actions")[0].children[3].disabled =
@@ -6094,22 +6130,20 @@ window.showBFAddAccountSweetalert = async (ev) => {
                     showHideDropdownButtons("account", "hide");
                     confirm_click_account_function();
                   });
-
-                Swal.fire({
-                  icon: "success",
-                  title: "Successfully added! <br/>Loading your account details...",
-                  timer: 3000,
-                  timerProgressBar: true,
-                  allowEscapeKey: false,
-                  heightAuto: false,
-                  backdrop: "rgba(0,0,0, 0.4)",
-                  showConfirmButton: false,
-                });
               });
             })
             .catch((error) => {
+              let message = `
+                    <div style="text-align: left;">
+                      <p>
+                          ${userErrorMessage(error, false)}
+                          If you are adding your API Key and Secret per the documentation available <a href="https://docs.sodaforsparc.io/docs/soda-features/connecting-to-pennsieve/connecting-with-api-key" target="_blank">here</a> and the issue persists
+                          reach out to the SODA team by following the instructions
+                          <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here</a>
+                      </p>
+                    </div>`;
               clientError(error);
-              Swal.showValidationMessage(userErrorMessage(error));
+              Swal.showValidationMessage(message);
               document.getElementsByClassName("swal2-actions")[0].children[1].disabled = false;
               document.getElementsByClassName("swal2-actions")[0].children[3].disabled = false;
               document.getElementsByClassName("swal2-actions")[0].children[0].style.display =

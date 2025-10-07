@@ -12,7 +12,7 @@ const cardData = [
       "Use this option to organize your dataset step by step according to the SPARC Dataset Structure.",
     buttonLabel: "Start Preparation",
     buttonColor: "blue",
-    onClick: () => console.log("Starting Dataset Preparation"),
+    onClick: () => {},
   },
   {
     id: "button-homepage-freeform-mode",
@@ -26,11 +26,9 @@ const cardData = [
 ];
 
 const HomeCard = ({ id, icon, title, description, buttonLabel, buttonColor, onClick }) => {
-  const { hovered, ref } = useHover();
   return (
     <Card
       id={id}
-      ref={ref}
       padding="lg"
       m="sm"
       className={classes.card}

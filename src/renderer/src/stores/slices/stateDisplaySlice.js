@@ -14,7 +14,6 @@ export const setStateDisplayData = (key, value) => {
         [key]: value,
       },
     };
-    console.log("[stateDisplaySlice] setStateDisplayData (external):", { key, value, newState });
     return newState;
   });
 };

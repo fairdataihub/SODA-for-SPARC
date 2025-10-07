@@ -50,6 +50,8 @@ import { setSelectedModalities } from "../../../stores/slices/modalitiesSlice.js
 import { guidedSaveProgress } from "./savePageChanges.js";
 import { createStandardizedDatasetStructure } from "../../utils/datasetStructure.js";
 import { setCurrentStep } from "../../../stores/slices/stepperSlice.js";
+import { setGuidedModeSidebarDatasetName } from "../../../stores/slices/sideBarSlice.js";
+
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
@@ -80,7 +82,6 @@ const handleNextButtonVisibility = (targetPageID) => {
 };
 
 const handleSaveAndExitButtonVisibility = (targetPageID) => {
-  console.log("Target page ID for save and exit visibility:", targetPageID);
   if (targetPageID === "guided-select-starting-point-tab") {
     $("#guided-button-save-and-exit").css("visibility", "hidden");
   } else {
@@ -156,11 +157,8 @@ const hideAndShowElementsDependingOnStartType = (pageElement) => {
 
 const setActiveProgressionTab = (targetPageID) => {
   let targetPageParentID = $(`#${targetPageID}`).parent().attr("id");
-  console.log("Target page parent ID:", targetPageParentID);
-  console.log("parent element of target page:", document.getElementById(targetPageParentID));
   // Get the text for the current step from the target page's data attribute
   const stepText = document.getElementById(targetPageParentID).getAttribute("data-parent-tab-name");
-  console.log("Setting step to:", stepText);
   setCurrentStep("guided-mode-progress-stepper", stepText);
 };
 
@@ -232,11 +230,10 @@ window.openPage = async (targetPageID) => {
       nextButtonSpans.forEach((span) => {
         span.innerHTML = "Continue";
       });
+      setGuidedModeSidebarDatasetName(null);
       guidedLockSideBar(false);
     } else {
-      // Set the dataset name display in the side bar
-      const datasetNameDisplay = document.getElementById("guided-navbar-dataset-name-display");
-      datasetNameDisplay.innerHTML = datasetName;
+      setGuidedModeSidebarDatasetName(datasetName);
 
       nextButton.querySelector("span.nav-button-text").innerHTML = "Save and Continue";
       nextButtonSpans.forEach((span) => {
@@ -432,8 +429,6 @@ window.openPage = async (targetPageID) => {
       }
     };
     renderCorrectFileExplorerByPage(targetPageID);
-
-    console.log("Current page before opening new page:", window.CURRENT_PAGE);
 
     let currentParentTab = window.CURRENT_PAGE.closest(".guided--parent-tab");
 

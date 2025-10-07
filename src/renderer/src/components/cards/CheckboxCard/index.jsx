@@ -52,10 +52,7 @@ const CheckboxCard = ({ id }) => {
       </Button>
     );
   }
-  if (checked) {
-    console.log("classes.cardSelected:", classes.cardSelected);
-    console.log("checked:", checked);
-  }
+
   return (
     <Card
       id={id}

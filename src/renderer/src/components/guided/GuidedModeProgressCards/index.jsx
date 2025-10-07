@@ -15,9 +15,6 @@ const generateProgressResumptionButton = (
   let buttonText;
   let color = "blue";
   let variant = "filled";
-  console.log("progressFileName:", progressFileName);
-  const appVersion = useGlobalStore.getState().appVersion;
-  console.log("App version:", appVersion);
 
   if (workspaceUserNeedsToSwitchTo) {
     if (!window.defaultBfAccount) {
@@ -46,10 +43,10 @@ const generateProgressResumptionButton = (
 
   if (boolAlreadyUploadedToPennsieve) {
     buttonText = "Share with the Curation Team";
-    color = "purple";
+    color = "violet";
   } else if (datasetStartingPoint === "new") {
     buttonText = "Resume Curation";
-    color = "var(--mantine-color-primary-6)";
+    color = "primary";
   } else {
     buttonText = "Continue updating Pennsieve Dataset";
     color = "orange";
@@ -236,9 +233,7 @@ const GuidedModeProgressCards = () => {
                         leftSection={<IconTrash size={18} />}
                         onClick={() => {
                           if (window.deleteProgressCard) {
-                            window.deleteProgressCard({
-                              datasetName: progressFileName,
-                            });
+                            window.deleteProgressCard(progressFileName);
                           }
                         }}
                       >

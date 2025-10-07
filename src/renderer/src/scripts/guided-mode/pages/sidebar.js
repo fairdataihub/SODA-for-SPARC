@@ -1,7 +1,10 @@
 import { getNonSkippedGuidedModePages } from "../pages/navigationUtils/pageSkipping";
-import { savePageChanges } from "../pages/savePageChanges";
 import Swal from "sweetalert2";
-
+import {
+  setGuidedModePageStructureObject,
+  setShowGuidedModePageNavigation,
+} from "../../../stores/slices/sideBarSlice";
+import { setOpenSidebarTab } from "../../../stores/slices/sideBarSlice";
 /**
  *
  * @param {string} activePage - The id of the html page open in the current Prepare Dataset Step-by-Step workflow.
@@ -10,80 +13,45 @@ import Swal from "sweetalert2";
  */
 export const renderSideBar = (activePage) => {
   const guidedNavItemsContainer = document.getElementById("guided-nav-items");
-  const guidedPageNavigationHeader = document.getElementById("guided-page-navigation-header");
 
   if (activePage === "guided-dataset-dissemination-tab") {
-    //Hide the side bar navigawtion and navigation header
-    guidedPageNavigationHeader.classList.add("hidden");
-    guidedNavItemsContainer.innerHTML = ``;
+    setShowGuidedModePageNavigation(false);
     return;
   }
-  //Show the page navigation header if it had been previously hidden
-  guidedPageNavigationHeader.classList.remove("hidden");
+  setShowGuidedModePageNavigation(true);
 
   const completedTabs = window.sodaJSONObj["completed-tabs"];
 
-  const pageStructureObject = {};
+  const newPageStructureObject = {};
 
   const highLevelStepElements = Array.from(document.querySelectorAll(".guided--parent-tab"));
 
+  // Track parent tab for the active page
+  let parentTabOfActivePage = null;
+
   for (const element of highLevelStepElements) {
     const highLevelStepName = element.getAttribute("data-parent-tab-name");
-    pageStructureObject[highLevelStepName] = {};
+    newPageStructureObject[highLevelStepName] = [];
 
     const notSkippedPages = getNonSkippedGuidedModePages(element);
 
     for (const page of notSkippedPages) {
       const pageName = page.getAttribute("data-page-name");
       const pageID = page.getAttribute("id");
-      pageStructureObject[highLevelStepName][pageID] = {
+
+      newPageStructureObject[highLevelStepName].push({
+        pageID: pageID,
         pageName: pageName,
         completed: completedTabs.includes(pageID),
-      };
+      });
+      if (pageID === activePage) {
+        setOpenSidebarTab(highLevelStepName);
+      }
     }
   }
-  let navBarHTML = "";
-  for (const [highLevelStepName, highLevelStepObject] of Object.entries(pageStructureObject)) {
-    // Add the high level drop down to the nav bar
-    const dropdDown = `
-          <div class="guided--nav-bar-dropdown">
-            <p class="help-text mb-0">
-              ${highLevelStepName}
-            </p>
-            <i class="fas fa-chevron-right"></i>
-          </div>
-        `;
 
-    // Add the high level drop down's children links to the nav bar
-    let dropDownContent = ``;
-    for (const [pageID, pageObject] of Object.entries(highLevelStepObject)) {
-      //add but keep hidden for now!!!!!!!!!!!!!!!!!!
-      dropDownContent += `
-            <div
-              class="
-                guided--nav-bar-section-page
-                hidden
-                ${pageObject.completed ? " completed" : " not-completed"}
-                ${pageID === activePage ? "active" : ""}"
-              data-target-page="${pageID}"
-            >
-              <div class="guided--nav-bar-section-page-title">
-                ${pageObject.pageName}
-              </div>
-            </div>
-          `;
-    }
-
-    // Add each section to the nav bar element
-    const dropDownContainer = `
-            <div class="guided--nav-bar-section">
-              ${dropdDown}
-              ${dropDownContent}
-            </div>
-          `;
-    navBarHTML += dropDownContainer;
-  }
-  guidedNavItemsContainer.innerHTML = navBarHTML;
+  //Set the page structure object in the zustand store
+  setGuidedModePageStructureObject(newPageStructureObject);
 
   const guidedNavBarDropdowns = Array.from(document.querySelectorAll(".guided--nav-bar-dropdown"));
   for (const guidedNavBarDropdown of guidedNavBarDropdowns) {
@@ -124,7 +92,7 @@ export const renderSideBar = (activePage) => {
       }
 
       try {
-        await savePageChanges(currentPageUserIsLeaving);
+        await window.savePageChanges(currentPageUserIsLeaving);
         const allNonSkippedPages = getNonSkippedGuidedModePages(document).map(
           (element) => element.id
         );
@@ -213,7 +181,7 @@ export const renderSideBar = (activePage) => {
 const checkIfPageIsValid = async (pageID) => {
   try {
     await window.openPage(pageID);
-    await savePageChanges(pageID);
+    await window.savePageChanges(pageID);
   } catch (error) {
     throw error;
   }
