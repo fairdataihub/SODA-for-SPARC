@@ -1,5 +1,4 @@
-import React from "react";
-import { Paper, Group, Text, Divider, Box } from "@mantine/core";
+import { Paper, Text, Divider, ScrollArea } from "@mantine/core";
 
 const EntityListContainer = ({
   title, // The title displayed at the top
@@ -15,7 +14,9 @@ const EntityListContainer = ({
           <Divider my="xs" />
         </>
       )}
-      <Box style={{ maxHeight: "600px", overflowY: "auto" }}>{children}</Box>
+      <ScrollArea.Autosize mah={600} type="auto" offsetScrollbars>
+        {children}
+      </ScrollArea.Autosize>
     </Paper>
   );
 };
