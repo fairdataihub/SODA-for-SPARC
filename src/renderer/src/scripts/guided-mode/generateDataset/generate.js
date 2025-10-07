@@ -893,7 +893,7 @@ const guidedCreateDataset = async (bfAccount, datasetName) => {
         <button
           class="ui positive button guided--button"
           id="guided-button-rename-dataset"
-          style="margin: 5px !important; background-color: var(--color-soda-green) !important; width: 140px !important;"
+          style="margin: 5px !important; background-color: var(--color-primary) !important; width: 140px !important;"
         >
           Rename dataset
         </button>

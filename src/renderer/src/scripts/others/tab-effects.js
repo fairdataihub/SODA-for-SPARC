@@ -313,19 +313,10 @@ const addCardDetail = (card_left, card_right, parent_tab = -1, element_id = "", 
   $(parent_element).append(new_card_element);
 };
 
-const checkHighLevelFoldersInput = () => {
-  setNavButtonDisabled("nextBtn", true);
-  var optionCards = document.getElementsByClassName("option-card high-level-folders");
-  var checked = false;
-  for (var card of optionCards) {
-    if ($(card).hasClass("checked")) {
-      checked = true;
-      break;
-    }
-  }
-  if (checked) {
-    setNavButtonDisabled("nextBtn", false);
-  }
+export const checkHighLevelFoldersInput = () => {
+  const optionCards = document.querySelectorAll(".option-card.high-level-folders");
+  const checked = Array.from(optionCards).some((card) => card.classList.contains("checked"));
+  setNavButtonDisabled("nextBtn", !checked);
   return checked;
 };
 

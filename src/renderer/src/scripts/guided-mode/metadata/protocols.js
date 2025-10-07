@@ -79,7 +79,7 @@ const generateProtocolField = (identifier, identifier_description) => {
           <button
             type="button"
             class="btn btn-sm"
-            style="color: white; background-color: var(--color-soda-green); border-color: var(--color-soda-green);"
+            style="color: white; background-color: var(--color-primary); border-color: var(--color-primary);"
             onclick="window.guidedOpenAddOrEditProtocolSwal('${identifier}')"
           >
           View/Edit

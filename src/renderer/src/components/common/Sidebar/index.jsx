@@ -73,7 +73,7 @@ const Sidebar = ({ id }) => {
         {id === "main-sidebar" && (
           <Stack align="center" mb="xl" gap="xs">
             <Image src="./img/logo-new-green.png" alt="Logo" w={90} />
-            <Text fw={600} size="xl" c="var(--color-soda-green)">
+            <Text fw={600} size="xl" c="var(--color-og-soda-green)">
               SODA
             </Text>
             <Code fw={700} id="version">

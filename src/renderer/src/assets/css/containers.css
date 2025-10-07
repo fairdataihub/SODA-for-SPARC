@@ -77,7 +77,7 @@
 }
 
 .button-prompt-container:hover {
-  box-shadow: 0px 0px 10px 0px var(--color-soda-green);
+  box-shadow: 0px 0px 10px 0px var(--color-primary);
 }
 
 .container-open {
@@ -199,7 +199,7 @@
 
   text-align: justify;
 
-  border: 1px solid var(--color-soda-green);
+  border: 1px solid var(--color-primary);
   border-radius: 3px;
 }
 
@@ -334,7 +334,7 @@
 
   text-align: justify;
 
-  border: 1px solid var(--color-soda-green);
+  border: 1px solid var(--color-primary);
   border-radius: 3px;
 }
 
@@ -392,7 +392,7 @@
   width: 100%;
   -webkit-border-radius: 100%;
   clip: rect(0px, 50px, 100px, 0px);
-  background: var(--color-soda-green);
+  background: var(--color-primary);
 }
 
 .circle .left .progress {

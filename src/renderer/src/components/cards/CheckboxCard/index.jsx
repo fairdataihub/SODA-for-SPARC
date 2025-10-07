@@ -2,7 +2,7 @@ import useGlobalStore from "../../../stores/globalStore";
 import { Checkbox, Text, Stack, Badge, Card, Center, ActionIcon, Button } from "@mantine/core";
 import { useHover } from "@mantine/hooks";
 import classes from "../cards.module.css";
-import pennsieveLogo from "../../../assets/img/pennsieveLogo.png";
+import { checkHighLevelFoldersInput } from "../../../scripts/others/tab-effects";
 import {
   setCheckboxCardChecked,
   setCheckboxCardUnchecked,
@@ -20,7 +20,9 @@ const CheckboxCard = ({ id }) => {
     checked,
     simpleButtonType,
     additionalClasses,
+    ffmButton,
   } = cardData[id];
+
   const isDisabled = !!comingSoon;
   const { hovered, ref } = useHover();
 
@@ -29,6 +31,10 @@ const CheckboxCard = ({ id }) => {
 
     if (!checked) {
       setCheckboxCardChecked(id);
+    }
+    if (ffmButton) {
+      // Special case for FFM button: check high level folders input (controls the next button state)
+      checkHighLevelFoldersInput();
     }
   };
 

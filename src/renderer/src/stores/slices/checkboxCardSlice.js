@@ -20,6 +20,7 @@ export const checkboxCardSlice = (set) => ({
       Icon: IconCirclePlus,
       mutuallyExclusiveWithCards: ["dataset-upload-existing-dataset"],
       checked: false,
+      ffmButton: true,
     },
 
     "dataset-upload-existing-dataset": {
@@ -28,7 +29,7 @@ export const checkboxCardSlice = (set) => ({
       Icon: IconCirclePlus,
       mutuallyExclusiveWithCards: ["dataset-upload-new-dataset"],
       checked: false,
-      additionalClasses: "option-card radio-button",
+      ffmButton: true,
     },
     "guided-button-start-new-curation": {
       title: "Prepare and share a new dataset test",

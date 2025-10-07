@@ -12,7 +12,7 @@ import { IconMoodAngry } from "@tabler/icons-react";
 
 const GuidedTileButton = ({ id, nextElementId, buttonText, icon }) => {
   // Default icon if none provided
-  const defaultIcon = <IconMoodAngry size={50} color="var(--color-soda-green)" />;
+  const defaultIcon = <IconMoodAngry size={50} color="var(--color-primary)" />;
 
   return (
     <button className="guided--radio-button tile-button" id={id} data-next-element={nextElementId}>
