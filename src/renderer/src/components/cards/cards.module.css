@@ -18,6 +18,26 @@
   background-color: var(--mantine-color-primary-1);
 }
 
+.card:focus {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.24);
+  border-color: var(--mantine-color-primary-3);
+  background-color: var(--mantine-color-primary-1);
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--mantine-color-primary-6);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--mantine-color-primary-1);
+  border-color: var(--mantine-color-primary-3);
+  background-color: var(--mantine-color-primary-1);
+}
+
+/* Remove focus outline when not using keyboard navigation */
+.card:focus:not(:focus-visible) {
+  outline: none;
+}
+
 .cardSelected {
   background-color: var(--mantine-color-primary-0) !important;
   border-color: var(--mantine-color-primary-3) !important;

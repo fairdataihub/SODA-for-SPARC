@@ -1,6 +1,5 @@
 import { Button, Card, Text, Stack, Center, ThemeIcon } from "@mantine/core";
 import { IconArrowRight, IconDatabase, IconUpload } from "@tabler/icons-react";
-import { useHover, useFocusWithin } from "@mantine/hooks";
 import classes from "../cards.module.css";
 
 const cardData = [
@@ -26,9 +25,6 @@ const cardData = [
 ];
 
 const HomeCard = ({ id, icon, title, description, buttonLabel, buttonColor, onClick }) => {
-  const { hovered, ref } = useHover();
-  const { focused, ref: focusRef } = useFocusWithin();
-
   return (
     <Card
       id={id}
@@ -40,7 +36,6 @@ const HomeCard = ({ id, icon, title, description, buttonLabel, buttonColor, onCl
         }
       }}
       tabIndex={0}
-      ref={focusRef}
       padding="lg"
       m="sm"
       className={classes.card}
@@ -53,14 +48,7 @@ const HomeCard = ({ id, icon, title, description, buttonLabel, buttonColor, onCl
         alignItems: "center",
         textAlign: "center",
         position: "relative",
-        outline: focused ? "2px solid var(--mantine-color-blue-6)" : "none",
-        outlineOffset: focused ? "2px" : "0",
-        boxShadow: focused
-          ? "0 0 0 4px rgba(34, 139, 230, 0.15)"
-          : hovered
-            ? "0 4px 12px rgba(0, 0, 0, 0.1)"
-            : "none",
-        transform: hovered || focused ? "translateY(-2px)" : "translateY(0)",
+
         transition: "all 0.2s ease",
       }}
       onClick={onClick}
