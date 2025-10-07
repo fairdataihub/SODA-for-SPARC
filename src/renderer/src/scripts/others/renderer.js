@@ -90,15 +90,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // TODO: gm-sidebar-update-temp
 // Grab the Prepare Dataset Step By Step button and focus on it for screen readers
-setTimeout(() => {
-  let mainBtn = document.querySelector("#button-homepage-guided-mode");
-  if (mainBtn) {
-    console.log("Focusing on the Prepare Dataset Step By Step button after 10 seconds");
-    mainBtn.focus();
-  } else {
-    console.log("Could not find the Prepare Dataset Step By Step button");
-  }
-}, 10000);
+// setTimeout(() => {
+//   let mainBtn = document.querySelector("#button-homepage-guided-mode");
+//   if (mainBtn) {
+//     console.log("Focusing on the Prepare Dataset Step By Step button after 10 seconds");
+//     mainBtn.focus();
+//   } else {
+//     console.log("Could not find the Prepare Dataset Step By Step button");
+//   }
+// }, 10000);
 
 window.datasetStructureJSONObj = {
   folders: {},

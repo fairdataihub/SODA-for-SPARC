@@ -35,9 +35,29 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.18/dist/css/bootstrap-select.min.css"
     />
+
+    <style>
+      .skip-link {
+        position: absolute;
+        top: -40px;
+        left: 6px;
+        background: #000;
+        color: #fff;
+        padding: 8px;
+        text-decoration: none;
+        z-index: 1000;
+        border-radius: 4px;
+        font-weight: bold;
+      }
+
+      .skip-link:focus {
+        top: 6px;
+      }
+    </style>
   </head>
 
   <body>
+    <a href="#button-homepage-guided-mode" class="skip-link">Skip to main content</a>
     <button type="button" id="sidebarCollapse" class="navbar-btn">
       <span></span>
       <span></span>
@@ -55,7 +75,7 @@
 
     <div id="root"></div>
     <div class="dash-app" style="background: #fff; border-top: 1px solid #c3c3c3">
-      <main id="content" class="content js-content"></main>
+      <main id="content" class="content js-content" role="main"></main>
     </div>
     <script type="module" src="/src/main.js"></script>
   </body>
