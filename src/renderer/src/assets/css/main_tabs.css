@@ -292,7 +292,7 @@ input[name="dataset_status_radio"]:checked ~ label {
   color: white;
   user-select: none;
   cursor: pointer;
-  background: var(--color-soda-green);
+  background: var(--color-soda-primary);
   width: inherit;
   height: inherit;
   margin-left: -10px;
@@ -324,7 +324,7 @@ input[name="dataset_status_radio"]:checked ~ label {
   border-radius: 4px;
   margin: 0px 10px;
   height: 35px;
-  background: var(--color-soda-green);
+  background: var(--color-soda-primary);
   color: #fff;
   font-weight: 600;
   border: none;

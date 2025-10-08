@@ -174,7 +174,7 @@ textarea {
   animation-iteration-count: infinite;
   animation-direction: alternate;
   position: relative;
-  color: var(--color-soda-green);
+  color: var(--color-soda-primary);
   font-size: 21px;
   margin-right: 10px;
 }

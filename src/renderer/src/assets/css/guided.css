@@ -158,7 +158,7 @@
 
 .guided--input:focus {
   outline: 0;
-  box-shadow: var(--color-soda-green) 0px 0px 0px 1px;
+  box-shadow: var(--color-soda-primary) 0px 0px 0px 1px;
 }
 
 .guided--progression-tab-container {
@@ -398,7 +398,7 @@
 
 .SODA-select-picker {
   border-radius: 5px;
-  border: 1px solid var(--color-soda-green);
+  border: 1px solid var(--color-soda-primary);
 }
 
 .neumorphic {
@@ -472,7 +472,7 @@
 }
 
 .guided--prompt-continue {
-  color: var(--color-soda-green) !important;
+  color: var(--color-soda-primary) !important;
   margin-top: 15px !important;
 }
 
@@ -616,7 +616,7 @@
   border-radius: 16px;
 }
 .guided--capsule.active {
-  background-color: var(--color-soda-green);
+  background-color: var(--color-soda-primary);
 }
 
 .guided--form-label {
@@ -668,7 +668,7 @@
 }
 .guided--radio-button.tile-button:hover {
   outline: none;
-  box-shadow: 0px 0px 10px 0px var(--color-soda-green);
+  box-shadow: 0px 0px 10px 0px var(--color-soda-primary);
   transition: all 0.25s linear;
   -webkit-transition: all 0.25s linear;
 }
@@ -705,8 +705,8 @@
 }
 
 .guided--radio-button.tile-button.selected {
-  border: 1px solid var(--color-soda-green);
-  box-shadow: 0px 0px 3px 0px var(--color-soda-green);
+  border: 1px solid var(--color-soda-primary);
+  box-shadow: 0px 0px 3px 0px var(--color-soda-primary);
   transition: all 0.25s linear;
   -webkit-transition: all 0.25s linear;
 }
@@ -726,12 +726,12 @@
 
 .guided--simple-radio-button:hover {
   outline: none;
-  box-shadow: 0px 0px 3px 0px var(--color-soda-green);
+  box-shadow: 0px 0px 3px 0px var(--color-soda-primary);
   cursor: pointer;
 }
 .guided--simple-radio-button.selected {
-  border: 1px solid var(--color-soda-green);
-  box-shadow: 0px 0px 3px 0px var(--color-soda-green);
+  border: 1px solid var(--color-soda-primary);
+  box-shadow: 0px 0px 3px 0px var(--color-soda-primary);
 }
 
 .guided--card-large {
@@ -966,7 +966,7 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--color-soda-green);
+  background: var(--color-soda-primary);
   margin: -4px 0 0 -4px;
 }
 .lds-roller div:nth-child(1) {

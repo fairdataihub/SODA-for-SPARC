@@ -327,7 +327,7 @@ body.waiting * {
 }
 
 .demo-button-prev-next:hover {
-  background-color: var(--color-soda-green);
+  background-color: var(--color-soda-primary);
   color: white;
   outline: none;
   /* border-color: var(--color-accent); */
@@ -402,7 +402,7 @@ button.download-metadata:hover {
   outline: none;
   box-shadow: none;
   border: none;
-  border-color: var(--color-soda-green);
+  border-color: var(--color-soda-primary);
   background-clip: border-box;
   cursor: pointer;
 }
@@ -414,7 +414,7 @@ button.download-metadata:hover {
   border-radius: 0;
   padding: 0 0 0 0;
   margin: 0 0 0 0;
-  background-color: var(--color-soda-green);
+  background-color: var(--color-soda-primary);
   color: white;
   box-sizing: none;
   cursor: pointer;
@@ -1037,7 +1037,7 @@ label.input-banner-img {
 .tagify {
   width: 100%;
   border: 1px solid rgba(34, 36, 38, 0.15) !important;
-  /* border-left: 2px solid var(--color-soda-green) !important; */
+  /* border-left: 2px solid var(--color-soda-primary) !important; */
   border-radius: 5px !important;
   background-color: white !important;
   --tag--max-width: 250px !important;
@@ -1072,7 +1072,7 @@ label.input-banner-img {
   border: 1px solid #c0c0c0;
   margin-bottom: 10px;
   border-radius: 5px;
-  transition: var(--color-soda-green) 0.25s ease-out;
+  transition: var(--color-soda-primary) 0.25s ease-out;
   padding: 4px 6px;
 }
 
@@ -1096,10 +1096,10 @@ input::-webkit-calendar-picker-indicator {
   font: inherit;
   width: 100%;
   border: 1px solid #c0c0c0;
-  /* border-left: 2px solid var(--color-soda-green); */
+  /* border-left: 2px solid var(--color-soda-primary); */
   /* margin-bottom: 10px; */
   border-radius: 5px;
-  transition: var(--color-soda-green) 0.25s ease-out;
+  transition: var(--color-soda-primary) 0.25s ease-out;
   padding: 4px 6px;
   min-height: 60px;
   /* max-height:60px; */
@@ -1117,7 +1117,7 @@ input::-webkit-calendar-picker-indicator {
   font-weight: 400;
   font: inherit;
   border-radius: 5px;
-  transition: var(--color-soda-green) 0.25s ease-out;
+  transition: var(--color-soda-primary) 0.25s ease-out;
   height: auto;
   display: none;
 }
@@ -1143,9 +1143,9 @@ input::-webkit-calendar-picker-indicator {
   width: 100%;
   /* margin-bottom: 10px; */
   border: 1px solid #c0c0c0;
-  border-left: 2px solid var(--color-soda-green);
+  border-left: 2px solid var(--color-soda-primary);
   border-radius: 5px;
-  transition: var(--color-soda-green) 0.25s ease-out;
+  transition: var(--color-soda-primary) 0.25s ease-out;
   padding: 4px 6px;
 }
 
@@ -1181,7 +1181,7 @@ input::-webkit-calendar-picker-indicator {
   transition-delay: 0s;
   position: relative;
   padding-top: 20px;
-  color: var(--color-soda-green);
+  color: var(--color-soda-primary);
   text-indent: -9999px;
   border: none;
   background-color: transparent;
@@ -1241,21 +1241,21 @@ input::-webkit-calendar-picker-indicator {
   display: none;
 }
 .multisteps-form__progress-btn.js-active1 {
-  color: var(--color-soda-green);
+  color: var(--color-soda-primary);
 }
 .multisteps-form__progress-btn.js-active2 {
-  color: var(--color-soda-green);
+  color: var(--color-soda-primary);
 }
 
 .multisteps-form__progress-btn.js-active1:before {
   -webkit-transform: translateX(-50%) scale(1.2);
   transform: translateX(-50%) scale(1.5);
-  background-color: var(--color-soda-green);
+  background-color: var(--color-soda-primary);
 }
 .multisteps-form__progress-btn.js-active2:before {
   -webkit-transform: translateX(-50%) scale(1.2);
   transform: translateX(-50%) scale(1.5);
-  background-color: var(--color-soda-green);
+  background-color: var(--color-soda-primary);
 }
 
 /* Hide all steps by default: */
@@ -1282,7 +1282,7 @@ input::-webkit-calendar-picker-indicator {
 
 /* Mark the steps that are finished and valid: */
 .ds-step.finish {
-  background-color: var(--color-soda-green);
+  background-color: var(--color-soda-primary);
 }
 
 .switch-field {
@@ -1318,7 +1318,7 @@ input::-webkit-calendar-picker-indicator {
 
 .label-switch:hover {
   cursor: pointer;
-  color: var(--color-soda-green);
+  color: var(--color-soda-primary);
 }
 
 #addAccount:checked ~ #div-add-account,
@@ -1332,9 +1332,9 @@ input::-webkit-calendar-picker-indicator {
 }
 
 .input-switch:checked + label {
-  border-bottom: 2px solid var(--color-soda-green);
+  border-bottom: 2px solid var(--color-soda-primary);
   text-decoration: none;
-  color: var(--color-soda-green);
+  color: var(--color-soda-primary);
   font-size: 16px;
   border-radius: 0;
 }

@@ -50,7 +50,7 @@ const UserDetailsCard = ({
           margin: 10px auto;
           width: 100px;
           height: 30px;
-          background: var(--color-soda-green);
+          background: var(--color-soda-primary);
           color: #fff;
           font-weight: 600;
           border: none;

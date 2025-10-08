@@ -1296,7 +1296,7 @@ window.loadProgressFile = (ev) => {
         $("body").removeClass("waiting");
         setNavButtonDisabled("nextBtn", false);
         document.getElementById("para-progress-file-status").innerHTML =
-          "<span style='color:var(--color-soda-green)'>Previous work loaded successfully! Continue below.</span>";
+          "<span style='color:var(--color-soda-primary)'>Previous work loaded successfully! Continue below.</span>";
 
         // log the success at the action and action with destination granularity levels
         window.logMetadataForAnalytics(
@@ -1370,7 +1370,7 @@ const verify_missing_files = (mode) => {
         $("body").removeClass("waiting");
         setNavButtonDisabled("nextBtn", false);
         document.getElementById("para-progress-file-status").innerHTML =
-          "<span style='color:var(--color-soda-green)'>Previous work loaded successfully! Continue below.</span>";
+          "<span style='color:var(--color-soda-primary)'>Previous work loaded successfully! Continue below.</span>";
 
         // log the success at the action and action with destination granularith levels
         window.logMetadataForAnalytics(

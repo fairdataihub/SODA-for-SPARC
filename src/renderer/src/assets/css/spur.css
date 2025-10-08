@@ -1932,7 +1932,7 @@ pre code {
 .form-control:focus {
   color: #495057;
   background-color: #fff;
-  border: 1px solid var(--color-soda-green);
+  border: 1px solid var(--color-soda-primary);
   outline: 0;
   box-shadow: 0 0 0 0.2rem rgba(63, 132, 252, 0.25);
 }
@@ -3388,7 +3388,7 @@ input[type="button"].btn-block {
 .dropdown-item:active {
   color: #fff;
   text-decoration: none;
-  background-color: var(--color-soda-green);
+  background-color: var(--color-soda-primary);
 }
 .dropdown-item.disabled,
 .dropdown-item:disabled {

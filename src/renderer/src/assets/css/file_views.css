@@ -6,7 +6,7 @@
   max-height: 300px;
   overflow-y: auto;
   margin-bottom: 5px;
-  border: 2px solid var(--color-soda-green);
+  border: 2px solid var(--color-soda-primary);
   margin-top: 5px;
   margin-bottom: 5px;
 }
@@ -29,7 +29,7 @@
 }
 
 .swal-confirm-button {
-  background-color: var(--color-soda-green) !important;
+  background-color: var(--color-soda-primary) !important;
 }
 
 .swal-deny-button {

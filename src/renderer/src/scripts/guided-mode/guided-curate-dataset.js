@@ -1839,7 +1839,7 @@ const generateSampleSpecificationRowElement = () => {
             data-alert-type="danger"
             style="margin-right: 5px;"
           />
-          <i class="far fa-check-circle fa-solid" style="cursor: pointer; margin-left: 15px; color: var(--color-soda-green); font-size: 1.24rem;" onclick="window.confirmEnter(this)"></i>
+          <i class="far fa-check-circle fa-solid" style="cursor: pointer; margin-left: 15px; color: var(--color-soda-primary); font-size: 1.24rem;" onclick="window.confirmEnter(this)"></i>
         </div>
       </td>
       <td class="middle aligned collapsing text-center remove-left-border">
@@ -2591,7 +2591,7 @@ const createPennsievePermissionsTableRowElement = (entityType, name, permission,
       <td style="opacity: 0.5" class="middle aligned remove-left-border permission-type-cell">${permission}</td>
       <td class="middle aligned text-center remove-left-border" style="width: 20px">
         <button type="button" style="display: none" class="btn btn-danger btn-sm" onclick="window.removePennsievePermission($(this))">Delete</button>
-        <button type="button" class="btn btn-sm" style="display: inline-block;color: white; background-color: var(--color-soda-green); border-color: var(--color-soda-green);" onclick="window.removePennsievePermission($(this))">Restore</button>
+        <button type="button" class="btn btn-sm" style="display: inline-block;color: white; background-color: var(--color-soda-primary); border-color: var(--color-soda-primary);" onclick="window.removePennsievePermission($(this))">Restore</button>
       </td>
     </tr>
   `;
@@ -2602,7 +2602,7 @@ const createPennsievePermissionsTableRowElement = (entityType, name, permission,
         <td class="middle aligned remove-left-border permission-type-cell">${permission}</td>
         <td class="middle aligned text-center remove-left-border" style="width: 20px">
           <button type="button" class="btn btn-danger btn-sm" onclick="window.removePennsievePermission($(this))">Delete</button>
-          <button type="button" class="btn btn-sm" style="display: none;color: white; background-color: var(--color-soda-green); border-color: var(--color-soda-green);" onclick="window.removePennsievePermission($(this))">Restore</button>
+          <button type="button" class="btn btn-sm" style="display: none;color: white; background-color: var(--color-soda-primary); border-color: var(--color-soda-primary);" onclick="window.removePennsievePermission($(this))">Restore</button>
         </td>
       </tr>
     `;

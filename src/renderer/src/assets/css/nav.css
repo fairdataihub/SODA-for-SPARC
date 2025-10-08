@@ -22,7 +22,7 @@
   height: 2px;
   margin: 0 auto;
   display: block;
-  background: var(--color-soda-green);
+  background: var(--color-og-soda-green);
   transition: all 0.25s linear;
   /* transition: all 0.1s cubic-bezier(0.81, -0.33, 0.345, 1.375); */
 }
@@ -149,16 +149,16 @@ a[data-toggle="collapse"] {
 }
 
 #main-nav ul li a.is-selected {
-  color: var(--color-soda-green);
+  color: var(--color-soda-primary);
   background: none;
   font-weight: 600;
-  border-left: 4px solid var(--color-soda-green);
+  border-left: 4px solid var(--color-soda-primary);
   /* margin-left: -3px; */
   border-radius: 0;
 }
 
 #main-nav ul li a.is-selected i {
-  color: var(--color-soda-green);
+  color: var(--color-soda-primary);
 }
 
 .help-section {
@@ -271,7 +271,7 @@ a[data-toggle="collapse"] {
 }
 
 .nav-title strong {
-  color: var(--color-soda-green);
+  color: var(--color-soda-primary);
   opacity: 0.8;
   transition: color 0.1s ease-in;
 }

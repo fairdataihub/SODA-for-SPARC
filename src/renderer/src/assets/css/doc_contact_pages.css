@@ -168,7 +168,7 @@
 }
 
 #gather-logs-btn {
-  background: var(--color-soda-green);
+  background: var(--color-soda-primary);
   font-size: 14px;
   font-weight: 600;
   color: #fff;

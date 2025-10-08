@@ -50,7 +50,7 @@ button:focus {
   height: 0.65em;
   transform: scale(0);
   transition: 120ms transform ease-in-out;
-  background-color: var(--color-soda-green);
+  background-color: var(--color-soda-primary);
 }
 
 .checkbox-design:checked::before {
@@ -60,13 +60,13 @@ button:focus {
 .skip-btn {
   margin-right: 15px;
   background-color: #fff;
-  border: solid 1px var(--color-soda-green);
-  color: var(--color-soda-green);
+  border: solid 1px var(--color-soda-primary);
+  color: var(--color-soda-primary);
   border-radius: 8px;
 }
 
 .skip-btn:hover {
-  background-color: var(--color-soda-green);
+  background-color: var(--color-soda-primary);
   color: #fff;
 }
 
@@ -111,7 +111,7 @@ button:focus {
 
 .rename-btn {
   margin-left: 15px;
-  background-color: var(--color-soda-green);
+  background-color: var(--color-soda-primary);
   color: white;
   border-radius: 8px;
 }
@@ -501,14 +501,14 @@ button[data-id="common-strain-rrid-dropdown"] {
   width: 190px;
   font-size: 14px;
   font-weight: 600;
-  color: var(--color-soda-green);
+  color: var(--color-soda-primary);
   background-color: #fff;
-  border: 2px solid var(--color-soda-green);
+  border: 2px solid var(--color-soda-primary);
   margin: 0 0;
   height: 35px;
   cursor: pointer;
   border-radius: 5px;
-  background: linear-gradient(to left, #fff 50%, var(--color-soda-green) 50%) right;
+  background: linear-gradient(to left, #fff 50%, var(--color-soda-primary) 50%) right;
   background-size: 200%;
   transition: 0.5s ease-out;
 }
@@ -657,10 +657,10 @@ button[data-id="common-strain-rrid-dropdown"] {
   width: 90px;
   height: 25px;
   background: #fff;
-  color: var(--color-soda-green);
-  border: 1px solid var(--color-soda-green);
+  color: var(--color-soda-primary);
+  border: 1px solid var(--color-soda-primary);
   border-radius: 3px;
-  box-shadow: 0 0 3px 0 var(--color-soda-green);
+  box-shadow: 0 0 3px 0 var(--color-soda-primary);
   margin: 0 auto;
   cursor: pointer;
 }
@@ -716,15 +716,15 @@ button[data-id="common-strain-rrid-dropdown"] {
 
 .progress-box.checked {
   content: "\2713";
-  background: var(--color-soda-green);
+  background: var(--color-soda-primary);
   color: #fff;
   text-align: center;
-  border-color: var(--color-soda-green);
+  border-color: var(--color-soda-primary);
 }
 
 .progress-box.checked span {
   opacity: 1;
-  color: var(--color-soda-green);
+  color: var(--color-soda-primary);
 }
 
 .metadata-progress-box {
