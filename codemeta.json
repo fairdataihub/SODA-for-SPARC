@@ -77,9 +77,19 @@
   "developmentStatus": "active",
   "downloadUrl": "https://fairdataihub.org/sodaforsparc",
   "funding": "OT2OD030213",
+  "identifier": "10.5281/zenodo.17247042",
   "isPartOf": "https://fairdataihub.org/",
   "issueTracker": "https://github.com/fairdataihub/SODA-for-SPARC/issues",
-  "keywords": ["SPARC", "FAIR", "data", "curation", "mac", "sparc-dataset", "ubuntu", "windows"],
+  "keywords": [
+    "SPARC",
+    "FAIR",
+    "data",
+    "curation",
+    "mac",
+    "sparc-dataset",
+    "ubuntu",
+    "windows"
+  ],
   "license": "https://spdx.org/licenses/MIT",
   "operatingSystem": [
     "Windows 10",
@@ -88,13 +98,13 @@
     "Windows 11",
     "Ubuntu"
   ],
-  "programmingLanguage": ["JavaScript", "HTML", "Python", "CSS"],
-  "referencePublication": "https://doi.org/10.1101/2021.02.10.430563",
-  "relatedLink": [],
-  "runtimePlatform": [],
+  "programmingLanguage": [
+    "JavaScript",
+    "HTML",
+    "Python",
+    "CSS"
+  ],
   "schema:releaseNotes": "## Bug Fixes:\n- Fixed an issue where Prepare Dataset Step-by-Step does not save sample files when using the save and exit button.",
-  "softwareRequirements": [],
   "version": "16.3.1",
-  "type": "SoftwareSourceCode",
-  "identifier": "10.5281/zenodo.17247042"
+  "type": "SoftwareSourceCode"
 }
