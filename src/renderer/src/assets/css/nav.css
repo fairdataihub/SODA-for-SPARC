@@ -73,11 +73,15 @@
 }
 
 .navbar-btn:focus {
-  outline: none;
+  outline: 2px solid #005fcc;
+  outline-offset: 2px;
+  background: #e6f0ff;
 }
 
 .navbar-btn.active:focus {
-  outline: none;
+  outline: 2px solid #005fcc;
+  outline-offset: 2px;
+  background: #e6f0ff;
 }
 
 .dash-content.active {

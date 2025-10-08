@@ -62,17 +62,19 @@
       -->
     </header>
 
-    <div id="guided-body" class="guided--body" role="main" tabindex="-1">
+    <div id="guided-body" class="guided--body"  tabindex="0">
       <div
         id="soda-home-page"
         class="guided--main-tab justify-center"
         role="region"
         aria-labelledby="homepage-heading"
+        aria-label="SODA home page"
       >
         <a href="#main-nav" class="skip-link">Skip to navigation</a>
         <div class="guided--panel">
-          <h2
+          <h1
             class="justify-center"
+            id="homepage-heading"
             style="
               font-size: 19px;
               width: 75%;
@@ -82,7 +84,7 @@
             "
           >
             SODA - Your one stop tool for sharing FAIR data and models
-          </h2>
+          </h1>
           <h2 class="mt-2 mb-3" style="font-size: 16px">What would you like to do today?</h2>
           <div data-component-type="home-page-cards"></div>
           <div
