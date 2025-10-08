@@ -14,22 +14,6 @@ import {
 
 export const checkboxCardSlice = (set) => ({
   cardData: {
-    "dataset-upload-new-dataset": {
-      title: "Create a new Pennsieve Dataset",
-      description: null,
-      Icon: IconCirclePlus,
-      mutuallyExclusiveWithCards: ["dataset-upload-existing-dataset"],
-      checked: false,
-    },
-
-    "dataset-upload-existing-dataset": {
-      title: "Upload to an existing Pennsieve Dataset",
-      description: null,
-      Icon: IconCirclePlus,
-      mutuallyExclusiveWithCards: ["dataset-upload-new-dataset"],
-      checked: false,
-      additionalClasses: "option-card radio-button",
-    },
     "guided-button-start-new-curation": {
       title: "Prepare and share a new dataset test",
       description: null,
