@@ -1,137 +1,45 @@
-@import url("https://fonts.googleapis.com/css?family=Poppins:400,500,600,700");
-
 .option-card {
-  max-height: 160px;
-  min-height: 140px;
-  max-width: 160px;
+  display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 20% auto;
-  padding: 5px;
-  border-radius: 5px;
-  font-size: 12px;
-  background: #fff;
-  margin: 10px;
-  color: white;
-  opacity: 0.9;
-  border: 1px transparent;
+  justify-content: center;
+  align-items: center;
+  padding: var(--mantine-spacing-lg);
+  border-radius: var(--mantine-radius-md);
+  font-size: var(--mantine-font-size-md);
+  background: var(--mantine-color-red);
+  margin: var(--mantine-spacing-sm, 12px);
+  border: 1px solid var(--mantine-color-gray-3, #e9ecef);
   position: relative;
-  box-shadow: 0px 0px 10px #d5d5d5;
+  transition:
+    border 0.2s,
+    background 0.2s,
+    transform 0.2s,
+    box-shadow 0.2s,
+    border-color 0.2s;
   cursor: pointer;
   pointer-events: auto;
+  width: 180px;
+  height: 150px;
 }
 
 .option-card:hover {
-  /* border: 1px solid var(--color-soda-primary); */
-  box-shadow: 0px 0px 10px 0px var(--color-soda-primary);
-  transition: all 0.25s linear;
-  -webkit-transition: all 0.25s linear;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(76, 175, 80, 0.16);
+  border-color: var(--mantine-color-primary-3);
+  background-color: var(--mantine-color-primary-1);
 }
 
 .option-card.checked {
-  border: 1px solid var(--color-soda-primary);
-  box-shadow: 0px 0px 3px 0px var(--color-soda-primary);
-  opacity: 1;
-  transition: all 0.25s linear;
-  -webkit-transition: all 0.25s linear;
+  background-color: var(--mantine-color-primary-0) !important;
+  border-color: var(--mantine-color-primary-3) !important;
 }
 
 .option-card.disabled {
   pointer-events: none;
-  opacity: 0.6;
-  transition: all 0.25s linear;
-  -webkit-transition: all 0.25s linear;
+  opacity: 0.5;
+  filter: grayscale(0.2);
 }
 
-.option-card.radio-button {
-  width: 180px !important;
-  height: 180px !important;
-  grid-template-rows: 10% auto !important;
-  pointer-events: auto;
-  transition: all 0.25s linear;
-  -webkit-transition: all 0.25s linear;
-}
-
-.option-card.radio-button .card-body {
-  padding-top: 0 !important;
-  margin-top: 3px;
-  color: #585858;
-}
-
-.option-card.radio-button .card-body i {
-  font-size: 39px;
-  color: green;
-  transition: all 0.25s linear;
-  -webkit-transition: all 0.25s linear;
-}
-
-.option-card.radio-button .card-body h2 {
-  font-size: 14px;
-  transition: all 0.25s linear;
-  -webkit-transition: all 0.25s linear;
-}
-
-.option-card.radio-button .card-head {
-  justify-content: flex-end;
-}
-
-.option-card.radio-button:hover,
-.option-card.radio-button:focus,
-.option-card.radio-button:active {
-  color: var(--color-soda-primary);
-  /* border: 1px solid var(--color-soda-primary); */
-  transition: all 0.25s linear;
-  -webkit-transition: all 0.25s linear;
-}
-
-.option-card.radio-button:hover,
-.option-card.radio-button:focus,
-.option-card.radio-button:active i {
-  color: var(--color-soda-primary);
-  transition: all 0.25s linear;
-  -webkit-transition: all 0.25s linear;
-}
-
-.option-card.radio-button.checked {
-  border: 1px solid var(--color-soda-primary);
-  box-shadow: 0px 0px 3px 0px var(--color-soda-primary);
-  opacity: 1;
-  pointer-events: none;
-}
-
-.option-card.radio-button.non-selected {
-  /* pointer-events: none; */
-  color: #585858;
-  opacity: 0.7;
-}
-
-.option-card.radio-button.non-selected svg {
-  fill: #585858;
-}
-
-.option-card.radio-button.non-selected svg path {
-  fill: #585858;
-}
-
-.option-card.radio-button.non-selected .card-body i {
-  color: #585858 !important;
-}
-
-.option-card.radio-button.coming-soon {
-  background: #f6f6f6;
-  pointer-events: none;
-  color: #585858;
-}
-
-.option-card.radio-button.coming-soon svg {
-  fill: #585858;
-}
-
-.option-card.radio-button.coming-soon .card-body i {
-  color: #585858 !important;
-}
 /*
 .option-card.radio-button.non-selected:hover {
   background: #fff;

@@ -34,10 +34,10 @@ body {
   margin-bottom: 0px;
   height: 3rem;
   border-radius: 4px;
-  background: #13716d;
+  background: var(--color-soda-primary);
   color: white;
   font-weight: 700;
-  border-color: #13716d;
+  border-color: var(--color-soda-primary);
 }
 
 .modal-title {

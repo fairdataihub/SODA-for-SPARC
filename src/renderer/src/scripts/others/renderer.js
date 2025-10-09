@@ -187,7 +187,7 @@ window.notyf = new Notyf({
     },
     {
       type: "success",
-      background: "#13716D",
+      background: "var(--color-soda-primary)",
       icon: {
         className: "fas fa-check-circle",
         tagName: "i",
@@ -197,7 +197,7 @@ window.notyf = new Notyf({
     },
     {
       type: "final",
-      background: "#13716D",
+      background: "var(--color-soda-primary)",
       icon: {
         className: "fas fa-check-circle",
         tagName: "i",
@@ -217,7 +217,7 @@ window.notyf = new Notyf({
     },
     {
       type: "info",
-      background: "#13716D",
+      background: "var(--color-soda-primary)",
       icon: {
         className: "fas fa-info-circle",
         tagName: "i",

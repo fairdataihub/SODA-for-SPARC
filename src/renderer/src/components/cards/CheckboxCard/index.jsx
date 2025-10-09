@@ -127,8 +127,8 @@ const CheckboxCard = ({ id }) => {
           src={image}
           alt={title}
           style={{
-            width: 48,
-            height: 48,
+            width: 50,
+            height: 50,
             marginBottom: 16,
             objectFit: "contain",
             opacity: isDisabled ? 0.5 : 1,

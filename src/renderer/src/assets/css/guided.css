@@ -1027,14 +1027,14 @@
 }
 
 .tippy-box[data-theme~="soda"] {
-  background-color: #13716d;
+  background-color: var(--color-soda-primary);
   color: white;
   /* white-space: nowrap; */
   /* overflow: hidden; */
 }
 
 .tippy-box[data-theme~="soda"][data-placement^="top"] > .tippy-arrow::before {
-  border-top-color: #13716d;
+  border-top-color: var(--color-soda-primary);
 }
 
 .removeFromPennsieve:before {

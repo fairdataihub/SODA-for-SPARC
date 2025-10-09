@@ -134,7 +134,7 @@ button:focus {
 .rename-input:focus {
   outline: none !important;
   border-width: 0 0 2px !important;
-  border-color: #13716d !important;
+  border-color: var(--color-soda-primary) !important;
 }
 
 .rename-input::-webkit-input-placeholder {

@@ -28,6 +28,7 @@ import ManifestFilePreviewSection from "../shared/ManifestFilePreviewSection";
 import DropDownNote from "../utils/ui/DropDownNote";
 import Sidebar from "../common/Sidebar";
 import HomePageCards from "../cards/HomePageCards";
+import FfmCardInternals from "../cards/FfmCardInternals";
 import GuidedModeProgressCards from "../guided/GuidedModeProgressCards";
 import { CardButton } from "../cards/CardButton";
 import CheckboxCard from "../cards/CheckboxCard";
@@ -52,6 +53,12 @@ export const renderComponent = (componentSlot, component) => {
 const componentTypeRenderers = {
   "home-page-cards": (componentSlot) => {
     renderComponent(componentSlot, <HomePageCards />);
+  },
+  "ffm-card-internals": (componentSlot) => {
+    const props = {
+      id: componentSlot.getAttribute("data-card-id"),
+    };
+    renderComponent(componentSlot, <FfmCardInternals {...props} />);
   },
   "guided-mode-page": (componentSlot) => {
     const pageIdToPageComponentMap = {

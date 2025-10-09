@@ -57,8 +57,8 @@ ipcMain.handle(
       fill: {
         type: "pattern",
         patternType: "solid",
-        bgColor: "#13716d",
-        fgColor: "#13716d",
+        bgColor: "var(--color-soda-primary)",
+        fgColor: "var(--color-soda-primary)",
       },
     });
 
