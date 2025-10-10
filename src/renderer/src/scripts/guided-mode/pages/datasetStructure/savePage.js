@@ -28,40 +28,42 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     const selectedEntities = useGlobalStore.getState()["selectedEntities"];
     const deSelectedEntities = useGlobalStore.getState()["deSelectedEntities"];
     // Check if any selections were made
-    if (selectedEntities.length === 0) {
+    if (!selectedEntities.includes("subjects") && !selectedEntities.includes("code")) {
       errorArray.push({
         type: "notyf",
-        message: "Please select 'Yes' for at least one dataset content option before continuing.",
+        message: "You must indicate that your dataset contains subjects and/or code",
       });
       throw errorArray;
     }
 
-    // If subjects is selected, verify all questions that should be visible were answered
-    if (selectedEntities.includes("subjects")) {
-      // Determine which questions should be visible based on dependencies
-      const visibleQuestions = Object.keys(contentOptionsMap).filter((key) => {
-        const option = contentOptionsMap[key];
-        // If this option has dependencies, check them all
-        if (option.dependsOn && option.dependsOn.length > 0) {
-          for (const dependency of option.dependsOn) {
-            if (deSelectedEntities.includes(dependency) || !selectedEntities.includes(dependency)) {
-              return false; // This question shouldn't be visible
-            }
+    const visibleQuestions = Object.keys(contentOptionsMap).filter((key) => {
+      const option = contentOptionsMap[key];
+      // If this option has dependencies, check them all
+      if (option.dependsOn && option.dependsOn.length > 0) {
+        for (const dependency of option.dependsOn) {
+          if (deSelectedEntities.includes(dependency) || !selectedEntities.includes(dependency)) {
+            return false; // This question shouldn't be visible
           }
         }
-        return true; // This question should be visible
-      });
-
-      // Now check if all visible questions were answered
-      for (const entity of visibleQuestions) {
-        if (!selectedEntities.includes(entity) && !deSelectedEntities.includes(entity)) {
-          errorArray.push({
-            type: "notyf",
-            message: "Please answer all questions before continuing.",
-          });
-          throw errorArray;
-        }
       }
+      return true; // This question should be visible
+    });
+
+    // Now check if all visible questions were answered
+    for (const entity of visibleQuestions) {
+      if (!selectedEntities.includes(entity) && !deSelectedEntities.includes(entity)) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please answer all questions before continuing.",
+        });
+        throw errorArray;
+      }
+    }
+
+    // If subjects is selected, verify all questions that should be visible were answered
+    if (selectedEntities.includes("subjects")) {
+      // Unskip all of the experimental pages
+      guidedUnSkipPageSet("guided-experimental-dataset-page-set");
 
       // If the dataset contains subjects, assume it is experimental by default
       window.sodaJSONObj["dataset-type"] = "experimental";
@@ -75,7 +77,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
-      // At this point, we can inform that the dataset does not have subjects
+      // At this point, we can infer that the dataset does not have subjects
       if (!selectedEntities.includes("code")) {
         errorArray.push({
           type: "notyf",
@@ -84,8 +86,10 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
         });
         throw errorArray;
       }
+      // Skip all of the experimental pages
+      guidedSkipPageSet("guided-experimental-dataset-page-set");
 
-      // At this point, we can inform that the dataset has code but no subjects (Computational workflow)
+      // At this point, we can infer that the dataset has code but no subjects (Computational workflow)
       window.sodaJSONObj["dataset-type"] = "computational";
     }
 
@@ -93,12 +97,10 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     window.sodaJSONObj["selected-entities"] = selectedEntities;
     window.sodaJSONObj["deSelected-entities"] = deSelectedEntities;
 
-    if (!selectedEntities.includes("subjects") && !selectedEntities.includes("code")) {
-      errorArray.push({
-        type: "notyf",
-        message: "You must indicate that your dataset contains subjects and/or code",
-      });
-      throw errorArray;
+    if (selectedEntities.includes("code")) {
+      guidedSkipPage("guided-add-code-metadata-tab");
+    } else {
+      guidedSkipPage("guided-add-code-metadata-tab");
     }
 
     // Handle page skipping based on selections
@@ -147,12 +149,6 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       if (existingPerformancesMetadata) {
         delete window.sodaJSONObj["dataset_metadata"]["performances"];
       }
-    }
-
-    if (selectedEntities.includes("code")) {
-      guidedSkipPage("guided-add-code-metadata-tab");
-    } else {
-      guidedSkipPage("guided-add-code-metadata-tab");
     }
   }
 

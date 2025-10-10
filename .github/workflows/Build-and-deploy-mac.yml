@@ -6,7 +6,7 @@ on:
     branches:
       - main
       - staging
-      - pre-staging-2
+      - code-only-workflow
 
 jobs:
   deploy-on-mac:
