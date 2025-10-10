@@ -70,7 +70,9 @@ const handleNextButtonVisibility = (targetPageID) => {
   if (
     targetPageID === "guided-dataset-generation-confirmation-tab" ||
     targetPageID === "guided-dataset-generation-tab" ||
-    targetPageID === "guided-dataset-dissemination-tab"
+    targetPageID === "guided-dataset-dissemination-tab" ||
+    (targetPageID === "guided-generate-dataset-locally" &&
+      window.sodaJSONObj["generate-dataset-on-pennsieve"] === false)
   ) {
     $("#guided-next-button").css("visibility", "hidden");
   } else {

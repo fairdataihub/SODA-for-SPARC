@@ -102,6 +102,8 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     } else {
       guidedSkipPage("guided-add-code-metadata-tab");
     }
+    // Skip this page in case it was skipped on a previous version
+    guidedUnSkipPage("data-categorization-tab");
 
     // Handle page skipping based on selections
     if (selectedEntities.includes("subjects")) {
