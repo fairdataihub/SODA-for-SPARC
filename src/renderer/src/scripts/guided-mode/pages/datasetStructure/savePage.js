@@ -75,7 +75,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
-      // If subjects is No, code must be Yes
+      // At this point, we can inform that the dataset does not have subjects
       if (!selectedEntities.includes("code")) {
         errorArray.push({
           type: "notyf",
@@ -85,7 +85,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
-      // If subjects is not selected (only code), assume it is computational by default
+      // At this point, we can inform that the dataset has code but no subjects (Computational workflow)
       window.sodaJSONObj["dataset-type"] = "computational";
     }
 
