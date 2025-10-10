@@ -21,6 +21,13 @@
   width: 180px;
   height: 150px;
 }
+.ffm-card-icon {
+  color: var(--mantine-color-black);
+}
+
+.option-card.checked .ffm-card-icon {
+  color: var(--mantine-color-blue-6);
+}
 
 .option-card:hover {
   transform: translateY(-2px);
@@ -1003,7 +1010,7 @@
 
 .need-help-div {
   width: 100%;
-  border-bottom: 5px solid #b80d49;
+  border-bottom: 5px solid var(--color-soda-primary);
   margin-bottom: -5px;
   display: flex;
   flex-direction: row;

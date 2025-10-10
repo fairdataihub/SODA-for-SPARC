@@ -5,21 +5,19 @@ import { useHover } from "@mantine/hooks";
 
 const cardData = {
   "dataset-upload-existing-dataset": {
-    icon: <IconFolderDown size={50} color="teal" />,
+    Icon: IconFolderDown,
     text: "Existing dataset",
-    tooltip:
-      "This will download a template folder structure and templates for all the high-level metadata fields prescribed in the SPARC Dataset Structure (SDS)",
   },
   "dataset-upload-new-dataset": {
-    icon: <IconFileDownload size={50} color="teal" />,
-    text: "New dataset what happens now when text goes under",
+    Icon: IconFileDownload,
+    text: "New dataset",
   },
   "start-new-card": {
-    icon: <IconCirclePlus size={50} />,
+    Icon: IconCirclePlus,
     text: "Prepare and share a new dataset",
   },
   "import-existing-card": {
-    icon: <IconCirclePlus size={50} />,
+    Icon: IconCirclePlus,
     text: "Import and manage an existing dataset",
   },
 };
@@ -29,7 +27,9 @@ const FfmCardInternals = ({ id }) => {
     console.error(`No card data found for id: ${id}`);
     return <div>Invalid FFM Card Internals {id}</div>; // or some fallback UI
   }
-  const { icon, text, tooltip } = cardData[id];
+  const { Icon, text, tooltip } = cardData[id];
+  // For demo, checked is always false. Replace with real checked logic if needed.
+  const checked = false;
 
   /*
     <Center mb={isCompact ? "sm" : 16}>
@@ -53,23 +53,15 @@ const FfmCardInternals = ({ id }) => {
           </Text>
         </Center>*/
 
-  const cardContent = (
+  return (
     <>
-      <Center mb="sm">{icon}</Center>
+      <Center mb="sm">{Icon && <Icon size={50} className="ffm-card-icon" />}</Center>
       <Center mb="sm">
         <Text size="md" lh={1.3} fw={450} h={50}>
           {text}
         </Text>
       </Center>
     </>
-  );
-
-  return tooltip ? (
-    <Tooltip label={tooltip} position="top" withArrow zIndex={2999} w={400} multiline>
-      {cardContent}
-    </Tooltip>
-  ) : (
-    cardContent
   );
 };
 
