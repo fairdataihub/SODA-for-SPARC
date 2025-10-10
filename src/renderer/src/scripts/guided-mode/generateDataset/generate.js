@@ -998,7 +998,7 @@ const guidedAddDatasetDescription = async (
   );
 
   // If studyPurpose, dataCollection, or dataConclusion are empty, skip adding the description
-  if (!studyPurpose || !dataCollection || !dataConclusion) {
+  if (!studyPurpose && !dataCollection && !dataConclusion) {
     datasetDescriptionUploadText.innerHTML = "Skipped optional dataset description...";
     guidedUploadStatusIcon("guided-dataset-description-upload-status", "success");
     return;
@@ -1008,9 +1008,9 @@ const guidedAddDatasetDescription = async (
 
   let descriptionArray = [];
 
-  descriptionArray.push("**Study Purpose:** " + studyPurpose + "\n\n");
-  descriptionArray.push("**Data Collection:** " + dataCollection + "\n\n");
-  descriptionArray.push("**Primary Conclusion:** " + dataConclusion + "\n\n");
+  studyPurpose && descriptionArray.push("**Study Purpose:** " + studyPurpose + "\n\n");
+  dataCollection && descriptionArray.push("**Data Collection:** " + dataCollection + "\n\n");
+  dataConclusion && descriptionArray.push("**Primary Conclusion:** " + dataConclusion + "\n\n");
 
   const description = descriptionArray.join("");
 
