@@ -86,12 +86,17 @@
             SODA - Your one stop tool for sharing FAIR data and models
           </h1>
           <h2 class="mt-2 mb-3" style="font-size: 16px">What would you like to do today?</h2>
-          <div data-component-type="home-page-cards"></div>
+          <div data-component-type="home-page-cards">
+            <h2 id="main-workflows" class="sr-only">Primary Workflows</h2>
+          </div>
           <div
             id="additional-option-buttons"
             style="flex-direction: row; justify-content: center; max-width: 600px"
             class="guided--section mt-md"
+            role="region"
+            aria-label="Additional options"
           >
+            <h3 id="additional-options" class="sr-only">Additional Options</h3>
             <div
               data-component-type="navigation-button"
               data-button-id="sds-templates"
@@ -100,6 +105,7 @@
               data-button-size="md"
               data-button-color="black"
               data-button-custom-width="250px"
+              aria-label="Download SDS template - additional option"
             ></div>
             <div
               data-component-type="navigation-button"

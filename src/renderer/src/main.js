@@ -99,3 +99,4 @@ import "tippy.js/themes/light.css";
 
 import "select2/dist/css/select2.min.css";
 import "intro.js/minified/introjs.min.css";
+import "./assets/css/accessibility.css";
