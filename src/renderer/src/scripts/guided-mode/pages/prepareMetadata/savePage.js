@@ -250,7 +250,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       dataset_type: numSubjects > 0 ? "experimental" : "computational", // Per curation team, datasets with subjects are experimental, otherwise computational
       standards_information: {
         data_standard: "SPARC",
-        data_standard_version: "SODA Metadata Standards",
+        data_standard_version: "3.0.0",
       },
       basic_information: {
         title,
