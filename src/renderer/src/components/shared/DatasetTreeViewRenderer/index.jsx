@@ -177,6 +177,7 @@ const FileItem = ({
   const { hovered, ref } = useHover();
   const contextMenuRelativePath = useGlobalStore((state) => state.contextMenuRelativePath);
   const contextMenuIsOpened = useGlobalStore((state) => state.contextMenuIsOpened);
+  console.log("indent", indent);
 
   const handleFileContextMenuOpen = (e) => {
     e.preventDefault();

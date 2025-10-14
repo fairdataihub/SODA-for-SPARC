@@ -37,6 +37,7 @@ import {
   filterRemovedFilesFromDatasetEntityObj,
   setEntityType,
 } from "../../../stores/slices/datasetEntitySelectorSlice.js";
+import { setDatasetType } from "../../../stores/slices/guidedModeSlice.js";
 import { setSelectedHierarchyEntity } from "../../../stores/slices/datasetContentSelectorSlice.js";
 import { guidedSetNavLoadingState } from "./navigationUtils/pageLoading.js";
 import Swal from "sweetalert2";
@@ -263,14 +264,27 @@ window.openPage = async (targetPageID) => {
 
         // Make any adjustments to the dataset entity object before setting it in the zustand store
         if (pageEntityType === "high-level-folder-data-categorization") {
+          const datasetType = window.sodaJSONObj["dataset-type"];
+          console.log("datasetType:", datasetType);
+          setDatasetType(datasetType);
           // Delete the manifest file because it throws off the count of files selected
           delete window.datasetStructureJSONObj?.["files"]?.["manifest.xlsx"];
-          const bucketTypes = ["Experimental", "Protocol", "Documentation"];
+          const bucketTypes = [];
+          if (datasetType === "experimental") {
+            bucketTypes.push(["Experimental"]);
+            if (selectedEntities.includes("code")) {
+              bucketTypes.push("Code");
+            }
+          }
+          if (datasetType === "computational") {
+            bucketTypes.push(...["Code", "Primary", "Source", "Derivative"]);
+          }
           if (selectedEntities.includes("code")) {
             bucketTypes.push("Code");
           } else {
             removeEntityFromEntityList("high-level-folder-data-categorization", "Code");
           }
+          bucketTypes.push("Protocol", "Documentation");
 
           for (const bucketType of bucketTypes) {
             addEntityToEntityList("high-level-folder-data-categorization", bucketType);

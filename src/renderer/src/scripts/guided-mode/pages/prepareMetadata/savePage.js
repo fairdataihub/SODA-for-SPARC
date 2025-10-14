@@ -244,10 +244,12 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
 
     const relatedResourceInformation = window.sodaJSONObj["related_resources"] || [];
 
+    const datasetType = window.sodaJSONObj["dataset-type"];
+
     // Populate dataset_metadata > dataset_description
     window.sodaJSONObj["dataset_metadata"]["dataset_description"] = {
       metadata_version: metadataVersion,
-      dataset_type: numSubjects > 0 ? "experimental" : "computational", // Per curation team, datasets with subjects are experimental, otherwise computational
+      dataset_type: datasetType,
       standards_information: {
         data_standard: "SPARC",
         data_standard_version: "SODA Metadata Standards",

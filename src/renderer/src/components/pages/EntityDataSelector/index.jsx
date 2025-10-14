@@ -91,7 +91,7 @@ const EntityDataSelectorPage = ({
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const datasetIncludesCode = selectedEntities.includes("code");
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
-  const datasetRenderArray = useGlobalStore((state) => state.datasetRenderArray);
+  const datasetType = useGlobalStore((state) => state.datasetType);
 
   const itemCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
   const countItemsSelected = countSelectedFilesByEntityType(entityType);
@@ -149,17 +149,32 @@ const EntityDataSelectorPage = ({
           {(() => {
             switch (entityType) {
               case "high-level-folder-data-categorization":
-                return (
-                  <>
-                    <Text mb={0}>
-                      The SDS requires data to be organized into{" "}
-                      {datasetIncludesCode ? "four" : "three"} categories: Experimental
-                      {datasetIncludesCode ? ", Code," : ","} Documentation, and Protocol. Use the
-                      interface below to classify your data files.
-                    </Text>
-                    <DropDownNote id="data-categories-list" />
-                  </>
-                );
+                if (datasetType === "experimental") {
+                  return (
+                    <>
+                      <Text mb={0}>
+                        The SDS requires data in experimental datasets to be organized into{" "}
+                        {datasetIncludesCode ? "four" : "three"} categories: Experimental
+                        {datasetIncludesCode ? ", Code," : ","} Documentation, and Protocol. Use the
+                        interface below to classify your data files.
+                      </Text>
+                      <DropDownNote id="data-categories-list" />
+                    </>
+                  );
+                }
+
+                if (datasetType === "computational") {
+                  return (
+                    <>
+                      <Text mb={0}>
+                        The SDS requires data in computational datasets to be organized into six
+                        categories: Primary, Source, Derivative, Code, Protocol, and Docs . Use the
+                        interface below to classify your data files.
+                      </Text>
+                      <DropDownNote id="data-categories-list" />
+                    </>
+                  );
+                }
 
               case "modalities":
                 return <Text>Select the folders and files that belong to each modality.</Text>;

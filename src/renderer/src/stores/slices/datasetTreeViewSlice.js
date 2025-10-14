@@ -339,7 +339,7 @@ export const reRenderTreeView = (resetOpenFolders = false) => {
             result.push({
               itemType: "file",
               itemIndex: itemIndex++,
-              itemIndent: depth + 1,
+              itemIndent: depth,
               fileName,
               content: file,
               ...file,
