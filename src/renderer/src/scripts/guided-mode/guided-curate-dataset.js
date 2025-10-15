@@ -5,7 +5,8 @@ import {
   addContributor,
   editContributorByOrcid,
   renderContributorsTable,
-} from "./metadata/contributors";
+} from "./metadata/contributors/contributors";
+import { CONTRIBUTORS_REGEX } from "./metadata/contributors/contributorsValidation";
 import { generateAlertElement } from "./metadata/utils";
 import determineDatasetLocation from "../analytics/analytics-utils";
 import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
@@ -1281,8 +1282,7 @@ const handleAddOrEditContributorHeaderUI = (boolEditingContributor) => {
 };
 
 window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) => {
-  let defaultFirstName = "";
-  let defaultLastName = "";
+  let defaultContributorName = "";
   let defaultOrcid = "";
   let defaultAffiliation = "";
   let defaultRole = "";
@@ -1290,12 +1290,11 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
 
   if (contributorIdToEdit) {
     const contributorData = getContributorByOrcid(contributorIdToEdit);
-    defaultFirstName = contributorData.contributor_first_name || "";
-    defaultLastName = contributorData.contributor_last_name || "";
+    defaultContributorName = contributorData.contributorName || "";
     defaultOrcid = contributorData.contributor_orcid_id || "";
     defaultAffiliation = contributorData.contributor_affiliation || "";
     defaultRole = contributorData.contributor_role || "";
-    contributorSwalTitle = `Edit contributor ${defaultLastName}, ${defaultFirstName}`;
+    contributorSwalTitle = `Edit contributor ${defaultContributorName}`;
   }
 
   await Swal.fire({
@@ -1308,16 +1307,15 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
     html: `
       <div class="guided--flex-center mb-1" style="font-size: 1em !important; height: 550px;">
         ${handleAddOrEditContributorHeaderUI(!!contributorIdToEdit)}
-        <div class="space-between w-100">
-          <div class="guided--flex-center mt-sm" style="width: 45%">
-            <label class="guided--form-label required">Last name:</label>
-            <input class="guided--input" id="guided-contributor-last-name" type="text" placeholder="Contributor's last name" value="${defaultLastName}" />
-          </div>
-          <div class="guided--flex-center mt-sm" style="width: 45%">
-            <label class="guided--form-label required">First name:</label>
-            <input class="guided--input" id="guided-contributor-first-name" type="text" placeholder="Contributor's first name" value="${defaultFirstName}" />
-          </div>
-        </div>
+          <label class="guided--form-label required">Contributor Name:</label>
+          <input 
+            class="guided--input" 
+            id="guided-contributor-name" 
+            type="text" 
+            placeholder="Last, First Middle" 
+            value="${defaultContributorName.trim()}" 
+          />
+
         <label class="guided--form-label mt-md required">ORCID:</label>
         <input class="guided--input" id="guided-contributor-orcid" type="text" placeholder="https://orcid.org/0000-0000-0000-0000 OR 0000-0000-0000-0000" value="${defaultOrcid}" />
         <p class="guided--text-input-instructions mb-0 text-left">
@@ -1389,12 +1387,7 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
       });
     },
     preConfirm: () => {
-      const contributorFirstNameValue = document
-        .getElementById("guided-contributor-first-name")
-        .value.trim();
-      const contributorLastNameValue = document
-        .getElementById("guided-contributor-last-name")
-        .value.trim();
+      const contributorName = document.querySelector("#guided-contributor-name").value.trim();
       const contributorOrcidInput = document
         .getElementById("guided-contributor-orcid")
         .value.trim();
@@ -1404,8 +1397,7 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
       const contributorRole = document.getElementById("guided-contributor-role-select").value;
 
       if (
-        !contributorFirstNameValue ||
-        !contributorLastNameValue ||
+        !contributorName ||
         !contributorOrcidInput ||
         !contributorAffiliation ||
         !contributorRole
@@ -1413,8 +1405,12 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
         return Swal.showValidationMessage("Please fill out all required fields");
       }
 
-      if (contributorFirstNameValue.includes(",") || contributorLastNameValue.includes(",")) {
-        return Swal.showValidationMessage("Please remove commas from the name fields");
+      if (!CONTRIBUTORS_REGEX.test(contributorName)) {
+        return Swal.showValidationMessage(
+          `Your name does not match an acceptable format for the Sparc Dataset Structure. 
+          Please ensure it matches the allowed format. 
+          For more information, hover over the info icon next to 'Name'.`
+        );
       }
 
       // Regex to check ORCID format (plain or full URL)
@@ -1441,20 +1437,13 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
         if (contributorIdToEdit) {
           editContributorByOrcid(
             contributorIdToEdit,
-            contributorLastNameValue,
-            contributorFirstNameValue,
+            contributorName,
             storedOrcid,
             contributorAffiliation,
             contributorRole
           );
         } else {
-          addContributor(
-            contributorLastNameValue,
-            contributorFirstNameValue,
-            storedOrcid,
-            contributorAffiliation,
-            contributorRole
-          );
+          addContributor(contributorName, storedOrcid, contributorAffiliation, contributorRole);
         }
       } catch (error) {
         return Swal.showValidationMessage(error);

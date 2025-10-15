@@ -1,8 +1,7 @@
-import { addOrUpdateStoredContributor } from "../../others/contributor-storage";
+import { addOrUpdateStoredContributor } from "../../../others/contributor-storage";
 
 export const addContributor = (
-  contributor_last_name, // string: last name
-  contributor_first_name, // string: first name
+  contributorName,
   contributor_orcid_id, // string: ORCID
   contributor_affiliation, // string: affiliation
   contributor_role // string: role (not array)
@@ -12,8 +11,7 @@ export const addContributor = (
     throw new Error("A contributor with the entered ORCID already exists");
   }
   const contributorObj = {
-    contributor_last_name,
-    contributor_first_name,
+    contributorName,
     contributor_orcid_id,
     contributor_affiliation,
     contributor_role,
@@ -32,8 +30,7 @@ export const addContributor = (
 
 export const editContributorByOrcid = (
   prevContributorOrcid,
-  contributorLastName,
-  contributorFirstName,
+  contributorName,
   newContributorOrcid,
   contributor_affiliation,
   contributor_role
@@ -56,8 +53,7 @@ export const editContributorByOrcid = (
   // Update the contributor's information
   const updatedContributorObj = {
     contributor_orcid_id: newContributorOrcid,
-    contributor_first_name: contributorFirstName,
-    contributor_last_name: contributorLastName,
+    contributorName: contributorName,
     contributor_affiliation: contributor_affiliation,
     contributor_role: contributor_role,
   };
@@ -101,7 +97,7 @@ export const getContributorByOrcid = (orcid) => {
 };
 
 const generateContributorTableRow = (contributorObj, contributorIndex) => {
-  const contributorFullName = `${contributorObj["contributor_last_name"]}, ${contributorObj["contributor_first_name"]}`;
+  const contributorFullName = contributorObj["contributorName"];
   const contributorOrcid = contributorObj["contributor_orcid_id"];
   const contributorRoleString = contributorObj["contributor_role"];
 
