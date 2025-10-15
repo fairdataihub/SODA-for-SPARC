@@ -1,4 +1,3 @@
-import { error } from "jquery";
 import useGlobalStore from "../../../../stores/globalStore";
 
 const homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
@@ -70,6 +69,22 @@ export const savePageCurationPreparation = async (pageBeingLeftID) => {
         message: "Please enter a dataset name.",
       });
     }
+    if (!datasetSubtitleInput) {
+      errorArray.push({
+        type: "notyf",
+        message: "Please enter a dataset subtitle.",
+      });
+    }
+
+    const sanitizedDatasetName = window.sanitizeGuidedModeProgressFileNameString(datasetNameInput);
+    console.log("Sanitized dataset name: ", sanitizedDatasetName);
+    errorArray.push({
+      type: "notyf",
+      message: "Test",
+    });
+    // Simple 8-character random string
+    const randomString = Math.random().toString(16).slice(2, 10);
+    console.log("Random string: ", randomString);
 
     const datasetNameContainsForbiddenCharacters = window.evaluateStringAgainstSdsRequirements(
       datasetNameInput,
@@ -79,12 +94,6 @@ export const savePageCurationPreparation = async (pageBeingLeftID) => {
       errorArray.push({
         type: "notyf",
         message: `A Pennsieve dataset name cannot contain any of the following characters: @#$%^&*()+=/\|"'~;:<>{}[]?`,
-      });
-    }
-    if (!datasetSubtitleInput) {
-      errorArray.push({
-        type: "notyf",
-        message: "Please enter a dataset subtitle.",
       });
     }
 

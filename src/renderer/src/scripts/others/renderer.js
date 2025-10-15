@@ -3173,6 +3173,7 @@ const forbiddenFileNameRegex = /^(CON|PRN|AUX|NUL|(COM|LPT)[0-9])$/;
 const forbiddenFiles = new Set([".DS_Store", "Thumbs.db"]);
 const forbiddenFilesRegex = /^(CON|PRN|AUX|NUL|(COM|LPT)[0-9])$/;
 const forbiddenCharacters = /[@#$%^&*()+=\/\\|"'~;:<>{}\[\]?]/;
+const forbiddenCharactersRegex = /[@#$%^&*()+=\/\\|"'~;:<>{}\[\]?]/g;
 
 window.evaluateStringAgainstSdsRequirements = (stringToTest, testType) => {
   const tests = {
@@ -3185,6 +3186,10 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, testType) => {
   };
 
   return tests[testType];
+};
+
+window.sanitizeGuidedModeProgressFileNameString = (stringToSanitize) => {
+  return stringToSanitize.replace(forbiddenCharactersRegex, "-");
 };
 
 // Create some test case examples
