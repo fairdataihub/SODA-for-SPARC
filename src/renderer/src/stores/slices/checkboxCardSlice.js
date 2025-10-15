@@ -6,10 +6,10 @@ import {
   IconCloudUp,
   IconFileSpreadsheet,
   IconDeviceDesktop,
-  IconFolderSymlink,
   IconBrowserPlus,
   IconCheckupList,
   IconReport,
+  IconFolderSymlink,
 } from "@tabler/icons-react";
 
 export const checkboxCardSlice = (set) => ({
@@ -17,7 +17,7 @@ export const checkboxCardSlice = (set) => ({
     "dataset-upload-new-dataset": {
       title: "Create a new Pennsieve Dataset",
       description: null,
-      Icon: IconCirclePlus,
+      Icon: IconBrowserPlus,
       mutuallyExclusiveWithCards: ["dataset-upload-existing-dataset"],
       checked: false,
     },
@@ -25,10 +25,9 @@ export const checkboxCardSlice = (set) => ({
     "dataset-upload-existing-dataset": {
       title: "Upload to an existing Pennsieve Dataset",
       description: null,
-      Icon: IconCirclePlus,
+      Icon: IconFolderSymlink,
       mutuallyExclusiveWithCards: ["dataset-upload-new-dataset"],
       checked: false,
-      additionalClasses: "option-card radio-button",
     },
     "guided-button-start-new-curation": {
       title: "Prepare and share a new dataset test",
