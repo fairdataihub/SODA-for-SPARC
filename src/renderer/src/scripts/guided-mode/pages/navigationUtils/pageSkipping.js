@@ -17,6 +17,7 @@ export const guidedSkipPage = (pageId) => {
 export const guidedSkipPageSet = (className) => {
   const pages = document.querySelectorAll(`.${className}`);
   for (const page of pages) {
+    console.log("Skipping page:", page.id);
     guidedSkipPage(page.id);
   }
 };

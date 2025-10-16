@@ -161,8 +161,6 @@ const getIconForFile = (fileName) => {
   return fileIcons[fileExtension] || <IconFile size={ICON_SETTINGS.fileSize} />;
 };
 
-let globalFileItemRenderCount = 0;
-
 // File item component - represents a single file in the dataset tree
 const FileItem = ({
   fileName,
@@ -173,11 +171,9 @@ const FileItem = ({
   allowStructureEditing,
   indent,
 }) => {
-  globalFileItemRenderCount++;
   const { hovered, ref } = useHover();
   const contextMenuRelativePath = useGlobalStore((state) => state.contextMenuRelativePath);
   const contextMenuIsOpened = useGlobalStore((state) => state.contextMenuIsOpened);
-  console.log("indent", indent);
 
   const handleFileContextMenuOpen = (e) => {
     e.preventDefault();

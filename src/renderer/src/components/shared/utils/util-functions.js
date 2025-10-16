@@ -1,11 +1,10 @@
 // Define once at the top level
 const preferredOrder = [
   "Experimental",
+  "Code",
   "Primary",
   "Source",
   "Derivative",
-  "Code",
-
   "Protocol",
   "Documentation",
 ];

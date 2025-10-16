@@ -266,27 +266,33 @@ window.openPage = async (targetPageID) => {
 
         // Make any adjustments to the dataset entity object before setting it in the zustand store
         if (pageEntityType === "high-level-folder-data-categorization") {
+          // Delete the manifest file because it throws off the count of files selected
+          delete window.datasetStructureJSONObj?.["files"]?.["manifest.xlsx"];
+
           const datasetType = window.sodaJSONObj["dataset-type"];
           console.log("datasetType:", datasetType);
           setDatasetType(datasetType);
-          // Delete the manifest file because it throws off the count of files selected
-          delete window.datasetStructureJSONObj?.["files"]?.["manifest.xlsx"];
+
           const bucketTypes = [];
+
           if (datasetType === "experimental") {
             bucketTypes.push(["Experimental"]);
-            if (selectedEntities.includes("code")) {
-              bucketTypes.push("Code");
-            }
-          }
-          if (datasetType === "computational") {
-            bucketTypes.push(...["Code", "Primary", "Source", "Derivative"]);
+          } else {
+            console.log("Removing Experimental from entity list");
+            removeEntityFromEntityList("high-level-folder-data-categorization", "Experimental");
           }
           if (selectedEntities.includes("code")) {
             bucketTypes.push("Code");
           } else {
             removeEntityFromEntityList("high-level-folder-data-categorization", "Code");
           }
-          bucketTypes.push("Protocol", "Documentation");
+          if (datasetType === "computational") {
+            bucketTypes.push("Primary");
+          } else {
+            removeEntityFromEntityList("high-level-folder-data-categorization", "Primary");
+          }
+
+          bucketTypes.push(...["Protocol", "Documentation"]);
 
           for (const bucketType of bucketTypes) {
             addEntityToEntityList("high-level-folder-data-categorization", bucketType);
@@ -416,7 +422,13 @@ window.openPage = async (targetPageID) => {
           window.datasetStructureJSONObj,
           window.sodaJSONObj["dataset-entity-obj"]
         );
-        setDatasetMetadataToPreview(Object.keys(window.sodaJSONObj["dataset_metadata"] || {}));
+        if (pageID === "guided-dataset-structure-and-manifest-review-tab") {
+          // Only show the manifest file for the dataset metadata preview
+          // even if there are other metadata files like sites or performances
+          setDatasetMetadataToPreview(["manifest.xlsx"]);
+        } else {
+          setDatasetMetadataToPreview(Object.keys(window.sodaJSONObj["dataset_metadata"] || {}));
+        }
 
         setPathToRender([]);
         useGlobalStore.setState({

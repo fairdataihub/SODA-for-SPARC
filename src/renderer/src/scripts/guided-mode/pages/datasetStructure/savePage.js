@@ -102,8 +102,6 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     } else {
       guidedSkipPage("guided-add-code-metadata-tab");
     }
-    // Skip this page in case it was skipped on a previous version
-    guidedUnSkipPage("data-categorization-tab");
 
     // Handle page skipping based on selections
     if (selectedEntities.includes("subjects")) {
@@ -118,7 +116,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       guidedSkipPageSet("guided-subjects-metadata-page-set");
     }
 
-    if (selectedEntities.includes("samples")) {
+    if (selectedEntities.includes("subjects") && selectedEntities.includes("samples")) {
       guidedUnSkipPageSet("guided-samples-metadata-page-set");
     } else {
       // Delete the existing samples metadata if it exists
@@ -130,7 +128,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       guidedSkipPageSet("guided-samples-metadata-page-set");
     }
 
-    if (selectedEntities.includes("sites")) {
+    if (selectedEntities.includes("subjects") && selectedEntities.includes("sites")) {
       guidedUnSkipPageSet("guided-sites-metadata-page-set");
     } else {
       guidedSkipPageSet("guided-sites-metadata-page-set");
@@ -142,7 +140,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       }
     }
 
-    if (selectedEntities.includes("performances")) {
+    if (selectedEntities.includes("subjects") && selectedEntities.includes("performances")) {
       guidedUnSkipPageSet("guided-performances-metadata-page-set");
     } else {
       guidedSkipPageSet("guided-performances-metadata-page-set");
@@ -152,46 +150,6 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
         delete window.sodaJSONObj["dataset_metadata"]["performances"];
       }
     }
-  }
-
-  if (pageBeingLeftID === "guided-entity-addition-method-selection-tab") {
-    // Add validation logic for guided-entity-addition-method-selection-tab if needed
-  }
-
-  if (pageBeingLeftID === "guided-manual-dataset-entity-and-metadata-tab") {
-    // Add validation logic for guided-manual-dataset-entity-and-metadata-tab if needed
-  }
-
-  if (pageBeingLeftID === "guided-spreadsheet-import-dataset-entity-and-metadata-tab") {
-    // Add validation logic for guided-spreadsheet-import-dataset-entity-and-metadata-tab if needed
-  }
-
-  if (pageBeingLeftID === "guided-sites-selection-tab") {
-    // Add validation logic for guided-sites-selection-tab if needed
-  }
-
-  if (pageBeingLeftID === "guided-samples-selection-tab") {
-    // Add validation logic for guided-samples-selection-tab if needed
-  }
-
-  if (pageBeingLeftID === "guided-subjects-selection-tab") {
-    // Add validation logic for guided-subjects-selection-tab if needed
-  }
-
-  if (pageBeingLeftID === "guided-performances-entity-addition-tab") {
-    // Add validation logic for guided-performances-entity-addition-tab if needed
-  }
-
-  if (pageBeingLeftID === "guided-Performances-selection-tab") {
-    // Add validation logic for guided-Performances-selection-tab if needed
-  }
-
-  if (pageBeingLeftID === "guided-modalities-selection-tab") {
-    // Page logic handled by the component nothing to do here
-  }
-
-  if (pageBeingLeftID === "guided-modalities-data-selection-tab") {
-    // Add validation logic for guided-modalities-data-selection-tab if needed
   }
 
   if (pageBeingLeftID === "guided-dataset-structure-and-manifest-review-tab") {
