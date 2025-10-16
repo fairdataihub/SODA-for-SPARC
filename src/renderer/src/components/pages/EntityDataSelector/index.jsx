@@ -80,12 +80,7 @@ const getInstructionalTextByEntityType = (entityType) => {
   );
 };
 
-const EntityDataSelectorPage = ({
-  pageName,
-  entityTypeStringSingular,
-  entityTypeStringPlural,
-  showProgress = false,
-}) => {
+const EntityDataSelectorPage = ({ pageName, entityTypeStringSingular, showProgress = false }) => {
   const activeEntity = useGlobalStore((state) => state.activeEntity);
   const entityType = useGlobalStore((state) => state.entityType); // e.g. 'high-level-folder-data-categorization'
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
