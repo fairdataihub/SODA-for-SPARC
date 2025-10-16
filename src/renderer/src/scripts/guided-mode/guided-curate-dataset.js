@@ -6,7 +6,11 @@ import {
   editContributorByOrcid,
   renderContributorsTable,
 } from "./metadata/contributors/contributors";
-import { CONTRIBUTORS_REGEX } from "./metadata/contributors/contributorsValidation";
+import {
+  CONTRIBUTORS_REGEX,
+  CONTRIBUTORS_LAST_NAME_REGEX,
+  CONTRIBUTORS_FIRST_NAME_REGEX,
+} from "./metadata/contributors/contributorsValidation";
 import { generateAlertElement } from "./metadata/utils";
 import determineDatasetLocation from "../analytics/analytics-utils";
 import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
@@ -1387,7 +1391,7 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
       });
     },
     preConfirm: () => {
-      const contributorName = document.querySelector("#guided-contributor-name").value.trim();
+      let contributorName = document.querySelector("#guided-contributor-name").value.trim();
       const contributorOrcidInput = document
         .getElementById("guided-contributor-orcid")
         .value.trim();
@@ -1405,13 +1409,51 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
         return Swal.showValidationMessage("Please fill out all required fields");
       }
 
-      if (!CONTRIBUTORS_REGEX.test(contributorName)) {
+      // Check if name has more than one comma
+      const commaCount = (contributorName.match(/,/g) || []).length;
+      if (commaCount > 1) {
         return Swal.showValidationMessage(
-          `Your name does not match an acceptable format for the Sparc Dataset Structure. 
-          Please ensure it matches the allowed format. 
-          For more information, hover over the info icon next to 'Name'.`
+          "Per the Sparc Dataset Structure, the accepted name format is as follows: Last, First Middle. Please ensure the name you inputted matches this format."
         );
       }
+
+      if (commaCount === 0) {
+        return Swal.showValidationMessage(
+          "Per the Sparc Dataset Structure, the accepted name format is as follows: Last, First Middle. Please ensure the name you inputted matches this format."
+        );
+      }
+
+      let lastName = contributorName.substring(0, contributorName.indexOf(",")).trim();
+      let firstAndMiddleName = contributorName.substring(contributorName.indexOf(",") + 1).trim();
+
+      // check if the last name is the part that is failing the regex
+      if (!CONTRIBUTORS_LAST_NAME_REGEX.test(lastName)) {
+        return Swal.showValidationMessage(
+          `The given last name does not conform to the SPARC Dataset Structure format. 
+             The last name should not contain numbers or special characters (except hyphens, apostrophes, and spaces for certain family name prefixes).`
+        );
+      }
+
+      if (!firstAndMiddleName) {
+        return Swal.showValidationMessage("Please provide at least a first name.");
+      }
+
+      // add required space before first and middle name for regex validation
+      if (firstAndMiddleName[0] !== " ") {
+        firstAndMiddleName = " " + firstAndMiddleName;
+      }
+
+      // Only check the first and middle name if it exists (middle name is optional)
+      if (!CONTRIBUTORS_FIRST_NAME_REGEX.test(firstAndMiddleName)) {
+        return Swal.showValidationMessage(
+          `The given first and/or middle name does not conform to the SPARC Dataset Structure format. 
+               The first and middle names should only contain letters, hyphens, apostrophes, and spaces. 
+               Moreover, the middle name is optional.`
+        );
+      }
+
+      // merge the name back together after validation to ensure proper spacing was added to first and middle name section
+      contributorName = `${lastName},${firstAndMiddleName}`;
 
       // Regex to check ORCID format (plain or full URL)
       const orcidFormatRegex = /^(https:\/\/orcid\.org\/)?\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/i;
