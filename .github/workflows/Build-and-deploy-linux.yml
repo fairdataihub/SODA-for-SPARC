@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - staging
+      - code-only-workflow
 
 jobs:
   deploy-on-linux:

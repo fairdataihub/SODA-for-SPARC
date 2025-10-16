@@ -150,6 +150,7 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
       });
       throw errorArray;
     }
+    console.log("pennsieveDatasetSubtitle:", pennsieveDatasetSubtitle);
     window.sodaJSONObj["pennsieve-dataset-subtitle"] = pennsieveDatasetSubtitle;
   }
 };

@@ -1,12 +1,5 @@
 import { savePageChanges } from "./savePageChanges";
-import { getGuidedProgressFileNames } from "./curationPreparation/savePage";
-import {
-  guidedUnSkipPage,
-  getNextPageNotSkipped,
-  getPrevPageNotSkipped,
-  guidedSkipPage,
-  getNonSkippedGuidedModePages,
-} from "./navigationUtils/pageSkipping";
+import { getNextPageNotSkipped, getPrevPageNotSkipped } from "./navigationUtils/pageSkipping";
 import { guidedUnLockSideBar, resetLazyLoading } from "../../../assets/nav";
 import api from "../../others/api/api";
 import lottie from "lottie-web";

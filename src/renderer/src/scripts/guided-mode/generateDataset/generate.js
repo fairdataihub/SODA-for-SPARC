@@ -39,6 +39,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     const guidedBfAccount = window.defaultBfAccount;
     const pennsieveDatasetName = window.sodaJSONObj["generate-dataset"]["dataset-name"];
     const pennsieveDatasetSubtitle = window.sodaJSONObj["pennsieve-dataset-subtitle"];
+    console.log("pennsieveDatasetSubtitle:", pennsieveDatasetSubtitle);
     const guidedLicense = window.sodaJSONObj?.["digital-metadata"]?.["license"];
     const guidedPennsieveStudyPurpose =
       window.sodaJSONObj["dataset_metadata"]?.["dataset_description"]?.["study_information"]?.[
@@ -70,7 +71,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         await uploadPennsieveMetadata(
           window.defaultBfAccount,
           window.sodaJSONObj["generate-dataset"]["dataset-name"],
-          window.sodaJSONObj["generate-dataset"]["dataset-subtitle"],
+          window.sodaJSONObj["pennsieve-dataset-subtitle"],
           window.sodaJSONObj["generate-dataset"]["banner-image"],
           window.sodaJSONObj["generate-dataset"]["license"],
           window.sodaJSONObj["generate-dataset"]["study-purpose"],
@@ -179,7 +180,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       await uploadPennsieveMetadata(
         window.defaultBfAccount,
         window.sodaJSONObj["generate-dataset"]["dataset-name"],
-        window.sodaJSONObj["generate-dataset"]["dataset-subtitle"],
+        window.sodaJSONObj["pennsieve-dataset-subtitle"],
         window.sodaJSONObj["generate-dataset"]["banner-image"],
         window.sodaJSONObj["generate-dataset"]["license"],
         window.sodaJSONObj["generate-dataset"]["study-purpose"],
@@ -911,8 +912,10 @@ const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle)
   const datasetSubtitleUploadText = document.getElementById("guided-dataset-subtitle-upload-text");
   datasetSubtitleUploadText.innerHTML = "Adding dataset subtitle...";
   guidedUploadStatusIcon("guided-dataset-subtitle-upload-status", "loading");
+  console.log("datasetSubtitle:", datasetSubtitle);
 
   const previousUploadSubtitle = window.sodaJSONObj["previously-uploaded-data"]["subtitle"];
+  console.log("previousUploadSubtitle:", previousUploadSubtitle);
 
   if (previousUploadSubtitle === datasetSubtitle) {
     datasetSubtitleUploadText.innerHTML = "Dataset subtitle already added on Pennsieve";
@@ -993,14 +996,21 @@ const guidedAddDatasetDescription = async (
   const datasetDescriptionUploadText = document.getElementById(
     "guided-dataset-description-upload-text"
   );
+
+  // If studyPurpose, dataCollection, or dataConclusion are empty, skip adding the description
+  if (!studyPurpose && !dataCollection && !dataConclusion) {
+    datasetDescriptionUploadText.innerHTML = "Skipped optional dataset description...";
+    guidedUploadStatusIcon("guided-dataset-description-upload-status", "success");
+    return;
+  }
   datasetDescriptionUploadText.innerHTML = "Adding dataset description...";
   guidedUploadStatusIcon("guided-dataset-description-upload-status", "loading");
 
   let descriptionArray = [];
 
-  descriptionArray.push("**Study Purpose:** " + studyPurpose + "\n\n");
-  descriptionArray.push("**Data Collection:** " + dataCollection + "\n\n");
-  descriptionArray.push("**Primary Conclusion:** " + dataConclusion + "\n\n");
+  studyPurpose && descriptionArray.push("**Study Purpose:** " + studyPurpose + "\n\n");
+  dataCollection && descriptionArray.push("**Data Collection:** " + dataCollection + "\n\n");
+  dataConclusion && descriptionArray.push("**Primary Conclusion:** " + dataConclusion + "\n\n");
 
   const description = descriptionArray.join("");
 
