@@ -6,7 +6,7 @@ on:
     branches:
       - main
       - staging
-      - code-only-workflow
+      - gm-computational-flow
 
 jobs:
   deploy-on-windows:
