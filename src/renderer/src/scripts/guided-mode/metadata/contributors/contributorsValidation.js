@@ -1,11 +1,72 @@
 // Purpose: Field validation for contributors. Includes regex pattern from sparcur 3.0.0 schemas.py
-// r'^((([Vv](an|on))|[Dd][ia]|([Dd]e( [Ll]os)?)) )?[^, ]+, [^,]+$'
+// Expanded to include additional family name prefixes from Wikipedia family name affixes
+// https://en.wikipedia.org/wiki/List_of_family_name_affixes
 
-export const CONTRIBUTORS_REGEX = /^((([Vv](an|on))|[Dd][ia]|([Dd]e( [Ll]os)?)) )?[^, ]+, [^,]+$/;
+// Comprehensive family name prefixes
+const FAMILY_PREFIXES = [
+  // Dutch/Flemish
+  "[Vv]an",
+  "[Vv]an [Dd]e[rn]?",
+  "[Vv]an [Tt]",
+  "[Vv]ander",
+  "[Vv]on",
+  // German/Austrian
+  "[Vv]on",
+  "[Vv]on [Dd]e[rn]?",
+  "[Zz]u",
+  "[Zz]ur",
+  "[Vv]om",
+  // French
+  "[Dd]e",
+  "[Dd]es",
+  "[Dd]u",
+  "[Dd]e [Ll]a",
+  "[Dd]e [Ll]es",
+  "[Dd]e [Ll]os",
+  "[Ll]e",
+  "[Ll]a",
+  "[Ll]es",
+  // Spanish/Portuguese
+  "[Dd]el",
+  "[Dd]e [Ll]os",
+  "[Dd]e [Ll]a",
+  "[Dd]e [Ll]as",
+  "[Dd]a",
+  "[Dd]o",
+  // Italian
+  "[Dd]i",
+  "[Dd]ell[ao]",
+  "[Dd]ell[ei]",
+  "[Dd]ai",
+  "[Dd]al",
+  "[Dd]alle",
+  // Irish/Scottish
+  "[Oo]'",
+  "[Mm]c",
+  "[Mm]ac",
+  // Arabic
+  "[Aa]l",
+  "[Ee]l",
+  "[Aa]bd [Aa]l",
+  "[Aa]bu",
+  "[Ii]bn",
+  // Other European
+  "[Ff]itz",
+  "[Aa]p",
+  "[Bb]en",
+  "[Bb]ar",
+  "[Bb]at",
+];
+
+const FAMILY_PREFIX_PATTERN = `((${FAMILY_PREFIXES.join("|")}) )?`;
+
+export const CONTRIBUTORS_REGEX = new RegExp(`^${FAMILY_PREFIX_PATTERN}[^, ]+, [^,]+$`);
 
 // Last name Portion regex
-export const CONTRIBUTORS_LAST_NAME_REGEX =
-  /^((([Vv](an|on))|[Dd][ia]|([Dd]e( [Ll]os)?)) )?[^, ]+$/;
+export const CONTRIBUTORS_LAST_NAME_REGEX = new RegExp(`^${FAMILY_PREFIX_PATTERN}[^, ]+$`);
 
 // First name Portion regex
 export const CONTRIBUTORS_FIRST_NAME_REGEX = /^[^,]+$/;
+
+// Export the pattern for debugging/testing
+export const FAMILY_PREFIX_PATTERN_STRING = FAMILY_PREFIX_PATTERN;

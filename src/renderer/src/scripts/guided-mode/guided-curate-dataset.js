@@ -1319,7 +1319,9 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
             placeholder="Last, First Middle" 
             value="${defaultContributorName.trim()}" 
           />
-
+        <p class="guided--text-input-instructions mb-0 text-left">
+          Should follow this format: Last, First Middle. For information on what family name prefixes are allowed <a target="_blank" href="https://en.wikipedia.org/wiki/List_of_family_name_affixes">click here</a>.
+        </p>
         <label class="guided--form-label mt-md required">ORCID:</label>
         <input class="guided--input" id="guided-contributor-orcid" type="text" placeholder="https://orcid.org/0000-0000-0000-0000 OR 0000-0000-0000-0000" value="${defaultOrcid}" />
         <p class="guided--text-input-instructions mb-0 text-left">
@@ -1430,7 +1432,8 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
       if (!CONTRIBUTORS_LAST_NAME_REGEX.test(lastName)) {
         return Swal.showValidationMessage(
           `The given last name does not conform to the SPARC Dataset Structure format. 
-             The last name should not contain numbers or special characters (except hyphens, apostrophes, and spaces for certain family name prefixes).`
+           The last name should not contain numbers or special characters (except hyphens, apostrophes, and spaces for certain family name prefixes).
+           If your name matches the format but you are still seeing this error, please contact us by clicking 'Save & Exit' and navigating to the 'Contact Us' page in the sidebar.`
         );
       }
 
