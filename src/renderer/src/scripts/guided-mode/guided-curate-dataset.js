@@ -1294,7 +1294,7 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
 
   if (contributorIdToEdit) {
     const contributorData = getContributorByOrcid(contributorIdToEdit);
-    defaultContributorName = contributorData.contributorName || "";
+    defaultContributorName = contributorData.contributor_name || "";
     defaultOrcid = contributorData.contributor_orcid_id || "";
     defaultAffiliation = contributorData.contributor_affiliation || "";
     defaultRole = contributorData.contributor_role || "";
