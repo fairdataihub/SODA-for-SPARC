@@ -179,13 +179,9 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
   // Remove any empty folders from the original structure
   originalStructure = deleteEmptyFoldersFromStructure(originalStructure);
 
-  // Helper to move files by mapping
   const moveFilesByCategory = (categoryObj, destFolder) => {
     if (!categoryObj) return;
-    const files = Object.keys(categoryObj);
-    for (const [i, file] of files.entries()) {
-      moveFileToTargetLocation(file, destFolder);
-    }
+    Object.keys(categoryObj).forEach((file) => moveFileToTargetLocation(file, destFolder));
   };
 
   try {
@@ -198,6 +194,13 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
     // Move Experimental files into the primary/ folder
     moveFilesByCategory(
       datasetEntityObj?.["high-level-folder-data-categorization"]?.["Experimental"],
+      "primary/"
+    );
+
+    // Move Primary files into the primary/ folder
+    // (Files that are marked as primary during the computational workflow)
+    moveFilesByCategory(
+      datasetEntityObj?.["high-level-folder-data-categorization"]?.["Primary"],
       "primary/"
     );
 

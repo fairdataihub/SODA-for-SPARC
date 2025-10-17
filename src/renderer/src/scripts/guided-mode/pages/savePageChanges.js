@@ -231,12 +231,12 @@ export const savePageChanges = async (pageBeingLeftID) => {
               }
             }
 
-            // Assign participants as array (duplicates allowed)
-            performance.participants = performanceParticipants;
+            // Assign participants as array of unique IDs
+            performance.participants = Array.from(new Set(performanceParticipants));
           });
 
           // Update dataset metadata
-          window.sodaJSONObj.dataset_metadata.performances = performanceMetadata;
+          window.sodaJSONObj["dataset_metadata"]["performances"] = performanceMetadata;
         }
 
         // Save the dataset entity object to the progress file

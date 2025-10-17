@@ -78,7 +78,7 @@ export const savePageCurationPreparation = async (pageBeingLeftID) => {
     if (datasetNameContainsForbiddenCharacters) {
       errorArray.push({
         type: "notyf",
-        message: `A Pennsieve dataset name cannot contain any of the following characters: @#$%^&*()+=/\|"'~;:<>{}[]?`,
+        message: `The SDS forbids the following characters in dataset names: @#$%^&*()+=/\|"'~;:<>{}[]?`,
       });
     }
     if (!datasetSubtitleInput) {

@@ -6,7 +6,7 @@ on:
     branches:
       - main
       - staging
-      - pre-staging-2
+      - gm-computational-flow
 
 jobs:
   deploy-on-mac:
