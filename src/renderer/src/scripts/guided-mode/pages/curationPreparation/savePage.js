@@ -61,7 +61,6 @@ export const savePageCurationPreparation = async (pageBeingLeftID) => {
   if (pageBeingLeftID === "guided-name-subtitle-tab") {
     const datasetNameInput = useGlobalStore.getState().guidedDatasetName.trim();
     const datasetSubtitleInput = useGlobalStore.getState().guidedDatasetSubtitle.trim();
-
     //Throw error if no dataset name or subtitle were added
     if (!datasetNameInput) {
       errorArray.push({
@@ -74,6 +73,13 @@ export const savePageCurationPreparation = async (pageBeingLeftID) => {
         type: "notyf",
         message: "Please enter a dataset subtitle.",
       });
+    }
+
+    const currentDatasetName = window.sodaJSONObj?.["digital-metadata"]?.["name"];
+    // Generate and store save-file-random-hash-suffix if it doesn't exist
+    const saveFileRandomHashSuffix = window.sodaJSONObj?.["save-file-random-hash-suffix"];
+    if (!saveFileRandomHashSuffix) {
+      window.sodaJSONObj["save-file-random-hash-suffix"] = Math.random().toString(16).slice(2, 10);
     }
 
     const sanitizedDatasetName = window.sanitizeGuidedModeProgressFileNameString(datasetNameInput);
@@ -90,18 +96,11 @@ export const savePageCurationPreparation = async (pageBeingLeftID) => {
       datasetNameInput,
       "string-contains-forbidden-characters"
     );
-    if (datasetNameContainsForbiddenCharacters) {
-      errorArray.push({
-        type: "notyf",
-        message: `A Pennsieve dataset name cannot contain any of the following characters: @#$%^&*()+=/\|"'~;:<>{}[]?`,
-      });
-    }
 
     if (errorArray.length > 0) {
       throw errorArray;
     }
 
-    const currentDatasetName = window.sodaJSONObj["digital-metadata"]["name"];
     if (currentDatasetName) {
       // Update the progress file path name and banner image path if needed
       if (datasetNameInput !== currentDatasetName) {
