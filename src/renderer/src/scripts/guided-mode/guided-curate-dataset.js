@@ -1316,7 +1316,7 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
             class="guided--input" 
             id="guided-contributor-name" 
             type="text" 
-            placeholder="Last, First Middle" 
+            placeholder="Last, First Middle (e.g., Smith, John A)" 
             value="${defaultContributorName.trim()}" 
           />
         <p class="guided--text-input-instructions mb-0 text-left">
