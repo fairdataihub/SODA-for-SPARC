@@ -154,10 +154,10 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     const contributorInformation = window.sodaJSONObj["dataset_contributors"] || [];
     // Validate the contributor names match the Regular Expression
     contributorInformation.forEach((contributor) => {
-      if (!CONTRIBUTORS_REGEX.test(contributor["contributorName"])) {
+      if (!CONTRIBUTORS_REGEX.test(contributor["contributor_name"])) {
         errorArray.push({
           type: "notyf",
-          message: `The contributor name "${contributor["contributorName"]}" is not in the correct format. Please use the format: Last, First Middle.`,
+          message: `The contributor name "${contributor["contributor_name"]}" is not in the correct format. Please use the format: Last, First Middle.`,
         });
       }
     });
