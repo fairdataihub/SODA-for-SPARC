@@ -1,4 +1,5 @@
 import { addOrUpdateStoredContributor } from "../../../others/contributor-storage";
+import { CONTRIBUTORS_REGEX } from "./contributorsValidation";
 
 export const addContributor = (
   contributorName,
@@ -66,10 +67,25 @@ export const editContributorByOrcid = (
   }
 };
 
+const handleContributorNormalization = (contributors) => {
+  // Normalize the contributor names to "Last, First MI" format; in the past the name fields were separated
+  return contributors.map((contributor) => {
+    if (contributor["contributor_last_name"] && contributor["contributor_first_name"]) {
+      contributor["contributorName"] =
+        `${contributor["contributor_last_name"]}, ${contributor["contributor_first_name"]}`.trim();
+      delete contributor["contributor_last_name"];
+      delete contributor["contributor_first_name"];
+    }
+    return contributor;
+  });
+};
+
 export const renderContributorsTable = () => {
   const contributorsTable = document.getElementById("guided-DD-connoributors-table");
   let contributorsTableHTML;
-  const contributors = window.sodaJSONObj["dataset_contributors"];
+  const contributors = handleContributorNormalization(window.sodaJSONObj["dataset_contributors"]);
+  window.sodaJSONObj["dataset_contributors"] = contributors; // Update the global object with normalized names
+
   if (contributors.length === 0) {
     contributorsTableHTML = `
         <tr>
@@ -101,6 +117,7 @@ const generateContributorTableRow = (contributorObj, contributorIndex) => {
   const contributorOrcid = contributorObj["contributor_orcid_id"];
   const contributorRoleString = contributorObj["contributor_role"];
 
+  let validContributorName = CONTRIBUTORS_REGEX.test(contributorFullName);
   return `
     <tr 
       data-contributor-orcid="${contributorOrcid}"
@@ -109,6 +126,7 @@ const generateContributorTableRow = (contributorObj, contributorIndex) => {
       ondragover="window.handleContributorDragOver(event)"
       ondragend="window.handleContributorDrop(event)"
       style="cursor: move;"
+      class="${!validContributorName ? "invalid-contributor" : ""}"
     >
       <td class="middle aligned collapsing text-center">
         ${contributorIndex}
