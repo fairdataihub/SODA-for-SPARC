@@ -5,7 +5,12 @@ import {
   addContributor,
   editContributorByOrcid,
   renderContributorsTable,
-} from "./metadata/contributors";
+} from "./metadata/contributors/contributors";
+import {
+  CONTRIBUTORS_REGEX,
+  CONTRIBUTORS_LAST_NAME_REGEX,
+  CONTRIBUTORS_FIRST_NAME_REGEX,
+} from "./metadata/contributors/contributorsValidation";
 import { generateAlertElement } from "./metadata/utils";
 import determineDatasetLocation from "../analytics/analytics-utils";
 import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
@@ -1281,8 +1286,7 @@ const handleAddOrEditContributorHeaderUI = (boolEditingContributor) => {
 };
 
 window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) => {
-  let defaultFirstName = "";
-  let defaultLastName = "";
+  let defaultContributorName = "";
   let defaultOrcid = "";
   let defaultAffiliation = "";
   let defaultRole = "";
@@ -1290,12 +1294,11 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
 
   if (contributorIdToEdit) {
     const contributorData = getContributorByOrcid(contributorIdToEdit);
-    defaultFirstName = contributorData.contributor_first_name || "";
-    defaultLastName = contributorData.contributor_last_name || "";
+    defaultContributorName = contributorData.contributorName || "";
     defaultOrcid = contributorData.contributor_orcid_id || "";
     defaultAffiliation = contributorData.contributor_affiliation || "";
     defaultRole = contributorData.contributor_role || "";
-    contributorSwalTitle = `Edit contributor ${defaultLastName}, ${defaultFirstName}`;
+    contributorSwalTitle = `Edit contributor ${defaultContributorName}`;
   }
 
   await Swal.fire({
@@ -1308,16 +1311,17 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
     html: `
       <div class="guided--flex-center mb-1" style="font-size: 1em !important; height: 550px;">
         ${handleAddOrEditContributorHeaderUI(!!contributorIdToEdit)}
-        <div class="space-between w-100">
-          <div class="guided--flex-center mt-sm" style="width: 45%">
-            <label class="guided--form-label required">Last name:</label>
-            <input class="guided--input" id="guided-contributor-last-name" type="text" placeholder="Contributor's last name" value="${defaultLastName}" />
-          </div>
-          <div class="guided--flex-center mt-sm" style="width: 45%">
-            <label class="guided--form-label required">First name:</label>
-            <input class="guided--input" id="guided-contributor-first-name" type="text" placeholder="Contributor's first name" value="${defaultFirstName}" />
-          </div>
-        </div>
+          <label class="guided--form-label required">Contributor Name:</label>
+          <input 
+            class="guided--input" 
+            id="guided-contributor-name" 
+            type="text" 
+            placeholder="Last, First Middle (e.g., Smith, John A)" 
+            value="${defaultContributorName.trim()}" 
+          />
+        <p class="guided--text-input-instructions mb-0 text-left">
+          Should follow this format: Last, First Middle. For information on what family name prefixes are allowed <a target="_blank" href="https://en.wikipedia.org/wiki/List_of_family_name_affixes">click here</a>.
+        </p>
         <label class="guided--form-label mt-md required">ORCID:</label>
         <input class="guided--input" id="guided-contributor-orcid" type="text" placeholder="https://orcid.org/0000-0000-0000-0000 OR 0000-0000-0000-0000" value="${defaultOrcid}" />
         <p class="guided--text-input-instructions mb-0 text-left">
@@ -1389,12 +1393,7 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
       });
     },
     preConfirm: () => {
-      const contributorFirstNameValue = document
-        .getElementById("guided-contributor-first-name")
-        .value.trim();
-      const contributorLastNameValue = document
-        .getElementById("guided-contributor-last-name")
-        .value.trim();
+      let contributorName = document.querySelector("#guided-contributor-name").value.trim();
       const contributorOrcidInput = document
         .getElementById("guided-contributor-orcid")
         .value.trim();
@@ -1404,8 +1403,7 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
       const contributorRole = document.getElementById("guided-contributor-role-select").value;
 
       if (
-        !contributorFirstNameValue ||
-        !contributorLastNameValue ||
+        !contributorName ||
         !contributorOrcidInput ||
         !contributorAffiliation ||
         !contributorRole
@@ -1413,9 +1411,52 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
         return Swal.showValidationMessage("Please fill out all required fields");
       }
 
-      if (contributorFirstNameValue.includes(",") || contributorLastNameValue.includes(",")) {
-        return Swal.showValidationMessage("Please remove commas from the name fields");
+      // Check if name has more than one comma
+      const commaCount = (contributorName.match(/,/g) || []).length;
+      if (commaCount > 1) {
+        return Swal.showValidationMessage(
+          "Per the Sparc Dataset Structure, the accepted name format is as follows: Last, First Middle. Please ensure the name you inputted matches this format."
+        );
       }
+
+      if (commaCount === 0) {
+        return Swal.showValidationMessage(
+          "Per the Sparc Dataset Structure, the accepted name format is as follows: Last, First Middle. Please ensure the name you inputted matches this format."
+        );
+      }
+
+      let lastName = contributorName.substring(0, contributorName.indexOf(",")).trim();
+      let firstAndMiddleName = contributorName.substring(contributorName.indexOf(",") + 1).trim();
+
+      // check if the last name is the part that is failing the regex
+      if (!CONTRIBUTORS_LAST_NAME_REGEX.test(lastName)) {
+        return Swal.showValidationMessage(
+          `The given last name does not conform to the SPARC Dataset Structure format. 
+           The last name should not contain numbers or special characters (except hyphens, apostrophes, and spaces for certain family name prefixes).
+           If your name matches the format but you are still seeing this error, please contact us by clicking 'Save & Exit' and navigating to the 'Contact Us' page in the sidebar.`
+        );
+      }
+
+      if (!firstAndMiddleName) {
+        return Swal.showValidationMessage("Please provide at least a first name.");
+      }
+
+      // add required space before first and middle name for regex validation
+      if (firstAndMiddleName[0] !== " ") {
+        firstAndMiddleName = " " + firstAndMiddleName;
+      }
+
+      // Only check the first and middle name if it exists (middle name is optional)
+      if (!CONTRIBUTORS_FIRST_NAME_REGEX.test(firstAndMiddleName)) {
+        return Swal.showValidationMessage(
+          `The given first and/or middle name does not conform to the SPARC Dataset Structure format. 
+               The first and middle names should only contain letters, hyphens, apostrophes, and spaces. 
+               Moreover, the middle name is optional.`
+        );
+      }
+
+      // merge the name back together after validation to ensure proper spacing was added to first and middle name section
+      contributorName = `${lastName},${firstAndMiddleName}`;
 
       // Regex to check ORCID format (plain or full URL)
       const orcidFormatRegex = /^(https:\/\/orcid\.org\/)?\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/i;
@@ -1441,20 +1482,13 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
         if (contributorIdToEdit) {
           editContributorByOrcid(
             contributorIdToEdit,
-            contributorLastNameValue,
-            contributorFirstNameValue,
+            contributorName,
             storedOrcid,
             contributorAffiliation,
             contributorRole
           );
         } else {
-          addContributor(
-            contributorLastNameValue,
-            contributorFirstNameValue,
-            storedOrcid,
-            contributorAffiliation,
-            contributorRole
-          );
+          addContributor(contributorName, storedOrcid, contributorAffiliation, contributorRole);
         }
       } catch (error) {
         return Swal.showValidationMessage(error);
