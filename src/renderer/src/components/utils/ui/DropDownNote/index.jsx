@@ -9,21 +9,32 @@ const dropDownIcons = {
   question: <IconInfoCircle size={18} color="gray" />,
 };
 
-const renderDataCategoriesNote = (datasetIncludesCode) => (
+const renderDataCategoriesNote = (datasetType, datasetIncludesCode) => (
   <>
-    <SodaPaper>
-      <Text fw={600}>Experimental</Text>
-      <Text size="sm">
-        Data collected from experiments, such as raw or processed measurements, images, recordings,
-        or any primary data generated during the study.
-      </Text>
-    </SodaPaper>
+    {datasetType === "experimental" && (
+      <SodaPaper>
+        <Text fw={600}>Experimental</Text>
+        <Text size="sm">
+          Data collected from experiments, such as raw or processed measurements, images,
+          recordings, or any primary data generated during the study.
+        </Text>
+      </SodaPaper>
+    )}
     {datasetIncludesCode && (
       <SodaPaper>
         <Text fw={600}>Code</Text>
         <Text size="sm">
           Scripts, computational models, analysis pipelines, or other software used for data
           processing, analysis, or simulation in the study.
+        </Text>
+      </SodaPaper>
+    )}
+    {datasetType === "computational" && (
+      <SodaPaper>
+        <Text fw={600}>Primary</Text>
+        <Text size="sm">
+          Data generated or processed through computational methods, such as simulation results,
+          model outputs, tabular datasets, or other primary data.
         </Text>
       </SodaPaper>
     )}
@@ -34,13 +45,24 @@ const renderDataCategoriesNote = (datasetIncludesCode) => (
         users understand and reuse the dataset.
       </Text>
     </SodaPaper>
-    <SodaPaper>
-      <Text fw={600}>Protocol</Text>
-      <Text size="sm">
-        Protocols, standard operating procedures, or step-by-step instructions describing how
-        experiments or analyses were performed.
-      </Text>
-    </SodaPaper>
+    {datasetType === "experimental" && (
+      <SodaPaper>
+        <Text fw={600}>Protocol</Text>
+        <Text size="sm">
+          Protocols such as standard operating procedures or step-by-step instructions describing
+          how experiments or analyses were performed.
+        </Text>
+      </SodaPaper>
+    )}
+    {datasetType === "computational" && (
+      <SodaPaper>
+        <Text fw={600}>Protocol</Text>
+        <Text size="sm">
+          Protocols such as workflows, step-by-step instructions, or documentation describing how
+          your data was generated, processed, or analyzed.
+        </Text>
+      </SodaPaper>
+    )}
   </>
 );
 
@@ -50,12 +72,13 @@ const DropDownNote = ({ id }) => {
   const datasetIncludesSamples = selectedEntities.includes("samples");
   const datasetIncludesSites = selectedEntities.includes("sites");
   const datasetIncludesCode = selectedEntities.includes("code");
+  const datasetType = useGlobalStore((state) => state.datasetType);
 
   const configMap = {
     "data-categories-list": {
       dropDownIcon: "info",
-      dropDownButtonText: "Learn more about the data categories",
-      dropDownNote: renderDataCategoriesNote(datasetIncludesCode),
+      dropDownButtonText: `Learn more about the data categories for ${datasetType} datasets`,
+      dropDownNote: renderDataCategoriesNote(datasetType, datasetIncludesCode),
     },
     "entity-types-list": {
       dropDownIcon: "info",

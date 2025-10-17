@@ -14,6 +14,7 @@ import {
   getExistingSubjects,
   getExistingSamples,
 } from "../../../../stores/slices/datasetEntityStructureSlice";
+import { CONTRIBUTORS_REGEX } from "../../metadata/contributors/contributorsValidation";
 
 import { getDropDownState } from "../../../../stores/slices/dropDownSlice";
 import { pennsieveDatasetSelectSlice } from "../../../../stores/slices/pennsieveDatasetSelectSlice";
@@ -149,6 +150,20 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       });
       throw errorArray;
     }
+
+    const contributorInformation = window.sodaJSONObj["dataset_contributors"] || [];
+    // Validate the contributor names match the Regular Expression
+    contributorInformation.forEach((contributor) => {
+      if (!CONTRIBUTORS_REGEX.test(contributor["contributorName"])) {
+        errorArray.push({
+          type: "notyf",
+          message: `The contributor name "${contributor["contributorName"]}" is not in the correct format. Please use the format: Last, First Middle.`,
+        });
+      }
+    });
+    if (errorArray.length > 0) {
+      throw errorArray;
+    }
   }
 
   if (pageBeingLeftID === "guided-protocols-tab") {
@@ -229,12 +244,6 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       fundingString = otherFunding.join(", ");
     }
 
-    const contributorInformation = window.sodaJSONObj["dataset_contributors"] || [];
-    // Combine the last and first names of contributors
-    contributorInformation.forEach((contributor) => {
-      contributor.contributor_name = `${contributor.contributor_last_name}, ${contributor.contributor_first_name}`;
-    });
-
     // Get the properties from the submission page to re-use in the dataset_description metadata
     const fundingConsortium =
       window.sodaJSONObj["dataset_metadata"]?.["submission"]?.["funding_consortium"] || "";
@@ -244,13 +253,15 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
 
     const relatedResourceInformation = window.sodaJSONObj["related_resources"] || [];
 
+    const datasetType = window.sodaJSONObj["dataset-type"];
+
     // Populate dataset_metadata > dataset_description
     window.sodaJSONObj["dataset_metadata"]["dataset_description"] = {
       metadata_version: metadataVersion,
-      dataset_type: numSubjects > 0 ? "experimental" : "computational", // Per curation team, datasets with subjects are experimental, otherwise computational
+      dataset_type: datasetType,
       standards_information: {
         data_standard: "SPARC",
-        data_standard_version: "SODA Metadata Standards",
+        data_standard_version: "3.0.0",
       },
       basic_information: {
         title,

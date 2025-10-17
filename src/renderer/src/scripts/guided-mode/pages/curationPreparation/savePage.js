@@ -68,6 +68,17 @@ export const savePageCurationPreparation = async (pageBeingLeftID) => {
         message: "Please enter a dataset name.",
       });
     }
+
+    const datasetNameContainsForbiddenCharacters = window.evaluateStringAgainstSdsRequirements(
+      datasetNameInput,
+      "string-contains-forbidden-characters"
+    );
+    if (datasetNameContainsForbiddenCharacters) {
+      errorArray.push({
+        type: "notyf",
+        message: `The SDS forbids the following characters in dataset names: @#$%^&*()+=/\|"'~;:<>{}[]?`,
+      });
+    }
     if (!datasetSubtitleInput) {
       errorArray.push({
         type: "notyf",
@@ -91,11 +102,6 @@ export const savePageCurationPreparation = async (pageBeingLeftID) => {
     // Simple 8-character random string
     const randomString = Math.random().toString(16).slice(2, 10);
     console.log("Random string: ", randomString);
-
-    const datasetNameContainsForbiddenCharacters = window.evaluateStringAgainstSdsRequirements(
-      datasetNameInput,
-      "string-contains-forbidden-characters"
-    );
 
     if (errorArray.length > 0) {
       throw errorArray;

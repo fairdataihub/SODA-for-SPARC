@@ -80,18 +80,13 @@ const getInstructionalTextByEntityType = (entityType) => {
   );
 };
 
-const EntityDataSelectorPage = ({
-  pageName,
-  entityTypeStringSingular,
-  entityTypeStringPlural,
-  showProgress = false,
-}) => {
+const EntityDataSelectorPage = ({ pageName, entityTypeStringSingular, showProgress = false }) => {
   const activeEntity = useGlobalStore((state) => state.activeEntity);
   const entityType = useGlobalStore((state) => state.entityType); // e.g. 'high-level-folder-data-categorization'
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const datasetIncludesCode = selectedEntities.includes("code");
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
-  const datasetRenderArray = useGlobalStore((state) => state.datasetRenderArray);
+  const datasetType = useGlobalStore((state) => state.datasetType);
 
   const itemCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
   const countItemsSelected = countSelectedFilesByEntityType(entityType);
@@ -149,17 +144,44 @@ const EntityDataSelectorPage = ({
           {(() => {
             switch (entityType) {
               case "high-level-folder-data-categorization":
-                return (
-                  <>
-                    <Text mb={0}>
-                      The SDS requires data to be organized into{" "}
-                      {datasetIncludesCode ? "four" : "three"} categories: Experimental
-                      {datasetIncludesCode ? ", Code," : ","} Documentation, and Protocol. Use the
-                      interface below to classify your data files.
-                    </Text>
-                    <DropDownNote id="data-categories-list" />
-                  </>
-                );
+                if (datasetType === "experimental") {
+                  return (
+                    <>
+                      <Text mb={0}>
+                        The SDS requires data in experimental datasets to be organized into{" "}
+                        {datasetIncludesCode ? "four" : "three"} categories: <b>Experimental</b>,{" "}
+                        {datasetIncludesCode ? <b>Code</b> : ""} <b>Protocol</b>, and{" "}
+                        <b>Documentation</b>. Use the interface below to classify your data files.
+                      </Text>
+                      <Text mb={0}>
+                        To categorize your data, choose a category on the left, then select the
+                        files that belong to it on the right. Selecting a folder categorizes all
+                        files within it. If a folder contains files that belong to different
+                        categories, you can expand it and categorize individual files as needed.
+                      </Text>
+                      <DropDownNote id="data-categories-list" />
+                    </>
+                  );
+                }
+
+                if (datasetType === "computational") {
+                  return (
+                    <>
+                      <Text mb={0}>
+                        For computational datasets, all files imported on the Data Selection page
+                        need to be categorized into four groups: <b>Code</b>, <b>Primary</b>,{" "}
+                        <b>Protocol</b>, and <b>Documentation</b>.
+                      </Text>
+                      <Text mb={0}>
+                        To categorize your data, choose a category on the left, then select the
+                        files that belong to it on the right. Selecting a folder categorizes all
+                        files within it. If a folder contains files that belong to different
+                        categories, you can expand it and categorize individual files as needed.
+                      </Text>
+                      <DropDownNote id="data-categories-list" />
+                    </>
+                  );
+                }
 
               case "modalities":
                 return <Text>Select the folders and files that belong to each modality.</Text>;
