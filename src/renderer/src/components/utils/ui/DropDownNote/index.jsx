@@ -29,6 +29,15 @@ const renderDataCategoriesNote = (datasetType, datasetIncludesCode) => (
         </Text>
       </SodaPaper>
     )}
+    {datasetType === "computational" && (
+      <SodaPaper>
+        <Text fw={600}>Primary</Text>
+        <Text size="sm">
+          Data generated or processed through computational methods, such as simulation results,
+          model outputs, tabular datasets, or other primary data.
+        </Text>
+      </SodaPaper>
+    )}
     <SodaPaper>
       <Text fw={600}>Documentation</Text>
       <Text size="sm">
@@ -36,13 +45,24 @@ const renderDataCategoriesNote = (datasetType, datasetIncludesCode) => (
         users understand and reuse the dataset.
       </Text>
     </SodaPaper>
-    <SodaPaper>
-      <Text fw={600}>Protocol</Text>
-      <Text size="sm">
-        Protocols, standard operating procedures, or step-by-step instructions describing how
-        experiments or analyses were performed.
-      </Text>
-    </SodaPaper>
+    {datasetType === "experimental" && (
+      <SodaPaper>
+        <Text fw={600}>Protocol</Text>
+        <Text size="sm">
+          Protocols such as standard operating procedures or step-by-step instructions describing
+          how experiments or analyses were performed.
+        </Text>
+      </SodaPaper>
+    )}
+    {datasetType === "computational" && (
+      <SodaPaper>
+        <Text fw={600}>Protocol</Text>
+        <Text size="sm">
+          Protocols such as workflows, step-by-step instructions, or documentation describing how
+          your data was generated, processed, or analyzed.
+        </Text>
+      </SodaPaper>
+    )}
   </>
 );
 
@@ -57,7 +77,7 @@ const DropDownNote = ({ id }) => {
   const configMap = {
     "data-categories-list": {
       dropDownIcon: "info",
-      dropDownButtonText: "Learn more about the data categories",
+      dropDownButtonText: `Learn more about the data categories for ${datasetType} datasets`,
       dropDownNote: renderDataCategoriesNote(datasetType, datasetIncludesCode),
     },
     "entity-types-list": {
