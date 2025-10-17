@@ -1245,14 +1245,13 @@ const handleAddOrEditContributorHeaderUI = (boolEditingContributor) => {
   const contributorOptions = locallyStoredContributorArray.map((contributor) => {
     return `
         <option
-          value="${contributor.contributor_last_name}, ${contributor.contributor_first_name}"
-          data-first-name="${contributor.contributor_first_name ?? ""}"
-          data-last-name="${contributor.contributor_last_name ?? ""}"
-          data-orcid="${contributor.contributor_orcid_id ?? ""}"
-          data-affiliation="${contributor.contributor_affiliation ?? ""}"
-          data-roles="${contributor.contributor_role ?? ""}"
+          value='${contributor.contributor_name}'
+          data-contributor-name='${contributor.contributor_name ?? ""}'
+          data-orcid='${contributor.contributor_orcid_id ?? ""}'
+          data-affiliation='${contributor.contributor_affiliation ?? ""}'
+          data-roles='${contributor.contributor_role ?? ""}'
         >
-          ${contributor.contributor_last_name}, ${contributor.contributor_first_name}
+          ${contributor.contributor_name}
         </option>
       `;
   });
@@ -1269,8 +1268,7 @@ const handleAddOrEditContributorHeaderUI = (boolEditingContributor) => {
     >
       <option
         value=""
-        data-first-name=""
-        data-last-name=""
+        data-contributor-name=""
         data-orcid=""
         data-affiliation=""
         data-roles=""
@@ -1378,10 +1376,8 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
 
       $("#guided-stored-contributors-select").on("change", function () {
         const selectedOption = $("#guided-stored-contributors-select option:selected");
-        document.getElementById("guided-contributor-first-name").value =
-          selectedOption.data("first-name") || "";
-        document.getElementById("guided-contributor-last-name").value =
-          selectedOption.data("last-name") || "";
+        document.getElementById("guided-contributor-name").value =
+          selectedOption.data("contributor-name") || "";
         document.getElementById("guided-contributor-orcid").value =
           selectedOption.data("orcid") || "";
         document.getElementById("guided-contributor-affiliation-input").value =
