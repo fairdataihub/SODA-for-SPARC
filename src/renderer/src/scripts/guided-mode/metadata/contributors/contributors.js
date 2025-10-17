@@ -2,7 +2,7 @@ import { addOrUpdateStoredContributor } from "../../../others/contributor-storag
 import { CONTRIBUTORS_REGEX } from "./contributorsValidation";
 
 export const addContributor = (
-  contributorName,
+  contributor_name,
   contributor_orcid_id, // string: ORCID
   contributor_affiliation, // string: affiliation
   contributor_role // string: role (not array)
@@ -12,7 +12,7 @@ export const addContributor = (
     throw new Error("A contributor with the entered ORCID already exists");
   }
   const contributorObj = {
-    contributorName,
+    contributor_name,
     contributor_orcid_id,
     contributor_affiliation,
     contributor_role,
