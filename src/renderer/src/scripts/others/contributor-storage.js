@@ -9,8 +9,11 @@ export const loadStoredContributors = () => {
     const contributorFileData = window.fs.readFileSync(window.storedContributorsPath, "utf8");
     const contributors = JSON.parse(contributorFileData);
 
+    console.log("Loaded stored contributors:", contributors);
+
     // Only return contributors that have the contributor_orcid_id field
-    return contributors.filter((contributor) => contributor.contributor_orcid_id);
+    let filteredByOrcid = contributors.filter((contributor) => contributor.contributor_orcid_id);
+    return filteredByOrcid.filter((contributor) => contributor.contributor_name);
   } catch (err) {
     window.log.info("Error loading stored contributors file: " + err);
     window.log.info("Returning empty array instead");
