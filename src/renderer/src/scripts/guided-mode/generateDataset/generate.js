@@ -36,25 +36,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
   guidedSetNavLoadingState(true);
   try {
     // Gather all required dataset info from window.sodaJSONObj
-    const guidedBfAccount = window.defaultBfAccount;
     const pennsieveDatasetName = window.sodaJSONObj["generate-dataset"]["dataset-name"];
-    const pennsieveDatasetSubtitle = window.sodaJSONObj["pennsieve-dataset-subtitle"];
-    console.log("pennsieveDatasetSubtitle:", pennsieveDatasetSubtitle);
-    const guidedLicense = window.sodaJSONObj?.["digital-metadata"]?.["license"];
-    const guidedPennsieveStudyPurpose =
-      window.sodaJSONObj["dataset_metadata"]?.["dataset_description"]?.["study_information"]?.[
-        "study_purpose"
-      ] || "Not provided";
-    const guidedPennsieveDataCollection =
-      window.sodaJSONObj["dataset_metadata"]?.["dataset_description"]?.["study_information"]?.[
-        "study_data_collection"
-      ] || "Not provided";
-    const guidedPennsievePrimaryConclusion =
-      window.sodaJSONObj["dataset_metadata"]?.["dataset_description"]?.["description"]?.[
-        "study_primary_conclusion"
-      ] || "Not provided";
-    const guidedBannerImagePath =
-      window.sodaJSONObj["digital-metadata"]?.["banner-image-path"] || "";
     // Create standardized structure
     const standardizedDatasetStructure = createStandardizedDatasetStructure(
       window.datasetStructureJSONObj,
@@ -912,10 +894,8 @@ const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle)
   const datasetSubtitleUploadText = document.getElementById("guided-dataset-subtitle-upload-text");
   datasetSubtitleUploadText.innerHTML = "Adding dataset subtitle...";
   guidedUploadStatusIcon("guided-dataset-subtitle-upload-status", "loading");
-  console.log("datasetSubtitle:", datasetSubtitle);
 
   const previousUploadSubtitle = window.sodaJSONObj["previously-uploaded-data"]["subtitle"];
-  console.log("previousUploadSubtitle:", previousUploadSubtitle);
 
   if (previousUploadSubtitle === datasetSubtitle) {
     datasetSubtitleUploadText.innerHTML = "Dataset subtitle already added on Pennsieve";

@@ -270,7 +270,6 @@ window.openPage = async (targetPageID) => {
           delete window.datasetStructureJSONObj?.["files"]?.["manifest.xlsx"];
 
           const datasetType = window.sodaJSONObj["dataset-type"];
-          console.log("datasetType:", datasetType);
           setDatasetType(datasetType);
 
           const bucketTypes = [];
@@ -278,7 +277,6 @@ window.openPage = async (targetPageID) => {
           if (datasetType === "experimental") {
             bucketTypes.push(["Experimental"]);
           } else {
-            console.log("Removing Experimental from entity list");
             removeEntityFromEntityList("high-level-folder-data-categorization", "Experimental");
           }
           if (selectedEntities.includes("code")) {
