@@ -254,6 +254,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     const relatedResourceInformation = window.sodaJSONObj["related_resources"] || [];
 
     const datasetType = window.sodaJSONObj["dataset-type"];
+    const contributorInformation = window.sodaJSONObj["dataset_contributors"] || [];
 
     // Populate dataset_metadata > dataset_description
     window.sodaJSONObj["dataset_metadata"]["dataset_description"] = {
