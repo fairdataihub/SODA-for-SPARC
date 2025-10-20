@@ -40,89 +40,125 @@ export const savePageCurationPreparation = async (pageBeingLeftID) => {
   }
 
   if (pageBeingLeftID === "guided-name-subtitle-tab") {
-    console.log("savePageCurationPreparation called for guided-name-subtitle-tab");
+    console.log("=== savePageCurationPreparation called for guided-name-subtitle-tab ===");
+
+    // 1. Retrieve and log user inputs
     const datasetNameInput = useGlobalStore.getState().guidedDatasetName.trim();
     const datasetSubtitleInput = useGlobalStore.getState().guidedDatasetSubtitle.trim();
-    //Throw error if no dataset name or subtitle were added
+    console.log("Step 1: Retrieved user inputs:", { datasetNameInput, datasetSubtitleInput });
+
+    // 2. Validate required inputs
     if (!datasetNameInput) {
-      errorArray.push({
-        type: "notyf",
-        message: "Please enter a dataset name.",
-      });
+      console.warn("Step 2: Validation failed — missing dataset name.");
+      errorArray.push({ type: "notyf", message: "Please enter a dataset name." });
     }
     if (!datasetSubtitleInput) {
-      errorArray.push({
-        type: "notyf",
-        message: "Please enter a dataset subtitle.",
-      });
+      console.warn("Step 2: Validation failed — missing dataset subtitle.");
+      errorArray.push({ type: "notyf", message: "Please enter a dataset subtitle." });
     }
+
     if (errorArray.length > 0) {
+      console.error("Step 2: Validation errors detected, throwing errorArray:", errorArray);
       throw errorArray;
     }
 
-    // At this point, we are past the validation checks so we're safe to update the JSON object
+    // 4. Update subtitle
     window.sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
+    console.log("Step 4: Updated subtitle in sodaJSONObj:", datasetSubtitleInput);
 
+    // 5. Sanitize dataset name
     const sanitizedDatasetName = window.sanitizeGuidedModeProgressFileNameString(datasetNameInput);
-    // Check if save-file-name exists (indicating if this is the first time saving the dataset)
-    const saveFileName = window.sodaJSONObj?.["save-file-name"];
+    console.log("Step 5: Sanitized dataset name:", sanitizedDatasetName);
 
-    // Create a random string used to append to the save file name to ensure uniqueness
-    // (for new save files or if the dataset name has changed)
+    // 6. Retrieve previous save info for comparison
+    const prevSaveFileName = window.sodaJSONObj?.["save-file-name"];
+    console.log("Step 6: Previous save file name:", prevSaveFileName);
+    const prevRandomSuffix = window.sodaJSONObj?.["save-file-random-hash-suffix"];
+    const prevDatasetName = window.sodaJSONObj?.["digital-metadata"]?.["name"];
+
     const randomString = Math.random().toString(16).slice(2, 10);
+    const newSaveFileName = `${sanitizedDatasetName}-${
+      prevRandomSuffix ? prevRandomSuffix : randomString
+    }`;
 
-    // If the saveFileName does not exist, generate it
-    if (!saveFileName) {
+    // Generate the new save file name
+    window.sodaJSONObj["save-file-name"] = newSaveFileName;
+    if (!prevRandomSuffix) {
       window.sodaJSONObj["save-file-random-hash-suffix"] = randomString;
-      window.sodaJSONObj["save-file-name"] = `${sanitizedDatasetName}-${randomString}`;
+      console.log("Step 6: Generated new random suffix:", randomString);
     }
 
-    const currentDatasetName = window.sodaJSONObj?.["digital-metadata"]?.["name"];
+    // 8. Log current dataset name
+    console.log("Step 8: Current dataset name from metadata:", prevDatasetName);
 
-    if (!currentDatasetName) {
-      // Set the dataset name for the first time
-      window.sodaJSONObj["digital-metadata"]["name"] = datasetNameInput;
-    } else if (datasetNameInput !== currentDatasetName) {
-      console.log(
-        "Dataset name has changed, updating guided progress file and banner image path if needed"
-      );
-      let previousSaveFileName;
-      if (window.sodaJSONObj["save-file-name"]) {
-        previousSaveFileName = window.sodaJSONObj["save-file-name"];
+    // 9. Rename progress file and banner folder if dataset name changed
+    if ((prevDatasetName && prevDatasetName !== datasetNameInput) || !prevSaveFileName) {
+      console.log("Step 9: Dataset name change detected:", prevDatasetName, "→", datasetNameInput);
+
+      const previousSaveFileName = prevSaveFileName || prevDatasetName;
+      console.log("Step 9: Previous save file name determined as:", previousSaveFileName);
+
+      const oldProgressFilePath = `${guidedProgressFilePath}/${previousSaveFileName}.json`;
+      const newProgressFilePath = `${guidedProgressFilePath}/${window.sodaJSONObj["save-file-name"]}.json`;
+
+      if (oldProgressFilePath !== newProgressFilePath) {
+        console.log(
+          "Step 9: Renaming progress file required from:",
+          oldProgressFilePath,
+          "to:",
+          newProgressFilePath
+        );
+        try {
+          window.fs.renameSync(oldProgressFilePath, newProgressFilePath);
+          console.log(
+            `Step 9: Successfully renamed guided progress file from ${oldProgressFilePath} → ${newProgressFilePath}`
+          );
+        } catch (error) {
+          console.error(
+            `Step 9: Error renaming guided progress file from ${oldProgressFilePath} → ${newProgressFilePath}:`,
+            error
+          );
+        }
+
+        const bannerImagePathToUpdate = window.sodaJSONObj["digital-metadata"]["banner-image-path"];
+        if (bannerImagePathToUpdate) {
+          console.log(
+            "Step 9: Banner image path found, preparing to rename:",
+            bannerImagePathToUpdate
+          );
+          console.log("previousSaveFileName:", previousSaveFileName);
+          console.log("newSaveFileName:", newSaveFileName);
+          const newBannerImagePath = bannerImagePathToUpdate.replace(
+            previousSaveFileName,
+            newSaveFileName
+          );
+
+          try {
+            console.log("Step 9: Renaming banner image folder:", {
+              old: bannerImagePathToUpdate,
+              new: newBannerImagePath,
+            });
+            window.fs.renameSync(bannerImagePathToUpdate, newBannerImagePath);
+            window.sodaJSONObj["digital-metadata"]["banner-image-path"] = newBannerImagePath;
+            console.log("Step 9: Updated banner image path in sodaJSONObj:", newBannerImagePath);
+          } catch (error) {
+            console.error(
+              `Step 9: Error renaming banner image folder from ${bannerImagePathToUpdate} → ${newBannerImagePath}:`,
+              error
+            );
+          }
+        } else {
+          console.log("Step 9: No banner image path to update.");
+        }
       } else {
-        previousSaveFileName = window.sodaJSONObj["digital-metadata"]["name"];
+        console.log("Step 9: Progress file path unchanged, no renaming needed.");
       }
-
-      // If the dataset name has changed since last save, update it
-      const previousDatasetName = window.sodaJSONObj["digital-metadata"]["name"];
-
-      //update old progress file with new dataset name
-      const oldProgressFilePath = `${guidedProgressFilePath}/${window.sodaJSONObj["save-file-name"]}.json`;
-      const newProgressFilePath = `${guidedProgressFilePath}/${sanitizedDatasetName}-${window.sodaJSONObj["save-file-random-hash-suffix"]}.json`;
-      try {
-        window.fs.renameSync(oldProgressFilePath, newProgressFilePath);
-      } catch (error) {
-        console.error(
-          `Error renaming guided progress file from ${oldProgressFilePath} to ${newProgressFilePath}:`,
-          error
-        );
-      }
-      console.log(
-        `Renamed guided progress file from ${oldProgressFilePath} to ${newProgressFilePath}`
-      );
-
-      const bannerImagePathToUpdate = window.sodaJSONObj["digital-metadata"]["banner-image-path"];
-      if (bannerImagePathToUpdate) {
-        const newBannerImagePath = bannerImagePathToUpdate.replace(
-          previousDatasetName,
-          newDatasetName
-        );
-        //Rename the old banner image folder to the new dataset name
-        window.fs.renameSync(bannerImagePathToUpdate, newBannerImagePath);
-        //change the banner image path in the JSON obj
-        window.sodaJSONObj["digital-metadata"]["banner-image-path"] = newBannerImagePath;
-      }
-      window.sodaJSONObj["digital-metadata"]["name"] = newDatasetName;
     }
+
+    // 12. Finalize metadata updates
+    window.sodaJSONObj["digital-metadata"]["name"] = datasetNameInput;
+    console.log("Step 12: Finalized dataset name in sodaJSONObj:", datasetNameInput);
+
+    console.log("=== savePageCurationPreparation completed for guided-name-subtitle-tab ===");
   }
 };
