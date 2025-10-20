@@ -2,7 +2,7 @@ import { addOrUpdateStoredContributor } from "../../../others/contributor-storag
 import { CONTRIBUTORS_REGEX } from "./contributorsValidation";
 
 export const addContributor = (
-  contributorName,
+  contributor_name,
   contributor_orcid_id, // string: ORCID
   contributor_affiliation, // string: affiliation
   contributor_role // string: role (not array)
@@ -12,7 +12,7 @@ export const addContributor = (
     throw new Error("A contributor with the entered ORCID already exists");
   }
   const contributorObj = {
-    contributorName,
+    contributor_name,
     contributor_orcid_id,
     contributor_affiliation,
     contributor_role,
@@ -54,7 +54,7 @@ export const editContributorByOrcid = (
   // Update the contributor's information
   const updatedContributorObj = {
     contributor_orcid_id: newContributorOrcid,
-    contributorName: contributorName,
+    contributor_name: contributorName,
     contributor_affiliation: contributor_affiliation,
     contributor_role: contributor_role,
   };
@@ -71,7 +71,7 @@ const handleContributorNormalization = (contributors) => {
   // Normalize the contributor names to "Last, First MI" format; in the past the name fields were separated
   return contributors.map((contributor) => {
     if (contributor["contributor_last_name"] && contributor["contributor_first_name"]) {
-      contributor["contributorName"] =
+      contributor["contributor_name"] =
         `${contributor["contributor_last_name"]}, ${contributor["contributor_first_name"]}`.trim();
       delete contributor["contributor_last_name"];
       delete contributor["contributor_first_name"];
@@ -113,7 +113,7 @@ export const getContributorByOrcid = (orcid) => {
 };
 
 const generateContributorTableRow = (contributorObj, contributorIndex) => {
-  const contributorFullName = contributorObj["contributorName"];
+  const contributorFullName = contributorObj["contributor_name"];
   const contributorOrcid = contributorObj["contributor_orcid_id"];
   const contributorRoleString = contributorObj["contributor_role"];
 
