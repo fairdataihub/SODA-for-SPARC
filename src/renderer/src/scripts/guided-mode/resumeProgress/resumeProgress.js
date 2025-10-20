@@ -21,10 +21,10 @@ while (!window.baseHtmlLoaded) {
 
 /**
  *
- * @param {string} datasetNameToResume - The name of the dataset associated with the save progress file the user wants to resume.
+ * @param {string} progressFileName - The name of the dataset associated with the save progress file the user wants to resume.
  * @description Read the given progress file and resume the Prepare Dataset Step-by-Step workflow where the user last left off.
  */
-window.guidedResumeProgress = async (datasetNameToResume) => {
+window.guidedResumeProgress = async (progressFileName) => {
   const loadingSwal = Swal.fire({
     title: "Resuming where you last left off",
     html: `
@@ -53,7 +53,16 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
   try {
-    const datasetResumeJsonObj = await getProgressFileData(datasetNameToResume);
+    console.log("datasetNameToResume:", progressFileName);
+    console.log("Will look for file:", progressFileName + ".json");
+
+    // Check what files actually exist in the directory
+    const homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
+    const guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
+    const existingFiles = window.fs.readdirSync(guidedProgressFilePath);
+    console.log("Files in Guided-Progress directory:", existingFiles);
+
+    const datasetResumeJsonObj = await getProgressFileData(progressFileName);
     // Datasets successfully uploaded will have the "dataset-successfully-uploaded-to-pennsieve" key
     const datasetHasAlreadyBeenSuccessfullyUploaded =
       datasetResumeJsonObj["dataset-successfully-uploaded-to-pennsieve"];

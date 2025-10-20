@@ -141,7 +141,14 @@ const generateProgressCardElement = (progressFileJSONObj) => {
         style="height: 80px; width: 80px"
       />
     `;
-  const progressFileName = progressFileJSONObj["digital-metadata"]["name"] || "";
+  const datasetName = progressFileJSONObj["digital-metadata"]["name"];
+  let progressFileName = null;
+  if (progressFileJSONObj["save-file-name"]) {
+    progressFileName = progressFileJSONObj["save-file-name"];
+  } else {
+    progressFileName = datasetName;
+  }
+
   const progressFileSubtitle =
     progressFileJSONObj["digital-metadata"]["subtitle"] || "No designated subtitle";
   const progressFileLastModified = new Date(progressFileJSONObj["last-modified"]).toLocaleString(
@@ -242,11 +249,11 @@ const generateProgressCardElement = (progressFileJSONObj) => {
           <div class="dataset-card-row">
             <h1
               class="dataset-card-title-text progress-file-name progress-card-popover"
-              data-tippy-content="Dataset name: ${progressFileName}"
+              data-tippy-content="Dataset name: ${datasetName}"
               rel="popover"
               placement="bottom"
               data-trigger="hover"
-            >${progressFileName}</h1>
+            >${datasetName}</h1>
           </div>
           <div class="dataset-card-row">
             <h1 
@@ -292,7 +299,7 @@ const generateProgressCardElement = (progressFileJSONObj) => {
             workspaceUserNeedsToSwitchTo,
             lastVersionOfSodaUsed
           )}
-          <h2 class="dataset-card-button-delete" onclick="window.deleteProgressCard(this)">
+          <h2 class="dataset-card-button-delete" onclick="window.deleteProgressCard(this, '${datasetName}', '${progressFileName}')">
             <i
               class="fas fa-trash mr-sm-1"
             ></i>
