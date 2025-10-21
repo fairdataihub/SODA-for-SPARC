@@ -148,9 +148,10 @@ const EntityDataSelectorPage = ({ pageName, entityTypeStringSingular, showProgre
                   return (
                     <>
                       <Text mb={0}>
-                        The SDS requires data in experimental datasets to be organized into{" "}
+                        The SDS requires data in experimental datasets
+                        {datasetIncludesCode ? " with code " : ""}to be organized into{" "}
                         {datasetIncludesCode ? "four" : "three"} categories: <b>Experimental</b>,{" "}
-                        {datasetIncludesCode ? <b>Code</b> : ""} <b>Protocol</b>, and{" "}
+                        {datasetIncludesCode ? <b>Code,</b> : ""} <b>Protocol</b>, and{" "}
                         <b>Documentation</b>. Use the interface below to classify your data files.
                       </Text>
                       <Text mb={0}>

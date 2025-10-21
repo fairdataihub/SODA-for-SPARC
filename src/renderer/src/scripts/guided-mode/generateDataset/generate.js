@@ -700,11 +700,11 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
   guidedResetLocalGenerationUI();
 
   try {
-    // Get the dataset name based on the sodaJSONObj
-    const guidedDatasetName = window.sanitizeStringForSaveFileSystemSave(
+    // Sanitize the dataset name to ensure it's valid for saving to the filesystem
+    const sanitizedDatasetName = window.sanitizeStringForSaveFileSystemSave(
       guidedGetDatasetName(window.sodaJSONObj)
     );
-    console.log("Guided Dataset Name:", guidedDatasetName);
+    console.log("Guided Dataset Name:", sanitizedDatasetName);
 
     // Create standardized structure
     const standardizedDatasetStructure = createStandardizedDatasetStructure(
@@ -743,7 +743,7 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
     // Copy and prepare SODA object
     const sodaJSONObjCopy = JSON.parse(JSON.stringify(window.sodaJSONObj));
     sodaJSONObjCopy["generate-dataset"] = {
-      "dataset-name": guidedDatasetName,
+      "dataset-name": sanitizedDatasetName,
       destination: "local",
       "generate-option": "new",
       "if-existing": "new",
