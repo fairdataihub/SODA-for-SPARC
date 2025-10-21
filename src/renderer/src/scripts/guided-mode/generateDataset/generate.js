@@ -55,10 +55,16 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
           window.sodaJSONObj["generate-dataset"]["dataset-name"],
           window.sodaJSONObj["pennsieve-dataset-subtitle"],
           window.sodaJSONObj?.["digital-metadata"]?.["banner-image-path"],
-          window.sodaJSONObj["generate-dataset"]["license"],
-          window.sodaJSONObj["generate-dataset"]["study-purpose"],
-          window.sodaJSONObj["generate-dataset"]["data-collection"],
-          window.sodaJSONObj["generate-dataset"]["primary-conclusion"]
+          window.sodaJSONObj?.["digital-metadata"]?.["license"],
+          window.sodaJSONObj?.["dataset_metadata"]?.["dataset_description"]?.[
+            "study_information"
+          ]?.["study_purpose"],
+          window.sodaJSONObj?.["dataset_metadata"]?.["dataset_description"]?.[
+            "study_information"
+          ]?.["study_data_collection"],
+          window.sodaJSONObj?.["dataset_metadata"]?.["dataset_description"]?.[
+            "study_information"
+          ]?.["study_primary_conclusion"]
         );
       }
       window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
@@ -164,10 +170,16 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         window.sodaJSONObj["generate-dataset"]["dataset-name"],
         window.sodaJSONObj["pennsieve-dataset-subtitle"],
         window.sodaJSONObj?.["digital-metadata"]?.["banner-image-path"],
-        window.sodaJSONObj["generate-dataset"]["license"],
-        window.sodaJSONObj["generate-dataset"]["study-purpose"],
-        window.sodaJSONObj["generate-dataset"]["data-collection"],
-        window.sodaJSONObj["generate-dataset"]["primary-conclusion"]
+        window.sodaJSONObj?.["digital-metadata"]?.["license"],
+        window.sodaJSONObj?.["dataset_metadata"]?.["dataset_description"]?.["study_information"]?.[
+          "study_purpose"
+        ],
+        window.sodaJSONObj?.["dataset_metadata"]?.["dataset_description"]?.["study_information"]?.[
+          "study_data_collection"
+        ],
+        window.sodaJSONObj?.["dataset_metadata"]?.["dataset_description"]?.["study_information"]?.[
+          "study_primary_conclusion"
+        ]
       );
     }
 
