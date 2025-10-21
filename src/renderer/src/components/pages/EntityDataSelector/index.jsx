@@ -65,18 +65,22 @@ const renderEntityList = (entityType, activeEntity, datasetEntityObj) => {
   });
 };
 
-const getInstructionalTextByEntityType = (entityType) => {
+const getInstructionalTextByEntityType = (entityType, datasetType) => {
   const instructionalText = {
-    Code: "Select the files that contain scripts, computational models, analysis pipelines, or other software used for data processing or analysis below.",
-    "Experimental data":
-      "Select the files containing data collected from experiments or analysis below.",
-    Other:
-      "Select the files that do not contain experimental data or code, such as protocols, notes, or supplementary materials below.",
+    Code: "Select the files that contain scripts, computational models, analysis pipelines, or other software used for data processing or analysis.",
+    Primary:
+      "Select the files that support your computational data, such as input or output files, tabular data, or other non-code data files.",
+    Experimental: "Select the files that contain data collected from experiments or analyses.",
+    Protocol:
+      datasetType === "computational"
+        ? "Select the files that describe the computational workflows, analysis procedures, or processing steps used in your data."
+        : "Select the files that document the experimental procedures, equipment setups, or workflows used in your study.",
+    Documentation: "Select the files that are supporting documents for your data.",
   };
 
   return (
     instructionalText[entityType] ||
-    `Select the folders and files that contain data pertaining to the entity ${entityType}.`
+    `Select the files that contain data pertaining to the entity ${entityType}.`
   );
 };
 
@@ -222,7 +226,10 @@ const EntityDataSelectorPage = ({ pageName, entityTypeStringSingular, showProgre
             {activeEntity ? (
               <Paper shadow="sm" radius="md">
                 <DatasetTreeViewRenderer
-                  itemSelectInstructions={getInstructionalTextByEntityType(activeEntity)}
+                  itemSelectInstructions={getInstructionalTextByEntityType(
+                    activeEntity,
+                    datasetType
+                  )}
                   mutuallyExclusiveSelection={true}
                   folderActions={{
                     "on-folder-click": (relativePath, folderIsSelected, mutuallyExclusive) => {

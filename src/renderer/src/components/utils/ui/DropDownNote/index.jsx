@@ -34,7 +34,7 @@ const renderDataCategoriesNote = (datasetType, datasetIncludesCode) => (
         <Text fw={600}>Primary</Text>
         <Text size="sm">
           Data generated or processed through computational methods, such as simulation results,
-          model outputs, tabular datasets, or other primary data.
+          model outputs, or tabular data.
         </Text>
       </SodaPaper>
     )}
