@@ -3188,7 +3188,7 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, testType) => {
   return tests[testType];
 };
 
-window.sanitizeGuidedModeProgressFileNameString = (stringToSanitize) => {
+window.sanitizeStringForSaveFileSystemSave = (stringToSanitize) => {
   return stringToSanitize.replace(forbiddenCharactersRegex, "-");
 };
 

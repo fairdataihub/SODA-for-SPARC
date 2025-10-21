@@ -78,12 +78,27 @@ const ResourceMetadataForm = () => {
   return (
     <Stack spacing="md">
       <TextInput
+        label="RRID (Research Resource Identifier)"
+        description={
+          <>
+            Enter the RRID for this resource. To find or verify RRIDs, visit{" "}
+            <a href="https://rrid.site" target="_blank" rel="noopener noreferrer">
+              rrid.site
+            </a>
+            .
+          </>
+        }
+        placeholder="e.g., RRID:AB_123456"
+        value={rrid}
+        onChange={(event) => setRrid(event.currentTarget.value)}
+        required
+      />
+      <TextInput
         label="Resource Name"
         description="Enter the name of the resource"
         placeholder="Resource name (e.g., GraphPad Prism, Abcam Antibody)"
         value={name}
         onChange={(event) => setName(event.currentTarget.value)}
-        required
       />
       <Select
         label="Resource Type"
@@ -91,13 +106,6 @@ const ResourceMetadataForm = () => {
         data={resourceTypes}
         value={type}
         onChange={(value) => setType(value)}
-      />
-      <TextInput
-        label="RRID (Research Resource Identifier)"
-        description="Enter the standardized RRID if available"
-        placeholder="e.g., RRID:AB_123456"
-        value={rrid}
-        onChange={(event) => setRrid(event.currentTarget.value)}
       />
 
       <TextInput
@@ -138,6 +146,7 @@ const ResourceMetadataForm = () => {
 
 const ResourcesManagementPage = () => {
   const isResourceFormVisible = useGlobalStore((state) => state.isResourceFormVisible);
+  const rrid = useGlobalStore((state) => state.rrid);
   const name = useGlobalStore((state) => state.name);
   const url = useGlobalStore((state) => state.url);
   const resourceList = useGlobalStore((state) => state.resourceList);
@@ -145,9 +154,9 @@ const ResourcesManagementPage = () => {
   const originalResourceName = useGlobalStore((state) => state.originalResourceName);
 
   const validateResourceForm = () => {
-    const resourceNameIsValid = name && name.trim().length > 0;
+    const rridIsValid = rrid && rrid.trim().length > 0;
     const urlIsValid = !url || matchesHttpPattern(url);
-    return resourceNameIsValid && urlIsValid;
+    return rridIsValid && urlIsValid;
   };
 
   // Validation for add/update button

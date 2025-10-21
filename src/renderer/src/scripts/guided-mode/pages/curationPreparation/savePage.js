@@ -79,7 +79,7 @@ export const savePageCurationPreparation = async (pageBeingLeftID) => {
     window.sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
 
     // 4. Sanitize dataset name
-    const sanitizedDatasetName = window.sanitizeGuidedModeProgressFileNameString(datasetNameInput);
+    const sanitizedDatasetName = window.sanitizeStringForSaveFileSystemSave(datasetNameInput);
 
     // 5. Retrieve previous save info
     const prevSaveFileName = window.sodaJSONObj?.["save-file-name"];
