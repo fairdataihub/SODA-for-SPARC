@@ -55,13 +55,6 @@ window.guidedResumeProgress = async (progressFileName) => {
   try {
     console.log("datasetNameToResume:", progressFileName);
     console.log("Will look for file:", progressFileName + ".json");
-
-    // Check what files actually exist in the directory
-    const homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
-    const guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
-    const existingFiles = window.fs.readdirSync(guidedProgressFilePath);
-    console.log("Files in Guided-Progress directory:", existingFiles);
-
     const datasetResumeJsonObj = await getProgressFileData(progressFileName);
     // Datasets successfully uploaded will have the "dataset-successfully-uploaded-to-pennsieve" key
     const datasetHasAlreadyBeenSuccessfullyUploaded =

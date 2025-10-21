@@ -112,8 +112,15 @@ export const savePageCurationPreparation = async (pageBeingLeftID) => {
     if ((prevDatasetName && prevDatasetName !== datasetNameInput) || !prevSaveFileName) {
       // Check to see an existing dataset name does not already exist with this name
       const existingProgressFileNames = getGuidedProgressFileNames();
-      console.log("Existing guided progress dataset names:", existingProgressFileNames);
-      if (existingProgressFileNames.includes(datasetNameInput)) {
+      // Filter out dataset with the same name as the previous one
+      const filteredExistingProgressFileNames = existingProgressFileNames.filter(
+        (name) => name !== prevDatasetName
+      );
+      console.log(
+        "Filtered existing guided progress dataset names:",
+        filteredExistingProgressFileNames
+      );
+      if (filteredExistingProgressFileNames.includes(datasetNameInput)) {
         errorArray.push({
           type: "notyf",
           message: "A dataset with this name already exists. Please choose a different name.",
