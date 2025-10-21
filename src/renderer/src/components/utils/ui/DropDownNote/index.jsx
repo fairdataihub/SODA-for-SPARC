@@ -38,13 +38,6 @@ const renderDataCategoriesNote = (datasetType, datasetIncludesCode) => (
         </Text>
       </SodaPaper>
     )}
-    <SodaPaper>
-      <Text fw={600}>Documentation</Text>
-      <Text size="sm">
-        Supporting documents such as README files, data dictionaries, or other materials that help
-        users understand and reuse the dataset.
-      </Text>
-    </SodaPaper>
     {datasetType === "experimental" && (
       <SodaPaper>
         <Text fw={600}>Protocol</Text>
@@ -63,6 +56,13 @@ const renderDataCategoriesNote = (datasetType, datasetIncludesCode) => (
         </Text>
       </SodaPaper>
     )}
+    <SodaPaper>
+      <Text fw={600}>Documentation</Text>
+      <Text size="sm">
+        Supporting documents such as README files, data dictionaries, or other materials that help
+        users understand and reuse the dataset.
+      </Text>
+    </SodaPaper>
   </>
 );
 

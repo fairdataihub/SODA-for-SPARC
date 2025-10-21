@@ -664,12 +664,10 @@ document.querySelectorAll(".guided-curation-team-task-button").forEach((button) 
   });
 });
 
-window.deleteProgressCard = async (progressCardDeleteButton) => {
+window.deleteProgressCard = async (progressCardDeleteButton, datasetName, progressFileName) => {
   const progressCard = progressCardDeleteButton.parentElement.parentElement;
-  const progressCardNameToDelete = progressCard.querySelector(".progress-file-name").textContent;
-
   const result = await Swal.fire({
-    title: `Are you sure you would like to delete SODA progress made on the dataset: ${progressCardNameToDelete}?`,
+    title: `Are you sure you would like to delete SODA progress made on the dataset: ${datasetName}?`,
     text: "Your progress file will be deleted permanently, and all existing progress will be lost.",
     icon: "warning",
     heightAuto: false,
@@ -682,7 +680,7 @@ window.deleteProgressCard = async (progressCardDeleteButton) => {
   });
   if (result.isConfirmed) {
     //delete the progress file
-    deleteProgresFile(progressCardNameToDelete);
+    deleteProgresFile(progressFileName);
 
     //remove the progress card from the DOM
     progressCard.remove();
