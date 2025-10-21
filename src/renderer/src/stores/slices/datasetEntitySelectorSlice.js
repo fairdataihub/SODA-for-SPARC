@@ -317,7 +317,20 @@ export const checkIfRelativePathBelongsToEntity = (entityId, relativePath, entit
   // Use provided entityType or default to "entity-to-file-mapping"
   const typeToCheck = entityType || "entity-to-file-mapping";
 
-  return Boolean(datasetEntityObj?.[typeToCheck]?.[entityId]?.[relativePath]);
+  const result = Boolean(datasetEntityObj?.[typeToCheck]?.[entityId]?.[relativePath]);
+
+  // Add logging to debug file selection issues
+  console.log("checkIfRelativePathBelongsToEntity:", {
+    entityId,
+    relativePath,
+    entityType,
+    typeToCheck,
+    result,
+    entityData: datasetEntityObj?.[typeToCheck]?.[entityId],
+    allEntityTypes: Object.keys(datasetEntityObj || {}),
+  });
+
+  return result;
 };
 
 /**
