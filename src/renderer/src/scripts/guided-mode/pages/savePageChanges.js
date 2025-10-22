@@ -33,7 +33,6 @@ if (!window.fs.existsSync(guidedProgressFilePath)) {
  *
  */
 export const guidedSaveProgress = async () => {
-  console.log("guidedSaveProgress called");
   const guidedProgressFileName = window.sodaJSONObj?.["save-file-name"];
   // If there is no guidedProgressFileName, return (nothing to save)
   if (!window.sodaJSONObj?.["save-file-name"]) {

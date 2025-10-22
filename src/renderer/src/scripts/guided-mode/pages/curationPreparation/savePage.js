@@ -20,7 +20,6 @@ export const getGuidedProgressFileNames = () => {
       const progressData = JSON.parse(fileContent);
       const datasetName = progressData?.["digital-metadata"]?.["name"];
       if (datasetName) {
-        console.log("Found dataset name in progress file:", datasetName);
         datasetNames.push(datasetName);
       }
     } catch (error) {
@@ -87,7 +86,6 @@ export const savePageCurationPreparation = async (pageBeingLeftID) => {
     const prevDatasetName = window.sodaJSONObj?.["digital-metadata"]?.["name"];
     if (!prevDatasetName) {
       const existingProgressFileNames = getGuidedProgressFileNames();
-      console.log("Existing guided progress dataset names:", existingProgressFileNames);
       if (existingProgressFileNames.includes(datasetNameInput)) {
         errorArray.push({
           type: "notyf",
@@ -116,10 +114,7 @@ export const savePageCurationPreparation = async (pageBeingLeftID) => {
       const filteredExistingProgressFileNames = existingProgressFileNames.filter(
         (name) => name !== prevDatasetName
       );
-      console.log(
-        "Filtered existing guided progress dataset names:",
-        filteredExistingProgressFileNames
-      );
+
       if (filteredExistingProgressFileNames.includes(datasetNameInput)) {
         errorArray.push({
           type: "notyf",
