@@ -175,16 +175,6 @@ const FileItem = ({
   const contextMenuRelativePath = useGlobalStore((state) => state.contextMenuRelativePath);
   const contextMenuIsOpened = useGlobalStore((state) => state.contextMenuIsOpened);
 
-  // Add logging to debug file selection issues
-  console.log("FileItem Debug:", {
-    fileName,
-    relativePath,
-    fileIsSelected,
-    indent,
-    entitiesAssociatedWithFile,
-    isRootLevel: indent === 0,
-  });
-
   const handleFileContextMenuOpen = (e) => {
     e.preventDefault();
     e.stopPropagation();
