@@ -789,7 +789,7 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
     // Save dataset path
     window.sodaJSONObj["path-to-local-dataset-copy"] = window.path.join(
       filePath,
-      guidedDatasetName
+      sanitizedDatasetName
     );
 
     // Final UI update
