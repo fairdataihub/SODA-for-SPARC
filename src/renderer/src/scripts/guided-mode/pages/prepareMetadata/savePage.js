@@ -265,6 +265,16 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       window.sodaJSONObj["dataset_metadata"]?.["submission"]?.["award_number"] || "";
 
     const relatedResourceInformation = window.sodaJSONObj["related_resources"] || [];
+    const datasetAdditionalLinks = (window.sodaJSONObj["dataset_additional_links"] || []).map(
+      (link) => ({
+        identifier: link.link,
+        identifier_description: link.description,
+        identifier_type: link.type,
+        relation_type: link.relation,
+      })
+    );
+    // Combine protocols and additional links into related_resource_information
+    relatedResourceInformation.push(...datasetAdditionalLinks);
 
     const datasetType = window.sodaJSONObj["dataset-type"];
     const contributorInformation = window.sodaJSONObj["dataset_contributors"] || [];
