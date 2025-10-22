@@ -3174,6 +3174,7 @@ const forbiddenFiles = new Set([".DS_Store", "Thumbs.db"]);
 const forbiddenFilesRegex = /^(CON|PRN|AUX|NUL|(COM|LPT)[0-9])$/;
 const forbiddenCharacters = /[@#$%^&*()+=\/\\|"'~;:<>{}\[\]?]/;
 const forbiddenCharactersRegex = /[@#$%^&*()+=\/\\|"'~;:<>{}\[\]?]/g;
+const forbiddenPennsieveDatasetNameCharacters = /[\/:*?'<>.,]/;
 
 window.evaluateStringAgainstSdsRequirements = (stringToTest, testType) => {
   const tests = {
@@ -3183,6 +3184,8 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, testType) => {
     "is-hidden-file": stringToTest.startsWith("."),
     "is-forbidden-file": forbiddenFiles.has(stringToTest) || forbiddenFilesRegex.test(stringToTest),
     "string-contains-forbidden-characters": forbiddenCharacters.test(stringToTest),
+    "string-contains-forbidden-pennsieve-dataset-name-characters":
+      forbiddenPennsieveDatasetNameCharacters.test(stringToTest),
   };
 
   return tests[testType];
