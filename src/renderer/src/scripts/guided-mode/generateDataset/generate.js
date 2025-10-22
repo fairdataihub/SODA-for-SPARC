@@ -705,7 +705,6 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
     const sanitizedDatasetName = window.sanitizeStringForSaveFileSystemSave(
       guidedGetDatasetName(window.sodaJSONObj)
     );
-    console.log("Guided Dataset Name:", sanitizedDatasetName);
 
     // Create standardized structure
     const standardizedDatasetStructure = createStandardizedDatasetStructure(

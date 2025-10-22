@@ -33,7 +33,6 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
   }
   if (pageBeingLeftID === "guided-resources-entity-addition-tab") {
     const resourceList = useGlobalStore.getState()["resourceList"];
-    console.log("Saving resources:", resourceList);
     if (!resourceList || resourceList.length === 0) {
       // Delete the resources metadata if no resources are added
       if (window.sodaJSONObj["dataset_metadata"]?.["resources"]) {

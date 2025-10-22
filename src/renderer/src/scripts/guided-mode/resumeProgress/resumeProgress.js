@@ -53,8 +53,6 @@ window.guidedResumeProgress = async (progressFileName) => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
   try {
-    console.log("datasetNameToResume:", progressFileName);
-    console.log("Will look for file:", progressFileName + ".json");
     const datasetResumeJsonObj = await getProgressFileData(progressFileName);
     // Datasets successfully uploaded will have the "dataset-successfully-uploaded-to-pennsieve" key
     const datasetHasAlreadyBeenSuccessfullyUploaded =

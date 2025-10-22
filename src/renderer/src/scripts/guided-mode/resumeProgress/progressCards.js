@@ -148,7 +148,6 @@ const generateProgressCardElement = (progressFileJSONObj) => {
   } else {
     progressFileName = datasetName;
   }
-  console.log("Progress file name determined as:", progressFileName);
 
   const progressFileSubtitle =
     progressFileJSONObj["digital-metadata"]["subtitle"] || "No designated subtitle";
