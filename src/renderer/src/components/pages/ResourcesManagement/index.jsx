@@ -39,6 +39,7 @@ import {
   setVendor,
   setVersion,
   setIdInProtocol,
+  setAdditionalMetadata,
   addResource,
   updateResource,
   deleteResource,
@@ -74,6 +75,7 @@ const ResourceMetadataForm = () => {
   const vendor = useGlobalStore((state) => state.vendor);
   const version = useGlobalStore((state) => state.version);
   const id_in_protocol = useGlobalStore((state) => state.id_in_protocol);
+  const additional_metadata = useGlobalStore((state) => state.additional_metadata);
 
   return (
     <Stack spacing="md">
@@ -99,6 +101,7 @@ const ResourceMetadataForm = () => {
         placeholder="Resource name (e.g., GraphPad Prism, Abcam Antibody)"
         value={name}
         onChange={(event) => setName(event.currentTarget.value)}
+        required
       />
       <Select
         label="Resource Type"
@@ -107,14 +110,17 @@ const ResourceMetadataForm = () => {
         value={type}
         onChange={(value) => setType(value)}
       />
-
       <TextInput
         label="URL"
         description="Link to the resource documentation or website"
         placeholder="e.g., https://example.com"
         value={url}
         onChange={(event) => setUrl(event.currentTarget.value)}
-        error={url && !matchesHttpPattern(url) ? "URL must start with http:// or https://" : null}
+        error={
+          url && url.length > 1 && !url.toLowerCase().startsWith("h") && !matchesHttpPattern(url)
+            ? "URL must start with http:// or https://"
+            : null
+        }
       />
 
       <TextInput
@@ -140,6 +146,14 @@ const ResourceMetadataForm = () => {
         value={id_in_protocol}
         onChange={(event) => setIdInProtocol(event.currentTarget.value)}
       />
+
+      <TextInput
+        label="Additional Metadata"
+        description="Any additional information about the resource"
+        placeholder="e.g., Specific usage notes or details"
+        value={additional_metadata}
+        onChange={(event) => setAdditionalMetadata(event.currentTarget.value)}
+      />
     </Stack>
   );
 };
@@ -155,8 +169,9 @@ const ResourcesManagementPage = () => {
 
   const validateResourceForm = () => {
     const rridIsValid = rrid && rrid.trim().length > 0;
+    const nameIsValid = name && name.trim().length > 0;
     const urlIsValid = !url || matchesHttpPattern(url);
-    return rridIsValid && urlIsValid;
+    return rridIsValid && nameIsValid && urlIsValid;
   };
 
   // Validation for add/update button
@@ -173,6 +188,7 @@ const ResourcesManagementPage = () => {
     setVendor(resource.vendor || "");
     setVersion(resource.version || "");
     setIdInProtocol(resource.id_in_protocol || "");
+    setAdditionalMetadata(resource.additional_metadata || "");
     setResourceFormVisible(true);
   };
 
@@ -187,6 +203,7 @@ const ResourcesManagementPage = () => {
     setVendor("");
     setVersion("");
     setIdInProtocol("");
+    setAdditionalMetadata("");
     setResourceFormVisible(true);
   };
 

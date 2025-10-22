@@ -33,12 +33,25 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
   }
   if (pageBeingLeftID === "guided-resources-entity-addition-tab") {
     const resourceList = useGlobalStore.getState()["resourceList"];
+    console.log("Saving resources:", resourceList);
     if (!resourceList || resourceList.length === 0) {
       // Delete the resources metadata if no resources are added
       if (window.sodaJSONObj["dataset_metadata"]?.["resources"]) {
         delete window.sodaJSONObj["dataset_metadata"]["resources"];
       }
     } else {
+      // Make sure all resources at least have a RRID
+      const invalidResources = resourceList.filter(
+        (resource) => !resource.rrid || resource.rrid.trim() === ""
+      );
+      if (invalidResources.length > 0) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please make sure all resources have a valid RRID.",
+        });
+        throw errorArray;
+      }
+      // Save the resources metadata
       window.sodaJSONObj["dataset_metadata"]["resources"] = resourceList;
     }
   }
