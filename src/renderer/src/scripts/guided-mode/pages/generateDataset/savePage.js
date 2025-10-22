@@ -73,11 +73,14 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
     if (generateOnNewPennsieveDatasetCardChecked) {
       // If the previous pennsieve generation target was set to "existing", we need to delete
       // the previous pennsieve dataset id and int id to ensure it's not used in the new dataset generation
-      if ("pennsieve-dataset-id" in window.sodaJSONObj["digital-metadata"]) {
-        delete window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
-      }
-      if ("pennsieve-int-id" in window.sodaJSONObj["digital-metadata"]) {
-        delete window.sodaJSONObj["digital-metadata"]["pennsieve-int-id"];
+      if (window.sodaJSONObj["previously-selected-dataset-id-to-upload-data-to"]) {
+        if ("pennsieve-dataset-id" in window.sodaJSONObj["digital-metadata"]) {
+          delete window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+        }
+        if ("pennsieve-int-id" in window.sodaJSONObj["digital-metadata"]) {
+          delete window.sodaJSONObj["digital-metadata"]["pennsieve-int-id"];
+        }
+        delete window.sodaJSONObj["previously-selected-dataset-id-to-upload-data-to"];
       }
 
       window.sodaJSONObj["pennsieve-generation-target"] = "new";
@@ -136,6 +139,19 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
       errorArray.push({
         type: "notyf",
         message: "Please enter a dataset name for Pennsieve.",
+      });
+      throw errorArray;
+    }
+    const pennsieveDatasetNameContainsForbiddenCharacters =
+      window.evaluateStringAgainstSdsRequirements(
+        pennsieveDatasetName,
+        "string-contains-forbidden-pennsieve-dataset-name-characters"
+      );
+    if (pennsieveDatasetNameContainsForbiddenCharacters) {
+      errorArray.push({
+        type: "notyf",
+        message:
+          'Pennsieve dataset names cannot contain any of the following characters: / ? % * : | " < > .',
       });
       throw errorArray;
     }
