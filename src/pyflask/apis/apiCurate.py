@@ -6,6 +6,7 @@ from os.path import (
     join,
 )
 
+# ensure using pysodafair
 from pysoda.core.dataset_generation import (
     check_empty_files_folders,
     main_curate_function,
