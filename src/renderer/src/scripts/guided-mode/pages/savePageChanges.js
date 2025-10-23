@@ -184,9 +184,6 @@ export const savePageChanges = async (pageBeingLeftID) => {
           const sites = getExistingSites();
           const samples = getExistingSamples();
           const subjects = getExistingSubjects();
-          console.log("Sites:", sites);
-          console.log("Samples:", samples);
-          console.log("Subjects:", subjects);
 
           performanceMetadata.forEach((performance) => {
             const performanceId = performance.performance_id;
