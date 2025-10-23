@@ -579,6 +579,15 @@ ipcMain.on("open-files-organize-datasets-dialog", async (event) => {
   }
 });
 
+ipcMain.on("file-explorer-dropped-datasets", (event, args) => {
+  const mainWindow = BrowserWindow.getFocusedWindow();
+  const importRelativePath = args.importRelativePath;
+  mainWindow.webContents.send("selected-folders-organize-datasets", {
+    filePaths: args.filePaths,
+    importRelativePath,
+  });
+});
+
 ipcMain.on("open-folders-organize-datasets-dialog", async (event, args) => {
   if (!args?.importRelativePath) {
     console.error(
