@@ -184,50 +184,82 @@ export const savePageChanges = async (pageBeingLeftID) => {
           const sites = getExistingSites();
           const samples = getExistingSamples();
           const subjects = getExistingSubjects();
+          console.log("Sites:", sites);
+          console.log("Samples:", samples);
+          console.log("Subjects:", subjects);
 
           performanceMetadata.forEach((performance) => {
             const performanceId = performance.performance_id;
             const performanceFiles = datasetEntityObj?.performances?.[performanceId];
 
+            // Skip performances that have no associated files
             if (!performanceFiles) {
               performance.participants = [];
               return;
             }
 
-            const performanceParticipants = [];
+            // Participants grouped by subject
+            const groupedParticipants = {};
 
-            // Add sites and their parents
+            // Collect parent subjects and samples from matching sites (exclude site IDs)
             for (const site of sites) {
               const siteId = site.metadata.site_id;
               const siteFiles = datasetEntityObj?.sites?.[siteId] || {};
+
               if (sharesAtLeastOneKey(performanceFiles, siteFiles)) {
-                performanceParticipants.push(siteId);
-                if (site.parentSample) performanceParticipants.push(site.parentSample);
-                if (site.parentSubject) performanceParticipants.push(site.parentSubject);
+                const { parentSample, parentSubject } = site;
+                if (parentSubject) {
+                  if (!groupedParticipants[parentSubject]) {
+                    groupedParticipants[parentSubject] = new Set();
+                  }
+                  if (parentSample) {
+                    groupedParticipants[parentSubject].add(parentSample);
+                  }
+                }
               }
             }
 
-            // Add samples and their parents
+            // Collect samples and their parent subjects
             for (const sample of samples) {
               const sampleId = sample.metadata.sample_id;
               const sampleFiles = datasetEntityObj?.samples?.[sampleId] || {};
+              const parentSubject = sample.metadata.subject_id || sample.parentSubject;
+
               if (sharesAtLeastOneKey(performanceFiles, sampleFiles)) {
-                performanceParticipants.push(sampleId);
-                if (sample.parentSubject) performanceParticipants.push(sample.parentSubject);
+                if (!groupedParticipants[parentSubject]) {
+                  groupedParticipants[parentSubject] = new Set();
+                }
+                groupedParticipants[parentSubject].add(sampleId);
               }
             }
 
-            // Add subjects
+            // Add subjects that have direct files or already have related samples
             for (const subject of subjects) {
               const subjectId = subject.metadata.subject_id;
               const subjectFiles = datasetEntityObj?.subjects?.[subjectId] || {};
+
               if (sharesAtLeastOneKey(performanceFiles, subjectFiles)) {
-                performanceParticipants.push(subjectId);
+                if (!groupedParticipants[subjectId]) {
+                  groupedParticipants[subjectId] = new Set();
+                }
               }
             }
 
-            // Assign participants as array of unique IDs
-            performance.participants = Array.from(new Set(performanceParticipants));
+            // Build ordered participant list (subject first, then samples)
+            const orderedParticipants = [];
+            for (const subject of subjects) {
+              const subjectId = subject.metadata.subject_id;
+              const samplesForSubject = groupedParticipants[subjectId];
+              if (samplesForSubject) {
+                orderedParticipants.push(subjectId);
+                samplesForSubject.forEach((sampleId) => {
+                  orderedParticipants.push(sampleId);
+                });
+              }
+            }
+
+            // Assign ordered participants list to performance
+            performance.participants = orderedParticipants;
           });
 
           // Update dataset metadata
