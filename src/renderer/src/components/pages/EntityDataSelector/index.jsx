@@ -103,6 +103,7 @@ const EntityDataSelectorPage = ({ pageName, entityTypeStringSingular, showProgre
       fileIsSelected ? "remove" : "add",
       mutuallyExclusiveSelection
     );
+
     reRenderTreeView();
   };
 

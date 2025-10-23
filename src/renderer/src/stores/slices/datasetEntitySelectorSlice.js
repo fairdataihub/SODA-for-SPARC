@@ -308,7 +308,7 @@ const removeFromOtherEntities = (entityEntries, targetEntityName, entityRelative
       delete entityEntries[entity][entityRelativePath];
     }
   });
-}; // Added missing closing brace
+};
 
 // Update this function to include entityType parameter
 export const checkIfRelativePathBelongsToEntity = (entityId, relativePath, entityType) => {

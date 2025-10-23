@@ -326,9 +326,11 @@ export const reRenderTreeView = (resetOpenFolders = false) => {
           const rootFileNames = Object.keys(node?.files || {}).sort(naturalSort);
           for (const fileName of rootFileNames) {
             const file = node.files[fileName];
+            const relativePath = file.relativePath;
+
             if (
               !filePassesAllFilters({
-                filePath: file.relativePath,
+                filePath: relativePath,
                 entityFilters,
                 searchFilter: datasetStructureSearchFilter,
                 datasetEntityObj,
@@ -336,13 +338,19 @@ export const reRenderTreeView = (resetOpenFolders = false) => {
             ) {
               continue;
             }
+
+            const entitySet = getFileEntitySet(relativePath, entityType, invertedDatasetEntityObj);
+            const fileIsSelected = entitySet && activeEntity ? entitySet.has(activeEntity) : false;
+            const entitiesAssociatedWithFile = entitySet ? Array.from(entitySet) : [];
+
             result.push({
               itemType: "file",
-              itemIndex: itemIndex++,
-              itemIndent: depth,
               fileName,
-              content: file,
-              ...file,
+              relativePath,
+              fileIsSelected,
+              entitiesAssociatedWithFile,
+              itemIndent: depth,
+              itemIndex: itemIndex++,
             });
           }
         }
