@@ -58,11 +58,9 @@ export const savePageCurationPreparation = async (pageBeingLeftID) => {
   }
 
   if (pageBeingLeftID === "guided-name-subtitle-tab") {
-    // 1. Retrieve user inputs
     const datasetNameInput = useGlobalStore.getState().guidedDatasetName.trim();
     const datasetSubtitleInput = useGlobalStore.getState().guidedDatasetSubtitle.trim();
 
-    // 2. Validate required inputs
     if (!datasetNameInput) {
       errorArray.push({ type: "notyf", message: "Please enter a dataset name." });
     }
@@ -74,16 +72,20 @@ export const savePageCurationPreparation = async (pageBeingLeftID) => {
       throw errorArray;
     }
 
-    // 3. Update subtitle
     window.sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
 
-    // 4. Sanitize dataset name
     const sanitizedDatasetName = window.sanitizeStringForSaveFileSystemSave(datasetNameInput);
 
-    // 5. Retrieve previous save info
     const prevSaveFileName = window.sodaJSONObj?.["save-file-name"];
     const prevRandomSuffix = window.sodaJSONObj?.["save-file-random-hash-suffix"];
     const prevDatasetName = window.sodaJSONObj?.["digital-metadata"]?.["name"];
+
+    window.log.info("[guided-name-subtitle-tab] Previous save info:", {
+      prevDatasetName,
+      prevSaveFileName,
+      prevRandomSuffix,
+    });
+
     if (!prevDatasetName) {
       const existingProgressFileNames = getGuidedProgressFileNames();
       if (existingProgressFileNames.includes(datasetNameInput)) {
@@ -97,20 +99,34 @@ export const savePageCurationPreparation = async (pageBeingLeftID) => {
     }
 
     const randomString = Math.random().toString(16).slice(2, 10);
-    const newSaveFileName = `${sanitizedDatasetName}-${
-      prevRandomSuffix ? prevRandomSuffix : randomString
-    }`;
+    const newSaveFileName = `${sanitizedDatasetName}-${prevRandomSuffix || randomString}`;
+
+    window.log.info("[guided-name-subtitle-tab] New save file info:", {
+      sanitizedDatasetName,
+      randomString,
+      newSaveFileName,
+    });
 
     window.sodaJSONObj["save-file-name"] = newSaveFileName;
     if (!prevRandomSuffix) {
       window.sodaJSONObj["save-file-random-hash-suffix"] = randomString;
     }
 
-    // 6. Rename progress file and banner folder if dataset name changed
-    if ((prevDatasetName && prevDatasetName !== datasetNameInput) || !prevSaveFileName) {
-      // Check to see an existing dataset name does not already exist with this name
+    const shouldRename =
+      prevSaveFileName && prevDatasetName && prevDatasetName !== datasetNameInput;
+
+    window.log.info("[guided-name-subtitle-tab] Rename check:", {
+      prevDatasetName,
+      prevSaveFileName,
+      shouldRename,
+    });
+
+    if (shouldRename) {
+      window.log.info(
+        `[guided-name-subtitle-tab] Dataset name change detected: ${prevDatasetName} → ${datasetNameInput}`
+      );
+
       const existingProgressFileNames = getGuidedProgressFileNames();
-      // Filter out dataset with the same name as the previous one
       const filteredExistingProgressFileNames = existingProgressFileNames.filter(
         (name) => name !== prevDatasetName
       );
@@ -123,17 +139,23 @@ export const savePageCurationPreparation = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
-      const previousSaveFileName = prevSaveFileName || prevDatasetName;
-
-      const oldProgressFilePath = `${guidedProgressFilePath}/${previousSaveFileName}.json`;
+      const oldProgressFilePath = `${guidedProgressFilePath}/${prevSaveFileName}.json`;
       const newProgressFilePath = `${guidedProgressFilePath}/${newSaveFileName}.json`;
+
+      window.log.info("[guided-name-subtitle-tab] Renaming progress file:", {
+        oldProgressFilePath,
+        newProgressFilePath,
+      });
 
       if (oldProgressFilePath !== newProgressFilePath) {
         try {
           window.fs.renameSync(oldProgressFilePath, newProgressFilePath);
+          window.log.info(
+            `[guided-name-subtitle-tab] Successfully renamed progress file: ${prevSaveFileName} → ${newSaveFileName}`
+          );
         } catch (error) {
-          console.error(
-            `Error renaming guided progress file from ${oldProgressFilePath} → ${newProgressFilePath}:`,
+          window.log.error(
+            `[guided-name-subtitle-tab] Error renaming guided progress file from ${oldProgressFilePath} → ${newProgressFilePath}:`,
             error
           );
         }
@@ -141,23 +163,34 @@ export const savePageCurationPreparation = async (pageBeingLeftID) => {
         const bannerImagePathToUpdate = window.sodaJSONObj["digital-metadata"]["banner-image-path"];
         if (bannerImagePathToUpdate) {
           const newBannerImagePath = bannerImagePathToUpdate.replace(
-            previousSaveFileName,
+            prevSaveFileName,
             newSaveFileName
           );
+
+          window.log.info("[guided-name-subtitle-tab] Renaming banner image folder:", {
+            old: bannerImagePathToUpdate,
+            new: newBannerImagePath,
+          });
+
           try {
             window.fs.renameSync(bannerImagePathToUpdate, newBannerImagePath);
             window.sodaJSONObj["digital-metadata"]["banner-image-path"] = newBannerImagePath;
+            window.log.info(
+              `[guided-name-subtitle-tab] Successfully renamed banner image folder: ${bannerImagePathToUpdate} → ${newBannerImagePath}`
+            );
           } catch (error) {
-            console.error(
-              `Error renaming banner image folder from ${bannerImagePathToUpdate} → ${newBannerImagePath}:`,
+            window.log.error(
+              `[guided-name-subtitle-tab] Error renaming banner image folder from ${bannerImagePathToUpdate} → ${newBannerImagePath}:`,
               error
             );
           }
         }
       }
+    } else {
+      window.log.info("[guided-name-subtitle-tab] Skipping rename (no previous save or no change)");
     }
 
-    // 7. Finalize dataset name
     window.sodaJSONObj["digital-metadata"]["name"] = datasetNameInput;
+    window.log.info("[guided-name-subtitle-tab] Finalized dataset name:", datasetNameInput);
   }
 };
