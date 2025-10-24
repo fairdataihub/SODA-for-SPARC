@@ -37,6 +37,7 @@ import {
   filterRemovedFilesFromDatasetEntityObj,
   setEntityType,
 } from "../../../stores/slices/datasetEntitySelectorSlice.js";
+import { setDatasetType } from "../../../stores/slices/guidedModeSlice.js";
 import { setSelectedHierarchyEntity } from "../../../stores/slices/datasetContentSelectorSlice.js";
 import { guidedSetNavLoadingState } from "./navigationUtils/pageLoading.js";
 import Swal from "sweetalert2";
@@ -70,7 +71,9 @@ const handleNextButtonVisibility = (targetPageID) => {
   if (
     targetPageID === "guided-dataset-generation-confirmation-tab" ||
     targetPageID === "guided-dataset-generation-tab" ||
-    targetPageID === "guided-dataset-dissemination-tab"
+    targetPageID === "guided-dataset-dissemination-tab" ||
+    (targetPageID === "guided-generate-dataset-locally" &&
+      window.sodaJSONObj["generate-dataset-on-pennsieve"] === false)
   ) {
     $("#guided-next-button").css("visibility", "hidden");
   } else {
@@ -265,12 +268,29 @@ window.openPage = async (targetPageID) => {
         if (pageEntityType === "high-level-folder-data-categorization") {
           // Delete the manifest file because it throws off the count of files selected
           delete window.datasetStructureJSONObj?.["files"]?.["manifest.xlsx"];
-          const bucketTypes = ["Experimental", "Protocol", "Documentation"];
+
+          const datasetType = window.sodaJSONObj["dataset-type"];
+          setDatasetType(datasetType);
+
+          const bucketTypes = [];
+
+          if (datasetType === "experimental") {
+            bucketTypes.push(["Experimental"]);
+          } else {
+            removeEntityFromEntityList("high-level-folder-data-categorization", "Experimental");
+          }
           if (selectedEntities.includes("code")) {
             bucketTypes.push("Code");
           } else {
             removeEntityFromEntityList("high-level-folder-data-categorization", "Code");
           }
+          if (datasetType === "computational") {
+            bucketTypes.push("Primary");
+          } else {
+            removeEntityFromEntityList("high-level-folder-data-categorization", "Primary");
+          }
+
+          bucketTypes.push(...["Protocol", "Documentation"]);
 
           for (const bucketType of bucketTypes) {
             addEntityToEntityList("high-level-folder-data-categorization", bucketType);
@@ -400,7 +420,13 @@ window.openPage = async (targetPageID) => {
           window.datasetStructureJSONObj,
           window.sodaJSONObj["dataset-entity-obj"]
         );
-        setDatasetMetadataToPreview(Object.keys(window.sodaJSONObj["dataset_metadata"] || {}));
+        if (pageID === "guided-dataset-structure-and-manifest-review-tab") {
+          // Only show the manifest file for the dataset metadata preview
+          // even if there are other metadata files like sites or performances
+          setDatasetMetadataToPreview(["manifest.xlsx"]);
+        } else {
+          setDatasetMetadataToPreview(Object.keys(window.sodaJSONObj["dataset_metadata"] || {}));
+        }
 
         setPathToRender([]);
         useGlobalStore.setState({

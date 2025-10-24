@@ -18,20 +18,21 @@ export const initialState = {
   vendor: "",
   version: "",
   id_in_protocol: "",
+  additional_metadata: "",
 
   // List of saved resources
   resourceList: [],
 };
+
+export const resourceMetadataSlice = (set) => ({
+  ...initialState,
+});
 
 export const setResourceList = (resourceList) => {
   useGlobalStore.setState({
     resourceList: resourceList,
   });
 };
-
-export const resourceMetadataSlice = (set) => ({
-  ...initialState,
-});
 
 // Form visibility toggle
 export const setResourceFormVisible = (visible) => {
@@ -97,6 +98,12 @@ export const setIdInProtocol = (value) => {
   });
 };
 
+export const setAdditionalMetadata = (value) => {
+  useGlobalStore.setState({
+    additional_metadata: value,
+  });
+};
+
 // Add resource to list
 export const addResource = () => {
   useGlobalStore.setState(
@@ -110,6 +117,7 @@ export const addResource = () => {
         vendor: state.vendor,
         version: state.version,
         id_in_protocol: state.id_in_protocol,
+        additional_metadata: state.additional_metadata,
       });
 
       // Reset form
@@ -120,6 +128,7 @@ export const addResource = () => {
       state.vendor = "";
       state.version = "";
       state.id_in_protocol = "";
+      state.additional_metadata = "";
       state.isResourceFormVisible = false;
     })
   );
@@ -143,6 +152,7 @@ export const updateResource = () => {
           vendor: state.vendor,
           version: state.version,
           id_in_protocol: state.id_in_protocol,
+          additional_metadata: state.additional_metadata,
         };
       }
 
@@ -154,6 +164,7 @@ export const updateResource = () => {
       state.vendor = "";
       state.version = "";
       state.id_in_protocol = "";
+      state.additional_metadata = "";
       state.isResourceFormVisible = false;
       state.isEditMode = false;
       state.originalResourceName = "";

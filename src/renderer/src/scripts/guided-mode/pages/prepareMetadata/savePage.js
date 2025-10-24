@@ -14,6 +14,7 @@ import {
   getExistingSubjects,
   getExistingSamples,
 } from "../../../../stores/slices/datasetEntityStructureSlice";
+import { CONTRIBUTORS_REGEX } from "../../metadata/contributors/contributorsValidation";
 
 import { getDropDownState } from "../../../../stores/slices/dropDownSlice";
 import { pennsieveDatasetSelectSlice } from "../../../../stores/slices/pennsieveDatasetSelectSlice";
@@ -38,6 +39,18 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
         delete window.sodaJSONObj["dataset_metadata"]["resources"];
       }
     } else {
+      // Make sure all resources at least have a RRID
+      const invalidResources = resourceList.filter(
+        (resource) => !resource.rrid || resource.rrid.trim() === ""
+      );
+      if (invalidResources.length > 0) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please make sure all resources have a valid RRID.",
+        });
+        throw errorArray;
+      }
+      // Save the resources metadata
       window.sodaJSONObj["dataset_metadata"]["resources"] = resourceList;
     }
   }
@@ -149,6 +162,20 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       });
       throw errorArray;
     }
+
+    const contributorInformation = window.sodaJSONObj["dataset_contributors"] || [];
+    // Validate the contributor names match the Regular Expression
+    contributorInformation.forEach((contributor) => {
+      if (!CONTRIBUTORS_REGEX.test(contributor["contributor_name"])) {
+        errorArray.push({
+          type: "notyf",
+          message: `The contributor name "${contributor["contributor_name"]}" is not in the correct format. Please use the format: Last, First Middle.`,
+        });
+      }
+    });
+    if (errorArray.length > 0) {
+      throw errorArray;
+    }
   }
 
   if (pageBeingLeftID === "guided-protocols-tab") {
@@ -229,12 +256,6 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       fundingString = otherFunding.join(", ");
     }
 
-    const contributorInformation = window.sodaJSONObj["dataset_contributors"] || [];
-    // Combine the last and first names of contributors
-    contributorInformation.forEach((contributor) => {
-      contributor.contributor_name = `${contributor.contributor_last_name}, ${contributor.contributor_first_name}`;
-    });
-
     // Get the properties from the submission page to re-use in the dataset_description metadata
     const fundingConsortium =
       window.sodaJSONObj["dataset_metadata"]?.["submission"]?.["funding_consortium"] || "";
@@ -243,11 +264,24 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       window.sodaJSONObj["dataset_metadata"]?.["submission"]?.["award_number"] || "";
 
     const relatedResourceInformation = window.sodaJSONObj["related_resources"] || [];
+    const datasetAdditionalLinks = (window.sodaJSONObj["dataset_additional_links"] || []).map(
+      (link) => ({
+        identifier: link.link,
+        identifier_description: link.description,
+        identifier_type: link.type,
+        relation_type: link.relation,
+      })
+    );
+    // Combine protocols and additional links into related_resource_information
+    relatedResourceInformation.push(...datasetAdditionalLinks);
+
+    const datasetType = window.sodaJSONObj["dataset-type"];
+    const contributorInformation = window.sodaJSONObj["dataset_contributors"] || [];
 
     // Populate dataset_metadata > dataset_description
     window.sodaJSONObj["dataset_metadata"]["dataset_description"] = {
       metadata_version: metadataVersion,
-      dataset_type: numSubjects > 0 ? "experimental" : "computational", // Per curation team, datasets with subjects are experimental, otherwise computational
+      dataset_type: datasetType,
       standards_information: {
         data_standard: "SPARC",
         data_standard_version: "3.0.0",

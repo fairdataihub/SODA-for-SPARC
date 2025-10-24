@@ -3173,6 +3173,8 @@ const forbiddenFileNameRegex = /^(CON|PRN|AUX|NUL|(COM|LPT)[0-9])$/;
 const forbiddenFiles = new Set([".DS_Store", "Thumbs.db"]);
 const forbiddenFilesRegex = /^(CON|PRN|AUX|NUL|(COM|LPT)[0-9])$/;
 const forbiddenCharacters = /[@#$%^&*()+=\/\\|"'~;:<>{}\[\]?]/;
+const forbiddenCharactersRegex = /[@#$%^&*()+=\/\\|"'~;:<>{}\[\]?]/g;
+const forbiddenPennsieveDatasetNameCharacters = /[\/:*?'<>.,]/;
 
 window.evaluateStringAgainstSdsRequirements = (stringToTest, testType) => {
   const tests = {
@@ -3182,9 +3184,15 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, testType) => {
     "is-hidden-file": stringToTest.startsWith("."),
     "is-forbidden-file": forbiddenFiles.has(stringToTest) || forbiddenFilesRegex.test(stringToTest),
     "string-contains-forbidden-characters": forbiddenCharacters.test(stringToTest),
+    "string-contains-forbidden-pennsieve-dataset-name-characters":
+      forbiddenPennsieveDatasetNameCharacters.test(stringToTest),
   };
 
   return tests[testType];
+};
+
+window.sanitizeStringForSaveFileSystemSave = (stringToSanitize) => {
+  return stringToSanitize.replace(forbiddenCharactersRegex, "-");
 };
 
 // Create some test case examples
@@ -6159,9 +6167,10 @@ window.showBFAddAccountSweetalert = async (ev) => {
                     // guided-change-workspace (from guided mode), handle changes based on the ev id
                     // otherwise, reset the FFM UI based on the ev class
                     // NOTE: For API Key sign in flow it is more simple to just reset the UI as the new user may be in a separate workspace than the prior user.
-                    ev.target?.classList.contains("data-reset-guided-mode-page")
-                      ? window.handleGuidedModeOrgSwitch(ev.target)
-                      : window.resetFFMUI(ev.target);
+
+                    ev?.target?.classList.contains("data-reset-guided-mode-page")
+                      ? window.handleGuidedModeOrgSwitch(ev?.target || null)
+                      : window.resetFFMUI(ev?.target || null);
 
                     window.datasetList = [];
                     window.defaultBfDataset = null;
@@ -6179,6 +6188,7 @@ window.showBFAddAccountSweetalert = async (ev) => {
                     });
                   })
                   .catch((error) => {
+                    clientError(error);
                     let message = `
                     <div style="text-align: left;">
                       <p>

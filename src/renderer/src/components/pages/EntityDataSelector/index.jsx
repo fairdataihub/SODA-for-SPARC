@@ -65,33 +65,32 @@ const renderEntityList = (entityType, activeEntity, datasetEntityObj) => {
   });
 };
 
-const getInstructionalTextByEntityType = (entityType) => {
+const getInstructionalTextByEntityType = (entityType, datasetType) => {
   const instructionalText = {
-    Code: "Select the files that contain scripts, computational models, analysis pipelines, or other software used for data processing or analysis below.",
-    "Experimental data":
-      "Select the files containing data collected from experiments or analysis below.",
-    Other:
-      "Select the files that do not contain experimental data or code, such as protocols, notes, or supplementary materials below.",
+    Code: "Select the files that contain scripts, computational models, analysis pipelines, or other software used for data processing or analysis.",
+    Primary:
+      "Select the files that support your computational data, such as input or output files, tabular data, or other non-code data files.",
+    Experimental: "Select the files that contain data collected from experiments or analyses.",
+    Protocol:
+      datasetType === "computational"
+        ? "Select the files that describe the computational workflows, analysis procedures, or processing steps used in your data."
+        : "Select the files that document the experimental procedures, equipment setups, or workflows used in your study.",
+    Documentation: "Select the files that are supporting documents for your data.",
   };
 
   return (
     instructionalText[entityType] ||
-    `Select the folders and files that contain data pertaining to the entity ${entityType}.`
+    `Select the files that contain data pertaining to the entity ${entityType}.`
   );
 };
 
-const EntityDataSelectorPage = ({
-  pageName,
-  entityTypeStringSingular,
-  entityTypeStringPlural,
-  showProgress = false,
-}) => {
+const EntityDataSelectorPage = ({ pageName, entityTypeStringSingular, showProgress = false }) => {
   const activeEntity = useGlobalStore((state) => state.activeEntity);
   const entityType = useGlobalStore((state) => state.entityType); // e.g. 'high-level-folder-data-categorization'
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const datasetIncludesCode = selectedEntities.includes("code");
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
-  const datasetRenderArray = useGlobalStore((state) => state.datasetRenderArray);
+  const datasetType = useGlobalStore((state) => state.datasetType);
 
   const itemCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
   const countItemsSelected = countSelectedFilesByEntityType(entityType);
@@ -104,6 +103,7 @@ const EntityDataSelectorPage = ({
       fileIsSelected ? "remove" : "add",
       mutuallyExclusiveSelection
     );
+
     reRenderTreeView();
   };
 
@@ -149,17 +149,45 @@ const EntityDataSelectorPage = ({
           {(() => {
             switch (entityType) {
               case "high-level-folder-data-categorization":
-                return (
-                  <>
-                    <Text mb={0}>
-                      The SDS requires data to be organized into{" "}
-                      {datasetIncludesCode ? "four" : "three"} categories: Experimental
-                      {datasetIncludesCode ? ", Code," : ","} Documentation, and Protocol. Use the
-                      interface below to classify your data files.
-                    </Text>
-                    <DropDownNote id="data-categories-list" />
-                  </>
-                );
+                if (datasetType === "experimental") {
+                  return (
+                    <>
+                      <Text mb={0}>
+                        The SDS requires data in experimental datasets
+                        {datasetIncludesCode ? " with code " : ""}to be organized into{" "}
+                        {datasetIncludesCode ? "four" : "three"} categories: <b>Experimental</b>,{" "}
+                        {datasetIncludesCode ? <b>Code,</b> : ""} <b>Protocol</b>, and{" "}
+                        <b>Documentation</b>. Use the interface below to classify your data files.
+                      </Text>
+                      <Text mb={0}>
+                        To categorize your data, choose a category on the left, then select the
+                        files that belong to it on the right. Selecting a folder categorizes all
+                        files within it. If a folder contains files that belong to different
+                        categories, you can expand it and categorize individual files as needed.
+                      </Text>
+                      <DropDownNote id="data-categories-list" />
+                    </>
+                  );
+                }
+
+                if (datasetType === "computational") {
+                  return (
+                    <>
+                      <Text mb={0}>
+                        For computational datasets, all files imported on the Data Selection page
+                        need to be categorized into four groups: <b>Code</b>, <b>Primary</b>,{" "}
+                        <b>Protocol</b>, and <b>Documentation</b>.
+                      </Text>
+                      <Text mb={0}>
+                        To categorize your data, choose a category on the left, then select the
+                        files that belong to it on the right. Selecting a folder categorizes all
+                        files within it. If a folder contains files that belong to different
+                        categories, you can expand it and categorize individual files as needed.
+                      </Text>
+                      <DropDownNote id="data-categories-list" />
+                    </>
+                  );
+                }
 
               case "modalities":
                 return <Text>Select the folders and files that belong to each modality.</Text>;
@@ -199,7 +227,10 @@ const EntityDataSelectorPage = ({
             {activeEntity ? (
               <Paper shadow="sm" radius="md">
                 <DatasetTreeViewRenderer
-                  itemSelectInstructions={getInstructionalTextByEntityType(activeEntity)}
+                  itemSelectInstructions={getInstructionalTextByEntityType(
+                    activeEntity,
+                    datasetType
+                  )}
                   mutuallyExclusiveSelection={true}
                   folderActions={{
                     "on-folder-click": (relativePath, folderIsSelected, mutuallyExclusive) => {

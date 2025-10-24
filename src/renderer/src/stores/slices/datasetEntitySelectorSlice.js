@@ -308,7 +308,7 @@ const removeFromOtherEntities = (entityEntries, targetEntityName, entityRelative
       delete entityEntries[entity][entityRelativePath];
     }
   });
-}; // Added missing closing brace
+};
 
 // Update this function to include entityType parameter
 export const checkIfRelativePathBelongsToEntity = (entityId, relativePath, entityType) => {
@@ -317,7 +317,9 @@ export const checkIfRelativePathBelongsToEntity = (entityId, relativePath, entit
   // Use provided entityType or default to "entity-to-file-mapping"
   const typeToCheck = entityType || "entity-to-file-mapping";
 
-  return Boolean(datasetEntityObj?.[typeToCheck]?.[entityId]?.[relativePath]);
+  const result = Boolean(datasetEntityObj?.[typeToCheck]?.[entityId]?.[relativePath]);
+
+  return result;
 };
 
 /**
