@@ -231,6 +231,7 @@ const guidedSubmitDatasetForReview = async (embargoReleaseDate = "") => {
     });
   } catch (error) {
     console.error("[Dataset Submission] Error:", error);
+    window.log.error("[Dataset Submission] Error:", error);
 
     // Track failure
     window.electron.ipcRenderer.send(
@@ -289,6 +290,7 @@ const guidedUnSubmitDatasetForReview = async () => {
     // Track success
   } catch (error) {
     console.error("[Dataset Unsubmission] Error:", error);
+    window.log.error("[Dataset Unsubmission] Error:", error);
   }
 };
 
@@ -324,6 +326,7 @@ export const guidedSetPublishingStatusUI = async () => {
     }
   } catch (error) {
     console.error("[PrepublishingFlow] Error fetching publishing status:", error);
+    window.log.error("[PrepublishingFlow] Error fetching publishing status:", error);
     await Swal.fire({
       title: "Error fetching publishing status",
       html: userErrorMessage(error),
@@ -472,6 +475,7 @@ window.guidedModifyCurationTeamAccess = async (action) => {
       setButtonState(shareBtn, { disabled: false, loading: false });
     } catch (error) {
       console.error("[Curation Access] Share flow error:", error);
+      window.log.error("[Curation Access] Share flow error:", error);
       setButtonState(shareBtn, { disabled: false, loading: false });
       await Swal.fire({
         title: "Failed to share dataset with Curation Team",
@@ -523,6 +527,7 @@ window.guidedModifyCurationTeamAccess = async (action) => {
       setButtonState(unshareBtn, { disabled: false, loading: false });
     } catch (error) {
       console.error("[Curation Access] Unshare flow error:", error);
+      window.log.error("[Curation Access] Unshare flow error:", error);
       setButtonState(unshareBtn, { disabled: false, loading: false });
       await Swal.fire({
         title: "Failed to unshare dataset from Curation Team",

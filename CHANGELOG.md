@@ -5,13 +5,14 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## v 16.4.0 - 2025-10-23
-
-## Bug fixes:
-
--
+## v 16.4.0 - 2025-10-27
 
 ## Feature Additions:
+
+- Added SDS3 computational dataset workflow
+- Loosened naming restrictions for the dataset name field and implemented random IDs for guided mode progress file storage.
+
+## Bug fixes:
 
 -
 
