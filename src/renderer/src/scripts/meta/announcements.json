@@ -4,7 +4,7 @@
       "features": [
         "A new workflow has been added to the `Prepare Dataset Step-by-Step` for purely computational workflows."
       ],
-      "bug-fixes": []
+      "bug-fixes": ["Added various improvements to the `Prepare Dataset Step-by-Step` feature."]
     }
   },
   "16.3.1": {
