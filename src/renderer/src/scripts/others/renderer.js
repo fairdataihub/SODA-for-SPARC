@@ -6167,9 +6167,10 @@ window.showBFAddAccountSweetalert = async (ev) => {
                     // guided-change-workspace (from guided mode), handle changes based on the ev id
                     // otherwise, reset the FFM UI based on the ev class
                     // NOTE: For API Key sign in flow it is more simple to just reset the UI as the new user may be in a separate workspace than the prior user.
-                    ev.target?.classList.contains("data-reset-guided-mode-page")
-                      ? window.handleGuidedModeOrgSwitch(ev.target)
-                      : window.resetFFMUI(ev.target);
+
+                    ev?.target?.classList.contains("data-reset-guided-mode-page")
+                      ? window.handleGuidedModeOrgSwitch(ev?.target || null)
+                      : window.resetFFMUI(ev?.target || null);
 
                     window.datasetList = [];
                     window.defaultBfDataset = null;
@@ -6187,6 +6188,7 @@ window.showBFAddAccountSweetalert = async (ev) => {
                     });
                   })
                   .catch((error) => {
+                    clientError(error);
                     let message = `
                     <div style="text-align: left;">
                       <p>
