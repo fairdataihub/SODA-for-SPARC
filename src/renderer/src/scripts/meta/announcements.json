@@ -1,4 +1,12 @@
 {
+  "16.4.0": {
+    "announcements": {
+      "features": [
+        "A new workflow has been added to the `Prepare Dataset Step-by-Step` for purely computational workflows."
+      ],
+      "bug-fixes": []
+    }
+  },
   "16.3.1": {
     "announcements": {
       "features": [],

@@ -14,7 +14,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Bug fixes:
 
--
+- Fixed an issue where renamed files were not updated in the manifest file
+- Fixed Pennsieve Banner Images and Dataset Descriptions not uploading to Pennsieve due to the wrong keys being plugged into the upload function.
 
 ## v 16.3.1 - 2025-10-01
 
