@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Fixed an issue where renamed files were not updated in the manifest file
 - Fixed Pennsieve Banner Images and Dataset Descriptions not uploading to Pennsieve due to the wrong keys being plugged into the upload function.
+- Fixed an issue that would cause SODA to access a null event target value when signing via api key and secret on the Manage Accounts page.
+- Fixed an issue where the Guided Mode manifest editor has an extra column.
+- Fixed an issue where the dataset_description.xlsx files outputted from SODA did not have a responsive Value header.
+- Fixed an issue where the resources metadata page was not requiring an RRID.
 
 ## v 16.3.1 - 2025-10-01
 
