@@ -12,7 +12,7 @@ export const openPageDatasetStructure = async (targetPageID) => {
   // Add handlers for other pages without componentType
 
   if (targetPageID === "guided-dataset-structure-and-manifest-review-tab") {
-    // Delete existing manifest files in the dataset structure
+    // Remove existing manifest files from the dataset structure
     Object.values(window.datasetStructureJSONObj.folders).forEach((folder) => {
       delete folder.files["manifest.xlsx"];
     });
@@ -23,41 +23,30 @@ export const openPageDatasetStructure = async (targetPageID) => {
     const purgeNonExistentFiles = async (datasetStructure) => {
       const nonExistentFiles = [];
 
-      const collectNonExistentFiles = async (currentStructure, currentPath = "") => {
-        for (const [fileName, fileData] of Object.entries(currentStructure.files || {})) {
+      const collectNonExistentFiles = async (current, currentPath = "") => {
+        for (const [fileName, fileData] of Object.entries(current.files || {})) {
           if (fileData.type === "local" && !(await window.fs.existsSync(fileData.path))) {
             nonExistentFiles.push(`${currentPath}${fileName}`);
           }
         }
+
         await Promise.all(
-          Object.entries(currentStructure.folders || {}).map(([folderName, folder]) =>
+          Object.entries(current.folders || {}).map(([folderName, folder]) =>
             collectNonExistentFiles(folder, `${currentPath}${folderName}/`)
           )
         );
       };
 
-      /**
-       * Recursively deletes references to non-existent files from the dataset structure.
-       * @param {Object} currentStructure - The current level of the dataset structure.
-       * @param {string} currentPath - The relative path to the current structure.
-       */
-      const deleteNonExistentFiles = (currentStructure, currentPath = "") => {
-        const files = currentStructure?.files || {};
+      const deleteNonExistentFiles = (current) => {
+        const files = current?.files || {};
         for (const fileName in files) {
           const fileData = files[fileName];
-          if (fileData.type === "local") {
-            const filePath = fileData.path;
-            const isNonExistent = !window.fs.existsSync(filePath);
-
-            if (isNonExistent) {
-              window.log.info(`Deleting reference to non-existent file: ${currentPath}${fileName}`);
-              delete files[fileName];
-            }
+          if (fileData.type === "local" && !window.fs.existsSync(fileData.path)) {
+            delete files[fileName];
           }
         }
-        Object.entries(currentStructure.folders || {}).forEach(([folderName, folder]) =>
-          deleteNonExistentFiles(folder)
-        );
+
+        Object.values(current.folders || {}).forEach(deleteNonExistentFiles);
       };
 
       await collectNonExistentFiles(datasetStructure);
@@ -74,11 +63,12 @@ export const openPageDatasetStructure = async (targetPageID) => {
 
     await purgeNonExistentFiles(window.datasetStructureJSONObj);
 
-    // Delete empty folders from the dataset structure
+    // Remove empty folders
     window.datasetStructureJSONObj = deleteEmptyFoldersFromStructure(
       window.datasetStructureJSONObj
     );
 
+    // Prepare cleaned dataset structure for server-side processing
     const sodaCopy = {
       ...window.sodaJSONObj,
       "metadata-files": {},
@@ -89,27 +79,27 @@ export const openPageDatasetStructure = async (targetPageID) => {
     };
     delete sodaCopy["generate-dataset"];
 
-    const response = await client.post(
+    // Clean dataset via backend
+    const { data: cleanResponse } = await client.post(
       "/curate_datasets/clean-dataset",
       { soda_json_structure: sodaCopy },
       { timeout: 0 }
     );
 
-    const responseData = response.data.soda;
+    const responseData = cleanResponse.soda;
 
-    const manifestRes = (
-      await client.post(
-        "/curate_datasets/generate_manifest_file_data",
-        { dataset_structure_obj: responseData["dataset-structure"] },
-        { timeout: 0 }
-      )
-    ).data;
+    // Generate manifest file data
+    const { data: manifestRes } = await client.post(
+      "/curate_datasets/generate_manifest_file_data",
+      { dataset_structure_obj: responseData["dataset-structure"] },
+      { timeout: 0 }
+    );
 
     const newManifestData = { headers: manifestRes.shift(), data: manifestRes };
     const entityColumnIndex = newManifestData.headers.indexOf("entity");
 
     /**
-     * Sort manifest data rows based on predefined folder order.
+     * Sort manifest rows based on top-level folder order.
      */
     const sortManifestDataRows = (rows) => {
       const folderOrder = {
@@ -122,114 +112,99 @@ export const openPageDatasetStructure = async (targetPageID) => {
         docs: 6,
       };
 
-      return rows.sort((rowA, rowB) => {
-        const pathA = rowA[0] || "";
-        const pathB = rowB[0] || "";
+      const getTopLevelFolder = (path) => (path.includes("/") ? path.split("/")[0] : path);
 
-        const getTopLevelFolder = (path) => (path.includes("/") ? path.split("/")[0] : path);
-
+      return rows.sort((a, b) => {
+        const pathA = a[0] || "";
+        const pathB = b[0] || "";
         const folderA = getTopLevelFolder(pathA);
         const folderB = getTopLevelFolder(pathB);
-
         const priorityA = folderOrder[folderA] ?? Infinity;
         const priorityB = folderOrder[folderB] ?? Infinity;
 
-        if (priorityA !== priorityB) {
-          return priorityA - priorityB;
-        }
-
-        // Ensure 'data' always comes before lexicographical sorting
+        if (priorityA !== priorityB) return priorityA - priorityB;
         if (folderA === "data" && folderB !== "data") return -1;
         if (folderB === "data" && folderA !== "data") return 1;
 
         return pathA.localeCompare(pathB);
       });
     };
+
     newManifestData.data = sortManifestDataRows(newManifestData.data);
 
     const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
 
-    const updateEntityColumn = (manifestDataRows, datasetEntityObj) => {
-      manifestDataRows.forEach((row) => {
-        let path = row[0]; // Path is in the first column
-        // replace the first part of the path with "data/"
-        const pathSegments = path.split("/");
-        if (pathSegments.length > 0) {
-          pathSegments[0] = "data";
-          path = pathSegments.join("/");
-        }
-        let entityList = [];
+    /**
+     * Update entity column values.
+     */
+    const updateEntityColumn = (rows) => {
+      const entityTypes = ["sites", "samples", "subjects", "performances"];
 
-        const entityTypes = ["sites", "samples", "subjects", "performances"];
+      rows.forEach((row) => {
+        let path = row[0];
+        const pathSegments = path.split("/");
+        if (pathSegments.length > 0) pathSegments[0] = "data";
+        path = pathSegments.join("/");
+
+        const entityList = [];
 
         for (const type of entityTypes) {
           const entities = datasetEntityObj?.[type] || {};
           for (const [entity, paths] of Object.entries(entities)) {
             if (paths?.[path]) {
               const entityData = getEntityDataById(entity);
-              if (!entityData) {
-                continue;
-              }
+              if (!entityData) continue;
+
               entityList.push(entityData.id);
-              if (entityData?.["metadata"]?.["sample_id"]) {
-                const sampleId = entityData["metadata"]["sample_id"];
-                entityList.push(sampleId);
-              }
-
-              if (entityData?.["metadata"]?.["subject id"]) {
-                const subjectId = entityData["metadata"]["subject id"];
-                entityList.push(subjectId);
-              }
-
-              break; // One match is enough
+              if (entityData?.metadata?.sample_id) entityList.push(entityData.metadata.sample_id);
+              if (entityData?.metadata?.["subject id"])
+                entityList.push(entityData.metadata["subject id"]);
+              break;
             }
           }
         }
-        // remove duplicates from entityList
-        entityList = [...new Set(entityList)];
 
-        row[entityColumnIndex] = entityList.join(" ");
+        row[entityColumnIndex] = [...new Set(entityList)].join(" ");
       });
 
-      return manifestDataRows;
+      return rows;
     };
 
-    const updateModalitiesColumn = (manifestDataRows, datasetEntityObj) => {
+    /**
+     * Update modalities column values.
+     */
+    const updateModalitiesColumn = (rows) => {
       const modalitiesColumnIndex = newManifestData.headers.indexOf("data modality");
-      manifestDataRows.forEach((row) => {
-        // Use the updated path (replace high-level folder with data/)
-        let path = row[0]; // Path is in the first column
+
+      rows.forEach((row) => {
+        let path = row[0];
         const pathSegments = path.split("/");
-        if (pathSegments.length > 0) {
-          pathSegments[0] = "data";
-          path = pathSegments.join("/");
-        }
-        let modalitiesList = [];
+        if (pathSegments.length > 0) pathSegments[0] = "data";
+        path = pathSegments.join("/");
 
-        // Check all modalities
+        const modalitiesList = [];
         for (const [modality, paths] of Object.entries(datasetEntityObj?.modalities || {})) {
-          if (paths?.[path]) {
-            modalitiesList.push(modality);
-          }
+          if (paths?.[path]) modalitiesList.push(modality);
         }
 
-        // Update the modalities column
         row[modalitiesColumnIndex] = modalitiesList.join(" ");
       });
 
-      return manifestDataRows;
+      return rows;
     };
 
-    // Update the column values for entities and modalities
-    updateEntityColumn(newManifestData.data, datasetEntityObj);
-    updateModalitiesColumn(newManifestData.data, datasetEntityObj);
-    window.sodaJSONObj["guided-manifest-file-data"] = window.sodaJSONObj[
-      "guided-manifest-file-data"
-    ]
+    // Merge with existing manifest diff (if any)
+    const guidedManifestData = window.sodaJSONObj["guided-manifest-file-data"]
       ? window.diffCheckManifestFiles(
           newManifestData,
           window.sodaJSONObj["guided-manifest-file-data"]
         )
       : newManifestData;
+
+    updateEntityColumn(guidedManifestData.data);
+    updateModalitiesColumn(guidedManifestData.data);
+
+    // Save final manifest data
+    window.sodaJSONObj["guided-manifest-file-data"] = guidedManifestData;
   }
 };
