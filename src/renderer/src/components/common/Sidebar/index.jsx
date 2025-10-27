@@ -13,6 +13,7 @@ import {
   Divider,
   ScrollArea,
   Paper,
+  Tooltip,
 } from "@mantine/core";
 import classes from "./Sidebar.module.css";
 import LinksGroup from "./LinksGroup.jsx";
@@ -120,9 +121,18 @@ const Sidebar = ({ id }) => {
               <Text size="md" fw={500}>
                 Current Dataset
               </Text>
-              <Text size="lg" fw={550} mt={-5}>
-                {guidedModeSidebarDatasetName}
-              </Text>
+              <Tooltip
+                label={guidedModeSidebarDatasetName}
+                withArrow
+                position="right"
+                multiline
+                maw={300}
+                zIndex={3000}
+              >
+                <Text fw={550} mt={-5} lineClamp={2} ta="center">
+                  {guidedModeSidebarDatasetName}
+                </Text>
+              </Tooltip>
               <Text size="md" fw={500} mt="xl" mb="xs">
                 Page Navigation
               </Text>
