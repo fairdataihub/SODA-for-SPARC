@@ -1,6 +1,6 @@
 import { setPageLoadingState } from "../navigationUtils/pageLoading";
 import useGlobalStore from "../../../../stores/globalStore";
-import { addContributor, renderContributorsTable } from "../../metadata/contributors";
+import { addContributor, renderContributorsTable } from "../../metadata/contributors/contributors";
 import { addGuidedProtocol } from "../../metadata/protocols";
 import Swal from "sweetalert2";
 import Cropper from "cropperjs";

@@ -1,14 +1,22 @@
+// Define once at the top level
+const preferredOrder = [
+  "Experimental",
+  "Code",
+  "Primary",
+  "Source",
+  "Derivative",
+  "Protocol",
+  "Documentation",
+];
+const orderMap = new Map(preferredOrder.map((item, index) => [item, index]));
+
 export const naturalSort = (arr) => {
   return arr.sort((a, b) => {
-    // Ensure "Experimental" always comes first
-    if (a === "Experimental") return -1;
-    if (b === "Experimental") return 1;
+    const aIndex = orderMap.has(a) ? orderMap.get(a) : Infinity;
+    const bIndex = orderMap.has(b) ? orderMap.get(b) : Infinity;
 
-    // Ensure "Code" comes after "Experimental" but before everything else
-    if (a === "Code") return b === "Experimental" ? 1 : -1;
-    if (b === "Code") return a === "Experimental" ? -1 : 1;
+    if (aIndex !== bIndex) return aIndex - bIndex;
 
-    // Apply natural sorting for all other items
     return a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
   });
 };

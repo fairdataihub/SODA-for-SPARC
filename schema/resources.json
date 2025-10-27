@@ -8,6 +8,10 @@
         "type": "string",
         "description": "Unique identifier for the site, typically an RRID"
       },
+      "type": {
+        "type": "string",
+        "description": "The type of resource, e.g., 'instrument', 'software', 'reagent', etc."
+      },
       "name": {
         "type": "string",
         "description": "The resources name"
@@ -34,6 +38,6 @@
         "description": "Additional metadata about the resource, such as usage notes or specific details"
       }
     },
-    "required": ["rrid", "name", "url", "vendor", "version", "id_in_protocol"]
+    "required": ["rrid"]
   }
 }

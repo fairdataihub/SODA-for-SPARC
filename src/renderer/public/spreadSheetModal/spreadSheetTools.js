@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
       let saveAndExitManifest = document.getElementById("manifest-save-exit");
 
       const readOnlyHeaders = ["A", "B", "D"];
-      const columnHeaders = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"];
+      const columnHeaders = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
       if (manifestFileData[0][0] != "filename") {
         manifestFileData.unshift(manifestHeaders);
       }
@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
             readOnly: !!readOnlyHeaders.includes(header),
             type: "text",
             title: header,
-            width: "204px",
+            width: header == "A" ? "360px" : "204px",
           };
         }),
         style: {

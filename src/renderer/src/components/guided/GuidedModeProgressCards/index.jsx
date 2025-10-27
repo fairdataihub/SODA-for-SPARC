@@ -68,6 +68,7 @@ const generateProgressResumptionButton = (
     </Button>
   );
 };
+
 const GuidedModeProgressCards = () => {
   const guidedModeProgressCardsLoadingText = useGlobalStore(
     (state) => state.guidedModeProgressCardsLoadingText
@@ -103,7 +104,13 @@ const GuidedModeProgressCards = () => {
 
           <Stack gap="md" align="center" w="100%">
             {guidedModeProgressCardsDataArray.map((progressFile) => {
-              const progressFileName = progressFile["digital-metadata"]["name"] || "";
+              const datasetName = progressFile["digital-metadata"]["name"] || "";
+              let progressFileName = null;
+              if (progressFile["save-file-name"]) {
+                progressFileName = progressFile["save-file-name"];
+              } else {
+                progressFileName = datasetName;
+              }
               const progressFileSubtitle =
                 progressFile["digital-metadata"]["subtitle"] || "No designated subtitle";
               const bannerImagePath =
@@ -147,6 +154,7 @@ const GuidedModeProgressCards = () => {
                   display="flex"
                   align="center"
                   justify="space-between"
+                  data-dataset-name={datasetName}
                 >
                   <Group w="100%" align="stretch" gap={0}>
                     {/* Section 1: Image */}
@@ -163,7 +171,7 @@ const GuidedModeProgressCards = () => {
                         fit="cover"
                       />
                     ) : (
-                      <Avvvatars value={progressFileName} size={80} style="shape" />
+                      <Avvvatars value={datasetName} size={80} style="shape" />
                     )}
 
                     {/* Section 2: Text */}
@@ -172,10 +180,10 @@ const GuidedModeProgressCards = () => {
                         fw={700}
                         size="lg"
                         lineClamp={1}
-                        title={progressFileName}
+                        title={datasetName}
                         style={{ wordBreak: "break-all" }}
                       >
-                        {progressFileName}
+                        {datasetName}
                       </Text>
                       <Text
                         c="dimmed"
@@ -233,7 +241,7 @@ const GuidedModeProgressCards = () => {
                         leftSection={<IconTrash size={18} />}
                         onClick={() => {
                           if (window.deleteProgressCard) {
-                            window.deleteProgressCard(progressFileName);
+                            window.deleteProgressCard(datasetName, progressFileName);
                           }
                         }}
                       >

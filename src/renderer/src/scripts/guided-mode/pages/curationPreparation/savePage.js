@@ -1,4 +1,3 @@
-import { error } from "jquery";
 import useGlobalStore from "../../../../stores/globalStore";
 import { isCheckboxCardChecked } from "../../../../stores/slices/checkboxCardSlice";
 
@@ -9,28 +8,27 @@ if (!window.fs.existsSync(guidedProgressFilePath)) {
 }
 
 export const getGuidedProgressFileNames = () => {
-  return window.fs
+  const progressFileNames = window.fs
     .readdirSync(guidedProgressFilePath)
-    .map((progressFileName) => progressFileName.replace(".json", ""));
-};
+    .filter((fileName) => fileName.endsWith(".json"));
 
-const updateGuidedDatasetName = (newDatasetName) => {
-  const previousDatasetName = window.sodaJSONObj["digital-metadata"]["name"];
+  const datasetNames = [];
 
-  //update old progress file with new dataset name
-  const oldProgressFilePath = `${guidedProgressFilePath}/${previousDatasetName}.json`;
-  const newProgressFilePath = `${guidedProgressFilePath}/${newDatasetName}.json`;
-  window.fs.renameSync(oldProgressFilePath, newProgressFilePath);
-
-  const bannerImagePathToUpdate = window.sodaJSONObj["digital-metadata"]["banner-image-path"];
-  if (bannerImagePathToUpdate) {
-    const newBannerImagePath = bannerImagePathToUpdate.replace(previousDatasetName, newDatasetName);
-    //Rename the old banner image folder to the new dataset name
-    window.fs.renameSync(bannerImagePathToUpdate, newBannerImagePath);
-    //change the banner image path in the JSON obj
-    window.sodaJSONObj["digital-metadata"]["banner-image-path"] = newBannerImagePath;
+  for (const fileName of progressFileNames) {
+    try {
+      const filePath = window.path.join(guidedProgressFilePath, fileName);
+      const fileContent = window.fs.readFileSync(filePath, "utf-8");
+      const progressData = JSON.parse(fileContent);
+      const datasetName = progressData?.["digital-metadata"]?.["name"];
+      if (datasetName) {
+        datasetNames.push(datasetName);
+      }
+    } catch (error) {
+      console.error(`Error reading progress file ${fileName}:`, error);
+    }
   }
-  window.sodaJSONObj["digital-metadata"]["name"] = newDatasetName;
+
+  return datasetNames;
 };
 
 export const savePageCurationPreparation = async (pageBeingLeftID) => {
@@ -60,63 +58,136 @@ export const savePageCurationPreparation = async (pageBeingLeftID) => {
     const datasetNameInput = useGlobalStore.getState().guidedDatasetName.trim();
     const datasetSubtitleInput = useGlobalStore.getState().guidedDatasetSubtitle.trim();
 
-    //Throw error if no dataset name or subtitle were added
     if (!datasetNameInput) {
-      errorArray.push({
-        type: "notyf",
-        message: "Please enter a dataset name.",
-      });
-    }
-
-    const datasetNameContainsForbiddenCharacters = window.evaluateStringAgainstSdsRequirements(
-      datasetNameInput,
-      "string-contains-forbidden-characters"
-    );
-    if (datasetNameContainsForbiddenCharacters) {
-      errorArray.push({
-        type: "notyf",
-        message: `A Pennsieve dataset name cannot contain any of the following characters: @#$%^&*()+=/\|"'~;:<>{}[]?`,
-      });
+      errorArray.push({ type: "notyf", message: "Please enter a dataset name." });
     }
     if (!datasetSubtitleInput) {
-      errorArray.push({
-        type: "notyf",
-        message: "Please enter a dataset subtitle.",
-      });
+      errorArray.push({ type: "notyf", message: "Please enter a dataset subtitle." });
     }
 
     if (errorArray.length > 0) {
       throw errorArray;
     }
 
-    const currentDatasetName = window.sodaJSONObj["digital-metadata"]["name"];
-    if (currentDatasetName) {
-      // Update the progress file path name and banner image path if needed
-      if (datasetNameInput !== currentDatasetName) {
-        const currentProgressFileNames = getGuidedProgressFileNames();
-        if (currentProgressFileNames.includes(datasetNameInput)) {
-          errorArray.push({
-            type: "notyf",
-            message: `Unable to change dataset name to: ${datasetNameInput}. A dataset with that name already exists.`,
-          });
-          throw errorArray;
-        }
-        updateGuidedDatasetName(datasetNameInput);
-        window.sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
-      } else {
-        window.sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
-      }
-    } else {
-      const currentProgressFileNames = getGuidedProgressFileNames();
-      if (currentProgressFileNames.includes(datasetNameInput)) {
+    window.sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
+
+    const sanitizedDatasetName = window.sanitizeStringForSaveFileSystemSave(datasetNameInput);
+
+    const prevSaveFileName = window.sodaJSONObj?.["save-file-name"];
+    const prevRandomSuffix = window.sodaJSONObj?.["save-file-random-hash-suffix"];
+    const prevDatasetName = window.sodaJSONObj?.["digital-metadata"]?.["name"];
+
+    window.log.info("[guided-name-subtitle-tab] Previous save info:", {
+      prevDatasetName,
+      prevSaveFileName,
+      prevRandomSuffix,
+    });
+
+    if (!prevDatasetName) {
+      const existingProgressFileNames = getGuidedProgressFileNames();
+      if (existingProgressFileNames.includes(datasetNameInput)) {
         errorArray.push({
           type: "notyf",
-          message: `A progress file already exists for the dataset: ${datasetNameInput}. Please enter a different dataset name.`,
+          message:
+            "A dataset with this name already exists. Please choose a different name or resume your previous progress by navigating back.",
         });
         throw errorArray;
       }
-      window.sodaJSONObj["digital-metadata"]["name"] = datasetNameInput;
-      window.sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
     }
+
+    const randomString = Math.random().toString(16).slice(2, 10);
+    const newSaveFileName = `${sanitizedDatasetName}-${prevRandomSuffix || randomString}`;
+
+    window.log.info("[guided-name-subtitle-tab] New save file info:", {
+      sanitizedDatasetName,
+      randomString,
+      newSaveFileName,
+    });
+
+    window.sodaJSONObj["save-file-name"] = newSaveFileName;
+    if (!prevRandomSuffix) {
+      window.sodaJSONObj["save-file-random-hash-suffix"] = randomString;
+    }
+
+    const shouldRename =
+      prevSaveFileName && prevDatasetName && prevDatasetName !== datasetNameInput;
+
+    window.log.info("[guided-name-subtitle-tab] Rename check:", {
+      prevDatasetName,
+      prevSaveFileName,
+      shouldRename,
+    });
+
+    if (shouldRename) {
+      window.log.info(
+        `[guided-name-subtitle-tab] Dataset name change detected: ${prevDatasetName} → ${datasetNameInput}`
+      );
+
+      const existingProgressFileNames = getGuidedProgressFileNames();
+      const filteredExistingProgressFileNames = existingProgressFileNames.filter(
+        (name) => name !== prevDatasetName
+      );
+
+      if (filteredExistingProgressFileNames.includes(datasetNameInput)) {
+        errorArray.push({
+          type: "notyf",
+          message: "A dataset with this name already exists. Please choose a different name.",
+        });
+        throw errorArray;
+      }
+
+      const oldProgressFilePath = `${guidedProgressFilePath}/${prevSaveFileName}.json`;
+      const newProgressFilePath = `${guidedProgressFilePath}/${newSaveFileName}.json`;
+
+      window.log.info("[guided-name-subtitle-tab] Renaming progress file:", {
+        oldProgressFilePath,
+        newProgressFilePath,
+      });
+
+      if (oldProgressFilePath !== newProgressFilePath) {
+        try {
+          window.fs.renameSync(oldProgressFilePath, newProgressFilePath);
+          window.log.info(
+            `[guided-name-subtitle-tab] Successfully renamed progress file: ${prevSaveFileName} → ${newSaveFileName}`
+          );
+        } catch (error) {
+          window.log.error(
+            `[guided-name-subtitle-tab] Error renaming guided progress file from ${oldProgressFilePath} → ${newProgressFilePath}:`,
+            error
+          );
+        }
+
+        const bannerImagePathToUpdate = window.sodaJSONObj["digital-metadata"]["banner-image-path"];
+        if (bannerImagePathToUpdate) {
+          const newBannerImagePath = bannerImagePathToUpdate.replace(
+            prevSaveFileName,
+            newSaveFileName
+          );
+
+          window.log.info("[guided-name-subtitle-tab] Renaming banner image folder:", {
+            old: bannerImagePathToUpdate,
+            new: newBannerImagePath,
+          });
+
+          try {
+            window.fs.renameSync(bannerImagePathToUpdate, newBannerImagePath);
+            window.sodaJSONObj["digital-metadata"]["banner-image-path"] = newBannerImagePath;
+            window.log.info(
+              `[guided-name-subtitle-tab] Successfully renamed banner image folder: ${bannerImagePathToUpdate} → ${newBannerImagePath}`
+            );
+          } catch (error) {
+            window.log.error(
+              `[guided-name-subtitle-tab] Error renaming banner image folder from ${bannerImagePathToUpdate} → ${newBannerImagePath}:`,
+              error
+            );
+          }
+        }
+      }
+    } else {
+      window.log.info("[guided-name-subtitle-tab] Skipping rename (no previous save or no change)");
+    }
+
+    window.sodaJSONObj["digital-metadata"]["name"] = datasetNameInput;
+    window.log.info("[guided-name-subtitle-tab] Finalized dataset name:", datasetNameInput);
   }
 };

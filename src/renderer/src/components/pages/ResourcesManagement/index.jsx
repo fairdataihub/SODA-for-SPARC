@@ -39,6 +39,7 @@ import {
   setVendor,
   setVersion,
   setIdInProtocol,
+  setAdditionalMetadata,
   addResource,
   updateResource,
   deleteResource,
@@ -74,9 +75,26 @@ const ResourceMetadataForm = () => {
   const vendor = useGlobalStore((state) => state.vendor);
   const version = useGlobalStore((state) => state.version);
   const id_in_protocol = useGlobalStore((state) => state.id_in_protocol);
+  const additional_metadata = useGlobalStore((state) => state.additional_metadata);
 
   return (
     <Stack spacing="md">
+      <TextInput
+        label="RRID (Research Resource Identifier)"
+        description={
+          <>
+            Enter the RRID for this resource. To find or verify RRIDs, visit{" "}
+            <a href="https://rrid.site" target="_blank" rel="noopener noreferrer">
+              rrid.site
+            </a>
+            .
+          </>
+        }
+        placeholder="e.g., RRID:AB_123456"
+        value={rrid}
+        onChange={(event) => setRrid(event.currentTarget.value)}
+        required
+      />
       <TextInput
         label="Resource Name"
         description="Enter the name of the resource"
@@ -93,20 +111,16 @@ const ResourceMetadataForm = () => {
         onChange={(value) => setType(value)}
       />
       <TextInput
-        label="RRID (Research Resource Identifier)"
-        description="Enter the standardized RRID if available"
-        placeholder="e.g., RRID:AB_123456"
-        value={rrid}
-        onChange={(event) => setRrid(event.currentTarget.value)}
-      />
-
-      <TextInput
         label="URL"
         description="Link to the resource documentation or website"
         placeholder="e.g., https://example.com"
         value={url}
         onChange={(event) => setUrl(event.currentTarget.value)}
-        error={url && !matchesHttpPattern(url) ? "URL must start with http:// or https://" : null}
+        error={
+          url && url.length > 1 && !url.toLowerCase().startsWith("h") && !matchesHttpPattern(url)
+            ? "URL must start with http:// or https://"
+            : null
+        }
       />
 
       <TextInput
@@ -132,12 +146,21 @@ const ResourceMetadataForm = () => {
         value={id_in_protocol}
         onChange={(event) => setIdInProtocol(event.currentTarget.value)}
       />
+
+      <TextInput
+        label="Additional Metadata"
+        description="Any additional information about the resource"
+        placeholder="e.g., Specific usage notes or details"
+        value={additional_metadata}
+        onChange={(event) => setAdditionalMetadata(event.currentTarget.value)}
+      />
     </Stack>
   );
 };
 
 const ResourcesManagementPage = () => {
   const isResourceFormVisible = useGlobalStore((state) => state.isResourceFormVisible);
+  const rrid = useGlobalStore((state) => state.rrid);
   const name = useGlobalStore((state) => state.name);
   const url = useGlobalStore((state) => state.url);
   const resourceList = useGlobalStore((state) => state.resourceList);
@@ -145,9 +168,10 @@ const ResourcesManagementPage = () => {
   const originalResourceName = useGlobalStore((state) => state.originalResourceName);
 
   const validateResourceForm = () => {
-    const resourceNameIsValid = name && name.trim().length > 0;
+    const rridIsValid = rrid && rrid.trim().length > 0;
+    const nameIsValid = name && name.trim().length > 0;
     const urlIsValid = !url || matchesHttpPattern(url);
-    return resourceNameIsValid && urlIsValid;
+    return rridIsValid && nameIsValid && urlIsValid;
   };
 
   // Validation for add/update button
@@ -164,6 +188,7 @@ const ResourcesManagementPage = () => {
     setVendor(resource.vendor || "");
     setVersion(resource.version || "");
     setIdInProtocol(resource.id_in_protocol || "");
+    setAdditionalMetadata(resource.additional_metadata || "");
     setResourceFormVisible(true);
   };
 
@@ -178,6 +203,7 @@ const ResourcesManagementPage = () => {
     setVendor("");
     setVersion("");
     setIdInProtocol("");
+    setAdditionalMetadata("");
     setResourceFormVisible(true);
   };
 

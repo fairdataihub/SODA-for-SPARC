@@ -1,19 +1,7 @@
-import { getGuidedProgressFileNames } from "./curationPreparation/savePage";
-import {
-  guidedUnSkipPage,
-  getNextPageNotSkipped,
-  getPrevPageNotSkipped,
-  guidedSkipPage,
-  getNonSkippedGuidedModePages,
-} from "./navigationUtils/pageSkipping";
+import { getNextPageNotSkipped, getPrevPageNotSkipped } from "./navigationUtils/pageSkipping";
 import { guidedUnLockSideBar, resetLazyLoading } from "../../../assets/nav";
-import api from "../../others/api/api";
-import lottie from "lottie-web";
-import { existingDataset, modifyDataset } from "../../../assets/lotties/lotties";
 import Swal from "sweetalert2";
-import { clientError } from "../../others/http-error-handler/error-handler";
-import client from "../../client";
-import { swalShowError, swalShowInfo } from "../../utils/swal-utils";
+import { swalShowError } from "../../utils/swal-utils";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));

@@ -28,40 +28,42 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     const selectedEntities = useGlobalStore.getState()["selectedEntities"];
     const deSelectedEntities = useGlobalStore.getState()["deSelectedEntities"];
     // Check if any selections were made
-    if (selectedEntities.length === 0) {
+    if (!selectedEntities.includes("subjects") && !selectedEntities.includes("code")) {
       errorArray.push({
         type: "notyf",
-        message: "Please select 'Yes' for at least one dataset content option before continuing.",
+        message: "You must indicate that your dataset contains subjects and/or code",
       });
       throw errorArray;
     }
 
-    // If subjects is selected, verify all questions that should be visible were answered
-    if (selectedEntities.includes("subjects")) {
-      // Determine which questions should be visible based on dependencies
-      const visibleQuestions = Object.keys(contentOptionsMap).filter((key) => {
-        const option = contentOptionsMap[key];
-        // If this option has dependencies, check them all
-        if (option.dependsOn && option.dependsOn.length > 0) {
-          for (const dependency of option.dependsOn) {
-            if (deSelectedEntities.includes(dependency) || !selectedEntities.includes(dependency)) {
-              return false; // This question shouldn't be visible
-            }
+    const visibleQuestions = Object.keys(contentOptionsMap).filter((key) => {
+      const option = contentOptionsMap[key];
+      // If this option has dependencies, check them all
+      if (option.dependsOn && option.dependsOn.length > 0) {
+        for (const dependency of option.dependsOn) {
+          if (deSelectedEntities.includes(dependency) || !selectedEntities.includes(dependency)) {
+            return false; // This question shouldn't be visible
           }
         }
-        return true; // This question should be visible
-      });
-
-      // Now check if all visible questions were answered
-      for (const entity of visibleQuestions) {
-        if (!selectedEntities.includes(entity) && !deSelectedEntities.includes(entity)) {
-          errorArray.push({
-            type: "notyf",
-            message: "Please answer all questions before continuing.",
-          });
-          throw errorArray;
-        }
       }
+      return true; // This question should be visible
+    });
+
+    // Now check if all visible questions were answered
+    for (const entity of visibleQuestions) {
+      if (!selectedEntities.includes(entity) && !deSelectedEntities.includes(entity)) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please answer all questions before continuing.",
+        });
+        throw errorArray;
+      }
+    }
+
+    // If subjects is selected, verify all questions that should be visible were answered
+    if (selectedEntities.includes("subjects")) {
+      // Unskip all of the experimental pages
+      guidedUnSkipPageSet("guided-experimental-dataset-page-set");
 
       // If the dataset contains subjects, assume it is experimental by default
       window.sodaJSONObj["dataset-type"] = "experimental";
@@ -75,7 +77,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
-      // If subjects is No, code must be Yes
+      // At this point, we can infer that the dataset does not have subjects
       if (!selectedEntities.includes("code")) {
         errorArray.push({
           type: "notyf",
@@ -84,8 +86,10 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
         });
         throw errorArray;
       }
+      // Skip all of the experimental pages
+      guidedSkipPageSet("guided-experimental-dataset-page-set");
 
-      // If subjects is not selected (only code), assume it is computational by default
+      // At this point, we can infer that the dataset has code but no subjects (Computational workflow)
       window.sodaJSONObj["dataset-type"] = "computational";
     }
 
@@ -93,12 +97,10 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     window.sodaJSONObj["selected-entities"] = selectedEntities;
     window.sodaJSONObj["deSelected-entities"] = deSelectedEntities;
 
-    if (!selectedEntities.includes("subjects") && !selectedEntities.includes("code")) {
-      errorArray.push({
-        type: "notyf",
-        message: "You must indicate that your dataset contains subjects and/or code",
-      });
-      throw errorArray;
+    if (selectedEntities.includes("code")) {
+      guidedSkipPage("guided-add-code-metadata-tab");
+    } else {
+      guidedSkipPage("guided-add-code-metadata-tab");
     }
 
     // Handle page skipping based on selections
@@ -114,7 +116,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       guidedSkipPageSet("guided-subjects-metadata-page-set");
     }
 
-    if (selectedEntities.includes("samples")) {
+    if (selectedEntities.includes("subjects") && selectedEntities.includes("samples")) {
       guidedUnSkipPageSet("guided-samples-metadata-page-set");
     } else {
       // Delete the existing samples metadata if it exists
@@ -126,7 +128,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       guidedSkipPageSet("guided-samples-metadata-page-set");
     }
 
-    if (selectedEntities.includes("sites")) {
+    if (selectedEntities.includes("subjects") && selectedEntities.includes("sites")) {
       guidedUnSkipPageSet("guided-sites-metadata-page-set");
     } else {
       guidedSkipPageSet("guided-sites-metadata-page-set");
@@ -138,7 +140,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       }
     }
 
-    if (selectedEntities.includes("performances")) {
+    if (selectedEntities.includes("subjects") && selectedEntities.includes("performances")) {
       guidedUnSkipPageSet("guided-performances-metadata-page-set");
     } else {
       guidedSkipPageSet("guided-performances-metadata-page-set");
@@ -148,52 +150,6 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
         delete window.sodaJSONObj["dataset_metadata"]["performances"];
       }
     }
-
-    if (selectedEntities.includes("code")) {
-      guidedSkipPage("guided-add-code-metadata-tab");
-    } else {
-      guidedSkipPage("guided-add-code-metadata-tab");
-    }
-  }
-
-  if (pageBeingLeftID === "guided-entity-addition-method-selection-tab") {
-    // Add validation logic for guided-entity-addition-method-selection-tab if needed
-  }
-
-  if (pageBeingLeftID === "guided-manual-dataset-entity-and-metadata-tab") {
-    // Add validation logic for guided-manual-dataset-entity-and-metadata-tab if needed
-  }
-
-  if (pageBeingLeftID === "guided-spreadsheet-import-dataset-entity-and-metadata-tab") {
-    // Add validation logic for guided-spreadsheet-import-dataset-entity-and-metadata-tab if needed
-  }
-
-  if (pageBeingLeftID === "guided-sites-selection-tab") {
-    // Add validation logic for guided-sites-selection-tab if needed
-  }
-
-  if (pageBeingLeftID === "guided-samples-selection-tab") {
-    // Add validation logic for guided-samples-selection-tab if needed
-  }
-
-  if (pageBeingLeftID === "guided-subjects-selection-tab") {
-    // Add validation logic for guided-subjects-selection-tab if needed
-  }
-
-  if (pageBeingLeftID === "guided-performances-entity-addition-tab") {
-    // Add validation logic for guided-performances-entity-addition-tab if needed
-  }
-
-  if (pageBeingLeftID === "guided-Performances-selection-tab") {
-    // Add validation logic for guided-Performances-selection-tab if needed
-  }
-
-  if (pageBeingLeftID === "guided-modalities-selection-tab") {
-    // Page logic handled by the component nothing to do here
-  }
-
-  if (pageBeingLeftID === "guided-modalities-data-selection-tab") {
-    // Add validation logic for guided-modalities-data-selection-tab if needed
   }
 
   if (pageBeingLeftID === "guided-dataset-structure-and-manifest-review-tab") {

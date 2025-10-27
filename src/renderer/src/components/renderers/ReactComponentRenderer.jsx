@@ -167,7 +167,6 @@ const componentTypeRenderers = {
     const props = {
       pageName: componentSlot.getAttribute("data-page-name"),
       entityTypeStringSingular: componentSlot.getAttribute("data-entity-type-string-singular"),
-      entityTypeStringPlural: componentSlot.getAttribute("data-entity-type-string-plural"),
       entityTypePrefix: componentSlot.getAttribute("data-entity-type-prefix"),
     };
     renderComponent(componentSlot, <PerformanceIdManagementPage {...props} />);
@@ -207,7 +206,6 @@ const componentTypeRenderers = {
     const props = {
       pageName: componentSlot.getAttribute("data-page-name"),
       entityTypeStringSingular: componentSlot.getAttribute("data-entity-type-string-singular"),
-      entityTypeStringPlural: componentSlot.getAttribute("data-entity-type-string-plural"),
       showProgress: componentSlot.getAttribute("data-show-progress") || false,
     };
     renderComponent(componentSlot, <EntityDataSelectorPage {...props} />);

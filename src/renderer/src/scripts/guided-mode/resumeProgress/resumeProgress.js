@@ -22,10 +22,10 @@ while (!window.baseHtmlLoaded) {
 
 /**
  *
- * @param {string} datasetNameToResume - The name of the dataset associated with the save progress file the user wants to resume.
+ * @param {string} progressFileName - The name of the dataset associated with the save progress file the user wants to resume.
  * @description Read the given progress file and resume the Prepare Dataset Step-by-Step workflow where the user last left off.
  */
-window.guidedResumeProgress = async (datasetNameToResume) => {
+window.guidedResumeProgress = async (progressFileName) => {
   const loadingSwal = Swal.fire({
     title: "Resuming where you last left off",
     html: `
@@ -54,7 +54,7 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
   try {
-    const datasetResumeJsonObj = await getProgressFileData(datasetNameToResume);
+    const datasetResumeJsonObj = await getProgressFileData(progressFileName);
     // Datasets successfully uploaded will have the "dataset-successfully-uploaded-to-pennsieve" key
     const datasetHasAlreadyBeenSuccessfullyUploaded =
       datasetResumeJsonObj["dataset-successfully-uploaded-to-pennsieve"];

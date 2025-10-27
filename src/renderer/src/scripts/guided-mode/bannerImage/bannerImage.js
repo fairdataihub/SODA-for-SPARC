@@ -14,8 +14,8 @@ export const guidedSaveBannerImage = async () => {
   } else {
     imageType = "image/jpeg";
   }
-  let datasetName = window.sodaJSONObj["digital-metadata"]["name"];
-  let imagePath = window.path.join(imageFolder, `${datasetName}.` + window.imageExtension);
+  let saveFileName = window.sodaJSONObj["save-file-name"];
+  let imagePath = window.path.join(imageFolder, `${saveFileName}.` + window.imageExtension);
   let croppedImageDataURI = window.myCropper.getCroppedCanvas().toDataURL(imageType);
   imageDataURI.outputFile(croppedImageDataURI, imagePath).then(async () => {
     let image_file_size = window.fs.fileSizeSync(imagePath);
