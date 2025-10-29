@@ -250,11 +250,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     // Get acknowledgments and funding
     const acknowledgmentsInput = document.getElementById("guided-ds-acknowledgments");
     const acknowledgments = acknowledgmentsInput.value.trim() || "";
-    let fundingString = "";
-    const otherFunding = window.getTagsFromTagifyElement(guidedOtherFundingsourcesTagify);
-    if (otherFunding.length > 0) {
-      fundingString = otherFunding.join(", ");
-    }
+    const fundingArray = window.getTagsFromTagifyElement(guidedOtherFundingsourcesTagify);
 
     // Get the properties from the submission page to re-use in the dataset_description metadata
     const fundingConsortium =
@@ -282,16 +278,18 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     window.sodaJSONObj["dataset_metadata"]["dataset_description"] = {
       metadata_version: metadataVersion,
       dataset_type: datasetType,
-      standards_information: {
-        data_standard: "SPARC",
-        data_standard_version: "3.0.0",
-      },
+      standards_information: [
+        {
+          data_standard: "SPARC",
+          data_standard_version: "3.0.0",
+        },
+      ],
       basic_information: {
         title,
         subtitle,
         description: subtitle,
         keywords: keywordArray,
-        funding: fundingString,
+        funding: fundingArray,
         acknowledgments: acknowledgments,
         license: "", // The license key is set on the dedicated license page
       },
