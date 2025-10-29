@@ -12,6 +12,25 @@ export const guidedDatasetKeywordsTagify = new Tagify(guidedDatasetKeyWordsInput
 const guidedOtherFundingSourcesInput = document.getElementById("guided-ds-other-funding");
 export const guidedOtherFundingsourcesTagify = new Tagify(guidedOtherFundingSourcesInput, {
   duplicates: false,
+  editTags: 1, // Allow editing tags by clicking on them
+  dropdown: {
+    enabled: 0, // Disable dropdown
+  },
+  templates: {
+    tag: function (tagData) {
+      // Custom template to ensure the remove button is always visible
+      const title = tagData.title || tagData.value;
+      const displayValue = title.length > 50 ? title.substring(0, 50) + "..." : title;
+      return `
+        <tag title="${title}" contenteditable='false' spellcheck='false' tabIndex="-1" class="tagify__tag" ${this.getAttributes(
+          tagData
+        )}>
+          <x title='remove tag' class="tagify__tag__removeBtn" role='button' aria-label='remove tag'></x>
+          <div class="tagify__tag-text">${displayValue}</div>
+        </tag>
+      `;
+    },
+  },
 });
 window.createDragSort(guidedOtherFundingsourcesTagify);
 const guidedStudyOrganSystemsInput = document.getElementById("guided-ds-study-organ-system");
