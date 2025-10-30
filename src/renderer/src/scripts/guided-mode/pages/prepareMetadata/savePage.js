@@ -14,7 +14,10 @@ import {
   getExistingSubjects,
   getExistingSamples,
 } from "../../../../stores/slices/datasetEntityStructureSlice";
-import { CONTRIBUTORS_REGEX } from "../../metadata/contributors/contributorsValidation";
+import {
+  CONTRIBUTORS_REGEX,
+  affiliationRorIsValid,
+} from "../../metadata/contributors/contributorsValidation";
 
 import { getDropDownState } from "../../../../stores/slices/dropDownSlice";
 import { pennsieveDatasetSelectSlice } from "../../../../stores/slices/pennsieveDatasetSelectSlice";
@@ -166,13 +169,22 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     const contributorInformation = window.sodaJSONObj["dataset_contributors"] || [];
     // Validate the contributor names match the Regular Expression
     contributorInformation.forEach((contributor) => {
+      console.log("Validating contributor:", contributor);
       if (!CONTRIBUTORS_REGEX.test(contributor["contributor_name"])) {
         errorArray.push({
           type: "notyf",
           message: `The contributor name "${contributor["contributor_name"]}" is not in the correct format. Please use the format: Last, First Middle.`,
         });
       }
+
+      if (!affiliationRorIsValid(contributor["contributor_affiliation"])) {
+        errorArray.push({
+          type: "notyf",
+          message: `The contributor affiliation "${contributor["contributor_affiliation"]}" is not a valid ROR. Please use a valid ROR format (e.g., https://ror.org/04ttjf776).`,
+        });
+      }
     });
+
     if (errorArray.length > 0) {
       throw errorArray;
     }

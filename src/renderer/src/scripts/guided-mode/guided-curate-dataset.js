@@ -10,6 +10,8 @@ import {
   CONTRIBUTORS_REGEX,
   CONTRIBUTORS_LAST_NAME_REGEX,
   CONTRIBUTORS_FIRST_NAME_REGEX,
+  orcidIsValid,
+  affiliationRorIsValid,
 } from "./metadata/contributors/contributorsValidation";
 import { generateAlertElement } from "./metadata/utils";
 import determineDatasetLocation from "../analytics/analytics-utils";
@@ -1246,43 +1248,45 @@ const handleAddOrEditContributorHeaderUI = (boolEditingContributor) => {
   }
 
   const contributorOptions = locallyStoredContributorArray.map((contributor) => {
+    const escapeName = (str) => (str || "").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+
     return `
         <option
-          value='${contributor.contributor_name}'
-          data-contributor-name='${contributor.contributor_name ?? ""}'
-          data-orcid='${contributor.contributor_orcid_id ?? ""}'
-          data-affiliation='${contributor.contributor_affiliation ?? ""}'
-          data-roles='${contributor.contributor_role ?? ""}'
+          value="${escapeName(contributor.contributor_name)}"
+          data-contributor-name="${escapeName(contributor.contributor_name)}"
+          data-orcid="${escapeName(contributor.contributor_orcid_id)}"
+          data-affiliation="${escapeName(contributor.contributor_affiliation)}"
+          data-roles="${escapeName(contributor.contributor_role)}"
         >
-          ${contributor.contributor_name}
+          ${escapeName(contributor.contributor_name)}
         </option>
       `;
   });
 
   return `
-    <label class="guided--form-label centered mb-2" style="font-size: 1em !important;">
-      If the contributor has been previously added, select them from the dropdown below.
-    </label>
-    <select
-      class="w-100 SODA-select-picker"
-      id="guided-stored-contributors-select"
-      data-live-search="true"
-      name="Dataset contributor"
-    >
-      <option
-        value=""
-        data-contributor-name=""
-        data-orcid=""
-        data-affiliation=""
-        data-roles=""
+      <label class="guided--form-label centered mb-2" style="font-size: 1em !important;">
+        If the contributor has been previously added, select them from the dropdown below.
+      </label>
+      <select
+        class="w-100 SODA-select-picker"
+        id="guided-stored-contributors-select"
+        data-live-search="true"
+        name="Dataset contributor"
       >
-        Select a saved contributor
-      </option>
-      ${contributorOptions}
-    </select>
-    <label class="guided--form-label centered mt-2" style="font-size: 1em !important;">
-      Otherwise, enter the contributor's information below.
-    </label>
+        <option
+          value=""
+          data-contributor-name=""
+          data-orcid=""
+          data-affiliation=""
+          data-roles=""
+        >
+          Select a saved contributor
+        </option>
+        ${contributorOptions}
+      </select>
+      <label class="guided--form-label centered mt-2" style="font-size: 1em !important;">
+        Otherwise, enter the contributor's information below.
+      </label>
   `;
 };
 
@@ -1457,9 +1461,7 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
       // merge the name back together after validation to ensure proper spacing was added to first and middle name section
       contributorName = `${lastName},${firstAndMiddleName}`;
 
-      // Regex to check ORCID format (plain or full URL)
-      const orcidFormatRegex = /^(https:\/\/orcid\.org\/)?\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/i;
-      if (!orcidFormatRegex.test(contributorOrcidInput)) {
+      if (!orcidIsValid(contributorOrcidInput)) {
         return Swal.showValidationMessage(
           "ORCID must be in the format https://orcid.org/0000-0000-0000-0000 OR 0000-0000-0000-0000"
         );
@@ -1476,6 +1478,13 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
       }
 
       const storedOrcid = ORCID.toUriWithProtocol(normalizedOrcid);
+
+      // validate that the affiliation is a valid ROR
+      if (!affiliationRorIsValid(contributorAffiliation)) {
+        return Swal.showValidationMessage(
+          "The affiliation must be a valid ROR. For example: https://ror.org/04ttjf776"
+        );
+      }
 
       try {
         if (contributorIdToEdit) {
