@@ -1333,8 +1333,8 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
           If your contributor does not have an ORCID, have the contributor <a target="_blank" href="https://orcid.org/register">sign up for one here</a>.
         </p>
         <label class="guided--form-label mt-md required">Affiliation:</label>
-        <input class="guided--input" id="guided-contributor-affiliation-input" type="text" placeholder="Institution name" value="${defaultAffiliation}" />
-        <p class="guided--text-input-instructions mb-0 text-left">Institution the contributor is affiliated with.</p>
+        <input class="guided--input" id="guided-contributor-affiliation-input" type="text" placeholder="Institution ROR" value="${defaultAffiliation}" />
+        <p class="guided--text-input-instructions mb-0 text-left">Institution the contributor is affiliated with. Should be formatted as an ROR organization identifier(e.g., https://ror.org/00abcdef).</p>
         <label class="guided--form-label mt-md required">Role:</label>
         <select id="guided-contributor-role-select" class="w-100 SODA-select-picker" title="Select a role" data-live-search="true">
           <option value="">Select a role</option>
