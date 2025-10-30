@@ -260,6 +260,9 @@ window.openPage = async (targetPageID) => {
         const pageEntityType = targetPageDataset.entityType;
         const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
         const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
+
+        // Filter out any file/folder references from the entity object that no longer exist in the dataset structure
+        // This prevents errors when users delete files/folders after previously assigning them to entities
         const filteredDatasetEntityObj =
           filterRemovedFilesFromDatasetEntityObj(savedDatasetEntityObj);
         setDatasetEntityObj(filteredDatasetEntityObj);

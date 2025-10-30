@@ -9,43 +9,83 @@ import SodaGreenPaper from "../../utils/ui/SodaGreenPaper";
 export const contentOptionsMap = {
   subjects: {
     label: "Did your research involve human or animal subjects?",
-    description:
+    dropDownDescription:
       "Select yes if you gathered data directly from living organisms such as human participants, laboratory animals, or other biological subjects. Examples include medical patients, experimental animals, behavioral study participants, etc.",
     ml: 0,
   },
   samples: {
     label: "Did you collect biological or physical samples from your subjects?",
-    description:
+    dropDownDescription:
       "Select yes if you obtained physical specimens such as tissue, blood, urine, or other biological materials from your human or animal subjects. This applies when you collected actual samples, not just measurements or observations.",
-    dependsOn: ["subjects"],
+    requiresAnswer: ["subjects"],
     ml: 10,
   },
   sites: {
     label:
       "Did you collect data from specific anatomical locations that need to be tracked separately?",
-    description:
+    dropDownDescription:
       "Select yes if you gathered data from different specific locations (e.g., brain regions, tissue sections, organ areas) within your subjects or samples, AND these locations need separate metadata. Examples include: recordings from multiple brain areas, measurements from different parts of an organ, or microscopy of different regions within a tissue sample.",
-    dependsOn: ["subjects", "samples"],
+    requiresAnswer: ["subjects", "samples"],
     ml: 10,
   },
-
   performances: {
     label: "Did you collect data from subjects across multiple sessions or time points?",
-    description:
+    dropDownDescription:
       "Select yes if you performed procedures on the same subjects at different times or under different conditions. Examples include: follow-up measurements, varied stimulation parameters, different behavioral tests, sequential imaging sessions, or any case where you need to track which protocol or time point generated specific data.",
-    dependsOn: ["subjects"],
+    requiresAnswer: ["subjects"],
     ml: 10,
   },
   code: {
     label: "Did you use code to generate or analyze your data?",
-    description:
+    dropDownDescription:
       "Select yes if your research involved computational tools, scripts, or analysis pipelines that were important for generating or analyzing your data. This includes custom code, analysis scripts, and simulation software relevant to understanding your results.",
     ml: 0,
+  },
+  primary: {
+    label: "Primary data?",
+    description: "Original data collected directly from experiments",
+    dropDownDescription:
+      "Select yes if your dataset includes original data collected directly from experiments or observations, as opposed to derived or processed data.",
+    ml: 0,
+    requiresSelection: ["subjects", "code"],
+  },
+  source: {
+    label: "Source data?",
+    description: "Raw or unprocessed data files",
+    dropDownDescription:
+      "Select yes if your dataset contains raw or unprocessed data files that serve as the original source for analysis.",
+    ml: 0,
+    requiresSelection: ["subjects", "code"],
+  },
+  derivative: {
+    label: "Derivative data?",
+    description: "Processed or analyzed data from original sources",
+    dropDownDescription:
+      "Select yes if your dataset includes data that has been processed, transformed, or analyzed from the original raw data.",
+    ml: 0,
+    requiresSelection: ["subjects", "code"],
+  },
+  protocol: {
+    label: "Protocol data?",
+    description: "Files describing methods and procedures",
+    dropDownDescription:
+      "Select yes if your dataset contains protocol files that describe the methods and procedures used during data collection or analysis.",
+    ml: 0,
+    requiresSelection: ["subjects", "code"],
+  },
+  docs: {
+    label: "Documentation data?",
+    description: "Supplementary materials and explanatory documents",
+    dropDownDescription:
+      "Select yes if your dataset includes supplementary materials such as readme files, data dictionaries, or other documents that provide context and explanations for the data.",
+    ml: 0,
+    requiresSelection: ["subjects", "code"],
   },
 };
 
 const DatasetContentSelector = () => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
+  console.log("Selected Entities:", selectedEntities);
   const deSelectedEntities = useGlobalStore((state) => state.deSelectedEntities);
   const [expanded, setExpanded] = useState({});
 
@@ -76,15 +116,25 @@ const DatasetContentSelector = () => {
   }, []);
 
   const visibleQuestions = Object.entries(contentOptionsMap).filter(([key, option]) => {
-    // If this option has dependencies
-    if (option.dependsOn && option.dependsOn.length > 0) {
-      // Check ALL dependencies - must have ALL dependencies selected to show the question
-      for (const dependency of option.dependsOn) {
-        if (deSelectedEntities.includes(dependency) || !selectedEntities.includes(dependency)) {
-          return false; // Hide the question if any dependency is not satisfied
+    // Check requiresAnswer dependencies (need "yes" answers)
+    if (option.requiresAnswer && option.requiresAnswer.length > 0) {
+      for (const dependency of option.requiresAnswer) {
+        if (!selectedEntities.includes(dependency)) {
+          return false; // Hide if dependency doesn't have a "yes" answer
         }
       }
     }
+
+    // Check requiresSelection dependencies (need any answer)
+    if (option.requiresSelection && option.requiresSelection.length > 0) {
+      // ALL dependencies need to be answered (either yes or no)
+      for (const dependency of option.requiresSelection) {
+        if (!selectedEntities.includes(dependency) && !deSelectedEntities.includes(dependency)) {
+          return false; // Hide if any dependency hasn't been answered
+        }
+      }
+    }
+
     return true; // Show the question if all dependencies are satisfied or it has no dependencies
   });
 
@@ -122,35 +172,43 @@ const DatasetContentSelector = () => {
                   borderRadius: "6px",
                 }}
               >
-                <Group position="apart" align="center">
-                  <Text size="md" fw={600}>
-                    {option.label}
-                  </Text>
-
-                  {option.description && (
-                    <Tooltip
-                      label={expanded[key] ? "Hide description" : "Show description"}
-                      zIndex={2999}
-                    >
-                      <ActionIcon
-                        size="sm"
-                        variant="transparent"
-                        onClick={() => toggleExpanded(key)}
-                      >
-                        {expanded[key] ? (
-                          <IconChevronUp size={16} />
-                        ) : (
-                          <IconChevronDown size={16} />
-                        )}
-                      </ActionIcon>
-                    </Tooltip>
-                  )}
+                <Group position="apart" align="flex-start">
+                  <div style={{ flex: 1 }}>
+                    <Group align="center" spacing="xs">
+                      <Text size="md" fw={600}>
+                        {option.label}
+                      </Text>
+                      {option.dropDownDescription && (
+                        <Tooltip
+                          label={expanded[key] ? "Hide details" : "Show details"}
+                          zIndex={2999}
+                        >
+                          <ActionIcon
+                            size="sm"
+                            variant="transparent"
+                            onClick={() => toggleExpanded(key)}
+                          >
+                            {expanded[key] ? (
+                              <IconChevronUp size={16} />
+                            ) : (
+                              <IconChevronDown size={16} />
+                            )}
+                          </ActionIcon>
+                        </Tooltip>
+                      )}
+                    </Group>
+                    {option.description && (
+                      <Text c="dimmed" mt={2}>
+                        {option.description}
+                      </Text>
+                    )}
+                  </div>
                 </Group>
 
-                {expanded[key] && (
+                {expanded[key] && option.dropDownDescription && (
                   <Box mb="md">
                     <SodaGreenPaper mt="sm" mb="sm">
-                      <Text>{option.description}</Text>
+                      <Text>{option.dropDownDescription}</Text>
                     </SodaGreenPaper>
                   </Box>
                 )}

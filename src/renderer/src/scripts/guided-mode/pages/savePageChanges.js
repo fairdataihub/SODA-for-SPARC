@@ -14,6 +14,7 @@ import {
   getExistingSamples,
   getExistingSites,
 } from "../../../stores/slices/datasetEntityStructureSlice";
+import { swalConfirmAction } from "../../utils/swal-utils";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -152,6 +153,15 @@ export const savePageChanges = async (pageBeingLeftID) => {
 
           // If the user has not categorized any files, throw an error
           if (categorizedFileCount === 0) {
+            // Call swalConfirmAction to show a confirmation dialog
+            const confirmResult = await swalConfirmAction(
+              null,
+              "No Data Categorized",
+              "You have not categorized any data files. Are you sure you want to continue without categorizing your data files?",
+              "Yes, continue",
+              "No, go back"
+            );
+            console.log("confirmResult:", confirmResult);
             errorArray.push({
               type: "notyf",
               message: "Please categorize your data files before continuing.",

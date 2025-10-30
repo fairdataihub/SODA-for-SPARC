@@ -27,14 +27,26 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
   if (pageBeingLeftID === "guided-dataset-content-tab") {
     const selectedEntities = useGlobalStore.getState()["selectedEntities"];
     const deSelectedEntities = useGlobalStore.getState()["deSelectedEntities"];
-    // Check if any selections were made
-    if (!selectedEntities.includes("subjects") && !selectedEntities.includes("code")) {
-      errorArray.push({
-        type: "notyf",
-        message: "You must indicate that your dataset contains subjects and/or code",
-      });
-      throw errorArray;
-    }
+    console.log("Selected Entities on save:", selectedEntities);
+    console.log("De-Selected Entities on save:", deSelectedEntities);
+
+    // Determine which high-level folders to include based on selections
+    const possibleFolders = ["primary", "source", "derivative", "code", "protocol", "docs"];
+    const possibleDataFolders = ["primary", "source", "derivative", "code"];
+    const possibleSupplementaryFolders = ["protocol", "docs"];
+    const highLevelFolders = possibleFolders.filter((folder) => selectedEntities.includes(folder));
+    const dataFolders = possibleDataFolders.filter((folder) => selectedEntities.includes(folder));
+    const supplementaryFolders = possibleSupplementaryFolders.filter((folder) =>
+      selectedEntities.includes(folder)
+    );
+
+    console.log("Data folders to include:", dataFolders);
+    console.log("Supplementary folders to include:", supplementaryFolders);
+
+    // Store the high-level folders in sodaJSONObj
+    window.sodaJSONObj["high-level-folders"] = highLevelFolders;
+
+    console.log("High-level folders to include:", highLevelFolders);
 
     const visibleQuestions = Object.keys(contentOptionsMap).filter((key) => {
       const option = contentOptionsMap[key];
