@@ -25,29 +25,13 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
   }
 
   if (pageBeingLeftID === "guided-dataset-content-tab") {
+    console.log("Leaving page: guided-dataset-content-tab");
+
+    // At this point, we know all visible questions were answered
+    // Now determine the workflow based on selected and de-selected answers
     const selectedEntities = useGlobalStore.getState()["selectedEntities"];
     const deSelectedEntities = useGlobalStore.getState()["deSelectedEntities"];
-    console.log("Selected Entities on save:", selectedEntities);
-    console.log("De-Selected Entities on save:", deSelectedEntities);
-
-    // Determine which high-level folders to include based on selections
-    const possibleFolders = ["primary", "source", "derivative", "code", "protocol", "docs"];
-    const possibleDataFolders = ["primary", "source", "derivative", "code"];
-    const possibleSupplementaryFolders = ["protocol", "docs"];
-    const highLevelFolders = possibleFolders.filter((folder) => selectedEntities.includes(folder));
-    const dataFolders = possibleDataFolders.filter((folder) => selectedEntities.includes(folder));
-    const supplementaryFolders = possibleSupplementaryFolders.filter((folder) =>
-      selectedEntities.includes(folder)
-    );
-
-    console.log("Data folders to include:", dataFolders);
-    console.log("Supplementary folders to include:", supplementaryFolders);
-
-    // Store the high-level folders in sodaJSONObj
-    window.sodaJSONObj["high-level-folders"] = highLevelFolders;
-
-    console.log("High-level folders to include:", highLevelFolders);
-
+    // Validate that all questions that should be visible were answered
     const visibleQuestions = Object.keys(contentOptionsMap).filter((key) => {
       const option = contentOptionsMap[key];
       // If this option has dependencies, check them all
@@ -60,8 +44,6 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       }
       return true; // This question should be visible
     });
-
-    // Now check if all visible questions were answered
     for (const entity of visibleQuestions) {
       if (!selectedEntities.includes(entity) && !deSelectedEntities.includes(entity)) {
         errorArray.push({
@@ -71,35 +53,55 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
         throw errorArray;
       }
     }
+    console.log("All visible questions were answered.");
 
-    // If subjects is selected, verify all questions that should be visible were answered
+    console.log("Selected Entities on save:", selectedEntities);
+    console.log("De-Selected Entities on save:", deSelectedEntities);
+
+    // Determine which high-level folders to include based on selections
+    const possibleFolders = ["primary", "source", "derivative", "code", "protocol", "docs"];
+    const possibleDataFolders = ["primary", "source", "derivative", "code"];
+    const possibleSupportingFolders = ["protocol", "docs"];
+    const highLevelFolders = possibleFolders.filter((folder) => selectedEntities.includes(folder));
+    const dataFolders = possibleDataFolders.filter((folder) => selectedEntities.includes(folder));
+    const supplementaryFolders = possibleSupportingFolders.filter((folder) =>
+      selectedEntities.includes(folder)
+    );
+    const userHasDataFolders = dataFolders.length > 0;
+    const userHasSupplementaryFolders = supplementaryFolders.length > 0;
+    const userOnlyHasDataFolders = userHasDataFolders && !userHasSupplementaryFolders;
+    const userOnlyHasSupplementaryFolders = !userHasDataFolders && userHasSupplementaryFolders;
+    const userHasDataAndSupplementaryFolders = userHasDataFolders && userHasSupplementaryFolders;
+
+    console.log("User has data folders:", userHasDataFolders);
+    console.log("User has supplementary folders:", userHasSupplementaryFolders);
+
+    console.log("Data folders to include:", dataFolders);
+    console.log("Supplementary folders to include:", supplementaryFolders);
+
+    // Store the high-level folders in sodaJSONObj
+    window.sodaJSONObj["high-level-folders"] = highLevelFolders;
+
+    console.log("High-level folders to include:", highLevelFolders);
+
     if (selectedEntities.includes("subjects")) {
       // Unskip all of the experimental pages
-      guidedUnSkipPageSet("guided-experimental-dataset-page-set");
+      guidedUnSkipPageSet("guided-subject-related-page-set");
+      guidedUnSkipPageSet("guided-subjects-metadata-page-set");
 
       // If the dataset contains subjects, assume it is experimental by default
       window.sodaJSONObj["dataset-type"] = "experimental";
     } else {
-      // If subjects is not selected, it must be explicitly marked as No
-      if (!deSelectedEntities.includes("subjects")) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please answer the question about subjects (select Yes or No).",
-        });
-        throw errorArray;
+      // Skip all of the experimental pages
+      guidedSkipPageSet("guided-subject-related-page-set");
+
+      // Delete the existing subjects metadata if it exists
+      const existingSubjectsMetadata = window.sodaJSONObj["dataset_metadata"]?.["subjects"];
+      if (existingSubjectsMetadata) {
+        delete window.sodaJSONObj["dataset_metadata"]["subjects"];
       }
 
-      // At this point, we can infer that the dataset does not have subjects
-      if (!selectedEntities.includes("code")) {
-        errorArray.push({
-          type: "notyf",
-          message:
-            "Your dataset must contain either subjects or code. Please select 'Yes' for at least one of these options.",
-        });
-        throw errorArray;
-      }
-      // Skip all of the experimental pages
-      guidedSkipPageSet("guided-experimental-dataset-page-set");
+      guidedSkipPageSet("guided-subjects-metadata-page-set");
 
       // At this point, we can infer that the dataset has code but no subjects (Computational workflow)
       window.sodaJSONObj["dataset-type"] = "computational";
@@ -113,19 +115,6 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       guidedSkipPage("guided-add-code-metadata-tab");
     } else {
       guidedSkipPage("guided-add-code-metadata-tab");
-    }
-
-    // Handle page skipping based on selections
-    if (selectedEntities.includes("subjects")) {
-      guidedUnSkipPageSet("guided-subjects-metadata-page-set");
-    } else {
-      // Delete the existing subjects metadata if it exists
-      const existingSubjectsMetadata = window.sodaJSONObj["dataset_metadata"]?.["subjects"];
-      if (existingSubjectsMetadata) {
-        delete window.sodaJSONObj["dataset_metadata"]["subjects"];
-      }
-
-      guidedSkipPageSet("guided-subjects-metadata-page-set");
     }
 
     if (selectedEntities.includes("subjects") && selectedEntities.includes("samples")) {

@@ -167,6 +167,7 @@ const componentTypeRenderers = {
       entityTypeStringSingular: componentSlot.getAttribute("data-entity-type-string-singular"),
       showProgress: componentSlot.getAttribute("data-show-progress") || false,
     };
+    console.log("Rendering DataCategorizationPage with props:", props);
     renderComponent(componentSlot, <EntityDataSelectorPage {...props} />);
   },
   "modality-selection-page": (componentSlot) => {

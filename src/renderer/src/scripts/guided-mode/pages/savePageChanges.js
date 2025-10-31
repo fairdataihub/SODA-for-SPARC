@@ -154,14 +154,14 @@ export const savePageChanges = async (pageBeingLeftID) => {
           // If the user has not categorized any files, throw an error
           if (categorizedFileCount === 0) {
             // Call swalConfirmAction to show a confirmation dialog
-            const confirmResult = await swalConfirmAction(
+            /*const confirmResult = await swalConfirmAction(
               null,
-              "No Data Categorized",
+              "You did not categorize any data files",
               "You have not categorized any data files. Are you sure you want to continue without categorizing your data files?",
               "Yes, continue",
               "No, go back"
             );
-            console.log("confirmResult:", confirmResult);
+            console.log("confirmResult:", confirmResult);*/
             errorArray.push({
               type: "notyf",
               message: "Please categorize your data files before continuing.",
@@ -423,6 +423,8 @@ export const savePageChanges = async (pageBeingLeftID) => {
       window.log.error(error);
     }
   } catch (error) {
+    console.error("Error saving page changes:", error);
+    window.log.error("Error saving page changes:", error);
     guidedSetNavLoadingState(false);
     throw error;
   }
