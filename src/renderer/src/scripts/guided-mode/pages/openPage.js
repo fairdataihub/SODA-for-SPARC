@@ -267,6 +267,19 @@ window.openPage = async (targetPageID) => {
           filterRemovedFilesFromDatasetEntityObj(savedDatasetEntityObj);
         setDatasetEntityObj(filteredDatasetEntityObj);
 
+        if (pageEntityType === "supporting-data-categorization") {
+          if (selectedEntities.includes("protocol")) {
+            addEntityToEntityList("supporting-data-categorization", "Protocol");
+          } else {
+            removeEntityFromEntityList("supporting-data-categorization", "Protocol");
+          }
+          if (selectedEntities.includes("docs")) {
+            addEntityToEntityList("supporting-data-categorization", "Documentation");
+          } else {
+            removeEntityFromEntityList("supporting-data-categorization", "Documentation");
+          }
+        }
+
         // Make any adjustments to the dataset entity object before setting it in the zustand store
         if (pageEntityType === "high-level-folder-data-categorization") {
           // Delete the manifest file because it throws off the count of files selected
@@ -276,28 +289,32 @@ window.openPage = async (targetPageID) => {
           setDatasetType(datasetType);
 
           const bucketTypes = [];
-
-          if (datasetType === "experimental") {
-            bucketTypes.push(["Experimental"]);
-          } else {
-            removeEntityFromEntityList("high-level-folder-data-categorization", "Experimental");
+          if (selectedEntities.includes("primary")) {
+            bucketTypes.push("Primary");
+          }
+          if (selectedEntities.includes("source")) {
+            bucketTypes.push("Source");
+          }
+          if (selectedEntities.includes("derivative")) {
+            bucketTypes.push("Derivative");
           }
           if (selectedEntities.includes("code")) {
             bucketTypes.push("Code");
-          } else {
-            removeEntityFromEntityList("high-level-folder-data-categorization", "Code");
           }
+
           if (datasetType === "computational") {
             bucketTypes.push("Primary");
           } else {
             removeEntityFromEntityList("high-level-folder-data-categorization", "Primary");
           }
 
-          bucketTypes.push(...["Protocol", "Documentation"]);
-
           for (const bucketType of bucketTypes) {
             addEntityToEntityList("high-level-folder-data-categorization", bucketType);
           }
+          setEntityFilter(
+            [],
+            [{ type: "supporting-data-categorization", names: ["Protocol", "Documentation"] }]
+          );
         }
 
         if (pageEntityType === "sites") {

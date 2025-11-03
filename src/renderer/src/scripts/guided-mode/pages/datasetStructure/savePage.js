@@ -53,25 +53,43 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
         throw errorArray;
       }
     }
-    console.log("All visible questions were answered.");
-
+    const datasetType = selectedEntities.includes("subjects") ? "experimental" : "computational";
+    window.sodaJSONObj["dataset-type"] = datasetType;
     console.log("Selected Entities on save:", selectedEntities);
     console.log("De-Selected Entities on save:", deSelectedEntities);
 
     // Determine which high-level folders to include based on selections
     const possibleFolders = ["primary", "source", "derivative", "code", "protocol", "docs"];
-    const possibleDataFolders = ["primary", "source", "derivative", "code"];
+    const possibleDataFolders = ["primary", "source", "derivative"];
     const possibleSupportingFolders = ["protocol", "docs"];
+
     const highLevelFolders = possibleFolders.filter((folder) => selectedEntities.includes(folder));
     const dataFolders = possibleDataFolders.filter((folder) => selectedEntities.includes(folder));
     const supplementaryFolders = possibleSupportingFolders.filter((folder) =>
       selectedEntities.includes(folder)
     );
+
+    const datasetContainsCode = selectedEntities.includes("code");
+    const datasetContainsSubjects = selectedEntities.includes("subjects");
+
+    // If the dataset has subjects, code goes into supplementary, otherwise we treat it as a data folder
+    if (datasetContainsSubjects) {
+      if (datasetContainsCode) {
+        supplementaryFolders.push("code");
+      }
+    } else {
+      if (datasetContainsCode) {
+        dataFolders.push("code");
+      }
+    }
     const userHasDataFolders = dataFolders.length > 0;
     const userHasSupplementaryFolders = supplementaryFolders.length > 0;
-    const userOnlyHasDataFolders = userHasDataFolders && !userHasSupplementaryFolders;
+
     const userOnlyHasSupplementaryFolders = !userHasDataFolders && userHasSupplementaryFolders;
     const userHasDataAndSupplementaryFolders = userHasDataFolders && userHasSupplementaryFolders;
+
+    // Per the sparc team, if the dataset contains subjects, it's experimental, otherwise computational
+    // (Further follow up required regarding "device" type datasets...)
 
     console.log("User has data folders:", userHasDataFolders);
     console.log("User has supplementary folders:", userHasSupplementaryFolders);
@@ -79,18 +97,46 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     console.log("Data folders to include:", dataFolders);
     console.log("Supplementary folders to include:", supplementaryFolders);
 
-    // Store the high-level folders in sodaJSONObj
-    window.sodaJSONObj["high-level-folders"] = highLevelFolders;
-
     console.log("High-level folders to include:", highLevelFolders);
+
+    // Handle data categorization pages based on user selections
+    const shouldShowSupportingDataCategorization =
+      (userOnlyHasSupplementaryFolders && supplementaryFolders.length > 1) || // case when user has only supplementary folders and more than one
+      userHasDataAndSupplementaryFolders; // case when user has both data and supplementary folders
+    const shouldShowDataCategorization = dataFolders.length > 1;
+
+    console.log(
+      "Should show supporting data categorization page:",
+      shouldShowSupportingDataCategorization
+    );
+    console.log("Should show data categorization page:", shouldShowDataCategorization);
+
+    if (shouldShowSupportingDataCategorization) {
+      guidedUnSkipPage("supporting-data-categorization-tab");
+      console.log("Showing supporting data categorization page");
+    } else {
+      guidedSkipPage("supporting-data-categorization-tab");
+      console.log("Skipping supporting data categorization page");
+    }
+
+    if (shouldShowDataCategorization) {
+      guidedUnSkipPage("data-categorization-tab");
+      console.log(
+        "Showing data categorization page - user has multiple data folders:",
+        dataFolders
+      );
+    } else {
+      guidedSkipPage("data-categorization-tab");
+      console.log(
+        "Skipping data categorization page - user has single or no data folders:",
+        dataFolders
+      );
+    }
 
     if (selectedEntities.includes("subjects")) {
       // Unskip all of the experimental pages
       guidedUnSkipPageSet("guided-subject-related-page-set");
       guidedUnSkipPageSet("guided-subjects-metadata-page-set");
-
-      // If the dataset contains subjects, assume it is experimental by default
-      window.sodaJSONObj["dataset-type"] = "experimental";
     } else {
       // Skip all of the experimental pages
       guidedSkipPageSet("guided-subject-related-page-set");
@@ -102,9 +148,6 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       }
 
       guidedSkipPageSet("guided-subjects-metadata-page-set");
-
-      // At this point, we can infer that the dataset has code but no subjects (Computational workflow)
-      window.sodaJSONObj["dataset-type"] = "computational";
     }
 
     // Store selections
