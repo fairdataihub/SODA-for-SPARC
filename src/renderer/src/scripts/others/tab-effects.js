@@ -1578,25 +1578,23 @@ window.verifySparcFolder = (rootFolderPath, type) => {
   const folderContents = window.fs
     .readdirSync(rootFolderPath)
     .map((item) => window.path.parse(item).name.toLowerCase())
-    .filter(item => !item.startsWith("."))
-
-
+    .filter((item) => !item.startsWith("."));
 
   const highLevelFolders = window.highLevelFolders.map((folder) => folder.toLowerCase());
 
-
   const datasetItemsValidSDS = (item) => {
-   return highLevelFolders.includes(item) || metadataFiles.includes(item)
-  }
+    return highLevelFolders.includes(item) || metadataFiles.includes(item);
+  };
 
   const datasetHasHighLevelFolder = (item) => {
-    return highLevelFolders.includes(item)
-  }
+    return highLevelFolders.includes(item);
+  };
 
-
-  // Returns true if none of the 
+  // Returns true if none of the
   // NOTE: For the moment we will not require metadata files in the workflow
-  return folderContents.every(datasetItemsValidSDS) && folderContents.some(datasetHasHighLevelFolder)
+  return (
+    folderContents.every(datasetItemsValidSDS) && folderContents.some(datasetHasHighLevelFolder)
+  );
 };
 
 // function similar to window.transitionSubQuestions, but for buttons
