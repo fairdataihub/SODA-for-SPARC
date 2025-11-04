@@ -5121,7 +5121,8 @@ const setupCode = async (resume = false) => {
 };
 
 const preGenerateSetup = async (e, elementContext) => {
-  $($($(elementContext).parent().parent()[0]).parents()[0]).removeClass("tab-active");
+  console.log(elementContext);
+  $("#preview-dataset-tab").removeClass("tab-active");
   let resume = e.target.textContent.trim() == "Retry";
   setupCode(resume);
 };
