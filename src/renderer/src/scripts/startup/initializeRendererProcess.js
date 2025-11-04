@@ -374,10 +374,10 @@ const warnUserIfBetaVersionAndDntNotEnabled = async () => {
     const homeDirectory = await window.electron.ipcRenderer.invoke("get-app-path", "home");
     const dntFilePath = window.path.join(homeDirectory, ".soda-config", "dnt.soda");
     if (currentAppVersion.includes("beta") && !window.fs.existsSync(dntFilePath)) {
-      await swalShowInfo(
-        "You are on a beta version of SODA",
-        "When you are finished using this special version of SODA, please download the latest stable version<a href='https://docs.sodaforsparc.io/' target='_blank'> by clicking here</a>"
-      );
+      // await swalShowInfo(
+      //   "You are on a beta version of SODA",
+      //   "When you are finished using this special version of SODA, please download the latest stable version<a href='https://docs.sodaforsparc.io/' target='_blank'> by clicking here</a>"
+      // );
     }
   } catch (err) {
     window.log.error("Error determing if beta pop up should exist:", err);

@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import SodaComponentWrapper from "../utils/SodaComponentWrapper";
 import ExternalLink from "../buttons/ExternalLink";
+import IconButton from "../buttons/IconButton";
 import NavigationButton from "../buttons/Navigation";
 import NameAndSubtitlePage from "../pages/NameAndSubtitle";
 import DropdownSelect from "../common/DropdownSelect";
@@ -74,6 +75,12 @@ const componentTypeRenderers = {
       buttonType: componentSlot.getAttribute("data-button-type"),
     };
     renderComponent(componentSlot, <ExternalLink {...props} />);
+  },
+  "icon-button": (componentSlot) => {
+    const props = {
+      buttonSize: componentSlot.getAttribute("data-button-size"),
+    };
+    renderComponent(componentSlot, <IconButton {...props} />);
   },
   "dynamic-link": (componentSlot) => {
     const props = {

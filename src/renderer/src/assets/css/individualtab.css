@@ -894,6 +894,12 @@
 .svg-change-current-account {
   cursor: pointer;
   transition: transform 0.07s ease-out;
+  fill: none;
+  stroke: var(--mantine-color-primary-6) !important;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  background: var(--mantine-color-primary-light, var(--mantine-color-white));
 }
 
 .svg-change-current-account:hover {
