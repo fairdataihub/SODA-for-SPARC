@@ -625,8 +625,8 @@ window.showCurrentPermission = async () => {
     return;
   }
 
-  window.currentDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
-  window.currentAddEditDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
+  window.currentDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active blue inline loader tiny"></div>`;
+  window.currentAddEditDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active blue inline loader tiny"></div>`;
   window.log.info(`Requesting current permissions for ${selectedBfDataset}.`);
 
   try {
@@ -2339,7 +2339,7 @@ window.showCurrentLicense = async () => {
     return;
   }
 
-  window.currentDatasetLicense.innerHTML = `Loading current license... <div class="ui active green inline loader tiny"></div>`;
+  window.currentDatasetLicense.innerHTML = `Loading current license... <div class="ui active blue inline loader tiny"></div>`;
   window.log.info(`Getting current license for dataset ${selectedBfDataset}`);
 
   try {

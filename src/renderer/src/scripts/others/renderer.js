@@ -6064,6 +6064,7 @@ window.showBFAddAccountSweetalert = async (ev) => {
                     $("#create_empty_dataset_BF_account_span").text(user_email);
                     $(".ps-account-span").text(user_email);
                     $("#current-ps-dataset").text("None");
+                    console.log("NO here");
                     $("#current-ps-dataset-generate").text("None");
                     $(".ps-dataset-span").html("None");
                     $("#para-continue-ps-dataset-getting-started").text("");

@@ -3149,6 +3149,7 @@ window.wipeOutCurateProgress = () => {
   $("#generate-manifest-curate").prop("checked", false);
 
   // reset dataset selection options
+  console.log("Here");
   $("#current-ps-dataset").text("None"); // step 1
   $("#current-ps-dataset-generate").text("None"); // step 6 for when merging a new dataset into an existing dataset
   $("#button-confirm-ps-dataset").hide(); // hide step 6 confirm button until the user selects the dataset again

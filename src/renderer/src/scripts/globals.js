@@ -1284,7 +1284,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
     $(".svg-change-current-account.dataset").css("display", "none");
     $("#div-permission-list-2").css("display", "none");
-    $(".ui.active.green.inline.loader.small:not(.organization-loader)").css("display", "block");
+    $(".ui.active.blue.inline.loader.small:not(.organization-loader)").css("display", "block");
     let currentLicenseText = currentDatasetLicense.innerText;
     let currentPermissionsText = window.currentAddEditDatasetPermission.innerText;
 
@@ -1323,7 +1323,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         var accountPresent = await window.check_api_key();
       } catch (error) {
         console.error(error);
-        $(".ui.active.green.inline.loader.small").css("display", "none");
+        $(".ui.active.blue.inline.loader.small").css("display", "none");
         $(".svg-change-current-account.dataset").css("display", "block");
         accountPresent = false;
       }
@@ -1348,10 +1348,10 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         }).then(async (result) => {
           if (result.isConfirmed) {
             await window.openDropdownPrompt(ev, "ps");
-            $(".ui.active.green.inline.loader.small").css("display", "none");
+            $(".ui.active.blue.inline.loader.small").css("display", "none");
             $(".svg-change-current-account.dataset").css("display", "block");
           } else {
-            $(".ui.active.green.inline.loader.small").css("display", "none");
+            $(".ui.active.blue.inline.loader.small").css("display", "none");
             $(".svg-change-current-account.dataset").css("display", "block");
           }
         });
@@ -1385,7 +1385,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           const emessage = userErrorMessage(error);
           await swalShowError("Failed to fetch datasets from Pennsieve", emessage);
           // Reset the dataset select UI
-          $(".ui.active.green.inline.loader.small").css("display", "none");
+          $(".ui.active.blue.inline.loader.small").css("display", "none");
           $(".svg-change-current-account.dataset").css("display", "block");
           return;
         }
@@ -1420,7 +1420,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               popup: "animate__animated animate__fadeOutUp animate__faster animate_fastest",
             },
             didOpen: () => {
-              $(".ui.active.green.inline.loader.small").css("display", "none");
+              $(".ui.active.blue.inline.loader.small").css("display", "none");
               $(".svg-change-current-account.dataset").css("display", "block");
             },
           });
@@ -1444,7 +1444,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               popup: "animate__animated animate__fadeOutUp animate__faster animate_fastest",
             },
             didOpen: () => {
-              $(".ui.active.green.inline.loader.small").css("display", "none");
+              $(".ui.active.blue.inline.loader.small").css("display", "none");
               $(".svg-change-current-account.dataset").css("display", "block");
             },
           });
@@ -1483,7 +1483,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           },
           didOpen: () => {
             $("#div-permission-list-2").css("display", "block");
-            $(".ui.active.green.inline.loader.small").css("display", "none");
+            $(".ui.active.blue.inline.loader.small").css("display", "none");
             window.datasetPermissionDiv.style.display = "block";
             $("#curatebfdatasetlist").attr("disabled", false);
             $(window.datasetPermissionDiv)
@@ -1717,7 +1717,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       }
       $("body").removeClass("waiting");
       $(".svg-change-current-account.dataset").css("display", "block");
-      $(".ui.active.green.inline.loader.small").css("display", "none");
+      $(".ui.active.blue.inline.loader.small").css("display", "none");
       window.electron.ipcRenderer.send(
         "track-event",
         "Success",
@@ -1730,7 +1730,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     // TODO: Change these classes to organization classes
     $(".svg-change-current-account.organization").css("display", "none");
     $("#div-permission-list-2").css("display", "none");
-    $(".ui.active.green.inline.loader.small.organization-loader").css("display", "block");
+    $(".ui.active.blue.inline.loader.small.organization-loader").css("display", "block");
 
     // hacky: wait for animations
     await window.wait(10);
@@ -1747,7 +1747,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       accountPresent = await window.check_api_key();
     } catch (error) {
       clientError(error);
-      $(".ui.active.green.inline.loader.small").css("display", "none");
+      $(".ui.active.blue.inline.loader.small").css("display", "none");
       $(".svg-change-current-account.dataset").css("display", "block");
       $("#div-permission-list-2").css("display", "block");
       initializeBootstrapSelect("#curatebforganizationlist", "show");
@@ -1775,11 +1775,11 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
       if (result) {
         await window.openDropdownPrompt(this, "ps");
-        $(".ui.active.green.inline.loader.small").css("display", "none");
+        $(".ui.active.blue.inline.loader.small").css("display", "none");
         $(".svg-change-current-account.dataset").css("display", "block");
         return;
       } else {
-        $(".ui.active.green.inline.loader.small").css("display", "none");
+        $(".ui.active.blue.inline.loader.small").css("display", "none");
         $(".svg-change-current-account.dataset").css("display", "block");
         $("#div-permission-list-2").css("display", "block");
 
@@ -1874,7 +1874,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         },
         didOpen: () => {
           $("#div-permission-list-2").css("display", "block");
-          $(".ui.active.green.inline.loader.small").css("display", "none");
+          $(".ui.active.blue.inline.loader.small").css("display", "none");
           window.datasetPermissionDiv.style.display = "block";
           $("#curatebforganizationlist").attr("disabled", false);
           $(window.datasetPermissionDiv)
@@ -1937,7 +1937,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
       if (!result) {
         $(".svg-change-current-account.organization").css("display", "block");
-        $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
+        $(".ui.active.blue.inline.loader.small.organization-loader").css("display", "none");
         $("#license-lottie-div").css("display", "block");
         $("#license-assigned").css("display", "block");
         window.currentDatasetLicense.innerText = window.currentDatasetLicense.innerText;
@@ -1993,7 +1993,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           const password = Swal.getPopup().querySelector("#ps_password").value;
 
           // show a loading spinner in place of the confirm button HERE
-          // $(".ui.active.green.inline.loader.small.organization-loader").css("display", "block");
+          // $(".ui.active.blue.inline.loader.small.organization-loader").css("display", "block");
           Swal.showLoading();
 
           if (!login) {
@@ -2036,7 +2036,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             });
             Swal.hideLoading();
             // reset the UI to pre-org switch state
-            $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
+            $(".ui.active.blue.inline.loader.small.organization-loader").css("display", "none");
             $(".svg-change-current-account.organization").css("display", "block");
             return undefined;
           }
@@ -2056,7 +2056,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
       if (!res) {
         $(".svg-change-current-account.organization").css("display", "block");
-        $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
+        $(".ui.active.blue.inline.loader.small.organization-loader").css("display", "none");
         $("#license-lottie-div").css("display", "block");
         $("#license-assigned").css("display", "block");
         initializeBootstrapSelect("#curatebforganizationlist", "show");
@@ -2092,7 +2092,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
     $("body").removeClass("waiting");
     $(".svg-change-current-account.organization").css("display", "block");
-    $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
+    $(".ui.active.blue.inline.loader.small.organization-loader").css("display", "none");
   }
 };
 
