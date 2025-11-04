@@ -189,7 +189,9 @@ const findMatchingRelativePaths = (obj, entityTypeLowerCased, matchingPaths) => 
 };
 
 // Set the dataset entity object directly
-export const setDatasetEntityObj = (datasetEntityObj) => {
+export const setDatasetEntityObj = (datasetEntityObj, setLocation) => {
+  console.log(`setDatasetEntityObj called from: ${setLocation}`);
+  console.log("Setting datasetEntityObj:", JSON.stringify(datasetEntityObj, null, 2));
   useGlobalStore.setState((state) => ({
     ...state,
     datasetEntityObj,
@@ -212,14 +214,14 @@ export const filterRemovedFilesFromDatasetEntityObj = (entityObj) => {
     // Loop through the entities of the current entity type
     // For example "Code", "Experimental", "Protocol" etc
     for (const [entityName, entityData] of Object.entries(entities)) {
+      // Always preserve the entity object, even if empty
+      filteredEntityObj[entityType][entityName] = {};
+
       // Loop through the files and if they exist re-add them to the filteredEntityObj
       for (const fileName of Object.keys(entityData)) {
         const { itemObject } = getFileDetailsByRelativePath(fileName);
         // If the file still exists in the dataset structure, add it to the filteredEntityObj
         if (itemObject) {
-          if (!filteredEntityObj[entityType][entityName]) {
-            filteredEntityObj[entityType][entityName] = {};
-          }
           filteredEntityObj[entityType][entityName][fileName] = entityData[fileName];
         }
       }

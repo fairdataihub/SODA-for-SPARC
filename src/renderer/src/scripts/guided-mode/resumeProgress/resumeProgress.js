@@ -89,7 +89,7 @@ window.guidedResumeProgress = async (progressFileName) => {
 
     window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
     const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
-    setDatasetEntityObj(savedDatasetEntityObj);
+    setDatasetEntityObj(savedDatasetEntityObj, "resume-progress");
     const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
     setDatasetEntityArray(datasetEntityArray);
 

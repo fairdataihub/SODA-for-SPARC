@@ -7,6 +7,10 @@ import {
   guidedSkipPageSet,
   guidedUnSkipPageSet,
 } from "../../../guided-mode/pages/navigationUtils/pageSkipping";
+import {
+  addEntityToEntityList,
+  removeEntityFromEntityList,
+} from "../../../../stores/slices/datasetEntitySelectorSlice";
 
 export const savePageDatasetStructure = async (pageBeingLeftID) => {
   const errorArray = [];
@@ -59,29 +63,50 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     console.log("De-Selected Entities on save:", deSelectedEntities);
 
     // Determine which high-level folders to include based on selections
-    const possibleFolders = ["primary", "source", "derivative", "code", "protocol", "docs"];
-    const possibleDataFolders = ["primary", "source", "derivative"];
-    const possibleSupportingFolders = ["protocol", "docs"];
+    const possibleDataFolders = ["Primary", "Source", "Derivative"];
+    const possibleSupportingFolders = ["Protocol", "Docs", "Code"];
 
-    const highLevelFolders = possibleFolders.filter((folder) => selectedEntities.includes(folder));
+    // Filter selected entities to get the actual folder selections
     const dataFolders = possibleDataFolders.filter((folder) => selectedEntities.includes(folder));
     const supplementaryFolders = possibleSupportingFolders.filter((folder) =>
       selectedEntities.includes(folder)
     );
+    const allSelectedFolders = [...dataFolders, ...supplementaryFolders];
 
-    const datasetContainsCode = selectedEntities.includes("code");
-    const datasetContainsSubjects = selectedEntities.includes("subjects");
+    console.log("=== FOLDER ANALYSIS ===");
+    console.log("Available data folders:", possibleDataFolders);
+    console.log("Available supporting folders:", possibleSupportingFolders);
+    console.log("User selected data folders:", dataFolders);
+    console.log("User selected supporting folders:", supplementaryFolders);
+    console.log("All selected folders:", allSelectedFolders);
 
-    // If the dataset has subjects, code goes into supplementary, otherwise we treat it as a data folder
-    if (datasetContainsSubjects) {
-      if (datasetContainsCode) {
-        supplementaryFolders.push("code");
-      }
-    } else {
-      if (datasetContainsCode) {
-        dataFolders.push("code");
+    // Set up entity lists for categorization pages
+    console.log("=== ENTITY LIST SETUP ===");
+
+    // Clear and set up data categorization entities
+    console.log("Setting up data categorization entities...");
+    for (const folder of possibleDataFolders) {
+      if (dataFolders.includes(folder)) {
+        console.log(`Adding ${folder} to data categorization`);
+        addEntityToEntityList("high-level-folder-data-categorization", folder);
+      } else {
+        console.log(`Removing ${folder} from data categorization`);
+        removeEntityFromEntityList("high-level-folder-data-categorization", folder);
       }
     }
+
+    // Clear and set up supporting data categorization entities
+    console.log("Setting up supporting data categorization entities...");
+    for (const folder of possibleSupportingFolders) {
+      if (supplementaryFolders.includes(folder)) {
+        console.log(`Adding ${folder} to supporting data categorization`);
+        addEntityToEntityList("supporting-data-categorization", folder);
+      } else {
+        console.log(`Removing ${folder} from supporting data categorization`);
+        removeEntityFromEntityList("supporting-data-categorization", folder);
+      }
+    }
+
     const userHasDataFolders = dataFolders.length > 0;
     const userHasSupplementaryFolders = supplementaryFolders.length > 0;
 
@@ -97,7 +122,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     console.log("Data folders to include:", dataFolders);
     console.log("Supplementary folders to include:", supplementaryFolders);
 
-    console.log("High-level folders to include:", highLevelFolders);
+    console.log("=== PAGE LOGIC DECISIONS ===");
 
     // Handle data categorization pages based on user selections
     const shouldShowSupportingDataCategorization =

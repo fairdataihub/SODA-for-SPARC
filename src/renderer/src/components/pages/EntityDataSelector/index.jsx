@@ -93,7 +93,14 @@ const EntityDataSelectorPage = ({ pageName, entityTypeStringSingular, showProgre
   const datasetType = useGlobalStore((state) => state.datasetType);
 
   const itemCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
+  const supplementaryFilesCount = countSelectedFilesByEntityType("supporting-data-categorization");
+  console.log("supplementaryFilesCount", supplementaryFilesCount);
   const countItemsSelected = countSelectedFilesByEntityType(entityType);
+  const totalFilesSelected = countItemsSelected + supplementaryFilesCount;
+
+  // Calculate percentages for stacked progress bar
+  const categorizedPercentage = itemCount > 0 ? (countItemsSelected / itemCount) * 100 : 0;
+  const supplementaryPercentage = itemCount > 0 ? (supplementaryFilesCount / itemCount) * 100 : 0;
 
   const handleFileClick = (relativePath, fileIsSelected, mutuallyExclusiveSelection) => {
     modifyDatasetEntityForRelativeFilePath(
@@ -209,9 +216,17 @@ const EntityDataSelectorPage = ({ pageName, entityTypeStringSingular, showProgre
         <GuidedModeSection>
           <Paper p="xs" shadow="sm">
             <Text size="sm" c="gray">
-              Progress: {countItemsSelected} of {itemCount} files categorized
+              Progress: {totalFilesSelected} of {itemCount} files categorized
+              {supplementaryFilesCount > 0 && (
+                <span> ({supplementaryFilesCount} supplementary files already handled)</span>
+              )}
             </Text>
-            <Progress color="green" size="xl" value={100 * (countItemsSelected / itemCount)} />
+            <Progress.Root size="xl">
+              {supplementaryFilesCount > 0 && (
+                <Progress.Section value={supplementaryPercentage} color="gray"></Progress.Section>
+              )}
+              <Progress.Section value={categorizedPercentage} color="blue"></Progress.Section>
+            </Progress.Root>
           </Paper>
         </GuidedModeSection>
       )}

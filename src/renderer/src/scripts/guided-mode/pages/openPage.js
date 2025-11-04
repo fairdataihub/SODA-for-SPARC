@@ -260,60 +260,30 @@ window.openPage = async (targetPageID) => {
         const pageEntityType = targetPageDataset.entityType;
         const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
         const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
+        // Delete the manifest file because it throws off the count of files selected
+        delete window.datasetStructureJSONObj?.["files"]?.["manifest.xlsx"];
 
         // Filter out any file/folder references from the entity object that no longer exist in the dataset structure
         // This prevents errors when users delete files/folders after previously assigning them to entities
         const filteredDatasetEntityObj =
           filterRemovedFilesFromDatasetEntityObj(savedDatasetEntityObj);
-        setDatasetEntityObj(filteredDatasetEntityObj);
+        setDatasetEntityObj(filteredDatasetEntityObj, "data-categorization-page");
 
         if (pageEntityType === "supporting-data-categorization") {
-          if (selectedEntities.includes("protocol")) {
-            addEntityToEntityList("supporting-data-categorization", "Protocol");
-          } else {
-            removeEntityFromEntityList("supporting-data-categorization", "Protocol");
-          }
-          if (selectedEntities.includes("docs")) {
-            addEntityToEntityList("supporting-data-categorization", "Documentation");
-          } else {
-            removeEntityFromEntityList("supporting-data-categorization", "Documentation");
-          }
+          setEntityFilter([], []); // No pre-set filters for supporting data categorization
         }
 
         // Make any adjustments to the dataset entity object before setting it in the zustand store
         if (pageEntityType === "high-level-folder-data-categorization") {
-          // Delete the manifest file because it throws off the count of files selected
-          delete window.datasetStructureJSONObj?.["files"]?.["manifest.xlsx"];
-
-          const datasetType = window.sodaJSONObj["dataset-type"];
-          setDatasetType(datasetType);
-
-          const bucketTypes = [];
-          if (selectedEntities.includes("primary")) {
-            bucketTypes.push("Primary");
-          }
-          if (selectedEntities.includes("source")) {
-            bucketTypes.push("Source");
-          }
-          if (selectedEntities.includes("derivative")) {
-            bucketTypes.push("Derivative");
-          }
-          if (selectedEntities.includes("code")) {
-            bucketTypes.push("Code");
-          }
-
-          if (datasetType === "computational") {
-            bucketTypes.push("Primary");
-          } else {
-            removeEntityFromEntityList("high-level-folder-data-categorization", "Primary");
-          }
-
-          for (const bucketType of bucketTypes) {
-            addEntityToEntityList("high-level-folder-data-categorization", bucketType);
-          }
+          // Filter out files that are selected as belonging to the supporting data folders
           setEntityFilter(
             [],
-            [{ type: "supporting-data-categorization", names: ["Protocol", "Documentation"] }]
+            [
+              {
+                type: "supporting-data-categorization",
+                names: ["Protocol", "Documentation", "Code"],
+              },
+            ]
           );
         }
 
@@ -322,6 +292,15 @@ window.openPage = async (targetPageID) => {
           for (const site of sites) {
             addEntityToEntityList("sites", site);
           }
+          setEntityFilter(
+            [
+              {
+                type: "high-level-folder-data-categorization",
+                names: ["Primary", "Source", "Derivative"],
+              },
+            ],
+            []
+          );
         }
 
         if (pageEntityType === "samples") {
@@ -344,7 +323,12 @@ window.openPage = async (targetPageID) => {
             addEntityToEntityList("performances", performance.performance_id);
           }
           setEntityFilter(
-            [{ type: "high-level-folder-data-categorization", names: ["Experimental"] }],
+            [
+              {
+                type: "high-level-folder-data-categorization",
+                names: ["Primary", "Source", "Derivative"],
+              },
+            ],
             []
           );
         }
@@ -355,7 +339,12 @@ window.openPage = async (targetPageID) => {
             addEntityToEntityList("modalities", modality);
           }
           setEntityFilter(
-            [{ type: "high-level-folder-data-categorization", names: ["Experimental"] }],
+            [
+              {
+                type: "high-level-folder-data-categorization",
+                names: ["Primary", "Source", "Derivative"],
+              },
+            ],
             []
           );
         }
@@ -369,23 +358,7 @@ window.openPage = async (targetPageID) => {
         const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
 
         // Make sure the datasetEntityObj is set before applying filters
-        setDatasetEntityObj(savedDatasetEntityObj);
-
-        // Check if there are files in the Experimental data bucket
-        const hasExperimentalData =
-          !!savedDatasetEntityObj?.["high-level-folder-data-categorization"]?.["Experimental"] &&
-          Object.keys(
-            savedDatasetEntityObj["high-level-folder-data-categorization"]["Experimental"]
-          ).length > 0;
-
-        // If experimental data exists, apply the filter
-        if (hasExperimentalData) {
-          // Apply the filter for experimental data
-          setEntityFilter(
-            [{ type: "high-level-folder-data-categorization", names: ["Experimental"] }],
-            []
-          );
-        }
+        setDatasetEntityObj(savedDatasetEntityObj, "entity-file-mapping-page");
 
         setDatasetEntityArray(datasetEntityArray);
       }

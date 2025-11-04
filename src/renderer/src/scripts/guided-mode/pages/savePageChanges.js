@@ -142,8 +142,6 @@ export const savePageChanges = async (pageBeingLeftID) => {
       if (pageBeingLeftComponentType === "data-categorization-page") {
         const entityType = pageBeingLeftDataSet.entityType;
         const datasetEntityObj = getDatasetEntityObj();
-        window.sodaJSONObj["dataset-entity-obj"] = datasetEntityObj;
-        console.log("datasetEntityObj on save:", datasetEntityObj);
         const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
         const datasetFileCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
 
@@ -173,18 +171,19 @@ export const savePageChanges = async (pageBeingLeftID) => {
             return acc + Object.keys(files).length;
           }, 0);
 
+          // Add supplementary data to the count of categorized files
+          const supplementaryData = datasetEntityObj?.["supporting-data-categorization"];
+          const supplementaryFileCount = supplementaryData
+            ? Object.keys(supplementaryData).reduce((acc, key) => {
+                const files = supplementaryData[key];
+                return acc + Object.keys(files).length;
+              }, 0)
+            : 0;
+
+          const totalCategorizedFiles = categorizedFileCount + supplementaryFileCount;
+
           // If the user has not categorized any files, throw an error
-          if (categorizedFileCount === 0) {
-            // Call swalConfirmAction to show a confirmation dialog
-            /*const confirmResult = await swalConfirmAction(
-              null,
-              "You did not categorize any data files",
-              "You have not categorized any data files. Are you sure you want to continue without categorizing your data files?",
-              "Yes, continue",
-              "No, go back"
-            );
-            console.log("confirmResult:", confirmResult);*/
-            console.log("1");
+          if (totalCategorizedFiles === 0) {
             errorArray.push({
               type: "notyf",
               message: "Please categorize your data files before continuing.",
@@ -193,9 +192,6 @@ export const savePageChanges = async (pageBeingLeftID) => {
           }
 
           const countOfFilesCategorizedAsCode = Object.keys(categorizedData["Code"] || {}).length;
-          const countOfFilesCategorizedAsExperimental = Object.keys(
-            categorizedData["Experimental"] || {}
-          ).length;
 
           if (selectedEntities.includes("code")) {
             if (countOfFilesCategorizedAsCode === 0) {
@@ -208,19 +204,8 @@ export const savePageChanges = async (pageBeingLeftID) => {
             }
           }
 
-          if (selectedEntities.includes("subjects")) {
-            if (countOfFilesCategorizedAsExperimental === 0) {
-              errorArray.push({
-                type: "notyf",
-                message:
-                  "You must classify at least one file in your dataset as experimental data on this step.",
-              });
-              throw errorArray;
-            }
-          }
-
           // If the user has not categorized all of the files, throw an error
-          if (datasetFileCount !== categorizedFileCount) {
+          if (datasetFileCount !== totalCategorizedFiles) {
             errorArray.push({
               type: "notyf",
               message: "You must categorize all of your data files before continuing.",
@@ -322,12 +307,6 @@ export const savePageChanges = async (pageBeingLeftID) => {
         }
       }
 
-      if (pageBeingLeftComponentType === "entity-file-mapping-page") {
-        const datasetEntityObj = getDatasetEntityObj();
-        // Save the dataset entity object to the progress file
-        window.sodaJSONObj["dataset-entity-obj"] = datasetEntityObj;
-      }
-
       if (
         pageBeingLeftComponentType === "entity-metadata-page" ||
         pageBeingLeftComponentType === "entity-spreadsheet-import-page"
@@ -389,6 +368,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
     await savePagePrepareMetadata(pageBeingLeftID);
     await savePagePennsieveDetails(pageBeingLeftID);
     await savePageGenerateDataset(pageBeingLeftID);
+    saveEntityFileMappingChanges();
 
     if (pageBeingLeftID === "guided-entity-addition-method-selection-tab") {
       const userSelectedAddEntitiesFromSpreadsheet = document
@@ -440,18 +420,8 @@ export const savePageChanges = async (pageBeingLeftID) => {
 export const saveEntityFileMappingChanges = () => {
   // Get the current datasetEntityObj from the store
   const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
+  console.log("Saving datasetEntityObj:", JSON.stringify(datasetEntityObj, null, 2));
 
   // Save the entire datasetEntityObj to window.sodaJSONObj
   window.sodaJSONObj["dataset-entity-obj"] = datasetEntityObj;
-
-  // If you need to do any reverse conversion (map to array) for backwards compatibility, do it here:
-  // const compatDatasetEntityObj = { ...datasetEntityObj };
-  // if (compatDatasetEntityObj["entity-to-file-mapping"]) {
-  //   Object.keys(compatDatasetEntityObj["entity-to-file-mapping"]).forEach(entityId => {
-  //     const entityFileMap = compatDatasetEntityObj["entity-to-file-mapping"][entityId];
-  //     compatDatasetEntityObj["entity-to-file-mapping"][entityId] = Object.keys(entityFileMap);
-  //   });
-  // }
-  // window.sodaJSONObj["dataset-entity-obj-compat"] = compatDatasetEntityObj;
-  return true;
 };

@@ -35,51 +35,51 @@ export const contentOptionsMap = {
     requiresAnswer: ["subjects"],
     ml: 10,
   },
-  code: {
+  Code: {
     label: "Did you use code to generate or analyze your data?",
     dropDownDescription:
       "Select yes if your research involved computational tools, scripts, or analysis pipelines that were important for generating or analyzing your data. This includes custom code, analysis scripts, and simulation software relevant to understanding your results.",
     ml: 0,
   },
-  primary: {
+  Primary: {
     label: "Primary data?",
     description: "Original data collected directly from experiments",
     dropDownDescription:
       "Select yes if your dataset includes original data collected directly from experiments or observations, as opposed to derived or processed data.",
     ml: 0,
-    requiresSelection: ["subjects", "code"],
+    requiresSelection: ["subjects", "Code"],
   },
-  source: {
+  Source: {
     label: "Source data?",
     description: "Raw or unprocessed data files",
     dropDownDescription:
       "Select yes if your dataset contains raw or unprocessed data files that serve as the original source for analysis.",
     ml: 0,
-    requiresSelection: ["subjects", "code"],
+    requiresSelection: ["subjects", "Code"],
   },
-  derivative: {
+  Derivative: {
     label: "Derivative data?",
     description: "Processed or analyzed data from original sources",
     dropDownDescription:
       "Select yes if your dataset includes data that has been processed, transformed, or analyzed from the original raw data.",
     ml: 0,
-    requiresSelection: ["subjects", "code"],
+    requiresSelection: ["subjects", "Code"],
   },
-  protocol: {
+  Protocol: {
     label: "Protocol data?",
     description: "Files describing methods and procedures",
     dropDownDescription:
       "Select yes if your dataset contains protocol files that describe the methods and procedures used during data collection or analysis.",
     ml: 0,
-    requiresSelection: ["subjects", "code"],
+    requiresSelection: ["subjects", "Code"],
   },
-  docs: {
+  Docs: {
     label: "Documentation data?",
     description: "Supplementary materials and explanatory documents",
     dropDownDescription:
       "Select yes if your dataset includes supplementary materials such as readme files, data dictionaries, or other documents that provide context and explanations for the data.",
     ml: 0,
-    requiresSelection: ["subjects", "code"],
+    requiresSelection: ["subjects", "Code"],
   },
 };
 
