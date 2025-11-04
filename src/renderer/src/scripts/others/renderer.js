@@ -5237,11 +5237,8 @@ const initiate_generate = async (resume = false) => {
     organizeDataset.style = "background-color: #f6f6f6;  border: #fff;";
   };
 
-  let sparc_container = document.getElementById("sparc-logo-container");
-  sparc_container.style.display = "none";
-  navContainer.appendChild(statusBarClone);
   let navbar = document.getElementById("main-nav");
-  if (navbar.classList.contains("active")) {
+  if (!navbar.classList.contains("active")) {
     document.getElementById("sidebarCollapse").click();
   }
 

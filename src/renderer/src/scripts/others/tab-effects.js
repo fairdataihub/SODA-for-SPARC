@@ -1563,8 +1563,8 @@ window.verifySparcFolder = (rootFolderPath, type) => {
     "dataset_description",
     "subjects",
     "samples",
-    "README",
-    "CHANGES",
+    "readme",
+    "changes",
     ".dss",
     "sites",
     "license",
@@ -1579,6 +1579,8 @@ window.verifySparcFolder = (rootFolderPath, type) => {
     .readdirSync(rootFolderPath)
     .map((item) => window.path.parse(item).name.toLowerCase())
     .filter((item) => !item.startsWith("."));
+
+  console.log(folderContents);
 
   const highLevelFolders = window.highLevelFolders.map((folder) => folder.toLowerCase());
 
