@@ -1516,6 +1516,19 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             $("#ps-dataset-select-div").show();
             $("#ps-organization-select-div").hide();
 
+            document
+              .querySelector("#ps-dataset-select-div button")
+              .addEventListener("click", (e) => {
+                const dropdownMenu = document.querySelector(
+                  "#ps-dataset-select-div .dropdown-menu.inner"
+                );
+                console.log(dropdownMenu);
+                if (dropdownMenu) {
+                  dropdownMenu.style.display = "block";
+                  dropdownMenu.parentElement.style.display = "block";
+                }
+              });
+
             bfDataset = $("#curatebfdatasetlist").val();
             let sweet_al = document.getElementsByClassName("swal2-html-container")[0];
             let sweet_alrt = document.getElementsByClassName("swal2-actions")[0];
@@ -1913,10 +1926,6 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           document
             .querySelector("#ps-organization-select-div button")
             .addEventListener("click", (e) => {
-              console.log("Clicked");
-
-              // document.querySelector(".bootstrap-select .dropdown-menu").style.display = "block";
-
               const dropdownMenu = e.target.parentElement.querySelector(".dropdown-menu.inner");
               if (dropdownMenu) {
                 dropdownMenu.style.display = "block";
