@@ -218,14 +218,14 @@ const EntityDataSelectorPage = ({ pageName, entityTypeStringSingular, showProgre
             <Text size="sm" c="gray">
               Progress: {totalFilesSelected} of {itemCount} files categorized
               {supplementaryFilesCount > 0 && (
-                <span> ({supplementaryFilesCount} supplementary files already handled)</span>
+                <span> ({supplementaryFilesCount} supplementary files already selected)</span>
               )}
             </Text>
             <Progress.Root size="xl">
               {supplementaryFilesCount > 0 && (
                 <Progress.Section value={supplementaryPercentage} color="gray"></Progress.Section>
               )}
-              <Progress.Section value={categorizedPercentage} color="blue"></Progress.Section>
+              <Progress.Section value={categorizedPercentage} color="green"></Progress.Section>
             </Progress.Root>
           </Paper>
         </GuidedModeSection>

@@ -42,31 +42,41 @@ export const contentOptionsMap = {
     ml: 0,
   },
   Primary: {
-    label: "Primary data?",
-    description: "Original data collected directly from experiments",
+    label: "Does the dataset include primary data?",
+    description:
+      "Primary data is the main experimental or observational data collected directly from a study, with minimal processing.",
     dropDownDescription:
-      "Select yes if your dataset includes original data collected directly from experiments or observations, as opposed to derived or processed data.",
+      "Select yes if the dataset contains original measurements or observations collected directly from experiments. " +
+      "Examples include converted microscope images, voltage recordings, behavioral measurements, or imaging stacks. " +
+      "This data forms the core of the dataset, distinct from raw instrument files or processed results.",
     ml: 0,
     requiresSelection: ["subjects", "Code"],
   },
+
   Source: {
-    label: "Source data?",
-    description: "Raw or unprocessed data files",
+    label: "Does the dataset include source data?",
+    description:
+      "Source data consists of completely raw, unaltered files produced directly by instruments or acquisition devices.",
     dropDownDescription:
-      "Select yes if your dataset contains raw or unprocessed data files that serve as the original source for analysis.",
+      "Select yes if the dataset contains original files from instruments or acquisition software, before any conversion or reorganization. " +
+      "Examples include proprietary microscope or scanner files, binary acquisition outputs, or unprocessed image or signal data.",
     ml: 0,
     requiresSelection: ["subjects", "Code"],
   },
+
   Derivative: {
-    label: "Derivative data?",
-    description: "Processed or analyzed data from original sources",
+    label: "Does the dataset include derivative data?",
+    description:
+      "Derivative data includes any processed, analyzed, or transformed data generated from primary or source data.",
     dropDownDescription:
-      "Select yes if your dataset includes data that has been processed, transformed, or analyzed from the original raw data.",
+      "Select yes if the dataset contains data that has been processed, analyzed, or transformed from the original experimental data. " +
+      "Examples include segmented images, averaged signals, computed metrics, statistical analyses, or models derived from primary data.",
     ml: 0,
     requiresSelection: ["subjects", "Code"],
   },
   Protocol: {
-    label: "Protocol data?",
+    label:
+      "Does your dataset include any protocols describing experimental or computational procedures?",
     description: "Files describing methods and procedures",
     dropDownDescription:
       "Select yes if your dataset contains protocol files that describe the methods and procedures used during data collection or analysis.",
