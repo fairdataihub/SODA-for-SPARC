@@ -100,47 +100,7 @@ export const setActiveEntity = (activeEntity) => {
     activeEntity,
   }));
 
-  if (activeEntity.startsWith("site-") || activeEntity.startsWith("perf-")) {
-    setEntityFilter(
-      [{ type: "high-level-folder-data-categorization", names: ["Experimental"] }],
-      []
-    );
-  }
-
-  if (activeEntity.startsWith("sam-")) {
-    const existingSiteIds = getExistingSites().map((site) => site.id);
-    const siteFilter = [
-      {
-        type: "sites",
-        names: existingSiteIds,
-      },
-    ];
-    setEntityFilter(
-      [{ type: "high-level-folder-data-categorization", names: ["Experimental"] }],
-      siteFilter
-    );
-  }
-
   if (activeEntity.startsWith("sub-")) {
-    const existingSiteIds = getExistingSites().map((site) => site.id);
-    const existingSampleIds = getExistingSamples().map((sample) => sample.id);
-    const siteFilter = [
-      {
-        type: "sites",
-        names: existingSiteIds,
-      },
-    ];
-    const sampleFilter = [
-      {
-        type: "samples",
-        names: existingSampleIds,
-      },
-    ];
-    const combinedFilter = [...siteFilter, ...sampleFilter];
-    setEntityFilter(
-      [{ type: "high-level-folder-data-categorization", names: ["Experimental"] }],
-      combinedFilter
-    );
   }
 };
 
@@ -207,7 +167,7 @@ export const filterRemovedFilesFromDatasetEntityObj = (entityObj) => {
   const filteredEntityObj = {};
 
   // Loop through each entity type in the savedDatasetEntityObj
-  // For example , "high-level-folder-data-categorization", "modalities" etc
+  // For example , "data-folders", "modalities" etc
   for (const [entityType, entities] of Object.entries(entityObj)) {
     filteredEntityObj[entityType] = {};
 

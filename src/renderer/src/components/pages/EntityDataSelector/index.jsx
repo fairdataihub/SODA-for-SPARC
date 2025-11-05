@@ -86,14 +86,14 @@ const getInstructionalTextByEntityType = (entityType, datasetType) => {
 
 const EntityDataSelectorPage = ({ pageName, entityTypeStringSingular, showProgress = false }) => {
   const activeEntity = useGlobalStore((state) => state.activeEntity);
-  const entityType = useGlobalStore((state) => state.entityType); // e.g. 'high-level-folder-data-categorization'
+  const entityType = useGlobalStore((state) => state.entityType); // e.g. 'data-folders'
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const datasetIncludesCode = selectedEntities.includes("code");
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
   const datasetType = useGlobalStore((state) => state.datasetType);
 
   const itemCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
-  const supplementaryFilesCount = countSelectedFilesByEntityType("supporting-data-categorization");
+  const supplementaryFilesCount = countSelectedFilesByEntityType("supporting-folders");
   console.log("supplementaryFilesCount", supplementaryFilesCount);
   const countItemsSelected = countSelectedFilesByEntityType(entityType);
   const totalFilesSelected = countItemsSelected + supplementaryFilesCount;
@@ -155,7 +155,7 @@ const EntityDataSelectorPage = ({ pageName, entityTypeStringSingular, showProgre
         <Stack>
           {(() => {
             switch (entityType) {
-              case "high-level-folder-data-categorization":
+              case "data-folders":
                 if (datasetType === "experimental") {
                   return (
                     <>

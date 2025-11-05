@@ -145,7 +145,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
         const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
         const datasetFileCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
 
-        if (entityType === "supporting-data-categorization") {
+        if (entityType === "supporting-folders") {
           const possibleSupportingFolders = ["protocol", "docs"];
           const supplementaryFolders = possibleSupportingFolders.filter((folder) =>
             selectedEntities.includes(folder)
@@ -153,7 +153,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
 
           // Only require categorization if there are multiple supplementary folders
           if (supplementaryFolders.length > 1) {
-            const supportingData = datasetEntityObj?.["supporting-data-categorization"];
+            const supportingData = datasetEntityObj?.["supporting-folders"];
             if (!supportingData) {
               errorArray.push({
                 type: "notyf",
@@ -163,16 +163,16 @@ export const savePageChanges = async (pageBeingLeftID) => {
             }
           }
         }
-        if (entityType === "high-level-folder-data-categorization") {
+        if (entityType === "data-folders") {
           // Make sure all of the files were categorized into a high-level folder
-          const categorizedData = datasetEntityObj?.["high-level-folder-data-categorization"];
+          const categorizedData = datasetEntityObj?.["data-folders"];
           const categorizedFileCount = Object.keys(categorizedData).reduce((acc, key) => {
             const files = categorizedData[key];
             return acc + Object.keys(files).length;
           }, 0);
 
           // Add supplementary data to the count of categorized files
-          const supplementaryData = datasetEntityObj?.["supporting-data-categorization"];
+          const supplementaryData = datasetEntityObj?.["supporting-folders"];
           const supplementaryFileCount = supplementaryData
             ? Object.keys(supplementaryData).reduce((acc, key) => {
                 const files = supplementaryData[key];

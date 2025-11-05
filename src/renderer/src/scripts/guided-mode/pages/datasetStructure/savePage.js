@@ -88,10 +88,10 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     for (const folder of possibleDataFolders) {
       if (dataFolders.includes(folder)) {
         console.log(`Adding ${folder} to data categorization`);
-        addEntityToEntityList("high-level-folder-data-categorization", folder);
+        addEntityToEntityList("data-folders", folder);
       } else {
         console.log(`Removing ${folder} from data categorization`);
-        removeEntityFromEntityList("high-level-folder-data-categorization", folder);
+        removeEntityFromEntityList("data-folders", folder);
       }
     }
 
@@ -100,10 +100,10 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     for (const folder of possibleSupportingFolders) {
       if (supplementaryFolders.includes(folder)) {
         console.log(`Adding ${folder} to supporting data categorization`);
-        addEntityToEntityList("supporting-data-categorization", folder);
+        addEntityToEntityList("supporting-folders", folder);
       } else {
         console.log(`Removing ${folder} from supporting data categorization`);
-        removeEntityFromEntityList("supporting-data-categorization", folder);
+        removeEntityFromEntityList("supporting-folders", folder);
       }
     }
 
@@ -137,10 +137,10 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     console.log("Should show data categorization page:", shouldShowDataCategorization);
 
     if (shouldShowSupportingDataCategorization) {
-      guidedUnSkipPage("supporting-data-categorization-tab");
+      guidedUnSkipPage("supporting-folders-tab");
       console.log("Showing supporting data categorization page");
     } else {
-      guidedSkipPage("supporting-data-categorization-tab");
+      guidedSkipPage("supporting-folders-tab");
       console.log("Skipping supporting data categorization page");
     }
 

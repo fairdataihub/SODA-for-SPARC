@@ -269,19 +269,19 @@ window.openPage = async (targetPageID) => {
           filterRemovedFilesFromDatasetEntityObj(savedDatasetEntityObj);
         setDatasetEntityObj(filteredDatasetEntityObj, "data-categorization-page");
 
-        if (pageEntityType === "supporting-data-categorization") {
+        if (pageEntityType === "supporting-folders") {
           setEntityFilter([], []); // No pre-set filters for supporting data categorization
         }
 
         // Make any adjustments to the dataset entity object before setting it in the zustand store
-        if (pageEntityType === "high-level-folder-data-categorization") {
+        if (pageEntityType === "data-folders") {
           // Filter out files that are selected as belonging to the supporting data folders
           setEntityFilter(
             [],
             [
               {
-                type: "supporting-data-categorization",
-                names: ["Protocol", "Documentation", "Code"],
+                type: "supporting-folders",
+                names: ["Protocol", "Docs", "Code"],
               },
             ]
           );
@@ -292,14 +292,20 @@ window.openPage = async (targetPageID) => {
           for (const site of sites) {
             addEntityToEntityList("sites", site);
           }
+
           setEntityFilter(
             [
               {
-                type: "high-level-folder-data-categorization",
+                type: "data-folders",
                 names: ["Primary", "Source", "Derivative"],
               },
             ],
-            []
+            [
+              {
+                type: "supporting-folders",
+                names: ["Protocol", "Docs", "Code"],
+              },
+            ]
           );
         }
 
@@ -308,6 +314,26 @@ window.openPage = async (targetPageID) => {
           for (const sample of samples) {
             addEntityToEntityList("samples", sample);
           }
+          const sites = getExistingSites().map((site) => site.id);
+          const siteFilter = [
+            {
+              type: "supporting-folders",
+              names: ["Protocol", "Docs", "Code"],
+            },
+            {
+              type: "sites",
+              names: sites,
+            },
+          ];
+          setEntityFilter(
+            [
+              {
+                type: "data-folders",
+                names: ["Primary", "Source", "Derivative"],
+              },
+            ],
+            siteFilter
+          );
         }
 
         if (pageEntityType === "subjects") {
@@ -315,6 +341,32 @@ window.openPage = async (targetPageID) => {
           for (const subject of subjects) {
             addEntityToEntityList("subjects", subject);
           }
+          const sites = getExistingSites().map((site) => site.id);
+          const samples = getExistingSamples().map((sample) => sample.id);
+          const siteAndSampleFilter = [
+            {
+              type: "supporting-folders",
+              names: ["Protocol", "Docs", "Code"],
+            },
+            {
+              type: "sites",
+              names: sites,
+            },
+            {
+              type: "samples",
+              names: samples,
+            },
+          ];
+
+          setEntityFilter(
+            [
+              {
+                type: "data-folders",
+                names: ["Primary", "Source", "Derivative"],
+              },
+            ],
+            siteAndSampleFilter
+          );
         }
 
         if (pageEntityType === "performances") {
@@ -325,11 +377,16 @@ window.openPage = async (targetPageID) => {
           setEntityFilter(
             [
               {
-                type: "high-level-folder-data-categorization",
+                type: "data-folders",
                 names: ["Primary", "Source", "Derivative"],
               },
             ],
-            []
+            [
+              {
+                type: "supporting-folders",
+                names: ["Protocol", "Docs", "Code"],
+              },
+            ]
           );
         }
 
@@ -341,11 +398,16 @@ window.openPage = async (targetPageID) => {
           setEntityFilter(
             [
               {
-                type: "high-level-folder-data-categorization",
+                type: "data-folders",
                 names: ["Primary", "Source", "Derivative"],
               },
             ],
-            []
+            [
+              {
+                type: "supporting-folders",
+                names: ["Protocol", "Docs", "Code"],
+              },
+            ]
           );
         }
       }

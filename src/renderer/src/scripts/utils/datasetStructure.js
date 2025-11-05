@@ -186,35 +186,19 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
 
   try {
     // Move Code files into the code/ folder
-    moveFilesByCategory(
-      datasetEntityObj?.["high-level-folder-data-categorization"]?.["Code"],
-      "code/"
-    );
-
-    // Move Experimental files into the primary/ folder
-    moveFilesByCategory(
-      datasetEntityObj?.["high-level-folder-data-categorization"]?.["Experimental"],
-      "primary/"
-    );
+    moveFilesByCategory(datasetEntityObj?.["supporting-folders"]?.["Code"], "code/");
+    moveFilesByCategory(datasetEntityObj?.["supporting-folders"]?.["Docs"], "docs/");
+    moveFilesByCategory(datasetEntityObj?.["supporting-folders"]?.["Protocol"], "protocol/");
 
     // Move Primary files into the primary/ folder
     // (Files that are marked as primary during the computational workflow)
-    moveFilesByCategory(
-      datasetEntityObj?.["high-level-folder-data-categorization"]?.["Primary"],
-      "primary/"
-    );
+    moveFilesByCategory(datasetEntityObj?.["data-folders"]?.["Primary"], "primary/");
 
     // Move Documentation files into the docs/ folder
-    moveFilesByCategory(
-      datasetEntityObj?.["high-level-folder-data-categorization"]?.["Documentation"],
-      "docs/"
-    );
+    moveFilesByCategory(datasetEntityObj?.["data-folders"]?.["Source"], "source/");
 
     // Move Protocol files into the protocols/ folder
-    moveFilesByCategory(
-      datasetEntityObj?.["high-level-folder-data-categorization"]?.["Protocol"],
-      "protocol/"
-    );
+    moveFilesByCategory(datasetEntityObj?.["data-folders"]?.["Derivative"], "derivative/");
 
     // Delete any empty folders in the dataset structure
     // (The window.datasetStructureJSONObj can be used since the move fns already update it)
