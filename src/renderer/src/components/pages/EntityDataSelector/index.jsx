@@ -155,6 +155,22 @@ const EntityDataSelectorPage = ({ pageName, entityTypeStringSingular, showProgre
         <Stack>
           {(() => {
             switch (entityType) {
+              case "supporting-folders":
+                return (
+                  <>
+                    <Text mb={0}>
+                      Use the interface blow to categorize your Code, Protocol, and Documentation
+                      files.
+                    </Text>
+                    <Text mb={0}>
+                      To categorize your data, choose a category on the left, then select the files
+                      that belong to it on the right. Selecting a folder categorizes all files
+                      within it. If a folder contains files that belong to different categories, you
+                      can expand it and categorize individual files as needed.
+                    </Text>
+                  </>
+                );
+
               case "data-folders":
                 if (datasetType === "experimental") {
                   return (
@@ -223,7 +239,10 @@ const EntityDataSelectorPage = ({ pageName, entityTypeStringSingular, showProgre
             </Text>
             <Progress.Root size="xl">
               {supplementaryFilesCount > 0 && (
-                <Progress.Section value={supplementaryPercentage} color="gray"></Progress.Section>
+                <Progress.Section
+                  value={supplementaryPercentage}
+                  color="lightgray"
+                ></Progress.Section>
               )}
               <Progress.Section value={categorizedPercentage} color="green"></Progress.Section>
             </Progress.Root>

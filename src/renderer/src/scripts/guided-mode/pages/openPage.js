@@ -262,6 +262,8 @@ window.openPage = async (targetPageID) => {
         const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
         // Delete the manifest file because it throws off the count of files selected
         delete window.datasetStructureJSONObj?.["files"]?.["manifest.xlsx"];
+        const datasetType = window.sodaJSONObj["dataset-type"];
+        setDatasetType(datasetType);
 
         // Filter out any file/folder references from the entity object that no longer exist in the dataset structure
         // This prevents errors when users delete files/folders after previously assigning them to entities

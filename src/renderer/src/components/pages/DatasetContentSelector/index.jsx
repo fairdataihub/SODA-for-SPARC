@@ -63,7 +63,6 @@ export const contentOptionsMap = {
     ml: 0,
     requiresSelection: ["subjects", "Code"],
   },
-
   Derivative: {
     label: "Does the dataset include derivative data?",
     description:
@@ -84,10 +83,12 @@ export const contentOptionsMap = {
     requiresSelection: ["subjects", "Code"],
   },
   Docs: {
-    label: "Documentation data?",
-    description: "Supplementary materials and explanatory documents",
+    label: "Does the dataset include documentation?",
+    description:
+      "Documentation includes supplementary materials and explanatory files that provide context for the dataset.",
     dropDownDescription:
-      "Select yes if your dataset includes supplementary materials such as readme files, data dictionaries, or other documents that provide context and explanations for the data.",
+      "Select yes if the dataset contains supporting materials such as readme files, data dictionaries, protocols summaries, or other documents that help interpret or understand the data. " +
+      "These files provide context, instructions, or clarifications for the dataset and its contents.",
     ml: 0,
     requiresSelection: ["subjects", "Code"],
   },
