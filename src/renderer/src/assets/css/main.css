@@ -213,6 +213,19 @@ button[data-id="common-strain-rrid-dropdown"] {
   width: 100%;
 }
 
+.swal2-container .bootstrap-select .dropdown-menu {
+  z-index: 10000 !important;
+}
+
+/* Alternative - increase z-index of all Bootstrap Select dropdowns */
+.bootstrap-select .dropdown-menu {
+  z-index: 999998 !important;
+}
+
+.bootstrap-select .dropdown-menu.inner {
+  z-index: 999999 !important;
+}
+
 .sidebar {
   background-color: var(--color-teal);
   height: 100%;

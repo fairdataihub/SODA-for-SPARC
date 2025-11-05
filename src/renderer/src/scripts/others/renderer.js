@@ -2428,6 +2428,8 @@ window.refreshDatasetList = () => {
     return a.toLowerCase().localeCompare(b.toLowerCase());
   });
 
+  console.log("Filtered Datasets: ", filteredDatasets);
+
   populateDatasetDropdowns(filteredDatasets);
   return filteredDatasets.length;
 };
@@ -2461,6 +2463,8 @@ const populateDatasetDropdowns = (mylist) => {
 
     window.curateDatasetDropdown.appendChild(option2);
   }
+
+  console.log(window.curateDatasetDropdown);
   // metadataDatasetlistChange();
   permissionDatasetlistChange();
   // postCurationListChange();

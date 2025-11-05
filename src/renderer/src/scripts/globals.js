@@ -83,6 +83,7 @@ const initializeBootstrapSelect = (dropdown, action) => {
 };
 
 const updateDatasetList = (bfaccount) => {
+  console.log("THis happens");
   var filteredDatasets = [];
 
   $("#div-filter-datasets-progress-2").css("display", "none");
@@ -90,7 +91,7 @@ const updateDatasetList = (bfaccount) => {
   window.removeOptions(window.curateDatasetDropdown);
   window.addOption(window.curateDatasetDropdown, "Search here...", "Select dataset");
 
-  initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
+  // initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
 
   $("#ps-dataset-select-header").css("display", "none");
   $("#curatebfdatasetlist").selectpicker("hide");
@@ -102,29 +103,35 @@ const updateDatasetList = (bfaccount) => {
   // waiting for dataset list to load first before initiating ps dataset dropdown list
   setTimeout(() => {
     var myPermission = $(window.datasetPermissionDiv).find("#select-permission-list-2").val();
+    console.log("Permission selected: ", myPermission);
 
     if (!myPermission) {
       myPermission = "All";
     }
 
-    if (myPermission.toLowerCase() === "all") {
-      for (var i = 0; i < window.datasetList.length; i++) {
+    // Destroy existing selectpicker
+    if ($("#curatebfdatasetlist").hasClass("selectpicker")) {
+      $("#curatebfdatasetlist").selectpicker("destroy");
+    }
+
+    // if (myPermission.toLowerCase() === "all") {
+    //   for (var i = 0; i < window.datasetList.length; i++) {
+    //     filteredDatasets.push(window.datasetList[i].name);
+    //   }
+    // } else {
+    for (var i = 0; i < window.datasetList.length; i++) {
+      if (window.datasetList[i].role === myPermission.toLowerCase()) {
         filteredDatasets.push(window.datasetList[i].name);
       }
-    } else {
-      for (var i = 0; i < window.datasetList.length; i++) {
-        if (window.datasetList[i].role === myPermission.toLowerCase()) {
-          filteredDatasets.push(window.datasetList[i].name);
-        }
-      }
     }
+    // }
 
     filteredDatasets.sort((a, b) => {
       return a.toLowerCase().localeCompare(b.toLowerCase());
     });
 
     // The window.removeOptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
-    $("#curatebfdatasetlist").find("option:not(:first)").remove();
+    // $("#curatebfdatasetlist").find("option:not(:first)").remove();
 
     for (const myitem in filteredDatasets) {
       var myitemselect = filteredDatasets[myitem];
@@ -134,15 +141,28 @@ const updateDatasetList = (bfaccount) => {
       window.curateDatasetDropdown.appendChild(option);
     }
 
-    initializeBootstrapSelect("#curatebfdatasetlist", "show");
+    // Initialize Bootstrap Select
+    $("#curatebfdatasetlist").selectpicker({
+      liveSearch: true,
+      noneSelectedText: "Loading datasets...",
+      style: "btn-default",
+    });
 
-    $("#div-filter-datasets-progress-2").css("display", "none");
-    //$("#ps-dataset-select-header").css("display", "block")
-    $("#curatebfdatasetlist").selectpicker("show");
-    $("#curatebfdatasetlist").selectpicker("refresh");
-    $(".selectpicker").selectpicker("show");
-    $(".selectpicker").selectpicker("refresh");
+    // Show the dropdown
     $("#ps-dataset-select-div").show();
+    $("#curatebfdatasetlist").selectpicker("refresh");
+    $(".dropdown.bootstrap-select button").removeClass("disabled");
+    $(".dropdown.bootstrap-select").removeClass("disabled");
+
+    // initializeBootstrapSelect("#curatebfdatasetlist", "show");
+
+    // $("#div-filter-datasets-progress-2").css("display", "none");
+    // //$("#ps-dataset-select-header").css("display", "block")
+    // $("#curatebfdatasetlist").selectpicker("show");
+    // $("#curatebfdatasetlist").selectpicker("refresh");
+    // $(".selectpicker").selectpicker("show");
+    // $(".selectpicker").selectpicker("refresh");
+    // $("#ps-dataset-select-div").show();
 
     if (document.getElementById("div-permission-list-2")) {
       document.getElementById("para-filter-datasets-status-2").innerHTML =
@@ -211,6 +231,7 @@ window.createDragSort = (tagify) => {
 };
 
 window.updateOrganizationList = async (bfaccount) => {
+  console.log("Here");
   let organizations = [];
 
   $("#div-filter-datasets-progress-2").css("display", "none");
@@ -1368,7 +1389,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         //           under the default profile does not mean that key is associated with the user's current workspace.
         let matching = await window.defaultProfileMatchesCurrentWorkspace();
         if (!matching) {
-          log.info("Default api key is for a different workspace");
+          window.log.info("Default api key is for a different workspace");
           await window.switchToCurrentWorkspace();
         }
       }
@@ -1378,6 +1399,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       if (window.datasetList.length === 0) {
         try {
           const datasetList = await api.getUsersDatasetList(false);
+          console.log("Fetched datasets from Pennsieve:", datasetList);
           window.datasetList = datasetList;
           window.clearDatasetDropdowns();
           window.refreshDatasetList();
@@ -1867,6 +1889,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         willOpen: () => {
           $("#curatebforganizationlist").selectpicker("hide");
           $("#curatebforganizationlist").selectpicker("refresh");
+
           // $("#ps-organization-select-header").show();
           // TODO: How to make this unnecessary?
           // $("#ps-dataset-select-div").hide();
@@ -1882,9 +1905,23 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             .css("display", "none");
           $("#curatebforganizationlist").selectpicker("refresh");
           $("#curatebforganizationlist").selectpicker("show");
+          console.log("SHow added to org picke");
           $("#ps-organization-select-div").show();
           $("#ps-dataset-select-div").hide();
           $("#ps-dataset-select-header").hide();
+
+          document
+            .querySelector("#ps-organization-select-div button")
+            .addEventListener("click", (e) => {
+              console.log("Clicked");
+
+              // document.querySelector(".bootstrap-select .dropdown-menu").style.display = "block";
+
+              const dropdownMenu = e.target.parentElement.querySelector(".dropdown-menu.inner");
+              if (dropdownMenu) {
+                dropdownMenu.style.display = "block";
+              }
+            });
 
           window.bfOrganization = $("#curatebforganizationlist").val();
           let sweet_al = document.getElementsByClassName("swal2-html-container")[0];
