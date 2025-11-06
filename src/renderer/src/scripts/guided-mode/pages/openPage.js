@@ -289,6 +289,20 @@ window.openPage = async (targetPageID) => {
           );
         }
 
+        // Make any adjustments to the dataset entity object before setting it in the zustand store
+        if (pageEntityType === "experimental-data") {
+          // Filter out files that are selected as belonging to the supporting data folders
+          setEntityFilter(
+            [],
+            [
+              {
+                type: "supporting-folders",
+                names: ["Protocol", "Docs", "Code"],
+              },
+            ]
+          );
+        }
+
         if (pageEntityType === "sites") {
           const sites = getExistingSites().map((site) => site.id);
           for (const site of sites) {
@@ -298,8 +312,8 @@ window.openPage = async (targetPageID) => {
           setEntityFilter(
             [
               {
-                type: "data-folders",
-                names: ["Primary", "Source", "Derivative"],
+                type: "experimental-data",
+                names: ["Experimental data"],
               },
             ],
             [
@@ -330,8 +344,8 @@ window.openPage = async (targetPageID) => {
           setEntityFilter(
             [
               {
-                type: "data-folders",
-                names: ["Primary", "Source", "Derivative"],
+                type: "experimental-data",
+                names: ["Experimental data"],
               },
             ],
             siteFilter
@@ -363,8 +377,8 @@ window.openPage = async (targetPageID) => {
           setEntityFilter(
             [
               {
-                type: "data-folders",
-                names: ["Primary", "Source", "Derivative"],
+                type: "experimental-data",
+                names: ["Experimental data"],
               },
             ],
             siteAndSampleFilter

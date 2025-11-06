@@ -41,54 +41,20 @@ export const contentOptionsMap = {
       "Select yes if your research involved computational tools, scripts, or analysis pipelines that were important for generating or analyzing your data. This includes custom code, analysis scripts, and simulation software relevant to understanding your results.",
     ml: 0,
   },
-  Primary: {
-    label: "Does the dataset include primary data?",
-    description:
-      "Primary data is the main experimental or observational data collected directly from a study, with minimal processing.",
-    dropDownDescription:
-      "Select yes if the dataset contains original measurements or observations collected directly from experiments. " +
-      "Examples include converted microscope images, voltage recordings, behavioral measurements, or imaging stacks. " +
-      "This data forms the core of the dataset, distinct from raw instrument files or processed results.",
-    ml: 0,
-    requiresSelection: ["subjects", "Code"],
-  },
 
-  Source: {
-    label: "Does the dataset include source data?",
-    description:
-      "Source data consists of completely raw, unaltered files produced directly by instruments or acquisition devices.",
-    dropDownDescription:
-      "Select yes if the dataset contains original files from instruments or acquisition software, before any conversion or reorganization. " +
-      "Examples include proprietary microscope or scanner files, binary acquisition outputs, or unprocessed image or signal data.",
-    ml: 0,
-    requiresSelection: ["subjects", "Code"],
-  },
-  Derivative: {
-    label: "Does the dataset include derivative data?",
-    description:
-      "Derivative data includes any processed, analyzed, or transformed data generated from primary or source data.",
-    dropDownDescription:
-      "Select yes if the dataset contains data that has been processed, analyzed, or transformed from the original experimental data. " +
-      "Examples include segmented images, averaged signals, computed metrics, statistical analyses, or models derived from primary data.",
-    ml: 0,
-    requiresSelection: ["subjects", "Code"],
-  },
   Protocol: {
     label:
       "Does your dataset include any protocols describing experimental or computational procedures?",
-    description: "Files describing methods and procedures",
     dropDownDescription:
       "Select yes if your dataset contains protocol files that describe the methods and procedures used during data collection or analysis.",
     ml: 0,
     requiresSelection: ["subjects", "Code"],
   },
   Docs: {
-    label: "Does the dataset include documentation?",
-    description:
-      "Documentation includes supplementary materials and explanatory files that provide context for the dataset.",
+    label: "Does your dataset include any documentation files?",
     dropDownDescription:
-      "Select yes if the dataset contains supporting materials such as readme files, data dictionaries, protocols summaries, or other documents that help interpret or understand the data. " +
-      "These files provide context, instructions, or clarifications for the dataset and its contents.",
+      "Select yes if your dataset includes files that describe, explain, or organize the data — such as README files, data dictionaries, summaries of experimental methods, or overviews of data organization. " +
+      "These materials help others interpret and use the dataset effectively.",
     ml: 0,
     requiresSelection: ["subjects", "Code"],
   },

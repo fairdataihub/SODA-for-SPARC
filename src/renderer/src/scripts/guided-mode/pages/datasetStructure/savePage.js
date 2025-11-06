@@ -107,6 +107,8 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       }
     }
 
+    addEntityToEntityList("experimental-data", "Experimental data");
+
     const userHasDataFolders = dataFolders.length > 0;
     const userHasSupplementaryFolders = supplementaryFolders.length > 0;
 

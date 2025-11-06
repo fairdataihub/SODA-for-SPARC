@@ -159,7 +159,7 @@ const EntityDataSelectorPage = ({ pageName, entityTypeStringSingular, showProgre
                 return (
                   <>
                     <Text mb={0}>
-                      Use the interface blow to categorize your Code, Protocol, and Documentation
+                      Use the interface below to categorize your Code, Protocol, and Documentation
                       files.
                     </Text>
                     <Text mb={0}>
@@ -167,6 +167,16 @@ const EntityDataSelectorPage = ({ pageName, entityTypeStringSingular, showProgre
                       that belong to it on the right. Selecting a folder categorizes all files
                       within it. If a folder contains files that belong to different categories, you
                       can expand it and categorize individual files as needed.
+                    </Text>
+                  </>
+                );
+
+              case "experimental-data":
+                return (
+                  <>
+                    <Text mb={0}>
+                      Use the interface below to indicate which files are part of your experimental
+                      data (related to subjects, samples, sites etc.).
                     </Text>
                   </>
                 );
