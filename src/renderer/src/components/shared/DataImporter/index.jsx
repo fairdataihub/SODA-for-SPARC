@@ -4,11 +4,12 @@ import { IconUpload, IconFile, IconX } from "@tabler/icons-react";
 import FullWidthContainer from "../../containers/FullWidthContainer";
 import DatasetTreeViewRenderer from "../DatasetTreeViewRenderer";
 import StateDisplayContainer from "../../containers/StateDisplayContainer";
+import classes from "./dataImporter.module.css";
 
 const DataImporter = ({ dataImporterId }) => {
   return (
-    <FullWidthContainer>
-      <Box w="100%" m={0} p={0} id={dataImporterId}>
+    <FullWidthContainer className={classes["di"]}>
+      <Box w="100%" m={0} p={0} id={dataImporterId} className={classes["di"]}>
         <Dropzone
           onDrop={(event) => {
             event.preventDefault();
@@ -19,6 +20,7 @@ const DataImporter = ({ dataImporterId }) => {
           }}
           onClick={(event) => event.preventDefault()}
           mb="lg"
+          className={classes["di"]}
         >
           <Group justify="center" gap="xl" mih={140} style={{ pointerEvents: "none" }}>
             <Dropzone.Accept>
