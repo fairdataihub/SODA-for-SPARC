@@ -22,6 +22,11 @@ import {
 } from "../utils/swal-utils";
 import { setNavButtonDisabled, setNavButtonHidden } from "../../stores/slices/navButtonStateSlice";
 import { setStateDisplayData } from "../../stores/slices/stateDisplaySlice";
+import {
+  isCheckboxCardChecked,
+  setCheckboxCardChecked,
+  setCheckboxCardUnchecked,
+} from "../../stores/slices/checkboxCardSlice";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -697,8 +702,8 @@ document
     document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
     document.getElementById("existing-dataset-upload").classList.remove("hidden");
 
-    document.getElementById("dataset-upload-new-dataset").classList.remove("checked");
-    document.getElementById("dataset-upload-existing-dataset").classList.add("checked");
+    setCheckboxCardUnchecked("dataset-upload-new-dataset");
+    setCheckboxCardChecked("dataset-upload-existing-dataset");
 
     setNavButtonDisabled("nextBtn", true);
   });
@@ -731,11 +736,10 @@ document.getElementById("dataset-upload-new-dataset").addEventListener("click", 
     });
     return;
   }
+
+  // TODO: START HERE FOR CONTEXT SWITCHING BETWEEN WORKFLOWS
   const dsName = document.getElementById("current-ps-dataset-generate").innerText;
-  const existingCardChecked = document
-    .getElementById("dataset-upload-existing-dataset")
-    .classList.contains("checked");
-  if (!["None", ""].includes(dsName) && existingCardChecked) {
+  if (!["None", ""].includes(dsName)) {
     // confirm with the user if they want to lose their progress by switching to the other workflow
     const confirmSwitch = await swalConfirmAction(
       "warning",
@@ -745,37 +749,25 @@ document.getElementById("dataset-upload-new-dataset").addEventListener("click", 
       "No"
     );
 
-    if (!confirmSwitch) return;
+    if (!confirmSwitch) {
+      setCheckboxCardChecked("dataset-upload-existing-dataset");
+      return;
+    }
 
     $("#inputNewNameDataset-upload-dataset").val("");
 
     // reset the dataset name input field
     document.getElementById("current-ps-dataset-generate").textContent = "None";
 
-    // TODO: REset sodaJSONObj here too
-    // Remove checked state from all checkbox cards (input field inside the cards)
-    document.getElementsByName("generate-5").forEach((element) => {
-      // Reset state for folder cards
-      element.checked = false;
-    });
-
-    document.getElementsByName("generate-6").forEach((element) => {
-      // Reset state for file cards
-      element.checked = false;
-    });
     // Reset the merge option cards
-
-    document.getElementById("replace-file-card").classList.remove("non-selected");
-    document.getElementById("replace-file-card").classList.remove("checked");
-    document.getElementById("skip-file-card").classList.remove("checked");
-    document.getElementById("skip-file-card").classList.remove("non-selected");
+    setCheckboxCardUnchecked("replace-file-card");
+    setCheckboxCardUnchecked("skip-file-card");
   }
-  document.getElementById("dataset-upload-new-dataset").classList.add("checked");
+
   document.getElementById("existing-dataset-upload").classList.add("hidden");
   document.getElementById("Question-new-dataset-upload-name").classList.remove("hidden");
 
-  document.getElementById("dataset-upload-existing-dataset").classList.remove("checked");
-  document.getElementById("Question-new-dataset-upload-name").classList.add("checked");
+  setCheckboxCardUnchecked("dataset-upload-existing-dataset");
 
   // hide the existing folder options
   $("#Question-generate-dataset-existing-files-options").addClass("hidden");
@@ -871,9 +863,7 @@ document.getElementById("change-workspace-btn").addEventListener("click", async 
   document.getElementById("dataset-upload-new-dataset").classList.remove("checked");
   document.getElementById("inputNewNameDataset-upload-dataset").value = "";
   document.getElementById("button-confirm-ps-dataset").parentNode.style.display = "flex";
-  document.getElementsByName("generate-5").forEach((element) => {
-    element.checked = false;
-  });
+
   // Remove checks from all the cards in step 3 (merge option cards)
 
   document.getElementById("replace-file-card").classList.remove("non-selected");
@@ -908,12 +898,6 @@ document.getElementById("change-workspace-btn").addEventListener("click", async 
   document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
   $("#upload-dataset-btn-confirm-new-dataset-name").addClass("hidden");
 
-  // get every input with name="generate-5" and remove the checked property
-  let inputs = document.querySelectorAll('input[name="generate-5"]');
-  inputs.forEach((input) => {
-    input.checked = false;
-    input.classList.remove("checked");
-  });
   document.getElementById("current-ps-dataset-generate").textContent = "None";
   // hide the existing folder/files options
   $("#Question-generate-dataset-existing-files-options").addClass("hidden");

@@ -12,6 +12,10 @@ import { setNavButtonDisabled, setNavButtonHidden } from "../../stores/slices/na
 import { setCurrentStep } from "../../stores/slices/stepperSlice";
 import { setStateDisplayData } from "../../stores/slices/stateDisplaySlice";
 import useGlobalStore from "../../stores/globalStore";
+import {
+  isCheckboxCardChecked,
+  setCheckboxCardUnchecked,
+} from "../../stores/slices/checkboxCardSlice";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -94,18 +98,15 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
   }
 
   if (tabNow == 2) {
-    if (document.getElementById("dataset-upload-existing-dataset").classList.contains("checked")) {
+    if (isCheckboxCardChecked("dataset-upload-existing-dataset")) {
       // If merge options are selected, enable the continue button
-      if (
-        $('input[name="generate-5"]:checked').length === 1 &&
-        $('input[name="generate-6"]:checked').length === 1
-      ) {
+      if (isCheckboxCardChecked("replace-file-card") || isCheckboxCardChecked("skip-file-card")) {
         setNavButtonDisabled("nextBtn", false);
       }
     }
 
     if (
-      document.getElementById("dataset-upload-new-dataset").classList.contains("checked") &&
+      isCheckboxCardChecked("dataset-upload-new-dataset") &&
       document.getElementById("inputNewNameDataset-upload-dataset").value !== ""
     ) {
       // If new dataset is selected and name confirmed, enable the continue button
@@ -125,7 +126,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
 
     // if the user has files already on their dataset when starting from new/local and merging to existing pennsieve then
     // show them a message detailing why they cannot create manifest files
-    if (document.getElementById("dataset-upload-existing-dataset").classList.contains("checked")) {
+    if (isCheckboxCardChecked("dataset-upload-existing-dataset")) {
       // check if the dataset has files already
       let packageTypeCounts = {};
       let gotPackageCount = true;
@@ -179,8 +180,8 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
   // preview dataset tab
   if (tabNow == 4) {
     setNavButtonHidden("nextBtn", true);
-    if (document.getElementById("dataset-upload-existing-dataset").classList.contains("checked")) {
-      $("#inputNewNameDataset-upload-dataset").val(defaultBfDataset);
+    if (isCheckboxCardChecked("dataset-upload-existing-dataset")) {
+      $("#inputNewNameDataset-upload-dataset").val(window.defaultBfDataset);
     }
     fill_info_details();
     // window.datasetStructureJSONObj["files"] = window.sodaJSONObj["metadata-files"];
@@ -831,6 +832,26 @@ const raiseWarningGettingStarted = () => {
     }
   });
 };
+
+document.querySelector("#replace-file-card").addEventListener("click", (event) => {
+  window.transitionSubQuestions(
+    event.currentTarget, // Note: 'this' doesn't work the same way in arrow functions
+    "Question-generate-dataset-existing-files-options",
+    "upload-destination-selection-tab",
+    "",
+    "generate-dataset"
+  );
+});
+
+document.querySelector("#skip-file-card").addEventListener("click", (event) => {
+  window.transitionSubQuestions(
+    event.currentTarget, // Note: 'this' doesn't work the same way in arrow functions
+    "Question-generate-dataset-existing-files-options",
+    "upload-destination-selection-tab",
+    "",
+    "generate-dataset"
+  );
+});
 
 window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, category) => {
   if (currentDiv === "Question-getting-started-1") {
@@ -2914,13 +2935,13 @@ const updateJSONStructureBfDestination = () => {
       };
     }
 
-    // file option selection
-    if ($('input[name="generate-6"]:checked').length > 0) {
-      if ($('input[name="generate-6"]:checked')[0].id === "existing-files-replace") {
-        window.sodaJSONObj["generate-dataset"]["if-existing-files"] = "replace";
-      } else if ($('input[name="generate-6"]:checked')[0].id === "existing-files-skip") {
-        window.sodaJSONObj["generate-dataset"]["if-existing-files"] = "skip";
-      }
+    let replaceCheckboxCardChecked = isCheckboxCardChecked("replace-file-card");
+    let skipCheckboxCardChecked = isCheckboxCardChecked("skip-file-card");
+
+    if (replaceCheckboxCardChecked) {
+      window.sodaJSONObj["generate-dataset"]["if-existing-files"] = "replace";
+    } else if (skipCheckboxCardChecked) {
+      window.sodaJSONObj["generate-dataset"]["if-existing-files"] = "skip";
     }
   }
 };
@@ -3027,23 +3048,13 @@ window.resetCurationTabs = () => {
   // step 3
   document.getElementById("existing-dataset-upload").classList.add("hidden");
   document.getElementById("current-ps-dataset-generate").innerText = "";
-  document.getElementById("dataset-upload-existing-dataset").classList.remove("checked");
-  document.getElementById("dataset-upload-new-dataset").classList.remove("checked");
+  setCheckboxCardUnchecked("dataset-upload-existing-dataset");
+  setCheckboxCardUnchecked("dataset-upload-new-dataset");
   document.getElementById("inputNewNameDataset-upload-dataset").value = "";
   document.getElementById("button-confirm-ps-dataset").parentNode.style.display = "flex";
-  document.getElementsByName("generate-5").forEach((element) => {
-    element.checked = false;
-  });
 
-  document.getElementsByName("generate-6").forEach((element) => {
-    element.checked = false;
-  });
-  // Remove checks from all the cards in step 3 (merge option cards)
-
-  document.getElementById("replace-file-card").classList.remove("non-selected");
-  document.getElementById("replace-file-card").classList.remove("checked");
-  document.getElementById("skip-file-card").classList.remove("checked");
-  document.getElementById("skip-file-card").classList.remove("non-selected");
+  setCheckboxCardUnchecked("replace-file-card");
+  setCheckboxCardUnchecked("skip-file-card");
 
   // Step 4
   if (document.getElementById("generate-manifest-curate").checked) {
@@ -3102,7 +3113,7 @@ window.wipeOutCurateProgress = () => {
   // reset page 3 dataset upload options
 
   // reset the two option card selections
-  document.getElementById("dataset-upload-existing-dataset").classList.remove("checked");
+  setCheckboxCardUnchecked("dataset-upload-existing-dataset");
   document.getElementById("Question-new-dataset-upload-name").classList.remove("checked");
 
   // reset the dataset name input field
@@ -3110,12 +3121,6 @@ window.wipeOutCurateProgress = () => {
   document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
   $("#upload-dataset-btn-confirm-new-dataset-name").addClass("hidden");
 
-  // get every input with name="generate-5" and remove the checked property
-  let inputs = document.querySelectorAll('input[name="generate-5"]');
-  inputs.forEach((input) => {
-    input.checked = false;
-    input.classList.remove("checked");
-  });
   document.getElementById("current-ps-dataset-generate").textContent = "None";
   // hide the existing folder/files options
   $("#Question-generate-dataset-existing-files-options").addClass("hidden");

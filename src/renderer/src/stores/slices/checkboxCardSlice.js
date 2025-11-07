@@ -10,6 +10,7 @@ import {
   IconCheckupList,
   IconReport,
   IconFolderSymlink,
+  IconReplace,
 } from "@tabler/icons-react";
 
 export const checkboxCardSlice = (set) => ({
@@ -28,6 +29,20 @@ export const checkboxCardSlice = (set) => ({
       Icon: IconFolderSymlink,
       mutuallyExclusiveWithCards: ["dataset-upload-new-dataset"],
       checked: false,
+    },
+    "replace-file-card": {
+      title: "Replace",
+      description: null,
+      Icon: IconReplace,
+      checked: false,
+      mutuallyExclusiveWithCards: ["skip-file-card"],
+    },
+    "skip-file-card": {
+      title: "Skip",
+      description: null,
+      Icon: IconReport,
+      checked: false,
+      mutuallyExclusiveWithCards: ["replace-file-card"],
     },
     "guided-button-start-new-curation": {
       title: "Prepare and share a new dataset test",
