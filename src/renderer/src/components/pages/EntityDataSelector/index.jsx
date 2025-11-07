@@ -91,7 +91,12 @@ function oxfordComma(arr) {
   return arr.slice(0, -1).join(", ") + ", and " + arr[arr.length - 1];
 }
 
-const EntityDataSelectorPage = ({ pageName, entityTypeStringSingular, showProgress = false }) => {
+const EntityDataSelectorPage = ({
+  pageName,
+  entityTypeStringSingular,
+  showProgress = false,
+  entityTypeOnlyHasOneCategory = false,
+}) => {
   const activeEntity = useGlobalStore((state) => state.activeEntity);
   const entityType = useGlobalStore((state) => state.entityType); // e.g. 'data-folders'
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);

@@ -127,6 +127,8 @@ const componentTypeRenderers = {
       pageName: componentSlot.getAttribute("data-page-name"),
       entityTypeStringSingular: componentSlot.getAttribute("data-entity-type-string-singular"),
       entityTypePrefix: componentSlot.getAttribute("data-entity-type-prefix"),
+      entityTypeOnlyHasOneCategory:
+        componentSlot.getAttribute("data-entity-type-only-has-one-category") === "true",
     };
     renderComponent(componentSlot, <PerformanceIdManagementPage {...props} />);
   },
@@ -166,6 +168,8 @@ const componentTypeRenderers = {
       pageName: componentSlot.getAttribute("data-page-name"),
       entityTypeStringSingular: componentSlot.getAttribute("data-entity-type-string-singular"),
       showProgress: componentSlot.getAttribute("data-show-progress") || false,
+      entityTypeOnlyHasOneCategory:
+        componentSlot.getAttribute("data-entity-type-only-has-one-category") === "true",
     };
     console.log("Rendering DataCategorizationPage with props:", props);
     renderComponent(componentSlot, <EntityDataSelectorPage {...props} />);
