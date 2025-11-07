@@ -5287,17 +5287,6 @@ const initiate_generate = async (resume = false) => {
 
       $("#party-lottie").show();
 
-      // check if we updated an existing dataset
-      // const mergeSelectedCard = document
-      //   .querySelector("#dataset-upload-existing-dataset")
-      //   .classList.contains("checked");
-      // if (mergeSelectedCard) {
-      //   await swalShowInfo(
-      //     "Manifest Files Not Updated With New Files",
-      //     "Please navigate to the `Advanced Features` tab and use the standalone manifest generator to update your manifest files with the new files."
-      //   );
-      // }
-
       main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
       uploadedFiles = data["main_curation_uploaded_files"];
       window.pennsieveAgentManifestId = data["local_manifest_id"];
@@ -5360,6 +5349,7 @@ const initiate_generate = async (resume = false) => {
       logSelectedUpdateExistingDatasetOptions(datasetLocation);
 
       // hide the retry button
+      $("#wrapper-wrap").show();
       $("#button-retry").hide();
       $("#button-generate-validate").show();
 
@@ -5515,7 +5505,7 @@ const initiate_generate = async (resume = false) => {
           },
         }).then((result) => {
           statusBarClone.remove();
-          sparc_container.style.display = "inline";
+          // sparc_container.style.display = "inline";
           if (result.isConfirmed) {
             let button = document.getElementById("button-generate");
             $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
@@ -5736,7 +5726,7 @@ const initiate_generate = async (resume = false) => {
       successful = true;
       $("#sidebarCollapse").prop("disabled", false);
       statusBarClone.remove();
-      sparc_container.style.display = "inline";
+      // sparc_container.style.display = "inline";
       organizeDataset.disabled = false;
       guidedModeHomePageButton.disabled = false;
       uploadLocally.disabled = false;
@@ -5769,7 +5759,7 @@ const initiate_generate = async (resume = false) => {
       $("#sidebarCollapse").prop("disabled", false);
       window.log.info("Done curate track");
       statusBarClone.remove();
-      sparc_container.style.display = "inline";
+      // sparc_container.style.display = "inline";
       if (successful === true) {
         //Enable the buttons (organize datasets, upload locally, curate existing dataset, curate new dataset)
         organizeDataset.disabled = false;

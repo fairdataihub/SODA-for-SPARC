@@ -598,6 +598,9 @@ window.electron.ipcRenderer.on(
 
 // Event listeners for buttons in step 2 of Organize Dataset
 document.getElementById("confirm-account-workspace").addEventListener("click", async function () {
+  console.log("Great happening now");
+  document.getElementById("confirm-account-workspace").classList.remove("soda-green-border");
+  document.getElementById("confirm-account-workspace").classList.add("soda-green-background");
   const loadingDiv = document.querySelector("#upload-dataset-synchronizing-workspace-loading");
   const loadingDivText = document.querySelector(
     "#upload-dataset-synchronizing-workspace-loading-para"
@@ -629,6 +632,8 @@ document.getElementById("confirm-account-workspace").addEventListener("click", a
       return;
     }
   } catch (e) {
+    document.getElementById("confirm-account-workspace").classList.add("soda-green-border");
+    document.getElementById("confirm-account-workspace").classList.remove("soda-green-background");
     await swalShowInfo(
       "Something went wrong while verifying your profile",
       "Please try again by clicking the 'Yes' button. If this issue persists please use our `Contact Us` page to report the issue."
@@ -646,6 +651,8 @@ document.getElementById("confirm-account-workspace").addEventListener("click", a
     loadingDiv.classList.add("hidden");
   } catch (e) {
     clientError(e);
+    document.getElementById("confirm-account-workspace").classList.add("soda-green-border");
+    document.getElementById("confirm-account-workspace").classList.remove("soda-green-background");
     await swalShowInfo(
       "Something went wrong while verifying your profile",
       "Please try again by clicking the 'Yes' button. If this issue persists please use our `Contact Us` page to report the issue."
@@ -661,10 +668,6 @@ document.getElementById("confirm-account-workspace").addEventListener("click", a
   } catch (e) {
     console.error("Error with agent" + e);
   }
-
-  // If the user confirms the workspace and account, proceed to the next step
-  document.getElementById("confirm-account-workspace").classList.remove("soda-green-border");
-  document.getElementById("confirm-account-workspace").classList.add("soda-green-background");
 });
 
 document
