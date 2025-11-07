@@ -9,8 +9,8 @@ import {
 import {
   externallySetSearchFilterValue,
   reRenderTreeView,
-  clearEntityFilter,
-  setEntityFilter,
+  clearFileVisibilityFilter,
+  setFileVisibilityFilter,
   setDatasetMetadataToPreview,
   setActiveFileExplorer,
   setPathToRender,
@@ -196,8 +196,8 @@ window.openPage = async (targetPageID) => {
     // Reset the zustand store search filter value
     externallySetSearchFilterValue("");
 
-    // clear the entity filter when navigating to a new page
-    clearEntityFilter();
+    // clear the file visibility filter when navigating to a new page
+    clearFileVisibilityFilter();
     setSelectedHierarchyEntity(null);
     setActiveEntity(null);
 
@@ -271,18 +271,18 @@ window.openPage = async (targetPageID) => {
           filterRemovedFilesFromDatasetEntityObj(savedDatasetEntityObj);
         setDatasetEntityObj(filteredDatasetEntityObj, "data-categorization-page");
 
-        if (pageEntityType === "supporting-folders") {
-          setEntityFilter([], []); // No pre-set filters for supporting data categorization
+        if (pageEntityType === "non-data-folders") {
+          setFileVisibilityFilter([], []); // No pre-set filters for supporting data categorization
         }
 
         // Make any adjustments to the dataset entity object before setting it in the zustand store
         if (pageEntityType === "data-folders") {
           // Filter out files that are selected as belonging to the supporting data folders
-          setEntityFilter(
+          setFileVisibilityFilter(
             [],
             [
               {
-                type: "supporting-folders",
+                type: "non-data-folders",
                 names: ["Protocol", "Docs", "Code"],
               },
             ]
@@ -292,11 +292,11 @@ window.openPage = async (targetPageID) => {
         // Make any adjustments to the dataset entity object before setting it in the zustand store
         if (pageEntityType === "experimental-data") {
           // Filter out files that are selected as belonging to the supporting data folders
-          setEntityFilter(
+          setFileVisibilityFilter(
             [],
             [
               {
-                type: "supporting-folders",
+                type: "non-data-folders",
                 names: ["Protocol", "Docs", "Code"],
               },
             ]
@@ -309,7 +309,7 @@ window.openPage = async (targetPageID) => {
             addEntityToEntityList("sites", site);
           }
 
-          setEntityFilter(
+          setFileVisibilityFilter(
             [
               {
                 type: "experimental-data",
@@ -318,7 +318,7 @@ window.openPage = async (targetPageID) => {
             ],
             [
               {
-                type: "supporting-folders",
+                type: "non-data-folders",
                 names: ["Protocol", "Docs", "Code"],
               },
             ]
@@ -333,7 +333,7 @@ window.openPage = async (targetPageID) => {
           const sites = getExistingSites().map((site) => site.id);
           const siteFilter = [
             {
-              type: "supporting-folders",
+              type: "non-data-folders",
               names: ["Protocol", "Docs", "Code"],
             },
             {
@@ -341,7 +341,7 @@ window.openPage = async (targetPageID) => {
               names: sites,
             },
           ];
-          setEntityFilter(
+          setFileVisibilityFilter(
             [
               {
                 type: "experimental-data",
@@ -361,7 +361,7 @@ window.openPage = async (targetPageID) => {
           const samples = getExistingSamples().map((sample) => sample.id);
           const siteAndSampleFilter = [
             {
-              type: "supporting-folders",
+              type: "non-data-folders",
               names: ["Protocol", "Docs", "Code"],
             },
             {
@@ -374,7 +374,7 @@ window.openPage = async (targetPageID) => {
             },
           ];
 
-          setEntityFilter(
+          setFileVisibilityFilter(
             [
               {
                 type: "experimental-data",
@@ -390,7 +390,7 @@ window.openPage = async (targetPageID) => {
           for (const performance of performanceList) {
             addEntityToEntityList("performances", performance.performance_id);
           }
-          setEntityFilter(
+          setFileVisibilityFilter(
             [
               {
                 type: "data-folders",
@@ -399,7 +399,7 @@ window.openPage = async (targetPageID) => {
             ],
             [
               {
-                type: "supporting-folders",
+                type: "non-data-folders",
                 names: ["Protocol", "Docs", "Code"],
               },
             ]
@@ -411,7 +411,7 @@ window.openPage = async (targetPageID) => {
           for (const modality of modalities) {
             addEntityToEntityList("modalities", modality);
           }
-          setEntityFilter(
+          setFileVisibilityFilter(
             [
               {
                 type: "data-folders",
@@ -420,7 +420,7 @@ window.openPage = async (targetPageID) => {
             ],
             [
               {
-                type: "supporting-folders",
+                type: "non-data-folders",
                 names: ["Protocol", "Docs", "Code"],
               },
             ]

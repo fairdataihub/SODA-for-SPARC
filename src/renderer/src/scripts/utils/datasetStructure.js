@@ -186,9 +186,9 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
 
   try {
     // Move Code files into the code/ folder
-    moveFilesByCategory(datasetEntityObj?.["supporting-folders"]?.["Code"], "code/");
-    moveFilesByCategory(datasetEntityObj?.["supporting-folders"]?.["Docs"], "docs/");
-    moveFilesByCategory(datasetEntityObj?.["supporting-folders"]?.["Protocol"], "protocol/");
+    moveFilesByCategory(datasetEntityObj?.["non-data-folders"]?.["Code"], "code/");
+    moveFilesByCategory(datasetEntityObj?.["non-data-folders"]?.["Docs"], "docs/");
+    moveFilesByCategory(datasetEntityObj?.["non-data-folders"]?.["Protocol"], "protocol/");
 
     // Move Primary files into the primary/ folder
     // (Files that are marked as primary during the computational workflow)

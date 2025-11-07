@@ -6,7 +6,7 @@ import {
   getExistingSites,
   getExistingPerformancesR,
 } from "./datasetEntityStructureSlice";
-import { setEntityFilter } from "./datasetTreeViewSlice";
+import { setFileVisibilityFilter } from "./datasetTreeViewSlice";
 import { getFileDetailsByRelativePath } from "../../scripts/utils/datasetStructure";
 
 // Slice initialization for the entity selector state

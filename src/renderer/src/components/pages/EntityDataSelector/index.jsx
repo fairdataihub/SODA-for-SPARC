@@ -84,16 +84,24 @@ const getInstructionalTextByEntityType = (entityType, datasetType) => {
   );
 };
 
+function oxfordComma(arr) {
+  if (!arr || arr.length === 0) return "";
+  if (arr.length === 1) return arr[0];
+  if (arr.length === 2) return arr.join(" and ");
+  return arr.slice(0, -1).join(", ") + ", and " + arr[arr.length - 1];
+}
+
 const EntityDataSelectorPage = ({ pageName, entityTypeStringSingular, showProgress = false }) => {
   const activeEntity = useGlobalStore((state) => state.activeEntity);
   const entityType = useGlobalStore((state) => state.entityType); // e.g. 'data-folders'
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
+  console.log("selectedEntities", selectedEntities);
   const datasetIncludesCode = selectedEntities.includes("code");
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
   const datasetType = useGlobalStore((state) => state.datasetType);
 
   const itemCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
-  const supplementaryFilesCount = countSelectedFilesByEntityType("supporting-folders");
+  const supplementaryFilesCount = countSelectedFilesByEntityType("non-data-folders");
   console.log("supplementaryFilesCount", supplementaryFilesCount);
   const countItemsSelected = countSelectedFilesByEntityType(entityType);
   const totalFilesSelected = countItemsSelected + supplementaryFilesCount;
@@ -155,18 +163,33 @@ const EntityDataSelectorPage = ({ pageName, entityTypeStringSingular, showProgre
         <Stack>
           {(() => {
             switch (entityType) {
-              case "supporting-folders":
+              case "non-data-folders":
+                // Map selected entities to their display names and format with Oxford comma
+                const entityDisplayMap = {
+                  Code: "Code",
+                  Protocol: "Protocol",
+                  Docs: "Documentation",
+                };
+
+                const selectedSupportingEntitiesFormatted = oxfordComma(
+                  selectedEntities
+                    .filter((entity) => entityDisplayMap[entity])
+                    .map((entity) => entityDisplayMap[entity])
+                );
+
+                console.log(
+                  "selectedSupportingEntitiesFormatted",
+                  selectedSupportingEntitiesFormatted
+                );
+
                 return (
                   <>
                     <Text mb={0}>
-                      Use the interface below to categorize your Code, Protocol, and Documentation
-                      files.
-                    </Text>
-                    <Text mb={0}>
-                      To categorize your data, choose a category on the left, then select the files
-                      that belong to it on the right. Selecting a folder categorizes all files
-                      within it. If a folder contains files that belong to different categories, you
-                      can expand it and categorize individual files as needed.
+                      You indicated that your dataset contains {selectedSupportingEntitiesFormatted}
+                      . The SDS requires these files to be separated into their own folders. Using
+                      the interface below, categorize your supporting files into the appropriate
+                      folders by selecting their category on the left, and then choosing the files
+                      that belong to it on the right.
                     </Text>
                   </>
                 );

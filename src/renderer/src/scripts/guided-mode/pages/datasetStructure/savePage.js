@@ -64,7 +64,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
 
     // Determine which high-level folders to include based on selections
     const possibleDataFolders = ["Primary", "Source", "Derivative"];
-    const possibleSupportingFolders = ["Protocol", "Docs", "Code"];
+    const possibleSupportingFolders = ["Code", "Protocol", "Docs"];
 
     // Filter selected entities to get the actual folder selections
     const dataFolders = possibleDataFolders.filter((folder) => selectedEntities.includes(folder));
@@ -100,10 +100,10 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     for (const folder of possibleSupportingFolders) {
       if (supplementaryFolders.includes(folder)) {
         console.log(`Adding ${folder} to supporting data categorization`);
-        addEntityToEntityList("supporting-folders", folder);
+        addEntityToEntityList("non-data-folders", folder);
       } else {
         console.log(`Removing ${folder} from supporting data categorization`);
-        removeEntityFromEntityList("supporting-folders", folder);
+        removeEntityFromEntityList("non-data-folders", folder);
       }
     }
 
@@ -139,10 +139,10 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     console.log("Should show data categorization page:", shouldShowDataCategorization);
 
     if (shouldShowSupportingDataCategorization) {
-      guidedUnSkipPage("supporting-folders-tab");
+      guidedUnSkipPage("non-data-folders-tab");
       console.log("Showing supporting data categorization page");
     } else {
-      guidedSkipPage("supporting-folders-tab");
+      guidedSkipPage("non-data-folders-tab");
       console.log("Skipping supporting data categorization page");
     }
 

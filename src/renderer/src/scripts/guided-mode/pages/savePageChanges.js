@@ -145,7 +145,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
         const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
         const datasetFileCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
 
-        if (entityType === "supporting-folders") {
+        if (entityType === "non-data-folders") {
           const possibleSupportingFolders = ["protocol", "docs"];
           const supplementaryFolders = possibleSupportingFolders.filter((folder) =>
             selectedEntities.includes(folder)
@@ -153,7 +153,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
 
           // Only require categorization if there are multiple supplementary folders
           if (supplementaryFolders.length > 1) {
-            const supportingData = datasetEntityObj?.["supporting-folders"];
+            const supportingData = datasetEntityObj?.["non-data-folders"];
             if (!supportingData) {
               errorArray.push({
                 type: "notyf",
@@ -172,7 +172,7 @@ export const savePageChanges = async (pageBeingLeftID) => {
           }, 0);
 
           // Add supplementary data to the count of categorized files
-          const supplementaryData = datasetEntityObj?.["supporting-folders"];
+          const supplementaryData = datasetEntityObj?.["non-data-folders"];
           const supplementaryFileCount = supplementaryData
             ? Object.keys(supplementaryData).reduce((acc, key) => {
                 const files = supplementaryData[key];
