@@ -371,9 +371,11 @@
                               Select your dataset
                             </h5>
                             <div class="search-select-box" id="ps-dataset-select-div">
-                              <div class="dropdown bootstrap-select w-100"><select class="w-100" id="curatebfdatasetlist" data-live-search="true" name="Pennsieve dataset" style="width: 450px; border-radius: 7px; padding: 8px" data-none-selected-text="Loading datasets...">
-                                <option value="Select dataset">Search here.....</option></select>
-                              </div>
+                              <!-- <div class="dropdown bootstrap-select w-100"> -->
+                                <select class="w-100 selectpicker" id="curatebfdatasetlist" data-live-search="true" name="Pennsieve dataset" style="width: 450px; border-radius: 7px; padding: 8px" data-none-selected-text="Loading datasets...">
+                                <option value="Select dataset">Search here.....</option>
+                              </select>
+                              <!-- </div> -->
                             </div>
 
                             <h5 style="text-align: left; color: #000; display: none" id="ps-organization-select-header">
@@ -399,15 +401,19 @@
                   justify-content: center;
                   margin: 10px auto;
                 ">
-                  <button id="button-confirm-ps-dataset" onclick="window.transitionSubQuestionsButton(this, 'Question-generate-dataset-ps-dataset', 'upload-destination-selection-tab', 'delete', 'individual-question generate-dataset')" data-next="Question-generate-dataset-existing-files-options" style="
-                      display: none;
-                      border-radius: 4px;
-                      height: 30px;
-                      width: 110px;
-                      border: none;
-                      background-color: #13716D;
-                      margin:auto;
-                    ">
+                  <button id="button-confirm-ps-dataset" 
+                          onclick="window.transitionSubQuestionsButton(this, 'Question-generate-dataset-ps-dataset', 'upload-destination-selection-tab', 'delete', 'individual-question generate-dataset')" data-next="Question-generate-dataset-existing-files-options" 
+                          style="
+                            display: none;
+                            border-radius: 4px;
+                            height: 30px;
+                            width: 110px;
+                            border: none;
+                            background-color: #13716D;
+                            margin:auto;
+                    "
+                          class="soda-green-background soda-green-border"
+                  >
 
                       <p style="margin:auto; color:white; font-size: small; font-weight: 700">Confirm</p>
                   </button>
