@@ -9,8 +9,8 @@ const SodaGreenPaper = ({ children, mt, ml }) => {
       shadow="sm"
       withBorder
       style={{
-        backgroundColor: "var(--color-transparent-soda-green)",
-        border: "1px solid var(--color-soda-primary)",
+        backgroundColor: "var(--mantine-color-primary-1)",
+        border: "1px solid var(--mantine-color-primary-1)",
       }}
     >
       {children}
