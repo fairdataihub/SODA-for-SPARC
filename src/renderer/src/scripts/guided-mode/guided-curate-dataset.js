@@ -1343,6 +1343,15 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
         .selectpicker("refresh");
       if (defaultRole) $("#guided-contributor-role-select").selectpicker("val", defaultRole);
 
+      $(".SODA-select-picker button").on("click", (e) => {
+        console.log(e);
+        const dropdownMenu = e.target.parentElement.querySelector(".dropdown-menu.inner");
+        if (dropdownMenu) {
+          dropdownMenu.style.display = "block";
+          dropdownMenu.parentElement.style.display = "block";
+        }
+      });
+
       $("#guided-stored-contributors-select").on("change", function () {
         const selectedOption = $("#guided-stored-contributors-select option:selected");
         document.getElementById("guided-contributor-name").value =
