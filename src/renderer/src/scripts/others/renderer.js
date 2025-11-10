@@ -1637,6 +1637,7 @@ window.clearDatasetDropdowns = () => {
     window.addOption(list, "Search here...", "Select dataset");
     list.options[0].disabled = true;
   }
+  console.log("Cleared dataset dropdowns");
 };
 
 const clearOrganizationDropdowns = () => {
@@ -2464,7 +2465,6 @@ const populateDatasetDropdowns = (mylist) => {
     window.curateDatasetDropdown.appendChild(option2);
   }
 
-  console.log(window.curateDatasetDropdown);
   // metadataDatasetlistChange();
   permissionDatasetlistChange();
   // postCurationListChange();

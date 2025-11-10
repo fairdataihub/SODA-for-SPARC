@@ -45,7 +45,6 @@ document
 document
   .querySelector("#Question-generate-dataset-ps-dataset .change-current-account")
   .addEventListener("click", function () {
-    console.log("okay foun dit");
     window.openDropdownPrompt(this, "dataset", false);
   });
 

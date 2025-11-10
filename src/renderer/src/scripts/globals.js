@@ -74,7 +74,10 @@ const initializeBootstrapSelect = (dropdown, action) => {
     $(".dropdown.bootstrap-select").addClass("disabled");
     $(dropdown).selectpicker("refresh");
   } else if (action === "show") {
-    $(dropdown).selectpicker();
+    $(dropdown).selectpicker({
+      dropupAuto: false, // Add this line
+      liveSearch: true,
+    });
     $(dropdown).selectpicker("refresh");
     $(dropdown).attr("disabled", false);
     $(".dropdown.bootstrap-select button").removeClass("disabled");
@@ -83,7 +86,6 @@ const initializeBootstrapSelect = (dropdown, action) => {
 };
 
 const updateDatasetList = (bfaccount) => {
-  console.log("THis happens");
   var filteredDatasets = [];
 
   $("#div-filter-datasets-progress-2").css("display", "none");
@@ -91,14 +93,9 @@ const updateDatasetList = (bfaccount) => {
   window.removeOptions(window.curateDatasetDropdown);
   window.addOption(window.curateDatasetDropdown, "Search here...", "Select dataset");
 
-  // initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
+  initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
 
   $("#ps-dataset-select-header").css("display", "none");
-  $("#curatebfdatasetlist").selectpicker("hide");
-  $("#curatebfdatasetlist").selectpicker("refresh");
-  $(".selectpicker").selectpicker("hide");
-  $(".selectpicker").selectpicker("refresh");
-  $("#ps-dataset-select-div").hide();
 
   // waiting for dataset list to load first before initiating ps dataset dropdown list
   setTimeout(() => {
@@ -109,22 +106,11 @@ const updateDatasetList = (bfaccount) => {
       myPermission = "All";
     }
 
-    // Destroy existing selectpicker
-    if ($("#curatebfdatasetlist").hasClass("selectpicker")) {
-      $("#curatebfdatasetlist").selectpicker("destroy");
-    }
-
-    // if (myPermission.toLowerCase() === "all") {
-    //   for (var i = 0; i < window.datasetList.length; i++) {
-    //     filteredDatasets.push(window.datasetList[i].name);
-    //   }
-    // } else {
     for (var i = 0; i < window.datasetList.length; i++) {
       if (window.datasetList[i].role === myPermission.toLowerCase()) {
         filteredDatasets.push(window.datasetList[i].name);
       }
     }
-    // }
 
     filteredDatasets.sort((a, b) => {
       return a.toLowerCase().localeCompare(b.toLowerCase());
@@ -141,28 +127,10 @@ const updateDatasetList = (bfaccount) => {
       window.curateDatasetDropdown.appendChild(option);
     }
 
-    // Initialize Bootstrap Select
-    $("#curatebfdatasetlist").selectpicker({
-      liveSearch: true,
-      noneSelectedText: "Loading datasets...",
-      style: "btn-default",
-    });
-
     // Show the dropdown
     $("#ps-dataset-select-div").show();
-    $("#curatebfdatasetlist").selectpicker("refresh");
-    $(".dropdown.bootstrap-select button").removeClass("disabled");
-    $(".dropdown.bootstrap-select").removeClass("disabled");
 
-    // initializeBootstrapSelect("#curatebfdatasetlist", "show");
-
-    // $("#div-filter-datasets-progress-2").css("display", "none");
-    // //$("#ps-dataset-select-header").css("display", "block")
-    // $("#curatebfdatasetlist").selectpicker("show");
-    // $("#curatebfdatasetlist").selectpicker("refresh");
-    // $(".selectpicker").selectpicker("show");
-    // $(".selectpicker").selectpicker("refresh");
-    // $("#ps-dataset-select-div").show();
+    initializeBootstrapSelect("#curatebfdatasetlist", "show");
 
     if (document.getElementById("div-permission-list-2")) {
       document.getElementById("para-filter-datasets-status-2").innerHTML =
@@ -232,7 +200,7 @@ window.createDragSort = (tagify) => {
 
 window.updateOrganizationList = async (bfaccount) => {
   console.log("Here");
-  let organizations = [];
+  let organizations = window.organizationList || [];
 
   $("#div-filter-datasets-progress-2").css("display", "none");
 
@@ -254,7 +222,7 @@ window.updateOrganizationList = async (bfaccount) => {
 
   // add the organization options to the dropdown
   for (const myOrganization in organizations) {
-    var myitemselect = organiztions[myOrganization];
+    var myitemselect = organizations[myOrganization];
     var option = document.createElement("option");
     option.textContent = myitemselect;
     option.value = myitemselect;
@@ -1333,6 +1301,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       $("#para-continue-ps-dataset-getting-started").text("");
 
       $(window.datasetPermissionDiv).find("#select-permission-list-2").val("All").trigger("change");
+
       $(window.datasetPermissionDiv)
         .find("#curatebfdatasetlist")
         .val("Select dataset")
@@ -1394,23 +1363,27 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         }
       }
 
+      // check if window.curateDatasetDropdown.appendChild(option2); has more than one  child
+
       //account is signed in but no datasets have been fetched or created
       //invoke dataset request to ensure no datasets have been created
-      if (window.datasetList.length === 0) {
-        try {
-          const datasetList = await api.getUsersDatasetList(false);
-          console.log("Fetched datasets from Pennsieve:", datasetList);
-          window.datasetList = datasetList;
-          window.clearDatasetDropdowns();
-          window.refreshDatasetList();
-        } catch (error) {
-          const emessage = userErrorMessage(error);
-          await swalShowError("Failed to fetch datasets from Pennsieve", emessage);
-          // Reset the dataset select UI
-          $(".ui.active.blue.inline.loader.small").css("display", "none");
-          $(".svg-change-current-account.dataset").css("display", "block");
-          return;
+      if (window.datasetList.length === 0 || window.curateDatasetDropdown.children.length <= 1) {
+        if (window.datasetList.length === 0) {
+          try {
+            const datasetList = await api.getUsersDatasetList(false);
+            console.log("Fetched datasets from Pennsieve:", datasetList);
+            window.datasetList = datasetList;
+          } catch (error) {
+            const emessage = userErrorMessage(error);
+            await swalShowError("Failed to fetch datasets from Pennsieve", emessage);
+            // Reset the dataset select UI
+            $(".ui.active.blue.inline.loader.small").css("display", "none");
+            $(".svg-change-current-account.dataset").css("display", "block");
+            return;
+          }
         }
+        window.clearDatasetDropdowns();
+        window.refreshDatasetList();
       }
 
       //after request check length again
@@ -1515,6 +1488,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             $("#curatebfdatasetlist").selectpicker("show");
             $("#ps-dataset-select-div").show();
             $("#ps-organization-select-div").hide();
+            window.re;
 
             document
               .querySelector("#ps-dataset-select-div button")
@@ -1522,10 +1496,10 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
                 const dropdownMenu = document.querySelector(
                   "#ps-dataset-select-div .dropdown-menu.inner"
                 );
-                console.log(dropdownMenu);
+                console.log("dropdownMenu", dropdownMenu);
                 if (dropdownMenu) {
                   dropdownMenu.style.display = "block";
-                  dropdownMenu.parentElement.style.display = "block";
+                  // dropdownMenu.parentElement.style.display = "block";
                 }
               });
 
@@ -1730,6 +1704,8 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
         // document.getElementById("ds-description").innerHTML = "";
         window.refreshDatasetList();
+        console.log("Refresh finished. Checking value of curatebfdatasetlist");
+        console.log(window.curateDatasetDropdown);
         $("#dataset-loaded-message").hide();
 
         showHideDropdownButtons("dataset", "show");
@@ -1849,6 +1825,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     //account is signed in but no datasets have been fetched or created
     //invoke dataset request to ensure no datasets have been created
     if (window.organizationList.length === 0) {
+      console.log("Getting list of orgs");
       let responseObject;
       try {
         responseObject = await client.get(`user/organizations`, {
@@ -1879,6 +1856,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     //datasets do exist so display popup with dataset options
     //else datasets have been created
     if (window.organizationList.length > 0) {
+      console.log("has list of orgs");
       const { value: result } = await Swal.fire({
         backdrop: "rgba(0,0,0, 0.4)",
         cancelButtonText: "Cancel",
@@ -1902,11 +1880,6 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         willOpen: () => {
           $("#curatebforganizationlist").selectpicker("hide");
           $("#curatebforganizationlist").selectpicker("refresh");
-
-          // $("#ps-organization-select-header").show();
-          // TODO: How to make this unnecessary?
-          // $("#ps-dataset-select-div").hide();
-          // $("#ps-dataset-select-header").hide();
         },
         didOpen: () => {
           $("#div-permission-list-2").css("display", "block");
@@ -1929,6 +1902,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               const dropdownMenu = e.target.parentElement.querySelector(".dropdown-menu.inner");
               if (dropdownMenu) {
                 dropdownMenu.style.display = "block";
+                dropdownMenu.parentElement.style.display = "block";
               }
             });
 
@@ -1980,6 +1954,8 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           return window.bfOrganization;
         },
       });
+
+      console.log("Org select result:", result);
 
       if (!result) {
         $(".svg-change-current-account.organization").css("display", "block");
