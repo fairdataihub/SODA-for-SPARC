@@ -1345,7 +1345,9 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
 
       $(".SODA-select-picker button").on("click", (e) => {
         console.log(e);
-        const dropdownMenu = e.target.parentElement.querySelector(".dropdown-menu.inner");
+        const dropdownParent = e.target.closest(".dropdown");
+        const dropdownMenu = dropdownParent.querySelector(".dropdown-menu.inner");
+        console.log(dropdownMenu);
         if (dropdownMenu) {
           dropdownMenu.style.display = "block";
           dropdownMenu.parentElement.style.display = "block";
