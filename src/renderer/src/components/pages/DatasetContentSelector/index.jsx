@@ -36,12 +36,11 @@ export const contentOptionsMap = {
     ml: 10,
   },
   Code: {
-    label: "Did you use code to generate or analyze your data?",
+    label: "Does your dataset include any code?",
     dropDownDescription:
-      "Select yes if your research involved computational tools, scripts, or analysis pipelines that were important for generating or analyzing your data. This includes custom code, analysis scripts, and simulation software relevant to understanding your results.",
+      "Select yes if your dataset contains computational tools, scripts, or analysis pipelines that were used to generate or analyze your data. This includes custom code, analysis scripts, and simulation software relevant to understanding your results.",
     ml: 0,
   },
-
   Protocol: {
     label:
       "Does your dataset include any protocols describing experimental or computational procedures?",

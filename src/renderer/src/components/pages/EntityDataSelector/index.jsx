@@ -98,7 +98,9 @@ const EntityDataSelectorPage = ({
   entityTypeOnlyHasOneCategory = false,
 }) => {
   const activeEntity = useGlobalStore((state) => state.activeEntity);
+  console.log("activeEntity", activeEntity);
   const entityType = useGlobalStore((state) => state.entityType); // e.g. 'data-folders'
+  console.log("entityType", entityType);
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   console.log("selectedEntities", selectedEntities);
   const datasetIncludesCode = selectedEntities.includes("code");
@@ -289,13 +291,15 @@ const EntityDataSelectorPage = ({
       )}
       <GuidedModeSection>
         <Grid gutter="lg">
-          <Grid.Col span={4} style={{ position: "sticky", top: "20px" }}>
-            <EntityListContainer title={`Select a ${entityTypeStringSingular}`}>
-              {renderEntityList(entityType, activeEntity, datasetEntityObj)}
-            </EntityListContainer>
-          </Grid.Col>
+          {!entityTypeOnlyHasOneCategory && (
+            <Grid.Col span={4} style={{ position: "sticky", top: "20px" }}>
+              <EntityListContainer title={`Select a ${entityTypeStringSingular}`}>
+                {renderEntityList(entityType, activeEntity, datasetEntityObj)}
+              </EntityListContainer>
+            </Grid.Col>
+          )}
 
-          <Grid.Col span={8}>
+          <Grid.Col span={!entityTypeOnlyHasOneCategory ? 8 : 12}>
             {activeEntity ? (
               <Paper shadow="sm" radius="md">
                 <DatasetTreeViewRenderer

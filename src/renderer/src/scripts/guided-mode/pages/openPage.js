@@ -203,6 +203,10 @@ window.openPage = async (targetPageID) => {
 
     if (targetPageDataset.entityType) {
       setEntityType(targetPageDataset.entityType);
+      // For single-category entity pages (like experimental-data), set activeEntity to entityType
+      if (targetPageDataset.entityTypeOnlyHasOneCategory === "true") {
+        setActiveEntity(targetPageDataset.entityType);
+      }
     } else {
       setEntityType(null);
     }

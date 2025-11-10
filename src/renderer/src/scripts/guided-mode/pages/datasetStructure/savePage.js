@@ -57,48 +57,42 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
         throw errorArray;
       }
     }
+
     const datasetType = selectedEntities.includes("subjects") ? "experimental" : "computational";
+    // If the dataset is experimental,
     window.sodaJSONObj["dataset-type"] = datasetType;
     console.log("Selected Entities on save:", selectedEntities);
     console.log("De-Selected Entities on save:", deSelectedEntities);
 
     // Determine which high-level folders to include based on selections
-    const possibleDataFolders = ["Primary", "Source", "Derivative"];
-    const possibleSupportingFolders = ["Code", "Protocol", "Docs"];
+    const possibleNonDataFolders = ["Code", "Protocol", "Docs"];
 
     // Filter selected entities to get the actual folder selections
-    const dataFolders = possibleDataFolders.filter((folder) => selectedEntities.includes(folder));
-    const supplementaryFolders = possibleSupportingFolders.filter((folder) =>
+    const nonDataFolders = possibleNonDataFolders.filter((folder) =>
       selectedEntities.includes(folder)
     );
-    const allSelectedFolders = [...dataFolders, ...supplementaryFolders];
 
     console.log("=== FOLDER ANALYSIS ===");
-    console.log("Available data folders:", possibleDataFolders);
-    console.log("Available supporting folders:", possibleSupportingFolders);
-    console.log("User selected data folders:", dataFolders);
-    console.log("User selected supporting folders:", supplementaryFolders);
-    console.log("All selected folders:", allSelectedFolders);
+    console.log("Available non-data folders:", possibleNonDataFolders);
+    console.log("User selected non-data folders:", nonDataFolders);
 
     // Set up entity lists for categorization pages
     console.log("=== ENTITY LIST SETUP ===");
 
-    // Clear and set up data categorization entities
-    console.log("Setting up data categorization entities...");
-    for (const folder of possibleDataFolders) {
-      if (dataFolders.includes(folder)) {
-        console.log(`Adding ${folder} to data categorization`);
-        addEntityToEntityList("data-folders", folder);
-      } else {
-        console.log(`Removing ${folder} from data categorization`);
-        removeEntityFromEntityList("data-folders", folder);
-      }
-    }
-
-    // Clear and set up supporting data categorization entities
+    // Set up supporting data categorization entities and page visibility
     console.log("Setting up supporting data categorization entities...");
-    for (const folder of possibleSupportingFolders) {
-      if (supplementaryFolders.includes(folder)) {
+    // Show/hide the supporting data categorization page based on whether user has any supporting folders
+    if (nonDataFolders.length > 0) {
+      guidedUnSkipPage("non-data-folders-tab");
+      console.log("Showing supporting data categorization page");
+    } else {
+      guidedSkipPage("non-data-folders-tab");
+      console.log("Skipping supporting data categorization page");
+    }
+    window.sodaJSONObj["non-data-folders"] = nonDataFolders;
+    // Update entity list: add selected folders, remove unselected ones
+    for (const folder of possibleNonDataFolders) {
+      if (nonDataFolders.includes(folder)) {
         console.log(`Adding ${folder} to supporting data categorization`);
         addEntityToEntityList("non-data-folders", folder);
       } else {
@@ -109,56 +103,15 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
 
     addEntityToEntityList("experimental-data", "Experimental data");
 
-    const userHasDataFolders = dataFolders.length > 0;
-    const userHasSupplementaryFolders = supplementaryFolders.length > 0;
-
-    const userOnlyHasSupplementaryFolders = !userHasDataFolders && userHasSupplementaryFolders;
-    const userHasDataAndSupplementaryFolders = userHasDataFolders && userHasSupplementaryFolders;
+    const userHasNonDataFolders = nonDataFolders.length > 0;
 
     // Per the sparc team, if the dataset contains subjects, it's experimental, otherwise computational
     // (Further follow up required regarding "device" type datasets...)
 
-    console.log("User has data folders:", userHasDataFolders);
-    console.log("User has supplementary folders:", userHasSupplementaryFolders);
-
-    console.log("Data folders to include:", dataFolders);
-    console.log("Supplementary folders to include:", supplementaryFolders);
+    console.log("User has non-data folders:", userHasNonDataFolders);
+    console.log("Non-data folders to include:", nonDataFolders);
 
     console.log("=== PAGE LOGIC DECISIONS ===");
-
-    // Handle data categorization pages based on user selections
-    const shouldShowSupportingDataCategorization =
-      (userOnlyHasSupplementaryFolders && supplementaryFolders.length > 1) || // case when user has only supplementary folders and more than one
-      userHasDataAndSupplementaryFolders; // case when user has both data and supplementary folders
-    const shouldShowDataCategorization = dataFolders.length > 1;
-
-    console.log(
-      "Should show supporting data categorization page:",
-      shouldShowSupportingDataCategorization
-    );
-    console.log("Should show data categorization page:", shouldShowDataCategorization);
-
-    if (shouldShowSupportingDataCategorization) {
-      guidedUnSkipPage("non-data-folders-tab");
-      console.log("Showing supporting data categorization page");
-    } else {
-      guidedSkipPage("non-data-folders-tab");
-      console.log("Skipping supporting data categorization page");
-    }
-
-    if (shouldShowDataCategorization) {
-      guidedUnSkipPage("data-categorization-tab");
-      console.log(
-        "Showing data categorization page - user has multiple data folders:",
-        dataFolders
-      );
-    } else {
-      guidedSkipPage("data-categorization-tab");
-      console.log(
-        "Skipping data categorization page - user has single or no data folders:",
-        dataFolders
-      );
-    }
 
     if (selectedEntities.includes("subjects")) {
       // Unskip all of the experimental pages
