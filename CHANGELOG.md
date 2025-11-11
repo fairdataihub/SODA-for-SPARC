@@ -21,6 +21,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed an issue where the dataset_description.xlsx files outputted from SODA did not have a responsive Value header.
 - Fixed an issue where the resources metadata page was not requiring an RRID.
 
+## v16.3.2 - 2025-10-03
+
+## Bug fixes:
+
+- Dataset Metadata Entity section now properly scrolls.
+
 ## v 16.3.1 - 2025-10-01
 
 ## Bug fixes:

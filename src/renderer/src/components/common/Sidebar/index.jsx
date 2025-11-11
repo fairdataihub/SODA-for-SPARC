@@ -117,8 +117,8 @@ const Sidebar = ({ id }) => {
 
         {id === "guided-sidebar" && (
           <>
-            <Stack gap={2} align="center">
-              <Text size="md" fw={500}>
+            <Stack gap={2} align="center" mb="lg">
+              <Text size="md" fw={800}>
                 Current Dataset
               </Text>
               <Tooltip
@@ -133,9 +133,6 @@ const Sidebar = ({ id }) => {
                   {guidedModeSidebarDatasetName}
                 </Text>
               </Tooltip>
-              <Text size="md" fw={500} mt="xl" mb="xs">
-                Page Navigation
-              </Text>
             </Stack>
 
             <ul id="guided-nav-items" className="guided--container-nav-items hidden"></ul>

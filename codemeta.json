@@ -71,12 +71,13 @@
   ],
   "codeRepository": "https://github.com/fairdataihub/SODA-for-SPARC",
   "dateCreated": "2021-10-08",
-  "dateModified": "2025-10-01",
+  "dateModified": "2025-10-27",
   "datePublished": "2024-10-11",
   "description": "Simplifying data curation for researchers funded by the NIH SPARC initiative",
   "developmentStatus": "active",
   "downloadUrl": "https://fairdataihub.org/sodaforsparc",
   "funding": "OT2OD030213",
+  "identifier": "10.5281/zenodo.17297669",
   "isPartOf": "https://fairdataihub.org/",
   "issueTracker": "https://github.com/fairdataihub/SODA-for-SPARC/issues",
   "keywords": ["SPARC", "FAIR", "data", "curation", "mac", "sparc-dataset", "ubuntu", "windows"],
@@ -89,12 +90,7 @@
     "Ubuntu"
   ],
   "programmingLanguage": ["JavaScript", "HTML", "Python", "CSS"],
-  "referencePublication": "https://doi.org/10.1101/2021.02.10.430563",
-  "relatedLink": [],
-  "runtimePlatform": [],
   "schema:releaseNotes": "## Bug Fixes:\n- Fixed an issue where Prepare Dataset Step-by-Step does not save sample files when using the save and exit button.",
-  "softwareRequirements": [],
-  "version": "16.3.1",
-  "type": "SoftwareSourceCode",
-  "identifier": "10.5281/zenodo.17247042"
+  "version": "16.4.0",
+  "type": "SoftwareSourceCode"
 }

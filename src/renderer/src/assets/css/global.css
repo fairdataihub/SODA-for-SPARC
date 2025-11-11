@@ -134,6 +134,10 @@ textarea {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
 
+.tabler-icon-edit {
+  stroke: var(--mantine-color-primary-6) !important;
+}
+
 #version {
   white-space: nowrap;
 }

@@ -280,11 +280,11 @@ const EntityMetadataForm = () => {
       case "subject":
         return <IconUser size={20} />;
       case "sample":
-        return <IconFlask size={20} color="#74b816" />;
+        return <IconFlask size={20} color="var(--mantine-color-primary-6)" />;
       case "site":
-        return <IconPin size={20} color="red" />;
+        return <IconPin size={20} color="var(--mantine-color-primary-6)" />;
       case "performance":
-        return <IconClipboard size={20} color="#ae3ec9" />;
+        return <IconClipboard size={20} color="var(--mantine-color-primary-6)" />;
       default:
         return null;
     }
