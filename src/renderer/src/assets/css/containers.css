@@ -187,7 +187,7 @@
 }
 
 .info-container {
-  background-color: var(--color-transparent-soda-green);
+  background-color: var(--mantine-color-primary-1);
 
   margin-top: 5px;
   padding: 10px;

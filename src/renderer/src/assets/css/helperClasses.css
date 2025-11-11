@@ -1052,7 +1052,7 @@
 .swal2-input:focus {
   outline: none !important;
   border-width: 0 0 2px !important;
-  border-color: #13716d !important;
+  border-color: var(--mantine-primary-color-6) !important;
 }
 
 .swal2-input::-webkit-input-placeholder {
