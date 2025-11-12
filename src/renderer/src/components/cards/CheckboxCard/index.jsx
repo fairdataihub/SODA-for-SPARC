@@ -39,7 +39,7 @@ const CheckboxCard = ({ id, clickAction }) => {
   const isCompact = !description;
   if (simpleButtonType) {
     // Use green for Yes, red for No
-    const color = simpleButtonType === "Positive" ? "green" : "red";
+    const color = simpleButtonType === "Positive" ? "primary" : "red";
     return (
       <Button
         id={id}
