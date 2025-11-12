@@ -1081,13 +1081,19 @@ input::-webkit-calendar-picker-indicator {
 }
 
 .form-container-input-ps:focus {
-  background-color: #fffafa;
   /* border-left: 2px solid #c0c0c0; */
   border-radius: 0;
 }
 
 .form-container-input-ps:disabled {
   background-color: #e5e5e5 !important;
+}
+
+.tagify.tagify--focus {
+  outline-color: white !important;
+  border-color: var(--mantine-color-primary-6) !important;
+  /* outline: none !important; */
+  background-color: white !important;
 }
 
 .form-container-textarea {
