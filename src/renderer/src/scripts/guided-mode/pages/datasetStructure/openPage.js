@@ -3,6 +3,7 @@ import { getEntityDataById } from "../../../../stores/slices/datasetEntityStruct
 import { createStandardizedDatasetStructure } from "../../../utils/datasetStructure";
 import { deleteEmptyFoldersFromStructure } from "../../../../stores/slices/datasetTreeViewSlice";
 import client from "../../../client";
+import { isCheckboxCardChecked } from "../../../../stores/slices/checkboxCardSlice";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -206,5 +207,8 @@ export const openPageDatasetStructure = async (targetPageID) => {
 
     // Save final manifest data
     window.sodaJSONObj["guided-manifest-file-data"] = guidedManifestData;
+  } else if (targetPageID == "guided-modalities-selection-tab") {
+    let showModalities = isCheckboxCardChecked("modality-selection-yes")
+    
   }
 };
