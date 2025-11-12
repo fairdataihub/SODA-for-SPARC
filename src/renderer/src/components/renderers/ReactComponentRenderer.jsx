@@ -26,6 +26,7 @@ import SodaTextInput from "../common/SodaTextInput";
 import ManifestFilePreviewSection from "../shared/ManifestFilePreviewSection";
 import DropDownNote from "../utils/ui/DropDownNote";
 import { Divider } from "@mantine/core";
+import DataCategoriesQuestionnairePage from "../pages/DataCategoriesQuestionnairePage";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
 while (!window.htmlSectionsAdded) {
@@ -174,6 +175,18 @@ const componentTypeRenderers = {
     console.log("Rendering DataCategorizationPage with props:", props);
     renderComponent(componentSlot, <EntityDataSelectorPage {...props} />);
   },
+
+  "data-categories-questionnaire-page": (componentSlot) => {
+    console.log("Rendering DataCategoriesQuestionnairePage for componentSlot:", componentSlot);
+    const props = {
+      pageID: componentSlot.id,
+      pageName: componentSlot.getAttribute("data-page-name"),
+      entityType: componentSlot.getAttribute("data-entity-type"),
+    };
+    console.log("Rendering DataCategoriesQuestionnairePage with props:", props);
+    renderComponent(componentSlot, <DataCategoriesQuestionnairePage {...props} />);
+  },
+
   "modality-selection-page": (componentSlot) => {
     renderComponent(componentSlot, <ModalitySelectionPage />);
   },

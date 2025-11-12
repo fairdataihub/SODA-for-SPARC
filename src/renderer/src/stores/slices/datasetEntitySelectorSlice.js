@@ -21,7 +21,7 @@ export const datasetEntitySelectorSlice = (set) => ({
 });
 
 // Add an entity to the specified entity type's list
-export const addEntityToEntityList = (entityType, entityName) => {
+export const addEntityNameToEntityType = (entityType, entityName) => {
   useGlobalStore.setState(
     produce((state) => {
       if (!state.datasetEntityObj) {

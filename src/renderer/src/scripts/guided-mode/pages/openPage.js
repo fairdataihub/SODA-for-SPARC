@@ -16,7 +16,7 @@ import {
   setPathToRender,
 } from "../../../stores/slices/datasetTreeViewSlice.js";
 import {
-  addEntityToEntityList,
+  addEntityNameToEntityType,
   removeEntityFromEntityList,
   setActiveEntity,
   setShowFullMetadataFormFields,
@@ -307,10 +307,28 @@ window.openPage = async (targetPageID) => {
           );
         }
 
+        if (pageEntityType === "experimental-data-categorization") {
+          // Filter out files that are selected as belonging to the supporting data folders
+          setFileVisibilityFilter(
+            [
+              {
+                type: "experimental-data",
+                names: ["experimental-data"],
+              },
+            ],
+            [
+              {
+                type: "non-data-folders",
+                names: ["Protocol", "Docs", "Code"],
+              },
+            ]
+          );
+        }
+
         if (pageEntityType === "sites") {
           const sites = getExistingSites().map((site) => site.id);
           for (const site of sites) {
-            addEntityToEntityList("sites", site);
+            addEntityNameToEntityType("sites", site);
           }
 
           setFileVisibilityFilter(
@@ -332,7 +350,7 @@ window.openPage = async (targetPageID) => {
         if (pageEntityType === "samples") {
           const samples = getExistingSamples().map((sample) => sample.id);
           for (const sample of samples) {
-            addEntityToEntityList("samples", sample);
+            addEntityNameToEntityType("samples", sample);
           }
           const sites = getExistingSites().map((site) => site.id);
           const siteFilter = [
@@ -359,7 +377,7 @@ window.openPage = async (targetPageID) => {
         if (pageEntityType === "subjects") {
           const subjects = getExistingSubjects().map((subject) => subject.id);
           for (const subject of subjects) {
-            addEntityToEntityList("subjects", subject);
+            addEntityNameToEntityType("subjects", subject);
           }
           const sites = getExistingSites().map((site) => site.id);
           const samples = getExistingSamples().map((sample) => sample.id);
@@ -392,7 +410,7 @@ window.openPage = async (targetPageID) => {
         if (pageEntityType === "performances") {
           const performanceList = window.sodaJSONObj["dataset_performances"];
           for (const performance of performanceList) {
-            addEntityToEntityList("performances", performance.performance_id);
+            addEntityNameToEntityType("performances", performance.performance_id);
           }
           setFileVisibilityFilter(
             [
@@ -413,7 +431,7 @@ window.openPage = async (targetPageID) => {
         if (pageEntityType === "modalities") {
           const modalities = window.sodaJSONObj["selected-modalities"] || [];
           for (const modality of modalities) {
-            addEntityToEntityList("modalities", modality);
+            addEntityNameToEntityType("modalities", modality);
           }
           setFileVisibilityFilter(
             [
@@ -430,6 +448,22 @@ window.openPage = async (targetPageID) => {
             ]
           );
         }
+      }
+      if (targetPageComponentType === "data-categories-questionnaire-page") {
+        setFileVisibilityFilter(
+          [
+            {
+              type: "experimental-data",
+              names: ["experimental-data"],
+            },
+          ],
+          [
+            {
+              type: "non-data-folders",
+              names: ["Protocol", "Docs", "Code"],
+            },
+          ]
+        );
       }
 
       if (targetPageComponentType === "entity-file-mapping-page") {
@@ -518,6 +552,7 @@ window.openPage = async (targetPageID) => {
       // For categorization or unstructured import pages: use raw structure
       if (
         targetPageDataset.componentType === "data-categorization-page" ||
+        targetPageDataset.componentType === "data-categories-questionnaire-page" ||
         pageID === "guided-unstructured-data-import-tab"
       ) {
         setPathToRender(["data"]);

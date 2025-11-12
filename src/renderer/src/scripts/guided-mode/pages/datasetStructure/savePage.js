@@ -8,7 +8,7 @@ import {
   guidedUnSkipPageSet,
 } from "../../../guided-mode/pages/navigationUtils/pageSkipping";
 import {
-  addEntityToEntityList,
+  addEntityNameToEntityType,
   removeEntityFromEntityList,
 } from "../../../../stores/slices/datasetEntitySelectorSlice";
 
@@ -94,14 +94,12 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     for (const folder of possibleNonDataFolders) {
       if (nonDataFolders.includes(folder)) {
         console.log(`Adding ${folder} to supporting data categorization`);
-        addEntityToEntityList("non-data-folders", folder);
+        addEntityNameToEntityType("non-data-folders", folder);
       } else {
         console.log(`Removing ${folder} from supporting data categorization`);
         removeEntityFromEntityList("non-data-folders", folder);
       }
     }
-
-    addEntityToEntityList("experimental-data", "Experimental data");
 
     const userHasNonDataFolders = nonDataFolders.length > 0;
 
@@ -115,9 +113,11 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
 
     if (selectedEntities.includes("subjects")) {
       // Unskip all of the experimental pages
+      addEntityNameToEntityType("experimental-data", "Experimental data");
       guidedUnSkipPageSet("guided-subject-related-page-set");
       guidedUnSkipPageSet("guided-subjects-metadata-page-set");
     } else {
+      removeEntityFromEntityList("experimental-data", "Experimental data");
       // Skip all of the experimental pages
       guidedSkipPageSet("guided-subject-related-page-set");
 

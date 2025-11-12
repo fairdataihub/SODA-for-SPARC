@@ -46,30 +46,6 @@ export const setRenderDatasetStructureJSONObjIsLoading = (isLoading) => {
   useGlobalStore.setState({ datasetRenderArrayIsLoading: isLoading });
 };
 
-const checkIfFilePassesVisibilityFilter = (filePath, fileVisibilityFilters) => {
-  const { datasetEntityObj } = useGlobalStore.getState();
-  if (!datasetEntityObj) return false;
-
-  const { include, exclude } = fileVisibilityFilters;
-  if (!include.length && !exclude.length) return true;
-
-  const isAssociatedWithFilters = (filters) => {
-    for (const { type, names } of filters) {
-      if (!type || !Array.isArray(names) || names.length === 0) continue;
-      const entities = datasetEntityObj[type];
-      if (!entities) continue;
-      for (const name of names) {
-        if (entities[name]?.[filePath]) return true;
-      }
-    }
-    return false;
-  };
-
-  if (isAssociatedWithFilters(exclude)) return false;
-  if (!include.length) return true;
-  return isAssociatedWithFilters(include);
-};
-
 export const setDatasetStructureSearchFilter = (searchFilter) => {
   useGlobalStore.setState({
     datasetStructureSearchFilter: searchFilter || "",
