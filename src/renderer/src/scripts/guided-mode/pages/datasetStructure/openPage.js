@@ -208,7 +208,6 @@ export const openPageDatasetStructure = async (targetPageID) => {
     // Save final manifest data
     window.sodaJSONObj["guided-manifest-file-data"] = guidedManifestData;
   } else if (targetPageID == "guided-modalities-selection-tab") {
-    let showModalities = isCheckboxCardChecked("modality-selection-yes")
-    
+    let showModalities = isCheckboxCardChecked("modality-selection-yes");
   }
 };
