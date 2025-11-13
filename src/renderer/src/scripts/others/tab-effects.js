@@ -1594,6 +1594,7 @@ window.verifySparcFolder = (rootFolderPath, type) => {
     "code_description",
     "manifest",
     "code_parameters",
+    "performances",
   ];
 
   const folderContents = window.fs
@@ -1606,12 +1607,21 @@ window.verifySparcFolder = (rootFolderPath, type) => {
   const highLevelFolders = window.highLevelFolders.map((folder) => folder.toLowerCase());
 
   const datasetItemsValidSDS = (item) => {
+    console.log(
+      `Checking ${item}:  ${highLevelFolders.includes(item) || metadataFiles.includes(item)}`
+    );
     return highLevelFolders.includes(item) || metadataFiles.includes(item);
   };
 
   const datasetHasHighLevelFolder = (item) => {
     return highLevelFolders.includes(item);
   };
+
+  console.log(
+    "Dataset is valid SDS structure: ",
+    folderContents.every(datasetItemsValidSDS),
+    folderContents.some(datasetHasHighLevelFolder)
+  );
 
   // Returns true if none of the
   // NOTE: For the moment we will not require metadata files in the workflow
