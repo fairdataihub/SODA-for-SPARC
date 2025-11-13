@@ -184,7 +184,7 @@ const DatasetContentSelector = () => {
                 {expanded[key] && option.dropDownDescription && (
                   <Box mb="md">
                     <SodaGreenPaper mt="sm" mb="sm">
-                      <Text>{option.dropDownDescription}</Text>
+                      <Text fw={500}>{option.dropDownDescription}</Text>
                     </SodaGreenPaper>
                   </Box>
                 )}

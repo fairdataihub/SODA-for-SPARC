@@ -5,15 +5,14 @@ import api from "./others/api/api";
 import { clientError, userErrorMessage } from "./others/http-error-handler/error-handler";
 import client from "./client";
 import { swalShowError, swalShowInfo } from "./utils/swal-utils";
-// // Purpose: Will become preload.js in the future. For now it is a place to put global variables/functions that are defined in javascript files
-// //          needed by the renderer process in order to run.
-import { clientBlockedByExternalFirewall, blockedMessage } from "./check-firewall/checkFirewall";
-import { datasetContentSelectorSlice } from "../stores/slices/datasetContentSelectorSlice";
 
-// // Contributors table for the dataset description editing page
+import { clientBlockedByExternalFirewall, blockedMessage } from "./check-firewall/checkFirewall";
+import { setNavButtonDisabled } from "../stores/slices/navButtonStateSlice";
+
+// Contributors table for the dataset description editing page
 const currentConTable = document.getElementById("table-current-contributors");
 
-// // function to show dataset or account Confirm buttons
+// function to show dataset or account Confirm buttons
 const showHideDropdownButtons = (category, action) => {
   if (category === "dataset") {
     if (action === "show") {
@@ -75,7 +74,10 @@ const initializeBootstrapSelect = (dropdown, action) => {
     $(".dropdown.bootstrap-select").addClass("disabled");
     $(dropdown).selectpicker("refresh");
   } else if (action === "show") {
-    $(dropdown).selectpicker();
+    $(dropdown).selectpicker({
+      dropupAuto: false, // Add this line
+      liveSearch: true,
+    });
     $(dropdown).selectpicker("refresh");
     $(dropdown).attr("disabled", false);
     $(".dropdown.bootstrap-select button").removeClass("disabled");
@@ -94,29 +96,19 @@ const updateDatasetList = (bfaccount) => {
   initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
 
   $("#ps-dataset-select-header").css("display", "none");
-  $("#curatebfdatasetlist").selectpicker("hide");
-  $("#curatebfdatasetlist").selectpicker("refresh");
-  $(".selectpicker").selectpicker("hide");
-  $(".selectpicker").selectpicker("refresh");
-  $("#ps-dataset-select-div").hide();
 
   // waiting for dataset list to load first before initiating ps dataset dropdown list
   setTimeout(() => {
     var myPermission = $(window.datasetPermissionDiv).find("#select-permission-list-2").val();
+    console.log("Permission selected: ", myPermission);
 
     if (!myPermission) {
       myPermission = "All";
     }
 
-    if (myPermission.toLowerCase() === "all") {
-      for (var i = 0; i < window.datasetList.length; i++) {
+    for (var i = 0; i < window.datasetList.length; i++) {
+      if (window.datasetList[i].role === myPermission.toLowerCase()) {
         filteredDatasets.push(window.datasetList[i].name);
-      }
-    } else {
-      for (var i = 0; i < window.datasetList.length; i++) {
-        if (window.datasetList[i].role === myPermission.toLowerCase()) {
-          filteredDatasets.push(window.datasetList[i].name);
-        }
       }
     }
 
@@ -125,7 +117,7 @@ const updateDatasetList = (bfaccount) => {
     });
 
     // The window.removeOptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
-    $("#curatebfdatasetlist").find("option:not(:first)").remove();
+    // $("#curatebfdatasetlist").find("option:not(:first)").remove();
 
     for (const myitem in filteredDatasets) {
       var myitemselect = filteredDatasets[myitem];
@@ -135,15 +127,10 @@ const updateDatasetList = (bfaccount) => {
       window.curateDatasetDropdown.appendChild(option);
     }
 
-    initializeBootstrapSelect("#curatebfdatasetlist", "show");
-
-    $("#div-filter-datasets-progress-2").css("display", "none");
-    //$("#ps-dataset-select-header").css("display", "block")
-    $("#curatebfdatasetlist").selectpicker("show");
-    $("#curatebfdatasetlist").selectpicker("refresh");
-    $(".selectpicker").selectpicker("show");
-    $(".selectpicker").selectpicker("refresh");
+    // Show the dropdown
     $("#ps-dataset-select-div").show();
+
+    initializeBootstrapSelect("#curatebfdatasetlist", "show");
 
     if (document.getElementById("div-permission-list-2")) {
       document.getElementById("para-filter-datasets-status-2").innerHTML =
@@ -212,7 +199,8 @@ window.createDragSort = (tagify) => {
 };
 
 window.updateOrganizationList = async (bfaccount) => {
-  let organizations = [];
+  console.log("Here");
+  let organizations = window.organizationList || [];
 
   $("#div-filter-datasets-progress-2").css("display", "none");
 
@@ -234,7 +222,7 @@ window.updateOrganizationList = async (bfaccount) => {
 
   // add the organization options to the dropdown
   for (const myOrganization in organizations) {
-    var myitemselect = organiztions[myOrganization];
+    var myitemselect = organizations[myOrganization];
     var option = document.createElement("option");
     option.textContent = myitemselect;
     option.value = myitemselect;
@@ -1285,13 +1273,13 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
     $(".svg-change-current-account.dataset").css("display", "none");
     $("#div-permission-list-2").css("display", "none");
-    $(".ui.active.green.inline.loader.small:not(.organization-loader)").css("display", "block");
+    $(".ui.active.blue.inline.loader.small:not(.organization-loader)").css("display", "block");
     let currentLicenseText = currentDatasetLicense.innerText;
     let currentPermissionsText = window.currentAddEditDatasetPermission.innerText;
 
     setTimeout(async function () {
       // disable the Continue btn first
-      $("#nextBtn").prop("disabled", true);
+      setNavButtonDisabled("nextBtn", true);
       var bfDataset = "";
 
       // if users edit Current dataset
@@ -1313,6 +1301,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       $("#para-continue-ps-dataset-getting-started").text("");
 
       $(window.datasetPermissionDiv).find("#select-permission-list-2").val("All").trigger("change");
+
       $(window.datasetPermissionDiv)
         .find("#curatebfdatasetlist")
         .val("Select dataset")
@@ -1324,7 +1313,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         var accountPresent = await window.check_api_key();
       } catch (error) {
         console.error(error);
-        $(".ui.active.green.inline.loader.small").css("display", "none");
+        $(".ui.active.blue.inline.loader.small").css("display", "none");
         $(".svg-change-current-account.dataset").css("display", "block");
         accountPresent = false;
       }
@@ -1349,10 +1338,10 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         }).then(async (result) => {
           if (result.isConfirmed) {
             await window.openDropdownPrompt(ev, "ps");
-            $(".ui.active.green.inline.loader.small").css("display", "none");
+            $(".ui.active.blue.inline.loader.small").css("display", "none");
             $(".svg-change-current-account.dataset").css("display", "block");
           } else {
-            $(".ui.active.green.inline.loader.small").css("display", "none");
+            $(".ui.active.blue.inline.loader.small").css("display", "none");
             $(".svg-change-current-account.dataset").css("display", "block");
           }
         });
@@ -1369,27 +1358,32 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         //           under the default profile does not mean that key is associated with the user's current workspace.
         let matching = await window.defaultProfileMatchesCurrentWorkspace();
         if (!matching) {
-          log.info("Default api key is for a different workspace");
+          window.log.info("Default api key is for a different workspace");
           await window.switchToCurrentWorkspace();
         }
       }
 
+      // check if window.curateDatasetDropdown.appendChild(option2); has more than one  child
+
       //account is signed in but no datasets have been fetched or created
       //invoke dataset request to ensure no datasets have been created
-      if (window.datasetList.length === 0) {
-        try {
-          const datasetList = await api.getUsersDatasetList(false);
-          window.datasetList = datasetList;
-          window.clearDatasetDropdowns();
-          window.refreshDatasetList();
-        } catch (error) {
-          const emessage = userErrorMessage(error);
-          await swalShowError("Failed to fetch datasets from Pennsieve", emessage);
-          // Reset the dataset select UI
-          $(".ui.active.green.inline.loader.small").css("display", "none");
-          $(".svg-change-current-account.dataset").css("display", "block");
-          return;
+      if (window.datasetList.length === 0 || window.curateDatasetDropdown.children.length <= 1) {
+        if (window.datasetList.length === 0) {
+          try {
+            const datasetList = await api.getUsersDatasetList(false);
+            console.log("Fetched datasets from Pennsieve:", datasetList);
+            window.datasetList = datasetList;
+          } catch (error) {
+            const emessage = userErrorMessage(error);
+            await swalShowError("Failed to fetch datasets from Pennsieve", emessage);
+            // Reset the dataset select UI
+            $(".ui.active.blue.inline.loader.small").css("display", "none");
+            $(".svg-change-current-account.dataset").css("display", "block");
+            return;
+          }
         }
+        window.clearDatasetDropdowns();
+        window.refreshDatasetList();
       }
 
       //after request check length again
@@ -1421,7 +1415,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               popup: "animate__animated animate__fadeOutUp animate__faster animate_fastest",
             },
             didOpen: () => {
-              $(".ui.active.green.inline.loader.small").css("display", "none");
+              $(".ui.active.blue.inline.loader.small").css("display", "none");
               $(".svg-change-current-account.dataset").css("display", "block");
             },
           });
@@ -1445,7 +1439,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               popup: "animate__animated animate__fadeOutUp animate__faster animate_fastest",
             },
             didOpen: () => {
-              $(".ui.active.green.inline.loader.small").css("display", "none");
+              $(".ui.active.blue.inline.loader.small").css("display", "none");
               $(".svg-change-current-account.dataset").css("display", "block");
             },
           });
@@ -1484,7 +1478,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           },
           didOpen: () => {
             $("#div-permission-list-2").css("display", "block");
-            $(".ui.active.green.inline.loader.small").css("display", "none");
+            $(".ui.active.blue.inline.loader.small").css("display", "none");
             window.datasetPermissionDiv.style.display = "block";
             $("#curatebfdatasetlist").attr("disabled", false);
             $(window.datasetPermissionDiv)
@@ -1494,6 +1488,20 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             $("#curatebfdatasetlist").selectpicker("show");
             $("#ps-dataset-select-div").show();
             $("#ps-organization-select-div").hide();
+            window.re;
+
+            document
+              .querySelector("#ps-dataset-select-div button")
+              .addEventListener("click", (e) => {
+                const dropdownMenu = document.querySelector(
+                  "#ps-dataset-select-div .dropdown-menu.inner"
+                );
+                console.log("dropdownMenu", dropdownMenu);
+                if (dropdownMenu) {
+                  dropdownMenu.style.display = "block";
+                  // dropdownMenu.parentElement.style.display = "block";
+                }
+              });
 
             bfDataset = $("#curatebfdatasetlist").val();
             let sweet_al = document.getElementsByClassName("swal2-html-container")[0];
@@ -1696,6 +1704,8 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
         // document.getElementById("ds-description").innerHTML = "";
         window.refreshDatasetList();
+        console.log("Refresh finished. Checking value of curatebfdatasetlist");
+        console.log(window.curateDatasetDropdown);
         $("#dataset-loaded-message").hide();
 
         showHideDropdownButtons("dataset", "show");
@@ -1718,7 +1728,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       }
       $("body").removeClass("waiting");
       $(".svg-change-current-account.dataset").css("display", "block");
-      $(".ui.active.green.inline.loader.small").css("display", "none");
+      $(".ui.active.blue.inline.loader.small").css("display", "none");
       window.electron.ipcRenderer.send(
         "track-event",
         "Success",
@@ -1731,13 +1741,13 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     // TODO: Change these classes to organization classes
     $(".svg-change-current-account.organization").css("display", "none");
     $("#div-permission-list-2").css("display", "none");
-    $(".ui.active.green.inline.loader.small.organization-loader").css("display", "block");
+    $(".ui.active.blue.inline.loader.small.organization-loader").css("display", "block");
 
     // hacky: wait for animations
     await window.wait(10);
 
     // disable the Continue btn first
-    $("#nextBtn").prop("disabled", true);
+    setNavButtonDisabled("nextBtn", true);
 
     // disable the dropdown until the list of organizations is loaded - which happens elsewhere
     initializeBootstrapSelect("#curatebforganizationlist", "disabled");
@@ -1748,7 +1758,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       accountPresent = await window.check_api_key();
     } catch (error) {
       clientError(error);
-      $(".ui.active.green.inline.loader.small").css("display", "none");
+      $(".ui.active.blue.inline.loader.small").css("display", "none");
       $(".svg-change-current-account.dataset").css("display", "block");
       $("#div-permission-list-2").css("display", "block");
       initializeBootstrapSelect("#curatebforganizationlist", "show");
@@ -1776,11 +1786,11 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
       if (result) {
         await window.openDropdownPrompt(this, "ps");
-        $(".ui.active.green.inline.loader.small").css("display", "none");
+        $(".ui.active.blue.inline.loader.small").css("display", "none");
         $(".svg-change-current-account.dataset").css("display", "block");
         return;
       } else {
-        $(".ui.active.green.inline.loader.small").css("display", "none");
+        $(".ui.active.blue.inline.loader.small").css("display", "none");
         $(".svg-change-current-account.dataset").css("display", "block");
         $("#div-permission-list-2").css("display", "block");
 
@@ -1815,6 +1825,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     //account is signed in but no datasets have been fetched or created
     //invoke dataset request to ensure no datasets have been created
     if (window.organizationList.length === 0) {
+      console.log("Getting list of orgs");
       let responseObject;
       try {
         responseObject = await client.get(`user/organizations`, {
@@ -1845,6 +1856,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     //datasets do exist so display popup with dataset options
     //else datasets have been created
     if (window.organizationList.length > 0) {
+      console.log("has list of orgs");
       const { value: result } = await Swal.fire({
         backdrop: "rgba(0,0,0, 0.4)",
         cancelButtonText: "Cancel",
@@ -1868,14 +1880,10 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         willOpen: () => {
           $("#curatebforganizationlist").selectpicker("hide");
           $("#curatebforganizationlist").selectpicker("refresh");
-          // $("#ps-organization-select-header").show();
-          // TODO: How to make this unnecessary?
-          // $("#ps-dataset-select-div").hide();
-          // $("#ps-dataset-select-header").hide();
         },
         didOpen: () => {
           $("#div-permission-list-2").css("display", "block");
-          $(".ui.active.green.inline.loader.small").css("display", "none");
+          $(".ui.active.blue.inline.loader.small").css("display", "none");
           window.datasetPermissionDiv.style.display = "block";
           $("#curatebforganizationlist").attr("disabled", false);
           $(window.datasetPermissionDiv)
@@ -1883,9 +1891,20 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             .css("display", "none");
           $("#curatebforganizationlist").selectpicker("refresh");
           $("#curatebforganizationlist").selectpicker("show");
+          console.log("SHow added to org picke");
           $("#ps-organization-select-div").show();
           $("#ps-dataset-select-div").hide();
           $("#ps-dataset-select-header").hide();
+
+          document
+            .querySelector("#ps-organization-select-div button")
+            .addEventListener("click", (e) => {
+              const dropdownMenu = e.target.parentElement.querySelector(".dropdown-menu.inner");
+              if (dropdownMenu) {
+                dropdownMenu.style.display = "block";
+                dropdownMenu.parentElement.style.display = "block";
+              }
+            });
 
           window.bfOrganization = $("#curatebforganizationlist").val();
           let sweet_al = document.getElementsByClassName("swal2-html-container")[0];
@@ -1936,9 +1955,11 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         },
       });
 
+      console.log("Org select result:", result);
+
       if (!result) {
         $(".svg-change-current-account.organization").css("display", "block");
-        $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
+        $(".ui.active.blue.inline.loader.small.organization-loader").css("display", "none");
         $("#license-lottie-div").css("display", "block");
         $("#license-assigned").css("display", "block");
         window.currentDatasetLicense.innerText = window.currentDatasetLicense.innerText;
@@ -1994,7 +2015,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           const password = Swal.getPopup().querySelector("#ps_password").value;
 
           // show a loading spinner in place of the confirm button HERE
-          // $(".ui.active.green.inline.loader.small.organization-loader").css("display", "block");
+          // $(".ui.active.blue.inline.loader.small.organization-loader").css("display", "block");
           Swal.showLoading();
 
           if (!login) {
@@ -2037,7 +2058,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             });
             Swal.hideLoading();
             // reset the UI to pre-org switch state
-            $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
+            $(".ui.active.blue.inline.loader.small.organization-loader").css("display", "none");
             $(".svg-change-current-account.organization").css("display", "block");
             return undefined;
           }
@@ -2057,7 +2078,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
       if (!res) {
         $(".svg-change-current-account.organization").css("display", "block");
-        $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
+        $(".ui.active.blue.inline.loader.small.organization-loader").css("display", "none");
         $("#license-lottie-div").css("display", "block");
         $("#license-assigned").css("display", "block");
         initializeBootstrapSelect("#curatebforganizationlist", "show");
@@ -2093,7 +2114,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
     $("body").removeClass("waiting");
     $(".svg-change-current-account.organization").css("display", "block");
-    $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
+    $(".ui.active.blue.inline.loader.small.organization-loader").css("display", "none");
   }
 };
 

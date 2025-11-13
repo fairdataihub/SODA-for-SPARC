@@ -8,6 +8,7 @@ import { savePagePennsieveDetails } from "./pennsieveDetails/savePage";
 import { savePageGenerateDataset } from "./generateDataset/savePage";
 import { countFilesInDatasetStructure } from "../../utils/datasetStructure";
 import { guidedSkipPage, guidedUnSkipPage } from "./navigationUtils/pageSkipping";
+import { isCheckboxCardChecked } from "../../../stores/slices/checkboxCardSlice";
 import useGlobalStore from "../../../stores/globalStore";
 import {
   getExistingSubjects,
@@ -49,8 +50,8 @@ export const guidedSaveProgress = async () => {
   window.sodaJSONObj["dataset-structure"] = window.datasetStructureJSONObj;
 
   // Save the current version of SODA as the user should be taken back to the first page when the app is updated
-  const currentAppVersion = document.getElementById("version").innerHTML;
-  window.sodaJSONObj["last-version-of-soda-used"] = currentAppVersion;
+  const appVersion = useGlobalStore.getState().appVersion;
+  window.sodaJSONObj["last-version-of-soda-used"] = appVersion;
 
   window.fs.writeFileSync(guidedFilePath, JSON.stringify(window.sodaJSONObj, null, 2));
 };
@@ -61,7 +62,7 @@ export const guidedSaveProgress = async () => {
  * @description Validate and save user progress for the page being left in the Prepare Dataset Step-by-Step workflow.
  *              Progress is saved in a progress file the user can access to resume their work after exiting their active workflow.
  */
-export const savePageChanges = async (pageBeingLeftID) => {
+window.savePageChanges = async (pageBeingLeftID) => {
   // This function is used by both the navigation bar and the side buttons,
   // and whenever it is being called, we know that the user is trying to save the changes on the current page.
   // this function is async because we sometimes need to make calls to validate data before the page is ready to be left.
@@ -103,13 +104,10 @@ export const savePageChanges = async (pageBeingLeftID) => {
       }
 
       if (pageBeingLeftComponentType === "modality-selection-page") {
-        const userSelectedTheyHaveMultipleModalities = document
-          .getElementById("modality-selection-yes")
-          .classList.contains("selected");
-        const userSelectedTheyDoNotHaveMultipleModalities = document
-          .getElementById("modality-selection-no")
-          .classList.contains("selected");
-
+        const userSelectedTheyHaveMultipleModalities =
+          isCheckboxCardChecked("modality-selection-yes");
+        const userSelectedTheyDoNotHaveMultipleModalities =
+          isCheckboxCardChecked("modality-selection-no");
         if (
           !userSelectedTheyDoNotHaveMultipleModalities &&
           !userSelectedTheyHaveMultipleModalities
@@ -371,13 +369,12 @@ export const savePageChanges = async (pageBeingLeftID) => {
     saveEntityFileMappingChanges();
 
     if (pageBeingLeftID === "guided-entity-addition-method-selection-tab") {
-      const userSelectedAddEntitiesFromSpreadsheet = document
-        .getElementById("guided-button-add-entities-via-spreadsheet")
-        .classList.contains("selected");
-      const userSelectedAddEntitiesManually = document
-        .getElementById("guided-button-add-entities-manually")
-        .classList.contains("selected");
-
+      const userSelectedAddEntitiesFromSpreadsheet = isCheckboxCardChecked(
+        "guided-button-add-entities-via-spreadsheet"
+      );
+      const userSelectedAddEntitiesManually = isCheckboxCardChecked(
+        "guided-button-add-entities-manually"
+      );
       if (!userSelectedAddEntitiesFromSpreadsheet && !userSelectedAddEntitiesManually) {
         errorArray.push({
           type: "notyf",

@@ -1,12 +1,6 @@
-import { savePageChanges } from "./savePageChanges";
 import { getNextPageNotSkipped, getPrevPageNotSkipped } from "./navigationUtils/pageSkipping";
 import { guidedUnLockSideBar, resetLazyLoading } from "../../../assets/nav";
-import api from "../../others/api/api";
-import lottie from "lottie-web";
-import { existingDataset, modifyDataset } from "../../../assets/lotties/lotties";
 import Swal from "sweetalert2";
-import { clientError } from "../../others/http-error-handler/error-handler";
-import client from "../../client";
 import { swalShowError } from "../../utils/swal-utils";
 
 while (!window.baseHtmlLoaded) {
@@ -27,7 +21,7 @@ export const handleNextButtonClick = async () => {
   window.pageBeingLeftID = window.CURRENT_PAGE.id;
 
   try {
-    await savePageChanges(window.pageBeingLeftID);
+    await window.savePageChanges(window.pageBeingLeftID);
     if (!window.sodaJSONObj["completed-tabs"].includes(window.pageBeingLeftID)) {
       window.sodaJSONObj["completed-tabs"].push(window.pageBeingLeftID);
     }
@@ -69,7 +63,7 @@ export const handleBackButtonClick = async () => {
   window.pageBeingLeftID = window.CURRENT_PAGE.id;
 
   try {
-    await savePageChanges(window.pageBeingLeftID);
+    await window.savePageChanges(window.pageBeingLeftID);
   } catch (error) {
     console.error("Error saving page changes during back button click", error);
   }
@@ -126,7 +120,7 @@ const guidedSaveAndExit = async () => {
     const currentPageID = window.CURRENT_PAGE.id;
 
     try {
-      await savePageChanges(currentPageID);
+      await window.savePageChanges(currentPageID);
     } catch (error) {
       const pageWithErrorName = window.CURRENT_PAGE.dataset.pageName;
 
@@ -184,25 +178,6 @@ window.guidedPrepareHomeScreen = async () => {
   //Wipe out existing progress if it exists
   guidedResetProgressVariables();
 
-  document.getElementById("existing-dataset-lottie").innerHTML = "";
-  document.getElementById("edit-dataset-component-lottie").innerHTML = "";
-
-  lottie.loadAnimation({
-    container: document.getElementById("existing-dataset-lottie"),
-    animationData: existingDataset,
-    renderer: "svg",
-    loop: true,
-    autoplay: true,
-  });
-
-  lottie.loadAnimation({
-    container: document.getElementById("edit-dataset-component-lottie"),
-    animationData: modifyDataset,
-    renderer: "svg",
-    loop: true,
-    autoplay: true,
-  });
-
   guidedUnLockSideBar();
 };
 
@@ -232,10 +207,6 @@ export const guidedTransitionFromHome = async () => {
   document.getElementById("curation-preparation-parent-tab").classList.remove("hidden");
   document.getElementById("guided-header-div").classList.remove("hidden");
 
-  //Remove the lotties (will be added again upon visting the home page)
-  document.getElementById("existing-dataset-lottie").innerHTML = "";
-  document.getElementById("edit-dataset-component-lottie").innerHTML = "";
-
   //Hide all guided pages (first one will be unHidden automatically)
   const guidedPages = document.querySelectorAll(".guided--page");
   guidedPages.forEach((page) => {
@@ -243,6 +214,7 @@ export const guidedTransitionFromHome = async () => {
   });
 
   window.CURRENT_PAGE = document.getElementById("guided-select-starting-point-tab");
+  await window.openPage("guided-select-starting-point-tab");
 
   document.getElementById("guided-footer-div").classList.remove("hidden");
 };

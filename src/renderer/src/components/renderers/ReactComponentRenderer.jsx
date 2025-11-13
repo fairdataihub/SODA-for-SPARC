@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import SodaComponentWrapper from "../utils/SodaComponentWrapper";
 import ExternalLink from "../buttons/ExternalLink";
+import IconButton from "../buttons/IconButton";
 import NavigationButton from "../buttons/Navigation";
 import NameAndSubtitlePage from "../pages/NameAndSubtitle";
 import DropdownSelect from "../common/DropdownSelect";
@@ -23,8 +24,14 @@ import DataImporter from "../shared/DataImporter";
 import SubmissionMetadataForm from "../pages/SubmissionMetadataForm";
 import Icon from "../shared/Icon";
 import SodaTextInput from "../common/SodaTextInput";
+import ProgressStepper from "../common/ProgressStepper";
 import ManifestFilePreviewSection from "../shared/ManifestFilePreviewSection";
 import DropDownNote from "../utils/ui/DropDownNote";
+import Sidebar from "../common/Sidebar";
+import HomePageCards from "../cards/HomePageCards";
+import GuidedModeProgressCards from "../guided/GuidedModeProgressCards";
+import { CardButton } from "../cards/CardButton";
+import CheckboxCard from "../cards/CheckboxCard";
 import { Divider } from "@mantine/core";
 import DataCategoriesQuestionnairePage from "../pages/DataCategoriesQuestionnairePage";
 
@@ -34,13 +41,20 @@ while (!window.htmlSectionsAdded) {
 }
 
 // Helper function to create a React root and render the component inside SodaComponentWrapper
-const renderComponent = (componentSlot, component) => {
-  const root = createRoot(componentSlot);
-  root.render(<SodaComponentWrapper>{component}</SodaComponentWrapper>);
+export const renderComponent = (componentSlot, component) => {
+  try {
+    const root = createRoot(componentSlot);
+    root.render(<SodaComponentWrapper>{component}</SodaComponentWrapper>);
+  } catch (error) {
+    console.error("Error rendering component:", error);
+  }
 };
 
 // Mapping of component types to their render functions
 const componentTypeRenderers = {
+  "home-page-cards": (componentSlot) => {
+    renderComponent(componentSlot, <HomePageCards />);
+  },
   "guided-mode-page": (componentSlot) => {
     const pageIdToPageComponentMap = {
       "guided-name-subtitle-tab": <NameAndSubtitlePage />,
@@ -52,6 +66,9 @@ const componentTypeRenderers = {
       renderComponent(componentSlot, pageComponent);
     }
   },
+  "guided-mode-progress-cards": (componentSlot) => {
+    renderComponent(componentSlot, <GuidedModeProgressCards />);
+  },
   "external-link": (componentSlot) => {
     const props = {
       href: componentSlot.getAttribute("data-href"),
@@ -59,6 +76,12 @@ const componentTypeRenderers = {
       buttonType: componentSlot.getAttribute("data-button-type"),
     };
     renderComponent(componentSlot, <ExternalLink {...props} />);
+  },
+  "icon-button": (componentSlot) => {
+    const props = {
+      buttonSize: componentSlot.getAttribute("data-button-size"),
+    };
+    renderComponent(componentSlot, <IconButton {...props} />);
   },
   "dynamic-link": (componentSlot) => {
     const props = {
@@ -80,11 +103,35 @@ const componentTypeRenderers = {
       buttonText: componentSlot.getAttribute("data-button-text"),
       navIcon: componentSlot.getAttribute("data-nav-icon"),
       buttonSize: componentSlot.getAttribute("data-button-size"),
-      buttonColor: componentSlot.getAttribute("data-button-color"),
+      buttonColor: componentSlot.getAttribute("data-button-color") || "black",
       buttonCustomWidth: componentSlot.getAttribute("data-button-custom-width"),
       buttonCustomClass: componentSlot.getAttribute("data-button-custom-class"),
     };
     renderComponent(componentSlot, <NavigationButton {...props} />);
+  },
+  "card-button": (componentSlot) => {
+    const props = {
+      id: componentSlot.id,
+    };
+    renderComponent(componentSlot, <CardButton {...props} />);
+  },
+  "checkbox-card": (componentSlot) => {
+    const props = {
+      id: componentSlot.getAttribute("data-button-id") || componentSlot.id,
+    };
+    renderComponent(componentSlot, <CheckboxCard {...props} />);
+  },
+  "progress-stepper": (componentSlot) => {
+    const props = {
+      id: componentSlot.getAttribute("data-stepper-id"),
+    };
+    renderComponent(componentSlot, <ProgressStepper {...props} />);
+  },
+  sidebar: (componentSlot) => {
+    const props = {
+      id: componentSlot.getAttribute("data-sidebar-id"),
+    };
+    renderComponent(componentSlot, <Sidebar {...props} />);
   },
   "generic-button": (componentSlot) => {
     const props = {
@@ -117,6 +164,7 @@ const componentTypeRenderers = {
 
   "data-importer": (componentSlot) => {
     const props = {
+      dataImporterId: componentSlot.getAttribute("data-importer-id"),
       relativeFolderPathToImportDataInto: componentSlot.getAttribute(
         "data-relative-folder-path-to-import-data-into"
       ),
@@ -232,7 +280,11 @@ document.querySelectorAll("[data-component-type]").forEach((componentSlot) => {
   const renderFunction = componentTypeRenderers[componentType];
 
   if (renderFunction) {
-    renderFunction(componentSlot);
+    try {
+      renderFunction(componentSlot);
+    } catch (error) {
+      console.error(`Error rendering component of type: ${componentType}`, error);
+    }
   } else {
     console.error(`No render function found for component type: ${componentType}`);
   }

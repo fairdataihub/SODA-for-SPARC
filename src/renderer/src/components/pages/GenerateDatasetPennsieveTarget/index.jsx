@@ -6,7 +6,7 @@ import useGlobalStore from "../../../stores/globalStore";
 
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
-import CheckboxCard from "../../buttons/CheckboxCard";
+import CheckboxCard from "../../cards/CheckboxCard";
 import NavigationButton from "../../buttons/Navigation";
 
 import {
@@ -15,7 +15,7 @@ import {
   fetchDatasetsToUploadDataTo,
 } from "../../../stores/slices/pennsieveDatasetSelectSlice";
 
-import { setCheckboxCardUnchecked } from "../../../stores/slices/checkboxCardSlice";
+import { isCheckboxCardChecked } from "../../../stores/slices/checkboxCardSlice";
 
 const GenerateDatasetPennsieveTargetPage = () => {
   const selectedDatasetIdToUploadDataTo = useGlobalStore(
@@ -31,10 +31,10 @@ const GenerateDatasetPennsieveTargetPage = () => {
   const datasetFetchErrorMessage = useGlobalStore((state) => state.datasetFetchErrorMessage);
   const guestUser = useGlobalStore((state) => state.isGuest);
   const isNewDatasetSelected = useGlobalStore(
-    (state) => !!state.checkboxes["generate-on-new-pennsieve-dataset"]
+    (state) => state.cardData["generate-on-new-pennsieve-dataset"].checked
   );
   const isExistingDatasetSelected = useGlobalStore(
-    (state) => !!state.checkboxes["generate-on-existing-pennsieve-dataset"]
+    (state) => state.cardData["generate-on-existing-pennsieve-dataset"].checked
   );
 
   if (guestUser) {
@@ -62,7 +62,7 @@ const GenerateDatasetPennsieveTargetPage = () => {
     if (isLoadingPennsieveDatasets) {
       return (
         <Stack align="center" mt="md">
-          <Loader size="md" />
+          <Loader size="md" color="primary" type="bars" />
           <Text size="md" align="center" fw={500}>
             Retrieving empty datasets from Pennsieve...
           </Text>

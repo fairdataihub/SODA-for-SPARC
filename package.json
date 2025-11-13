@@ -48,6 +48,7 @@
     "@yaireo/tagify": "^4.17.9",
     "accordion-js": "^3.3.4",
     "animate.css": "4.1.1",
+    "avvvatars-react": "^0.4.2",
     "axios": "^1.6.0",
     "bootbox": "5.5.2",
     "bootstrap": "4.0.0",

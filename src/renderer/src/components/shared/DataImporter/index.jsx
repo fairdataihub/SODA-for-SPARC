@@ -3,11 +3,13 @@ import { Dropzone } from "@mantine/dropzone";
 import { IconUpload, IconFile, IconX } from "@tabler/icons-react";
 import FullWidthContainer from "../../containers/FullWidthContainer";
 import DatasetTreeViewRenderer from "../DatasetTreeViewRenderer";
+import StateDisplayContainer from "../../containers/StateDisplayContainer";
+import classes from "./dataImporter.module.css";
 
-const DataImporter = () => {
+const DataImporter = ({ dataImporterId }) => {
   return (
-    <FullWidthContainer>
-      <Box w="100%" m={0} p={0} id="data-importer-dropzone">
+    <FullWidthContainer className={classes["di"]}>
+      <Box w="100%" m={0} p={0} id={dataImporterId} className={classes["di"]}>
         <Dropzone
           onDrop={(event) => {
             event.preventDefault();
@@ -18,10 +20,11 @@ const DataImporter = () => {
           }}
           onClick={(event) => event.preventDefault()}
           mb="lg"
+          className={classes["di"]}
         >
           <Group justify="center" gap="xl" mih={140} style={{ pointerEvents: "none" }}>
             <Dropzone.Accept>
-              <IconUpload size={52} color="var(--mantine-color-blue-6)" stroke={1.5} />
+              <IconUpload size={52} color="var(--mantine-color-primary-6)" stroke={1.5} />
             </Dropzone.Accept>
             <Dropzone.Reject>
               <IconX size={52} color="var(--mantine-color-red-6)" stroke={1.5} />
@@ -41,12 +44,17 @@ const DataImporter = () => {
           </Group>
         </Dropzone>
       </Box>
-      <DatasetTreeViewRenderer
-        allowStructureEditing={true}
-        hideSearchBar={true}
-        entityType={null}
-        fileExplorerId="guided-unstructured-data-import-tab"
-      />
+      {dataImporterId === "gm-data-importer-dropzone" && (
+        <DatasetTreeViewRenderer
+          allowStructureEditing={true}
+          hideSearchBar={true}
+          entityType={null}
+          fileExplorerId="guided-unstructured-data-import-tab"
+        />
+      )}
+      {dataImporterId === "ffm-data-importer-dropzone" && (
+        <StateDisplayContainer id="ffm-data-importer-dropzone" />
+      )}
     </FullWidthContainer>
   );
 };

@@ -1,4 +1,3 @@
-import { guidedSetNavLoadingState } from "./pages/navigationUtils/pageLoading";
 import { guidedSaveProgress } from "./pages/savePageChanges";
 import {
   getContributorByOrcid,
@@ -10,47 +9,37 @@ import {
   CONTRIBUTORS_REGEX,
   CONTRIBUTORS_LAST_NAME_REGEX,
   CONTRIBUTORS_FIRST_NAME_REGEX,
+  orcidIsValid,
+  affiliationRorIsValid,
 } from "./metadata/contributors/contributorsValidation";
 import { generateAlertElement } from "./metadata/utils";
-import determineDatasetLocation from "../analytics/analytics-utils";
 import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
 import api from "../others/api/api";
 import kombuchaEnums from "../analytics/analytics-enums";
 import Swal from "sweetalert2";
 import Tagify from "@yaireo/tagify/dist/tagify.esm.js";
-import { v4 as uuid } from "uuid";
 import client from "../client";
 import {
   guidedGenerateDatasetLocally,
   guidedGenerateDatasetOnPennsieve,
 } from "./generateDataset/generate";
 import { guidedDatasetKeywordsTagify } from "./tagifies/tagifies";
-import { updateDatasetUploadProgressTable } from "./generateDataset/uploadProgressBar";
 import {
   swalConfirmAction,
   swalShowError,
   swalFileListSingleAction,
   swalFileListDoubleAction,
-  swalShowInfo,
 } from "../utils/swal-utils";
 import DatePicker from "tui-date-picker";
 import { loadStoredContributors } from "../others/contributor-storage";
 import { ORCID } from "orcid-utils";
 
-import { guidedCreateManifestFilesAndAddToDatasetStructure } from "./manifests/manifest";
-import { createStandardizedDatasetStructure } from "../utils/datasetStructure";
 import { guidedRenderProgressCards } from "./resumeProgress/progressCards";
-
-import { guidedGetDatasetName } from "./utils/sodaJSONObj";
-
-import { getDatasetEntityObj } from "../../stores/slices/datasetEntitySelectorSlice";
 
 import "bootstrap-select";
 import Cropper from "cropperjs";
 
 import "jstree";
-
-import { newEmptyFolderObj } from "../utils/datasetStructure";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -62,7 +51,7 @@ if (!window.fs.existsSync(guidedProgressFilePath)) {
   window.fs.mkdirSync(guidedProgressFilePath, { recursive: true });
 }
 
-window.returnToGuided = () => {
+window.clickGuidedModeButton = () => {
   document.getElementById("guided_mode_view").click();
 };
 
@@ -603,7 +592,7 @@ document.querySelectorAll(".pass-button-click-to-next-button").forEach((element)
   });
 });
 
-const deleteProgresFile = async (progressFileName) => {
+const deleteProgressFile = async (progressFileName) => {
   //Get the path of the progress file to delete
   const progressFilePathToDelete = window.path.join(
     guidedProgressFilePath,
@@ -669,8 +658,7 @@ document.querySelectorAll(".guided-curation-team-task-button").forEach((button) 
   });
 });
 
-window.deleteProgressCard = async (progressCardDeleteButton, datasetName, progressFileName) => {
-  const progressCard = progressCardDeleteButton.parentElement.parentElement;
+window.deleteProgressCard = async (datasetName, progressFileName) => {
   const result = await Swal.fire({
     title: `Are you sure you would like to delete SODA progress made on the dataset: ${datasetName}?`,
     text: "Your progress file will be deleted permanently, and all existing progress will be lost.",
@@ -685,10 +673,13 @@ window.deleteProgressCard = async (progressCardDeleteButton, datasetName, progre
   });
   if (result.isConfirmed) {
     //delete the progress file
-    deleteProgresFile(progressFileName);
+    deleteProgressFile(progressFileName);
 
-    //remove the progress card from the DOM
-    progressCard.remove();
+    // Find the card with the matching dataset name and remove it from the DOM
+    const cardToDelete = document.querySelector(`[data-dataset-name="${datasetName}"]`);
+    if (cardToDelete) {
+      cardToDelete.remove();
+    }
   }
 };
 
@@ -1199,29 +1190,6 @@ const generateadditionalLinkRowElement = (link, linkType, linkRelation) => {
   `;
 };
 
-window.removeContributorField = (contributorDeleteButton) => {
-  const contributorField = contributorDeleteButton.parentElement;
-  const { contributorFirstName, contributorLastName } = contributorField.dataset;
-
-  const contributorsBeforeDelete = window.sodaJSONObj["dataset_contributors"];
-  //If the contributor has data-first-name and data-last-name, then it is a contributor that
-  //already been added. Delete it from the contributors array.
-  if (contributorFirstName && contributorLastName) {
-    const filteredContributors = contributorsBeforeDelete.filter((contributor) => {
-      //remove contributors with matching first and last name
-      return !(
-        contributor.contributorFirstName == contributorFirstName &&
-        contributor.contributorLastName == contributorLastName
-      );
-    });
-
-    window.sodaJSONObj["dataset_contributors"];
-    filteredContributors;
-  }
-
-  contributorField.remove();
-};
-
 const getExistingContributorORCiDs = () => {
   return window.sodaJSONObj["dataset_contributors"].map((contributor) => {
     return contributor.contributor_orcid_id;
@@ -1246,43 +1214,45 @@ const handleAddOrEditContributorHeaderUI = (boolEditingContributor) => {
   }
 
   const contributorOptions = locallyStoredContributorArray.map((contributor) => {
+    const escapeName = (str) => (str || "").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+
     return `
         <option
-          value='${contributor.contributor_name}'
-          data-contributor-name='${contributor.contributor_name ?? ""}'
-          data-orcid='${contributor.contributor_orcid_id ?? ""}'
-          data-affiliation='${contributor.contributor_affiliation ?? ""}'
-          data-roles='${contributor.contributor_role ?? ""}'
+          value="${escapeName(contributor.contributor_name)}"
+          data-contributor-name="${escapeName(contributor.contributor_name)}"
+          data-orcid="${escapeName(contributor.contributor_orcid_id)}"
+          data-affiliation="${escapeName(contributor.contributor_affiliation)}"
+          data-roles="${escapeName(contributor.contributor_role)}"
         >
-          ${contributor.contributor_name}
+          ${escapeName(contributor.contributor_name)}
         </option>
       `;
   });
 
   return `
-    <label class="guided--form-label centered mb-2" style="font-size: 1em !important;">
-      If the contributor has been previously added, select them from the dropdown below.
-    </label>
-    <select
-      class="w-100 SODA-select-picker"
-      id="guided-stored-contributors-select"
-      data-live-search="true"
-      name="Dataset contributor"
-    >
-      <option
-        value=""
-        data-contributor-name=""
-        data-orcid=""
-        data-affiliation=""
-        data-roles=""
+      <label class="guided--form-label centered mb-2" style="font-size: 1em !important;">
+        If the contributor has been previously added, select them from the dropdown below.
+      </label>
+      <select
+        class="w-100 SODA-select-picker"
+        id="guided-stored-contributors-select"
+        data-live-search="true"
+        name="Dataset contributor"
       >
-        Select a saved contributor
-      </option>
-      ${contributorOptions}
-    </select>
-    <label class="guided--form-label centered mt-2" style="font-size: 1em !important;">
-      Otherwise, enter the contributor's information below.
-    </label>
+        <option
+          value=""
+          data-contributor-name=""
+          data-orcid=""
+          data-affiliation=""
+          data-roles=""
+        >
+          Select a saved contributor
+        </option>
+        ${contributorOptions}
+      </select>
+      <label class="guided--form-label centered mt-2" style="font-size: 1em !important;">
+        Otherwise, enter the contributor's information below.
+      </label>
   `;
 };
 
@@ -1329,8 +1299,8 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
           If your contributor does not have an ORCID, have the contributor <a target="_blank" href="https://orcid.org/register">sign up for one here</a>.
         </p>
         <label class="guided--form-label mt-md required">Affiliation:</label>
-        <input class="guided--input" id="guided-contributor-affiliation-input" type="text" placeholder="Institution name" value="${defaultAffiliation}" />
-        <p class="guided--text-input-instructions mb-0 text-left">Institution the contributor is affiliated with.</p>
+        <input class="guided--input" id="guided-contributor-affiliation-input" type="text" placeholder="Institution ROR" value="${defaultAffiliation}" />
+        <p class="guided--text-input-instructions mb-0 text-left">Institution the contributor is affiliated with. Should be formatted as an ROR organization identifier(e.g., https://ror.org/00abcdef).</p>
         <label class="guided--form-label mt-md required">Role:</label>
         <select id="guided-contributor-role-select" class="w-100 SODA-select-picker" title="Select a role" data-live-search="true">
           <option value="">Select a role</option>
@@ -1376,6 +1346,17 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
         .selectpicker({ style: "SODA-select-picker" })
         .selectpicker("refresh");
       if (defaultRole) $("#guided-contributor-role-select").selectpicker("val", defaultRole);
+
+      $(".SODA-select-picker button").on("click", (e) => {
+        console.log(e);
+        const dropdownParent = e.target.closest(".dropdown");
+        const dropdownMenu = dropdownParent.querySelector(".dropdown-menu.inner");
+        console.log(dropdownMenu);
+        if (dropdownMenu) {
+          dropdownMenu.style.display = "block";
+          dropdownMenu.parentElement.style.display = "block";
+        }
+      });
 
       $("#guided-stored-contributors-select").on("change", function () {
         const selectedOption = $("#guided-stored-contributors-select option:selected");
@@ -1457,9 +1438,7 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
       // merge the name back together after validation to ensure proper spacing was added to first and middle name section
       contributorName = `${lastName},${firstAndMiddleName}`;
 
-      // Regex to check ORCID format (plain or full URL)
-      const orcidFormatRegex = /^(https:\/\/orcid\.org\/)?\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/i;
-      if (!orcidFormatRegex.test(contributorOrcidInput)) {
+      if (!orcidIsValid(contributorOrcidInput)) {
         return Swal.showValidationMessage(
           "ORCID must be in the format https://orcid.org/0000-0000-0000-0000 OR 0000-0000-0000-0000"
         );
@@ -1476,6 +1455,13 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
       }
 
       const storedOrcid = ORCID.toUriWithProtocol(normalizedOrcid);
+
+      // validate that the affiliation is a valid ROR
+      if (!affiliationRorIsValid(contributorAffiliation)) {
+        return Swal.showValidationMessage(
+          "The affiliation must be a valid ROR. For example: https://ror.org/04ttjf776"
+        );
+      }
 
       try {
         if (contributorIdToEdit) {
@@ -1896,31 +1882,6 @@ const updatePoolDropdown = (poolDropDown, poolName) => {
   }
 };
 
-//On edit button click, creates a new subject ID rename input box
-window.openSubjectRenameInput = (subjectNameEditButton) => {
-  const subjectIdCellToRename = subjectNameEditButton.closest("td");
-  const prevSubjectName = subjectIdCellToRename.find(".subject-id").text();
-  let prevSubjectInput = prevSubjectName.substr(prevSubjectName.search("-") + 1);
-  const subjectRenameElement = `
-    <div class="space-between w-100" style="align-items: center">
-      <span style="margin-right: 5px;">sub-</span>
-      <input
-        class="guided--input"
-        type="text"
-        name="guided-subject-id"
-        value=${prevSubjectInput}
-        placeholder="Enter subject ID and press enter"
-        onkeyup="specifySubject(event, window.$(this))"
-        data-alert-message="Subject IDs may not contain spaces or special characters"
-        data-alert-type="danger"
-        data-prev-name="${prevSubjectName}"
-      />
-      <i class="far fa-check-circle fa-solid" style="cursor: pointer; margin-left: 15px; color: var(--color-light-green); font-size: 1.24rem;" onclick="window.confirmEnter(this)"></i>
-    </div>
-  `;
-  subjectIdCellToRename.html(subjectRenameElement);
-};
-
 const generateSampleSpecificationRowElement = () => {
   return `
     <tr>
@@ -1938,7 +1899,7 @@ const generateSampleSpecificationRowElement = () => {
             data-alert-type="danger"
             style="margin-right: 5px;"
           />
-          <i class="far fa-check-circle fa-solid" style="cursor: pointer; margin-left: 15px; color: var(--color-light-green); font-size: 1.24rem;" onclick="window.confirmEnter(this)"></i>
+          <i class="far fa-check-circle fa-solid" style="cursor: pointer; margin-left: 15px; color: var(--color-soda-primary); font-size: 1.24rem;" onclick="window.confirmEnter(this)"></i>
         </div>
       </td>
       <td class="middle aligned collapsing text-center remove-left-border">
@@ -2559,31 +2520,6 @@ window.deleteSample = async (sampleDeleteButton) => {
   renderSamplesTable();
 };
 
-//SAMPLE TABLE FUNCTIONS
-window.openSampleRenameInput = (subjectNameEditButton) => {
-  const sampleIdCellToRename = subjectNameEditButton.closest("td");
-  const prevSampleName = sampleIdCellToRename.find(".sample-id").text();
-  const prevSampleInput = prevSampleName.substr(prevSampleName.search("-") + 1);
-  const sampleRenameElement = `
-    <div class="space-between w-100" style="align-items: center">
-      <span style="margin-right: 5px;">sam-</span>
-      <input
-        class="guided--input"
-        type="text"
-        value=${prevSampleInput}
-        name="guided-sample-id"
-        placeholder="Enter new sample ID"
-        onkeyup="specifySample(event, window.$(this))"
-        data-alert-message="Sample IDs may not contain spaces or special characters"
-        data-alert-type="danger"
-        data-prev-name="${prevSampleName}"
-      />
-      <i class="far fa-check-circle fa-solid" style="cursor: pointer; margin-left: 15px; color: var(--color-light-green); font-size: 1.24rem;" onclick="window.confirmEnter(this)"></i>
-    </div>
-  `;
-  sampleIdCellToRename.html(sampleRenameElement);
-};
-
 window.removePennsievePermission = (clickedPermissionRemoveButton) => {
   let permissionElementToRemove = clickedPermissionRemoveButton.closest("tr");
   let permissionEntityType = permissionElementToRemove.attr("data-entity-type");
@@ -2715,7 +2651,7 @@ const createPennsievePermissionsTableRowElement = (entityType, name, permission,
       <td style="opacity: 0.5" class="middle aligned remove-left-border permission-type-cell">${permission}</td>
       <td class="middle aligned text-center remove-left-border" style="width: 20px">
         <button type="button" style="display: none" class="btn btn-danger btn-sm" onclick="window.removePennsievePermission($(this))">Delete</button>
-        <button type="button" class="btn btn-sm" style="display: inline-block;color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);" onclick="window.removePennsievePermission($(this))">Restore</button>
+        <button type="button" class="btn btn-sm" style="display: inline-block;color: white; background-color: var(--color-soda-primary); border-color: var(--color-soda-primary);" onclick="window.removePennsievePermission($(this))">Restore</button>
       </td>
     </tr>
   `;
@@ -2726,7 +2662,7 @@ const createPennsievePermissionsTableRowElement = (entityType, name, permission,
         <td class="middle aligned remove-left-border permission-type-cell">${permission}</td>
         <td class="middle aligned text-center remove-left-border" style="width: 20px">
           <button type="button" class="btn btn-danger btn-sm" onclick="window.removePennsievePermission($(this))">Delete</button>
-          <button type="button" class="btn btn-sm" style="display: none;color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);" onclick="window.removePennsievePermission($(this))">Restore</button>
+          <button type="button" class="btn btn-sm" style="display: none;color: white; background-color: var(--color-soda-primary); border-color: var(--color-soda-primary);" onclick="window.removePennsievePermission($(this))">Restore</button>
         </td>
       </tr>
     `;
@@ -3311,173 +3247,6 @@ document
     }
   });
 
-$("#guided-button-save-other-link-fields").on("click", () => {
-  let allInputsValid = true;
-  //get all contributor fields
-  const otherLinkFields = document.querySelectorAll(".guided-other-links-field-container");
-  //check if contributorFields is empty
-  if (otherLinkFields.length === 0) {
-    window.notyf.error("Please add at least one other link");
-    return;
-  }
-
-  //loop through contributor fields and get values
-  const otherLinkFieldsArray = Array.from(otherLinkFields);
-  ///////////////////////////////////////////////////////////////////////////////
-  otherLinkFieldsArray.forEach((otherLinkField) => {
-    const linkUrl = otherLinkField.querySelector(".guided-other-link-url-input");
-    const linkDescription = otherLinkField.querySelector(".guided-other-link-description-input");
-    const linkRelation = otherLinkField.querySelector(".guided-other-link-relation-dropdown");
-
-    const textInputs = [linkUrl, linkDescription];
-
-    //check if all text inputs are valid
-    textInputs.forEach((textInput) => {
-      if (textInput.value === "") {
-        textInput.style.setProperty("border-color", "red", "important");
-        allInputsValid = false;
-      } else {
-        textInput.style.setProperty("border-color", "hsl(0, 0%, 88%)", "important");
-      }
-    });
-    if (linkRelation.value === "Select") {
-      linkRelation.style.setProperty("border-color", "red", "important");
-      allInputsValid = false;
-    } else {
-      linkRelation.style.setProperty("border-color", "hsl(0, 0%, 88%)", "important");
-    }
-  });
-  ///////////////////////////////////////////////////////////////////////////////
-  if (!allInputsValid) {
-    window.notyf.error("Please fill out all link fields");
-    return;
-  }
-
-  //set opacity and remove pointer events for table and show edit button
-  disableElementById("other-links-container");
-  disableElementById("guided-button-add-other-link");
-
-  //switch button from save to edit
-  document.getElementById("guided-button-save-other-link-fields").style.display = "none";
-  document.getElementById("guided-button-edit-other-link-fields").style.display = "flex";
-});
-$("#guided-button-add-additional-link").on("click", async () => {
-  openAddAdditionLinkSwal();
-});
-$("#guided-button-edit-other-link-fields").on("click", () => {
-  enableElementById("other-links-container");
-  enableElementById("guided-button-add-other-link");
-  //switch button from edit to save
-  document.getElementById("guided-button-edit-other-link-fields").style.display = "none";
-  document.getElementById("guided-button-save-other-link-fields").style.display = "flex";
-});
-
-const guidedGenerateRCFilesHelper = (type) => {
-  let textValue = $(`#guided-textarea-create-${type}`).val().trim();
-  if (textValue === "") {
-    Swal.fire({
-      title: "Incomplete information",
-      text: "Plase fill in the textarea.",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      icon: "error",
-      showCancelButton: false,
-      showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
-      hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
-    });
-    return "empty";
-  }
-};
-const guidedSaveRCFile = async (type) => {
-  var result = guidedGenerateRCFilesHelper(type);
-  if (result === "empty") {
-    return;
-  }
-  var { value: continueProgress } = await Swal.fire({
-    title: `Any existing ${type.toUpperCase()}.txt file in the specified location will be replaced.`,
-    text: "Are you sure you want to continue?",
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    showConfirmButton: true,
-    showCancelButton: true,
-    cancelButtonText: "Cancel",
-    confirmButtonText: "Yes",
-  });
-  if (!continueProgress) {
-    return;
-  }
-  let data = $(`#guided-textarea-create-${type}`).val().trim();
-  let destinationPath;
-  if (type === "changes") {
-    destinationPath = window.path.join($("#guided-dataset-path").text().trim(), "CHANGES.xlsx");
-  } else {
-    destinationPath = window.path.join($("#guided-dataset-path").text().trim(), "README.xlsx");
-  }
-  window.fs.writeFile(destinationPath, data, (err) => {
-    if (err) {
-      window.log.error(err);
-      var emessage = userErrorMessage(err);
-      Swal.fire({
-        title: `Failed to generate the existing ${type}.txt file`,
-        html: emessage,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        icon: "error",
-        didOpen: () => {
-          Swal.hideLoading();
-        },
-      });
-    } else {
-      var newName =
-        type === "changes"
-          ? window.path.join(window.path.dirname(destinationPath), "CHANGES.txt")
-          : window.path.join(window.path.dirname(destinationPath), "README.txt");
-      window.fs.rename(destinationPath, newName, async (err) => {
-        if (err) {
-          window.log.error(err);
-          Swal.fire({
-            title: `Failed to generate the ${type}.txt file`,
-            html: err,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            icon: "error",
-            didOpen: () => {
-              Swal.hideLoading();
-            },
-          });
-        } else {
-          Swal.fire({
-            title: `The ${type.toUpperCase()}.txt file has been successfully generated at the specified location.`,
-            icon: "success",
-            showConfirmButton: true,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            didOpen: () => {
-              Swal.hideLoading();
-            },
-          });
-        }
-      });
-    }
-  });
-};
-$("#guided-generate-subjects-file").on("click", () => {
-  window.addSubject("guided");
-  window.clearAllSubjectFormFields(window.guidedSubjectsFormDiv);
-});
-
-$("#guided-generate-submission-file").on("click", () => {
-  guidedSaveSubmissionFile();
-});
-$("#guided-generate-readme-file").on("click", () => {
-  guidedSaveRCFile("readme");
-});
-$("#guided-generate-changes-file").on("click", () => {
-  guidedSaveRCFile("changes");
-});
-
 const doTheHack = async () => {
   // wait for a second
   await new Promise((resolve) => setTimeout(resolve, 5000));
@@ -3505,19 +3274,33 @@ const doTheHack = async () => {
 doTheHack();
 
 // Add the event listener for the Data importation component
-const dragDropElementId = document.getElementById("data-importer-dropzone");
-dragDropElementId.addEventListener("click", (event) => {
+const gmDragDropElementId = document.getElementById("gm-data-importer-dropzone");
+gmDragDropElementId.addEventListener("click", (event) => {
   event.preventDefault();
   window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog", {
     importRelativePath: "data/",
   });
 });
 // Add a drop listener that handles the drop event
-dragDropElementId.addEventListener("drop", (event) => {
+gmDragDropElementId.addEventListener("drop", (event) => {
   event.preventDefault();
   const itemsDroppedInFileExplorer = Array.from(event.dataTransfer.files).map((file) => file.path);
   window.electron.ipcRenderer.send("file-explorer-dropped-datasets", {
     filePaths: itemsDroppedInFileExplorer,
     importRelativePath: "data/",
   });
+});
+
+const ffmDragDropElementId = document.getElementById("ffm-data-importer-dropzone");
+ffmDragDropElementId.addEventListener("click", (event) => {
+  event.preventDefault();
+  window.uploadDatasetClickHandler();
+});
+ffmDragDropElementId.addEventListener("drop", (event) => {
+  event.preventDefault();
+  window.uploadDatasetDropHandler(event);
+});
+
+$("#guided-button-add-additional-link").on("click", async () => {
+  openAddAdditionLinkSwal();
 });

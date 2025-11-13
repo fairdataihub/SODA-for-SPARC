@@ -24,15 +24,15 @@
 }
 
 .option-card:hover {
-  /* border: 1px solid var(--color-light-green); */
-  box-shadow: 0px 0px 10px 0px var(--color-light-green);
+  /* border: 1px solid var(--color-soda-primary); */
+  box-shadow: 0px 0px 10px 0px var(--color-soda-primary);
   transition: all 0.25s linear;
   -webkit-transition: all 0.25s linear;
 }
 
 .option-card.checked {
-  border: 1px solid var(--color-light-green);
-  box-shadow: 0px 0px 3px 0px var(--color-light-green);
+  border: 1px solid var(--color-soda-primary);
+  box-shadow: 0px 0px 3px 0px var(--color-soda-primary);
   opacity: 1;
   transition: all 0.25s linear;
   -webkit-transition: all 0.25s linear;
@@ -80,8 +80,8 @@
 .option-card.radio-button:hover,
 .option-card.radio-button:focus,
 .option-card.radio-button:active {
-  color: var(--color-light-green);
-  /* border: 1px solid var(--color-light-green); */
+  color: var(--color-soda-primary);
+  /* border: 1px solid var(--color-soda-primary); */
   transition: all 0.25s linear;
   -webkit-transition: all 0.25s linear;
 }
@@ -89,14 +89,14 @@
 .option-card.radio-button:hover,
 .option-card.radio-button:focus,
 .option-card.radio-button:active i {
-  color: var(--color-light-green);
+  color: var(--color-soda-primary);
   transition: all 0.25s linear;
   -webkit-transition: all 0.25s linear;
 }
 
 .option-card.radio-button.checked {
-  border: 1px solid var(--color-light-green);
-  box-shadow: 0px 0px 3px 0px var(--color-light-green);
+  border: 1px solid var(--color-soda-primary);
+  box-shadow: 0px 0px 3px 0px var(--color-soda-primary);
   opacity: 1;
   pointer-events: none;
 }
@@ -181,8 +181,8 @@
 }
 
 .option-card.radio-button .folder-input-check:checked + label:before {
-  background-color: var(--color-light-green) !important;
-  border-color: var(--color-light-green) !important;
+  background-color: var(--color-soda-primary) !important;
+  border-color: var(--color-soda-primary) !important;
   color: #fff !important;
   font-size: 16px;
 }
@@ -222,8 +222,8 @@
 }
 
 .folder-input-check:checked + label:before {
-  background-color: var(--color-light-green);
-  border-color: var(--color-light-green);
+  background-color: var(--color-soda-primary);
+  border-color: var(--color-soda-primary);
   color: #fff;
 }
 
@@ -266,7 +266,7 @@
 }
 
 .main-buttons:hover {
-  background: var(--color-light-green);
+  background: var(--color-soda-primary);
   /* transform: scale(1.1) !important; */
   font-size: 16px;
 }
@@ -278,7 +278,7 @@
 }
 
 .main-buttons.add-folders.is-selected {
-  background: var(--color-light-green) !important;
+  background: var(--color-soda-primary) !important;
   outline: none;
 }
 
@@ -309,7 +309,7 @@
 }
 
 .transition-btn {
-  background: var(--color-light-green);
+  background: var(--color-soda-primary);
   font-size: 14px;
   font-weight: 600;
   width: 160px;
@@ -492,17 +492,17 @@
 }
 
 .multi-steps > li.is-done:before {
-  background-color: var(--color-light-green);
-  border-color: var(--color-light-green);
+  background-color: var(--color-soda-primary);
+  border-color: var(--color-soda-primary);
   color: #fff;
   content: "\2713";
   font-size: 18px;
-  box-shadow: 0 0 4px 0 var(--color-light-green);
+  box-shadow: 0 0 4px 0 var(--color-soda-primary);
 }
 
 .multi-steps > li.is-current:before {
-  border-color: var(--color-light-green) !important;
-  color: var(--color-light-green) !important;
+  border-color: var(--color-soda-primary) !important;
+  color: var(--color-soda-primary) !important;
   background-color: #fff !important;
 }
 
@@ -511,11 +511,11 @@
 }
 
 .multi-steps > li.is-current strong {
-  color: var(--color-light-green);
+  color: var(--color-soda-primary);
 }
 
 .multi-steps > li.is-done:after {
-  background-color: var(--color-light-green);
+  background-color: var(--color-soda-primary);
 }
 
 .multi-steps > li.disabled:after {
@@ -527,7 +527,7 @@
 }
 
 .multi-steps > li.is-done strong {
-  color: var(--color-light-green);
+  color: var(--color-soda-primary);
 }
 
 .circle-icon {
@@ -581,114 +581,6 @@
 /* Hide all steps by default: */
 .tab {
   display: none;
-}
-
-.vertical-progress-bar {
-  /* border: 1px solid red; */
-  width: auto;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.vertical-progress-bar-step {
-  position: relative;
-  margin-bottom: 35px;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  box-shadow: 0px 4px 8px rgba(8, 35, 48, 0.24);
-}
-
-.vertical-progress-bar-step.done span:first-of-type {
-  background: var(--color-bg-plum);
-  opacity: 0.9;
-  font-size: 10px;
-  line-height: 28px;
-  letter-spacing: 0.25px;
-  color: #fff;
-  font-weight: 600;
-}
-
-.vertical-progress-bar-step.done span:last-of-type {
-  display: none;
-  position: relative;
-  background: #373f51;
-}
-
-.vertical-progress-bar-step.is-current span:first-of-type {
-  background: #fff;
-  opacity: 0.9;
-  font-size: 10px;
-  line-height: 28px;
-  border: 1px solid var(--color-bg-plum);
-  color: var(--color-bg-plum);
-  font-weight: 600;
-}
-
-.vertical-progress-bar-step.is-current span:last-of-type {
-  display: none;
-  position: relative;
-  background: #373f51;
-}
-
-.vertical-progress-bar-step:after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 45%;
-  width: 1px;
-  height: 35px;
-  background: #373f51;
-  opacity: 0.24;
-  margin-bottom: 20px;
-}
-
-.vertical-progress-bar-step.done:after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 45%;
-  width: 1px;
-  height: 35px;
-  background: var(--color-bg-plum);
-  opacity: 0.8;
-  margin-bottom: 20px;
-}
-
-.vertical-progress-bar-step.last:after {
-  height: 0;
-}
-
-.vertical-progress-bar-step span {
-  display: inline-block;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  border-radius: 50%;
-}
-
-.vertical-progress-bar-step span:first-of-type {
-  background: none;
-  opacity: 0.9;
-  font-size: 10px;
-  line-height: 32px;
-  letter-spacing: 0.25px;
-  color: #ccc;
-  font-weight: 600;
-}
-
-.vertical-progress-bar-step span:last-of-type {
-  display: none;
-  position: relative;
-  background: transparent;
-}
-
-.vertical-progress-bar-step span svg {
-  position: absolute;
-  left: 25%;
-  top: 25%;
 }
 
 .modal-title {
@@ -794,7 +686,7 @@
 }
 
 .ui.radio.checkbox input:checked ~ label:after {
-  background-color: var(--color-light-green) !important;
+  background-color: var(--color-soda-primary) !important;
 }
 
 .ui.radio.checkbox label:after {
@@ -866,7 +758,7 @@
 }
 
 .button-active-now.active {
-  background: var(--color-light-green) !important;
+  background: var(--color-soda-primary) !important;
   color: #fff !important;
   font-weight: 600 !important;
 }
@@ -926,7 +818,7 @@
 }
 
 .ui.input.modified > input:focus {
-  border-bottom: 1px solid var(--color-light-green) !important;
+  border-bottom: 1px solid var(--color-soda-primary) !important;
 }
 
 .ui.styled.accordion .title {
@@ -958,12 +850,12 @@
 }
 
 #generate-manifest-curate:checked .labelradiocurate-manifest.yes {
-  color: var(--color-light-green) !important;
+  color: var(--mantine-color-primary-6) !important;
 }
 
 .ui.icon.button {
   background: transparent;
-  color: var(--color-light-green);
+  color: var(--mantine-color-primary-6);
   padding: 2px !important;
   height: 20px;
 }
@@ -1010,8 +902,8 @@
 .prepare-dd-cards:active,
 .prepare-dd-cards:focus {
   outline: none;
-  border: 1px solid var(--color-light-green);
-  box-shadow: 0px 0px 3px 0px var(--color-light-green);
+  border: 1px solid var(--color-soda-primary);
+  box-shadow: 0px 0px 3px 0px var(--color-soda-primary);
 }
 .prepare-dd-cards p {
   color: #000;
@@ -1035,11 +927,16 @@
 .svg-change-current-account {
   cursor: pointer;
   transition: transform 0.07s ease-out;
+  fill: none;
+  stroke: var(--mantine-color-primary-6) !important;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  background: var(--mantine-color-primary-light, var(--mantine-color-white));
 }
 
 .svg-change-current-account:hover {
   transform: translateY(-2px);
-  fill: #000;
 }
 
 .change-current-account {
@@ -1496,7 +1393,7 @@
 }
 
 #gather-logs-btn {
-  background: var(--color-light-green);
+  background: var(--color-soda-primary);
   font-size: 14px;
   font-weight: 600;
   color: #fff;
