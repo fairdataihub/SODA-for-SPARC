@@ -3298,3 +3298,7 @@ ffmDragDropElementId.addEventListener("drop", (event) => {
   event.preventDefault();
   window.uploadDatasetDropHandler(event);
 });
+
+$("#guided-button-add-additional-link").on("click", async () => {
+  openAddAdditionLinkSwal();
+});
