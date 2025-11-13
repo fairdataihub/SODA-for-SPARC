@@ -46,6 +46,7 @@ const StateDisplayContainer = ({ id }) => {
           // Show tooltip if value is long
           const maxValueLength = 45;
           const isLong = valueStr.length > maxValueLength;
+          console.log("isLong:", isLong, "for valueStr:", valueStr);
           const displayValue = isLong ? valueStr.slice(0, maxValueLength - 3) + "..." : valueStr;
           return (
             <React.Fragment key={row.rowKey}>
@@ -55,24 +56,11 @@ const StateDisplayContainer = ({ id }) => {
                   {row.rowDisplayName || row.rowKey}:
                 </Text>
 
-                {/* Value with tooltip if long */}
-                {isLong ? (
-                  <Tooltip label={valueStr} position="top" withArrow zIndex={2999}>
-                    <Text fw={500} c="gray.7" flex={1} ta="left" truncate>
-                      {displayValue}
-                    </Text>
-                  </Tooltip>
-                ) : (
-                  <Text
-                    fw={500}
-                    c={valueStr === "No Value" ? "gray.4" : "gray.7"}
-                    flex={1}
-                    ta="left"
-                    truncate
-                  >
+                <Tooltip label={valueStr} position="top" withArrow zIndex={2999}>
+                  <Text fw={500} c="gray.7" flex={1} ta="left" truncate>
                     {displayValue}
                   </Text>
-                )}
+                </Tooltip>
 
                 {/* Edit button if onEdit is defined */}
                 {row.onEdit && (
