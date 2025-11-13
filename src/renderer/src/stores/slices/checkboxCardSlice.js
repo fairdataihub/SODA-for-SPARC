@@ -31,14 +31,14 @@ export const checkboxCardSlice = (set) => ({
       checked: false,
     },
     "replace-file-card": {
-      title: "Replace",
+      title: "Replace files",
       description: null,
       Icon: IconReplace,
       checked: false,
       mutuallyExclusiveWithCards: ["skip-file-card"],
     },
     "skip-file-card": {
-      title: "Skip",
+      title: "Skip files",
       description: null,
       Icon: IconReport,
       checked: false,
