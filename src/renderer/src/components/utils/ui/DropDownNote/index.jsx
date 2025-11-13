@@ -235,6 +235,8 @@ const DropDownNote = ({ id }) => {
         chevron: {
           color: "var(--mantine-color-primary-6)",
         },
+
+        panel: { backgroundColor: "var(--mantine-color-primary-1)" },
       }}
     >
       <Accordion.Item value={id}>
