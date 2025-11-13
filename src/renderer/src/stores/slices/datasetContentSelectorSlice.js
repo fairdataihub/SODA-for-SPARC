@@ -4,6 +4,8 @@ import useGlobalStore from "../globalStore";
 export const datasetContentSelectorSlice = (set, get) => ({
   selectedEntities: [],
   deSelectedEntities: [],
+  selectedDataCategories: [],
+  deSelectedDataCategories: [],
   selectedHierarchyEntity: null,
   currentSelectedHierarchyEntityParentSubject: null,
   currentSelectedHierarchyEntityParentSample: null,
@@ -15,6 +17,14 @@ export const setSelectedEntities = (selectedEntities) => {
 
 export const setDeSelectedEntities = (deSelectedEntities) => {
   useGlobalStore.setState({ deSelectedEntities });
+};
+
+export const setSelectedDataCategories = (selectedDataCategories) => {
+  useGlobalStore.setState({ selectedDataCategories });
+};
+
+export const setDeSelectedDataCategories = (deSelectedDataCategories) => {
+  useGlobalStore.setState({ deSelectedDataCategories });
 };
 
 export const setSelectedHierarchyEntity = (entityObj) => {

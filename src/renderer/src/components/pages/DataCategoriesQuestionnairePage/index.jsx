@@ -1,15 +1,180 @@
-import { Text } from "@mantine/core";
+import { useState, useCallback } from "react";
+import { Text, Stack, Group, Box, Tooltip, ActionIcon, Switch } from "@mantine/core";
+import { IconChevronDown, IconChevronUp } from "@tabler/icons-react";
 import useGlobalStore from "../../../stores/globalStore";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import DatasetTreeViewRenderer from "../../shared/DatasetTreeViewRenderer";
+import SodaGreenPaper from "../../utils/ui/SodaGreenPaper";
+
+// Data categories options map
+export const dataCategoriesOptionsMap = {
+  Primary: {
+    label: "Does your dataset include primary data?",
+    dropDownDescription:
+      "Primary data refers to data that was originally collected for your research purposes. This includes raw experimental measurements, sensor readings, survey responses, observation records, or any data that was directly gathered from the source without processing or analysis. Examples: raw neural recordings, original microscopy images, behavioral task responses, physiological measurements.",
+  },
+  Source: {
+    label: "Does your dataset include source data?",
+    dropDownDescription:
+      "Source data refers to data obtained from other studies, databases, or published sources that you are using in your research. This includes publicly available datasets, reference data, previously published measurements, or data obtained from collaborators. Examples: reference anatomical atlases, publicly available genomic sequences, published behavioral norms, standardized measurement protocols.",
+  },
+  Derivative: {
+    label: "Does your dataset include derivative data?",
+    dropDownDescription:
+      "Derivative data refers to data that has been processed, analyzed, or computed from primary or source data. This includes statistical summaries, processed images, calculated metrics, model outputs, or any data that results from analysis of other data. Examples: averaged signals, statistical analysis results, processed imaging data, computed features, model predictions.",
+  },
+};
 
 const DataCategoriesQuestionnairePage = ({ pageID, pageName, questionnaireEntityType }) => {
   const activeEntity = useGlobalStore((state) => state.activeEntity);
+  const selectedDataCategories = useGlobalStore((state) => state.selectedDataCategories) || [];
+  const deSelectedDataCategories = useGlobalStore((state) => state.deSelectedDataCategories) || [];
+  const [expanded, setExpanded] = useState({});
+
+  const toggleExpanded = (key) => {
+    setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handleDataCategorySelection = useCallback((key, checked) => {
+    const { selectedDataCategories = [], deSelectedDataCategories = [] } =
+      useGlobalStore.getState();
+
+    if (checked) {
+      // If switch is checked (true), add to selectedDataCategories and remove from deSelectedDataCategories
+      useGlobalStore.setState({
+        selectedDataCategories: selectedDataCategories.includes(key)
+          ? selectedDataCategories
+          : [...selectedDataCategories, key],
+        deSelectedDataCategories: deSelectedDataCategories.filter((id) => id !== key),
+      });
+    } else {
+      // If switch is unchecked (false), add to deSelectedDataCategories and remove from selectedDataCategories
+      useGlobalStore.setState({
+        deSelectedDataCategories: deSelectedDataCategories.includes(key)
+          ? deSelectedDataCategories
+          : [...deSelectedDataCategories, key],
+        selectedDataCategories: selectedDataCategories.filter((id) => id !== key),
+      });
+    }
+  }, []);
+
   return (
     <GuidedModePage pageHeader={pageName}>
       <GuidedModeSection>
-        <Text>This is the {questionnaireEntityType} page</Text>
+        <Text>
+          Answer the following questions about the types of data in your dataset to help organize
+          your files properly.
+        </Text>
+      </GuidedModeSection>
+      <GuidedModeSection withBorder>
+        <Stack gap="md">
+          {Object.entries(dataCategoriesOptionsMap).map(([key, option]) => {
+            let switchChecked;
+            if (selectedDataCategories.includes(key)) {
+              switchChecked = true; // Yes
+            } else if (deSelectedDataCategories.includes(key)) {
+              switchChecked = false; // No
+            } else {
+              switchChecked = false; // Default to unchecked for unanswered
+            }
+
+            const isAnswered =
+              selectedDataCategories.includes(key) || deSelectedDataCategories.includes(key);
+
+            return (
+              <div
+                key={key}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  padding: "6px 10px",
+                  borderRadius: "6px",
+                }}
+              >
+                <Group justify="space-between" align="flex-start">
+                  <div style={{ flex: 1 }}>
+                    <Group align="center" spacing="xs">
+                      <Text size="md" fw={600}>
+                        {option.label}
+                      </Text>
+                      {option.dropDownDescription && (
+                        <Tooltip
+                          label={expanded[key] ? "Hide details" : "Show details"}
+                          zIndex={2999}
+                        >
+                          <ActionIcon
+                            size="sm"
+                            variant="transparent"
+                            onClick={() => toggleExpanded(key)}
+                          >
+                            {expanded[key] ? (
+                              <IconChevronUp size={16} />
+                            ) : (
+                              <IconChevronDown size={16} />
+                            )}
+                          </ActionIcon>
+                        </Tooltip>
+                      )}
+                    </Group>
+                  </div>
+                  <Group align="center" spacing="md">
+                    <Text size="sm" c={!switchChecked && isAnswered ? "red" : "dimmed"}>
+                      No
+                    </Text>
+                    <Switch
+                      checked={switchChecked}
+                      onChange={(event) =>
+                        handleDataCategorySelection(key, event.currentTarget.checked)
+                      }
+                      size="lg"
+                      color={switchChecked ? "green" : "red"}
+                      thumbIcon={
+                        switchChecked ? (
+                          <Text size="xs" c="white" fw={700}>
+                            ✓
+                          </Text>
+                        ) : (
+                          <Text size="xs" c="white" fw={700}>
+                            ✗
+                          </Text>
+                        )
+                      }
+                      styles={(theme) => ({
+                        track: {
+                          backgroundColor: !switchChecked
+                            ? theme.colors.red[2]
+                            : theme.colors.green[2],
+                        },
+                      })}
+                    />
+                    <Text size="sm" c={switchChecked && isAnswered ? "green" : "dimmed"}>
+                      Yes
+                    </Text>
+                  </Group>
+                </Group>
+
+                {expanded[key] && option.dropDownDescription && (
+                  <Box mb="md">
+                    <SodaGreenPaper mt="sm" mb="sm">
+                      <Text>{option.dropDownDescription}</Text>
+                    </SodaGreenPaper>
+                  </Box>
+                )}
+
+                {isAnswered && (
+                  <Group justify="center" mt="sm">
+                    <Text size="sm" fw={500} c={switchChecked ? "green" : "red"}>
+                      {switchChecked
+                        ? "✓ Yes - This dataset includes this type of data"
+                        : "✗ No - This dataset does not include this type of data"}
+                    </Text>
+                  </Group>
+                )}
+              </div>
+            );
+          })}
+        </Stack>
       </GuidedModeSection>
       <GuidedModeSection>
         <DatasetTreeViewRenderer fileExplorerId={pageID} entityType={null} hideSearchBar={true} />
