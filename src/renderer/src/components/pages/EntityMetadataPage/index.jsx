@@ -278,13 +278,13 @@ const EntityMetadataForm = () => {
 
     switch (entityType) {
       case "subject":
-        return <IconUser size={20} />;
+        return <IconUser size={20} color="black" />;
       case "sample":
-        return <IconFlask size={20} color="var(--mantine-color-primary-6)" />;
+        return <IconFlask size={20} color="black" />;
       case "site":
-        return <IconPin size={20} color="var(--mantine-color-primary-6)" />;
+        return <IconPin size={20} color="black" />;
       case "performance":
-        return <IconClipboard size={20} color="var(--mantine-color-primary-6)" />;
+        return <IconClipboard size={20} color="black" />;
       default:
         return null;
     }
