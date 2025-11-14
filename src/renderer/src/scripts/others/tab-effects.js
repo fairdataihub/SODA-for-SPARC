@@ -2936,16 +2936,9 @@ const updateJSONStructureBfDestination = () => {
       "if-existing": "merge",
     };
 
-    if (window.sodaJSONObj["ps-dataset-selected"]) {
-      console.log("Wowwoowow");
-      window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = $(
-        "#inputNewNameDataset-upload-dataset"
-      ).val();
-    } else {
-      window.sodaJSONObj["ps-dataset-selected"] = {
-        "dataset-name": $("#current-ps-dataset-generate").text(),
-      };
-    }
+    window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = $(
+      "#current-ps-dataset-generate"
+    ).text();
 
     let replaceCheckboxCardChecked = isCheckboxCardChecked("replace-file-card");
     let skipCheckboxCardChecked = isCheckboxCardChecked("skip-file-card");
