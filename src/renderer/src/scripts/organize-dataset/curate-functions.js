@@ -555,6 +555,8 @@ window.importLocalDataset = async (folderPath) => {
   let moveForward = false;
   let valid_dataset = window.verifySparcFolder(folderPath, "local");
 
+  console.log("Valid dataset: ", valid_dataset);
+
   if (valid_dataset) {
     moveForward = await window.handleLocalDatasetImport(folderPath);
   } else {

@@ -1640,6 +1640,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
   */
 
   if (currentDiv === "Question-getting-started-ps-dataset") {
+    console.log("Wowza");
     let selectedDataset = $("#current-ps-dataset").text();
     setNavButtonDisabled("nextBtn", true);
     window.sodaJSONObj = {
@@ -2936,9 +2937,10 @@ const updateJSONStructureBfDestination = () => {
     };
 
     if (window.sodaJSONObj["ps-dataset-selected"]) {
+      console.log("Wowwoowow");
       window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = $(
-        "#current-ps-dataset-generate"
-      ).text();
+        "#inputNewNameDataset-upload-dataset"
+      ).val();
     } else {
       window.sodaJSONObj["ps-dataset-selected"] = {
         "dataset-name": $("#current-ps-dataset-generate").text(),
