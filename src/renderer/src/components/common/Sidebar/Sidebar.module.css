@@ -54,6 +54,12 @@
   pointer-events: none;
   opacity: 0.3;
 }
+.nextPageToComplete {
+  color: var(--mantine-color-blue-1);
+  font-weight: 500;
+  opacity: 0.8 !important;
+  border-left: 2px solid var(--mantine-color-primary-5) !important;
+}
 /* NAVBAR-SPECIFIC PARTS */
 .navbarMain {
   flex: 1;

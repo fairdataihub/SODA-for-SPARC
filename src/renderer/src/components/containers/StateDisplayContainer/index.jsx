@@ -21,7 +21,6 @@ const StateDisplayContainer = ({ id }) => {
   const rowValues = useGlobalStore((state) =>
     rowConfigs.map((row) => state.stateDisplay?.[row.rowKey])
   );
-  console.log("[StateDisplayContainer] rowValues:", rowValues);
 
   // Longest label for alignment
   const maxLabelLength = useMemo(
