@@ -178,11 +178,7 @@ export const renderSideBar = (activePage) => {
   }
 };
 
-const checkIfPageIsValid = async (pageID) => {
-  try {
-    await window.openPage(pageID);
-    await window.savePageChanges(pageID);
-  } catch (error) {
-    throw error;
-  }
+export const checkIfPageIsValid = async (pageID) => {
+  await window.openPage(pageID);
+  await window.savePageChanges(pageID);
 };

@@ -11,6 +11,8 @@ import { getNonSkippedGuidedModePages } from "../../../scripts/guided-mode/pages
 import classes from "./Sidebar.module.css";
 import Swal from "sweetalert2";
 import { setOpenSidebarTab } from "../../../stores/slices/sideBarSlice";
+import { checkIfPageIsValid } from "../../../scripts/guided-mode/pages/sidebar";
+import { swalShowError } from "../../../scripts/utils/swal-utils";
 import useGlobalStore from "../../../stores/globalStore";
 
 const icons = {
@@ -36,6 +38,7 @@ async function handlePageNavigation(page, currentPage) {
   const userIsNavigatingForward = targetIndex > currentIndex;
 
   const intermediatePages = allPages.slice(currentIndex + 1, targetIndex);
+  console.log("Intermediate pages to check:", intermediatePages);
 
   try {
     await window.savePageChanges(currentPage);
@@ -65,25 +68,27 @@ async function handlePageNavigation(page, currentPage) {
 
   if (userIsNavigatingForward) {
     for (const pageId of intermediatePages) {
+      console.log(`Checking intermediate page ${pageId} for errors...`);
       try {
-        await window.checkIfPageIsValid(pageId);
+        await checkIfPageIsValid(pageId);
       } catch (error) {
+        console.log(`Errors found on intermediate page ${pageId}:`, error);
         const pageName = document.getElementById(pageId)?.getAttribute("data-page-name") || pageId;
         await window.openPage(pageId);
-        await Swal.fire({
-          title: `An error occured on an intermediate page: ${pageName}`,
-          html: `Please address the issues before continuing to ${page.pageName}:<br /><br /><ul>${(
-            error || []
-          )
-            .map((err) => `<li class='text-left'>${err.message}</li>`)
-            .join("")}</ul>`,
-          icon: "info",
-          confirmButtonText: "Fix the errors on this page",
-          focusConfirm: true,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          width: 800,
-        });
+
+        // Ensure error is an array and format it properly
+        const errorArray = Array.isArray(error) ? error : [error];
+        const errorListHtml =
+          errorArray.length > 0
+            ? `<ul>${errorArray
+                .map((err) => `<li class='text-left'>${err?.message || err}</li>`)
+                .join("")}</ul>`
+            : "<p>Unknown error occurred</p>";
+
+        await swalShowError(
+          `An error occured on an intermediate page: ${pageName}`,
+          `<div></div><div class="text-center">Please address the issues before continuing to ${page.pageName}:</div><br />${errorListHtml}</div>`
+        );
         return;
       }
     }
@@ -95,7 +100,7 @@ async function handlePageNavigation(page, currentPage) {
 /**
  * Renders a button for a given page.
  */
-function PageButton({ page, isActive }) {
+function PageButton({ page, isActive, isNextPageToComplete }) {
   return (
     <Button
       variant="subtle"
@@ -104,9 +109,11 @@ function PageButton({ page, isActive }) {
       justify="flex-start"
       key={page.pageID || page.pageName}
       color="black"
-      className={`${classes.pageButton} ${isActive ? classes.pageButtonActive : ""} ${
-        !page.completed && !isActive ? classes.disabled : ""
-      }`}
+      className={`
+        ${classes.pageButton} ${isActive ? classes.pageButtonActive : ""}
+        ${isNextPageToComplete ? classes.nextPageToComplete : ""}
+        ${!page.completed && !isActive && !isNextPageToComplete ? classes.disabled : ""}
+      `}
       style={{
         fontWeight: isActive ? 600 : 400,
       }}
@@ -131,6 +138,9 @@ const LinksGroup = ({ label, pages }) => {
   const opened = openSidebarTab === label;
   const hasPages = Array.isArray(pages);
   const currentPage = window.CURRENT_PAGE?.id;
+  const allPages = getNonSkippedGuidedModePages(document).map((el) => el.id);
+  const userCompletedPages = window.sodaJSONObj["completed-tabs"];
+  const nextPage = allPages.find((page) => !userCompletedPages.includes(page));
 
   const items = hasPages
     ? pages.map((page) => (
@@ -138,6 +148,7 @@ const LinksGroup = ({ label, pages }) => {
           key={page.pageID || page.pageName}
           page={page}
           isActive={page.pageID === currentPage}
+          isNextPageToComplete={page.pageID === nextPage}
         />
       ))
     : null;

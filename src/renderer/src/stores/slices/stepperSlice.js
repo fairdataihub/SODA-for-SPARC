@@ -11,7 +11,7 @@ export const stepperSlice = (set) => ({
         "Import Data",
         "Pennsieve Account",
         "Select Dataset",
-        "Manifest Files",
+        "Manifest File",
         "Generate Dataset",
       ],
       currentStep: 0,

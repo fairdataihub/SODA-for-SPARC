@@ -1594,6 +1594,7 @@ window.verifySparcFolder = (rootFolderPath, type) => {
     "code_description",
     "manifest",
     "code_parameters",
+    "performances",
   ];
 
   const folderContents = window.fs
@@ -1606,12 +1607,21 @@ window.verifySparcFolder = (rootFolderPath, type) => {
   const highLevelFolders = window.highLevelFolders.map((folder) => folder.toLowerCase());
 
   const datasetItemsValidSDS = (item) => {
+    console.log(
+      `Checking ${item}:  ${highLevelFolders.includes(item) || metadataFiles.includes(item)}`
+    );
     return highLevelFolders.includes(item) || metadataFiles.includes(item);
   };
 
   const datasetHasHighLevelFolder = (item) => {
     return highLevelFolders.includes(item);
   };
+
+  console.log(
+    "Dataset is valid SDS structure: ",
+    folderContents.every(datasetItemsValidSDS),
+    folderContents.some(datasetHasHighLevelFolder)
+  );
 
   // Returns true if none of the
   // NOTE: For the moment we will not require metadata files in the workflow
@@ -1630,6 +1640,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
   */
 
   if (currentDiv === "Question-getting-started-ps-dataset") {
+    console.log("Wowza");
     let selectedDataset = $("#current-ps-dataset").text();
     setNavButtonDisabled("nextBtn", true);
     window.sodaJSONObj = {
@@ -2908,7 +2919,7 @@ window.updateJSONStructureGenerate = (sodaJSONObject) => {
 
 const updateJSONStructureBfDestination = () => {
   // check which option-card is selected in the upload destination selection tab
-  if ($("#dataset-upload-new-dataset").hasClass("checked")) {
+  if (isCheckboxCardChecked("dataset-upload-new-dataset")) {
     window.sodaJSONObj["generate-dataset"] = {
       destination: "ps",
       "generate-option": "new",
@@ -2925,15 +2936,9 @@ const updateJSONStructureBfDestination = () => {
       "if-existing": "merge",
     };
 
-    if (window.sodaJSONObj["ps-dataset-selected"]) {
-      window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = $(
-        "#current-ps-dataset-generate"
-      ).text();
-    } else {
-      window.sodaJSONObj["ps-dataset-selected"] = {
-        "dataset-name": $("#current-ps-dataset-generate").text(),
-      };
-    }
+    window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = $(
+      "#current-ps-dataset-generate"
+    ).text();
 
     let replaceCheckboxCardChecked = isCheckboxCardChecked("replace-file-card");
     let skipCheckboxCardChecked = isCheckboxCardChecked("skip-file-card");

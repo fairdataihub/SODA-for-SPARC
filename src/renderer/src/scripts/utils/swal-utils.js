@@ -58,7 +58,7 @@ export const swalShowError = async (title, errorText) => {
   await new Promise((resolve) => setTimeout(resolve, 200));
   await Swal.fire({
     title: title,
-    html: errorText,
+    html: `<div class="swal-scroll-box">${errorText}</div>`,
     icon: "error",
     width: 800,
     heightAuto: false,
@@ -97,8 +97,6 @@ export const swalFileListSingleAction = async (fileList, title, helpText, postAc
       </div>
       ${postActionText ? `<b>${postActionText}</b>` : ""}
     `,
-    width: 800,
-    heightAuto: false,
     width: 800,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",

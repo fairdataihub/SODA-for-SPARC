@@ -995,6 +995,22 @@
 
 /////////////////////////  SWEET ALERT CLASSES /////////////////////////
 
+.swal2-popup .swal-scroll-box {
+  max-height: 400px !important;
+  overflow-y: auto !important;
+  text-align: left !important;
+  padding: 10px !important;
+  margin: 0 !important;
+}
+
+/* Also target it without the parent selector in case of different SweetAlert versions */
+.swal-scroll-box {
+  max-height: 400px !important;
+  overflow-y: auto !important;
+  text-align: left !important;
+  padding: 10px !important;
+}
+
 .animate_fastest {
   --animate-duration: 0.3s;
 }
