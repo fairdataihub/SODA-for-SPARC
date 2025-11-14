@@ -2919,7 +2919,7 @@ window.updateJSONStructureGenerate = (sodaJSONObject) => {
 
 const updateJSONStructureBfDestination = () => {
   // check which option-card is selected in the upload destination selection tab
-  if ($("#dataset-upload-new-dataset").hasClass("checked")) {
+  if (isCheckboxCardChecked("dataset-upload-new-dataset")) {
     window.sodaJSONObj["generate-dataset"] = {
       destination: "ps",
       "generate-option": "new",
