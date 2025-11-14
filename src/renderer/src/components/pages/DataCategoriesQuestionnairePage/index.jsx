@@ -90,8 +90,7 @@ const DataCategoriesQuestionnairePage = ({ pageID, pageName, questionnaireEntity
           <CheckboxCard id="categorize-experimental-data-no" />
         </Center>
       </GuidedModeSection>
-      <GuidedModeSection></GuidedModeSection>
-      <GuidedModeSection withBorder>
+      <GuidedModeSection withBorder sectionId="experimental-data-categories-selection">
         <Stack gap="md">
           {Object.entries(dataCategoriesOptionsMap).map(([key, option]) => {
             let switchChecked;
@@ -199,6 +198,11 @@ const DataCategoriesQuestionnairePage = ({ pageID, pageName, questionnaireEntity
             );
           })}
         </Stack>
+      </GuidedModeSection>
+      <GuidedModeSection sectionId="experimental-data-categorization-not-selected">
+        <Text size="md" fw={500}>
+          You have chosen not to categorize your experimental data.
+        </Text>
       </GuidedModeSection>
       <GuidedModeSection>
         <DatasetTreeViewRenderer fileExplorerId={pageID} entityType={null} hideSearchBar={true} />

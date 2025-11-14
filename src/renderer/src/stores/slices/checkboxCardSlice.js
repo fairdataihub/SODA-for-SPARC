@@ -155,7 +155,7 @@ export const checkboxCardSlice = (set) => ({
       description: null,
       Icon: null,
       mutuallyExclusiveWithCards: ["categorize-experimental-data-no"],
-      nextElementID: "guided-section-experimental-data-categorization",
+      nextElementID: "experimental-data-categories-selection",
       checked: false,
       configValue: "categorize-experimental-data",
       configValueState: "yes",
@@ -166,7 +166,7 @@ export const checkboxCardSlice = (set) => ({
       description: null,
       Icon: null,
       mutuallyExclusiveWithCards: ["categorize-experimental-data-yes"],
-      nextElementID: "guided-div-skip-experimental-data-categorization",
+      nextElementID: "experimental-data-categorization-not-selected",
       checked: false,
       configValue: "categorize-experimental-data",
       configValueState: "no",
@@ -272,14 +272,6 @@ export const setCheckboxCardUnchecked = (key) => {
     const el = document.getElementById(card.nextElementID);
     if (el) el.classList.add("hidden");
   }
-};
-
-export const clearAllCheckboxCardChecked = () => {
-  useGlobalStore.setState((state) => {
-    Object.keys(state.cardData).forEach((key) => {
-      state.cardData[key].checked = false;
-    });
-  });
 };
 
 export const isCheckboxCardChecked = (key) => {

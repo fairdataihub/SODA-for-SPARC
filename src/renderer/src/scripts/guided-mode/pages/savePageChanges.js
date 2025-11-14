@@ -108,6 +108,7 @@ window.savePageChanges = async (pageBeingLeftID) => {
           isCheckboxCardChecked("modality-selection-yes");
         const userSelectedTheyDoNotHaveMultipleModalities =
           isCheckboxCardChecked("modality-selection-no");
+
         if (
           !userSelectedTheyDoNotHaveMultipleModalities &&
           !userSelectedTheyHaveMultipleModalities
@@ -142,6 +143,7 @@ window.savePageChanges = async (pageBeingLeftID) => {
         const datasetEntityObj = getDatasetEntityObj();
         const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
         const datasetFileCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
+        console.log("Dataset file count:", datasetFileCount);
 
         if (entityType === "non-data-folders") {
           const possibleSupportingFolders = ["protocol", "docs"];
@@ -375,6 +377,7 @@ window.savePageChanges = async (pageBeingLeftID) => {
       const userSelectedAddEntitiesManually = isCheckboxCardChecked(
         "guided-button-add-entities-manually"
       );
+
       if (!userSelectedAddEntitiesFromSpreadsheet && !userSelectedAddEntitiesManually) {
         errorArray.push({
           type: "notyf",
