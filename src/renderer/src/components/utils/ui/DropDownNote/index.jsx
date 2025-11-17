@@ -179,8 +179,8 @@ const DropDownNote = ({ id }) => {
             dataset step-by-step" because of potential conflicts with existing data.
           </Text>
           <Text size="sm">
-            You must also have <strong>"Owner"</strong> or <strong>"Manager"</strong> permissions on
-            the dataset in order for SODA to retrieve it.
+            You must also have <strong>"Owner"</strong> or <strong>"Manager"</strong> or{" "}
+            <strong>"Editor"</strong> permissions on the dataset in order for SODA to retrieve it.
           </Text>
         </>
       ),
@@ -196,8 +196,8 @@ const DropDownNote = ({ id }) => {
             dataset step-by-step" because of potential conflicts with existing data.
           </Text>
           <Text size="sm">
-            You must also have <strong>"Owner"</strong> or <strong>"Manager"</strong> permissions on
-            the dataset in order for SODA to retrieve it.
+            You must also have <strong>"Owner"</strong> or <strong>"Manager"</strong> or{" "}
+            <strong>"Editor"</strong> permissions on the dataset in order for SODA to retrieve it.
           </Text>
         </>
       ),
