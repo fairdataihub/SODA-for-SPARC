@@ -11,171 +11,57 @@ import { setOpenSidebarTab } from "../../../stores/slices/sideBarSlice";
  * @description - Render the Prepare Dataset Step-by-Step sidebar. The sidebar contains the sections and available pages
  *                in the active workflow. Can be used to navigate to different pages in the workflow along with the continue and back buttons.
  */
+// Builds and updates the sidebar structure for Guided Mode
+// Functionality preserved exactly as in the original
 export const renderSideBar = (activePage) => {
-  const guidedNavItemsContainer = document.getElementById("guided-nav-items");
-
+  // Do not render sidebar navigation for the dissemination tab
   if (activePage === "guided-dataset-dissemination-tab") {
     setShowGuidedModePageNavigation(false);
     return;
   }
+
+  // Ensure sidebar navigation is visible
   setShowGuidedModePageNavigation(true);
 
+  // List of completed page IDs stored in sodaJSONObj
   const completedTabs = window.sodaJSONObj["completed-tabs"];
 
+  // Will hold the refreshed sidebar structure
   const newPageStructureObject = {};
 
+  // Top-level sidebar sections
   const highLevelStepElements = Array.from(document.querySelectorAll(".guided--parent-tab"));
 
-  // Track parent tab for the active page
-  let parentTabOfActivePage = null;
-
+  // Build structure for each top-level section
   for (const element of highLevelStepElements) {
-    const highLevelStepName = element.getAttribute("data-parent-tab-name");
-    newPageStructureObject[highLevelStepName] = [];
+    const parentTabName = element.getAttribute("data-parent-tab-name");
 
+    // Initialize container for this section
+    newPageStructureObject[parentTabName] = [];
+
+    // Fetch all pages not marked as skipped
     const notSkippedPages = getNonSkippedGuidedModePages(element);
 
+    // Build structure for each page
     for (const page of notSkippedPages) {
       const pageName = page.getAttribute("data-page-name");
       const pageID = page.getAttribute("id");
 
-      newPageStructureObject[highLevelStepName].push({
-        pageID: pageID,
-        pageName: pageName,
+      newPageStructureObject[parentTabName].push({
+        pageID,
+        pageName,
         completed: completedTabs.includes(pageID),
       });
+
+      // Expand whichever high-level tab the active page belongs to
       if (pageID === activePage) {
-        setOpenSidebarTab(highLevelStepName);
+        setOpenSidebarTab(parentTabName);
       }
     }
   }
 
-  //Set the page structure object in the zustand store
+  // Update Zustand store with new structure (triggers sidebar re-render)
   setGuidedModePageStructureObject(newPageStructureObject);
-
-  const guidedNavBarDropdowns = Array.from(document.querySelectorAll(".guided--nav-bar-dropdown"));
-  for (const guidedNavBarDropdown of guidedNavBarDropdowns) {
-    guidedNavBarDropdown.addEventListener("click", () => {
-      //remove hidden from child elements with guided--nav-bar-section-page class
-      const guidedNavBarSectionPage = guidedNavBarDropdown.parentElement.querySelectorAll(
-        ".guided--nav-bar-section-page"
-      );
-      for (const guidedNavBarSectionPageElement of guidedNavBarSectionPage) {
-        guidedNavBarSectionPageElement.classList.toggle("hidden");
-      }
-      //toggle the chevron
-      const chevron = guidedNavBarDropdown.querySelector("i");
-      chevron.classList.toggle("fa-chevron-right");
-      chevron.classList.toggle("fa-chevron-down");
-    });
-
-    //click the dropdown if it has a child element with data-target-page that matches the active page
-    if (guidedNavBarDropdown.parentElement.querySelector(`[data-target-page="${activePage}"]`)) {
-      guidedNavBarDropdown.click();
-    }
-  }
-
-  const guidedNavBarSectionPages = Array.from(
-    document.querySelectorAll(".guided--nav-bar-section-page")
-  );
-  for (const guidedNavBarSectionPage of guidedNavBarSectionPages) {
-    guidedNavBarSectionPage.addEventListener("click", async () => {
-      const currentPageUserIsLeaving = window.CURRENT_PAGE.id;
-      const pageToNavigateTo = guidedNavBarSectionPage.getAttribute("data-target-page");
-      const pageToNaviatetoName = document
-        .getElementById(pageToNavigateTo)
-        .getAttribute("data-page-name");
-
-      // Do nothing if the user clicks the tab of the page they are currently on
-      if (currentPageUserIsLeaving === pageToNavigateTo) {
-        return;
-      }
-
-      try {
-        await window.savePageChanges(currentPageUserIsLeaving);
-        const allNonSkippedPages = getNonSkippedGuidedModePages(document).map(
-          (element) => element.id
-        );
-        // Get the pages in the allNonSkippedPages array that cone after the page the user is leaving
-        // and before the page the user is going to
-        const pagesBetweenCurrentAndTargetPage = allNonSkippedPages.slice(
-          allNonSkippedPages.indexOf(currentPageUserIsLeaving),
-          allNonSkippedPages.indexOf(pageToNavigateTo)
-        );
-
-        //If the user is skipping forward with the nav bar, pages between current page and target page
-        //Need to be validated. If they're going backwards, the for loop below will not be ran.
-        for (const page of pagesBetweenCurrentAndTargetPage) {
-          try {
-            await checkIfPageIsValid(page);
-          } catch (error) {
-            const pageWithErrorName = document.getElementById(page).getAttribute("data-page-name");
-            await window.openPage(page);
-            await Swal.fire({
-              title: `An error occured on an intermediate page: ${pageWithErrorName}`,
-              html: `Please address the issues before continuing to ${pageToNaviatetoName}:
-                      <br />
-                      <br />
-                      <ul>
-                        ${error
-                          .map((error) => `<li class="text-left">${error.message}</li>`)
-                          .join("")}
-                      </ul>
-                    `,
-              icon: "info",
-              confirmButtonText: "Fix the errors on this page",
-              focusConfirm: true,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              width: 700,
-            });
-            return;
-          }
-        }
-
-        //All pages have been validated. Open the target page.
-        await window.openPage(pageToNavigateTo);
-      } catch (error) {
-        const pageWithErrorName = window.CURRENT_PAGE.dataset.pageName;
-        const { value: continueWithoutSavingCurrPageChanges } = await Swal.fire({
-          title: "The current page was not able to be saved",
-          html: `The following error${
-            error.length > 1 ? "s" : ""
-          } occurred when attempting to save the ${pageWithErrorName} page:
-                  <br />
-                  <br />
-                  <ul>
-                    ${error.map((error) => `<li class="text-left">${error.message}</li>`).join("")}
-                  </ul>
-                  <br />
-                  Would you like to continue without saving the changes to the current page?`,
-          icon: "info",
-          showCancelButton: true,
-          confirmButtonText: "Yes, continue without saving",
-          cancelButtonText: "No, I would like to address the errors",
-          confirmButtonWidth: 255,
-          cancelButtonWidth: 255,
-          focusCancel: true,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          width: 700,
-        });
-        if (continueWithoutSavingCurrPageChanges) {
-          await window.openPage(pageToNavigateTo);
-        }
-      }
-    });
-  }
-
-  const nextPagetoComplete = guidedNavItemsContainer.querySelector(
-    ".guided--nav-bar-section-page.not-completed"
-  );
-  if (nextPagetoComplete) {
-    nextPagetoComplete.classList.remove("not-completed");
-    //Add pulse blue animation for 3 seconds
-    nextPagetoComplete.style.borderLeft = "3px solid gray";
-    nextPagetoComplete.style.animation = "pulse-blue 3s Infinity";
-  }
 };
 
 export const checkIfPageIsValid = async (pageID) => {
