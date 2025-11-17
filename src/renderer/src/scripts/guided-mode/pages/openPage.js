@@ -205,7 +205,7 @@ window.openPage = async (targetPageID) => {
 
     if (targetPageDataset.entityType) {
       setEntityType(targetPageDataset.entityType);
-      // For single-category entity pages (like experimental-data), set activeEntity to entityType
+      // For single-category entity pages (like experimental), set activeEntity to entityType
       if (targetPageDataset.entityTypeOnlyHasOneCategory === "true") {
         setActiveEntity(targetPageDataset.entityType);
       }
@@ -295,7 +295,7 @@ window.openPage = async (targetPageID) => {
         }
 
         // Make any adjustments to the dataset entity object before setting it in the zustand store
-        if (pageEntityType === "experimental-data") {
+        if (pageEntityType === "experimental") {
           // Filter out files that are selected as belonging to the supporting data folders
           setFileVisibilityFilter(
             [],
@@ -308,13 +308,13 @@ window.openPage = async (targetPageID) => {
           );
         }
 
-        if (pageEntityType === "experimental-data-categorization") {
+        if (pageEntityType === "experimental-categorization") {
           // Filter out files that are selected as belonging to the supporting data folders
           setFileVisibilityFilter(
             [
               {
-                type: "experimental-data",
-                names: ["experimental-data"],
+                type: "experimental",
+                names: ["experimental"],
               },
             ],
             [
@@ -335,7 +335,7 @@ window.openPage = async (targetPageID) => {
           setFileVisibilityFilter(
             [
               {
-                type: "experimental-data",
+                type: "experimental",
                 names: ["Experimental data"],
               },
             ],
@@ -367,7 +367,7 @@ window.openPage = async (targetPageID) => {
           setFileVisibilityFilter(
             [
               {
-                type: "experimental-data",
+                type: "experimental",
                 names: ["Experimental data"],
               },
             ],
@@ -400,7 +400,7 @@ window.openPage = async (targetPageID) => {
           setFileVisibilityFilter(
             [
               {
-                type: "experimental-data",
+                type: "experimental",
                 names: ["Experimental data"],
               },
             ],
@@ -454,8 +454,8 @@ window.openPage = async (targetPageID) => {
         setFileVisibilityFilter(
           [
             {
-              type: "experimental-data",
-              names: ["experimental-data"],
+              type: "experimental",
+              names: ["experimental"],
             },
           ],
           [

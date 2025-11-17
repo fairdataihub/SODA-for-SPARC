@@ -64,8 +64,8 @@ const DataCategoriesQuestionnairePage = ({ pageID, pageName, questionnaireEntity
     <GuidedModePage pageHeader={pageName}>
       <GuidedModeSection>
         <Text>
-          Experimental data in SPARC is organized into three main categories. These help describe
-          where your data came from and how it was produced:
+          Experimental data in SPARC is organized into three categories. These help describe where
+          your data came from and how it was produced:
         </Text>
         <List spacing="sm" mt="sm">
           <List.Item>

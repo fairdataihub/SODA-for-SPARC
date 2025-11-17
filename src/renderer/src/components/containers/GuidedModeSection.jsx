@@ -1,7 +1,21 @@
 import { Stack } from "@mantine/core";
 import SodaPaper from "../utils/ui/SodaPaper";
+import useGlobalStore from "../../stores/globalStore";
 
 const GuidedModeSection = ({ children, sectionId, withBorder }) => {
+  const hiddenGuidedModeSections = useGlobalStore((state) => state.hiddenGuidedModeSections);
+
+  // Return null if this section should be hidden
+  if (sectionId && hiddenGuidedModeSections.includes(sectionId)) {
+    console.log("Not rendering guided mode section:", sectionId);
+    console.log("Hidden sections:", hiddenGuidedModeSections);
+    return null;
+  } else {
+    if (sectionId) {
+      console.log("Rendering guided mode section:", sectionId);
+    }
+  }
+
   // If withBorder is true, wrap the Stack in a SodaPaper
   if (withBorder) {
     return (
@@ -20,5 +34,4 @@ const GuidedModeSection = ({ children, sectionId, withBorder }) => {
     </Stack>
   );
 };
-
 export default GuidedModeSection;

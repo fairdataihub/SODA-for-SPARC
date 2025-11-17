@@ -200,7 +200,7 @@ const EntityDataSelectorPage = ({
                   </>
                 );
 
-              case "experimental-data":
+              case "experimental":
                 return (
                   <>
                     <Text mb={0}>
