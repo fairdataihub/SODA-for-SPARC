@@ -139,8 +139,8 @@ const LinksGroup = ({ label, pages }) => {
   const hasPages = Array.isArray(pages);
   const currentPage = window.CURRENT_PAGE?.id;
   const allPages = getNonSkippedGuidedModePages(document).map((el) => el.id);
-  const userCompletedPages = window.sodaJSONObj["completed-tabs"];
-  const nextPage = allPages.find((page) => !userCompletedPages.includes(page));
+  const userCompletedPages = window.sodaJSONObj["completed-tabs"] || [];
+  const nextPage = allPages.find((page) => !userCompletedPages.includes(page)) || null;
 
   const items = hasPages
     ? pages.map((page) => (
