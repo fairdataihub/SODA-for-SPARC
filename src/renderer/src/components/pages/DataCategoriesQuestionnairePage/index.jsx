@@ -86,6 +86,10 @@ const DataCategoriesQuestionnairePage = ({ pageID, pageName, questionnaireEntity
       </GuidedModeSection>
       <GuidedModeSection>
         <Center>
+          <label className="guided--form-label centered">
+            Would you like to categorize your experimental data into Primary, Source, and/or
+            Derivative?
+          </label>
           <CheckboxCard id="categorize-experimental-data-yes" />
           <CheckboxCard id="categorize-experimental-data-no" />
         </Center>
@@ -199,7 +203,7 @@ const DataCategoriesQuestionnairePage = ({ pageID, pageName, questionnaireEntity
           })}
         </Stack>
       </GuidedModeSection>
-      <GuidedModeSection sectionId="experimental-data-categorization-not-selected">
+      <GuidedModeSection withBorder sectionId="experimental-data-categorization-not-selected">
         <Text size="md" fw={500}>
           You have chosen not to categorize your experimental data.
         </Text>
