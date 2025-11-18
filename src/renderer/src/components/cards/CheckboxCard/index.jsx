@@ -30,6 +30,8 @@ const CheckboxCard = ({ id, clickAction }) => {
 
     if (!checked) {
       setCheckboxCardChecked(id);
+    } else {
+      setCheckboxCardUnchecked(id);
     }
 
     if (clickAction) {
