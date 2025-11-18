@@ -254,6 +254,15 @@ const EntityDataSelectorPage = ({
               case "modalities":
                 return <Text>Select the folders and files that belong to each modality.</Text>;
 
+              case "experimental-data-categorization":
+                return (
+                  <Text>
+                    Use the interface below to categorize your experimental data files into Primary,
+                    Source, and Derivative data types. Any files not categorized will be marked as
+                    primary by default.
+                  </Text>
+                );
+
               default:
                 return (
                   <Text>

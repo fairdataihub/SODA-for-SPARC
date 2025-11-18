@@ -308,7 +308,9 @@ window.openPage = async (targetPageID) => {
           );
         }
 
-        if (pageEntityType === "experimental-categorization") {
+        if (pageEntityType === "experimental-data-categorization") {
+          addEntityNameToEntityType("experimental-data-categorization", "Primary");
+          addEntityNameToEntityType("experimental-data-categorization", "Source");
           // Filter out files that are selected as belonging to the supporting data folders
           setFileVisibilityFilter(
             [
@@ -336,7 +338,7 @@ window.openPage = async (targetPageID) => {
             [
               {
                 type: "experimental",
-                names: ["Experimental data"],
+                names: ["experimental"],
               },
             ],
             [
@@ -368,7 +370,7 @@ window.openPage = async (targetPageID) => {
             [
               {
                 type: "experimental",
-                names: ["Experimental data"],
+                names: ["experimental"],
               },
             ],
             siteFilter
@@ -401,7 +403,7 @@ window.openPage = async (targetPageID) => {
             [
               {
                 type: "experimental",
-                names: ["Experimental data"],
+                names: ["experimental"],
               },
             ],
             siteAndSampleFilter

@@ -17,28 +17,30 @@ export const setSelectedDataCategoriesByEntityType = (selectedDataCategoriesByEn
 };
 
 export const addSelectedDataCategoryForEntityType = (entityType, dataCategory) => {
-  useGlobalStore.setState((state) => {
-    const updatedMap = { ...state.selectedDataCategoriesByEntityType };
-    if (!updatedMap[entityType]) {
-      updatedMap[entityType] = [];
-    }
-    if (!updatedMap[entityType].includes(dataCategory)) {
-      updatedMap[entityType].push(dataCategory);
-    }
-    return { selectedDataCategoriesByEntityType: updatedMap };
-  });
+  const currentState = useGlobalStore.getState();
+  const updatedMap = { ...currentState.selectedDataCategoriesByEntityType };
+
+  if (!updatedMap[entityType]) {
+    updatedMap[entityType] = [];
+  }
+  if (!updatedMap[entityType].includes(dataCategory)) {
+    updatedMap[entityType] = [...updatedMap[entityType], dataCategory];
+  }
+
+  useGlobalStore.setState({ selectedDataCategoriesByEntityType: updatedMap });
 };
 export const removeSelectedDataCategoryForEntityType = (entityType, dataCategory) => {
-  useGlobalStore.setState((state) => {
-    const updatedMap = { ...state.selectedDataCategoriesByEntityType };
-    if (updatedMap[entityType]) {
-      updatedMap[entityType] = updatedMap[entityType].filter((cat) => cat !== dataCategory);
-      if (updatedMap[entityType].length === 0) {
-        delete updatedMap[entityType];
-      }
+  const currentState = useGlobalStore.getState();
+  const updatedMap = { ...currentState.selectedDataCategoriesByEntityType };
+
+  if (updatedMap[entityType]) {
+    updatedMap[entityType] = updatedMap[entityType].filter((cat) => cat !== dataCategory);
+    if (updatedMap[entityType].length === 0) {
+      delete updatedMap[entityType];
     }
-    return { selectedDataCategoriesByEntityType: updatedMap };
-  });
+  }
+
+  useGlobalStore.setState({ selectedDataCategoriesByEntityType: updatedMap });
 };
 
 export const setSelectedEntities = (selectedEntities) => {

@@ -66,6 +66,9 @@ const getBadgeColor = (entityId) => {
   if (entityId === "Experimental") return "green";
   if (entityId === "Protocol") return "gray";
   if (entityId === "Docs") return "cyan";
+  if (entityId === "Primary") return "teal";
+  if (entityId === "Source") return "violet";
+  if (entityId === "Derivative") return "yellow";
 };
 
 const EntityBadges = ({ entities }) => {

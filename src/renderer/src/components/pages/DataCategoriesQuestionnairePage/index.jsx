@@ -1,6 +1,10 @@
 import { useCallback } from "react";
 import { Text, Stack, Group, Switch, List, Center } from "@mantine/core";
 import useGlobalStore from "../../../stores/globalStore";
+import {
+  addSelectedDataCategoryForEntityType,
+  removeSelectedDataCategoryForEntityType,
+} from "../../../stores/slices/datasetContentSelectorSlice";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import DatasetTreeViewRenderer from "../../shared/DatasetTreeViewRenderer";
@@ -23,31 +27,26 @@ export const dataCategoriesOptionsMap = {
 const DataCategoriesQuestionnairePage = ({ pageID, pageName, questionnaireEntityType }) => {
   console.log("questionnaireEntityType:", questionnaireEntityType);
   const activeEntity = useGlobalStore((state) => state.activeEntity);
-  const selectedDataCategories = useGlobalStore((state) => state.selectedDataCategories) || [];
-  const deSelectedDataCategories = useGlobalStore((state) => state.deSelectedDataCategories) || [];
+  const selectedDataCategoriesByEntityType =
+    useGlobalStore((state) => state.selectedDataCategoriesByEntityType) || {};
+  console.log("selectedDataCategoriesByEntityType:", selectedDataCategoriesByEntityType);
 
-  const handleDataCategorySelection = useCallback((key, checked) => {
-    const { selectedDataCategories = [], deSelectedDataCategories = [] } =
-      useGlobalStore.getState();
+  // Get the selected data categories for the current entity type
+  const selectedDataCategoriesForEntityType =
+    selectedDataCategoriesByEntityType[questionnaireEntityType] || [];
 
-    if (checked) {
-      // If switch is checked (true), add to selectedDataCategories and remove from deSelectedDataCategories
-      useGlobalStore.setState({
-        selectedDataCategories: selectedDataCategories.includes(key)
-          ? selectedDataCategories
-          : [...selectedDataCategories, key],
-        deSelectedDataCategories: deSelectedDataCategories.filter((id) => id !== key),
-      });
-    } else {
-      // If switch is unchecked (false), add to deSelectedDataCategories and remove from selectedDataCategories
-      useGlobalStore.setState({
-        deSelectedDataCategories: deSelectedDataCategories.includes(key)
-          ? deSelectedDataCategories
-          : [...deSelectedDataCategories, key],
-        selectedDataCategories: selectedDataCategories.filter((id) => id !== key),
-      });
-    }
-  }, []);
+  const handleDataCategorySelection = useCallback(
+    (key, checked) => {
+      if (checked) {
+        // If switch is checked (true), add the data category for this entity type
+        addSelectedDataCategoryForEntityType(questionnaireEntityType, key);
+      } else {
+        // If switch is unchecked (false), remove the data category for this entity type
+        removeSelectedDataCategoryForEntityType(questionnaireEntityType, key);
+      }
+    },
+    [questionnaireEntityType]
+  );
 
   return (
     <GuidedModePage pageHeader={pageName}>
@@ -77,14 +76,8 @@ const DataCategoriesQuestionnairePage = ({ pageID, pageName, questionnaireEntity
       <GuidedModeSection withBorder sectionId="experimental-data-categories-selection">
         <Stack gap="xs">
           {Object.entries(dataCategoriesOptionsMap).map(([key, option]) => {
-            let switchChecked;
-            if (selectedDataCategories.includes(key)) {
-              switchChecked = true; // Yes
-            } else if (deSelectedDataCategories.includes(key)) {
-              switchChecked = false; // No
-            } else {
-              switchChecked = false; // Default to unchecked for unanswered
-            }
+            // Check if this data category is selected for the current entity type
+            const switchChecked = selectedDataCategoriesForEntityType.includes(key);
 
             return (
               <div
