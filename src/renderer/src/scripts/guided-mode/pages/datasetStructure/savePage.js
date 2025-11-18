@@ -113,11 +113,11 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
 
     if (selectedEntities.includes("subjects")) {
       // Unskip all of the experimental pages
-      addEntityNameToEntityType("experimental-data", "Experimental data");
+      addEntityNameToEntityType("experimental", "experimental");
       guidedUnSkipPageSet("guided-subject-related-page-set");
       guidedUnSkipPageSet("guided-subjects-metadata-page-set");
     } else {
-      removeEntityFromEntityList("experimental-data", "Experimental data");
+      removeEntityFromEntityList("experimental", "experimental");
       // Skip all of the experimental pages
       guidedSkipPageSet("guided-subject-related-page-set");
 
