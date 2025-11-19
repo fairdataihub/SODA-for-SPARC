@@ -596,11 +596,44 @@
 .tagify__tag {
   max-width: 280px;
   background-color: #e5e5e5;
+  position: relative;
 }
 
 .tagify__tag > div > * {
   white-space: pre !important;
   display: block !important;
+}
+
+/* Ensure remove button is always visible and accessible */
+.tagify__tag__removeBtn {
+  position: absolute !important;
+  right: 4px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  z-index: 10 !important;
+  width: 12px !important;
+  height: 12px !important;
+  background: rgba(0, 0, 0, 0.6) !important;
+  color: white !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  font-size: 10px !important;
+}
+
+.tagify__tag__removeBtn:hover {
+  background: rgba(0, 0, 0, 0.8) !important;
+}
+
+/* Ensure tag text doesn't overlap with remove button */
+.tagify__tag-text {
+  padding-right: 25px !important;
+  display: block !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
 }
 
 .tagify.form-control {

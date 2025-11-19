@@ -218,7 +218,6 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     const datasetMetadata = window.sodaJSONObj["dataset_metadata"]?.["dataset_description"] || {};
     const basicInformation = datasetMetadata?.["basic_information"] || {};
     const studyInformation = datasetMetadata?.["study_information"] || {};
-    const fundingInformation = datasetMetadata?.["funding_information"] || {};
 
     // Set basic information fields
     guidedDatasetKeywordsTagify.removeAllTags();
@@ -250,7 +249,15 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     document.getElementById("guided-ds-study-collection-title").value = studyCollectionTitle;
 
     guidedOtherFundingsourcesTagify.removeAllTags();
-    ///////////
+    const funding = basicInformation?.["funding"] || "";
+    if (funding) {
+      // Split the funding string by comma and add as tags
+      const fundingTags = funding
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter((tag) => tag.length > 0);
+      guidedOtherFundingsourcesTagify.addTags(fundingTags);
+    }
 
     const acknowledgments = basicInformation["acknowledgments"] || "";
     document.getElementById("guided-ds-acknowledgments").value = acknowledgments;
