@@ -251,12 +251,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     guidedOtherFundingsourcesTagify.removeAllTags();
     const funding = basicInformation?.["funding"] || "";
     if (funding) {
-      // Split the funding string by comma and add as tags
-      const fundingTags = funding
-        .split(",")
-        .map((tag) => tag.trim())
-        .filter((tag) => tag.length > 0);
-      guidedOtherFundingsourcesTagify.addTags(fundingTags);
+      guidedOtherFundingsourcesTagify.addTags(funding);
     }
 
     const acknowledgments = basicInformation["acknowledgments"] || "";
