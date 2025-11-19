@@ -1,4 +1,10 @@
 {
+  "16.5.0": {
+    "announcements": {
+      "features": ["SODA has been given a visual refresh!"],
+      "bug-fixes": []
+    }
+  },
   "16.4.0": {
     "announcements": {
       "features": [
