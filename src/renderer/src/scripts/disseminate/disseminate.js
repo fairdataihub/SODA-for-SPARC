@@ -114,7 +114,7 @@ const disseminateShowCurrentPermission = async (bfAcct, bfDS) => {
     window.currentDatasetPermission.innerHTML = "None";
     return;
   }
-  window.currentDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
+  window.currentDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active blue inline loader tiny"></div>`;
 
   let permissions;
   try {

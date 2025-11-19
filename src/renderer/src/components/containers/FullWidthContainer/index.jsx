@@ -9,7 +9,7 @@ const FullWidthContainer = ({ children, backgroundColor, margin, padding, id }) 
       m={margin || "0px"} /* Can be "xs", "sm", "md", "lg", "xl" */
       style={{
         width: "100%",
-        backgroundColor: backgroundColor,
+        // backgroundColor: backgroundColor,
       }}
     >
       {children}

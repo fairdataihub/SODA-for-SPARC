@@ -27,9 +27,9 @@ const getEntityIcon = (iconType) => {
     case "subject":
       return <IconUser size={iconSize} />;
     case "sample":
-      return <IconFlask size={iconSize} color="#74b816" />;
+      return <IconFlask size={iconSize} color="black" />;
     case "site":
-      return <IconPin size={iconSize} color="red" />;
+      return <IconPin size={iconSize} color="black" />;
     case "add":
       return (
         <ActionIcon variant="light" color="blue" radius="xl" size="sm">

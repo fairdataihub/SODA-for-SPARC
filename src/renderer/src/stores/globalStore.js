@@ -17,10 +17,16 @@ import { checkboxCardSlice } from "./slices/checkboxCardSlice";
 import { sodaTextInputSlice } from "./slices/sodaTextInputSlice";
 import { pennsieveDatasetSelectSlice } from "./slices/pennsieveDatasetSelectSlice";
 import { fileExplorerStateSlice } from "./slices/fileExplorerStateSlice";
+import { stepperSlice } from "./slices/stepperSlice";
+import { guidedModeProgressCardsSlice } from "./slices/guidedModeProgressCardsSlice";
+import { navButtonStateSlice } from "./slices/navButtonStateSlice";
+import { appConfigSlice } from "./slices/appConfigSlice";
+import { stateDisplaySlice } from "./slices/stateDisplaySlice";
 import { isGuestSlice } from "./slices/isGuestSlice";
 
 const useGlobalStore = create(
   immer((set, ...a) => ({
+    ...appConfigSlice(set, ...a),
     ...guidedModeSlice(set, ...a),
     ...sideBarSlice(set, ...a),
     ...dropDownSlice(set, ...a),
@@ -38,6 +44,10 @@ const useGlobalStore = create(
     ...sodaTextInputSlice(set, ...a),
     ...pennsieveDatasetSelectSlice(set, ...a),
     ...fileExplorerStateSlice(set, ...a),
+    ...stepperSlice(set, ...a),
+    ...guidedModeProgressCardsSlice(set, ...a),
+    ...navButtonStateSlice(set, ...a),
+    ...stateDisplaySlice(set, ...a),
     ...isGuestSlice(set, ...a),
   }))
 );

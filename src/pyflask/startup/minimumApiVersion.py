@@ -10,6 +10,8 @@ def get_api_version():
 
 
 
-    return {"version": os.getenv("API_VERSION", "16.4.1-beta")}
+
+    return {"version": os.getenv("API_VERSION", "16.5.0-beta")}
+
 
 

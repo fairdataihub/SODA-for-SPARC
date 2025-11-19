@@ -1,3 +1,4 @@
+import React from "react";
 import { useEffect } from "react";
 import { Text, Group, Select, Collapse, Center, Loader, Stack, Button } from "@mantine/core";
 import DropDownNote from "../../utils/ui/DropDownNote";
@@ -6,7 +7,7 @@ import useGlobalStore from "../../../stores/globalStore";
 
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
-import CheckboxCard from "../../buttons/CheckboxCard";
+import CheckboxCard from "../../cards/CheckboxCard";
 import NavigationButton from "../../buttons/Navigation";
 
 import {
@@ -15,7 +16,10 @@ import {
   fetchDatasetsToUploadDataTo,
 } from "../../../stores/slices/pennsieveDatasetSelectSlice";
 
-import { setCheckboxCardUnchecked } from "../../../stores/slices/checkboxCardSlice";
+import {
+  isCheckboxCardChecked,
+  setCheckboxCardUnchecked,
+} from "../../../stores/slices/checkboxCardSlice";
 
 const GenerateDatasetPennsieveTargetPage = () => {
   const selectedDatasetIdToUploadDataTo = useGlobalStore(
@@ -31,15 +35,20 @@ const GenerateDatasetPennsieveTargetPage = () => {
   const datasetFetchErrorMessage = useGlobalStore((state) => state.datasetFetchErrorMessage);
   const guestUser = useGlobalStore((state) => state.isGuest);
   const isNewDatasetSelected = useGlobalStore(
-    (state) => !!state.checkboxes["generate-on-new-pennsieve-dataset"]
+    (state) => state.cardData["generate-on-new-pennsieve-dataset"].checked
   );
   const isExistingDatasetSelected = useGlobalStore(
-    (state) => !!state.checkboxes["generate-on-existing-pennsieve-dataset"]
+    (state) => state.cardData["generate-on-existing-pennsieve-dataset"].checked
   );
 
-  if (guestUser) {
-    setCheckboxCardUnchecked("generate-on-new-pennsieve-dataset");
-  }
+  // ✅ Move setState to useEffect
+  useEffect(() => {
+    console.log(guestUser);
+    if (guestUser) {
+      console.log("Setting unchecked");
+      setCheckboxCardUnchecked("generate-on-new-pennsieve-dataset");
+    }
+  });
 
   const handleSelectDataset = (id) => {
     const dataset = availableDatasetsToUploadDataTo.find((d) => d.value === id);
@@ -62,7 +71,7 @@ const GenerateDatasetPennsieveTargetPage = () => {
     if (isLoadingPennsieveDatasets) {
       return (
         <Stack align="center" mt="md">
-          <Loader size="md" />
+          <Loader size="md" color="primary" type="bars" />
           <Text size="md" align="center" fw={500}>
             Retrieving empty datasets from Pennsieve...
           </Text>
@@ -85,7 +94,7 @@ const GenerateDatasetPennsieveTargetPage = () => {
 
     if (availableDatasetsToUploadDataTo.length > 0) {
       return (
-        <>
+        <React.Fragment>
           <Text mt="md" align="center" fw={500} size="lg">
             Select your Pennsieve dataset:
           </Text>
@@ -98,11 +107,14 @@ const GenerateDatasetPennsieveTargetPage = () => {
             comboboxProps={{ withinPortal: false }}
           />
           <DropDownNote id="user-retrieved-datasets-but-missing-desired-dataset" />
-        </>
+        </React.Fragment>
       );
     }
 
+    console.log("Guest user is true");
+
     if (guestUser) {
+      console.log("Rendering guest user message");
       return (
         <Stack mt="md" align="center">
           <Text size="md" align="left" fw={500}>
@@ -155,7 +167,13 @@ const GenerateDatasetPennsieveTargetPage = () => {
         </Text>
 
         <Group align="stretch" gap="md" justify="center">
-          <CheckboxCard id="generate-on-new-pennsieve-dataset" disabled={guestUser} />
+          <CheckboxCard
+            id={
+              guestUser
+                ? "generate-on-new-pennsieve-dataset-guest"
+                : "generate-on-new-pennsieve-dataset"
+            }
+          />
           <CheckboxCard id="generate-on-existing-pennsieve-dataset" />
         </Group>
       </GuidedModeSection>

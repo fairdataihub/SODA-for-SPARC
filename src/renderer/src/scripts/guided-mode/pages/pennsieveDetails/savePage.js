@@ -6,6 +6,7 @@ import {
 import api from "../../../others/api/api";
 import { guidedGetCurrentUserWorkSpace } from "../../../guided-mode/workspaces/workspaces";
 import { error } from "jquery";
+import { isCheckboxCardChecked } from "../../../../stores/slices/checkboxCardSlice";
 
 export const savePagePennsieveDetails = async (pageBeingLeftID) => {
   const errorArray = [];
@@ -52,8 +53,11 @@ export const savePagePennsieveDetails = async (pageBeingLeftID) => {
       }*/
   if (pageBeingLeftID === "guided-pennsieve-intro-tab") {
     // Check if the user has confirmed their Pennsieve account
-    const confirmAccountbutton = document.getElementById("guided-confirm-pennsieve-account-button");
-    if (!confirmAccountbutton.classList.contains("selected")) {
+
+    const userConfirmedPennsieveAccount = isCheckboxCardChecked(
+      "guided-confirm-pennsieve-account-button"
+    );
+    if (!userConfirmedPennsieveAccount) {
       if (!window.defaultBfAccount) {
         // If the user has not logged in, throw an error
         errorArray.push({
@@ -71,10 +75,10 @@ export const savePagePennsieveDetails = async (pageBeingLeftID) => {
       }
     }
     // Check if the user has confirmed their organization
-    const confirmOrganizationButton = document.getElementById(
+    const userConfirmedOrganization = isCheckboxCardChecked(
       "guided-confirm-pennsieve-organization-button"
     );
-    if (!confirmOrganizationButton.classList.contains("selected")) {
+    if (!userConfirmedOrganization) {
       // If the user has not confirmed their organization, throw an error
       errorArray.push({
         type: "notyf",

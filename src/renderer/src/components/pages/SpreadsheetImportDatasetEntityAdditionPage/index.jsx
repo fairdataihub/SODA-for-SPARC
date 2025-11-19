@@ -175,7 +175,7 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
       title: "Import Samples",
       singularString: "sample",
       icon: <IconFlask size={24} />,
-      color: "green",
+      color: "black",
       description: "Import sample IDs and metadata from an Excel file",
       dependsOn: ["subjects"], // Depends on subjects being imported first
       sequence: 2,

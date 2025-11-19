@@ -1,10 +1,22 @@
 {
+  "16.5.0": {
+    "announcements": {
+      "features": ["SODA has been given a visual refresh!"],
+      "bug-fixes": []
+    }
+  },
   "16.4.0": {
     "announcements": {
       "features": [
         "A new workflow has been added to the `Prepare Dataset Step-by-Step` for purely computational workflows."
       ],
       "bug-fixes": ["Added various improvements to the `Prepare Dataset Step-by-Step` feature."]
+    }
+  },
+  "16.3.2": {
+    "announcements": {
+      "features": [],
+      "bug-fixes": ["Dataset Entity Metadata section now properly scrolls."]
     }
   },
   "16.3.1": {

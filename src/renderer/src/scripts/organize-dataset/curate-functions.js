@@ -20,6 +20,13 @@ import {
   swalFileListTripleAction,
   swalShowInfo,
 } from "../utils/swal-utils";
+import { setNavButtonDisabled, setNavButtonHidden } from "../../stores/slices/navButtonStateSlice";
+import { setStateDisplayData } from "../../stores/slices/stateDisplaySlice";
+import {
+  isCheckboxCardChecked,
+  setCheckboxCardChecked,
+  setCheckboxCardUnchecked,
+} from "../../stores/slices/checkboxCardSlice";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -49,81 +56,13 @@ $(".button-individual-metadata.remove").click(function () {
   $($(this).parents()[1]).find(".div-metadata-go-back").css("display", "flex");
 });
 
-// Where metadata files are imported through free form mode
-$(".metadata-button").click(function () {
-  metadataFile = $(this);
-  $(".div-organize-generate-dataset.metadata").addClass("hide");
-  let target = $(this).attr("data-next");
-  $("#" + target).toggleClass("show");
-  document.getElementById("nextBtn").style.display = "none";
-  document.getElementById("prevBtn").style.display = "none";
-});
-
-window.confirmMetadataFilePath = (ev) => {
-  $($(ev).parents()[1]).removeClass("show");
-  $(".div-organize-generate-dataset.metadata").removeClass("hide");
-  document.getElementById("nextBtn").style.display = "inline";
-  document.getElementById("prevBtn").style.display = "inline";
-
-  // Checking if metadata files are imported
-  //// once users click "Confirm" or "Cancel", check if file is specified
-  //// if yes: addClass 'done'
-  //// if no: removeClass 'done'
-  let errorMetadataFileMessages = [
-    "",
-    "Please only drag and drop a file!",
-    "Your SPARC metadata file must be in one of the formats listed above!",
-    "Your SPARC metadata file must be named and formatted exactly as listed above!",
-  ];
-  let metadataFileStatus = $($(ev).parents()[1]).find(".para-metadata-file-status");
-
-  if (!errorMetadataFileMessages.includes($(metadataFileStatus).text())) {
-    $(metadataFile).addClass("done");
-
-    // log the import to analytics
-    window.logCurationForAnalytics(
-      "Success",
-      window.PrepareDatasetsAnalyticsPrefix.CURATE,
-      window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-      [
-        "Step 4",
-        "Import",
-        `${window.getMetadataFileNameFromStatus(metadataFileStatus)}`,
-        window.determineLocationFromStatus(metadataFileStatus)
-          ? Destinations.PENNSIEVE
-          : Destinations.LOCAL,
-      ],
-      determineDatasetLocation()
-    );
-  } else {
-    $(metadataFile).removeClass("done");
-    $(metadataFileStatus).text("");
-    // log the import attempt to analytics
-    window.logCurationForAnalytics(
-      "Error",
-      window.PrepareDatasetsAnalyticsPrefix.CURATE,
-      window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-      [
-        "Step 4",
-        "Import",
-        `${window.getMetadataFileNameFromStatus(metadataFileStatus)}`,
-        window.determineLocationFromStatus(metadataFileStatus)
-          ? Destinations.PENNSIEVE
-          : Destinations.LOCAL,
-      ],
-      determineDatasetLocation()
-    );
-  }
-};
-
 // Two vars with the same name
 $(".button-individual-metadata.go-back").click(function () {
   var metadataFileStatus = $($(this).parents()[1]).find(".para-metadata-file-status");
   $(metadataFileStatus).text("");
   $($(this).parents()[1]).removeClass("show");
   $(".div-organize-generate-dataset.metadata").removeClass("hide");
-  document.getElementById("nextBtn").style.display = "inline";
-  document.getElementById("prevBtn").style.display = "inline";
+  setNavButtonHidden("prevBtn", false);
   let errorMetadataFileMessages = [
     "",
     "Please only drag and drop a file!",
@@ -163,7 +102,6 @@ window.uploadDatasetDropHandler = async (ev) => {
       };
 
       let moveForward = false;
-      document.getElementById("para-org-dataset-path").classList.add("hidden");
       let valid_dataset = window.verifySparcFolder(folderPath, "local");
 
       if (valid_dataset) {
@@ -194,11 +132,9 @@ window.uploadDatasetDropHandler = async (ev) => {
       }
 
       if (moveForward) {
-        document.getElementById("org-dataset-folder-path").innerHTML = folderPath;
-        document.getElementById("nextBtn").disabled = false;
+        setStateDisplayData("org-dataset-folder-path", folderPath);
+        setNavButtonDisabled("nextBtn", false);
       }
-    } else {
-      document.getElementById("para-org-dataset-path").classList.remove("hidden");
     }
   }
 };
@@ -484,7 +420,7 @@ window.addManifestDetailsToDatasetStructure = async (
   return datasetStructure;
 };
 
-window.uploadDatasetClickHandler = async (ev) => {
+window.uploadDatasetClickHandler = async () => {
   window.electron.ipcRenderer.send("open-file-dialog-upload-dataset");
 };
 
@@ -619,6 +555,8 @@ window.importLocalDataset = async (folderPath) => {
   let moveForward = false;
   let valid_dataset = window.verifySparcFolder(folderPath, "local");
 
+  console.log("Valid dataset: ", valid_dataset);
+
   if (valid_dataset) {
     moveForward = await window.handleLocalDatasetImport(folderPath);
   } else {
@@ -647,8 +585,8 @@ window.importLocalDataset = async (folderPath) => {
   }
 
   if (moveForward) {
-    document.getElementById("org-dataset-folder-path").innerHTML = folderPath;
-    document.getElementById("nextBtn").disabled = false;
+    setStateDisplayData("org-dataset-folder-path", folderPath);
+    setNavButtonDisabled("nextBtn", false);
   }
 };
 
@@ -666,6 +604,9 @@ window.electron.ipcRenderer.on(
 
 // Event listeners for buttons in step 2 of Organize Dataset
 document.getElementById("confirm-account-workspace").addEventListener("click", async function () {
+  console.log("Great happening now");
+  document.getElementById("confirm-account-workspace").classList.remove("soda-green-border");
+  document.getElementById("confirm-account-workspace").classList.add("soda-green-background");
   const loadingDiv = document.querySelector("#upload-dataset-synchronizing-workspace-loading");
   const loadingDivText = document.querySelector(
     "#upload-dataset-synchronizing-workspace-loading-para"
@@ -697,6 +638,8 @@ document.getElementById("confirm-account-workspace").addEventListener("click", a
       return;
     }
   } catch (e) {
+    document.getElementById("confirm-account-workspace").classList.add("soda-green-border");
+    document.getElementById("confirm-account-workspace").classList.remove("soda-green-background");
     await swalShowInfo(
       "Something went wrong while verifying your profile",
       "Please try again by clicking the 'Yes' button. If this issue persists please use our `Contact Us` page to report the issue."
@@ -714,6 +657,8 @@ document.getElementById("confirm-account-workspace").addEventListener("click", a
     loadingDiv.classList.add("hidden");
   } catch (e) {
     clientError(e);
+    document.getElementById("confirm-account-workspace").classList.add("soda-green-border");
+    document.getElementById("confirm-account-workspace").classList.remove("soda-green-background");
     await swalShowInfo(
       "Something went wrong while verifying your profile",
       "Please try again by clicking the 'Yes' button. If this issue persists please use our `Contact Us` page to report the issue."
@@ -725,14 +670,10 @@ document.getElementById("confirm-account-workspace").addEventListener("click", a
     pennsieveAgentCheckDiv.classList.remove("hidden");
     // Check to make sure the Pennsieve agent is installed
     let passed = await window.checkPennsieveAgent(pennsieveAgentCheckDivId);
-    if (passed) document.getElementById("nextBtn").disabled = false;
+    if (passed) setNavButtonDisabled("nextBtn", false);
   } catch (e) {
     console.error("Error with agent" + e);
   }
-
-  // If the user confirms the workspace and account, proceed to the next step
-  document.getElementById("confirm-account-workspace").classList.remove("soda-green-border");
-  document.getElementById("confirm-account-workspace").classList.add("soda-green-background");
 });
 
 document
@@ -762,10 +703,10 @@ document
     document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
     document.getElementById("existing-dataset-upload").classList.remove("hidden");
 
-    document.getElementById("dataset-upload-new-dataset").classList.remove("checked");
-    document.getElementById("dataset-upload-existing-dataset").classList.add("checked");
+    setCheckboxCardUnchecked("dataset-upload-new-dataset");
+    setCheckboxCardChecked("dataset-upload-existing-dataset");
 
-    $("#nextBtn").prop("disabled", true);
+    setNavButtonDisabled("nextBtn", true);
   });
 
 document.getElementById("dataset-upload-new-dataset").addEventListener("click", async function () {
@@ -796,11 +737,10 @@ document.getElementById("dataset-upload-new-dataset").addEventListener("click", 
     });
     return;
   }
+
+  // TODO: START HERE FOR CONTEXT SWITCHING BETWEEN WORKFLOWS
   const dsName = document.getElementById("current-ps-dataset-generate").innerText;
-  const existingCardChecked = document
-    .getElementById("dataset-upload-existing-dataset")
-    .classList.contains("checked");
-  if (!["None", ""].includes(dsName) && existingCardChecked) {
+  if (!["None", ""].includes(dsName)) {
     // confirm with the user if they want to lose their progress by switching to the other workflow
     const confirmSwitch = await swalConfirmAction(
       "warning",
@@ -810,43 +750,31 @@ document.getElementById("dataset-upload-new-dataset").addEventListener("click", 
       "No"
     );
 
-    if (!confirmSwitch) return;
+    if (!confirmSwitch) {
+      setCheckboxCardChecked("dataset-upload-existing-dataset");
+      return;
+    }
 
     $("#inputNewNameDataset-upload-dataset").val("");
 
     // reset the dataset name input field
     document.getElementById("current-ps-dataset-generate").textContent = "None";
 
-    // TODO: REset sodaJSONObj here too
-    // Remove checked state from all checkbox cards (input field inside the cards)
-    document.getElementsByName("generate-5").forEach((element) => {
-      // Reset state for folder cards
-      element.checked = false;
-    });
-
-    document.getElementsByName("generate-6").forEach((element) => {
-      // Reset state for file cards
-      element.checked = false;
-    });
     // Reset the merge option cards
-
-    document.getElementById("replace-file-card").classList.remove("non-selected");
-    document.getElementById("replace-file-card").classList.remove("checked");
-    document.getElementById("skip-file-card").classList.remove("checked");
-    document.getElementById("skip-file-card").classList.remove("non-selected");
+    setCheckboxCardUnchecked("replace-file-card");
+    setCheckboxCardUnchecked("skip-file-card");
   }
-  document.getElementById("dataset-upload-new-dataset").classList.add("checked");
+
   document.getElementById("existing-dataset-upload").classList.add("hidden");
   document.getElementById("Question-new-dataset-upload-name").classList.remove("hidden");
 
-  document.getElementById("dataset-upload-existing-dataset").classList.remove("checked");
-  document.getElementById("Question-new-dataset-upload-name").classList.add("checked");
+  setCheckboxCardUnchecked("dataset-upload-existing-dataset");
 
   // hide the existing folder options
   $("#Question-generate-dataset-existing-files-options").addClass("hidden");
 
   // disable the continue btn
-  $("#nextBtn").prop("disabled", true);
+  setNavButtonDisabled("nextBtn", true);
 });
 
 document
@@ -902,7 +830,7 @@ document
       document
         .getElementById("upload-dataset-btn-confirm-new-dataset-name")
         .classList.add("hidden");
-      document.getElementById("nextBtn").disabled = false;
+      setNavButtonDisabled("nextBtn", false);
     }
     document
       .getElementById("upload-dataset-btn-confirm-new-dataset-name")
@@ -936,9 +864,7 @@ document.getElementById("change-workspace-btn").addEventListener("click", async 
   document.getElementById("dataset-upload-new-dataset").classList.remove("checked");
   document.getElementById("inputNewNameDataset-upload-dataset").value = "";
   document.getElementById("button-confirm-ps-dataset").parentNode.style.display = "flex";
-  document.getElementsByName("generate-5").forEach((element) => {
-    element.checked = false;
-  });
+
   // Remove checks from all the cards in step 3 (merge option cards)
 
   document.getElementById("replace-file-card").classList.remove("non-selected");
@@ -973,12 +899,6 @@ document.getElementById("change-workspace-btn").addEventListener("click", async 
   document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
   $("#upload-dataset-btn-confirm-new-dataset-name").addClass("hidden");
 
-  // get every input with name="generate-5" and remove the checked property
-  let inputs = document.querySelectorAll('input[name="generate-5"]');
-  inputs.forEach((input) => {
-    input.checked = false;
-    input.classList.remove("checked");
-  });
   document.getElementById("current-ps-dataset-generate").textContent = "None";
   // hide the existing folder/files options
   $("#Question-generate-dataset-existing-files-options").addClass("hidden");
@@ -1344,7 +1264,7 @@ window.loadProgressFile = (ev) => {
   let jsonContent = progressFileParse(ev);
 
   $("#para-progress-file-status").html("");
-  // $("#nextBtn").prop("disabled", true);
+  setNavButtonDisabled("nextBtn", true);
 
   // create loading effect
   $("#div-progress-file-loader").css("display", "block");
@@ -1363,12 +1283,9 @@ window.loadProgressFile = (ev) => {
       } else {
         document.getElementById("div-progress-file-loader").style.display = "none";
         $("body").removeClass("waiting");
-        let nextBtn = document.getElementById("nextBtn");
-        if (nextBtn.disabled) {
-          nextBtn.removeAttribute("disabled");
-        }
+        setNavButtonDisabled("nextBtn", false);
         document.getElementById("para-progress-file-status").innerHTML =
-          "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>";
+          "<span style='color:var(--color-soda-primary)'>Previous work loaded successfully! Continue below.</span>";
 
         // log the success at the action and action with destination granularity levels
         window.logMetadataForAnalytics(
@@ -1440,9 +1357,9 @@ const verify_missing_files = (mode) => {
       if (mode === "pre-existing") {
         document.getElementById("div-progress-file-loader").style.display = "none";
         $("body").removeClass("waiting");
-        document.getElementById("nextBtn").disabled = false;
+        setNavButtonDisabled("nextBtn", false);
         document.getElementById("para-progress-file-status").innerHTML =
-          "<span style='color:var(--color-light-green)'>Previous work loaded successfully! Continue below.</span>";
+          "<span style='color:var(--color-soda-primary)'>Previous work loaded successfully! Continue below.</span>";
 
         // log the success at the action and action with destination granularith levels
         window.logMetadataForAnalytics(
@@ -2194,7 +2111,7 @@ const moveItemsHelper = (item, destination, category, currentDatasetPath) => {
 
 window.updateManifestLabelColor = (el) => {
   document.getElementById("label-manifest").style.color = el.checked
-    ? "var(--color-light-green)"
+    ? "var(--mantine-color-primary-6)"
     : "#303030";
   document.getElementById("label-manifest").style.fontWeight = el.checked ? "bold" : "normal";
 };
@@ -2344,37 +2261,6 @@ $(window.jstreePreview).on("open_node.jstree", function (event, data) {
 $(window.jstreePreview).on("close_node.jstree", function (event, data) {
   data.instance.set_type(data.node, "folder closed");
 });
-
-window.showTreeViewPreview = (
-  disabledBoolean,
-  selectedBoolean,
-  manifestFileBoolean,
-  new_dataset_name,
-  previewDiv,
-  datasetStructure
-) => {
-  if (manifestFileBoolean) {
-    if (window.manifestFileCheck.checked) {
-      window.addManifestFilesForTreeView();
-    } else {
-      revertManifestForTreeView();
-    }
-  }
-
-  var jsTreePreviewDataManifest = window.create_child_node(
-    datasetStructure,
-    new_dataset_name,
-    "folder",
-    "",
-    new_dataset_name,
-    selectedBoolean,
-    disabledBoolean,
-    "",
-    "preview"
-  );
-  $(previewDiv).jstree(true).settings.core.data = jsTreePreviewDataManifest;
-  $(previewDiv).jstree(true).refresh();
-};
 
 // if checked
 window.addManifestFilesForTreeView = () => {

@@ -5,7 +5,7 @@ import useGlobalStore from "../../../../stores/globalStore";
 import ExternalLink from "../../../buttons/ExternalLink";
 
 const dropDownIcons = {
-  info: <IconInfoCircle size={18} color="gray" />,
+  info: <IconInfoCircle size={18} color="var(--mantine-color-primary-6)" />,
   question: <IconInfoCircle size={18} color="gray" />,
 };
 
@@ -179,8 +179,8 @@ const DropDownNote = ({ id }) => {
             dataset step-by-step" because of potential conflicts with existing data.
           </Text>
           <Text size="sm">
-            You must also have <strong>"Owner"</strong> or <strong>"Manager"</strong> permissions on
-            the dataset in order for SODA to retrieve it.
+            You must also have <strong>"Owner"</strong> or <strong>"Manager"</strong> or{" "}
+            <strong>"Editor"</strong> permissions on the dataset in order for SODA to retrieve it.
           </Text>
         </>
       ),
@@ -196,8 +196,8 @@ const DropDownNote = ({ id }) => {
             dataset step-by-step" because of potential conflicts with existing data.
           </Text>
           <Text size="sm">
-            You must also have <strong>"Owner"</strong> or <strong>"Manager"</strong> permissions on
-            the dataset in order for SODA to retrieve it.
+            You must also have <strong>"Owner"</strong> or <strong>"Manager"</strong> or{" "}
+            <strong>"Editor"</strong> permissions on the dataset in order for SODA to retrieve it.
           </Text>
         </>
       ),
@@ -231,6 +231,13 @@ const DropDownNote = ({ id }) => {
       defaultValue={null} // closed by default
       chevronPosition="right"
       mt="md"
+      styles={{
+        chevron: {
+          color: "var(--mantine-color-primary-6)",
+        },
+
+        panel: { backgroundColor: "var(--mantine-color-primary-1)" },
+      }}
     >
       <Accordion.Item value={id}>
         <Accordion.Control>
