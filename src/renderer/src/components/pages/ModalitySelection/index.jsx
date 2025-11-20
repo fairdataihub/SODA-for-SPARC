@@ -12,28 +12,16 @@ import {
   ActionIcon,
   Center,
 } from "@mantine/core";
-import { useState } from "react";
+import useGlobalStore from "../../../stores/globalStore";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import CheckboxCard from "../../cards/CheckboxCard";
 import NavigationButton from "../../buttons/Navigation";
 import ModalitySelector from "../../ModalitySelector";
 
-import {
-  toggleModalitySelection,
-  modalityIsSelected,
-} from "../../../stores/slices/modalitiesSlice";
-
 const ModalitySelectionPage = () => {
-  const [selectedOption, setSelectedOption] = useState(null);
-
-  const handleYesClick = () => {
-    setSelectedOption("yes");
-  };
-
-  const handleNoClick = () => {
-    setSelectedOption("no");
-  };
+  const isYesChecked = useGlobalStore((state) => state.cardData["modality-selection-yes"]?.checked);
+  const isNoChecked = useGlobalStore((state) => state.cardData["modality-selection-no"]?.checked);
 
   return (
     <GuidedModePage pageHeader="Dataset modalities">
@@ -48,13 +36,13 @@ const ModalitySelectionPage = () => {
         </label>
 
         <Center>
-          <CheckboxCard id="modality-selection-yes" clickAction={handleYesClick} />
-          <CheckboxCard id="modality-selection-no" clickAction={handleNoClick} />
+          <CheckboxCard id="modality-selection-yes" />
+          <CheckboxCard id="modality-selection-no" />
         </Center>
       </GuidedModeSection>
       {/* Section that appears when user selects "Yes" */}
 
-      {selectedOption === "yes" && (
+      {isYesChecked && (
         <GuidedModeSection sectionId="dataset-selection">
           <Text>Select all modalities used to acquire data in this dataset.</Text>
 
@@ -63,7 +51,7 @@ const ModalitySelectionPage = () => {
       )}
 
       {/* New section that appears when user selects "No" */}
-      {selectedOption === "no" && (
+      {isNoChecked && (
         <GuidedModeSection sectionId="no-modalities">
           <Center mt="xl">
             <NavigationButton

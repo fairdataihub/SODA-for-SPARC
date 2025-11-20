@@ -8,7 +8,7 @@ import {
   setCheckboxCardUnchecked,
 } from "../../../stores/slices/checkboxCardSlice";
 
-const CheckboxCard = ({ id, clickAction }) => {
+const CheckboxCard = ({ id }) => {
   const cardData = useGlobalStore((state) => state.cardData);
   if (!cardData[id]) return <div>Invalid id: {id}</div>;
   const {
@@ -32,10 +32,6 @@ const CheckboxCard = ({ id, clickAction }) => {
       setCheckboxCardChecked(id);
     } else {
       setCheckboxCardUnchecked(id);
-    }
-
-    if (clickAction) {
-      clickAction();
     }
   };
 
