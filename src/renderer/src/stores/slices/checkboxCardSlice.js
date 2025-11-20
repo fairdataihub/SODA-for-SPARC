@@ -45,7 +45,7 @@ export const checkboxCardSlice = (set) => ({
       mutuallyExclusiveWithCards: ["replace-file-card"],
     },
     "guided-button-start-new-curation": {
-      title: "Prepare and share a new dataset test",
+      title: "Prepare and optionally share a new dataset",
       description: null,
       Icon: IconCirclePlus,
       mutuallyExclusiveWithCards: ["guided-button-resume-progress-file"],

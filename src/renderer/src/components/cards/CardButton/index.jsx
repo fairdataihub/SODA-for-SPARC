@@ -18,7 +18,7 @@ const cardData = {
   },
   "start-new-card": {
     icon: <IconCirclePlus size={50} />,
-    text: "Prepare and share a new dataset",
+    text: "Prepare and optionally share a new dataset",
   },
   "import-existing-card": {
     icon: <IconCirclePlus size={50} />,
