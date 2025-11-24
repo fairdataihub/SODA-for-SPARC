@@ -46,7 +46,7 @@ export const checkboxCardSlice = (set) => ({
       mutuallyExclusiveWithCards: ["replace-file-card"],
     },
     "guided-button-start-new-curation": {
-      title: "Prepare and share a new dataset test",
+      title: "Prepare and optionally share a new dataset",
       description: null,
       Icon: IconCirclePlus,
       mutuallyExclusiveWithCards: ["guided-button-resume-progress-file"],
@@ -107,6 +107,15 @@ export const checkboxCardSlice = (set) => ({
       Icon: IconBrowserPlus,
       mutuallyExclusiveWithCards: ["generate-on-existing-pennsieve-dataset"],
       checked: false,
+    },
+    "generate-on-new-pennsieve-dataset-guest": {
+      title: "Create a new dataset on Pennsieve",
+      description:
+        "Pennsieve workspace guests cannot create new datasets. Please use the existing dataset option to select a dataset shared with you by a collaborator.",
+      Icon: IconBrowserPlus,
+      mutuallyExclusiveWithCards: ["generate-on-existing-pennsieve-dataset"],
+      checked: false,
+      disabledNotComingSoon: true,
     },
     "guided-button-user-has-protocols": {
       title: "Yes, my dataset's protocols are ready to enter",

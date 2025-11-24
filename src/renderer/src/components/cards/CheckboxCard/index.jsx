@@ -7,7 +7,7 @@ import {
   setCheckboxCardUnchecked,
 } from "../../../stores/slices/checkboxCardSlice";
 
-const CheckboxCard = ({ id, clickAction }) => {
+const CheckboxCard = ({ id }) => {
   const cardData = useGlobalStore((state) => state.cardData);
   if (!cardData[id]) return <div>Invalid id: {id}</div>;
   const {
@@ -19,19 +19,18 @@ const CheckboxCard = ({ id, clickAction }) => {
     checked,
     simpleButtonType,
     additionalClasses,
+    disabledNotComingSoon,
   } = cardData[id];
   const isDisabled = !!comingSoon;
   const { hovered, ref } = useHover();
 
   const handleClick = () => {
-    if (isDisabled) return;
+    if (isDisabled || disabledNotComingSoon) return;
 
     if (!checked) {
       setCheckboxCardChecked(id);
-    }
-
-    if (clickAction) {
-      clickAction();
+    } else {
+      setCheckboxCardUnchecked(id);
     }
   };
 
@@ -73,13 +72,13 @@ const CheckboxCard = ({ id, clickAction }) => {
         width: isCompact ? 180 : 270,
         height: isCompact ? 150 : "auto",
         minHeight: isCompact ? 150 : 180,
-        opacity: isDisabled ? 0.8 : 1,
+        opacity: isDisabled || disabledNotComingSoon ? 0.8 : 1,
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
         textAlign: "center",
         position: "relative",
-        cursor: isDisabled ? "not-allowed" : "pointer",
+        cursor: isDisabled || disabledNotComingSoon ? "not-allowed" : "pointer",
       }}
     >
       {comingSoon && (

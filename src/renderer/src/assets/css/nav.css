@@ -22,7 +22,7 @@
   height: 2px;
   margin: 0 auto;
   display: block;
-  background: var(--color-og-soda-green);
+  background: var(--mantine-color-primary-7);
   transition: all 0.25s linear;
   /* transition: all 0.1s cubic-bezier(0.81, -0.33, 0.345, 1.375); */
 }

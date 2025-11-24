@@ -142,6 +142,7 @@ textarea {
 
 #version {
   white-space: nowrap;
+  color: var(--mantine-color-primary-7);
 }
 
 .temporary-hide {
