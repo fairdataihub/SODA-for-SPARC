@@ -67,8 +67,10 @@ const renderEntityList = (entityType, activeEntity, datasetEntityObj) => {
 const getInstructionalTextByEntityType = (entityType, datasetType) => {
   const instructionalText = {
     Code: "Select the files that contain scripts, computational models, analysis pipelines, or other software used for data processing or analysis.",
-    Primary:
-      "Select the files that support your computational data, such as input or output files, tabular data, or other non-code data files.",
+    Primary: "Select the files that are the main data files produced or collected in your study.",
+    Source: "Select the files that are the original unprocessed data used in your study.",
+    Derivative:
+      "Select the files that were created by processing or transforming other data files.",
     Experimental: "Select the files that contain data collected from experiments or analyses.",
     Protocol:
       datasetType === "computational"
@@ -260,6 +262,15 @@ const EntityDataSelectorPage = ({
                     Use the interface below to categorize your experimental data files into Primary,
                     Source, and Derivative data types. Any files not categorized will be marked as
                     primary by default.
+                  </Text>
+                );
+
+              case "non-experimental-data-categorization":
+                return (
+                  <Text>
+                    Use the interface below to categorize your non-experimental data files into
+                    Primary, Source, and Derivative data types. Any files not categorized will be
+                    marked as primary by default.
                   </Text>
                 );
 

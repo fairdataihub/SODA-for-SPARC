@@ -137,11 +137,11 @@ const Sidebar = ({ id }) => {
 
             <ul id="guided-nav-items" className="guided--container-nav-items hidden"></ul>
             {showGuidedModePageNavigation && (
-              <div>
+              <ScrollArea.Autosize mah={900} type="scroll">
                 {Object.entries(guidedModePageStructureObject).map(([pageKey, pageChildren]) => (
                   <LinksGroup key={pageKey} label={pageKey} pages={pageChildren} />
                 ))}
-              </div>
+              </ScrollArea.Autosize>
             )}
           </>
         )}

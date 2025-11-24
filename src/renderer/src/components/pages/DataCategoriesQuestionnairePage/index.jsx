@@ -51,20 +51,33 @@ const DataCategoriesQuestionnairePage = ({ pageID, pageName, questionnaireEntity
   return (
     <GuidedModePage pageHeader={pageName}>
       <GuidedModeSection>
-        <Text>
-          Your experimental data, which can be viewed at the bottom of this page, can be categorized
-          into three separate types: Primary, Source, and Derivative. If you choose to categorize
-          your data on this page, you will be asked to categorize your experimental data on a
-          per-file basis on the next page. You can skip categorization by selecting "No" below, and
-          your experimental data will be categorized as "Primary" by default.
-        </Text>
+        {questionnaireEntityType === "non-experimental-data-categorization" && (
+          <Text>
+            Your non-experimental data (data not marked as either Experimental or belonging to a
+            supporting folder), which can be viewed at the bottom of this page, can be categorized
+            into three separate types: Primary, Source, and Derivative. If you choose to categorize
+            your data on this page, you will be asked to categorize your non-experimental data on a
+            per-file basis on the next page. You can skip categorization by selecting "No" below,
+            and your non-experimental data will be categorized as "Primary" by default.
+          </Text>
+        )}
+
+        {questionnaireEntityType === "experimental-data-categorization" && (
+          <Text>
+            Your experimental data, which can be viewed at the bottom of this page, can be
+            categorized into three separate types: Primary, Source, and Derivative. If you choose to
+            categorize your data on this page, you will be asked to categorize your experimental
+            data on a per-file basis on the next page. You can skip categorization by selecting "No"
+            below, and your experimental data will be categorized as "Primary" by default.
+          </Text>
+        )}
 
         <DropDownNote id="data-categories-explanation" />
       </GuidedModeSection>
       <GuidedModeSection>
-        <Stack gap="xs">
+        <Stack gap={0}>
           <label className="guided--form-label centered mt-md">
-            Would you like to categorize your experimental data into Primary, Source, and/or
+            Would you like to categorize your non-experimental data into Primary, Source, and/or
             Derivative?
           </label>
           <Center>
@@ -136,10 +149,18 @@ const DataCategoriesQuestionnairePage = ({ pageID, pageName, questionnaireEntity
         </Stack>
       </GuidedModeSection>
       <GuidedModeSection withBorder sectionId="experimental-data-categorization-not-selected">
-        <Text size="md" fw={500}>
-          The experimental data below will be categorized as "Primary". You may now continue to the
-          next page.
-        </Text>
+        {questionnaireEntityType === "experimental-data-categorization" && (
+          <Text size="md" fw={500}>
+            The experimental data below will be categorized as "Primary". You may now continue to
+            the next page.
+          </Text>
+        )}
+        {questionnaireEntityType === "non-experimental-data-categorization" && (
+          <Text size="md" fw={500}>
+            The non-experimental data below will be categorized as "Primary". You may now continue
+            to the next page.
+          </Text>
+        )}
       </GuidedModeSection>
       <GuidedModeSection>
         <DatasetTreeViewRenderer fileExplorerId={pageID} entityType={null} hideSearchBar={true} />

@@ -327,6 +327,25 @@ window.openPage = async (targetPageID) => {
             ]
           );
         }
+        if (pageEntityType === "non-experimental-data-categorization") {
+          addEntityNameToEntityType("non-experimental-data-categorization", "Primary");
+          addEntityNameToEntityType("non-experimental-data-categorization", "Derivative");
+          removeEntityFromEntityList("non-experimental-data-categorization", "Source");
+          // Filter out files that are selected as belonging to the supporting data folders
+          setFileVisibilityFilter(
+            [],
+            [
+              {
+                type: "experimental",
+                names: ["experimental"],
+              },
+              {
+                type: "non-data-folders",
+                names: ["Protocol", "Docs", "Code"],
+              },
+            ]
+          );
+        }
 
         if (pageEntityType === "sites") {
           const sites = getExistingSites().map((site) => site.id);
@@ -453,20 +472,41 @@ window.openPage = async (targetPageID) => {
         }
       }
       if (targetPageComponentType === "data-categories-questionnaire-page") {
-        setFileVisibilityFilter(
-          [
-            {
-              type: "experimental",
-              names: ["experimental"],
-            },
-          ],
-          [
-            {
-              type: "non-data-folders",
-              names: ["Protocol", "Docs", "Code"],
-            },
-          ]
-        );
+        // Extract the questionnaire entity type from the data attribute
+        const questionnaireEntityType = targetPageDataset.questionnaireEntityType;
+        console.log("questionnaireEntityType:", questionnaireEntityType);
+        if (questionnaireEntityType === "experimental-data-categorization") {
+          setFileVisibilityFilter(
+            [
+              {
+                type: "experimental",
+                names: ["experimental"],
+              },
+            ],
+            [
+              {
+                type: "non-data-folders",
+                names: ["Protocol", "Docs", "Code"],
+              },
+            ]
+          );
+        }
+
+        if (questionnaireEntityType === "non-experimental-data-categorization") {
+          setFileVisibilityFilter(
+            [],
+            [
+              {
+                type: "non-data-folders",
+                names: ["Protocol", "Docs", "Code"],
+              },
+              {
+                type: "experimental",
+                names: ["experimental"],
+              },
+            ]
+          );
+        }
       }
 
       if (targetPageComponentType === "entity-file-mapping-page") {
