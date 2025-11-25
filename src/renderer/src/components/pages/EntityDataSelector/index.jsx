@@ -24,6 +24,7 @@ import {
 import InstructionsTowardsLeftContainer from "../../utils/ui/InstructionsTowardsLeftContainer";
 import SodaPaper from "../../utils/ui/SodaPaper";
 import DropDownNote from "../../utils/ui/DropDownNote";
+import InfoList from "../../shared/InfoList";
 import { swalShowLoading } from "../../../scripts/utils/swal-utils";
 import Swal from "sweetalert2";
 
@@ -206,9 +207,13 @@ const EntityDataSelectorPage = ({
                 return (
                   <>
                     <Text mb={0}>
-                      Use the interface below to indicate which files are part of your experimental
-                      data (related to subjects, samples, sites etc.).
+                      The SDS includes specific requirements for annotating data collected from a
+                      subject (human or non-human), whether the data comes directly from the subject
+                      or from a sample taken from that subject (such as tissue). We refer to this as
+                      experimental data. Select all of your experimental data below so SODA can help
+                      you annotate it in the following steps.
                     </Text>
+                    <InfoList id="dataset-entities" />
                   </>
                 );
 
@@ -268,7 +273,7 @@ const EntityDataSelectorPage = ({
               case "non-experimental-data-categorization":
                 return (
                   <Text>
-                    Use the interface below to categorize your non-experimental data files into
+                    Use the interface below to categorize your non-1experimental data files into
                     Primary, Source, and Derivative data types. Any files not categorized will be
                     marked as primary by default.
                   </Text>
