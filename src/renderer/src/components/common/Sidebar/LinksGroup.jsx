@@ -14,6 +14,7 @@ import { setOpenSidebarTab } from "../../../stores/slices/sideBarSlice";
 import { checkIfPageIsValid } from "../../../scripts/guided-mode/pages/sidebar";
 import { swalShowError } from "../../../scripts/utils/swal-utils";
 import useGlobalStore from "../../../stores/globalStore";
+import { clientError } from "../../../scripts/others/http-error-handler/error-handler";
 
 const icons = {
   "Getting Started": <IconPlayerPlay color="black" />,
@@ -38,7 +39,6 @@ async function handlePageNavigation(page, currentPage) {
   const userIsNavigatingForward = targetIndex > currentIndex;
 
   const intermediatePages = allPages.slice(currentIndex + 1, targetIndex);
-  console.log("Intermediate pages to check:", intermediatePages);
 
   try {
     await window.savePageChanges(currentPage);
@@ -68,11 +68,10 @@ async function handlePageNavigation(page, currentPage) {
 
   if (userIsNavigatingForward) {
     for (const pageId of intermediatePages) {
-      console.log(`Checking intermediate page ${pageId} for errors...`);
       try {
         await checkIfPageIsValid(pageId);
       } catch (error) {
-        console.log(`Errors found on intermediate page ${pageId}:`, error);
+        clientError(error);
         const pageName = document.getElementById(pageId)?.getAttribute("data-page-name") || pageId;
         await window.openPage(pageId);
 
