@@ -61,10 +61,9 @@ export const guidedRenderProgressCards = async () => {
     } catch (e) {
       clientError(e);
       await swalShowInfo(
-        "Something went wrong while verifying your profile",
-        "Please try again by clicking the 'Yes' button. If this issue persists please use our `Contact Us` page to report the issue."
+        "Something went wrong while checking your connection to Pennsieve",
+        "Please try again by clicking the 'Continue a dataset saved in SODA' button. If this issue persists please use our `Contact Us` page to report the issue."
       );
-      return;
     }
   }
 
@@ -86,7 +85,7 @@ export const guidedRenderProgressCards = async () => {
   // This will stop after 6 seconds
   if (!guidedGetCurrentUserWorkSpace()) {
     setGuidedModeProgressCardsText("Waiting for workspace to load");
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < 40; i++) {
       // If the workspace loaded, break out of the loop
       if (guidedGetCurrentUserWorkSpace()) {
         break;

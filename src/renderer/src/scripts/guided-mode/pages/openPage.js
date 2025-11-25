@@ -277,12 +277,12 @@ window.openPage = async (targetPageID) => {
         setDatasetEntityObj(filteredDatasetEntityObj, "data-categorization-page");
 
         if (pageEntityType === "non-data-folders") {
-          setFileVisibilityFilter([], []); // No pre-set filters for supporting data categorization
+          setFileVisibilityFilter([], []); // No pre-set filters for data categorization
         }
 
         // Make any adjustments to the dataset entity object before setting it in the zustand store
         if (pageEntityType === "data-folders") {
-          // Filter out files that are selected as belonging to the supporting data folders
+          // Filter out files that are selected as belonging to the non-data folders
           setFileVisibilityFilter(
             [],
             [

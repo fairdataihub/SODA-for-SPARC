@@ -1,5 +1,8 @@
 import { guidedSetNavLoadingState } from "./navigationUtils/pageLoading";
-import { getDatasetEntityObj } from "../../../stores/slices/datasetEntitySelectorSlice";
+import {
+  getDatasetEntityObj,
+  getCategorizedEntityFileCount,
+} from "../../../stores/slices/datasetEntitySelectorSlice";
 import { startOrStopAnimationsInContainer } from "../lotties/lottie";
 import { savePageDatasetStructure } from "./datasetStructure/savePage";
 import { savePageCurationPreparation } from "./curationPreparation/savePage";
@@ -146,6 +149,20 @@ window.savePageChanges = async (pageBeingLeftID) => {
         console.log("Dataset file count:", datasetFileCount);
 
         if (entityType === "non-data-folders") {
+          const userSelectedNonDataFolders = window.sodaJSONObj["non-data-folders"];
+          console.log("User selected non-data-folders:", userSelectedNonDataFolders);
+          // Make sure the user categorized at least one file into each of the non-data folders
+          // that should have files categorized into them
+          for (const folder of userSelectedNonDataFolders) {
+            const categorizedFileCount = getCategorizedEntityFileCount("non-data-folders", folder);
+            if (categorizedFileCount === 0) {
+              errorArray.push({
+                type: "notyf",
+                message: `You indicated that your dataset contains ${folder} files, but you have not categorized any files into the ${folder} folder. Please categorize all of your ${folder} files before continuing.`,
+              });
+              throw errorArray;
+            }
+          }
           const possibleSupportingFolders = ["protocol", "docs"];
           const supplementaryFolders = possibleSupportingFolders.filter((folder) =>
             selectedEntities.includes(folder)

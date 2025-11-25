@@ -276,7 +276,7 @@ export const initializeSODARenderer = async () => {
     const pennsieveURL = "https://api.pennsieve.io/discover/datasets";
     const blocked = await clientBlockedByExternalFirewall(pennsieveURL);
     if (blocked) {
-      swalShowInfo("Potential Network Issue Detected", blockedMessage);
+      await swalShowInfo("Potential Network Issue Detected", blockedMessage);
     }
   }
 

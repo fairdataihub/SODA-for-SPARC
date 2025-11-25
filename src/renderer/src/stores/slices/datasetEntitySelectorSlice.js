@@ -75,6 +75,13 @@ export const getEntityObjForEntityType = (entityType) => {
   return useGlobalStore.getState()?.datasetEntityObj?.[entityType] || {};
 };
 
+// Get the count of files categorized in a specific entity type and name
+export const getCategorizedEntityFileCount = (entityType, entityName) => {
+  const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
+  const categorizedData = datasetEntityObj?.[entityType]?.[entityName];
+  return categorizedData ? Object.keys(categorizedData).length : 0;
+};
+
 export const setShowFullMetadataFormFields = (showFullMetadataFormFields) => {
   useGlobalStore.setState((state) => ({
     ...state,

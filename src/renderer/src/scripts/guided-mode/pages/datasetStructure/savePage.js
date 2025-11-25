@@ -83,10 +83,10 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     console.log("Setting up supporting data categorization entities...");
     // Show/hide the supporting data categorization page based on whether user has any supporting folders
     if (nonDataFolders.length > 0) {
-      guidedUnSkipPage("non-data-folders-tab");
+      guidedUnSkipPage("non-data-categorization-tab");
       console.log("Showing supporting data categorization page");
     } else {
-      guidedSkipPage("non-data-folders-tab");
+      guidedSkipPage("non-data-categorization-tab");
       console.log("Skipping supporting data categorization page");
     }
     window.sodaJSONObj["non-data-folders"] = nonDataFolders;
