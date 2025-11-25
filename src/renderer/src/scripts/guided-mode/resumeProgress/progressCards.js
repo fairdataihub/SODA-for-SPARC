@@ -61,10 +61,9 @@ export const guidedRenderProgressCards = async () => {
     } catch (e) {
       clientError(e);
       await swalShowInfo(
-        "Something went wrong while verifying your profile",
-        "Please try again by clicking the 'Yes' button. If this issue persists please use our `Contact Us` page to report the issue."
+        "Something went wrong while checking your connection to Pennsieve",
+        "Please try again by clicking the 'Continue a dataset saved in SODA' button. If this issue persists please use our `Contact Us` page to report the issue."
       );
-      return;
     }
   }
 
