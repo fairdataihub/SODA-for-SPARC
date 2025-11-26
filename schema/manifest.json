@@ -11,7 +11,8 @@
         },
         "timestamp": {
           "type": "string",
-          "description": "Timestamp of when the data was created or last modified. This should be in ISO 8601 format."
+          "description": "Timestamp of when the data was created or last modified. This should be in ISO 8601 format. Per the SDS guidelines, commas are to be used for separating fractional seconds. Empty string for when it does not apply.",
+          "pattern": "^([0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9](:[0-6][0-9](,[0-9]{1,9})?)?(Z|[+-][0-2][0-9]:[0-6][0-9])?)?$"
         },
         "description": {
           "type": "string",
@@ -23,7 +24,8 @@
         },
         "entity": {
           "type": "string",
-          "description": "Each ID should be taken from the subject.xlsx, samples.xlsx, sites.xlsx, or performances.xlsx files."
+          "description": "Each ID should be taken from the subject.xlsx, samples.xlsx, sites.xlsx, or performances.xlsx files.",
+          "pattern": "^((pop-)?(sub|sam|site|perf)-[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?)?$"
         },
         "data_modality": {
           "type": "string",
@@ -43,7 +45,7 @@
         },
         "entity_is_transitive": {
           "type": "string",
-          "description": "Indicates whether the entity represented in this data file is transitive. This should be either true or false."
+          "description": "Indicates whether the entity represented in this data file is transitive. This should be either true or false if provided ."
         },
         "additional_metadata": {
           "type": "string",

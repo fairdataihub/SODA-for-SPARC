@@ -8,21 +8,25 @@
     },
     "type": {
       "type": "string",
-      "description": "The type of the dataset. For example, experimental."
+      "enum": ["experimental", "computational"],
+      "description": "The type of the dataset. In short, experimental data should have data collected from subjects and/or samples."
     },
     "standards_information": {
-      "type": "object",
-      "properties": {
-        "data_standard": {
-          "type": "string",
-          "description": "The name of the standard used in the project."
-        },
-        "data_standard_version": {
-          "type": "string",
-          "description": "The version of the standard used in the project."
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "properties": {
+          "data_standard": {
+            "type": "string",
+            "description": "The name of the standard used in the project. For example, SPARC."
+          },
+          "data_standard_version": {
+            "type": "string",
+            "description": "The version of the standard used in the project. For example, 1.0.0"
+          }
         }
-      },
-      "required": []
+      }
     },
     "basic_information": {
       "type": "object",
@@ -47,8 +51,11 @@
           "description": "A list of keywords related to the project."
         },
         "funding": {
-          "type": "string",
-          "description": "Funding awards for the project."
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Funding awards for the project. Listed as free text. E.g., OT2OD025349"
         },
         "acknowledgments": {
           "type": "string",
@@ -56,7 +63,7 @@
         },
         "license": {
           "type": "string",
-          "description": "The license under which the project is released."
+          "description": "The license under which the project is released. Use the SPDX license identifier."
         }
       },
       "required": []
@@ -128,36 +135,43 @@
         "properties": {
           "contributor_orcid_id": {
             "type": "string",
-            "description": "The ORCiD for this contributor."
+            "pattern": "^https://orcid.org/000[09]-00[01][0-9]-[0-9]{4}-[0-9]{3}([0-9]|X)$",
+            "description": "The ORCiD for this contributor. Must be a valid ORCID URL format."
           },
           "contributor_affiliation": {
             "type": "string",
+            "pattern": "^https://ror.org/0[0-9a-z]{6}[0-9]{2}$",
             "description": "The institutional affiliation for this contributor."
           },
           "contributor_name": {
             "type": "string",
-            "pattern": "^[A-Za-z]+, [A-Za-z]+( [A-Za-z]+)?$",
-            "description": "The name of the contributor. The format should be 'Last Name, First Name'."
+            "pattern": "^(([Vv]an|[Vv]an [Dd]e[rn]?|[Vv]an [Tt]|[Vv]ander|[Vv]on|[Vv]on [Dd]e[rn]?|[Zz]u|[Zz]ur|[Vv]om|[Dd]e|[Dd]es|[Dd]u|[Dd]e [Ll]a|[Dd]e [Ll]es|[Dd]e [Ll]os|[Ll]e|[Ll]a|[Ll]es|[Dd]el|[Dd]e [Ll]os|[Dd]e [Ll]a|[Dd]e [Ll]as|[Dd]a|[Dd]o|[Dd]i|[Dd]ell[ao]|[Dd]ell[ei]|[Dd]ai|[Dd]al|[Dd]alle|[Oo]'|[Mm]c|[Mm]ac|[Aa]l|[Ee]l|[Aa]bd [Aa]l|[Aa]bu|[Ii]bn|[Ff]itz|[Aa]p|[Bb]en|[Bb]ar|[Bb]at) )?[^, ]+, [^,]+$",
+            "description": "The name of the contributor. The format should be 'Last Name, First Name'. Supports international family name prefixes (van, von, de, del, etc.)."
           },
           "contributor_role": {
             "type": "string",
             "enum": [
-              "PrincipalInvestigator",
-              "Creator",
-              "CoInvestigator",
               "CorrespondingAuthor",
+              "ContactPerson",
+              "Creator",
               "DataCollector",
               "DataCurator",
               "DataManager",
               "Distributor",
               "Editor",
+              "HostingInstitution",
+              "PrincipalInvestigator",
+              "CoInvestigator",
               "Producer",
               "ProjectLeader",
               "ProjectManager",
               "ProjectMember",
+              "RegistrationAgency",
+              "RegistrationAuthority",
               "RelatedPerson",
               "Researcher",
               "ResearchGroup",
+              "RightsHolder",
               "Sponsor",
               "Supervisor",
               "WorkPackageLeader",
@@ -256,40 +270,48 @@
       "type": "object",
       "properties": {
         "number_of_subjects": {
-          "type": "number",
+          "type": "integer",
+          "minimum": 0,
           "description": "The number of subjects in the study."
         },
         "number_of_samples": {
-          "type": "number",
+          "type": "integer",
+          "minimum": 0,
           "description": "The number of samples in the study."
         },
         "number_of_sites": {
-          "type": "number",
+          "type": "integer",
+          "minimum": 0,
           "description": "The number of sites in the study."
         },
         "number_of_performances": {
-          "type": "number",
+          "type": "integer",
+          "minimum": 0,
           "description": "The number of performance in the study."
         }
       },
       "required": []
     },
     "data_dictionary_information": {
-      "type": "object",
-      "properties": {
-        "data_dictionary_path": {
-          "type": "string",
-          "description": "The path to the data dictionary file."
-        },
-        "data_dictionary_type": {
-          "type": "string",
-          "description": "The type of the data dictionary. E.g., json-schema"
-        },
-        "data_dictionary_description": {
-          "type": "string",
-          "description": "A descrption of the data dictionary."
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "data_dictionary_path": {
+            "type": "string",
+            "description": "The path to the data dictionary file. Should be relative to the root of the dataset. E.g., 'code/data_dictionary/schema.json'"
+          },
+          "data_dictionary_type": {
+            "type": "string",
+            "description": "The type of the data dictionary. E.g., json-schema"
+          },
+          "data_dictionary_description": {
+            "type": "string",
+            "description": "A description of the data dictionary."
+          }
         }
       }
     }
-  }
+  },
+  "required": ["metadata_version"]
 }
