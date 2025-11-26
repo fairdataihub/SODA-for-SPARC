@@ -14,6 +14,7 @@ import {
   ScrollArea,
   Paper,
   Tooltip,
+  Badge,
 } from "@mantine/core";
 import classes from "./Sidebar.module.css";
 import LinksGroup from "./LinksGroup.jsx";
@@ -73,13 +74,19 @@ const Sidebar = ({ id }) => {
       <div className={classes.navbarMain}>
         {id === "main-sidebar" && (
           <Stack align="center" mb="xl" gap="xs">
-            <Image src="./img/logo-new-green.png" alt="Logo" w={90} />
-            <Text fw={600} size="xl" c="var(--mantine-color-primary-7)">
+            <Image src="./img/logo-new-prim-7.png" alt="Logo" w={90} />
+            <Text fw={800} size="xl" c="var(--mantine-color-primary-7)">
               SODA
             </Text>
-            <Text fw={700} id="version">
+            <Badge
+              fw={800}
+              id="version"
+              bg="var(--mantine-color-white)"
+              c="var(--mantine-color-primary-7)"
+              fz="13px"
+            >
               {appVersion}
-            </Text>
+            </Badge>
             <Divider my="sm" />
           </Stack>
         )}

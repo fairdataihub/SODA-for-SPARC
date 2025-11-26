@@ -2305,7 +2305,9 @@ window.ffmCreateManifest = async () => {
     for (const folder in datasetStructure["folders"]) {
       let folderName = parentFolder ? `${parentFolder}/${folder}` : folder;
       const statsObj = await window.fs.stat(datasetStructure["folders"][folder]["path"]);
-      const timeStamp = statsObj.mtime.toISOString();
+      let timeStamp = statsObj.mtime.toISOString();
+      // replace timestamp . with , for SDS3 compliance (the . is used to separate fractional seconds)
+      timeStamp = timeStamp.replace(/\./g, ",");
       manifestStructure.push({
         filename: folderName,
         timestamp: timeStamp,
@@ -2326,7 +2328,8 @@ window.ffmCreateManifest = async () => {
       let filePath = parentFolder ? `${parentFolder}/${file}` : file;
       // get timestamp of the file at the given path
       const statsObj = await window.fs.stat(datasetStructure["files"][file]["path"]);
-      const timeStamp = statsObj.mtime.toISOString();
+      let timeStamp = statsObj.mtime.toISOString();
+      timeStamp = timeStamp.replace(/\./g, ",");
       const fileExtension = window.path.extname(datasetStructure["files"][file]["path"]);
 
       manifestStructure.push({

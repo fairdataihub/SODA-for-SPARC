@@ -43,9 +43,7 @@ const GenerateDatasetPennsieveTargetPage = () => {
 
   // ✅ Move setState to useEffect
   useEffect(() => {
-    console.log(guestUser);
     if (guestUser) {
-      console.log("Setting unchecked");
       setCheckboxCardUnchecked("generate-on-new-pennsieve-dataset");
     }
   });
@@ -111,10 +109,7 @@ const GenerateDatasetPennsieveTargetPage = () => {
       );
     }
 
-    console.log("Guest user is true");
-
     if (guestUser) {
-      console.log("Rendering guest user message");
       return (
         <Stack mt="md" align="center">
           <Text size="md" align="left" fw={500}>
