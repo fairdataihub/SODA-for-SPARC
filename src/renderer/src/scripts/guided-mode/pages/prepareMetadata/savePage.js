@@ -14,10 +14,14 @@ import {
   getExistingSubjects,
   getExistingSamples,
 } from "../../../../stores/slices/datasetEntityStructureSlice";
-import { CONTRIBUTORS_REGEX } from "../../metadata/contributors/contributorsValidation";
+import {
+  CONTRIBUTORS_REGEX,
+  affiliationRorIsValid,
+} from "../../metadata/contributors/contributorsValidation";
 
 import { getDropDownState } from "../../../../stores/slices/dropDownSlice";
 import { pennsieveDatasetSelectSlice } from "../../../../stores/slices/pennsieveDatasetSelectSlice";
+import { isCheckboxCardChecked } from "../../../../stores/slices/checkboxCardSlice";
 
 export const savePagePrepareMetadata = async (pageBeingLeftID) => {
   const errorArray = [];
@@ -172,22 +176,29 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
           message: `The contributor name "${contributor["contributor_name"]}" is not in the correct format. Please use the format: Last, First Middle.`,
         });
       }
+
+      if (!affiliationRorIsValid(contributor["contributor_affiliation"])) {
+        errorArray.push({
+          type: "notyf",
+          message: `The contributor affiliation "${contributor["contributor_affiliation"]}" is not a valid ROR. Please use a valid ROR format (e.g., https://ror.org/04ttjf776).`,
+        });
+      }
     });
+
     if (errorArray.length > 0) {
       throw errorArray;
     }
   }
 
   if (pageBeingLeftID === "guided-protocols-tab") {
-    const buttonYesUserHasProtocols = document.getElementById("guided-button-user-has-protocols");
-    const buttonNoDelayProtocolEntry = document.getElementById(
+    const userIndicatedTheirProtocolsAreReady = isCheckboxCardChecked(
+      "guided-button-user-has-protocols"
+    );
+    const userIndicatedTheyWillAddProtocolsLater = isCheckboxCardChecked(
       "guided-button-delay-protocol-entry"
     );
 
-    if (
-      !buttonYesUserHasProtocols.classList.contains("selected") &&
-      !buttonNoDelayProtocolEntry.classList.contains("selected")
-    ) {
+    if (!userIndicatedTheirProtocolsAreReady && !userIndicatedTheyWillAddProtocolsLater) {
       errorArray.push({
         type: "notyf",
         message: "Please indicate if protocols are ready to be added to your dataset",
@@ -195,7 +206,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       throw errorArray;
     }
 
-    if (buttonYesUserHasProtocols.classList.contains("selected")) {
+    if (userIndicatedTheirProtocolsAreReady) {
       const protocols = window.sodaJSONObj["related_resources"] || [];
 
       if (protocols.length === 0) {
@@ -207,7 +218,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       }
     }
 
-    if (buttonNoDelayProtocolEntry.classList.contains("selected")) {
+    if (userIndicatedTheyWillAddProtocolsLater) {
       window.sodaJSONObj["related_resources"] = []; // Clear protocols if user says they will add later
     }
   }
@@ -250,11 +261,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     // Get acknowledgments and funding
     const acknowledgmentsInput = document.getElementById("guided-ds-acknowledgments");
     const acknowledgments = acknowledgmentsInput.value.trim() || "";
-    let fundingString = "";
-    const otherFunding = window.getTagsFromTagifyElement(guidedOtherFundingsourcesTagify);
-    if (otherFunding.length > 0) {
-      fundingString = otherFunding.join(", ");
-    }
+    const fundingArray = window.getTagsFromTagifyElement(guidedOtherFundingsourcesTagify);
 
     // Get the properties from the submission page to re-use in the dataset_description metadata
     const fundingConsortium =
@@ -282,16 +289,18 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     window.sodaJSONObj["dataset_metadata"]["dataset_description"] = {
       metadata_version: metadataVersion,
       dataset_type: datasetType,
-      standards_information: {
-        data_standard: "SPARC",
-        data_standard_version: "3.0.0",
-      },
+      standards_information: [
+        {
+          data_standard: "SPARC",
+          data_standard_version: "3.0.0",
+        },
+      ],
       basic_information: {
         title,
         subtitle,
         description: subtitle,
         keywords: keywordArray,
-        funding: fundingString,
+        funding: fundingArray,
         acknowledgments: acknowledgments,
         license: "", // The license key is set on the dedicated license page
       },

@@ -1,4 +1,5 @@
 from flask_restx import Resource, fields, reqparse
+import pkg_resources
 from namespaces import NamespaceEnum, get_namespace
 from flask import request
 from os.path import (
@@ -33,6 +34,8 @@ model_check_empty_files_folders_response = api.model( "CheckEmptyFilesFoldersRes
     "empty_folders": fields.List(fields.String),
     "soda_json_structure": fields.String(description="JSON structure of the SODA dataset"),
 })
+
+
 
 @api.route("/empty_files_and_folders")
 class CheckEmptyFilesFolders(Resource):
@@ -158,6 +161,13 @@ class Curation(Resource):
         resume = data["resume"]
 
         api.logger.info('/curation POST request')
+
+        try:
+            pysoda_version = pkg_resources.get_distribution("pysodafair").version
+            api.logger.info(f"pysodafair version: {pysoda_version}")
+            api.logger.info("Funny it didnt work")
+        except pkg_resources.DistributionNotFound:
+            api.logger.info("pysodafair version: not found")
 
         try:
             return main_curate_function(soda_json_structure, resume)

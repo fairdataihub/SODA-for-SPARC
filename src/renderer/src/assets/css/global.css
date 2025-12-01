@@ -134,8 +134,13 @@ textarea {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
 
+.tabler-icon-edit {
+  stroke: var(--mantine-color-primary-6) !important;
+}
+
 #version {
   white-space: nowrap;
+  color: var(--mantine-color-primary-7);
 }
 
 .temporary-hide {
@@ -174,7 +179,7 @@ textarea {
   animation-iteration-count: infinite;
   animation-direction: alternate;
   position: relative;
-  color: var(--color-light-green);
+  color: var(--color-soda-primary);
   font-size: 21px;
   margin-right: 10px;
 }

@@ -24,7 +24,6 @@ import {
 import api from "../../../others/api/api.js";
 
 export const openPageGenerateDataset = async (targetPageID) => {
-  const targetPageDataset = document.getElementById(targetPageID).dataset;
   if (targetPageID === "guided-dataset-generation-options-tab") {
     ["generate-dataset-locally", "generate-dataset-on-pennsieve"].forEach((key) => {
       const isChecked = window.sodaJSONObj[key] === true;

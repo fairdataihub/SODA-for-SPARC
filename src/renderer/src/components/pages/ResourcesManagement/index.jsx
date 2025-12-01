@@ -336,7 +336,7 @@ const ResourcesManagementPage = () => {
                   {/* Header section with entity type and title */}
                   <Group justify="space-between">
                     <Group>
-                      <IconFlask size={20} color="#ae3ec9" />
+                      <IconFlask size={20} color="var(--mantine-color-primary-6)" />
                       <Title order={4}>
                         {isEditMode ? "Edit research resource" : "Add new research resource"}
                       </Title>

@@ -150,7 +150,7 @@ const DatasetContentSelector = () => {
                 {expanded[key] && (
                   <Box mb="md">
                     <SodaGreenPaper mt="sm" mb="sm">
-                      <Text>{option.description}</Text>
+                      <Text fw={500}>{option.description}</Text>
                     </SodaGreenPaper>
                   </Box>
                 )}

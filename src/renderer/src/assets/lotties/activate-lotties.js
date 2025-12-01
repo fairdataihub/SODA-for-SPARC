@@ -75,46 +75,6 @@ about_us_lottie_observer.observe(about_section, {
   attributeFilter: ["class"],
 });
 
-// overview page lotties
-let existingDatasetLottieContainer = document.getElementById("existing-dataset-lottie");
-existingDatasetLottieContainer.innerHTML = "";
-let existingDatasetLottie = lottie.loadAnimation({
-  container: existingDatasetLottieContainer,
-  animationData: existingDataset,
-  renderer: "svg",
-  loop: true,
-  autoplay: true,
-});
-
-let modifyDatasetLottieContainer = document.getElementById("edit-dataset-component-lottie");
-modifyDatasetLottieContainer.innerHTML = "";
-let editDatasetLottie = lottie.loadAnimation({
-  container: modifyDatasetLottieContainer,
-  animationData: modifyDataset,
-  renderer: "svg",
-  loop: true,
-  autoplay: true,
-});
-
-// A mutation observer (watches the classes of the given element)
-// On changes this will do some work with the lotties
-let sectionObserver = new MutationObserver(function (mutations) {
-  mutations.forEach(function (mutation) {
-    let attributeValue = $(mutation.target).prop(mutation.attributeName);
-
-    if (attributeValue.includes("is-shown")) {
-      //add lotties
-      existingDatasetLottie.play();
-      editDatasetLottie.play();
-      // heart_container.play();
-    } else {
-      existingDatasetLottie.stop();
-      editDatasetLottie.stop();
-      // heart_container.stop();
-    }
-  });
-});
-
 let doc_lottie = document.getElementById("documentation-lottie");
 let documentation_lottie = lottie.loadAnimation({
   container: doc_lottie,
@@ -135,13 +95,6 @@ let documentation_lottie_observer = new MutationObserver(function (mutations) {
       documentation_lottie.stop();
     }
   });
-});
-
-let guidedModeSection = document.getElementById("guided_mode-section");
-
-sectionObserver.observe(guidedModeSection, {
-  attributes: true,
-  attributeFilter: ["class"],
 });
 
 let successValidatedFilesContainer = document.getElementById("success-validated-files-lottie");

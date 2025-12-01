@@ -77,6 +77,7 @@ import {
   setPennsieveAgentCheckInProgress,
   setPostPennsieveAgentCheckAction,
 } from "../../stores/slices/backgroundServicesSlice";
+import { setNavButtonDisabled, setNavButtonHidden } from "../../stores/slices/navButtonStateSlice";
 
 // add jquery to the window object
 window.$ = jQuery;
@@ -86,8 +87,6 @@ window.select2 = select2;
 document.addEventListener("DOMContentLoaded", function () {
   $("select").select2();
 });
-
-window.nextBtnDisabledVariable = true;
 
 window.datasetStructureJSONObj = {
   folders: {},
@@ -119,7 +118,7 @@ window.wait = async (delay) => {
 const appVersion = await window.electron.ipcRenderer.invoke("app-version");
 window.log.info(`Current SODA version: ${appVersion}`);
 
-document.getElementById("guided_mode_view").click();
+// document.getElementById("guided_mode_view").click();
 
 window.notyf = new Notyf({
   position: { x: "right", y: "bottom" },
@@ -1581,21 +1580,6 @@ window.loadSamplesFileToDataframe = async (filePath) => {
   }
 };
 
-// load and parse json file
-window.parseJson = (path) => {
-  if (!window.fs.existsSync(path)) {
-    return {};
-  }
-  try {
-    var content = window.fs.readFileSync(path, "utf8");
-    let contentJson = JSON.parse(content);
-    return contentJson;
-  } catch (error) {
-    window.log.error(error);
-    return {};
-  }
-};
-
 // function to make directory if metadata path does not exist
 window.createMetadataDir = () => {
   try {
@@ -2477,6 +2461,7 @@ const populateDatasetDropdowns = (mylist) => {
 
     window.curateDatasetDropdown.appendChild(option2);
   }
+
   // metadataDatasetlistChange();
   permissionDatasetlistChange();
   // postCurationListChange();
@@ -4929,14 +4914,14 @@ window.addDetailsForFile = (ev) => {
 };
 
 $("#inputNewNameDataset").on("click", () => {
-  $("#nextBtn").prop("disabled", true);
+  setNavButtonDisabled("nextBtn", true);
   $("#inputNewNameDataset").keyup();
 });
 
 $("#inputNewNameDataset").keyup(function () {
   let step6 = document.getElementById("generate-dataset-tab");
   if (step6.classList.contains("tab-active")) {
-    $("#nextBtn").prop("disabled", true);
+    setNavButtonDisabled("nextBtn", true);
   }
 
   var newName = $("#inputNewNameDataset").val().trim();
@@ -4956,7 +4941,6 @@ $("#inputNewNameDataset").keyup(function () {
       document.getElementById("para-new-name-dataset-message").innerHTML =
         "Error: A Pennsieve dataset name cannot contain any of the following characters: \\/:*?'<>.,";
 
-      // $("#nextBtn").prop("disabled", true)
       $("#Question-generate-dataset-generate-div-old").removeClass("show");
       $("#div-confirm-inputNewNameDataset").css("display", "none");
       $("#btn-confirm-new-dataset-name").hide();
@@ -4985,7 +4969,7 @@ window.electron.ipcRenderer.on(
         document.getElementById("input-destination-generate-dataset-locally").placeholder =
           filepath[0];
         document.getElementById("input-destination-generate-dataset-locally").value = filepath[0];
-        document.getElementById("nextBtn").disabled = true;
+        setNavButtonDisabled("nextBtn", true);
       } else {
         $("#div-confirm-destination-locally").css("display", "none");
         $("#div-confirm-destination-locally button").hide();
@@ -5000,37 +4984,6 @@ window.electron.ipcRenderer.on(
     }
   }
 );
-
-document.getElementById("button-generate-validate").addEventListener("click", function () {
-  // setTimeout(function () {
-  //   document.getElementById("generate-dataset-progress-tab").style.display = "none";
-  //   document.getElementById("div-vertical-progress-bar").style.display = "flex";
-  //   document.getElementById("prevBtn").style.display = "inline";
-  //   document.getElementById("nextBtn").style.display = "inline";
-  //   document.getElementById("start-over-btn").style.display = "inline-block";
-  //   window.showParentTab(window.currentTab, 1);
-  //   if (
-  //     window.sodaJSONObj["starting-point"]["origin"] == "new" &&
-  //     "local-path" in window.sodaJSONObj["starting-point"]
-  //   ) {
-  //     window.sodaJSONObj["starting-point"]["origin"] = "local";ps-account
-  //   }
-  // }, window.delayAnimation);
-});
-
-// function to hide the sidebar and disable the sidebar expand button
-// function forceActionSidebar(action) {
-//   if (action === "show") {
-//     $("#sidebarCollapse").removeClass("active");
-//     $("#main-nav").removeClass("active");
-//   } else {
-//     $("#sidebarCollapse").addClass("active");
-//     $("#main-nav").addClass("active");
-//     // $("#sidebarCollapse").prop("disabled", false);
-//   }
-// }
-
-// /// MAIN CURATE NEW ///
 
 const progressBarNewCurate = document.getElementById("progress-bar-new-curate");
 const divGenerateProgressBar = document.getElementById("div-new-curate-meter-progress");
@@ -5088,9 +5041,8 @@ const setupCode = async (resume = false) => {
   $("#generate-dataset-progress-tab").addClass("tab-active");
   document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
   document.getElementById("para-please-wait-new-curate").innerHTML = "";
-  document.getElementById("prevBtn").style.display = "none";
+  setNavButtonHidden("prevBtn", true);
   document.getElementById("start-over-btn").style.display = "none";
-  document.getElementById("div-vertical-progress-bar").style.display = "none";
   document.getElementById("div-generate-comeback").style.display = "none";
   document.getElementById("wrapper-wrap").style.display = "none";
   document.getElementById("generate-dataset-progress-tab").style.display = "flex";
@@ -5138,9 +5090,8 @@ const setupCode = async (resume = false) => {
       // $($($(this).parent()[0]).parents()[0]).addClass("tab-active");
       document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
       document.getElementById("para-please-wait-new-curate").innerHTML = "";
-      document.getElementById("prevBtn").style.display = "inline";
+      setNavButtonHidden("prevBtn", false);
       document.getElementById("start-over-btn").style.display = "inline-block";
-      document.getElementById("div-vertical-progress-bar").style.display = "flex";
       document.getElementById("div-generate-comeback").style.display = "flex";
       document.getElementById("generate-dataset-progress-tab").style.display = "none";
       $("#generate-dataset-progress-tab").removeClass("tab-active");
@@ -5171,7 +5122,7 @@ const setupCode = async (resume = false) => {
 };
 
 const preGenerateSetup = async (e, elementContext) => {
-  $($($(elementContext).parent().parent()[0]).parents()[0]).removeClass("tab-active");
+  $("#preview-dataset-tab").removeClass("tab-active");
   let resume = e.target.textContent.trim() == "Retry";
   setupCode(resume);
 };
@@ -5203,23 +5154,6 @@ window.dismissStatus = (id) => {
 
 window.file_counter = 0;
 window.folder_counter = 0;
-window.uploadComplete = new Notyf({
-  position: { x: "right", y: "bottom" },
-  dismissible: true,
-  ripple: false,
-  types: [
-    {
-      type: "success",
-      background: "#13716D",
-      icon: {
-        className: "fas fa-check-circle",
-        tagName: "i",
-        color: "white",
-      },
-      duration: 4000,
-    },
-  ],
-});
 
 let amountOfTimesPennsieveUploadFailed = 0;
 
@@ -5295,9 +5229,8 @@ const initiate_generate = async (resume = false) => {
     organizeDataset.click();
     let button = document.getElementById("button-generate");
     $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
-    document.getElementById("prevBtn").style.display = "none";
+    setNavButtonHidden("prevBtn", true);
     document.getElementById("start-over-btn").style.display = "none";
-    document.getElementById("div-vertical-progress-bar").style.display = "none";
     document.getElementById("div-generate-comeback").style.display = "none";
     document.getElementById("generate-dataset-progress-tab").style.display = "flex";
     organizeDataset.disabled = true;
@@ -5305,11 +5238,8 @@ const initiate_generate = async (resume = false) => {
     organizeDataset.style = "background-color: #f6f6f6;  border: #fff;";
   };
 
-  let sparc_container = document.getElementById("sparc-logo-container");
-  sparc_container.style.display = "none";
-  navContainer.appendChild(statusBarClone);
   let navbar = document.getElementById("main-nav");
-  if (navbar.classList.contains("active")) {
+  if (!navbar.classList.contains("active")) {
     document.getElementById("sidebarCollapse").click();
   }
 
@@ -5352,17 +5282,6 @@ const initiate_generate = async (resume = false) => {
       amountOfTimesPennsieveUploadFailed = 0;
 
       $("#party-lottie").show();
-
-      // check if we updated an existing dataset
-      // const mergeSelectedCard = document
-      //   .querySelector("#dataset-upload-existing-dataset")
-      //   .classList.contains("checked");
-      // if (mergeSelectedCard) {
-      //   await swalShowInfo(
-      //     "Manifest Files Not Updated With New Files",
-      //     "Please navigate to the `Advanced Features` tab and use the standalone manifest generator to update your manifest files with the new files."
-      //   );
-      // }
 
       main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
       uploadedFiles = data["main_curation_uploaded_files"];
@@ -5426,6 +5345,7 @@ const initiate_generate = async (resume = false) => {
       logSelectedUpdateExistingDatasetOptions(datasetLocation);
 
       // hide the retry button
+      $("#wrapper-wrap").show();
       $("#button-retry").hide();
       $("#button-generate-validate").show();
 
@@ -5581,13 +5501,12 @@ const initiate_generate = async (resume = false) => {
           },
         }).then((result) => {
           statusBarClone.remove();
-          sparc_container.style.display = "inline";
+          // sparc_container.style.display = "inline";
           if (result.isConfirmed) {
             let button = document.getElementById("button-generate");
             $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
-            document.getElementById("prevBtn").style.display = "none";
+            setNavButtonHidden("prevBtn", true);
             document.getElementById("start-over-btn").style.display = "none";
-            document.getElementById("div-vertical-progress-bar").style.display = "none";
             document.getElementById("wrapper-wrap").style.display = "flex";
             document.getElementById("div-generate-comeback").style.display = "flex";
             document.getElementById("generate-dataset-progress-tab").style.display = "flex";
@@ -5683,9 +5602,8 @@ const initiate_generate = async (resume = false) => {
         if (result.isConfirmed) {
           let button = document.getElementById("button-generate");
           $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
-          document.getElementById("prevBtn").style.display = "none";
+          setNavButtonHidden("prevBtn", true);
           document.getElementById("start-over-btn").style.display = "none";
-          document.getElementById("div-vertical-progress-bar").style.display = "none";
           document.getElementById("wrapper-wrap").style.display = "flex";
           document.getElementById("div-generate-comeback").style.display = "none";
           document.getElementById("generate-dataset-progress-tab").style.display = "flex";
@@ -5804,7 +5722,7 @@ const initiate_generate = async (resume = false) => {
       successful = true;
       $("#sidebarCollapse").prop("disabled", false);
       statusBarClone.remove();
-      sparc_container.style.display = "inline";
+      // sparc_container.style.display = "inline";
       organizeDataset.disabled = false;
       guidedModeHomePageButton.disabled = false;
       uploadLocally.disabled = false;
@@ -5837,7 +5755,7 @@ const initiate_generate = async (resume = false) => {
       $("#sidebarCollapse").prop("disabled", false);
       window.log.info("Done curate track");
       statusBarClone.remove();
-      sparc_container.style.display = "inline";
+      // sparc_container.style.display = "inline";
       if (successful === true) {
         //Enable the buttons (organize datasets, upload locally, curate existing dataset, curate new dataset)
         organizeDataset.disabled = false;
@@ -5853,7 +5771,7 @@ const initiate_generate = async (resume = false) => {
         uploadLocally.className = "content-button is-selected";
         uploadLocally.style = "background-color: #fff";
 
-        window.uploadComplete.open({
+        window.notyf.open({
           type: "success",
           message: "Dataset created successfully",
         });
@@ -6516,27 +6434,6 @@ window.logCurationForAnalytics = (
       window.electron.ipcRenderer.send("track-event", `${category}`, actionName, location, 1);
     }
   }
-};
-
-window.getMetadataFileNameFromStatus = (metadataFileStatus) => {
-  // get the UI text that displays the file path
-  let filePath = metadataFileStatus.text();
-
-  let fileName = window.path.basename(filePath);
-
-  // remove the extension
-  fileName = fileName.slice(0, fileName.indexOf("."));
-
-  return fileName;
-};
-
-window.determineLocationFromStatus = (metadataFileStatus) => {
-  let filePath = metadataFileStatus.text();
-
-  // determine if the user imported from Pennsieve or Locally
-  let pennsieveFile = filePath.toUpperCase().includes("Pennsieve".toUpperCase());
-
-  return pennsieveFile;
 };
 
 window.logGeneralOperationsForAnalytics = (category, analyticsPrefix, granularity, actions) => {
