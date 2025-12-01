@@ -315,7 +315,8 @@ const FolderItem = ({
 
   // Helper function for determining background color
   const getBackgroundColor = () => {
-    if (hovered || (contextMenuIsOpened && contextMenuRelativePath === content.relativePath)) {
+    if (folderIsSelected) return "var(--mantine-color-primary-0)";
+    if (hovered || (contextMenuIsOpened && contextMenuRelativePath === relativePath)) {
       return "rgba(0, 0, 0, 0.05)";
     }
     return undefined;

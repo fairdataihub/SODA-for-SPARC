@@ -324,6 +324,12 @@ window.savePageChanges = async (pageBeingLeftID) => {
         }
       }
 
+      if (pageBeingLeftComponentType === "data-categories-questionnaire-page") {
+        const entityType = pageBeingLeftDataSet.questionnaireEntityType;
+        console.log("Saving data categories questionnaire for entity type:", entityType);
+        console.log("Page dataset attributes:", pageBeingLeftDataSet);
+      }
+
       if (
         pageBeingLeftComponentType === "entity-metadata-page" ||
         pageBeingLeftComponentType === "entity-spreadsheet-import-page"

@@ -78,6 +78,7 @@ const getInstructionalTextByEntityType = (entityType, datasetType) => {
         ? "Select the files that describe the computational workflows, analysis procedures, or processing steps used in your data."
         : "Select the files that document the experimental procedures, equipment setups, or workflows used in your study.",
     Documentation: "Select the files that are supporting documents for your data.",
+    experimental: "Select the files that are described in the list above.",
   };
 
   return (
@@ -208,10 +209,9 @@ const EntityDataSelectorPage = ({
                   <>
                     <Text mb={0}>
                       The SDS includes specific requirements for annotating data collected from a
-                      subject (human or non-human), whether the data comes directly from the subject
-                      or from a sample taken from that subject (such as tissue). We refer to this as
-                      experimental data. Select all of your experimental data below so SODA can help
-                      you annotate it in the following steps.
+                      subject, whether human or non-human, which we refer to as experimental data.
+                      Select all of your experimental data below so SODA can help you annotate it in
+                      the following steps.
                     </Text>
                     <InfoList id="dataset-entities" />
                   </>
