@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - SODA's Prepare Dataset Step-by-Step UI has been updated to use Mantine components. This provides a more extensible theming system for future UI updates. It also provides a more modern and consistent look and feel.
 - SODA's Upload Dataset UI has been updated to use some Mantine components. It has also been updated to use mantine's color theming system. It is aesthetically consistent with the rest of SODA's UI and is easier to change for future UI updates.
+- The dataset description metadata file in Prepare Dataset Step-by-Step has had its schema updated to match Pysoda 0.1.66. Funding is treated as an array, standards information is an array of objects to allow for multiple standards.
+- The manifest timestamp in Upload Dataset and Prepare Dataset Step-by-Step has a simplified iso 8601 format. The timezone offset has been removed. A comma is used to separate fractional seconds instead of a period to match the SDS3 specification.
 
 ## v 16.4.0 - 2025-10-27
 
