@@ -1602,26 +1602,15 @@ window.verifySparcFolder = (rootFolderPath, type) => {
     .map((item) => window.path.parse(item).name.toLowerCase())
     .filter((item) => !item.startsWith("."));
 
-  console.log(folderContents);
-
   const highLevelFolders = window.highLevelFolders.map((folder) => folder.toLowerCase());
 
   const datasetItemsValidSDS = (item) => {
-    console.log(
-      `Checking ${item}:  ${highLevelFolders.includes(item) || metadataFiles.includes(item)}`
-    );
     return highLevelFolders.includes(item) || metadataFiles.includes(item);
   };
 
   const datasetHasHighLevelFolder = (item) => {
     return highLevelFolders.includes(item);
   };
-
-  console.log(
-    "Dataset is valid SDS structure: ",
-    folderContents.every(datasetItemsValidSDS),
-    folderContents.some(datasetHasHighLevelFolder)
-  );
 
   // Returns true if none of the
   // NOTE: For the moment we will not require metadata files in the workflow
@@ -1640,7 +1629,6 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
   */
 
   if (currentDiv === "Question-getting-started-ps-dataset") {
-    console.log("Wowza");
     let selectedDataset = $("#current-ps-dataset").text();
     setNavButtonDisabled("nextBtn", true);
     window.sodaJSONObj = {

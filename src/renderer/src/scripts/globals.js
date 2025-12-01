@@ -100,7 +100,6 @@ const updateDatasetList = (bfaccount) => {
   // waiting for dataset list to load first before initiating ps dataset dropdown list
   setTimeout(() => {
     var myPermission = $(window.datasetPermissionDiv).find("#select-permission-list-2").val();
-    console.log("Permission selected: ", myPermission);
 
     if (!myPermission) {
       myPermission = "All";
@@ -199,7 +198,6 @@ window.createDragSort = (tagify) => {
 };
 
 window.updateOrganizationList = async (bfaccount) => {
-  console.log("Here");
   let organizations = window.organizationList || [];
 
   $("#div-filter-datasets-progress-2").css("display", "none");
@@ -1371,7 +1369,6 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         if (window.datasetList.length === 0) {
           try {
             const datasetList = await api.getUsersDatasetList(false);
-            console.log("Fetched datasets from Pennsieve:", datasetList);
             window.datasetList = datasetList;
           } catch (error) {
             const emessage = userErrorMessage(error);
@@ -1496,7 +1493,6 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
                 const dropdownMenu = document.querySelector(
                   "#ps-dataset-select-div .dropdown-menu.inner"
                 );
-                console.log("dropdownMenu", dropdownMenu);
                 if (dropdownMenu) {
                   dropdownMenu.style.display = "block";
                   // dropdownMenu.parentElement.style.display = "block";
@@ -1704,8 +1700,6 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
         // document.getElementById("ds-description").innerHTML = "";
         window.refreshDatasetList();
-        console.log("Refresh finished. Checking value of curatebfdatasetlist");
-        console.log(window.curateDatasetDropdown);
         $("#dataset-loaded-message").hide();
 
         showHideDropdownButtons("dataset", "show");
@@ -1825,7 +1819,6 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     //account is signed in but no datasets have been fetched or created
     //invoke dataset request to ensure no datasets have been created
     if (window.organizationList.length === 0) {
-      console.log("Getting list of orgs");
       let responseObject;
       try {
         responseObject = await client.get(`user/organizations`, {
@@ -1856,7 +1849,6 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     //datasets do exist so display popup with dataset options
     //else datasets have been created
     if (window.organizationList.length > 0) {
-      console.log("has list of orgs");
       const { value: result } = await Swal.fire({
         backdrop: "rgba(0,0,0, 0.4)",
         cancelButtonText: "Cancel",
@@ -1891,7 +1883,6 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             .css("display", "none");
           $("#curatebforganizationlist").selectpicker("refresh");
           $("#curatebforganizationlist").selectpicker("show");
-          console.log("SHow added to org picke");
           $("#ps-organization-select-div").show();
           $("#ps-dataset-select-div").hide();
           $("#ps-dataset-select-header").hide();
@@ -1954,8 +1945,6 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           return window.bfOrganization;
         },
       });
-
-      console.log("Org select result:", result);
 
       if (!result) {
         $(".svg-change-current-account.organization").css("display", "block");

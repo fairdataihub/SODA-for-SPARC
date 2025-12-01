@@ -170,7 +170,6 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     const contributorInformation = window.sodaJSONObj["dataset_contributors"] || [];
     // Validate the contributor names match the Regular Expression
     contributorInformation.forEach((contributor) => {
-      console.log("Validating contributor:", contributor);
       if (!CONTRIBUTORS_REGEX.test(contributor["contributor_name"])) {
         errorArray.push({
           type: "notyf",

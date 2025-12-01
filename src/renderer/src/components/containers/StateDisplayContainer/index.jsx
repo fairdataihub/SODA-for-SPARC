@@ -45,7 +45,6 @@ const StateDisplayContainer = ({ id }) => {
           // Show tooltip if value is long
           const maxValueLength = 45;
           const isLong = valueStr.length > maxValueLength;
-          console.log("isLong:", isLong, "for valueStr:", valueStr);
           const displayValue = isLong ? valueStr.slice(0, maxValueLength - 3) + "..." : valueStr;
           return (
             <React.Fragment key={row.rowKey}>
