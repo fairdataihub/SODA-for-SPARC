@@ -264,7 +264,6 @@ window.openPage = async (targetPageID) => {
       if (targetPageComponentType === "data-categorization-page") {
         const pageEntityType = targetPageDataset.entityType;
         const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
-        const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
         // Delete the manifest file because it throws off the count of files selected
         delete window.datasetStructureJSONObj?.["files"]?.["manifest.xlsx"];
         const datasetType = window.sodaJSONObj["dataset-type"];
@@ -309,8 +308,6 @@ window.openPage = async (targetPageID) => {
         }
 
         if (pageEntityType === "experimental-data-categorization") {
-          addEntityNameToEntityType("experimental-data-categorization", "Primary");
-          addEntityNameToEntityType("experimental-data-categorization", "Source");
           // Filter out files that are selected as belonging to the supporting data folders
           setFileVisibilityFilter(
             [
@@ -328,9 +325,6 @@ window.openPage = async (targetPageID) => {
           );
         }
         if (pageEntityType === "non-experimental-data-categorization") {
-          addEntityNameToEntityType("non-experimental-data-categorization", "Primary");
-          addEntityNameToEntityType("non-experimental-data-categorization", "Derivative");
-          removeEntityFromEntityList("non-experimental-data-categorization", "Source");
           // Filter out files that are selected as belonging to the supporting data folders
           setFileVisibilityFilter(
             [],
@@ -437,8 +431,8 @@ window.openPage = async (targetPageID) => {
           setFileVisibilityFilter(
             [
               {
-                type: "data-folders",
-                names: ["Primary", "Source", "Derivative"],
+                type: "experimental",
+                names: ["experimental"],
               },
             ],
             [
@@ -456,12 +450,7 @@ window.openPage = async (targetPageID) => {
             addEntityNameToEntityType("modalities", modality);
           }
           setFileVisibilityFilter(
-            [
-              {
-                type: "data-folders",
-                names: ["Primary", "Source", "Derivative"],
-              },
-            ],
+            [],
             [
               {
                 type: "non-data-folders",

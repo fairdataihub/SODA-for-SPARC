@@ -2,7 +2,9 @@ import { guidedSetNavLoadingState } from "./navigationUtils/pageLoading";
 import {
   getDatasetEntityObj,
   getCategorizedEntityFileCount,
+  removeEntityFromEntityList,
 } from "../../../stores/slices/datasetEntitySelectorSlice";
+import { getSelectedDataCategoriesByEntityType } from "../../../stores/slices/datasetContentSelectorSlice";
 import { startOrStopAnimationsInContainer } from "../lotties/lottie";
 import { savePageDatasetStructure } from "./datasetStructure/savePage";
 import { savePageCurationPreparation } from "./curationPreparation/savePage";
@@ -19,6 +21,7 @@ import {
   getExistingSites,
 } from "../../../stores/slices/datasetEntityStructureSlice";
 import { swalConfirmAction } from "../../utils/swal-utils";
+import { addEntityNameToEntityType } from "../../../stores/slices/datasetEntitySelectorSlice";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -325,9 +328,121 @@ window.savePageChanges = async (pageBeingLeftID) => {
       }
 
       if (pageBeingLeftComponentType === "data-categories-questionnaire-page") {
-        const entityType = pageBeingLeftDataSet.questionnaireEntityType;
-        console.log("Saving data categories questionnaire for entity type:", entityType);
-        console.log("Page dataset attributes:", pageBeingLeftDataSet);
+        const questionnaireEntityType = pageBeingLeftDataSet.questionnaireEntityType;
+        const experimentalDataFolders = ["Primary", "Source", "Derivative"];
+
+        if (questionnaireEntityType === "experimental-data-categorization") {
+          const categorizeExperimentalDataYes = isCheckboxCardChecked(
+            "categorize-experimental-data-yes"
+          );
+          const categorizeExperimentalDataNo = isCheckboxCardChecked(
+            "categorize-experimental-data-no"
+          );
+          if (!categorizeExperimentalDataYes && !categorizeExperimentalDataNo) {
+            errorArray.push({
+              type: "notyf",
+              message: "Please indicate if you would like to categorize your Experimental data.",
+            });
+            throw errorArray;
+          }
+
+          if (categorizeExperimentalDataYes) {
+            // Check which data categories the user selected for experimental data
+            const selectedExperimentalDataCategories = getSelectedDataCategoriesByEntityType(
+              "experimental-data-categorization"
+            );
+            if (selectedExperimentalDataCategories.length < 2) {
+              // Validate that at least one data category was selected
+              if (selectedExperimentalDataCategories.length === 0) {
+                errorArray.push({
+                  type: "notyf",
+                  message: "Please select at least one data category for your experimental data.",
+                });
+                throw errorArray;
+              }
+
+              if (selectedExperimentalDataCategories.length === 1) {
+                const confirmResult = await swalConfirmAction(
+                  null,
+                  "Confirm Data Category Selection",
+                  `You have only selected the "${selectedExperimentalDataCategories[0]}" data category for your experimental data.\n\nSince only one category is selected, all of your experimental data will automatically be placed in the ${selectedExperimentalDataCategories[0]} folder without requiring you to categorize individual files.\n\nAre you sure you want to proceed with this selection?`,
+                  "Yes, proceed",
+                  "Cancel"
+                );
+                if (!confirmResult.isConfirmed) {
+                  errorArray.push({
+                    type: "notyf",
+                    message: "Please review your data category selection.",
+                  });
+                  throw errorArray;
+                }
+              }
+
+              guidedSkipPage("experimental-data-categorization-tab");
+            } else {
+              guidedUnSkipPage("experimental-data-categorization-tab");
+            }
+
+            for (const folder of experimentalDataFolders) {
+              if (selectedExperimentalDataCategories.includes(folder)) {
+                console.log("Adding entity name to entity type:", folder);
+                addEntityNameToEntityType("experimental-data-categorization", folder);
+              } else {
+                console.log("Removing entity name from entity type:", folder);
+                removeEntityFromEntityList("experimental-data-categorization", folder);
+              }
+            }
+
+            // Save the selected categories for experimental data
+            window.sodaJSONObj["selected-experimental-data-categories"] =
+              selectedExperimentalDataCategories;
+          }
+        }
+
+        if (questionnaireEntityType === "non-experimental-data-categorization") {
+          const categorizeNonExperimentalDataYes = isCheckboxCardChecked(
+            "categorize-non-experimental-data-yes"
+          );
+          const categorizeNonExperimentalDataNo = isCheckboxCardChecked(
+            "categorize-non-experimental-data-no"
+          );
+          if (!categorizeNonExperimentalDataYes && !categorizeNonExperimentalDataNo) {
+            errorArray.push({
+              type: "notyf",
+              message:
+                "Please indicate if you would like to categorize your non-experimental data.",
+            });
+            throw errorArray;
+          }
+          if (categorizeNonExperimentalDataYes) {
+            // Check which data categories the user selected for non-experimental data
+            const selectedNonExperimentalDataCategories = getSelectedDataCategoriesByEntityType(
+              "non-experimental-data-categorization"
+            );
+
+            console.log(
+              "Selected non-experimental data categories:",
+              selectedNonExperimentalDataCategories
+            );
+
+            // Validate that at least one data category was selected
+            if (selectedNonExperimentalDataCategories.length === 0) {
+              errorArray.push({
+                type: "notyf",
+                message: "Please select at least one data category for your non-experimental data.",
+              });
+              throw errorArray;
+            }
+
+            // Save the selected categories for non-experimental data
+            window.sodaJSONObj["selected-non-experimental-data-categories"] =
+              selectedNonExperimentalDataCategories;
+
+            guidedUnSkipPage("experimental-data-categorization-tab");
+          } else {
+            guidedSkipPage("experimental-data-categorization-tab");
+          }
+        }
       }
 
       if (

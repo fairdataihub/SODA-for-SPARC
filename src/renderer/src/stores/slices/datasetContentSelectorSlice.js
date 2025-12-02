@@ -43,6 +43,11 @@ export const removeSelectedDataCategoryForEntityType = (entityType, dataCategory
   useGlobalStore.setState({ selectedDataCategoriesByEntityType: updatedMap });
 };
 
+export const getSelectedDataCategoriesByEntityType = (entityType) => {
+  const selectedDataCategoriesByEntityType = useGlobalStore.getState().selectedDataCategoriesByEntityType || {};
+  return selectedDataCategoriesByEntityType[entityType] || [];
+};
+
 export const setSelectedEntities = (selectedEntities) => {
   useGlobalStore.setState({ selectedEntities });
 };
