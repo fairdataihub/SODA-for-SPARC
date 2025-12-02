@@ -44,7 +44,8 @@ export const removeSelectedDataCategoryForEntityType = (entityType, dataCategory
 };
 
 export const getSelectedDataCategoriesByEntityType = (entityType) => {
-  const selectedDataCategoriesByEntityType = useGlobalStore.getState().selectedDataCategoriesByEntityType || {};
+  const selectedDataCategoriesByEntityType =
+    useGlobalStore.getState().selectedDataCategoriesByEntityType || {};
   return selectedDataCategoriesByEntityType[entityType] || [];
 };
 
