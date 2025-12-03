@@ -183,7 +183,7 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
     if (!categoryObj) return;
     Object.keys(categoryObj).forEach((file) => moveFileToTargetLocation(file, destFolder));
   };
-
+  console.log("Creating standardized dataset structure...");
   try {
     // Move Code files into the code/ folder
     moveFilesByCategory(datasetEntityObj?.["non-data-folders"]?.["Code"], "code/");

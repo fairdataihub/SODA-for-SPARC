@@ -22,6 +22,7 @@ import {
 } from "../../../stores/slices/datasetEntityStructureSlice";
 import { swalConfirmAction } from "../../utils/swal-utils";
 import { addEntityNameToEntityType } from "../../../stores/slices/datasetEntitySelectorSlice";
+import { data } from "jquery";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -325,11 +326,14 @@ window.savePageChanges = async (pageBeingLeftID) => {
           // Update dataset metadata
           window.sodaJSONObj["dataset_metadata"]["performances"] = performanceMetadata;
         }
+        if (entityType === "experimental-data-categorization") {
+          console.log("Saving experimental data categorization changes...");
+        }
       }
 
       if (pageBeingLeftComponentType === "data-categories-questionnaire-page") {
         const questionnaireEntityType = pageBeingLeftDataSet.questionnaireEntityType;
-        const experimentalDataFolders = ["Primary", "Source", "Derivative"];
+        const dataFolders = ["Primary", "Source", "Derivative"];
 
         if (questionnaireEntityType === "experimental-data-categorization") {
           const categorizeExperimentalDataYes = isCheckboxCardChecked(
@@ -347,7 +351,6 @@ window.savePageChanges = async (pageBeingLeftID) => {
           }
 
           if (categorizeExperimentalDataYes) {
-            // Check which data categories the user selected for experimental data
             const selectedExperimentalDataCategories = getSelectedDataCategoriesByEntityType(
               "experimental-data-categorization"
             );
@@ -383,12 +386,10 @@ window.savePageChanges = async (pageBeingLeftID) => {
               guidedUnSkipPage("experimental-data-categorization-tab");
             }
 
-            for (const folder of experimentalDataFolders) {
+            for (const folder of dataFolders) {
               if (selectedExperimentalDataCategories.includes(folder)) {
-                console.log("Adding entity name to entity type:", folder);
                 addEntityNameToEntityType("experimental-data-categorization", folder);
               } else {
-                console.log("Removing entity name from entity type:", folder);
                 removeEntityFromEntityList("experimental-data-categorization", folder);
               }
             }
@@ -414,33 +415,57 @@ window.savePageChanges = async (pageBeingLeftID) => {
             });
             throw errorArray;
           }
+
           if (categorizeNonExperimentalDataYes) {
-            // Check which data categories the user selected for non-experimental data
             const selectedNonExperimentalDataCategories = getSelectedDataCategoriesByEntityType(
               "non-experimental-data-categorization"
             );
+            if (selectedNonExperimentalDataCategories.length < 2) {
+              // Validate that at least one data category was selected
+              if (selectedNonExperimentalDataCategories.length === 0) {
+                errorArray.push({
+                  type: "notyf",
+                  message:
+                    "Please select at least one data category for your non-experimental data.",
+                });
+                throw errorArray;
+              }
 
-            console.log(
-              "Selected non-experimental data categories:",
-              selectedNonExperimentalDataCategories
-            );
+              if (selectedNonExperimentalDataCategories.length === 1) {
+                const confirmResult = await swalConfirmAction(
+                  null,
+                  "Confirm Data Category Selection",
+                  `You have only selected the "${selectedNonExperimentalDataCategories[0]}" data category for your non-experimental data.\n\nSince only one category is selected, all of your non-experimental data will automatically be placed in the ${selectedNonExperimentalDataCategories[0]} folder without requiring you to categorize individual files.\n\nAre you sure you want to proceed with this selection?`,
+                  "Yes, proceed",
+                  "Cancel"
+                );
+                if (!confirmResult.isConfirmed) {
+                  errorArray.push({
+                    type: "notyf",
+                    message: "Please review your data category selection.",
+                  });
+                  throw errorArray;
+                }
+              }
 
-            // Validate that at least one data category was selected
-            if (selectedNonExperimentalDataCategories.length === 0) {
-              errorArray.push({
-                type: "notyf",
-                message: "Please select at least one data category for your non-experimental data.",
-              });
-              throw errorArray;
+              guidedSkipPage("non-experimental-data-categorization-tab");
+            } else {
+              guidedUnSkipPage("non-experimental-data-categorization-tab");
+            }
+
+            for (const folder of dataFolders) {
+              if (selectedNonExperimentalDataCategories.includes(folder)) {
+                addEntityNameToEntityType("non-experimental-data-categorization", folder);
+              } else {
+                removeEntityFromEntityList("non-experimental-data-categorization", folder);
+              }
             }
 
             // Save the selected categories for non-experimental data
             window.sodaJSONObj["selected-non-experimental-data-categories"] =
               selectedNonExperimentalDataCategories;
-
-            guidedUnSkipPage("experimental-data-categorization-tab");
           } else {
-            guidedSkipPage("experimental-data-categorization-tab");
+            guidedSkipPage("non-experimental-data-categorization-tab");
           }
         }
       }

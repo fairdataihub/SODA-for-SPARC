@@ -6,10 +6,14 @@ const LIST_CONFIGS = {
     title: "The experimental data you should select includes:",
     getItems: (selectedEntities) =>
       [
-        selectedEntities.includes("subjects") && "Files that describe or belong to your subjects.",
-        selectedEntities.includes("samples") && "Files associated with your samples.",
+        selectedEntities.includes("subjects") &&
+          "Data files that were collected from or describe the subjects in your dataset.",
+        selectedEntities.includes("samples") &&
+          "Data files that were collected from or describe the samples in your dataset.",
         selectedEntities.includes("sites") &&
-          "Files that contain data pertaining to data collected from separate anatomical locations.",
+          "Data files that were collected from or describe the anatomical or extraction sites of your samples.",
+        selectedEntities.includes("performances") &&
+          "Data files that were collected from or describe the performances or experimental sessions of your subjects.",
       ].filter(Boolean),
   },
   "selected-folders": {

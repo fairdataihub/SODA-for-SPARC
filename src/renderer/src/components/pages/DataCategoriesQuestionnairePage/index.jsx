@@ -54,10 +54,11 @@ const DataCategoriesQuestionnairePage = ({ pageID, pageName, questionnaireEntity
         {questionnaireEntityType === "experimental-data-categorization" && (
           <Text>
             Your experimental data, which can be viewed at the bottom of this page, can be
-            categorized into three separate types: Primary, Source, and Derivative. If you choose to
-            categorize your data on this page, you will be asked to categorize your experimental
-            data on a per-file basis on the next page. You can skip categorization by selecting "No"
-            below, and your experimental data will be categorized as "Primary" by default.
+            categorized into three separate categories: Primary, Source, and Derivative. If you
+            choose to categorize your data on this page, you will be asked to categorize your
+            experimental data on a per-file basis on the next page. You can skip categorization by
+            selecting "No" below, and your experimental data will be categorized as "Primary" and
+            placed in the Primary folder by default.
           </Text>
         )}
         {questionnaireEntityType === "non-experimental-data-categorization" && (
