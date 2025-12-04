@@ -31,6 +31,7 @@ import {
 import {
   setSelectedEntities,
   setDeSelectedEntities,
+  setSelectedDataCategoriesByEntityType,
 } from "../../../stores/slices/datasetContentSelectorSlice.js";
 import {
   setDatasetEntityObj,
@@ -464,7 +465,15 @@ window.openPage = async (targetPageID) => {
         // Extract the questionnaire entity type from the data attribute
         const questionnaireEntityType = targetPageDataset.questionnaireEntityType;
         console.log("questionnaireEntityType:", questionnaireEntityType);
+
+        // Restore user selections from JSON
         if (questionnaireEntityType === "experimental-data-categorization") {
+          const savedExperimentalCategories =
+            window.sodaJSONObj["selected-experimental-data-categories"] || [];
+          setSelectedDataCategoriesByEntityType({
+            "experimental-data-categorization": savedExperimentalCategories,
+          });
+
           setFileVisibilityFilter(
             [
               {
@@ -482,6 +491,12 @@ window.openPage = async (targetPageID) => {
         }
 
         if (questionnaireEntityType === "non-experimental-data-categorization") {
+          const savedNonExperimentalCategories =
+            window.sodaJSONObj["selected-non-experimental-data-categories"] || [];
+          setSelectedDataCategoriesByEntityType({
+            "non-experimental-data-categorization": savedNonExperimentalCategories,
+          });
+
           setFileVisibilityFilter(
             [],
             [

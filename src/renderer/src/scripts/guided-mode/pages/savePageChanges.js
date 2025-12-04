@@ -368,9 +368,14 @@ window.savePageChanges = async (pageBeingLeftID) => {
                 const confirmResult = await swalConfirmAction(
                   null,
                   "Confirm Data Category Selection",
-                  `You have only selected the "${selectedExperimentalDataCategories[0]}" data category for your experimental data.\n\nSince only one category is selected, all of your experimental data will automatically be placed in the ${selectedExperimentalDataCategories[0]} folder without requiring you to categorize individual files.\n\nAre you sure you want to proceed with this selection?`,
-                  "Yes, proceed",
-                  "Cancel"
+                  `You have selected only the "${selectedExperimentalDataCategories[0]}" category for your experimental data. 
+
+                  Since only one category is chosen, all experimental data will automatically be placed in the "${selectedExperimentalDataCategories[0]}" folder.
+                  <br />
+                  <br />
+                  Would you like to proceed with this selection?`,
+                  `Place all experimental data in "${selectedExperimentalDataCategories[0]}" folder`,
+                  "Change selected folders"
                 );
                 if (!confirmResult.isConfirmed) {
                   errorArray.push({

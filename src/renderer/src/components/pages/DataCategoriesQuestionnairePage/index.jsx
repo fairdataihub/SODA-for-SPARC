@@ -53,22 +53,27 @@ const DataCategoriesQuestionnairePage = ({ pageID, pageName, questionnaireEntity
       <GuidedModeSection>
         {questionnaireEntityType === "experimental-data-categorization" && (
           <Text>
-            Your experimental data, which can be viewed at the bottom of this page, can be
-            categorized into three separate categories: Primary, Source, and Derivative. If you
-            choose to categorize your data on this page, you will be asked to categorize your
-            experimental data on a per-file basis on the next page. You can skip categorization by
-            selecting "No" below, and your experimental data will be categorized as "Primary" and
-            placed in the Primary folder by default.
+            Your experimental data, shown at the bottom of this page, can be organized into three
+            categories: Primary, Source, and Derivative. These categories correspond to the folders
+            where your data will be placed in your final standardized dataset. If you have files
+            that are Source or Derivative and would like to categorize them, select "Yes" below
+            indicating that you would like to organize your experimental data, and on the next page,
+            you will be asked to assign a category to each file. If you do not have Source or
+            Derivative files or do not wish to categorize your experimental data, select "No" below,
+            and all experimental data will be categorized as "Primary" and placed in the Primary
+            folder of your standardized dataset.
           </Text>
         )}
         {questionnaireEntityType === "non-experimental-data-categorization" && (
           <Text>
-            Your non-experimental data (data not marked as either Experimental or belonging to a
-            supporting folder), which can be viewed at the bottom of this page, can be categorized
-            into three separate types: Primary, Source, and Derivative. If you choose to categorize
-            your data on this page, you will be asked to categorize your non-experimental data on a
-            per-file basis on the next page. You can skip categorization by selecting "No" below,
-            and your non-experimental data will be categorized as "Primary" by default.
+            Your non-experimental data, shown at the bottom of this page, can be organized into
+            three categories: Primary, Source, and Derivative. These categories correspond to the
+            folders where your data will be placed in your final standardized dataset. If you have
+            Source or Derivative files and want to categorize them, select "Yes" below. On the next
+            page, you will assign a category to each file. If you do not have Source or Derivative
+            files or do not wish to categorize your data, select "No," and all non-experimental data
+            will be treated as Primary and placed in the Primary folder of your standardized
+            dataset.
           </Text>
         )}
 
@@ -78,7 +83,7 @@ const DataCategoriesQuestionnairePage = ({ pageID, pageName, questionnaireEntity
         {questionnaireEntityType === "experimental-data-categorization" && (
           <Stack gap={0}>
             <label className="guided--form-label centered mt-md">
-              Would you like to categorize your Experimental data?
+              Would you like to categorize some experimental data as either Source or Derivative?
             </label>
             <Center>
               <CheckboxCard id="categorize-experimental-data-yes" />
@@ -90,7 +95,8 @@ const DataCategoriesQuestionnairePage = ({ pageID, pageName, questionnaireEntity
         {questionnaireEntityType === "non-experimental-data-categorization" && (
           <Stack gap={0}>
             <label className="guided--form-label centered mt-md">
-              Would you like to categorize your non-experimental data?
+              Would you like to categorize some non-experimental data as either Source or
+              Derivative?
             </label>
             <Center>
               <CheckboxCard id="categorize-non-experimental-data-yes" />
