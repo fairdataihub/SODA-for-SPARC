@@ -192,13 +192,20 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
 
     // Move Primary files into the primary/ folder
     // (Files that are marked as primary during the computational workflow)
-    moveFilesByCategory(datasetEntityObj?.["data-folders"]?.["Primary"], "primary/");
+    moveFilesByCategory(
+      datasetEntityObj?.["experimental-data-categorization"]?.["Source"],
+      "source/"
+    );
+    moveFilesByCategory(
+      datasetEntityObj?.["experimental-data-categorization"]?.["Derivative"],
+      "derivative/"
+    );
 
-    // Move Documentation files into the docs/ folder
-    moveFilesByCategory(datasetEntityObj?.["data-folders"]?.["Source"], "source/");
-
-    // Move Protocol files into the protocols/ folder
-    moveFilesByCategory(datasetEntityObj?.["data-folders"]?.["Derivative"], "derivative/");
+    moveFilesByCategory(datasetEntityObj?.["remaining-data-categorization"]?.["Source"], "source/");
+    moveFilesByCategory(
+      datasetEntityObj?.["remaining-data-categorization"]?.["Derivative"],
+      "derivative/"
+    );
 
     // Delete any empty folders in the dataset structure
     // (The window.datasetStructureJSONObj can be used since the move fns already update it)

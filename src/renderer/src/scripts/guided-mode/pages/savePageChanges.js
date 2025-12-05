@@ -376,7 +376,7 @@ window.savePageChanges = async (pageBeingLeftID) => {
             addEntityNameToEntityType("remaining-data-categorization", "Source");
             addEntityNameToEntityType("remaining-data-categorization", "Derivative");
           } else {
-            guidedUnSkipPage("remaining-data-categorization-tab");
+            guidedSkipPage("remaining-data-categorization-tab");
             removeEntityFromEntityList("remaining-data-categorization", "Source");
             removeEntityFromEntityList("remaining-data-categorization", "Derivative");
           }

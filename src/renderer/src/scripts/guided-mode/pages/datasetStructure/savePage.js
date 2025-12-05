@@ -35,21 +35,60 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     // Now determine the workflow based on selected and de-selected answers
     const selectedEntities = useGlobalStore.getState()["selectedEntities"];
     const deSelectedEntities = useGlobalStore.getState()["deSelectedEntities"];
+
+    console.log("Selected entities:", selectedEntities);
+    console.log("DeSelected entities:", deSelectedEntities);
+    console.log("Content options map keys:", Object.keys(contentOptionsMap));
+
     // Validate that all questions that should be visible were answered
     const visibleQuestions = Object.keys(contentOptionsMap).filter((key) => {
       const option = contentOptionsMap[key];
-      // If this option has dependencies, check them all
-      if (option.dependsOn && option.dependsOn.length > 0) {
-        for (const dependency of option.dependsOn) {
-          if (deSelectedEntities.includes(dependency) || !selectedEntities.includes(dependency)) {
-            return false; // This question shouldn't be visible
+      console.log(`Checking visibility for ${key}:`, option);
+
+      // Check requiresAnswer dependencies (need "yes" answers)
+      if (option.requiresAnswer && option.requiresAnswer.length > 0) {
+        console.log(`${key} requiresAnswer:`, option.requiresAnswer);
+        for (const dependency of option.requiresAnswer) {
+          if (!selectedEntities.includes(dependency)) {
+            console.log(
+              `${key} is NOT VISIBLE due to requiresAnswer dependency ${dependency} not being selected`
+            );
+            return false; // Hide if dependency doesn't have a "yes" answer
           }
         }
       }
+
+      // Check requiresSelection dependencies (need any answer)
+      if (option.requiresSelection && option.requiresSelection.length > 0) {
+        console.log(`${key} requiresSelection:`, option.requiresSelection);
+        // ALL dependencies need to be answered (either yes or no)
+        for (const dependency of option.requiresSelection) {
+          if (!selectedEntities.includes(dependency) && !deSelectedEntities.includes(dependency)) {
+            console.log(
+              `${key} is NOT VISIBLE due to requiresSelection dependency ${dependency} not being answered`
+            );
+            return false; // Hide if any dependency hasn't been answered
+          }
+        }
+      }
+
+      console.log(`${key} is VISIBLE`);
       return true; // This question should be visible
     });
+
+    console.log("Visible questions:", visibleQuestions);
+
     for (const entity of visibleQuestions) {
-      if (!selectedEntities.includes(entity) && !deSelectedEntities.includes(entity)) {
+      const isSelected = selectedEntities.includes(entity);
+      const isDeselected = deSelectedEntities.includes(entity);
+      const isUnanswered = !isSelected && !isDeselected;
+
+      console.log(
+        `Question ${entity}: selected=${isSelected}, deselected=${isDeselected}, unanswered=${isUnanswered}`
+      );
+
+      if (isUnanswered) {
+        console.error(`VALIDATION FAILED: Question '${entity}' is unanswered!`);
         errorArray.push({
           type: "notyf",
           message: "Please answer all questions before continuing.",
