@@ -270,7 +270,7 @@ const EntityDataSelectorPage = ({
                   </Text>
                 );
 
-              case "non-experimental-data-categorization":
+              case "remaining-data-categorization":
                 return (
                   <Text>
                     Use the interface below to categorize your non-1experimental data files into

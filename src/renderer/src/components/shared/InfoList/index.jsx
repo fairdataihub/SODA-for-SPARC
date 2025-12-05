@@ -7,13 +7,13 @@ const LIST_CONFIGS = {
     getItems: (selectedEntities) =>
       [
         selectedEntities.includes("subjects") &&
-          "Data files that were collected from or describe the subjects in your dataset.",
+          "Files that were collected from or describe the subjects in your dataset.",
         selectedEntities.includes("samples") &&
-          "Data files that were collected from or describe the samples in your dataset.",
+          "Files that were collected from or describe the samples in your dataset.",
         selectedEntities.includes("sites") &&
-          "Data files that were collected from or describe the anatomical or extraction sites of your samples.",
+          "Files that were collected from or describe the anatomical or extraction sites of your samples.",
         selectedEntities.includes("performances") &&
-          "Data files that were collected from or describe the performances or experimental sessions of your subjects.",
+          "Files that were collected from or describe the performances or experimental sessions of your subjects.",
       ].filter(Boolean),
   },
   "selected-folders": {

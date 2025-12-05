@@ -325,7 +325,7 @@ window.openPage = async (targetPageID) => {
             ]
           );
         }
-        if (pageEntityType === "non-experimental-data-categorization") {
+        if (pageEntityType === "remaining-data-categorization") {
           // Filter out files that are selected as belonging to the supporting data folders
           setFileVisibilityFilter(
             [],
@@ -490,11 +490,11 @@ window.openPage = async (targetPageID) => {
           );
         }
 
-        if (questionnaireEntityType === "non-experimental-data-categorization") {
+        if (questionnaireEntityType === "remaining-data-categorization") {
           const savedNonExperimentalCategories =
-            window.sodaJSONObj["selected-non-experimental-data-categories"] || [];
+            window.sodaJSONObj["selected-remaining-data-categories"] || [];
           setSelectedDataCategoriesByEntityType({
-            "non-experimental-data-categorization": savedNonExperimentalCategories,
+            "remaining-data-categorization": savedNonExperimentalCategories,
           });
 
           setFileVisibilityFilter(
