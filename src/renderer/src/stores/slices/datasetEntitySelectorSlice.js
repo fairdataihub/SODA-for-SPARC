@@ -70,6 +70,18 @@ export const removeEntityFromEntityList = (entityType, entityName) => {
   );
 };
 
+export const removeEntityType = (entityType) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      if (state.datasetEntityObj && state.datasetEntityObj[entityType]) {
+        delete state.datasetEntityObj[entityType];
+      } else {
+        console.warn(`Entity type ${entityType} does not exist in datasetEntityObj.`);
+      }
+    })
+  );
+};
+
 // Get the obj of entities for a specific entity type
 export const getEntityObjForEntityType = (entityType) => {
   return useGlobalStore.getState()?.datasetEntityObj?.[entityType] || {};

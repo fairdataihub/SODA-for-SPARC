@@ -3,6 +3,7 @@ import { produce } from "immer";
 import { isFolderOpen, resetOpenFoldersState } from "./fileExplorerStateSlice";
 import { newEmptyFolderObj } from "../../scripts/utils/datasetStructure";
 import { getFolderDetailsByRelativePath } from "../../scripts/utils/datasetStructure";
+import { naturalSort } from "../../components/shared/utils/util-functions";
 
 const initialState = {
   datasetStructureJSONObj: null,
@@ -174,9 +175,6 @@ export const reRenderTreeView = (resetOpenFolders = false) => {
       resetOpenFoldersState(pathToRender, updatedStructure);
     }
 
-    const naturalSort = (a, b) =>
-      a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
-
     const invertedDatasetEntityObj = getInvertedDatasetEntityObj();
 
     const convertDatasetStructureToArray = (structure) => {
@@ -189,7 +187,7 @@ export const reRenderTreeView = (resetOpenFolders = false) => {
       for (const folderName of pathToRender) node = node?.folders?.[folderName];
 
       const traverse = (node, depth = 0, allFolderChildrenAreSelected = false) => {
-        const folderNames = Object.keys(node?.folders || {}).sort(naturalSort);
+        const folderNames = naturalSort(Object.keys(node?.folders || {}));
         const { entityType, activeEntity } = useGlobalStore.getState();
 
         for (const folderName of folderNames) {
@@ -253,7 +251,7 @@ export const reRenderTreeView = (resetOpenFolders = false) => {
           });
 
           if (isFolderOpen(relativePath)) {
-            const fileNames = Object.keys(folder.files || {}).sort(naturalSort);
+            const fileNames = naturalSort(Object.keys(folder.files || {}));
             for (const fileName of fileNames) {
               const file = folder.files[fileName];
               const relativePath = file.relativePath;
@@ -299,7 +297,7 @@ export const reRenderTreeView = (resetOpenFolders = false) => {
 
         // Handle files at root level
         if (depth === 0) {
-          const rootFileNames = Object.keys(node?.files || {}).sort(naturalSort);
+          const rootFileNames = naturalSort(Object.keys(node?.files || {}));
           for (const fileName of rootFileNames) {
             const file = node.files[fileName];
             const relativePath = file.relativePath;

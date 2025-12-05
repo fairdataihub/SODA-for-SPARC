@@ -233,6 +233,7 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
     };
 
     const dataFolderFiles = getDataFolderFiles();
+    console.log("dataFolderFiles:", dataFolderFiles);
     dataFolderFiles.forEach((filePath) => moveFileToTargetLocation(filePath, "primary/"));
 
     // Delete any empty folders in the dataset structure

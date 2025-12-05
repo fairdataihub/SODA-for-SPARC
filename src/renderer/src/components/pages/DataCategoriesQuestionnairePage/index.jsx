@@ -1,6 +1,7 @@
 import { Text, Stack, Center } from "@mantine/core";
 import useGlobalStore from "../../../stores/globalStore";
 import { isCheckboxCardChecked } from "../../../stores/slices/checkboxCardSlice";
+import NavigationButton from "../../buttons/Navigation";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import DatasetTreeViewRenderer from "../../shared/DatasetTreeViewRenderer";
@@ -71,21 +72,39 @@ const DataCategoriesQuestionnairePage = ({ pageID, pageName, questionnaireEntity
           <GuidedModeSection
             withBorder
             sectionId="guided-section-experimental-data-categorization-yes-message"
+            centered
           >
-            <Text size="md" fw={500}>
-              Great! On the next page, you will be able to categorize your experimental data into
-              Primary, Source, and Derivative folders. You may now continue to the next page.
-            </Text>
+            <NavigationButton
+              onClick={() => {
+                // Pass the button click to the real next button
+                document.getElementById("guided-next-button").click();
+              }}
+              buttonCustomWidth={"215px"}
+              buttonText={"Save and Continue"}
+              navIcon={"right-arrow"}
+              buttonSize={"md"}
+            ></NavigationButton>
           </GuidedModeSection>
 
           <GuidedModeSection
             withBorder
             sectionId="guided-section-experimental-data-categorization-no-message"
+            centered
           >
             <Text size="md" fw={500}>
               The experimental data below will be categorized as "Primary". You may now continue to
               the next page.
             </Text>
+            <NavigationButton
+              onClick={() => {
+                // Pass the button click to the real next button
+                document.getElementById("guided-next-button").click();
+              }}
+              buttonCustomWidth={"215px"}
+              buttonText={"Save and Continue"}
+              navIcon={"right-arrow"}
+              buttonSize={"md"}
+            ></NavigationButton>
           </GuidedModeSection>
         </>
       )}
@@ -94,16 +113,28 @@ const DataCategoriesQuestionnairePage = ({ pageID, pageName, questionnaireEntity
           <GuidedModeSection
             withBorder
             sectionId="guided-section-remaining-data-categorization-yes-message"
+            centered
           >
             <Text size="md" fw={500}>
               Great! On the next page, you will be able to categorize your remaining data into
               Primary, Source, and Derivative folders. You may now continue to the next page.
             </Text>
+            <NavigationButton
+              onClick={() => {
+                // Pass the button click to the real next button
+                document.getElementById("guided-next-button").click();
+              }}
+              buttonCustomWidth={"215px"}
+              buttonText={"Save and Continue"}
+              navIcon={"right-arrow"}
+              buttonSize={"md"}
+            ></NavigationButton>
           </GuidedModeSection>
 
           <GuidedModeSection
             withBorder
             sectionId="guided-section-remaining-data-categorization-no-message"
+            centered
           >
             <Text size="md" fw={500}>
               The remaining data below will be categorized as "Primary". You may now continue to the

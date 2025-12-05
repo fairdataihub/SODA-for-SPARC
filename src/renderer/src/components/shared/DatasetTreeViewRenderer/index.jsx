@@ -51,7 +51,6 @@ import {
 } from "../../../stores/slices/fileExplorerStateSlice";
 
 import { useDebouncedValue } from "@mantine/hooks";
-import { naturalSort } from "../utils/util-functions";
 import SelectedEntityPreviewer from "../SelectedEntityPreviewer";
 
 // Get badge color based on entity type

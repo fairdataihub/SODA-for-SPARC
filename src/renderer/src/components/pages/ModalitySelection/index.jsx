@@ -40,7 +40,6 @@ const ModalitySelectionPage = () => {
           <CheckboxCard id="modality-selection-no" />
         </Center>
       </GuidedModeSection>
-      {/* Section that appears when user selects "Yes" */}
 
       {isYesChecked && (
         <GuidedModeSection sectionId="dataset-selection">

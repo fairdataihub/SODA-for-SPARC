@@ -177,7 +177,7 @@ const EntityDataSelectorPage = ({
                 // Map selected entities to their display names and format with Oxford comma
                 const entityDisplayMap = {
                   Code: "Code",
-                  Protocol: "Protocol",
+                  Protocol: "Protocol Documentation",
                   Docs: "Documentation",
                 };
 
@@ -195,11 +195,12 @@ const EntityDataSelectorPage = ({
                 return (
                   <>
                     <Text mb={0}>
-                      You indicated that your dataset contains {selectedSupportingEntitiesFormatted}
-                      . The SDS requires these files to be separated into their own folders. Using
-                      the interface below, categorize your supporting files into the appropriate
-                      folders by selecting their category on the left, and then choosing the files
-                      that belong to it on the right.
+                      You indicated that your dataset contains {selectedSupportingEntitiesFormatted}{" "}
+                      {selectedSupportingEntitiesFormatted != "Code" && "data"}. The SDS requires
+                      these files to be separated into their own folders. Using the interface below,
+                      categorize your supporting files into the appropriate folders by selecting
+                      their category on the left, and then choosing the files that belong to it on
+                      the right.
                     </Text>
                   </>
                 );

@@ -3,6 +3,7 @@ import {
   getDatasetEntityObj,
   getCategorizedEntityFileCount,
   removeEntityFromEntityList,
+  removeEntityType,
 } from "../../../stores/slices/datasetEntitySelectorSlice";
 import { getSelectedDataCategoriesByEntityType } from "../../../stores/slices/datasetContentSelectorSlice";
 import { startOrStopAnimationsInContainer } from "../lotties/lottie";
@@ -22,7 +23,6 @@ import {
 } from "../../../stores/slices/datasetEntityStructureSlice";
 import { swalConfirmAction } from "../../utils/swal-utils";
 import { addEntityNameToEntityType } from "../../../stores/slices/datasetEntitySelectorSlice";
-import { data } from "jquery";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -355,8 +355,7 @@ window.savePageChanges = async (pageBeingLeftID) => {
             addEntityNameToEntityType("experimental-data-categorization", "Derivative");
           } else {
             guidedSkipPage("experimental-data-categorization-tab");
-            removeEntityFromEntityList("experimental-data-categorization", "Source");
-            removeEntityFromEntityList("experimental-data-categorization", "Derivative");
+            removeEntityType("experimental-data-categorization");
           }
         }
 
@@ -377,8 +376,7 @@ window.savePageChanges = async (pageBeingLeftID) => {
             addEntityNameToEntityType("remaining-data-categorization", "Derivative");
           } else {
             guidedSkipPage("remaining-data-categorization-tab");
-            removeEntityFromEntityList("remaining-data-categorization", "Source");
-            removeEntityFromEntityList("remaining-data-categorization", "Derivative");
+            removeEntityType("remaining-data-categorization");
           }
         }
       }

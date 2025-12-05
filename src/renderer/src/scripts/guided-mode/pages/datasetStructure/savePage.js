@@ -10,6 +10,7 @@ import {
 import {
   addEntityNameToEntityType,
   removeEntityFromEntityList,
+  removeEntityType,
 } from "../../../../stores/slices/datasetEntitySelectorSlice";
 
 export const savePageDatasetStructure = async (pageBeingLeftID) => {
@@ -152,11 +153,20 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
 
     if (selectedEntities.includes("subjects")) {
       // Unskip all of the experimental pages
+      console.log(
+        "dataset entity object before adding experimental:",
+        window.sodaJSONObj["dataset-entity-obj"]
+      );
       addEntityNameToEntityType("experimental", "experimental");
+      console.log(
+        "dataset entity object after adding experimental:",
+        window.sodaJSONObj["dataset-entity-obj"]
+      );
       guidedUnSkipPageSet("guided-subject-related-page-set");
       guidedUnSkipPageSet("guided-subjects-metadata-page-set");
     } else {
-      removeEntityFromEntityList("experimental", "experimental");
+      removeEntityType("experimental");
+
       // Skip all of the experimental pages
       guidedSkipPageSet("guided-subject-related-page-set");
 
