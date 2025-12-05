@@ -207,6 +207,34 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
       "derivative/"
     );
 
+    // Get list of files in data folder and move them to primary
+    const getDataFolderFiles = () => {
+      const dataFolder = window.datasetStructureJSONObj?.folders?.data;
+      if (!dataFolder) return [];
+
+      const collectFiles = (folderObj) => {
+        let files = [];
+        if (folderObj?.files) {
+          Object.values(folderObj.files).forEach((fileObj) => {
+            if (fileObj.relativePath) {
+              files.push(fileObj.relativePath);
+            }
+          });
+        }
+        if (folderObj?.folders) {
+          Object.values(folderObj.folders).forEach((subFolder) => {
+            files = files.concat(collectFiles(subFolder));
+          });
+        }
+        return files;
+      };
+
+      return collectFiles(dataFolder);
+    };
+
+    const dataFolderFiles = getDataFolderFiles();
+    dataFolderFiles.forEach((filePath) => moveFileToTargetLocation(filePath, "primary/"));
+
     // Delete any empty folders in the dataset structure
     // (The window.datasetStructureJSONObj can be used since the move fns already update it)
     window.datasetStructureJSONObj = deleteEmptyFoldersFromStructure(
