@@ -12,8 +12,7 @@ import api from "../../others/api/api";
 import client from "../../client";
 import { clientError } from "../../others/http-error-handler/error-handler";
 import { swalShowInfo } from "../../utils/swal-utils";
-import { setDatasetEntityObj } from "../../../stores/slices/datasetEntitySelectorSlice";
-import { setDatasetEntityArray } from "../../../stores/slices/datasetEntityStructureSlice";
+
 import { getCategorizedEntityFileList } from "../../../stores/slices/datasetEntitySelectorSlice";
 import { modifyDatasetEntityForRelativeFilePath } from "../../../stores/slices/datasetEntitySelectorSlice";
 import useGlobalStore from "../../../stores/globalStore";
@@ -91,10 +90,6 @@ window.guidedResumeProgress = async (progressFileName) => {
     await patchPreviousGuidedModeVersions();
 
     window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
-    const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
-    setDatasetEntityObj(savedDatasetEntityObj);
-    const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
-    setDatasetEntityArray(datasetEntityArray);
 
     // Save the skipped pages in a temp variable since guidedTransitionFromHome will remove them
     const prevSessionSkikppedPages = [...window.sodaJSONObj["skipped-pages"]];

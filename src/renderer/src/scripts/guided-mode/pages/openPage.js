@@ -219,6 +219,8 @@ window.openPage = async (targetPageID) => {
     setDeSelectedEntities(window.sodaJSONObj["deSelected-entities"] || []);
     setPerformanceList(window.sodaJSONObj["dataset_metadata"]?.["performance_metadata"] || []);
 
+    setDatasetEntityArray(window.sodaJSONObj["dataset-entity-array"] || []);
+
     // Filter out any file/folder references from the entity object that no longer exist in the dataset structure
     // This prevents errors when users delete files/folders after previously assigning them to entities
     const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
@@ -514,19 +516,12 @@ window.openPage = async (targetPageID) => {
       if (targetPageComponentType === "entity-file-mapping-page") {
         /* ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** */
         setSelectedHierarchyEntity(null);
-
-        const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
-
-        setDatasetEntityArray(datasetEntityArray);
       }
 
       if (
         targetPageComponentType === "entity-metadata-page" ||
         targetPageComponentType === "entity-spreadsheet-import-page"
       ) {
-        const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
-
-        setDatasetEntityArray(datasetEntityArray);
         setActiveFormType(null);
       }
     }
