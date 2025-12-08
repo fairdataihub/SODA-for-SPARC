@@ -182,23 +182,46 @@ const guidedGetPageToReturnTo = async () => {
 const patchPreviousGuidedModeVersions = async () => {
   console.log("datasetEntityObj before patching:", window.sodaJSONObj["dataset-entity-obj"]);
 
-  const previousWorkflowExperimentalMarkedFiles =
-    window.sodaJSONObj["dataset-entity-obj"]?.["high-level-folder-data-categorization"]?.[
-      "Experimental"
-    ];
+  const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
+  const oldHighLevelFolders = datasetEntityObj?.["high-level-folder-data-categorization"];
 
-  // Only patch if old data exists
-  if (
-    previousWorkflowExperimentalMarkedFiles &&
-    Object.keys(previousWorkflowExperimentalMarkedFiles).length > 0
-  ) {
-    // Force-create the needed nested structure so this exists:
-    // window.sodaJSONObj["dataset-entity-obj"]["experimental"]["experimental"]
-    window.sodaJSONObj["dataset-entity-obj"]["experimental"] = {};
-    window.sodaJSONObj["dataset-entity-obj"]["experimental"]["experimental"] =
-      previousWorkflowExperimentalMarkedFiles;
-    // Delete the old structure as it is no longer utilized
-    delete window.sodaJSONObj["dataset-entity-obj"]?.["high-level-folder-data-categorization"];
+  if (oldHighLevelFolders && Object.keys(oldHighLevelFolders).length > 0) {
+    // Ensure new keys exist
+    datasetEntityObj["experimental"] = {};
+    datasetEntityObj["non-data-folders"] = {};
+
+    // Patch Experimental files
+    const experimentalFiles = oldHighLevelFolders["Experimental"];
+    if (experimentalFiles && Object.keys(experimentalFiles).length > 0) {
+      datasetEntityObj["experimental"]["experimental"] = experimentalFiles;
+    }
+
+    // Patch Non-data folders
+    const codeFiles = oldHighLevelFolders["Code"];
+    if (codeFiles && Object.keys(codeFiles).length > 0) {
+      datasetEntityObj["non-data-folders"]["Code"] = codeFiles;
+    }
+
+    const protocolFiles = oldHighLevelFolders["Protocol"];
+    if (protocolFiles && Object.keys(protocolFiles).length > 0) {
+      datasetEntityObj["non-data-folders"]["Protocol"] = protocolFiles;
+    }
+
+    const docsFiles = oldHighLevelFolders["Documentation"];
+    if (docsFiles && Object.keys(docsFiles).length > 0) {
+      datasetEntityObj["non-data-folders"]["Docs"] = docsFiles;
+    }
+
+    // Remove old key
+    delete datasetEntityObj["high-level-folder-data-categorization"];
+  }
+
+  // Update "code" in selected-entities to "Code"
+  const selectedEntities = window.sodaJSONObj["selected-entities"];
+  if (selectedEntities.includes("code")) {
+    window.sodaJSONObj["selected-entities"] = selectedEntities
+      .filter((entity) => entity.toLowerCase() !== "code")
+      .concat("Code");
   }
 };
 
