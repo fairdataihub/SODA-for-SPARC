@@ -3,17 +3,17 @@ import useGlobalStore from "../../../stores/globalStore";
 
 const LIST_CONFIGS = {
   "dataset-entities": {
-    title: "The experimental data you should select includes:",
+    title: "The experimental data you should select includes files pertaining to:",
     getItems: (selectedEntities) =>
       [
         selectedEntities.includes("subjects") &&
-          "Files that were collected from or describe the subjects in your dataset.",
+          "Subjects: data about the individual subjects in your study, such as measurements or observations.",
         selectedEntities.includes("samples") &&
-          "Files that were collected from or describe the samples in your dataset.",
+          "Samples: data from physical samples collected from subjects, like tissue or fluid.",
         selectedEntities.includes("sites") &&
-          "Files that were collected from or describe the anatomical or extraction sites of your samples.",
+          "Sites: data describing the anatomical locations or extraction points of samples.",
         selectedEntities.includes("performances") &&
-          "Files that were collected from or describe the performances or experimental sessions of your subjects.",
+          "Performances: data from experimental sessions or tasks performed by subjects, including recorded outcomes.",
       ].filter(Boolean),
   },
   "selected-folders": {

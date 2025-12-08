@@ -77,7 +77,7 @@ const getInstructionalTextByEntityType = (entityType, datasetType) => {
       datasetType === "computational"
         ? "Select the files that describe the computational workflows, analysis procedures, or processing steps used in your data."
         : "Select the files that document the experimental procedures, equipment setups, or workflows used in your study.",
-    Documentation: "Select the files that are supporting documents for your data.",
+    Docs: "Select the files that are supporting documents for your data.",
     experimental: "Select the files that are described in the list above.",
   };
 
@@ -176,9 +176,9 @@ const EntityDataSelectorPage = ({
               case "non-data-folders":
                 // Map selected entities to their display names and format with Oxford comma
                 const entityDisplayMap = {
-                  Code: "Code",
-                  Protocol: "Protocol Documentation",
-                  Docs: "Documentation",
+                  Code: "code",
+                  Protocol: "protocol documentation",
+                  Docs: "documentation",
                 };
 
                 const selectedSupportingEntitiesFormatted = oxfordComma(
@@ -197,10 +197,14 @@ const EntityDataSelectorPage = ({
                     <Text mb={0}>
                       You indicated that your dataset contains {selectedSupportingEntitiesFormatted}{" "}
                       {selectedSupportingEntitiesFormatted != "Code" && "data"}. The SDS requires
-                      these files to be separated into their own folders. Using the interface below,
-                      categorize your supporting files into the appropriate folders by selecting
-                      their category on the left, and then choosing the files that belong to it on
-                      the right.
+                      these files to be placed into their own folders. Use the interface below to
+                      assign your supporting files to the correct folder by selecting a category on
+                      the left and then choosing the files that belong to it on the right.
+                    </Text>
+                    <Text>
+                      <b>Note:</b> You should have files for each category shown on the left. Any
+                      remaining files that are not categorized below will be handled in a later
+                      step.
                     </Text>
                   </>
                 );
@@ -235,6 +239,7 @@ const EntityDataSelectorPage = ({
                         files within it. If a folder contains files that belong to different
                         categories, you can expand it and categorize individual files as needed.
                       </Text>
+
                       <DropDownNote id="data-categories-list" />
                     </>
                   );

@@ -18,24 +18,22 @@ const DataCategoriesQuestionnairePage = ({ pageID, pageName, questionnaireEntity
           <Text>
             Your experimental data, shown at the bottom of this page, can be organized into three
             categories: Primary, Source, and Derivative. These categories correspond to the folders
-            where your data will be placed in your final standardized dataset. If you have files
-            that are Source or Derivative and would like to categorize them, select "Yes" below
-            indicating that you would like to organize your experimental data, and on the next page,
-            you will be asked to assign a category to each file. If you do not have Source or
-            Derivative files or do not wish to categorize your experimental data, select "No" below,
-            and all experimental data will be categorized as "Primary" and placed in the Primary
-            folder of your standardized dataset.
+            where your data will be placed in your final standardized dataset. If you do not have
+            Source or Derivative files, or do not wish to categorize your data, select "No" below.
+            All experimental data will then be categorized as "Primary" and placed in the Primary
+            folder. If you have Source or Derivative files and want to categorize them, select "Yes"
+            below, and on the next page, you will be asked to assign a category to each file.
           </Text>
         )}
         {questionnaireEntityType === "remaining-data-categorization" && (
           <Text>
-            Your remaining data, shown at the bottom of this page, can be organized into three
-            categories: Primary, Source, and Derivative. These categories correspond to the folders
-            where your data will be placed in your final standardized dataset. If you have Source or
-            Derivative files and want to categorize them, select "Yes" below. On the next page, you
-            will assign a category to each file. If you do not have Source or Derivative files or do
-            not wish to categorize your data, select "No," and all remaining data will be treated as
-            Primary and placed in the Primary folder of your standardized dataset.
+            The files shown below have not yet been categorized and must be organized according to
+            the SPARC Dataset Structure (SDS). These files can be placed into one of three
+            categories: Primary, Source, or Derivative. Each category corresponds to a specific
+            folder in your final standardized dataset. If you need to manually assign some files as
+            Source or Derivative, select "Yes" below and you'll be able to categorize each file
+            individually on the next page. If all remaining files should be treated as Primary data,
+            select "No" and they will automatically be placed in the Primary folder.
           </Text>
         )}
 
