@@ -14,6 +14,8 @@ import { clientError } from "../../others/http-error-handler/error-handler";
 import { swalShowInfo } from "../../utils/swal-utils";
 import { setDatasetEntityObj } from "../../../stores/slices/datasetEntitySelectorSlice";
 import { setDatasetEntityArray } from "../../../stores/slices/datasetEntityStructureSlice";
+import { getCategorizedEntityFileList } from "../../../stores/slices/datasetEntitySelectorSlice";
+import { modifyDatasetEntityForRelativeFilePath } from "../../../stores/slices/datasetEntitySelectorSlice";
 import useGlobalStore from "../../../stores/globalStore";
 
 while (!window.baseHtmlLoaded) {
@@ -178,7 +180,19 @@ const guidedGetPageToReturnTo = async () => {
 };
 
 const patchPreviousGuidedModeVersions = async () => {
-  // Empty since this is the first SDS3 release and no changes need be modified
+  console.log("datasetEntityObj before patching:", window.sodaJSONObj["dataset-entity-obj"]);
+  // Get a list of files added to the old experimental data entity structure and add it to the new structure
+  const oldExperimentalDataEntityFiles = Object.keys(
+    window.sodaJSONObj["dataset-entity-obj"]?.["high-level-folder-data-categorization"]?.[
+      "Experimental"
+    ] || {}
+  );
+  if (oldExperimentalDataEntityFiles.length > 0) {
+    console.log("Found files in old Experimental data entity structure, patching...");
+    for (const filePath of oldExperimentalDataEntityFiles) {
+      modifyDatasetEntityForRelativeFilePath("experimental", "experimental", filePath, "add");
+    }
+  }
 };
 
 const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {

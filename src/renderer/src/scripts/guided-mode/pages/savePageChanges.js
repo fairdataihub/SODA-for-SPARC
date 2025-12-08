@@ -1,7 +1,7 @@
 import { guidedSetNavLoadingState } from "./navigationUtils/pageLoading";
 import {
   getDatasetEntityObj,
-  getCategorizedEntityFileCount,
+  getCategorizedEntityFileList,
   removeEntityFromEntityList,
   removeEntityType,
 } from "../../../stores/slices/datasetEntitySelectorSlice";
@@ -156,7 +156,10 @@ window.savePageChanges = async (pageBeingLeftID) => {
           // Make sure the user categorized at least one file into each of the non-data folders
           // that should have files categorized into them
           for (const folder of userSelectedNonDataFolders) {
-            const categorizedFileCount = getCategorizedEntityFileCount("non-data-folders", folder);
+            const categorizedFileCount = getCategorizedEntityFileList(
+              "non-data-folders",
+              folder
+            ).length;
             if (categorizedFileCount === 0) {
               errorArray.push({
                 type: "notyf",
