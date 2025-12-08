@@ -219,6 +219,12 @@ window.openPage = async (targetPageID) => {
     setDeSelectedEntities(window.sodaJSONObj["deSelected-entities"] || []);
     setPerformanceList(window.sodaJSONObj["dataset_metadata"]?.["performance_metadata"] || []);
 
+    // Filter out any file/folder references from the entity object that no longer exist in the dataset structure
+    // This prevents errors when users delete files/folders after previously assigning them to entities
+    const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
+    const filteredDatasetEntityObj = filterRemovedFilesFromDatasetEntityObj(savedDatasetEntityObj);
+    setDatasetEntityObj(filteredDatasetEntityObj);
+
     handleNextButtonVisibility(targetPageID);
     handleBackButtonVisibility(targetPageID);
     handleSaveAndExitButtonVisibility(targetPageID);
@@ -264,17 +270,10 @@ window.openPage = async (targetPageID) => {
 
       if (targetPageComponentType === "data-categorization-page") {
         const pageEntityType = targetPageDataset.entityType;
-        const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
         // Delete the manifest file because it throws off the count of files selected
         delete window.datasetStructureJSONObj?.["files"]?.["manifest.xlsx"];
         const datasetType = window.sodaJSONObj["dataset-type"];
         setDatasetType(datasetType);
-
-        // Filter out any file/folder references from the entity object that no longer exist in the dataset structure
-        // This prevents errors when users delete files/folders after previously assigning them to entities
-        const filteredDatasetEntityObj =
-          filterRemovedFilesFromDatasetEntityObj(savedDatasetEntityObj);
-        setDatasetEntityObj(filteredDatasetEntityObj, "data-categorization-page");
 
         if (pageEntityType === "non-data-folders") {
           setFileVisibilityFilter([], []); // No pre-set filters for data categorization
@@ -517,10 +516,6 @@ window.openPage = async (targetPageID) => {
         setSelectedHierarchyEntity(null);
 
         const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
-        const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
-
-        // Make sure the datasetEntityObj is set before applying filters
-        setDatasetEntityObj(savedDatasetEntityObj, "entity-file-mapping-page");
 
         setDatasetEntityArray(datasetEntityArray);
       }

@@ -168,7 +168,7 @@ const findMatchingRelativePaths = (obj, entityTypeLowerCased, matchingPaths) => 
 };
 
 // Set the dataset entity object directly
-export const setDatasetEntityObj = (datasetEntityObj, setLocation) => {
+export const setDatasetEntityObj = (datasetEntityObj) => {
   useGlobalStore.setState((state) => ({
     ...state,
     datasetEntityObj,

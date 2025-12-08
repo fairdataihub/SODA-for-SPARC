@@ -134,6 +134,16 @@ const DataCategoriesQuestionnairePage = ({ pageID, pageName, questionnaireEntity
               The remaining data below will be categorized as "Primary" and remain in the Primary
               folder. You may now continue to the next page.
             </Text>
+            <NavigationButton
+              onClick={() => {
+                // Pass the button click to the real next button
+                document.getElementById("guided-next-button").click();
+              }}
+              buttonCustomWidth={"215px"}
+              buttonText={"Save and Continue"}
+              navIcon={"right-arrow"}
+              buttonSize={"md"}
+            ></NavigationButton>
           </GuidedModeSection>
         </>
       )}
