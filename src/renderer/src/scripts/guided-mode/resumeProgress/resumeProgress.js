@@ -1,20 +1,15 @@
 import Swal from "sweetalert2";
-import { guidedTransitionFromHome } from "../pages/navigate";
 import { checkIfDatasetExistsOnPennsieve } from "../pennsieveUtils";
 import {
   guidedSkipPage,
-  guidedUnSkipPage,
   getNonSkippedGuidedModePages,
 } from "../pages/navigationUtils/pageSkipping";
 import { guidedGetCurrentUserWorkSpace } from "../workspaces/workspaces";
 import { getProgressFileData } from "./progressFile";
-import api from "../../others/api/api";
-import client from "../../client";
+
 import { clientError } from "../../others/http-error-handler/error-handler";
 import { swalShowInfo } from "../../utils/swal-utils";
 
-import { getCategorizedEntityFileList } from "../../../stores/slices/datasetEntitySelectorSlice";
-import { modifyDatasetEntityForRelativeFilePath } from "../../../stores/slices/datasetEntitySelectorSlice";
 import useGlobalStore from "../../../stores/globalStore";
 
 while (!window.baseHtmlLoaded) {
