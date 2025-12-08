@@ -181,17 +181,24 @@ const guidedGetPageToReturnTo = async () => {
 
 const patchPreviousGuidedModeVersions = async () => {
   console.log("datasetEntityObj before patching:", window.sodaJSONObj["dataset-entity-obj"]);
-  // Get a list of files added to the old experimental data entity structure and add it to the new structure
-  const oldExperimentalDataEntityFiles = Object.keys(
+
+  const previousWorkflowExperimentalMarkedFiles =
     window.sodaJSONObj["dataset-entity-obj"]?.["high-level-folder-data-categorization"]?.[
       "Experimental"
-    ] || {}
-  );
-  if (oldExperimentalDataEntityFiles.length > 0) {
-    console.log("Found files in old Experimental data entity structure, patching...");
-    for (const filePath of oldExperimentalDataEntityFiles) {
-      modifyDatasetEntityForRelativeFilePath("experimental", "experimental", filePath, "add");
-    }
+    ];
+
+  // Only patch if old data exists
+  if (
+    previousWorkflowExperimentalMarkedFiles &&
+    Object.keys(previousWorkflowExperimentalMarkedFiles).length > 0
+  ) {
+    // Force-create the needed nested structure so this exists:
+    // window.sodaJSONObj["dataset-entity-obj"]["experimental"]["experimental"]
+    window.sodaJSONObj["dataset-entity-obj"]["experimental"] = {};
+    window.sodaJSONObj["dataset-entity-obj"]["experimental"]["experimental"] =
+      previousWorkflowExperimentalMarkedFiles;
+    // Delete the old structure as it is no longer utilized
+    delete window.sodaJSONObj["dataset-entity-obj"]?.["high-level-folder-data-categorization"];
   }
 };
 
