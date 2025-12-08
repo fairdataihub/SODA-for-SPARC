@@ -515,7 +515,7 @@ const initialize = () => {
       width: 220,
       height: 190,
       frame: false,
-      icon: __dirname + "/assets/img/logo-new-prim-7.png",
+      icon: __dirname + "/assets/menu-icon/soda_icon.png",
       alwaysOnTop: true,
       transparent: true,
     });
