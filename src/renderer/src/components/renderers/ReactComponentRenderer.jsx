@@ -220,7 +220,6 @@ const componentTypeRenderers = {
       entityTypeOnlyHasOneCategory:
         componentSlot.getAttribute("data-entity-type-only-has-one-category") === "true",
     };
-    console.log("Rendering DataCategorizationPage with props:", props);
     renderComponent(componentSlot, <EntityDataSelectorPage {...props} />);
   },
 

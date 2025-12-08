@@ -9,8 +9,6 @@ import CheckboxCard from "../../cards/CheckboxCard";
 import DropDownNote from "../../utils/ui/DropDownNote";
 
 const DataCategoriesQuestionnairePage = ({ pageID, pageName, questionnaireEntityType }) => {
-  console.log("questionnaireEntityType:", questionnaireEntityType);
-
   return (
     <GuidedModePage pageHeader={pageName}>
       <GuidedModeSection>
@@ -27,13 +25,13 @@ const DataCategoriesQuestionnairePage = ({ pageID, pageName, questionnaireEntity
         )}
         {questionnaireEntityType === "remaining-data-categorization" && (
           <Text>
-            The files shown below have not yet been categorized and must be organized according to
-            the SPARC Dataset Structure (SDS). These files can be placed into one of three
-            categories: Primary, Source, or Derivative. Each category corresponds to a specific
-            folder in your final standardized dataset. If you need to manually assign some files as
-            Source or Derivative, select "Yes" below and you'll be able to categorize each file
-            individually on the next page. If all remaining files should be treated as Primary data,
-            select "No" and they will automatically be placed in the Primary folder.
+            Your remaining files, shown at the bottom of this page, can be organized into three
+            categories: Primary, Source, and Derivative. These categories correspond to the folders
+            where your files will be placed in your final standardized dataset. If you do not have
+            Source or Derivative files, or do not wish to categorize your files, select "No" below.
+            All remaining files will then be categorized as "Primary" and placed in the Primary
+            folder. If you have Source or Derivative files and want to categorize them, select "Yes"
+            below, and on the next page, you will be asked to assign a category to each file.
           </Text>
         )}
 
@@ -68,10 +66,12 @@ const DataCategoriesQuestionnairePage = ({ pageID, pageName, questionnaireEntity
       {questionnaireEntityType === "experimental-data-categorization" && (
         <>
           <GuidedModeSection
-            withBorder
             sectionId="guided-section-experimental-data-categorization-yes-message"
             centered
           >
+            <Text size="md" fw={500}>
+              Continue to the next page to categorize your experimental data.
+            </Text>
             <NavigationButton
               onClick={() => {
                 // Pass the button click to the real next button
@@ -85,13 +85,12 @@ const DataCategoriesQuestionnairePage = ({ pageID, pageName, questionnaireEntity
           </GuidedModeSection>
 
           <GuidedModeSection
-            withBorder
             sectionId="guided-section-experimental-data-categorization-no-message"
             centered
           >
             <Text size="md" fw={500}>
-              The experimental data below will be categorized as "Primary". You may now continue to
-              the next page.
+              The experimental data below will be categorized as "Primary" and remain in the Primary
+              folder. You may now continue to the next page.
             </Text>
             <NavigationButton
               onClick={() => {
@@ -109,13 +108,11 @@ const DataCategoriesQuestionnairePage = ({ pageID, pageName, questionnaireEntity
       {questionnaireEntityType === "remaining-data-categorization" && (
         <>
           <GuidedModeSection
-            withBorder
             sectionId="guided-section-remaining-data-categorization-yes-message"
             centered
           >
             <Text size="md" fw={500}>
-              Great! On the next page, you will be able to categorize your remaining data into
-              Primary, Source, and Derivative folders. You may now continue to the next page.
+              Continue to the next page to categorize your remaining data.
             </Text>
             <NavigationButton
               onClick={() => {
@@ -130,19 +127,18 @@ const DataCategoriesQuestionnairePage = ({ pageID, pageName, questionnaireEntity
           </GuidedModeSection>
 
           <GuidedModeSection
-            withBorder
             sectionId="guided-section-remaining-data-categorization-no-message"
             centered
           >
             <Text size="md" fw={500}>
-              The remaining data below will be categorized as "Primary". You may now continue to the
-              next page.
+              The remaining data below will be categorized as "Primary" and remain in the Primary
+              folder. You may now continue to the next page.
             </Text>
           </GuidedModeSection>
         </>
       )}
 
-      <GuidedModeSection>
+      <GuidedModeSection mt="lg">
         <DatasetTreeViewRenderer fileExplorerId={pageID} entityType={null} hideSearchBar={true} />
       </GuidedModeSection>
     </GuidedModePage>

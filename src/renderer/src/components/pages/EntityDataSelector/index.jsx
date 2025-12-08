@@ -101,18 +101,14 @@ const EntityDataSelectorPage = ({
   entityTypeOnlyHasOneCategory = false,
 }) => {
   const activeEntity = useGlobalStore((state) => state.activeEntity);
-  console.log("activeEntity", activeEntity);
   const entityType = useGlobalStore((state) => state.entityType); // e.g. 'data-folders'
-  console.log("entityType", entityType);
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
-  console.log("selectedEntities", selectedEntities);
   const datasetIncludesCode = selectedEntities.includes("code");
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
   const datasetType = useGlobalStore((state) => state.datasetType);
 
   const itemCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
   const supplementaryFilesCount = countSelectedFilesByEntityType("non-data-folders");
-  console.log("supplementaryFilesCount", supplementaryFilesCount);
   const countItemsSelected = countSelectedFilesByEntityType(entityType);
   const totalFilesSelected = countItemsSelected + supplementaryFilesCount;
 
@@ -185,11 +181,6 @@ const EntityDataSelectorPage = ({
                   selectedEntities
                     .filter((entity) => entityDisplayMap[entity])
                     .map((entity) => entityDisplayMap[entity])
-                );
-
-                console.log(
-                  "selectedSupportingEntitiesFormatted",
-                  selectedSupportingEntitiesFormatted
                 );
 
                 return (
@@ -270,18 +261,18 @@ const EntityDataSelectorPage = ({
               case "experimental-data-categorization":
                 return (
                   <Text>
-                    Use the interface below to categorize your experimental data files into Primary,
-                    Source, and Derivative data types. Any files not categorized will be marked as
-                    primary by default.
+                    Use the interface below to categorize your Source and Derivative experimental
+                    data files. Any files not categorized will be marked as "Primary" by default and
+                    be placed in the Primary folder.
                   </Text>
                 );
 
               case "remaining-data-categorization":
                 return (
                   <Text>
-                    Use the interface below to categorize your non-1experimental data files into
-                    Primary, Source, and Derivative data types. Any files not categorized will be
-                    marked as primary by default.
+                    Use the interface below to categorize your Source and Derivative data files. Any
+                    files not categorized will be marked as "Primary" by default and be placed in
+                    the Primary folder.
                   </Text>
                 );
 
