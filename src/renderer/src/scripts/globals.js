@@ -1700,7 +1700,6 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
         // document.getElementById("ds-description").innerHTML = "";
         window.refreshDatasetList();
-
         $("#dataset-loaded-message").hide();
 
         showHideDropdownButtons("dataset", "show");
