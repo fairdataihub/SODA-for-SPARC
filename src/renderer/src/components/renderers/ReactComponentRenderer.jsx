@@ -224,13 +224,11 @@ const componentTypeRenderers = {
   },
 
   "data-categories-questionnaire-page": (componentSlot) => {
-    console.log("Rendering DataCategoriesQuestionnairePage for componentSlot:", componentSlot);
     const props = {
       pageID: componentSlot.id,
       pageName: componentSlot.getAttribute("data-page-name"),
       questionnaireEntityType: componentSlot.getAttribute("data-questionnaire-entity-type"),
     };
-    console.log("Rendering DataCategoriesQuestionnairePage with props:", props);
     renderComponent(componentSlot, <DataCategoriesQuestionnairePage {...props} />);
   },
 

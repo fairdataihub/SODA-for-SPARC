@@ -100,7 +100,6 @@ export const openPageDatasetStructure = async (targetPageID) => {
     );
 
     const newManifestData = { headers: manifestRes.shift(), data: manifestRes };
-    console.log("newManifestData before processing:", newManifestData);
     // wait for 100 seconds
     const entityColumnIndex = newManifestData.headers.indexOf("entity");
 
@@ -215,7 +214,6 @@ export const openPageDatasetStructure = async (targetPageID) => {
   } else if (targetPageID == "guided-modalities-selection-tab") {
     let modalities = window.sodaJSONObj["button-config"]["multiple-modalities"];
     if (modalities === "yes") {
-      console.log("Setting modality selection to YES");
       setCheckboxCardChecked("modality-selection-yes");
     } else if (modalities === "no") {
       setCheckboxCardChecked("modality-selection-no");

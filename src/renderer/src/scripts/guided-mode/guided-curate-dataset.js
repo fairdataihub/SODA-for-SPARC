@@ -1348,10 +1348,8 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
       if (defaultRole) $("#guided-contributor-role-select").selectpicker("val", defaultRole);
 
       $(".SODA-select-picker button").on("click", (e) => {
-        console.log(e);
         const dropdownParent = e.target.closest(".dropdown");
         const dropdownMenu = dropdownParent.querySelector(".dropdown-menu.inner");
-        console.log(dropdownMenu);
         if (dropdownMenu) {
           dropdownMenu.style.display = "block";
           dropdownMenu.parentElement.style.display = "block";

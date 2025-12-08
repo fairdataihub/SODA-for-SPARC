@@ -181,17 +181,11 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
 
   const moveFilesByCategory = (categoryObj, destFolder) => {
     if (!categoryObj) return;
-    if (destFolder === "source/") {
-      console.log(`Moving files to ${destFolder}:`, Object.keys(categoryObj));
-    }
+
     Object.keys(categoryObj).forEach((file) => {
-      if (destFolder === "source/") {
-        console.log(`Attempting to move: ${file} to ${destFolder}`);
-      }
       moveFileToTargetLocation(file, destFolder);
     });
   };
-  console.log("Creating standardized dataset structure...");
   try {
     // Move Code files into the code/ folder
     moveFilesByCategory(datasetEntityObj?.["non-data-folders"]?.["Code"], "code/");
@@ -218,7 +212,6 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
     // Get list of files in data folder and move them to primary
     const getDataFolderFiles = () => {
       const dataFolder = window.datasetStructureJSONObj?.folders?.data;
-      console.log("dataFolder:", dataFolder);
       if (!dataFolder) return [];
 
       const collectFiles = (folderObj) => {
@@ -242,7 +235,6 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
     };
 
     const dataFolderFiles = getDataFolderFiles();
-    console.log("dataFolderFiles:", dataFolderFiles);
     dataFolderFiles.forEach((filePath) => moveFileToTargetLocation(filePath, "primary/"));
 
     // Delete any empty folders in the dataset structure

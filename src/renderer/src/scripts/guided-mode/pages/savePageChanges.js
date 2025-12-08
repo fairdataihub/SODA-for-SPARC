@@ -150,11 +150,9 @@ window.savePageChanges = async (pageBeingLeftID) => {
         const datasetEntityObj = getDatasetEntityObj();
         const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
         const datasetFileCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
-        console.log("Dataset file count:", datasetFileCount);
 
         if (entityType === "non-data-folders") {
           const userSelectedNonDataFolders = window.sodaJSONObj["non-data-folders"];
-          console.log("User selected non-data-folders:", userSelectedNonDataFolders);
           // Make sure the user categorized at least one file into each of the non-data folders
           // that should have files categorized into them
           for (const folder of userSelectedNonDataFolders) {
@@ -326,9 +324,6 @@ window.savePageChanges = async (pageBeingLeftID) => {
           // Update dataset metadata
           window.sodaJSONObj["dataset_metadata"]["performances"] = performanceMetadata;
         }
-        if (entityType === "experimental-data-categorization") {
-          console.log("Saving experimental data categorization changes...");
-        }
       }
 
       if (pageBeingLeftComponentType === "data-categories-questionnaire-page") {
@@ -494,7 +489,6 @@ window.savePageChanges = async (pageBeingLeftID) => {
 export const saveEntityFileMappingChanges = () => {
   // Get the current datasetEntityObj from the store
   const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
-  console.log("Saving datasetEntityObj:", JSON.stringify(datasetEntityObj, null, 2));
 
   // Save the entire datasetEntityObj to window.sodaJSONObj
   window.sodaJSONObj["dataset-entity-obj"] = datasetEntityObj;

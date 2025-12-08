@@ -555,8 +555,6 @@ window.importLocalDataset = async (folderPath) => {
   let moveForward = false;
   let valid_dataset = window.verifySparcFolder(folderPath, "local");
 
-  console.log("Valid dataset: ", valid_dataset);
-
   if (valid_dataset) {
     moveForward = await window.handleLocalDatasetImport(folderPath);
   } else {
@@ -604,7 +602,6 @@ window.electron.ipcRenderer.on(
 
 // Event listeners for buttons in step 2 of Organize Dataset
 document.getElementById("confirm-account-workspace").addEventListener("click", async function () {
-  console.log("Great happening now");
   document.getElementById("confirm-account-workspace").classList.remove("soda-green-border");
   document.getElementById("confirm-account-workspace").classList.add("soda-green-background");
   const loadingDiv = document.querySelector("#upload-dataset-synchronizing-workspace-loading");

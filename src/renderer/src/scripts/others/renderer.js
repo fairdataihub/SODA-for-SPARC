@@ -1637,7 +1637,6 @@ window.clearDatasetDropdowns = () => {
     window.addOption(list, "Search here...", "Select dataset");
     list.options[0].disabled = true;
   }
-  console.log("Cleared dataset dropdowns");
 };
 
 const clearOrganizationDropdowns = () => {
@@ -2428,8 +2427,6 @@ window.refreshDatasetList = () => {
   filteredDatasets.sort((a, b) => {
     return a.toLowerCase().localeCompare(b.toLowerCase());
   });
-
-  console.log("Filtered Datasets: ", filteredDatasets);
 
   populateDatasetDropdowns(filteredDatasets);
   return filteredDatasets.length;
@@ -5125,7 +5122,6 @@ const setupCode = async (resume = false) => {
 };
 
 const preGenerateSetup = async (e, elementContext) => {
-  console.log(elementContext);
   $("#preview-dataset-tab").removeClass("tab-active");
   let resume = e.target.textContent.trim() == "Retry";
   setupCode(resume);
@@ -6058,7 +6054,6 @@ window.showBFAddAccountSweetalert = async (ev) => {
                     $("#create_empty_dataset_BF_account_span").text(user_email);
                     $(".ps-account-span").text(user_email);
                     $("#current-ps-dataset").text("None");
-                    console.log("NO here");
                     $("#current-ps-dataset-generate").text("None");
                     $(".ps-dataset-span").html("None");
                     $("#para-continue-ps-dataset-getting-started").text("");

@@ -464,7 +464,6 @@ window.openPage = async (targetPageID) => {
       if (targetPageComponentType === "data-categories-questionnaire-page") {
         // Extract the questionnaire entity type from the data attribute
         const questionnaireEntityType = targetPageDataset.questionnaireEntityType;
-        console.log("questionnaireEntityType:", questionnaireEntityType);
 
         // Restore user selections from JSON
         if (questionnaireEntityType === "experimental-data-categorization") {
