@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - staging
+      - icons-updae
 
 jobs:
   deploy-on-windows:
