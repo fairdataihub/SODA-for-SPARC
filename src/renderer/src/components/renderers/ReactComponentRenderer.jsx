@@ -34,6 +34,7 @@ import { CardButton } from "../cards/CardButton";
 import CheckboxCard from "../cards/CheckboxCard";
 import { Divider } from "@mantine/core";
 import DataCategoriesQuestionnairePage from "../pages/DataCategoriesQuestionnairePage";
+import InfoList from "../shared/InfoList";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
 while (!window.htmlSectionsAdded) {
@@ -268,6 +269,12 @@ const componentTypeRenderers = {
       id: componentSlot.id,
     };
     renderComponent(componentSlot, <DropDownNote {...props} />);
+  },
+  "info-list": (componentSlot) => {
+    const props = {
+      id: componentSlot.id,
+    };
+    renderComponent(componentSlot, <InfoList {...props} />);
   },
 };
 

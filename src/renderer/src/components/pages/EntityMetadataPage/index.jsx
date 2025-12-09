@@ -59,6 +59,7 @@ import { getExistingSamples } from "../../../stores/slices/datasetEntityStructur
 import InstructionsTowardsLeftContainer from "../../utils/ui/InstructionsTowardsLeftContainer";
 import { OptionalFieldsNotice } from "./utils";
 import DropDownNote from "../../utils/ui/DropDownNote";
+import InfoList from "../../shared/InfoList";
 /**
  * EntityMetadataForm Component
  *
@@ -1032,8 +1033,17 @@ const EntityMetadataPage = ({ entityType }) => {
         <Text>
           {showFullMetadataFormFields
             ? `Tell us more about the ${entityType} you collected data from in the interface below. `
-            : "Use the interface below to describe the entities in your experimental data."}
+            : "The SDS requires metadata for the entities your data was collected from, such as subjects or samples, so you must provide a unique ID for each entity in your dataset."}
         </Text>
+        {!showFullMetadataFormFields && (
+          <InfoList id="entity-addition-method-entity-explanation-list" />
+        )}
+        {!showFullMetadataFormFields && (
+          <Text mb="-10px">
+            Use the interface below to specify IDs for each entity in your dataset. For more details
+            about working with entities, expand the dropdown below.
+          </Text>
+        )}
         {!showFullMetadataFormFields && <DropDownNote id="dataset-entity-management-page" />}
       </GuidedModeSection>
 

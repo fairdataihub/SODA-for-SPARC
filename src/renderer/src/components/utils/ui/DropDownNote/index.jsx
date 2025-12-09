@@ -130,37 +130,35 @@ const DropDownNote = ({ id }) => {
       dropDownButtonText: "Learn more about managing the structure of your entities",
       dropDownNote: (
         <>
-          <Text size="sm">
-            The SPARC Dataset Structure (SDS) requires you to denote entities and their
-            relationships. This page allows you to add, edit, or remove entities such as subjects,
-            samples, and sites. The recommended workflow for this page is:
-          </Text>
-          <List type="ordered" mt="md">
+          <Text mt="md">The recommended workflow for specifying entity IDs on this page is:</Text>
+          <List type="ordered" mt="md" withPadding>
             {datasetIncludesSubjects && (
               <List.Item>
-                <Text size="sm">
-                  <strong>Add subjects</strong> - Click the "Add Subject" button, enter some
-                  metadata for the subject (at minimum the subject's ID), and click the "Add
-                  subject" button at the bottom of the form.
+                <Text mb="sm">
+                  <strong>Specify subject IDs</strong> – For each subject, click the “Add Subject”
+                  button, enter metadata for the subject (at minimum the subject ID), then click the
+                  blue “Add Subject” button at the top or bottom of the form.
                 </Text>
               </List.Item>
             )}
+
             {datasetIncludesSamples && (
               <List.Item>
-                <Text size="sm">
-                  <strong>Add samples</strong> - Click the "Add Sample" button underneath the
-                  subject that the sample was taken from, enter some metadata for the sample (at
-                  minimum the sample's ID), and click the "Add Sample" button at the bottom of the
-                  form.
+                <Text mb="sm">
+                  <strong>Specify sample IDs</strong> – For each sample, click the “Add Sample”
+                  button under the subject the sample belongs to, enter metadata for the sample (at
+                  minimum the sample ID), then click the blue “Add Sample” button at the top or
+                  bottom of the form.
                 </Text>
               </List.Item>
             )}
+
             {datasetIncludesSites && (
               <List.Item>
-                <Text size="sm">
-                  <strong>Add sites</strong> - Click the "Add site" button underneath the sample the
-                  site is from, enter some metadata for the site (at minimum the site's ID), and
-                  click the "Add site" button at the bottom of the form.
+                <Text>
+                  <strong>Specify site IDs</strong> – For each site, click the “Add Site” button
+                  under the sample the site belongs to, enter metadata for the site (at minimum the
+                  site ID), then click the blue “Add Site” button at the top or bottom of the form.
                 </Text>
               </List.Item>
             )}

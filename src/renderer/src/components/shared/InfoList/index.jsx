@@ -2,7 +2,7 @@ import { Box, Text, List } from "@mantine/core";
 import useGlobalStore from "../../../stores/globalStore";
 
 const LIST_CONFIGS = {
-  "dataset-entities": {
+  "experimental-data-entity-selection-list": {
     title: "The experimental data you should select includes files pertaining to:",
     getItems: (selectedEntities) =>
       [
@@ -16,6 +16,19 @@ const LIST_CONFIGS = {
           "Performances: data from experimental sessions or tasks performed by subjects, including recorded outcomes.",
       ].filter(Boolean),
   },
+  "entity-addition-method-entity-explanation-list": {
+    title: "The entities you will need to provided IDs for are:",
+    getItems: (selectedEntities) =>
+      [
+        selectedEntities.includes("subjects") &&
+          "Subjects: Each individual (human or animal) participating in your study.",
+        selectedEntities.includes("samples") &&
+          "Samples: Each physical specimen collected from subjects, such as tissue or fluid samples.",
+        selectedEntities.includes("sites") &&
+          "Sites: Each specific anatomical location or extraction point of samples.",
+      ].filter(Boolean),
+  },
+
   "selected-folders": {
     title: "Selected folders:",
     getItems: () => [],

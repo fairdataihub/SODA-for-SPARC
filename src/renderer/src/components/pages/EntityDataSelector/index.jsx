@@ -209,7 +209,7 @@ const EntityDataSelectorPage = ({
                       Select all of your experimental data below so SODA can help you annotate it in
                       the following steps.
                     </Text>
-                    <InfoList id="dataset-entities" />
+                    <InfoList id="experimental-data-entity-selection-list" />
                   </>
                 );
 
