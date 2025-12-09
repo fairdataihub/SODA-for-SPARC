@@ -47,15 +47,14 @@ export const contentOptionsMap = {
     dropDownDescription:
       "Select yes if your dataset contains protocol files that describe the methods and procedures used during data collection or analysis.",
     ml: 0,
-    requiresSelection: ["subjects", "Code"],
   },
+
   Docs: {
     label: "Does your dataset include any documentation files?",
     dropDownDescription:
       "Select yes if your dataset includes files that describe, explain, or organize the data — such as README files, data dictionaries, summaries of experimental methods, or overviews of data organization. " +
       "These materials help others interpret and use the dataset effectively.",
     ml: 0,
-    requiresSelection: ["subjects", "Code"],
   },
 };
 

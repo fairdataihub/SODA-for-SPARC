@@ -207,7 +207,7 @@ const patchPreviousGuidedModeVersions = async () => {
   }
 
   // Update "code" in selected-entities to "Code"
-  const selectedEntities = window.sodaJSONObj["selected-entities"];
+  const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
   if (selectedEntities.includes("code")) {
     window.sodaJSONObj["selected-entities"] = selectedEntities
       .filter((entity) => entity.toLowerCase() !== "code")
