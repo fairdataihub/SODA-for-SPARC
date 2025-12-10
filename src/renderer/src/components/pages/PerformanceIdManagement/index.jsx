@@ -87,16 +87,20 @@ const PerformanceMetadataForm = () => {
           label="Start Date & Time"
           description="Enter the date and time when the performance started."
           placeholder="Select start date and time"
-          value={start_datetime ? new Date(start_datetime) : null}
+          value={start_datetime ? new Date(start_datetime.replace(" ", "T")) : null}
           onChange={(val) => setStartDatetime(val ? val.toISOString() : "")}
+          withSeconds
+          valueFormat="YYYY-MM-DD HH:mm:ss"
           clearable
         />
         <DateTimePicker
           label="End Date & Time"
           description="Enter the date and time when the performance ended."
           placeholder="Select end date and time"
-          value={end_datetime ? new Date(end_datetime) : null}
+          value={end_datetime ? new Date(end_datetime.replace(" ", "T")) : null}
           onChange={(val) => setEndDatetime(val ? val.toISOString() : "")}
+          withSeconds
+          valueFormat="YYYY-MM-DD HH:mm:ss"
           clearable
         />
       </Group>
