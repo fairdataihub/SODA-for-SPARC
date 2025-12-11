@@ -13,7 +13,12 @@ import { savePagePrepareMetadata } from "./prepareMetadata/savePage";
 import { savePagePennsieveDetails } from "./pennsieveDetails/savePage";
 import { savePageGenerateDataset } from "./generateDataset/savePage";
 import { countFilesInDatasetStructure, getFilesByEntityType } from "../../utils/datasetStructure";
-import { guidedSkipPage, guidedUnSkipPage } from "./navigationUtils/pageSkipping";
+import {
+  guidedSkipPage,
+  guidedUnSkipPage,
+  guidedSkipPageSet,
+  guidedUnSkipPageSet,
+} from "./navigationUtils/pageSkipping";
 import { isCheckboxCardChecked } from "../../../stores/slices/checkboxCardSlice";
 import useGlobalStore from "../../../stores/globalStore";
 import {
@@ -323,6 +328,27 @@ window.savePageChanges = async (pageBeingLeftID) => {
                 throw errorArray;
               }
             }
+          }
+        }
+
+        if (entityType !== "remaining-data-categorization") {
+          // Whenever leaving a data categorization page, check the count of the
+          // non-data-folders (e.g. code, docs) combined with the experimentally
+          // marked files, and if they are not equal, we can assume that their are files that
+          // were not categorized therefore remaining.
+          const countOfNonRemainingDataCategories = getFilesByEntityType([
+            "experimental",
+            "non-data-folders",
+          ]).length;
+          console.log("countOfNonRemainingDataCategories:", countOfNonRemainingDataCategories);
+          console.log("datasetFileCount:", datasetFileCount);
+
+          if (countOfNonRemainingDataCategories === datasetFileCount) {
+            console.log("Skipping guided-remaining-data-categorization-page-set");
+            guidedSkipPageSet("guided-remaining-data-categorization-page-set");
+          } else {
+            console.log("Unskipping guided-remaining-data-categorization-page-set");
+            guidedUnSkipPageSet("guided-remaining-data-categorization-page-set");
           }
         }
       }
