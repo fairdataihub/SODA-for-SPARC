@@ -54,6 +54,40 @@ export const countSelectedFilesByEntityType = (entityType) => {
   return totalCount;
 };
 
+/**
+ * Gets an array of file paths that are attributed to specific entity type(s)
+ * @param {string|Array<string>} entityType - The entity type(s) to get files for (e.g., "data-folders", ["subjects", "samples"])
+ * @param {string} [entityName] - Optional specific entity name to get files for
+ * @returns {Array} Array of file relative paths attributed to the entity type(s)/name
+ */
+export const getFilesByEntityType = (entityType, entityName = null) => {
+  const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
+
+  // Handle both string and array inputs
+  const entityTypes = Array.isArray(entityType) ? entityType : [entityType];
+  let allFilePaths = [];
+
+  entityTypes.forEach((type) => {
+    if (!datasetEntityObj?.[type]) return;
+
+    if (entityName) {
+      // Get files for a specific entity within the type
+      const entityFiles = datasetEntityObj[type][entityName] || {};
+      const filePaths = Object.keys(entityFiles).filter((filePath) => entityFiles[filePath]);
+      allFilePaths = allFilePaths.concat(filePaths);
+    } else {
+      // Get files for all entities of this type
+      const allEntities = Object.values(datasetEntityObj[type] || {});
+      allEntities.forEach((entityFiles) => {
+        const filePaths = Object.keys(entityFiles).filter((filePath) => entityFiles[filePath]);
+        allFilePaths = allFilePaths.concat(filePaths);
+      });
+    }
+  });
+
+  return allFilePaths;
+};
+
 const getNestedObjectAtPathArray = (pathArray) => {
   let current = window.datasetStructureJSONObj;
   for (const folder of pathArray) {

@@ -103,6 +103,8 @@ const EntityDataSelectorPage = ({
   const activeEntity = useGlobalStore((state) => state.activeEntity);
   const entityType = useGlobalStore((state) => state.entityType); // e.g. 'data-folders'
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
+  const includesSites = selectedEntities.includes("sites");
+  const includesSamples = selectedEntities.includes("samples");
   const datasetIncludesCode = selectedEntities.includes("code");
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
   const datasetType = useGlobalStore((state) => state.datasetType);
@@ -213,48 +215,6 @@ const EntityDataSelectorPage = ({
                   </>
                 );
 
-              case "data-folders":
-                if (datasetType === "experimental") {
-                  return (
-                    <>
-                      <Text mb={0}>
-                        The SDS requires data in experimental datasets
-                        {datasetIncludesCode ? " with code " : ""}to be organized into{" "}
-                        {datasetIncludesCode ? "four" : "three"} categories: <b>Experimental</b>,{" "}
-                        {datasetIncludesCode ? <b>Code,</b> : ""} <b>Protocol</b>, and{" "}
-                        <b>Documentation</b>. Use the interface below to classify your data files.
-                      </Text>
-                      <Text mb={0}>
-                        To categorize your data, choose a category on the left, then select the
-                        files that belong to it on the right. Selecting a folder categorizes all
-                        files within it. If a folder contains files that belong to different
-                        categories, you can expand it and categorize individual files as needed.
-                      </Text>
-
-                      <DropDownNote id="data-categories-list" />
-                    </>
-                  );
-                }
-
-                if (datasetType === "computational") {
-                  return (
-                    <>
-                      <Text mb={0}>
-                        For computational datasets, all files imported on the Data Selection page
-                        need to be categorized into four groups: <b>Code</b>, <b>Primary</b>,{" "}
-                        <b>Protocol</b>, and <b>Documentation</b>.
-                      </Text>
-                      <Text mb={0}>
-                        To categorize your data, choose a category on the left, then select the
-                        files that belong to it on the right. Selecting a folder categorizes all
-                        files within it. If a folder contains files that belong to different
-                        categories, you can expand it and categorize individual files as needed.
-                      </Text>
-                      <DropDownNote id="data-categories-list" />
-                    </>
-                  );
-                }
-
               case "modalities":
                 return <Text>Select the folders and files that belong to each modality.</Text>;
 
@@ -273,6 +233,58 @@ const EntityDataSelectorPage = ({
                     Use the interface below to categorize your Source and Derivative data files. Any
                     files not categorized will be marked as "Primary" by default and be placed in
                     the Primary folder.
+                  </Text>
+                );
+
+              case "sites":
+                return (
+                  <Text>
+                    The SDS requires all files associated with a site to be linked to that site
+                    entity. To do this, select a site from the list on the left, then choose the
+                    folders and files that contain data collected at that site. Any files you link
+                    to a site are automatically associated with the sample and subject that the site
+                    belongs to, so you will not need to select them again later.
+                  </Text>
+                );
+
+              case "samples":
+                return (
+                  <Text>
+                    The SDS requires all files associated with a sample to be linked to that sample
+                    entity. To do this, select a sample from the list on the left, then choose the
+                    folders and files that contain data collected from that sample.
+                    {includesSites
+                      ? " Files already linked through the sites associated with this sample do not appear here, so you only need to select files specific to the sample itself."
+                      : ""}
+                  </Text>
+                );
+
+              case "subjects":
+                return (
+                  <Text>
+                    The SDS requires all files associated with a subject to be linked to that
+                    subject entity. To do this, select a subject from the list on the left, then
+                    choose the folders and files that contain data collected from that subject.
+                    {includesSamples
+                      ? " Files already linked through samples or sites associated with this subject do not appear here, so you only need to select the files that directly relate to the subject."
+                      : includesSites
+                        ? " Files already linked through sites associated with this subject do not appear here, so you only need to select the files that directly relate to the subject."
+                        : " Assign all relevant files for the subject here."}{" "}
+                    <br />
+                    <br />
+                    <b>Note:</b> Since subjects are the highest-level entity in your dataset
+                    hierarchy, all experimental files should ultimately be associated with a subject
+                    by the end of this step.
+                  </Text>
+                );
+
+              case "performances":
+                return (
+                  <Text>
+                    For each performance ID you entered, associate the relevant files from your
+                    dataset. Select a performance from the list on the left, then choose the
+                    corresponding folders and files that contain data from that specific
+                    experimental session or trial.
                   </Text>
                 );
 

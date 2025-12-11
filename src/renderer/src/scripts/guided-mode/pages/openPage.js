@@ -282,20 +282,6 @@ window.openPage = async (targetPageID) => {
         }
 
         // Make any adjustments to the dataset entity object before setting it in the zustand store
-        if (pageEntityType === "data-folders") {
-          // Filter out files that are selected as belonging to the non-data folders
-          setFileVisibilityFilter(
-            [],
-            [
-              {
-                type: "non-data-folders",
-                names: ["Protocol", "Docs", "Code"],
-              },
-            ]
-          );
-        }
-
-        // Make any adjustments to the dataset entity object before setting it in the zustand store
         if (pageEntityType === "experimental") {
           // Filter out files that are selected as belonging to the supporting data folders
           setFileVisibilityFilter(

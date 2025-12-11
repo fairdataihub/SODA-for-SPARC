@@ -12,7 +12,7 @@ import { savePageCurationPreparation } from "./curationPreparation/savePage";
 import { savePagePrepareMetadata } from "./prepareMetadata/savePage";
 import { savePagePennsieveDetails } from "./pennsieveDetails/savePage";
 import { savePageGenerateDataset } from "./generateDataset/savePage";
-import { countFilesInDatasetStructure } from "../../utils/datasetStructure";
+import { countFilesInDatasetStructure, getFilesByEntityType } from "../../utils/datasetStructure";
 import { guidedSkipPage, guidedUnSkipPage } from "./navigationUtils/pageSkipping";
 import { isCheckboxCardChecked } from "../../../stores/slices/checkboxCardSlice";
 import useGlobalStore from "../../../stores/globalStore";
@@ -21,7 +21,7 @@ import {
   getExistingSamples,
   getExistingSites,
 } from "../../../stores/slices/datasetEntityStructureSlice";
-import { swalConfirmAction } from "../../utils/swal-utils";
+import { swalFileListDoubleAction } from "../../utils/swal-utils";
 import { addEntityNameToEntityType } from "../../../stores/slices/datasetEntitySelectorSlice";
 
 while (!window.baseHtmlLoaded) {
@@ -185,56 +185,6 @@ window.savePageChanges = async (pageBeingLeftID) => {
             }
           }
         }
-        if (entityType === "data-folders") {
-          // Make sure all of the files were categorized into a high-level folder
-          const categorizedData = datasetEntityObj?.["data-folders"];
-          const categorizedFileCount = Object.keys(categorizedData).reduce((acc, key) => {
-            const files = categorizedData[key];
-            return acc + Object.keys(files).length;
-          }, 0);
-
-          // Add supplementary data to the count of categorized files
-          const supplementaryData = datasetEntityObj?.["non-data-folders"];
-          const supplementaryFileCount = supplementaryData
-            ? Object.keys(supplementaryData).reduce((acc, key) => {
-                const files = supplementaryData[key];
-                return acc + Object.keys(files).length;
-              }, 0)
-            : 0;
-
-          const totalCategorizedFiles = categorizedFileCount + supplementaryFileCount;
-
-          // If the user has not categorized any files, throw an error
-          if (totalCategorizedFiles === 0) {
-            errorArray.push({
-              type: "notyf",
-              message: "Please categorize your data files before continuing.",
-            });
-            throw errorArray;
-          }
-
-          const countOfFilesCategorizedAsCode = Object.keys(categorizedData["Code"] || {}).length;
-
-          if (selectedEntities.includes("code")) {
-            if (countOfFilesCategorizedAsCode === 0) {
-              errorArray.push({
-                type: "notyf",
-                message:
-                  "You must classify at least one file in your dataset as code on this step.",
-              });
-              throw errorArray;
-            }
-          }
-
-          // If the user has not categorized all of the files, throw an error
-          if (datasetFileCount !== totalCategorizedFiles) {
-            errorArray.push({
-              type: "notyf",
-              message: "You must categorize all of your data files before continuing.",
-            });
-            throw errorArray;
-          }
-        }
 
         if (entityType === "performances") {
           // Clone current performances metadata to avoid mutating the original reference
@@ -326,6 +276,54 @@ window.savePageChanges = async (pageBeingLeftID) => {
 
           // Update dataset metadata
           window.sodaJSONObj["dataset_metadata"]["performances"] = performanceMetadata;
+        }
+
+        if (entityType === "subjects") {
+          // Get a list of files that were marked as experimental but not assigned to any entities
+          const experimentalFiles = getFilesByEntityType("experimental");
+          const entityAssociatedFiles = getFilesByEntityType(["sites", "samples", "subjects"]);
+          // Find items that were associated to experimentalFiles but not in entityAssociatedFiles
+          const unassociatedExperimentalFiles = experimentalFiles.filter(
+            (file) => !entityAssociatedFiles.includes(file)
+          );
+          const previousBypassedExperimentalFiles =
+            window.sodaJSONObj["bypassed-experimental-files"];
+          if (unassociatedExperimentalFiles.length > 0) {
+            // Check if the arrays are different by comparing their contents
+            const arraysAreDifferent =
+              !previousBypassedExperimentalFiles ||
+              previousBypassedExperimentalFiles.length !== unassociatedExperimentalFiles.length ||
+              !unassociatedExperimentalFiles.every((file) =>
+                previousBypassedExperimentalFiles.includes(file)
+              );
+
+            if (arraysAreDifferent) {
+              const continueWithUnassociatedExperimentalFiles = await swalFileListDoubleAction(
+                unassociatedExperimentalFiles.map((file) =>
+                  file.startsWith("data/") ? file.substring(5) : file
+                ),
+                "Unassociated Experimental Files Detected",
+                `The following experimental files have not been associated with any subjects, samples, or sites. 
+                You can choose to continue without associating these files, or go back to associate them with entities.`,
+                "Continue without associating these files",
+                "Go back to associate files",
+                "What would you like to do with these unassociated experimental files?"
+              );
+
+              if (continueWithUnassociatedExperimentalFiles) {
+                // User chose to continue - save the bypassed files
+                window.sodaJSONObj["bypassed-experimental-files"] = unassociatedExperimentalFiles;
+              } else {
+                // User chose to go back - throw error to prevent navigation
+                errorArray.push({
+                  type: "notyf",
+                  message:
+                    "Please associate all experimental files with entities before continuing.",
+                });
+                throw errorArray;
+              }
+            }
+          }
         }
       }
 
