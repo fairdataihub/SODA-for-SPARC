@@ -623,6 +623,27 @@ document
     window.open(datasetLink, "_blank");
   });
 
+// Add event listener to open dataset link in new tab
+document
+  .getElementById("guided-button-open-link-on-pennsieve-publishing")
+  .addEventListener("click", async (event) => {
+    event.preventDefault();
+    const userInformation = await api.getUserInformation();
+    const preferredOrganization = userInformation.preferredOrganization;
+    const pennsieveDatasetID = window.sodaJSONObj?.["digital-metadata"]?.["pennsieve-dataset-id"];
+
+    // If the user has a preferred organization and a dataset ID, construct the dataset link
+    // Otherwise, default to the Pennsieve app homepage
+    let datasetLink;
+    if (preferredOrganization && pennsieveDatasetID) {
+      datasetLink = `https://app.pennsieve.io/${preferredOrganization}/datasets/${pennsieveDatasetID}/publishing-settings`;
+    } else {
+      datasetLink = "https://app.pennsieve.io";
+    }
+
+    window.open(datasetLink, "_blank");
+  });
+
 // Add event listener to Reserve DOI button "guided-button-reserve-doi"
 document.getElementById("guided-button-reserve-doi").addEventListener("click", async (event) => {
   event.preventDefault();
