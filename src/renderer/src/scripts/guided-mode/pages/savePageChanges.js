@@ -176,18 +176,17 @@ window.savePageChanges = async (pageBeingLeftID) => {
               throw errorArray;
             }
           }
-          const possibleSupportingFolders = ["protocol", "docs"];
-          const supplementaryFolders = possibleSupportingFolders.filter((folder) =>
-            selectedEntities.includes(folder)
-          );
 
-          // Only require categorization if there are multiple supplementary folders
-          if (supplementaryFolders.length > 1) {
-            const supportingData = datasetEntityObj?.["non-data-folders"];
-            if (!supportingData) {
+          // Check to make sure all files were not selected here (if they have subjects) because then there would
+          // be no experimental data
+          const nonDataFileCount = getFilesByEntityType(["non-data-folders"]);
+          const nonDataFileCountLength = nonDataFileCount.length;
+
+          if (nonDataFileCountLength >= datasetFileCount) {
+            if (selectedEntities.includes("subjects")) {
               errorArray.push({
                 type: "notyf",
-                message: "Please categorize your supporting data files before continuing.",
+                message: `You indicated that your dataset contains subject-related data (experimental), but all files are categorized as non-data folders (code, docs, protocol). Please decategorize the experimental data files from the non-data folders before continuing.`,
               });
               throw errorArray;
             }
@@ -340,6 +339,11 @@ window.savePageChanges = async (pageBeingLeftID) => {
           // non-data-folders (e.g. code, docs) combined with the experimentally
           // marked files, and if they are not equal, we can assume that their are files that
           // were not categorized therefore remaining.
+          const nonRemainingDataCategories = getFilesByEntityType([
+            "experimental",
+            "non-data-folders",
+          ]);
+          console.log("nonRemainingDataCategories:", nonRemainingDataCategories);
           const countOfNonRemainingDataCategories = getFilesByEntityType([
             "experimental",
             "non-data-folders",
