@@ -615,8 +615,8 @@ const getLatestPennsieveAgentVersion = async () => {
     "https://api.github.com/repos/Pennsieve/pennsieve-agent/releases/latest"
   );
 
-  const latestReleaseAssets = res.data?.assets;
-  const latestPennsieveAgentVersion = res.data?.tag_name;
+  let latestReleaseAssets = res.data?.assets;
+  let latestPennsieveAgentVersion = res.data?.tag_name;
 
   if (!latestReleaseAssets) {
     throw new Error("Failed to extract assets from the latest Pennsieve agent release");
@@ -626,13 +626,24 @@ const getLatestPennsieveAgentVersion = async () => {
     throw new Error("Failed to retrieve the latest Pennsieve agent version");
   }
 
-  // Find the platform specific agent download url based on the user's platform
   const usersPlatform = window.process.platform();
   let platformSpecificAgentDownloadURL;
+
+  if (latestPennsieveAgentVersion.includes("1.8.10") && usersPlatform === "darwin") {
+    // change asset information to 1.8.9
+    const updatedReleaseAsset = await axios.get(
+      "https://api.github.com/repos/Pennsieve/pennsieve-agent/releases/tags/1.8.9"
+    );
+    latestReleaseAssets = updatedReleaseAsset.data.assets;
+    latestPennsieveAgentVersion = updatedReleaseAsset.data.tag_name;
+  }
+
+  // Find the platform specific agent download url based on the user's platform
+  let systemArchitecture;
   switch (usersPlatform) {
     case "darwin":
       // The Pennsieve has different agent releases for different architectures on MacOS
-      const systemArchitecture = window.process.architecture();
+      systemArchitecture = window.process.architecture();
       if (systemArchitecture === "x64") {
         platformSpecificAgentDownloadURL = findDownloadURL("x86_64.pkg", latestReleaseAssets);
       }

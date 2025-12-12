@@ -176,6 +176,14 @@ const PennsieveAgentCheckDisplay = () => {
             <Text mb="sm">
               The Pennsieve agent is required to upload data to Pennsieve from SODA. Please download
               and install the Pennsieve Agent by clicking the button below.
+              {window.process.platform() === "darwin" && (
+                <>
+                  {" "}
+                  <b>NOTE:</b> The Pennsieve Agent 1.8.10 does not work for some Mac users. If you
+                  are seeing this please click the Download button to get the version 1.8.9 of the
+                  Pennsieve Agent.
+                </>
+              )}
             </Text>
             <ExternalLink
               href={pennsieveAgentDownloadURL}
