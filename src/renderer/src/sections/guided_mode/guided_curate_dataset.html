@@ -529,21 +529,28 @@
           class="guided--page"
           data-component-type="dataset-content-selector"
         ></div>
-
         <div
-          id="data-categorization-tab"
+          id="non-data-categorization-tab"
           data-page-name="Data Categorization"
           class="guided--page"
           data-component-type="data-categorization-page"
-          data-entity-type="high-level-folder-data-categorization"
+          data-entity-type="non-data-folders"
           data-entity-type-string-singular="Data category"
-          data-entity-type-prefix=""
-          data-show-progress="true"
         ></div>
+        <div
+          id="experimental-data-tab"
+          data-page-name="Experimental Data Selection"
+          class="guided--page guided-subject-related-page-set"
+          data-component-type="data-categorization-page"
+          data-entity-type="experimental"
+          data-entity-type-string-singular="Experimental data"
+          data-entity-type-only-has-one-category="true"
+        ></div>
+        <!--
         <div
           id="guided-entity-addition-method-selection-tab"
           data-page-name="Entity Addition Method"
-          class="guided--page guided-experimental-dataset-page-set"
+          class="guided--page guided-subject-related-page-set"
         >
           <div class="guided--section">
             <h1 class="text-sub-step-title">Entity Addition Method</h1>
@@ -556,6 +563,11 @@
               spreadsheet is recommend to avoid having to type out all of your entity IDs within the
               SODA UI.
             </p>
+            <div
+              data-component-type="info-list"
+              id="entity-addition-method-entity-explanation-list"
+              class="w-100"
+            ></div>
 
             <div
               data-component-type="dropdown-note-renderer"
@@ -581,80 +593,105 @@
             </div>
           </div>
         </div>
+        -->
         <div
           id="guided-manual-dataset-entity-and-metadata-tab"
           data-page-name="Dataset Entity Metadata"
-          class="guided--page guided-experimental-dataset-page-set"
+          class="guided--page guided-subject-related-page-set"
           data-component-type="entity-metadata-page"
         ></div>
+        <!--
         <div
           id="guided-spreadsheet-import-dataset-entity-and-metadata-tab"
           data-page-name="Designate Entity IDs Using Spreadsheets"
-          class="guided--page guided-experimental-dataset-page-set"
+          class="guided--page guided-subject-related-page-set"
           data-component-type="entity-spreadsheet-import-page"
         ></div>
-
+        -->
         <div
           id="guided-sites-selection-tab"
           data-page-name="Sites Data Selection"
-          class="guided--page guided-sites-metadata-page-set guided-experimental-dataset-page-set"
+          class="guided--page guided-sites-metadata-page-set guided-subject-related-page-set"
           data-component-type="data-categorization-page"
           data-entity-type="sites"
           data-entity-type-string-singular="site"
-          data-entity-type-prefix="site-"
         ></div>
         <div
           id="guided-samples-selection-tab"
           data-page-name="Samples Data Selection"
-          class="guided--page guided-samples-metadata-page-set guided-experimental-dataset-page-set"
+          class="guided--page guided-samples-metadata-page-set guided-subject-related-page-set"
           data-component-type="data-categorization-page"
           data-entity-type="samples"
           data-entity-type-string-singular="sample"
-          data-entity-type-prefix="sam-"
         ></div>
         <div
           id="guided-subjects-selection-tab"
           data-page-name="Subjects Data Selection"
-          class="guided--page guided-subjects-metadata-page-set guided-experimental-dataset-page-set"
+          class="guided--page guided-subjects-metadata-page-set guided-subject-related-page-set"
           data-component-type="data-categorization-page"
           data-entity-type="subjects"
           data-entity-type-string-singular="subject"
-          data-entity-type-prefix="sub-"
         ></div>
 
+        <div
+          id="experimental-data-categories-questionnaire-tab"
+          data-page-name="Experimental Data Categorization"
+          class="guided--page guided-subject-related-page-set"
+          data-component-type="data-categories-questionnaire-page"
+          data-questionnaire-entity-type="experimental-data-categorization"
+        ></div>
+        <div
+          id="experimental-data-categorization-tab"
+          data-page-name="Experimental Data Categorization"
+          class="guided--page guided-subject-related-page-set"
+          data-component-type="data-categorization-page"
+          data-entity-type="experimental-data-categorization"
+          data-entity-type-string-singular="Data Category"
+        ></div>
+        <div
+          id="remaining-data-categories-questionnaire-tab"
+          data-page-name="Remaining Data Categorization"
+          class="guided--page guided-remaining-data-categorization-page-set"
+          data-component-type="data-categories-questionnaire-page"
+          data-questionnaire-entity-type="remaining-data-categorization"
+        ></div>
+        <div
+          id="remaining-data-categorization-tab"
+          data-page-name="Remaining Data Categorization"
+          class="guided--page guided-remaining-data-categorization-page-set"
+          data-component-type="data-categorization-page"
+          data-entity-type="remaining-data-categorization"
+          data-entity-type-string-singular="Data Category"
+        ></div>
         <div
           id="guided-performances-entity-addition-tab"
           data-page-name="Description Of Performances"
-          class="guided--page guided-performances-metadata-page-set guided-experimental-dataset-page-set"
+          class="guided--page guided-performances-metadata-page-set guided-subject-related-page-set"
           data-component-type="performance-id-management-page"
           data-entity-type="performances"
           data-entity-type-string-singular="performance"
-          data-entity-type-prefix="perf-"
         ></div>
-
         <div
           id="guided-Performances-selection-tab"
           data-page-name="Performances Data Selection"
-          class="guided--page guided-performances-metadata-page-set guided-experimental-dataset-page-set"
+          class="guided--page guided-performances-metadata-page-set guided-subject-related-page-set"
           data-component-type="data-categorization-page"
           data-entity-type="performances"
           data-entity-type-string-singular="performance"
-          data-entity-type-prefix="perf-"
         ></div>
         <div
           id="guided-modalities-selection-tab"
           data-page-name="Dataset Modalities"
-          class="guided--page guided-experimental-dataset-page-set"
+          class="guided--page guided-subject-related-page-set"
           data-component-type="modality-selection-page"
         ></div>
         <div
           id="guided-modalities-data-selection-tab"
           data-page-name="Modalities Data Selection"
-          class="guided--page guided-experimental-dataset-page-set"
+          class="guided--page guided-subject-related-page-set"
           data-component-type="data-categorization-page"
           data-entity-type="modalities"
           data-entity-type-string-singular="modality"
-          data-entity-type-prefix=""
         ></div>
         <div
           class="guided--page"
@@ -1550,12 +1587,7 @@
               dataset, and the dataset will be generated in the selected location.
             </p>
           </div>
-          <div
-            data-component-type="dataset-tree-view-renderer"
-            data-file-explorer-id="guided-generate-dataset-locally"
-            data-full-width="true"
-            class="guided--section"
-          ></div>
+
           <div class="guided--section">
             <div
               data-component-type="generic-button"
@@ -1616,6 +1648,12 @@
               Retry local dataset copy generation
             </button>
           </div>
+          <div
+            data-component-type="dataset-tree-view-renderer"
+            data-file-explorer-id="guided-generate-dataset-locally"
+            data-full-width="true"
+            class="guided--section"
+          ></div>
         </div>
 
         <div

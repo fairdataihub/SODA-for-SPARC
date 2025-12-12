@@ -1,13 +1,27 @@
 import { guidedSetNavLoadingState } from "./navigationUtils/pageLoading";
-import { getDatasetEntityObj } from "../../../stores/slices/datasetEntitySelectorSlice";
+import {
+  getDatasetEntityObj,
+  getCategorizedEntityFileList,
+  removeEntityFromEntityList,
+  removeEntityType,
+} from "../../../stores/slices/datasetEntitySelectorSlice";
+import {
+  getSelectedDataCategoriesByEntityType,
+  getOxfordCommaSeperatedListOfEntities,
+} from "../../../stores/slices/datasetContentSelectorSlice";
 import { startOrStopAnimationsInContainer } from "../lotties/lottie";
 import { savePageDatasetStructure } from "./datasetStructure/savePage";
 import { savePageCurationPreparation } from "./curationPreparation/savePage";
 import { savePagePrepareMetadata } from "./prepareMetadata/savePage";
 import { savePagePennsieveDetails } from "./pennsieveDetails/savePage";
 import { savePageGenerateDataset } from "./generateDataset/savePage";
-import { countFilesInDatasetStructure } from "../../utils/datasetStructure";
-import { guidedSkipPage, guidedUnSkipPage } from "./navigationUtils/pageSkipping";
+import { countFilesInDatasetStructure, getFilesByEntityType } from "../../utils/datasetStructure";
+import {
+  guidedSkipPage,
+  guidedUnSkipPage,
+  guidedSkipPageSet,
+  guidedUnSkipPageSet,
+} from "./navigationUtils/pageSkipping";
 import { isCheckboxCardChecked } from "../../../stores/slices/checkboxCardSlice";
 import useGlobalStore from "../../../stores/globalStore";
 import {
@@ -15,6 +29,8 @@ import {
   getExistingSamples,
   getExistingSites,
 } from "../../../stores/slices/datasetEntityStructureSlice";
+import { swalFileListDoubleAction } from "../../utils/swal-utils";
+import { addEntityNameToEntityType } from "../../../stores/slices/datasetEntitySelectorSlice";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -107,6 +123,7 @@ window.savePageChanges = async (pageBeingLeftID) => {
           isCheckboxCardChecked("modality-selection-yes");
         const userSelectedTheyDoNotHaveMultipleModalities =
           isCheckboxCardChecked("modality-selection-no");
+
         if (
           !userSelectedTheyDoNotHaveMultipleModalities &&
           !userSelectedTheyHaveMultipleModalities
@@ -139,31 +156,53 @@ window.savePageChanges = async (pageBeingLeftID) => {
       if (pageBeingLeftComponentType === "data-categorization-page") {
         const entityType = pageBeingLeftDataSet.entityType;
         const datasetEntityObj = getDatasetEntityObj();
+        const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
+        const datasetFileCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
 
-        if (entityType === "high-level-folder-data-categorization") {
-          // Make sure all of the files were categorized into a high-level folder
-          const categorizedData = datasetEntityObj?.["high-level-folder-data-categorization"];
-          const categorizedFileCount = Object.keys(categorizedData).reduce((acc, key) => {
-            const files = categorizedData[key];
-            return acc + Object.keys(files).length;
-          }, 0);
-
-          // If the user has not categorized any files, throw an error
-          if (categorizedFileCount === 0) {
-            errorArray.push({
-              type: "notyf",
-              message: "Please categorize your data files before continuing.",
-            });
-            throw errorArray;
+        if (entityType === "non-data-folders") {
+          const userSelectedNonDataFolders = window.sodaJSONObj["non-data-folders"];
+          // Make sure the user categorized at least one file into each of the non-data folders
+          // that should have files categorized into them
+          for (const folder of userSelectedNonDataFolders) {
+            const categorizedFileCount = getCategorizedEntityFileList(
+              "non-data-folders",
+              folder
+            ).length;
+            if (categorizedFileCount === 0) {
+              errorArray.push({
+                type: "notyf",
+                message: `You indicated that your dataset contains ${folder} files, but you have not categorized any files into the ${folder} folder. Please categorize all of your ${folder} files before continuing.`,
+              });
+              throw errorArray;
+            }
           }
 
-          const datasetFileCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
+          // Check to make sure all files were not selected here (if they have subjects) because then there would
+          // be no experimental data
+          const nonDataFileCount = getFilesByEntityType(["non-data-folders"]);
+          const nonDataFileCountLength = nonDataFileCount.length;
 
-          // If the user has not categorized all of the files, throw an error
-          if (datasetFileCount !== categorizedFileCount) {
+          if (nonDataFileCountLength >= datasetFileCount) {
+            if (selectedEntities.includes("subjects")) {
+              errorArray.push({
+                type: "notyf",
+                message: `You indicated that your dataset contains subject-related data (experimental), but all files are categorized as non-data folders (code, docs, protocol). Please decategorize the experimental data files from the non-data folders before continuing.`,
+              });
+              throw errorArray;
+            }
+          }
+        }
+
+        if (entityType === "experimental") {
+          const experimentalFileCount = getCategorizedEntityFileList(
+            "experimental",
+            "experimental"
+          ).length;
+
+          if (experimentalFileCount === 0) {
             errorArray.push({
               type: "notyf",
-              message: "You must categorize all of your data files before continuing.",
+              message: "Please select your experimental data files before continuing.",
             });
             throw errorArray;
           }
@@ -261,57 +300,130 @@ window.savePageChanges = async (pageBeingLeftID) => {
           window.sodaJSONObj["dataset_metadata"]["performances"] = performanceMetadata;
         }
 
-        // Save the dataset entity object to the progress file
-        window.sodaJSONObj["dataset-entity-obj"] = datasetEntityObj;
-        const categorizedData = datasetEntityObj?.["high-level-folder-data-categorization"];
+        if (entityType === "subjects") {
+          // Get a list of files that were marked as experimental but not assigned to any entities
+          const experimentalFiles = getFilesByEntityType("experimental");
+          const entityAssociatedFiles = getFilesByEntityType(["sites", "samples", "subjects"]);
+          // Find items that were associated to experimentalFiles but not in entityAssociatedFiles
+          const unassociatedExperimentalFiles = experimentalFiles.filter(
+            (file) => !entityAssociatedFiles.includes(file)
+          );
+          const previousBypassedExperimentalFiles =
+            window.sodaJSONObj["bypassed-experimental-files"];
+          if (unassociatedExperimentalFiles.length > 0) {
+            // Check if the arrays are different by comparing their contents
+            const arraysAreDifferent =
+              !previousBypassedExperimentalFiles ||
+              previousBypassedExperimentalFiles.length !== unassociatedExperimentalFiles.length ||
+              !unassociatedExperimentalFiles.every((file) =>
+                previousBypassedExperimentalFiles.includes(file)
+              );
 
-        let categorizedFileCount = 0;
-        if (categorizedData) {
-          categorizedFileCount = Object.keys(categorizedData).reduce((acc, key) => {
-            const files = categorizedData[key];
-            return acc + Object.keys(files).length;
-          }, 0);
-        }
+            if (arraysAreDifferent) {
+              const hierarchyEntitiesList = getOxfordCommaSeperatedListOfEntities("or");
+              const continueWithUnassociatedExperimentalFiles = await swalFileListDoubleAction(
+                unassociatedExperimentalFiles.map((file) =>
+                  file.startsWith("data/") ? file.substring(5) : file
+                ),
+                "Unassociated Experimental Files Detected",
+                `The following experimental files have not been associated with any ${hierarchyEntitiesList}. 
+                You can choose to continue without associating these files, or go back to associate them with entities.`,
+                "Continue without associating these files",
+                "Go back to associate files",
+                "What would you like to do with these unassociated experimental files?"
+              );
 
-        if (categorizedFileCount === 0) {
-          errorArray.push({
-            type: "notyf",
-            message: "Please categorize your data files before continuing.",
-          });
-          throw errorArray;
-        }
-
-        const countOfFilesCategorizedAsCode = Object.keys(categorizedData["Code"] || {}).length;
-        const countOfFilesCategorizedAsExperimental = Object.keys(
-          categorizedData["Experimental"] || {}
-        ).length;
-
-        if (window.sodaJSONObj["selected-entities"].includes("code")) {
-          if (countOfFilesCategorizedAsCode === 0) {
-            errorArray.push({
-              type: "notyf",
-              message: "You must classify at least one file in your dataset as code on this step.",
-            });
-            throw errorArray;
+              if (continueWithUnassociatedExperimentalFiles) {
+                // User chose to continue - save the bypassed files
+                window.sodaJSONObj["bypassed-experimental-files"] = unassociatedExperimentalFiles;
+              } else {
+                // User chose to go back - throw error to prevent navigation
+                errorArray.push({
+                  type: "notyf",
+                  message:
+                    "Please associate all experimental files with entities before continuing.",
+                });
+                throw errorArray;
+              }
+            }
           }
         }
 
-        if (window.sodaJSONObj["selected-entities"].includes("subjects")) {
-          if (countOfFilesCategorizedAsExperimental === 0) {
-            errorArray.push({
-              type: "notyf",
-              message:
-                "You must classify at least one file in your dataset as experimental data on this step.",
-            });
-            throw errorArray;
+        if (entityType !== "remaining-data-categorization") {
+          // Whenever leaving a data categorization page, check the count of the
+          // non-data-folders (e.g. code, docs) combined with the experimentally
+          // marked files, and if they are not equal, we can assume that their are files that
+          // were not categorized therefore remaining.
+          const nonRemainingDataCategories = getFilesByEntityType([
+            "experimental",
+            "non-data-folders",
+          ]);
+          console.log("nonRemainingDataCategories:", nonRemainingDataCategories);
+          const countOfNonRemainingDataCategories = getFilesByEntityType([
+            "experimental",
+            "non-data-folders",
+          ]).length;
+          console.log("countOfNonRemainingDataCategories:", countOfNonRemainingDataCategories);
+          console.log("datasetFileCount:", datasetFileCount);
+
+          if (countOfNonRemainingDataCategories >= datasetFileCount) {
+            console.log("Skipping guided-remaining-data-categorization-page-set");
+            guidedSkipPageSet("guided-remaining-data-categorization-page-set");
+          } else {
+            console.log("Unskipping guided-remaining-data-categorization-page-set");
+            guidedUnSkipPageSet("guided-remaining-data-categorization-page-set");
           }
         }
       }
 
-      if (pageBeingLeftComponentType === "entity-file-mapping-page") {
-        const datasetEntityObj = getDatasetEntityObj();
-        // Save the dataset entity object to the progress file
-        window.sodaJSONObj["dataset-entity-obj"] = datasetEntityObj;
+      if (pageBeingLeftComponentType === "data-categories-questionnaire-page") {
+        const questionnaireEntityType = pageBeingLeftDataSet.questionnaireEntityType;
+
+        if (questionnaireEntityType === "experimental-data-categorization") {
+          const categorizeExperimentalDataYes = isCheckboxCardChecked(
+            "categorize-experimental-data-yes"
+          );
+          const categorizeExperimentalDataNo = isCheckboxCardChecked(
+            "categorize-experimental-data-no"
+          );
+          if (!categorizeExperimentalDataYes && !categorizeExperimentalDataNo) {
+            errorArray.push({
+              type: "notyf",
+              message: "Please indicate if you would like to categorize your Experimental data.",
+            });
+            throw errorArray;
+          }
+
+          if (categorizeExperimentalDataYes) {
+            guidedUnSkipPage("experimental-data-categorization-tab");
+            addEntityNameToEntityType("experimental-data-categorization", "Source");
+            addEntityNameToEntityType("experimental-data-categorization", "Derivative");
+          } else {
+            guidedSkipPage("experimental-data-categorization-tab");
+            removeEntityType("experimental-data-categorization");
+          }
+        }
+
+        if (questionnaireEntityType === "remaining-data-categorization") {
+          const categorizeRemainingDataYes = isCheckboxCardChecked("categorize-remaining-data-yes");
+          const categorizeRemainingDataNo = isCheckboxCardChecked("categorize-remaining-data-no");
+          if (!categorizeRemainingDataYes && !categorizeRemainingDataNo) {
+            errorArray.push({
+              type: "notyf",
+              message: "Please indicate if you would like to categorize your remaining data.",
+            });
+            throw errorArray;
+          }
+
+          if (categorizeRemainingDataYes) {
+            guidedUnSkipPage("remaining-data-categorization-tab");
+            addEntityNameToEntityType("remaining-data-categorization", "Source");
+            addEntityNameToEntityType("remaining-data-categorization", "Derivative");
+          } else {
+            guidedSkipPage("remaining-data-categorization-tab");
+            removeEntityType("remaining-data-categorization");
+          }
+        }
       }
 
       if (
@@ -375,6 +487,7 @@ window.savePageChanges = async (pageBeingLeftID) => {
     await savePagePrepareMetadata(pageBeingLeftID);
     await savePagePennsieveDetails(pageBeingLeftID);
     await savePageGenerateDataset(pageBeingLeftID);
+    saveEntityFileMappingChanges();
 
     if (pageBeingLeftID === "guided-entity-addition-method-selection-tab") {
       const userSelectedAddEntitiesFromSpreadsheet = isCheckboxCardChecked(
@@ -383,6 +496,7 @@ window.savePageChanges = async (pageBeingLeftID) => {
       const userSelectedAddEntitiesManually = isCheckboxCardChecked(
         "guided-button-add-entities-manually"
       );
+
       if (!userSelectedAddEntitiesFromSpreadsheet && !userSelectedAddEntitiesManually) {
         errorArray.push({
           type: "notyf",
@@ -410,6 +524,8 @@ window.savePageChanges = async (pageBeingLeftID) => {
       window.log.error(error);
     }
   } catch (error) {
+    console.error("Error saving page changes:", error);
+    window.log.error("Error saving page changes:", error);
     guidedSetNavLoadingState(false);
     throw error;
   }
@@ -426,15 +542,4 @@ export const saveEntityFileMappingChanges = () => {
 
   // Save the entire datasetEntityObj to window.sodaJSONObj
   window.sodaJSONObj["dataset-entity-obj"] = datasetEntityObj;
-
-  // If you need to do any reverse conversion (map to array) for backwards compatibility, do it here:
-  // const compatDatasetEntityObj = { ...datasetEntityObj };
-  // if (compatDatasetEntityObj["entity-to-file-mapping"]) {
-  //   Object.keys(compatDatasetEntityObj["entity-to-file-mapping"]).forEach(entityId => {
-  //     const entityFileMap = compatDatasetEntityObj["entity-to-file-mapping"][entityId];
-  //     compatDatasetEntityObj["entity-to-file-mapping"][entityId] = Object.keys(entityFileMap);
-  //   });
-  // }
-  // window.sodaJSONObj["dataset-entity-obj-compat"] = compatDatasetEntityObj;
-  return true;
 };

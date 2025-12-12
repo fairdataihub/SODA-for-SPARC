@@ -141,14 +141,12 @@ const Sidebar = ({ id }) => {
                 </Text>
               </Tooltip>
             </Stack>
-
-            <ul id="guided-nav-items" className="guided--container-nav-items hidden"></ul>
             {showGuidedModePageNavigation && (
-              <div>
+              <ScrollArea.Autosize mah={800} type="hover" scrollbarSize={8}>
                 {Object.entries(guidedModePageStructureObject).map(([pageKey, pageChildren]) => (
                   <LinksGroup key={pageKey} label={pageKey} pages={pageChildren} />
                 ))}
-              </div>
+              </ScrollArea.Autosize>
             )}
           </>
         )}

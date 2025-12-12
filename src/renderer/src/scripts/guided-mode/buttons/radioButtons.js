@@ -12,35 +12,39 @@ while (!window.baseHtmlLoaded) {
 export const resetGuidedRadioButtons = (parentPageID) => {
   const parentPage = document.getElementById(parentPageID);
 
-  const guidedRadioButtons = parentPage.querySelectorAll('[data-component-type="checkbox-card"]');
-  for (const guidedRadioButton of guidedRadioButtons) {
-    // Get the button id from data-button-id attribute
-    const buttonId = guidedRadioButton.getAttribute("data-button-id");
+  const reactComponentCards = parentPage.querySelectorAll("[data-checkbox-card-id]");
+
+  // Process React component cards
+  for (const reactCard of reactComponentCards) {
+    const buttonId = reactCard.getAttribute("data-checkbox-card-id");
     if (buttonId) {
       resetProgressCheckboxCard(buttonId);
     } else {
-      console.warn("🚨 Guided Radio Button is missing a data-button-id:", guidedRadioButton);
+      console.warn("🚨 React CheckboxCard is missing a data-checkbox-card-id:", reactCard);
     }
   }
 };
 
 export const updateGuidedRadioButtonsFromJSON = (parentPageID) => {
   const parentPage = document.getElementById(parentPageID);
-  const guidedRadioButtons = parentPage.querySelectorAll('[data-component-type="checkbox-card"]');
-  for (const guidedRadioButton of guidedRadioButtons) {
-    // Get the button id from data-button-id attribute
-    const buttonId = guidedRadioButton.getAttribute("data-button-id");
+
+  // Look for both HTML renderer cards and React component cards
+  const reactComponentCards = parentPage.querySelectorAll("[data-checkbox-card-id]");
+
+  // Process React component cards
+  for (const reactCard of reactComponentCards) {
+    const buttonId = reactCard.getAttribute("data-checkbox-card-id");
     const checkboxData = getCheckboxDataByKey(buttonId);
     if (!buttonId) {
       console.error(
-        "[updateGuidedRadioButtonsFromJSON] data-button-id missing for element:",
-        guidedRadioButton
+        "[updateGuidedRadioButtonsFromJSON] data-checkbox-card-id missing for React element:",
+        reactCard
       );
       continue;
     }
     if (!checkboxData) {
       console.error(
-        "[updateGuidedRadioButtonsFromJSON] No checkboxData found for buttonId:",
+        "[updateGuidedRadioButtonsFromJSON] No checkboxData found for React buttonId:",
         buttonId
       );
       continue;

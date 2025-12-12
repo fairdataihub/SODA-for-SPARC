@@ -33,6 +33,8 @@ import GuidedModeProgressCards from "../guided/GuidedModeProgressCards";
 import { CardButton } from "../cards/CardButton";
 import CheckboxCard from "../cards/CheckboxCard";
 import { Divider } from "@mantine/core";
+import DataCategoriesQuestionnairePage from "../pages/DataCategoriesQuestionnairePage";
+import InfoList from "../shared/InfoList";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
 while (!window.htmlSectionsAdded) {
@@ -175,6 +177,8 @@ const componentTypeRenderers = {
       pageName: componentSlot.getAttribute("data-page-name"),
       entityTypeStringSingular: componentSlot.getAttribute("data-entity-type-string-singular"),
       entityTypePrefix: componentSlot.getAttribute("data-entity-type-prefix"),
+      entityTypeOnlyHasOneCategory:
+        componentSlot.getAttribute("data-entity-type-only-has-one-category") === "true",
     };
     renderComponent(componentSlot, <PerformanceIdManagementPage {...props} />);
   },
@@ -214,9 +218,21 @@ const componentTypeRenderers = {
       pageName: componentSlot.getAttribute("data-page-name"),
       entityTypeStringSingular: componentSlot.getAttribute("data-entity-type-string-singular"),
       showProgress: componentSlot.getAttribute("data-show-progress") || false,
+      entityTypeOnlyHasOneCategory:
+        componentSlot.getAttribute("data-entity-type-only-has-one-category") === "true",
     };
     renderComponent(componentSlot, <EntityDataSelectorPage {...props} />);
   },
+
+  "data-categories-questionnaire-page": (componentSlot) => {
+    const props = {
+      pageID: componentSlot.id,
+      pageName: componentSlot.getAttribute("data-page-name"),
+      questionnaireEntityType: componentSlot.getAttribute("data-questionnaire-entity-type"),
+    };
+    renderComponent(componentSlot, <DataCategoriesQuestionnairePage {...props} />);
+  },
+
   "modality-selection-page": (componentSlot) => {
     renderComponent(componentSlot, <ModalitySelectionPage />);
   },
@@ -253,6 +269,12 @@ const componentTypeRenderers = {
       id: componentSlot.id,
     };
     renderComponent(componentSlot, <DropDownNote {...props} />);
+  },
+  "info-list": (componentSlot) => {
+    const props = {
+      id: componentSlot.id,
+    };
+    renderComponent(componentSlot, <InfoList {...props} />);
   },
 };
 

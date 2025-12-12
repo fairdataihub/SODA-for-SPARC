@@ -4,6 +4,7 @@ export const guidedModeSlice = (set) => ({
   guidedDatasetName: "",
   guidedDatasetSubtitle: "",
   datasetType: null,
+  hiddenGuidedModeSections: [],
 });
 
 export const setGuidedDatasetName = (datasetName) => {
@@ -16,4 +17,21 @@ export const setGuidedDatasetSubtitle = (datasetSubtitle) => {
 
 export const setDatasetType = (datasetType) => {
   useGlobalStore.setState({ datasetType });
+};
+
+export const addHiddenGuidedModeSection = (sectionId) => {
+  useGlobalStore.setState((state) => {
+    if (!state.hiddenGuidedModeSections.includes(sectionId)) {
+      state.hiddenGuidedModeSections.push(sectionId);
+    }
+  });
+};
+
+export const removeHiddenGuidedModeSection = (sectionId) => {
+  useGlobalStore.setState((state) => {
+    const index = state.hiddenGuidedModeSections.indexOf(sectionId);
+    if (index !== -1) {
+      state.hiddenGuidedModeSections.splice(index, 1);
+    }
+  });
 };

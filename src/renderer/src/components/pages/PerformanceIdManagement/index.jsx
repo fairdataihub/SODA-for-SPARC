@@ -156,7 +156,10 @@ const PerformanceIdManagement = () => {
     <GuidedModePage pageHeader="Description of Performances">
       <GuidedModeSection>
         <Text mb="md">
-          Provide information for each performance of the experimental protocol below.
+          You indicated that your dataset includes data collected from subjects across multiple
+          sessions or time points. According to the SDS, each session must be categorized as a
+          performance. Use the interface below to add a performance ID and enter details for each
+          performance.
         </Text>
       </GuidedModeSection>
 

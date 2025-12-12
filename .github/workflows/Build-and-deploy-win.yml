@@ -6,7 +6,7 @@ on:
     branches:
       - main
       - staging
-      - icons-updae
+      - gm-psc-rework
 
 jobs:
   deploy-on-windows:

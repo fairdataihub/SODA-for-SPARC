@@ -51,7 +51,6 @@ import {
 } from "../../../stores/slices/fileExplorerStateSlice";
 
 import { useDebouncedValue } from "@mantine/hooks";
-import { naturalSort } from "../utils/util-functions";
 import SelectedEntityPreviewer from "../SelectedEntityPreviewer";
 
 // Get badge color based on entity type
@@ -66,6 +65,9 @@ const getBadgeColor = (entityId) => {
   if (entityId === "Experimental") return "green";
   if (entityId === "Protocol") return "gray";
   if (entityId === "Docs") return "cyan";
+  if (entityId === "Primary") return "teal";
+  if (entityId === "Source") return "violet";
+  if (entityId === "Derivative") return "yellow";
 };
 
 const EntityBadges = ({ entities }) => {
@@ -312,7 +314,8 @@ const FolderItem = ({
 
   // Helper function for determining background color
   const getBackgroundColor = () => {
-    if (hovered || (contextMenuIsOpened && contextMenuRelativePath === content.relativePath)) {
+    if (folderIsSelected) return "var(--mantine-color-primary-0)";
+    if (hovered || (contextMenuIsOpened && contextMenuRelativePath === relativePath)) {
       return "rgba(0, 0, 0, 0.05)";
     }
     return undefined;

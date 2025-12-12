@@ -151,6 +151,7 @@ const CheckboxCard = ({ id, disabled = false }) => {
     return (
       <Tooltip label="Guest users cannot create datasets" withArrow position="top" openDelay={200}>
         <div
+          data-checkbox-button-id={id}
           style={{
             position: "relative",
             display: "flex",
@@ -186,6 +187,7 @@ const CheckboxCard = ({ id, disabled = false }) => {
   return (
     <UnstyledButton
       onClick={handleCardClick}
+      data-checkbox-button-id={id}
       style={{
         position: "relative",
         display: "flex",

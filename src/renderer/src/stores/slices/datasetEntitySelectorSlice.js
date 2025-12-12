@@ -6,7 +6,7 @@ import {
   getExistingSites,
   getExistingPerformancesR,
 } from "./datasetEntityStructureSlice";
-import { setEntityFilter } from "./datasetTreeViewSlice";
+import { setFileVisibilityFilter } from "./datasetTreeViewSlice";
 import { getFileDetailsByRelativePath } from "../../scripts/utils/datasetStructure";
 
 // Slice initialization for the entity selector state
@@ -21,7 +21,7 @@ export const datasetEntitySelectorSlice = (set) => ({
 });
 
 // Add an entity to the specified entity type's list
-export const addEntityToEntityList = (entityType, entityName) => {
+export const addEntityNameToEntityType = (entityType, entityName) => {
   useGlobalStore.setState(
     produce((state) => {
       if (!state.datasetEntityObj) {
@@ -70,9 +70,28 @@ export const removeEntityFromEntityList = (entityType, entityName) => {
   );
 };
 
+export const removeEntityType = (entityType) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      if (state.datasetEntityObj && state.datasetEntityObj[entityType]) {
+        delete state.datasetEntityObj[entityType];
+      } else {
+        console.warn(`Entity type ${entityType} does not exist in datasetEntityObj.`);
+      }
+    })
+  );
+};
+
 // Get the obj of entities for a specific entity type
 export const getEntityObjForEntityType = (entityType) => {
   return useGlobalStore.getState()?.datasetEntityObj?.[entityType] || {};
+};
+
+// Get the list of files categorized in a specific entity type and name
+export const getCategorizedEntityFileList = (entityType, entityName) => {
+  const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
+  const categorizedData = datasetEntityObj?.[entityType]?.[entityName];
+  return categorizedData ? Object.keys(categorizedData) : [];
 };
 
 export const setShowFullMetadataFormFields = (showFullMetadataFormFields) => {
@@ -100,47 +119,7 @@ export const setActiveEntity = (activeEntity) => {
     activeEntity,
   }));
 
-  if (activeEntity.startsWith("site-") || activeEntity.startsWith("perf-")) {
-    setEntityFilter(
-      [{ type: "high-level-folder-data-categorization", names: ["Experimental"] }],
-      []
-    );
-  }
-
-  if (activeEntity.startsWith("sam-")) {
-    const existingSiteIds = getExistingSites().map((site) => site.id);
-    const siteFilter = [
-      {
-        type: "sites",
-        names: existingSiteIds,
-      },
-    ];
-    setEntityFilter(
-      [{ type: "high-level-folder-data-categorization", names: ["Experimental"] }],
-      siteFilter
-    );
-  }
-
   if (activeEntity.startsWith("sub-")) {
-    const existingSiteIds = getExistingSites().map((site) => site.id);
-    const existingSampleIds = getExistingSamples().map((sample) => sample.id);
-    const siteFilter = [
-      {
-        type: "sites",
-        names: existingSiteIds,
-      },
-    ];
-    const sampleFilter = [
-      {
-        type: "samples",
-        names: existingSampleIds,
-      },
-    ];
-    const combinedFilter = [...siteFilter, ...sampleFilter];
-    setEntityFilter(
-      [{ type: "high-level-folder-data-categorization", names: ["Experimental"] }],
-      combinedFilter
-    );
   }
 };
 
@@ -205,21 +184,21 @@ export const filterRemovedFilesFromDatasetEntityObj = (entityObj) => {
   const filteredEntityObj = {};
 
   // Loop through each entity type in the savedDatasetEntityObj
-  // For example , "high-level-folder-data-categorization", "modalities" etc
+  // For example , "data-folders", "modalities" etc
   for (const [entityType, entities] of Object.entries(entityObj)) {
     filteredEntityObj[entityType] = {};
 
     // Loop through the entities of the current entity type
     // For example "Code", "Experimental", "Protocol" etc
     for (const [entityName, entityData] of Object.entries(entities)) {
+      // Always preserve the entity object, even if empty
+      filteredEntityObj[entityType][entityName] = {};
+
       // Loop through the files and if they exist re-add them to the filteredEntityObj
       for (const fileName of Object.keys(entityData)) {
         const { itemObject } = getFileDetailsByRelativePath(fileName);
         // If the file still exists in the dataset structure, add it to the filteredEntityObj
         if (itemObject) {
-          if (!filteredEntityObj[entityType][entityName]) {
-            filteredEntityObj[entityType][entityName] = {};
-          }
           filteredEntityObj[entityType][entityName][fileName] = entityData[fileName];
         }
       }

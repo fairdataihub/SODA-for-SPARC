@@ -85,7 +85,7 @@ export const guidedRenderProgressCards = async () => {
   // This will stop after 6 seconds
   if (!guidedGetCurrentUserWorkSpace()) {
     setGuidedModeProgressCardsText("Waiting for workspace to load");
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < 40; i++) {
       // If the workspace loaded, break out of the loop
       if (guidedGetCurrentUserWorkSpace()) {
         break;

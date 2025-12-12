@@ -77,7 +77,6 @@
   align-items: center;
   text-decoration: none;
   font-size: var(--mantine-font-size-md);
-  color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-1));
   padding: var(--mantine-spacing-xs) var(--mantine-spacing-sm);
   border-radius: var(--mantine-radius-sm);
   font-weight: 500;
@@ -89,7 +88,7 @@
 }
 
 .link:hover {
-  background: var(--mantine-color-primary-0);
+  background: var(--mantine-color-primary-2);
   font-weight: 600;
   box-shadow: 0 2px 8px 0 rgba(34, 139, 230, 0.1);
   transform: translateY(-2px) scale(1.01);
@@ -100,7 +99,7 @@
 }
 
 .link.linkActive {
-  background: var(--mantine-color-primary-2);
+  background: var(--mantine-color-primary-0);
   border-radius: var(--mantine-radius-md);
   font-weight: 600;
   box-shadow: 0 2px 8px 0 rgba(34, 139, 230, 0.08);

@@ -17,7 +17,7 @@ import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import CheckboxCard from "../../cards/CheckboxCard";
 import NavigationButton from "../../buttons/Navigation";
-import ModalitySelector from "../../modalitySelector";
+import ModalitySelector from "../../ModalitySelector";
 
 const ModalitySelectionPage = () => {
   const isYesChecked = useGlobalStore((state) => state.cardData["modality-selection-yes"]?.checked);
@@ -40,7 +40,6 @@ const ModalitySelectionPage = () => {
           <CheckboxCard id="modality-selection-no" />
         </Center>
       </GuidedModeSection>
-      {/* Section that appears when user selects "Yes" */}
 
       {isYesChecked && (
         <GuidedModeSection sectionId="dataset-selection">

@@ -1,4 +1,5 @@
 import useGlobalStore from "../globalStore";
+import { addHiddenGuidedModeSection, removeHiddenGuidedModeSection } from "./guidedModeSlice";
 import {
   IconCirclePlus,
   IconDeviceFloppy,
@@ -158,6 +159,50 @@ export const checkboxCardSlice = (set) => ({
       configValue: "multiple-modalities",
       configValueState: "no",
     },
+    "categorize-experimental-data-yes": {
+      simpleButtonType: "Positive",
+      title: "Yes",
+      description: null,
+      Icon: null,
+      mutuallyExclusiveWithCards: ["categorize-experimental-data-no"],
+      nextElementID: "guided-section-experimental-data-categorization-yes-message",
+      checked: false,
+      configValue: "categorize-experimental-data",
+      configValueState: "yes",
+    },
+    "categorize-experimental-data-no": {
+      simpleButtonType: "Negative",
+      title: "No",
+      description: null,
+      Icon: null,
+      mutuallyExclusiveWithCards: ["categorize-experimental-data-yes"],
+      nextElementID: "guided-section-experimental-data-categorization-no-message",
+      checked: false,
+      configValue: "categorize-experimental-data",
+      configValueState: "no",
+    },
+    "categorize-remaining-data-yes": {
+      simpleButtonType: "Positive",
+      title: "Yes",
+      description: null,
+      Icon: null,
+      mutuallyExclusiveWithCards: ["categorize-remaining-data-no"],
+      nextElementID: "guided-section-remaining-data-categorization-yes-message",
+      checked: false,
+      configValue: "categorize-remaining-data",
+      configValueState: "yes",
+    },
+    "categorize-remaining-data-no": {
+      simpleButtonType: "Negative",
+      title: "No",
+      description: null,
+      Icon: null,
+      mutuallyExclusiveWithCards: ["categorize-remaining-data-yes"],
+      nextElementID: "guided-section-remaining-data-categorization-no-message",
+      checked: false,
+      configValue: "categorize-remaining-data",
+      configValueState: "no",
+    },
     "guided-confirm-pennsieve-account-button": {
       simpleButtonType: "Positive",
       title: "Yes, this is the account",
@@ -216,29 +261,37 @@ export const getCheckboxDataByKey = (key) => {
 export const setCheckboxCardChecked = (key) => {
   const cardData = useGlobalStore.getState().cardData;
   const card = cardData[key];
+
+  // Update checkbox states
   useGlobalStore.setState((state) => {
     // Check this card
     state.cardData[key].checked = true;
 
-    // Uncheck mutually exclusive cards and hide their next elements
+    // Uncheck mutually exclusive cards
     card.mutuallyExclusiveWithCards?.forEach((cardId) => {
       if (state.cardData[cardId]) {
         state.cardData[cardId].checked = false;
-        // Hide their next element if defined
-        const otherData = state.cardData[cardId];
-        if (otherData.nextElementID) {
-          const el = document.getElementById(otherData.nextElementID);
-          if (el) el.classList.add("hidden");
-        }
       }
     });
+  });
 
-    // Show this card's next element if defined
-    if (card.nextElementID) {
-      const el = document.getElementById(card.nextElementID);
-      if (el) el.classList.remove("hidden");
+  // Handle section visibility (outside of setState to avoid nesting)
+  card.mutuallyExclusiveWithCards?.forEach((cardId) => {
+    const otherData = cardData[cardId];
+    if (otherData?.nextElementID) {
+      // Hide their next element (both React state and DOM)
+      addHiddenGuidedModeSection(otherData.nextElementID);
+      const el = document.getElementById(otherData.nextElementID);
+      if (el) el.classList.add("hidden");
     }
   });
+
+  // Show this card's next element (both React state and DOM)
+  if (card.nextElementID) {
+    removeHiddenGuidedModeSection(card.nextElementID);
+    const el = document.getElementById(card.nextElementID);
+    if (el) el.classList.remove("hidden");
+  }
   // If the card has a config value, set it in sodaJSONObj (only if not preventRadioHandler)
   if (card.configValue && card.configValueState) {
     window.sodaJSONObj["button-config"][card.configValue] = card.configValueState;
@@ -254,19 +307,14 @@ export const setCheckboxCardUnchecked = (key) => {
   });
 
   const card = useGlobalStore.getState().cardData[key];
-  // Hide this card's next element if defined
+  // Hide this card's next element if defined (both React state and DOM)
   if (card.nextElementID) {
+    // For React components using GuidedModeSection
+    addHiddenGuidedModeSection(card.nextElementID);
+    // For HTML elements that don't use React state
     const el = document.getElementById(card.nextElementID);
     if (el) el.classList.add("hidden");
   }
-};
-
-export const clearAllCheckboxCardChecked = () => {
-  useGlobalStore.setState((state) => {
-    Object.keys(state.cardData).forEach((key) => {
-      state.cardData[key].checked = false;
-    });
-  });
 };
 
 export const isCheckboxCardChecked = (key) => {
@@ -281,9 +329,5 @@ export const resetProgressCheckboxCard = (id) => {
   const checkboxConfig = useGlobalStore.getState().cardData[id];
   if (!checkboxConfig) return;
   setCheckboxCardUnchecked(id);
-  // Hide their next element if defined
-  if (checkboxConfig.nextElementID) {
-    const el = document.getElementById(checkboxConfig.nextElementID);
-    if (el) el.classList.add("hidden");
-  }
+  // setCheckboxCardUnchecked already handles hiding via both React state and DOM manipulation
 };
