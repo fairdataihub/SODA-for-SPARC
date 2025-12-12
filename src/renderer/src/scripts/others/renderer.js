@@ -5485,6 +5485,15 @@ const initiate_generate = async (resume = false) => {
       uploadLocally.className = "content-button is-selected";
       uploadLocally.style = "background-color: #fff";
 
+      // Check for network error now
+      if (!error.response && error.request && error.isAxiosError) {
+        await swalShowError(
+          "Network Error",
+          "The server did not respond. Please close SODA and reopen it to try the upload again. SODA will remember any progress in the upload you have made. If the problem persists, please contact support."
+        );
+        return;
+      }
+
       document.getElementById("para-new-curate-progress-bar-error-status").innerHTML =
         `<div style='color: red; text-align: left;'>
         <p style="overflow-y: auto; max-height: 120px; color: red;">Error: ${emessage}</p>
