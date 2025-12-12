@@ -7,13 +7,7 @@ const GuidedModeSection = ({ children, sectionId, withBorder, centered, mb, mt }
 
   // Return null if this section should be hidden
   if (sectionId && hiddenGuidedModeSections.includes(sectionId)) {
-    console.log("Not rendering guided mode section:", sectionId);
-    console.log("Hidden sections:", hiddenGuidedModeSections);
     return null;
-  } else {
-    if (sectionId) {
-      console.log("Rendering guided mode section:", sectionId);
-    }
   }
 
   const stackProps = {

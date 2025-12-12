@@ -20,8 +20,6 @@ export const setDatasetType = (datasetType) => {
 };
 
 export const addHiddenGuidedModeSection = (sectionId) => {
-  console.log("HIDING guided mode section:", sectionId);
-
   useGlobalStore.setState((state) => {
     if (!state.hiddenGuidedModeSections.includes(sectionId)) {
       state.hiddenGuidedModeSections.push(sectionId);

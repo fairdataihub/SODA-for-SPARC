@@ -5,7 +5,10 @@ import {
   removeEntityFromEntityList,
   removeEntityType,
 } from "../../../stores/slices/datasetEntitySelectorSlice";
-import { getSelectedDataCategoriesByEntityType } from "../../../stores/slices/datasetContentSelectorSlice";
+import {
+  getSelectedDataCategoriesByEntityType,
+  getOxfordCommaSeperatedListOfEntities,
+} from "../../../stores/slices/datasetContentSelectorSlice";
 import { startOrStopAnimationsInContainer } from "../lotties/lottie";
 import { savePageDatasetStructure } from "./datasetStructure/savePage";
 import { savePageCurationPreparation } from "./curationPreparation/savePage";
@@ -303,12 +306,13 @@ window.savePageChanges = async (pageBeingLeftID) => {
               );
 
             if (arraysAreDifferent) {
+              const hierarchyEntitiesList = getOxfordCommaSeperatedListOfEntities("or");
               const continueWithUnassociatedExperimentalFiles = await swalFileListDoubleAction(
                 unassociatedExperimentalFiles.map((file) =>
                   file.startsWith("data/") ? file.substring(5) : file
                 ),
                 "Unassociated Experimental Files Detected",
-                `The following experimental files have not been associated with any subjects, samples, or sites. 
+                `The following experimental files have not been associated with any ${hierarchyEntitiesList}. 
                 You can choose to continue without associating these files, or go back to associate them with entities.`,
                 "Continue without associating these files",
                 "Go back to associate files",
@@ -343,7 +347,7 @@ window.savePageChanges = async (pageBeingLeftID) => {
           console.log("countOfNonRemainingDataCategories:", countOfNonRemainingDataCategories);
           console.log("datasetFileCount:", datasetFileCount);
 
-          if (countOfNonRemainingDataCategories === datasetFileCount) {
+          if (countOfNonRemainingDataCategories >= datasetFileCount) {
             console.log("Skipping guided-remaining-data-categorization-page-set");
             guidedSkipPageSet("guided-remaining-data-categorization-page-set");
           } else {

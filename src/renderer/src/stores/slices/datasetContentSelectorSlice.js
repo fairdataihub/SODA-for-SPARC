@@ -29,6 +29,26 @@ export const addSelectedDataCategoryForEntityType = (entityType, dataCategory) =
 
   useGlobalStore.setState({ selectedDataCategoriesByEntityType: updatedMap });
 };
+
+export const getOxfordCommaSeperatedListOfEntities = (separator) => {
+  const selectedEntities = useGlobalStore.getState().selectedEntities || [];
+  const hierarchyEntities = selectedEntities.filter((entity) =>
+    ["subjects", "samples", "sites"].includes(entity)
+  );
+
+  if (!hierarchyEntities || hierarchyEntities.length === 0) return "";
+  if (hierarchyEntities.length === 1) return hierarchyEntities[0];
+
+  const finalSeparator = separator || " or ";
+  if (hierarchyEntities.length === 2) return hierarchyEntities.join(finalSeparator);
+  return (
+    hierarchyEntities.slice(0, -1).join(", ") +
+    "," +
+    finalSeparator +
+    hierarchyEntities[hierarchyEntities.length - 1]
+  );
+};
+
 export const removeSelectedDataCategoryForEntityType = (entityType, dataCategory) => {
   const currentState = useGlobalStore.getState();
   const updatedMap = { ...currentState.selectedDataCategoriesByEntityType };

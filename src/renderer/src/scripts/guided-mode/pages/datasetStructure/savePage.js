@@ -117,6 +117,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       guidedUnSkipPageSet("guided-subjects-metadata-page-set");
     } else {
       removeEntityType("experimental");
+      removeEntityType("subjects");
 
       // Skip all of the experimental pages
       guidedSkipPageSet("guided-subject-related-page-set");
@@ -143,6 +144,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     if (selectedEntities.includes("subjects") && selectedEntities.includes("samples")) {
       guidedUnSkipPageSet("guided-samples-metadata-page-set");
     } else {
+      removeEntityType("samples");
       // Delete the existing samples metadata if it exists
       const existingSamplesMetadata = window.sodaJSONObj["dataset_metadata"]?.["samples"];
       if (existingSamplesMetadata) {
@@ -155,6 +157,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     if (selectedEntities.includes("subjects") && selectedEntities.includes("sites")) {
       guidedUnSkipPageSet("guided-sites-metadata-page-set");
     } else {
+      removeEntityType("sites");
       guidedSkipPageSet("guided-sites-metadata-page-set");
 
       // Delete the existing sites metadata if it exists
@@ -167,6 +170,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     if (selectedEntities.includes("subjects") && selectedEntities.includes("performances")) {
       guidedUnSkipPageSet("guided-performances-metadata-page-set");
     } else {
+      removeEntityType("performances");
       guidedSkipPageSet("guided-performances-metadata-page-set");
       // Delete the existing performances metadata if it exists
       const existingPerformancesMetadata = window.sodaJSONObj["dataset_metadata"]?.["performances"];

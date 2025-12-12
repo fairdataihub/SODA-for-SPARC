@@ -170,8 +170,6 @@ const guidedGetPageToReturnTo = async () => {
 };
 
 const patchPreviousGuidedModeVersions = async () => {
-  console.log("datasetEntityObj before patching:", window.sodaJSONObj["dataset-entity-obj"]);
-
   const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
   const oldHighLevelFolders = datasetEntityObj?.["high-level-folder-data-categorization"];
 

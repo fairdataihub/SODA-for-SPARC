@@ -87,11 +87,13 @@ const getInstructionalTextByEntityType = (entityType, datasetType) => {
   );
 };
 
-function oxfordComma(arr) {
+function oxfordComma(arr, useOr) {
   if (!arr || arr.length === 0) return "";
   if (arr.length === 1) return arr[0];
-  if (arr.length === 2) return arr.join(" and ");
-  return arr.slice(0, -1).join(", ") + ", and " + arr[arr.length - 1];
+
+  const separator = useOr ? " or " : " and ";
+  if (arr.length === 2) return arr.join(separator);
+  return arr.slice(0, -1).join(", ") + "," + separator + arr[arr.length - 1];
 }
 
 const EntityDataSelectorPage = ({
@@ -182,7 +184,8 @@ const EntityDataSelectorPage = ({
                 const selectedSupportingEntitiesFormatted = oxfordComma(
                   selectedEntities
                     .filter((entity) => entityDisplayMap[entity])
-                    .map((entity) => entityDisplayMap[entity])
+                    .map((entity) => entityDisplayMap[entity]),
+                  false
                 );
 
                 return (
@@ -274,7 +277,8 @@ const EntityDataSelectorPage = ({
                     <br />
                     <b>Note:</b> Since subjects are the highest-level entity in your dataset
                     hierarchy, all experimental files should ultimately be associated with a subject
-                    by the end of this step.
+                    by the end of this step. If you have files that are unassociated with a subject,
+                    SODA will notify you when you in a pop-up when clicking "Save and Continue".
                   </Text>
                 );
 

@@ -50,7 +50,7 @@ const InfoList = ({ id }) => {
         {config.title}
       </Text>
 
-      <List spacing="xs" size="sm">
+      <List spacing="xs">
         {items.map((item, index) => (
           <List.Item key={index}>{item}</List.Item>
         ))}
