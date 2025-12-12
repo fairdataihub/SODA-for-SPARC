@@ -413,7 +413,7 @@ window.openPage = async (targetPageID) => {
         }
 
         if (pageEntityType === "performances") {
-          const performanceList = window.sodaJSONObj["dataset_performances"];
+          const performanceList = window.sodaJSONObj["dataset_performances"] || [];
           for (const performance of performanceList) {
             addEntityNameToEntityType("performances", performance.performance_id);
           }
