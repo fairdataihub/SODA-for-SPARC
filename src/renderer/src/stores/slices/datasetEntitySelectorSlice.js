@@ -253,6 +253,12 @@ export const modifyDatasetEntityForRelativeFilePath = (
                 entityRelativePath
               );
             }
+            // Always remove from mutually exclusive entity types
+            removeFromMutuallyExclusiveEntityTypes(
+              state.datasetEntityObj,
+              entityType,
+              entityRelativePath
+            );
           }
           break;
 
@@ -266,6 +272,12 @@ export const modifyDatasetEntityForRelativeFilePath = (
               entityRelativePath
             );
           }
+          // Always remove from mutually exclusive entity types
+          removeFromMutuallyExclusiveEntityTypes(
+            state.datasetEntityObj,
+            entityType,
+            entityRelativePath
+          );
           break;
 
         case "remove":
@@ -285,6 +297,40 @@ const removeFromOtherEntities = (entityEntries, targetEntityName, entityRelative
   Object.keys(entityEntries).forEach((entity) => {
     if (entity !== targetEntityName && entityEntries[entity]) {
       delete entityEntries[entity][entityRelativePath];
+    }
+  });
+};
+
+// Define mutually exclusive entity type groups
+const MUTUALLY_EXCLUSIVE_ENTITY_TYPES = [
+  ["non-data-folders", "experimental"], // non-data-folders and experimental are mutually exclusive
+];
+
+// Remove a file path from all mutually exclusive entity types
+const removeFromMutuallyExclusiveEntityTypes = (
+  datasetEntityObj,
+  currentEntityType,
+  entityRelativePath
+) => {
+  // Find which group the current entity type belongs to
+  const exclusiveGroup = MUTUALLY_EXCLUSIVE_ENTITY_TYPES.find((group) =>
+    group.includes(currentEntityType)
+  );
+
+  if (!exclusiveGroup) return; // No mutual exclusions for this entity type
+
+  // Remove from all other entity types in the same exclusive group
+  exclusiveGroup.forEach((entityType) => {
+    if (entityType !== currentEntityType && datasetEntityObj[entityType]) {
+      // Remove from all entities within this entity type
+      Object.keys(datasetEntityObj[entityType]).forEach((entityName) => {
+        if (
+          datasetEntityObj[entityType][entityName] &&
+          datasetEntityObj[entityType][entityName][entityRelativePath]
+        ) {
+          delete datasetEntityObj[entityType][entityName][entityRelativePath];
+        }
+      });
     }
   });
 };
