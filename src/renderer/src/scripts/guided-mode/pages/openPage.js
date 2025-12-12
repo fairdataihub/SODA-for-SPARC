@@ -278,7 +278,8 @@ window.openPage = async (targetPageID) => {
         setDatasetType(datasetType);
 
         if (pageEntityType === "non-data-folders") {
-          setFileVisibilityFilter([], []); // No pre-set filters for data categorization
+          // Filter files that may have been marked as experimental in a previous step
+          setFileVisibilityFilter([], [{ type: "experimental", names: ["experimental"] }]);
         }
 
         // Make any adjustments to the dataset entity object before setting it in the zustand store

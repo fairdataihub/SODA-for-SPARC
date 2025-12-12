@@ -193,6 +193,21 @@ window.savePageChanges = async (pageBeingLeftID) => {
           }
         }
 
+        if (entityType === "experimental") {
+          const experimentalFileCount = getCategorizedEntityFileList(
+            "experimental",
+            "experimental"
+          ).length;
+
+          if (experimentalFileCount === 0) {
+            errorArray.push({
+              type: "notyf",
+              message: "Please select your experimental data files before continuing.",
+            });
+            throw errorArray;
+          }
+        }
+
         if (entityType === "performances") {
           // Clone current performances metadata to avoid mutating the original reference
           const performanceMetadata = structuredClone(

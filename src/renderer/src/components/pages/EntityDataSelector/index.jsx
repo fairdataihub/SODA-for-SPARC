@@ -219,7 +219,14 @@ const EntityDataSelectorPage = ({
                 );
 
               case "modalities":
-                return <Text>Select the folders and files that belong to each modality.</Text>;
+                return (
+                  <Text>
+                    The SDS requires organizing data by modality when datasets contain multiple data
+                    collection methods or techniques. To do this, select a modality from the list on
+                    the left, then choose the folders and files that contain data collected using
+                    that specific modality or technique.
+                  </Text>
+                );
 
               case "experimental-data-categorization":
                 return (
