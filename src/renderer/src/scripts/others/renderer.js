@@ -5485,7 +5485,7 @@ const initiate_generate = async (resume = false) => {
       uploadLocally.className = "content-button is-selected";
       uploadLocally.style = "background-color: #fff";
 
-      // Check for network error now
+      // Check for network error that generally happens when the server dies
       if (!error.response && error.request && error.isAxiosError) {
         await swalShowError(
           "Network Error",
