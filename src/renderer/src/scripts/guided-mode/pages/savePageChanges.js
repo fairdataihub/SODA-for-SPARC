@@ -354,23 +354,15 @@ window.savePageChanges = async (pageBeingLeftID) => {
           // non-data-folders (e.g. code, docs) combined with the experimentally
           // marked files, and if they are not equal, we can assume that their are files that
           // were not categorized therefore remaining.
-          const nonRemainingDataCategories = getFilesByEntityType([
-            "experimental",
-            "non-data-folders",
-          ]);
-          console.log("nonRemainingDataCategories:", nonRemainingDataCategories);
+
           const countOfNonRemainingDataCategories = getFilesByEntityType([
             "experimental",
             "non-data-folders",
           ]).length;
-          console.log("countOfNonRemainingDataCategories:", countOfNonRemainingDataCategories);
-          console.log("datasetFileCount:", datasetFileCount);
 
           if (countOfNonRemainingDataCategories >= datasetFileCount) {
-            console.log("Skipping guided-remaining-data-categorization-page-set");
             guidedSkipPageSet("guided-remaining-data-categorization-page-set");
           } else {
-            console.log("Unskipping guided-remaining-data-categorization-page-set");
             guidedUnSkipPageSet("guided-remaining-data-categorization-page-set");
           }
         }
