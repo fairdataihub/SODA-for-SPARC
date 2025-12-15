@@ -7,7 +7,7 @@ import {
 } from "../../../stores/slices/datasetEntitySelectorSlice";
 import {
   getSelectedDataCategoriesByEntityType,
-  getOxfordCommaSeperatedListOfEntities,
+  getOxfordCommaSeparatedListOfEntities,
 } from "../../../stores/slices/datasetContentSelectorSlice";
 import { startOrStopAnimationsInContainer } from "../lotties/lottie";
 import { savePageDatasetStructure } from "./datasetStructure/savePage";
@@ -320,7 +320,7 @@ window.savePageChanges = async (pageBeingLeftID) => {
               );
 
             if (arraysAreDifferent) {
-              const hierarchyEntitiesList = getOxfordCommaSeperatedListOfEntities("or");
+              const hierarchyEntitiesList = getOxfordCommaSeparatedListOfEntities("or");
               const continueWithUnassociatedExperimentalFiles = await swalFileListDoubleAction(
                 unassociatedExperimentalFiles.map((file) =>
                   file.startsWith("data/") ? file.substring(5) : file

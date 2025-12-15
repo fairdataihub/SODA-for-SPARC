@@ -46,7 +46,10 @@ import {
   clearTemporaryMetadata,
   setActiveFormType,
 } from "../../../stores/slices/datasetEntityStructureSlice";
-import { setSelectedHierarchyEntity } from "../../../stores/slices/datasetContentSelectorSlice";
+import {
+  setSelectedHierarchyEntity,
+  getOxfordCommaSeparatedListOfEntities,
+} from "../../../stores/slices/datasetContentSelectorSlice";
 import {
   addSubject,
   addSampleToSubject,
@@ -172,7 +175,7 @@ const EntityMetadataForm = () => {
       <InstructionsTowardsLeftContainer>
         <Text fw={500}>
           {showFullMetadataFormFields
-            ? "Select a sample from the list on the left to edit its metadata."
+            ? "Select an entity from the list on the left to edit its metadata."
             : "Select an entity from the hierarchy on the left to edit its metadata or click an entity addition button to add a new entity."}
         </Text>
       </InstructionsTowardsLeftContainer>
@@ -1032,16 +1035,18 @@ const EntityMetadataPage = ({ entityType }) => {
       <GuidedModeSection>
         <Text>
           {showFullMetadataFormFields
-            ? `Tell us more about the ${entityType} you collected data from in the interface below. `
-            : "The SDS requires metadata for the entities your data was collected from, such as subjects or samples, so you must provide a unique ID for each entity in your dataset."}
+            ? `Tell us more about the ${entityType} you collected data from in the interface below.`
+            : `The SDS requires metadata for all entities from which your data were collected. These entities are organizational components, such as ${getOxfordCommaSeparatedListOfEntities(
+                "or"
+              )}, that help structure your dataset. You must provide each entity in your dataset an ID using the interface below.`}
         </Text>
         {!showFullMetadataFormFields && (
           <InfoList id="entity-addition-method-entity-explanation-list" />
         )}
         {!showFullMetadataFormFields && (
           <Text mb="-10px">
-            Use the interface below to specify IDs for each entity in your dataset. For more details
-            about working with entities, expand the dropdown below.
+            Use the interface below to specify IDs and basic metadata for each entity in your
+            dataset. For more details about working with entities, expand the dropdown below.
           </Text>
         )}
         {!showFullMetadataFormFields && <DropDownNote id="dataset-entity-management-page" />}
