@@ -5,6 +5,22 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v 16.6.0 - 2025-12-15
+
+## Feature Additions:
+
+- The `Prepare Dataset Step-by-Step` data categorization workflow was updated and now allows users to categorize non-data folders (code, protocol, and docs) in a more efficient manner.
+
+- The `Prepare Dataset Step-by-Step` now allows users to separate experimental data on a dedicated page, enabling more streamlined file-to-entity association.
+
+- The `Prepare Dataset Step-by-Step` now allows users to categorize experimental data into the Primary, Source, and Derivative folders.
+
+- The `Prepare Dataset Step-by-Step` now allows users to review all unclassified files on a new page called 'Remaining Data Categorization' and sort the remaining data into the Primary, Source, and Derivative folders.
+
+## Bug fixes:
+
+- Both the `Prepare Dataset Step-by-Step` and `Upload Dataset` upload functions were updated to stop the upload and notify the user when SODA's server crashes.
+
 ## v 16.5.0 - 2025-12-01
 
 ## Feature Additions:
