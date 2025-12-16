@@ -1036,9 +1036,9 @@ const EntityMetadataPage = ({ entityType }) => {
         <Text>
           {showFullMetadataFormFields
             ? `Tell us more about the ${entityType} you collected data from in the interface below.`
-            : `The SDS requires metadata for all entities from which your data were collected. These entities are organizational components, such as ${getOxfordCommaSeparatedListOfEntities(
-                "or"
-              )}, that help structure your dataset. You must provide each entity in your dataset an ID using the interface below.`}
+            : `The SDS requires descriptive metadata for all entities from which your experimental data were collected. These entities include ${getOxfordCommaSeparatedListOfEntities(
+                "and"
+              )}, and are used to describe and structure your dataset.`}
         </Text>
         {!showFullMetadataFormFields && (
           <InfoList id="entity-addition-method-entity-explanation-list" />
