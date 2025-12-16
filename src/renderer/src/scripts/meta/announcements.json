@@ -2,7 +2,7 @@
   "16.6.0": {
     "announcements": {
       "features": [
-        "The Prepare Dataset Step-by-Step workflow has been improved with a more intuitive data categorization and file-entity relationship experience."
+        "The Prepare Dataset workflow now makes organizing data and linking files to entities easier."
       ],
       "bug-fixes": [
         "Uploads now stop gracefully and notify you if the SODA server crashes during an upload."
