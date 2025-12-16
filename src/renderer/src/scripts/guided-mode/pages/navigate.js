@@ -43,7 +43,7 @@ export const handleNextButtonClick = async () => {
       for (const err of error) {
         if (err.type === "notyf") {
           window.notyf.open({
-            duration: "7000",
+            duration: "10000",
             type: "error",
             message: err.message,
           });

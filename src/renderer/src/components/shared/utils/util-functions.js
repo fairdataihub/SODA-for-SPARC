@@ -7,6 +7,13 @@ const preferredOrder = [
   "Derivative",
   "Protocol",
   "Documentation",
+  "experimental",
+  "primary",
+  "source",
+  "derivative",
+  "code",
+  "protocol",
+  "docs",
 ];
 const orderMap = new Map(preferredOrder.map((item, index) => [item, index]));
 

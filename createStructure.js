@@ -3,7 +3,7 @@ const path = require("path");
 
 const rootDir = "SDS3-Dataset";
 
-// Configuration variables - adjust these to scale the dataset
+// Configuration variables - adjust these to scale the dataset base dataset
 const numSubjects = 2; // Number of subjects to create
 const samplesPerSubject = 2; // Number of tissue samples per subject
 const regionsPerSample = 2; // Number of regions per sample

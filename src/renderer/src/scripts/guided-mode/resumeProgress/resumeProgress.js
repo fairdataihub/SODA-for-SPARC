@@ -1,19 +1,15 @@
 import Swal from "sweetalert2";
-import { guidedTransitionFromHome } from "../pages/navigate";
 import { checkIfDatasetExistsOnPennsieve } from "../pennsieveUtils";
 import {
   guidedSkipPage,
-  guidedUnSkipPage,
   getNonSkippedGuidedModePages,
 } from "../pages/navigationUtils/pageSkipping";
 import { guidedGetCurrentUserWorkSpace } from "../workspaces/workspaces";
 import { getProgressFileData } from "./progressFile";
-import api from "../../others/api/api";
-import client from "../../client";
+
 import { clientError } from "../../others/http-error-handler/error-handler";
 import { swalShowInfo } from "../../utils/swal-utils";
-import { setDatasetEntityObj } from "../../../stores/slices/datasetEntitySelectorSlice";
-import { setDatasetEntityArray } from "../../../stores/slices/datasetEntityStructureSlice";
+
 import useGlobalStore from "../../../stores/globalStore";
 
 while (!window.baseHtmlLoaded) {
@@ -89,10 +85,6 @@ window.guidedResumeProgress = async (progressFileName) => {
     await patchPreviousGuidedModeVersions();
 
     window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
-    const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
-    setDatasetEntityObj(savedDatasetEntityObj);
-    const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
-    setDatasetEntityArray(datasetEntityArray);
 
     // Save the skipped pages in a temp variable since guidedTransitionFromHome will remove them
     const prevSessionSkikppedPages = [...window.sodaJSONObj["skipped-pages"]];
@@ -178,7 +170,47 @@ const guidedGetPageToReturnTo = async () => {
 };
 
 const patchPreviousGuidedModeVersions = async () => {
-  // Empty since this is the first SDS3 release and no changes need be modified
+  const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
+  const oldHighLevelFolders = datasetEntityObj?.["high-level-folder-data-categorization"];
+
+  if (oldHighLevelFolders && Object.keys(oldHighLevelFolders).length > 0) {
+    // Ensure new keys exist
+    datasetEntityObj["experimental"] = {};
+    datasetEntityObj["non-data-folders"] = {};
+
+    // Patch Experimental files
+    const experimentalFiles = oldHighLevelFolders["Experimental"];
+    if (experimentalFiles && Object.keys(experimentalFiles).length > 0) {
+      datasetEntityObj["experimental"]["experimental"] = experimentalFiles;
+    }
+
+    // Patch Non-data folders
+    const codeFiles = oldHighLevelFolders["Code"];
+    if (codeFiles && Object.keys(codeFiles).length > 0) {
+      datasetEntityObj["non-data-folders"]["Code"] = codeFiles;
+    }
+
+    const protocolFiles = oldHighLevelFolders["Protocol"];
+    if (protocolFiles && Object.keys(protocolFiles).length > 0) {
+      datasetEntityObj["non-data-folders"]["Protocol"] = protocolFiles;
+    }
+
+    const docsFiles = oldHighLevelFolders["Documentation"];
+    if (docsFiles && Object.keys(docsFiles).length > 0) {
+      datasetEntityObj["non-data-folders"]["Docs"] = docsFiles;
+    }
+
+    // Remove old key
+    delete datasetEntityObj["high-level-folder-data-categorization"];
+  }
+
+  // Update "code" in selected-entities to "Code"
+  const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
+  if (selectedEntities.includes("code")) {
+    window.sodaJSONObj["selected-entities"] = selectedEntities
+      .filter((entity) => entity.toLowerCase() !== "code")
+      .concat("Code");
+  }
 };
 
 const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {

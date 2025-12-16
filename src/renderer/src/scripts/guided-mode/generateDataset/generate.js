@@ -601,6 +601,19 @@ const trackPennsieveDatasetGenerationProgress = async (standardizedDatasetStruct
       // Wait for a second before fetching the next progress update
       await new Promise((resolve) => setTimeout(resolve, 1000));
     } catch (error) {
+      // Check for network error
+      if (!error.response && error.request && error.isAxiosError) {
+        const currentPageID = window.CURRENT_PAGE.id;
+        await window.savePageChanges(currentPageID);
+        clientError(error);
+        await swalShowError(
+          "Network Error",
+          "The server did not respond. Please close SODA and reopen it to try the upload again. SODA will remember any progress in the upload you have made. If the problem persists, please contact support."
+        );
+        guidedSetNavLoadingState(false);
+        guidedTransitionToHome();
+        return;
+      }
       console.error("[Pennsieve Progress] Error tracking upload progress:", error);
       throw new Error(userErrorMessage(error));
     }

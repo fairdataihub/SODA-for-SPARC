@@ -1805,14 +1805,6 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         initializeBootstrapSelect("#curatebforganizationlist", "show");
         return;
       }
-
-      window.electron.ipcRenderer.send(
-        "track-event",
-        "Error",
-        "Selecting dataset",
-        "User has not connected their Pennsieve account with SODA",
-        1
-      );
     }
 
     // get the list of the user's available organizations

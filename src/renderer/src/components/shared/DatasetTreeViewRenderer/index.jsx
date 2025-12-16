@@ -51,7 +51,6 @@ import {
 } from "../../../stores/slices/fileExplorerStateSlice";
 
 import { useDebouncedValue } from "@mantine/hooks";
-import { naturalSort } from "../utils/util-functions";
 import SelectedEntityPreviewer from "../SelectedEntityPreviewer";
 
 // Get badge color based on entity type
@@ -66,6 +65,9 @@ const getBadgeColor = (entityId) => {
   if (entityId === "Experimental") return "green";
   if (entityId === "Protocol") return "gray";
   if (entityId === "Docs") return "cyan";
+  if (entityId === "Primary") return "teal";
+  if (entityId === "Source") return "violet";
+  if (entityId === "Derivative") return "yellow";
 };
 
 const EntityBadges = ({ entities }) => {
@@ -312,7 +314,8 @@ const FolderItem = ({
 
   // Helper function for determining background color
   const getBackgroundColor = () => {
-    if (hovered || (contextMenuIsOpened && contextMenuRelativePath === content.relativePath)) {
+    if (folderIsSelected) return "var(--mantine-color-primary-0)";
+    if (hovered || (contextMenuIsOpened && contextMenuRelativePath === relativePath)) {
       return "rgba(0, 0, 0, 0.05)";
     }
     return undefined;
@@ -384,6 +387,16 @@ const FolderItem = ({
   );
 };
 
+const generateEmptyFolderStructureMessage = (entityType) => {
+  switch (entityType) {
+    case "samples":
+      return "No experimental files are available to assign to samples. This occurs when all experimental files have already been assigned to sites, as files linked to sites are automatically associated with their corresponding samples. No action is necessary - you can continue to the next step.";
+    case "subjects":
+      return "No experimental files are available to assign to subjects. This occurs when all experimental files have already been assigned to samples, as files linked to samples are automatically associated with their corresponding subjects. No action is necessary - you can continue to the next step.";
+    default:
+      return "No folders or files to display.";
+  }
+};
 // Main component - renders the entire dataset tree structure
 const DatasetTreeViewRenderer = ({
   fileExplorerId,
@@ -487,10 +500,10 @@ const DatasetTreeViewRenderer = ({
       >
         {renderObjIsEmpty ? (
           <Center mt="md">
-            <Text size="sm" c="gray">
+            <Text size="sm" c="gray" p="sm">
               {debouncedSearchFilter.length > 0
                 ? "No files or folders found matching the search criteria."
-                : "No folders or files to display."}
+                : generateEmptyFolderStructureMessage(entityType)}
             </Text>
           </Center>
         ) : datasetRenderArrayIsLoading ? (

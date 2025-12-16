@@ -7,6 +7,11 @@ import {
   guidedSkipPageSet,
   guidedUnSkipPageSet,
 } from "../../../guided-mode/pages/navigationUtils/pageSkipping";
+import {
+  addEntityNameToEntityType,
+  removeEntityFromEntityList,
+  removeEntityType,
+} from "../../../../stores/slices/datasetEntitySelectorSlice";
 
 export const savePageDatasetStructure = async (pageBeingLeftID) => {
   const errorArray = [];
@@ -25,33 +30,44 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
   }
 
   if (pageBeingLeftID === "guided-dataset-content-tab") {
+    // At this point, we know all visible questions were answered
+    // Now determine the workflow based on selected and de-selected answers
     const selectedEntities = useGlobalStore.getState()["selectedEntities"];
     const deSelectedEntities = useGlobalStore.getState()["deSelectedEntities"];
-    // Check if any selections were made
-    if (!selectedEntities.includes("subjects") && !selectedEntities.includes("code")) {
-      errorArray.push({
-        type: "notyf",
-        message: "You must indicate that your dataset contains subjects and/or code",
-      });
-      throw errorArray;
-    }
 
+    // Validate that all questions that should be visible were answered
     const visibleQuestions = Object.keys(contentOptionsMap).filter((key) => {
       const option = contentOptionsMap[key];
-      // If this option has dependencies, check them all
-      if (option.dependsOn && option.dependsOn.length > 0) {
-        for (const dependency of option.dependsOn) {
-          if (deSelectedEntities.includes(dependency) || !selectedEntities.includes(dependency)) {
-            return false; // This question shouldn't be visible
+
+      // Check requiresAnswer dependencies (need "yes" answers)
+      if (option.requiresAnswer && option.requiresAnswer.length > 0) {
+        for (const dependency of option.requiresAnswer) {
+          if (!selectedEntities.includes(dependency)) {
+            return false; // Hide if dependency doesn't have a "yes" answer
           }
         }
       }
+
+      // Check requiresSelection dependencies (need any answer)
+      if (option.requiresSelection && option.requiresSelection.length > 0) {
+        // ALL dependencies need to be answered (either yes or no)
+        for (const dependency of option.requiresSelection) {
+          if (!selectedEntities.includes(dependency) && !deSelectedEntities.includes(dependency)) {
+            return false; // Hide if any dependency hasn't been answered
+          }
+        }
+      }
+
       return true; // This question should be visible
     });
 
-    // Now check if all visible questions were answered
     for (const entity of visibleQuestions) {
-      if (!selectedEntities.includes(entity) && !deSelectedEntities.includes(entity)) {
+      const isSelected = selectedEntities.includes(entity);
+      const isDeselected = deSelectedEntities.includes(entity);
+      const isUnanswered = !isSelected && !isDeselected;
+
+      if (isUnanswered) {
+        console.error(`VALIDATION FAILED: Question '${entity}' is unanswered!`);
         errorArray.push({
           type: "notyf",
           message: "Please answer all questions before continuing.",
@@ -60,37 +76,59 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       }
     }
 
-    // If subjects is selected, verify all questions that should be visible were answered
+    // Determine which high-level folders to include based on selections
+    const possibleNonDataFolders = ["Code", "Protocol", "Docs"];
+
+    // Filter selected entities to get the actual folder selections
+    const nonDataFolders = possibleNonDataFolders.filter((folder) =>
+      selectedEntities.includes(folder)
+    );
+
+    // Set up supporting data categorization entities and page visibility
+    // Show/hide the supporting data categorization page based on whether user has any supporting folders
+    if (nonDataFolders.length > 0) {
+      guidedUnSkipPage("non-data-categorization-tab");
+    } else {
+      guidedSkipPage("non-data-categorization-tab");
+    }
+
+    window.sodaJSONObj["non-data-folders"] = nonDataFolders;
+
+    // Update entity list: add selected folders, remove unselected ones
+    for (const folder of possibleNonDataFolders) {
+      if (nonDataFolders.includes(folder)) {
+        addEntityNameToEntityType("non-data-folders", folder);
+      } else {
+        removeEntityFromEntityList("non-data-folders", folder);
+      }
+    }
+
+    // Per the sparc team, if the dataset contains subjects, it's experimental, otherwise computational
+    // (Further follow up required regarding "device" type datasets...)
+    const datasetType = selectedEntities.includes("subjects") ? "experimental" : "computational";
+    window.sodaJSONObj["dataset-type"] = datasetType;
+
     if (selectedEntities.includes("subjects")) {
       // Unskip all of the experimental pages
-      guidedUnSkipPageSet("guided-experimental-dataset-page-set");
 
-      // If the dataset contains subjects, assume it is experimental by default
-      window.sodaJSONObj["dataset-type"] = "experimental";
+      addEntityNameToEntityType("experimental", "experimental");
+
+      guidedUnSkipPageSet("guided-subject-related-page-set");
+      guidedUnSkipPageSet("guided-subjects-metadata-page-set");
     } else {
-      // If subjects is not selected, it must be explicitly marked as No
-      if (!deSelectedEntities.includes("subjects")) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please answer the question about subjects (select Yes or No).",
-        });
-        throw errorArray;
-      }
+      removeEntityType("experimental");
+      removeEntityType("subjects");
 
-      // At this point, we can infer that the dataset does not have subjects
-      if (!selectedEntities.includes("code")) {
-        errorArray.push({
-          type: "notyf",
-          message:
-            "Your dataset must contain either subjects or code. Please select 'Yes' for at least one of these options.",
-        });
-        throw errorArray;
-      }
       // Skip all of the experimental pages
-      guidedSkipPageSet("guided-experimental-dataset-page-set");
+      guidedSkipPageSet("guided-subject-related-page-set");
 
-      // At this point, we can infer that the dataset has code but no subjects (Computational workflow)
-      window.sodaJSONObj["dataset-type"] = "computational";
+      // Delete the existing subjects metadata if it exists
+      const existingSubjectsMetadata = window.sodaJSONObj["dataset_metadata"]?.["subjects"];
+      if (existingSubjectsMetadata) {
+        delete window.sodaJSONObj["dataset_metadata"]["subjects"];
+      }
+
+      guidedSkipPageSet("guided-subjects-metadata-page-set");
     }
 
     // Store selections
@@ -103,22 +141,10 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       guidedSkipPage("guided-add-code-metadata-tab");
     }
 
-    // Handle page skipping based on selections
-    if (selectedEntities.includes("subjects")) {
-      guidedUnSkipPageSet("guided-subjects-metadata-page-set");
-    } else {
-      // Delete the existing subjects metadata if it exists
-      const existingSubjectsMetadata = window.sodaJSONObj["dataset_metadata"]?.["subjects"];
-      if (existingSubjectsMetadata) {
-        delete window.sodaJSONObj["dataset_metadata"]["subjects"];
-      }
-
-      guidedSkipPageSet("guided-subjects-metadata-page-set");
-    }
-
     if (selectedEntities.includes("subjects") && selectedEntities.includes("samples")) {
       guidedUnSkipPageSet("guided-samples-metadata-page-set");
     } else {
+      removeEntityType("samples");
       // Delete the existing samples metadata if it exists
       const existingSamplesMetadata = window.sodaJSONObj["dataset_metadata"]?.["samples"];
       if (existingSamplesMetadata) {
@@ -131,6 +157,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     if (selectedEntities.includes("subjects") && selectedEntities.includes("sites")) {
       guidedUnSkipPageSet("guided-sites-metadata-page-set");
     } else {
+      removeEntityType("sites");
       guidedSkipPageSet("guided-sites-metadata-page-set");
 
       // Delete the existing sites metadata if it exists
@@ -143,6 +170,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     if (selectedEntities.includes("subjects") && selectedEntities.includes("performances")) {
       guidedUnSkipPageSet("guided-performances-metadata-page-set");
     } else {
+      removeEntityType("performances");
       guidedSkipPageSet("guided-performances-metadata-page-set");
       // Delete the existing performances metadata if it exists
       const existingPerformancesMetadata = window.sodaJSONObj["dataset_metadata"]?.["performances"];

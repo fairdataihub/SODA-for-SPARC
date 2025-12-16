@@ -2,7 +2,6 @@ import useGlobalStore from "../../../stores/globalStore";
 import { Checkbox, Text, Stack, Badge, Card, Center, ActionIcon, Button } from "@mantine/core";
 import { useHover } from "@mantine/hooks";
 import classes from "../cards.module.css";
-import pennsieveLogo from "../../../assets/img/pennsieveLogo.png";
 import {
   setCheckboxCardChecked,
   setCheckboxCardUnchecked,
@@ -42,6 +41,7 @@ const CheckboxCard = ({ id }) => {
     return (
       <Button
         id={id}
+        data-checkbox-card-id={id}
         variant={checked ? "filled" : "outline"}
         color={color}
         onClick={handleClick}
@@ -59,6 +59,7 @@ const CheckboxCard = ({ id }) => {
   return (
     <Card
       id={id}
+      data-checkbox-card-id={id}
       ref={ref}
       onClick={handleClick}
       shadow={checked ? "sm" : "xs"}

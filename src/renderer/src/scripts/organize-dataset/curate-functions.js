@@ -102,34 +102,8 @@ window.uploadDatasetDropHandler = async (ev) => {
       };
 
       let moveForward = false;
-      let valid_dataset = window.verifySparcFolder(folderPath, "local");
 
-      if (valid_dataset) {
-        moveForward = await window.handleLocalDatasetImport(folderPath);
-      } else {
-        Swal.fire({
-          icon: "warning",
-          html: `<div style="text-align: left;">
-                  This dataset is not following the SPARC Dataset Structure (SDS). It is expected that each of the high-level folders in this dataset is named after one of the SDS folders.
-                  <br/>
-                  See the "Data Organization" section of the SPARC documentation for more 
-                  <a target="_blank" href="https://docs.sparc.science/docs/sparc-dataset-structure">details</a>
-                  </div>`,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          showConfirmButton: false,
-          showCancelButton: true,
-          focusCancel: true,
-          cancelButtonText: "Okay",
-          reverseButtons: window.reverseSwalButtons,
-          showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster",
-          },
-        });
-      }
+      moveForward = await window.handleLocalDatasetImport(folderPath);
 
       if (moveForward) {
         setStateDisplayData("org-dataset-folder-path", folderPath);
@@ -553,34 +527,8 @@ window.importLocalDataset = async (folderPath) => {
   };
 
   let moveForward = false;
-  let valid_dataset = window.verifySparcFolder(folderPath, "local");
 
-  if (valid_dataset) {
-    moveForward = await window.handleLocalDatasetImport(folderPath);
-  } else {
-    Swal.fire({
-      icon: "warning",
-      html: `<div style="text-align: left;">
-              This dataset is not following the SPARC Dataset Structure (SDS). It is expected that each of the high-level folders in this dataset is named after one of the SDS folders.
-              <br/>
-              See the "Data Organization" section of the SPARC documentation for more 
-              <a target="_blank" href="https://docs.sparc.science/docs/sparc-dataset-structure">details</a>
-              </div>`,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showConfirmButton: false,
-      showCancelButton: true,
-      focusCancel: true,
-      cancelButtonText: "Okay",
-      reverseButtons: window.reverseSwalButtons,
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    });
-  }
+  moveForward = await window.handleLocalDatasetImport(folderPath);
 
   if (moveForward) {
     setStateDisplayData("org-dataset-folder-path", folderPath);

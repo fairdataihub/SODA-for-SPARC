@@ -62,6 +62,7 @@ const generateProgressResumptionButton = (
       size="md"
       color={color}
       variant={variant}
+      data-progress-file-name={progressFileName}
       onClick={() => window.guidedResumeProgress(progressFileName)}
     >
       {buttonText}

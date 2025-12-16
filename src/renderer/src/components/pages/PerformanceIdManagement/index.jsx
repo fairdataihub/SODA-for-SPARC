@@ -87,16 +87,20 @@ const PerformanceMetadataForm = () => {
           label="Start Date & Time"
           description="Enter the date and time when the performance started."
           placeholder="Select start date and time"
-          value={start_datetime ? new Date(start_datetime) : null}
+          value={start_datetime ? new Date(start_datetime.replace(" ", "T")) : null}
           onChange={(val) => setStartDatetime(val ? val.toISOString() : "")}
+          withSeconds
+          valueFormat="YYYY-MM-DD HH:mm:ss"
           clearable
         />
         <DateTimePicker
           label="End Date & Time"
           description="Enter the date and time when the performance ended."
           placeholder="Select end date and time"
-          value={end_datetime ? new Date(end_datetime) : null}
+          value={end_datetime ? new Date(end_datetime.replace(" ", "T")) : null}
           onChange={(val) => setEndDatetime(val ? val.toISOString() : "")}
+          withSeconds
+          valueFormat="YYYY-MM-DD HH:mm:ss"
           clearable
         />
       </Group>
@@ -152,7 +156,10 @@ const PerformanceIdManagement = () => {
     <GuidedModePage pageHeader="Description of Performances">
       <GuidedModeSection>
         <Text mb="md">
-          Provide information for each performance of the experimental protocol below.
+          You indicated that your dataset includes data collected from subjects across multiple
+          sessions or time points. According to the SDS, each session must be categorized as a
+          performance. Use the interface below to add a performance ID and enter details for each
+          performance.
         </Text>
       </GuidedModeSection>
 

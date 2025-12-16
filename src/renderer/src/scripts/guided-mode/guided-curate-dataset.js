@@ -623,6 +623,27 @@ document
     window.open(datasetLink, "_blank");
   });
 
+// Add event listener to open dataset link in new tab
+document
+  .getElementById("guided-button-open-link-on-pennsieve-publishing")
+  .addEventListener("click", async (event) => {
+    event.preventDefault();
+    const userInformation = await api.getUserInformation();
+    const preferredOrganization = userInformation.preferredOrganization;
+    const pennsieveDatasetID = window.sodaJSONObj?.["digital-metadata"]?.["pennsieve-dataset-id"];
+
+    // If the user has a preferred organization and a dataset ID, construct the dataset link
+    // Otherwise, default to the Pennsieve app homepage
+    let datasetLink;
+    if (preferredOrganization && pennsieveDatasetID) {
+      datasetLink = `https://app.pennsieve.io/${preferredOrganization}/datasets/${pennsieveDatasetID}/publishing-settings`;
+    } else {
+      datasetLink = "https://app.pennsieve.io";
+    }
+
+    window.open(datasetLink, "_blank");
+  });
+
 // Add event listener to Reserve DOI button "guided-button-reserve-doi"
 document.getElementById("guided-button-reserve-doi").addEventListener("click", async (event) => {
   event.preventDefault();
@@ -3253,22 +3274,25 @@ const doTheHack = async () => {
   // wait for 5 seconds
   await new Promise((resolve) => setTimeout(resolve, 4000));
 
-  // Search the dom for a button with the classes "ui positive button guided--progress-button-resume-curation"
-  const resumeCurationButton = document.querySelector(
-    ".ui.positive.button.guided--progress-button-resume-curation"
-  );
-  if (resumeCurationButton) {
-    resumeCurationButton.click();
+  // Search the dom for the first button with data-progress-file-name attribute
+  const progressFileButton = document.querySelector("button[data-progress-file-name]");
+  if (progressFileButton) {
+    progressFileButton.click();
   } else {
     // wait for 3 more seconds then click
     await new Promise((resolve) => setTimeout(resolve, 3000));
-    document.querySelector(".ui.positive.button.guided--progress-button-resume-curation").click();
+    const fallbackButton = document.querySelector("button[data-progress-file-name]");
+    if (fallbackButton) {
+      fallbackButton.click();
+    }
   }
   // wait for 4 seconds then click the next button
   await new Promise((resolve) => setTimeout(resolve, 4000));
   document.querySelector(".primary-selection-aside-item.selection-aside-item").click();
 };
+
 // doTheHack();
+
 // Add the event listener for the Data importation component
 const gmDragDropElementId = document.getElementById("gm-data-importer-dropzone");
 gmDragDropElementId.addEventListener("click", (event) => {

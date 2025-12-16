@@ -1,4 +1,14 @@
 {
+  "16.6.0": {
+    "announcements": {
+      "features": [
+        "The dataset structuring step in the Prepare Dataset Step by Step workflow has been improved for easier data categorization and SDS entity creation and file association."
+      ],
+      "bug-fixes": [
+        "Uploads now stop gracefully and notify you if the SODA server crashes during an upload."
+      ]
+    }
+  },
   "16.5.0": {
     "announcements": {
       "features": ["SODA has been given a visual refresh!"],

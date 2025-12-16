@@ -11,6 +11,8 @@ import { setOpenSidebarTab } from "../../../stores/slices/sideBarSlice";
  * @description - Render the Prepare Dataset Step-by-Step sidebar. The sidebar contains the sections and available pages
  *                in the active workflow. Can be used to navigate to different pages in the workflow along with the continue and back buttons.
  */
+// Builds and updates the sidebar structure for Guided Mode
+// Functionality preserved exactly as in the original
 export const renderSideBar = (activePage) => {
   // Do not render sidebar navigation for the dissemination tab
   if (activePage === "guided-dataset-dissemination-tab") {

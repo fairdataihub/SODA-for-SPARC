@@ -100,6 +100,7 @@ export const openPageDatasetStructure = async (targetPageID) => {
     );
 
     const newManifestData = { headers: manifestRes.shift(), data: manifestRes };
+    // wait for 100 seconds
     const entityColumnIndex = newManifestData.headers.indexOf("entity");
 
     /**
