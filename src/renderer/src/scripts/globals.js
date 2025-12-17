@@ -5,9 +5,10 @@ import api from "./others/api/api";
 import { clientError, userErrorMessage } from "./others/http-error-handler/error-handler";
 import client from "./client";
 import { swalShowError, swalShowInfo } from "./utils/swal-utils";
-
+import { updateDropDownOptions } from "../stores/slices/dropDownSlice";
 import { clientBlockedByExternalFirewall, blockedMessage } from "./check-firewall/checkFirewall";
 import { setNavButtonDisabled } from "../stores/slices/navButtonStateSlice";
+import { setRender } from "../components/renderers/ReactComponentRenderer";
 
 // Contributors table for the dataset description editing page
 const currentConTable = document.getElementById("table-current-contributors");
@@ -1820,6 +1821,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         });
       } catch (error) {
         clientError(error);
+        console.error("TODO: Address the error here with Mantine Select");
         initializeBootstrapSelect("#curatebforganizationlist", "show");
         return;
       }
@@ -1835,7 +1837,9 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           orgs[org]["organization"]["id"];
       }
 
-      window.refreshOrganizationList();
+      // TODO: Refresh the organization list UI with Mantine Select
+      // window.refreshOrganizationList();
+      updateDropDownOptions("global-workspace-select", window.organizationList);
     }
 
     //datasets do exist so display popup with dataset options
@@ -1850,11 +1854,13 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         heightAuto: false,
         allowOutsideClick: false,
         allowEscapeKey: true,
-        html: window.datasetPermissionDiv,
+        title: "Select your workspace",
+        html: `
+          <div id="global-workspace-select" data-component-type="dropdown-select"></div>
+        `,
         reverseButtons: window.reverseSwalButtons,
         showCloseButton: true,
         showCancelButton: true,
-        title: "<h3 style='margin-bottom:20px !important'>Select your workspace</h3>",
         showClass: {
           popup: "animate__animated animate__fadeInDown animate__faster",
         },
@@ -1879,15 +1885,14 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           $("#ps-dataset-select-div").hide();
           $("#ps-dataset-select-header").hide();
 
-          document
-            .querySelector("#ps-organization-select-div button")
-            .addEventListener("click", (e) => {
-              const dropdownMenu = e.target.parentElement.querySelector(".dropdown-menu.inner");
-              if (dropdownMenu) {
-                dropdownMenu.style.display = "block";
-                dropdownMenu.parentElement.style.display = "block";
-              }
-            });
+          setTimeout(() => {
+            const el = document.getElementById("global-workspace-select");
+            if (el && el.nodeType === 1) {
+              setRender("dropdown-select", el);
+            } else {
+              console.error("Could not find element to render dropdown-select component");
+            }
+          }, 100);
 
           window.bfOrganization = $("#curatebforganizationlist").val();
           let sweet_al = document.getElementsByClassName("swal2-html-container")[0];
@@ -1896,8 +1901,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
           let tip_container = document.createElement("div");
           let tip_content = document.createElement("p");
-          tip_content.innerText =
-            "Only datasets where you have owner or manager permissions will be shown in the list";
+          tip_content.innerText = "Only workspaces you have access to will be shown in the list";
           tip_content.classList.add("tip-content");
           tip_content.style.textAlign = "left";
           tip_container.style.marginTop = "1rem";
