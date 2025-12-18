@@ -296,6 +296,7 @@ def fetch_user_datasets(return_only_empty_datasets=False):
     datasets = get_users_dataset_list()
 
     datasets_list = []
+    namespace_logger.info(f"Total datasets retrieved: {len(datasets)}")
     for ds in datasets:
         datasets_list.append({"name": ds["content"]["name"], "id": ds["content"]["id"], "intId": ds["content"]["intId"]})
 
@@ -307,6 +308,7 @@ def fetch_user_datasets(return_only_empty_datasets=False):
             r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/role", headers=create_request_headers(get_access_token()))
             r.raise_for_status()
             user_role = r.json()["role"]
+            namespace_logger.info(f"Dataset {dataset['name']} has role {user_role}")
             if user_role not in ["viewer"]:
                 store.append(
                     {
@@ -349,6 +351,8 @@ def fetch_user_datasets(return_only_empty_datasets=False):
         return {"datasets": filtered_datasets}
     else:
         return {"datasets": sorted_bf_datasets}
+    
+fetch_user_datasets(True)
 
 def get_username(accountname):
     """

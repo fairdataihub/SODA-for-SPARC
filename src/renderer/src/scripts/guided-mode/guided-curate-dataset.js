@@ -3324,3 +3324,190 @@ ffmDragDropElementId.addEventListener("drop", (event) => {
 $("#guided-button-add-additional-link").on("click", async () => {
   openAddAdditionLinkSwal();
 });
+
+// Add click handler for the fetch user datasets button
+document.getElementById("fetch-user-datasets-btn").addEventListener("click", async () => {
+  const button = document.getElementById("fetch-user-datasets-btn");
+
+  try {
+    // Disable button and show loading state
+    button.disabled = true;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+
+    // Make API call to fetch all datasets from SPARC discover API
+    const response = await fetch(
+      "https://api.pennsieve.io/discover/datasets?limit=400&offset=0&orderBy=relevance&orderDirection=desc",
+      {
+        headers: {
+          accept: "application/json",
+        },
+      }
+    );
+    const data = await response.json();
+    const allDatasets = data.datasets;
+    console.log("Fetched datasets:", allDatasets);
+
+    // Filter datasets under 1 GB (1 * 1024 * 1024 * 1024 = 1073741824 bytes)
+    const maxSizeBytes = 1 * 1024 * 1024 * 1024;
+    const filteredDatasets = allDatasets.filter(
+      (dataset) => dataset.size && dataset.size < maxSizeBytes
+    );
+
+    console.log(
+      `Filtered ${filteredDatasets.length} datasets under 1GB from ${allDatasets.length} total`
+    );
+
+    // Now filter for datasets that have both dataset_description.xlsx and subjects.xlsx files
+    const datasetsWithBothFiles = [];
+
+    for (const dataset of filteredDatasets) {
+      try {
+        // Use the latest version from the dataset object
+        const latestVersion = dataset.version;
+        console.log(`Checking dataset ${dataset.id} (version ${latestVersion}) for required files`);
+
+        // Check for dataset_description.xlsx
+        const descriptionCheckUrl = `https://api.pennsieve.io/discover/datasets/${dataset.id}/versions/${latestVersion}/files?path=files%2Fdataset_description.xlsx`;
+        const descriptionResponse = await fetch(descriptionCheckUrl, {
+          headers: {
+            accept: "application/json",
+          },
+        });
+
+        // Check for subjects.xlsx
+        const subjectsCheckUrl = `https://api.pennsieve.io/discover/datasets/${dataset.id}/versions/${latestVersion}/files?path=files%2Fsubjects.xlsx`;
+        const subjectsResponse = await fetch(subjectsCheckUrl, {
+          headers: {
+            accept: "application/json",
+          },
+        });
+
+        // Check for samples.xlsx
+        const samplesCheckUrl = `https://api.pennsieve.io/discover/datasets/${dataset.id}/versions/${latestVersion}/files?path=files%2Fsamples.xlsx`;
+        const samplesResponse = await fetch(samplesCheckUrl, {
+          headers: {
+            accept: "application/json",
+          },
+        });
+
+        const hasDescription = descriptionResponse.ok;
+        const hasSubjects = subjectsResponse.ok;
+        const hasSamples = samplesResponse.ok;
+
+        console.log(
+          `Dataset ${dataset.id} v${latestVersion}: description=${hasDescription}, subjects=${hasSubjects}, samples=${hasSamples}`
+        );
+
+        if (hasDescription && hasSubjects && hasSamples) {
+          datasetsWithBothFiles.push(dataset);
+          console.log(`Dataset ${dataset.id} v${latestVersion} has all three required files`);
+        } else {
+          console.log(
+            `Dataset ${dataset.id} v${latestVersion} missing files - description: ${hasDescription}, subjects: ${hasSubjects}, samples: ${hasSamples}`
+          );
+        }
+      } catch (error) {
+        console.error(`Error checking files for dataset ${dataset.id}:`, error);
+      }
+    }
+
+    console.log(
+      `Found ${datasetsWithBothFiles.length} datasets with all three files out of ${filteredDatasets.length} datasets under 1GB`
+    );
+
+    // Open all matching datasets in browser for download
+    if (datasetsWithBothFiles.length > 0) {
+      await Swal.fire({
+        title: "Open Dataset Pages?",
+        html: `
+          <div style="text-align: left;">
+            <p>Found <strong>${datasetsWithBothFiles.length}</strong> datasets with all three required files:</p>
+            <ul>
+              <li>dataset_description.xlsx</li>
+              <li>subjects.xlsx</li>
+              <li>samples.xlsx</li>
+            </ul>
+            <p>Open all of them in browser tabs for download?</p>
+          </div>
+        `,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Open All Browser Tabs",
+        cancelButtonText: "Just Show List",
+        reverseButtons: true,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          datasetsWithBothFiles.forEach((dataset, index) => {
+            const url = `https://sparc.science/datasets/${dataset.id}?datasetDetailsTab=files`;
+            console.log(`Opening dataset ${dataset.id}: ${url}`);
+
+            // Add a small delay between opening tabs to avoid browser blocking
+            setTimeout(() => {
+              window.open(url, "_blank");
+            }, index * 500); // 500ms delay between each tab
+          });
+
+          console.log(`Opened ${datasetsWithBothFiles.length} browser tabs for datasets`);
+        }
+      });
+    }
+
+    // Display the filtered datasets
+    if (datasetsWithBothFiles && datasetsWithBothFiles.length > 0) {
+      const datasetsList = datasetsWithBothFiles
+        .map((dataset) => {
+          const sizeInMB = dataset.size ? (dataset.size / (1024 * 1024)).toFixed(2) : "Unknown";
+          return `<li><strong>${dataset.name}</strong> (ID: ${dataset.id}, Version: ${dataset.version}, Size: ${sizeInMB} MB)</li>`;
+        })
+        .join("");
+
+      await Swal.fire({
+        title: "SPARC Datasets with All Required Files (Under 1GB)",
+        html: `
+          <div style="text-align: left;">
+            <p>Found <strong>${datasetsWithBothFiles.length}</strong> datasets under 1 GB that have all three files:</p>
+            <ul>
+              <li>dataset_description.xlsx</li>
+              <li>subjects.xlsx</li>
+              <li>samples.xlsx</li>
+            </ul>
+            <p><small>(Filtered from ${filteredDatasets.length} datasets under 1GB out of ${allDatasets.length} total)</small></p>
+            <ul style="max-height: 300px; overflow-y: auto;">
+              ${datasetsList}
+            </ul>
+          </div>
+        `,
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+    } else {
+      await Swal.fire({
+        title: "No Matching Datasets Found",
+        html: `
+          <div style="text-align: left;">
+            <p>No datasets found that meet all criteria:</p>
+            <ul>
+              <li>Under 1 GB in size</li>
+              <li>Have all three required files: dataset_description.xlsx, subjects.xlsx, and samples.xlsx</li>
+            </ul>
+            <p>Datasets under 1GB found: <strong>${filteredDatasets.length}</strong> (out of ${allDatasets.length} total)</p>
+          </div>
+        `,
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+    }
+  } catch (error) {
+    console.error("Error fetching datasets:", error);
+    await Swal.fire({
+      title: "Error",
+      text: "Failed to fetch datasets. Please check your connection and try again.",
+      icon: "error",
+      confirmButtonText: "OK",
+    });
+  } finally {
+    // Re-enable button and restore original text
+    button.disabled = false;
+    button.innerHTML = "Load My Datasets";
+  }
+});
