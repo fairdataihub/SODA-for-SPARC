@@ -9,6 +9,7 @@ import { updateDropDownOptions } from "../stores/slices/dropDownSlice";
 import { clientBlockedByExternalFirewall, blockedMessage } from "./check-firewall/checkFirewall";
 import { setNavButtonDisabled } from "../stores/slices/navButtonStateSlice";
 import { setRender } from "../components/renderers/ReactComponentRenderer";
+import { getDropDownState } from "../stores/slices/dropDownSlice";
 
 // Contributors table for the dataset description editing page
 const currentConTable = document.getElementById("table-current-contributors");
@@ -1894,7 +1895,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             }
           }, 100);
 
-          window.bfOrganization = $("#curatebforganizationlist").val();
+          window.bfOrganization = getDropDownState("global-workspace-select");
           let sweet_al = document.getElementsByClassName("swal2-html-container")[0];
           let sweet_alrt = document.getElementsByClassName("swal2-actions")[0];
           sweet_alrt.style.marginTop = "1rem";
@@ -1909,30 +1910,15 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           sweet_al.appendChild(tip_container);
         },
         preConfirm: () => {
-          window.bfOrganization = $("#curatebforganizationlist").val();
+          window.bfOrganization = getDropDownState("global-workspace-select");
           if (!window.bfOrganization) {
-            Swal.showValidationMessage("Please select an organization!");
-
-            $(window.datasetPermissionDiv)
-              .find("#div-filter-datasets-progress-2")
-              .css("display", "none");
-            $("#curatebforganizationlist").selectpicker("show");
-            $("#curatebforganizationlist").selectpicker("refresh");
-            $("#ps-organization-select-div").show();
-
+            Swal.showValidationMessage("Please select a workspace!");
+            // TODO: Update to Mantine UI Select for when no organization is selected
             return undefined;
           }
 
-          if (window.bfOrganization === "Select organization") {
-            Swal.showValidationMessage("Please select an organization!");
-
-            $(window.datasetPermissionDiv)
-              .find("#div-filter-datasets-progress-2")
-              .css("display", "none");
-            $("#curatebforganizationlist").selectpicker("show");
-            $("#curatebforganizationlist").selectpicker("refresh");
-            $("#ps-organization-select-div").show();
-
+          if (window.bfOrganization === "Select a workspace") {
+            Swal.showValidationMessage("Please select a workspace!!");
             return undefined;
           }
 
@@ -1948,7 +1934,6 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         $("#license-lottie-div").css("display", "block");
         $("#license-assigned").css("display", "block");
         window.currentDatasetLicense.innerText = window.currentDatasetLicense.innerText;
-        initializeBootstrapSelect("#curatebforganizationlist", "show");
         return;
       }
 
@@ -1961,10 +1946,9 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         return;
       }
 
-      window.refreshOrganizationList();
+      // TODO: Update to Mantine UI Select
+      // window.refreshOrganizationList();
       $("#dataset-loaded-message").hide();
-
-      showHideDropdownButtons("organization", "show");
       document.getElementById("div-rename-ps-dataset").children[0].style.display = "flex";
 
       // rejoin test organiztion
@@ -2089,13 +2073,13 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
       // checkPrevDivForConfirmButton("dataset");
     }
+
     $("#button-refresh-publishing-status").addClass("hidden");
 
     // TODO: MIght need to hide if clicked twice / do similar logic as above
     // for organization span in those locations instead of a dataset span
     //; since the logic is there for a reason.
     initializeBootstrapSelect("#curatebforganizationlist", "show");
-    showHideDropdownButtons("organization", "show");
 
     $("body").removeClass("waiting");
     $(".svg-change-current-account.organization").css("display", "block");
