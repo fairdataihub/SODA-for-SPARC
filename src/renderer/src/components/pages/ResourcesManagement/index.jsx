@@ -60,9 +60,30 @@ const toOxfordCommaString = (arr) => {
   return `${arr.slice(0, -1).join(", ")}, and ${arr[len - 1]}`;
 };
 
-const matchesHttpPattern = (str) => {
-  const pattern = /^https?:\/\/.+/;
-  return pattern.test(str);
+const isValidUrl = (value) => {
+  if (!value || value.trim() === "") return true;
+
+  const trimmedValue = value.trim();
+
+  if (/\s/.test(trimmedValue)) return false;
+
+  try {
+    const hasProtocol = /^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(trimmedValue);
+
+    if (hasProtocol) {
+      new URL(trimmedValue);
+      return true;
+    }
+
+    if (trimmedValue.includes(".") && /^[a-zA-Z0-9]/.test(trimmedValue)) {
+      new URL(`https://${trimmedValue}`);
+      return true;
+    }
+
+    return false;
+  } catch {
+    return false;
+  }
 };
 
 // Resource metadata form component with store-based state
@@ -112,15 +133,11 @@ const ResourceMetadataForm = () => {
       />
       <TextInput
         label="URL"
-        description="Link to the resource documentation or website"
-        placeholder="e.g., https://example.com"
+        description="Link to the resource documentation or website (supports HTTP, HTTPS, DOI, FTP, etc.)"
+        placeholder="e.g., https://example.com, doi:10.1038/s41586-019-1234-5"
         value={url}
         onChange={(event) => setUrl(event.currentTarget.value)}
-        error={
-          url && url.length > 1 && !url.toLowerCase().startsWith("h") && !matchesHttpPattern(url)
-            ? "URL must start with http:// or https://"
-            : null
-        }
+        error={url && url.trim().length > 4 && !isValidUrl(url) ? "Please enter a valid URL" : null}
       />
 
       <TextInput
@@ -170,7 +187,7 @@ const ResourcesManagementPage = () => {
   const validateResourceForm = () => {
     const rridIsValid = rrid && rrid.trim().length > 0;
     const nameIsValid = name && name.trim().length > 0;
-    const urlIsValid = !url || matchesHttpPattern(url);
+    const urlIsValid = isValidUrl(url);
     return rridIsValid && nameIsValid && urlIsValid;
   };
 
