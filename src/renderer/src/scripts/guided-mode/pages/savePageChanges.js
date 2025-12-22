@@ -29,7 +29,7 @@ import {
   getExistingSamples,
   getExistingSites,
 } from "../../../stores/slices/datasetEntityStructureSlice";
-import { swalFileListDoubleAction } from "../../utils/swal-utils";
+import { swalListDoubleAction, swalListSingleAction } from "../../utils/swal-utils";
 import { addEntityNameToEntityType } from "../../../stores/slices/datasetEntitySelectorSlice";
 
 while (!window.baseHtmlLoaded) {
@@ -321,7 +321,7 @@ window.savePageChanges = async (pageBeingLeftID) => {
 
             if (arraysAreDifferent) {
               const hierarchyEntitiesList = getOxfordCommaSeparatedListOfEntities("or");
-              const continueWithUnassociatedExperimentalFiles = await swalFileListDoubleAction(
+              const continueWithUnassociatedExperimentalFiles = await swalListDoubleAction(
                 unassociatedExperimentalFiles.map((file) =>
                   file.startsWith("data/") ? file.substring(5) : file
                 ),
@@ -423,10 +423,30 @@ window.savePageChanges = async (pageBeingLeftID) => {
         pageBeingLeftComponentType === "entity-spreadsheet-import-page"
       ) {
         const datasetEntityArray = useGlobalStore.getState().datasetEntityArray;
+        console.log("datasetEntityArray:", datasetEntityArray);
         if (datasetEntityArray.length === 0) {
           errorArray.push({
             type: "notyf",
             message: "You must add at least one subject to your dataset before continuing",
+          });
+          throw errorArray;
+        }
+
+        // Check that the species was added for each subject in the datasetEntityArray
+        // (This is to throw an error for old progress files that did not require species)
+        const subjectsWithoutSpecies = datasetEntityArray
+          .filter((entity) => !entity.metadata.species || entity.metadata.species.trim() === "")
+          .map((entity) => entity.metadata.subject_id);
+        if (subjectsWithoutSpecies.length > 0) {
+          await swalListSingleAction(
+            subjectsWithoutSpecies,
+            "Required Species Information Missing",
+            "Species information is mandatory for all subjects in SPARC datasets. The following subject IDs are missing this required field. Please specify the taxonomic species (e.g., Homo sapiens, Rattus norvegicus, Mus musculus) for each subject.",
+            "Please provide a species for each subject in the list above."
+          );
+          errorArray.push({
+            type: "notyf",
+            message: `Please complete species information for all subjects before continuing.`,
           });
           throw errorArray;
         }

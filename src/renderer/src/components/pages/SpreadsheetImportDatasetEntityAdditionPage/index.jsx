@@ -26,7 +26,7 @@ import {
 import { Dropzone, MIME_TYPES } from "@mantine/dropzone";
 import useGlobalStore from "../../../stores/globalStore";
 import { importEntitiesFromExcel, entityConfigs, saveEntities } from "./excelImport";
-import { swalFileListDoubleAction, swalConfirmAction } from "../../../scripts/utils/swal-utils";
+import { swalListDoubleAction, swalConfirmAction } from "../../../scripts/utils/swal-utils";
 import {
   getExistingSubjects,
   getExistingSamples,
@@ -76,7 +76,7 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
       // Show confirmation with processed entities
       const entityList = result.entities.map((entity) => config.formatDisplayId(entity));
 
-      const confirmed = await swalFileListDoubleAction(
+      const confirmed = await swalListDoubleAction(
         entityList,
         `Confirm ${entityType.charAt(0).toUpperCase() + entityType.slice(1)} Import`,
         `The following ${entityList.length} ${entityType} were detected in your spreadsheet and will be imported into SODA:`,

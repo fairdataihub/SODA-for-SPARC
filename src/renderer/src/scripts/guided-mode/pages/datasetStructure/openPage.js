@@ -1,4 +1,4 @@
-import { swalFileListSingleAction } from "../../../utils/swal-utils";
+import { swalListSingleAction } from "../../../utils/swal-utils";
 import { getEntityDataById } from "../../../../stores/slices/datasetEntityStructureSlice";
 import { createStandardizedDatasetStructure } from "../../../utils/datasetStructure";
 import { deleteEmptyFoldersFromStructure } from "../../../../stores/slices/datasetTreeViewSlice";
@@ -55,7 +55,7 @@ export const openPageDatasetStructure = async (targetPageID) => {
 
       await collectNonExistentFiles(datasetStructure);
       if (nonExistentFiles.length > 0) {
-        await swalFileListSingleAction(
+        await swalListSingleAction(
           nonExistentFiles,
           "Files imported into SODA that are no longer on your computer were detected",
           "These files will be disregarded and not uploaded to Pennsieve.",

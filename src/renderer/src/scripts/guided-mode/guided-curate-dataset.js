@@ -27,8 +27,8 @@ import { guidedDatasetKeywordsTagify } from "./tagifies/tagifies";
 import {
   swalConfirmAction,
   swalShowError,
-  swalFileListSingleAction,
-  swalFileListDoubleAction,
+  swalListSingleAction,
+  swalListDoubleAction,
 } from "../utils/swal-utils";
 import DatePicker from "tui-date-picker";
 import { loadStoredContributors } from "../others/contributor-storage";
@@ -2145,7 +2145,7 @@ const guidedAddListOfSubjects = async (subjectNameArray, showWarningForExistingS
     }
   }
   if (invalidSubjectNames.length > 0) {
-    await swalFileListSingleAction(
+    await swalListSingleAction(
       invalidSubjectNames,
       "Invalid subject names detected",
       "Subject names can not contain spaces or special characters. The following subjects will not be imported into SODA:",
@@ -2178,7 +2178,7 @@ const guidedAddListOfSubjects = async (subjectNameArray, showWarningForExistingS
 
   if (showWarningForExistingSubjects && duplicateSubjects.length > 0) {
     // Let the user know that duplicate subjects will not be added
-    await swalFileListSingleAction(
+    await swalListSingleAction(
       duplicateSubjects,
       "Duplicate subjects detected",
       "The following subjects have already been specified and will not be added:",
@@ -2188,7 +2188,7 @@ const guidedAddListOfSubjects = async (subjectNameArray, showWarningForExistingS
 
   if (newSubjects.length > 0) {
     // Confirm that the user wants to add the subjects
-    const subjectAdditionConfirmed = await swalFileListDoubleAction(
+    const subjectAdditionConfirmed = await swalListDoubleAction(
       newSubjects,
       `${newSubjects.length} subjects will be added to the dataset`,
       "Please review the list of subjects before proceeding:",
@@ -3291,7 +3291,7 @@ const doTheHack = async () => {
   document.querySelector(".primary-selection-aside-item.selection-aside-item").click();
 };
 
-// doTheHack();
+doTheHack();
 
 // Add the event listener for the Data importation component
 const gmDragDropElementId = document.getElementById("gm-data-importer-dropzone");

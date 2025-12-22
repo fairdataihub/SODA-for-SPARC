@@ -201,6 +201,29 @@ const EntityMetadataForm = () => {
    */
   const handleSave = () => {
     if (selectedHierarchyEntity) {
+      // Validate required fields for editing existing entity
+      if (selectedHierarchyEntity.type === "subject") {
+        const currentMetadata = selectedHierarchyEntity.metadata || {};
+
+        if (!currentMetadata["subject_id"]) {
+          window.notyf.open({
+            duration: "4000",
+            type: "error",
+            message: "You must assign this subject an ID.",
+          });
+          return;
+        }
+
+        if (!currentMetadata["species"]) {
+          window.notyf.open({
+            duration: "4000",
+            type: "error",
+            message: "You must provide the species for this subject.",
+          });
+          return;
+        }
+      }
+
       // Complete editing existing entity
       setSelectedHierarchyEntity(null);
     } else {
@@ -215,6 +238,15 @@ const EntityMetadataForm = () => {
             duration: "4000",
             type: "error",
             message: "You must assign this subject an ID.",
+          });
+          return;
+        }
+
+        if (!tempMetadata["species"]) {
+          window.notyf.open({
+            duration: "4000",
+            type: "error",
+            message: "You must provide the species for this subject.",
           });
           return;
         }
@@ -332,6 +364,14 @@ const EntityMetadataForm = () => {
               readOnly={!!selectedHierarchyEntity}
               disabled={!!selectedHierarchyEntity}
             />
+            <TextInput
+              label="Species"
+              description="The species of the subject"
+              placeholder="e.g., Homo sapiens, Mus musculus"
+              required
+              value={getMetadataValue("species", "")}
+              onChange={(e) => handleChange("species", e.target.value)}
+            />
             <OptionalFieldsNotice />
 
             <Select
@@ -430,13 +470,6 @@ const EntityMetadataForm = () => {
                 />
               </Box>
             </Group>
-            <TextInput
-              label="Species"
-              description="The species of the subject"
-              placeholder="e.g., Homo sapiens, Mus musculus"
-              value={getMetadataValue("species", "")}
-              onChange={(e) => handleChange("species", e.target.value)}
-            />
             <TextInput
               label="Strain"
               description="The strain of the subject"
