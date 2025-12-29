@@ -507,14 +507,6 @@ const EntityMetadataForm = () => {
                   value={getMetadataValue("member_of", "")}
                   onChange={(e) => handleChange("member_of", e.target.value)}
                 />
-                <Select
-                  label="Metadata only"
-                  description="Whether this subject has metadata only"
-                  placeholder="Select option"
-                  data={["yes", "no"]}
-                  value={getMetadataValue("metadata_only", null)}
-                  onChange={(value) => handleChange("metadata_only", value)}
-                />
                 <TextInput
                   label="Laboratory internal id"
                   description="The internal ID used by the laboratory for this subject"
@@ -802,17 +794,6 @@ const EntityMetadataForm = () => {
                   placeholder="e.g., group-1, cohort-A"
                   value={getMetadataValue("member_of", "")}
                   onChange={(e) => handleChange("member_of", e.target.value)}
-                />
-                <Select
-                  key={`metadata_only-${
-                    selectedHierarchyEntity ? selectedHierarchyEntity.id : activeFormType
-                  }`}
-                  label="Metadata only"
-                  description="Whether this sample is metadata only"
-                  placeholder="Select option"
-                  data={["yes", "no"]}
-                  value={getMetadataValue("metadata_only", null)}
-                  onChange={(value) => handleChange("metadata_only", value)}
                 />
                 <TextInput
                   label="Laboratory internal id"

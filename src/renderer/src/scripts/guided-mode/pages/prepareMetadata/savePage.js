@@ -80,6 +80,14 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
         metadata.body_mass = `${metadata.body_mass_numeric_value} ${metadata.body_mass_unit}`;
       }
 
+      // Check if the subject has any files in the dataset-entity-obj
+      const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
+      const subjectFiles = datasetEntityObj.subjects?.[metadata.subject_id] || {};
+      const hasFiles = Object.keys(subjectFiles).length > 0;
+
+      // Set metadata_only field based on whether the subject has associated files
+      metadata.metadata_only = hasFiles ? "no" : "yes";
+
       // Remove the extraneous fields to prevent schema validation errors
       delete metadata.age_numeric_value;
       delete metadata.age_unit;
@@ -98,7 +106,17 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     // Prepare the samples metadata
     const samples = getExistingSamples();
     const samplesMetadata = samples.map((sample) => {
-      return sample.metadata;
+      const metadata = { ...sample.metadata };
+
+      // Check if the sample has any files in the dataset-entity-obj
+      const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
+      const sampleFiles = datasetEntityObj.samples?.[metadata.sample_id] || {};
+      const hasFiles = Object.keys(sampleFiles).length > 0;
+
+      // Set metadata_only field based on whether the sample has associated files
+      metadata.metadata_only = hasFiles ? "no" : "yes";
+
+      return metadata;
     });
     window.sodaJSONObj["dataset_metadata"]["samples"] = samplesMetadata;
   }
