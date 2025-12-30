@@ -171,6 +171,7 @@ const guidedGetPageToReturnTo = async () => {
 
 const patchPreviousGuidedModeVersions = async () => {
   const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
+  const datasetMetadata = window.sodaJSONObj["dataset_metadata"] || {};
   const oldHighLevelFolders = datasetEntityObj?.["high-level-folder-data-categorization"];
 
   if (oldHighLevelFolders && Object.keys(oldHighLevelFolders).length > 0) {
@@ -210,6 +211,25 @@ const patchPreviousGuidedModeVersions = async () => {
     window.sodaJSONObj["selected-entities"] = selectedEntities
       .filter((entity) => entity.toLowerCase() !== "code")
       .concat("Code");
+  }
+
+  // Change all fields named "disease_or_disorder" to "disease" in subjects metadata
+  const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
+  for (const subject of datasetEntityArray) {
+    if (subject.type === "subject" && subject.metadata) {
+      if (subject.metadata.disease_or_disorder !== undefined) {
+        subject.metadata.disease = subject.metadata.disease_or_disorder;
+        delete subject.metadata.disease_or_disorder;
+      }
+    }
+  }
+  // Change all fields named "disease_or_disorder" to "disease" in subjects metadata in dataset-entity-obj
+  const subjectsMetadata = datasetMetadata?.subjects || [];
+  for (const subjectMetadata of subjectsMetadata) {
+    if (subjectMetadata.disease_or_disorder !== undefined) {
+      subjectMetadata.disease = subjectMetadata.disease_or_disorder;
+      delete subjectMetadata.disease_or_disorder;
+    }
   }
 };
 

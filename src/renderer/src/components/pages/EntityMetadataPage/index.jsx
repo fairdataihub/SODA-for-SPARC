@@ -507,6 +507,14 @@ const EntityMetadataForm = () => {
                   value={getMetadataValue("member_of", "")}
                   onChange={(e) => handleChange("member_of", e.target.value)}
                 />
+                <Select
+                  label="Metadata only"
+                  description="Whether this subject has metadata only"
+                  placeholder="Select option"
+                  data={["yes", "no"]}
+                  value={getMetadataValue("metadata_only", null)}
+                  onChange={(value) => handleChange("metadata_only", value)}
+                />
                 <TextInput
                   label="Laboratory internal id"
                   description="The internal ID used by the laboratory for this subject"
@@ -659,8 +667,8 @@ const EntityMetadataForm = () => {
                   label="Disease or Disorder"
                   description="Any known disease or disorder affecting the subject"
                   placeholder="e.g., Diabetes"
-                  value={getMetadataValue("disease_or_disorder", "")}
-                  onChange={(e) => handleChange("disease_or_disorder", e.target.value)}
+                  value={getMetadataValue("disease", "")}
+                  onChange={(e) => handleChange("disease", e.target.value)}
                 />
                 {/* Intervention Input */}
                 <TextInput
@@ -794,6 +802,17 @@ const EntityMetadataForm = () => {
                   placeholder="e.g., group-1, cohort-A"
                   value={getMetadataValue("member_of", "")}
                   onChange={(e) => handleChange("member_of", e.target.value)}
+                />
+                <Select
+                  key={`metadata_only-${
+                    selectedHierarchyEntity ? selectedHierarchyEntity.id : activeFormType
+                  }`}
+                  label="Metadata only"
+                  description="Whether this sample is metadata only"
+                  placeholder="Select option"
+                  data={["yes", "no"]}
+                  value={getMetadataValue("metadata_only", null)}
+                  onChange={(value) => handleChange("metadata_only", value)}
                 />
                 <TextInput
                   label="Laboratory internal id"

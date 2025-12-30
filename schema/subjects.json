@@ -100,7 +100,7 @@
           "type": "string",
           "description": "Date of the experiment involving the subject."
         },
-        "disease_or_disorder": {
+        "disease": {
           "type": "string",
           "description": "Disease or disorder associated with the subject."
         },
