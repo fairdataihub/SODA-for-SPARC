@@ -9,7 +9,6 @@ import {
 } from "../../../../scripts/guided-mode/tagifies/tagifies";
 import { getGuidedDatasetName, getGuidedDatasetSubtitle } from "../curationPreparation/utils";
 import useGlobalStore from "../../../../stores/globalStore";
-import { error } from "jquery";
 import {
   getExistingSubjects,
   getExistingSamples,
@@ -20,7 +19,6 @@ import {
 } from "../../metadata/contributors/contributorsValidation";
 
 import { getDropDownState } from "../../../../stores/slices/dropDownSlice";
-import { pennsieveDatasetSelectSlice } from "../../../../stores/slices/pennsieveDatasetSelectSlice";
 import { isCheckboxCardChecked } from "../../../../stores/slices/checkboxCardSlice";
 
 export const savePagePrepareMetadata = async (pageBeingLeftID) => {
@@ -243,6 +241,8 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
 
   if (pageBeingLeftID === "guided-create-description-metadata-tab") {
     const metadataVersion = "3.0.0";
+    const currentSodaVersion = useGlobalStore.getState().appVersion || "unknown";
+    console.log("Current SODA version:", currentSodaVersion);
     // Get values from digital_metadata
     const title = getGuidedDatasetName();
     const subtitle = getGuidedDatasetSubtitle();
@@ -310,7 +310,11 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       standards_information: [
         {
           data_standard: "SPARC",
-          data_standard_version: "3.0.0",
+          data_standard_version: "3.0.2",
+        },
+        {
+          data_standard: "SODA Version",
+          data_standard_version: currentSodaVersion,
         },
       ],
       basic_information: {
