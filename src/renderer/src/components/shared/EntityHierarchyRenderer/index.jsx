@@ -267,12 +267,44 @@ const EntityHierarchyRenderer = ({
     [selectedHierarchyEntity]
   );
 
+  // ----- SUBJECT SITE OPERATIONS -----
+  const handleAddSubjectSiteButtonClick = useCallback((subject) => {
+    const subjectId = subject["metadata"]["subject_id"];
+    setSelectedHierarchyEntity(null);
+    setEntityBeingAddedParentSubject(subjectId);
+    setEntityBeingAddedParentSample(null);
+    setActiveFormType("site");
+  }, []);
+
+  const handleDeleteSubjectSite = useCallback(
+    (site, subject) => {
+      // If the site being deleted is currently selected, clear the form
+      if (selectedHierarchyEntity && selectedHierarchyEntity.id === site.id) {
+        setSelectedHierarchyEntity(null);
+      }
+      // You'll need to implement deleteSubjectSite function similar to deleteSiteFromSample
+      // return deleteSubjectSite(subject.id, site.id);
+    },
+    [selectedHierarchyEntity]
+  );
+
+  // ----- DERIVED SAMPLE OPERATIONS -----
+  const handleAddDerivedSampleButtonClick = useCallback(({ sample, subject }) => {
+    const subjectId = subject["metadata"]["subject_id"];
+    const parentSampleId = sample["metadata"]["sample_id"];
+    setSelectedHierarchyEntity(null);
+    setEntityBeingAddedParentSubject(subjectId);
+    setEntityBeingAddedParentSample(parentSampleId);
+    setActiveFormType("sample");
+  }, []);
+
   // Calculate which entity types should be displayed based on selected entities
-  const { showSamples, showSubjectSites, showSampleSites } = useMemo(
+  const { showSamples, showSubjectSites, showSampleSites, showDerivedSamples } = useMemo(
     () => ({
       showSamples: selectedEntities?.includes("samples") || false,
-      showSubjectSites: selectedEntities?.includes("sites") || false,
-      showSampleSites: selectedEntities?.includes("sites") || false,
+      showSubjectSites: selectedEntities?.includes("subjectSites") || false,
+      showSampleSites: selectedEntities?.includes("sampleSites") || false,
+      showDerivedSamples: selectedEntities?.includes("derivedSamples") || false,
     }),
     [selectedEntities]
   );
@@ -430,7 +462,6 @@ const EntityHierarchyRenderer = ({
                   </Group>
                 )}
               </Flex>
-
               {allowEntityStructureEditing && showSamples && (
                 <HierarchyItem
                   label={`Add sample`}
@@ -440,8 +471,34 @@ const EntityHierarchyRenderer = ({
                   onAdd={handleAddSampleButtonClick}
                 />
               )}
-
+              {allowEntityStructureEditing && showSubjectSites && (
+                <HierarchyItem
+                  label={`Add subject site`}
+                  icon="add"
+                  level={2}
+                  parentEntityData={subject}
+                  onAdd={handleAddSubjectSiteButtonClick}
+                />
+              )}
+              {/* Subject Sites */}
+              {showSubjectSites &&
+                subject.subjectSites?.map((site) => (
+                  <HierarchyItem
+                    key={site.id}
+                    icon="site"
+                    label={site.id}
+                    level={2}
+                    allowEntityStructureEditing={allowEntityStructureEditing}
+                    allowEntitySelection={allowEntitySelection}
+                    entityData={site}
+                    parentEntityData={subject}
+                    onEdit={handleEntitySelect}
+                    onDelete={() => handleDeleteSubjectSite(site, subject)}
+                    onSelect={handleEntitySelect}
+                  />
+                ))}
               {/* Samples */}
+
               {showSamples &&
                 subject.samples?.map((sample) => (
                   <HierarchyItem
@@ -461,11 +518,21 @@ const EntityHierarchyRenderer = ({
                     {/* Sample Sites */}
                     {allowEntityStructureEditing && showSampleSites && (
                       <HierarchyItem
-                        label={`Add site`}
+                        label={`Add sample site`}
                         icon="add"
                         level={3}
                         parentEntityData={{ sample, subject }}
                         onAdd={handleAddSampleSiteButtonClick}
+                      />
+                    )}
+                    {/* Derived Samples (subsamples) */}
+                    {allowEntityStructureEditing && showDerivedSamples && (
+                      <HierarchyItem
+                        label={`Add derived sample`}
+                        icon="add"
+                        level={3}
+                        parentEntityData={{ sample, subject }}
+                        onAdd={handleAddDerivedSampleButtonClick}
                       />
                     )}
                     {showSampleSites &&
@@ -481,6 +548,23 @@ const EntityHierarchyRenderer = ({
                           parentEntityData={{ sample, subject }}
                           onEdit={handleEntitySelect}
                           onDelete={() => handleDeleteSampleSite(site, { sample, subject })}
+                          onSelect={handleEntitySelect}
+                        />
+                      ))}
+                    {/* Render derived samples if they exist */}
+                    {showDerivedSamples &&
+                      sample.derivedSamples?.map((derivedSample) => (
+                        <HierarchyItem
+                          key={derivedSample.id}
+                          icon="sample"
+                          label={derivedSample.id}
+                          level={3}
+                          allowEntityStructureEditing={allowEntityStructureEditing}
+                          allowEntitySelection={allowEntitySelection}
+                          entityData={derivedSample}
+                          parentEntityData={{ sample, subject }}
+                          onEdit={handleEntitySelect}
+                          onDelete={() => handleDeleteSample(derivedSample, subject)}
                           onSelect={handleEntitySelect}
                         />
                       ))}

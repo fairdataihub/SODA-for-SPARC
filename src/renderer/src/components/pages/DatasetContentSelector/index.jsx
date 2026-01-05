@@ -20,14 +20,28 @@ export const contentOptionsMap = {
     requiresAnswer: ["subjects"],
     ml: 10,
   },
-  sites: {
-    label:
-      "Did you collect data from specific anatomical locations that need to be tracked separately?",
+  derivedSamples: {
+    label: "Did you derive additional samples from your original samples?",
     dropDownDescription:
-      "Select yes if you gathered data from different specific locations (e.g., brain regions, tissue sections, organ areas) within your subjects or samples, AND these locations need separate metadata. Examples include: recordings from multiple brain areas, measurements from different parts of an organ, or microscopy of different regions within a tissue sample.",
-    requiresAnswer: ["subjects", "samples"],
+      "Select yes if you processed, divided, or extracted new samples from your original samples. Examples include: tissue sections cut from a biopsy, cell cultures grown from tissue samples, RNA extracted from tissue, or any secondary samples created by processing the original specimens.",
+    requiresAnswer: ["samples"],
+    ml: 20,
+  },
+  subjectSites: {
+    label: "Did you collect data from specific anatomical locations within your subjects?",
+    dropDownDescription:
+      "Select yes if you gathered data from different specific anatomical locations (e.g., brain regions, organ areas, body parts) within your subjects, AND these locations need separate metadata. Examples include: recordings from multiple brain areas, measurements from different parts of an organ, or data from various anatomical sites within the same subject.",
+    requiresAnswer: ["subjects"],
     ml: 10,
   },
+  sampleSites: {
+    label: "Did you collect data from distinct spatial regions within your samples?",
+    dropDownDescription:
+      "Select yes if you gathered data from different specific regions or locations within your samples, AND these locations need separate metadata. Examples include: microscopy of different areas within a tissue section, measurements from different regions of a cell culture, or analysis of distinct zones within a biological specimen.",
+    requiresAnswer: ["samples"],
+    ml: 20,
+  },
+
   performances: {
     label: "Did you collect data from subjects across multiple sessions or time points?",
     dropDownDescription:
@@ -48,7 +62,6 @@ export const contentOptionsMap = {
       "Select yes if your dataset contains protocol files that describe the methods and procedures used during data collection or analysis.",
     ml: 0,
   },
-
   Docs: {
     label: "Does your dataset include any documentation files?",
     dropDownDescription:
