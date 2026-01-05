@@ -211,7 +211,8 @@ export const openPageDatasetStructure = async (targetPageID) => {
 
     // Save final manifest data
     window.sodaJSONObj["guided-manifest-file-data"] = guidedManifestData;
-  } else if (targetPageID == "guided-modalities-selection-tab") {
+  }
+  if (targetPageID == "guided-modalities-selection-tab") {
     let modalities = window.sodaJSONObj["button-config"]["multiple-modalities"];
     if (modalities === "yes") {
       setCheckboxCardChecked("modality-selection-yes");
