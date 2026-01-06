@@ -39,6 +39,24 @@ export const addEntityNameToEntityType = (entityType, entityName) => {
   );
 };
 
+// Remove an entity from the specified entity type's list
+export const removeEntityFromEntityList = (entityType, entityName) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      if (state.datasetEntityObj && state.datasetEntityObj[entityType]) {
+        delete state.datasetEntityObj[entityType][entityName];
+      } else {
+        console.warn(`Entity type ${entityType} does not exist in datasetEntityObj.`);
+      }
+    })
+  );
+};
+
+export const getEntityNamesByEntityType = (entityType) => {
+  const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
+  return datasetEntityObj?.[entityType] ? Object.keys(datasetEntityObj[entityType]) : [];
+};
+
 export const setEntityListUsingArray = (entityType, entityArray) => {
   useGlobalStore.setState(
     produce((state) => {
@@ -53,19 +71,6 @@ export const setEntityListUsingArray = (entityType, entityArray) => {
       entityArray.forEach((entity) => {
         state.datasetEntityObj[entityType][entity] = [];
       });
-    })
-  );
-};
-
-// Remove an entity from the specified entity type's list
-export const removeEntityFromEntityList = (entityType, entityName) => {
-  useGlobalStore.setState(
-    produce((state) => {
-      if (state.datasetEntityObj && state.datasetEntityObj[entityType]) {
-        delete state.datasetEntityObj[entityType][entityName];
-      } else {
-        console.warn(`Entity type ${entityType} does not exist in datasetEntityObj.`);
-      }
     })
   );
 };

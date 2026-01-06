@@ -17,6 +17,7 @@ import {
 } from "../../../stores/slices/datasetTreeViewSlice.js";
 import {
   addEntityNameToEntityType,
+  getEntityNamesByEntityType,
   removeEntityFromEntityList,
   setActiveEntity,
   setShowFullMetadataFormFields,
@@ -336,6 +337,13 @@ window.openPage = async (targetPageID) => {
             addEntityNameToEntityType("sites", site);
           }
 
+          const prevSiteNames = getEntityNamesByEntityType("sites");
+          for (const siteName of prevSiteNames) {
+            if (!sites.includes(siteName)) {
+              removeEntityFromEntityList("sites", siteName);
+            }
+          }
+
           setFileVisibilityFilter(
             [
               {
@@ -352,11 +360,19 @@ window.openPage = async (targetPageID) => {
           );
         }
 
-        if (pageEntityType === "samples") {
-          const samples = getExistingSamples().map((sample) => sample.id);
-          for (const sample of samples) {
-            addEntityNameToEntityType("samples", sample);
+        if (pageEntityType === "derived-samples") {
+          const derivedSamples = getExistingSamples("derived").map((sample) => sample.id);
+          for (const derivedSample of derivedSamples) {
+            addEntityNameToEntityType("derived-samples", derivedSample);
           }
+
+          const prevDerivedSampleNames = getEntityNamesByEntityType("derived-samples");
+          for (const derivedSampleName of prevDerivedSampleNames) {
+            if (!derivedSamples.includes(derivedSampleName)) {
+              removeEntityFromEntityList("derived-samples", derivedSampleName);
+            }
+          }
+
           const sites = getExistingSites().map((site) => site.id);
           const siteFilter = [
             {
@@ -379,11 +395,58 @@ window.openPage = async (targetPageID) => {
           );
         }
 
+        if (pageEntityType === "samples") {
+          const samples = getExistingSamples("non-derived").map((sample) => sample.id);
+          for (const sample of samples) {
+            addEntityNameToEntityType("samples", sample);
+          }
+          const prevSampleNames = getEntityNamesByEntityType("samples");
+          for (const sampleName of prevSampleNames) {
+            if (!samples.includes(sampleName)) {
+              removeEntityFromEntityList("samples", sampleName);
+            }
+          }
+
+          const sites = getExistingSites().map((site) => site.id);
+          const derivedSamples = getExistingSamples("derived").map((sample) => sample.id);
+          const siteFilter = [
+            {
+              type: "non-data-folders",
+              names: ["Protocol", "Docs", "Code"],
+            },
+            {
+              type: "sites",
+              names: sites,
+            },
+            {
+              type: "samples",
+              names: derivedSamples,
+            },
+          ];
+          setFileVisibilityFilter(
+            [
+              {
+                type: "experimental",
+                names: ["experimental"],
+              },
+            ],
+            siteFilter
+          );
+        }
+
         if (pageEntityType === "subjects") {
           const subjects = getExistingSubjects().map((subject) => subject.id);
           for (const subject of subjects) {
             addEntityNameToEntityType("subjects", subject);
           }
+
+          const prevSubjectNames = getEntityNamesByEntityType("subjects");
+          for (const subjectName of prevSubjectNames) {
+            if (!subjects.includes(subjectName)) {
+              removeEntityFromEntityList("subjects", subjectName);
+            }
+          }
+
           const sites = getExistingSites().map((site) => site.id);
           const samples = getExistingSamples().map((sample) => sample.id);
           const siteAndSampleFilter = [

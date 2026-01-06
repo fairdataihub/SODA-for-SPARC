@@ -423,6 +423,11 @@ window.savePageChanges = async (pageBeingLeftID) => {
         pageBeingLeftComponentType === "entity-spreadsheet-import-page"
       ) {
         const datasetEntityArray = useGlobalStore.getState().datasetEntityArray;
+        window.sodaJSONObj["dataset-entity-array"] = datasetEntityArray;
+        // Save progress early because a lot of work managing entities could have happened here
+        // and we don't want the user to lost it.
+        await guidedSaveProgress();
+
         console.log("datasetEntityArray:", datasetEntityArray);
         if (datasetEntityArray.length === 0) {
           errorArray.push({
@@ -487,9 +492,6 @@ window.savePageChanges = async (pageBeingLeftID) => {
             delete window.sodaJSONObj["dataset_metadata"]["sites"];
           }
         }
-
-        // Save the dataset entity object to the progress file
-        window.sodaJSONObj["dataset-entity-array"] = datasetEntityArray;
       }
     }
 

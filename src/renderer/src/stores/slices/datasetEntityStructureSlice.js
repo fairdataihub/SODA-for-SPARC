@@ -97,7 +97,7 @@ export const getEntityDataById = (entityId) => {
           return site;
         }
       }
-      
+
       // Then check sample sites
       if (subject.samples) {
         for (const sample of subject.samples) {
@@ -239,9 +239,17 @@ export const deleteSampleFromSubject = (subjectId, sampleId) => {
   );
 };
 
-export const getExistingSamples = () => {
+export const getExistingSamples = (filterType = "all") => {
   const { datasetEntityArray } = useGlobalStore.getState();
-  return datasetEntityArray.flatMap((subject) => subject.samples);
+  const allSamples = datasetEntityArray.flatMap((subject) => subject.samples);
+
+  if (filterType === "non-derived") {
+    return allSamples.filter((sample) => !sample.metadata?.was_derived_from);
+  } else if (filterType === "derived") {
+    return allSamples.filter((sample) => sample.metadata?.was_derived_from);
+  } else {
+    return allSamples; // Return all samples (original behavior)
+  }
 };
 
 /**
@@ -251,13 +259,13 @@ export const getExistingSamples = () => {
 export const getExistingSites = () => {
   const { datasetEntityArray } = useGlobalStore.getState();
   const allSites = [];
-  
+
   for (const subject of datasetEntityArray) {
     // Add subject sites
     if (subject.subjectSites) {
       allSites.push(...subject.subjectSites);
     }
-    
+
     // Add sample sites
     if (subject.samples) {
       for (const sample of subject.samples) {
@@ -267,7 +275,7 @@ export const getExistingSites = () => {
       }
     }
   }
-  
+
   return allSites;
 };
 
@@ -324,17 +332,6 @@ export const addSiteToSubject = (subjectId, siteId, metadata = {}) => {
   );
 };
 
-export const deleteSiteFromSubject = (subjectId, siteId) => {
-  useGlobalStore.setState(
-    produce((state) => {
-      const subject = state.datasetEntityArray.find((s) => s.id === subjectId); // Changed from subjectId to id
-      if (subject && subject.subjectSites) {
-        subject.subjectSites = subject.subjectSites.filter((site) => site.id !== siteId); // Changed from siteId to id
-      }
-    })
-  );
-};
-
 // Unified site deletion function that works for both subject sites and sample sites
 export const deleteSite = (siteId) => {
   useGlobalStore.setState(
@@ -349,7 +346,7 @@ export const deleteSite = (siteId) => {
             return;
           }
         }
-        
+
         // Check sample sites
         if (subject.samples) {
           for (const sample of subject.samples) {
@@ -416,20 +413,6 @@ export const addSiteToSample = (subjectId, sampleId, siteId, metadata = {}) => {
             parentSample: sample.id,
             metadata: mergedMetadata,
           });
-        }
-      }
-    })
-  );
-};
-
-export const deleteSiteFromSample = (subjectId, sampleId, siteId) => {
-  useGlobalStore.setState(
-    produce((state) => {
-      const subject = state.datasetEntityArray.find((s) => s.id === subjectId); // Changed from subjectId to id
-      if (subject && subject.samples) {
-        const sample = subject.samples.find((s) => s.id === sampleId); // Changed from sampleId to id
-        if (sample && sample.sites) {
-          sample.sites = sample.sites.filter((site) => site.id !== siteId); // Changed from siteId to id
         }
       }
     })

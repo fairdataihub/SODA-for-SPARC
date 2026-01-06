@@ -580,7 +580,39 @@ const EntityHierarchyRenderer = ({
                               onEdit={handleEntitySelect}
                               onDelete={() => handleDeleteSample(derivedSample, subject)}
                               onSelect={handleEntitySelect}
-                            />
+                            >
+                              {/* Derived Sample Sites */}
+                              {allowEntityStructureEditing && showSampleSites && (
+                                <HierarchyItem
+                                  label={`Add sample site`}
+                                  icon="add"
+                                  level={4}
+                                  parentEntityData={{ sample: derivedSample, subject }}
+                                  onAdd={handleAddSampleSiteButtonClick}
+                                />
+                              )}
+                              {showSampleSites &&
+                                derivedSample.sites?.map((site) => (
+                                  <HierarchyItem
+                                    key={site.id}
+                                    icon="site"
+                                    label={site.id}
+                                    level={4}
+                                    allowEntityStructureEditing={allowEntityStructureEditing}
+                                    allowEntitySelection={allowEntitySelection}
+                                    entityData={site}
+                                    parentEntityData={{ sample: derivedSample, subject }}
+                                    onEdit={handleEntitySelect}
+                                    onDelete={() =>
+                                      handleDeleteSampleSite(site, {
+                                        sample: derivedSample,
+                                        subject,
+                                      })
+                                    }
+                                    onSelect={handleEntitySelect}
+                                  />
+                                ))}
+                            </HierarchyItem>
                           ))}
                       </HierarchyItem>
                     );
