@@ -4,7 +4,7 @@ import { useMemo, useCallback, memo } from "react";
 import {
   deleteSubject,
   deleteSampleFromSubject,
-  deleteSiteFromSample,
+  deleteSite,
   modifySampleSiteId,
   setActiveFormType,
   setEntityBeingAddedParentSubject,
@@ -262,7 +262,7 @@ const EntityHierarchyRenderer = ({
       if (selectedHierarchyEntity && selectedHierarchyEntity.id === site.id) {
         setSelectedHierarchyEntity(null);
       }
-      return deleteSiteFromSample(subject.id, sample.id, site.id);
+      return deleteSite(site.id);
     },
     [selectedHierarchyEntity]
   );
@@ -282,8 +282,7 @@ const EntityHierarchyRenderer = ({
       if (selectedHierarchyEntity && selectedHierarchyEntity.id === site.id) {
         setSelectedHierarchyEntity(null);
       }
-      // You'll need to implement deleteSubjectSite function similar to deleteSiteFromSample
-      // return deleteSubjectSite(subject.id, site.id);
+      return deleteSite(site.id);
     },
     [selectedHierarchyEntity]
   );
@@ -493,83 +492,100 @@ const EntityHierarchyRenderer = ({
                     entityData={site}
                     parentEntityData={subject}
                     onEdit={handleEntitySelect}
-                    onDelete={() => handleDeleteSubjectSite(site, subject)}
+                    onDelete={() => handleDeleteSubjectSite(site)}
                     onSelect={handleEntitySelect}
                   />
                 ))}
               {/* Samples */}
-
               {showSamples &&
-                subject.samples?.map((sample) => (
-                  <HierarchyItem
-                    key={sample.id}
-                    icon="sample"
-                    label={sample.id}
-                    level={2}
-                    allowEntityStructureEditing={allowEntityStructureEditing}
-                    allowEntitySelection={allowEntitySelection}
-                    entityData={sample}
-                    parentEntityData={subject}
-                    onEdit={handleEntitySelect}
-                    onDelete={() => handleDeleteSample(sample, subject)}
-                    onSelect={handleEntitySelect}
-                    isSampleParent={sample.id === currentSelectedHierarchyEntityParentSample}
-                  >
-                    {/* Sample Sites */}
-                    {allowEntityStructureEditing && showSampleSites && (
+                (() => {
+                  // Filter samples into regular samples and derived samples
+                  const allSamples = subject.samples?.filter(Boolean) || [];
+                  const regularSamples = allSamples.filter(
+                    (sample) => !sample.metadata?.was_derived_from
+                  );
+                  const derivedSamples = allSamples.filter(
+                    (sample) => sample.metadata?.was_derived_from
+                  );
+
+                  return regularSamples.map((sample) => {
+                    // Find derived samples that were derived from this sample
+                    const childDerivedSamples = derivedSamples.filter(
+                      (derivedSample) => derivedSample.metadata?.was_derived_from === sample.id
+                    );
+
+                    return (
                       <HierarchyItem
-                        label={`Add sample site`}
-                        icon="add"
-                        level={3}
-                        parentEntityData={{ sample, subject }}
-                        onAdd={handleAddSampleSiteButtonClick}
-                      />
-                    )}
-                    {/* Derived Samples (subsamples) */}
-                    {allowEntityStructureEditing && showDerivedSamples && (
-                      <HierarchyItem
-                        label={`Add derived sample`}
-                        icon="add"
-                        level={3}
-                        parentEntityData={{ sample, subject }}
-                        onAdd={handleAddDerivedSampleButtonClick}
-                      />
-                    )}
-                    {showSampleSites &&
-                      sample.sites?.map((site) => (
-                        <HierarchyItem
-                          key={site.id}
-                          icon="site"
-                          label={site.id}
-                          level={3}
-                          allowEntityStructureEditing={allowEntityStructureEditing}
-                          allowEntitySelection={allowEntitySelection}
-                          entityData={site}
-                          parentEntityData={{ sample, subject }}
-                          onEdit={handleEntitySelect}
-                          onDelete={() => handleDeleteSampleSite(site, { sample, subject })}
-                          onSelect={handleEntitySelect}
-                        />
-                      ))}
-                    {/* Render derived samples if they exist */}
-                    {showDerivedSamples &&
-                      sample.derivedSamples?.map((derivedSample) => (
-                        <HierarchyItem
-                          key={derivedSample.id}
-                          icon="sample"
-                          label={derivedSample.id}
-                          level={3}
-                          allowEntityStructureEditing={allowEntityStructureEditing}
-                          allowEntitySelection={allowEntitySelection}
-                          entityData={derivedSample}
-                          parentEntityData={{ sample, subject }}
-                          onEdit={handleEntitySelect}
-                          onDelete={() => handleDeleteSample(derivedSample, subject)}
-                          onSelect={handleEntitySelect}
-                        />
-                      ))}
-                  </HierarchyItem>
-                ))}
+                        key={sample.id}
+                        icon="sample"
+                        label={sample.id}
+                        level={2}
+                        allowEntityStructureEditing={allowEntityStructureEditing}
+                        allowEntitySelection={allowEntitySelection}
+                        entityData={sample}
+                        parentEntityData={subject}
+                        onEdit={handleEntitySelect}
+                        onDelete={() => handleDeleteSample(sample, subject)}
+                        onSelect={handleEntitySelect}
+                        isSampleParent={sample.id === currentSelectedHierarchyEntityParentSample}
+                      >
+                        {/* Sample Sites */}
+                        {allowEntityStructureEditing && showSampleSites && (
+                          <HierarchyItem
+                            label={`Add sample site`}
+                            icon="add"
+                            level={3}
+                            parentEntityData={{ sample, subject }}
+                            onAdd={handleAddSampleSiteButtonClick}
+                          />
+                        )}
+                        {/* Derived Samples (subsamples) */}
+                        {allowEntityStructureEditing && showDerivedSamples && (
+                          <HierarchyItem
+                            label={`Add derived sample`}
+                            icon="add"
+                            level={3}
+                            parentEntityData={{ sample, subject }}
+                            onAdd={handleAddDerivedSampleButtonClick}
+                          />
+                        )}
+                        {showSampleSites &&
+                          sample.sites?.map((site) => (
+                            <HierarchyItem
+                              key={site.id}
+                              icon="site"
+                              label={site.id}
+                              level={3}
+                              allowEntityStructureEditing={allowEntityStructureEditing}
+                              allowEntitySelection={allowEntitySelection}
+                              entityData={site}
+                              parentEntityData={{ sample, subject }}
+                              onEdit={handleEntitySelect}
+                              onDelete={() => handleDeleteSampleSite(site, { sample, subject })}
+                              onSelect={handleEntitySelect}
+                            />
+                          ))}
+                        {/* Render derived samples that were derived from this sample */}
+                        {showDerivedSamples &&
+                          childDerivedSamples.map((derivedSample) => (
+                            <HierarchyItem
+                              key={derivedSample.id}
+                              icon="sample"
+                              label={derivedSample.id}
+                              level={3}
+                              allowEntityStructureEditing={allowEntityStructureEditing}
+                              allowEntitySelection={allowEntitySelection}
+                              entityData={derivedSample}
+                              parentEntityData={{ sample, subject }}
+                              onEdit={handleEntitySelect}
+                              onDelete={() => handleDeleteSample(derivedSample, subject)}
+                              onSelect={handleEntitySelect}
+                            />
+                          ))}
+                      </HierarchyItem>
+                    );
+                  });
+                })()}
             </Box>
           ))
         )}

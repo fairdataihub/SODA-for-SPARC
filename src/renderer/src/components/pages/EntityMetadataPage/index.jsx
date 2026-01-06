@@ -52,7 +52,7 @@ import {
 } from "../../../stores/slices/datasetContentSelectorSlice";
 import {
   addSubject,
-  addSampleToSubject,
+  addSample,
   addSiteToSubject,
   addSiteToSample,
 } from "../../../stores/slices/datasetEntityStructureSlice";
@@ -262,7 +262,12 @@ const EntityMetadataForm = () => {
       } else if (activeFormType === "sample") {
         // Create sample entity
         const tempMetadata = useGlobalStore.getState().temporaryEntityMetadata?.sample || {};
-        addSampleToSubject(entityBeingAddedParentSubject, tempMetadata["sample_id"], tempMetadata);
+        addSample(
+          entityBeingAddedParentSubject,
+          entityBeingAddedParentSample,
+          tempMetadata["sample_id"],
+          tempMetadata
+        );
         clearTemporaryMetadata("sample");
       } else if (activeFormType === "site") {
         // Create site entity
@@ -775,20 +780,6 @@ const EntityMetadataForm = () => {
             />
             {showFullMetadataFormFields && (
               <>
-                <Select
-                  key={`was_derived_from-${
-                    selectedHierarchyEntity ? selectedHierarchyEntity.id : activeFormType
-                  }`}
-                  label="Was derived from"
-                  description="The entity this sample was derived from"
-                  placeholder="Select entity"
-                  data={getExistingSamples()
-                    .map((sample) => sample.id)
-                    .filter((id) => id !== `sam-${getMetadataValue("sample_id", "")}`)}
-                  value={getMetadataValue("was_derived_from", "")}
-                  onChange={(value) => handleChange("was_derived_from", value)}
-                />
-                {/* Also in dataset TextInput */}
                 <TextInput
                   label="Also in dataset"
                   description="Other datasets that include this sample"

@@ -19,10 +19,11 @@ const SelectedEntityPreviewer = () => {
     "sample_id",
     "sample type",
     "site_id",
-    "performanceId",
+    "performance_id",
     "protocolUrl",
     "startDateTime",
     "endDateTime",
+    "was_derived_from",
   ];
 
   // Get relevant field values from metadata only
