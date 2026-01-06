@@ -97,7 +97,7 @@ export const getEntityDataById = (entityId) => {
           return site;
         }
       }
-      
+
       // Then check sample sites
       if (subject.samples) {
         for (const sample of subject.samples) {
@@ -251,13 +251,13 @@ export const getExistingSamples = () => {
 export const getExistingSites = () => {
   const { datasetEntityArray } = useGlobalStore.getState();
   const allSites = [];
-  
+
   for (const subject of datasetEntityArray) {
     // Add subject sites
     if (subject.subjectSites) {
       allSites.push(...subject.subjectSites);
     }
-    
+
     // Add sample sites
     if (subject.samples) {
       for (const sample of subject.samples) {
@@ -267,7 +267,7 @@ export const getExistingSites = () => {
       }
     }
   }
-  
+
   return allSites;
 };
 
@@ -349,7 +349,7 @@ export const deleteSite = (siteId) => {
             return;
           }
         }
-        
+
         // Check sample sites
         if (subject.samples) {
           for (const sample of subject.samples) {
