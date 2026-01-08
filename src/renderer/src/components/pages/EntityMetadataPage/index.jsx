@@ -1,6 +1,8 @@
 import { useMemo, useCallback, useRef, useEffect } from "react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
+import { isValidRRID } from "../../../scripts/utils/rrid-utils";
+import ExternalLink from "../../buttons/ExternalLink";
 import {
   IconInfoCircle,
   IconDeviceFloppy,
@@ -222,6 +224,24 @@ const EntityMetadataForm = () => {
           });
           return;
         }
+
+        // Validate RRID if provided and over 5 characters
+        if (
+          currentMetadata["rrid_for_strain"] &&
+          currentMetadata["rrid_for_strain"].length > 5 &&
+          !window.evaluateStringAgainstSdsRequirements(
+            currentMetadata["rrid_for_strain"],
+            "rrid-format"
+          )
+        ) {
+          window.notyf.open({
+            duration: "4000",
+            type: "error",
+            message:
+              "Invalid strain RRID format. Use: RRID:rrid_identifier (e.g., RRID:IMSR_JAX:000664)",
+          });
+          return;
+        }
       }
 
       // Complete editing existing entity
@@ -247,6 +267,24 @@ const EntityMetadataForm = () => {
             duration: "4000",
             type: "error",
             message: "You must provide the species for this subject.",
+          });
+          return;
+        }
+
+        // Validate RRID if provided and over 5 characters
+        if (
+          tempMetadata["rrid_for_strain"] &&
+          tempMetadata["rrid_for_strain"].length > 5 &&
+          !window.evaluateStringAgainstSdsRequirements(
+            tempMetadata["rrid_for_strain"],
+            "rrid-format"
+          )
+        ) {
+          window.notyf.open({
+            duration: "4000",
+            type: "error",
+            message:
+              "Invalid strain RRID format. Use: RRID:rrid_identifier (e.g., RRID:IMSR_JAX:000664)",
           });
           return;
         }
@@ -479,10 +517,31 @@ const EntityMetadataForm = () => {
             />
             <TextInput
               label="RRID for strain"
-              description="Research Resource Identifier for the strain"
+              description={
+                <span>
+                  Research Resource Identifier for the strain. Don't have an RRID?{" "}
+                  <ExternalLink
+                    buttonType="anchor"
+                    href="https://scicrunch.org/resources/data/source/nlx_154697-1/search"
+                    buttonText="Search Scicrunch.org"
+                    buttonSize="xs"
+                  />
+                  .
+                </span>
+              }
               placeholder="e.g., RRID:IMSR_JAX:000664"
               value={getMetadataValue("rrid_for_strain", "")}
               onChange={(e) => handleChange("rrid_for_strain", e.target.value)}
+              error={
+                getMetadataValue("rrid_for_strain", "") &&
+                getMetadataValue("rrid_for_strain", "").length > 5 &&
+                !window.evaluateStringAgainstSdsRequirements(
+                  getMetadataValue("rrid_for_strain", ""),
+                  "rrid-format"
+                )
+                  ? "Invalid strain RRID format. Use: RRID:rrid_identifier (e.g., RRID:IMSR_JAX:000664)"
+                  : undefined
+              }
             />
             <TextInput
               label="Subject Experimental Group"
