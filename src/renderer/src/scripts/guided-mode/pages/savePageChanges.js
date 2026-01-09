@@ -423,7 +423,6 @@ window.savePageChanges = async (pageBeingLeftID) => {
         pageBeingLeftComponentType === "entity-spreadsheet-import-page"
       ) {
         const datasetEntityArray = useGlobalStore.getState().datasetEntityArray;
-        console.log("datasetEntityArray:", datasetEntityArray);
         if (datasetEntityArray.length === 0) {
           errorArray.push({
             type: "notyf",

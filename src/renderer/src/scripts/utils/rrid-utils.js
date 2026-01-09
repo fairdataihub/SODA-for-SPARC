@@ -12,7 +12,6 @@ export const isValidRRID = async (rrid) => {
       throw new Error("RRID not found");
     }
 
-    console.log("RRID resolved successfully");
     return true;
   } catch (error) {
     if (error.message === "RRID not found") {
@@ -34,7 +33,6 @@ export const analyzeRRID = async (rrid) => {
       strainInfo: null,
     };
 
-    console.log("RRID analysis result:", result);
     return result;
   } catch (error) {
     const result = {
@@ -44,7 +42,6 @@ export const analyzeRRID = async (rrid) => {
       strainInfo: null,
     };
 
-    console.log("RRID analysis result:", result);
     return result;
   }
 };
