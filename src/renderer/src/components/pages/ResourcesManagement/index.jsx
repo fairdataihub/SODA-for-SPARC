@@ -1,6 +1,7 @@
 import { useState } from "react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
+import ExternalLink from "../../buttons/ExternalLink";
 import {
   IconPlus,
   IconTrash,
@@ -60,32 +61,6 @@ const toOxfordCommaString = (arr) => {
   return `${arr.slice(0, -1).join(", ")}, and ${arr[len - 1]}`;
 };
 
-const isValidUrl = (value) => {
-  if (!value || value.trim() === "") return true;
-
-  const trimmedValue = value.trim();
-
-  if (/\s/.test(trimmedValue)) return false;
-
-  try {
-    const hasProtocol = /^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(trimmedValue);
-
-    if (hasProtocol) {
-      new URL(trimmedValue);
-      return true;
-    }
-
-    if (trimmedValue.includes(".") && /^[a-zA-Z0-9]/.test(trimmedValue)) {
-      new URL(`https://${trimmedValue}`);
-      return true;
-    }
-
-    return false;
-  } catch {
-    return false;
-  }
-};
-
 // Resource metadata form component with store-based state
 const ResourceMetadataForm = () => {
   // Get form values from the global store
@@ -104,16 +79,26 @@ const ResourceMetadataForm = () => {
         label="RRID (Research Resource Identifier)"
         description={
           <>
-            Enter the RRID for this resource. To find or verify RRIDs, visit{" "}
-            <a href="https://rrid.site" target="_blank" rel="noopener noreferrer">
-              rrid.site
-            </a>
-            .
+            Enter the RRID for this resource. If you don't already have the RRID, you can look it up
+            at{" "}
+            <ExternalLink
+              buttonType="anchor"
+              href="https://rrid.site/"
+              buttonText="rrid.site"
+              buttonSize="xs"
+            />
           </>
         }
         placeholder="e.g., RRID:AB_123456"
         value={rrid}
         onChange={(event) => setRrid(event.currentTarget.value)}
+        error={
+          rrid &&
+          rrid.length > 5 &&
+          !window.evaluateStringAgainstSdsRequirements(rrid, "rrid-format")
+            ? "Invalid resource RRID format. Use: RRID:rrid_identifier (e.g., RRID:AB_123456)"
+            : undefined
+        }
         required
       />
       <TextInput
@@ -133,11 +118,13 @@ const ResourceMetadataForm = () => {
       />
       <TextInput
         label="URL"
-        description="Link to the resource documentation or website (supports HTTP, HTTPS, DOI, FTP, etc.)"
+        description="Link to the resource documentation or website (HTTP, HTTPS, DOI, FTP, etc.)"
         placeholder="e.g., https://example.com, doi:10.1038/s41586-019-1234-5"
         value={url}
-        onChange={(event) => setUrl(event.currentTarget.value)}
-        error={url && url.trim().length > 4 && !isValidUrl(url) ? "Please enter a valid URL" : null}
+        onChange={(event) => {
+          const trimmedValue = event.currentTarget.value.trim();
+          setUrl(trimmedValue);
+        }}
       />
 
       <TextInput
@@ -187,8 +174,12 @@ const ResourcesManagementPage = () => {
   const validateResourceForm = () => {
     const rridIsValid = rrid && rrid.trim().length > 0;
     const nameIsValid = name && name.trim().length > 0;
-    const urlIsValid = isValidUrl(url);
-    return rridIsValid && nameIsValid && urlIsValid;
+
+    // Additional RRID format validation
+    const rridFormatValid =
+      !rrid || window.evaluateStringAgainstSdsRequirements(rrid, "rrid-format");
+
+    return rridIsValid && nameIsValid && rridFormatValid;
   };
 
   // Validation for add/update button

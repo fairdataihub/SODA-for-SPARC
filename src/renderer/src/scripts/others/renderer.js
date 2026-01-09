@@ -3183,6 +3183,17 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, testType) => {
     "string-contains-forbidden-pennsieve-dataset-name-characters":
       forbiddenPennsieveDatasetNameCharacters.test(stringToTest),
     "rrid-format": /^RRID:[A-Za-z0-9_-]+$/.test(stringToTest),
+    "url-format": (() => {
+      if (!stringToTest || stringToTest.trim() === "") return false;
+      const trimmedValue = stringToTest.trim();
+      if (!trimmedValue.startsWith("https://")) return false;
+      try {
+        new URL(trimmedValue);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    })(),
   };
 
   return tests[testType];

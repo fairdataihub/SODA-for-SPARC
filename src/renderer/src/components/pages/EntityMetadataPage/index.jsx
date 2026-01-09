@@ -519,14 +519,14 @@ const EntityMetadataForm = () => {
               label="RRID for strain"
               description={
                 <span>
-                  Research Resource Identifier for the strain. Don't have an RRID?{" "}
+                  Research Resource Identifier for the strain. If you don't already have the RRID,
+                  you can look it up at{" "}
                   <ExternalLink
                     buttonType="anchor"
-                    href="https://scicrunch.org/resources/data/source/nlx_154697-1/search"
-                    buttonText="Search Scicrunch.org"
+                    href="https://rrid.site/"
+                    buttonText="rrid.site"
                     buttonSize="xs"
                   />
-                  .
                 </span>
               }
               placeholder="e.g., RRID:IMSR_JAX:000664"
