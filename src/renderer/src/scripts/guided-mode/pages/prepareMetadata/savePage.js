@@ -67,18 +67,25 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
 
       if (metadata.age_numeric_value && metadata.age_unit) {
         metadata.age = `${metadata.age_numeric_value} ${metadata.age_unit}`;
+      } else {
+        metadata.age = "";
       }
       if (metadata.age_range_min_numeric_value && metadata.age_range_unit) {
         metadata.age_range_min = `${metadata.age_range_min_numeric_value} ${metadata.age_range_unit}`;
+      } else {
+        metadata.age_range_min = "";
       }
-
       if (metadata.age_range_max_numeric_value && metadata.age_range_unit) {
         metadata.age_range_max = `${metadata.age_range_max_numeric_value} ${metadata.age_range_unit}`;
+      } else {
+        metadata.age_range_max = "";
       }
-
       if (metadata.body_mass_numeric_value && metadata.body_mass_unit) {
         metadata.body_mass = `${metadata.body_mass_numeric_value} ${metadata.body_mass_unit}`;
+      } else {
+        metadata.body_mass = "";
       }
+      console.log("Subject body mass:", metadata.body_mass);
 
       // Check if the subject has any files in the dataset-entity-obj
       const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
