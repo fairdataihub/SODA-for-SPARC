@@ -1,6 +1,8 @@
 import { useMemo, useCallback, useRef, useEffect } from "react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
+import { isValidRRID } from "../../../scripts/utils/rrid-utils";
+import ExternalLink from "../../buttons/ExternalLink";
 import {
   IconInfoCircle,
   IconDeviceFloppy,
@@ -222,6 +224,24 @@ const EntityMetadataForm = () => {
           });
           return;
         }
+
+        // Validate RRID if provided and over 5 characters
+        if (
+          currentMetadata["rrid_for_strain"] &&
+          currentMetadata["rrid_for_strain"].length > 5 &&
+          !window.evaluateStringAgainstSdsRequirements(
+            currentMetadata["rrid_for_strain"],
+            "rrid-format"
+          )
+        ) {
+          window.notyf.open({
+            duration: "4000",
+            type: "error",
+            message:
+              "Invalid strain RRID format. Use: RRID:rrid_identifier (e.g., RRID:IMSR_JAX:000664)",
+          });
+          return;
+        }
       }
 
       // Complete editing existing entity
@@ -247,6 +267,24 @@ const EntityMetadataForm = () => {
             duration: "4000",
             type: "error",
             message: "You must provide the species for this subject.",
+          });
+          return;
+        }
+
+        // Validate RRID if provided and over 5 characters
+        if (
+          tempMetadata["rrid_for_strain"] &&
+          tempMetadata["rrid_for_strain"].length > 5 &&
+          !window.evaluateStringAgainstSdsRequirements(
+            tempMetadata["rrid_for_strain"],
+            "rrid-format"
+          )
+        ) {
+          window.notyf.open({
+            duration: "4000",
+            type: "error",
+            message:
+              "Invalid strain RRID format. Use: RRID:rrid_identifier (e.g., RRID:IMSR_JAX:000664)",
           });
           return;
         }
@@ -484,10 +522,31 @@ const EntityMetadataForm = () => {
             />
             <TextInput
               label="RRID for strain"
-              description="Research Resource Identifier for the strain"
+              description={
+                <span>
+                  Research Resource Identifier for the strain. If you don't already have the RRID,
+                  you can look it up at{" "}
+                  <ExternalLink
+                    buttonType="anchor"
+                    href="https://rrid.site/"
+                    buttonText="rrid.site"
+                    buttonSize="xs"
+                  />
+                </span>
+              }
               placeholder="e.g., RRID:IMSR_JAX:000664"
               value={getMetadataValue("rrid_for_strain", "")}
               onChange={(e) => handleChange("rrid_for_strain", e.target.value)}
+              error={
+                getMetadataValue("rrid_for_strain", "") &&
+                getMetadataValue("rrid_for_strain", "").length > 5 &&
+                !window.evaluateStringAgainstSdsRequirements(
+                  getMetadataValue("rrid_for_strain", ""),
+                  "rrid-format"
+                )
+                  ? "Invalid strain RRID format. Use: RRID:rrid_identifier (e.g., RRID:IMSR_JAX:000664)"
+                  : undefined
+              }
             />
             <TextInput
               label="Subject Experimental Group"
@@ -511,14 +570,6 @@ const EntityMetadataForm = () => {
                   placeholder="e.g., group-1, cohort-A"
                   value={getMetadataValue("member_of", "")}
                   onChange={(e) => handleChange("member_of", e.target.value)}
-                />
-                <Select
-                  label="Metadata only"
-                  description="Whether this subject has metadata only"
-                  placeholder="Select option"
-                  data={["yes", "no"]}
-                  value={getMetadataValue("metadata_only", null)}
-                  onChange={(value) => handleChange("metadata_only", value)}
                 />
                 <TextInput
                   label="Laboratory internal id"
@@ -793,17 +844,6 @@ const EntityMetadataForm = () => {
                   placeholder="e.g., group-1, cohort-A"
                   value={getMetadataValue("member_of", "")}
                   onChange={(e) => handleChange("member_of", e.target.value)}
-                />
-                <Select
-                  key={`metadata_only-${
-                    selectedHierarchyEntity ? selectedHierarchyEntity.id : activeFormType
-                  }`}
-                  label="Metadata only"
-                  description="Whether this sample is metadata only"
-                  placeholder="Select option"
-                  data={["yes", "no"]}
-                  value={getMetadataValue("metadata_only", null)}
-                  onChange={(value) => handleChange("metadata_only", value)}
                 />
                 <TextInput
                   label="Laboratory internal id"
