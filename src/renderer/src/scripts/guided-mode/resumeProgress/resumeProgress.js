@@ -213,6 +213,12 @@ const patchPreviousGuidedModeVersions = async () => {
       .concat("Code");
   }
 
+  if (selectedEntities.includes("sites")) {
+    // Add sampleSites because old save files had sites only applicable to samples
+    window.sodaJSONObj["selected-entities"] =
+      window.sodaJSONObj["selected-entities"].concat("sampleSites");
+  }
+
   // Change all fields named "disease_or_disorder" to "disease" in subjects metadata
   const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
   for (const subject of datasetEntityArray) {

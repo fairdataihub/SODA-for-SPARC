@@ -312,6 +312,7 @@ export const addSiteToSubject = (subjectId, siteId, metadata = {}) => {
     produce((state) => {
       const subject = state.datasetEntityArray.find((s) => s.id === normalizedSubjectId);
       if (subject) {
+        // If subjectSites array doesn't exist yet, initialize it
         if (!subject.subjectSites) subject.subjectSites = [];
 
         // Create merged metadata object for the site
@@ -319,6 +320,7 @@ export const addSiteToSubject = (subjectId, siteId, metadata = {}) => {
           ...metadata,
           site_id: normalizedSiteId,
           subject_id: normalizedSubjectId,
+          specimen_id: normalizedSubjectId,
         };
 
         subject.subjectSites.push({
@@ -326,7 +328,55 @@ export const addSiteToSubject = (subjectId, siteId, metadata = {}) => {
           type: "site",
           parentSubject: subject.id,
           metadata: mergedMetadata,
+          specimen_id: normalizedSubjectId,
         });
+      }
+    })
+  );
+};
+
+// Sample site management functions
+export const addSiteToSample = (subjectId, sampleId, siteId, metadata = {}) => {
+  // Use normalizeEntityId for all IDs
+  const normalizedSiteId = normalizeEntityId("site-", siteId);
+  const normalizedSubjectId = normalizeEntityId("sub-", subjectId);
+  const normalizedSampleId = normalizeEntityId("sam-", sampleId);
+
+  if (!normalizedSiteId) {
+    throw new Error("Site ID cannot be empty");
+  }
+
+  // Prevent duplicate site IDs within all sites
+  const existingSites = getExistingSites();
+  if (existingSites.some((site) => site.id === normalizedSiteId)) {
+    throw new Error(`A site with ID ${normalizedSiteId} already exists.`);
+  }
+  useGlobalStore.setState(
+    produce((state) => {
+      const subject = state.datasetEntityArray.find((s) => s.id === normalizedSubjectId);
+      if (subject && subject.samples) {
+        const sample = subject.samples.find((s) => s.id === normalizedSampleId);
+        if (sample) {
+          if (!sample.sites) sample.sites = [];
+
+          // Create merged metadata object for the site
+          const mergedMetadata = {
+            ...metadata,
+            site_id: normalizedSiteId,
+            subject_id: normalizedSubjectId,
+            sample_id: normalizedSampleId,
+            specimen_id: normalizedSampleId,
+          };
+
+          sample.sites.push({
+            id: normalizedSiteId,
+            type: "site",
+            parentSubject: subject.id,
+            parentSample: sample.id,
+            specimen_id: normalizedSampleId,
+            metadata: mergedMetadata,
+          });
+        }
       }
     })
   );
@@ -372,51 +422,6 @@ export const getExistingPerformancesR = () => {
     (subject) => subject.subjectPerformances || []
   );
   return existingPerformances;
-};
-
-// Sample site management functions
-export const addSiteToSample = (subjectId, sampleId, siteId, metadata = {}) => {
-  // Use normalizeEntityId for all IDs
-  const normalizedSiteId = normalizeEntityId("site-", siteId);
-  const normalizedSubjectId = normalizeEntityId("sub-", subjectId);
-  const normalizedSampleId = normalizeEntityId("sam-", sampleId);
-
-  if (!normalizedSiteId) {
-    throw new Error("Site ID cannot be empty");
-  }
-
-  // Prevent duplicate site IDs within all sites
-  const existingSites = getExistingSites();
-  if (existingSites.some((site) => site.id === normalizedSiteId)) {
-    throw new Error(`A site with ID ${normalizedSiteId} already exists.`);
-  }
-  useGlobalStore.setState(
-    produce((state) => {
-      const subject = state.datasetEntityArray.find((s) => s.id === normalizedSubjectId);
-      if (subject && subject.samples) {
-        const sample = subject.samples.find((s) => s.id === normalizedSampleId);
-        if (sample) {
-          if (!sample.sites) sample.sites = [];
-
-          // Create merged metadata object for the site
-          const mergedMetadata = {
-            ...metadata,
-            site_id: normalizedSiteId,
-            subject_id: normalizedSubjectId,
-            sample_id: normalizedSampleId,
-          };
-
-          sample.sites.push({
-            id: normalizedSiteId,
-            type: "site",
-            parentSubject: subject.id,
-            parentSample: sample.id,
-            metadata: mergedMetadata,
-          });
-        }
-      }
-    })
-  );
 };
 
 export const deletePerformanceFromSample = (subjectId, sampleId, performanceId) => {

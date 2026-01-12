@@ -446,7 +446,7 @@ window.savePageChanges = async (pageBeingLeftID) => {
           await swalListSingleAction(
             subjectsWithoutSpecies,
             "Required Species Information Missing",
-            "Species information is mandatory for all subjects in SPARC datasets. The following subject IDs are missing this required field. Please specify the taxonomic species (e.g., Homo sapiens, Rattus norvegicus, Mus musculus) for each subject.",
+            "Species information is now mandatory for all subjects in SPARC datasets. The following subject IDs are missing this required field. Please specify the taxonomic species (e.g., Homo sapiens, Rattus norvegicus, Mus musculus) for each subject.",
             "Please provide a species for each subject in the list above."
           );
           errorArray.push({
@@ -458,6 +458,19 @@ window.savePageChanges = async (pageBeingLeftID) => {
 
         // Get a list of the entities that the user said they had on the dataset content page
         const selectedEntities = window.sodaJSONObj["selected-entities"];
+        const subjects = getExistingSubjects();
+
+        // This should always be true if the user is leaving this page but check just in case
+        if (selectedEntities.includes("subjects")) {
+          console.log("Existing subjects:", subjects);
+          if (subjects.length === 0) {
+            errorArray.push({
+              type: "notyf",
+              message: "You must add at least one subject to your dataset before continuing",
+            });
+            throw errorArray;
+          }
+        }
 
         // If the user said they had samples but did not add or import any, throw an error
         if (selectedEntities.includes("samples")) {
@@ -469,9 +482,12 @@ window.savePageChanges = async (pageBeingLeftID) => {
             throw errorArray;
           }
         }
+        const sitess = getExistingSites();
+        console.log("Existing sitess:", sitess);
 
-        if (selectedEntities.includes("sites")) {
+        if (selectedEntities.includes("subjectSites")) {
           const sites = getExistingSites();
+          console.log("Existing sites:", sites);
           if (sites.length === 0) {
             errorArray.push({
               type: "notyf",
@@ -483,7 +499,6 @@ window.savePageChanges = async (pageBeingLeftID) => {
           const sitesCopy = structuredClone(sites);
           const sitesMetadata = sitesCopy.map((site) => ({
             ...site.metadata,
-            specimen_id: `${site.metadata.sample_id} ${site.metadata.subject_id}`,
           }));
           window.sodaJSONObj["dataset_metadata"]["sites"] = sitesMetadata;
         } else {

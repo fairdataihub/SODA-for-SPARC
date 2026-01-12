@@ -12,13 +12,13 @@ const SelectedEntityPreviewer = () => {
   }
 
   const differentiableEntityFields = [
+    "site_id",
+    "sample_id",
     "subject_id",
     "experimental group",
     "sex",
     "age category",
-    "sample_id",
     "sample type",
-    "site_id",
     "performance_id",
     "protocolUrl",
     "startDateTime",
