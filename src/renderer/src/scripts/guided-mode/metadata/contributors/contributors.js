@@ -5,7 +5,7 @@ export const addContributor = (
   contributor_name,
   contributor_orcid_id, // string: ORCID
   contributor_affiliation, // string: affiliation
-  contributor_role // string: role (not array)
+  contributor_roles // array: roles
 ) => {
   // Check if the contributor already exists
   if (getContributorByOrcid(contributor_orcid_id)) {
@@ -15,7 +15,7 @@ export const addContributor = (
     contributor_name,
     contributor_orcid_id,
     contributor_affiliation,
-    contributor_role,
+    contributor_roles,
   };
 
   // Add to dataset_contributors using new schema
@@ -34,7 +34,7 @@ export const editContributorByOrcid = (
   contributorName,
   newContributorOrcid,
   contributor_affiliation,
-  contributor_role
+  contributor_roles
 ) => {
   // Get the index of the contributor to edit
   const contributorsIndex = window.sodaJSONObj["dataset_contributors"].findIndex(
@@ -56,7 +56,7 @@ export const editContributorByOrcid = (
     contributor_orcid_id: newContributorOrcid,
     contributor_name: contributorName,
     contributor_affiliation: contributor_affiliation,
-    contributor_role: contributor_role,
+    contributor_roles: contributor_roles,
   };
   window.sodaJSONObj["dataset_contributors"][contributorsIndex] = updatedContributorObj;
   // Update local storage for the contributor
@@ -115,7 +115,7 @@ export const getContributorByOrcid = (orcid) => {
 const generateContributorTableRow = (contributorObj, contributorIndex) => {
   const contributorFullName = contributorObj["contributor_name"];
   const contributorOrcid = contributorObj["contributor_orcid_id"];
-  const contributorRoleString = contributorObj["contributor_role"];
+  const contributorRoleString = contributorObj["contributor_roles"].join(", ");
 
   let validContributorName = CONTRIBUTORS_REGEX.test(contributorFullName);
   return `

@@ -795,6 +795,15 @@ const EntityMetadataForm = () => {
               readOnly={!!selectedHierarchyEntity}
               disabled={!!selectedHierarchyEntity}
             />
+
+            {getMetadataValue("was_derived_from", "") && (
+              <TextInput
+                label="Sample this sample was derived from"
+                disabled
+                value={getMetadataValue("was_derived_from", "")}
+                description="The parent sample from which this sample was derived"
+              />
+            )}
             <OptionalFieldsNotice />
             <TextInput
               label="Sample Experimental Group"

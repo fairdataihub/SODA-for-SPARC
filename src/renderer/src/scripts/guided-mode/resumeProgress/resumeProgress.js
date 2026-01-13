@@ -237,6 +237,15 @@ const patchPreviousGuidedModeVersions = async () => {
       delete subjectMetadata.disease_or_disorder;
     }
   }
+
+  // Change the contributor role field to an array if it is a string
+  const contributors = window.sodaJSONObj["dataset_contributors"];
+  for (const contributor of contributors) {
+    if (contributor.contributor_role && typeof contributor.contributor_role === "string") {
+      contributor.contributor_roles = [contributor.contributor_role];
+      delete contributor.contributor_role;
+    }
+  }
 };
 
 const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {

@@ -303,7 +303,12 @@ window.savePageChanges = async (pageBeingLeftID) => {
         if (entityType === "subjects") {
           // Get a list of files that were marked as experimental but not assigned to any entities
           const experimentalFiles = getFilesByEntityType("experimental");
-          const entityAssociatedFiles = getFilesByEntityType(["sites", "samples", "subjects"]);
+          const entityAssociatedFiles = getFilesByEntityType([
+            "sites",
+            "derived-samples",
+            "samples",
+            "subjects",
+          ]);
           // Find items that were associated to experimentalFiles but not in entityAssociatedFiles
           const unassociatedExperimentalFiles = experimentalFiles.filter(
             (file) => !entityAssociatedFiles.includes(file)

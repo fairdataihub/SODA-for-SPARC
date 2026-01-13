@@ -178,14 +178,36 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       throw errorArray;
     }
 
-    // Make sure at least one contributor has the contributor_role of "PrincipalInvestigator"
-    const hasPrincipalInvestigator = contributors.some(
-      (contributor) => contributor.contributor_role === "PrincipalInvestigator"
+    // Make sure one and only one Principal Investigator is assigned
+    const principalInvestigators = contributors.filter((contributor) =>
+      contributor.contributor_roles.includes("PrincipalInvestigator")
     );
-    if (!hasPrincipalInvestigator) {
+    if (principalInvestigators.length === 0) {
       errorArray.push({
         type: "notyf",
         message: "Please assign at least one contributor as Principal Investigator",
+      });
+      throw errorArray;
+    }
+
+    if (principalInvestigators.length > 1) {
+      errorArray.push({
+        type: "notyf",
+        message: "Please assign only one contributor as Principal Investigator",
+      });
+      throw errorArray;
+    }
+
+    // For contributors that were assigned the "Creator" role, make sure they have at least one other role too
+    const creatorsWithNoOtherRole = contributors.filter(
+      (contributor) =>
+        contributor.contributor_roles.includes("Creator") &&
+        contributor.contributor_roles.length === 1
+    );
+    if (creatorsWithNoOtherRole.length > 0) {
+      errorArray.push({
+        type: "notyf",
+        message: `Please assign at least one additional role to the contributor "${creatorsWithNoOtherRole[0].contributor_name}" who was assigned the "Creator" role.`,
       });
       throw errorArray;
     }

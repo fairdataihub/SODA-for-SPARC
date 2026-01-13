@@ -70,7 +70,8 @@ const DropDownNote = ({ id }) => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const datasetIncludesSubjects = selectedEntities.includes("subjects");
   const datasetIncludesSamples = selectedEntities.includes("samples");
-  const datasetIncludesSites = selectedEntities.includes("sites");
+  const datasetIncludesSites =
+    selectedEntities.includes("subjectSites") || selectedEntities.includes("sampleSites");
   const datasetIncludesCode = selectedEntities.includes("code");
   const datasetType = useGlobalStore((state) => state.datasetType);
 

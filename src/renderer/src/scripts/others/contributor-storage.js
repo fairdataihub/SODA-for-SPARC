@@ -9,8 +9,20 @@ export const loadStoredContributors = () => {
     const contributorFileData = window.fs.readFileSync(window.storedContributorsPath, "utf8");
     const contributors = JSON.parse(contributorFileData);
 
+    // Migrate old format to new format
+    const migratedContributors = contributors.map((contributor) => {
+      // Convert old contributor_role (string) to contributor_roles (array)
+      if (contributor.contributor_role && !contributor.contributor_roles) {
+        contributor.contributor_roles = [contributor.contributor_role];
+        delete contributor.contributor_role;
+      }
+      return contributor;
+    });
+
     // Only return contributors that have the contributor_orcid_id field
-    let filteredByOrcid = contributors.filter((contributor) => contributor.contributor_orcid_id);
+    let filteredByOrcid = migratedContributors.filter(
+      (contributor) => contributor.contributor_orcid_id
+    );
     return filteredByOrcid.filter((contributor) => contributor.contributor_name);
   } catch (err) {
     window.log.info("Error loading stored contributors file: " + err);

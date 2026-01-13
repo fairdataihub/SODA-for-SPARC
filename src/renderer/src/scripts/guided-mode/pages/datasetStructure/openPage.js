@@ -143,7 +143,7 @@ export const openPageDatasetStructure = async (targetPageID) => {
      * Update entity column values.
      */
     const updateEntityColumn = (rows) => {
-      const entityTypes = ["sites", "samples", "subjects"];
+      const entityTypes = ["sites", "derived-samples", "samples", "subjects"];
 
       rows.forEach((row) => {
         let path = row[0];
