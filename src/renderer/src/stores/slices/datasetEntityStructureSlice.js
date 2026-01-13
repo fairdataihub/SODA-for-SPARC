@@ -218,7 +218,7 @@ export const addSample = (subjectId, parentSampleId, sampleId, metadata = {}) =>
             ...metadata,
             subject_id: normalizedSubjectId,
             sample_id: normalizedSampleId,
-            was_derived_from: normalizedParentSampleId || null,
+            was_derived_from: normalizedParentSampleId || "",
           },
           sites: [],
           performances: [],

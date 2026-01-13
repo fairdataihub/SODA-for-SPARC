@@ -490,7 +490,7 @@ window.savePageChanges = async (pageBeingLeftID) => {
         const sitess = getExistingSites();
         console.log("Existing sitess:", sitess);
 
-        if (selectedEntities.includes("subjectSites")) {
+        if (selectedEntities.includes("subjectSites") || selectedEntities.includes("sampleSites")) {
           const sites = getExistingSites();
           console.log("Existing sites:", sites);
           if (sites.length === 0) {

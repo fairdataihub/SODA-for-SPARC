@@ -180,6 +180,7 @@ const EntityHierarchyRenderer = ({
   // ----- SUBJECT OPERATIONS -----
   const handleAddSubjectButtonClick = useCallback(() => {
     setSelectedHierarchyEntity(null);
+    setEntityBeingAddedParentSample(null);
     setActiveFormType("subject");
   }, []);
 
@@ -219,6 +220,7 @@ const EntityHierarchyRenderer = ({
     const subjectId = subject["metadata"]["subject_id"];
     setSelectedHierarchyEntity(null);
     setEntityBeingAddedParentSubject(subjectId);
+    setEntityBeingAddedParentSample(null);
     setActiveFormType("sample");
   }, []);
 
@@ -501,12 +503,15 @@ const EntityHierarchyRenderer = ({
                 (() => {
                   // Filter samples into regular samples and derived samples
                   const allSamples = subject.samples?.filter(Boolean) || [];
+                  console.log("allSamples:", allSamples);
                   const regularSamples = allSamples.filter(
                     (sample) => !sample.metadata?.was_derived_from
                   );
                   const derivedSamples = allSamples.filter(
                     (sample) => sample.metadata?.was_derived_from
                   );
+                  console.log("regularSamples:", regularSamples);
+                  console.log("derivedSamples:", derivedSamples);
 
                   return regularSamples.map((sample) => {
                     // Find derived samples that were derived from this sample

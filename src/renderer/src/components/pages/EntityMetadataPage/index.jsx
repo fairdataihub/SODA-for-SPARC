@@ -763,13 +763,45 @@ const EntityMetadataForm = () => {
       case "sample":
         return (
           <Stack spacing="md">
-            {currentSelectedHierarchyEntityParentSubject && (
-              <TextInput
-                label="Subject this sample belongs to"
-                disabled
-                value={currentSelectedHierarchyEntityParentSubject}
-              />
-            )}
+            {/* Display parent subject information based on what's available */}
+            {selectedHierarchyEntity
+              ? // When editing an existing sample
+                currentSelectedHierarchyEntityParentSubject && (
+                  <TextInput
+                    label="Subject this sample belongs to"
+                    disabled
+                    value={currentSelectedHierarchyEntityParentSubject}
+                  />
+                )
+              : // When creating a new sample
+                entityBeingAddedParentSubject && (
+                  <TextInput
+                    label="Subject this sample belongs to"
+                    disabled
+                    value={entityBeingAddedParentSubject}
+                  />
+                )}
+
+            {selectedHierarchyEntity
+              ? // When editing an existing sample - use metadata value
+                getMetadataValue("was_derived_from", "") && (
+                  <TextInput
+                    label="Sample this sample was derived from"
+                    disabled
+                    value={getMetadataValue("was_derived_from", "")}
+                    description="The parent sample from which this sample was derived"
+                  />
+                )
+              : // When creating a new sample - use parent variable
+                entityBeingAddedParentSample && (
+                  <TextInput
+                    label="Sample this sample was derived from"
+                    disabled
+                    value={entityBeingAddedParentSample}
+                    description="The parent sample from which this sample was derived"
+                  />
+                )}
+
             <TextInput
               label="Sample Identifier"
               required
@@ -796,14 +828,6 @@ const EntityMetadataForm = () => {
               disabled={!!selectedHierarchyEntity}
             />
 
-            {getMetadataValue("was_derived_from", "") && (
-              <TextInput
-                label="Sample this sample was derived from"
-                disabled
-                value={getMetadataValue("was_derived_from", "")}
-                description="The parent sample from which this sample was derived"
-              />
-            )}
             <OptionalFieldsNotice />
             <TextInput
               label="Sample Experimental Group"
