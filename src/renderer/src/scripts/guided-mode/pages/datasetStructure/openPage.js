@@ -151,7 +151,7 @@ export const openPageDatasetStructure = async (targetPageID) => {
         if (pathSegments.length > 0) pathSegments[0] = "data";
         path = pathSegments.join("/");
 
-        const entityList = [];
+        let entityId = "";
 
         for (const type of entityTypes) {
           const entities = datasetEntityObj?.[type] || {};
@@ -160,16 +160,14 @@ export const openPageDatasetStructure = async (targetPageID) => {
               const entityData = getEntityDataById(entity);
               if (!entityData) continue;
 
-              entityList.push(entityData.id);
-              if (entityData?.metadata?.sample_id) entityList.push(entityData.metadata.sample_id);
-              if (entityData?.metadata?.["subject id"])
-                entityList.push(entityData.metadata["subject id"]);
+              entityId = entityData.id;
               break;
             }
           }
+          if (entityId) break;
         }
 
-        row[entityColumnIndex] = [...new Set(entityList)].join(" ");
+        row[entityColumnIndex] = entityId;
       });
 
       return rows;

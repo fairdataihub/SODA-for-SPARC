@@ -218,7 +218,6 @@ window.openPage = async (targetPageID) => {
     // Synchronize state between the SODA JSON object and the zustand store
     setSelectedEntities(window.sodaJSONObj["selected-entities"] || []);
     setDeSelectedEntities(window.sodaJSONObj["deSelected-entities"] || []);
-    setPerformanceList(window.sodaJSONObj["dataset_metadata"]?.["performance_metadata"] || []);
 
     setDatasetEntityArray(window.sodaJSONObj["dataset-entity-array"] || []);
 
