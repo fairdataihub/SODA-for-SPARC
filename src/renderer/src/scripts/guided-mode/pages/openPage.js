@@ -511,6 +511,14 @@ window.openPage = async (targetPageID) => {
           for (const modality of modalities) {
             addEntityNameToEntityType("modalities", modality);
           }
+
+          const prevModalityNames = getEntityNamesByEntityType("modalities");
+          for (const modalityName of prevModalityNames) {
+            if (!modalities.includes(modalityName)) {
+              removeEntityFromEntityList("modalities", modalityName);
+            }
+          }
+
           setFileVisibilityFilter(
             [],
             [
