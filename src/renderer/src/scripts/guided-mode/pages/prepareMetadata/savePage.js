@@ -17,6 +17,9 @@ import {
   CONTRIBUTORS_REGEX,
   affiliationRorIsValid,
 } from "../../metadata/contributors/contributorsValidation";
+import { countFilesInDatasetStructure } from "../../../utils/datasetStructure";
+import { bytesToReadableSize } from "../../generateDataset/generate";
+import client from "../../../client";
 
 import { getDropDownState } from "../../../../stores/slices/dropDownSlice";
 import { isCheckboxCardChecked } from "../../../../stores/slices/checkboxCardSlice";
@@ -112,6 +115,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     const samples = getExistingSamples();
     const samplesMetadata = samples.map((sample) => {
       const metadata = { ...sample.metadata };
+      console.log("sample", sample);
 
       // Check if the sample has any files in the dataset-entity-obj
       const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
@@ -300,6 +304,30 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     const studyPrimaryConclusion = studyPrimaryConclusionInput.value.trim() || "";
     const studyCollectionTitle = studyCollectionTitleInput.value.trim() || "";
 
+    let descriptionArray = [];
+
+    studyPurpose && descriptionArray.push("Study Purpose: " + studyPurpose + "\n");
+    studyDataCollection && descriptionArray.push("Data Collection: " + studyDataCollection + "\n");
+    studyPrimaryConclusion &&
+      descriptionArray.push("Primary Conclusion: " + studyPrimaryConclusion + "\n");
+
+    if (descriptionArray.length > 0) {
+      const numberOfFilesInDataset = countFilesInDatasetStructure(window.datasetStructureJSONObj);
+      descriptionArray.push("Number of Files in Dataset: " + numberOfFilesInDataset + "\n");
+      // Get dataset size
+      const localDatasetSizeReq = await client.post(
+        "/curate_datasets/dataset_size",
+        { soda_json_structure: window.sodaJSONObj },
+        { timeout: 0 }
+      );
+      const localDatasetSizeInBytes = localDatasetSizeReq.data.dataset_size;
+      const formattedDatasetSize = bytesToReadableSize(localDatasetSizeInBytes);
+      descriptionArray.push("Dataset Size: " + formattedDatasetSize + "\n");
+      console.log("Local dataset size", formattedDatasetSize);
+    }
+    const datasetDescription = descriptionArray.join("");
+    console.log("Dataset Description:", datasetDescription);
+
     // Get tagify study fields
     const studyOrganSystemTags = window.getTagsFromTagifyElement(guidedStudyOrganSystemsTagify);
     const studyApproachTags = window.getTagsFromTagifyElement(guidedStudyApproachTagify);
@@ -349,7 +377,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       basic_information: {
         title,
         subtitle,
-        description: subtitle,
+        description: datasetDescription,
         keywords: keywordArray,
         funding: fundingArray,
         acknowledgments: acknowledgments,
