@@ -487,20 +487,37 @@ window.savePageChanges = async (pageBeingLeftID) => {
             throw errorArray;
           }
         }
-        const sitess = getExistingSites();
-        console.log("Existing sitess:", sitess);
-
-        if (selectedEntities.includes("subjectSites") || selectedEntities.includes("sampleSites")) {
-          const sites = getExistingSites();
-          console.log("Existing sites:", sites);
-          if (sites.length === 0) {
+        if (selectedEntities.includes("subjectSites")) {
+          const subjectSites = getExistingSites().filter((site) =>
+            site.specimen_id.startsWith("sub-")
+          );
+          console.log("Existing subject sites:", subjectSites);
+          if (subjectSites.length === 0) {
             errorArray.push({
               type: "notyf",
-              message: "You must add at least one site to your dataset before continuing",
+              message:
+                "You indicated that you collected data from specific locations within your subjects, but did not add any site IDs for those subjects.",
             });
             throw errorArray;
           }
-          // Prepare the sites metadata
+        }
+
+        if (selectedEntities.includes("sampleSites")) {
+          const sampleSites = getExistingSites().filter((site) =>
+            site.specimen_id.startsWith("sam-")
+          );
+          if (sampleSites.length === 0) {
+            errorArray.push({
+              type: "notyf",
+              message:
+                "You indicated that you collected data from specific locations within your samples, but did not add any site IDs for those samples.",
+            });
+            throw errorArray;
+          }
+        }
+
+        if (selectedEntities.includes("subjectSites") || selectedEntities.includes("sampleSites")) {
+          const sites = getExistingSites();
           const sitesCopy = structuredClone(sites);
           const sitesMetadata = sitesCopy.map((site) => ({
             ...site.metadata,

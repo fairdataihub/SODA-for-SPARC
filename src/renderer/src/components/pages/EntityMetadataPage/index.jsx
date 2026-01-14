@@ -242,6 +242,23 @@ const EntityMetadataForm = () => {
           });
           return;
         }
+
+        // Validate protocol URL or DOI if provided and over 5 characters
+        if (
+          currentMetadata["protocol_url_or_doi"] &&
+          !window.evaluateStringAgainstSdsRequirements(
+            currentMetadata["protocol_url_or_doi"],
+            "string-is-valid-url-or-doi"
+          )
+        ) {
+          window.notyf.open({
+            duration: "4000",
+            type: "error",
+            message:
+              "Invalid protocol URL or DOI format. Please enter a valid HTTPS URL, DOI, or DOI URL.",
+          });
+          return;
+        }
       }
 
       // Complete editing existing entity
@@ -289,6 +306,23 @@ const EntityMetadataForm = () => {
           return;
         }
 
+        // Validate protocol URL or DOI if provided and over 5 characters
+        if (
+          tempMetadata["protocol_url_or_doi"] &&
+          !window.evaluateStringAgainstSdsRequirements(
+            tempMetadata["protocol_url_or_doi"],
+            "string-is-valid-url-or-doi"
+          )
+        ) {
+          window.notyf.open({
+            duration: "4000",
+            type: "error",
+            message:
+              "Invalid protocol URL or DOI format. Please enter a valid HTTPS URL, DOI, or DOI URL.",
+          });
+          return;
+        }
+
         try {
           addSubject(tempMetadata["subject_id"], tempMetadata);
         } catch (error) {
@@ -300,6 +334,24 @@ const EntityMetadataForm = () => {
       } else if (activeFormType === "sample") {
         // Create sample entity
         const tempMetadata = useGlobalStore.getState().temporaryEntityMetadata?.sample || {};
+
+        // Validate protocol URL or DOI if provided and over 5 characters
+        if (
+          tempMetadata["protocol_url_or_doi"] &&
+          !window.evaluateStringAgainstSdsRequirements(
+            tempMetadata["protocol_url_or_doi"],
+            "string-is-valid-url-or-doi"
+          )
+        ) {
+          window.notyf.open({
+            duration: "4000",
+            type: "error",
+            message:
+              "Invalid protocol URL or DOI format. Please enter a valid HTTPS URL, DOI, or DOI URL.",
+          });
+          return;
+        }
+
         addSample(
           entityBeingAddedParentSubject,
           entityBeingAddedParentSample,
@@ -755,6 +807,16 @@ const EntityMetadataForm = () => {
                   placeholder="e.g., https://doi.org/10.1234/abcd"
                   value={getMetadataValue("protocol_url_or_doi", "")}
                   onChange={(e) => handleChange("protocol_url_or_doi", e.target.value)}
+                  error={
+                    getMetadataValue("protocol_url_or_doi", "") &&
+                    getMetadataValue("protocol_url_or_doi", "").length > 5 &&
+                    !window.evaluateStringAgainstSdsRequirements?.(
+                      getMetadataValue("protocol_url_or_doi", ""),
+                      "string-is-valid-url-or-doi"
+                    )
+                      ? "Invalid format. Please enter a valid HTTPS URL, DOI, or DOI URL."
+                      : undefined
+                  }
                 />
               </>
             )}
@@ -954,6 +1016,16 @@ const EntityMetadataForm = () => {
                   placeholder="e.g., https://doi.org/10.1234/abcd"
                   value={getMetadataValue("protocol_url_or_doi", "")}
                   onChange={(e) => handleChange("protocol_url_or_doi", e.target.value)}
+                  error={
+                    getMetadataValue("protocol_url_or_doi", "") &&
+                    getMetadataValue("protocol_url_or_doi", "").length > 5 &&
+                    !window.evaluateStringAgainstSdsRequirements?.(
+                      getMetadataValue("protocol_url_or_doi", ""),
+                      "string-is-valid-url-or-doi"
+                    )
+                      ? "Invalid format. Please enter a valid HTTPS URL, DOI, or DOI URL."
+                      : undefined
+                  }
                 />
               </>
             )}

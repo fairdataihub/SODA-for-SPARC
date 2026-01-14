@@ -80,6 +80,16 @@ const PerformanceMetadataForm = () => {
         placeholder="Enter protocol URL or DOI (e.g., doi:10.1000/xyz123 or https://protocol.io/...)"
         value={protocol_url_or_doi}
         onChange={(event) => setProtocolUrlOrDoi(event.currentTarget.value)}
+        error={
+          protocol_url_or_doi &&
+          protocol_url_or_doi.length > 5 &&
+          !window.evaluateStringAgainstSdsRequirements(
+            protocol_url_or_doi,
+            "string-is-valid-url-or-doi"
+          )
+            ? "Invalid format. Please enter a valid HTTPS URL, DOI, or DOI URL."
+            : undefined
+        }
       />
 
       <Group grow>
@@ -111,6 +121,7 @@ const PerformanceMetadataForm = () => {
 const PerformanceIdManagement = () => {
   const IsPerformanceFormVisible = useGlobalStore((state) => state.IsPerformanceFormVisible);
   const performance_id = useGlobalStore((state) => state.performance_id);
+  const protocol_url_or_doi = useGlobalStore((state) => state.protocol_url_or_doi);
 
   const performanceList = useGlobalStore((state) => state.performanceList);
 
@@ -121,6 +132,11 @@ const PerformanceIdManagement = () => {
   const isPerformanceIdValid = window.evaluateStringAgainstSdsRequirements?.(
     performance_id,
     "string-adheres-to-identifier-conventions"
+  );
+
+  const isProtocolUrlOrDoiValid = window.evaluateStringAgainstSdsRequirements?.(
+    protocol_url_or_doi,
+    "string-is-valid-url-or-doi"
   );
 
   // Function to handle selecting a performance for editing
@@ -297,7 +313,9 @@ const PerformanceIdManagement = () => {
                     <Button
                       color="blue"
                       onClick={isEditMode ? updatePerformance : addPerformance}
-                      disabled={!performance_id || !isPerformanceIdValid}
+                      disabled={
+                        !performance_id || !isPerformanceIdValid || !isProtocolUrlOrDoiValid
+                      }
                     >
                       {isEditMode ? "Update Performance" : "Add Performance"}
                     </Button>

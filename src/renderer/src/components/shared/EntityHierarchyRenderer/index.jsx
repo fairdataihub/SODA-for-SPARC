@@ -172,6 +172,19 @@ const EntityHierarchyRenderer = ({
   );
 
   const activeEntity = useGlobalStore((state) => state.activeEntity);
+
+  // Helper function to reset form state and set up new form type
+  // Consolidates the common pattern of clearing selections and setting parent relationships
+  const setupFormForEntityType = useCallback(
+    (formType, parentSubjectId = null, parentSampleId = null) => {
+      setSelectedHierarchyEntity(null);
+      setEntityBeingAddedParentSubject(parentSubjectId);
+      setEntityBeingAddedParentSample(parentSampleId);
+      setActiveFormType(formType);
+    },
+    []
+  );
+
   // Memoize the entity select handler to prevent recreation on each render
   const handleEntitySelect = useCallback((entityData) => {
     setSelectedHierarchyEntity(entityData);
@@ -179,10 +192,8 @@ const EntityHierarchyRenderer = ({
 
   // ----- SUBJECT OPERATIONS -----
   const handleAddSubjectButtonClick = useCallback(() => {
-    setSelectedHierarchyEntity(null);
-    setEntityBeingAddedParentSample(null);
-    setActiveFormType("subject");
-  }, []);
+    setupFormForEntityType("subject");
+  }, [setupFormForEntityType]);
 
   const handleDeleteSubject = useCallback(
     (subject) => {
@@ -190,7 +201,7 @@ const EntityHierarchyRenderer = ({
 
       // If the subject being deleted is currently selected, clear the form
       if (selectedHierarchyEntity && selectedHierarchyEntity.id === subject.id) {
-        setSelectedHierarchyEntity(null);
+        setupFormForEntityType(null);
       }
 
       // If currently adding a sample or site to this subject, reset the form
@@ -199,30 +210,28 @@ const EntityHierarchyRenderer = ({
         currentState.activeFormType === "sample" &&
         currentState.entityBeingAddedParentSubject === subjectId
       ) {
-        setSelectedHierarchyEntity(null);
-        setActiveFormType(null);
+        setupFormForEntityType(null);
       }
       if (
         currentState.activeFormType === "site" &&
         currentState.entityBeingAddedParentSubject === subjectId
       ) {
-        setSelectedHierarchyEntity(null);
-        setActiveFormType(null);
+        setupFormForEntityType(null);
       }
 
       return deleteSubject(subject.id);
     },
-    [selectedHierarchyEntity]
+    [selectedHierarchyEntity, setupFormForEntityType]
   );
 
   // ----- SAMPLE OPERATIONS -----
-  const handleAddSampleButtonClick = useCallback((subject) => {
-    const subjectId = subject["metadata"]["subject_id"];
-    setSelectedHierarchyEntity(null);
-    setEntityBeingAddedParentSubject(subjectId);
-    setEntityBeingAddedParentSample(null);
-    setActiveFormType("sample");
-  }, []);
+  const handleAddSampleButtonClick = useCallback(
+    (subject) => {
+      const subjectId = subject["metadata"]["subject_id"];
+      setupFormForEntityType("sample", subjectId, null);
+    },
+    [setupFormForEntityType]
+  );
 
   const handleDeleteSample = useCallback(
     (sample, subject) => {
@@ -230,7 +239,7 @@ const EntityHierarchyRenderer = ({
 
       // If the sample being deleted is currently selected, clear the form
       if (selectedHierarchyEntity && selectedHierarchyEntity.id === sample.id) {
-        setSelectedHierarchyEntity(null);
+        setupFormForEntityType(null);
       }
 
       // If currently adding a site to this sample, reset the form
@@ -239,65 +248,64 @@ const EntityHierarchyRenderer = ({
         currentState.activeFormType === "site" &&
         currentState.entityBeingAddedParentSample === sampleId
       ) {
-        setSelectedHierarchyEntity(null);
-        setActiveFormType(null);
+        setupFormForEntityType(null);
       }
 
       return deleteSampleFromSubject(subject.id, sample.id);
     },
-    [selectedHierarchyEntity]
+    [selectedHierarchyEntity, setupFormForEntityType]
   );
 
   // ----- SAMPLE SITE OPERATIONS -----
-  const handleAddSampleSiteButtonClick = useCallback(({ sample, subject }) => {
-    const subjectId = subject["metadata"]["subject_id"];
-    const sampleId = sample["metadata"]["sample_id"];
-    setSelectedHierarchyEntity(null);
-    setEntityBeingAddedParentSample(sampleId);
-    setEntityBeingAddedParentSubject(subjectId);
-    setActiveFormType("site");
-  }, []);
+  const handleAddSampleSiteButtonClick = useCallback(
+    ({ sample, subject }) => {
+      const subjectId = subject["metadata"]["subject_id"];
+      const sampleId = sample["metadata"]["sample_id"];
+      setupFormForEntityType("site", subjectId, sampleId);
+    },
+    [setupFormForEntityType]
+  );
 
   const handleDeleteSampleSite = useCallback(
     (site, { sample, subject }) => {
       // If the site being deleted is currently selected, clear the form
       if (selectedHierarchyEntity && selectedHierarchyEntity.id === site.id) {
-        setSelectedHierarchyEntity(null);
+        setupFormForEntityType(null);
       }
       return deleteSite(site.id);
     },
-    [selectedHierarchyEntity]
+    [selectedHierarchyEntity, setupFormForEntityType]
   );
 
   // ----- SUBJECT SITE OPERATIONS -----
-  const handleAddSubjectSiteButtonClick = useCallback((subject) => {
-    const subjectId = subject["metadata"]["subject_id"];
-    setSelectedHierarchyEntity(null);
-    setEntityBeingAddedParentSubject(subjectId);
-    setEntityBeingAddedParentSample(null);
-    setActiveFormType("site");
-  }, []);
+  const handleAddSubjectSiteButtonClick = useCallback(
+    (subject) => {
+      const subjectId = subject["metadata"]["subject_id"];
+      setupFormForEntityType("site", subjectId, null);
+    },
+    [setupFormForEntityType]
+  );
 
   const handleDeleteSubjectSite = useCallback(
     (site, subject) => {
       // If the site being deleted is currently selected, clear the form
       if (selectedHierarchyEntity && selectedHierarchyEntity.id === site.id) {
-        setSelectedHierarchyEntity(null);
+        setupFormForEntityType(null);
       }
       return deleteSite(site.id);
     },
-    [selectedHierarchyEntity]
+    [selectedHierarchyEntity, setupFormForEntityType]
   );
 
   // ----- DERIVED SAMPLE OPERATIONS -----
-  const handleAddDerivedSampleButtonClick = useCallback(({ sample, subject }) => {
-    const subjectId = subject["metadata"]["subject_id"];
-    const parentSampleId = sample["metadata"]["sample_id"];
-    setSelectedHierarchyEntity(null);
-    setEntityBeingAddedParentSubject(subjectId);
-    setEntityBeingAddedParentSample(parentSampleId);
-    setActiveFormType("sample");
-  }, []);
+  const handleAddDerivedSampleButtonClick = useCallback(
+    ({ sample, subject }) => {
+      const subjectId = subject["metadata"]["subject_id"];
+      const parentSampleId = sample["metadata"]["sample_id"];
+      setupFormForEntityType("sample", subjectId, parentSampleId);
+    },
+    [setupFormForEntityType]
+  );
 
   // Calculate which entity types should be displayed based on selected entities
   const { showSamples, showSubjectSites, showSampleSites, showDerivedSamples } = useMemo(

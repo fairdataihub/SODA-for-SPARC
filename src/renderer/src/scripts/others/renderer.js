@@ -3172,6 +3172,14 @@ const forbiddenCharacters = /[@#$%^&*()+=\/\\|"'~;:<>{}\[\]?]/;
 const forbiddenCharactersRegex = /[@#$%^&*()+=\/\\|"'~;:<>{}\[\]?]/g;
 const forbiddenPennsieveDatasetNameCharacters = /[\/:*?'<>.,]/;
 
+// URL and DOI validation patterns
+const urlOrDoiPatterns = [
+  /^$/, // Empty string
+  /^https:\/\/[A-Za-z0-9.-]+[A-Za-z0-9](:[0-9]+)?(\/.*)?$/, // HTTPS URL
+  /^10\.\d{4,9}\/[-._;()/:A-Za-z0-9]+$/, // DOI pattern
+  /^https:\/\/doi\.org\/10\.\d{4,9}\/[-._;()/:A-Za-z0-9]+$/, // DOI URL
+];
+
 window.evaluateStringAgainstSdsRequirements = (stringToTest, testType) => {
   const tests = {
     "folder-or-file-name-contains-forbidden-characters": !forbiddenFileNameRegex.test(stringToTest),
@@ -3183,16 +3191,18 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, testType) => {
     "string-contains-forbidden-pennsieve-dataset-name-characters":
       forbiddenPennsieveDatasetNameCharacters.test(stringToTest),
     "rrid-format": /^RRID:[A-Za-z0-9_-]+$/.test(stringToTest),
-    "url-format": (() => {
-      if (!stringToTest || stringToTest.trim() === "") return false;
-      const trimmedValue = stringToTest.trim();
-      if (!trimmedValue.startsWith("https://")) return false;
-      try {
-        new URL(trimmedValue);
-        return true;
-      } catch (error) {
-        return false;
-      }
+    "string-is-valid-url-or-doi": (() => {
+      const result = urlOrDoiPatterns.some((pattern) => pattern.test(stringToTest));
+      console.log(`URL/DOI validation for "${stringToTest}":`, result);
+
+      // Log individual pattern matches for debugging
+      urlOrDoiPatterns.forEach((pattern, index) => {
+        const patternNames = ["Empty string", "HTTPS URL", "DOI pattern", "DOI URL"];
+        const matches = pattern.test(stringToTest);
+        console.log(`  Pattern ${index} (${patternNames[index]}): ${matches} - ${pattern}`);
+      });
+
+      return result;
     })(),
   };
 

@@ -479,6 +479,17 @@ window.openPage = async (targetPageID) => {
           for (const performance of performanceList) {
             addEntityNameToEntityType("performances", performance.performance_id);
           }
+
+          const prevPerformanceNames = getEntityNamesByEntityType("performances");
+          for (const performanceName of prevPerformanceNames) {
+            const performanceExists = performanceList.some(
+              (p) => p.performance_id === performanceName
+            );
+            if (!performanceExists) {
+              removeEntityFromEntityList("performances", performanceName);
+            }
+          }
+
           setFileVisibilityFilter(
             [
               {
