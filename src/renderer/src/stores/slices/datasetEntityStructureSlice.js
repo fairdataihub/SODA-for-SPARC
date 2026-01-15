@@ -218,7 +218,7 @@ export const addSample = (subjectId, parentSampleId, sampleId, metadata = {}) =>
             ...metadata,
             subject_id: normalizedSubjectId,
             sample_id: normalizedSampleId,
-            was_derived_from: normalizedParentSampleId || "",
+            was_derived_from: normalizedParentSampleId || normalizedSubjectId || "",
           },
           sites: [],
           performances: [],
@@ -247,6 +247,16 @@ export const getExistingSamples = (filterType = "all") => {
     return allSamples.filter((sample) => !sample.metadata?.was_derived_from);
   } else if (filterType === "derived") {
     return allSamples.filter((sample) => sample.metadata?.was_derived_from);
+  } else if (filterType === "derived-from-subjects") {
+    return allSamples.filter(
+      (sample) =>
+        sample.metadata?.was_derived_from && sample.metadata.was_derived_from.startsWith("sub-")
+    );
+  } else if (filterType === "derived-from-samples") {
+    return allSamples.filter(
+      (sample) =>
+        sample.metadata?.was_derived_from && sample.metadata.was_derived_from.startsWith("sam-")
+    );
   } else {
     return allSamples; // Return all samples (original behavior)
   }

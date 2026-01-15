@@ -62,6 +62,8 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
 
   if (pageBeingLeftID === "guided-subjects-metadata-tab") {
     const subjects = getExistingSubjects();
+    const samples = getExistingSamples();
+    const samplesDerivedFromSubjects = getExistingSamples("derived-from-subjects");
 
     const subjectsMetadata = subjects.map((subject) => {
       const metadata = { ...subject.metadata };
@@ -88,6 +90,23 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       }
       console.log("Subject body mass:", metadata.body_mass);
 
+      // Get the number of samples derived directly from the subject
+      const subjectId = metadata.subject_id;
+      const numberOfSamplesDerivedFromThisSubject = samplesDerivedFromSubjects.filter(
+        (sample) => sample.metadata.was_derived_from === subjectId
+      ).length;
+      console.log(
+        "Number of samples derived from subject",
+        subjectId,
+        ":",
+        numberOfSamplesDerivedFromThisSubject
+      );
+      metadata.number_of_directly_derived_samples = `${numberOfSamplesDerivedFromThisSubject}`;
+      console.log(
+        "metadata.number_of_directly_derived_samples:",
+        metadata.number_of_directly_derived_samples
+      );
+
       // Check if the subject has any files in the dataset-entity-obj
       const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
       const subjectFiles = datasetEntityObj.subjects?.[metadata.subject_id] || {};
@@ -113,6 +132,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
   if (pageBeingLeftID === "guided-samples-metadata-tab") {
     // Prepare the samples metadata
     const samples = getExistingSamples();
+    console.log("all samples", samples);
     const samplesMetadata = samples.map((sample) => {
       const metadata = { ...sample.metadata };
       console.log("sample", sample);
@@ -124,6 +144,18 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
 
       // Set metadata_only field based on whether the sample has associated files
       metadata.metadata_only = hasFiles ? "no" : "yes";
+
+      // Get the amount of samples derived from this sample
+      const sampleId = metadata.sample_id;
+      const derivedSamples = samples.filter((s) => s.metadata.was_derived_from === sampleId);
+      const numberOfDirectlyDerivedSamples = derivedSamples.length;
+      console.log(
+        "Number of derivative samples for",
+        sampleId,
+        ":",
+        numberOfDirectlyDerivedSamples
+      );
+      metadata.number_of_directly_derived_samples = `${numberOfDirectlyDerivedSamples}`;
 
       return metadata;
     });

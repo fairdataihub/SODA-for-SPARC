@@ -360,7 +360,9 @@ window.openPage = async (targetPageID) => {
         }
 
         if (pageEntityType === "derived-samples") {
-          const derivedSamples = getExistingSamples("derived").map((sample) => sample.id);
+          const derivedSamples = getExistingSamples("derived-from-samples").map(
+            (sample) => sample.id
+          );
           for (const derivedSample of derivedSamples) {
             addEntityNameToEntityType("derived-samples", derivedSample);
           }
@@ -395,7 +397,7 @@ window.openPage = async (targetPageID) => {
         }
 
         if (pageEntityType === "samples") {
-          const samples = getExistingSamples("non-derived").map((sample) => sample.id);
+          const samples = getExistingSamples("derived-from-subjects").map((sample) => sample.id);
           for (const sample of samples) {
             addEntityNameToEntityType("samples", sample);
           }
@@ -407,7 +409,9 @@ window.openPage = async (targetPageID) => {
           }
 
           const sites = getExistingSites().map((site) => site.id);
-          const derivedSamples = getExistingSamples("derived").map((sample) => sample.id);
+          const derivedSamples = getExistingSamples("derived-from-samples").map(
+            (sample) => sample.id
+          );
           const siteFilter = [
             {
               type: "non-data-folders",

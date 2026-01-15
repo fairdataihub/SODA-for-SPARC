@@ -845,8 +845,9 @@ const EntityMetadataForm = () => {
                 )}
 
             {selectedHierarchyEntity
-              ? // When editing an existing sample - use metadata value
-                getMetadataValue("was_derived_from", "") && (
+              ? // When editing an existing sample - use metadata value but only show it if it was derived from a sample (if it's a subject, no need to display)
+                getMetadataValue("was_derived_from", "") &&
+                getMetadataValue("was_derived_from", "").startsWith("sam-") && (
                   <TextInput
                     label="Sample this sample was derived from"
                     disabled

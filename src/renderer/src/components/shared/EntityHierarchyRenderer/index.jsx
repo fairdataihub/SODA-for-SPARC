@@ -509,15 +509,17 @@ const EntityHierarchyRenderer = ({
               {/* Samples */}
               {showSamples &&
                 (() => {
+                  console.log("subject.id:", subject.id);
                   // Filter samples into regular samples and derived samples
                   const allSamples = subject.samples?.filter(Boolean) || [];
-                  console.log("allSamples:", allSamples);
                   const regularSamples = allSamples.filter(
-                    (sample) => !sample.metadata?.was_derived_from
+                    (sample) => sample.metadata?.was_derived_from === subject.id
                   );
                   const derivedSamples = allSamples.filter(
-                    (sample) => sample.metadata?.was_derived_from
+                    (sample) => sample.metadata?.was_derived_from !== subject.id
                   );
+                  console.log("allSamples: for" + subject.id + ",", allSamples);
+
                   console.log("regularSamples:", regularSamples);
                   console.log("derivedSamples:", derivedSamples);
 
