@@ -10,9 +10,8 @@ const LIST_CONFIGS = {
           "Subjects: data about the individual subjects in your study, such as measurements or observations.",
         selectedEntities.includes("samples") &&
           "Samples: data from physical samples collected from subjects, like tissue or fluid.",
-        selectedEntities.includes("subjectSites") ||
-          (selectedEntities.includes("sampleSites") &&
-            "Sites: data describing the anatomical locations or extraction points of samples."),
+        (selectedEntities.includes("subjectSites") || selectedEntities.includes("sampleSites")) &&
+          "Sites: data describing the anatomical locations or extraction points of subjects or samples.",
         selectedEntities.includes("performances") &&
           "Performances: data from experimental sessions or tasks performed by subjects, including recorded outcomes.",
       ].filter(Boolean),
@@ -25,9 +24,10 @@ const LIST_CONFIGS = {
           "Subjects: Each individual (human or animal) participating in your study.",
         selectedEntities.includes("samples") &&
           "Samples: Each physical specimen collected from subjects, such as tissue or fluid samples.",
-        selectedEntities.includes("subjectSites") ||
-          (selectedEntities.includes("sampleSites") &&
-            "Sites: Each specific anatomical location or extraction point of samples."),
+        selectedEntities.includes("subjectSites") &&
+          "Subject Sites: Each specific anatomical location or extraction point on subjects.",
+        selectedEntities.includes("sampleSites") &&
+          "Sample Sites: Each specific anatomical location or extraction point on samples.",
       ].filter(Boolean),
   },
 

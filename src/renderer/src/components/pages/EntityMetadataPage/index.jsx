@@ -868,7 +868,7 @@ const EntityMetadataForm = () => {
             <TextInput
               label="Sample Identifier"
               required
-              description="Enter a unique identifier for this biological sample."
+              description="Unique identifier for this sample"
               placeholder="Enter sample ID"
               value={getMetadataValue("sample_id", "")}
               onChange={(e) => handleChange("sample_id", e.target.value)}
@@ -894,7 +894,7 @@ const EntityMetadataForm = () => {
             <OptionalFieldsNotice />
             <TextInput
               label="Sample Experimental Group"
-              description="The experimental group this sample belongs to"
+              description="Experimental group to which this sample belongs"
               placeholder="e.g., Control, Treatment A"
               value={getMetadataValue("sample_experimental_group", "")}
               onChange={(e) => handleChange("sample_experimental_group", e.target.value)}
@@ -920,7 +920,7 @@ const EntityMetadataForm = () => {
             />
             <TextInput
               label="Anatomical Location"
-              description="The anatomical location this sample was taken from"
+              description="Anatomical location from which the sample was collected"
               placeholder="e.g., Dorsal root ganglion"
               value={getMetadataValue("sample_anatomical_location", "")}
               onChange={(e) => handleChange("sample_anatomical_location", e.target.value)}
@@ -929,21 +929,21 @@ const EntityMetadataForm = () => {
               <>
                 <TextInput
                   label="Also in dataset"
-                  description="Other datasets that include this sample"
+                  description="Other datasets in which this sample is included"
                   placeholder="e.g., dataset-1, dataset-2"
                   value={getMetadataValue("also_in_dataset", "")}
                   onChange={(e) => handleChange("also_in_dataset", e.target.value)}
                 />
                 <TextInput
                   label="Member of"
-                  description="Group or cohort the sample is a member of"
+                  description="Group or cohort to which this sample belongs"
                   placeholder="e.g., group-1, cohort-A"
                   value={getMetadataValue("member_of", "")}
                   onChange={(e) => handleChange("member_of", e.target.value)}
                 />
                 <TextInput
                   label="Laboratory internal id"
-                  description="The internal ID used by the laboratory for this sample"
+                  description="Internal identifier used by the laboratory for this sample"
                   placeholder="e.g., LAB-123"
                   value={getMetadataValue("laboratory_internal_id", "")}
                   onChange={(e) => handleChange("laboratory_internal_id", e.target.value)}
@@ -960,60 +960,61 @@ const EntityMetadataForm = () => {
                   valueFormat="MM/DD/YYYY"
                   icon={<IconCalendar size={16} />}
                   clearable
-                  description="Date when the sample was derived"
+                  description="Date on which the sample was derived"
                 />
                 <TextInput
                   label="Experimental log file path"
-                  description="Path to the experimental log file for this sample"
+                  description="File path to the experimental log associated with this sample"
                   placeholder="e.g., /path/to/log.txt"
                   value={getMetadataValue("experimental_log_file_path", "")}
                   onChange={(e) => handleChange("experimental_log_file_path", e.target.value)}
                 />
                 <TextInput
                   label="Reference Atlas"
-                  description="Reference atlas used in the experiment"
+                  description="Reference atlas used for this sample"
                   placeholder="e.g., Allen Brain Atlas"
                   value={getMetadataValue("reference_atlas", "")}
                   onChange={(e) => handleChange("reference_atlas", e.target.value)}
                 />
                 <TextInput
                   label="Pathology"
-                  description="Pathology associated with the sample"
+                  description="Pathological condition associated with this sample"
                   placeholder="e.g., Tumor"
                   value={getMetadataValue("pathology", "")}
                   onChange={(e) => handleChange("pathology", e.target.value)}
                 />
-                <TextInput
+                <Select
                   label="Laterality"
-                  description="Laterality of the sample (e.g., left, right, bilateral)"
-                  placeholder="e.g., left"
-                  value={getMetadataValue("laterality", "")}
-                  onChange={(e) => handleChange("laterality", e.target.value)}
+                  description="Anatomical side of the body from which the sample was collected"
+                  placeholder="Select laterality"
+                  data={["left", "right", "bilateral", "midline"]}
+                  value={getMetadataValue("laterality", null)}
+                  onChange={(value) => handleChange("laterality", value)}
                 />
                 <TextInput
                   label="Cell Type"
-                  description="Cell type of the sample"
+                  description="Cell type represented by this sample"
                   placeholder="e.g., Neuron"
                   value={getMetadataValue("cell_type", "")}
                   onChange={(e) => handleChange("cell_type", e.target.value)}
                 />
                 <TextInput
                   label="Plane of Section"
-                  description="Plane of section of the sample"
+                  description="Anatomical plane in which the sample was sectioned"
                   placeholder="e.g., sagittal"
                   value={getMetadataValue("plane_of_section", "")}
                   onChange={(e) => handleChange("plane_of_section", e.target.value)}
                 />
                 <TextInput
                   label="Protocol Title"
-                  description="Title of the protocol used in the experiment"
+                  description="Title of the protocol used to generate this sample"
                   placeholder="e.g., Protocol 1"
                   value={getMetadataValue("protocol_title", "")}
                   onChange={(e) => handleChange("protocol_title", e.target.value)}
                 />
                 <TextInput
                   label="Protocol URL or DOI"
-                  description="URL or DOI of the protocol used in the experiment"
+                  description="URL or DOI for the protocol used to generate this sample"
                   placeholder="e.g., https://doi.org/10.1234/abcd"
                   value={getMetadataValue("protocol_url_or_doi", "")}
                   onChange={(e) => handleChange("protocol_url_or_doi", e.target.value)}

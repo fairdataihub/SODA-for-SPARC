@@ -262,10 +262,10 @@ const EntityDataSelectorPage = ({
               case "derived-samples":
                 return (
                   <Text>
-                    The SDS requires all files associated with a derived samples (samples derived
-                    from other samples) to be linked to that derived sample. To do this, select a
-                    derived sample from the list on the left, then choose the folders and files that
-                    contain data collected from that derived sample.
+                    The SDS requires all files associated with derived samples (samples derived from
+                    other samples) to be linked to that derived sample. To do this, select a derived
+                    sample from the list on the left, then choose the folders and files that contain
+                    data collected from that derived sample.
                     {includesSites
                       ? " Files already linked through the sites associated with this derived sample do not appear here, so you only need to select files specific to the derived sample itself."
                       : ""}
