@@ -20,6 +20,7 @@ import {
 import { countFilesInDatasetStructure } from "../../../utils/datasetStructure";
 import { bytesToReadableSize } from "../../generateDataset/generate";
 import client from "../../../client";
+import { swalListSingleAction } from "../../../utils/swal-utils";
 
 import { getDropDownState } from "../../../../stores/slices/dropDownSlice";
 import { isCheckboxCardChecked } from "../../../../stores/slices/checkboxCardSlice";
@@ -62,8 +63,33 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
 
   if (pageBeingLeftID === "guided-subjects-metadata-tab") {
     const subjects = getExistingSubjects();
-    const samples = getExistingSamples();
     const samplesDerivedFromSubjects = getExistingSamples("derived-from-subjects");
+
+    // Check for subjects with invalid protocol URL or DOI format
+    // (This is to throw an error for old progress files that may have invalid protocol formats)
+    const subjectsWithInvalidProtocol = subjects
+      .filter((subject) => {
+        const protocolValue = subject.metadata.protocol_url_or_doi;
+        return (
+          protocolValue &&
+          protocolValue.trim() !== "" &&
+          !window.evaluateStringAgainstSdsRequirements(protocolValue, "string-is-valid-url-or-doi")
+        );
+      })
+      .map((subject) => subject.metadata.subject_id);
+    if (subjectsWithInvalidProtocol.length > 0) {
+      await swalListSingleAction(
+        subjectsWithInvalidProtocol,
+        "Invalid Protocol URL or DOI Format",
+        "The following subjects have invalid protocol URL or DOI formats. Please update them to use valid HTTPS URLs, DOIs (e.g., 10.1000/xyz123), or DOI URLs (e.g., https://doi.org/10.1000/xyz123).",
+        "Please correct the protocol URL or DOI format for each subject in the list above."
+      );
+      errorArray.push({
+        type: "notyf",
+        message: `Please correct the protocol URL or DOI format for all subjects before continuing.`,
+      });
+      throw errorArray;
+    }
 
     const subjectsMetadata = subjects.map((subject) => {
       const metadata = { ...subject.metadata };
@@ -133,6 +159,32 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     // Prepare the samples metadata
     const samples = getExistingSamples();
     console.log("all samples", samples);
+
+    // Check for samples with invalid protocol URL or DOI format
+    // (This is to throw an error for old progress files that may have invalid protocol formats)
+    const samplesWithInvalidProtocol = samples
+      .filter((sample) => {
+        const protocolValue = sample.metadata.protocol_url_or_doi;
+        return (
+          protocolValue &&
+          protocolValue.trim() !== "" &&
+          !window.evaluateStringAgainstSdsRequirements(protocolValue, "string-is-valid-url-or-doi")
+        );
+      })
+      .map((sample) => sample.metadata.sample_id);
+    if (samplesWithInvalidProtocol.length > 0) {
+      await swalListSingleAction(
+        samplesWithInvalidProtocol,
+        "Invalid Protocol URL or DOI Format",
+        "The following samples have invalid protocol URL or DOI formats. Please update them to use valid HTTPS URLs, DOIs (e.g., 10.1000/xyz123), or DOI URLs (e.g., https://doi.org/10.1000/xyz123).",
+        "Please correct the protocol URL or DOI format for each sample in the list above."
+      );
+      errorArray.push({
+        type: "notyf",
+        message: `Please correct the protocol URL or DOI format for all samples before continuing.`,
+      });
+      throw errorArray;
+    }
     const samplesMetadata = samples.map((sample) => {
       const metadata = { ...sample.metadata };
       console.log("sample", sample);

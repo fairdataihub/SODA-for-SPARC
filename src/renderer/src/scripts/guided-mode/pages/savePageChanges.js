@@ -103,6 +103,43 @@ window.savePageChanges = async (pageBeingLeftID) => {
           throw errorArray;
         }
 
+        // Check for performances with invalid protocol URL or DOI format
+        // (This is to throw an error for old progress files that may have invalid protocol formats)
+        const performancesWithInvalidProtocol = performanceList
+          .filter((performance) => {
+            const protocolValue = performance.protocol_url_or_doi;
+            console.log("Checking protocol value:", protocolValue);
+            console.log(
+              "protocolValue is valid:",
+              window.evaluateStringAgainstSdsRequirements(
+                protocolValue,
+                "string-is-valid-url-or-doi"
+              )
+            );
+            return (
+              protocolValue &&
+              protocolValue.trim() !== "" &&
+              !window.evaluateStringAgainstSdsRequirements(
+                protocolValue,
+                "string-is-valid-url-or-doi"
+              )
+            );
+          })
+          .map((performance) => performance.performance_id);
+        if (performancesWithInvalidProtocol.length > 0) {
+          await swalListSingleAction(
+            performancesWithInvalidProtocol,
+            "Invalid Protocol URL or DOI Format",
+            "The following performances have invalid protocol URL or DOI formats. Please update them to use valid HTTPS URLs, DOIs (e.g., 10.1000/xyz123), or DOI URLs (e.g., https://doi.org/10.1000/xyz123).",
+            "Please correct the protocol URL or DOI format for each performance in the list above."
+          );
+          errorArray.push({
+            type: "notyf",
+            message: `Please correct the protocol URL or DOI format for all performances before continuing.`,
+          });
+          throw errorArray;
+        }
+
         window.sodaJSONObj["dataset_performances"] = performanceList;
 
         // Deep copy to avoid mutating the original list in the global store
