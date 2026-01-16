@@ -577,7 +577,7 @@ const EntityMetadataForm = () => {
               description={
                 <span>
                   Research Resource Identifier for the strain. If you don't already have the RRID,
-                  you can look it up at{" "}
+                  you can look it up at
                   <ExternalLink
                     buttonType="anchor"
                     href="https://rrid.site/"

@@ -177,6 +177,21 @@ export const deleteResource = (name) => {
   useGlobalStore.setState(
     produce((state) => {
       state.resourceList = state.resourceList.filter((resource) => resource.name !== name);
+
+      // Reset form if the deleted resource was being edited
+      if (state.isEditMode && state.originalResourceName === name) {
+        state.rrid = "";
+        state.type = "";
+        state.name = "";
+        state.url = "";
+        state.vendor = "";
+        state.version = "";
+        state.id_in_protocol = "";
+        state.additional_metadata = "";
+        state.isResourceFormVisible = false;
+        state.isEditMode = false;
+        state.originalResourceName = "";
+      }
     })
   );
 };

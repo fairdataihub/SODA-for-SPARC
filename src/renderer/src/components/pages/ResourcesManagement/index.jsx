@@ -80,7 +80,7 @@ const ResourceMetadataForm = () => {
         description={
           <>
             Enter the RRID for this resource. If you don't already have the RRID, you can look it up
-            at{" "}
+            at
             <ExternalLink
               buttonType="anchor"
               href="https://rrid.site/"
@@ -239,7 +239,8 @@ const ResourcesManagementPage = () => {
       <GuidedModeSection>
         <Text mb="md">
           Provide information about the resources used in the experiments below. The currently
-          supported resources are: {toOxfordCommaString(resourceTypes)}.
+          supported resources are: {toOxfordCommaString(resourceTypes)}. You must provide a valid
+          RRID for each resource.
         </Text>
       </GuidedModeSection>
 
