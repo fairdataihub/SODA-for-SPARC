@@ -158,8 +158,15 @@ const DropDownNote = ({ id }) => {
               <List.Item>
                 <Text>
                   <strong>Specify site IDs</strong> – For each site, click the “Add Site” button
-                  under the sample the site belongs to, enter metadata for the site (at minimum the
-                  site ID), then click the blue “Add Site” button at the top or bottom of the form.
+                  under the{" "}
+                  {selectedEntities.includes("subjectSites") &&
+                  selectedEntities.includes("sampleSites")
+                    ? "subject or sample"
+                    : selectedEntities.includes("subjectSites")
+                      ? "subject"
+                      : "sample"}{" "}
+                  the site belongs to, enter metadata for the site (at minimum the site ID), then
+                  click the blue “Add Site” button at the top or bottom of the form.
                 </Text>
               </List.Item>
             )}

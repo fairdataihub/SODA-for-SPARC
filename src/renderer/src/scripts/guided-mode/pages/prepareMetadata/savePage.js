@@ -109,10 +109,11 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     }
   }
 
-  if (pageBeingLeftID === "guided-subjects-metadata-tab") {
+  if (
+    pageBeingLeftID === "guided-subjects-metadata-tab" ||
+    pageBeingLeftID === "guided-manual-dataset-entity-and-metadata-tab"
+  ) {
     const subjects = getExistingSubjects();
-    const samplesDerivedFromSubjects = getExistingSamples("derived-from-subjects");
-
     // Check for subjects with invalid protocol URL or DOI format
     // (This is to throw an error for old progress files that may have invalid protocol formats)
     const subjectsWithInvalidProtocol = subjects
@@ -144,6 +145,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     const subjectsWithInvalidRrid = subjects
       .filter((subject) => {
         const rridValue = subject.metadata.rrid_for_strain;
+        console.log("rrid", rridValue);
         return (
           rridValue &&
           rridValue.trim() !== "" &&
@@ -164,6 +166,11 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       });
       throw errorArray;
     }
+  }
+
+  if (pageBeingLeftID === "guided-subjects-metadata-tab") {
+    const subjects = getExistingSubjects();
+    const samplesDerivedFromSubjects = getExistingSamples("derived-from-subjects");
 
     const subjectsMetadata = subjects.map((subject) => {
       const metadata = { ...subject.metadata };
@@ -219,8 +226,10 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     window.sodaJSONObj["dataset_metadata"]["subjects"] = subjectsMetadata;
   }
 
-  if (pageBeingLeftID === "guided-samples-metadata-tab") {
-    // Prepare the samples metadata
+  if (
+    pageBeingLeftID === "guided-subjects-metadata-tab" ||
+    pageBeingLeftID === "guided-manual-dataset-entity-and-metadata-tab"
+  ) {
     const samples = getExistingSamples();
 
     // Check for samples with invalid protocol URL or DOI format
@@ -248,6 +257,12 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       });
       throw errorArray;
     }
+  }
+
+  if (pageBeingLeftID === "guided-samples-metadata-tab") {
+    // Prepare the samples metadata
+    const samples = getExistingSamples();
+
     const samplesMetadata = samples.map((sample) => {
       const metadata = { ...sample.metadata };
 

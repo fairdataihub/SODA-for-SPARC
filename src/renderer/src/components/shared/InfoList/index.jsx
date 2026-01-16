@@ -24,6 +24,8 @@ const LIST_CONFIGS = {
           "Subjects: Each individual (human or animal) participating in your study.",
         selectedEntities.includes("samples") &&
           "Samples: Each physical specimen collected from subjects, such as tissue or fluid samples.",
+        selectedEntities.includes("derivedSamples") &&
+          "Derived Samples: Additional samples created from samples that were collected directly from subjects.",
         selectedEntities.includes("subjectSites") &&
           "Subject Sites: Each specific anatomical location or extraction point on subjects.",
         selectedEntities.includes("sampleSites") &&
