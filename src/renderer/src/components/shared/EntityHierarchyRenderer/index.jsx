@@ -509,7 +509,6 @@ const EntityHierarchyRenderer = ({
               {/* Samples */}
               {showSamples &&
                 (() => {
-                  console.log("subject.id:", subject.id);
                   // Filter samples into regular samples and derived samples
                   const allSamples = subject.samples?.filter(Boolean) || [];
                   const regularSamples = allSamples.filter(
@@ -518,10 +517,6 @@ const EntityHierarchyRenderer = ({
                   const derivedSamples = allSamples.filter(
                     (sample) => sample.metadata?.was_derived_from !== subject.id
                   );
-                  console.log("allSamples: for" + subject.id + ",", allSamples);
-
-                  console.log("regularSamples:", regularSamples);
-                  console.log("derivedSamples:", derivedSamples);
 
                   return regularSamples.map((sample) => {
                     // Find derived samples that were derived from this sample

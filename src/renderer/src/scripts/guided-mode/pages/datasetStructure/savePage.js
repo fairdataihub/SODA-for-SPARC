@@ -155,10 +155,8 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     }
 
     if (selectedEntities.includes("samples") && selectedEntities.includes("derivedSamples")) {
-      console.log("Unskipping derived samples page");
       guidedUnSkipPageSet("guided-derived-samples-metadata-page-set");
     } else {
-      console.log("Skipping derived samples page");
       removeEntityType("derived-samples");
       guidedSkipPageSet("guided-derived-samples-metadata-page-set");
     }

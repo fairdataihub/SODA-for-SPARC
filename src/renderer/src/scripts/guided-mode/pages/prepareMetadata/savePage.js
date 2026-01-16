@@ -56,6 +56,54 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
         });
         throw errorArray;
       }
+
+      // Check for resources with invalid RRID format
+      // (This is to throw an error for old progress files that may have invalid RRID formats)
+      const resourcesWithInvalidRrid = resourceList
+        .filter((resource) => {
+          const rridValue = resource.rrid;
+          return !window.evaluateStringAgainstSdsRequirements(rridValue, "string-is-valid-rrid");
+        })
+        .map((resource) => resource.name);
+      if (resourcesWithInvalidRrid.length > 0) {
+        await swalListSingleAction(
+          resourcesWithInvalidRrid,
+          "Invalid RRID Format",
+          "The following resources have invalid RRID formats. Please update them to use valid RRID format (e.g., RRID:IMSR_JAX:000664, RRID:AB_123456, RRID:SCR_123456).",
+          "Please correct the RRID format for each resource in the list above."
+        );
+        errorArray.push({
+          type: "notyf",
+          message: `Please correct the RRID format for all resources before continuing.`,
+        });
+        throw errorArray;
+      }
+
+      // Check for resources with invalid URL format
+      // (This is to throw an error for old progress files that may have invalid URL formats)
+      const resourcesWithInvalidUrl = resourceList
+        .filter((resource) => {
+          const urlValue = resource.url;
+          return (
+            urlValue &&
+            urlValue.trim() !== "" &&
+            !window.evaluateStringAgainstSdsRequirements(urlValue, "string-is-valid-url-or-doi")
+          );
+        })
+        .map((resource) => resource.name);
+      if (resourcesWithInvalidUrl.length > 0) {
+        await swalListSingleAction(
+          resourcesWithInvalidUrl,
+          "Invalid URL Format",
+          "The following resources have invalid URL formats. Please update them to use valid HTTPS URLs, DOIs (e.g., 10.1000/xyz123), or DOI URLs (e.g., https://doi.org/10.1000/xyz123).",
+          "Please correct the URL format for each resource in the list above."
+        );
+        errorArray.push({
+          type: "notyf",
+          message: `Please correct the URL format for all resources before continuing.`,
+        });
+        throw errorArray;
+      }
       // Save the resources metadata
       window.sodaJSONObj["dataset_metadata"]["resources"] = resourceList;
     }
@@ -91,6 +139,32 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       throw errorArray;
     }
 
+    // Check for subjects with invalid RRID format
+    // (This is to throw an error for old progress files that may have invalid RRID formats)
+    const subjectsWithInvalidRrid = subjects
+      .filter((subject) => {
+        const rridValue = subject.metadata.rrid_for_strain;
+        return (
+          rridValue &&
+          rridValue.trim() !== "" &&
+          !window.evaluateStringAgainstSdsRequirements(rridValue, "string-is-valid-rrid")
+        );
+      })
+      .map((subject) => subject.metadata.subject_id);
+    if (subjectsWithInvalidRrid.length > 0) {
+      await swalListSingleAction(
+        subjectsWithInvalidRrid,
+        "Invalid RRID Format",
+        "The following subjects have invalid RRID formats. Please update them to use valid RRID format (e.g., RRID:IMSR_JAX:000664, RRID:AB_123456, RRID:SCR_123456).",
+        "Please correct the RRID format for each subject in the list above."
+      );
+      errorArray.push({
+        type: "notyf",
+        message: `Please correct the RRID format for all subjects before continuing.`,
+      });
+      throw errorArray;
+    }
+
     const subjectsMetadata = subjects.map((subject) => {
       const metadata = { ...subject.metadata };
 
@@ -114,24 +188,14 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       } else {
         metadata.body_mass = "";
       }
-      console.log("Subject body mass:", metadata.body_mass);
 
       // Get the number of samples derived directly from the subject
       const subjectId = metadata.subject_id;
       const numberOfSamplesDerivedFromThisSubject = samplesDerivedFromSubjects.filter(
         (sample) => sample.metadata.was_derived_from === subjectId
       ).length;
-      console.log(
-        "Number of samples derived from subject",
-        subjectId,
-        ":",
-        numberOfSamplesDerivedFromThisSubject
-      );
+
       metadata.number_of_directly_derived_samples = `${numberOfSamplesDerivedFromThisSubject}`;
-      console.log(
-        "metadata.number_of_directly_derived_samples:",
-        metadata.number_of_directly_derived_samples
-      );
 
       // Check if the subject has any files in the dataset-entity-obj
       const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
@@ -158,7 +222,6 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
   if (pageBeingLeftID === "guided-samples-metadata-tab") {
     // Prepare the samples metadata
     const samples = getExistingSamples();
-    console.log("all samples", samples);
 
     // Check for samples with invalid protocol URL or DOI format
     // (This is to throw an error for old progress files that may have invalid protocol formats)
@@ -187,7 +250,6 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     }
     const samplesMetadata = samples.map((sample) => {
       const metadata = { ...sample.metadata };
-      console.log("sample", sample);
 
       // Check if the sample has any files in the dataset-entity-obj
       const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
@@ -201,12 +263,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       const sampleId = metadata.sample_id;
       const derivedSamples = samples.filter((s) => s.metadata.was_derived_from === sampleId);
       const numberOfDirectlyDerivedSamples = derivedSamples.length;
-      console.log(
-        "Number of derivative samples for",
-        sampleId,
-        ":",
-        numberOfDirectlyDerivedSamples
-      );
+
       metadata.number_of_directly_derived_samples = `${numberOfDirectlyDerivedSamples}`;
 
       return metadata;
@@ -359,7 +416,6 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
   if (pageBeingLeftID === "guided-create-description-metadata-tab") {
     const metadataVersion = "3.0.0";
     const currentSodaVersion = useGlobalStore.getState().appVersion || "unknown";
-    console.log("Current SODA version:", currentSodaVersion);
     // Get values from digital_metadata
     const title = getGuidedDatasetName();
     const subtitle = getGuidedDatasetSubtitle();
@@ -409,10 +465,8 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       const localDatasetSizeInBytes = localDatasetSizeReq.data.dataset_size;
       const formattedDatasetSize = bytesToReadableSize(localDatasetSizeInBytes);
       descriptionArray.push("Dataset Size: " + formattedDatasetSize);
-      console.log("Local dataset size", formattedDatasetSize);
     }
     const datasetDescription = descriptionArray.join("\n\n");
-    console.log("Dataset Description:", datasetDescription);
 
     // Get tagify study fields
     const studyOrganSystemTags = window.getTagsFromTagifyElement(guidedStudyOrganSystemsTagify);
@@ -512,7 +566,6 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     const datasetLicense = getDropDownState("license-select");
     if (datasetLicense) {
       // Save the selected license to the sodaJSONObj
-      console.log("Selected license:", datasetLicense);
       window.sodaJSONObj["dataset-license"] = datasetLicense;
 
       const licenseConfig = {
@@ -572,7 +625,6 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
 
       const datasetMetadataLicenseValue = licenseConfig?.[datasetLicense]?.["licenseType"] || "";
       const pennsieveLicenseString = licenseConfig?.[datasetLicense]?.["pennsieveString"] || null;
-      console.log("pennsieveLicenseString:", pennsieveLicenseString);
 
       // Overwrite the default value in the dataset_description metadata with the selected license
       window.sodaJSONObj["dataset_metadata"]["dataset_description"]["basic_information"][

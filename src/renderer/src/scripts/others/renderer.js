@@ -3190,18 +3190,9 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, testType) => {
     "string-contains-forbidden-characters": forbiddenCharacters.test(stringToTest),
     "string-contains-forbidden-pennsieve-dataset-name-characters":
       forbiddenPennsieveDatasetNameCharacters.test(stringToTest),
-    "rrid-format": /^RRID:[A-Za-z0-9_-]+$/.test(stringToTest),
+    "string-is-valid-rrid": /^RRID:[A-Za-z]+\S*[_:]\S*$/.test(stringToTest),
     "string-is-valid-url-or-doi": (() => {
       const result = urlOrDoiPatterns.some((pattern) => pattern.test(stringToTest));
-      console.log(`URL/DOI validation for "${stringToTest}":`, result);
-
-      // Log individual pattern matches for debugging
-      urlOrDoiPatterns.forEach((pattern, index) => {
-        const patternNames = ["Empty string", "HTTPS URL", "DOI pattern", "DOI URL"];
-        const matches = pattern.test(stringToTest);
-        console.log(`  Pattern ${index} (${patternNames[index]}): ${matches} - ${pattern}`);
-      });
-
       return result;
     })(),
   };

@@ -231,7 +231,7 @@ const EntityMetadataForm = () => {
           currentMetadata["rrid_for_strain"].length > 5 &&
           !window.evaluateStringAgainstSdsRequirements(
             currentMetadata["rrid_for_strain"],
-            "rrid-format"
+            "string-is-valid-rrid"
           )
         ) {
           window.notyf.open({
@@ -294,7 +294,7 @@ const EntityMetadataForm = () => {
           tempMetadata["rrid_for_strain"].length > 5 &&
           !window.evaluateStringAgainstSdsRequirements(
             tempMetadata["rrid_for_strain"],
-            "rrid-format"
+            "string-is-valid-rrid"
           )
         ) {
           window.notyf.open({
@@ -594,7 +594,7 @@ const EntityMetadataForm = () => {
                 getMetadataValue("rrid_for_strain", "").length > 5 &&
                 !window.evaluateStringAgainstSdsRequirements(
                   getMetadataValue("rrid_for_strain", ""),
-                  "rrid-format"
+                  "string-is-valid-rrid"
                 )
                   ? "Invalid strain RRID format. Use: RRID:rrid_identifier (e.g., RRID:IMSR_JAX:000664)"
                   : undefined

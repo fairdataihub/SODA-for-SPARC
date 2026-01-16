@@ -11,6 +11,8 @@ import { clientError } from "../../others/http-error-handler/error-handler";
 import { swalShowInfo } from "../../utils/swal-utils";
 
 import useGlobalStore from "../../../stores/globalStore";
+import { getExistingSites } from "../../../stores/slices/datasetEntityStructureSlice";
+import { get } from "jquery";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -213,10 +215,12 @@ const patchPreviousGuidedModeVersions = async () => {
       .concat("Code");
   }
 
+  // specimen_id should be added to the old sites
   if (selectedEntities.includes("sites")) {
     // Add sampleSites because old save files had sites only applicable to samples
-    window.sodaJSONObj["selected-entities"] =
-      window.sodaJSONObj["selected-entities"].concat("sampleSites");
+    window.sodaJSONObj["selected-entities"] = selectedEntities
+      .filter((entity) => entity.toLowerCase() !== "sites")
+      .concat("sampleSites");
   }
 
   // Change all fields named "disease_or_disorder" to "disease" in subjects metadata

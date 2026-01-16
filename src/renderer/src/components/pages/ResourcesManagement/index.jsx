@@ -95,7 +95,7 @@ const ResourceMetadataForm = () => {
         error={
           rrid &&
           rrid.length > 5 &&
-          !window.evaluateStringAgainstSdsRequirements(rrid, "rrid-format")
+          !window.evaluateStringAgainstSdsRequirements(rrid, "string-is-valid-rrid")
             ? "Invalid resource RRID format. Use: RRID:rrid_identifier (e.g., RRID:AB_123456)"
             : undefined
         }
@@ -118,13 +118,20 @@ const ResourceMetadataForm = () => {
       />
       <TextInput
         label="URL"
-        description="Link to the resource documentation or website (HTTP, HTTPS, DOI, FTP, etc.)"
-        placeholder="e.g., https://example.com, doi:10.1038/s41586-019-1234-5"
+        description="Link to the resource documentation or website (HTTPS URL)"
+        placeholder="e.g., https://example.com"
         value={url}
         onChange={(event) => {
           const trimmedValue = event.currentTarget.value.trim();
           setUrl(trimmedValue);
         }}
+        error={
+          url &&
+          url.length > 5 &&
+          !window.evaluateStringAgainstSdsRequirements(url, "string-is-valid-url-or-doi")
+            ? "Invalid format. Please enter a valid HTTPS URL or DOI."
+            : undefined
+        }
       />
 
       <TextInput
@@ -172,14 +179,19 @@ const ResourcesManagementPage = () => {
   const originalResourceName = useGlobalStore((state) => state.originalResourceName);
 
   const validateResourceForm = () => {
-    const rridIsValid = rrid && rrid.trim().length > 0;
+    const rridIsValid =
+      rrid &&
+      rrid.trim().length > 0 &&
+      window.evaluateStringAgainstSdsRequirements(rrid, "string-is-valid-rrid");
     const nameIsValid = name && name.trim().length > 0;
 
-    // Additional RRID format validation
-    const rridFormatValid =
-      !rrid || window.evaluateStringAgainstSdsRequirements(rrid, "rrid-format");
+    // Additional URL format validation (only if URL is provided)
+    const urlFormatValid =
+      !url ||
+      url.trim() === "" ||
+      window.evaluateStringAgainstSdsRequirements(url, "string-is-valid-url-or-doi");
 
-    return rridIsValid && nameIsValid && rridFormatValid;
+    return rridIsValid && nameIsValid && urlFormatValid;
   };
 
   // Validation for add/update button

@@ -108,14 +108,7 @@ window.savePageChanges = async (pageBeingLeftID) => {
         const performancesWithInvalidProtocol = performanceList
           .filter((performance) => {
             const protocolValue = performance.protocol_url_or_doi;
-            console.log("Checking protocol value:", protocolValue);
-            console.log(
-              "protocolValue is valid:",
-              window.evaluateStringAgainstSdsRequirements(
-                protocolValue,
-                "string-is-valid-url-or-doi"
-              )
-            );
+
             return (
               protocolValue &&
               protocolValue.trim() !== "" &&
@@ -470,7 +463,6 @@ window.savePageChanges = async (pageBeingLeftID) => {
         // and we don't want the user to lost it.
         await guidedSaveProgress();
 
-        console.log("datasetEntityArray:", datasetEntityArray);
         if (datasetEntityArray.length === 0) {
           errorArray.push({
             type: "notyf",
@@ -504,7 +496,6 @@ window.savePageChanges = async (pageBeingLeftID) => {
 
         // This should always be true if the user is leaving this page but check just in case
         if (selectedEntities.includes("subjects")) {
-          console.log("Existing subjects:", subjects);
           if (subjects.length === 0) {
             errorArray.push({
               type: "notyf",
@@ -528,7 +519,6 @@ window.savePageChanges = async (pageBeingLeftID) => {
           const subjectSites = getExistingSites().filter((site) =>
             site.specimen_id.startsWith("sub-")
           );
-          console.log("Existing subject sites:", subjectSites);
           if (subjectSites.length === 0) {
             errorArray.push({
               type: "notyf",
