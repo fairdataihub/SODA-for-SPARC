@@ -602,7 +602,7 @@ const EntityMetadataForm = () => {
             />
             <TextInput
               label="Subject Experimental Group"
-              description="The experimental group this subject belongs to"
+              description="Experimental group to which this subject belongs"
               placeholder="e.g., Control, Treatment A"
               value={getMetadataValue("subject_experimental_group", "")}
               onChange={(e) => handleChange("subject_experimental_group", e.target.value)}
@@ -611,21 +611,21 @@ const EntityMetadataForm = () => {
               <>
                 <TextInput
                   label="Also in dataset"
-                  description="Other datasets that include this subject"
+                  description="Other datasets in which this subject is included"
                   placeholder="e.g., dataset-1, dataset-2"
                   value={getMetadataValue("also_in_dataset", "")}
                   onChange={(e) => handleChange("also_in_dataset", e.target.value)}
                 />
                 <TextInput
                   label="Member of"
-                  description="Group memberships for this subject"
+                  description="Group or cohort to which this subject belongs"
                   placeholder="e.g., group-1, cohort-A"
                   value={getMetadataValue("member_of", "")}
                   onChange={(e) => handleChange("member_of", e.target.value)}
                 />
                 <TextInput
                   label="Laboratory internal id"
-                  description="The internal ID used by the laboratory for this subject"
+                  description="Internal identifier used by the laboratory for this subject"
                   placeholder="e.g., LAB-123"
                   value={getMetadataValue("laboratory_internal_id", "")}
                   onChange={(e) => handleChange("laboratory_internal_id", e.target.value)}

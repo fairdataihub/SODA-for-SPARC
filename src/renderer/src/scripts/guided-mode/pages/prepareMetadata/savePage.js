@@ -338,14 +338,16 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
 
     let descriptionArray = [];
 
-    studyPurpose && descriptionArray.push("Study Purpose: " + studyPurpose + "\n");
-    studyDataCollection && descriptionArray.push("Data Collection: " + studyDataCollection + "\n");
+    studyPurpose && descriptionArray.push("Study Purpose: " + studyPurpose);
+    studyDataCollection && descriptionArray.push("Data Collection: " + studyDataCollection);
     studyPrimaryConclusion &&
-      descriptionArray.push("Primary Conclusion: " + studyPrimaryConclusion + "\n");
+      descriptionArray.push("Primary Conclusion: " + studyPrimaryConclusion);
 
     if (descriptionArray.length > 0) {
-      const numberOfFilesInDataset = countFilesInDatasetStructure(window.datasetStructureJSONObj);
-      descriptionArray.push("Number of Files in Dataset: " + numberOfFilesInDataset + "\n");
+      const numberOfFilesInDataset = countFilesInDatasetStructure(
+        window.datasetStructureJSONObj?.["folders"]?.["data"]
+      );
+      descriptionArray.push("Number of Files in Dataset: " + numberOfFilesInDataset);
       // Get dataset size
       const localDatasetSizeReq = await client.post(
         "/curate_datasets/dataset_size",
@@ -354,10 +356,10 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       );
       const localDatasetSizeInBytes = localDatasetSizeReq.data.dataset_size;
       const formattedDatasetSize = bytesToReadableSize(localDatasetSizeInBytes);
-      descriptionArray.push("Dataset Size: " + formattedDatasetSize + "\n");
+      descriptionArray.push("Dataset Size: " + formattedDatasetSize);
       console.log("Local dataset size", formattedDatasetSize);
     }
-    const datasetDescription = descriptionArray.join("");
+    const datasetDescription = descriptionArray.join("\n\n");
     console.log("Dataset Description:", datasetDescription);
 
     // Get tagify study fields
@@ -458,6 +460,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     const datasetLicense = getDropDownState("license-select");
     if (datasetLicense) {
       // Save the selected license to the sodaJSONObj
+      console.log("Selected license:", datasetLicense);
       window.sodaJSONObj["dataset-license"] = datasetLicense;
 
       const licenseConfig = {
@@ -469,16 +472,16 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
           licenseType: "CDLA-Sharing-1.0",
           pennsieveString: "Community Data License Agreement – Sharing",
         },
-        "ODC-ODbL – Open Data Commons Open Database License": {
-          licenseType: "ODC-ODbL",
+        "ODbL-1.0 – Open Data Commons Open Database License": {
+          licenseType: "ODbL-1.0",
           pennsieveString: "Open Data Commons Open Database",
         },
-        "ODC-BY – Open Data Commons Attribution License": {
-          licenseType: "ODC-BY",
+        "ODC-By-1.0 – Open Data Commons Attribution License": {
+          licenseType: "ODC-By-1.0",
           pennsieveString: "Open Data Commons Attribution",
         },
-        "ODC-PDDL – Open Data Commons Public Domain Dedication and License": {
-          licenseType: "ODC-PDDL",
+        "PDDL-1.0 – Open Data Commons Public Domain Dedication and License": {
+          licenseType: "PDDL-1.0",
           pennsieveString: "Open Data Commons Public Domain Dedication and License",
         },
         "CC0-1.0 – Creative Commons Zero 1.0 Universal": {
@@ -517,6 +520,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
 
       const datasetMetadataLicenseValue = licenseConfig?.[datasetLicense]?.["licenseType"] || "";
       const pennsieveLicenseString = licenseConfig?.[datasetLicense]?.["pennsieveString"] || null;
+      console.log("pennsieveLicenseString:", pennsieveLicenseString);
 
       // Overwrite the default value in the dataset_description metadata with the selected license
       window.sodaJSONObj["dataset_metadata"]["dataset_description"]["basic_information"][
