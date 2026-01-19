@@ -209,7 +209,7 @@ export const moveFileToTargetLocation = (relativePathToMove, destionationRelativ
 
   // Check if the file exists before trying to move it
   if (!itemObject || !parentFolder || !parentFolder.files || !parentFolder.files[itemName]) {
-    console.log(`moveFileToTargetLocation: File not found, skipping: ${relativePathToMove}`);
+    console.warn(`moveFileToTargetLocation: File not found, skipping: ${relativePathToMove}`);
     return;
   }
 

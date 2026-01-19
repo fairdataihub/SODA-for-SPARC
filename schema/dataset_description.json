@@ -4,7 +4,8 @@
   "properties": {
     "metadata_version": {
       "type": "string",
-      "description": "The version of the metadata schema used."
+      "description": "The version of the metadata schema used.",
+      "enum": ["3.0.0", "3.0.1", "3.0.2"]
     },
     "type": {
       "type": "string",
@@ -149,35 +150,38 @@
             "description": "The name of the contributor. The format should be 'Last Name, First Name'. Supports international family name prefixes (van, von, de, del, etc.)."
           },
           "contributor_role": {
-            "type": "string",
-            "enum": [
-              "CorrespondingAuthor",
-              "ContactPerson",
-              "Creator",
-              "DataCollector",
-              "DataCurator",
-              "DataManager",
-              "Distributor",
-              "Editor",
-              "HostingInstitution",
-              "PrincipalInvestigator",
-              "CoInvestigator",
-              "Producer",
-              "ProjectLeader",
-              "ProjectManager",
-              "ProjectMember",
-              "RegistrationAgency",
-              "RegistrationAuthority",
-              "RelatedPerson",
-              "Researcher",
-              "ResearchGroup",
-              "RightsHolder",
-              "Sponsor",
-              "Supervisor",
-              "WorkPackageLeader",
-              "Other"
-            ],
-            "description": "The role of the contributor in the project. There must be at least one PrincipalInvestigator."
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "CorrespondingAuthor",
+                "ContactPerson",
+                "Creator",
+                "DataCollector",
+                "DataCurator",
+                "DataManager",
+                "Distributor",
+                "Editor",
+                "HostingInstitution",
+                "PrincipalInvestigator",
+                "CoInvestigator",
+                "Producer",
+                "ProjectLeader",
+                "ProjectManager",
+                "ProjectMember",
+                "RegistrationAgency",
+                "RegistrationAuthority",
+                "RelatedPerson",
+                "Researcher",
+                "ResearchGroup",
+                "RightsHolder",
+                "Sponsor",
+                "Supervisor",
+                "WorkPackageLeader",
+                "Other"
+              ]
+            },
+            "description": "The roles of the contributor in the project. There must be at least one PrincipalInvestigator. The Creator role requires an additional role to accompany it."
           }
         }
       }

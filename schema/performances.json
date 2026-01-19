@@ -1,17 +1,25 @@
 {
-  "$schema": "https://json.schemastore.org/performances.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "array",
   "items": {
     "type": "object",
     "properties": {
       "performance_id": {
         "type": "string",
-        "description": "Unique identifier for the performance"
+        "description": "Unique identifier for the performance",
+        "pattern": "^(pop-)?perf-[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?$"
       },
       "protocol_url_or_doi": {
         "type": "string",
-        "description": "URL or DOI of the protocol associated with the performance",
-        "pattern": "^$|^(https?://|doi:).+"
+        "description": "URL or DOI of the protocol used for the subject.",
+        "anyOf": [
+          { "pattern": "^$" },
+          { "pattern": "^https://[A-Za-z0-9.-]+[A-Za-z0-9](:[0-9]+)?(/.*)?$" },
+          { "pattern": "^10\\.\\d{4,9}/[-._;()/:A-Za-z0-9]+$" },
+          {
+            "pattern": "^https://doi\\.org/10\\.\\d{4,9}/[-._;()/:A-Za-z0-9]+$"
+          }
+        ]
       },
       "date": {
         "type": "string",

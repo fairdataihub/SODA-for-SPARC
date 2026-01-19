@@ -4,7 +4,8 @@
   "properties": {
     "consortium_data_standard": {
       "type": "string",
-      "description": "The consortium data standard used for the submssion. Examples include SDS, BIDS, etc."
+      "description": "The consortium data standard used for the submssion. At the moment SPARC is the only supported standard in pysoda. Future support for HEAL is planned.",
+      "enum": ["SPARC", "HEAL"]
     },
     "funding_consortium": {
       "type": "string",
@@ -12,7 +13,7 @@
     },
     "award_number": {
       "type": "string",
-      "description": "The award number associated with the funding. This is typically a unique identifier assigned by the funding agency."
+      "description": "The award number associated with the funding. This is typically a unique identifier assigned by the funding agency. TODO: Check regex coverage for RE-JOIN before applying pattern."
     },
     "milestone_achieved": {
       "type": "array",
@@ -21,8 +22,10 @@
     },
     "milestone_completion_date": {
       "type": "string",
-      "description": "The date when the milestone was completed. This should be in ISO 8601 format."
+      "description": "The date when the milestone was completed. This should be in ISO 8601 format.",
+      "pattern": "^([0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-6][0-9](:[0-6][0-9](,[0-9]{1,9})?)?(Z|[+-][0-2][0-9]:[0-6][0-9])?)?$"
     }
   },
-  "required": []
+  "required": [],
+  "description": "TODO: Add funding_consortium, milestone_completion_date, and consortium_data_standard to required fields list once SODA front end has validation page."
 }
