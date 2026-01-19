@@ -207,6 +207,43 @@ export const openPageDatasetStructure = async (targetPageID) => {
       return rows;
     };
 
+    /**
+     * Update also in dataset column values from entity metadata.
+     */
+    const updateAlsoInDatasetColumn = (rows) => {
+      const alsoInDatasetColumnIndex = newManifestData.headers.indexOf("also in dataset");
+
+      if (alsoInDatasetColumnIndex === -1) return rows; // Column doesn't exist
+
+      rows.forEach((row) => {
+        let path = row[0];
+        const pathSegments = path.split("/");
+        if (pathSegments.length > 0) pathSegments[0] = "data";
+        path = pathSegments.join("/");
+
+        let alsoInDatasetValue = "";
+
+        const entityTypes = ["samples", "subjects"];
+        for (const type of entityTypes) {
+          const entities = datasetEntityObj?.[type] || {};
+          for (const [entity, paths] of Object.entries(entities)) {
+            if (paths?.[path]) {
+              const entityData = getEntityDataById(entity);
+              if (entityData?.metadata?.also_in_dataset) {
+                alsoInDatasetValue = entityData.metadata.also_in_dataset;
+                break;
+              }
+            }
+          }
+          if (alsoInDatasetValue) break;
+        }
+
+        row[alsoInDatasetColumnIndex] = alsoInDatasetValue;
+      });
+
+      return rows;
+    };
+
     // Merge with existing manifest diff (if any)
     const guidedManifestData = window.sodaJSONObj["guided-manifest-file-data"]
       ? window.diffCheckManifestFiles(
@@ -217,6 +254,7 @@ export const openPageDatasetStructure = async (targetPageID) => {
 
     updateEntityColumn(guidedManifestData.data);
     updateModalitiesColumn(guidedManifestData.data);
+    updateAlsoInDatasetColumn(guidedManifestData.data);
 
     // Save final manifest data
     window.sodaJSONObj["guided-manifest-file-data"] = guidedManifestData;

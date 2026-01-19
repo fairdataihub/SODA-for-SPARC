@@ -607,15 +607,15 @@ const EntityMetadataForm = () => {
               value={getMetadataValue("subject_experimental_group", "")}
               onChange={(e) => handleChange("subject_experimental_group", e.target.value)}
             />
+            <TextInput
+              label="Also in dataset"
+              description="Indicates if the subject is also part of another dataset. Should be a DOI or https link to another dataset or an other identifier."
+              placeholder="e.g., dataset-1, dataset-2"
+              value={getMetadataValue("also_in_dataset", "")}
+              onChange={(e) => handleChange("also_in_dataset", e.target.value)}
+            />
             {showFullMetadataFormFields && (
               <>
-                <TextInput
-                  label="Also in dataset"
-                  description="Other datasets in which this subject is included"
-                  placeholder="e.g., dataset-1, dataset-2"
-                  value={getMetadataValue("also_in_dataset", "")}
-                  onChange={(e) => handleChange("also_in_dataset", e.target.value)}
-                />
                 <TextInput
                   label="Member of"
                   description="Group or cohort to which this subject belongs"
@@ -925,15 +925,15 @@ const EntityMetadataForm = () => {
               value={getMetadataValue("sample_anatomical_location", "")}
               onChange={(e) => handleChange("sample_anatomical_location", e.target.value)}
             />
+            <TextInput
+              label="Also in dataset"
+              description="Indicates if the sample is also part of another dataset. Should be a DOI or https link to another dataset or an other identifier."
+              placeholder="e.g., dataset-1, dataset-2"
+              value={getMetadataValue("also_in_dataset", "")}
+              onChange={(e) => handleChange("also_in_dataset", e.target.value)}
+            />
             {showFullMetadataFormFields && (
               <>
-                <TextInput
-                  label="Also in dataset"
-                  description="Other datasets in which this sample is included"
-                  placeholder="e.g., dataset-1, dataset-2"
-                  value={getMetadataValue("also_in_dataset", "")}
-                  onChange={(e) => handleChange("also_in_dataset", e.target.value)}
-                />
                 <TextInput
                   label="Member of"
                   description="Group or cohort to which this sample belongs"
