@@ -145,7 +145,6 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     const subjectsWithInvalidRrid = subjects
       .filter((subject) => {
         const rridValue = subject.metadata.rrid_for_strain;
-        console.log("rrid", rridValue);
         return (
           rridValue &&
           rridValue.trim() !== "" &&
@@ -292,7 +291,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     const awardNumber = useGlobalStore.getState().awardNumber || "";
 
     let fundingAgency = "";
-    let fundingConsortium = "EXTERNAL";
+    let fundingConsortium = "";
     let milestonesAchieved = [];
     let milestoneCompletionDate = "";
     if (fundingAgencyDropDownValue !== null) {
