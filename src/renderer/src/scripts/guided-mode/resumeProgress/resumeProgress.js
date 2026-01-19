@@ -11,6 +11,11 @@ import { clientError } from "../../others/http-error-handler/error-handler";
 import { swalShowInfo } from "../../utils/swal-utils";
 
 import useGlobalStore from "../../../stores/globalStore";
+import {
+  addSubject,
+  addSample,
+  addSiteToSample,
+} from "../../../stores/slices/datasetEntityStructureSlice";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -173,6 +178,7 @@ const patchPreviousGuidedModeVersions = async () => {
   const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
   const datasetMetadata = window.sodaJSONObj["dataset_metadata"] || {};
   const oldHighLevelFolders = datasetEntityObj?.["high-level-folder-data-categorization"];
+  const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
 
   if (oldHighLevelFolders && Object.keys(oldHighLevelFolders).length > 0) {
     // Ensure new keys exist
@@ -205,20 +211,79 @@ const patchPreviousGuidedModeVersions = async () => {
     delete datasetEntityObj["high-level-folder-data-categorization"];
   }
 
-  // Update "code" in selected-entities to "Code"
-  const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
-  if (selectedEntities.includes("code")) {
-    window.sodaJSONObj["selected-entities"] = selectedEntities
-      .filter((entity) => entity.toLowerCase() !== "code")
-      .concat("Code");
-  }
-
   // specimen_id should be added to the old sites
   if (selectedEntities.includes("sites")) {
+    // This indicates an old dataset - convert the entity structure using proper methods
+    const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
+
+    if (datasetEntityArray.length > 0) {
+      // Extract data from old structure before clearing
+      const oldSubjects = [...datasetEntityArray];
+
+      // Clear old structure and reset the global store
+      window.sodaJSONObj["dataset-entity-array"] = [];
+      useGlobalStore.setState({ datasetEntityArray: [] });
+
+      // Recreate structure using proper methods with preserved metadata
+      for (const oldSubject of oldSubjects) {
+        try {
+          // Add subject with its metadata
+          addSubject(oldSubject.id, oldSubject.metadata || {});
+
+          // Add samples with their metadata
+          if (oldSubject.samples && Array.isArray(oldSubject.samples)) {
+            for (const oldSample of oldSubject.samples) {
+              try {
+                addSample(oldSubject.id, null, oldSample.id, oldSample.metadata || {});
+
+                // Add sites to samples (old structure: all sites were on samples)
+                if (oldSample.sites && Array.isArray(oldSample.sites)) {
+                  for (const oldSite of oldSample.sites) {
+                    try {
+                      addSiteToSample(
+                        oldSubject.id,
+                        oldSample.id,
+                        oldSite.id,
+                        oldSite.metadata || {}
+                      );
+                    } catch (error) {
+                      console.warn(
+                        `Failed to add site ${oldSite.id} to sample ${oldSample.id}:`,
+                        error
+                      );
+                    }
+                  }
+                }
+              } catch (error) {
+                console.warn(
+                  `Failed to add sample ${oldSample.id} to subject ${oldSubject.id}:`,
+                  error
+                );
+              }
+            }
+          }
+
+          // Note: Performances are handled similarly but not commonly used in old datasets
+        } catch (error) {
+          console.warn(`Failed to add subject ${oldSubject.id}:`, error);
+        }
+      }
+
+      // Update the SODA JSON object with the newly created structure
+      window.sodaJSONObj["dataset-entity-array"] = useGlobalStore.getState().datasetEntityArray;
+    }
+
     // Add sampleSites because old save files had sites only applicable to samples
     window.sodaJSONObj["selected-entities"] = selectedEntities
       .filter((entity) => entity.toLowerCase() !== "sites")
       .concat("sampleSites");
+  }
+
+  // Update "code" in selected-entities to "Code"
+  if (selectedEntities.includes("code")) {
+    window.sodaJSONObj["selected-entities"] = selectedEntities
+      .filter((entity) => entity.toLowerCase() !== "code")
+      .concat("Code");
   }
 
   // Change all fields named "disease_or_disorder" to "disease" in subjects metadata
