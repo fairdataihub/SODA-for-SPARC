@@ -346,6 +346,12 @@ window.openPage = async (targetPageID) => {
             }
           }
 
+          const filterList = [
+            {
+              type: "non-data-folders",
+              names: ["Protocol", "Docs", "Code"],
+            },
+          ];
           setFileVisibilityFilter(
             [
               {
@@ -353,12 +359,7 @@ window.openPage = async (targetPageID) => {
                 names: ["experimental"],
               },
             ],
-            [
-              {
-                type: "non-data-folders",
-                names: ["Protocol", "Docs", "Code"],
-              },
-            ]
+            filterList
           );
         }
 
@@ -379,7 +380,8 @@ window.openPage = async (targetPageID) => {
           }
 
           const sites = getExistingSites().map((site) => site.id);
-          const siteFilter = [
+          const samples = getExistingSamples("derived-from-subjects").map((sample) => sample.id);
+          const filterList = [
             {
               type: "non-data-folders",
               names: ["Protocol", "Docs", "Code"],
@@ -387,6 +389,10 @@ window.openPage = async (targetPageID) => {
             {
               type: "sites",
               names: sites,
+            },
+            {
+              type: "samples",
+              names: samples,
             },
           ];
           setFileVisibilityFilter(
@@ -396,7 +402,7 @@ window.openPage = async (targetPageID) => {
                 names: ["experimental"],
               },
             ],
-            siteFilter
+            filterList
           );
         }
 
@@ -416,7 +422,7 @@ window.openPage = async (targetPageID) => {
           const derivedSamples = getExistingSamples("derived-from-samples").map(
             (sample) => sample.id
           );
-          const siteFilter = [
+          const filterList = [
             {
               type: "non-data-folders",
               names: ["Protocol", "Docs", "Code"],
@@ -437,7 +443,7 @@ window.openPage = async (targetPageID) => {
                 names: ["experimental"],
               },
             ],
-            siteFilter
+            filterList
           );
         }
 
@@ -455,8 +461,11 @@ window.openPage = async (targetPageID) => {
           }
 
           const sites = getExistingSites().map((site) => site.id);
-          const samples = getExistingSamples().map((sample) => sample.id);
-          const siteAndSampleFilter = [
+          const samples = getExistingSamples("derived-from-subjects").map((sample) => sample.id);
+          const derivedSamples = getExistingSamples("derived-from-samples").map(
+            (sample) => sample.id
+          );
+          const filterList = [
             {
               type: "non-data-folders",
               names: ["Protocol", "Docs", "Code"],
@@ -469,6 +478,10 @@ window.openPage = async (targetPageID) => {
               type: "samples",
               names: samples,
             },
+            {
+              type: "derived-samples",
+              names: derivedSamples,
+            },
           ];
 
           setFileVisibilityFilter(
@@ -478,7 +491,7 @@ window.openPage = async (targetPageID) => {
                 names: ["experimental"],
               },
             ],
-            siteAndSampleFilter
+            filterList
           );
         }
 
