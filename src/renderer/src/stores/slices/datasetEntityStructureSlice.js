@@ -243,11 +243,7 @@ export const getExistingSamples = (filterType = "all") => {
   const { datasetEntityArray } = useGlobalStore.getState();
   const allSamples = datasetEntityArray.flatMap((subject) => subject.samples);
 
-  if (filterType === "non-derived") {
-    return allSamples.filter((sample) => !sample.metadata?.was_derived_from);
-  } else if (filterType === "derived") {
-    return allSamples.filter((sample) => sample.metadata?.was_derived_from);
-  } else if (filterType === "derived-from-subjects") {
+  if (filterType === "derived-from-subjects") {
     return allSamples.filter(
       (sample) =>
         sample.metadata?.was_derived_from && sample.metadata.was_derived_from.startsWith("sub-")

@@ -515,6 +515,18 @@ window.savePageChanges = async (pageBeingLeftID) => {
             throw errorArray;
           }
         }
+        // If the user said they had derived samples but did not add or import any, throw an error
+        if (selectedEntities.includes("derivedSamples")) {
+          if (getExistingSamples("derived-from-samples").length === 0) {
+            errorArray.push({
+              type: "notyf",
+              message:
+                "You indicated that your dataset contains derived samples (samples derived from other samples), but did not add any samples derived from other samples.",
+            });
+            throw errorArray;
+          }
+        }
+
         if (selectedEntities.includes("subjectSites")) {
           const subjectSites = getExistingSites().filter((site) =>
             site.specimen_id.startsWith("sub-")
