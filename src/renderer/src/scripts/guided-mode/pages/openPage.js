@@ -426,7 +426,7 @@ window.openPage = async (targetPageID) => {
               names: sites,
             },
             {
-              type: "samples",
+              type: "derived-samples",
               names: derivedSamples,
             },
           ];
