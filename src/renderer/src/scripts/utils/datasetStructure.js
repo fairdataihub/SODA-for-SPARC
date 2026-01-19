@@ -5,6 +5,7 @@ import {
   getInvertedDatasetEntityObj,
   filePassesAllFilters,
 } from "../../stores/slices/datasetTreeViewSlice";
+import { modifyDatasetEntityForRelativeFilePath } from "../../stores/slices/datasetEntitySelectorSlice";
 
 export const countFilesInDatasetStructure = (datasetStructure) => {
   // If datasetStructure is an array (datasetRenderArray), count file items
@@ -170,6 +171,9 @@ export const deleteFoldersByRelativePath = (arrayOfRelativePaths) => {
 };
 
 export const deleteFilesByRelativePath = (arrayOfRelativePaths) => {
+  // Get the inverted entity object to find which entities each file belongs to
+  const invertedDatasetEntityObj = getInvertedDatasetEntityObj();
+
   for (const relativePathToDelete of arrayOfRelativePaths) {
     const { parentFolder, itemName, itemObject } =
       getFileDetailsByRelativePath(relativePathToDelete);
@@ -178,12 +182,37 @@ export const deleteFilesByRelativePath = (arrayOfRelativePaths) => {
     } else {
       delete parentFolder["files"][itemName];
     }
+
+    // Remove from datasetEntityObj using existing utility functions
+    const fileEntityMapping = invertedDatasetEntityObj[relativePathToDelete];
+    if (fileEntityMapping) {
+      Object.keys(fileEntityMapping).forEach((entityType) => {
+        const entityNames = fileEntityMapping[entityType];
+        entityNames.forEach((entityName) => {
+          modifyDatasetEntityForRelativeFilePath(
+            entityType,
+            entityName,
+            relativePathToDelete,
+            "remove",
+            false
+          );
+        });
+      });
+    }
   }
   useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
   reRenderTreeView();
 };
 
 export const moveFileToTargetLocation = (relativePathToMove, destionationRelativeFolderPath) => {
+  const { parentFolder, itemName, itemObject } = getFileDetailsByRelativePath(relativePathToMove);
+
+  // Check if the file exists before trying to move it
+  if (!itemObject || !parentFolder || !parentFolder.files || !parentFolder.files[itemName]) {
+    console.log(`moveFileToTargetLocation: File not found, skipping: ${relativePathToMove}`);
+    return;
+  }
+
   const filePathSegments = relativePathToMove.split("/").filter(Boolean);
   const subfolders = filePathSegments.slice(1, -1);
   const destinationPathSegments = destionationRelativeFolderPath
@@ -193,14 +222,27 @@ export const moveFileToTargetLocation = (relativePathToMove, destionationRelativ
 
   let currentFolder = window.datasetStructureJSONObj;
   for (const segment of destinationPathSegments) {
-    if (!currentFolder.folders) currentFolder.folders = {};
+    if (!currentFolder || !currentFolder.folders) {
+      if (!currentFolder) {
+        console.error("moveFileToTargetLocation: currentFolder is null/undefined");
+        return;
+      }
+      currentFolder.folders = {};
+    }
     if (!currentFolder.folders[segment]) {
       currentFolder.folders[segment] = newEmptyFolderObj();
     }
     currentFolder = currentFolder.folders[segment];
   }
 
-  const { parentFolder, itemName, itemObject } = getFileDetailsByRelativePath(relativePathToMove);
+  if (!currentFolder) {
+    console.error("moveFileToTargetLocation: target folder is null after path traversal");
+    return;
+  }
+
+  if (!currentFolder.files) {
+    currentFolder.files = {};
+  }
 
   currentFolder["files"][itemName] = itemObject;
   delete parentFolder["files"][itemName];

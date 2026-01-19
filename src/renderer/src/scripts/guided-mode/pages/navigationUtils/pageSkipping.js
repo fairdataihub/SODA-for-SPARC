@@ -107,3 +107,8 @@ export const getPrevPageNotSkipped = (currentPageID) => {
 export const pageIsSkipped = (pageId) => {
   return window.sodaJSONObj["skipped-pages"].includes(pageId);
 };
+
+export const returnUserToFirstPage = async () => {
+  const firstPageID = getNonSkippedGuidedModePages(document)[0].id;
+  await window.openPage(firstPageID);
+};

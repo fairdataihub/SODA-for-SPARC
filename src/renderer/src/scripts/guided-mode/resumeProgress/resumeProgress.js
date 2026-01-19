@@ -11,8 +11,6 @@ import { clientError } from "../../others/http-error-handler/error-handler";
 import { swalShowInfo } from "../../utils/swal-utils";
 
 import useGlobalStore from "../../../stores/globalStore";
-import { getExistingSites } from "../../../stores/slices/datasetEntityStructureSlice";
-import { get } from "jquery";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));

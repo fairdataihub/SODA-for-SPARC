@@ -1,7 +1,12 @@
-import { swalListSingleAction } from "../../../utils/swal-utils";
+import { swalListSingleAction, swalListDoubleAction } from "../../../utils/swal-utils";
 import { getEntityDataById } from "../../../../stores/slices/datasetEntityStructureSlice";
-import { createStandardizedDatasetStructure } from "../../../utils/datasetStructure";
+import {
+  createStandardizedDatasetStructure,
+  deleteFilesByRelativePath,
+} from "../../../utils/datasetStructure";
 import { deleteEmptyFoldersFromStructure } from "../../../../stores/slices/datasetTreeViewSlice";
+import { returnUserToFirstPage } from "../navigationUtils/pageSkipping";
+import useGlobalStore from "../../../../stores/globalStore";
 import client from "../../../client";
 import {
   isCheckboxCardChecked,
@@ -27,45 +32,53 @@ export const openPageDatasetStructure = async (targetPageID) => {
     const purgeNonExistentFiles = async (datasetStructure) => {
       const nonExistentFiles = [];
 
-      const collectNonExistentFiles = async (current, currentPath = "") => {
+      const collectNonExistentFiles = async (current) => {
         for (const [fileName, fileData] of Object.entries(current.files || {})) {
-          if (fileData.type === "local" && !(await window.fs.existsSync(fileData.path))) {
-            nonExistentFiles.push(`${currentPath}${fileName}`);
+          if (fileData.location === "local" && !window.fs.existsSync(fileData.path)) {
+            // Use the relativePath property from the file data
+            nonExistentFiles.push(fileData.relativePath);
           }
         }
 
         await Promise.all(
-          Object.entries(current.folders || {}).map(([folderName, folder]) =>
-            collectNonExistentFiles(folder, `${currentPath}${folderName}/`)
-          )
+          Object.values(current.folders || {}).map((folder) => collectNonExistentFiles(folder))
         );
-      };
-
-      const deleteNonExistentFiles = (current) => {
-        const files = current?.files || {};
-        for (const fileName in files) {
-          const fileData = files[fileName];
-          if (fileData.type === "local" && !window.fs.existsSync(fileData.path)) {
-            delete files[fileName];
-          }
-        }
-
-        Object.values(current.folders || {}).forEach(deleteNonExistentFiles);
       };
 
       await collectNonExistentFiles(datasetStructure);
       if (nonExistentFiles.length > 0) {
-        await swalListSingleAction(
+        const userConfirmedRemoval = await swalListDoubleAction(
           nonExistentFiles,
-          "Files imported into SODA that are no longer on your computer were detected",
-          "These files will be disregarded and not uploaded to Pennsieve.",
-          ""
+          "Missing files detected in your dataset",
+          "The following files were imported into SODA but can no longer be found on your computer. SODA can remove these missing files from your dataset structure and entity assignments, then take you back to the first page to continue. <strong>Your progress will not be lost unless these files are permanently inaccessible.</strong> It would be better to restore these files to their original locations if possible.",
+          "Remove missing files",
+          "Keep references",
+          "Would you like SODA to remove these missing files from your dataset?"
         );
-        deleteNonExistentFiles(datasetStructure);
+
+        if (userConfirmedRemoval) {
+          // Use deleteFilesByRelativePath to properly clean both structure and entity assignments
+          deleteFilesByRelativePath(nonExistentFiles);
+          // Update the sodaJSONObj with the cleaned entity object from global store
+          window.sodaJSONObj["dataset-entity-obj"] = useGlobalStore.getState().datasetEntityObj;
+          // Return user to the first page since the dataset structure has changed
+          await returnUserToFirstPage();
+          return true; // Signal that user was redirected
+        }
       }
     };
 
-    await purgeNonExistentFiles(window.datasetStructureJSONObj);
+    const userWasRedirected = await purgeNonExistentFiles(window.datasetStructureJSONObj);
+    
+    // If user was redirected to first page, don't continue with manifest generation
+    if (userWasRedirected) {
+      return;
+    }
+
+    // Ensure dataset structure is not undefined after purging
+    if (!window.datasetStructureJSONObj) {
+      window.datasetStructureJSONObj = { folders: {}, files: {} };
+    }
 
     // Remove empty folders
     window.datasetStructureJSONObj = deleteEmptyFoldersFromStructure(
