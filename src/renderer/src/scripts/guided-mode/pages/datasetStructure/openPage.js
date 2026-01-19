@@ -31,12 +31,15 @@ export const openPageDatasetStructure = async (targetPageID) => {
      */
     const purgeNonExistentFiles = async (datasetStructure) => {
       const nonExistentFiles = [];
+      const nonExistentRelativePaths = [];
 
       const collectNonExistentFiles = async (current) => {
         for (const [fileName, fileData] of Object.entries(current.files || {})) {
           if (fileData.location === "local" && !window.fs.existsSync(fileData.path)) {
-            // Use the relativePath property from the file data
-            nonExistentFiles.push(fileData.relativePath);
+            // Use the actual file path so users can see what's missing
+            nonExistentFiles.push(fileData.path);
+            // Also collect relative paths for deletion function
+            nonExistentRelativePaths.push(fileData.relativePath);
           }
         }
 
@@ -50,35 +53,30 @@ export const openPageDatasetStructure = async (targetPageID) => {
         const userConfirmedRemoval = await swalListDoubleAction(
           nonExistentFiles,
           "Missing files detected in your dataset",
-          "The following files were imported into SODA but can no longer be found on your computer. SODA can remove these missing files from your dataset structure and entity assignments, then take you back to the first page to continue. <strong>Your progress will not be lost unless these files are permanently inaccessible.</strong> It would be better to restore these files to their original locations if possible.",
+          "The following files were imported into SODA but can no longer be found on your computer. SODA can remove these missing files from your dataset structure, but then will have to take you back to the first page to continue (you will only lose progress regarding the files not found). It would be better to restore these files to their original locations if possible.",
           "Remove missing files",
           "Keep references",
           "Would you like SODA to remove these missing files from your dataset?"
         );
 
         if (userConfirmedRemoval) {
-          // Use deleteFilesByRelativePath to properly clean both structure and entity assignments
-          deleteFilesByRelativePath(nonExistentFiles);
+          // Use deleteFilesByRelativePath with relative paths, not file paths
+          deleteFilesByRelativePath(nonExistentRelativePaths);
           // Update the sodaJSONObj with the cleaned entity object from global store
           window.sodaJSONObj["dataset-entity-obj"] = useGlobalStore.getState().datasetEntityObj;
-          // Return user to the first page since the dataset structure has changed
-          await returnUserToFirstPage();
-          return true; // Signal that user was redirected
+          // Ensure dataset structure is not undefined after purging
+          if (!window.datasetStructureJSONObj) {
+            window.datasetStructureJSONObj = { folders: {}, files: {} };
+          }
+          // Set flag that user should be redirected to first page
+          window.sodaJSONObj["redirect-to-first-page-after-error"] = true;
+          // Throw an error to trigger the error handler which will handle the redirect
+          throw new Error("Files were purged - redirecting to first page");
         }
       }
     };
 
-    const userWasRedirected = await purgeNonExistentFiles(window.datasetStructureJSONObj);
-    
-    // If user was redirected to first page, don't continue with manifest generation
-    if (userWasRedirected) {
-      return;
-    }
-
-    // Ensure dataset structure is not undefined after purging
-    if (!window.datasetStructureJSONObj) {
-      window.datasetStructureJSONObj = { folders: {}, files: {} };
-    }
+    await purgeNonExistentFiles(window.datasetStructureJSONObj);
 
     // Remove empty folders
     window.datasetStructureJSONObj = deleteEmptyFoldersFromStructure(

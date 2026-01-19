@@ -44,7 +44,10 @@ import { setSelectedHierarchyEntity } from "../../../stores/slices/datasetConten
 import { guidedSetNavLoadingState } from "./navigationUtils/pageLoading.js";
 import Swal from "sweetalert2";
 import { userErrorMessage } from "../../others/http-error-handler/error-handler.js";
-import { getNonSkippedGuidedModePages } from "./navigationUtils/pageSkipping.js";
+import {
+  getNonSkippedGuidedModePages,
+  returnUserToFirstPage,
+} from "./navigationUtils/pageSkipping.js";
 import { startOrStopAnimationsInContainer } from "../lotties/lottie.js";
 import { renderSideBar } from "./sidebar.js";
 import useGlobalStore from "../../../stores/globalStore.js";
@@ -714,6 +717,17 @@ window.openPage = async (targetPageID) => {
   } catch (error) {
     console.error("Error opening page:", targetPageID);
     console.error("Error: ", error);
+    guidedSetNavLoadingState(false);
+
+    // Check if user should be redirected to first page due to file purging
+    if (window.sodaJSONObj?.["redirect-to-first-page-after-error"]) {
+      // Clear the flag
+      delete window.sodaJSONObj["redirect-to-first-page-after-error"];
+      await returnUserToFirstPage();
+      guidedSetNavLoadingState(false);
+      return;
+    }
+
     const eMessage = userErrorMessage(error);
     Swal.fire({
       icon: "error",
@@ -727,7 +741,6 @@ window.openPage = async (targetPageID) => {
       allowOutsideClick: false,
     });
 
-    guidedSetNavLoadingState(false);
     throw error;
   }
 
