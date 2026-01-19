@@ -1,6 +1,7 @@
 import { useState } from "react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
+import ExternalLink from "../../buttons/ExternalLink";
 import {
   IconPlus,
   IconTrash,
@@ -60,11 +61,6 @@ const toOxfordCommaString = (arr) => {
   return `${arr.slice(0, -1).join(", ")}, and ${arr[len - 1]}`;
 };
 
-const matchesHttpPattern = (str) => {
-  const pattern = /^https?:\/\/.+/;
-  return pattern.test(str);
-};
-
 // Resource metadata form component with store-based state
 const ResourceMetadataForm = () => {
   // Get form values from the global store
@@ -83,16 +79,26 @@ const ResourceMetadataForm = () => {
         label="RRID (Research Resource Identifier)"
         description={
           <>
-            Enter the RRID for this resource. To find or verify RRIDs, visit{" "}
-            <a href="https://rrid.site" target="_blank" rel="noopener noreferrer">
-              rrid.site
-            </a>
-            .
+            Enter the RRID for this resource. If you don't already have the RRID, you can look it up
+            at
+            <ExternalLink
+              buttonType="anchor"
+              href="https://rrid.site/"
+              buttonText="rrid.site"
+              buttonSize="xs"
+            />
           </>
         }
         placeholder="e.g., RRID:AB_123456"
         value={rrid}
         onChange={(event) => setRrid(event.currentTarget.value)}
+        error={
+          rrid &&
+          rrid.length > 5 &&
+          !window.evaluateStringAgainstSdsRequirements(rrid, "string-is-valid-rrid")
+            ? "Invalid resource RRID format. Use: RRID:rrid_identifier (e.g., RRID:AB_123456)"
+            : undefined
+        }
         required
       />
       <TextInput
@@ -112,14 +118,19 @@ const ResourceMetadataForm = () => {
       />
       <TextInput
         label="URL"
-        description="Link to the resource documentation or website"
+        description="Link to the resource documentation or website (HTTPS URL)"
         placeholder="e.g., https://example.com"
         value={url}
-        onChange={(event) => setUrl(event.currentTarget.value)}
+        onChange={(event) => {
+          const trimmedValue = event.currentTarget.value.trim();
+          setUrl(trimmedValue);
+        }}
         error={
-          url && url.length > 1 && !url.toLowerCase().startsWith("h") && !matchesHttpPattern(url)
-            ? "URL must start with http:// or https://"
-            : null
+          url &&
+          url.length > 5 &&
+          !window.evaluateStringAgainstSdsRequirements(url, "string-is-valid-url-or-doi")
+            ? "Invalid format. Please enter a valid HTTPS URL or DOI."
+            : undefined
         }
       />
 
@@ -168,10 +179,19 @@ const ResourcesManagementPage = () => {
   const originalResourceName = useGlobalStore((state) => state.originalResourceName);
 
   const validateResourceForm = () => {
-    const rridIsValid = rrid && rrid.trim().length > 0;
+    const rridIsValid =
+      rrid &&
+      rrid.trim().length > 0 &&
+      window.evaluateStringAgainstSdsRequirements(rrid, "string-is-valid-rrid");
     const nameIsValid = name && name.trim().length > 0;
-    const urlIsValid = !url || matchesHttpPattern(url);
-    return rridIsValid && nameIsValid && urlIsValid;
+
+    // Additional URL format validation (only if URL is provided)
+    const urlFormatValid =
+      !url ||
+      url.trim() === "" ||
+      window.evaluateStringAgainstSdsRequirements(url, "string-is-valid-url-or-doi");
+
+    return rridIsValid && nameIsValid && urlFormatValid;
   };
 
   // Validation for add/update button
@@ -219,7 +239,8 @@ const ResourcesManagementPage = () => {
       <GuidedModeSection>
         <Text mb="md">
           Provide information about the resources used in the experiments below. The currently
-          supported resources are: {toOxfordCommaString(resourceTypes)}.
+          supported resources are: {toOxfordCommaString(resourceTypes)}. You must provide a valid
+          RRID for each resource.
         </Text>
       </GuidedModeSection>
 

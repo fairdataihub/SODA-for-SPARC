@@ -16,8 +16,8 @@ import fileJpeg from "/img/jpeg-file.png";
 import fileOther from "/img/other-file.png";
 import {
   swalConfirmAction,
-  swalFileListSingleAction,
-  swalFileListTripleAction,
+  swalListSingleAction,
+  swalListTripleAction,
   swalShowInfo,
 } from "../utils/swal-utils";
 import { setNavButtonDisabled, setNavButtonHidden } from "../../stores/slices/navButtonStateSlice";
@@ -438,7 +438,7 @@ window.handleLocalDatasetImport = async (path) => {
 
   // TODO: Handle dropped/renamed files in the manifest file
   if (forbiddenFileNames.length > 0) {
-    await swalFileListSingleAction(
+    await swalListSingleAction(
       forbiddenFileNames.map((file) => `dataset_root/${file}`),
       "Forbidden file names detected",
       "The files listed below do not comply with the SPARC data standards and will not be imported",
@@ -454,7 +454,7 @@ window.handleLocalDatasetImport = async (path) => {
   }
 
   if (problematicFiles.length > 0) {
-    const userResponse = await swalFileListTripleAction(
+    const userResponse = await swalListTripleAction(
       problematicFiles.map((file) => `dataset_root/${file}`),
       "<p>File name modifications</p>",
       `The files listed below contain the special characters "#", "&", "%", or "+"
@@ -477,7 +477,7 @@ window.handleLocalDatasetImport = async (path) => {
   }
 
   if (hiddenItems.length > 0) {
-    const userResponse = await swalFileListTripleAction(
+    const userResponse = await swalListTripleAction(
       hiddenItems.map((file) => `dataset_root/${file}`),
       "<p>Hidden files detected</p>",
       `Hidden files are typically not recommend per the SPARC data standards, but you can choose to keep them if you wish.`,

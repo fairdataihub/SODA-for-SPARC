@@ -2,7 +2,7 @@ import { Checkbox, Stack, Paper } from "@mantine/core";
 import { toggleModalitySelection, modalityIsSelected } from "../../stores/slices/modalitiesSlice";
 
 const ModalitySelector = ({
-  modalities = ["Microscopy", "Neuroimaging", "Tabular", "Timeseries"],
+  modalities = ["Physiology", "Sequencing", "Radiology", "Microscopy", "Morphology"],
 }) => {
   return (
     <Paper shadow="sm" radius="md" p="sm" withBorder mb="md">

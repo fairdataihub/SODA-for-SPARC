@@ -29,7 +29,7 @@ import {
   getExistingSamples,
   getExistingSites,
 } from "../../../stores/slices/datasetEntityStructureSlice";
-import { swalFileListDoubleAction } from "../../utils/swal-utils";
+import { swalListDoubleAction, swalListSingleAction } from "../../utils/swal-utils";
 import { addEntityNameToEntityType } from "../../../stores/slices/datasetEntitySelectorSlice";
 
 while (!window.baseHtmlLoaded) {
@@ -99,6 +99,36 @@ window.savePageChanges = async (pageBeingLeftID) => {
           errorArray.push({
             type: "notyf",
             message: "Please add at least one performance",
+          });
+          throw errorArray;
+        }
+
+        // Check for performances with invalid protocol URL or DOI format
+        // (This is to throw an error for old progress files that may have invalid protocol formats)
+        const performancesWithInvalidProtocol = performanceList
+          .filter((performance) => {
+            const protocolValue = performance.protocol_url_or_doi;
+
+            return (
+              protocolValue &&
+              protocolValue.trim() !== "" &&
+              !window.evaluateStringAgainstSdsRequirements(
+                protocolValue,
+                "string-is-valid-url-or-doi"
+              )
+            );
+          })
+          .map((performance) => performance.performance_id);
+        if (performancesWithInvalidProtocol.length > 0) {
+          await swalListSingleAction(
+            performancesWithInvalidProtocol,
+            "Invalid Protocol URL or DOI Format",
+            "The following performances have invalid protocol URL or DOI formats. Please update them to use valid HTTPS URLs, DOIs (e.g., 10.1000/xyz123), or DOI URLs (e.g., https://doi.org/10.1000/xyz123).",
+            "Please correct the protocol URL or DOI format for each performance in the list above."
+          );
+          errorArray.push({
+            type: "notyf",
+            message: `Please correct the protocol URL or DOI format for all performances before continuing.`,
           });
           throw errorArray;
         }
@@ -303,7 +333,12 @@ window.savePageChanges = async (pageBeingLeftID) => {
         if (entityType === "subjects") {
           // Get a list of files that were marked as experimental but not assigned to any entities
           const experimentalFiles = getFilesByEntityType("experimental");
-          const entityAssociatedFiles = getFilesByEntityType(["sites", "samples", "subjects"]);
+          const entityAssociatedFiles = getFilesByEntityType([
+            "sites",
+            "derived-samples",
+            "samples",
+            "subjects",
+          ]);
           // Find items that were associated to experimentalFiles but not in entityAssociatedFiles
           const unassociatedExperimentalFiles = experimentalFiles.filter(
             (file) => !entityAssociatedFiles.includes(file)
@@ -321,7 +356,7 @@ window.savePageChanges = async (pageBeingLeftID) => {
 
             if (arraysAreDifferent) {
               const hierarchyEntitiesList = getOxfordCommaSeparatedListOfEntities("or");
-              const continueWithUnassociatedExperimentalFiles = await swalFileListDoubleAction(
+              const continueWithUnassociatedExperimentalFiles = await swalListDoubleAction(
                 unassociatedExperimentalFiles.map((file) =>
                   file.startsWith("data/") ? file.substring(5) : file
                 ),
@@ -423,6 +458,11 @@ window.savePageChanges = async (pageBeingLeftID) => {
         pageBeingLeftComponentType === "entity-spreadsheet-import-page"
       ) {
         const datasetEntityArray = useGlobalStore.getState().datasetEntityArray;
+        window.sodaJSONObj["dataset-entity-array"] = datasetEntityArray;
+        // Save progress early because a lot of work managing entities could have happened here
+        // and we don't want the user to lost it.
+        await guidedSaveProgress();
+
         if (datasetEntityArray.length === 0) {
           errorArray.push({
             type: "notyf",
@@ -431,8 +471,39 @@ window.savePageChanges = async (pageBeingLeftID) => {
           throw errorArray;
         }
 
+        // Check that the species was added for each subject in the datasetEntityArray
+        // (This is to throw an error for old progress files that did not require species)
+        const subjectsWithoutSpecies = datasetEntityArray
+          .filter((entity) => !entity.metadata.species || entity.metadata.species.trim() === "")
+          .map((entity) => entity.metadata.subject_id);
+        if (subjectsWithoutSpecies.length > 0) {
+          await swalListSingleAction(
+            subjectsWithoutSpecies,
+            "Required Species Information Missing",
+            "Species information is now mandatory for all subjects in SPARC datasets. The following subject IDs are missing this required field. Please specify the taxonomic species (e.g., Homo sapiens, Rattus norvegicus, Mus musculus) for each subject.",
+            "Please provide a species for each subject in the list above."
+          );
+          errorArray.push({
+            type: "notyf",
+            message: `Please complete species information for all subjects before continuing.`,
+          });
+          throw errorArray;
+        }
+
         // Get a list of the entities that the user said they had on the dataset content page
         const selectedEntities = window.sodaJSONObj["selected-entities"];
+        const subjects = getExistingSubjects();
+
+        // This should always be true if the user is leaving this page but check just in case
+        if (selectedEntities.includes("subjects")) {
+          if (subjects.length === 0) {
+            errorArray.push({
+              type: "notyf",
+              message: "You must add at least one subject to your dataset before continuing",
+            });
+            throw errorArray;
+          }
+        }
 
         // If the user said they had samples but did not add or import any, throw an error
         if (selectedEntities.includes("samples")) {
@@ -444,21 +515,51 @@ window.savePageChanges = async (pageBeingLeftID) => {
             throw errorArray;
           }
         }
-
-        if (selectedEntities.includes("sites")) {
-          const sites = getExistingSites();
-          if (sites.length === 0) {
+        // If the user said they had derived samples but did not add or import any, throw an error
+        if (selectedEntities.includes("derivedSamples")) {
+          if (getExistingSamples("derived-from-samples").length === 0) {
             errorArray.push({
               type: "notyf",
-              message: "You must add at least one site to your dataset before continuing",
+              message:
+                "You indicated that your dataset contains derived samples (samples derived from other samples), but did not add any samples derived from other samples.",
             });
             throw errorArray;
           }
-          // Prepare the sites metadata
+        }
+
+        if (selectedEntities.includes("subjectSites")) {
+          const subjectSites = getExistingSites().filter((site) =>
+            site.specimen_id.startsWith("sub-")
+          );
+          if (subjectSites.length === 0) {
+            errorArray.push({
+              type: "notyf",
+              message:
+                "You indicated that you collected data from specific locations within your subjects, but did not add any site IDs for those subjects.",
+            });
+            throw errorArray;
+          }
+        }
+
+        if (selectedEntities.includes("sampleSites")) {
+          const sampleSites = getExistingSites().filter((site) =>
+            site.specimen_id.startsWith("sam-")
+          );
+          if (sampleSites.length === 0) {
+            errorArray.push({
+              type: "notyf",
+              message:
+                "You indicated that you collected data from specific locations within your samples, but did not add any site IDs for those samples.",
+            });
+            throw errorArray;
+          }
+        }
+
+        if (selectedEntities.includes("subjectSites") || selectedEntities.includes("sampleSites")) {
+          const sites = getExistingSites();
           const sitesCopy = structuredClone(sites);
           const sitesMetadata = sitesCopy.map((site) => ({
             ...site.metadata,
-            specimen_id: `${site.metadata.sample_id} ${site.metadata.subject_id}`,
           }));
           window.sodaJSONObj["dataset_metadata"]["sites"] = sitesMetadata;
         } else {
@@ -467,9 +568,6 @@ window.savePageChanges = async (pageBeingLeftID) => {
             delete window.sodaJSONObj["dataset_metadata"]["sites"];
           }
         }
-
-        // Save the dataset entity object to the progress file
-        window.sodaJSONObj["dataset-entity-array"] = datasetEntityArray;
       }
     }
 

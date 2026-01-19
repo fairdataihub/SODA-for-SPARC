@@ -58,14 +58,8 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
           window.sodaJSONObj?.["digital-metadata"]?.["banner-image-path"],
           window.sodaJSONObj?.["digital-metadata"]?.["license"],
           window.sodaJSONObj?.["dataset_metadata"]?.["dataset_description"]?.[
-            "study_information"
-          ]?.["study_purpose"],
-          window.sodaJSONObj?.["dataset_metadata"]?.["dataset_description"]?.[
-            "study_information"
-          ]?.["study_data_collection"],
-          window.sodaJSONObj?.["dataset_metadata"]?.["dataset_description"]?.[
-            "study_information"
-          ]?.["study_primary_conclusion"]
+            "basic_information"
+          ]?.["description"]
         );
       }
       window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
@@ -172,14 +166,8 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         window.sodaJSONObj["pennsieve-dataset-subtitle"],
         window.sodaJSONObj?.["digital-metadata"]?.["banner-image-path"],
         window.sodaJSONObj?.["digital-metadata"]?.["license"],
-        window.sodaJSONObj?.["dataset_metadata"]?.["dataset_description"]?.["study_information"]?.[
-          "study_purpose"
-        ],
-        window.sodaJSONObj?.["dataset_metadata"]?.["dataset_description"]?.["study_information"]?.[
-          "study_data_collection"
-        ],
-        window.sodaJSONObj?.["dataset_metadata"]?.["dataset_description"]?.["study_information"]?.[
-          "study_primary_conclusion"
+        window.sodaJSONObj?.["dataset_metadata"]?.["dataset_description"]?.["basic_information"]?.[
+          "description"
         ]
       );
     }
@@ -291,9 +279,7 @@ const uploadPennsieveMetadata = async (
   pennsieveDatasetSubtitle,
   guidedBannerImagePath,
   guidedLicense,
-  guidedPennsieveStudyPurpose,
-  guidedPennsieveDataCollection,
-  guidedPennsievePrimaryConclusion
+  guidedDatasetDescription
 ) => {
   // Show Pennsieve metadata upload table
   window.unHideAndSmoothScrollToElement(
@@ -305,9 +291,7 @@ const uploadPennsieveMetadata = async (
   await guidedAddDatasetDescription(
     guidedBfAccount,
     pennsieveDatasetName,
-    guidedPennsieveStudyPurpose,
-    guidedPennsieveDataCollection,
-    guidedPennsievePrimaryConclusion
+    guidedDatasetDescription
   );
   await guidedAddDatasetBannerImage(guidedBfAccount, pennsieveDatasetName, guidedBannerImagePath);
   if (guidedLicense) {
@@ -319,8 +303,26 @@ const roundToHundredth = (num) => {
   return Math.round(num * 100) / 100;
 };
 
-const convertBytesToGb = (bytes) => {
+export const convertBytesToGb = (bytes) => {
   return roundToHundredth(bytes / 1024 ** 3);
+};
+
+export const bytesToReadableSize = (bytes) => {
+  if (!Number.isFinite(bytes) || bytes < 0) {
+    return "";
+  }
+
+  if (bytes === 0) {
+    return "0 B";
+  }
+
+  const k = 1000;
+  const units = ["B", "KB", "MB", "GB", "TB", "PB"];
+
+  const unitIndex = Math.floor(Math.log(bytes) / Math.log(k));
+  const value = bytes / Math.pow(k, unitIndex);
+
+  return `${Math.round(value)} ${units[unitIndex]}`;
 };
 // Counts the number of files in the dataset structure
 // Note: This function should only be used for local datasets (Not datasets pulled from Pennsieve)
@@ -747,9 +749,9 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
     // Check available space
     if (freeMemoryInBytes < localDatasetSizeInBytes) {
       throw new Error(
-        `Not enough free space on disk. Free space: ${convertBytesToGb(
+        `Not enough free space on disk. Free space: ${bytesToReadableSize(
           freeMemoryInBytes
-        )}GB. Dataset size: ${convertBytesToGb(localDatasetSizeInBytes)}GB`
+        )}GB. Dataset size: ${bytesToReadableSize(localDatasetSizeInBytes)}GB`
       );
     }
 
@@ -1015,20 +1017,14 @@ const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle)
   }
 };
 
-const guidedAddDatasetDescription = async (
-  bfAccount,
-  datasetName,
-  studyPurpose,
-  dataCollection,
-  dataConclusion
-) => {
+const guidedAddDatasetDescription = async (bfAccount, datasetName, guidedDatasetDescription) => {
   document.getElementById("guided-dataset-description-upload-tr").classList.remove("hidden");
   const datasetDescriptionUploadText = document.getElementById(
     "guided-dataset-description-upload-text"
   );
 
-  // If studyPurpose, dataCollection, or dataConclusion are empty, skip adding the description
-  if (!studyPurpose && !dataCollection && !dataConclusion) {
+  // If guidedDatasetDescription is empty (not enough user input to generate a description), skip adding the description
+  if (!guidedDatasetDescription) {
     datasetDescriptionUploadText.innerHTML = "Skipped optional dataset description...";
     guidedUploadStatusIcon("guided-dataset-description-upload-status", "success");
     return;
@@ -1036,18 +1032,10 @@ const guidedAddDatasetDescription = async (
   datasetDescriptionUploadText.innerHTML = "Adding dataset description...";
   guidedUploadStatusIcon("guided-dataset-description-upload-status", "loading");
 
-  let descriptionArray = [];
-
-  studyPurpose && descriptionArray.push("**Study Purpose:** " + studyPurpose + "\n\n");
-  dataCollection && descriptionArray.push("**Data Collection:** " + dataCollection + "\n\n");
-  dataConclusion && descriptionArray.push("**Primary Conclusion:** " + dataConclusion + "\n\n");
-
-  const description = descriptionArray.join("");
-
   const previouslyUploadedDescription =
     window.sodaJSONObj["previously-uploaded-data"]["description"];
 
-  if (previouslyUploadedDescription === description) {
+  if (previouslyUploadedDescription === guidedDatasetDescription) {
     datasetDescriptionUploadText.innerHTML = "Dataset description already added on Pennsieve";
     guidedUploadStatusIcon("guided-dataset-description-upload-status", "success");
     return;
@@ -1056,13 +1044,13 @@ const guidedAddDatasetDescription = async (
   try {
     await client.put(
       `/manage_datasets/datasets/${datasetName}/readme`,
-      { updated_readme: description },
+      { updated_readme: guidedDatasetDescription },
       { params: { selected_account: bfAccount } }
     );
 
     datasetDescriptionUploadText.innerHTML = `Successfully added dataset description!`;
     guidedUploadStatusIcon("guided-dataset-description-upload-status", "success");
-    window.sodaJSONObj["previously-uploaded-data"]["description"] = description;
+    window.sodaJSONObj["previously-uploaded-data"]["description"] = guidedDatasetDescription;
     await guidedSaveProgress();
 
     // Send successful dataset description upload event to Kombucha

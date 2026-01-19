@@ -83,7 +83,7 @@ export const swalShowInfo = async (title, infoText) => {
   });
 };
 
-export const swalFileListSingleAction = async (fileList, title, helpText, postActionText) => {
+export const swalListSingleAction = async (fileList, title, helpText, postActionText) => {
   await Swal.fire({
     title: title,
     html: `
@@ -107,7 +107,7 @@ export const swalFileListSingleAction = async (fileList, title, helpText, postAc
   });
 };
 
-export const swalFileListDisplayOnly = async (fileList, title, helpText) => {
+export const swalListDisplayOnly = async (fileList, title, helpText) => {
   await Swal.fire({
     title: title,
     html: `
@@ -135,7 +135,7 @@ export const swalFileListDisplayOnly = async (fileList, title, helpText) => {
   });
 };
 
-export const swalFileListDoubleAction = async (
+export const swalListDoubleAction = async (
   fileList,
   title,
   helpText,
@@ -169,7 +169,7 @@ export const swalFileListDoubleAction = async (
   return action;
 };
 
-export const swalFileListTripleAction = async (
+export const swalListTripleAction = async (
   fileList,
   title,
   helpText,

@@ -5,6 +5,17 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v 16.7.0 - 2025-01-19
+
+## Feature Additions:
+
+- Updated metadata fields from SDS 3.0.0 to SDS 3.0.2.
+- Added the ability to specify sites as belonging to both subjects and samples instead of just samples.
+- Added the ability to specify samples as being derived from both subjects or samples.
+- Added sweet alerts for metadata entities that are missing required metadata fields.
+- Added a derived samples file->entity association page.
+- Updated contributors metadata sweet alerts to allow users to assign multiple roles.
+
 ## v 16.6.0 - 2025-12-15
 
 ## Feature Additions:

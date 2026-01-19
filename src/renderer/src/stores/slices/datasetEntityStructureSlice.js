@@ -88,12 +88,25 @@ export const getEntityDataById = (entityId) => {
     }
   }
   if (entityId.startsWith("site-")) {
-    // Look through all of the samples and find the site
+    // Look through all subjects and their sites, then all samples and their sites
     for (const subject of datasetEntityArray) {
-      for (const sample of subject.samples) {
-        const site = sample.sites.find((site) => site.id === entityId);
+      // Check subject sites first
+      if (subject.subjectSites) {
+        const site = subject.subjectSites.find((site) => site.id === entityId);
         if (site) {
           return site;
+        }
+      }
+
+      // Then check sample sites
+      if (subject.samples) {
+        for (const sample of subject.samples) {
+          if (sample.sites) {
+            const site = sample.sites.find((site) => site.id === entityId);
+            if (site) {
+              return site;
+            }
+          }
         }
       }
     }
@@ -174,10 +187,13 @@ export const getExistingSubjects = () => {
 };
 
 // Sample management functions
-export const addSampleToSubject = (subjectId, sampleId, metadata = {}) => {
+export const addSample = (subjectId, parentSampleId, sampleId, metadata = {}) => {
   // Use normalizeEntityId for both sample and subject IDs
   const normalizedSampleId = normalizeEntityId("sam-", sampleId);
   const normalizedSubjectId = normalizeEntityId("sub-", subjectId);
+  const normalizedParentSampleId = parentSampleId
+    ? normalizeEntityId("sam-", parentSampleId)
+    : null;
 
   if (!normalizedSampleId) {
     throw new Error("Sample ID cannot be empty");
@@ -188,22 +204,22 @@ export const addSampleToSubject = (subjectId, sampleId, metadata = {}) => {
   if (existingSamples.some((sample) => sample.id === normalizedSampleId)) {
     throw new Error(`A sample with ID ${normalizedSampleId} already exists.`);
   }
+
   useGlobalStore.setState(
     produce((state) => {
       const subject = state.datasetEntityArray.find((s) => s.id === normalizedSubjectId);
       if (subject) {
-        // Create merged metadata object for the sample
-        const mergedMetadata = {
-          ...metadata,
-          subject_id: normalizedSubjectId,
-          sample_id: normalizedSampleId,
-        };
-
+        // Add sample to subject's samples array
         subject.samples.push({
           id: normalizedSampleId,
           type: "sample",
           parentSubject: normalizedSubjectId,
-          metadata: mergedMetadata, // Use the merged metadata
+          metadata: {
+            ...metadata,
+            subject_id: normalizedSubjectId,
+            sample_id: normalizedSampleId,
+            was_derived_from: normalizedParentSampleId || normalizedSubjectId || "",
+          },
           sites: [],
           performances: [],
         });
@@ -223,9 +239,23 @@ export const deleteSampleFromSubject = (subjectId, sampleId) => {
   );
 };
 
-export const getExistingSamples = () => {
+export const getExistingSamples = (filterType = "all") => {
   const { datasetEntityArray } = useGlobalStore.getState();
-  return datasetEntityArray.flatMap((subject) => subject.samples);
+  const allSamples = datasetEntityArray.flatMap((subject) => subject.samples);
+
+  if (filterType === "derived-from-subjects") {
+    return allSamples.filter(
+      (sample) =>
+        sample.metadata?.was_derived_from && sample.metadata.was_derived_from.startsWith("sub-")
+    );
+  } else if (filterType === "derived-from-samples") {
+    return allSamples.filter(
+      (sample) =>
+        sample.metadata?.was_derived_from && sample.metadata.was_derived_from.startsWith("sam-")
+    );
+  } else {
+    return allSamples; // Return all samples (original behavior)
+  }
 };
 
 /**
@@ -233,11 +263,26 @@ export const getExistingSamples = () => {
  * @returns {Array} Array of all site IDs in the dataset
  */
 export const getExistingSites = () => {
-  // Get the list of samples from the dataset
-  const existingSamples = getExistingSamples();
-  // Flatten the samples and extract site IDs
-  const existingSites = existingSamples.flatMap((sample) => sample.sites || []);
-  return existingSites;
+  const { datasetEntityArray } = useGlobalStore.getState();
+  const allSites = [];
+
+  for (const subject of datasetEntityArray) {
+    // Add subject sites
+    if (subject.subjectSites) {
+      allSites.push(...subject.subjectSites);
+    }
+
+    // Add sample sites
+    if (subject.samples) {
+      for (const sample of subject.samples) {
+        if (sample.sites) {
+          allSites.push(...sample.sites);
+        }
+      }
+    }
+  }
+
+  return allSites;
 };
 
 export const modifySampleId = (subjectId, oldSampleId, newSampleId) => {
@@ -273,6 +318,7 @@ export const addSiteToSubject = (subjectId, siteId, metadata = {}) => {
     produce((state) => {
       const subject = state.datasetEntityArray.find((s) => s.id === normalizedSubjectId);
       if (subject) {
+        // If subjectSites array doesn't exist yet, initialize it
         if (!subject.subjectSites) subject.subjectSites = [];
 
         // Create merged metadata object for the site
@@ -280,6 +326,7 @@ export const addSiteToSubject = (subjectId, siteId, metadata = {}) => {
           ...metadata,
           site_id: normalizedSiteId,
           subject_id: normalizedSubjectId,
+          specimen_id: normalizedSubjectId,
         };
 
         subject.subjectSites.push({
@@ -287,31 +334,11 @@ export const addSiteToSubject = (subjectId, siteId, metadata = {}) => {
           type: "site",
           parentSubject: subject.id,
           metadata: mergedMetadata,
+          specimen_id: normalizedSubjectId,
         });
       }
     })
   );
-};
-
-export const deleteSiteFromSubject = (subjectId, siteId) => {
-  useGlobalStore.setState(
-    produce((state) => {
-      const subject = state.datasetEntityArray.find((s) => s.id === subjectId); // Changed from subjectId to id
-      if (subject && subject.subjectSites) {
-        subject.subjectSites = subject.subjectSites.filter((site) => site.id !== siteId); // Changed from siteId to id
-      }
-    })
-  );
-};
-
-export const getExistingPerformancesR = () => {
-  // Get a list of existing subjects
-  const existingSubjects = getExistingSubjects();
-  // Flatten the subjects and extract performance IDs
-  const existingPerformances = existingSubjects.flatMap(
-    (subject) => subject.subjectPerformances || []
-  );
-  return existingPerformances;
 };
 
 // Sample site management functions
@@ -344,6 +371,7 @@ export const addSiteToSample = (subjectId, sampleId, siteId, metadata = {}) => {
             site_id: normalizedSiteId,
             subject_id: normalizedSubjectId,
             sample_id: normalizedSampleId,
+            specimen_id: normalizedSampleId,
           };
 
           sample.sites.push({
@@ -351,6 +379,7 @@ export const addSiteToSample = (subjectId, sampleId, siteId, metadata = {}) => {
             type: "site",
             parentSubject: subject.id,
             parentSample: sample.id,
+            specimen_id: normalizedSampleId,
             metadata: mergedMetadata,
           });
         }
@@ -359,18 +388,46 @@ export const addSiteToSample = (subjectId, sampleId, siteId, metadata = {}) => {
   );
 };
 
-export const deleteSiteFromSample = (subjectId, sampleId, siteId) => {
+// Unified site deletion function that works for both subject sites and sample sites
+export const deleteSite = (siteId) => {
   useGlobalStore.setState(
     produce((state) => {
-      const subject = state.datasetEntityArray.find((s) => s.id === subjectId); // Changed from subjectId to id
-      if (subject && subject.samples) {
-        const sample = subject.samples.find((s) => s.id === sampleId); // Changed from sampleId to id
-        if (sample && sample.sites) {
-          sample.sites = sample.sites.filter((site) => site.id !== siteId); // Changed from siteId to id
+      // Find the site across all subjects and samples
+      for (const subject of state.datasetEntityArray) {
+        // Check subject sites
+        if (subject.subjectSites) {
+          const siteIndex = subject.subjectSites.findIndex((site) => site.id === siteId);
+          if (siteIndex !== -1) {
+            subject.subjectSites.splice(siteIndex, 1);
+            return;
+          }
+        }
+
+        // Check sample sites
+        if (subject.samples) {
+          for (const sample of subject.samples) {
+            if (sample.sites) {
+              const siteIndex = sample.sites.findIndex((site) => site.id === siteId);
+              if (siteIndex !== -1) {
+                sample.sites.splice(siteIndex, 1);
+                return;
+              }
+            }
+          }
         }
       }
     })
   );
+};
+
+export const getExistingPerformancesR = () => {
+  // Get a list of existing subjects
+  const existingSubjects = getExistingSubjects();
+  // Flatten the subjects and extract performance IDs
+  const existingPerformances = existingSubjects.flatMap(
+    (subject) => subject.subjectPerformances || []
+  );
+  return existingPerformances;
 };
 
 export const deletePerformanceFromSample = (subjectId, sampleId, performanceId) => {

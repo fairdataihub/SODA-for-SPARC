@@ -10,7 +10,7 @@
         "subject_id": {
           "type": "string",
           "description": "Unique identifier for the subject. This should be a unique identifier for the subject within the dataset.",
-          "minLength": 1
+          "pattern": "^(pop-)?sub-[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?$"
         },
         "pool_id": {
           "type": "string",
@@ -26,11 +26,11 @@
         },
         "sex": {
           "type": "string",
-          "description": "Sex of the subject."
+          "description": "Sex of the subject. Can be represented as freetext or a CURIE or IRI from a standard ontology such as PATO."
         },
         "species": {
           "type": "string",
-          "description": "Species of the subject. This should be the scientific name of the species."
+          "description": "Species of the subject. This should be the scientific name of the species. For example CURIE or IRI from NCBI taxonomy or something free form."
         },
         "strain": {
           "type": "string",
@@ -38,7 +38,18 @@
         },
         "rrid_for_strain": {
           "type": "string",
-          "description": "RRID for strain. This should be a unique identifier for the strain in the Research Resource Identifier (RRID) database."
+          "description": "RRID for strain. This should be a unique identifier for the strain in the Research Resource Identifier (RRID) database.",
+          "anyOf": [
+            {
+              "pattern": "^RRID:[A-Z]+_[0-9]+$"
+            },
+            {
+              "pattern": "^RRID:([A-Z]+):([A-Za-z0-9_:-]+)$"
+            },
+            {
+              "pattern": "^RRID:[A-Za-z]+\\S*[_:]\\S*$"
+            }
+          ]
         },
         "age_category": {
           "type": "string",
@@ -46,7 +57,7 @@
         },
         "also_in_dataset": {
           "type": "string",
-          "description": "Indicates if the subject is also part of another dataset."
+          "description": "Indicates if the subject is also part of another dataset. Should be a DOI or https link to another dataset or an other identifier."
         },
         "member_of": {
           "type": "string",
@@ -55,6 +66,10 @@
         "metadata_only": {
           "type": "string",
           "description": "Indicates if this entry is metadata only."
+        },
+        "number_of_directly_derived_samples": {
+          "type": "string",
+          "description": "Number of samples directly derived from this sample."
         },
         "laboratory_internal_id": {
           "type": "string",
@@ -73,8 +88,24 @@
           "description": "Maximum age range of the subject."
         },
         "body_mass": {
-          "type": "string",
-          "description": "Body mass of the subject."
+          "oneOf": [
+            {
+              "type": "string",
+              "description": "Body mass of the subject."
+            },
+            {
+              "type": "number",
+              "description": "Body mass of the subject."
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string" },
+                "value": { "type": "number" },
+                "unit": { "type": "string" }
+              }
+            }
+          ]
         },
         "genotype": {
           "type": "string",
@@ -100,7 +131,7 @@
           "type": "string",
           "description": "Date of the experiment involving the subject."
         },
-        "disease_or_disorder": {
+        "disease": {
           "type": "string",
           "description": "Disease or disorder associated with the subject."
         },
@@ -118,10 +149,20 @@
         },
         "protocol_url_or_doi": {
           "type": "string",
-          "description": "URL or DOI of the protocol used for the subject."
+          "description": "URL or DOI of the protocol used for the subject.",
+          "anyOf": [
+            { "pattern": "^$" },
+            {
+              "pattern": "^https://[A-Za-z0-9.-]+[A-Za-z0-9](:[0-9]+)?(/.*)?$"
+            },
+            { "pattern": "^10\\.\\d{4,9}/[-._;()/:A-Za-z0-9]+$" },
+            {
+              "pattern": "^https://doi\\.org/10\\.\\d{4,9}/[-._;()/:A-Za-z0-9]+$"
+            }
+          ]
         }
       },
-      "required": ["subject_id"],
+      "required": ["subject_id", "species"],
       "additionalProperties": {
         "type": "string",
         "description": "Additional properties for the subject. This can include any other relevant information about the subject that is not covered by the predefined fields."

@@ -9,7 +9,6 @@ import {
 } from "../../../../scripts/guided-mode/tagifies/tagifies";
 import { getGuidedDatasetName, getGuidedDatasetSubtitle } from "../curationPreparation/utils";
 import useGlobalStore from "../../../../stores/globalStore";
-import { error } from "jquery";
 import {
   getExistingSubjects,
   getExistingSamples,
@@ -18,9 +17,12 @@ import {
   CONTRIBUTORS_REGEX,
   affiliationRorIsValid,
 } from "../../metadata/contributors/contributorsValidation";
+import { countFilesInDatasetStructure } from "../../../utils/datasetStructure";
+import { bytesToReadableSize } from "../../generateDataset/generate";
+import client from "../../../client";
+import { swalListSingleAction } from "../../../utils/swal-utils";
 
 import { getDropDownState } from "../../../../stores/slices/dropDownSlice";
-import { pennsieveDatasetSelectSlice } from "../../../../stores/slices/pennsieveDatasetSelectSlice";
 import { isCheckboxCardChecked } from "../../../../stores/slices/checkboxCardSlice";
 
 export const savePagePrepareMetadata = async (pageBeingLeftID) => {
@@ -54,31 +56,161 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
         });
         throw errorArray;
       }
+
+      // Check for resources with invalid RRID format
+      // (This is to throw an error for old progress files that may have invalid RRID formats)
+      const resourcesWithInvalidRrid = resourceList
+        .filter((resource) => {
+          const rridValue = resource.rrid;
+          return !window.evaluateStringAgainstSdsRequirements(rridValue, "string-is-valid-rrid");
+        })
+        .map((resource) => resource.name);
+      if (resourcesWithInvalidRrid.length > 0) {
+        await swalListSingleAction(
+          resourcesWithInvalidRrid,
+          "Invalid RRID Format",
+          "The following resources have invalid RRID formats. Please update them to use valid RRID format (e.g., RRID:IMSR_JAX:000664, RRID:AB_123456, RRID:SCR_123456).",
+          "Please correct the RRID format for each resource in the list above."
+        );
+        errorArray.push({
+          type: "notyf",
+          message: `Please correct the RRID format for all resources before continuing.`,
+        });
+        throw errorArray;
+      }
+
+      // Check for resources with invalid URL format
+      // (This is to throw an error for old progress files that may have invalid URL formats)
+      const resourcesWithInvalidUrl = resourceList
+        .filter((resource) => {
+          const urlValue = resource.url;
+          return (
+            urlValue &&
+            urlValue.trim() !== "" &&
+            !window.evaluateStringAgainstSdsRequirements(urlValue, "string-is-valid-url-or-doi")
+          );
+        })
+        .map((resource) => resource.name);
+      if (resourcesWithInvalidUrl.length > 0) {
+        await swalListSingleAction(
+          resourcesWithInvalidUrl,
+          "Invalid URL Format",
+          "The following resources have invalid URL formats. Please update them to use valid HTTPS URLs, DOIs (e.g., 10.1000/xyz123), or DOI URLs (e.g., https://doi.org/10.1000/xyz123).",
+          "Please correct the URL format for each resource in the list above."
+        );
+        errorArray.push({
+          type: "notyf",
+          message: `Please correct the URL format for all resources before continuing.`,
+        });
+        throw errorArray;
+      }
       // Save the resources metadata
       window.sodaJSONObj["dataset_metadata"]["resources"] = resourceList;
     }
   }
 
+  if (
+    pageBeingLeftID === "guided-subjects-metadata-tab" ||
+    pageBeingLeftID === "guided-manual-dataset-entity-and-metadata-tab"
+  ) {
+    const subjects = getExistingSubjects();
+    // Check for subjects with invalid protocol URL or DOI format
+    // (This is to throw an error for old progress files that may have invalid protocol formats)
+    const subjectsWithInvalidProtocol = subjects
+      .filter((subject) => {
+        const protocolValue = subject.metadata.protocol_url_or_doi;
+        return (
+          protocolValue &&
+          protocolValue.trim() !== "" &&
+          !window.evaluateStringAgainstSdsRequirements(protocolValue, "string-is-valid-url-or-doi")
+        );
+      })
+      .map((subject) => subject.metadata.subject_id);
+    if (subjectsWithInvalidProtocol.length > 0) {
+      await swalListSingleAction(
+        subjectsWithInvalidProtocol,
+        "Invalid Protocol URL or DOI Format",
+        "The following subjects have invalid protocol URL or DOI formats. Please update them to use valid HTTPS URLs, DOIs (e.g., 10.1000/xyz123), or DOI URLs (e.g., https://doi.org/10.1000/xyz123).",
+        "Please correct the protocol URL or DOI format for each subject in the list above."
+      );
+      errorArray.push({
+        type: "notyf",
+        message: `Please correct the protocol URL or DOI format for all subjects before continuing.`,
+      });
+      throw errorArray;
+    }
+
+    // Check for subjects with invalid RRID format
+    // (This is to throw an error for old progress files that may have invalid RRID formats)
+    const subjectsWithInvalidRrid = subjects
+      .filter((subject) => {
+        const rridValue = subject.metadata.rrid_for_strain;
+        console.log("rrid", rridValue);
+        return (
+          rridValue &&
+          rridValue.trim() !== "" &&
+          !window.evaluateStringAgainstSdsRequirements(rridValue, "string-is-valid-rrid")
+        );
+      })
+      .map((subject) => subject.metadata.subject_id);
+    if (subjectsWithInvalidRrid.length > 0) {
+      await swalListSingleAction(
+        subjectsWithInvalidRrid,
+        "Invalid RRID Format",
+        "The following subjects have invalid RRID formats. Please update them to use valid RRID format (e.g., RRID:IMSR_JAX:000664, RRID:AB_123456, RRID:SCR_123456).",
+        "Please correct the RRID format for each subject in the list above."
+      );
+      errorArray.push({
+        type: "notyf",
+        message: `Please correct the RRID format for all subjects before continuing.`,
+      });
+      throw errorArray;
+    }
+  }
+
   if (pageBeingLeftID === "guided-subjects-metadata-tab") {
     const subjects = getExistingSubjects();
+    const samplesDerivedFromSubjects = getExistingSamples("derived-from-subjects");
 
     const subjectsMetadata = subjects.map((subject) => {
       const metadata = { ...subject.metadata };
 
       if (metadata.age_numeric_value && metadata.age_unit) {
         metadata.age = `${metadata.age_numeric_value} ${metadata.age_unit}`;
+      } else {
+        metadata.age = "";
       }
       if (metadata.age_range_min_numeric_value && metadata.age_range_unit) {
         metadata.age_range_min = `${metadata.age_range_min_numeric_value} ${metadata.age_range_unit}`;
+      } else {
+        metadata.age_range_min = "";
       }
-
       if (metadata.age_range_max_numeric_value && metadata.age_range_unit) {
         metadata.age_range_max = `${metadata.age_range_max_numeric_value} ${metadata.age_range_unit}`;
+      } else {
+        metadata.age_range_max = "";
       }
-
       if (metadata.body_mass_numeric_value && metadata.body_mass_unit) {
         metadata.body_mass = `${metadata.body_mass_numeric_value} ${metadata.body_mass_unit}`;
+      } else {
+        metadata.body_mass = "";
       }
+
+      // Get the number of samples derived directly from the subject
+      const subjectId = metadata.subject_id;
+      const numberOfSamplesDerivedFromThisSubject = samplesDerivedFromSubjects.filter(
+        (sample) => sample.metadata.was_derived_from === subjectId
+      ).length;
+
+      metadata.number_of_directly_derived_samples = `${numberOfSamplesDerivedFromThisSubject}`;
+
+      // Check if the subject has any files in the dataset-entity-obj
+      const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
+      const subjectFiles = datasetEntityObj.subjects?.[metadata.subject_id] || {};
+      const hasFiles = Object.keys(subjectFiles).length > 0;
+
+      // Set metadata_only field based on whether the subject has associated files
+      metadata.metadata_only = hasFiles ? "no" : "yes";
 
       // Remove the extraneous fields to prevent schema validation errors
       delete metadata.age_numeric_value;
@@ -94,11 +226,62 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     window.sodaJSONObj["dataset_metadata"]["subjects"] = subjectsMetadata;
   }
 
+  if (
+    pageBeingLeftID === "guided-subjects-metadata-tab" ||
+    pageBeingLeftID === "guided-manual-dataset-entity-and-metadata-tab"
+  ) {
+    const samples = getExistingSamples();
+
+    // Check for samples with invalid protocol URL or DOI format
+    // (This is to throw an error for old progress files that may have invalid protocol formats)
+    const samplesWithInvalidProtocol = samples
+      .filter((sample) => {
+        const protocolValue = sample.metadata.protocol_url_or_doi;
+        return (
+          protocolValue &&
+          protocolValue.trim() !== "" &&
+          !window.evaluateStringAgainstSdsRequirements(protocolValue, "string-is-valid-url-or-doi")
+        );
+      })
+      .map((sample) => sample.metadata.sample_id);
+    if (samplesWithInvalidProtocol.length > 0) {
+      await swalListSingleAction(
+        samplesWithInvalidProtocol,
+        "Invalid Protocol URL or DOI Format",
+        "The following samples have invalid protocol URL or DOI formats. Please update them to use valid HTTPS URLs, DOIs (e.g., 10.1000/xyz123), or DOI URLs (e.g., https://doi.org/10.1000/xyz123).",
+        "Please correct the protocol URL or DOI format for each sample in the list above."
+      );
+      errorArray.push({
+        type: "notyf",
+        message: `Please correct the protocol URL or DOI format for all samples before continuing.`,
+      });
+      throw errorArray;
+    }
+  }
+
   if (pageBeingLeftID === "guided-samples-metadata-tab") {
     // Prepare the samples metadata
     const samples = getExistingSamples();
+
     const samplesMetadata = samples.map((sample) => {
-      return sample.metadata;
+      const metadata = { ...sample.metadata };
+
+      // Check if the sample has any files in the dataset-entity-obj
+      const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
+      const sampleFiles = datasetEntityObj.samples?.[metadata.sample_id] || {};
+      const hasFiles = Object.keys(sampleFiles).length > 0;
+
+      // Set metadata_only field based on whether the sample has associated files
+      metadata.metadata_only = hasFiles ? "no" : "yes";
+
+      // Get the amount of samples derived from this sample
+      const sampleId = metadata.sample_id;
+      const derivedSamples = samples.filter((s) => s.metadata.was_derived_from === sampleId);
+      const numberOfDirectlyDerivedSamples = derivedSamples.length;
+
+      metadata.number_of_directly_derived_samples = `${numberOfDirectlyDerivedSamples}`;
+
+      return metadata;
     });
     window.sodaJSONObj["dataset_metadata"]["samples"] = samplesMetadata;
   }
@@ -155,14 +338,36 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       throw errorArray;
     }
 
-    // Make sure at least one contributor has the contributor_role of "PrincipalInvestigator"
-    const hasPrincipalInvestigator = contributors.some(
-      (contributor) => contributor.contributor_role === "PrincipalInvestigator"
+    // Make sure one and only one Principal Investigator is assigned
+    const principalInvestigators = contributors.filter((contributor) =>
+      contributor.contributor_roles.includes("PrincipalInvestigator")
     );
-    if (!hasPrincipalInvestigator) {
+    if (principalInvestigators.length === 0) {
       errorArray.push({
         type: "notyf",
         message: "Please assign at least one contributor as Principal Investigator",
+      });
+      throw errorArray;
+    }
+
+    if (principalInvestigators.length > 1) {
+      errorArray.push({
+        type: "notyf",
+        message: "Please assign only one contributor as Principal Investigator",
+      });
+      throw errorArray;
+    }
+
+    // For contributors that were assigned the "Creator" role, make sure they have at least one other role too
+    const creatorsWithNoOtherRole = contributors.filter(
+      (contributor) =>
+        contributor.contributor_roles.includes("Creator") &&
+        contributor.contributor_roles.length === 1
+    );
+    if (creatorsWithNoOtherRole.length > 0) {
+      errorArray.push({
+        type: "notyf",
+        message: `Please assign at least one additional role to the contributor "${creatorsWithNoOtherRole[0].contributor_name}" who was assigned the "Creator" role.`,
       });
       throw errorArray;
     }
@@ -225,6 +430,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
 
   if (pageBeingLeftID === "guided-create-description-metadata-tab") {
     const metadataVersion = "3.0.0";
+    const currentSodaVersion = useGlobalStore.getState().appVersion || "unknown";
     // Get values from digital_metadata
     const title = getGuidedDatasetName();
     const subtitle = getGuidedDatasetSubtitle();
@@ -252,6 +458,30 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     const studyDataCollection = studyDataCollectionInput.value.trim() || "";
     const studyPrimaryConclusion = studyPrimaryConclusionInput.value.trim() || "";
     const studyCollectionTitle = studyCollectionTitleInput.value.trim() || "";
+
+    let descriptionArray = [];
+
+    studyPurpose && descriptionArray.push("Study Purpose: " + studyPurpose);
+    studyDataCollection && descriptionArray.push("Data Collection: " + studyDataCollection);
+    studyPrimaryConclusion &&
+      descriptionArray.push("Primary Conclusion: " + studyPrimaryConclusion);
+
+    if (descriptionArray.length > 0) {
+      const numberOfFilesInDataset = countFilesInDatasetStructure(
+        window.datasetStructureJSONObj?.["folders"]?.["data"]
+      );
+      descriptionArray.push("Number of Files in Dataset: " + numberOfFilesInDataset);
+      // Get dataset size
+      const localDatasetSizeReq = await client.post(
+        "/curate_datasets/dataset_size",
+        { soda_json_structure: window.sodaJSONObj },
+        { timeout: 0 }
+      );
+      const localDatasetSizeInBytes = localDatasetSizeReq.data.dataset_size;
+      const formattedDatasetSize = bytesToReadableSize(localDatasetSizeInBytes);
+      descriptionArray.push("Dataset Size: " + formattedDatasetSize);
+    }
+    const datasetDescription = descriptionArray.join("\n\n");
 
     // Get tagify study fields
     const studyOrganSystemTags = window.getTagsFromTagifyElement(guidedStudyOrganSystemsTagify);
@@ -292,13 +522,17 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       standards_information: [
         {
           data_standard: "SPARC",
-          data_standard_version: "3.0.0",
+          data_standard_version: "3.0.2",
+        },
+        {
+          data_standard: "SODA Version",
+          data_standard_version: currentSodaVersion,
         },
       ],
       basic_information: {
         title,
         subtitle,
-        description: subtitle,
+        description: datasetDescription,
         keywords: keywordArray,
         funding: fundingArray,
         acknowledgments: acknowledgments,
@@ -358,16 +592,16 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
           licenseType: "CDLA-Sharing-1.0",
           pennsieveString: "Community Data License Agreement – Sharing",
         },
-        "ODC-ODbL – Open Data Commons Open Database License": {
-          licenseType: "ODC-ODbL",
+        "ODbL-1.0 – Open Data Commons Open Database License": {
+          licenseType: "ODbL-1.0",
           pennsieveString: "Open Data Commons Open Database",
         },
-        "ODC-BY – Open Data Commons Attribution License": {
-          licenseType: "ODC-BY",
+        "ODC-By-1.0 – Open Data Commons Attribution License": {
+          licenseType: "ODC-By-1.0",
           pennsieveString: "Open Data Commons Attribution",
         },
-        "ODC-PDDL – Open Data Commons Public Domain Dedication and License": {
-          licenseType: "ODC-PDDL",
+        "PDDL-1.0 – Open Data Commons Public Domain Dedication and License": {
+          licenseType: "PDDL-1.0",
           pennsieveString: "Open Data Commons Public Domain Dedication and License",
         },
         "CC0-1.0 – Creative Commons Zero 1.0 Universal": {

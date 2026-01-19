@@ -13,7 +13,18 @@
       "type": "array",
       "items": {
         "type": "string",
-        "description": "The identifier used to identify the resource in the RRID database."
+        "description": "The identifier used to identify the resource in the RRID database.",
+        "anyOf": [
+          {
+            "pattern": "^RRID:[A-Z]+_[0-9]+$"
+          },
+          {
+            "pattern": "^RRID:([A-Z]+):([A-Za-z0-9_:-]+)$"
+          },
+          {
+            "pattern": "^RRID:[A-Za-z]+\\S*[_:]\\S*$"
+          }
+        ]
       }
     },
     "ontology_term": {
@@ -40,8 +51,13 @@
           "properties": {
             "Link": {
               "type": "string",
-              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
-              "description": "The URL or DOI of the publication that describes the tool or method."
+              "description": "The URL or DOI of the publication that describes the tool or method.",
+              "anyOf": [
+                {
+                  "pattern": "^https://doi.org/10\\.[0-9]{4,9}[-._;()/:a-zA-Z0-9]+$"
+                },
+                { "pattern": "^https://[wd-._~:/?#[]@!$&'()*+,;=%]+$" }
+              ]
             },
             "Rating": {
               "type": "string",
@@ -67,7 +83,12 @@
           "properties": {
             "Link": {
               "type": "string",
-              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "anyOf": [
+                {
+                  "pattern": "^https://doi.org/10\\.[0-9]{4,9}[-._;()/:a-zA-Z0-9]+$"
+                },
+                { "pattern": "^https://[wd-._~:/?#[]@!$&'()*+,;=%]+$" }
+              ],
               "description": "The URL or DOI of the publication that describes the tool or method."
             },
             "Rating": {
@@ -94,7 +115,12 @@
           "properties": {
             "Link": {
               "type": "string",
-              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "anyOf": [
+                {
+                  "pattern": "^https://doi.org/10\\.[0-9]{4,9}[-._;()/:a-zA-Z0-9]+$"
+                },
+                { "pattern": "^https://[wd-._~:/?#[]@!$&'()*+,;=%]+$" }
+              ],
               "description": "The URL or DOI of the publication that describes the tool or method."
             },
             "Rating": {
@@ -121,7 +147,12 @@
           "properties": {
             "Link": {
               "type": "string",
-              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "anyOf": [
+                {
+                  "pattern": "^https://doi.org/10\\.[0-9]{4,9}[-._;()/:a-zA-Z0-9]+$"
+                },
+                { "pattern": "^https://[wd-._~:/?#[]@!$&'()*+,;=%]+$" }
+              ],
               "description": "The URL or DOI of the publication that describes the tool or method."
             }
           },
@@ -132,7 +163,12 @@
           "properties": {
             "Link": {
               "type": "string",
-              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "anyOf": [
+                {
+                  "pattern": "^https://doi.org/10\\.[0-9]{4,9}[-._;()/:a-zA-Z0-9]+$"
+                },
+                { "pattern": "^https://[wd-._~:/?#[]@!$&'()*+,;=%]+$" }
+              ],
               "description": "The URL or DOI of the publication that describes the tool or method."
             }
           },
@@ -143,7 +179,12 @@
           "properties": {
             "Link": {
               "type": "string",
-              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "anyOf": [
+                {
+                  "pattern": "^https://doi.org/10\\.[0-9]{4,9}[-._;()/:a-zA-Z0-9]+$"
+                },
+                { "pattern": "^https://[wd-._~:/?#[]@!$&'()*+,;=%]+$" }
+              ],
               "description": "The URL or DOI of the publication that describes the tool or method."
             },
             "Rating": {
@@ -170,7 +211,12 @@
           "properties": {
             "Link": {
               "type": "string",
-              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "anyOf": [
+                {
+                  "pattern": "^https://doi.org/10\\.[0-9]{4,9}[-._;()/:a-zA-Z0-9]+$"
+                },
+                { "pattern": "^https://[wd-._~:/?#[]@!$&'()*+,;=%]+$" }
+              ],
               "description": "The URL or DOI of the publication that describes the tool or method."
             },
             "Rating": {
@@ -197,7 +243,12 @@
           "properties": {
             "Link": {
               "type": "string",
-              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "anyOf": [
+                {
+                  "pattern": "^https://doi.org/10\\.[0-9]{4,9}[-._;()/:a-zA-Z0-9]+$"
+                },
+                { "pattern": "^https://[wd-._~:/?#[]@!$&'()*+,;=%]+$" }
+              ],
               "description": "The URL or DOI of the publication that describes the tool or method."
             },
             "Rating": {
@@ -224,7 +275,12 @@
           "properties": {
             "Link": {
               "type": "string",
-              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "anyOf": [
+                {
+                  "pattern": "^https://doi.org/10\\.[0-9]{4,9}[-._;()/:a-zA-Z0-9]+$"
+                },
+                { "pattern": "^https://[wd-._~:/?#[]@!$&'()*+,;=%]+$" }
+              ],
               "description": "The URL or DOI of the publication that describes the tool or method."
             },
             "Rating": {
@@ -251,7 +307,12 @@
           "properties": {
             "Link": {
               "type": "string",
-              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "anyOf": [
+                {
+                  "pattern": "^https://doi.org/10\\.[0-9]{4,9}[-._;()/:a-zA-Z0-9]+$"
+                },
+                { "pattern": "^https://[wd-._~:/?#[]@!$&'()*+,;=%]+$" }
+              ],
               "description": "The URL or DOI of the publication that describes the tool or method."
             }
           },
@@ -262,7 +323,12 @@
           "properties": {
             "Link": {
               "type": "string",
-              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "anyOf": [
+                {
+                  "pattern": "^https://doi.org/10\\.[0-9]{4,9}[-._;()/:a-zA-Z0-9]+$"
+                },
+                { "pattern": "^https://[wd-._~:/?#[]@!$&'()*+,;=%]+$" }
+              ],
               "description": "The URL or DOI of the publication that describes the tool or method."
             }
           },
@@ -273,7 +339,12 @@
           "properties": {
             "Link": {
               "type": "string",
-              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "anyOf": [
+                {
+                  "pattern": "^https://doi.org/10\\.[0-9]{4,9}[-._;()/:a-zA-Z0-9]+$"
+                },
+                { "pattern": "^https://[wd-._~:/?#[]@!$&'()*+,;=%]+$" }
+              ],
               "description": "The URL or DOI of the publication that describes the tool or method."
             }
           },
@@ -284,7 +355,12 @@
           "properties": {
             "Link": {
               "type": "string",
-              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "anyOf": [
+                {
+                  "pattern": "^https://doi.org/10\\.[0-9]{4,9}[-._;()/:a-zA-Z0-9]+$"
+                },
+                { "pattern": "^https://[wd-._~:/?#[]@!$&'()*+,;=%]+$" }
+              ],
               "description": "The URL or DOI of the publication that describes the tool or method."
             }
           },
@@ -295,7 +371,12 @@
           "properties": {
             "Link": {
               "type": "string",
-              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "anyOf": [
+                {
+                  "pattern": "^https://doi.org/10\\.[0-9]{4,9}[-._;()/:a-zA-Z0-9]+$"
+                },
+                { "pattern": "^https://[wd-._~:/?#[]@!$&'()*+,;=%]+$" }
+              ],
               "description": "The URL or DOI of the publication that describes the tool or method."
             },
             "Rating": {
@@ -322,7 +403,12 @@
           "properties": {
             "Link": {
               "type": "string",
-              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "anyOf": [
+                {
+                  "pattern": "^https://doi.org/10\\.[0-9]{4,9}[-._;()/:a-zA-Z0-9]+$"
+                },
+                { "pattern": "^https://[wd-._~:/?#[]@!$&'()*+,;=%]+$" }
+              ],
               "description": "The URL or DOI of the publication that describes the tool or method."
             }
           },
@@ -333,7 +419,12 @@
           "properties": {
             "Link": {
               "type": "string",
-              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "anyOf": [
+                {
+                  "pattern": "^https://doi.org/10\\.[0-9]{4,9}[-._;()/:a-zA-Z0-9]+$"
+                },
+                { "pattern": "^https://[wd-._~:/?#[]@!$&'()*+,;=%]+$" }
+              ],
               "description": "The URL or DOI of the publication that describes the tool or method."
             },
             "Rating": {
@@ -360,7 +451,12 @@
           "properties": {
             "Link": {
               "type": "string",
-              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "anyOf": [
+                {
+                  "pattern": "^https://doi.org/10\\.[0-9]{4,9}[-._;()/:a-zA-Z0-9]+$"
+                },
+                { "pattern": "^https://[wd-._~:/?#[]@!$&'()*+,;=%]+$" }
+              ],
               "description": "The URL or DOI of the publication that describes the tool or method."
             },
             "Rating": {
@@ -387,7 +483,12 @@
           "properties": {
             "Link": {
               "type": "string",
-              "pattern": "^(https?://(?:www\\.)?|doi:)[\\w\\d./?=#]+$",
+              "anyOf": [
+                {
+                  "pattern": "^https://doi.org/10\\.[0-9]{4,9}[-._;()/:a-zA-Z0-9]+$"
+                },
+                { "pattern": "^https://[wd-._~:/?#[]@!$&'()*+,;=%]+$" }
+              ],
               "description": "The URL or DOI of the publication that describes the tool or method."
             }
           },

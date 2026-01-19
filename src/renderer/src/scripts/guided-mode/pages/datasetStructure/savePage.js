@@ -154,7 +154,17 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       guidedSkipPageSet("guided-samples-metadata-page-set");
     }
 
-    if (selectedEntities.includes("subjects") && selectedEntities.includes("sites")) {
+    if (selectedEntities.includes("samples") && selectedEntities.includes("derivedSamples")) {
+      guidedUnSkipPageSet("guided-derived-samples-metadata-page-set");
+    } else {
+      removeEntityType("derived-samples");
+      guidedSkipPageSet("guided-derived-samples-metadata-page-set");
+    }
+
+    if (
+      (selectedEntities.includes("subjects") && selectedEntities.includes("subjectSites")) ||
+      selectedEntities.includes("sampleSites")
+    ) {
       guidedUnSkipPageSet("guided-sites-metadata-page-set");
     } else {
       removeEntityType("sites");

@@ -25,7 +25,7 @@ import { setResourceList } from "../../../../stores/slices/resourceMetadataSlice
 import { guidedGetCurrentUserWorkSpace } from "../../../guided-mode/workspaces/workspaces";
 import { dragDrop, successCheck } from "../../../../assets/lotties/lotties";
 import { renderProtocolsTable } from "../../metadata/protocols";
-import { swalFileListSingleAction, swalShowInfo } from "../../../utils/swal-utils";
+import { swalListSingleAction, swalShowInfo } from "../../../utils/swal-utils";
 import { guidedDatasetKeywordsTagify } from "../../tagifies/tagifies";
 import lottie from "lottie-web";
 import { renderAdditionalLinksTable } from "../../guided-curate-dataset";

@@ -648,7 +648,7 @@
               "type": "array",
               "items": { "type": "string", "format": "file-path" }
             },
-            "experimental": {
+            "experimental-data": {
               "type": "array",
               "items": { "type": "string", "format": "file-path" }
             },

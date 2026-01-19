@@ -6,7 +6,7 @@ import {
   getExistingSamples,
   getExistingPerformancesR,
   getExistingSites,
-  addSampleToSubject,
+  addSample,
   addSiteToSample,
   addSiteToSubject,
 } from "../../../stores/slices/datasetEntityStructureSlice";
@@ -252,7 +252,7 @@ export const guidedOpenEntityAdditionSwal = async ({ entityType, subjectId, samp
 
     if (entityType === "samples") {
       for (const entityId of newEntities) {
-        addSampleToSubject(subjectId, entityId);
+        addSample(subjectId, null, entityId);
       }
     }
 

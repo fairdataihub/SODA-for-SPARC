@@ -12,17 +12,18 @@ const SelectedEntityPreviewer = () => {
   }
 
   const differentiableEntityFields = [
+    "site_id",
+    "sample_id",
     "subject_id",
     "experimental group",
     "sex",
     "age category",
-    "sample_id",
     "sample type",
-    "site_id",
-    "performanceId",
+    "performance_id",
     "protocolUrl",
     "startDateTime",
     "endDateTime",
+    "was_derived_from",
   ];
 
   // Get relevant field values from metadata only
@@ -41,7 +42,8 @@ const SelectedEntityPreviewer = () => {
 
   const relevantFields = getRelevantFieldsFromMetadata();
   const hasRelevantFields = Object.keys(relevantFields).length > 0;
-  const uppercaseFirstLetter = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+  const formatFieldName = (str) =>
+    str.replace(/_/g, " ").charAt(0).toUpperCase() + str.replace(/_/g, " ").slice(1);
 
   if (!hasRelevantFields) {
     return null;
@@ -56,7 +58,7 @@ const SelectedEntityPreviewer = () => {
         {Object.entries(relevantFields).map(([key, value]) => (
           <Group key={key}>
             <Text fw={600} miw={100}>
-              {uppercaseFirstLetter(key)}:
+              {formatFieldName(key)}:
             </Text>
             <Text>{typeof value === "object" ? JSON.stringify(value) : value}</Text>
           </Group>

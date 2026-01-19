@@ -14,20 +14,34 @@ export const contentOptionsMap = {
     ml: 0,
   },
   samples: {
-    label: "Did you collect biological or physical samples from your subjects?",
+    label: "Did you collect physical samples from your subjects?",
     dropDownDescription:
-      "Select yes if you obtained physical specimens such as tissue, blood, urine, or other biological materials from your human or animal subjects. This applies when you collected actual samples, not just measurements or observations.",
+      "Select yes if you physically removed material from a subject to create a sample that exists independently of the subject. Examples include tissue biopsies, blood draws, urine samples, swabs, or any specimen that can be stored, processed, or analyzed separately from the subject.",
     requiresAnswer: ["subjects"],
     ml: 10,
   },
-  sites: {
-    label:
-      "Did you collect data from specific anatomical locations that need to be tracked separately?",
+  derivedSamples: {
+    label: "Did you derive additional samples from samples collected directly from subjects?",
     dropDownDescription:
-      "Select yes if you gathered data from different specific locations (e.g., brain regions, tissue sections, organ areas) within your subjects or samples, AND these locations need separate metadata. Examples include: recordings from multiple brain areas, measurements from different parts of an organ, or microscopy of different regions within a tissue sample.",
-    requiresAnswer: ["subjects", "samples"],
+      "Select yes if you created additional samples from samples that were collected directly from subjects. Examples include tissue sections, cell cultures, extracted RNA or protein, or other samples created from the originally collected material.",
+    requiresAnswer: ["samples"],
+    ml: 20,
+  },
+  subjectSites: {
+    label: "Did you collect data from specific locations within your subjects?",
+    dropDownDescription:
+      "Select yes if you collected data from distinct anatomical locations within a subject without creating a physical sample, and those locations require separate metadata. Examples include recordings from different brain regions, measurements from multiple organs, or sensors placed on different body locations of the same subject.",
+    requiresAnswer: ["subjects"],
     ml: 10,
   },
+  sampleSites: {
+    label: "Did you collect data from specific locations within your samples?",
+    dropDownDescription:
+      "Select yes if you collected data from distinct spatial locations within the same sample without creating new samples, and those locations require separate metadata. Examples include imaging different regions of a tissue section, measurements from multiple areas of a single specimen, or recordings from defined locations within a prepared sample.",
+    requiresAnswer: ["samples"],
+    ml: 20,
+  },
+
   performances: {
     label: "Did you collect data from subjects across multiple sessions or time points?",
     dropDownDescription:
@@ -48,7 +62,6 @@ export const contentOptionsMap = {
       "Select yes if your dataset contains protocol files that describe the methods and procedures used during data collection or analysis.",
     ml: 0,
   },
-
   Docs: {
     label: "Does your dataset include any documentation files?",
     dropDownDescription:

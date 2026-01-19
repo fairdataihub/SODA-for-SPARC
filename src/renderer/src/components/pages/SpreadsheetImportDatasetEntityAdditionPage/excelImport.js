@@ -1,7 +1,7 @@
 import * as XLSX from "xlsx";
 import {
   addSubject,
-  addSampleToSubject,
+  addSample,
   addSiteToSubject,
   addSiteToSample,
   normalizeEntityId,
@@ -62,7 +62,7 @@ export const entityConfigs = {
         metadata: { ...item, sample_id: id, subject_id: subjectId },
       };
     },
-    saveEntity: (entity) => addSampleToSubject(entity.parentSubject, entity.id, entity.metadata),
+    saveEntity: (entity) => addSample(entity.parentSubject, null, entity.id, entity.metadata),
     formatDisplayId: (entity) => `${entity.id}`,
     templateFileName: "samples.xlsx",
   },

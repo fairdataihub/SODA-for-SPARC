@@ -105,8 +105,10 @@ const EntityDataSelectorPage = ({
   const activeEntity = useGlobalStore((state) => state.activeEntity);
   const entityType = useGlobalStore((state) => state.entityType); // e.g. 'data-folders'
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
-  const includesSites = selectedEntities.includes("sites");
+  const includesSites =
+    selectedEntities.includes("subjectSites") || selectedEntities.includes("sampleSites");
   const includesSamples = selectedEntities.includes("samples");
+  const includesDerivedSamples = selectedEntities.includes("derived-samples");
   const datasetIncludesCode = selectedEntities.includes("code");
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
   const datasetType = useGlobalStore((state) => state.datasetType);
@@ -257,6 +259,19 @@ const EntityDataSelectorPage = ({
                   </Text>
                 );
 
+              case "derived-samples":
+                return (
+                  <Text>
+                    The SDS requires all files associated with derived samples (samples derived from
+                    other samples) to be linked to that derived sample. To do this, select a derived
+                    sample from the list on the left, then choose the folders and files that contain
+                    data collected from that derived sample.
+                    {includesSites
+                      ? " Files already linked through the sites associated with this derived sample do not appear here, so you only need to select files specific to the derived sample itself."
+                      : ""}
+                  </Text>
+                );
+
               case "samples":
                 return (
                   <Text>
@@ -265,6 +280,9 @@ const EntityDataSelectorPage = ({
                     folders and files that contain data collected from that sample.
                     {includesSites
                       ? " Files already linked through the sites associated with this sample do not appear here, so you only need to select files specific to the sample itself."
+                      : ""}
+                    {includesDerivedSamples
+                      ? " Since this sample has derived samples, files that were already assigned to those derived samples won't appear here."
                       : ""}
                   </Text>
                 );
@@ -276,10 +294,13 @@ const EntityDataSelectorPage = ({
                     subject entity. To do this, select a subject from the list on the left, then
                     choose the folders and files that contain data collected from that subject.
                     {includesSamples
-                      ? " Files already linked through samples or sites associated with this subject do not appear here, so you only need to select the files that directly relate to the subject."
+                      ? " Files already linked through samples associated with this subject do not appear here, so you only need to select the files that directly relate to the subject."
                       : includesSites
                         ? " Files already linked through sites associated with this subject do not appear here, so you only need to select the files that directly relate to the subject."
-                        : " Assign all relevant files for the subject here."}{" "}
+                        : " Assign all relevant files for the subject here."}
+                    {includesDerivedSamples
+                      ? " Additionally, files linked to derived samples from this subject are already accounted for and won't appear in the selection below."
+                      : ""}{" "}
                     <br />
                     <br />
                     <b>Note:</b> Since subjects are the highest-level entity in your dataset

@@ -1,6 +1,8 @@
 import { useMemo, useCallback, useRef, useEffect } from "react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
+import { isValidRRID } from "../../../scripts/utils/rrid-utils";
+import ExternalLink from "../../buttons/ExternalLink";
 import {
   IconInfoCircle,
   IconDeviceFloppy,
@@ -52,7 +54,7 @@ import {
 } from "../../../stores/slices/datasetContentSelectorSlice";
 import {
   addSubject,
-  addSampleToSubject,
+  addSample,
   addSiteToSubject,
   addSiteToSample,
 } from "../../../stores/slices/datasetEntityStructureSlice";
@@ -201,6 +203,64 @@ const EntityMetadataForm = () => {
    */
   const handleSave = () => {
     if (selectedHierarchyEntity) {
+      // Validate required fields for editing existing entity
+      if (selectedHierarchyEntity.type === "subject") {
+        const currentMetadata = selectedHierarchyEntity.metadata || {};
+
+        if (!currentMetadata["subject_id"]) {
+          window.notyf.open({
+            duration: "4000",
+            type: "error",
+            message: "You must assign this subject an ID.",
+          });
+          return;
+        }
+
+        if (!currentMetadata["species"]) {
+          window.notyf.open({
+            duration: "4000",
+            type: "error",
+            message: "You must provide the species for this subject.",
+          });
+          return;
+        }
+
+        // Validate RRID if provided and over 5 characters
+        if (
+          currentMetadata["rrid_for_strain"] &&
+          currentMetadata["rrid_for_strain"].length > 5 &&
+          !window.evaluateStringAgainstSdsRequirements(
+            currentMetadata["rrid_for_strain"],
+            "string-is-valid-rrid"
+          )
+        ) {
+          window.notyf.open({
+            duration: "4000",
+            type: "error",
+            message:
+              "Invalid strain RRID format. Use: RRID:rrid_identifier (e.g., RRID:IMSR_JAX:000664)",
+          });
+          return;
+        }
+
+        // Validate protocol URL or DOI if provided and over 5 characters
+        if (
+          currentMetadata["protocol_url_or_doi"] &&
+          !window.evaluateStringAgainstSdsRequirements(
+            currentMetadata["protocol_url_or_doi"],
+            "string-is-valid-url-or-doi"
+          )
+        ) {
+          window.notyf.open({
+            duration: "4000",
+            type: "error",
+            message:
+              "Invalid protocol URL or DOI format. Please enter a valid HTTPS URL, DOI, or DOI URL.",
+          });
+          return;
+        }
+      }
+
       // Complete editing existing entity
       setSelectedHierarchyEntity(null);
     } else {
@@ -219,6 +279,50 @@ const EntityMetadataForm = () => {
           return;
         }
 
+        if (!tempMetadata["species"]) {
+          window.notyf.open({
+            duration: "4000",
+            type: "error",
+            message: "You must provide the species for this subject.",
+          });
+          return;
+        }
+
+        // Validate RRID if provided and over 5 characters
+        if (
+          tempMetadata["rrid_for_strain"] &&
+          tempMetadata["rrid_for_strain"].length > 5 &&
+          !window.evaluateStringAgainstSdsRequirements(
+            tempMetadata["rrid_for_strain"],
+            "string-is-valid-rrid"
+          )
+        ) {
+          window.notyf.open({
+            duration: "4000",
+            type: "error",
+            message:
+              "Invalid strain RRID format. Use: RRID:rrid_identifier (e.g., RRID:IMSR_JAX:000664)",
+          });
+          return;
+        }
+
+        // Validate protocol URL or DOI if provided and over 5 characters
+        if (
+          tempMetadata["protocol_url_or_doi"] &&
+          !window.evaluateStringAgainstSdsRequirements(
+            tempMetadata["protocol_url_or_doi"],
+            "string-is-valid-url-or-doi"
+          )
+        ) {
+          window.notyf.open({
+            duration: "4000",
+            type: "error",
+            message:
+              "Invalid protocol URL or DOI format. Please enter a valid HTTPS URL, DOI, or DOI URL.",
+          });
+          return;
+        }
+
         try {
           addSubject(tempMetadata["subject_id"], tempMetadata);
         } catch (error) {
@@ -230,7 +334,30 @@ const EntityMetadataForm = () => {
       } else if (activeFormType === "sample") {
         // Create sample entity
         const tempMetadata = useGlobalStore.getState().temporaryEntityMetadata?.sample || {};
-        addSampleToSubject(entityBeingAddedParentSubject, tempMetadata["sample_id"], tempMetadata);
+
+        // Validate protocol URL or DOI if provided and over 5 characters
+        if (
+          tempMetadata["protocol_url_or_doi"] &&
+          !window.evaluateStringAgainstSdsRequirements(
+            tempMetadata["protocol_url_or_doi"],
+            "string-is-valid-url-or-doi"
+          )
+        ) {
+          window.notyf.open({
+            duration: "4000",
+            type: "error",
+            message:
+              "Invalid protocol URL or DOI format. Please enter a valid HTTPS URL, DOI, or DOI URL.",
+          });
+          return;
+        }
+
+        addSample(
+          entityBeingAddedParentSubject,
+          entityBeingAddedParentSample,
+          tempMetadata["sample_id"],
+          tempMetadata
+        );
         clearTemporaryMetadata("sample");
       } else if (activeFormType === "site") {
         // Create site entity
@@ -332,6 +459,14 @@ const EntityMetadataForm = () => {
               readOnly={!!selectedHierarchyEntity}
               disabled={!!selectedHierarchyEntity}
             />
+            <TextInput
+              label="Species"
+              description="The species of the subject"
+              placeholder="e.g., Homo sapiens, Mus musculus"
+              required
+              value={getMetadataValue("species", "")}
+              onChange={(e) => handleChange("species", e.target.value)}
+            />
             <OptionalFieldsNotice />
 
             <Select
@@ -431,13 +566,6 @@ const EntityMetadataForm = () => {
               </Box>
             </Group>
             <TextInput
-              label="Species"
-              description="The species of the subject"
-              placeholder="e.g., Homo sapiens, Mus musculus"
-              value={getMetadataValue("species", "")}
-              onChange={(e) => handleChange("species", e.target.value)}
-            />
-            <TextInput
               label="Strain"
               description="The strain of the subject"
               placeholder="e.g., C57BL/6J"
@@ -446,45 +574,58 @@ const EntityMetadataForm = () => {
             />
             <TextInput
               label="RRID for strain"
-              description="Research Resource Identifier for the strain"
+              description={
+                <span>
+                  Research Resource Identifier for the strain. If you don't already have the RRID,
+                  you can look it up at
+                  <ExternalLink
+                    buttonType="anchor"
+                    href="https://rrid.site/"
+                    buttonText="rrid.site"
+                    buttonSize="xs"
+                  />
+                </span>
+              }
               placeholder="e.g., RRID:IMSR_JAX:000664"
               value={getMetadataValue("rrid_for_strain", "")}
               onChange={(e) => handleChange("rrid_for_strain", e.target.value)}
+              error={
+                getMetadataValue("rrid_for_strain", "") &&
+                getMetadataValue("rrid_for_strain", "").length > 5 &&
+                !window.evaluateStringAgainstSdsRequirements(
+                  getMetadataValue("rrid_for_strain", ""),
+                  "string-is-valid-rrid"
+                )
+                  ? "Invalid strain RRID format. Use: RRID:rrid_identifier (e.g., RRID:IMSR_JAX:000664)"
+                  : undefined
+              }
             />
             <TextInput
               label="Subject Experimental Group"
-              description="The experimental group this subject belongs to"
+              description="Experimental group to which this subject belongs"
               placeholder="e.g., Control, Treatment A"
               value={getMetadataValue("subject_experimental_group", "")}
               onChange={(e) => handleChange("subject_experimental_group", e.target.value)}
             />
+            <TextInput
+              label="Also in dataset"
+              description="Indicates if the subject is also part of another dataset. Should be a DOI or https link to another dataset or an other identifier."
+              placeholder="e.g., dataset-1, dataset-2"
+              value={getMetadataValue("also_in_dataset", "")}
+              onChange={(e) => handleChange("also_in_dataset", e.target.value)}
+            />
             {showFullMetadataFormFields && (
               <>
                 <TextInput
-                  label="Also in dataset"
-                  description="Other datasets that include this subject"
-                  placeholder="e.g., dataset-1, dataset-2"
-                  value={getMetadataValue("also_in_dataset", "")}
-                  onChange={(e) => handleChange("also_in_dataset", e.target.value)}
-                />
-                <TextInput
                   label="Member of"
-                  description="Group memberships for this subject"
+                  description="Group or cohort to which this subject belongs"
                   placeholder="e.g., group-1, cohort-A"
                   value={getMetadataValue("member_of", "")}
                   onChange={(e) => handleChange("member_of", e.target.value)}
                 />
-                <Select
-                  label="Metadata only"
-                  description="Whether this subject has metadata only"
-                  placeholder="Select option"
-                  data={["yes", "no"]}
-                  value={getMetadataValue("metadata_only", null)}
-                  onChange={(value) => handleChange("metadata_only", value)}
-                />
                 <TextInput
                   label="Laboratory internal id"
-                  description="The internal ID used by the laboratory for this subject"
+                  description="Internal identifier used by the laboratory for this subject"
                   placeholder="e.g., LAB-123"
                   value={getMetadataValue("laboratory_internal_id", "")}
                   onChange={(e) => handleChange("laboratory_internal_id", e.target.value)}
@@ -634,8 +775,8 @@ const EntityMetadataForm = () => {
                   label="Disease or Disorder"
                   description="Any known disease or disorder affecting the subject"
                   placeholder="e.g., Diabetes"
-                  value={getMetadataValue("disease_or_disorder", "")}
-                  onChange={(e) => handleChange("disease_or_disorder", e.target.value)}
+                  value={getMetadataValue("disease", "")}
+                  onChange={(e) => handleChange("disease", e.target.value)}
                 />
                 {/* Intervention Input */}
                 <TextInput
@@ -666,6 +807,16 @@ const EntityMetadataForm = () => {
                   placeholder="e.g., https://doi.org/10.1234/abcd"
                   value={getMetadataValue("protocol_url_or_doi", "")}
                   onChange={(e) => handleChange("protocol_url_or_doi", e.target.value)}
+                  error={
+                    getMetadataValue("protocol_url_or_doi", "") &&
+                    getMetadataValue("protocol_url_or_doi", "").length > 5 &&
+                    !window.evaluateStringAgainstSdsRequirements?.(
+                      getMetadataValue("protocol_url_or_doi", ""),
+                      "string-is-valid-url-or-doi"
+                    )
+                      ? "Invalid format. Please enter a valid HTTPS URL, DOI, or DOI URL."
+                      : undefined
+                  }
                 />
               </>
             )}
@@ -674,17 +825,50 @@ const EntityMetadataForm = () => {
       case "sample":
         return (
           <Stack spacing="md">
-            {currentSelectedHierarchyEntityParentSubject && (
-              <TextInput
-                label="Subject this sample belongs to"
-                disabled
-                value={currentSelectedHierarchyEntityParentSubject}
-              />
-            )}
+            {/* Display parent subject information based on what's available */}
+            {selectedHierarchyEntity
+              ? // When editing an existing sample
+                currentSelectedHierarchyEntityParentSubject && (
+                  <TextInput
+                    label="Subject this sample belongs to"
+                    disabled
+                    value={currentSelectedHierarchyEntityParentSubject}
+                  />
+                )
+              : // When creating a new sample
+                entityBeingAddedParentSubject && (
+                  <TextInput
+                    label="Subject this sample belongs to"
+                    disabled
+                    value={entityBeingAddedParentSubject}
+                  />
+                )}
+
+            {selectedHierarchyEntity
+              ? // When editing an existing sample - use metadata value but only show it if it was derived from a sample (if it's a subject, no need to display)
+                getMetadataValue("was_derived_from", "") &&
+                getMetadataValue("was_derived_from", "").startsWith("sam-") && (
+                  <TextInput
+                    label="Sample this sample was derived from"
+                    disabled
+                    value={getMetadataValue("was_derived_from", "")}
+                    description="The parent sample from which this sample was derived"
+                  />
+                )
+              : // When creating a new sample - use parent variable
+                entityBeingAddedParentSample && (
+                  <TextInput
+                    label="Sample this sample was derived from"
+                    disabled
+                    value={entityBeingAddedParentSample}
+                    description="The parent sample from which this sample was derived"
+                  />
+                )}
+
             <TextInput
               label="Sample Identifier"
               required
-              description="Enter a unique identifier for this biological sample."
+              description="Unique identifier for this sample"
               placeholder="Enter sample ID"
               value={getMetadataValue("sample_id", "")}
               onChange={(e) => handleChange("sample_id", e.target.value)}
@@ -706,10 +890,11 @@ const EntityMetadataForm = () => {
               readOnly={!!selectedHierarchyEntity}
               disabled={!!selectedHierarchyEntity}
             />
+
             <OptionalFieldsNotice />
             <TextInput
               label="Sample Experimental Group"
-              description="The experimental group this sample belongs to"
+              description="Experimental group to which this sample belongs"
               placeholder="e.g., Control, Treatment A"
               value={getMetadataValue("sample_experimental_group", "")}
               onChange={(e) => handleChange("sample_experimental_group", e.target.value)}
@@ -735,55 +920,30 @@ const EntityMetadataForm = () => {
             />
             <TextInput
               label="Anatomical Location"
-              description="The anatomical location this sample was taken from"
+              description="Anatomical location from which the sample was collected"
               placeholder="e.g., Dorsal root ganglion"
               value={getMetadataValue("sample_anatomical_location", "")}
               onChange={(e) => handleChange("sample_anatomical_location", e.target.value)}
             />
+            <TextInput
+              label="Also in dataset"
+              description="Indicates if the sample is also part of another dataset. Should be a DOI or https link to another dataset or an other identifier."
+              placeholder="e.g., dataset-1, dataset-2"
+              value={getMetadataValue("also_in_dataset", "")}
+              onChange={(e) => handleChange("also_in_dataset", e.target.value)}
+            />
             {showFullMetadataFormFields && (
               <>
-                <Select
-                  key={`was_derived_from-${
-                    selectedHierarchyEntity ? selectedHierarchyEntity.id : activeFormType
-                  }`}
-                  label="Was derived from"
-                  description="The entity this sample was derived from"
-                  placeholder="Select entity"
-                  data={getExistingSamples()
-                    .map((sample) => sample.id)
-                    .filter((id) => id !== `sam-${getMetadataValue("sample_id", "")}`)}
-                  value={getMetadataValue("was_derived_from", "")}
-                  onChange={(value) => handleChange("was_derived_from", value)}
-                />
-                {/* Also in dataset TextInput */}
-                <TextInput
-                  label="Also in dataset"
-                  description="Other datasets that include this sample"
-                  placeholder="e.g., dataset-1, dataset-2"
-                  value={getMetadataValue("also_in_dataset", "")}
-                  onChange={(e) => handleChange("also_in_dataset", e.target.value)}
-                />
                 <TextInput
                   label="Member of"
-                  description="Group or cohort the sample is a member of"
+                  description="Group or cohort to which this sample belongs"
                   placeholder="e.g., group-1, cohort-A"
                   value={getMetadataValue("member_of", "")}
                   onChange={(e) => handleChange("member_of", e.target.value)}
                 />
-                <Select
-                  key={`metadata_only-${
-                    selectedHierarchyEntity ? selectedHierarchyEntity.id : activeFormType
-                  }`}
-                  label="Metadata only"
-                  description="Whether this sample is metadata only"
-                  placeholder="Select option"
-                  data={["yes", "no"]}
-                  value={getMetadataValue("metadata_only", null)}
-                  onChange={(value) => handleChange("metadata_only", value)}
-                />
                 <TextInput
                   label="Laboratory internal id"
-                  description="The internal ID used by the laboratory for this sample"
+                  description="Internal identifier used by the laboratory for this sample"
                   placeholder="e.g., LAB-123"
                   value={getMetadataValue("laboratory_internal_id", "")}
                   onChange={(e) => handleChange("laboratory_internal_id", e.target.value)}
@@ -800,63 +960,74 @@ const EntityMetadataForm = () => {
                   valueFormat="MM/DD/YYYY"
                   icon={<IconCalendar size={16} />}
                   clearable
-                  description="Date when the sample was derived"
+                  description="Date on which the sample was derived"
                 />
                 <TextInput
                   label="Experimental log file path"
-                  description="Path to the experimental log file for this sample"
+                  description="File path to the experimental log associated with this sample"
                   placeholder="e.g., /path/to/log.txt"
                   value={getMetadataValue("experimental_log_file_path", "")}
                   onChange={(e) => handleChange("experimental_log_file_path", e.target.value)}
                 />
                 <TextInput
                   label="Reference Atlas"
-                  description="Reference atlas used in the experiment"
+                  description="Reference atlas used for this sample"
                   placeholder="e.g., Allen Brain Atlas"
                   value={getMetadataValue("reference_atlas", "")}
                   onChange={(e) => handleChange("reference_atlas", e.target.value)}
                 />
                 <TextInput
                   label="Pathology"
-                  description="Pathology associated with the sample"
+                  description="Pathological condition associated with this sample"
                   placeholder="e.g., Tumor"
                   value={getMetadataValue("pathology", "")}
                   onChange={(e) => handleChange("pathology", e.target.value)}
                 />
-                <TextInput
+                <Select
                   label="Laterality"
-                  description="Laterality of the sample (e.g., left, right, bilateral)"
-                  placeholder="e.g., left"
-                  value={getMetadataValue("laterality", "")}
-                  onChange={(e) => handleChange("laterality", e.target.value)}
+                  description="Anatomical side of the body from which the sample was collected"
+                  placeholder="Select laterality"
+                  data={["left", "right", "bilateral", "midline"]}
+                  value={getMetadataValue("laterality", null)}
+                  onChange={(value) => handleChange("laterality", value)}
                 />
                 <TextInput
                   label="Cell Type"
-                  description="Cell type of the sample"
+                  description="Cell type represented by this sample"
                   placeholder="e.g., Neuron"
                   value={getMetadataValue("cell_type", "")}
                   onChange={(e) => handleChange("cell_type", e.target.value)}
                 />
                 <TextInput
                   label="Plane of Section"
-                  description="Plane of section of the sample"
+                  description="Anatomical plane in which the sample was sectioned"
                   placeholder="e.g., sagittal"
                   value={getMetadataValue("plane_of_section", "")}
                   onChange={(e) => handleChange("plane_of_section", e.target.value)}
                 />
                 <TextInput
                   label="Protocol Title"
-                  description="Title of the protocol used in the experiment"
+                  description="Title of the protocol used to generate this sample"
                   placeholder="e.g., Protocol 1"
                   value={getMetadataValue("protocol_title", "")}
                   onChange={(e) => handleChange("protocol_title", e.target.value)}
                 />
                 <TextInput
                   label="Protocol URL or DOI"
-                  description="URL or DOI of the protocol used in the experiment"
+                  description="URL or DOI for the protocol used to generate this sample"
                   placeholder="e.g., https://doi.org/10.1234/abcd"
                   value={getMetadataValue("protocol_url_or_doi", "")}
                   onChange={(e) => handleChange("protocol_url_or_doi", e.target.value)}
+                  error={
+                    getMetadataValue("protocol_url_or_doi", "") &&
+                    getMetadataValue("protocol_url_or_doi", "").length > 5 &&
+                    !window.evaluateStringAgainstSdsRequirements?.(
+                      getMetadataValue("protocol_url_or_doi", ""),
+                      "string-is-valid-url-or-doi"
+                    )
+                      ? "Invalid format. Please enter a valid HTTPS URL, DOI, or DOI URL."
+                      : undefined
+                  }
                 />
               </>
             )}

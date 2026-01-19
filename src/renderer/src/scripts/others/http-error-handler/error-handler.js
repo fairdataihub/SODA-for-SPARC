@@ -75,7 +75,7 @@ const authenticationError = (error) => {
 
 window.defaultProfileMatchesCurrentWorkspace = async () => {
   // check ifwindow.defaultBfAccount has soda-pennsieve as a prefix
-  if (!window.defaultBfAccount.startsWith("soda-pennsieve")) {
+  if (!window.defaultBfAccount || !window.defaultBfAccount.startsWith("soda-pennsieve")) {
     // Don't bother trying to validate unsupported profile formats the user can switch workspaces manually if they want
     return true;
   }

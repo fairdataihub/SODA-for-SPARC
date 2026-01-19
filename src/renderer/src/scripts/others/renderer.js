@@ -57,9 +57,9 @@ import {
 } from "../globals";
 import checkForAnnouncements from "./announcements";
 import {
-  swalFileListSingleAction,
-  swalFileListTripleAction,
-  swalFileListDoubleAction,
+  swalListSingleAction,
+  swalListTripleAction,
+  swalListDoubleAction,
   swalShowError,
   swalShowInfo,
 } from "../utils/swal-utils";
@@ -3172,6 +3172,14 @@ const forbiddenCharacters = /[@#$%^&*()+=\/\\|"'~;:<>{}\[\]?]/;
 const forbiddenCharactersRegex = /[@#$%^&*()+=\/\\|"'~;:<>{}\[\]?]/g;
 const forbiddenPennsieveDatasetNameCharacters = /[\/:*?'<>.,]/;
 
+// URL and DOI validation patterns
+const urlOrDoiPatterns = [
+  /^$/, // Empty string
+  /^https:\/\/[A-Za-z0-9.-]+[A-Za-z0-9](:[0-9]+)?(\/.*)?$/, // HTTPS URL
+  /^10\.\d{4,9}\/[-._;()/:A-Za-z0-9]+$/, // DOI pattern
+  /^https:\/\/doi\.org\/10\.\d{4,9}\/[-._;()/:A-Za-z0-9]+$/, // DOI URL
+];
+
 window.evaluateStringAgainstSdsRequirements = (stringToTest, testType) => {
   const tests = {
     "folder-or-file-name-contains-forbidden-characters": !forbiddenFileNameRegex.test(stringToTest),
@@ -3182,6 +3190,11 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, testType) => {
     "string-contains-forbidden-characters": forbiddenCharacters.test(stringToTest),
     "string-contains-forbidden-pennsieve-dataset-name-characters":
       forbiddenPennsieveDatasetNameCharacters.test(stringToTest),
+    "string-is-valid-rrid": /^RRID:[A-Za-z]+\S*[_:]\S*$/.test(stringToTest),
+    "string-is-valid-url-or-doi": (() => {
+      const result = urlOrDoiPatterns.some((pattern) => pattern.test(stringToTest));
+      return result;
+    })(),
   };
 
   return tests[testType];
@@ -3390,7 +3403,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
   closeFileImportLoadingSweetAlert();
 
   if (inaccessibleItems.length > 0) {
-    await swalFileListSingleAction(
+    await swalListSingleAction(
       inaccessibleItems,
       "SODA was unable to access some of your imported files",
       "The files listed below will not be imported into SODA:",
@@ -3399,7 +3412,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
   }
 
   if (forbiddenFileNames.length > 0) {
-    await swalFileListSingleAction(
+    await swalListSingleAction(
       forbiddenFileNames.map((file) => file.relativePath),
       "Forbidden file names detected",
       "The files listed below do not comply with the SPARC data standards and will not be imported:",
@@ -3408,7 +3421,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
   }
 
   if (emptyFolders.length > 0) {
-    await swalFileListSingleAction(
+    await swalListSingleAction(
       emptyFolders,
       "Empty folders detected",
       "The following folders are empty or contain only other empty folders or files (0 KB). These will not be imported into SODA:",
@@ -3417,7 +3430,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
   }
 
   if (emptyFiles.length > 0) {
-    await swalFileListSingleAction(
+    await swalListSingleAction(
       emptyFiles.map((file) => file.relativePath),
       "Empty files detected",
       "The files listed below are empty (0 KB) and will not be imported into SODA:",
@@ -3426,7 +3439,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
   }
 
   if (problematicFolderNames.length > 0) {
-    const replaceFoldersForUser = await swalFileListDoubleAction(
+    const replaceFoldersForUser = await swalListDoubleAction(
       problematicFolderNames,
       "Folder names not compliant with SPARC data standards detected",
       `
@@ -3448,7 +3461,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
   }
 
   if (problematicFileNames.length > 0) {
-    const replaceFilesForUser = await swalFileListDoubleAction(
+    const replaceFilesForUser = await swalListDoubleAction(
       problematicFileNames.map((file) => file.relativePath),
       "File names not compliant with SPARC data standards detected",
       `
@@ -3469,7 +3482,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
   }
 
   if (hiddenItems.length > 0) {
-    const userResponse = await swalFileListTripleAction(
+    const userResponse = await swalListTripleAction(
       hiddenItems.map((file) => file.relativePath),
       "<p>Hidden files detected</p>",
       `Hidden files are typically not recommend per the SPARC data standards, but you can choose to keep them if you wish.`,
@@ -3561,7 +3574,7 @@ const mergeLocalAndRemoteDatasetStructure = async (
   closeFileImportLoadingSweetAlert();
 
   if (duplicateFiles.length > 0) {
-    const userConfirmedFileOverwrite = await swalFileListDoubleAction(
+    const userConfirmedFileOverwrite = await swalListDoubleAction(
       duplicateFiles.map((file) => `${file.virtualFilePath}${file.fileName}`),
       `Duplicate files detected  <p>You have two options for the duplicate files:</p>`,
       ` 
@@ -3705,7 +3718,7 @@ window.drop = async (ev) => {
 
   if (inaccessibleItems.length > 0) {
     if (accessibleItems.length === 0) {
-      await swalFileListSingleAction(
+      await swalListSingleAction(
         inaccessibleItems,
         "SODA was unable import your dropped files/folders",
         "The files listed below will not be imported into SODA. If this issue persists, please try importing the folders/files via the import button.",
@@ -3713,7 +3726,7 @@ window.drop = async (ev) => {
       );
       return;
     } else {
-      const importAccessibleItemsOnly = await swalFileListDoubleAction(
+      const importAccessibleItemsOnly = await swalListDoubleAction(
         accessibleItems,
         "<p>SODA was unable to import some of your dropped files/folders</p>",
         "A list of the folders/files that SODA was not able to import is shown below:",

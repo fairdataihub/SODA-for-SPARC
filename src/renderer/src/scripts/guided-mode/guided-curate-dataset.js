@@ -27,8 +27,8 @@ import { guidedDatasetKeywordsTagify } from "./tagifies/tagifies";
 import {
   swalConfirmAction,
   swalShowError,
-  swalFileListSingleAction,
-  swalFileListDoubleAction,
+  swalListSingleAction,
+  swalListDoubleAction,
 } from "../utils/swal-utils";
 import DatePicker from "tui-date-picker";
 import { loadStoredContributors } from "../others/contributor-storage";
@@ -1243,7 +1243,7 @@ const handleAddOrEditContributorHeaderUI = (boolEditingContributor) => {
           data-contributor-name="${escapeName(contributor.contributor_name)}"
           data-orcid="${escapeName(contributor.contributor_orcid_id)}"
           data-affiliation="${escapeName(contributor.contributor_affiliation)}"
-          data-roles="${escapeName(contributor.contributor_role)}"
+          data-roles="${contributor.contributor_roles.join(",")}"
         >
           ${escapeName(contributor.contributor_name)}
         </option>
@@ -1281,7 +1281,7 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
   let defaultContributorName = "";
   let defaultOrcid = "";
   let defaultAffiliation = "";
-  let defaultRole = "";
+  let defaultRole = [];
   let contributorSwalTitle = "Adding a new contributor";
 
   if (contributorIdToEdit) {
@@ -1289,7 +1289,7 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
     defaultContributorName = contributorData.contributor_name || "";
     defaultOrcid = contributorData.contributor_orcid_id || "";
     defaultAffiliation = contributorData.contributor_affiliation || "";
-    defaultRole = contributorData.contributor_role || "";
+    defaultRole = contributorData.contributor_roles || [];
     contributorSwalTitle = `Edit contributor ${defaultContributorName}`;
   }
 
@@ -1306,7 +1306,7 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
           <label class="guided--form-label required">Contributor Name:</label>
           <input 
             class="guided--input" 
-            id="guided-contributor-name" 
+            id="guided-contributor-name"
             type="text" 
             placeholder="Last, First Middle (e.g., Smith, John A)" 
             value="${defaultContributorName.trim()}" 
@@ -1322,9 +1322,8 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
         <label class="guided--form-label mt-md required">Affiliation:</label>
         <input class="guided--input" id="guided-contributor-affiliation-input" type="text" placeholder="Institution ROR" value="${defaultAffiliation}" />
         <p class="guided--text-input-instructions mb-0 text-left">Institution the contributor is affiliated with. Should be formatted as an ROR organization identifier(e.g., https://ror.org/00abcdef).</p>
-        <label class="guided--form-label mt-md required">Role:</label>
-        <select id="guided-contributor-role-select" class="w-100 SODA-select-picker" title="Select a role" data-live-search="true">
-          <option value="">Select a role</option>
+        <label class="guided--form-label mt-md required">Role(s):</label>
+        <select id="guided-contributor-role-select" class="w-100 SODA-select-picker" title="Select one or more roles" data-live-search="true" multiple>
           <option value="ContactPerson">Contact Person</option>
           <option value="CoInvestigator">Co-Investigator</option>
           <option value="CorrespondingAuthor">Corresponding Author</option>
@@ -1352,7 +1351,7 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
           <option value="Other">Other</option>
         </select>
         <p class="guided--text-input-instructions mb-0 text-left">
-          Role the contributor played in the creation of the dataset. Visit <a target="_blank" href="https://schema.datacite.org/meta/kernel-4.4/doc/DataCite-MetadataKernel_v4.4.pdf">DataCite</a> for definitions.<br /><b>Select a role from the dropdown.</b>
+          Role(s) the contributor played in the creation of the dataset. Visit <a target="_blank" href="https://schema.datacite.org/meta/kernel-4.4/doc/DataCite-MetadataKernel_v4.4.pdf">DataCite</a> for definitions.<br /><b>Select one or more roles from the dropdown.</b>
         </p>
       </div>
     `,
@@ -1366,7 +1365,10 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
       $("#guided-contributor-role-select")
         .selectpicker({ style: "SODA-select-picker" })
         .selectpicker("refresh");
-      if (defaultRole) $("#guided-contributor-role-select").selectpicker("val", defaultRole);
+      if (defaultRole) {
+        const roles = Array.isArray(defaultRole) ? defaultRole : [defaultRole];
+        $("#guided-contributor-role-select").selectpicker("val", roles);
+      }
 
       $(".SODA-select-picker button").on("click", (e) => {
         const dropdownParent = e.target.closest(".dropdown");
@@ -1387,7 +1389,7 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
           selectedOption.data("affiliation") || "";
         $("#guided-contributor-role-select").selectpicker(
           "val",
-          selectedOption.data("roles") || ""
+          selectedOption.data("roles") ? selectedOption.data("roles").split(",") : []
         );
       });
     },
@@ -1399,13 +1401,13 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
       const contributorAffiliation = document
         .getElementById("guided-contributor-affiliation-input")
         .value.trim();
-      const contributorRole = document.getElementById("guided-contributor-role-select").value;
+      const contributorRoles = $("#guided-contributor-role-select").val() || [];
 
       if (
         !contributorName ||
         !contributorOrcidInput ||
         !contributorAffiliation ||
-        !contributorRole
+        contributorRoles.length === 0
       ) {
         return Swal.showValidationMessage("Please fill out all required fields");
       }
@@ -1489,10 +1491,10 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
             contributorName,
             storedOrcid,
             contributorAffiliation,
-            contributorRole
+            contributorRoles
           );
         } else {
-          addContributor(contributorName, storedOrcid, contributorAffiliation, contributorRole);
+          addContributor(contributorName, storedOrcid, contributorAffiliation, contributorRoles);
         }
       } catch (error) {
         return Swal.showValidationMessage(error);
@@ -2145,7 +2147,7 @@ const guidedAddListOfSubjects = async (subjectNameArray, showWarningForExistingS
     }
   }
   if (invalidSubjectNames.length > 0) {
-    await swalFileListSingleAction(
+    await swalListSingleAction(
       invalidSubjectNames,
       "Invalid subject names detected",
       "Subject names can not contain spaces or special characters. The following subjects will not be imported into SODA:",
@@ -2178,7 +2180,7 @@ const guidedAddListOfSubjects = async (subjectNameArray, showWarningForExistingS
 
   if (showWarningForExistingSubjects && duplicateSubjects.length > 0) {
     // Let the user know that duplicate subjects will not be added
-    await swalFileListSingleAction(
+    await swalListSingleAction(
       duplicateSubjects,
       "Duplicate subjects detected",
       "The following subjects have already been specified and will not be added:",
@@ -2188,7 +2190,7 @@ const guidedAddListOfSubjects = async (subjectNameArray, showWarningForExistingS
 
   if (newSubjects.length > 0) {
     // Confirm that the user wants to add the subjects
-    const subjectAdditionConfirmed = await swalFileListDoubleAction(
+    const subjectAdditionConfirmed = await swalListDoubleAction(
       newSubjects,
       `${newSubjects.length} subjects will be added to the dataset`,
       "Please review the list of subjects before proceeding:",

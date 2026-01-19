@@ -17,6 +17,7 @@ import {
 } from "../../../stores/slices/datasetTreeViewSlice.js";
 import {
   addEntityNameToEntityType,
+  getEntityNamesByEntityType,
   removeEntityFromEntityList,
   setActiveEntity,
   setShowFullMetadataFormFields,
@@ -43,7 +44,10 @@ import { setSelectedHierarchyEntity } from "../../../stores/slices/datasetConten
 import { guidedSetNavLoadingState } from "./navigationUtils/pageLoading.js";
 import Swal from "sweetalert2";
 import { userErrorMessage } from "../../others/http-error-handler/error-handler.js";
-import { getNonSkippedGuidedModePages } from "./navigationUtils/pageSkipping.js";
+import {
+  getNonSkippedGuidedModePages,
+  returnUserToFirstPage,
+} from "./navigationUtils/pageSkipping.js";
 import { startOrStopAnimationsInContainer } from "../lotties/lottie.js";
 import { renderSideBar } from "./sidebar.js";
 import useGlobalStore from "../../../stores/globalStore.js";
@@ -217,7 +221,6 @@ window.openPage = async (targetPageID) => {
     // Synchronize state between the SODA JSON object and the zustand store
     setSelectedEntities(window.sodaJSONObj["selected-entities"] || []);
     setDeSelectedEntities(window.sodaJSONObj["deSelected-entities"] || []);
-    setPerformanceList(window.sodaJSONObj["dataset_metadata"]?.["performance_metadata"] || []);
 
     setDatasetEntityArray(window.sodaJSONObj["dataset-entity-array"] || []);
 
@@ -336,6 +339,13 @@ window.openPage = async (targetPageID) => {
             addEntityNameToEntityType("sites", site);
           }
 
+          const prevSiteNames = getEntityNamesByEntityType("sites");
+          for (const siteName of prevSiteNames) {
+            if (!sites.includes(siteName)) {
+              removeEntityFromEntityList("sites", siteName);
+            }
+          }
+
           setFileVisibilityFilter(
             [
               {
@@ -352,11 +362,23 @@ window.openPage = async (targetPageID) => {
           );
         }
 
-        if (pageEntityType === "samples") {
-          const samples = getExistingSamples().map((sample) => sample.id);
-          for (const sample of samples) {
-            addEntityNameToEntityType("samples", sample);
+        if (pageEntityType === "derived-samples") {
+          const derivedSamples = getExistingSamples("derived-from-samples").map(
+            (sample) => sample.id
+          );
+          console.log("Derived samples", derivedSamples);
+          console.log("Derived samples2", getExistingSamples("derived-from-samples"));
+          for (const derivedSample of derivedSamples) {
+            addEntityNameToEntityType("derived-samples", derivedSample);
           }
+
+          const prevDerivedSampleNames = getEntityNamesByEntityType("derived-samples");
+          for (const derivedSampleName of prevDerivedSampleNames) {
+            if (!derivedSamples.includes(derivedSampleName)) {
+              removeEntityFromEntityList("derived-samples", derivedSampleName);
+            }
+          }
+
           const sites = getExistingSites().map((site) => site.id);
           const siteFilter = [
             {
@@ -379,11 +401,60 @@ window.openPage = async (targetPageID) => {
           );
         }
 
+        if (pageEntityType === "samples") {
+          const samples = getExistingSamples("derived-from-subjects").map((sample) => sample.id);
+          for (const sample of samples) {
+            addEntityNameToEntityType("samples", sample);
+          }
+          const prevSampleNames = getEntityNamesByEntityType("samples");
+          for (const sampleName of prevSampleNames) {
+            if (!samples.includes(sampleName)) {
+              removeEntityFromEntityList("samples", sampleName);
+            }
+          }
+
+          const sites = getExistingSites().map((site) => site.id);
+          const derivedSamples = getExistingSamples("derived-from-samples").map(
+            (sample) => sample.id
+          );
+          const siteFilter = [
+            {
+              type: "non-data-folders",
+              names: ["Protocol", "Docs", "Code"],
+            },
+            {
+              type: "sites",
+              names: sites,
+            },
+            {
+              type: "samples",
+              names: derivedSamples,
+            },
+          ];
+          setFileVisibilityFilter(
+            [
+              {
+                type: "experimental",
+                names: ["experimental"],
+              },
+            ],
+            siteFilter
+          );
+        }
+
         if (pageEntityType === "subjects") {
           const subjects = getExistingSubjects().map((subject) => subject.id);
           for (const subject of subjects) {
             addEntityNameToEntityType("subjects", subject);
           }
+
+          const prevSubjectNames = getEntityNamesByEntityType("subjects");
+          for (const subjectName of prevSubjectNames) {
+            if (!subjects.includes(subjectName)) {
+              removeEntityFromEntityList("subjects", subjectName);
+            }
+          }
+
           const sites = getExistingSites().map((site) => site.id);
           const samples = getExistingSamples().map((sample) => sample.id);
           const siteAndSampleFilter = [
@@ -417,6 +488,17 @@ window.openPage = async (targetPageID) => {
           for (const performance of performanceList) {
             addEntityNameToEntityType("performances", performance.performance_id);
           }
+
+          const prevPerformanceNames = getEntityNamesByEntityType("performances");
+          for (const performanceName of prevPerformanceNames) {
+            const performanceExists = performanceList.some(
+              (p) => p.performance_id === performanceName
+            );
+            if (!performanceExists) {
+              removeEntityFromEntityList("performances", performanceName);
+            }
+          }
+
           setFileVisibilityFilter(
             [
               {
@@ -438,6 +520,14 @@ window.openPage = async (targetPageID) => {
           for (const modality of modalities) {
             addEntityNameToEntityType("modalities", modality);
           }
+
+          const prevModalityNames = getEntityNamesByEntityType("modalities");
+          for (const modalityName of prevModalityNames) {
+            if (!modalities.includes(modalityName)) {
+              removeEntityFromEntityList("modalities", modalityName);
+            }
+          }
+
           setFileVisibilityFilter(
             [],
             [
@@ -629,6 +719,17 @@ window.openPage = async (targetPageID) => {
   } catch (error) {
     console.error("Error opening page:", targetPageID);
     console.error("Error: ", error);
+    guidedSetNavLoadingState(false);
+
+    // Check if user should be redirected to first page due to file purging
+    if (window.sodaJSONObj?.["redirect-to-first-page-after-error"]) {
+      // Clear the flag
+      delete window.sodaJSONObj["redirect-to-first-page-after-error"];
+      await returnUserToFirstPage();
+      guidedSetNavLoadingState(false);
+      return;
+    }
+
     const eMessage = userErrorMessage(error);
     Swal.fire({
       icon: "error",
@@ -642,7 +743,6 @@ window.openPage = async (targetPageID) => {
       allowOutsideClick: false,
     });
 
-    guidedSetNavLoadingState(false);
     throw error;
   }
 
