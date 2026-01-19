@@ -366,8 +366,7 @@ window.openPage = async (targetPageID) => {
           const derivedSamples = getExistingSamples("derived-from-samples").map(
             (sample) => sample.id
           );
-          console.log("Derived samples", derivedSamples);
-          console.log("Derived samples2", getExistingSamples("derived-from-samples"));
+
           for (const derivedSample of derivedSamples) {
             addEntityNameToEntityType("derived-samples", derivedSample);
           }
