@@ -1,4 +1,12 @@
 {
+  "16.7.0": {
+    "announcements": {
+      "features": [
+        "The Prepare Dataset Step by Step workflow has been updated to support the latest version of the SDS (3.0.2)"
+      ],
+      "bug-fixes": []
+    }
+  },
   "16.6.0": {
     "announcements": {
       "features": [
