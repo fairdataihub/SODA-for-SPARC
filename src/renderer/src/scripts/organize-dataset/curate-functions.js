@@ -648,8 +648,8 @@ document
     document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
     document.getElementById("existing-dataset-upload").classList.remove("hidden");
 
-    setCheckboxCardUnchecked("dataset-upload-new-dataset");
-    setCheckboxCardChecked("dataset-upload-existing-dataset");
+    setCheckboxCardChecked("dataset-upload-new-dataset");
+    setCheckboxCardUnchecked("dataset-upload-existing-dataset");
 
     setNavButtonDisabled("nextBtn", true);
   });
