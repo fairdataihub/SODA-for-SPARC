@@ -58,6 +58,13 @@ export const dropDownSlice = (set) => ({
       options: [],
       selectedValue: "",
     },
+    "global-dataset-select": {
+      label: "",
+      description: "",
+      placeholder: "Select a dataset",
+      options: [],
+      selectedValue: "",
+    },
   },
 });
 

@@ -1459,7 +1459,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           heightAuto: false,
           allowOutsideClick: false,
           allowEscapeKey: true,
-          html: window.datasetPermissionDiv,
+          html: `<div id="global-dataset-select" data-component-type="dropdown-select"></div>`,
           reverseButtons: window.reverseSwalButtons,
           showCloseButton: true,
           showCancelButton: true,
