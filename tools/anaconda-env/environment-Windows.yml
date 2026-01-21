@@ -79,5 +79,6 @@ dependencies:
     - zope-interface==6.1
     - setuptools == 71.0.4
     - backports.tarfile
+    - --extra-index-url https://test.pypi.org/simple/
     - pysodafair
 
