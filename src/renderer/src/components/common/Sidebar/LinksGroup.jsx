@@ -156,12 +156,12 @@ const LinksGroup = ({ label, pages }) => {
     <>
       <UnstyledButton
         className={`${classes.link} ${opened ? classes.linkActive : ""}`}
-        onClick={() => setOpenSidebarTab(label)}
+        onClick={() => setOpenSidebarTab(opened ? null : label)}
         p="xs"
         w="100%"
       >
         <Group justify="space-between" w="100%">
-          <Group gap={8}>
+          <Group gap={6}>
             <ThemeIcon variant="light" size={30} radius="md">
               {icons[label]}
             </ThemeIcon>

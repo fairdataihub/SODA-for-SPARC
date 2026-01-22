@@ -142,7 +142,13 @@ const Sidebar = ({ id }) => {
               </Tooltip>
             </Stack>
             {showGuidedModePageNavigation && (
-              <ScrollArea.Autosize mah={800} type="hover" scrollbarSize={8}>
+              <ScrollArea.Autosize
+                mah={800}
+                type="hover"
+                scrollbarSize={8}
+                offsetScrollbars
+                mr="-10px"
+              >
                 {Object.entries(guidedModePageStructureObject).map(([pageKey, pageChildren]) => (
                   <LinksGroup key={pageKey} label={pageKey} pages={pageChildren} />
                 ))}
