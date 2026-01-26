@@ -1,6 +1,51 @@
 import { addOrUpdateStoredContributor } from "../../../others/contributor-storage";
 import { CONTRIBUTORS_REGEX } from "./contributorsValidation";
 
+// Contributor role value/display mapping for reuse throughout the app
+// Note that the order of the roles here is intentional (from highest to lowest priority),
+// so if you modify this list, please keep that in mind.
+export const CONTRIBUTOR_ROLE_OPTIONS = {
+  PrincipalInvestigator: "Principal Investigator",
+  Sponsor: "Sponsor",
+  ProjectLeader: "Project Leader",
+  Supervisor: "Supervisor",
+  CorrespondingAuthor: "Corresponding Author",
+  CoInvestigator: "Co-Investigator",
+  WorkPackageLeader: "Work Package Leader",
+  Researcher: "Researcher",
+  Creator: "Creator",
+  Producer: "Producer",
+  Editor: "Editor",
+  DataManager: "Data Manager",
+  DataCurator: "Data Curator",
+  ProjectManager: "Project Manager",
+  ContactPerson: "Contact Person",
+  RightsHolder: "Rights Holder",
+  Distributor: "Distributor",
+  HostingInstitution: "Hosting Institution",
+  ResearchGroup: "Research Group",
+  RegistrationAuthority: "Registration Authority",
+  RegistrationAgency: "Registration Agency",
+  DataCollector: "Data Collector",
+  ProjectMember: "Project Member",
+  RelatedPerson: "Related Person",
+  Other: "Other",
+};
+
+// Function that sorts an array of contributor roles based on the order defined in CONTRIBUTOR_ROLE_OPTIONS
+export const sortContributorRoles = (rolesArray) => {
+  const roleOrder = Object.keys(CONTRIBUTOR_ROLE_OPTIONS);
+  const input = rolesArray.slice();
+  const sorted = input.sort(
+    (a, b) =>
+      (roleOrder.indexOf(a) === -1 ? Infinity : roleOrder.indexOf(a)) -
+      (roleOrder.indexOf(b) === -1 ? Infinity : roleOrder.indexOf(b))
+  );
+  console.log("sortContributorRoles input:", rolesArray);
+  console.log("sortContributorRoles output:", sorted);
+  return sorted;
+};
+
 export const addContributor = (
   contributor_name,
   contributor_orcid_id, // string: ORCID
@@ -115,9 +160,8 @@ export const getContributorByOrcid = (orcid) => {
 const generateContributorTableRow = (contributorObj, contributorIndex) => {
   const contributorFullName = contributorObj["contributor_name"];
   const contributorOrcid = contributorObj["contributor_orcid_id"];
-  // Map role keys to user-friendly names
-  const contributorRoleString = (contributorObj["contributor_roles"] || [])
-    .map(role => (window.CONTRIBUTOR_ROLE_OPTIONS && window.CONTRIBUTOR_ROLE_OPTIONS[role]) ? window.CONTRIBUTOR_ROLE_OPTIONS[role] : role)
+  const contributorRoleString = sortContributorRoles(contributorObj.contributor_roles || [])
+    .map((role) => CONTRIBUTOR_ROLE_OPTIONS[role] ?? role)
     .join(", ");
 
   let validContributorName = CONTRIBUTORS_REGEX.test(contributorFullName);

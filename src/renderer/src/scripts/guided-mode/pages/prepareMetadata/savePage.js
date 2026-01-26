@@ -24,6 +24,7 @@ import { swalListSingleAction } from "../../../utils/swal-utils";
 
 import { getDropDownState } from "../../../../stores/slices/dropDownSlice";
 import { isCheckboxCardChecked } from "../../../../stores/slices/checkboxCardSlice";
+import { sortContributorRoles } from "../../metadata/contributors/contributors";
 
 export const savePagePrepareMetadata = async (pageBeingLeftID) => {
   const errorArray = [];
@@ -344,9 +345,15 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
   }
 
   if (pageBeingLeftID === "guided-contributors-tab") {
+    const contributorInformation = (window.sodaJSONObj["dataset_contributors"] || []).map(
+      (contributor) => ({
+        ...contributor,
+        contributor_roles: sortContributorRoles(contributor.contributor_roles || []),
+      })
+    );
+
     // Make sure the user has added at least one contributor
-    const contributors = window.sodaJSONObj["dataset_contributors"];
-    if (contributors.length === 0) {
+    if (contributorInformation.length === 0) {
       errorArray.push({
         type: "notyf",
         message: "Please add at least one contributor to your dataset",
@@ -355,7 +362,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     }
 
     // Make sure one and only one Principal Investigator is assigned
-    const principalInvestigators = contributors.filter((contributor) =>
+    const principalInvestigators = contributorInformation.filter((contributor) =>
       contributor.contributor_roles.includes("PrincipalInvestigator")
     );
     if (principalInvestigators.length === 0) {
@@ -375,7 +382,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     }
 
     // For contributors that were assigned the "Creator" role, make sure they have at least one other role too
-    const creatorsWithNoOtherRole = contributors.filter(
+    const creatorsWithNoOtherRole = contributorInformation.filter(
       (contributor) =>
         contributor.contributor_roles.includes("Creator") &&
         contributor.contributor_roles.length === 1
@@ -387,8 +394,6 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       });
       throw errorArray;
     }
-
-    const contributorInformation = window.sodaJSONObj["dataset_contributors"] || [];
 
     // Validate the contributor names match the Regular Expression
     contributorInformation.forEach((contributor) => {
@@ -406,6 +411,9 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
         });
       }
     });
+
+    // Save the validated contributor information
+    window.sodaJSONObj["dataset_contributors"] = contributorInformation;
 
     if (errorArray.length > 0) {
       throw errorArray;

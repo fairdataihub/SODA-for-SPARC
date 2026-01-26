@@ -41,6 +41,7 @@ import "bootstrap-select";
 import Cropper from "cropperjs";
 
 import "jstree";
+import { CONTRIBUTOR_ROLE_OPTIONS } from "./metadata/contributors/contributors";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -1278,35 +1279,6 @@ const handleAddOrEditContributorHeaderUI = (boolEditingContributor) => {
   `;
 };
 
-// Contributor role value/display mapping for reuse throughout the app
-window.CONTRIBUTOR_ROLE_OPTIONS = {
-  ContactPerson: "Contact Person",
-  CoInvestigator: "Co-Investigator",
-  CorrespondingAuthor: "Corresponding Author",
-  Creator: "Creator",
-  DataCollector: "Data Collector",
-  DataCurator: "Data Curator",
-  DataManager: "Data Manager",
-  Distributor: "Distributor",
-  Editor: "Editor",
-  HostingInstitution: "Hosting Institution",
-  PrincipalInvestigator: "Principal Investigator",
-  Producer: "Producer",
-  ProjectLeader: "Project Leader",
-  ProjectManager: "Project Manager",
-  ProjectMember: "Project Member",
-  RegistrationAgency: "Registration Agency",
-  RegistrationAuthority: "Registration Authority",
-  RelatedPerson: "Related Person",
-  ResearchGroup: "Research Group",
-  Researcher: "Researcher",
-  RightsHolder: "Rights Holder",
-  Sponsor: "Sponsor",
-  Supervisor: "Supervisor",
-  WorkPackageLeader: "Work Package Leader",
-  Other: "Other",
-};
-
 window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) => {
   let defaultContributorName = "";
   let defaultOrcid = "";
@@ -1354,7 +1326,7 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
         <p class="guided--text-input-instructions mb-0 text-left">Institution the contributor is affiliated with. Should be formatted as an ROR organization identifier(e.g., https://ror.org/00abcdef).</p>
         <label class="guided--form-label mt-md required">Role(s):</label>
         <select id="guided-contributor-role-select" class="w-100 SODA-select-picker" title="Select one or more roles" data-live-search="true" multiple>
-          ${Object.entries(window.CONTRIBUTOR_ROLE_OPTIONS)
+          ${Object.entries(CONTRIBUTOR_ROLE_OPTIONS)
             .map(([value, label]) => `<option value="${value}">${label}</option>`)
             .join("")}
         </select>
@@ -1376,6 +1348,8 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
       if (defaultRole) {
         const roles = Array.isArray(defaultRole) ? defaultRole : [defaultRole];
         $("#guided-contributor-role-select").selectpicker("val", roles);
+        // Track the initial order
+        $("#guided-contributor-role-select").data("prevOrder", roles);
       }
 
       $(".SODA-select-picker button").on("click", (e) => {
