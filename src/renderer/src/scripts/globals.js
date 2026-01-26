@@ -1098,15 +1098,17 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
 
       showHideDropdownButtons("account", "show");
       confirm_click_account_function();
-      updateBfAccountList();
+      window.updateBfAccountList();
+      console.log("ev in addBfAccount:", ev);
+      console.log("window.CURRENT_PAGE in addBfAccount:", window.CURRENT_PAGE);
 
-      // If the clicked button has the data attribute "reset-guided-mode-page" and the value is "true"
-      // then reset the guided mode page
-      if (ev?.getAttribute("data-reset-guided-mode-page") == "true") {
-        // Get the current page that the user is on in the guided mode
-        const currentPage = CURRENT_PAGE.id;
-        if (currentPage) {
-          await window.openPage(currentPage);
+      // If the user is on a current guided mode page, then reload that page
+      if (window.CURRENT_PAGE?.id) {
+        const pageToReloadId = window.CURRENT_PAGE.id;
+        console.log("pageToReloadId:", pageToReloadId);
+        await window.openPage(pageToReloadId);
+        if (pageToReloadId === "guided-select-starting-point-tab") {
+          document.getElementById("guided-button-resume-progress-file").click();
         }
       }
     } catch (error) {
@@ -1194,13 +1196,13 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
       confirm_click_account_function();
       window.updateBfAccountList();
 
-      // If the clicked button has the data attribute "reset-guided-mode-page" and the value is "true"
-      // then reset the guided mode page
-      if (ev?.getAttribute("data-reset-guided-mode-page") == "true") {
-        // Get the current page that the user is on in the guided mode
-        const currentPage = window.CURRENT_PAGE.id;
-        if (currentPage) {
-          await window.openPage(currentPage);
+      // If the user is on a current guided mode page, then reload that page
+      if (window.CURRENT_PAGE?.id) {
+        const pageToReloadId = window.CURRENT_PAGE.id;
+        console.log("pageToReloadId:", pageToReloadId);
+        await window.openPage(pageToReloadId);
+        if (pageToReloadId === "guided-select-starting-point-tab") {
+          document.getElementById("guided-button-resume-progress-file").click();
         }
       }
     } catch (error) {
@@ -1248,6 +1250,9 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
 
 var dropdownEventID = "";
 window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
+  console.log("ev in openDropdownPrompt:", ev);
+  console.log("dropdown in openDropdownPrompt:", dropdown);
+  console.log("show_timer in openDropdownPrompt:", show_timer);
   // if users edit current account
   if (dropdown === "ps") {
     await window.addBfAccount(ev, false);

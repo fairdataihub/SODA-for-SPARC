@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - staging
+      - 302-bug-fixes
 
 jobs:
   deploy-on-linux:
