@@ -43,11 +43,11 @@ while (!window.baseHtmlLoaded) {
 }
 
 export const openPagePrepareMetadata = async (targetPageID) => {
-  if (targetPageID === "guided-pennsieve-metadata-intro-tab") {
-    // Page-specific initialization code will go here
-  }
-
   if (targetPageID === "guided-pennsieve-intro-tab") {
+    // Hide the Pennsieve Agent check UI (The window.checkPennsieveAgent function will unhide it when called)
+    document
+      .getElementById("guided-mode-post-log-in-pennsieve-agent-check")
+      .classList.add("hidden");
     const elementsToShowWhenLoggedInToPennsieve = document.querySelectorAll(".show-when-logged-in");
     const elementsToShowWhenNotLoggedInToPennsieve =
       document.querySelectorAll(".show-when-logged-out");

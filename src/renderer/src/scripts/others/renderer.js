@@ -287,6 +287,7 @@ window.getPennsieveAgentStatus = async () => {
 };
 
 window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
+  window.unHideAndSmoothScrollToElement(pennsieveAgentStatusDivId);
   try {
     // Step 0: abort if the background services are already running
     if (useGlobalStore.getState()["pennsieveAgentCheckInProgress"] === true) {
