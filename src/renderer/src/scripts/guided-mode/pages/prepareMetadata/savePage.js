@@ -315,12 +315,29 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     }
 
     // Prepare the submission metadata
+    // Ensure milestone_completion_date is stored as an ISO 8601 string (if provided)
+    let milestoneCompletionIso = "";
+    if (milestoneCompletionDate) {
+      try {
+        const dateObj =
+          milestoneCompletionDate instanceof Date
+            ? milestoneCompletionDate
+            : new Date(milestoneCompletionDate);
+        if (!isNaN(dateObj)) {
+          milestoneCompletionIso = dateObj.toISOString();
+        }
+      } catch (err) {
+        // Fallback: leave empty string if it cannot be parsed
+        milestoneCompletionIso = "";
+      }
+    }
+
     window.sodaJSONObj["dataset_metadata"]["submission"] = {
       consortium_data_standard: "SPARC", // Hardcoded for now (SODA only supports SPARC data standard)
       funding_consortium: fundingConsortium,
       award_number: awardNumber,
       milestone_achieved: milestonesAchieved,
-      milestone_completion_date: milestoneCompletionDate,
+      milestone_completion_date: milestoneCompletionIso,
     };
     // Save the funding agency name for the dataset_description metadata
     window.sodaJSONObj["funding_agency"] = fundingAgency;
@@ -372,6 +389,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     }
 
     const contributorInformation = window.sodaJSONObj["dataset_contributors"] || [];
+
     // Validate the contributor names match the Regular Expression
     contributorInformation.forEach((contributor) => {
       if (!CONTRIBUTORS_REGEX.test(contributor["contributor_name"])) {

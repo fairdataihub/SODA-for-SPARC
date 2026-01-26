@@ -115,7 +115,10 @@ export const getContributorByOrcid = (orcid) => {
 const generateContributorTableRow = (contributorObj, contributorIndex) => {
   const contributorFullName = contributorObj["contributor_name"];
   const contributorOrcid = contributorObj["contributor_orcid_id"];
-  const contributorRoleString = contributorObj["contributor_roles"].join(", ");
+  // Map role keys to user-friendly names
+  const contributorRoleString = (contributorObj["contributor_roles"] || [])
+    .map(role => (window.CONTRIBUTOR_ROLE_OPTIONS && window.CONTRIBUTOR_ROLE_OPTIONS[role]) ? window.CONTRIBUTOR_ROLE_OPTIONS[role] : role)
+    .join(", ");
 
   let validContributorName = CONTRIBUTORS_REGEX.test(contributorFullName);
   return `

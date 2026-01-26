@@ -18,6 +18,7 @@ import api from "../others/api/api";
 import kombuchaEnums from "../analytics/analytics-enums";
 import Swal from "sweetalert2";
 import Tagify from "@yaireo/tagify/dist/tagify.esm.js";
+
 import client from "../client";
 import {
   guidedGenerateDatasetLocally,
@@ -1277,6 +1278,35 @@ const handleAddOrEditContributorHeaderUI = (boolEditingContributor) => {
   `;
 };
 
+// Contributor role value/display mapping for reuse throughout the app
+window.CONTRIBUTOR_ROLE_OPTIONS = {
+  ContactPerson: "Contact Person",
+  CoInvestigator: "Co-Investigator",
+  CorrespondingAuthor: "Corresponding Author",
+  Creator: "Creator",
+  DataCollector: "Data Collector",
+  DataCurator: "Data Curator",
+  DataManager: "Data Manager",
+  Distributor: "Distributor",
+  Editor: "Editor",
+  HostingInstitution: "Hosting Institution",
+  PrincipalInvestigator: "Principal Investigator",
+  Producer: "Producer",
+  ProjectLeader: "Project Leader",
+  ProjectManager: "Project Manager",
+  ProjectMember: "Project Member",
+  RegistrationAgency: "Registration Agency",
+  RegistrationAuthority: "Registration Authority",
+  RelatedPerson: "Related Person",
+  ResearchGroup: "Research Group",
+  Researcher: "Researcher",
+  RightsHolder: "Rights Holder",
+  Sponsor: "Sponsor",
+  Supervisor: "Supervisor",
+  WorkPackageLeader: "Work Package Leader",
+  Other: "Other",
+};
+
 window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) => {
   let defaultContributorName = "";
   let defaultOrcid = "";
@@ -1324,31 +1354,9 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
         <p class="guided--text-input-instructions mb-0 text-left">Institution the contributor is affiliated with. Should be formatted as an ROR organization identifier(e.g., https://ror.org/00abcdef).</p>
         <label class="guided--form-label mt-md required">Role(s):</label>
         <select id="guided-contributor-role-select" class="w-100 SODA-select-picker" title="Select one or more roles" data-live-search="true" multiple>
-          <option value="ContactPerson">Contact Person</option>
-          <option value="CoInvestigator">Co-Investigator</option>
-          <option value="CorrespondingAuthor">Corresponding Author</option>
-          <option value="Creator">Creator</option>
-          <option value="DataCollector">Data Collector</option>
-          <option value="DataCurator">Data Curator</option>
-          <option value="DataManager">Data Manager</option>
-          <option value="Distributor">Distributor</option>
-          <option value="Editor">Editor</option>
-          <option value="HostingInstitution">Hosting Institution</option>
-          <option value="PrincipalInvestigator">Principal Investigator</option>
-          <option value="Producer">Producer</option>
-          <option value="ProjectLeader">Project Leader</option>
-          <option value="ProjectManager">Project Manager</option>
-          <option value="ProjectMember">Project Member</option>
-          <option value="RegistrationAgency">Registration Agency</option>
-          <option value="RegistrationAuthority">Registration Authority</option>
-          <option value="RelatedPerson">Related Person</option>
-          <option value="ResearchGroup">Research Group</option>
-          <option value="Researcher">Researcher</option>
-          <option value="RightsHolder">Rights Holder</option>
-          <option value="Sponsor">Sponsor</option>
-          <option value="Supervisor">Supervisor</option>
-          <option value="WorkPackageLeader">Work Package Leader</option>
-          <option value="Other">Other</option>
+          ${Object.entries(window.CONTRIBUTOR_ROLE_OPTIONS)
+            .map(([value, label]) => `<option value="${value}">${label}</option>`)
+            .join("")}
         </select>
         <p class="guided--text-input-instructions mb-0 text-left">
           Role(s) the contributor played in the creation of the dataset. Visit <a target="_blank" href="https://schema.datacite.org/meta/kernel-4.4/doc/DataCite-MetadataKernel_v4.4.pdf">DataCite</a> for definitions.<br /><b>Select one or more roles from the dropdown.</b>

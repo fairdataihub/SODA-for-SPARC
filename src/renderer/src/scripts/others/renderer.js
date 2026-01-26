@@ -3190,7 +3190,7 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, testType) => {
     "string-contains-forbidden-characters": forbiddenCharacters.test(stringToTest),
     "string-contains-forbidden-pennsieve-dataset-name-characters":
       forbiddenPennsieveDatasetNameCharacters.test(stringToTest),
-    "string-is-valid-rrid": /^RRID:[A-Za-z]+\S*[_:]\S*$/.test(stringToTest),
+    "string-is-valid-rrid": /^$|^RRID:/.test(stringToTest),
     "string-is-valid-url-or-doi": (() => {
       const result = urlOrDoiPatterns.some((pattern) => pattern.test(stringToTest));
       return result;
