@@ -66,13 +66,7 @@
               "description": "Text"
             }
           },
-          "required": [
-            "Link",
-            "Rating",
-            "Target",
-            "Target Justification",
-            "Text"
-          ]
+          "required": ["Link", "Rating", "Target", "Target Justification", "Text"]
         },
         "TSR2": {
           "type": "object",
@@ -104,13 +98,7 @@
               "description": "Text"
             }
           },
-          "required": [
-            "Link",
-            "Rating",
-            "Target",
-            "Target Justification",
-            "Text"
-          ]
+          "required": ["Link", "Rating", "Target", "Target Justification", "Text"]
         },
         "TSR3a": {
           "type": "object",
@@ -142,13 +130,7 @@
               "description": "Text"
             }
           },
-          "required": [
-            "Link",
-            "Rating",
-            "Target",
-            "Target Justification",
-            "Text"
-          ]
+          "required": ["Link", "Rating", "Target", "Target Justification", "Text"]
         },
         "TSR3b": {
           "type": "object",
@@ -212,13 +194,7 @@
               "description": "Text"
             }
           },
-          "required": [
-            "Link",
-            "Rating",
-            "Target",
-            "Target Justification",
-            "Text"
-          ]
+          "required": ["Link", "Rating", "Target", "Target Justification", "Text"]
         },
         "TSR5": {
           "type": "object",
@@ -250,13 +226,7 @@
               "description": "Text"
             }
           },
-          "required": [
-            "Link",
-            "Rating",
-            "Target",
-            "Target Justification",
-            "Text"
-          ]
+          "required": ["Link", "Rating", "Target", "Target Justification", "Text"]
         },
         "TSR6": {
           "type": "object",
@@ -288,13 +258,7 @@
               "description": "Text"
             }
           },
-          "required": [
-            "Link",
-            "Rating",
-            "Target",
-            "Target Justification",
-            "Text"
-          ]
+          "required": ["Link", "Rating", "Target", "Target Justification", "Text"]
         },
         "TSR7a": {
           "type": "object",
@@ -326,13 +290,7 @@
               "description": "Text"
             }
           },
-          "required": [
-            "Link",
-            "Rating",
-            "Target",
-            "Target Justification",
-            "Text"
-          ]
+          "required": ["Link", "Rating", "Target", "Target Justification", "Text"]
         },
         "TSR7b": {
           "type": "object",
@@ -428,13 +386,7 @@
               "description": "Text"
             }
           },
-          "required": [
-            "Link",
-            "Rating",
-            "Target",
-            "Target Justification",
-            "Text"
-          ]
+          "required": ["Link", "Rating", "Target", "Target Justification", "Text"]
         },
         "TSR8b": {
           "type": "object",
@@ -482,13 +434,7 @@
               "description": "Text"
             }
           },
-          "required": [
-            "Link",
-            "Rating",
-            "Target",
-            "Target Justification",
-            "Text"
-          ]
+          "required": ["Link", "Rating", "Target", "Target Justification", "Text"]
         },
         "TSR10a": {
           "type": "object",
@@ -520,13 +466,7 @@
               "description": "Text"
             }
           },
-          "required": [
-            "Link",
-            "Rating",
-            "Target",
-            "Target Justification",
-            "Text"
-          ]
+          "required": ["Link", "Rating", "Target", "Target Justification", "Text"]
         },
         "TSR10b": {
           "type": "object",
