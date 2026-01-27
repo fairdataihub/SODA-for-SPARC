@@ -316,33 +316,30 @@ const patchPreviousGuidedModeVersions = async () => {
 };
 
 const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
-  // Check if guided-pennsieve-intro-tab is in completed tabs
+  // If the intro tab hasn't been completed, no reconfirmation required
   if (!window.sodaJSONObj["completed-tabs"].includes("guided-pennsieve-intro-tab")) {
     return false;
   }
 
-  // Check if the user has changed their Pennsieve account
+  // If the user changed account -> clear confirmation flags and require reconfirmation
   if (window.sodaJSONObj?.["last-confirmed-ps-account-details"] !== window.defaultBfAccount) {
     if (window.sodaJSONObj["button-config"]?.["pennsieve-account-has-been-confirmed"]) {
       delete window.sodaJSONObj["button-config"]["pennsieve-account-has-been-confirmed"];
     }
-    if (window.sodaJSONObj["button-config"]?.["organization-has-been-confirmed"]) {
-      delete window.sodaJSONObj["button-config"]["organization-has-been-confirmed"];
+    if (window.sodaJSONObj["button-config"]?.["pennsieve-organization-has-been-confirmed"]) {
+      delete window.sodaJSONObj["button-config"]["pennsieve-organization-has-been-confirmed"];
     }
     return true;
   }
 
-  // Log current and previously confirmed workspace details
+  // If the user changed workspace -> clear organization confirmation flag and require reconfirmation
   const currentWorkspace = guidedGetCurrentUserWorkSpace();
-
-  // Check if the user has changed their Pennsieve workspace
   if (currentWorkspace != window.sodaJSONObj?.["last-confirmed-pennsieve-workspace-details"]) {
-    if (window.sodaJSONObj["button-config"]?.["organization-has-been-confirmed"]) {
-      delete window.sodaJSONObj["button-config"]["organization-has-been-confirmed"];
+    if (window.sodaJSONObj["button-config"]?.["pennsieve-organization-has-been-confirmed"]) {
+      delete window.sodaJSONObj["button-config"]["pennsieve-organization-has-been-confirmed"];
     }
     return true;
   }
 
-  // If no reconfirmation is needed, log that information
   return false;
 };

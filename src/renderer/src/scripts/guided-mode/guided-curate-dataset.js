@@ -18,6 +18,7 @@ import api from "../others/api/api";
 import kombuchaEnums from "../analytics/analytics-enums";
 import Swal from "sweetalert2";
 import Tagify from "@yaireo/tagify/dist/tagify.esm.js";
+
 import client from "../client";
 import {
   guidedGenerateDatasetLocally,
@@ -40,6 +41,7 @@ import "bootstrap-select";
 import Cropper from "cropperjs";
 
 import "jstree";
+import { CONTRIBUTOR_ROLE_OPTIONS } from "./metadata/contributors/contributors";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -1324,31 +1326,9 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
         <p class="guided--text-input-instructions mb-0 text-left">Institution the contributor is affiliated with. Should be formatted as an ROR organization identifier(e.g., https://ror.org/00abcdef).</p>
         <label class="guided--form-label mt-md required">Role(s):</label>
         <select id="guided-contributor-role-select" class="w-100 SODA-select-picker" title="Select one or more roles" data-live-search="true" multiple>
-          <option value="ContactPerson">Contact Person</option>
-          <option value="CoInvestigator">Co-Investigator</option>
-          <option value="CorrespondingAuthor">Corresponding Author</option>
-          <option value="Creator">Creator</option>
-          <option value="DataCollector">Data Collector</option>
-          <option value="DataCurator">Data Curator</option>
-          <option value="DataManager">Data Manager</option>
-          <option value="Distributor">Distributor</option>
-          <option value="Editor">Editor</option>
-          <option value="HostingInstitution">Hosting Institution</option>
-          <option value="PrincipalInvestigator">Principal Investigator</option>
-          <option value="Producer">Producer</option>
-          <option value="ProjectLeader">Project Leader</option>
-          <option value="ProjectManager">Project Manager</option>
-          <option value="ProjectMember">Project Member</option>
-          <option value="RegistrationAgency">Registration Agency</option>
-          <option value="RegistrationAuthority">Registration Authority</option>
-          <option value="RelatedPerson">Related Person</option>
-          <option value="ResearchGroup">Research Group</option>
-          <option value="Researcher">Researcher</option>
-          <option value="RightsHolder">Rights Holder</option>
-          <option value="Sponsor">Sponsor</option>
-          <option value="Supervisor">Supervisor</option>
-          <option value="WorkPackageLeader">Work Package Leader</option>
-          <option value="Other">Other</option>
+          ${Object.entries(CONTRIBUTOR_ROLE_OPTIONS)
+            .map(([value, label]) => `<option value="${value}">${label}</option>`)
+            .join("")}
         </select>
         <p class="guided--text-input-instructions mb-0 text-left">
           Role(s) the contributor played in the creation of the dataset. Visit <a target="_blank" href="https://schema.datacite.org/meta/kernel-4.4/doc/DataCite-MetadataKernel_v4.4.pdf">DataCite</a> for definitions.<br /><b>Select one or more roles from the dropdown.</b>
@@ -1368,6 +1348,8 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
       if (defaultRole) {
         const roles = Array.isArray(defaultRole) ? defaultRole : [defaultRole];
         $("#guided-contributor-role-select").selectpicker("val", roles);
+        // Track the initial order
+        $("#guided-contributor-role-select").data("prevOrder", roles);
       }
 
       $(".SODA-select-picker button").on("click", (e) => {
@@ -3229,6 +3211,13 @@ document.querySelector("#guided-generate-dataset-locally-button").addEventListen
   // Send an IPC message to select the local dataset generation path
   window.electron.ipcRenderer.send("guided-select-local-dataset-generation-path");
 });
+// add a click listener to button with id guided-retry-generate-dataset-locally-button that triggers local gen
+document
+  .querySelector("#guided-retry-generate-dataset-locally-button")
+  .addEventListener("click", () => {
+    // Send an IPC message to select the local dataset generation path
+    window.electron.ipcRenderer.send("guided-select-local-dataset-generation-path");
+  });
 
 // Listen for the selected path for local dataset generation that starts the local dataset generation process
 window.electron.ipcRenderer.on(
