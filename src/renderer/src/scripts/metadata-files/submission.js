@@ -1130,21 +1130,12 @@ const loadSubmissionFileToUI = (data, type) => {
 
   // 4. populate Completion date (only if milestones were imported, otherwise leave as default value)
   if (data["Milestone completion date"] !== "" && milestonesImported) {
-    const rawDate = data["Milestone completion date"];
-    // Convert to YYYY-MM-DD for input[type=date] display if possible
-    let inputDate = rawDate;
-    try {
-      const d = new Date(rawDate);
-      if (!isNaN(d)) {
-        inputDate = d.toISOString().slice(0, 10);
-      }
-    } catch (err) {
-      /* leave inputDate as rawDate on parse failure */
-    }
-
-    // Add option for display and set the date input to the normalized value
-    window.addOption(window.descriptionDateInput, rawDate, inputDate);
-    $("#submission-completion-date").val(inputDate);
+    window.addOption(
+      window.descriptionDateInput,
+      data["Milestone completion date"],
+      data["Milestone completion date"]
+    );
+    $("#submission-completion-date").val(data["Milestone completion date"]);
   }
 
   Swal.fire({
