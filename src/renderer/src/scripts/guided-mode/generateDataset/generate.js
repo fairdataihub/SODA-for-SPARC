@@ -795,10 +795,15 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
       )
       .catch((error) => {
         immediateError = error;
-        throw error;
+        if (window.log && typeof window.log.error === "function") {
+          window.log.error("Immediate error during local dataset generation:", error);
+        } else {
+          console.error("Immediate error during local dataset generation:", error);
+        }
+        // do not rethrow here to avoid an unhandled rejection; surface after brief wait
       });
 
-    // Wait briefly to catch immediate validation errors before starting progress tracking
+    // Wait briefly to let immediate validation errors surface from backend
     await new Promise((resolve) => setTimeout(resolve, 3000));
 
     if (immediateError) {
