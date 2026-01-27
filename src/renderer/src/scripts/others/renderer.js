@@ -286,6 +286,12 @@ window.getPennsieveAgentStatus = async () => {
   return useGlobalStore.getState()["pennsieveAgentCheckSuccessful"];
 };
 
+window.CHECK_FOR_PENNSIEVE_AGENT_STATUS = {
+  NOT_INSTALLED: "NOT_INSTALLED",
+  INSTALLED: "INSTALLED",
+  FOUND_BUT_BAD_EXECUTABLE: "FOUND_BUT_BAD_EXECUTABLE",
+};
+
 window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
   try {
     // Step 0: abort if the background services are already running
@@ -310,15 +316,33 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
 
     // Step 2: Check if the Pennsieve agent is installed
     const pennsieveAgentInstalled = await window.spawn.checkForPennsieveAgent();
-    setPennsieveAgentInstalled(pennsieveAgentInstalled);
-
-    if (!pennsieveAgentInstalled) {
-      // If the Pennsieve agent is not installed, get the download URL and set it in the store
+    if (pennsieveAgentInstalled === window.CHECK_FOR_PENNSIEVE_AGENT_STATUS.ERROR) {
+      setPennsieveAgentInstalled(false);
+      setPennsieveAgentCheckError(
+        "The Pennsieve Agent is installed but not compatible with your system architecture",
+        "Please download and install the correct version of the Pennsieve Agent for your system. If you need assistance please contact us at help@fairdataihub.org"
+      );
+      abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+      return false;
+    } else if (
+      pennsieveAgentInstalled === window.CHECK_FOR_PENNSIEVE_AGENT_STATUS.FOUND_BUT_BAD_EXECUTABLE
+    ) {
+      setPennsieveAgentInstalled(false);
+      setPennsieveAgentCheckError(
+        "The Pennsieve Agent is installed but is not able to run on your computer",
+        "There are different reasons for this to happen and the easiest way to verify is for the SODA team to check manually. Please reach out to us by using the 'Contact Us' page accessible from the sidebar to get support."
+      );
+      abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+      return false;
+    } else if (pennsieveAgentInstalled === window.CHECK_FOR_PENNSIEVE_AGENT_STATUS.NOT_INSTALLED) {
       const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
       setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
       abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+      setPennsieveAgentInstalled(false);
       return false;
     }
+
+    setPennsieveAgentInstalled(true);
 
     // Stop the Pennsieve agent if it is running
     // This is to ensure that the agent is not running when we try to start it so no funny business happens
