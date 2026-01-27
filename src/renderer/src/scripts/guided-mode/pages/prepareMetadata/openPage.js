@@ -43,10 +43,6 @@ while (!window.baseHtmlLoaded) {
 }
 
 export const openPagePrepareMetadata = async (targetPageID) => {
-  if (targetPageID === "guided-pennsieve-metadata-intro-tab") {
-    // Page-specific initialization code will go here
-  }
-
   if (targetPageID === "guided-pennsieve-intro-tab") {
     const elementsToShowWhenLoggedInToPennsieve = document.querySelectorAll(".show-when-logged-in");
     const elementsToShowWhenNotLoggedInToPennsieve =
@@ -72,19 +68,6 @@ export const openPagePrepareMetadata = async (targetPageID) => {
       const userInformation = await api.getUserInformation();
       const userEmail = userInformation.email;
       pennsieveIntroText.innerHTML = userEmail;
-
-      try {
-        if (window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"]) {
-          if (
-            window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"] ===
-            guidedGetCurrentUserWorkSpace()
-          ) {
-            document.getElementById("guided-confirm-pennsieve-organization-button").click();
-          }
-        }
-      } catch (error) {
-        pennsieveIntroAccountDetailsText.innerHTML = "Error loading account details";
-      }
     }
   }
 

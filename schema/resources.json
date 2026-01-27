@@ -6,17 +6,7 @@
     "properties": {
       "rrid": {
         "type": "string",
-        "anyOf": [
-          {
-            "pattern": "^RRID:[A-Z]+_[0-9]+$"
-          },
-          {
-            "pattern": "^RRID:([A-Z]+):([A-Za-z0-9_:-]+)$"
-          },
-          {
-            "pattern": "^RRID:[A-Za-z]+\\S*[_:]\\S*$"
-          }
-        ],
+        "pattern": "^$|^RRID:",
         "description": "Research Resource Identifier (RRID) for the resource. Accepts RRID:SCR_003070 or RRID:SCR:003070 formats. Also captures legacy format."
       },
       "type": {

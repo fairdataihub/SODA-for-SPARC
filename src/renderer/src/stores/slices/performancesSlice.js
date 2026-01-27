@@ -1,5 +1,6 @@
 import useGlobalStore from "../globalStore";
 import { produce } from "immer";
+import { renameEntity } from "./datasetEntitySelectorSlice";
 
 export const performancesSlice = (set, get) => ({
   // UI state
@@ -293,6 +294,15 @@ export const updatePerformance = () => {
       state.originalPerformanceId = "";
     })
   );
+
+  // If the performance id changed, rename associated entity and log
+  if (originalId !== newPerformanceId) {
+    try {
+      renameEntity("performances", originalId, newPerformanceId);
+    } catch (err) {
+      console.error("Error renaming associated entity:", err);
+    }
+  }
 
   window.notyf.open({
     duration: "4000",

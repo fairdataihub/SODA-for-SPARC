@@ -163,16 +163,6 @@ window.switchToCurrentWorkspace = async () => {
       showHideDropdownButtons("account", "show");
       confirm_click_account_function();
       window.updateBfAccountList();
-
-      //   // If the clicked button has the data attribute "reset-guided-mode-page" and the value is "true"
-      //   // then reset the guided mode page
-      //   if (ev?.getAttribute("data-reset-guided-mode-page") == "true") {
-      //     // Get the current page that the user is on in the guided mode
-      //     const currentPage = CURRENT_PAGE.id;
-      //     if (currentPage) {
-      //       await openPage(currentPage);
-      //     }
-      //   }
     } catch (error) {
       clientError(error);
       Swal.fire({

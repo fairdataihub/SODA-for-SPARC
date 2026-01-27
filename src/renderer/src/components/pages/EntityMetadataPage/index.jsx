@@ -1,7 +1,6 @@
 import { useMemo, useCallback, useRef, useEffect } from "react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
-import { isValidRRID } from "../../../scripts/utils/rrid-utils";
 import ExternalLink from "../../buttons/ExternalLink";
 import {
   IconInfoCircle,

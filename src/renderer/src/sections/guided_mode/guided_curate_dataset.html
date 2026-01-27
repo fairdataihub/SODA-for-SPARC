@@ -778,9 +778,12 @@
           <div class="guided--section">
             <h1 class="text-sub-step-title">Contributor information</h1>
             <p class="help-text">
-              Provide information about the individuals who contributed to this dataset. These
-              individuals do not have to be authors of any publications that describe the data, but
-              they should be acknowledged for their role in producing and publishing the dataset.
+              The SDS allows you to specify contributors to a dataset so they can be acknowledged
+              for their role in producing, managing, and publishing the data. This may include
+              people responsible for data collection, curation, oversight, coordination, or
+              institutional support. Contributors do not need to be authors on a related
+              publication, but their involvement in the creation and stewardship of the dataset
+              should be recognized.
             </p>
             <p class="help-text">
               The order in which the contributors should be added is in the same way that you would
@@ -1649,12 +1652,14 @@
             <p class="help-text">
               Click the button below to retry the local dataset copy generation.
             </p>
-            <button
-              class="ui positive button soda-green-background button-starts-local-dataset-copy-generation"
-              style="width: 350px !important"
-            >
-              Retry local dataset copy generation
-            </button>
+            <div
+              data-component-type="generic-button"
+              data-button-id="guided-retry-generate-dataset-locally-button"
+              data-variant="filled"
+              data-size="md"
+              data-text="Retry local dataset generation"
+              class="mb-md mt-md"
+            ></div>
           </div>
           <div
             data-component-type="dataset-tree-view-renderer"
@@ -1755,7 +1760,7 @@
               ></div>
             </div>
           </div>
-          <div class="guided--section" id="guided-section-background-services-check">
+          <div class="guided--section show-when-logged-in">
             <div
               data-component-type="pennsieve-agent-check-display"
               class="guided--section"
