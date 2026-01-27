@@ -41,8 +41,7 @@ export const sortContributorRoles = (rolesArray) => {
       (roleOrder.indexOf(a) === -1 ? Infinity : roleOrder.indexOf(a)) -
       (roleOrder.indexOf(b) === -1 ? Infinity : roleOrder.indexOf(b))
   );
-  console.log("sortContributorRoles input:", rolesArray);
-  console.log("sortContributorRoles output:", sorted);
+
   return sorted;
 };
 

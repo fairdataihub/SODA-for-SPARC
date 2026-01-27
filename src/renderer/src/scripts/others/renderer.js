@@ -287,7 +287,6 @@ window.getPennsieveAgentStatus = async () => {
 };
 
 window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
-  console.log("Checking Pennsieve agent status..." + pennsieveAgentStatusDivId);
   window.unHideAndSmoothScrollToElement(pennsieveAgentStatusDivId);
 
   try {
@@ -6103,7 +6102,6 @@ window.showBFAddAccountSweetalert = async (ev) => {
                     // If the user is on a current guided mode page, then reload that page
                     if (window.CURRENT_PAGE?.id) {
                       const pageToReloadId = window.CURRENT_PAGE.id;
-                      console.log("pageToReloadId:", pageToReloadId);
                       await window.openPage(pageToReloadId);
                       if (pageToReloadId === "guided-select-starting-point-tab") {
                         document.getElementById("guided-button-resume-progress-file").click();

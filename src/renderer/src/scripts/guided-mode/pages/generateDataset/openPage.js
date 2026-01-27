@@ -32,10 +32,6 @@ export const openPageGenerateDataset = async (targetPageID) => {
   }
 
   if (targetPageID === "guided-generate-dataset-locally") {
-    // Create a deep copy of the dataset structure JSON object
-    const datasetStructureJSONObjCopy = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
-    // Restore the original dataset structure
-    window.datasetStructureJSONObj = datasetStructureJSONObjCopy;
     guidedResetLocalGenerationUI();
   }
 

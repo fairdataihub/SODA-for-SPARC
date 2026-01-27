@@ -654,6 +654,7 @@ window.openPage = async (targetPageID) => {
           window.datasetStructureJSONObj,
           window.sodaJSONObj["dataset-entity-obj"]
         );
+
         if (pageID === "guided-dataset-structure-and-manifest-review-tab") {
           // Only show the manifest file for the dataset metadata preview
           // even if there are other metadata files like sites or performances
@@ -681,6 +682,7 @@ window.openPage = async (targetPageID) => {
         pageID === "guided-unstructured-data-import-tab"
       ) {
         setPathToRender(["data"]);
+
         useGlobalStore.setState({
           datasetStructureJSONObj: window.datasetStructureJSONObj,
           calculateEntities: true,

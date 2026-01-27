@@ -3211,6 +3211,13 @@ document.querySelector("#guided-generate-dataset-locally-button").addEventListen
   // Send an IPC message to select the local dataset generation path
   window.electron.ipcRenderer.send("guided-select-local-dataset-generation-path");
 });
+// add a click listener to button with id guided-retry-generate-dataset-locally-button that triggers local gen
+document
+  .querySelector("#guided-retry-generate-dataset-locally-button")
+  .addEventListener("click", () => {
+    // Send an IPC message to select the local dataset generation path
+    window.electron.ipcRenderer.send("guided-select-local-dataset-generation-path");
+  });
 
 // Listen for the selected path for local dataset generation that starts the local dataset generation process
 window.electron.ipcRenderer.on(

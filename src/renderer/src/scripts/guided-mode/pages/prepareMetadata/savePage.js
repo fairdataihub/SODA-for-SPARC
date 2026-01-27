@@ -547,7 +547,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       standards_information: [
         {
           data_standard: "SPARC",
-          data_standard_version: "3.0.2",
+          data_standard_version: "2025.05.01",
         },
         {
           data_standard: "SODA Version",

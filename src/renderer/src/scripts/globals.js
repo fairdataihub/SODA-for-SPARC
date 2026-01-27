@@ -1099,13 +1099,10 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
       showHideDropdownButtons("account", "show");
       confirm_click_account_function();
       window.updateBfAccountList();
-      console.log("ev in addBfAccount:", ev);
-      console.log("window.CURRENT_PAGE in addBfAccount:", window.CURRENT_PAGE);
 
       // If the user is on a current guided mode page, then reload that page
       if (window.CURRENT_PAGE?.id) {
         const pageToReloadId = window.CURRENT_PAGE.id;
-        console.log("pageToReloadId:", pageToReloadId);
         await window.openPage(pageToReloadId);
         if (pageToReloadId === "guided-select-starting-point-tab") {
           document.getElementById("guided-button-resume-progress-file").click();
@@ -1199,7 +1196,6 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
       // If the user is on a current guided mode page, then reload that page
       if (window.CURRENT_PAGE?.id) {
         const pageToReloadId = window.CURRENT_PAGE.id;
-        console.log("pageToReloadId:", pageToReloadId);
         await window.openPage(pageToReloadId);
         if (pageToReloadId === "guided-select-starting-point-tab") {
           document.getElementById("guided-button-resume-progress-file").click();
@@ -1250,9 +1246,6 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
 
 var dropdownEventID = "";
 window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
-  console.log("ev in openDropdownPrompt:", ev);
-  console.log("dropdown in openDropdownPrompt:", dropdown);
-  console.log("show_timer in openDropdownPrompt:", show_timer);
   // if users edit current account
   if (dropdown === "ps") {
     await window.addBfAccount(ev, false);
@@ -2058,7 +2051,6 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           // If the user is on a current guided mode page, then reload that page
           if (window.CURRENT_PAGE?.id) {
             const pageToReloadId = window.CURRENT_PAGE.id;
-            console.log("pageToReloadId:", pageToReloadId);
             await window.openPage(pageToReloadId);
             if (pageToReloadId === "guided-select-starting-point-tab") {
               document.getElementById("guided-button-resume-progress-file").click();
@@ -2087,7 +2079,6 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       // If the user is on a current guided mode page, then reload that page
       if (window.CURRENT_PAGE?.id) {
         const pageToReloadId = window.CURRENT_PAGE.id;
-        console.log("pageToReloadId:", pageToReloadId);
         await window.openPage(pageToReloadId);
         if (pageToReloadId === "guided-select-starting-point-tab") {
           document.getElementById("guided-button-resume-progress-file").click();

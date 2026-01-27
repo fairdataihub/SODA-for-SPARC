@@ -375,7 +375,7 @@ const trackLocalDatasetGenerationProgress = async (standardizedDatasetStructure)
       const { status, message, elapsedTime, uploadedFiles, curationErrorMessage } =
         await fetchProgressData();
       if (curationErrorMessage !== undefined && curationErrorMessage !== "") {
-        console.log("Error message during local dataset generation:", curationErrorMessage);
+        console.error("Error message during local dataset generation:", curationErrorMessage);
       }
 
       if (curationErrorMessage) {
@@ -799,7 +799,7 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
       });
 
     // Wait briefly to catch immediate validation errors before starting progress tracking
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 3000));
 
     if (immediateError) {
       throw immediateError;
@@ -824,9 +824,8 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
     });
     window.unHideAndSmoothScrollToElement("guided-section-post-local-generation-success");
   } catch (error) {
-    console.error("Error during local dataset generation:", error);
+    window.log.error("Error during local dataset generation:", error);
     const errorMessage = userErrorMessage(error);
-    console.error(errorMessage);
     guidedResetLocalGenerationUI();
     await swalShowError("Error generating dataset locally", errorMessage);
     window.unHideAndSmoothScrollToElement("guided-section-retry-local-generation");
