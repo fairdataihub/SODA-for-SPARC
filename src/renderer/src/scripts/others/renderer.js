@@ -6100,14 +6100,16 @@ window.showBFAddAccountSweetalert = async (ev) => {
                     confirm_click_account_function();
                     window.updateBfAccountList();
 
-                    // If the clicked button has the data attribute "reset-guided-mode-page" and the value is "true"
-                    // then reset the guided mode page
-                    if (ev?.getAttribute("data-reset-guided-mode-page") == "true") {
-                      // Get the current page that the user is on in the guided mode
-                      const currentPage = window.CURRENT_PAGE.id;
-                      if (currentPage) {
-                        await window.openPage(currentPage);
+                    // If the user is on a current guided mode page, then reload that page
+                    if (window.CURRENT_PAGE?.id) {
+                      const pageToReloadId = window.CURRENT_PAGE.id;
+                      console.log("pageToReloadId:", pageToReloadId);
+                      await window.openPage(pageToReloadId);
+                      if (pageToReloadId === "guided-select-starting-point-tab") {
+                        document.getElementById("guided-button-resume-progress-file").click();
                       }
+                    } else {
+                      window.resetFFMUI(ev?.target || null);
                     }
 
                     // reset the selected dataset to None
@@ -6116,16 +6118,6 @@ window.showBFAddAccountSweetalert = async (ev) => {
                     $(".current-permissions").html("None");
 
                     window.refreshOrganizationList();
-
-                    // If the button that triggered the organization has the class
-                    // guided-change-workspace (from guided mode), handle changes based on the ev id
-                    // otherwise, reset the FFM UI based on the ev class
-                    // NOTE: For API Key sign in flow it is more simple to just reset the UI as the new user may be in a separate workspace than the prior user.
-
-                    ev?.target?.classList.contains("data-reset-guided-mode-page")
-                      ? window.handleGuidedModeOrgSwitch(ev?.target || null)
-                      : window.resetFFMUI(ev?.target || null);
-
                     window.datasetList = [];
                     window.defaultBfDataset = null;
                     window.clearDatasetDropdowns();

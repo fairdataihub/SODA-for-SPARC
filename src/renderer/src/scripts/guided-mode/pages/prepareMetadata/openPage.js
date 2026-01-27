@@ -68,19 +68,6 @@ export const openPagePrepareMetadata = async (targetPageID) => {
       const userInformation = await api.getUserInformation();
       const userEmail = userInformation.email;
       pennsieveIntroText.innerHTML = userEmail;
-
-      try {
-        if (window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"]) {
-          if (
-            window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"] ===
-            guidedGetCurrentUserWorkSpace()
-          ) {
-            document.getElementById("guided-confirm-pennsieve-organization-button").click();
-          }
-        }
-      } catch (error) {
-        pennsieveIntroAccountDetailsText.innerHTML = "Error loading account details";
-      }
     }
   }
 
