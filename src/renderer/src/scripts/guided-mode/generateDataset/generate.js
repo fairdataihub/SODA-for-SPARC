@@ -374,6 +374,13 @@ const trackLocalDatasetGenerationProgress = async (standardizedDatasetStructure)
     try {
       const { status, message, elapsedTime, uploadedFiles, curationErrorMessage } =
         await fetchProgressData();
+      console.log("Local generation progress:", {
+        status,
+        message,
+        elapsedTime,
+        uploadedFiles,
+        curationErrorMessage,
+      });
       if (curationErrorMessage !== undefined && curationErrorMessage !== "") {
         console.error("Error message during local dataset generation:", curationErrorMessage);
       }
@@ -786,29 +793,19 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
     });
 
     // Start local generation - catch immediate errors (like validation) without blocking
-    let immediateError = null;
     client
       .post(
         "/curate_datasets/curation",
         { soda_json_structure: sodaJSONObjCopy, resume: false },
         { timeout: 0 }
       )
-      .catch((error) => {
-        immediateError = error;
-        if (window.log && typeof window.log.error === "function") {
-          window.log.error("Immediate error during local dataset generation:", error);
-        } else {
-          console.error("Immediate error during local dataset generation:", error);
-        }
-        // do not rethrow here to avoid an unhandled rejection; surface after brief wait
+      .catch(async (error) => {
+        window.log.error("Error during local dataset generation:", error);
+        const errorMessage = userErrorMessage(error);
+        guidedResetLocalGenerationUI();
+        await swalShowError("Error generating dataset locally", errorMessage);
+        window.unHideAndSmoothScrollToElement("guided-section-retry-local-generation");
       });
-
-    // Wait briefly to let immediate validation errors surface from backend
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-
-    if (immediateError) {
-      throw immediateError;
-    }
 
     await trackLocalDatasetGenerationProgress(standardizedDatasetStructure);
 
