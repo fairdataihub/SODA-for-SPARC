@@ -374,13 +374,7 @@ const trackLocalDatasetGenerationProgress = async (standardizedDatasetStructure)
     try {
       const { status, message, elapsedTime, uploadedFiles, curationErrorMessage } =
         await fetchProgressData();
-      console.log("Local generation progress:", {
-        status,
-        message,
-        elapsedTime,
-        uploadedFiles,
-        curationErrorMessage,
-      });
+
       if (curationErrorMessage !== undefined && curationErrorMessage !== "") {
         console.error("Error message during local dataset generation:", curationErrorMessage);
       }
@@ -729,6 +723,15 @@ const automaticRetry = async (supplementaryChecks = false, errorMessage = "") =>
   guidedGenerateDatasetOnPennsieve();
 };
 
+// Handle local generation failure UI + logging in one place
+const handleLocalGenerationFailure = async (error) => {
+  window.log.error("Error during local dataset generation:", error);
+  const errorMessage = userErrorMessage(error);
+  guidedResetLocalGenerationUI();
+  await swalShowError("Error generating dataset locally", errorMessage);
+  guidedSetNavLoadingState(false);
+};
+
 export const guidedGenerateDatasetLocally = async (filePath) => {
   guidedSetNavLoadingState(true); // Lock the nav while local dataset generation is in progress
   guidedResetLocalGenerationUI();
@@ -800,11 +803,8 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
         { timeout: 0 }
       )
       .catch(async (error) => {
-        window.log.error("Error during local dataset generation:", error);
-        const errorMessage = userErrorMessage(error);
-        guidedResetLocalGenerationUI();
-        await swalShowError("Error generating dataset locally", errorMessage);
-        window.unHideAndSmoothScrollToElement("guided-section-retry-local-generation");
+        console.error("Error during local dataset generation:", error);
+        await handleLocalGenerationFailure(error);
       });
 
     await trackLocalDatasetGenerationProgress(standardizedDatasetStructure);
@@ -826,11 +826,9 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
     });
     window.unHideAndSmoothScrollToElement("guided-section-post-local-generation-success");
   } catch (error) {
-    window.log.error("Error during local dataset generation:", error);
-    const errorMessage = userErrorMessage(error);
-    guidedResetLocalGenerationUI();
-    await swalShowError("Error generating dataset locally", errorMessage);
-    window.unHideAndSmoothScrollToElement("guided-section-retry-local-generation");
+    console.error("Error during local dataset generation:2", error);
+
+    await handleLocalGenerationFailure(error);
   } finally {
     guidedSetNavLoadingState(false); // Always unlock nav
   }

@@ -76,8 +76,6 @@ export const guidedResetLocalGenerationUI = () => {
   document.getElementById("guided-section-local-generation-status-table").classList.add("hidden");
   // Hide the local dataset generation success section
   document.getElementById("guided-section-post-local-generation-success").classList.add("hidden");
-  // Hide the local dataset generation retry section
-  document.getElementById("guided-section-retry-local-generation").classList.add("hidden");
 };
 
 // This function reads the innerText of the textSharedWithCurationTeamStatus element
@@ -3211,13 +3209,6 @@ document.querySelector("#guided-generate-dataset-locally-button").addEventListen
   // Send an IPC message to select the local dataset generation path
   window.electron.ipcRenderer.send("guided-select-local-dataset-generation-path");
 });
-// add a click listener to button with id guided-retry-generate-dataset-locally-button that triggers local gen
-document
-  .querySelector("#guided-retry-generate-dataset-locally-button")
-  .addEventListener("click", () => {
-    // Send an IPC message to select the local dataset generation path
-    window.electron.ipcRenderer.send("guided-select-local-dataset-generation-path");
-  });
 
 // Listen for the selected path for local dataset generation that starts the local dataset generation process
 window.electron.ipcRenderer.on(
