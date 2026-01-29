@@ -17,7 +17,10 @@ import {
   CONTRIBUTORS_REGEX,
   affiliationRorIsValid,
 } from "../../metadata/contributors/contributorsValidation";
-import { countFilesInDatasetStructure } from "../../../utils/datasetStructure";
+import {
+  countFilesInDatasetStructure,
+  getFileTypesArrayInDatasetStructure,
+} from "../../../utils/datasetStructure";
 import { bytesToReadableSize } from "../../generateDataset/generate";
 import client from "../../../client";
 import { swalListSingleAction } from "../../../utils/swal-utils";
@@ -472,6 +475,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     // Get keywords
     const keywordArray = window.getTagsFromTagifyElement(guidedDatasetKeywordsTagify);
     // Get study description inputs
+    const studyDescriptionInput = document.getElementById("guided-ds-study-description");
     const studyPurposeInput = document.getElementById("guided-ds-study-purpose");
     const studyDataCollectionInput = document.getElementById("guided-ds-study-data-collection");
     const studyPrimaryConclusionInput = document.getElementById(
@@ -479,23 +483,32 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     );
     const studyCollectionTitleInput = document.getElementById("guided-ds-study-collection-title");
 
+    const studyDescription = studyDescriptionInput.value.trim() || "";
+    // Save the study description as is (to be used in the openPage when re-opening the page)
+    window.sodaJSONObj["dataset-description"] = studyDescription;
+
     const studyPurpose = studyPurposeInput.value.trim() || "";
     const studyDataCollection = studyDataCollectionInput.value.trim() || "";
     const studyPrimaryConclusion = studyPrimaryConclusionInput.value.trim() || "";
     const studyCollectionTitle = studyCollectionTitleInput.value.trim() || "";
 
-    let descriptionArray = [];
+    // Get tagify study fields
+    const studyOrganSystemTags = window.getTagsFromTagifyElement(guidedStudyOrganSystemsTagify);
+    const studyApproachTags = window.getTagsFromTagifyElement(guidedStudyApproachTagify);
+    const studyTechniqueTags = window.getTagsFromTagifyElement(guidedStudyTechniquesTagify);
 
-    studyPurpose && descriptionArray.push("Study Purpose: " + studyPurpose);
-    studyDataCollection && descriptionArray.push("Data Collection: " + studyDataCollection);
-    studyPrimaryConclusion &&
-      descriptionArray.push("Primary Conclusion: " + studyPrimaryConclusion);
+    let studyDescriptionFormattedForDatasetDescription;
 
-    if (descriptionArray.length > 0) {
+    // Use the study description as the dataset description. If the user provided a study description,
+    // append the number of files and the dataset size to the end of it.
+    if (studyDescription !== "") {
       const numberOfFilesInDataset = countFilesInDatasetStructure(
         window.datasetStructureJSONObj?.["folders"]?.["data"]
       );
-      descriptionArray.push("Number of Files in Dataset: " + numberOfFilesInDataset);
+
+      const datasetFileTypesArray = getFileTypesArrayInDatasetStructure(
+        window.datasetStructureJSONObj?.["folders"]?.["data"]
+      ).join(", ");
       // Get dataset size
       const localDatasetSizeReq = await client.post(
         "/curate_datasets/dataset_size",
@@ -504,14 +517,19 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       );
       const localDatasetSizeInBytes = localDatasetSizeReq.data.dataset_size;
       const formattedDatasetSize = bytesToReadableSize(localDatasetSizeInBytes);
-      descriptionArray.push("Dataset Size: " + formattedDatasetSize);
-    }
-    const datasetDescription = descriptionArray.join("\n\n");
 
-    // Get tagify study fields
-    const studyOrganSystemTags = window.getTagsFromTagifyElement(guidedStudyOrganSystemsTagify);
-    const studyApproachTags = window.getTagsFromTagifyElement(guidedStudyApproachTagify);
-    const studyTechniqueTags = window.getTagsFromTagifyElement(guidedStudyTechniquesTagify);
+      const descriptionParts = [studyDescription];
+      if (studyTechniqueTags.length > 0) {
+        descriptionParts.push("Techniques used: " + studyTechniqueTags.join(", "));
+      }
+      descriptionParts.push(`Number of files in dataset: ${numberOfFilesInDataset}`);
+      descriptionParts.push(`File formats in dataset: ${datasetFileTypesArray}`);
+      descriptionParts.push(`Dataset size: ${formattedDatasetSize}`);
+
+      studyDescriptionFormattedForDatasetDescription = descriptionParts.join("\n");
+    } else {
+      studyDescriptionFormattedForDatasetDescription = "";
+    }
 
     // Get acknowledgments and funding
     const acknowledgmentsInput = document.getElementById("guided-ds-acknowledgments");
@@ -557,7 +575,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       basic_information: {
         title,
         subtitle,
-        description: datasetDescription,
+        description: studyDescriptionFormattedForDatasetDescription,
         keywords: keywordArray,
         funding: fundingArray,
         acknowledgments: acknowledgments,

@@ -208,6 +208,8 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     guidedDatasetKeywordsTagify.addTags(keywords);
 
     // Set the Study information fields
+    const studyDescription = window.sodaJSONObj["dataset-description"] || "";
+    document.getElementById("guided-ds-study-description").value = studyDescription;
     const studyPurpose = studyInformation["study_purpose"] || "";
     document.getElementById("guided-ds-study-purpose").value = studyPurpose;
     const studyDataCollection = studyInformation["study_data_collection"] || "";
@@ -239,8 +241,6 @@ export const openPagePrepareMetadata = async (targetPageID) => {
 
     const acknowledgments = basicInformation["acknowledgments"] || "";
     document.getElementById("guided-ds-acknowledgments").value = acknowledgments;
-
-    const license = basicInformation["license"] || "";
 
     renderAdditionalLinksTable();
   }

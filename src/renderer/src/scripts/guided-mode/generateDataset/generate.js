@@ -343,6 +343,56 @@ const countFilesInDatasetStructure = (datasetStructure) => {
   return totalFiles;
 };
 
+export const getFileTypesArrayInDatasetStructure = (datasetStructure) => {
+  console.log("[getFileTypesArrayInDatasetStructure] called");
+  // Recursively traverse the dataset structure and collect unique file extensions
+  const fileTypesSet = new Set();
+
+  if (!datasetStructure || typeof datasetStructure !== "object") {
+    console.log(
+      "[getFileTypesArrayInDatasetStructure] no dataset structure provided or invalid type"
+    );
+    return [];
+  }
+
+  const keys = Object.keys(datasetStructure);
+  for (const key of keys) {
+    if (key === "files") {
+      const filesObj = datasetStructure[key] || {};
+      const fileNames = Object.keys(filesObj);
+      console.log(
+        `[getFileTypesArrayInDatasetStructure] scanning ${fileNames.length} file(s) in current node`
+      );
+      for (const fileName of fileNames) {
+        const extensionRaw = filesObj[fileName]?.extension;
+        if (extensionRaw && typeof extensionRaw === "string") {
+          const ext = extensionRaw.trim().toLowerCase().replace(/^\./, "");
+          if (ext) {
+            if (!fileTypesSet.has(ext)) {
+              console.log(
+                `[getFileTypesArrayInDatasetStructure] found extension: ${ext} (file: ${fileName})`
+              );
+            }
+            fileTypesSet.add(ext);
+          }
+        }
+      }
+    } else if (key === "folders") {
+      const folders = Object.keys(datasetStructure[key] || {});
+      for (const folder of folders) {
+        console.log(`[getFileTypesArrayInDatasetStructure] descending into folder: ${folder}`);
+        const child = datasetStructure[key][folder];
+        const childTypes = getFileTypesArrayInDatasetStructure(child);
+        childTypes.forEach((t) => fileTypesSet.add(t));
+      }
+    }
+  }
+
+  const result = Array.from(fileTypesSet).sort();
+  console.log("[getFileTypesArrayInDatasetStructure] result:", result);
+  return result;
+};
+
 // Track the status of local dataset generation
 const trackLocalDatasetGenerationProgress = async (standardizedDatasetStructure) => {
   const numberOfFilesToGenerate = countFilesInDatasetStructure(standardizedDatasetStructure);
