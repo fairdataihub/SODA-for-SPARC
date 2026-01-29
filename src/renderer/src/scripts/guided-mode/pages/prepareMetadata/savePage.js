@@ -454,7 +454,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
   }
 
   if (pageBeingLeftID === "guided-create-description-metadata-tab") {
-    const metadataVersion = "3.0.0";
+    const metadataVersion = "3.0.2";
     const currentSodaVersion = useGlobalStore.getState().appVersion || "unknown";
     // Get values from digital_metadata
     const title = getGuidedDatasetName();
