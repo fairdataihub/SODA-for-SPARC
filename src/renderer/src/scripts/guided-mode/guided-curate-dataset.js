@@ -34,6 +34,7 @@ import {
 import DatePicker from "tui-date-picker";
 import { loadStoredContributors } from "../others/contributor-storage";
 import { ORCID } from "orcid-utils";
+import { guidedGetCurrentUserWorkSpace } from "./workspaces/workspaces";
 
 import { guidedRenderProgressCards } from "./resumeProgress/progressCards";
 
@@ -702,6 +703,31 @@ window.deleteProgressCard = async (datasetName, progressFileName) => {
       cardToDelete.remove();
     }
   }
+};
+
+export const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
+  // Determine individual status flags
+  const completedIntro = window.sodaJSONObj["completed-tabs"].includes(
+    "guided-pennsieve-intro-tab"
+  );
+  const accountSame =
+    window.sodaJSONObj?.["last-confirmed-ps-account-details"] === window.defaultBfAccount;
+  const currentWorkspace = guidedGetCurrentUserWorkSpace();
+  const workspaceSame =
+    currentWorkspace === window.sodaJSONObj?.["last-confirmed-pennsieve-workspace-details"];
+
+  const needsReconfirm = completedIntro && (!accountSame || !workspaceSame);
+
+  return {
+    completedIntro,
+    accountSame,
+    workspaceSame,
+    needsReconfirm,
+  };
+};
+window.handleGuidedModeOrganizationConfirmationClick = async () => {
+  document.getElementById("guided-section-pennsieve-agent-check").classList.remove("hidden");
+  await window.checkPennsieveAgent("guided-mode-post-log-in-pennsieve-agent-check");
 };
 
 window.guidedOpenManifestEditSwal = async () => {
@@ -3273,7 +3299,7 @@ const doTheHack = async () => {
   document.querySelector(".primary-selection-aside-item.selection-aside-item").click();
 };
 
-// doTheHack();
+doTheHack();
 
 // Add the event listener for the Data importation component
 const gmDragDropElementId = document.getElementById("gm-data-importer-dropzone");

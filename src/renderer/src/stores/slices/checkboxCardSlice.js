@@ -211,8 +211,8 @@ export const checkboxCardSlice = (set) => ({
       mutuallyExclusiveWithCards: ["guided-button-switch-account"],
       nextElementID: "guided-section-select-organization",
       checked: false,
-      configValue: "pennsieve-account-has-been-confirmed",
-      configValueState: "yes",
+      configValue: null,
+      configValueState: null,
     },
     "guided-button-switch-account": {
       simpleButtonType: "Negative",
@@ -234,9 +234,9 @@ export const checkboxCardSlice = (set) => ({
       Icon: null,
       mutuallyExclusiveWithCards: ["guided-button-switch-organization"],
       checked: false,
-      configValue: "pennsieve-organization-has-been-confirmed",
-      configValueState: "yes",
-      customOnClick: "window.checkPennsieveAgent('guided-mode-post-log-in-pennsieve-agent-check')",
+      configValue: null,
+      configValueState: null,
+      customOnClick: "window.handleGuidedModeOrganizationConfirmationClick()",
     },
     "guided-button-switch-organization": {
       simpleButtonType: "Negative",

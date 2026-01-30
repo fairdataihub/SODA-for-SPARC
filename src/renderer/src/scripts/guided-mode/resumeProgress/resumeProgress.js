@@ -16,6 +16,7 @@ import {
   addSample,
   addSiteToSample,
 } from "../../../stores/slices/datasetEntityStructureSlice";
+import { guidedCheckIfUserNeedsToReconfirmAccountDetails } from "../guided-curate-dataset";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -153,7 +154,9 @@ const guidedGetPageToReturnTo = async () => {
     return firstPageID;
   }
 
-  if (guidedCheckIfUserNeedsToReconfirmAccountDetails() === true) {
+  const { needsReconfirm, completedIntro, accountSame, workspaceSame } =
+    guidedCheckIfUserNeedsToReconfirmAccountDetails();
+  if (needsReconfirm) {
     await swalShowInfo(
       "Your Pennsieve account or workspace has changed since you last worked on this dataset.",
       "Please confirm your Pennsieve account and workspace details."
@@ -313,33 +316,4 @@ const patchPreviousGuidedModeVersions = async () => {
       delete contributor.contributor_role;
     }
   }
-};
-
-const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
-  // If the intro tab hasn't been completed, no reconfirmation required
-  if (!window.sodaJSONObj["completed-tabs"].includes("guided-pennsieve-intro-tab")) {
-    return false;
-  }
-
-  // If the user changed account -> clear confirmation flags and require reconfirmation
-  if (window.sodaJSONObj?.["last-confirmed-ps-account-details"] !== window.defaultBfAccount) {
-    if (window.sodaJSONObj["button-config"]?.["pennsieve-account-has-been-confirmed"]) {
-      delete window.sodaJSONObj["button-config"]["pennsieve-account-has-been-confirmed"];
-    }
-    if (window.sodaJSONObj["button-config"]?.["pennsieve-organization-has-been-confirmed"]) {
-      delete window.sodaJSONObj["button-config"]["pennsieve-organization-has-been-confirmed"];
-    }
-    return true;
-  }
-
-  // If the user changed workspace -> clear organization confirmation flag and require reconfirmation
-  const currentWorkspace = guidedGetCurrentUserWorkSpace();
-  if (currentWorkspace != window.sodaJSONObj?.["last-confirmed-pennsieve-workspace-details"]) {
-    if (window.sodaJSONObj["button-config"]?.["pennsieve-organization-has-been-confirmed"]) {
-      delete window.sodaJSONObj["button-config"]["pennsieve-organization-has-been-confirmed"];
-    }
-    return true;
-  }
-
-  return false;
 };

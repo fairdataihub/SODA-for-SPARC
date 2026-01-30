@@ -3,43 +3,16 @@ import useGlobalStore from "../../../stores/globalStore";
 import { Card, Text, Stack, Group, Image, Button, Badge, Tooltip, Loader } from "@mantine/core";
 import { IconClock, IconTrash } from "@tabler/icons-react";
 import Avvvatars from "avvvatars-react";
-import { guidedGetCurrentUserWorkSpace } from "../../../scripts/guided-mode/workspaces/workspaces";
 
 const generateProgressResumptionButton = (
   datasetStartingPoint,
   boolAlreadyUploadedToPennsieve,
   progressFileName,
-  workspaceUserNeedsToSwitchTo,
   lastVersionOfSodaUsed
 ) => {
   let buttonText;
   let color = "blue";
   let variant = "filled";
-
-  if (workspaceUserNeedsToSwitchTo) {
-    if (!window.defaultBfAccount) {
-      return (
-        <Button
-          size="md"
-          color="gray"
-          variant="light"
-          onClick={() => window.openDropdownPrompt?.(null, "ps")}
-        >
-          Log in to Pennsieve to resume curation
-        </Button>
-      );
-    }
-    return (
-      <Button
-        size="md"
-        color="gray"
-        variant="light"
-        onClick={() => window.openDropdownPrompt?.(null, "organization")}
-      >
-        Switch to {workspaceUserNeedsToSwitchTo} workspace to resume curation
-      </Button>
-    );
-  }
 
   if (boolAlreadyUploadedToPennsieve) {
     buttonText = "Share with the Curation Team";
@@ -137,12 +110,6 @@ const GuidedModeProgressCards = () => {
               const alreadyUploadedToPennsieve =
                 !!progressFile?.["dataset-successfully-uploaded-to-pennsieve"];
 
-              let workspaceUserNeedsToSwitchTo = false;
-              const datasetWorkspace = progressFile?.["digital-metadata"]?.["dataset-workspace"];
-              const currentWorkspace = guidedGetCurrentUserWorkSpace();
-              if (datasetWorkspace && datasetWorkspace !== currentWorkspace) {
-                workspaceUserNeedsToSwitchTo = datasetWorkspace;
-              }
               const lastVersionOfSodaUsed = progressFile?.["last-version-of-soda-used"] || "1.0.0";
 
               return (
@@ -231,7 +198,6 @@ const GuidedModeProgressCards = () => {
                         datasetStartingPoint,
                         alreadyUploadedToPennsieve,
                         progressFileName,
-                        workspaceUserNeedsToSwitchTo,
                         lastVersionOfSodaUsed
                       )}
 
