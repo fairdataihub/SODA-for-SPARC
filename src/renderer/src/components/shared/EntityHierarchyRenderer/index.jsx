@@ -5,7 +5,6 @@ import {
   deleteSubject,
   deleteSampleFromSubject,
   deleteSite,
-  modifySampleSiteId,
   setActiveFormType,
   setEntityBeingAddedParentSubject,
   setEntityBeingAddedParentSample,

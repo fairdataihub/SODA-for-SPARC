@@ -1,5 +1,6 @@
 import { produce } from "immer";
 import useGlobalStore from "../globalStore";
+import { swalListDoubleAction } from "../../scripts/utils/swal-utils";
 
 export const datasetEntityStructureSlice = (set) => ({
   speciesList: [],
@@ -120,6 +121,15 @@ export const getEntityDataById = (entityId) => {
   }
 
   return null;
+};
+
+// Function that removes entire entity types from the dataset structure
+export const removeEntityType = (entityType) => {
+  if (entityType === "subjects") {
+    // Get a list of subjects and their children entities
+    const existingSubjects = getExistingSubjects();
+    const subjectIdsToRemove = existingSubjects.map((subject) => subject.id);
+  }
 };
 
 // Subject management functions

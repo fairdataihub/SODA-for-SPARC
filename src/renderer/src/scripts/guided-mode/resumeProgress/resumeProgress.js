@@ -154,8 +154,7 @@ const guidedGetPageToReturnTo = async () => {
     return firstPageID;
   }
 
-  const { needsReconfirm, completedIntro, accountSame, workspaceSame } =
-    guidedCheckIfUserNeedsToReconfirmAccountDetails();
+  const { needsReconfirm } = guidedCheckIfUserNeedsToReconfirmAccountDetails();
   if (needsReconfirm) {
     await swalShowInfo(
       "Your Pennsieve account or workspace has changed since you last worked on this dataset.",
