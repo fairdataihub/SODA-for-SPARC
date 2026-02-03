@@ -80,4 +80,4 @@ dependencies:
     - setuptools == 71.0.4
     - backports.tarfile
     - --extra-index-url https://test.pypi.org/simple/
-    - pysodafair == 0.1.73
+    - pysodafair == 0.1.74

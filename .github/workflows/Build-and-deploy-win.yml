@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - staging
+      - crash-testing
 
 jobs:
   deploy-on-windows:
