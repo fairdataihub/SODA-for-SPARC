@@ -286,12 +286,18 @@ export const addSample = (subjectId, parentSampleId, sampleId, metadata = {}) =>
   );
 };
 
-export const deleteSampleFromSubject = (subjectId, sampleId) => {
+export const deleteSample = (sampleId) => {
   useGlobalStore.setState(
     produce((state) => {
-      const subject = state.datasetEntityArray.find((s) => s.id === subjectId); // Changed from subjectId to id
-      if (subject && subject.samples) {
-        subject.samples = subject.samples.filter((sample) => sample.id !== sampleId); // Changed from sampleId to id
+      // Find the sample across all subjects and remove it
+      for (const subject of state.datasetEntityArray) {
+        if (subject.samples) {
+          const sampleIndex = subject.samples.findIndex((s) => s.id === sampleId);
+          if (sampleIndex !== -1) {
+            subject.samples.splice(sampleIndex, 1);
+            return;
+          }
+        }
       }
     })
   );
