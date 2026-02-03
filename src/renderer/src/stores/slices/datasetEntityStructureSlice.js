@@ -94,36 +94,24 @@ export const getEntityDataById = (entityId) => {
     const subject = subjects.find((subject) => subject?.metadata?.subject_id === entityId);
 
     if (!subject) return null;
-    const subjectsSamples = nonDerivedSamples
+
+    const subjectsSamples = samples
       .filter((s) => s.metadata?.subject_id === subject.id)
       .map((s) => s.id);
-    console.log("Subjects samples: ", subjectsSamples);
-    const samplesDerivedFromSamplesTakenFromSubject = derivedSamples
-      .filter((s) => s.metadata?.subject_id === subject.id)
-      .map((s) => s.id);
-    console.log("Subjects derived samples: ", samplesDerivedFromSamplesTakenFromSubject);
+    console.log("Samples taken from subject: ", subjectsSamples);
 
-    const subjectSites = sites
-      .filter((site) => site.metadata?.specimen_id === subject.id)
+    const subjectsSites = sites
+      .filter((site) => {
+        const specimenId = site.metadata?.specimen_id;
+        return specimenId === subject.id || subjectsSamples.includes(specimenId);
+      })
       .map((s) => s.id);
 
-    console.log("Subject sites: ", subjectSites);
-
-    const samplesTakenFromSubject = samples
-      .filter((s) => s.metadata?.subject_id === subject.id)
-      .map((s) => s.id);
-    console.log("Samples taken from subject: ", samplesTakenFromSubject);
-
-    const sampleSites = sites
-      .filter((site) => samplesTakenFromSubject.includes(site.metadata?.specimen_id))
-      .map((s) => s.id);
-    console.log("Sample sites: ", sampleSites);
+    console.log("Subject sites: ", subjectsSites);
 
     const children = {
       subjectsSamples,
-      samplesDerivedFromSamplesTakenFromSubject,
-      subjectSites,
-      sampleSites,
+      subjectsSites,
     };
 
     return { entityMetadata: subject, entityChildren: children };

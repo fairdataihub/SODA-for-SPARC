@@ -18,6 +18,10 @@ import {
   getExistingSites,
   getEntityDataById,
 } from "../../../../stores/slices/datasetEntityStructureSlice";
+import {
+  deleteSubject,
+  deleteSampleFromSubject,
+} from "../../../../stores/slices/datasetEntityStructureSlice";
 import { removeEntityTypeAndChildrenEntities } from "../../../../stores/slices/datasetEntityStructureSlice";
 import { swalListDoubleAction } from "../../../utils/swal-utils";
 
@@ -170,28 +174,73 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     } else {
       const existingSubjects = getExistingSubjects().map((subject) => subject.id);
       if (existingSubjects.length > 0) {
+        const itemList = [];
         for (const subjId of existingSubjects) {
           const { entityMetadata, entityChildren } = getEntityDataById(subjId) || {};
           console.log("Entity Information for subject being removed: ", {
             entityMetadata,
             entityChildren,
           });
+          itemList.push(`Subject: ${subjId}`);
+          for (const sampleId of entityChildren?.subjectsSamples || []) {
+            itemList.push(`Sample: ${sampleId}`);
+          }
+          for (const siteId of entityChildren?.subjectsSites || []) {
+            itemList.push(`Site: ${siteId}`);
+          }
+        }
+        console.log("Items to be removed: ", itemList);
+        const isConfirmed = await swalListDoubleAction(
+          itemList,
+          "Removing Subjects and Related Entities",
+          "By de-selecting 'Subjects', all subject-related entities will be removed from the dataset. This includes any samples and sites associated with the subjects. This action cannot be undone. Are you sure you want to proceed?",
+          "Yes, remove all subject-related entities",
+          "Cancel",
+          null
+        );
+        if (!isConfirmed) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please re-indicate that your dataset includes subjects to continue.",
+          });
+          throw errorArray;
         }
       }
-      removeEntityTypeAndChildrenEntities("subjects");
+      for (const subjId of existingSubjects) {
+        deleteSubject(subjId);
+      }
+
       removeEntityType("experimental");
       removeEntityType("subjects");
+      removeEntityType("samples");
+      removeEntityType("derived-samples");
+      removeEntityType("sites");
+      removeEntityType("performances");
 
       // Skip all of the experimental pages
       guidedSkipPageSet("guided-subject-related-page-set");
 
-      // Delete the existing subjects metadata if it exists
-      const existingSubjectsMetadata = window.sodaJSONObj["dataset_metadata"]?.["subjects"];
-      if (existingSubjectsMetadata) {
+      // Delete the existing subjects related metadata if it exists
+      if (window.sodaJSONObj["dataset_metadata"]?.["subjects"]) {
         delete window.sodaJSONObj["dataset_metadata"]["subjects"];
+      }
+      if (window.sodaJSONObj["dataset_metadata"]?.["samples"]) {
+        delete window.sodaJSONObj["dataset_metadata"]["samples"];
+      }
+
+      if (window.sodaJSONObj["dataset_metadata"]?.["sites"]) {
+        delete window.sodaJSONObj["dataset_metadata"]["sites"];
+      }
+      if (window.sodaJSONObj["dataset_metadata"]?.["performances"]) {
+        delete window.sodaJSONObj["dataset_metadata"]["performances"];
       }
 
       guidedSkipPageSet("guided-subjects-metadata-page-set");
+      errorArray.push({
+        type: "notyf",
+        message: "blocked",
+      });
+      throw errorArray;
     }
 
     // Store selections
@@ -203,11 +252,6 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     } else {
       guidedSkipPage("guided-add-code-metadata-tab");
     }
-    errorArray.push({
-      type: "notyf",
-      message: "blocked",
-    });
-    throw errorArray;
   }
 
   if (pageBeingLeftID === "guided-dataset-structure-and-manifest-review-tab") {
