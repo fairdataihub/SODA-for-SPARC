@@ -15,8 +15,10 @@ import {
   addSubject,
   addSample,
   addSiteToSample,
+  getExistingSamples,
 } from "../../../stores/slices/datasetEntityStructureSlice";
 import { guidedCheckIfUserNeedsToReconfirmAccountDetails } from "../guided-curate-dataset";
+import { normalizeToMMDDYYYY } from "../../utils/date-utils";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -296,8 +298,41 @@ const patchPreviousGuidedModeVersions = async () => {
         subject.metadata.disease = subject.metadata.disease_or_disorder;
         delete subject.metadata.disease_or_disorder;
       }
+      // Update the date_of_birth field to MM/DD/YYYY format
+      if (subject.metadata.date_of_birth) {
+        const normalized = normalizeToMMDDYYYY(subject.metadata.date_of_birth);
+        if (normalized) {
+          subject.metadata.date_of_birth = normalized;
+        }
+      }
+      // Update the experiment_date field to MM/DD/YYYY format
+      if (subject.metadata.experiment_date) {
+        const normalized = normalizeToMMDDYYYY(subject.metadata.experiment_date);
+        if (normalized) {
+          subject.metadata.experiment_date = normalized;
+        }
+      }
+    }
+    console.log("subject.samples:", subject.samples);
+    for (const sample of subject.samples || []) {
+      // Update the date_of_derivation field to MM/DD/YYYY format
+      if (sample.metadata?.date_of_derivation) {
+        console.log(
+          "sample.metadata.date_of_derivation before normalization:",
+          sample.metadata.date_of_derivation
+        );
+        const normalized = normalizeToMMDDYYYY(sample.metadata.date_of_derivation);
+        if (normalized) {
+          sample.metadata.date_of_derivation = normalized;
+          console.log(
+            "sample.metadata.date_of_derivation after normalization:",
+            sample.metadata.date_of_derivation
+          );
+        }
+      }
     }
   }
+
   // Change all fields named "disease_or_disorder" to "disease" in subjects metadata in dataset-entity-obj
   const subjectsMetadata = datasetMetadata?.subjects || [];
   for (const subjectMetadata of subjectsMetadata) {

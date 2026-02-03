@@ -64,6 +64,7 @@ import InstructionsTowardsLeftContainer from "../../utils/ui/InstructionsTowards
 import { OptionalFieldsNotice } from "./utils";
 import DropDownNote from "../../utils/ui/DropDownNote";
 import InfoList from "../../shared/InfoList";
+import { formatMMDDYYYY, parseMMDDYYYY } from "../../../scripts/utils/date-utils";
 /**
  * EntityMetadataForm Component
  *
@@ -630,12 +631,8 @@ const EntityMetadataForm = () => {
                   onChange={(e) => handleChange("laboratory_internal_id", e.target.value)}
                 />
                 <DateInput
-                  value={
-                    getMetadataValue("date_of_birth", null)
-                      ? new Date(getMetadataValue("date_of_birth", null))
-                      : null
-                  }
-                  onChange={(date) => handleChange("date_of_birth", date)}
+                  value={parseMMDDYYYY(getMetadataValue("date_of_birth", null))}
+                  onChange={(date) => handleChange("date_of_birth", formatMMDDYYYY(date))}
                   label="Date of Birth"
                   placeholder="MM/DD/YYYY"
                   valueFormat="MM/DD/YYYY"
@@ -757,12 +754,8 @@ const EntityMetadataForm = () => {
                   onChange={(e) => handleChange("experimental_log_file_path", e.target.value)}
                 />
                 <DateInput
-                  value={
-                    getMetadataValue("experiment_date", null)
-                      ? new Date(getMetadataValue("experiment_date", null))
-                      : null
-                  }
-                  onChange={(date) => handleChange("experiment_date", date)}
+                  value={parseMMDDYYYY(getMetadataValue("experiment_date", null))}
+                  onChange={(date) => handleChange("experiment_date", formatMMDDYYYY(date))}
                   label="Experiment Date"
                   placeholder="MM/DD/YYYY"
                   valueFormat="MM/DD/YYYY"
@@ -948,12 +941,8 @@ const EntityMetadataForm = () => {
                   onChange={(e) => handleChange("laboratory_internal_id", e.target.value)}
                 />
                 <DateInput
-                  value={
-                    getMetadataValue("date_of_derivation", null)
-                      ? new Date(getMetadataValue("date_of_derivation", null))
-                      : null
-                  }
-                  onChange={(date) => handleChange("date_of_derivation", date)}
+                  value={parseMMDDYYYY(getMetadataValue("date_of_derivation", null))}
+                  onChange={(date) => handleChange("date_of_derivation", formatMMDDYYYY(date))}
                   label="Date of Derivation"
                   placeholder="MM/DD/YYYY"
                   valueFormat="MM/DD/YYYY"
