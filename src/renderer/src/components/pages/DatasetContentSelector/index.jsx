@@ -5,6 +5,10 @@ import useGlobalStore from "../../../stores/globalStore";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import SodaGreenPaper from "../../utils/ui/SodaGreenPaper";
+import {
+  addEntityToSelectedEntities,
+  removeEntityFromSelectedEntities,
+} from "../../../stores/slices/datasetContentSelectorSlice";
 
 export const contentOptionsMap = {
   subjects: {
@@ -24,7 +28,7 @@ export const contentOptionsMap = {
     label: "Did you derive samples from samples collected from subjects?",
     dropDownDescription:
       "Select yes if you created additional samples from samples that were collected directly from subjects. Examples include tissue sections, cell cultures, extracted RNA or protein, or other samples created from the originally collected material.",
-    requiresAnswer: ["samples"],
+    requiresAnswer: ["subjects", "samples"],
     ml: 20,
   },
   subjectSites: {
@@ -38,7 +42,7 @@ export const contentOptionsMap = {
     label: "Did you collect data from specific locations within your samples?",
     dropDownDescription:
       "Select yes if you collected data from distinct spatial locations within the same sample without creating new samples, and those locations require separate metadata. Examples include imaging different regions of a tissue section, measurements from multiple areas of a single specimen, or recordings from defined locations within a prepared sample.",
-    requiresAnswer: ["samples"],
+    requiresAnswer: ["subjects", "samples"],
     ml: 20,
   },
 
@@ -81,24 +85,12 @@ const DatasetContentSelector = () => {
   };
 
   const handleEntitySelection = useCallback((key, answer) => {
-    const { selectedEntities, deSelectedEntities } = useGlobalStore.getState();
-
     if (answer === "yes") {
       // If yes is selected, add to selectedEntities and remove from deSelectedEntities
-      useGlobalStore.setState({
-        selectedEntities: selectedEntities.includes(key)
-          ? selectedEntities
-          : [...selectedEntities, key],
-        deSelectedEntities: deSelectedEntities.filter((id) => id !== key),
-      });
+      addEntityToSelectedEntities(key);
     } else if (answer === "no") {
       // If no is selected, add to deSelectedEntities and remove from selectedEntities
-      useGlobalStore.setState({
-        deSelectedEntities: deSelectedEntities.includes(key)
-          ? deSelectedEntities
-          : [...deSelectedEntities, key],
-        selectedEntities: selectedEntities.filter((id) => id !== key),
-      });
+      removeEntityFromSelectedEntities(key);
     }
   }, []);
 

@@ -140,6 +140,10 @@ const ICON_SETTINGS = {
   fileSize: 14,
 };
 
+const ROW_CONFIG = {
+  height: 25, // in pixels
+  margin: 1, // in pixels
+};
 const fileIcons = {
   py: <IconBrandPython size={ICON_SETTINGS.fileSize} />,
   txt: <IconFileText size={ICON_SETTINGS.fileSize} />,
@@ -207,9 +211,9 @@ const FileItem = ({
       justify="flex-start"
       bg={getFileColor()}
       onContextMenu={handleFileContextMenuOpen}
-      my="1px"
+      my={`${ROW_CONFIG.margin}px`}
       style={{ flexWrap: "nowrap" }}
-      h="23px"
+      h={`${ROW_CONFIG.height - ROW_CONFIG.margin * 2}px`}
       ml={`${indent * 10 + 5}px`}
     >
       {onFileClick && (
@@ -336,10 +340,10 @@ const FolderItem = ({
       onContextMenu={handleFolderContextMenuOpen}
       ref={ref}
       bg={getBackgroundColor()}
-      my="1px"
+      my={`${ROW_CONFIG.margin}px`}
       style={{ flexWrap: "nowrap" }}
       onClick={handleFolderClick}
-      h="23px"
+      h={`${ROW_CONFIG.height - ROW_CONFIG.margin * 2}px`}
       ml={`${indent * 10}px`}
     >
       {isOpen ? (
@@ -454,7 +458,7 @@ const DatasetTreeViewRenderer = ({
   if (activeFileExplorer !== fileExplorerId) {
     return <Text>Inactive file explorer {fileExplorerId ? fileExplorerId : "NONE"}</Text>;
   }
-  const renderObjIsEmpty =
+  const renderArrayIsEmpty =
     !datasetRenderArray || (Array.isArray(datasetRenderArray) && datasetRenderArray.length === 0);
 
   const handleFileItemClick = (relativePath, fileIsSelected) => {
@@ -498,7 +502,7 @@ const DatasetTreeViewRenderer = ({
           position: "relative",
         }}
       >
-        {renderObjIsEmpty ? (
+        {renderArrayIsEmpty ? (
           <Center mt="md">
             <Text size="sm" c="gray" p="sm">
               {debouncedSearchFilter.length > 0
@@ -513,7 +517,18 @@ const DatasetTreeViewRenderer = ({
         ) : (
           <div
             style={{
-              height: rowVirtualizer.getTotalSize(),
+              height: (() => {
+                const totalSize = rowVirtualizer.getTotalSize();
+                if (totalSize === 0 && count > 0) {
+                  const fallback = count * ROW_CONFIG.height;
+                  console.warn(
+                    "DatasetTreeViewRenderer: virtualizer totalSize=0, using fallback height",
+                    { count, fallback }
+                  );
+                  return fallback;
+                }
+                return totalSize;
+              })(),
               width: "100%",
               position: "relative",
             }}
@@ -576,13 +591,13 @@ const DatasetTreeViewRenderer = ({
               return (
                 <div
                   key={virtualRow.key}
-                  ref={rowVirtualizer.measureElement}
                   data-index={virtualRow.index}
                   style={{
                     position: "absolute",
                     top: 0,
                     left: 0,
                     width: "100%",
+                    height: `${ROW_CONFIG.height}px`,
                     transform: `translateY(${virtualRow.start}px)`,
                   }}
                 >

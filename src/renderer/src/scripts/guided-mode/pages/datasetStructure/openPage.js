@@ -168,10 +168,10 @@ export const openPageDatasetStructure = async (targetPageID) => {
           const entities = datasetEntityObj?.[type] || {};
           for (const [entity, paths] of Object.entries(entities)) {
             if (paths?.[path]) {
-              const entityData = getEntityDataById(entity);
-              if (!entityData) continue;
+              const { entityMetadata } = getEntityDataById(entity) || {};
+              if (!entityMetadata) continue;
 
-              entityId = entityData.id;
+              entityId = entityMetadata.id;
               break;
             }
           }
@@ -228,9 +228,9 @@ export const openPageDatasetStructure = async (targetPageID) => {
           const entities = datasetEntityObj?.[type] || {};
           for (const [entity, paths] of Object.entries(entities)) {
             if (paths?.[path]) {
-              const entityData = getEntityDataById(entity);
-              if (entityData?.metadata?.also_in_dataset) {
-                alsoInDatasetValue = entityData.metadata.also_in_dataset;
+              const { entityMetadata } = getEntityDataById(entity) || {};
+              if (entityMetadata?.metadata?.also_in_dataset) {
+                alsoInDatasetValue = entityMetadata.metadata.also_in_dataset;
                 break;
               }
             }
