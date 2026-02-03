@@ -643,6 +643,7 @@ window.nextPrev = async (pageIndex) => {
       $("#generate-dataset-replace-existing").children().hide();
     }
     setNavButtonDisabled("nextBtn", true);
+    // TODO: FIND IT HERE
     window.showParentTab(window.currentTab, pageIndex);
   } else if (
     parentTabs[window.currentTab].id === "validate-dataset-tab" &&
@@ -695,13 +696,6 @@ window.nextPrev = async (pageIndex) => {
     window.showParentTab(window.currentTab, pageIndex);
   }
 };
-
-document.getElementById("prevBtn").addEventListener("click", function () {
-  window.nextPrev(-1);
-});
-document.getElementById("nextBtn").addEventListener("click", function () {
-  window.nextPrev(1);
-});
 
 //// High level folders check mark effect
 $(".option-card.high-level-folders").click(function () {
@@ -3073,7 +3067,7 @@ window.resetCurationTabs = () => {
 
 window.exitCurate = async () => {
   $("#dataset-loaded-message").hide();
-  window.clickGuidedModeButton();
+  $("#guided_mode_view").click();
 };
 
 window.wipeOutCurateProgress = () => {

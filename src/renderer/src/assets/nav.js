@@ -85,7 +85,11 @@ window.handleSideBarTabClick = async (id, section) => {
     );
     if (!leaveUploadDataset) return;
     window.resetCurationTabs();
+  } else if (uploadDone) {
+    window.resetCurationTabs();
   }
+
+  window.resetCurationTabs();
 
   // Always set activeTab to section, not id
   setActiveSidebarTab(section);
