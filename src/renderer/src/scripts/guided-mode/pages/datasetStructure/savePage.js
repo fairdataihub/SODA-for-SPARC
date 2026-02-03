@@ -12,6 +12,14 @@ import {
   removeEntityFromEntityList,
   removeEntityType,
 } from "../../../../stores/slices/datasetEntitySelectorSlice";
+import {
+  getExistingSubjects,
+  getExistingSamples,
+  getExistingSites,
+  getEntityDataById,
+} from "../../../../stores/slices/datasetEntityStructureSlice";
+import { removeEntityTypeAndChildrenEntities } from "../../../../stores/slices/datasetEntityStructureSlice";
+import { swalListDoubleAction } from "../../../utils/swal-utils";
 
 export const savePageDatasetStructure = async (pageBeingLeftID) => {
   const errorArray = [];
@@ -109,13 +117,68 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     window.sodaJSONObj["dataset-type"] = datasetType;
 
     if (selectedEntities.includes("subjects")) {
-      // Unskip all of the experimental pages
-
       addEntityNameToEntityType("experimental", "experimental");
 
       guidedUnSkipPageSet("guided-subject-related-page-set");
       guidedUnSkipPageSet("guided-subjects-metadata-page-set");
+
+      if (selectedEntities.includes("samples")) {
+        guidedUnSkipPageSet("guided-samples-metadata-page-set");
+
+        if (selectedEntities.includes("derivedSamples")) {
+          guidedUnSkipPageSet("guided-derived-samples-metadata-page-set");
+        } else {
+          removeEntityType("derived-samples");
+          guidedSkipPageSet("guided-derived-samples-metadata-page-set");
+        }
+      } else {
+        removeEntityType("samples");
+        // Delete the existing samples metadata if it exists
+        const existingSamplesMetadata = window.sodaJSONObj["dataset_metadata"]?.["samples"];
+        if (existingSamplesMetadata) {
+          delete window.sodaJSONObj["dataset_metadata"]["samples"];
+        }
+
+        guidedSkipPageSet("guided-samples-metadata-page-set");
+      }
+
+      if (selectedEntities.includes("subjectSites") || selectedEntities.includes("sampleSites")) {
+        guidedUnSkipPageSet("guided-sites-metadata-page-set");
+      } else {
+        removeEntityType("sites");
+        guidedSkipPageSet("guided-sites-metadata-page-set");
+
+        // Delete the existing sites metadata if it exists
+        const existingSitesMetadata = window.sodaJSONObj["dataset_metadata"]?.["sites"];
+        if (existingSitesMetadata) {
+          delete window.sodaJSONObj["dataset_metadata"]["sites"];
+        }
+      }
+
+      if (selectedEntities.includes("performances")) {
+        guidedUnSkipPageSet("guided-performances-metadata-page-set");
+      } else {
+        removeEntityType("performances");
+        guidedSkipPageSet("guided-performances-metadata-page-set");
+        // Delete the existing performances metadata if it exists
+        const existingPerformancesMetadata =
+          window.sodaJSONObj["dataset_metadata"]?.["performances"];
+        if (existingPerformancesMetadata) {
+          delete window.sodaJSONObj["dataset_metadata"]["performances"];
+        }
+      }
     } else {
+      const existingSubjects = getExistingSubjects().map((subject) => subject.id);
+      if (existingSubjects.length > 0) {
+        for (const subjId of existingSubjects) {
+          const { entityMetadata, entityChildren } = getEntityDataById(subjId) || {};
+          console.log("Entity Information for subject being removed: ", {
+            entityMetadata,
+            entityChildren,
+          });
+        }
+      }
+      removeEntityTypeAndChildrenEntities("subjects");
       removeEntityType("experimental");
       removeEntityType("subjects");
 
@@ -140,54 +203,11 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     } else {
       guidedSkipPage("guided-add-code-metadata-tab");
     }
-
-    if (selectedEntities.includes("subjects") && selectedEntities.includes("samples")) {
-      guidedUnSkipPageSet("guided-samples-metadata-page-set");
-    } else {
-      removeEntityType("samples");
-      // Delete the existing samples metadata if it exists
-      const existingSamplesMetadata = window.sodaJSONObj["dataset_metadata"]?.["samples"];
-      if (existingSamplesMetadata) {
-        delete window.sodaJSONObj["dataset_metadata"]["samples"];
-      }
-
-      guidedSkipPageSet("guided-samples-metadata-page-set");
-    }
-
-    if (selectedEntities.includes("samples") && selectedEntities.includes("derivedSamples")) {
-      guidedUnSkipPageSet("guided-derived-samples-metadata-page-set");
-    } else {
-      removeEntityType("derived-samples");
-      guidedSkipPageSet("guided-derived-samples-metadata-page-set");
-    }
-
-    if (
-      (selectedEntities.includes("subjects") && selectedEntities.includes("subjectSites")) ||
-      selectedEntities.includes("sampleSites")
-    ) {
-      guidedUnSkipPageSet("guided-sites-metadata-page-set");
-    } else {
-      removeEntityType("sites");
-      guidedSkipPageSet("guided-sites-metadata-page-set");
-
-      // Delete the existing sites metadata if it exists
-      const existingSitesMetadata = window.sodaJSONObj["dataset_metadata"]?.["sites"];
-      if (existingSitesMetadata) {
-        delete window.sodaJSONObj["dataset_metadata"]["sites"];
-      }
-    }
-
-    if (selectedEntities.includes("subjects") && selectedEntities.includes("performances")) {
-      guidedUnSkipPageSet("guided-performances-metadata-page-set");
-    } else {
-      removeEntityType("performances");
-      guidedSkipPageSet("guided-performances-metadata-page-set");
-      // Delete the existing performances metadata if it exists
-      const existingPerformancesMetadata = window.sodaJSONObj["dataset_metadata"]?.["performances"];
-      if (existingPerformancesMetadata) {
-        delete window.sodaJSONObj["dataset_metadata"]["performances"];
-      }
-    }
+    errorArray.push({
+      type: "notyf",
+      message: "blocked",
+    });
+    throw errorArray;
   }
 
   if (pageBeingLeftID === "guided-dataset-structure-and-manifest-review-tab") {

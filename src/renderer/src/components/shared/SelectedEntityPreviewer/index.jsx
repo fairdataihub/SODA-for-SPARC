@@ -6,7 +6,7 @@ const SelectedEntityPreviewer = () => {
   if (!activeEntity) {
     return null;
   }
-  const activeEntityData = getEntityDataById(activeEntity);
+  const { entityMetadata: activeEntityData } = getEntityDataById(activeEntity) || {};
   if (!activeEntityData) {
     return null;
   }
