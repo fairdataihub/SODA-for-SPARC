@@ -5,6 +5,10 @@ import useGlobalStore from "../../../stores/globalStore";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import SodaGreenPaper from "../../utils/ui/SodaGreenPaper";
+import {
+  addEntityToSelectedEntities,
+  removeEntityFromSelectedEntities,
+} from "../../../stores/slices/datasetContentSelectorSlice";
 
 export const contentOptionsMap = {
   subjects: {
@@ -81,24 +85,12 @@ const DatasetContentSelector = () => {
   };
 
   const handleEntitySelection = useCallback((key, answer) => {
-    const { selectedEntities, deSelectedEntities } = useGlobalStore.getState();
-
     if (answer === "yes") {
       // If yes is selected, add to selectedEntities and remove from deSelectedEntities
-      useGlobalStore.setState({
-        selectedEntities: selectedEntities.includes(key)
-          ? selectedEntities
-          : [...selectedEntities, key],
-        deSelectedEntities: deSelectedEntities.filter((id) => id !== key),
-      });
+      addEntityToSelectedEntities(key);
     } else if (answer === "no") {
       // If no is selected, add to deSelectedEntities and remove from selectedEntities
-      useGlobalStore.setState({
-        deSelectedEntities: deSelectedEntities.includes(key)
-          ? deSelectedEntities
-          : [...deSelectedEntities, key],
-        selectedEntities: selectedEntities.filter((id) => id !== key),
-      });
+      removeEntityFromSelectedEntities(key);
     }
   }, []);
 

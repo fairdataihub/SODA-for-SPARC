@@ -23,7 +23,10 @@ import {
   deleteSample,
   deleteSite,
 } from "../../../../stores/slices/datasetEntityStructureSlice";
-import { removeEntityTypeAndChildrenEntities } from "../../../../stores/slices/datasetEntityStructureSlice";
+import {
+  addEntityToSelectedEntities,
+  removeEntityFromSelectedEntities,
+} from "../../../../stores/slices/datasetContentSelectorSlice";
 import { swalListDoubleAction } from "../../../utils/swal-utils";
 
 export const savePageDatasetStructure = async (pageBeingLeftID) => {
@@ -140,11 +143,8 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
             const itemList = [];
             for (const derivedSampleId of existingDerivedSamples) {
               itemList.push(`Derived Sample: ${derivedSampleId}`);
-              const { entityMetadata, entityChildren } = getEntityDataById(derivedSampleId) || {};
-              console.log("Entity Information for derived sample being removed: ", {
-                entityMetadata,
-                entityChildren,
-              });
+              const { entityChildren } = getEntityDataById(derivedSampleId) || {};
+
               for (const siteId of entityChildren?.derivedSamplesSites || []) {
                 itemList.push(`Site: ${siteId}`);
               }
@@ -169,6 +169,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
           for (const derivedSampleId of existingDerivedSamples) {
             deleteSample(derivedSampleId);
           }
+          removeEntityFromSelectedEntities("derivedSamples");
           removeEntityType("derived-samples");
           guidedSkipPageSet("guided-derived-samples-metadata-page-set");
         }
@@ -178,11 +179,8 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
           const itemList = [];
           for (const sampleId of existingSamples) {
             itemList.push(`Sample: ${sampleId}`);
-            const { entityMetadata, entityChildren } = getEntityDataById(sampleId) || {};
-            console.log("Entity Information for sample being removed: ", {
-              entityMetadata,
-              entityChildren,
-            });
+            const { entityChildren } = getEntityDataById(sampleId) || {};
+
             for (const siteId of entityChildren?.sampleSites || []) {
               itemList.push(`Site: ${siteId}`);
             }
@@ -206,6 +204,8 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
             deleteSample(sampleId);
           }
         }
+        removeEntityFromSelectedEntities("derivedSamples");
+        removeEntityFromSelectedEntities("sampleSites");
 
         removeEntityType("samples");
         removeEntityType("derived-samples");
@@ -248,6 +248,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
           for (const site of subjectSites) {
             deleteSite(site.id);
           }
+          removeEntityFromSelectedEntities("subjectSites");
         }
         if (!selectedEntities.includes("sampleSites") && sampleSites.length > 0) {
           const sampleSiteIds = sampleSites.map((site) => site.id);
@@ -269,6 +270,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
           for (const site of sampleSites) {
             deleteSite(site.id);
           }
+          removeEntityFromSelectedEntities("sampleSites");
         }
       } else {
         if (existingSites.length > 0) {
@@ -295,6 +297,8 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
         for (const site of existingSites) {
           deleteSite(site.id);
         }
+        removeEntityFromSelectedEntities("subjectSites");
+        removeEntityFromSelectedEntities("sampleSites");
         removeEntityType("sites");
         guidedSkipPageSet("guided-sites-metadata-page-set");
 
@@ -381,6 +385,13 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       removeEntityType("sites");
       removeEntityType("performances");
 
+      removeEntityFromSelectedEntities("subjectSites");
+      removeEntityFromSelectedEntities("sampleSites");
+
+      removeEntityFromSelectedEntities("samples");
+      removeEntityFromSelectedEntities("derivedSamples");
+      removeEntityFromSelectedEntities("performances");
+
       window.sodaJSONObj["dataset_performances"] = [];
 
       // Skip all of the experimental pages
@@ -404,9 +415,13 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       guidedSkipPageSet("guided-subjects-metadata-page-set");
     }
 
-    // Store selections
-    window.sodaJSONObj["selected-entities"] = selectedEntities;
-    window.sodaJSONObj["deSelected-entities"] = deSelectedEntities;
+    // Store selections (re-read from store to capture updates made above)
+    const {
+      selectedEntities: latestSelectedEntities = [],
+      deSelectedEntities: latestDeSelectedEntities = [],
+    } = useGlobalStore.getState();
+    window.sodaJSONObj["selected-entities"] = latestSelectedEntities;
+    window.sodaJSONObj["deSelected-entities"] = latestDeSelectedEntities;
 
     if (selectedEntities.includes("code")) {
       guidedSkipPage("guided-add-code-metadata-tab");

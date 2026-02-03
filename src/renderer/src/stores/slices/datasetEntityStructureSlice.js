@@ -85,10 +85,6 @@ export const getEntityDataById = (entityId) => {
   const nonDerivedSamples = getExistingSamples("derived-from-subjects");
   const derivedSamples = getExistingSamples("derived-from-samples");
   const sites = getExistingSites();
-  console.log("subjects: ", subjects);
-  console.log("nonDerivedSamples: ", nonDerivedSamples);
-  console.log("derivedSamples: ", derivedSamples);
-  console.log("sites: ", sites);
 
   if (entityId.startsWith("sub-")) {
     const subject = subjects.find((subject) => subject?.metadata?.subject_id === entityId);
@@ -98,7 +94,6 @@ export const getEntityDataById = (entityId) => {
     const subjectsSamples = samples
       .filter((s) => s.metadata?.subject_id === subject.id)
       .map((s) => s.id);
-    console.log("Samples taken from subject: ", subjectsSamples);
 
     const subjectsSites = sites
       .filter((site) => {
@@ -106,8 +101,6 @@ export const getEntityDataById = (entityId) => {
         return specimenId === subject.id || subjectsSamples.includes(specimenId);
       })
       .map((s) => s.id);
-
-    console.log("Subject sites: ", subjectsSites);
 
     const children = {
       subjectsSamples,
@@ -169,15 +162,6 @@ export const getEntityDataById = (entityId) => {
   }
 
   return null;
-};
-
-// Function that removes entire entity types from the dataset structure
-export const removeEntityTypeAndChildrenEntities = (entityType) => {
-  if (entityType === "subjects") {
-    // Get a list of subjects and their children entities
-    const existingSubjects = getExistingSubjects();
-    console.log("Existing subjects to delete: ", existingSubjects);
-  }
 };
 
 // Subject management functions
