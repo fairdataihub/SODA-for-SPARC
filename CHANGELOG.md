@@ -5,7 +5,19 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## v 16.7.0 - 2025-01-19
+## v 17.0.0 - 2026-02-04
+
+## Feature Additions:
+
+- SODA supports 3.0.2 of the SDS specification in both Prepare Dataset Step-by-Step and Upload Dataset features.
+- The dataset description file version will include a SODA version and the version number of SODA.
+- General tightening of allowable fields. For example, DOIs must match a DOI prefix.
+
+## Bug fixes:
+
+- Fixed an issue where certain datasets would fail to upload in the Update Existing dataset features of SODA.
+
+## v 16.7.0 - 20256-01-19
 
 ## Feature Additions:
 
