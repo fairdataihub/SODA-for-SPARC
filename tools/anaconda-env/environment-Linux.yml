@@ -34,4 +34,5 @@ dependencies:
   - flask-cors == 4.0.0
   - setuptools == 71.0.4
   - backports.tarfile
-  - pysodafair == 0.1.70
+  - --extra-index-url https://test.pypi.org/simple/
+  - pysodafair == 0.1.73
