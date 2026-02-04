@@ -43,46 +43,6 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
   }
 
   if (pageBeingLeftID === "guided-dataset-content-tab") {
-    // At this point, we know all visible questions were answered
-    // Now determine the workflow based on selected and de-selected answers
-
-    // Make local copies so we do not mutate store state directly
-    let selectedEntities = [...useGlobalStore.getState().selectedEntities];
-    let deSelectedEntities = [...useGlobalStore.getState().deSelectedEntities];
-
-    // Resolve parent-child dependencies until no invalid selections remain
-    let changed = true;
-
-    while (changed) {
-      changed = false;
-
-      // Iterate over current selections and remove any entity
-      // whose required parent entity is no longer selected
-      for (const entity of selectedEntities) {
-        const parentEntities = contentOptionsMap[entity]?.requiresAnswer || [];
-
-        // If a required parent is missing, this entity cannot remain selected
-        const missingParent = parentEntities.some(
-          (parentEntity) => !selectedEntities.includes(parentEntity)
-        );
-
-        if (missingParent) {
-          // Remove the invalid child entity from selected entities
-          selectedEntities = selectedEntities.filter((e) => e !== entity);
-
-          // Track it as explicitly de-selected if not already present
-          if (!deSelectedEntities.includes(entity)) {
-            deSelectedEntities.push(entity);
-          }
-
-          // A removal may invalidate additional entities, so run again
-          changed = true;
-        }
-      }
-    }
-    window.sodaJSONObj["selected-entities"] = selectedEntities;
-    window.sodaJSONObj["deSelected-entities"] = deSelectedEntities;
-
     // Validate that all questions that should be visible were answered
     const visibleQuestions = Object.keys(contentOptionsMap).filter((key) => {
       const option = contentOptionsMap[key];
@@ -123,6 +83,45 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
         throw errorArray;
       }
     }
+
+    // Make local copies so we do not mutate store state directly
+    let selectedEntities = [...useGlobalStore.getState().selectedEntities];
+    let deSelectedEntities = [...useGlobalStore.getState().deSelectedEntities];
+
+    // Resolve parent-child dependencies until no invalid selections remain
+    let changed = true;
+
+    while (changed) {
+      changed = false;
+
+      // Iterate over current selections and remove any entity
+      // whose required parent entity is no longer selected
+      for (const entity of selectedEntities) {
+        const parentEntities = contentOptionsMap[entity]?.requiresAnswer || [];
+
+        // If a required parent is missing, this entity cannot remain selected
+        const missingParent = parentEntities.some(
+          (parentEntity) => !selectedEntities.includes(parentEntity)
+        );
+
+        if (missingParent) {
+          // Remove the invalid child entity from selected entities
+          selectedEntities = selectedEntities.filter((e) => e !== entity);
+
+          // Track it as explicitly de-selected if not already present
+          if (!deSelectedEntities.includes(entity)) {
+            deSelectedEntities.push(entity);
+          }
+
+          // A removal may invalidate additional entities, so run again
+          changed = true;
+        }
+      }
+    }
+
+    // Store selections now that they have been validated and adjusted
+    window.sodaJSONObj["selected-entities"] = selectedEntities;
+    window.sodaJSONObj["deSelected-entities"] = deSelectedEntities;
 
     // Determine which high-level folders to include based on selections
     const possibleNonDataFolders = ["Code", "Protocol", "Docs"];
