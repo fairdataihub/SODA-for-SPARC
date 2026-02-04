@@ -78,6 +78,8 @@ export const contentOptionsMap = {
 const DatasetContentSelector = () => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const deSelectedEntities = useGlobalStore((state) => state.deSelectedEntities);
+  console.log("Selected entities:", selectedEntities);
+  console.log("De-selected entities:", deSelectedEntities);
   const [expanded, setExpanded] = useState({});
 
   const toggleExpanded = (key) => {

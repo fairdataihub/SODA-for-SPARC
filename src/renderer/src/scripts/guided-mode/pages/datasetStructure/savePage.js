@@ -80,6 +80,8 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
         }
       }
     }
+    window.sodaJSONObj["selected-entities"] = selectedEntities;
+    window.sodaJSONObj["deSelected-entities"] = deSelectedEntities;
 
     // Validate that all questions that should be visible were answered
     const visibleQuestions = Object.keys(contentOptionsMap).filter((key) => {
@@ -106,8 +108,6 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
 
       return true; // This question should be visible
     });
-    window.sodaJSONObj["selected-entities"] = selectedEntities;
-    window.sodaJSONObj["de-selected-entities"] = deSelectedEntities;
 
     for (const entity of visibleQuestions) {
       const isSelected = selectedEntities.includes(entity);
