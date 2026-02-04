@@ -43,6 +43,10 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
   }
 
   if (pageBeingLeftID === "guided-dataset-content-tab") {
+    // Make local copies so we do not mutate store state directly
+    let selectedEntities = [...useGlobalStore.getState().selectedEntities];
+    let deSelectedEntities = [...useGlobalStore.getState().deSelectedEntities];
+
     // Validate that all questions that should be visible were answered
     const visibleQuestions = Object.keys(contentOptionsMap).filter((key) => {
       const option = contentOptionsMap[key];
@@ -83,10 +87,6 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
         throw errorArray;
       }
     }
-
-    // Make local copies so we do not mutate store state directly
-    let selectedEntities = [...useGlobalStore.getState().selectedEntities];
-    let deSelectedEntities = [...useGlobalStore.getState().deSelectedEntities];
 
     // Resolve parent-child dependencies until no invalid selections remain
     let changed = true;
