@@ -25,7 +25,7 @@ export const contentOptionsMap = {
     ml: 10,
   },
   derivedSamples: {
-    label: "Did you derive samples from samples collected from subjects?",
+    label: "Did you derive samples from other samples?",
     dropDownDescription:
       "Select yes if you created additional samples from samples that were collected directly from subjects. Examples include tissue sections, cell cultures, extracted RNA or protein, or other samples created from the originally collected material.",
     requiresAnswer: ["subjects", "samples"],

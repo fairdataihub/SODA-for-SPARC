@@ -313,21 +313,12 @@ const patchPreviousGuidedModeVersions = async () => {
         }
       }
     }
-    console.log("subject.samples:", subject.samples);
     for (const sample of subject.samples || []) {
       // Update the date_of_derivation field to MM/DD/YYYY format
       if (sample.metadata?.date_of_derivation) {
-        console.log(
-          "sample.metadata.date_of_derivation before normalization:",
-          sample.metadata.date_of_derivation
-        );
         const normalized = normalizeToMMDDYYYY(sample.metadata.date_of_derivation);
         if (normalized) {
           sample.metadata.date_of_derivation = normalized;
-          console.log(
-            "sample.metadata.date_of_derivation after normalization:",
-            sample.metadata.date_of_derivation
-          );
         }
       }
     }

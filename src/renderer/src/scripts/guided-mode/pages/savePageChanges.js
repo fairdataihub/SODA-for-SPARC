@@ -582,10 +582,6 @@ window.savePageChanges = async (pageBeingLeftID) => {
     await savePagePrepareMetadata(pageBeingLeftID);
     await savePagePennsieveDetails(pageBeingLeftID);
     await savePageGenerateDataset(pageBeingLeftID);
-    // Store selections (re-read from store to capture updates made above)
-    const { selectedEntities, deSelectedEntities } = useGlobalStore.getState();
-    window.sodaJSONObj["selected-entities"] = selectedEntities;
-    window.sodaJSONObj["deSelected-entities"] = deSelectedEntities;
 
     const datasetEntityArrayCopy = useGlobalStore.getState().datasetEntityArray;
     window.sodaJSONObj["dataset-entity-array"] = datasetEntityArrayCopy;
