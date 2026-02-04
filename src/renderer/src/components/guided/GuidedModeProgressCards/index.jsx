@@ -2,17 +2,47 @@ import React from "react";
 import useGlobalStore from "../../../stores/globalStore";
 import { Card, Text, Stack, Group, Image, Button, Badge, Tooltip, Loader } from "@mantine/core";
 import { IconClock, IconTrash } from "@tabler/icons-react";
+import { guidedGetCurrentUserWorkSpace } from "../../../scripts/guided-mode/workspaces/workspaces";
 import Avvvatars from "avvvatars-react";
+
+const switchToPreviousPennsieveAccountMessage =
+  "Switch to the Pennsieve account that shared this dataset.";
 
 const generateProgressResumptionButton = (
   datasetStartingPoint,
   boolAlreadyUploadedToPennsieve,
   progressFileName,
+  requiredAccountChangeAction,
   lastVersionOfSodaUsed
 ) => {
   let buttonText;
   let color = "blue";
   let variant = "filled";
+
+  if (requiredAccountChangeAction) {
+    if (requiredAccountChangeAction === switchToPreviousPennsieveAccountMessage) {
+      return (
+        <Button
+          size="md"
+          color="gray"
+          variant="light"
+          onClick={() => window.openDropdownPrompt?.(null, "ps")}
+        >
+          {switchToPreviousPennsieveAccountMessage}
+        </Button>
+      );
+    }
+    return (
+      <Button
+        size="md"
+        color="gray"
+        variant="light"
+        onClick={() => window.openDropdownPrompt?.(null, "organization")}
+      >
+        {requiredAccountChangeAction}
+      </Button>
+    );
+  }
 
   if (boolAlreadyUploadedToPennsieve) {
     buttonText = "Share with the Curation Team";
@@ -110,6 +140,25 @@ const GuidedModeProgressCards = () => {
               const alreadyUploadedToPennsieve =
                 !!progressFile?.["dataset-successfully-uploaded-to-pennsieve"];
 
+              let requiredAccountChangeAction = false;
+
+              // Only require user to switch workspace if the dataset has already been uploaded
+              // (they will be returned to the share with curation team page)
+              if (alreadyUploadedToPennsieve) {
+                const accountSame =
+                  progressFile?.["last-confirmed-ps-account-details"] === window.defaultBfAccount;
+                if (!accountSame) {
+                  const datasetWorkspace =
+                    progressFile?.["digital-metadata"]?.["dataset-workspace"];
+                  const currentWorkspace = guidedGetCurrentUserWorkSpace();
+                  if (datasetWorkspace && datasetWorkspace !== currentWorkspace) {
+                    requiredAccountChangeAction = `Switch to ${datasetWorkspace} workspace to resume curation.`;
+                  } else {
+                    requiredAccountChangeAction = switchToPreviousPennsieveAccountMessage;
+                  }
+                }
+              }
+
               const lastVersionOfSodaUsed = progressFile?.["last-version-of-soda-used"] || "1.0.0";
 
               return (
@@ -198,6 +247,7 @@ const GuidedModeProgressCards = () => {
                         datasetStartingPoint,
                         alreadyUploadedToPennsieve,
                         progressFileName,
+                        requiredAccountChangeAction,
                         lastVersionOfSodaUsed
                       )}
 
