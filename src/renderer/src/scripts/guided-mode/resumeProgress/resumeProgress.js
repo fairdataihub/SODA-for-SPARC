@@ -290,14 +290,18 @@ const patchPreviousGuidedModeVersions = async () => {
       .concat("Code");
   }
 
-  // Change all fields named "disease_or_disorder" to "disease" in subjects metadata
-  const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
+  // Create a mutable copy of the dataset entity array to modify and then replace the original
+  const datasetEntityArray = JSON.parse(
+    JSON.stringify(window.sodaJSONObj["dataset-entity-array"] || [])
+  );
   for (const subject of datasetEntityArray) {
     if (subject.type === "subject" && subject.metadata) {
+      // Replace the disease_or_disorder field with disease for consistency with the current expected format
       if (subject.metadata.disease_or_disorder !== undefined) {
         subject.metadata.disease = subject.metadata.disease_or_disorder;
         delete subject.metadata.disease_or_disorder;
       }
+
       // Update the date_of_birth field to MM/DD/YYYY format
       if (subject.metadata.date_of_birth) {
         const normalized = normalizeToMMDDYYYY(subject.metadata.date_of_birth);
@@ -324,14 +328,8 @@ const patchPreviousGuidedModeVersions = async () => {
     }
   }
 
-  // Change all fields named "disease_or_disorder" to "disease" in subjects metadata in dataset-entity-obj
-  const subjectsMetadata = datasetMetadata?.subjects || [];
-  for (const subjectMetadata of subjectsMetadata) {
-    if (subjectMetadata.disease_or_disorder !== undefined) {
-      subjectMetadata.disease = subjectMetadata.disease_or_disorder;
-      delete subjectMetadata.disease_or_disorder;
-    }
-  }
+  // Reset the dataset-entity-array with the migrated/copy version
+  window.sodaJSONObj["dataset-entity-array"] = datasetEntityArray;
 
   // Change the contributor role field to an array if it is a string
   const contributors = window.sodaJSONObj["dataset_contributors"];
