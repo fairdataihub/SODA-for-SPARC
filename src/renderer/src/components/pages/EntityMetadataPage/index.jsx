@@ -352,12 +352,17 @@ const EntityMetadataForm = () => {
           return;
         }
 
-        addSample(
-          entityBeingAddedParentSubject,
-          entityBeingAddedParentSample,
-          tempMetadata["sample_id"],
-          tempMetadata
-        );
+        try {
+          addSample(
+            entityBeingAddedParentSubject,
+            entityBeingAddedParentSample,
+            tempMetadata["sample_id"],
+            tempMetadata
+          );
+        } catch (error) {
+          window.notyf.open({ duration: "4000", type: "error", message: error.message });
+          return;
+        }
         clearTemporaryMetadata("sample");
       } else if (activeFormType === "site") {
         // Create site entity

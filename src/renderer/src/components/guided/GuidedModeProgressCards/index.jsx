@@ -20,6 +20,21 @@ const generateProgressResumptionButton = (
   let variant = "filled";
 
   if (requiredAccountChangeAction) {
+    // If they are not logged in, just have them log in
+    if (!window.defaultBfAccount) {
+      return (
+        <Button
+          size="md"
+          color="gray"
+          variant="light"
+          onClick={() => window.openDropdownPrompt?.(null, "ps")}
+        >
+          Connect your Pennsieve account to resume curation.
+        </Button>
+      );
+    }
+
+    // If they are logged in but need to switch accounts
     if (requiredAccountChangeAction === switchToPreviousPennsieveAccountMessage) {
       return (
         <Button
@@ -32,6 +47,8 @@ const generateProgressResumptionButton = (
         </Button>
       );
     }
+
+    // If they need to switch workspaces (current workspace is not the workspace the dataset on Pennsieve is in)
     return (
       <Button
         size="md"
