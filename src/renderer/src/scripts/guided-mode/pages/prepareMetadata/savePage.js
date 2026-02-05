@@ -271,8 +271,11 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
 
       // Check if the sample has any files in the dataset-entity-obj
       const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
-      const sampleFiles = datasetEntityObj.samples?.[metadata.sample_id] || {};
-      const hasFiles = Object.keys(sampleFiles).length > 0;
+      const nonDerivativeSampleFiles = datasetEntityObj?.samples || {};
+      const derivedSampleFiles = datasetEntityObj?.["derived-samples"] || {};
+      const sampleFiles = { ...nonDerivativeSampleFiles, ...derivedSampleFiles };
+      const thisSamplesFiles = sampleFiles[metadata.sample_id] || {};
+      const hasFiles = Object.keys(thisSamplesFiles).length > 0;
 
       // Set metadata_only field based on whether the sample has associated files
       metadata.metadata_only = hasFiles ? "no" : "yes";
