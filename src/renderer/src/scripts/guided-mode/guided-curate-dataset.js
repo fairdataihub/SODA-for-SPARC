@@ -18,6 +18,7 @@ import api from "../others/api/api";
 import kombuchaEnums from "../analytics/analytics-enums";
 import Swal from "sweetalert2";
 import Tagify from "@yaireo/tagify/dist/tagify.esm.js";
+
 import client from "../client";
 import {
   guidedGenerateDatasetLocally,
@@ -33,6 +34,7 @@ import {
 import DatePicker from "tui-date-picker";
 import { loadStoredContributors } from "../others/contributor-storage";
 import { ORCID } from "orcid-utils";
+import { guidedGetCurrentUserWorkSpace } from "./workspaces/workspaces";
 
 import { guidedRenderProgressCards } from "./resumeProgress/progressCards";
 
@@ -40,6 +42,7 @@ import "bootstrap-select";
 import Cropper from "cropperjs";
 
 import "jstree";
+import { CONTRIBUTOR_ROLE_OPTIONS } from "./metadata/contributors/contributors";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -74,8 +77,6 @@ export const guidedResetLocalGenerationUI = () => {
   document.getElementById("guided-section-local-generation-status-table").classList.add("hidden");
   // Hide the local dataset generation success section
   document.getElementById("guided-section-post-local-generation-success").classList.add("hidden");
-  // Hide the local dataset generation retry section
-  document.getElementById("guided-section-retry-local-generation").classList.add("hidden");
 };
 
 // This function reads the innerText of the textSharedWithCurationTeamStatus element
@@ -704,6 +705,31 @@ window.deleteProgressCard = async (datasetName, progressFileName) => {
   }
 };
 
+export const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
+  // Determine individual status flags
+  const completedIntro = window.sodaJSONObj["completed-tabs"].includes(
+    "guided-pennsieve-intro-tab"
+  );
+  const accountSame =
+    window.sodaJSONObj?.["last-confirmed-ps-account-details"] === window.defaultBfAccount;
+  const currentWorkspace = guidedGetCurrentUserWorkSpace();
+  const workspaceSame =
+    currentWorkspace === window.sodaJSONObj?.["last-confirmed-pennsieve-workspace-details"];
+
+  const needsReconfirm = completedIntro && (!accountSame || !workspaceSame);
+
+  return {
+    completedIntro,
+    accountSame,
+    workspaceSame,
+    needsReconfirm,
+  };
+};
+window.handleGuidedModeOrganizationConfirmationClick = async () => {
+  document.getElementById("guided-section-pennsieve-agent-check").classList.remove("hidden");
+  await window.checkPennsieveAgent("guided-mode-post-log-in-pennsieve-agent-check");
+};
+
 window.guidedOpenManifestEditSwal = async () => {
   const existingManifestData = window.sodaJSONObj["guided-manifest-file-data"];
   //send manifest data to main.js to then send to child window
@@ -1324,31 +1350,9 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
         <p class="guided--text-input-instructions mb-0 text-left">Institution the contributor is affiliated with. Should be formatted as an ROR organization identifier(e.g., https://ror.org/00abcdef).</p>
         <label class="guided--form-label mt-md required">Role(s):</label>
         <select id="guided-contributor-role-select" class="w-100 SODA-select-picker" title="Select one or more roles" data-live-search="true" multiple>
-          <option value="ContactPerson">Contact Person</option>
-          <option value="CoInvestigator">Co-Investigator</option>
-          <option value="CorrespondingAuthor">Corresponding Author</option>
-          <option value="Creator">Creator</option>
-          <option value="DataCollector">Data Collector</option>
-          <option value="DataCurator">Data Curator</option>
-          <option value="DataManager">Data Manager</option>
-          <option value="Distributor">Distributor</option>
-          <option value="Editor">Editor</option>
-          <option value="HostingInstitution">Hosting Institution</option>
-          <option value="PrincipalInvestigator">Principal Investigator</option>
-          <option value="Producer">Producer</option>
-          <option value="ProjectLeader">Project Leader</option>
-          <option value="ProjectManager">Project Manager</option>
-          <option value="ProjectMember">Project Member</option>
-          <option value="RegistrationAgency">Registration Agency</option>
-          <option value="RegistrationAuthority">Registration Authority</option>
-          <option value="RelatedPerson">Related Person</option>
-          <option value="ResearchGroup">Research Group</option>
-          <option value="Researcher">Researcher</option>
-          <option value="RightsHolder">Rights Holder</option>
-          <option value="Sponsor">Sponsor</option>
-          <option value="Supervisor">Supervisor</option>
-          <option value="WorkPackageLeader">Work Package Leader</option>
-          <option value="Other">Other</option>
+          ${Object.entries(CONTRIBUTOR_ROLE_OPTIONS)
+            .map(([value, label]) => `<option value="${value}">${label}</option>`)
+            .join("")}
         </select>
         <p class="guided--text-input-instructions mb-0 text-left">
           Role(s) the contributor played in the creation of the dataset. Visit <a target="_blank" href="https://schema.datacite.org/meta/kernel-4.4/doc/DataCite-MetadataKernel_v4.4.pdf">DataCite</a> for definitions.<br /><b>Select one or more roles from the dropdown.</b>
@@ -1368,6 +1372,8 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
       if (defaultRole) {
         const roles = Array.isArray(defaultRole) ? defaultRole : [defaultRole];
         $("#guided-contributor-role-select").selectpicker("val", roles);
+        // Track the initial order
+        $("#guided-contributor-role-select").data("prevOrder", roles);
       }
 
       $(".SODA-select-picker button").on("click", (e) => {

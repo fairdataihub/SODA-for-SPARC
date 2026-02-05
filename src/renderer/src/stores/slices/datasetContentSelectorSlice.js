@@ -30,6 +30,26 @@ export const addSelectedDataCategoryForEntityType = (entityType, dataCategory) =
   useGlobalStore.setState({ selectedDataCategoriesByEntityType: updatedMap });
 };
 
+// Function that adds an entity to the selectedEntities list in global store
+// and removes it from the deSelectedEntities list if present (immutable updates)
+export const addEntityToSelectedEntities = (entity) => {
+  const { selectedEntities = [], deSelectedEntities = [] } = useGlobalStore.getState();
+  const newSelected = selectedEntities.includes(entity)
+    ? selectedEntities
+    : [...selectedEntities, entity];
+  const newDeSelected = deSelectedEntities.filter((id) => id !== entity);
+  useGlobalStore.setState({ selectedEntities: newSelected, deSelectedEntities: newDeSelected });
+};
+
+export const removeEntityFromSelectedEntities = (entity) => {
+  const { selectedEntities = [], deSelectedEntities = [] } = useGlobalStore.getState();
+  const newSelected = selectedEntities.filter((id) => id !== entity);
+  const newDeSelected = deSelectedEntities.includes(entity)
+    ? deSelectedEntities
+    : [...deSelectedEntities, entity];
+  useGlobalStore.setState({ selectedEntities: newSelected, deSelectedEntities: newDeSelected });
+};
+
 export const getOxfordCommaSeparatedListOfEntities = (separator) => {
   const selectedEntities = useGlobalStore.getState().selectedEntities || [];
   const hierarchyEntities = selectedEntities.filter((entity) =>

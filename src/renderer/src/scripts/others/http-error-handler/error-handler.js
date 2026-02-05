@@ -48,7 +48,7 @@ const userErrorMessage = (error, includeContactAddendum = true) => {
   if (error.response) {
     // The request was made and the server responded with a status code
     // that falls out of the range of 2xx
-    errorMessage = `${error.response.data.message}<br>${contactSODATeamAddendum}`;
+    errorMessage = `${error.response.data.message}<br><br>${contactSODATeamAddendum}`;
   } else if (error.request) {
     // The request was made but no response was received
     // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
@@ -57,7 +57,7 @@ const userErrorMessage = (error, includeContactAddendum = true) => {
     errorMessage = "The server did not respond to the request. <br>" + contactSODATeamAddendum;
   } else {
     // Something happened in setting up the request that triggered an Error
-    errorMessage = error.message + "<br>" + contactSODATeamAddendum;
+    errorMessage = error.message + "<br><br>" + contactSODATeamAddendum;
   }
 
   // If the error message contains a 423, it means the dataset is locked.
@@ -163,16 +163,6 @@ window.switchToCurrentWorkspace = async () => {
       showHideDropdownButtons("account", "show");
       confirm_click_account_function();
       window.updateBfAccountList();
-
-      //   // If the clicked button has the data attribute "reset-guided-mode-page" and the value is "true"
-      //   // then reset the guided mode page
-      //   if (ev?.getAttribute("data-reset-guided-mode-page") == "true") {
-      //     // Get the current page that the user is on in the guided mode
-      //     const currentPage = CURRENT_PAGE.id;
-      //     if (currentPage) {
-      //       await openPage(currentPage);
-      //     }
-      //   }
     } catch (error) {
       clientError(error);
       Swal.fire({

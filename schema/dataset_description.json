@@ -149,7 +149,7 @@
             "pattern": "^(([Vv]an|[Vv]an [Dd]e[rn]?|[Vv]an [Tt]|[Vv]ander|[Vv]on|[Vv]on [Dd]e[rn]?|[Zz]u|[Zz]ur|[Vv]om|[Dd]e|[Dd]es|[Dd]u|[Dd]e [Ll]a|[Dd]e [Ll]es|[Dd]e [Ll]os|[Ll]e|[Ll]a|[Ll]es|[Dd]el|[Dd]e [Ll]os|[Dd]e [Ll]a|[Dd]e [Ll]as|[Dd]a|[Dd]o|[Dd]i|[Dd]ell[ao]|[Dd]ell[ei]|[Dd]ai|[Dd]al|[Dd]alle|[Oo]'|[Mm]c|[Mm]ac|[Aa]l|[Ee]l|[Aa]bd [Aa]l|[Aa]bu|[Ii]bn|[Ff]itz|[Aa]p|[Bb]en|[Bb]ar|[Bb]at) )?[^, ]+, [^,]+$",
             "description": "The name of the contributor. The format should be 'Last Name, First Name'. Supports international family name prefixes (van, von, de, del, etc.)."
           },
-          "contributor_role": {
+          "contributor_roles": {
             "type": "array",
             "items": {
               "type": "string",

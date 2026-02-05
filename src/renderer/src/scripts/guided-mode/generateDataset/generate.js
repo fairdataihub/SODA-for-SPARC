@@ -326,7 +326,7 @@ export const bytesToReadableSize = (bytes) => {
 };
 // Counts the number of files in the dataset structure
 // Note: This function should only be used for local datasets (Not datasets pulled from Pennsieve)
-const countFilesInDatasetStructure = (datasetStructure) => {
+export const countFilesInDatasetStructure = (datasetStructure) => {
   let totalFiles = 0;
   const keys = Object.keys(datasetStructure);
   for (const key of keys) {
@@ -356,6 +356,7 @@ const trackLocalDatasetGenerationProgress = async (standardizedDatasetStructure)
       message: data["main_curate_progress_message"],
       elapsedTime: data["elapsed_time_formatted"],
       uploadedFiles: data["total_files_uploaded"],
+      curationErrorMessage: data["curation_error_message"],
     };
   };
 
@@ -371,7 +372,18 @@ const trackLocalDatasetGenerationProgress = async (standardizedDatasetStructure)
 
   while (true) {
     try {
-      const { status, message, elapsedTime, uploadedFiles } = await fetchProgressData();
+      const { status, message, elapsedTime, uploadedFiles, curationErrorMessage } =
+        await fetchProgressData();
+
+      if (curationErrorMessage !== undefined && curationErrorMessage !== "") {
+        console.error("Error message during local dataset generation:", curationErrorMessage);
+      }
+
+      if (curationErrorMessage) {
+        throw new Error(
+          "An error occurred during local dataset generation: " + curationErrorMessage
+        );
+      }
 
       if (message === "Success: COMPLETED!" || status === "Done") break;
 
@@ -711,6 +723,15 @@ const automaticRetry = async (supplementaryChecks = false, errorMessage = "") =>
   guidedGenerateDatasetOnPennsieve();
 };
 
+// Handle local generation failure UI + logging in one place
+const handleLocalGenerationFailure = async (error) => {
+  window.log.error("Error during local dataset generation:", error);
+  const errorMessage = userErrorMessage(error);
+  guidedResetLocalGenerationUI();
+  await swalShowError("Error generating dataset locally", errorMessage);
+  guidedSetNavLoadingState(false);
+};
+
 export const guidedGenerateDatasetLocally = async (filePath) => {
   guidedSetNavLoadingState(true); // Lock the nav while local dataset generation is in progress
   guidedResetLocalGenerationUI();
@@ -774,12 +795,17 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
       "Current action": "Preparing dataset for local generation",
     });
 
-    // Start local generation
-    client.post(
-      "/curate_datasets/curation",
-      { soda_json_structure: sodaJSONObjCopy, resume: false },
-      { timeout: 0 }
-    );
+    // Start local generation - catch immediate errors (like validation) without blocking
+    client
+      .post(
+        "/curate_datasets/curation",
+        { soda_json_structure: sodaJSONObjCopy, resume: false },
+        { timeout: 0 }
+      )
+      .catch(async (error) => {
+        console.error("Error during local dataset generation:", error);
+        await handleLocalGenerationFailure(error);
+      });
 
     await trackLocalDatasetGenerationProgress(standardizedDatasetStructure);
 
@@ -787,18 +813,6 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
     updateDatasetUploadProgressTable("local", {
       "Current action": "Generating metadata files",
     });
-
-    // Metadata file generation is temporarily disabled
-    /*
-    const datasetPath = window.path.join(filePath, guidedDatasetName);
-    await guidedGenerateSubjectsMetadata(window.path.join(datasetPath, "subjects.xlsx"));
-    await guidedGenerateSamplesMetadata(window.path.join(datasetPath, "samples.xlsx"));
-    await guidedGenerateSubmissionMetadata(window.path.join(datasetPath, "submission.xlsx"));
-    await guidedGenerateDatasetDescriptionMetadata(window.path.join(datasetPath, "dataset_description.xlsx"));
-    await guidedGenerateReadmeMetadata(window.path.join(datasetPath, "README.txt"));
-    await guidedGenerateChangesMetadata(window.path.join(datasetPath, "CHANGES.txt"));
-    await guidedGenerateCodeDescriptionMetadata(window.path.join(datasetPath, "code_description.xlsx"));
-    */
 
     // Save dataset path
     window.sodaJSONObj["path-to-local-dataset-copy"] = window.path.join(
@@ -812,12 +826,9 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
     });
     window.unHideAndSmoothScrollToElement("guided-section-post-local-generation-success");
   } catch (error) {
-    console.error("Error during local dataset generation:", error);
-    const errorMessage = userErrorMessage(error);
-    console.error(errorMessage);
-    guidedResetLocalGenerationUI();
-    await swalShowError("Error generating dataset locally", errorMessage);
-    window.unHideAndSmoothScrollToElement("guided-section-retry-local-generation");
+    console.error("Error during local dataset generation:2", error);
+
+    await handleLocalGenerationFailure(error);
   } finally {
     guidedSetNavLoadingState(false); // Always unlock nav
   }

@@ -14,17 +14,7 @@
       "items": {
         "type": "string",
         "description": "The identifier used to identify the resource in the RRID database.",
-        "anyOf": [
-          {
-            "pattern": "^RRID:[A-Z]+_[0-9]+$"
-          },
-          {
-            "pattern": "^RRID:([A-Z]+):([A-Za-z0-9_:-]+)$"
-          },
-          {
-            "pattern": "^RRID:[A-Za-z]+\\S*[_:]\\S*$"
-          }
-        ]
+        "pattern": "^$|^RRID:"
       }
     },
     "ontology_term": {

@@ -37,53 +37,46 @@ import {
   setMilestones,
   setMilestoneDate,
 } from "../../../../stores/slices/datasetMetadataSlice";
+import { guidedCheckIfUserNeedsToReconfirmAccountDetails } from "../../guided-curate-dataset";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
 export const openPagePrepareMetadata = async (targetPageID) => {
-  if (targetPageID === "guided-pennsieve-metadata-intro-tab") {
-    // Page-specific initialization code will go here
-  }
-
   if (targetPageID === "guided-pennsieve-intro-tab") {
-    const elementsToShowWhenLoggedInToPennsieve = document.querySelectorAll(".show-when-logged-in");
-    const elementsToShowWhenNotLoggedInToPennsieve =
-      document.querySelectorAll(".show-when-logged-out");
+    // Hide the Pennsieve agent check section initially (it gets shown after confirming organization)
+    document.getElementById("guided-section-pennsieve-agent-check").classList.add("hidden");
+
+    const { accountSame, workspaceSame } = guidedCheckIfUserNeedsToReconfirmAccountDetails();
+
+    const signInUI = document.getElementById("guided-select-pennsieve-account");
+    const confirmAccountUi = document.getElementById("guided-confirm-pennsieve-account");
 
     if (!window.defaultBfAccount) {
-      elementsToShowWhenLoggedInToPennsieve.forEach((element) => {
-        element.classList.add("hidden");
-      });
-      elementsToShowWhenNotLoggedInToPennsieve.forEach((element) => {
-        element.classList.remove("hidden");
-      });
+      signInUI.classList.remove("hidden");
+      confirmAccountUi.classList.add("hidden");
     } else {
-      elementsToShowWhenLoggedInToPennsieve.forEach((element) => {
-        element.classList.remove("hidden");
-      });
-      elementsToShowWhenNotLoggedInToPennsieve.forEach((element) => {
-        element.classList.add("hidden");
-      });
+      signInUI.classList.add("hidden");
+      confirmAccountUi.classList.remove("hidden");
+      if (accountSame) {
+        // Since this is the same account as last time, auto-click the confirm account checkbox
+        document.getElementById("guided-confirm-pennsieve-account-button").click();
+      }
 
-      const pennsieveIntroText = document.getElementById("guided-pennsive-intro-ps-account");
+      if (workspaceSame) {
+        // Since this is the same workspace as last time, auto-click the confirm organization checkbox
+        document.getElementById("guided-confirm-pennsieve-organization-button").click();
+      }
+
+      const pennsieveIntroText = document.getElementById("guided-pennsieve-intro-ps-account");
       // fetch the user's email and set that as the account field's value
-      const userInformation = await api.getUserInformation();
-      const userEmail = userInformation.email;
-      pennsieveIntroText.innerHTML = userEmail;
-
       try {
-        if (window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"]) {
-          if (
-            window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"] ===
-            guidedGetCurrentUserWorkSpace()
-          ) {
-            document.getElementById("guided-confirm-pennsieve-organization-button").click();
-          }
-        }
-      } catch (error) {
-        pennsieveIntroAccountDetailsText.innerHTML = "Error loading account details";
+        const userInformation = await api.getUserInformation();
+        const userEmail = userInformation.email;
+        pennsieveIntroText.innerHTML = userEmail;
+      } catch (err) {
+        pennsieveIntroText.innerHTML = "";
       }
     }
   }
@@ -225,6 +218,8 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     guidedDatasetKeywordsTagify.addTags(keywords);
 
     // Set the Study information fields
+    const studyDescription = window.sodaJSONObj["dataset-description"] || "";
+    document.getElementById("guided-ds-study-description").value = studyDescription;
     const studyPurpose = studyInformation["study_purpose"] || "";
     document.getElementById("guided-ds-study-purpose").value = studyPurpose;
     const studyDataCollection = studyInformation["study_data_collection"] || "";
@@ -256,8 +251,6 @@ export const openPagePrepareMetadata = async (targetPageID) => {
 
     const acknowledgments = basicInformation["acknowledgments"] || "";
     document.getElementById("guided-ds-acknowledgments").value = acknowledgments;
-
-    const license = basicInformation["license"] || "";
 
     renderAdditionalLinksTable();
   }

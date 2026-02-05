@@ -260,17 +260,23 @@ if (process.contextIsolated) {
 
           agentStartSpawn.stdout.on("data", (data) => {
             log.info("Pennsieve agent is installed:", data.toString()); // Log data for debugging
-            resolve(true); // Agent found
+            resolve("INSTALLED"); // Agent found
           });
 
           agentStartSpawn.stderr.on("data", (data) => {
-            log.error("Error checking for Pennsieve agent:", data.toString());
-            resolve(false); // Agent not found or error
+            ///bin/sh: /usr/local/bin/pennsieve: Bad CPU type in executable
+            if (data.toString().includes("Bad CPU type in executable")) {
+              resolve("FOUND_BUT_BAD_EXECUTABLE");
+            }
+
+            resolve("NOT_INSTALLED");
           });
 
           agentStartSpawn.on("error", (error) => {
-            log.error("Unexpected error checking for Pennsieve agent:", error);
-            resolve(false); // Agent not found or error
+            if (error.toString().includes("Bad CPU type in executable")) {
+              resolve("FOUND_BUT_BAD_EXECUTABLE");
+            }
+            resolve("NOT_INSTALLED");
           });
         });
       },

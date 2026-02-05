@@ -286,7 +286,15 @@ window.getPennsieveAgentStatus = async () => {
   return useGlobalStore.getState()["pennsieveAgentCheckSuccessful"];
 };
 
+window.CHECK_FOR_PENNSIEVE_AGENT_STATUS = {
+  NOT_INSTALLED: "NOT_INSTALLED",
+  INSTALLED: "INSTALLED",
+  FOUND_BUT_BAD_EXECUTABLE: "FOUND_BUT_BAD_EXECUTABLE",
+};
+
 window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
+  window.unHideAndSmoothScrollToElement(pennsieveAgentStatusDivId);
+
   try {
     // Step 0: abort if the background services are already running
     if (useGlobalStore.getState()["pennsieveAgentCheckInProgress"] === true) {
@@ -310,15 +318,33 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
 
     // Step 2: Check if the Pennsieve agent is installed
     const pennsieveAgentInstalled = await window.spawn.checkForPennsieveAgent();
-    setPennsieveAgentInstalled(pennsieveAgentInstalled);
-
-    if (!pennsieveAgentInstalled) {
-      // If the Pennsieve agent is not installed, get the download URL and set it in the store
+    if (pennsieveAgentInstalled === window.CHECK_FOR_PENNSIEVE_AGENT_STATUS.ERROR) {
+      setPennsieveAgentInstalled(false);
+      setPennsieveAgentCheckError(
+        "The Pennsieve Agent is installed but not compatible with your system architecture",
+        "Please download and install the correct version of the Pennsieve Agent for your system. If you need assistance please contact us at help@fairdataihub.org"
+      );
+      abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+      return false;
+    } else if (
+      pennsieveAgentInstalled === window.CHECK_FOR_PENNSIEVE_AGENT_STATUS.FOUND_BUT_BAD_EXECUTABLE
+    ) {
+      setPennsieveAgentInstalled(false);
+      setPennsieveAgentCheckError(
+        "The Pennsieve Agent is installed but is not able to run on your computer",
+        "There are different reasons for this to happen and the easiest way to verify is for the SODA team to check manually. Please reach out to us by using the 'Contact Us' page accessible from the sidebar to get support."
+      );
+      abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+      return false;
+    } else if (pennsieveAgentInstalled === window.CHECK_FOR_PENNSIEVE_AGENT_STATUS.NOT_INSTALLED) {
       const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
       setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
       abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+      setPennsieveAgentInstalled(false);
       return false;
     }
+
+    setPennsieveAgentInstalled(true);
 
     // Stop the Pennsieve agent if it is running
     // This is to ensure that the agent is not running when we try to start it so no funny business happens
@@ -3190,7 +3216,7 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, testType) => {
     "string-contains-forbidden-characters": forbiddenCharacters.test(stringToTest),
     "string-contains-forbidden-pennsieve-dataset-name-characters":
       forbiddenPennsieveDatasetNameCharacters.test(stringToTest),
-    "string-is-valid-rrid": /^RRID:[A-Za-z]+\S*[_:]\S*$/.test(stringToTest),
+    "string-is-valid-rrid": /^$|^RRID:/.test(stringToTest),
     "string-is-valid-url-or-doi": (() => {
       const result = urlOrDoiPatterns.some((pattern) => pattern.test(stringToTest));
       return result;
@@ -6097,14 +6123,15 @@ window.showBFAddAccountSweetalert = async (ev) => {
                     confirm_click_account_function();
                     window.updateBfAccountList();
 
-                    // If the clicked button has the data attribute "reset-guided-mode-page" and the value is "true"
-                    // then reset the guided mode page
-                    if (ev?.getAttribute("data-reset-guided-mode-page") == "true") {
-                      // Get the current page that the user is on in the guided mode
-                      const currentPage = window.CURRENT_PAGE.id;
-                      if (currentPage) {
-                        await window.openPage(currentPage);
+                    // If the user is on a current guided mode page, then reload that page
+                    if (window.CURRENT_PAGE?.id) {
+                      const pageToReloadId = window.CURRENT_PAGE.id;
+                      await window.openPage(pageToReloadId);
+                      if (pageToReloadId === "guided-select-starting-point-tab") {
+                        document.getElementById("guided-button-resume-progress-file").click();
                       }
+                    } else {
+                      window.resetFFMUI(ev?.target || null);
                     }
 
                     // reset the selected dataset to None
@@ -6113,16 +6140,6 @@ window.showBFAddAccountSweetalert = async (ev) => {
                     $(".current-permissions").html("None");
 
                     window.refreshOrganizationList();
-
-                    // If the button that triggered the organization has the class
-                    // guided-change-workspace (from guided mode), handle changes based on the ev id
-                    // otherwise, reset the FFM UI based on the ev class
-                    // NOTE: For API Key sign in flow it is more simple to just reset the UI as the new user may be in a separate workspace than the prior user.
-
-                    ev?.target?.classList.contains("data-reset-guided-mode-page")
-                      ? window.handleGuidedModeOrgSwitch(ev?.target || null)
-                      : window.resetFFMUI(ev?.target || null);
-
                     window.datasetList = [];
                     window.defaultBfDataset = null;
                     window.clearDatasetDropdowns();

@@ -15,7 +15,10 @@ import {
   addSubject,
   addSample,
   addSiteToSample,
+  getExistingSamples,
 } from "../../../stores/slices/datasetEntityStructureSlice";
+import { guidedCheckIfUserNeedsToReconfirmAccountDetails } from "../guided-curate-dataset";
+import { normalizeToMMDDYYYY } from "../../utils/date-utils";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -153,7 +156,8 @@ const guidedGetPageToReturnTo = async () => {
     return firstPageID;
   }
 
-  if (guidedCheckIfUserNeedsToReconfirmAccountDetails() === true) {
+  const { needsReconfirm } = guidedCheckIfUserNeedsToReconfirmAccountDetails();
+  if (needsReconfirm) {
     await swalShowInfo(
       "Your Pennsieve account or workspace has changed since you last worked on this dataset.",
       "Please confirm your Pennsieve account and workspace details."
@@ -286,24 +290,46 @@ const patchPreviousGuidedModeVersions = async () => {
       .concat("Code");
   }
 
-  // Change all fields named "disease_or_disorder" to "disease" in subjects metadata
-  const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
+  // Create a mutable copy of the dataset entity array to modify and then replace the original
+  const datasetEntityArray = JSON.parse(
+    JSON.stringify(window.sodaJSONObj["dataset-entity-array"] || [])
+  );
   for (const subject of datasetEntityArray) {
     if (subject.type === "subject" && subject.metadata) {
+      // Replace the disease_or_disorder field with disease for consistency with the current expected format
       if (subject.metadata.disease_or_disorder !== undefined) {
         subject.metadata.disease = subject.metadata.disease_or_disorder;
         delete subject.metadata.disease_or_disorder;
       }
+
+      // Update the date_of_birth field to MM/DD/YYYY format
+      if (subject.metadata.date_of_birth) {
+        const normalized = normalizeToMMDDYYYY(subject.metadata.date_of_birth);
+        if (normalized) {
+          subject.metadata.date_of_birth = normalized;
+        }
+      }
+      // Update the experiment_date field to MM/DD/YYYY format
+      if (subject.metadata.experiment_date) {
+        const normalized = normalizeToMMDDYYYY(subject.metadata.experiment_date);
+        if (normalized) {
+          subject.metadata.experiment_date = normalized;
+        }
+      }
+    }
+    for (const sample of subject.samples || []) {
+      // Update the date_of_derivation field to MM/DD/YYYY format
+      if (sample.metadata?.date_of_derivation) {
+        const normalized = normalizeToMMDDYYYY(sample.metadata.date_of_derivation);
+        if (normalized) {
+          sample.metadata.date_of_derivation = normalized;
+        }
+      }
     }
   }
-  // Change all fields named "disease_or_disorder" to "disease" in subjects metadata in dataset-entity-obj
-  const subjectsMetadata = datasetMetadata?.subjects || [];
-  for (const subjectMetadata of subjectsMetadata) {
-    if (subjectMetadata.disease_or_disorder !== undefined) {
-      subjectMetadata.disease = subjectMetadata.disease_or_disorder;
-      delete subjectMetadata.disease_or_disorder;
-    }
-  }
+
+  // Reset the dataset-entity-array with the migrated/copy version
+  window.sodaJSONObj["dataset-entity-array"] = datasetEntityArray;
 
   // Change the contributor role field to an array if it is a string
   const contributors = window.sodaJSONObj["dataset_contributors"];
@@ -313,36 +339,4 @@ const patchPreviousGuidedModeVersions = async () => {
       delete contributor.contributor_role;
     }
   }
-};
-
-const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
-  // Check if guided-pennsieve-intro-tab is in completed tabs
-  if (!window.sodaJSONObj["completed-tabs"].includes("guided-pennsieve-intro-tab")) {
-    return false;
-  }
-
-  // Check if the user has changed their Pennsieve account
-  if (window.sodaJSONObj?.["last-confirmed-ps-account-details"] !== window.defaultBfAccount) {
-    if (window.sodaJSONObj["button-config"]?.["pennsieve-account-has-been-confirmed"]) {
-      delete window.sodaJSONObj["button-config"]["pennsieve-account-has-been-confirmed"];
-    }
-    if (window.sodaJSONObj["button-config"]?.["organization-has-been-confirmed"]) {
-      delete window.sodaJSONObj["button-config"]["organization-has-been-confirmed"];
-    }
-    return true;
-  }
-
-  // Log current and previously confirmed workspace details
-  const currentWorkspace = guidedGetCurrentUserWorkSpace();
-
-  // Check if the user has changed their Pennsieve workspace
-  if (currentWorkspace != window.sodaJSONObj?.["last-confirmed-pennsieve-workspace-details"]) {
-    if (window.sodaJSONObj["button-config"]?.["organization-has-been-confirmed"]) {
-      delete window.sodaJSONObj["button-config"]["organization-has-been-confirmed"];
-    }
-    return true;
-  }
-
-  // If no reconfirmation is needed, log that information
-  return false;
 };

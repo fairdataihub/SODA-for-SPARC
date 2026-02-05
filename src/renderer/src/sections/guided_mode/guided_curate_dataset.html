@@ -619,7 +619,7 @@
         <div
           id="guided-derived-samples-selection-tab"
           data-page-name="Derived Samples Data Selection"
-          class="guided--page guided-derived-samples-metadata-page-set guided-subject-related-page-set"
+          class="guided--page guided-samples-metadata-page-set guided-derived-samples-metadata-page-set guided-subject-related-page-set"
           data-component-type="data-categorization-page"
           data-entity-type="derived-samples"
           data-entity-type-string-singular="derived sample"
@@ -778,9 +778,12 @@
           <div class="guided--section">
             <h1 class="text-sub-step-title">Contributor information</h1>
             <p class="help-text">
-              Provide information about the individuals who contributed to this dataset. These
-              individuals do not have to be authors of any publications that describe the data, but
-              they should be acknowledged for their role in producing and publishing the dataset.
+              The SDS allows you to specify contributors to a dataset so they can be acknowledged
+              for their role in producing, managing, and publishing the data. This may include
+              people responsible for data collection, curation, oversight, coordination, or
+              institutional support. Contributors do not need to be authors on a related
+              publication, but their involvement in the creation and stewardship of the dataset
+              should be recognized.
             </p>
             <p class="help-text">
               The order in which the contributors should be added is in the same way that you would
@@ -1102,7 +1105,19 @@
           </div>
           <div class="guided--section neumorphic mt-xl">
             <h2 class="text-sub-step-title mt-0">Study information</h2>
-
+            <label class="guided--form-label mt-md">Dataset description:</label>
+            <textarea
+              class="guided--input guided--text-area"
+              type="text"
+              name="guided-study-description"
+              placeholder="Enter your study description here"
+              id="guided-ds-study-description"
+              style="height: 8em"
+            ></textarea>
+            <p class="guided--text-input-instructions mb-0">
+              Enter a brief description of the study and dataset, similar to a scientific abstract.
+              Include the study rationale and the types of data collected.
+            </p>
             <label class="guided--form-label mt-md">Study purpose:</label>
             <textarea
               class="guided--input guided--text-area"
@@ -1110,7 +1125,7 @@
               name="guided-study-purpose"
               placeholder="Enter your study purpose here"
               id="guided-ds-study-purpose"
-              style="height: 7.5em"
+              style="height: 8em"
             ></textarea>
             <p class="guided--text-input-instructions mb-0">
               Enter a paragraph that explains the purpose of your study.
@@ -1122,7 +1137,7 @@
               name="guided-data-collection"
               placeholder="Enter your data collection here"
               id="guided-ds-study-data-collection"
-              style="height: 7.5em"
+              style="height: 8em"
             ></textarea>
             <p class="guided--text-input-instructions mb-0">
               Enter a paragraph that explains the method you used for data collection.
@@ -1134,7 +1149,7 @@
               name="guided-primary-conclusion"
               placeholder="Enter your primary conclusion here"
               id="guided-ds-study-primary-conclusion"
-              style="height: 7.5em"
+              style="height: 8em"
             ></textarea>
             <p class="guided--text-input-instructions mb-0">
               Enter a paragraph that explains the primary conclusion of your study.
@@ -1645,17 +1660,7 @@
               reviewed.
             </h2>
           </div>
-          <div class="guided--section" id="guided-section-retry-local-generation">
-            <p class="help-text">
-              Click the button below to retry the local dataset copy generation.
-            </p>
-            <button
-              class="ui positive button soda-green-background button-starts-local-dataset-copy-generation"
-              style="width: 350px !important"
-            >
-              Retry local dataset copy generation
-            </button>
-          </div>
+
           <div
             data-component-type="dataset-tree-view-renderer"
             data-file-explorer-id="guided-generate-dataset-locally"
@@ -1702,7 +1707,7 @@
                     class="guided--dataset-content-container"
                     onclick="window.openDropdownPrompt(this, 'ps')"
                   >
-                    <h5 id="guided-pennsive-intro-ps-account" class="guided--dataset-content"></h5>
+                    <h5 id="guided-pennsieve-intro-ps-account" class="guided--dataset-content"></h5>
                     <i class="far fa-edit jump-back" style="color: #000"></i>
                   </div>
                 </div>
@@ -1720,7 +1725,7 @@
             </div>
           </div>
 
-          <div class="guided--section show-when-logged-in" id="guided-section-select-organization">
+          <div class="guided--section" id="guided-section-select-organization">
             <div class="guided--input-container">
               <h2 class="text-sub-step-title">
                 Is this the Pennsieve workspace you want to upload your dataset to?
@@ -1755,7 +1760,7 @@
               ></div>
             </div>
           </div>
-          <div class="guided--section" id="guided-section-background-services-check">
+          <div class="guided--section" id="guided-section-pennsieve-agent-check">
             <div
               data-component-type="pennsieve-agent-check-display"
               class="guided--section"

@@ -1,4 +1,12 @@
 {
+  "17.0.0": {
+    "announcements": {
+      "features": ["SODA has been updated to support the latest version of the SDS (3.0.2)."],
+      "bug-fixes": [
+        "Fixed an issue where certain datasets would fail to upload in the Update Existing dataset features of SODA."
+      ]
+    }
+  },
   "16.7.0": {
     "announcements": {
       "features": [

@@ -56,6 +56,10 @@ linux:
       to: ./file_templates
     - from: ./pennsieve-io-chain.pem
       to: ./pennsieve-io-chain.pem
+    - from: ./metadata_templates
+      to: ./metadata_templates
+    - from: ./schema
+      to: ./schema
   asar: true
   maintainer: electronjs.org
   category: Utility

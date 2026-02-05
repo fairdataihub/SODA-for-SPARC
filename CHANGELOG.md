@@ -5,16 +5,22 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## v 16.7.0 - 2025-01-19
+## v 17.0.0 - 2026-02-04
 
 ## Feature Additions:
 
-- Updated metadata fields from SDS 3.0.0 to SDS 3.0.2.
+- SODA supports 3.0.2 of the SDS specification in both Prepare Dataset Step-by-Step and Upload Dataset features.
+- The dataset description file version will include a SODA version and the version number of SODA.
+- General tightening of allowable fields. For example, DOIs must match a DOI prefix.
 - Added the ability to specify sites as belonging to both subjects and samples instead of just samples.
 - Added the ability to specify samples as being derived from both subjects or samples.
 - Added sweet alerts for metadata entities that are missing required metadata fields.
 - Added a derived samples file -> entity association page.
 - Updated contributors metadata sweet alerts to allow users to assign multiple roles.
+
+## Bug fixes:
+
+- Fixed an issue where certain datasets would fail to upload in the Update Existing dataset features of SODA.
 
 ## v 16.6.0 - 2025-12-15
 

@@ -52,6 +52,43 @@ export const removeEntityFromEntityList = (entityType, entityName) => {
   );
 };
 
+/**
+ * Rename an entity within a given entity type if it exists and the new name isn't taken.
+ * Returns true if renamed, false otherwise.
+ */
+export const renameEntity = (entityType, oldName, newName) => {
+  if (!entityType || !oldName || !newName) {
+    return false;
+  }
+
+  const state = useGlobalStore.getState();
+  if (!state.datasetEntityObj || !state.datasetEntityObj[entityType]) {
+    return false;
+  }
+
+  if (!state.datasetEntityObj[entityType][oldName]) {
+    return false;
+  }
+
+  if (state.datasetEntityObj[entityType][newName]) {
+    return false;
+  }
+
+  useGlobalStore.setState(
+    produce((s) => {
+      s.datasetEntityObj[entityType][newName] = s.datasetEntityObj[entityType][oldName];
+      delete s.datasetEntityObj[entityType][oldName];
+
+      // Update activeEntity if it pointed to the old name
+      if (s.activeEntity === oldName) {
+        s.activeEntity = newName;
+      }
+    })
+  );
+
+  return true;
+};
+
 export const getEntityNamesByEntityType = (entityType) => {
   const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
   return datasetEntityObj?.[entityType] ? Object.keys(datasetEntityObj[entityType]) : [];

@@ -31,6 +31,32 @@ export const countFilesInDatasetStructure = (datasetStructure) => {
   return totalFiles;
 };
 
+export const getFileTypesArrayInDatasetStructure = (datasetStructure) => {
+  // Collect unique file extensions from a nested dataset structure and return them sorted.
+
+  const fileTypes = new Set();
+
+  const walk = (node) => {
+    if (node.files) {
+      for (const fileObj of Object.values(node.files)) {
+        if (typeof fileObj.extension === "string") {
+          fileTypes.add(fileObj.extension);
+        }
+      }
+    }
+
+    if (node.folders) {
+      for (const folderObj of Object.values(node.folders)) {
+        walk(folderObj);
+      }
+    }
+  };
+
+  walk(datasetStructure);
+
+  return Array.from(fileTypes).sort((a, b) => a.localeCompare(b));
+};
+
 /**
  * Creates a new empty folder object with standard properties
  * @returns {Object} A new empty folder object

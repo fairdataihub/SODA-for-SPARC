@@ -1,5 +1,6 @@
 import { produce } from "immer";
 import useGlobalStore from "../globalStore";
+import { swalListDoubleAction } from "../../scripts/utils/swal-utils";
 
 export const datasetEntityStructureSlice = (set) => ({
   speciesList: [],
@@ -69,53 +70,94 @@ export const normalizeEntityId = (entityPrefix, entityId) => {
   return entityPrefix + trimmedId;
 };
 
+/**
+ * Gets entity data by ID and returns the entity plus an explicit children object.
+ * Only `subject` and `sample` entities will have populated children; other entity types return an empty children object.
+ * Return value: { entity: <entityObject>, children: { ... } }
+ */
 export const getEntityDataById = (entityId) => {
   const { datasetEntityArray } = useGlobalStore.getState();
   if (!entityId || !datasetEntityArray) {
     return null;
   }
+  const subjects = getExistingSubjects();
+  const samples = getExistingSamples();
+  const nonDerivedSamples = getExistingSamples("derived-from-subjects");
+  const derivedSamples = getExistingSamples("derived-from-samples");
+  const sites = getExistingSites();
 
   if (entityId.startsWith("sub-")) {
-    return datasetEntityArray.find((subject) => subject.id === entityId);
+    const subject = subjects.find((subject) => subject?.metadata?.subject_id === entityId);
+
+    if (!subject) return null;
+
+    const subjectsSamples = samples
+      .filter((s) => s.metadata?.subject_id === subject.id)
+      .map((s) => s.id);
+
+    const subjectsSites = sites
+      .filter((site) => {
+        const specimenId = site.metadata?.specimen_id;
+        return specimenId === subject.id || subjectsSamples.includes(specimenId);
+      })
+      .map((s) => s.id);
+
+    const children = {
+      subjectsSamples,
+      subjectsSites,
+    };
+
+    return { entityMetadata: subject, entityChildren: children };
   }
 
   if (entityId.startsWith("sam-")) {
-    for (const subject of datasetEntityArray) {
-      const sample = subject.samples.find((sample) => sample.id === entityId);
-      if (sample) {
-        return sample;
-      }
-    }
+    const sample = getExistingSamples().find((s) => s.id === entityId);
+    if (!sample) return null;
+    const samplesDerivedFromSample = getExistingSamples("derived-from-samples")
+      .filter((s) => s.metadata?.was_derived_from === sample.id)
+      .map((s) => s.id);
+
+    const sampleSites = getExistingSites()
+      .filter((site) => {
+        const specimenId = site.metadata?.specimen_id;
+        return specimenId === sample.id || samplesDerivedFromSample.includes(specimenId);
+      })
+      .map((s) => s.id);
+
+    const children = {
+      samplesDerivedFromSample,
+      sampleSites,
+    };
+
+    return { entityMetadata: sample, entityChildren: children };
   }
+
   if (entityId.startsWith("site-")) {
-    // Look through all subjects and their sites, then all samples and their sites
-    for (const subject of datasetEntityArray) {
-      // Check subject sites first
+    for (const subject of subjects) {
       if (subject.subjectSites) {
         const site = subject.subjectSites.find((site) => site.id === entityId);
-        if (site) {
-          return site;
-        }
+        if (site) return { entityMetadata: site, entityChildren: {} };
       }
-
-      // Then check sample sites
       if (subject.samples) {
         for (const sample of subject.samples) {
           if (sample.sites) {
             const site = sample.sites.find((site) => site.id === entityId);
-            if (site) {
-              return site;
-            }
+            if (site) return { entityMetadata: site, entityChildren: {} };
           }
         }
       }
     }
+    return null;
   }
 
   if (entityId.startsWith("perf-")) {
     const performanceList = useGlobalStore.getState()["performanceList"];
     if (performanceList) {
-      return performanceList.find((performance) => performance.performanceId === entityId);
+      const perf =
+        performanceList.find((performance) => performance.performanceId === entityId) ||
+        performanceList.find((performance) => performance.performance_id === entityId);
+      if (!perf) return null;
+      return { entityMetadata: perf, entityChildren: {} };
     }
   }
 
@@ -228,12 +270,18 @@ export const addSample = (subjectId, parentSampleId, sampleId, metadata = {}) =>
   );
 };
 
-export const deleteSampleFromSubject = (subjectId, sampleId) => {
+export const deleteSample = (sampleId) => {
   useGlobalStore.setState(
     produce((state) => {
-      const subject = state.datasetEntityArray.find((s) => s.id === subjectId); // Changed from subjectId to id
-      if (subject && subject.samples) {
-        subject.samples = subject.samples.filter((sample) => sample.id !== sampleId); // Changed from sampleId to id
+      // Find the sample across all subjects and remove it
+      for (const subject of state.datasetEntityArray) {
+        if (subject.samples) {
+          const sampleIndex = subject.samples.findIndex((s) => s.id === sampleId);
+          if (sampleIndex !== -1) {
+            subject.samples.splice(sampleIndex, 1);
+            return;
+          }
+        }
       }
     })
   );

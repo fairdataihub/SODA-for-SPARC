@@ -3,9 +3,8 @@ import { IconUser, IconFlask, IconPin, IconEdit, IconPlus, IconTrash } from "@ta
 import { useMemo, useCallback, memo } from "react";
 import {
   deleteSubject,
-  deleteSampleFromSubject,
+  deleteSample,
   deleteSite,
-  modifySampleSiteId,
   setActiveFormType,
   setEntityBeingAddedParentSubject,
   setEntityBeingAddedParentSample,
@@ -234,7 +233,7 @@ const EntityHierarchyRenderer = ({
   );
 
   const handleDeleteSample = useCallback(
-    (sample, subject) => {
+    (sample) => {
       const sampleId = sample.metadata.sample_id;
 
       // If the sample being deleted is currently selected, clear the form
@@ -251,7 +250,7 @@ const EntityHierarchyRenderer = ({
         setupFormForEntityType(null);
       }
 
-      return deleteSampleFromSubject(subject.id, sample.id);
+      return deleteSample(sampleId);
     },
     [selectedHierarchyEntity, setupFormForEntityType]
   );
@@ -535,7 +534,7 @@ const EntityHierarchyRenderer = ({
                         entityData={sample}
                         parentEntityData={subject}
                         onEdit={handleEntitySelect}
-                        onDelete={() => handleDeleteSample(sample, subject)}
+                        onDelete={() => handleDeleteSample(sample)}
                         onSelect={handleEntitySelect}
                         isSampleParent={sample.id === currentSelectedHierarchyEntityParentSample}
                       >
@@ -588,7 +587,7 @@ const EntityHierarchyRenderer = ({
                               entityData={derivedSample}
                               parentEntityData={{ sample, subject }}
                               onEdit={handleEntitySelect}
-                              onDelete={() => handleDeleteSample(derivedSample, subject)}
+                              onDelete={() => handleDeleteSample(derivedSample)}
                               onSelect={handleEntitySelect}
                             >
                               {/* Derived Sample Sites */}

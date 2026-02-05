@@ -85,7 +85,11 @@ window.handleSideBarTabClick = async (id, section) => {
     );
     if (!leaveUploadDataset) return;
     window.resetCurationTabs();
+  } else if (uploadDone) {
+    window.resetCurationTabs();
   }
+
+  window.resetCurationTabs();
 
   // Always set activeTab to section, not id
   setActiveSidebarTab(section);
@@ -113,7 +117,13 @@ window.handleSideBarTabClick = async (id, section) => {
   }
 
   // --- Guided mode section ---
-  if (sectionId === "guided_mode-section") {
+  if (
+    sectionId === "guided_mode-section" ||
+    sectionId === "documentation-section" ||
+    sectionId === "account-section" ||
+    sectionId === "contact-us-section" ||
+    sectionId === "about-us-section"
+  ) {
     // Block transition if upload in progress
     if (document.getElementById("returnButton") !== null) {
       Swal.fire({

@@ -17,13 +17,17 @@ import {
   CONTRIBUTORS_REGEX,
   affiliationRorIsValid,
 } from "../../metadata/contributors/contributorsValidation";
-import { countFilesInDatasetStructure } from "../../../utils/datasetStructure";
+import {
+  countFilesInDatasetStructure,
+  getFileTypesArrayInDatasetStructure,
+} from "../../../utils/datasetStructure";
 import { bytesToReadableSize } from "../../generateDataset/generate";
 import client from "../../../client";
 import { swalListSingleAction } from "../../../utils/swal-utils";
 
 import { getDropDownState } from "../../../../stores/slices/dropDownSlice";
 import { isCheckboxCardChecked } from "../../../../stores/slices/checkboxCardSlice";
+import { sortContributorRoles } from "../../metadata/contributors/contributors";
 
 export const savePagePrepareMetadata = async (pageBeingLeftID) => {
   const errorArray = [];
@@ -109,11 +113,9 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     }
   }
 
-  if (
-    pageBeingLeftID === "guided-subjects-metadata-tab" ||
-    pageBeingLeftID === "guided-manual-dataset-entity-and-metadata-tab"
-  ) {
+  if (pageBeingLeftID === "guided-subjects-metadata-tab") {
     const subjects = getExistingSubjects();
+
     // Check for subjects with invalid protocol URL or DOI format
     // (This is to throw an error for old progress files that may have invalid protocol formats)
     const subjectsWithInvalidProtocol = subjects
@@ -165,10 +167,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       });
       throw errorArray;
     }
-  }
 
-  if (pageBeingLeftID === "guided-subjects-metadata-tab") {
-    const subjects = getExistingSubjects();
     const samplesDerivedFromSubjects = getExistingSamples("derived-from-subjects");
 
     const subjectsMetadata = subjects.map((subject) => {
@@ -225,10 +224,8 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     window.sodaJSONObj["dataset_metadata"]["subjects"] = subjectsMetadata;
   }
 
-  if (
-    pageBeingLeftID === "guided-subjects-metadata-tab" ||
-    pageBeingLeftID === "guided-manual-dataset-entity-and-metadata-tab"
-  ) {
+  if (pageBeingLeftID === "guided-samples-metadata-tab") {
+    // Prepare the samples metadata
     const samples = getExistingSamples();
 
     // Check for samples with invalid protocol URL or DOI format
@@ -256,19 +253,17 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       });
       throw errorArray;
     }
-  }
-
-  if (pageBeingLeftID === "guided-samples-metadata-tab") {
-    // Prepare the samples metadata
-    const samples = getExistingSamples();
 
     const samplesMetadata = samples.map((sample) => {
       const metadata = { ...sample.metadata };
 
       // Check if the sample has any files in the dataset-entity-obj
       const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
-      const sampleFiles = datasetEntityObj.samples?.[metadata.sample_id] || {};
-      const hasFiles = Object.keys(sampleFiles).length > 0;
+      const nonDerivativeSampleFiles = datasetEntityObj?.samples || {};
+      const derivedSampleFiles = datasetEntityObj?.["derived-samples"] || {};
+      const sampleFiles = { ...nonDerivativeSampleFiles, ...derivedSampleFiles };
+      const thisSamplesFiles = sampleFiles[metadata.sample_id] || {};
+      const hasFiles = Object.keys(thisSamplesFiles).length > 0;
 
       // Set metadata_only field based on whether the sample has associated files
       metadata.metadata_only = hasFiles ? "no" : "yes";
@@ -315,21 +310,44 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     }
 
     // Prepare the submission metadata
+    // Ensure milestone_completion_date is stored as an ISO 8601 string (if provided)
+    let milestoneCompletionIso = "";
+    if (milestoneCompletionDate) {
+      try {
+        const dateObj =
+          milestoneCompletionDate instanceof Date
+            ? milestoneCompletionDate
+            : new Date(milestoneCompletionDate);
+        if (!isNaN(dateObj)) {
+          milestoneCompletionIso = dateObj.toISOString();
+        }
+      } catch (err) {
+        // Fallback: leave empty string if it cannot be parsed
+        milestoneCompletionIso = "";
+      }
+    }
+
     window.sodaJSONObj["dataset_metadata"]["submission"] = {
       consortium_data_standard: "SPARC", // Hardcoded for now (SODA only supports SPARC data standard)
       funding_consortium: fundingConsortium,
       award_number: awardNumber,
       milestone_achieved: milestonesAchieved,
-      milestone_completion_date: milestoneCompletionDate,
+      milestone_completion_date: milestoneCompletionIso,
     };
     // Save the funding agency name for the dataset_description metadata
     window.sodaJSONObj["funding_agency"] = fundingAgency;
   }
 
   if (pageBeingLeftID === "guided-contributors-tab") {
+    const contributorInformation = (window.sodaJSONObj["dataset_contributors"] || []).map(
+      (contributor) => ({
+        ...contributor,
+        contributor_roles: sortContributorRoles(contributor.contributor_roles || []),
+      })
+    );
+
     // Make sure the user has added at least one contributor
-    const contributors = window.sodaJSONObj["dataset_contributors"];
-    if (contributors.length === 0) {
+    if (contributorInformation.length === 0) {
       errorArray.push({
         type: "notyf",
         message: "Please add at least one contributor to your dataset",
@@ -338,7 +356,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     }
 
     // Make sure one and only one Principal Investigator is assigned
-    const principalInvestigators = contributors.filter((contributor) =>
+    const principalInvestigators = contributorInformation.filter((contributor) =>
       contributor.contributor_roles.includes("PrincipalInvestigator")
     );
     if (principalInvestigators.length === 0) {
@@ -358,7 +376,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     }
 
     // For contributors that were assigned the "Creator" role, make sure they have at least one other role too
-    const creatorsWithNoOtherRole = contributors.filter(
+    const creatorsWithNoOtherRole = contributorInformation.filter(
       (contributor) =>
         contributor.contributor_roles.includes("Creator") &&
         contributor.contributor_roles.length === 1
@@ -371,7 +389,6 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       throw errorArray;
     }
 
-    const contributorInformation = window.sodaJSONObj["dataset_contributors"] || [];
     // Validate the contributor names match the Regular Expression
     contributorInformation.forEach((contributor) => {
       if (!CONTRIBUTORS_REGEX.test(contributor["contributor_name"])) {
@@ -388,6 +405,9 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
         });
       }
     });
+
+    // Save the validated contributor information
+    window.sodaJSONObj["dataset_contributors"] = contributorInformation;
 
     if (errorArray.length > 0) {
       throw errorArray;
@@ -428,7 +448,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
   }
 
   if (pageBeingLeftID === "guided-create-description-metadata-tab") {
-    const metadataVersion = "3.0.0";
+    const metadataVersion = "3.0.2";
     const currentSodaVersion = useGlobalStore.getState().appVersion || "unknown";
     // Get values from digital_metadata
     const title = getGuidedDatasetName();
@@ -446,6 +466,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     // Get keywords
     const keywordArray = window.getTagsFromTagifyElement(guidedDatasetKeywordsTagify);
     // Get study description inputs
+    const studyDescriptionInput = document.getElementById("guided-ds-study-description");
     const studyPurposeInput = document.getElementById("guided-ds-study-purpose");
     const studyDataCollectionInput = document.getElementById("guided-ds-study-data-collection");
     const studyPrimaryConclusionInput = document.getElementById(
@@ -453,23 +474,32 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     );
     const studyCollectionTitleInput = document.getElementById("guided-ds-study-collection-title");
 
+    const studyDescription = studyDescriptionInput.value.trim() || "";
+    // Save the study description as is (to be used in the openPage when re-opening the page)
+    window.sodaJSONObj["dataset-description"] = studyDescription;
+
     const studyPurpose = studyPurposeInput.value.trim() || "";
     const studyDataCollection = studyDataCollectionInput.value.trim() || "";
     const studyPrimaryConclusion = studyPrimaryConclusionInput.value.trim() || "";
     const studyCollectionTitle = studyCollectionTitleInput.value.trim() || "";
 
-    let descriptionArray = [];
+    // Get tagify study fields
+    const studyOrganSystemTags = window.getTagsFromTagifyElement(guidedStudyOrganSystemsTagify);
+    const studyApproachTags = window.getTagsFromTagifyElement(guidedStudyApproachTagify);
+    const studyTechniqueTags = window.getTagsFromTagifyElement(guidedStudyTechniquesTagify);
 
-    studyPurpose && descriptionArray.push("Study Purpose: " + studyPurpose);
-    studyDataCollection && descriptionArray.push("Data Collection: " + studyDataCollection);
-    studyPrimaryConclusion &&
-      descriptionArray.push("Primary Conclusion: " + studyPrimaryConclusion);
+    let studyDescriptionFormattedForDatasetDescription;
 
-    if (descriptionArray.length > 0) {
+    // Use the study description as the dataset description. If the user provided a study description,
+    // append the number of files and the dataset size to the end of it.
+    if (studyDescription !== "") {
       const numberOfFilesInDataset = countFilesInDatasetStructure(
         window.datasetStructureJSONObj?.["folders"]?.["data"]
       );
-      descriptionArray.push("Number of Files in Dataset: " + numberOfFilesInDataset);
+
+      const datasetFileTypesArray = getFileTypesArrayInDatasetStructure(
+        window.datasetStructureJSONObj?.["folders"]?.["data"]
+      ).join(", ");
       // Get dataset size
       const localDatasetSizeReq = await client.post(
         "/curate_datasets/dataset_size",
@@ -478,14 +508,19 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       );
       const localDatasetSizeInBytes = localDatasetSizeReq.data.dataset_size;
       const formattedDatasetSize = bytesToReadableSize(localDatasetSizeInBytes);
-      descriptionArray.push("Dataset Size: " + formattedDatasetSize);
-    }
-    const datasetDescription = descriptionArray.join("\n\n");
 
-    // Get tagify study fields
-    const studyOrganSystemTags = window.getTagsFromTagifyElement(guidedStudyOrganSystemsTagify);
-    const studyApproachTags = window.getTagsFromTagifyElement(guidedStudyApproachTagify);
-    const studyTechniqueTags = window.getTagsFromTagifyElement(guidedStudyTechniquesTagify);
+      const descriptionParts = [studyDescription];
+      if (studyTechniqueTags.length > 0) {
+        descriptionParts.push("Techniques used: " + studyTechniqueTags.join(", "));
+      }
+      descriptionParts.push(`Number of files in dataset: ${numberOfFilesInDataset}`);
+      descriptionParts.push(`File formats in dataset: ${datasetFileTypesArray}`);
+      descriptionParts.push(`Dataset size: ${formattedDatasetSize}`);
+
+      studyDescriptionFormattedForDatasetDescription = descriptionParts.join("\n");
+    } else {
+      studyDescriptionFormattedForDatasetDescription = "";
+    }
 
     // Get acknowledgments and funding
     const acknowledgmentsInput = document.getElementById("guided-ds-acknowledgments");
@@ -521,7 +556,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       standards_information: [
         {
           data_standard: "SPARC",
-          data_standard_version: "3.0.2",
+          data_standard_version: "2025.05.01",
         },
         {
           data_standard: "SODA Version",
@@ -531,7 +566,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       basic_information: {
         title,
         subtitle,
-        description: datasetDescription,
+        description: studyDescriptionFormattedForDatasetDescription,
         keywords: keywordArray,
         funding: fundingArray,
         acknowledgments: acknowledgments,

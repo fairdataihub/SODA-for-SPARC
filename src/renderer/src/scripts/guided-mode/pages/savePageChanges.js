@@ -86,6 +86,11 @@ window.savePageChanges = async (pageBeingLeftID) => {
   const errorArray = [];
   try {
     //save changes to the current page
+    const datasetEntityArray = useGlobalStore.getState().datasetEntityArray;
+    window.sodaJSONObj["dataset-entity-array"] = datasetEntityArray;
+    // Save progress early because a lot of work managing entities could have happened here
+    // and we don't want the user to lost it.
+    await guidedSaveProgress();
 
     // Check if the page being left is part of a page set
     const pageBeingLeftElement = document.getElementById(pageBeingLeftID);
@@ -577,7 +582,12 @@ window.savePageChanges = async (pageBeingLeftID) => {
     await savePagePrepareMetadata(pageBeingLeftID);
     await savePagePennsieveDetails(pageBeingLeftID);
     await savePageGenerateDataset(pageBeingLeftID);
-    saveEntityFileMappingChanges();
+
+    const datasetEntityArrayCopy = useGlobalStore.getState().datasetEntityArray;
+    window.sodaJSONObj["dataset-entity-array"] = datasetEntityArrayCopy;
+
+    const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
+    window.sodaJSONObj["dataset-entity-obj"] = datasetEntityObj;
 
     if (pageBeingLeftID === "guided-entity-addition-method-selection-tab") {
       const userSelectedAddEntitiesFromSpreadsheet = isCheckboxCardChecked(
@@ -621,15 +631,4 @@ window.savePageChanges = async (pageBeingLeftID) => {
   }
 
   guidedSetNavLoadingState(false);
-};
-
-/**
- * Save entity file mapping changes to the SODA JSON object
- */
-export const saveEntityFileMappingChanges = () => {
-  // Get the current datasetEntityObj from the store
-  const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
-
-  // Save the entire datasetEntityObj to window.sodaJSONObj
-  window.sodaJSONObj["dataset-entity-obj"] = datasetEntityObj;
 };

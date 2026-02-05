@@ -1098,15 +1098,14 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
 
       showHideDropdownButtons("account", "show");
       confirm_click_account_function();
-      updateBfAccountList();
+      window.updateBfAccountList();
 
-      // If the clicked button has the data attribute "reset-guided-mode-page" and the value is "true"
-      // then reset the guided mode page
-      if (ev?.getAttribute("data-reset-guided-mode-page") == "true") {
-        // Get the current page that the user is on in the guided mode
-        const currentPage = CURRENT_PAGE.id;
-        if (currentPage) {
-          await window.openPage(currentPage);
+      // If the user is on a current guided mode page, then reload that page
+      if (window.CURRENT_PAGE?.id) {
+        const pageToReloadId = window.CURRENT_PAGE.id;
+        await window.openPage(pageToReloadId);
+        if (pageToReloadId === "guided-select-starting-point-tab") {
+          document.getElementById("guided-button-resume-progress-file").click();
         }
       }
     } catch (error) {
@@ -1194,13 +1193,12 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
       confirm_click_account_function();
       window.updateBfAccountList();
 
-      // If the clicked button has the data attribute "reset-guided-mode-page" and the value is "true"
-      // then reset the guided mode page
-      if (ev?.getAttribute("data-reset-guided-mode-page") == "true") {
-        // Get the current page that the user is on in the guided mode
-        const currentPage = window.CURRENT_PAGE.id;
-        if (currentPage) {
-          await window.openPage(currentPage);
+      // If the user is on a current guided mode page, then reload that page
+      if (window.CURRENT_PAGE?.id) {
+        const pageToReloadId = window.CURRENT_PAGE.id;
+        await window.openPage(pageToReloadId);
+        if (pageToReloadId === "guided-select-starting-point-tab") {
+          document.getElementById("guided-button-resume-progress-file").click();
         }
       }
     } catch (error) {
@@ -2050,7 +2048,14 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           $(".ps-organization-span").html(window.bfOrganization);
           // set the permissions content to an empty string
           await window.loadDefaultAccount();
-
+          // If the user is on a current guided mode page, then reload that page
+          if (window.CURRENT_PAGE?.id) {
+            const pageToReloadId = window.CURRENT_PAGE.id;
+            await window.openPage(pageToReloadId);
+            if (pageToReloadId === "guided-select-starting-point-tab") {
+              document.getElementById("guided-button-resume-progress-file").click();
+            }
+          }
           // confirm_click_function();
 
           return true;
@@ -2071,12 +2076,16 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       // reset the current owner span in the manage dataset make pi owner of a dataset tab
       $(".current-permissions").html("None");
 
-      // If the button that triggered the organization has the class
-      // guided-change-workspace (from guided mode), handle changes based on the ev id
-      // otherwise, reset the FFM UI based on the ev class
-      ev.classList.contains("guided-change-workspace")
-        ? window.handleGuidedModeOrgSwitch(ev)
-        : window.resetFFMUI(ev);
+      // If the user is on a current guided mode page, then reload that page
+      if (window.CURRENT_PAGE?.id) {
+        const pageToReloadId = window.CURRENT_PAGE.id;
+        await window.openPage(pageToReloadId);
+        if (pageToReloadId === "guided-select-starting-point-tab") {
+          document.getElementById("guided-button-resume-progress-file").click();
+        }
+      } else {
+        window.resetFFMUI(ev?.target || null);
+      }
 
       // reset the dataset list
       window.datasetList = [];
