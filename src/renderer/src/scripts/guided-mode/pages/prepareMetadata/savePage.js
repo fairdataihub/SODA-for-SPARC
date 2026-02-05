@@ -113,11 +113,9 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     }
   }
 
-  if (
-    pageBeingLeftID === "guided-subjects-metadata-tab" ||
-    pageBeingLeftID === "guided-manual-dataset-entity-and-metadata-tab"
-  ) {
+  if (pageBeingLeftID === "guided-subjects-metadata-tab") {
     const subjects = getExistingSubjects();
+
     // Check for subjects with invalid protocol URL or DOI format
     // (This is to throw an error for old progress files that may have invalid protocol formats)
     const subjectsWithInvalidProtocol = subjects
@@ -169,10 +167,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       });
       throw errorArray;
     }
-  }
 
-  if (pageBeingLeftID === "guided-subjects-metadata-tab") {
-    const subjects = getExistingSubjects();
     const samplesDerivedFromSubjects = getExistingSamples("derived-from-subjects");
 
     const subjectsMetadata = subjects.map((subject) => {
@@ -229,10 +224,8 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     window.sodaJSONObj["dataset_metadata"]["subjects"] = subjectsMetadata;
   }
 
-  if (
-    pageBeingLeftID === "guided-subjects-metadata-tab" ||
-    pageBeingLeftID === "guided-manual-dataset-entity-and-metadata-tab"
-  ) {
+  if (pageBeingLeftID === "guided-samples-metadata-tab") {
+    // Prepare the samples metadata
     const samples = getExistingSamples();
 
     // Check for samples with invalid protocol URL or DOI format
@@ -260,11 +253,6 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       });
       throw errorArray;
     }
-  }
-
-  if (pageBeingLeftID === "guided-samples-metadata-tab") {
-    // Prepare the samples metadata
-    const samples = getExistingSamples();
 
     const samplesMetadata = samples.map((sample) => {
       const metadata = { ...sample.metadata };
