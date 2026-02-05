@@ -34,5 +34,4 @@ dependencies:
   - requests == 2.31.0
   - backports.tarfile
   - setuptools == 71.0.4
-  - --extra-index-url https://test.pypi.org/simple/
-  - pysodafair == 0.1.73
+  - pysodafair == 0.1.68
