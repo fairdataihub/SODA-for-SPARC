@@ -49,8 +49,8 @@ jobs:
         id: get_version
         run: echo "VERSION=$(node -p -e "require('./package.json').version")" >> $GITHUB_ENV
 
-      - name: Sign files with Trusted Signing V1.1
-        uses: azure/trusted-signing-action@v0.5.1
+      - name: Sign Files with Artifact Signing Service
+        uses: azure/artifact-signing-action@v1
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
