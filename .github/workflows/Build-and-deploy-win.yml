@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - staging
+      - code-sign-update
 jobs:
   deploy-on-windows:
     runs-on: windows-latest
