@@ -62,7 +62,10 @@ export const savePageCurationPreparation = async (pageBeingLeftID) => {
       errorArray.push({ type: "notyf", message: "Please enter a dataset name." });
     }
     if (!datasetSubtitleInput) {
-      errorArray.push({ type: "notyf", message: "Please enter a dataset subtitle." });
+      errorArray.push({
+        type: "notyf",
+        message: "Please enter a dataset brief description of your dataset.",
+      });
     }
 
     if (errorArray.length > 0) {
@@ -189,5 +192,71 @@ export const savePageCurationPreparation = async (pageBeingLeftID) => {
 
     window.sodaJSONObj["digital-metadata"]["name"] = datasetNameInput;
     window.log.info("[guided-name-subtitle-tab] Finalized dataset name:", datasetNameInput);
+  }
+
+  if (pageBeingLeftID === "guided-data-standard-selection-tab") {
+    console.log("Validating Data Standard Selection...");
+    const sparcDatasetStandardChecked = isCheckboxCardChecked("sparc-data-standard");
+    const healRejoinDatasetStandardChecked = isCheckboxCardChecked("heal-rejoin-data-standard");
+    const healPrecisionDatasetStandardChecked = isCheckboxCardChecked(
+      "heal-precision-data-standard"
+    );
+    if (
+      !sparcDatasetStandardChecked &&
+      !healRejoinDatasetStandardChecked &&
+      !healPrecisionDatasetStandardChecked
+    ) {
+      errorArray.push({
+        type: "notyf",
+        message: "Please select a dataset standard to use for organizing your dataset.",
+      });
+      throw errorArray;
+    }
+
+    const currentSodaVersion = useGlobalStore.getState().appVersion || "";
+
+    const sparcStandardInfo = {
+      data_standard: "SPARC",
+      data_standard_version: "2025.05.01",
+    };
+    const healStandardInfo = {
+      data_standard: "HEAL",
+      data_standard_version: "2024.10.01",
+    };
+    const sodaStandardInfo = {
+      data_standard: "SODA",
+      data_standard_version: currentSodaVersion,
+    };
+
+    if (sparcDatasetStandardChecked) {
+      window.sodaJSONObj["data-standard"] = "SPARC";
+      window.sodaJSONObj["standards-information"] = [sparcStandardInfo, sodaStandardInfo];
+    }
+
+    if (healRejoinDatasetStandardChecked) {
+      window.sodaJSONObj["data-standard"] = "HEAL-REJOIN";
+      window.sodaJSONObj["standards-information"] = [
+        sparcStandardInfo,
+        healStandardInfo,
+        {
+          data_standard: "HEAL-REJOIN",
+          data_standard_version: "2025.01.14",
+        },
+        sodaStandardInfo,
+      ];
+    }
+
+    if (healPrecisionDatasetStandardChecked) {
+      window.sodaJSONObj["data-standard"] = "HEAL-PRECISION";
+      window.sodaJSONObj["standards-information"] = [
+        sparcStandardInfo,
+        healStandardInfo,
+        {
+          data_standard: "HEAL-PRECISION",
+          data_standard_version: "2025.02.05",
+        },
+        sodaStandardInfo,
+      ];
+    }
   }
 };

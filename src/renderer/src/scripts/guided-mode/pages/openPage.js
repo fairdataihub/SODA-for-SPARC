@@ -39,7 +39,7 @@ import {
   filterRemovedFilesFromDatasetEntityObj,
   setEntityType,
 } from "../../../stores/slices/datasetEntitySelectorSlice.js";
-import { setDatasetType } from "../../../stores/slices/guidedModeSlice.js";
+import { setDataStandard, setDatasetType } from "../../../stores/slices/guidedModeSlice.js";
 import { setSelectedHierarchyEntity } from "../../../stores/slices/datasetContentSelectorSlice.js";
 import { guidedSetNavLoadingState } from "./navigationUtils/pageLoading.js";
 import Swal from "sweetalert2";
@@ -229,6 +229,9 @@ window.openPage = async (targetPageID) => {
     const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
     const filteredDatasetEntityObj = filterRemovedFilesFromDatasetEntityObj(savedDatasetEntityObj);
     setDatasetEntityObj(filteredDatasetEntityObj);
+
+    // Set the data standard in the zustand store based on the value in the SODA JSON object
+    setDataStandard(window.sodaJSONObj["data-standard"] || null);
 
     handleNextButtonVisibility(targetPageID);
     handleBackButtonVisibility(targetPageID);

@@ -2,6 +2,9 @@ import { useMemo, useCallback, useRef, useEffect } from "react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import ExternalLink from "../../buttons/ExternalLink";
+import sparcLogo from "../../../assets/logos/sparc-logo-primary.png";
+import healRejoinLogo from "../../../assets/logos/heal-rejoin-logo-primary.png";
+import healPrecisionLogo from "../../../assets/logos/heal-precision-logo-primary.png";
 import {
   IconInfoCircle,
   IconDeviceFloppy,
@@ -24,6 +27,7 @@ import {
   Paper,
   Box,
   Tooltip,
+  Center,
   Badge,
   Title,
   Divider,
@@ -61,10 +65,11 @@ import SodaPaper from "../../utils/ui/SodaPaper";
 import SodaGreenPaper from "../../utils/ui/SodaGreenPaper";
 import { getExistingSamples } from "../../../stores/slices/datasetEntityStructureSlice";
 import InstructionsTowardsLeftContainer from "../../utils/ui/InstructionsTowardsLeftContainer";
-import { OptionalFieldsNotice } from "./utils";
+import { OptionalFieldsNotice, AdditionalMetadataFieldDivider } from "./utils";
 import DropDownNote from "../../utils/ui/DropDownNote";
 import InfoList from "../../shared/InfoList";
 import { formatMMDDYYYY, parseMMDDYYYY } from "../../../scripts/utils/date-utils";
+
 /**
  * EntityMetadataForm Component
  *
@@ -75,7 +80,6 @@ const EntityMetadataForm = () => {
   // Cache to prevent redundant updates
   const previousValueRef = useRef({});
 
-  // Subscribe to global store state with individual selectors for optimal re-renders
   const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
 
   const currentSelectedHierarchyEntityParentSubject = useGlobalStore(
@@ -86,6 +90,8 @@ const EntityMetadataForm = () => {
   );
   const activeFormType = useGlobalStore((state) => state.activeFormType);
   const temporaryEntityMetadata = useGlobalStore((state) => state.temporaryEntityMetadata || {});
+  const dataStandard = useGlobalStore((state) => state.dataStandard);
+  console.log("EntityMetadataForm dataStandard:", dataStandard);
   const entityBeingAddedParentSubject = useGlobalStore(
     (state) => state.entityBeingAddedParentSubject
   );
@@ -815,6 +821,70 @@ const EntityMetadataForm = () => {
                       : undefined
                   }
                 />
+                {dataStandard && dataStandard !== "SPARC" && (
+                  <>
+                    {AdditionalMetadataFieldDivider(dataStandard)}
+
+                    {dataStandard === "HEAL-REJOIN" && (
+                      <>
+                        <TextInput
+                          label="Supplier"
+                          description="The supplier of the subject"
+                          placeholder=""
+                          value={getMetadataValue("supplier", "")}
+                          onChange={(e) => handleChange("supplier", e.target.value)}
+                        />
+                        <TextInput
+                          label="Test Name"
+                          description="The name the test performed on the subject"
+                          placeholder=""
+                          value={getMetadataValue("test_name", "")}
+                          onChange={(e) => handleChange("test_name", e.target.value)}
+                        />
+                        <TextInput
+                          label="Assessment Type"
+                          description="The type of assessment performed on the subject"
+                          placeholder=""
+                          value={getMetadataValue("assessment_type", "")}
+                          onChange={(e) => handleChange("assessment_type", e.target.value)}
+                        />
+                        <TextInput
+                          label="Assessment Measure"
+                          description="The measure used in the assessment performed on the subject"
+                          placeholder=""
+                          value={getMetadataValue("assessment_measure", "")}
+                          onChange={(e) => handleChange("assessment_measure", e.target.value)}
+                        />
+                      </>
+                    )}
+
+                    {dataStandard === "HEAL-PRECISION" && (
+                      <>
+                        <TextInput
+                          label="BMI"
+                          description="The body mass index of the subject"
+                          placeholder=""
+                          value={getMetadataValue("bmi", "")}
+                          onChange={(e) => handleChange("bmi", e.target.value)}
+                        />
+                        <TextInput
+                          label="Height"
+                          description="The height of the subject"
+                          placeholder=""
+                          value={getMetadataValue("height", "")}
+                          onChange={(e) => handleChange("height", e.target.value)}
+                        />
+                        <TextInput
+                          label="Cause of Death"
+                          description="The cause of death for the subject, if applicable"
+                          placeholder=""
+                          value={getMetadataValue("cause_of_death", "")}
+                          onChange={(e) => handleChange("cause_of_death", e.target.value)}
+                        />
+                      </>
+                    )}
+                  </>
+                )}
               </>
             )}
           </Stack>
@@ -1177,6 +1247,7 @@ const EntityMetadataForm = () => {
  */
 const EntityMetadataPage = ({ entityType }) => {
   const showFullMetadataFormFields = useGlobalStore((state) => state.showFullMetadataFormFields);
+
   const generateSelectTextByEntityType = (entityType) => {
     switch (entityType) {
       case "subjects":

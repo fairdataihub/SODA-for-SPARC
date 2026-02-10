@@ -449,7 +449,6 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
 
   if (pageBeingLeftID === "guided-create-description-metadata-tab") {
     const metadataVersion = "3.0.2";
-    const currentSodaVersion = useGlobalStore.getState().appVersion || "unknown";
     // Get values from digital_metadata
     const title = getGuidedDatasetName();
     const subtitle = getGuidedDatasetSubtitle();
@@ -548,21 +547,13 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
 
     const datasetType = window.sodaJSONObj["dataset-type"];
     const contributorInformation = window.sodaJSONObj["dataset_contributors"] || [];
+    const standardsInformation = window.sodaJSONObj["standards-information"] || [];
 
     // Populate dataset_metadata > dataset_description
     window.sodaJSONObj["dataset_metadata"]["dataset_description"] = {
       metadata_version: metadataVersion,
       dataset_type: datasetType,
-      standards_information: [
-        {
-          data_standard: "SPARC",
-          data_standard_version: "2025.05.01",
-        },
-        {
-          data_standard: "SODA Version",
-          data_standard_version: currentSodaVersion,
-        },
-      ],
+      standards_information: standardsInformation,
       basic_information: {
         title,
         subtitle,

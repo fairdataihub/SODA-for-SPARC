@@ -13,6 +13,9 @@ import {
   IconFolderSymlink,
   IconReplace,
 } from "@tabler/icons-react";
+import sparcLogo from "../../assets/logos/sparc-logo-primary.png";
+import healRejoinLogo from "../../assets/logos/heal-rejoin-logo-primary.png";
+import healPrecisionLogo from "../../assets/logos/heal-precision-logo-primary.png";
 
 export const checkboxCardSlice = (set) => ({
   cardData: {
@@ -30,6 +33,40 @@ export const checkboxCardSlice = (set) => ({
       Icon: IconFolderSymlink,
       mutuallyExclusiveWithCards: ["dataset-upload-new-dataset"],
       checked: false,
+    },
+
+    "sparc-data-standard": {
+      title: "SPARC Dataset Standard",
+      description:
+        "Organize your dataset using the SPARC standard (default SPARC templates and structure)",
+      Icon: IconCheckupList,
+      image: sparcLogo,
+      mutuallyExclusiveWithCards: ["heal-rejoin-data-standard", "heal-precision-data-standard"],
+      checked: false,
+      configValue: "dataset-standard",
+      configValueState: "sparc",
+    },
+
+    "heal-rejoin-data-standard": {
+      title: "HEAL-REJOIN Dataset Standard",
+      description: "Organize your dataset following the HEAL REJOIN specification",
+      Icon: IconCheckupList,
+      image: healRejoinLogo,
+      mutuallyExclusiveWithCards: ["sparc-data-standard", "heal-precision-data-standard"],
+      checked: false,
+      configValue: "dataset-standard",
+      configValueState: "heal-rejoin",
+    },
+
+    "heal-precision-data-standard": {
+      title: "HEAL-Precision Dataset Standard",
+      description: "Organize your dataset following the HEAL Precision specification",
+      Icon: IconCheckupList,
+      image: healPrecisionLogo,
+      mutuallyExclusiveWithCards: ["sparc-data-standard", "heal-rejoin-data-standard"],
+      checked: false,
+      configValue: "dataset-standard",
+      configValueState: "heal-precision",
     },
     "replace-file-card": {
       title: "Replace files",

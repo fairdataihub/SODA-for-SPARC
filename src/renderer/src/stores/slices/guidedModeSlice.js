@@ -5,6 +5,7 @@ export const guidedModeSlice = (set) => ({
   guidedDatasetSubtitle: "",
   datasetType: null,
   hiddenGuidedModeSections: [],
+  dataStandard: null,
 });
 
 export const setGuidedDatasetName = (datasetName) => {
@@ -34,4 +35,9 @@ export const removeHiddenGuidedModeSection = (sectionId) => {
       state.hiddenGuidedModeSections.splice(index, 1);
     }
   });
+};
+
+export const setDataStandard = (dataStandard) => {
+  console.log("Setting store data standard to:", dataStandard);
+  useGlobalStore.setState({ dataStandard });
 };

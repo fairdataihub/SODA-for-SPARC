@@ -4,6 +4,7 @@ import ExternalLink from "../buttons/ExternalLink";
 import IconButton from "../buttons/IconButton";
 import NavigationButton from "../buttons/Navigation";
 import NameAndSubtitlePage from "../pages/NameAndSubtitle";
+import DataStandardSelectionPage from "../pages/DataStandardSelectionPage";
 import DropdownSelect from "../common/DropdownSelect";
 import DatasetTreeViewRenderer from "../shared/DatasetTreeViewRenderer";
 import GenericButton from "../buttons/Generic";
@@ -59,6 +60,7 @@ const componentTypeRenderers = {
   "guided-mode-page": (componentSlot) => {
     const pageIdToPageComponentMap = {
       "guided-name-subtitle-tab": <NameAndSubtitlePage />,
+      "guided-data-standard-selection-tab": <DataStandardSelectionPage />,
     };
     const pageComponent = pageIdToPageComponentMap[componentSlot.id];
     if (!pageComponent) {
