@@ -957,7 +957,6 @@ const EntityMetadataForm = () => {
               readOnly={!!selectedHierarchyEntity}
               disabled={!!selectedHierarchyEntity}
             />
-
             <OptionalFieldsNotice />
             <TextInput
               label="Sample Experimental Group"
@@ -1092,6 +1091,64 @@ const EntityMetadataForm = () => {
                       : undefined
                   }
                 />
+
+                {dataStandard && dataStandard !== "SPARC" && (
+                  <>
+                    {AdditionalMetadataFieldDivider(dataStandard)}
+
+                    {dataStandard === "HEAL-REJOIN" && (
+                      <>
+                        <TextInput
+                          label="Relative laterality"
+                          description="The relative laterality of the sample"
+                          placeholder=""
+                          value={getMetadataValue("relative_laterality", "")}
+                          onChange={(e) => handleChange("relative_laterality", e.target.value)}
+                        />
+                        <TextInput
+                          label="Anatomical orientation"
+                          description="The anatomical orientation of the sample"
+                          placeholder=""
+                          value={getMetadataValue("anatomical_orientation", "")}
+                          onChange={(e) => handleChange("anatomical_orientation", e.target.value)}
+                        />
+                        <TextInput
+                          label="Time to fixation"
+                          description="The time to fixation of the sample"
+                          placeholder=""
+                          value={getMetadataValue("time_to_fixation", "")}
+                          onChange={(e) => handleChange("time_to_fixation", e.target.value)}
+                        />
+                      </>
+                    )}
+
+                    {dataStandard === "HEAL-PRECISION" && (
+                      <>
+                        <TextInput
+                          label="RNA concentration"
+                          description="The RNA concentration of the sample"
+                          placeholder=""
+                          value={getMetadataValue("rna_concentration", "")}
+                          onChange={(e) => handleChange("rna_concentration", e.target.value)}
+                        />
+                        <TextInput
+                          label="RNA concentration method"
+                          description="The method used to measure the RNA concentration of the sample"
+                          placeholder=""
+                          value={getMetadataValue("rna_concentration_method", "")}
+                          onChange={(e) => handleChange("rna_concentration_method", e.target.value)}
+                        />
+                        <TextInput
+                          label="RNA purity"
+                          description="The purity of the RNA in the sample"
+                          placeholder=""
+                          value={getMetadataValue("rna_purity", "")}
+                          onChange={(e) => handleChange("rna_purity", e.target.value)}
+                        />
+                      </>
+                    )}
+                  </>
+                )}
               </>
             )}
           </Stack>
