@@ -285,6 +285,18 @@ const componentTypeRenderers = {
   },
 };
 
+export const setRender = (componentType, componentSlot) => {
+  const renderFunction = componentTypeRenderers[componentType];
+
+  if (renderFunction) {
+    try {
+      renderFunction(componentSlot);
+    } catch (error) {
+      console.error(`Error rendering component of type: ${componentType}`, error);
+    }
+  }
+};
+
 // Query all DOM nodes with the data attribute "data-component-type" and render the appropriate component
 document.querySelectorAll("[data-component-type]").forEach((componentSlot) => {
   const componentType = componentSlot.getAttribute("data-component-type");

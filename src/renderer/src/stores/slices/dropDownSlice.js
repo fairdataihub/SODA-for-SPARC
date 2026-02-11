@@ -51,6 +51,20 @@ export const dropDownSlice = (set) => ({
       options: ["NIH", "Other"],
       selectedValue: "",
     },
+    "global-workspace-select": {
+      label: "",
+      description: "",
+      placeholder: "Select a workspace",
+      options: [],
+      selectedValue: "",
+    },
+    "global-dataset-select": {
+      label: "",
+      description: "",
+      placeholder: "Select a dataset",
+      options: [],
+      selectedValue: "",
+    },
   },
 });
 
@@ -80,4 +94,15 @@ export const setDropdownState = (id, selectedValue) => {
 
 export const getDropDownState = (id) => {
   return useGlobalStore.getState().dropDownState?.[id]?.selectedValue || null;
+};
+
+// Function to dynamically update the options for a select dropdown
+export const updateDropDownOptions = (id, newOptions) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      if (state.dropDownState[id]) {
+        state.dropDownState[id].options = newOptions;
+      }
+    })
+  );
 };

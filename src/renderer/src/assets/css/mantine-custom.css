@@ -1,5 +1,5 @@
 .mantine-Popover-dropdown {
-  z-index: 1001 !important;
+  z-index: 2001 !important;
 }
 
 .mantine-Popover-dropdown[data-dates-dropdown="true"] {
@@ -7,5 +7,5 @@
 }
 
 .mantine-Menu-dropdown {
-  z-index: 1001 !important;
+  z-index: 2001 !important;
 }

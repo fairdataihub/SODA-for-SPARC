@@ -226,6 +226,14 @@ button[data-id="common-strain-rrid-dropdown"] {
   z-index: 999999 !important;
 }
 
+#global-workspace-select {
+  z-index: 999999 !important;
+}
+
+#global-dataset-select {
+  z-index: 999999 !important;
+}
+
 .sidebar {
   background-color: var(--color-teal);
   height: 100%;

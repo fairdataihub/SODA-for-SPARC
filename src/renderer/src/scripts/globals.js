@@ -5,9 +5,11 @@ import api from "./others/api/api";
 import { clientError, userErrorMessage } from "./others/http-error-handler/error-handler";
 import client from "./client";
 import { swalShowError, swalShowInfo } from "./utils/swal-utils";
-
+import { updateDropDownOptions } from "../stores/slices/dropDownSlice";
 import { clientBlockedByExternalFirewall, blockedMessage } from "./check-firewall/checkFirewall";
 import { setNavButtonDisabled } from "../stores/slices/navButtonStateSlice";
+import { setRender } from "../components/renderers/ReactComponentRenderer";
+import { getDropDownState } from "../stores/slices/dropDownSlice";
 
 // Contributors table for the dataset description editing page
 const currentConTable = document.getElementById("table-current-contributors");
@@ -1455,7 +1457,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           heightAuto: false,
           allowOutsideClick: false,
           allowEscapeKey: true,
-          html: window.datasetPermissionDiv,
+          html: `<div id="global-dataset-select" data-component-type="dropdown-select"></div>`,
           reverseButtons: window.reverseSwalButtons,
           showCloseButton: true,
           showCancelButton: true,
@@ -1818,6 +1820,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         });
       } catch (error) {
         clientError(error);
+        console.error("TODO: Address the error here with Mantine Select");
         initializeBootstrapSelect("#curatebforganizationlist", "show");
         return;
       }
@@ -1833,7 +1836,9 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           orgs[org]["organization"]["id"];
       }
 
-      window.refreshOrganizationList();
+      // TODO: Refresh the organization list UI with Mantine Select
+      // window.refreshOrganizationList();
+      updateDropDownOptions("global-workspace-select", window.organizationList);
     }
 
     //datasets do exist so display popup with dataset options
@@ -1848,11 +1853,13 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         heightAuto: false,
         allowOutsideClick: false,
         allowEscapeKey: true,
-        html: window.datasetPermissionDiv,
+        title: "Select your workspace",
+        html: `
+          <div id="global-workspace-select" data-component-type="dropdown-select"></div>
+        `,
         reverseButtons: window.reverseSwalButtons,
         showCloseButton: true,
         showCancelButton: true,
-        title: "<h3 style='margin-bottom:20px !important'>Select your workspace</h3>",
         showClass: {
           popup: "animate__animated animate__fadeInDown animate__faster",
         },
@@ -1877,25 +1884,23 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           $("#ps-dataset-select-div").hide();
           $("#ps-dataset-select-header").hide();
 
-          document
-            .querySelector("#ps-organization-select-div button")
-            .addEventListener("click", (e) => {
-              const dropdownMenu = e.target.parentElement.querySelector(".dropdown-menu.inner");
-              if (dropdownMenu) {
-                dropdownMenu.style.display = "block";
-                dropdownMenu.parentElement.style.display = "block";
-              }
-            });
+          setTimeout(() => {
+            const el = document.getElementById("global-workspace-select");
+            if (el && el.nodeType === 1) {
+              setRender("dropdown-select", el);
+            } else {
+              console.error("Could not find element to render dropdown-select component");
+            }
+          }, 100);
 
-          window.bfOrganization = $("#curatebforganizationlist").val();
+          window.bfOrganization = getDropDownState("global-workspace-select");
           let sweet_al = document.getElementsByClassName("swal2-html-container")[0];
           let sweet_alrt = document.getElementsByClassName("swal2-actions")[0];
           sweet_alrt.style.marginTop = "1rem";
 
           let tip_container = document.createElement("div");
           let tip_content = document.createElement("p");
-          tip_content.innerText =
-            "Only datasets where you have owner or manager permissions will be shown in the list";
+          tip_content.innerText = "Only workspaces you have access to will be shown in the list";
           tip_content.classList.add("tip-content");
           tip_content.style.textAlign = "left";
           tip_container.style.marginTop = "1rem";
@@ -1903,30 +1908,15 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           sweet_al.appendChild(tip_container);
         },
         preConfirm: () => {
-          window.bfOrganization = $("#curatebforganizationlist").val();
+          window.bfOrganization = getDropDownState("global-workspace-select");
           if (!window.bfOrganization) {
-            Swal.showValidationMessage("Please select an organization!");
-
-            $(window.datasetPermissionDiv)
-              .find("#div-filter-datasets-progress-2")
-              .css("display", "none");
-            $("#curatebforganizationlist").selectpicker("show");
-            $("#curatebforganizationlist").selectpicker("refresh");
-            $("#ps-organization-select-div").show();
-
+            Swal.showValidationMessage("Please select a workspace!");
+            // TODO: Update to Mantine UI Select for when no organization is selected
             return undefined;
           }
 
-          if (window.bfOrganization === "Select organization") {
-            Swal.showValidationMessage("Please select an organization!");
-
-            $(window.datasetPermissionDiv)
-              .find("#div-filter-datasets-progress-2")
-              .css("display", "none");
-            $("#curatebforganizationlist").selectpicker("show");
-            $("#curatebforganizationlist").selectpicker("refresh");
-            $("#ps-organization-select-div").show();
-
+          if (window.bfOrganization === "Select a workspace") {
+            Swal.showValidationMessage("Please select a workspace!!");
             return undefined;
           }
 
@@ -1942,7 +1932,6 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         $("#license-lottie-div").css("display", "block");
         $("#license-assigned").css("display", "block");
         window.currentDatasetLicense.innerText = window.currentDatasetLicense.innerText;
-        initializeBootstrapSelect("#curatebforganizationlist", "show");
         return;
       }
 
@@ -1955,10 +1944,9 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         return;
       }
 
-      window.refreshOrganizationList();
+      // TODO: Update to Mantine UI Select
+      // window.refreshOrganizationList();
       $("#dataset-loaded-message").hide();
-
-      showHideDropdownButtons("organization", "show");
       document.getElementById("div-rename-ps-dataset").children[0].style.display = "flex";
 
       // rejoin test organiztion
@@ -2094,13 +2082,13 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
       // checkPrevDivForConfirmButton("dataset");
     }
+
     $("#button-refresh-publishing-status").addClass("hidden");
 
     // TODO: MIght need to hide if clicked twice / do similar logic as above
     // for organization span in those locations instead of a dataset span
     //; since the logic is there for a reason.
     initializeBootstrapSelect("#curatebforganizationlist", "show");
-    showHideDropdownButtons("organization", "show");
 
     $("body").removeClass("waiting");
     $(".svg-change-current-account.organization").css("display", "block");
