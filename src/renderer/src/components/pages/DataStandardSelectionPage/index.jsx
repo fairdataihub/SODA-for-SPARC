@@ -9,15 +9,9 @@ const DataStandardSelectionPage = () => {
       <GuidedModeSection>
         <Stack>
           <Text>
-            Select the data standard you will use to organize your dataset. SODA will guide you
-            through the curation process based on the selected standard to ensure your dataset is
-            organized correctly.
-          </Text>
-          <Text>
-            <b>Not sure which standard to choose?</b> Select the SPARC Data Standard. SPARC is the
-            default standard used in SODA. RE-JOIN and PRECISION data standards are an extension of
-            SPARC and should only be selected if your dataset is part of the NIH HEAL initiative and
-            requires additional metadata that is specific to HEAL projects.
+            Choose the data standard for your dataset. If you are not sure which to use, select
+            SPARC, the default in SODA. REJOIN and PRECISION should only be selected for NIH HEAL
+            projects that require additional HEAL-specific metadata.
           </Text>
         </Stack>
       </GuidedModeSection>

@@ -36,9 +36,8 @@ export const checkboxCardSlice = (set) => ({
     },
 
     "sparc-data-standard": {
-      title: "SPARC Dataset Standard",
-      description:
-        "Organize your dataset using the SPARC standard (default SPARC templates and structure)",
+      title: "SPARC Data Standard",
+      description: "Organize your dataset using the SPARC standard",
       Icon: IconCheckupList,
       image: sparcLogo,
       mutuallyExclusiveWithCards: ["heal-rejoin-data-standard", "heal-precision-data-standard"],
@@ -48,7 +47,7 @@ export const checkboxCardSlice = (set) => ({
     },
 
     "heal-rejoin-data-standard": {
-      title: "HEAL-REJOIN Dataset Standard",
+      title: "HEAL-REJOIN Data Standard",
       description: "Organize your dataset following the HEAL REJOIN specification",
       Icon: IconCheckupList,
       image: healRejoinLogo,
@@ -59,7 +58,7 @@ export const checkboxCardSlice = (set) => ({
     },
 
     "heal-precision-data-standard": {
-      title: "HEAL-Precision Dataset Standard",
+      title: "HEAL-Precision Data Standard",
       description: "Organize your dataset following the HEAL Precision specification",
       Icon: IconCheckupList,
       image: healPrecisionLogo,

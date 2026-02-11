@@ -70,7 +70,7 @@ const CheckboxCard = ({ id }) => {
       className={`${classes.card} ${checked ? classes.cardSelected : ""} ${additionalClasses}`}
       style={{
         width: isCompact ? 180 : 270,
-        height: isCompact ? 150 : "auto",
+        height: isCompact ? 150 : image ? 220 : 180,
         minHeight: isCompact ? 150 : 180,
         opacity: isDisabled || disabledNotComingSoon ? 0.8 : 1,
         flexDirection: "column",
