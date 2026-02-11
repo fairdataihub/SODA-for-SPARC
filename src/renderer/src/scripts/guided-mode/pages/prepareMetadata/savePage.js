@@ -559,7 +559,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
           data_standard_version: "2025.05.01",
         },
         {
-          data_standard: "SODA Version",
+          data_standard: "SODA",
           data_standard_version: currentSodaVersion,
         },
       ],
