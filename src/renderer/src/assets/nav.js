@@ -51,7 +51,7 @@ const resetLazyLoading = () => {
   window.amount = 500;
 };
 
-const guidedUnLockSideBar = () => {
+const unlockSideBar = () => {
   const sidebar = document.getElementById("sidebarCollapse");
   const guidedModeSection = document.getElementById("guided_mode-section");
   const guidedDatsetTab = document.getElementById("guided_curate_dataset-tab");
@@ -101,7 +101,6 @@ window.handleSideBarTabClick = async (id, section) => {
   // --- Organize section ---
   if (sectionId === "organize-section") {
     resetLazyLoading();
-    window.hasFiles = false;
 
     window.scroll_box = document.querySelector("#organize-dataset-tab");
     document.querySelectorAll(".shared-folder-structure-element").forEach((el) => {
@@ -180,7 +179,7 @@ window.handleSideBarTabClick = async (id, section) => {
       }
     );
 
-    guidedUnLockSideBar();
+    unlockSideBar();
   }
 
   // --- Handle section switching ---
@@ -261,4 +260,4 @@ $(document).ready(() => {
   });
 });
 
-export { resetLazyLoading, guidedUnLockSideBar, hideAllSectionsAndDeselectButtons };
+export { resetLazyLoading, unlockSideBar, hideAllSectionsAndDeselectButtons };

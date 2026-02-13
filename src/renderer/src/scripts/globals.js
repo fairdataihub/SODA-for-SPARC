@@ -1601,11 +1601,8 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
                     fileCount += packages[packageKey];
                   }
                 }
-
-                window.hasFiles = fileCount > 0;
               } catch (e) {
                 clientError(e);
-                window.hasFiles = true;
               }
             }
 

@@ -12,7 +12,7 @@ const cardData = [
       "Use this option to organize your dataset step by step according to the SPARC Dataset Structure.",
     buttonLabel: "Start Preparation",
     buttonColor: "blue",
-    onClick: () => {},
+    onClick: () => window.openCurationMode("guided"),
   },
   {
     id: "button-homepage-freeform-mode",
@@ -21,7 +21,7 @@ const cardData = [
     description: "Use this option to submit your dataset for publication on the SPARC portal.",
     buttonLabel: "Start Upload",
     buttonColor: "blue",
-    onClick: () => window.handleSideBarTabClick("upload-dataset-view", "organize"),
+    onClick: () => window.openCurationMode("freeform"),
   },
 ];
 

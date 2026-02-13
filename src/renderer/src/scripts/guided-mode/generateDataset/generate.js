@@ -1,7 +1,7 @@
 import { setGuidedProgressBarValue, updateDatasetUploadProgressTable } from "./uploadProgressBar";
 import { guidedSetNavLoadingState } from "../pages/navigationUtils/pageLoading";
 import { clientError, userErrorMessage } from "../../others/http-error-handler/error-handler";
-import { guidedTransitionToHome } from "../pages/navigate";
+import { returnHomeFromGuidedMode } from "../pages/navigate";
 import { guidedSaveProgress } from "../pages/savePageChanges";
 import client from "../../client";
 import { checkIfDatasetExistsOnPennsieve } from "../pennsieveUtils";
@@ -625,7 +625,7 @@ const trackPennsieveDatasetGenerationProgress = async (standardizedDatasetStruct
           "The server did not respond. Please close SODA and reopen it to try the upload again. SODA will remember any progress in the upload you have made. If the problem persists, please contact support."
         );
         guidedSetNavLoadingState(false);
-        guidedTransitionToHome();
+        returnHomeFromGuidedMode();
         return;
       }
       console.error("[Pennsieve Progress] Error tracking upload progress:", error);
@@ -690,7 +690,7 @@ const automaticRetry = async (supplementaryChecks = false, errorMessage = "") =>
       } catch (error) {
         window.log.error("Error saving page changes", error);
       }
-      guidedTransitionToHome();
+      returnHomeFromGuidedMode();
       return;
     }
     supplementaryChecks = await window.run_pre_flight_checks(
@@ -715,7 +715,7 @@ const automaticRetry = async (supplementaryChecks = false, errorMessage = "") =>
     } catch (error) {
       window.log.error("Error saving page changes", error);
     }
-    guidedTransitionToHome();
+    returnHomeFromGuidedMode();
     return;
   }
 

@@ -1,5 +1,5 @@
 import { getNextPageNotSkipped, getPrevPageNotSkipped } from "./navigationUtils/pageSkipping";
-import { guidedUnLockSideBar, resetLazyLoading } from "../../../assets/nav";
+import { unlockSideBar, resetLazyLoading } from "../../../assets/nav";
 import Swal from "sweetalert2";
 import { swalShowError } from "../../utils/swal-utils";
 
@@ -12,6 +12,66 @@ const guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progres
 if (!window.fs.existsSync(guidedProgressFilePath)) {
   window.fs.mkdirSync(guidedProgressFilePath, { recursive: true });
 }
+
+window.openCurationMode = async (curationMode) => {
+  const isGuided = curationMode === "guided";
+  const isFreeform = curationMode === "freeform";
+
+  if (!isGuided && !isFreeform) {
+    window.notyf.open({
+      type: "error",
+      message: "Invalid curation mode selected",
+    });
+    return;
+  }
+
+  const itemsContainer = document.getElementById("items");
+  const freeFormItemsContainer = document.getElementById("free-form-folder-structure-container");
+  const freeFormButtons = document.getElementById("organize-path-and-back-button-div");
+  const sharedElements = document.querySelectorAll(".shared-folder-structure-element");
+
+  resetLazyLoading();
+
+  if (isGuided) {
+    // Set global references
+    const guidedInput = document.getElementById("guided-input-global-path");
+    window.organizeDSglobalPath = guidedInput;
+    window.dataset_path = guidedInput;
+    window.scroll_box = document.querySelector("#guided-body");
+
+    guidedInput.value = "";
+    itemsContainer.innerHTML = "";
+
+    // Remove freeform styles
+    freeFormItemsContainer.classList.remove("freeform-file-explorer");
+    freeFormButtons.classList.remove("freeform-file-explorer-buttons");
+
+    // Move shared elements to guided container
+    const guidedContainer = document.getElementById("guided-folder-structure-container");
+    sharedElements.forEach((el) => guidedContainer.appendChild(el));
+
+    guidedTransitionFromHome();
+    unlockSideBar();
+
+    await window.openPage("guided-select-starting-point-tab");
+  }
+  if (isFreeform) {
+    // Freeform mode
+    window.scroll_box = document.querySelector("#organize-dataset-tab");
+
+    // Move shared elements to freeform container
+    sharedElements.forEach((el) => freeFormItemsContainer.appendChild(el));
+
+    freeFormItemsContainer.classList.add("freeform-file-explorer");
+    freeFormButtons.classList.add("freeform-file-explorer-buttons");
+
+    const freeformInput = document.getElementById("input-global-path");
+    window.organizeDSglobalPath = freeformInput;
+    window.dataset_path = freeformInput;
+
+    window.handleSideBarTabClick("upload-dataset-view", "organize");
+  }
+};
 
 /**
  * @description Navigate to the next page in the active prepare datasets step-by-step workflow.
@@ -99,7 +159,7 @@ document.getElementById("guided-button-save-and-exit").addEventListener("click",
 const guidedSaveAndExit = async () => {
   if (!window.sodaJSONObj["digital-metadata"]["name"]) {
     // If a progress file has not been created, then we don't need to save anything
-    guidedTransitionToHome();
+    returnHomeFromGuidedMode();
     return;
   }
   const { value: returnToGuidedHomeScreen } = await Swal.fire({
@@ -146,17 +206,17 @@ const guidedSaveAndExit = async () => {
         width: 700,
       });
       if (continueWithoutSavingCurrPageChanges) {
-        guidedTransitionToHome();
+        returnHomeFromGuidedMode();
       } else {
         return;
       }
     }
-    guidedTransitionToHome();
+    returnHomeFromGuidedMode();
   }
 };
 
-export const guidedTransitionToHome = () => {
-  guidedUnLockSideBar();
+export const returnHomeFromGuidedMode = () => {
+  unlockSideBar();
   window.guidedPrepareHomeScreen();
 
   document.getElementById("soda-home-page").classList.remove("hidden");
@@ -178,28 +238,8 @@ window.guidedPrepareHomeScreen = async () => {
   //Wipe out existing progress if it exists
   guidedResetProgressVariables();
 
-  guidedUnLockSideBar();
+  unlockSideBar();
 };
-
-const itemsContainer = document.getElementById("items");
-const freeFormItemsContainer = document.getElementById("free-form-folder-structure-container");
-const freeFormButtons = document.getElementById("organize-path-and-back-button-div");
-
-document.getElementById("button-homepage-guided-mode").addEventListener("click", async () => {
-  //Transition file explorer elements to guided mode
-  window.organizeDSglobalPath = document.getElementById("guided-input-global-path");
-  window.organizeDSglobalPath.value = "";
-  window.dataset_path = document.getElementById("guided-input-global-path");
-  window.scroll_box = document.querySelector("#guided-body");
-  itemsContainer.innerHTML = "";
-  resetLazyLoading();
-  freeFormItemsContainer.classList.remove("freeform-file-explorer");
-  freeFormButtons.classList.remove("freeform-file-explorer-buttons");
-  $(".shared-folder-structure-element").appendTo($("#guided-folder-structure-container"));
-  guidedTransitionFromHome();
-  guidedUnLockSideBar();
-  await window.openPage("guided-select-starting-point-tab");
-});
 
 export const guidedTransitionFromHome = async () => {
   //Hide the home screen
