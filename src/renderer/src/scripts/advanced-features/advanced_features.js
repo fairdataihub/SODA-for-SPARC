@@ -1,6 +1,5 @@
 /* Functions for advanced features page and options */
 
-import { resetLazyLoading } from "../../assets/nav";
 import { hideAllSectionsAndDeselectButtons } from "../../assets/nav";
 import { existingDataset, modifyDataset } from "../../assets/lotties/lotties";
 import lottie from "lottie-web";
@@ -78,13 +77,8 @@ const transitionToAdvancedPage = () => {
 
 // Advanced features event listener
 $("#direct-to-advanced-features").on("click", () => {
-  // Reset the DS global path as it is not needed in advanced features
   window.organizeDSglobalPath.value = "";
 
-  // Reset lazy loading
-  resetLazyLoading();
-
-  //Transition to advanced features page
   transitionToAdvancedPage();
 });
 

@@ -1,5 +1,5 @@
 import { getNextPageNotSkipped, getPrevPageNotSkipped } from "./navigationUtils/pageSkipping";
-import { unlockSideBar, resetLazyLoading } from "../../../assets/nav";
+import { unlockSideBar } from "../../../assets/nav";
 import Swal from "sweetalert2";
 import { swalShowError } from "../../utils/swal-utils";
 
@@ -25,12 +25,7 @@ window.openCurationMode = async (curationMode) => {
     return;
   }
 
-  const itemsContainer = document.getElementById("items");
-  const freeFormItemsContainer = document.getElementById("free-form-folder-structure-container");
   const freeFormButtons = document.getElementById("organize-path-and-back-button-div");
-  const sharedElements = document.querySelectorAll(".shared-folder-structure-element");
-
-  resetLazyLoading();
 
   if (isGuided) {
     // Set global references
@@ -40,15 +35,8 @@ window.openCurationMode = async (curationMode) => {
     window.scroll_box = document.querySelector("#guided-body");
 
     guidedInput.value = "";
-    itemsContainer.innerHTML = "";
 
-    // Remove freeform styles
-    freeFormItemsContainer.classList.remove("freeform-file-explorer");
     freeFormButtons.classList.remove("freeform-file-explorer-buttons");
-
-    // Move shared elements to guided container
-    const guidedContainer = document.getElementById("guided-folder-structure-container");
-    sharedElements.forEach((el) => guidedContainer.appendChild(el));
 
     guidedTransitionFromHome();
     unlockSideBar();
@@ -59,10 +47,6 @@ window.openCurationMode = async (curationMode) => {
     // Freeform mode
     window.scroll_box = document.querySelector("#organize-dataset-tab");
 
-    // Move shared elements to freeform container
-    sharedElements.forEach((el) => freeFormItemsContainer.appendChild(el));
-
-    freeFormItemsContainer.classList.add("freeform-file-explorer");
     freeFormButtons.classList.add("freeform-file-explorer-buttons");
 
     const freeformInput = document.getElementById("input-global-path");

@@ -527,74 +527,7 @@
                         flex-grow: 1;
                         text-overflow: ellipsis;
                       " id="input-global-path" value="dataset_root/" readonly />
-
-                    <div class="div-organize-dataset-menu">
-                      <button id="new-folder" style="
-                          width: 130px;
-                          float: right;
-                          margin-right: 10px;
-                          color: var(--tagify-dd-color-primary);
-                          background: #fff;
-                          border: 1px solid var(--tagify-dd-color-primary);
-                          font-weight: 600;
-                        ">
-                        <i class="fas fa-folder-plus"></i> New folder
-                      </button>
-                      <div class="btn-group" role="group">
-                        <button id="btnGroupDrop1" type="button" style="
-                            color: var(--tagify-dd-color-primary);
-                            background: #fff;
-                            border: 1px solid var(--tagify-dd-color-primary);
-                            font-weight: 600;
-                          " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          <svg style="margin-right: 10px" width="1em" height="1em" viewBox="0 0 16 16"
-                            class="bi bi-upload" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd"
-                              d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
-                            <path fill-rule="evenodd"
-                              d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
-                          </svg>
-                          Import
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="btnGroupDrop1">
-                          <a class="dropdown-item" id="add-files" href="#"><i class="fas fa-upload"
-                              style="margin-right: 5px"></i>Import files</a>
-                          <a class="dropdown-item" id="add-folders" href="#"><i class="fas fa-upload"
-                              style="margin-right: 5px"></i>Import
-                            folders</a>
-                        </div>
-                      </div>
-                    </div>
                   </div>
-                  <!-- These are the context menu options, will not appear on the UI until prompted -->
-                  <ul class="menu reg-folder off shared-folder-structure-element">
-                    <li id="reg-folder-rename"><i class="fas fa-edit fa-fw"></i>Rename</li>
-                    <li id="folder-move"><i class="fas fa-external-link-alt"></i>Move</li>
-                    <li id="reg-folder-delete"><i class="far fa-trash-alt fa-fw"></i>Delete</li>
-                  </ul>
-                  <ul class="menu high-level-folder off shared-folder-structure-element">
-                    <li id="high-folder-rename"><i class="fas fa-edit fa-fw"></i>Rename</li>
-                    <li id="high-folder-delete"><i class="far fa-trash-alt fa-fw"></i>Delete</li>
-                    <li id="tooltip-folders"><i class="fas fa-info fa-fw"></i>Details</li>
-                  </ul>
-                  <ul class="menu file off shared-folder-structure-element">
-                    <li id="file-rename"><i class="fas fa-edit fa-fw"></i>Rename</li>
-                    <li id="file-move"><i class="fas fa-external-link-alt"></i>Move</li>
-                    <li id="file-delete"><i class="far fa-trash-alt fa-fw"></i>Delete</li>
-                    <li id="file-description"><i class="far fa-plus-square fa-fw"></i>Details</li>
-                  </ul>
-                  <!-- <span class="hoverPath" style="display: none"></span> -->
-                  <span class="hoverFullName shared-folder-structure-element" style="display: none"></span>
-                  <!-- END -->
-
-                  <div id="items" class="div-organize-items shared-folder-structure-element" ondrop="window.drop(event);"
-                    ondragover="window.allowDrop(event);" style="
-                      box-shadow: none !important;
-                      border: none;
-                      overflow-y: auto;
-                      max-height: 392px !important;
-                    "></div>
-                  <!-- "data" is jstree html element -->
                   <div id="data" style="display: none"></div>
                   <div id="display-details" class="div-display-details file">
                     <button class="button-display-details">X</button>

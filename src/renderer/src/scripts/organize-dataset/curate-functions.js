@@ -1956,10 +1956,6 @@ window.moveItems = async (ev) => {
           }
         }
 
-        // Rerender the file view again
-        window.listItems(myPath, "#items", 500);
-        window.getInFolder(".single-item", "#items", window.organizeDSglobalPath, myPath);
-
         // if moved into an empty folder we need to remove the class 'empty' from the folder destination
         let folderDestinationName = splitSelectedPath[splitSelectedPath.length - 1];
         if (
