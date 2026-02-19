@@ -1,5 +1,5 @@
 import { getNextPageNotSkipped, getPrevPageNotSkipped } from "./navigationUtils/pageSkipping";
-import { unlockSideBar } from "../../../assets/nav";
+import { prepareGuidedSidebar } from "../../../assets/nav";
 import Swal from "sweetalert2";
 import { swalShowError } from "../../utils/swal-utils";
 
@@ -13,6 +13,24 @@ if (!window.fs.existsSync(guidedProgressFilePath)) {
   window.fs.mkdirSync(guidedProgressFilePath, { recursive: true });
 }
 
+export const guidedTransitionFromHomeToPage = async (startingPageId) => {
+  //Hide the home screen
+  document.getElementById("soda-home-page").classList.add("hidden");
+  document.getElementById("curation-preparation-parent-tab").classList.remove("hidden");
+  document.getElementById("guided-header-div").classList.remove("hidden");
+
+  //Hide all guided pages (first one will be unHidden automatically)
+  const guidedPages = document.querySelectorAll(".guided--page");
+  guidedPages.forEach((page) => {
+    page.classList.add("hidden");
+  });
+
+  window.CURRENT_PAGE = document.getElementById(startingPageId);
+  await window.openPage(startingPageId);
+
+  document.getElementById("guided-footer-div").classList.remove("hidden");
+};
+
 window.openCurationMode = async (curationMode) => {
   const isGuided = curationMode === "guided";
   const isFreeform = curationMode === "freeform";
@@ -25,35 +43,11 @@ window.openCurationMode = async (curationMode) => {
     return;
   }
 
-  const freeFormButtons = document.getElementById("organize-path-and-back-button-div");
-
   if (isGuided) {
-    // Set global references
-    const guidedInput = document.getElementById("guided-input-global-path");
-    window.organizeDSglobalPath = guidedInput;
-    window.dataset_path = guidedInput;
-    window.scroll_box = document.querySelector("#guided-body");
-
-    guidedInput.value = "";
-
-    freeFormButtons.classList.remove("freeform-file-explorer-buttons");
-
-    guidedTransitionFromHome();
-    unlockSideBar();
-
-    await window.openPage("guided-select-starting-point-tab");
+    guidedTransitionFromHomeToPage("guided-select-starting-point-tab");
   }
   if (isFreeform) {
-    // Freeform mode
-    window.scroll_box = document.querySelector("#organize-dataset-tab");
-
-    freeFormButtons.classList.add("freeform-file-explorer-buttons");
-
-    const freeformInput = document.getElementById("input-global-path");
-    window.organizeDSglobalPath = freeformInput;
-    window.dataset_path = freeformInput;
-
-    window.handleSideBarTabClick("upload-dataset-view", "organize");
+    guidedTransitionFromHomeToPage("ffm-select-starting-point-tab");
   }
 };
 
@@ -141,7 +135,7 @@ document.getElementById("guided-button-save-and-exit").addEventListener("click",
  *              Progress is saved to a progress file that can be resumed by the user.
  */
 const guidedSaveAndExit = async () => {
-  if (!window.sodaJSONObj["digital-metadata"]["name"]) {
+  if (!window.sodaJSONObj?.["digital-metadata"]?.["name"]) {
     // If a progress file has not been created, then we don't need to save anything
     returnHomeFromGuidedMode();
     return;
@@ -200,7 +194,7 @@ const guidedSaveAndExit = async () => {
 };
 
 export const returnHomeFromGuidedMode = () => {
-  unlockSideBar();
+  prepareGuidedSidebar();
   window.guidedPrepareHomeScreen();
 
   document.getElementById("soda-home-page").classList.remove("hidden");
@@ -222,25 +216,7 @@ window.guidedPrepareHomeScreen = async () => {
   //Wipe out existing progress if it exists
   guidedResetProgressVariables();
 
-  unlockSideBar();
-};
-
-export const guidedTransitionFromHome = async () => {
-  //Hide the home screen
-  document.getElementById("soda-home-page").classList.add("hidden");
-  document.getElementById("curation-preparation-parent-tab").classList.remove("hidden");
-  document.getElementById("guided-header-div").classList.remove("hidden");
-
-  //Hide all guided pages (first one will be unHidden automatically)
-  const guidedPages = document.querySelectorAll(".guided--page");
-  guidedPages.forEach((page) => {
-    page.classList.add("hidden");
-  });
-
-  window.CURRENT_PAGE = document.getElementById("guided-select-starting-point-tab");
-  await window.openPage("guided-select-starting-point-tab");
-
-  document.getElementById("guided-footer-div").classList.remove("hidden");
+  prepareGuidedSidebar();
 };
 
 const guidedResetProgressVariables = () => {

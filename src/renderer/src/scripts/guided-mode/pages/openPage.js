@@ -186,7 +186,6 @@ window.openPage = async (targetPageID) => {
   // this function is async because we sometimes need to fetch data before the page is ready to be opened
 
   guidedSetNavLoadingState(true);
-
   const targetPage = document.getElementById(targetPageID);
   const targetPageName = targetPage.dataset.pageName || targetPageID;
   const targetPageParentTab = targetPage.closest(".guided--parent-tab");
@@ -622,6 +621,7 @@ window.openPage = async (targetPageID) => {
       // Show the full entity metadata forms for all other pages
       setShowFullMetadataFormFields(true);
     }
+    // await openPageFreeFormMode(targetPageID);
 
     await openPageCurationPreparation(targetPageID);
     await openPageDatasetStructure(targetPageID);
@@ -691,6 +691,7 @@ window.openPage = async (targetPageID) => {
       }
     };
     renderCorrectFileExplorerByPage(targetPageID);
+    console.log("window.CURRENT_PAGE: ", window.CURRENT_PAGE);
 
     let currentParentTab = window.CURRENT_PAGE.closest(".guided--parent-tab");
 

@@ -43,15 +43,17 @@ function forceActionSidebar(action) {
   }
 }
 
-const unlockSideBar = () => {
+const prepareGuidedSidebar = () => {
+  // Click the home page sidebar button if
   const sidebar = document.getElementById("sidebarCollapse");
+  if (sidebar.classList.contains("active")) {
+    sidebar.click();
+  }
+
   const guidedModeSection = document.getElementById("guided_mode-section");
   const guidedDatsetTab = document.getElementById("guided_curate_dataset-tab");
   const guidedNav = document.getElementById("guided-nav");
 
-  if (sidebar.classList.contains("active")) {
-    sidebar.click();
-  }
   sidebar.disabled = false;
   guidedModeSection.style.marginLeft = "-15px";
   //remove the marginLeft style from guidedDatasetTab
@@ -92,8 +94,6 @@ window.handleSideBarTabClick = async (id, section) => {
 
   // --- Organize section ---
   if (sectionId === "organize-section") {
-    window.scroll_box = document.querySelector("#organize-dataset-tab");
-
     freeFormItemsContainer.classList.add("freeform-file-explorer");
     freeFormButtons.classList.add("freeform-file-explorer-buttons");
 
@@ -118,7 +118,6 @@ window.handleSideBarTabClick = async (id, section) => {
     window.organizeDSglobalPath = document.getElementById("guided-input-global-path");
     window.organizeDSglobalPath.value = "";
     window.dataset_path = window.organizeDSglobalPath;
-    window.scroll_box = document.querySelector("#guided-body");
 
     freeFormItemsContainer.classList.remove("freeform-file-explorer");
     freeFormButtons.classList.remove("freeform-file-explorer-buttons");
@@ -146,7 +145,7 @@ window.handleSideBarTabClick = async (id, section) => {
       }
     );
 
-    unlockSideBar();
+    prepareGuidedSidebar();
   }
 
   // --- Handle section switching ---
@@ -227,4 +226,4 @@ $(document).ready(() => {
   });
 });
 
-export { unlockSideBar, hideAllSectionsAndDeselectButtons };
+export { prepareGuidedSidebar, hideAllSectionsAndDeselectButtons };

@@ -8,7 +8,10 @@ import { guidedCreateSodaJSONObj } from "../../utils/sodaJSONObj.js";
 import { guidedResetSkippedPages } from "../navigationUtils/pageSkipping.js";
 
 export const openPageCurationPreparation = async (targetPageID) => {
-  if (targetPageID === "guided-select-starting-point-tab") {
+  if (
+    targetPageID === "guided-select-starting-point-tab" ||
+    targetPageID === "ffm-select-starting-point-tab"
+  ) {
     guidedCreateSodaJSONObj();
     guidedResetSkippedPages();
   }
