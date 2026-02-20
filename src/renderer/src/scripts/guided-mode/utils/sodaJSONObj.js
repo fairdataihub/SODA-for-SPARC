@@ -66,7 +66,7 @@ export const guidedGetDatasetOrigin = (sodaJSON) => {
   return "New";
 };
 //dataset description (first page) functions
-export const guidedCreateSodaJSONObj = () => {
+export const initializeGuidedDatasetObject = () => {
   window.sodaJSONObj = {};
 
   window.sodaJSONObj["guided-options"] = {};

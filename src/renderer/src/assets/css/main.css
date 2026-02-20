@@ -415,19 +415,6 @@ button[data-id="common-strain-rrid-dropdown"] {
   overflow: hidden;
 }
 
-.hoverFullName {
-  max-width: auto;
-  min-height: auto;
-  background-color: #f4f4f4;
-  color: #333;
-  border: 1px solid #aaa;
-  border-radius: 3px;
-  position: absolute;
-  padding: 5px 5px;
-  font-size: 12px;
-  z-index: 1000;
-}
-
 .switch {
   position: relative;
   display: inline-block;

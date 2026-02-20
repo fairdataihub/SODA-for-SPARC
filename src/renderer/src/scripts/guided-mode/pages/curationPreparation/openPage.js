@@ -4,16 +4,17 @@ import {
   setGuidedDatasetName,
   setGuidedDatasetSubtitle,
 } from "../../../../stores/slices/guidedModeSlice";
-import { guidedCreateSodaJSONObj } from "../../utils/sodaJSONObj.js";
+import { initializeGuidedDatasetObject } from "../../utils/sodaJSONObj.js";
 import { guidedResetSkippedPages } from "../navigationUtils/pageSkipping.js";
 
 export const openPageCurationPreparation = async (targetPageID) => {
-  if (
-    targetPageID === "guided-select-starting-point-tab" ||
-    targetPageID === "ffm-select-starting-point-tab"
-  ) {
-    guidedCreateSodaJSONObj();
-    guidedResetSkippedPages();
+  if (targetPageID === "ffm-select-starting-point-tab") {
+    initializeGuidedDatasetObject();
+    guidedResetSkippedPages("ffm");
+  }
+  if (targetPageID === "guided-select-starting-point-tab") {
+    initializeGuidedDatasetObject();
+    guidedResetSkippedPages("gm");
   }
 
   if (targetPageID === "guided-name-subtitle-tab") {

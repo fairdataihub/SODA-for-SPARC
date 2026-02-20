@@ -70,7 +70,7 @@
       >
         <div
           id="guided-select-starting-point-tab"
-          class="guided--page h-100 hidden"
+          class="guided--page h-100 gm"
           data-page-name="Select Starting Point"
         >
           <div class="guided--section">
@@ -120,7 +120,7 @@
         </div>
         <div
           id="ffm-select-starting-point-tab"
-          class="guided--page h-100 hidden"
+          class="guided--page h-100 ffm"
           data-page-name="Select Starting Point"
         >
           <div class="guided--section">
@@ -142,7 +142,7 @@
         </div>
         <div
           id="guided-name-subtitle-tab"
-          class="guided--page"
+          class="guided--page gm"
           data-component-type="guided-mode-page"
           data-page-header="Dataset Name"
           data-page-name="Dataset Name"
@@ -154,7 +154,7 @@
         class="guided--parent-tab hidden"
         data-parent-tab-name="Dataset Structure"
       >
-        <div class="guided--page" id="guided-dataset-structure-intro-tab" data-page-name="Intro">
+        <div class="guided--page gm" id="guided-dataset-structure-intro-tab" data-page-name="Intro">
           <h1 class="text-sub-step-title">Dataset Structure Introduction</h1>
           <div class="guided--section">
             <p class="help-text">
@@ -180,7 +180,7 @@
         <!--
         <div
           id="guided-subject-structure-spreadsheet-importation-tab"
-          class="guided--page"
+          class="guided--page gm"
           data-page-name="Subject/sample IDs specification"
         >
           <div class="guided--section">
@@ -483,7 +483,7 @@
         -->
         <div
           id="guided-unstructured-data-import-tab"
-          class="guided--page"
+          class="guided--page gm"
           data-page-name="Data Selection"
         >
           <div class="guided--section">
@@ -503,13 +503,13 @@
         <div
           id="guided-dataset-content-tab"
           data-page-name="Dataset Content"
-          class="guided--page"
+          class="guided--page gm"
           data-component-type="dataset-content-selector"
         ></div>
         <div
           id="non-data-categorization-tab"
           data-page-name="Data Categorization"
-          class="guided--page"
+          class="guided--page gm"
           data-component-type="data-categorization-page"
           data-entity-type="non-data-folders"
           data-entity-type-string-singular="Data category"
@@ -517,7 +517,7 @@
         <div
           id="experimental-data-tab"
           data-page-name="Experimental Data Selection"
-          class="guided--page guided-subject-related-page-set"
+          class="guided--page guided-subject-related-page-set gm"
           data-component-type="data-categorization-page"
           data-entity-type="experimental"
           data-entity-type-string-singular="Experimental data"
@@ -527,7 +527,7 @@
         <div
           id="guided-entity-addition-method-selection-tab"
           data-page-name="Entity Addition Method"
-          class="guided--page guided-subject-related-page-set"
+          class="guided--page guided-subject-related-page-set gm"
         >
           <div class="guided--section">
             <h1 class="text-sub-step-title">Entity Addition Method</h1>
@@ -574,21 +574,21 @@
         <div
           id="guided-manual-dataset-entity-and-metadata-tab"
           data-page-name="Experimental Data Metadata"
-          class="guided--page guided-subject-related-page-set"
+          class="guided--page guided-subject-related-page-set gm"
           data-component-type="entity-metadata-page"
         ></div>
         <!--
         <div
           id="guided-spreadsheet-import-dataset-entity-and-metadata-tab"
           data-page-name="Designate Entity IDs Using Spreadsheets"
-          class="guided--page guided-subject-related-page-set"
+          class="guided--page guided-subject-related-page-set gm"
           data-component-type="entity-spreadsheet-import-page"
         ></div>
         -->
         <div
           id="guided-sites-selection-tab"
           data-page-name="Sites Data Selection"
-          class="guided--page guided-sites-metadata-page-set guided-subject-related-page-set"
+          class="guided--page guided-sites-metadata-page-set guided-subject-related-page-set gm"
           data-component-type="data-categorization-page"
           data-entity-type="sites"
           data-entity-type-string-singular="site"
@@ -596,7 +596,7 @@
         <div
           id="guided-derived-samples-selection-tab"
           data-page-name="Derived Samples Data Selection"
-          class="guided--page guided-samples-metadata-page-set guided-derived-samples-metadata-page-set guided-subject-related-page-set"
+          class="guided--page guided-samples-metadata-page-set guided-derived-samples-metadata-page-set guided-subject-related-page-set gm"
           data-component-type="data-categorization-page"
           data-entity-type="derived-samples"
           data-entity-type-string-singular="derived sample"
@@ -604,7 +604,7 @@
         <div
           id="guided-samples-selection-tab"
           data-page-name="Samples Data Selection"
-          class="guided--page guided-samples-metadata-page-set guided-subject-related-page-set"
+          class="guided--page guided-samples-metadata-page-set guided-subject-related-page-set gm"
           data-component-type="data-categorization-page"
           data-entity-type="samples"
           data-entity-type-string-singular="sample"
@@ -612,7 +612,7 @@
         <div
           id="guided-subjects-selection-tab"
           data-page-name="Subjects Data Selection"
-          class="guided--page guided-subjects-metadata-page-set guided-subject-related-page-set"
+          class="guided--page guided-subjects-metadata-page-set guided-subject-related-page-set gm"
           data-component-type="data-categorization-page"
           data-entity-type="subjects"
           data-entity-type-string-singular="subject"
@@ -621,14 +621,14 @@
         <div
           id="experimental-data-categories-questionnaire-tab"
           data-page-name="Experimental Data Categorization"
-          class="guided--page guided-subject-related-page-set"
+          class="guided--page guided-subject-related-page-set gm"
           data-component-type="data-categories-questionnaire-page"
           data-questionnaire-entity-type="experimental-data-categorization"
         ></div>
         <div
           id="experimental-data-categorization-tab"
           data-page-name="Experimental Data Categorization"
-          class="guided--page guided-subject-related-page-set"
+          class="guided--page guided-subject-related-page-set gm"
           data-component-type="data-categorization-page"
           data-entity-type="experimental-data-categorization"
           data-entity-type-string-singular="Data Category"
@@ -636,14 +636,14 @@
         <div
           id="remaining-data-categories-questionnaire-tab"
           data-page-name="Remaining Data Categorization"
-          class="guided--page guided-remaining-data-categorization-page-set"
+          class="guided--page guided-remaining-data-categorization-page-set gm"
           data-component-type="data-categories-questionnaire-page"
           data-questionnaire-entity-type="remaining-data-categorization"
         ></div>
         <div
           id="remaining-data-categorization-tab"
           data-page-name="Remaining Data Categorization"
-          class="guided--page guided-remaining-data-categorization-page-set"
+          class="guided--page guided-remaining-data-categorization-page-set gm"
           data-component-type="data-categorization-page"
           data-entity-type="remaining-data-categorization"
           data-entity-type-string-singular="Data Category"
@@ -651,7 +651,7 @@
         <div
           id="guided-performances-entity-addition-tab"
           data-page-name="Description Of Performances"
-          class="guided--page guided-performances-metadata-page-set guided-subject-related-page-set"
+          class="guided--page guided-performances-metadata-page-set guided-subject-related-page-set gm"
           data-component-type="performance-id-management-page"
           data-entity-type="performances"
           data-entity-type-string-singular="performance"
@@ -659,7 +659,7 @@
         <div
           id="guided-Performances-selection-tab"
           data-page-name="Performances Data Selection"
-          class="guided--page guided-performances-metadata-page-set guided-subject-related-page-set"
+          class="guided--page guided-performances-metadata-page-set guided-subject-related-page-set gm"
           data-component-type="data-categorization-page"
           data-entity-type="performances"
           data-entity-type-string-singular="performance"
@@ -667,19 +667,19 @@
         <div
           id="guided-modalities-selection-tab"
           data-page-name="Dataset Modalities"
-          class="guided--page guided-subject-related-page-set"
+          class="guided--page guided-subject-related-page-set gm"
           data-component-type="modality-selection-page"
         ></div>
         <div
           id="guided-modalities-data-selection-tab"
           data-page-name="Modalities Data Selection"
-          class="guided--page guided-subject-related-page-set"
+          class="guided--page guided-subject-related-page-set gm"
           data-component-type="data-categorization-page"
           data-entity-type="modalities"
           data-entity-type-string-singular="modality"
         ></div>
         <div
-          class="guided--page"
+          class="guided--page gm"
           id="guided-dataset-structure-and-manifest-review-tab"
           data-page-name="Dataset Structure And Manifest Preview"
         >
@@ -716,7 +716,7 @@
         class="guided--parent-tab hidden"
         data-parent-tab-name="Dataset Metadata"
       >
-        <div class="guided--page" id="guided-dataset-metadata-intro-tab" data-page-name="Intro">
+        <div class="guided--page gm" id="guided-dataset-metadata-intro-tab" data-page-name="Intro">
           <h1 class="text-sub-step-title">Dataset Metadata Introduction</h1>
           <div class="guided--section">
             <p class="help-text">
@@ -742,14 +742,14 @@
         </div>
 
         <div
-          class="guided--page"
+          class="guided--page gm"
           id="guided-submission-metatdata-tab"
           data-page-name="Funding And Submission Metadata"
           data-component-type="submission-metadata-form"
         ></div>
         <div
           id="guided-contributors-tab"
-          class="guided--page"
+          class="guided--page gm"
           data-page-name="Contributor information"
         >
           <div class="guided--section">
@@ -816,7 +816,7 @@
           </div>
         </div>
 
-        <div id="guided-protocols-tab" class="guided--page" data-page-name="Dataset protocols">
+        <div id="guided-protocols-tab" class="guided--page gm" data-page-name="Dataset protocols">
           <div class="guided--section">
             <h1 class="text-sub-step-title">Dataset protocols</h1>
             <p class="help-text">
@@ -884,7 +884,7 @@
 
         <div
           id="guided-subjects-metadata-tab"
-          class="guided--page guided-subjects-metadata-page-set"
+          class="guided--page guided-subjects-metadata-page-set gm"
           data-page-name="Subjects Metadata"
           data-component-type="entity-metadata-page"
           data-entity-type="subjects"
@@ -892,13 +892,17 @@
 
         <div
           id="guided-samples-metadata-tab"
-          class="guided--page guided-samples-metadata-page-set"
+          class="guided--page guided-samples-metadata-page-set gm"
           data-page-name="Samples Metadata"
           data-component-type="entity-metadata-page"
           data-entity-type="samples"
         ></div>
 
-        <div id="guided-add-code-metadata-tab" class="guided--page" data-page-name="Code metadata">
+        <div
+          id="guided-add-code-metadata-tab"
+          class="guided--page gm"
+          data-page-name="Code metadata"
+        >
           <div class="guided--section">
             <h1 class="text-sub-step-title">Code-related metadata</h1>
           </div>
@@ -1044,12 +1048,12 @@
         <div
           id="guided-resources-entity-addition-tab"
           data-page-name="Experimental Resources"
-          class="guided--page"
+          class="guided--page gm"
           data-component-type="resources-management-page"
         ></div>
         <div
           id="guided-create-description-metadata-tab"
-          class="guided--page"
+          class="guided--page gm"
           data-page-name="Dataset description"
         >
           <div class="guided--section">
@@ -1244,7 +1248,7 @@
             </p>
           </div>
         </div>
-        <div id="guided-create-readme-metadata-tab" class="guided--page" data-page-name="README">
+        <div id="guided-create-readme-metadata-tab" class="guided--page gm" data-page-name="README">
           <div class="guided--section">
             <h1 class="text-sub-step-title">README information</h1>
             <p class="help-text">
@@ -1293,12 +1297,12 @@
         </div>
         <div
           id="guided-create-license-metadata-tab"
-          class="guided--page"
+          class="guided--page gm"
           data-page-name="LICENSE"
           data-component-type="license-select-page"
         ></div>
         <!--
-        <div id="guided-create-changes-metadata-tab" class="guided--page" data-page-name="CHANGES">
+        <div id="guided-create-changes-metadata-tab" class="guided--page gm" data-page-name="CHANGES">
           <div class="guided--section">
             <h1 class="text-sub-step-title">CHANGES information</h1>
             <p class="help-text">
@@ -1330,7 +1334,7 @@
         -->
         <div
           id="guided-dataset-structure-review-tab"
-          class="guided--page"
+          class="guided--page gm"
           data-page-name="Final Dataset Review"
         >
           <div class="guided--section">
@@ -1355,7 +1359,7 @@
         class="guided--parent-tab hidden"
         data-parent-tab-name="Pennsieve metadata"
       >
-        <div class="guided--page" id="guided-pennsieve-metadata-intro-tab" data-page-name="Intro">
+        <div class="guided--page gm" id="guided-pennsieve-metadata-intro-tab" data-page-name="Intro">
           <h1 class="text-sub-step-title">Pennsieve metadata Introduction</h1>
           <div class="guided--section">
             <p class="help-text">
@@ -1569,13 +1573,13 @@
       >
         <div
           id="guided-dataset-generation-options-tab"
-          class="guided--page"
+          class="guided--page gm"
           data-page-name="Options"
           data-component-type="generate-dataset-location-selector-page"
         ></div>
         <div
           id="guided-generate-dataset-locally"
-          class="guided--page local-generation-page-set"
+          class="guided--page gm local-generation-page-set"
           data-page-name="Local Dataset Generation"
         >
           <div class="guided--section">
@@ -1648,7 +1652,7 @@
 
         <div
           id="guided-pennsieve-intro-tab"
-          class="guided--page pennsieve-generation-page-set"
+          class="guided--page gm ffm pennsieve-generation-page-set"
           data-page-name="Pennsieve log in"
         >
           <div class="guided--section">
@@ -1755,7 +1759,7 @@
 
         <div
           id="guided-pennsieve-settings-tab"
-          class="guided--page pennsieve-generation-page-set new-pennsieve-dataset-config-page-set"
+          class="guided--page gm pennsieve-generation-page-set new-pennsieve-dataset-config-page-set"
           data-page-name="Pennsieve Settings"
         >
           <div class="guided--section">
@@ -1969,7 +1973,7 @@
         </div>
         <div
           id="guided-dataset-generation-confirmation-tab"
-          class="guided--page pennsieve-generation-page-set"
+          class="guided--page pennsieve-generation-page-set gm"
           data-page-name="Review and Generate"
         >
           <div class="guided--section">

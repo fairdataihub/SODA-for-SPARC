@@ -13,24 +13,6 @@ if (!window.fs.existsSync(guidedProgressFilePath)) {
   window.fs.mkdirSync(guidedProgressFilePath, { recursive: true });
 }
 
-export const guidedTransitionFromHomeToPage = async (startingPageId) => {
-  //Hide the home screen
-  document.getElementById("soda-home-page").classList.add("hidden");
-  document.getElementById("curation-preparation-parent-tab").classList.remove("hidden");
-  document.getElementById("guided-header-div").classList.remove("hidden");
-
-  //Hide all guided pages (first one will be unHidden automatically)
-  const guidedPages = document.querySelectorAll(".guided--page");
-  guidedPages.forEach((page) => {
-    page.classList.add("hidden");
-  });
-
-  window.CURRENT_PAGE = document.getElementById(startingPageId);
-  await window.openPage(startingPageId);
-
-  document.getElementById("guided-footer-div").classList.remove("hidden");
-};
-
 window.openCurationMode = async (curationMode) => {
   const isGuided = curationMode === "guided";
   const isFreeform = curationMode === "freeform";
@@ -44,10 +26,10 @@ window.openCurationMode = async (curationMode) => {
   }
 
   if (isGuided) {
-    guidedTransitionFromHomeToPage("guided-select-starting-point-tab");
+    transitionFromHomePageToGuidedMode("guided-select-starting-point-tab");
   }
   if (isFreeform) {
-    guidedTransitionFromHomeToPage("ffm-select-starting-point-tab");
+    transitionFromHomePageToGuidedMode("ffm-select-starting-point-tab");
   }
 };
 
@@ -137,7 +119,7 @@ document.getElementById("guided-button-save-and-exit").addEventListener("click",
 const guidedSaveAndExit = async () => {
   if (!window.sodaJSONObj?.["digital-metadata"]?.["name"]) {
     // If a progress file has not been created, then we don't need to save anything
-    returnHomeFromGuidedMode();
+    transitionFromGuidedModeToHome();
     return;
   }
   const { value: returnToGuidedHomeScreen } = await Swal.fire({
@@ -184,16 +166,34 @@ const guidedSaveAndExit = async () => {
         width: 700,
       });
       if (continueWithoutSavingCurrPageChanges) {
-        returnHomeFromGuidedMode();
+        transitionFromGuidedModeToHome();
       } else {
         return;
       }
     }
-    returnHomeFromGuidedMode();
+    transitionFromGuidedModeToHome();
   }
 };
 
-export const returnHomeFromGuidedMode = () => {
+export const transitionFromHomePageToGuidedMode = async (startingPageId) => {
+  //Hide the home screen
+  document.getElementById("soda-home-page").classList.add("hidden");
+  document.getElementById("curation-preparation-parent-tab").classList.remove("hidden");
+  document.getElementById("guided-header-div").classList.remove("hidden");
+
+  //Hide all guided pages (first one will be unHidden automatically)
+  const guidedPages = document.querySelectorAll(".guided--page");
+  guidedPages.forEach((page) => {
+    page.classList.add("hidden");
+  });
+
+  window.CURRENT_PAGE = document.getElementById(startingPageId);
+  await window.openPage(startingPageId);
+
+  document.getElementById("guided-footer-div").classList.remove("hidden");
+};
+
+export const transitionFromGuidedModeToHome = () => {
   prepareGuidedSidebar();
   window.guidedPrepareHomeScreen();
 

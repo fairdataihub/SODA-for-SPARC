@@ -62,29 +62,6 @@ const prepareGuidedSidebar = () => {
 };
 
 window.handleSideBarTabClick = async (id, section) => {
-  const leavingUpload = window.leavingUploadDatasets();
-  const hasProgress = window.sodaJSONHasProgress();
-  const uploadDone = window.uploadComplete();
-
-  // Handle confirmation when leaving upload datasets
-  if (leavingUpload && hasProgress) {
-    const leaveUploadDataset = await swalConfirmAction(
-      "warning",
-      "Are you sure you want to exit?",
-      uploadDone
-        ? "" // after upload complete
-        : "Any progress made importing your dataset and creating manifest files will not be saved. Do you want to continue?", // during upload
-      "Yes",
-      "Cancel"
-    );
-    if (!leaveUploadDataset) return;
-    window.resetCurationTabs();
-  } else if (uploadDone) {
-    window.resetCurationTabs();
-  }
-
-  window.resetCurationTabs();
-
   // Always set activeTab to section, not id
   setActiveSidebarTab(section);
   const sectionId = `${section}-section`;
@@ -110,15 +87,6 @@ window.handleSideBarTabClick = async (id, section) => {
     sectionId === "contact-us-section" ||
     sectionId === "about-us-section"
   ) {
-    window.sodaJSONObj = {};
-    window.datasetStructureJSONObj = {};
-    window.subjectsTableData = [];
-    window.samplesTableData = [];
-
-    window.organizeDSglobalPath = document.getElementById("guided-input-global-path");
-    window.organizeDSglobalPath.value = "";
-    window.dataset_path = window.organizeDSglobalPath;
-
     freeFormItemsContainer.classList.remove("freeform-file-explorer");
     freeFormButtons.classList.remove("freeform-file-explorer-buttons");
 
