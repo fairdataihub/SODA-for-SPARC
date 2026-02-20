@@ -534,8 +534,6 @@ window.run_pre_flight_checks = async (pennsieveAgentStatusDivId) => {
   }
 };
 
-
-
 window.checkInternetConnection = async () => {
   try {
     await axios.get("https://www.google.com");
