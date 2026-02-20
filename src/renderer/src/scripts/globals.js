@@ -1248,6 +1248,8 @@ var dropdownEventID = "";
 window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
   // if users edit current account
   if (dropdown === "ps") {
+    let msg = userErrorMessage(new Error("Sorry folks."), true)
+    await swalShowError("Could not add account", msg);
     await window.addBfAccount(ev, false);
   } else if (dropdown === "dataset") {
     dropdownEventID = ev?.id ?? "";

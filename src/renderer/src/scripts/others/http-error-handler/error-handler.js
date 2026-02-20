@@ -40,7 +40,7 @@ const clientError = (error) => {
  */
 const userErrorMessage = (error, includeContactAddendum = true) => {
   let errorMessage = "";
-  let contactSODATeamAddendum = `If this issue persists, please follow our instructions on how best to contact our team for support <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">using our documentation page here.</a>`;
+  let contactSODATeamAddendum = `If this issue continues, please see our documentation on how to collect and send your SODA log files to our team for help <a href="https://docs.sodaforsparc.io/docs/contact-us" target="_blank">here</a>.`;
   if (!includeContactAddendum) {
     contactSODATeamAddendum = "";
   }
