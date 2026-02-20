@@ -1,0 +1,55 @@
+name: Notify Docs Repo on Main Push
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  notify-docs-repo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract version from package.json
+        id: get_version
+        run: |
+          VERSION=$(jq -r .version package.json)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Extract changelog for version
+        id: get_changelog
+        run: |
+          VERSION="${{ steps.get_version.outputs.version }}"
+          START=$(grep -n -m 1 "v *$VERSION" CHANGELOG.md | cut -d: -f1)
+          END=$(tail -n +$((START+1)) CHANGELOG.md | grep -n -m 1 "^## v" | cut -d: -f1)
+          if [ -z "$END" ]; then
+            END=$(wc -l < CHANGELOG.md)
+          else
+            END=$((START + END - 1))
+          fi
+          CHANGELOG=$(sed -n "${START},${END}p" CHANGELOG.md | awk '/Feature Additions:/,0' | awk '/Feature Additions:/,/^$|^## /' | sed '/^## /q' | sed '/^$/q')
+          BUGFIXES=$(sed -n "${START},${END}p" CHANGELOG.md | awk '/Bug fixes:/,0' | awk '/Bug fixes:/,/^$|^## /' | sed '/^## /q' | sed '/^$/q')
+          CHANGELOG_COMBINED="Feature Additions:\n$CHANGELOG\nBug fixes:\n$BUGFIXES"
+          # Check if both sections are empty
+          if [ -z "$CHANGELOG" ] && [ -z "$BUGFIXES" ]; then
+            echo "No changes found for version $VERSION. Stopping workflow."
+            exit 0
+          fi
+          CHANGELOG_JSON=$(echo "$CHANGELOG_COMBINED" | jq -Rs .)
+          echo "changelog=$CHANGELOG_JSON" >> $GITHUB_OUTPUT
+
+      - name: Send repository_dispatch to Docs Repo
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.DOCS_REPO_TOKEN }}
+          repository: fairdataihub/soda-for-sparc-docs
+          event-type: update-from-soda
+          client-payload: >-
+            {
+              "source_repo": "SODA-for-SPARC",
+              "branch": "main",
+              "version": "${{ steps.get_version.outputs.version }}",
+              "changelog": ${{ steps.get_changelog.outputs.changelog }}
+            }
