@@ -6555,7 +6555,7 @@ document.getElementById("button-gather-logs").addEventListener("click", () => {
   const platform = window.os.platform();
   const appName = "SODA for SPARC";
 
-  const logFiles = ["main.log", "agent.log", "api.log"];
+  const logFiles = ["main.log", "main.old.log", "agent.log", "api.log"];
 
   const serverLogsPath = window.path.join(homedir, "SODA", "logs");
 
