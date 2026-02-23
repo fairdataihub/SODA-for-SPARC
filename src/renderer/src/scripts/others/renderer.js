@@ -6550,13 +6550,16 @@ document.getElementById("button-view-impact").addEventListener("click", () => {
   window.open("https://docs.sodaforsparc.io#impact/", "_blank");
 });
 
-document.getElementById("button-gather-logs").addEventListener("click", () => {
+document.getElementById("button-gather-logs").addEventListener("click", async () => {
   //function will be used to gather all logs on all OS's
   let homedir = window.os.homedir();
+  console.log("homedir: ", homedir);
   let file_path = "";
   let clientLogsPath = "";
   let serverLogsPath = window.path.join(homedir, "SODA", "logs");
   let logFiles = ["main.log", "renderer.log", "agent.log", "api.log"];
+  let userDataPath = await window.electron.ipcRenderer.invoke("get-app-path", "userData");
+  console.log("userDataPath: ", userDataPath);
 
   if (window.os.platform() === "darwin") {
     clientLogsPath = window.path.join(homedir, "/Library/Logs/soda-for-sparc/");
@@ -6565,6 +6568,9 @@ document.getElementById("button-gather-logs").addEventListener("click", () => {
   } else {
     clientLogsPath = window.path.join(homedir, ".config", "soda-for-sparc", "logs");
   }
+
+  console.log("clientLogsPath: ", clientLogsPath);
+  console.log("serverLogsPath: ", serverLogsPath);
 
   Swal.fire({
     title: "Select a destination to create log folder",
@@ -6623,13 +6629,31 @@ document.getElementById("button-gather-logs").addEventListener("click", () => {
             let missingLog = false;
             if (logFile === "agent.log") {
               logFilePath = window.path.join(homedir, ".pennsieve", logFile);
-              if (!window.fs.existsSync(logFilePath)) missingLog = true;
+              console.log("logFilePath for " + logFile + ": ", logFilePath);
+              if (!window.fs.existsSync(logFilePath)) {
+                missingLog = true;
+                console.log(logFile + " does not exist");
+              } else {
+                console.log(logFile + " exists");
+              }
             } else if (logFile === "api.log") {
               logFilePath = window.path.join(serverLogsPath, logFile);
-              if (!window.fs.existsSync(logFilePath)) missingLog = true;
+              console.log("logFilePath for " + logFile + ": ", logFilePath);
+              if (!window.fs.existsSync(logFilePath)) {
+                missingLog = true;
+                console.log(logFile + " does not exist");
+              } else {
+                console.log(logFile + " exists");
+              }
             } else {
               logFilePath = window.path.join(clientLogsPath, logFile);
-              if (!window.fs.existsSync(logFilePath)) missingLog = true;
+              console.log("logFilePath for " + logFile + ": ", logFilePath);
+              if (!window.fs.existsSync(logFilePath)) {
+                missingLog = true;
+                console.log(logFile + " does not exist");
+              } else {
+                console.log(logFile + " exists");
+              }
             }
             if (!missingLog) {
               let log_copy = window.path.join(log_folder, logFile);
