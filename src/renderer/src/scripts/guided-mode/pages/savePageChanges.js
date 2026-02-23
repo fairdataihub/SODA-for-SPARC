@@ -624,7 +624,6 @@ window.savePageChanges = async (pageBeingLeftID) => {
       window.log.error(error);
     }
   } catch (error) {
-    console.log("Error saving page changes:", error);
     if (Array.isArray(error)) {
       for (const err of error) {
         if (err?.message) {

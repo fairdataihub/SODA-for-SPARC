@@ -6566,13 +6566,6 @@ document.getElementById("button-gather-logs").addEventListener("click", () => {
 
   const clientLogsPath = CLIENT_LOG_PATHS[platform] || CLIENT_LOG_PATHS.linux;
 
-  // debug output for log path investigation
-  console.log("[gather-logs] home directory:", homedir);
-  console.log("[gather-logs] platform:", platform);
-  console.log("[gather-logs] serverLogsPath:", serverLogsPath);
-  console.log("[gather-logs] clientLogsPath:", clientLogsPath);
-  console.log("[gather-logs] appName used:", appName);
-
   // Base logs only
   const logFiles = ["main.log", "agent.log", "api.log"];
 
