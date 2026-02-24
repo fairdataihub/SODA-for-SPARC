@@ -41,6 +41,9 @@ jobs:
       - name: Install package.json modules and their dependencies
         run: npm install --ignore-scripts
 
+      - name: Disable Windows code signing
+        run: echo "CSC_IDENTITY_AUTO_DISCOVERY=false" >> $GITHUB_ENV
+
       - name: Deploy the app to GitHub
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
