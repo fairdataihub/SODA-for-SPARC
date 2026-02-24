@@ -62,6 +62,7 @@ import {
   swalListDoubleAction,
   swalShowError,
   swalShowInfo,
+  swalShowSuccess,
 } from "../utils/swal-utils";
 
 import useGlobalStore from "../../stores/globalStore";
@@ -5435,132 +5436,143 @@ document.getElementById("button-view-impact").addEventListener("click", () => {
 });
 
 document.getElementById("button-gather-logs").addEventListener("click", () => {
-  //function will be used to gather all logs on all OS's
-  let homedir = window.os.homedir();
-  let file_path = "";
-  let clientLogsPath = "";
-  let serverLogsPath = window.path.join(homedir, "SODA", "logs");
-  let logFiles = ["main.log", "renderer.log", "agent.log", "api.log"];
+  const homedir = window.os.homedir();
+  const platform = window.os.platform();
+  const appName = "SODA for SPARC";
 
-  if (window.os.platform() === "darwin") {
-    clientLogsPath = window.path.join(homedir, "/Library/Logs/soda-for-sparc/");
-  } else if (window.os.platform() === "win32") {
-    clientLogsPath = window.path.join(homedir, "AppData", "Roaming", "soda-for-sparc", "logs");
-  } else {
-    clientLogsPath = window.path.join(homedir, ".config", "soda-for-sparc", "logs");
-  }
+  const serverLogsPath = window.path.join(homedir, "SODA", "logs");
+
+  const CLIENT_LOG_PATHS = {
+    darwin: window.path.join(homedir, "Library", "Logs", appName),
+    win32: window.path.join(homedir, "AppData", "Roaming", appName, "logs"),
+    linux: window.path.join(homedir, ".config", appName, "logs"),
+  };
+
+  const clientLogsPath = CLIENT_LOG_PATHS[platform] || CLIENT_LOG_PATHS.linux;
+
+  // Base logs only
+  const logFiles = ["main.log", "agent.log", "api.log"];
+
+  let selectedDestination = "";
 
   Swal.fire({
     title: "Select a destination to create log folder",
-    html: `<div style="margin-bottom:1rem;"><p>Please note that any log files that are in your destination already will be overwritten.</p></div><input class="form-control" id="selected-log-destination" type="text" readonly="" placeholder="Select a destination">`,
+    html: `
+      <div style="margin-bottom:1rem;">
+        <p>Please note that any log files that are in your destination already will be overwritten.</p>
+      </div>
+      <input 
+        class="form-control" 
+        id="selected-log-destination" 
+        type="text" 
+        readonly 
+        placeholder="Select a destination"
+      >
+    `,
+    width: 800,
     heightAuto: false,
     showCancelButton: true,
     allowOutsideClick: false,
     allowEscapeKey: true,
     didOpen: () => {
-      let swal_alert_confirm = document.getElementsByClassName("swal2-confirm swal2-styled")[0];
-      swal_alert_confirm.setAttribute("disabled", true);
+      const confirmBtn = document.querySelector(".swal2-confirm");
+      confirmBtn.setAttribute("disabled", true);
 
-      let log_destination_input = document.getElementById("selected-log-destination");
-      log_destination_input.addEventListener("click", function () {
+      const input = document.getElementById("selected-log-destination");
+
+      input.addEventListener("click", () => {
         window.electron.ipcRenderer.send("open-file-dialog-log-destination");
       });
-      window.electron.ipcRenderer.on("selected-log-folder", (event, result) => {
-        file_path = result["filePaths"][0];
-        if (file_path != undefined) {
-          log_destination_input.value = file_path;
-          swal_alert_confirm.removeAttribute("disabled");
+
+      const folderListener = (event, result) => {
+        const selected = result?.filePaths?.[0];
+
+        if (selected) {
+          selectedDestination = selected;
+          input.value = selected;
+          confirmBtn.removeAttribute("disabled");
         } else {
-          Swal.showValidationMessage(`Please enter a destination`);
+          Swal.showValidationMessage("Please enter a destination");
         }
-      });
+
+        window.electron.ipcRenderer.removeListener("selected-log-folder", folderListener);
+      };
+
+      window.electron.ipcRenderer.on("selected-log-folder", folderListener);
     },
     preConfirm: () => {
-      let log_destination_input = document.getElementById("selected-log-destination");
-      if (log_destination_input.value === "" || log_destination_input.value === undefined) {
-        Swal.showValidationMessage(`Please enter a destination`);
+      if (!selectedDestination) {
+        Swal.showValidationMessage("Please enter a destination");
       }
     },
-  }).then((result) => {
-    if (result.isConfirmed === true) {
-      if (file_path !== undefined || file_path !== "") {
-        Swal.fire({
-          title: "Creating log folder",
-          html: "Please wait...",
-          // timer: 5000,
-          allowEscapeKey: false,
-          allowOutsideClick: false,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          timerProgressBar: false,
-          didOpen: () => {
-            Swal.showLoading();
-          },
-        });
+  }).then(async (result) => {
+    if (!result.isConfirmed || !selectedDestination) return;
 
-        let log_folder = window.path.join(file_path, "/SODA-For-SPARC-Logs/");
-        try {
-          window.fs.mkdirSync(log_folder, { recursive: true });
-          // destination will be created or overwritten by default.
-          for (const logFile of logFiles) {
-            let logFilePath;
-            let missingLog = false;
-            if (logFile === "agent.log") {
-              logFilePath = window.path.join(homedir, ".pennsieve", logFile);
-              if (!window.fs.existsSync(logFilePath)) missingLog = true;
-            } else if (logFile === "api.log") {
-              logFilePath = window.path.join(serverLogsPath, logFile);
-              if (!window.fs.existsSync(logFilePath)) missingLog = true;
-            } else {
-              logFilePath = window.path.join(clientLogsPath, logFile);
-              if (!window.fs.existsSync(logFilePath)) missingLog = true;
-            }
-            if (!missingLog) {
-              let log_copy = window.path.join(log_folder, logFile);
+    const logFolder = window.path.join(selectedDestination, "SODA-For-SPARC-Logs");
 
-              window.fs.copyFileSync(logFilePath, log_copy);
-            }
+    try {
+      window.fs.mkdirSync(logFolder, { recursive: true });
+
+      for (const logFile of logFiles) {
+        let basePath;
+
+        if (logFile === "agent.log") {
+          basePath = window.path.join(homedir, ".pennsieve");
+        } else if (logFile === "api.log") {
+          basePath = serverLogsPath;
+        } else {
+          basePath = clientLogsPath;
+        }
+
+        // Always copy base log if it exists
+        const mainSource = window.path.join(basePath, logFile);
+        const mainExists = window.fs.existsSync(mainSource);
+        if (mainExists) {
+          window.fs.copyFileSync(mainSource, window.path.join(logFolder, logFile));
+        }
+
+        // Handle overflow logs for main.log (main.old.log)
+        if (logFile === "main.log") {
+          const overflow = window.path.join(basePath, "main.old.log");
+          if (window.fs.existsSync(overflow)) {
+            window.fs.copyFileSync(overflow, window.path.join(logFolder, "main.old.log"));
           }
-          Swal.close();
+        }
 
-          Swal.fire({
-            title: "Success!",
-            text: `Successfully created SODA-For-SPARC-Logs in ${file_path}`,
-            icon: "success",
-            showConfirmButton: true,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            didOpen: () => {
-              if (document.getElementsByClassName("swal2-loader").length > 0) {
-                document.getElementsByClassName("swal2-loader")[0].style.display = "none";
-                document.getElementsByClassName("swal2-confirm swal2-styled")[0].style.display =
-                  "block";
-              }
-            },
-          });
-        } catch (error) {
-          clientError(error);
-          Swal.fire({
-            title: "Failed to create log folder!",
-            text: error,
-            icon: "error",
-            showConfirmButton: true,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            didOpen: () => {
-              if (document.getElementsByClassName("swal2-loader").length > 0) {
-                document.getElementsByClassName("swal2-loader")[0].style.display = "none";
-                document.getElementsByClassName("swal2-confirm swal2-styled")[0].style.display =
-                  "block";
-              }
-            },
-          });
+        // Handle overflow logs for api.log (api.log.1, api.log.2...)
+        if (logFile === "api.log") {
+          let index = 1;
+          while (true) {
+            const overflowName = `api.log.${index}`;
+            const overflowPath = window.path.join(basePath, overflowName);
+
+            if (!window.fs.existsSync(overflowPath)) break;
+
+            window.fs.copyFileSync(overflowPath, window.path.join(logFolder, overflowName));
+
+            index++;
+          }
         }
       }
+
+      await swalShowSuccess(
+        "Log folder created successfully!",
+        `Successfully created SODA-For-SPARC-Logs in ${selectedDestination}`
+      );
+    } catch (error) {
+      clientError(error);
+
+      Swal.fire({
+        title: "Failed to create log folder!",
+        text: String(error),
+        icon: "error",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
     }
   });
 });
-
 /**
  * Gather the client's analytics ID and save it in a file of the user's choosing. The user can then send this to use when requesting to have their data
  * removed from our analytics database. For each computer/profile the user has they may have to perform this operation if they want all of their data

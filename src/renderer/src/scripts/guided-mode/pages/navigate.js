@@ -58,18 +58,17 @@ export const handleNextButtonClick = async () => {
       await window.openPage(targetPageID);
     }
   } catch (error) {
-    window.log.error(error);
     if (Array.isArray(error)) {
       for (const err of error) {
         if (err.type === "notyf") {
           window.notyf.open({
             duration: "10000",
             type: "error",
-            message: err.message,
+            message: err?.message,
           });
         }
         if (err.type === "swal") {
-          await swalShowError(err.errorTitle, err.errorText);
+          await swalShowError(err?.errorTitle, err?.errorText);
         }
       }
     }

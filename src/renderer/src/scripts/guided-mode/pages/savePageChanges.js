@@ -624,8 +624,17 @@ window.savePageChanges = async (pageBeingLeftID) => {
       window.log.error(error);
     }
   } catch (error) {
-    console.error("Error saving page changes:", error);
-    window.log.error("Error saving page changes:", error);
+    if (Array.isArray(error)) {
+      for (const err of error) {
+        if (err?.message) {
+          window.log.error("Error saving page " + pageBeingLeftID + " changes:" + err.message);
+        }
+        if (err?.errorText) {
+          window.log.error("Error saving page " + pageBeingLeftID + " changes:" + err.errorText);
+        }
+      }
+    }
+    window.log.error("Error saving page changes:", JSON.stringify(error, null, 2));
     guidedSetNavLoadingState(false);
     throw error;
   }
