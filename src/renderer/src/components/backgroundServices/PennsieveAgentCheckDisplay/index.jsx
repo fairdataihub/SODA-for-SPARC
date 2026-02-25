@@ -192,9 +192,11 @@ const PennsieveAgentCheckDisplay = () => {
             <Center>
               <RestartSodaButton />
             </Center>
-            <Text mt="xl">
-              If you have already installed the Pennsieve Agent, please review the error message
-              below.
+            <Text mt="xl" size="lg" fw={600}>
+              Already have the Pennsieve Agent installed?
+            </Text>
+            <Text mt="md">
+              Review the output of the Pennsieve agent below when attempting to start it:
             </Text>
             {pennsieveAgentOutputErrorMessage && (
               <>
@@ -205,17 +207,15 @@ const PennsieveAgentCheckDisplay = () => {
               </>
             )}
             <Text mt="md">
-              The Pennsieve Agent not starting can be caused by a variety of issues, including
-              system security settings. If you are not able to get the Pennsieve Agent working,
-              please refer to the{" "}
+              The Pennsieve Agent not starting can be caused by a variety of issues. If you are not
+              able to get the Pennsieve Agent working, please refer to the{" "}
               <ExternalLink
                 href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/trouble-starting-the-pennsieve-agent-in-soda"
                 buttonText="SODA documentation"
                 buttonType="anchor"
               />
-              for troubleshooting steps and contact SODA support at{" "}
-              <a href="mailto:help@fairdataihub.org">help@fairdataihub.org</a> if you need further
-              assistance.
+              for troubleshooting steps. If you need further assistance, please contact the SODA
+              support team by returning to the home page and going to the "Contact Us" section.
             </Text>
           </Alert>
         </Stack>
