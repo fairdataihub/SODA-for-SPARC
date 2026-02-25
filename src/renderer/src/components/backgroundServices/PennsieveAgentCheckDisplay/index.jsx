@@ -113,17 +113,21 @@ const PennsieveAgentErrorMessageDisplay = ({ errorMessage }) => {
 };
 
 const PennsieveAgentCheckDisplay = () => {
-  const {
-    pennsieveAgentInstalled,
-    pennsieveAgentUpToDate,
-    pennsieveAgentDownloadURL,
-    pennsieveAgentOutputErrorMessage,
-    pennsieveAgentCheckInProgress,
-    pennsieveAgentCheckError,
-    usersPennsieveAgentVersion,
-    latestPennsieveAgentVersion,
-    postPennsieveAgentCheckAction,
-  } = useGlobalStore();
+  const pennsieveAgentInstalled = useGlobalStore((state) => state.pennsieveAgentInstalled);
+  const pennsieveAgentUpToDate = useGlobalStore((state) => state.pennsieveAgentUpToDate);
+  const pennsieveAgentDownloadURL = useGlobalStore((state) => state.pennsieveAgentDownloadURL);
+  const pennsieveAgentOutputErrorMessage = useGlobalStore(
+    (state) => state.pennsieveAgentOutputErrorMessage
+  );
+  const pennsieveAgentCheckInProgress = useGlobalStore(
+    (state) => state.pennsieveAgentCheckInProgress
+  );
+  const pennsieveAgentCheckError = useGlobalStore((state) => state.pennsieveAgentCheckError);
+  const usersPennsieveAgentVersion = useGlobalStore((state) => state.usersPennsieveAgentVersion);
+  const latestPennsieveAgentVersion = useGlobalStore((state) => state.latestPennsieveAgentVersion);
+  const postPennsieveAgentCheckAction = useGlobalStore(
+    (state) => state.postPennsieveAgentCheckAction
+  );
 
   // If the Pennsieve agent check is in progress, display a loading spinner
   if (pennsieveAgentCheckInProgress === true) {

@@ -69,7 +69,7 @@ import useGlobalStore from "../../stores/globalStore";
 import { reRenderTreeView } from "../../stores/slices/datasetTreeViewSlice";
 import {
   resetPennsieveAgentCheckState,
-  setPennsieveAgentCheckSuccessful,
+  setPennsieveAgentStartedSuccessfully,
   setPennsieveAgentInstalled,
   setPennsieveAgentDownloadURL,
   setPennsieveAgentOutputErrorMessage,
@@ -270,7 +270,7 @@ startBackgroundServices();
 initializeSODARenderer();
 
 const abortPennsieveAgentCheck = (pennsieveAgentStatusDivId) => {
-  setPennsieveAgentCheckSuccessful(false);
+  setPennsieveAgentStartedSuccessfully(false);
   if (!pennsieveAgentStatusDivId) {
     return;
   }
@@ -284,7 +284,7 @@ window.getPennsieveAgentStatus = async () => {
   while (useGlobalStore.getState()["pennsieveAgentCheckInProgress"] === true) {
     await window.wait(100);
   }
-  return useGlobalStore.getState()["pennsieveAgentCheckSuccessful"];
+  return useGlobalStore.getState()["pennsieveAgentStartedSuccessfully"];
 };
 
 window.CHECK_FOR_PENNSIEVE_AGENT_STATUS = {
@@ -318,31 +318,49 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
     }
 
     // Step 2: Check if the Pennsieve agent is installed
-    const pennsieveAgentInstalled = await window.spawn.checkForPennsieveAgent();
-    if (pennsieveAgentInstalled === window.CHECK_FOR_PENNSIEVE_AGENT_STATUS.ERROR) {
+    const { agentInstalled, errorMessage } = await window.spawn.checkPennsieveAgentInstallation();
+    console.log(
+      `Pennsieve agent installation check result: installed: ${agentInstalled}, errorMessage: ${errorMessage}`
+    );
+
+    if (agentInstalled === true && !errorMessage) {
+      // If the agent is installed and there are no error messages, we can assume the agent is installed
+      // and working correctly.
+      setPennsieveAgentInstalled(true);
+    } else {
       setPennsieveAgentInstalled(false);
       setPennsieveAgentCheckError(
-        "The Pennsieve Agent is installed but not compatible with your system architecture",
-        "Please download and install the correct version of the Pennsieve Agent for your system. If you need assistance please contact us at help@fairdataihub.org"
+        "SODA was not able to verify the Pennsieve Agent installation",
+        errorMessage
       );
       abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
       return false;
-    } else if (
-      pennsieveAgentInstalled === window.CHECK_FOR_PENNSIEVE_AGENT_STATUS.FOUND_BUT_BAD_EXECUTABLE
-    ) {
-      setPennsieveAgentInstalled(false);
-      setPennsieveAgentCheckError(
-        "The Pennsieve Agent is installed but is not able to run on your computer",
-        "There are different reasons for this to happen and the easiest way to verify is for the SODA team to check manually. Please reach out to us by using the 'Contact Us' page accessible from the sidebar to get support."
-      );
-      abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
-      return false;
-    } else if (pennsieveAgentInstalled === window.CHECK_FOR_PENNSIEVE_AGENT_STATUS.NOT_INSTALLED) {
-      const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
-      setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
-      abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
-      setPennsieveAgentInstalled(false);
-      return false;
+      /*
+      if (errorMessage === window.CHECK_FOR_PENNSIEVE_AGENT_STATUS.ERROR) {
+        setPennsieveAgentInstalled(false);
+        setPennsieveAgentCheckError(
+          "The Pennsieve Agent is installed but not compatible with your system architecture",
+          "Please download and install the correct version of the Pennsieve Agent for your system. If you need assistance please contact us at help@fairdataihub.org"
+        );
+        abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+        return false;
+      } else if (
+        errorMessage === window.CHECK_FOR_PENNSIEVE_AGENT_STATUS.FOUND_BUT_BAD_EXECUTABLE
+      ) {
+        setPennsieveAgentInstalled(false);
+        setPennsieveAgentCheckError(
+          "The Pennsieve Agent is installed but is not able to run on your computer",
+          "There are different reasons for this to happen and the easiest way to verify is for the SODA team to check manually. Please reach out to us by using the 'Contact Us' page accessible from the sidebar to get support."
+        );
+        abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+        return false;
+      } else if (errorMessage === window.CHECK_FOR_PENNSIEVE_AGENT_STATUS.NOT_INSTALLED) {
+        const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
+        setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
+        abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+        setPennsieveAgentInstalled(false);
+        return false;
+      }*/
     }
 
     setPennsieveAgentInstalled(true);
@@ -363,7 +381,6 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
       const emessage = userErrorMessage(error);
       setPennsieveAgentOutputErrorMessage(emessage);
       abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
-
       return false;
     }
 
@@ -408,7 +425,7 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
     }
 
     // If we get to this point, it means all the background services are operational
-    setPennsieveAgentCheckSuccessful(true);
+    setPennsieveAgentStartedSuccessfully(true);
     const postAgentCheckMessages = {
       "guided-mode-post-log-in-pennsieve-agent-check":
         "Click the 'Save and Continue' button below to finish preparing your dataset to be uploaded to Pennsieve.",
@@ -498,9 +515,9 @@ window.run_pre_flight_checks = async (pennsieveAgentStatusDivId) => {
     await window.synchronizePennsieveWorkspace();
 
     // Run the Pennsieve agent checks
-    const pennsieveAgentCheckSuccessful =
+    const pennsieveAgentStartedSuccessfully =
       await window.checkPennsieveAgent(pennsieveAgentStatusDivId);
-    if (!pennsieveAgentCheckSuccessful) {
+    if (!pennsieveAgentStartedSuccessfully) {
       await swalShowInfo(
         "The Pennsieve Agent is not running",
         "Please follow the instructions to start the Pennsieve Agent and try again."
