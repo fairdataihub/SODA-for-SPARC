@@ -285,13 +285,7 @@ if (process.contextIsolated) {
           // Throw an error if the agent doesn't start within 15 seconds
           const agentStartTimeout = 15000; // 15 seconds
           const versionCheckTimeout = setTimeout(() => {
-            reject(
-              new Error(
-                `Pennsieve Agent output while trying to start the agent:\n${pennsieveAgentOutputLog.join(
-                  "\n"
-                )}`
-              )
-            );
+            reject(new Error(`${pennsieveAgentOutputLog.join("\n")}`));
           }, agentStartTimeout);
 
           let agentStartSpawn = spawn("pennsieve", ["agent", "start"], {
