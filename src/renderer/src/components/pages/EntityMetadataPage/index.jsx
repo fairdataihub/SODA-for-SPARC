@@ -860,27 +860,84 @@ const EntityMetadataForm = () => {
 
                     {dataStandard === "HEAL-PRECISION" && (
                       <>
-                        <TextInput
-                          label="BMI"
-                          description="The body mass index of the subject"
-                          placeholder=""
-                          value={getMetadataValue("bmi", "")}
-                          onChange={(e) => handleChange("bmi", e.target.value)}
+                        <Select
+                          label="Subject Type"
+                          description="The type of subject used in the experiment"
+                          placeholder="Select subject type"
+                          data={["Surgical", "Post-mortem"]}
+                          value={getMetadataValue("precision_subject_type", null)}
+                          onChange={(value) => handleChange("precision_subject_type", value)}
                         />
-                        <TextInput
-                          label="Height"
-                          description="The height of the subject"
-                          placeholder=""
-                          value={getMetadataValue("height", "")}
-                          onChange={(e) => handleChange("height", e.target.value)}
-                        />
-                        <TextInput
-                          label="Cause of Death"
-                          description="The cause of death for the subject, if applicable"
-                          placeholder=""
-                          value={getMetadataValue("cause_of_death", "")}
-                          onChange={(e) => handleChange("cause_of_death", e.target.value)}
-                        />
+                        {getMetadataValue("precision_subject_type", null) === "Surgical" && (
+                          <>
+                            <Select
+                              label="Race"
+                              description="The race of the subject"
+                              placeholder="Select race"
+                              data={[
+                                "White",
+                                "Black or African American",
+                                "Asian",
+                                "Native American",
+                                "Other",
+                              ]}
+                              value={getMetadataValue("precision_subject_race", "")}
+                              onChange={(value) => handleChange("precision_subject_race", value)}
+                            />
+                            <Select
+                              label="Education Level"
+                              description="The education level of the subject"
+                              placeholder="Select education level"
+                              data={[
+                                "Did not complete Secondary School or less than High School",
+                                "Some Secondary School or High School education",
+                                "High School or Secondary School degree complete",
+                                "Associate's or Technical Degree complete",
+                                "College or Baccalaureate degree complete",
+                                "Doctoral or Postgraduate education complete",
+                              ]}
+                              value={getMetadataValue("precision_subject_education_level", "")}
+                              onChange={(value) =>
+                                handleChange("precision_subject_education_level", value)
+                              }
+                            />
+                          </>
+                        )}
+                        {getMetadataValue("precision_subject_type", null) === "Post-mortem" && (
+                          <>
+                            <Select
+                              label="Race"
+                              description="The race of the subject"
+                              placeholder="Select race"
+                              data={[
+                                "White",
+                                "Black or African American",
+                                "Asian",
+                                "Native American",
+                                "Other",
+                              ]}
+                              value={getMetadataValue("precision_subject_race", "")}
+                              onChange={(value) => handleChange("precision_subject_race", value)}
+                            />
+                            <TextInput
+                              label="Cause of Death"
+                              description="immediate (declared) cause of death"
+                              placeholder="e.g., cardiac arrest"
+                              value={getMetadataValue("precision_cause_of_death", "")}
+                              onChange={(e) =>
+                                handleChange("precision_cause_of_death", e.target.value)
+                              }
+                            />
+                            <Select
+                              label="Ventilator Use"
+                              description="Whether the subject was on a ventilator"
+                              placeholder="Select ventilator use"
+                              data={["Yes", "No", "Unknown"]}
+                              value={getMetadataValue("precision_ventilator_use", "")}
+                              onChange={(value) => handleChange("precision_ventilator_use", value)}
+                            />
+                          </>
+                        )}
                       </>
                     )}
                   </>
