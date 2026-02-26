@@ -166,16 +166,15 @@ const PennsieveAgentCheckDisplay = () => {
             style={{ width: "100%" }}
           >
             <Text mb="sm">
-              The Pennsieve agent is required to upload data to Pennsieve from SODA. If you have not
-              installed the Pennsieve Agent, please download and install it using the link below.
-              NOTE: If after downloading the Agent, you have trouble installing it, please refer to
-              the
+              The Pennsieve Agent is required to upload data to Pennsieve from SODA. If you do not
+              have the Pennsieve Agent, please download it using the button below. For help
+              installing the Pennsieve Agent refer to the
               <ExternalLink
                 href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/installing-the-pennsieve-agent"
                 buttonText="SODA documentation"
                 buttonType="anchor"
               />
-              for help troubleshooting common installation issues.
+              .
               {window.process.platform() === "darwin" && (
                 <>
                   {" "}
