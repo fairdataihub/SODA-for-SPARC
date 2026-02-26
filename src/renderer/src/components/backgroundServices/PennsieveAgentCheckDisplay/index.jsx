@@ -187,7 +187,14 @@ const PennsieveAgentCheckDisplay = () => {
             </Center>
             <Text mt="sm" mb="sm">
               After installing the agent, you must restart SODA using the {CLOSE_SODA_BUTTON_TEXT}{" "}
-              button below and return to this section to ensure the agent was installed properly.
+              button below and return to this section to ensure the agent was installed properly. If
+              you are having trouble installing the Pennsieve Agent, please refer to the
+              <ExternalLink
+                href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/installing-the-pennsieve-agent"
+                buttonText="SODA documentation"
+                buttonType="anchor"
+              />
+              for help troubleshooting common installation issues.
             </Text>
             <Center>
               <RestartSodaButton />
