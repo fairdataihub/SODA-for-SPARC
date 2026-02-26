@@ -177,7 +177,6 @@ const guidedSaveAndExit = async () => {
 export const transitionFromHomePageToGuidedMode = async (startingPageId) => {
   //Hide the home screen
   document.getElementById("soda-home-page").classList.add("hidden");
-  document.getElementById("curation-preparation-parent-tab").classList.remove("hidden");
   document.getElementById("guided-header-div").classList.remove("hidden");
 
   //Hide all guided pages (first one will be unHidden automatically)

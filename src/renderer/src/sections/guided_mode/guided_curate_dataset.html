@@ -118,31 +118,10 @@
             <div class="guided--section" id="guided-container-progress-cards"></div>
           </div>
         </div>
-        <div
-          id="ffm-select-starting-point-tab"
-          class="guided--page h-100 ffm"
-          data-page-name="Select Starting Point"
-        >
-          <div class="guided--section">
-            <h1 class="text-sub-step-title">Prepare Dataset Step-by-Step</h1>
-          </div>
-          <div class="guided--section">
-            <h1 class="text-sub-step-title">Dataset Selection</h1>
-            <p class="help-text w-100">
-              Select all of the data that you would like to include in your dataset below. Data
-              successfully imported into SODA will be displayed underneath the import button.
-            </p>
-          </div>
-          <div
-            data-component-type="data-importer"
-            data-importer-id="ffm-data-importer-dropzone"
-            data-relative-folder-path-to-import-data-into="data/"
-            class="guided--section"
-          ></div>
-        </div>
+
         <div
           id="guided-name-subtitle-tab"
-          class="guided--page gm"
+          class="guided--page gm ffm"
           data-component-type="guided-mode-page"
           data-page-header="Dataset Name"
           data-page-name="Dataset Name"
@@ -496,6 +475,25 @@
           <div
             data-component-type="data-importer"
             data-importer-id="gm-data-importer-dropzone"
+            data-relative-folder-path-to-import-data-into="data/"
+            class="guided--section"
+          ></div>
+        </div>
+        <div
+          id="ffm-select-starting-point-tab"
+          class="guided--page ffm"
+          data-page-name="Select Starting Point"
+        >
+          <div class="guided--section">
+            <h1 class="text-sub-step-title">Dataset Selection</h1>
+            <p class="help-text w-100">
+              Select all of the data that you would like to include in your dataset below. Data
+              successfully imported into SODA will be displayed underneath the import button.
+            </p>
+          </div>
+          <div
+            data-component-type="data-importer"
+            data-importer-id="ffm-data-importer-dropzone"
             data-relative-folder-path-to-import-data-into="data/"
             class="guided--section"
           ></div>

@@ -115,7 +115,7 @@ const handleGuidedValidationState = (targetPageID) => {
   }
 };
 
-const guidedLockSideBar = (boolShowGuidedModeContainerElements) => {
+const guidedRenderSideBar = (pageBeingOpenedID) => {
   const sidebar = document.getElementById("sidebarCollapse");
   const guidedModeSection = document.getElementById("guided_mode-section");
   const guidedDatsetTab = document.getElementById("guided_curate_dataset-tab");
@@ -128,8 +128,9 @@ const guidedLockSideBar = (boolShowGuidedModeContainerElements) => {
 
   sidebar.disabled = true;
   guidedModeSection.style.marginLeft = "-70px";
+  const pagesToNotRenderSidebarOn = ["guided-select-starting-point-tab"];
 
-  if (boolShowGuidedModeContainerElements) {
+  if (!pagesToNotRenderSidebarOn.includes(pageBeingOpenedID)) {
     guidedDatsetTab.style.marginLeft = "215px";
     guidedNav.style.display = "flex";
     guidedProgressContainer.classList.remove("hidden");
@@ -233,6 +234,7 @@ window.openPage = async (targetPageID) => {
     handleBackButtonVisibility(targetPageID);
     handleSaveAndExitButtonVisibility(targetPageID);
     handleGuidedValidationState(targetPageID);
+    guidedRenderSideBar(targetPageID);
 
     // If the user has not saved the dataset name and subtitle, then the next button should say "Continue"
     // as they are not really saving anything
@@ -249,15 +251,12 @@ window.openPage = async (targetPageID) => {
         span.innerHTML = "Continue";
       });
       setGuidedModeSidebarDatasetName(null);
-      guidedLockSideBar(false);
     } else {
       setGuidedModeSidebarDatasetName(datasetName);
-
       nextButton.querySelector("span.nav-button-text").innerHTML = "Save and Continue";
       nextButtonSpans.forEach((span) => {
         span.innerHTML = "Save and Continue";
       });
-      guidedLockSideBar(true);
     }
 
     if (targetPageDataset.componentType) {
@@ -693,35 +692,27 @@ window.openPage = async (targetPageID) => {
     renderCorrectFileExplorerByPage(targetPageID);
     console.log("window.CURRENT_PAGE: ", window.CURRENT_PAGE);
 
-    let currentParentTab = window.CURRENT_PAGE.closest(".guided--parent-tab");
-
     //Set all capsules to grey and set capsule of page being traversed to green
     setActiveProgressionTab(targetPageID);
 
     renderSideBar(targetPageID);
+    const allParentTabs = document.querySelectorAll(".guided--parent-tab");
+    allParentTabs.forEach((tab) => {
+      if (tab.id !== targetPageParentTab.id) {
+        tab.classList.add("hidden");
+      } else {
+        tab.classList.remove("hidden");
+      }
+    });
 
-    const guidedBody = document.getElementById("guided-body");
-    //Check to see if target element has the same parent as current sub step
-    if (currentParentTab.id === targetPageParentTab.id) {
-      window.CURRENT_PAGE.classList.add("hidden");
-      window.CURRENT_PAGE = targetPage;
-      window.CURRENT_PAGE.classList.remove("hidden");
-      //smooth scroll to top of guidedBody
-      guidedBody.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
-    } else {
-      window.CURRENT_PAGE.classList.add("hidden");
-      currentParentTab.classList.add("hidden");
-      targetPageParentTab.classList.remove("hidden");
-      window.CURRENT_PAGE = targetPage;
-      window.CURRENT_PAGE.classList.remove("hidden");
-      //smooth scroll to top of guidedBody
-      guidedBody.scrollTo({
-        top: 0,
-      });
-    }
+    window.CURRENT_PAGE.classList.add("hidden");
+    window.CURRENT_PAGE = targetPage;
+    window.CURRENT_PAGE.classList.remove("hidden");
+    //smooth scroll to top of guidedBody
+    document.getElementById("guided-body").scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
 
     // Start any animations that need to be started
     startOrStopAnimationsInContainer(targetPageID, "start");

@@ -133,24 +133,30 @@ function PageButton({ page, isActive, isNextPageToComplete }) {
 }
 
 const LinksGroup = ({ label, pages }) => {
+  const hasPages = Array.isArray(pages) && pages.length > 0;
+
+  console.log(`[LinksGroup] Rendering LinksGroup for ${label} with pages:`, pages);
+  // Don't render if there are no pages
+  if (!hasPages) {
+    console.log(`[LinksGroup] No pages found for ${label}, not rendering this section.`);
+    return null;
+  }
+
   const openSidebarTab = useGlobalStore((state) => state.openSidebarTab);
   const opened = openSidebarTab === label;
-  const hasPages = Array.isArray(pages);
   const currentPage = window.CURRENT_PAGE?.id;
   const allPages = getNonSkippedGuidedModePages(document).map((el) => el.id);
   const userCompletedPages = window.sodaJSONObj["completed-tabs"] || [];
   const nextPage = allPages.find((page) => !userCompletedPages.includes(page)) || null;
 
-  const items = hasPages
-    ? pages.map((page) => (
-        <PageButton
-          key={page.pageID || page.pageName}
-          page={page}
-          isActive={page.pageID === currentPage}
-          isNextPageToComplete={page.pageID === nextPage}
-        />
-      ))
-    : null;
+  const items = pages.map((page) => (
+    <PageButton
+      key={page.pageID || page.pageName}
+      page={page}
+      isActive={page.pageID === currentPage}
+      isNextPageToComplete={page.pageID === nextPage}
+    />
+  ));
 
   return (
     <>

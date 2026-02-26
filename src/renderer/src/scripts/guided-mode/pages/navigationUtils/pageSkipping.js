@@ -1,3 +1,9 @@
+const PAGES_THAT_SHOULD_ALWAYS_BE_SKIPPED = [
+  "guided-dataset-generation-tab",
+  "guided-dataset-dissemination-tab",
+  "guided-select-starting-point-tab",
+];
+
 export const guidedSkipPage = (pageId) => {
   const page = document.getElementById(pageId);
 
@@ -29,6 +35,11 @@ export const guidedUnSkipPageSet = (className) => {
 };
 
 export const guidedUnSkipPage = (pageId) => {
+  // Prevent unskipping pages that should always be skipped
+  if (PAGES_THAT_SHOULD_ALWAYS_BE_SKIPPED.includes(pageId)) {
+    return;
+  }
+
   const page = document.getElementById(pageId);
 
   // If the page no longer exists, return
@@ -48,19 +59,15 @@ export const guidedUnSkipPage = (pageId) => {
 };
 
 export const guidedResetSkippedPages = (curationMode) => {
-  const pagesThatShouldAlwaysBeskipped = [
-    "guided-dataset-generation-tab",
-    "guided-dataset-dissemination-tab",
-    "guided-select-starting-point-tab",
-  ];
-  for (const page of pagesThatShouldAlwaysBeskipped) {
+  // Skip pages that should always be skipped
+  for (const page of PAGES_THAT_SHOULD_ALWAYS_BE_SKIPPED) {
     guidedSkipPage(page);
   }
 
   // Reset (unskip) all regular guided pages (excluding pages that should always be skipped)
   const pagesToUnskip = Array.from(document.querySelectorAll(".guided--page"))
     .map((page) => page.id)
-    .filter((pageID) => !pagesThatShouldAlwaysBeskipped.includes(pageID));
+    .filter((pageID) => !PAGES_THAT_SHOULD_ALWAYS_BE_SKIPPED.includes(pageID));
 
   for (const pageID of pagesToUnskip) {
     guidedUnSkipPage(pageID);
@@ -71,19 +78,22 @@ export const guidedResetSkippedPages = (curationMode) => {
     // In FFM mode, skip all pages that don't have "ffm" in their class
     const allPages = Array.from(document.querySelectorAll(".guided--page"));
     for (const page of allPages) {
-      if (!page.classList.contains("ffm")) {
-        console.log(`FFM mode: Skipping page ${page.id} (missing 'ffm' class)`);
+      if (
+        !page.classList.contains("ffm") ||
+        PAGES_THAT_SHOULD_ALWAYS_BE_SKIPPED.includes(page.id)
+      ) {
         guidedSkipPage(page.id);
       } else {
         console.log(`FFM mode: Keeping page ${page.id} (has 'ffm' class)`);
       }
     }
-  } else if (curationMode === "gm") {
+  }
+
+  if (curationMode === "gm") {
     // In GM mode, skip all pages that don't have "gm" in their class
     const allPages = Array.from(document.querySelectorAll(".guided--page"));
     for (const page of allPages) {
-      if (!page.classList.contains("gm")) {
-        console.log(`GM mode: Skipping page ${page.id} (missing 'gm' class)`);
+      if (!page.classList.contains("gm") || PAGES_THAT_SHOULD_ALWAYS_BE_SKIPPED.includes(page.id)) {
         guidedSkipPage(page.id);
       } else {
         console.log(`GM mode: Keeping page ${page.id} (has 'gm' class)`);
@@ -111,15 +121,19 @@ export const getNextPageNotSkipped = (currentPageID) => {
   if (currentPageIndex != siblingPages.length - 1) {
     return document.getElementById(siblingPages[currentPageIndex + 1]);
   } else {
-    const nextParentContainer = parentContainer.nextElementSibling;
-    const nextPages = getNonSkippedGuidedModePages(nextParentContainer);
-    if (nextPages.length === 0) {
-      console.log(
-        `getNextPageNotSkipped: No non-skipped pages available in next parent container from ${currentPageID}`
-      );
-      return undefined;
+    // Keep searching through subsequent parent containers until we find a non-skipped page
+    let nextParentContainer = parentContainer.nextElementSibling;
+    while (nextParentContainer) {
+      const nextPages = getNonSkippedGuidedModePages(nextParentContainer);
+      if (nextPages.length > 0) {
+        return nextPages[0];
+      }
+      nextParentContainer = nextParentContainer.nextElementSibling;
     }
-    return nextPages[0];
+    console.log(
+      `getNextPageNotSkipped: No non-skipped pages available in any subsequent parent container from ${currentPageID}`
+    );
+    return undefined;
   }
 };
 
@@ -130,15 +144,19 @@ export const getPrevPageNotSkipped = (currentPageID) => {
   if (currentPageIndex != 0) {
     return document.getElementById(siblingPages[currentPageIndex - 1]);
   } else {
-    const prevParentContainer = parentContainer.previousElementSibling;
-    const prevParentContainerPages = getNonSkippedGuidedModePages(prevParentContainer);
-    if (prevParentContainerPages.length === 0) {
-      console.log(
-        `getPrevPageNotSkipped: No non-skipped pages available in previous parent container from ${currentPageID}`
-      );
-      return undefined;
+    // Keep searching through previous parent containers until we find a non-skipped page
+    let prevParentContainer = parentContainer.previousElementSibling;
+    while (prevParentContainer) {
+      const prevPages = getNonSkippedGuidedModePages(prevParentContainer);
+      if (prevPages.length > 0) {
+        return prevPages[prevPages.length - 1];
+      }
+      prevParentContainer = prevParentContainer.previousElementSibling;
     }
-    return prevParentContainerPages[prevParentContainerPages.length - 1];
+    console.log(
+      `getPrevPageNotSkipped: No non-skipped pages available in any previous parent container from ${currentPageID}`
+    );
+    return undefined;
   }
 };
 
