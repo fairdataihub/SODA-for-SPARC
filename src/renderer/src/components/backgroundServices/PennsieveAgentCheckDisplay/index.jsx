@@ -163,7 +163,7 @@ const PennsieveAgentCheckDisplay = () => {
             color="blue"
             title="SODA was not able to start the Pennsieve Agent"
             icon={<IconTool />}
-            style={{ width: "100%" }}
+            style={{ width: "100%", maxHeight: 300, overflowY: "auto" }}
           >
             <Text mb="sm">
               The Pennsieve Agent is required to upload data to Pennsieve from SODA. If you do not
