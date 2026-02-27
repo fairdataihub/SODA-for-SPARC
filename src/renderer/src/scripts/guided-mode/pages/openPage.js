@@ -2,6 +2,7 @@ import { openPageCurationPreparation } from "./curationPreparation/openPage.js";
 import { openPageDatasetStructure } from "./datasetStructure/openPage.js";
 import { openPagePrepareMetadata } from "./prepareMetadata/openPage.js";
 import { openPageGenerateDataset } from "./generateDataset/openPage.js";
+import { openPageSharedWorkflowSteps } from "./sharedWorkflowSteps/openPage.js";
 import {
   resetGuidedRadioButtons,
   updateGuidedRadioButtonsFromJSON,
@@ -626,6 +627,7 @@ window.openPage = async (targetPageID) => {
     await openPageDatasetStructure(targetPageID);
     await openPagePrepareMetadata(targetPageID);
     await openPageGenerateDataset(targetPageID);
+    await openPageSharedWorkflowSteps(targetPageID);
 
     const showCorrectFileExplorerByPage = (pageID) => {
       // Get the element for the pageId

@@ -29,7 +29,7 @@ window.openCurationMode = async (curationMode) => {
     transitionFromHomePageToGuidedMode("guided-select-starting-point-tab");
   }
   if (isFreeform) {
-    transitionFromHomePageToGuidedMode("ffm-select-starting-point-tab");
+    transitionFromHomePageToGuidedMode("ffm-pennsieve-login-tab");
   }
 };
 

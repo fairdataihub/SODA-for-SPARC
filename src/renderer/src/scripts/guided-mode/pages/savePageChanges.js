@@ -15,6 +15,7 @@ import { savePageCurationPreparation } from "./curationPreparation/savePage";
 import { savePagePrepareMetadata } from "./prepareMetadata/savePage";
 import { savePagePennsieveDetails } from "./pennsieveDetails/savePage";
 import { savePageGenerateDataset } from "./generateDataset/savePage";
+import { savePageSharedWorkflowSteps } from "./sharedWorkflowSteps/savePage";
 import { countFilesInDatasetStructure, getFilesByEntityType } from "../../utils/datasetStructure";
 import {
   guidedSkipPage,
@@ -581,6 +582,7 @@ window.savePageChanges = async (pageBeingLeftID) => {
     await savePageCurationPreparation(pageBeingLeftID);
     await savePagePrepareMetadata(pageBeingLeftID);
     await savePagePennsieveDetails(pageBeingLeftID);
+    await savePageSharedWorkflowSteps(pageBeingLeftID);
     await savePageGenerateDataset(pageBeingLeftID);
 
     const datasetEntityArrayCopy = useGlobalStore.getState().datasetEntityArray;

@@ -121,11 +121,111 @@
 
         <div
           id="guided-name-subtitle-tab"
-          class="guided--page gm ffm"
+          class="guided--page gm"
           data-component-type="guided-mode-page"
           data-page-header="Dataset Name"
           data-page-name="Dataset Name"
         ></div>
+
+        <div
+          id="ffm-pennsieve-login-tab"
+          class="guided--page ffm pennsieve-generation-page-set"
+          data-page-name="Pennsieve log in"
+        >
+          <div class="guided--section">
+            <h1 class="text-sub-step-title">Pennsieve Log In</h1>
+          </div>
+
+          <div class="guided--section show-when-logged-out" id="ffm-select-pennsieve-account">
+            <h2 class="text-sub-step-title">First, connect your Pennsieve account with SODA</h2>
+            <button
+              class="ui positive button mt-md"
+              data-reset-guided-mode-page="true"
+              onclick="window.openDropdownPrompt(this, 'ps')"
+              style="
+                background-color: var(--color-soda-primary) !important;
+                width: 200px !important;
+              "
+            >
+              Log in to Pennsieve
+            </button>
+          </div>
+
+          <div class="guided--section show-when-logged-in" id="ffm-confirm-pennsieve-account">
+            <div class="guided--input-container">
+              <h2 class="text-sub-step-title">
+                Is this the Pennsieve account you would like to work with?
+              </h2>
+              <div class="guided--container-data-display mt-sm" style="width: 100%">
+                <div class="guided--card-dataset-info">
+                  <div class="guided--dataset-description-container">
+                    <h5 class="guided--dataset-description">Current account:</h5>
+                  </div>
+                  <div
+                    class="guided--dataset-content-container"
+                    onclick="window.openDropdownPrompt(this, 'ps')"
+                  >
+                    <h5 id="ffm-pennsieve-intro-ps-account" class="guided--dataset-content"></h5>
+                    <i class="far fa-edit jump-back" style="color: #000"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="guided--radio-button-container mb-sm" style="margin-top: 1rem">
+              <div
+                data-button-id="ffm-confirm-pennsieve-account-button"
+                data-component-type="checkbox-card"
+              ></div>
+              <div
+                data-button-id="ffm-button-switch-account"
+                data-component-type="checkbox-card"
+              ></div>
+            </div>
+          </div>
+
+          <div class="guided--section" id="ffm-section-select-organization">
+            <div class="guided--input-container">
+              <h2 class="text-sub-step-title">
+                Is this the Pennsieve workspace you want to upload your dataset to?
+              </h2>
+              <div class="guided--container-data-display mt-sm" style="width: 100%">
+                <div class="guided--card-dataset-info">
+                  <div class="guided--dataset-description-container">
+                    <h5 class="guided--dataset-description">Current workspace:</h5>
+                  </div>
+                  <div
+                    class="guided--dataset-content-container change-current-account ds-dd organization"
+                  >
+                    <h5
+                      id="ffm-pennsieve-selected-organization"
+                      class="guided--dataset-content ps-organization-span"
+                    >
+                      Click here to select workspace
+                    </h5>
+                    <i class="far fa-edit jump-back" style="color: #000"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="guided--radio-button-container mb-sm" style="margin-top: 1rem">
+              <div
+                data-button-id="ffm-confirm-pennsieve-organization-button"
+                data-component-type="checkbox-card"
+              ></div>
+              <div
+                data-button-id="ffm-button-switch-organization"
+                data-component-type="checkbox-card"
+              ></div>
+            </div>
+          </div>
+          <div class="guided--section" id="ffm-section-pennsieve-agent-check">
+            <div
+              data-component-type="pennsieve-agent-check-display"
+              class="guided--section"
+              id="ffm-mode-post-log-in-pennsieve-agent-check"
+            ></div>
+          </div>
+        </div>
       </div>
 
       <div
@@ -1649,7 +1749,7 @@
         </div>
 
         <div
-          id="guided-pennsieve-intro-tab"
+          id="guided-pennsieve-login-tab"
           class="guided--page gm ffm pennsieve-generation-page-set"
           data-page-name="Pennsieve log in"
         >
@@ -1715,10 +1815,10 @@
                     <h5 class="guided--dataset-description">Current workspace:</h5>
                   </div>
                   <div
-                    class="guided--dataset-content-container change-current-account ds-dd organization guided-change-workspace"
+                    class="guided--dataset-content-container change-current-account ds-dd organization"
                   >
                     <h5
-                      id="guided-pennsive-selected-organization"
+                      id="guided-pennsieve-selected-organization"
                       class="guided--dataset-content ps-organization-span"
                     >
                       Click here to select workspace
@@ -2015,10 +2115,10 @@
                 <h5 class="guided--dataset-description">Dataset workspace:</h5>
               </div>
               <div
-                class="guided--dataset-content-container change-current-account ds-dd organization guided-change-workspace"
+                class="guided--dataset-content-container change-current-account ds-dd organization"
               >
                 <h5
-                  id="guided-pennsive-selected-organization-review-generate"
+                  id="guided-pennsieve-selected-organization-review-generate"
                   class="guided--dataset-content ps-organization-span"
                 >
                   Click here to select workspace

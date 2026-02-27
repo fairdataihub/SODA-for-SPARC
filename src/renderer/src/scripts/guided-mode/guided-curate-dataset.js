@@ -708,7 +708,7 @@ window.deleteProgressCard = async (datasetName, progressFileName) => {
 export const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
   // Determine individual status flags
   const completedIntro = window.sodaJSONObj["completed-tabs"].includes(
-    "guided-pennsieve-intro-tab"
+    "guided-pennsieve-login-tab"
   );
   const accountSame =
     window.sodaJSONObj?.["last-confirmed-ps-account-details"] === window.defaultBfAccount;
