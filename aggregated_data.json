@@ -1,10 +1,11 @@
 {
-  "Number of total users": 1326,
-  "Number of new users": 641,
-  "Number of times app launched": 6934,
-  "Amount (GB) of data files processed": 48535.959632700884,
-  "Number of files processed": 456581,
-  "Number of unique dataset touched": 407,
-  "Number of published datasets touched": 234,
-  "Number of asset downloads": 4684
+    "Number of total users": 1359,
+    "Number of new users": 667,
+    "Number of times app launched": 7043,
+    "Amount (GB) of data files processed": 50738.383422725885,
+    "Number of files processed": 457391,
+    "Number of unique dataset touched": 414,
+    "Unique datasets touched By SODA": [],
+    "Number of published datasets touched": 166,
+    "Number of asset downloads": 5430
 }
