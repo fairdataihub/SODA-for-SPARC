@@ -191,7 +191,7 @@ const PennsieveAgentCheckDisplay = () => {
             <Center>
               <RestartSodaButton />
             </Center>
-            <Text mt="xl" size="lg" fw={600}>
+            <Text mt="sm" size="lg" fw={600}>
               Already have the Pennsieve Agent installed?
             </Text>
             <Text mt="md">
