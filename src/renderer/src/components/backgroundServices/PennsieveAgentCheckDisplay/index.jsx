@@ -157,7 +157,7 @@ const PennsieveAgentCheckDisplay = () => {
   if (pennsieveAgentInstalled === false) {
     return (
       <FullWidthContainer>
-        <Stack mt="sm" align="center" style={{ maxHeight: 300, overflowY: "auto" }}>
+        <Stack mt="sm" align="center" style={{ overflowY: "auto" }}>
           <Alert
             variant="light"
             color="blue"
@@ -175,14 +175,6 @@ const PennsieveAgentCheckDisplay = () => {
                 buttonType="anchor"
               />
               .
-              {window.process.platform() === "darwin" && (
-                <>
-                  {" "}
-                  <b>NOTE:</b> The Pennsieve Agent 1.8.10 does not work for some Mac users. If you
-                  are seeing this please click the Download button to get the version 1.8.9 of the
-                  Pennsieve Agent.
-                </>
-              )}
             </Text>
             <Center>
               <ExternalLink
