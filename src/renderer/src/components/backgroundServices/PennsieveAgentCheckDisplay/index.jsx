@@ -157,13 +157,13 @@ const PennsieveAgentCheckDisplay = () => {
   if (pennsieveAgentInstalled === false) {
     return (
       <FullWidthContainer>
-        <Stack mt="sm" align="center">
+        <Stack mt="sm" align="center" style={{ maxHeight: 300, overflowY: "auto" }}>
           <Alert
             variant="light"
             color="blue"
             title="SODA was not able to start the Pennsieve Agent"
             icon={<IconTool />}
-            style={{ width: "100%", maxHeight: 300, overflowY: "auto" }}
+            style={{ width: "100%" }}
           >
             <Text mb="sm">
               The Pennsieve Agent is required to upload data to Pennsieve from SODA. If you do not
