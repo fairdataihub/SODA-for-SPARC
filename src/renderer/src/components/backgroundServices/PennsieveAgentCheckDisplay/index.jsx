@@ -8,6 +8,7 @@ import useGlobalStore from "../../../stores/globalStore";
 // Constants
 const RETRY_BUTTON_TEXT = "Retry Pennsieve Agent check";
 const CLOSE_SODA_BUTTON_TEXT = "Close SODA";
+const CONTINUE_WITH_OLD_AGENT_BUTTON_TEXT = "Continue with Currently Installed Pennsieve Agent";
 const KNOWN_ERROR_MESSAGES = [
   "UNIQUE constraint failed:",
   "NotAuthorizedException: Incorrect username or password.",
@@ -52,6 +53,19 @@ const RestartSodaButton = () => (
 );
 
 const RetryButton = () => <Button onClick={window.checkPennsieveAgent}>{RETRY_BUTTON_TEXT}</Button>;
+
+const ContinueWithOldAgentButton = () => (
+  <Button
+    bg="gray"
+    onClick={() => {
+      // Mark that the user has chosen to continue with the current version of the Pennsieve Agent for this session, so that they are not prompted again to update the agent until they restart SODA
+      window.allowOutdatedPennsieveAgentForThisSession = true;
+      window.checkPennsieveAgent();
+    }}
+  >
+    {CONTINUE_WITH_OLD_AGENT_BUTTON_TEXT}
+  </Button>
+);
 
 const PennsieveAgentErrorMessageDisplay = ({ errorMessage }) => {
   const isKnownError = KNOWN_ERROR_MESSAGES.some((msg) => errorMessage.includes(msg));
@@ -213,6 +227,8 @@ const PennsieveAgentCheckDisplay = () => {
     );
   }
 
+  console.log("window", window);
+
   // If the Pennsieve agent is not up to date, display a message with a download link to the latest version
   if (pennsieveAgentUpToDate === false) {
     return (
@@ -228,11 +244,13 @@ const PennsieveAgentCheckDisplay = () => {
             <Text>
               Installed Pennsieve Agent version: <b>{usersPennsieveAgentVersion}</b>
             </Text>
-            <Text mt="sm">
+            <Text mt="sm" mb="sm">
               Latest Pennsieve Agent version: <b>{latestPennsieveAgentVersion}</b>
             </Text>
             <Text mt="sm" mb="sm">
-              Please download and install the latest version of the Pennsieve Agent below.
+              Please download and install the latest version to avoid potential upload issues using
+              the button below. After installing, click the {RETRY_BUTTON_TEXT} button to verify the
+              update.
             </Text>
             <ExternalLink
               href={pennsieveAgentDownloadURL}
@@ -240,13 +258,19 @@ const PennsieveAgentCheckDisplay = () => {
               buttonType="button"
               buttonSize="md"
             />
-            <Text mt="sm">
-              After installing the agent, click the {RETRY_BUTTON_TEXT} button to ensure the agent
-              was installed properly.
+            <Text size="lg" fw={700} mt="lg">
+              Having issues with the latest Pennsieve Agent?
             </Text>
-            <Center mt="sm">
+            <Text mt="md">
+              If you are experiencing issues with the latest version of the Pennsieve Agent, you can
+              choose to continue using your current version of the Pennsieve Agent. However, please
+              note that if you choose to do this, you may encounter upload issues and you will not
+              be able to take advantage of the latest features and bug fixes.
+            </Text>
+            <Group justify="center" mt="sm">
               <RetryButton />
-            </Center>
+              <ContinueWithOldAgentButton />
+            </Group>
           </Alert>
         </Stack>
       </FullWidthContainer>
