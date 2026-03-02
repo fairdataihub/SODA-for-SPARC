@@ -79,8 +79,8 @@ ipcMain.on("open-file-dialog-upload-dataset", async (event) => {
     properties: ["openDirectory", "openFile", "multiSelections"],
     title: "Select a directory or archive file",
     filters: [
-      { name: "Folders and Archives", extensions: ["zip", "tar", "gz", "tar.gz", "*"] },
-      { name: "Archive Files", extensions: ["zip", "tar", "gz", "tar.gz"] },
+      { name: "Folders and Archives", extensions: ["zip", "tar", "gz", "tar.gz", "zarr.tar", "*"] },
+      { name: "Archive Files", extensions: ["zip", "tar", "gz", "tar.gz", "zarr.tar"] },
       { name: "All Files", extensions: ["*"] },
     ],
   });
