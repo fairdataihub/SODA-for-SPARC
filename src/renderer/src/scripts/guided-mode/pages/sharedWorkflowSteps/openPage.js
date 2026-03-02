@@ -1,6 +1,7 @@
 import { getGuidedDatasetName, getGuidedDatasetSubtitle } from "../curationPreparation/utils.js";
 import { guidedResetSkippedPages } from "../navigationUtils/pageSkipping.js";
 import { guidedCheckIfUserNeedsToReconfirmAccountDetails } from "../../guided-curate-dataset.js";
+import { initializeGuidedDatasetObject } from "../../utils/sodaJSONObj.js";
 import api from "../../../others/api/api.js";
 import {
   setGuidedDatasetName,
@@ -9,6 +10,10 @@ import {
 
 export const openPageSharedWorkflowSteps = async (targetPageID) => {
   if (targetPageID === "guided-pennsieve-login-tab" || targetPageID === "ffm-pennsieve-login-tab") {
+    if (targetPageID === "ffm-pennsieve-login-tab") {
+      initializeGuidedDatasetObject();
+      guidedResetSkippedPages("ffm");
+    }
     const tabType = targetPageID.includes("ffm") ? "ffm" : "guided";
     const prefix = tabType;
     const agentCheckElementId = `${prefix}-section-pennsieve-agent-check`;
@@ -62,24 +67,5 @@ export const openPageSharedWorkflowSteps = async (targetPageID) => {
         }
       }
     }
-  }
-  if (targetPageID === "ffm-select-starting-point-tab") {
-    //initializeGuidedDatasetObject();
-    guidedResetSkippedPages("ffm");
-  }
-  if (targetPageID === "guided-select-starting-point-tab") {
-    //initializeGuidedDatasetObject();
-    guidedResetSkippedPages("gm");
-  }
-
-  if (targetPageID === "guided-name-subtitle-tab") {
-    // Get the dataset name and subtitle from the JSON obj
-    const datasetName = getGuidedDatasetName() || "";
-
-    // Set the zustand datasetName state value to the dataset name
-    setGuidedDatasetName(datasetName);
-
-    const datasetSubtitle = getGuidedDatasetSubtitle();
-    setGuidedDatasetSubtitle(datasetSubtitle);
   }
 };
