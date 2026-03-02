@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - staging
+      - allow-older-pennsieve-agent-versions
 
 jobs:
   deploy-on-windows:
