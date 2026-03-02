@@ -75,12 +75,17 @@ ipcMain.on("open-file-dialog-uploadorganization", (event) => {
 ipcMain.on("open-file-dialog-upload-dataset", async (event) => {
   let mainWindow = BrowserWindow.getFocusedWindow();
 
-  let files = await dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
-    properties: ["openDirectory"],
-    title: "Select a directory",
+  let files = await dialog.showOpenDialog(mainWindow, {
+    properties: ["openDirectory", "openFile", "multiSelections"],
+    title: "Select a directory or archive file",
+    filters: [
+      { name: "Folders and Archives", extensions: ["zip", "tar", "gz", "tar.gz", "zarr.tar", "*"] },
+      { name: "Archive Files", extensions: ["zip", "tar", "gz", "tar.gz", "zarr.tar"] },
+      { name: "All Files", extensions: ["*"] },
+    ],
   });
 
-  if (files) {
+  if (files && files.filePaths && files.filePaths.length > 0) {
     mainWindow.webContents.send("selected-destination-upload-dataset", files.filePaths);
   }
 });
