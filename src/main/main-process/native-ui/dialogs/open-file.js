@@ -76,8 +76,8 @@ ipcMain.on("open-file-dialog-upload-dataset", async (event) => {
   let mainWindow = BrowserWindow.getFocusedWindow();
 
   let files = await dialog.showOpenDialog(mainWindow, {
-    properties: ["openDirectory", "openFile", "multiSelections"],
-    title: "Select a directory or archive file",
+    properties: ["openDirectory"],
+    title: "Select a dataset or folder to upload",
     filters: [
       { name: "Folders and Archives", extensions: ["zip", "tar", "gz", "tar.gz", "zarr.tar", "*"] },
       { name: "Archive Files", extensions: ["zip", "tar", "gz", "tar.gz", "zarr.tar"] },
