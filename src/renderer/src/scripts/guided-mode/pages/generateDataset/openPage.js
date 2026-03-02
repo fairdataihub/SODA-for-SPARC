@@ -22,6 +22,7 @@ import {
   setPreferredPennsieveDatasetIntId,
 } from "../../../../stores/slices/pennsieveDatasetSelectSlice.js";
 import api from "../../../others/api/api.js";
+import { guidedGetCurrentUserWorkSpace } from "../../workspaces/workspaces.js";
 
 export const openPageGenerateDataset = async (targetPageID) => {
   if (targetPageID === "guided-dataset-generation-options-tab") {
