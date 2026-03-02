@@ -44,7 +44,11 @@ while (!window.baseHtmlLoaded) {
 }
 
 export const openPagePrepareMetadata = async (targetPageID) => {
+<<<<<<< HEAD
   if (targetPageID === "guided-submission-metadata-tab") {
+=======
+  if (targetPageID === "guided-submission-metatdata-tab") {
+>>>>>>> 435156000fc42cc91d22022d30e2ab050654122f
     // Set the funding agency (currently either NIH or Other)
     const fundingAgency = window.sodaJSONObj["funding_agency"] || "";
     const fundingConsortium =
