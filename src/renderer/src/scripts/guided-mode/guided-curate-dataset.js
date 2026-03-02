@@ -3299,7 +3299,6 @@ const doTheHack = async () => {
   document.querySelector(".primary-selection-aside-item.selection-aside-item").click();
 };
 
-doTheHack();
 
 // Add the event listener for the Data importation component
 const gmDragDropElementId = document.getElementById("gm-data-importer-dropzone");
