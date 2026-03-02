@@ -227,8 +227,6 @@ const PennsieveAgentCheckDisplay = () => {
     );
   }
 
-  console.log("window", window);
-
   // If the Pennsieve agent is not up to date, display a message with a download link to the latest version
   if (pennsieveAgentUpToDate === false) {
     return (

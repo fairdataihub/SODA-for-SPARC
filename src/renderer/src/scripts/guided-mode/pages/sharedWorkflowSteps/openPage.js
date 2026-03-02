@@ -23,10 +23,6 @@ export const openPageSharedWorkflowSteps = async (targetPageID) => {
     const confirmOrgButtonId = `${prefix}-confirm-pennsieve-organization-button`;
     const psAccountTextId = `${prefix}-pennsieve-intro-ps-account`;
 
-    console.log(
-      `Opening ${prefix}-pennsieve-login-tab, checking if user needs to reconfirm account details`
-    );
-
     // Hide the Pennsieve agent check section initially (it gets shown after confirming organization)
     document.getElementById(agentCheckElementId).classList.add("hidden");
 
@@ -60,7 +56,6 @@ export const openPageSharedWorkflowSteps = async (targetPageID) => {
         try {
           const userInformation = await api.getUserInformation();
           const userEmail = userInformation.email;
-          console.log("user email: ", userEmail);
           pennsieveIntroText.innerHTML = userEmail;
         } catch (err) {
           pennsieveIntroText.innerHTML = "";

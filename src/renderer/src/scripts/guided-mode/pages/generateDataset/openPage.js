@@ -31,6 +31,13 @@ export const openPageGenerateDataset = async (targetPageID) => {
     });
   }
 
+  if (targetPageID === "guided-pennsieve-intro-tab") {
+    // Hide the Pennsieve Agent check UI (The window.checkPennsieveAgent function will unhide it when called)
+    document
+      .getElementById("guided-mode-post-log-in-pennsieve-agent-check")
+      .classList.add("hidden");
+  }
+
   if (targetPageID === "guided-generate-dataset-locally") {
     guidedResetLocalGenerationUI();
   }
