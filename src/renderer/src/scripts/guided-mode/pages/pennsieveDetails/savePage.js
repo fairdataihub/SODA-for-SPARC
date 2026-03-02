@@ -12,8 +12,6 @@ export const savePagePennsieveDetails = async (pageBeingLeftID) => {
   const errorArray = [];
 
   if (pageBeingLeftID === "guided-pennsieve-intro-tab") {
-    // Check if the user has confirmed their Pennsieve account
-
     const userConfirmedPennsieveAccount = isCheckboxCardChecked(
       "guided-confirm-pennsieve-account-button"
     );
