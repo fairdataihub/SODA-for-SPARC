@@ -2,6 +2,7 @@ import { getGuidedDatasetName, getGuidedDatasetSubtitle } from "../curationPrepa
 import { guidedResetSkippedPages } from "../navigationUtils/pageSkipping.js";
 import { guidedCheckIfUserNeedsToReconfirmAccountDetails } from "../../guided-curate-dataset.js";
 import { initializeGuidedDatasetObject } from "../../utils/sodaJSONObj.js";
+import { guidedGetCurrentUserWorkSpace } from "../../workspaces/workspaces.js";
 import api from "../../../others/api/api.js";
 import {
   setGuidedDatasetName,
@@ -30,41 +31,59 @@ export const openPageSharedWorkflowSteps = async (targetPageID) => {
     // Hide the Pennsieve agent check section initially (it gets shown after confirming organization)
     document.getElementById(agentCheckElementId).classList.add("hidden");
 
-    // Check if this page has been completed before
-    const completedIntro = window.sodaJSONObj?.["completed-tabs"]?.includes(targetPageID) || false;
+    const elementsToShowWhenLoggedInToPennsieve = document.querySelectorAll(".show-when-logged-in");
+    const elementsToShowWhenNotLoggedInToPennsieve =
+      document.querySelectorAll(".show-when-logged-out");
 
-    if (completedIntro) {
-      const { accountSame, workspaceSame } = guidedCheckIfUserNeedsToReconfirmAccountDetails();
+    if (!window.defaultBfAccount) {
+      elementsToShowWhenLoggedInToPennsieve.forEach((element) => {
+        element.classList.add("hidden");
+      });
+      elementsToShowWhenNotLoggedInToPennsieve.forEach((element) => {
+        element.classList.remove("hidden");
+      });
+    } else {
+      elementsToShowWhenLoggedInToPennsieve.forEach((element) => {
+        element.classList.remove("hidden");
+      });
+      elementsToShowWhenNotLoggedInToPennsieve.forEach((element) => {
+        element.classList.add("hidden");
+      });
 
-      const signInUI = document.getElementById(selectAccountId);
-      const confirmAccountUi = document.getElementById(confirmAccountId);
+      // Auto select the confirm account checkbox if the user has already logged in to Pennsieve
+      // and hasn't changed their account
+      const lastConfirmedAccount = window.sodaJSONObj?.["last-confirmed-ps-account-details"];
+      if (window.defaultBfAccount === lastConfirmedAccount) {
+        document.getElementById(confirmAccountButtonId).click();
+      }
 
-      if (!window.defaultBfAccount) {
-        signInUI.classList.remove("hidden");
-        confirmAccountUi.classList.add("hidden");
-      } else {
-        signInUI.classList.add("hidden");
-        confirmAccountUi.classList.remove("hidden");
-        if (accountSame) {
-          // Since this is the same account as last time, auto-click the confirm account checkbox
-          document.getElementById(confirmAccountButtonId).click();
+      const pennsieveIntroText = document.getElementById(psAccountTextId);
+      // fetch the user's email and set that as the account field's value
+      try {
+        const userInformation = await api.getUserInformation();
+        const userEmail = userInformation.email;
+        console.log("user email: ", userEmail);
+        pennsieveIntroText.innerHTML = userEmail;
+      } catch (err) {
+        console.error("Error fetching user email:", err);
+        pennsieveIntroText.innerHTML = "";
+      }
+
+      try {
+        if (window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"]) {
+          if (
+            window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"] ===
+            guidedGetCurrentUserWorkSpace()
+          ) {
+            console.log(
+              "Auto-confirming organization since user is on the same workspace as last time: ",
+              guidedGetCurrentUserWorkSpace()
+            );
+            document.getElementById(confirmOrgButtonId).click();
+          }
         }
-
-        if (workspaceSame) {
-          // Since this is the same workspace as last time, auto-click the confirm organization checkbox
-          document.getElementById(confirmOrgButtonId).click();
-        }
-
-        const pennsieveIntroText = document.getElementById(psAccountTextId);
-        // fetch the user's email and set that as the account field's value
-        try {
-          const userInformation = await api.getUserInformation();
-          const userEmail = userInformation.email;
-          console.log("user email: ", userEmail);
-          pennsieveIntroText.innerHTML = userEmail;
-        } catch (err) {
-          pennsieveIntroText.innerHTML = "";
-        }
+      } catch (error) {
+        console.error("Error auto-confirming organization: ", error);
       }
     }
   }
