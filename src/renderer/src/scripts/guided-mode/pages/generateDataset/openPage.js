@@ -22,6 +22,7 @@ import {
   setPreferredPennsieveDatasetIntId,
 } from "../../../../stores/slices/pennsieveDatasetSelectSlice.js";
 import api from "../../../others/api/api.js";
+import { guidedGetCurrentUserWorkSpace } from "../../workspaces/workspaces.js";
 
 export const openPageGenerateDataset = async (targetPageID) => {
   if (targetPageID === "guided-dataset-generation-options-tab") {
@@ -33,9 +34,57 @@ export const openPageGenerateDataset = async (targetPageID) => {
 
   if (targetPageID === "guided-pennsieve-intro-tab") {
     // Hide the Pennsieve Agent check UI (The window.checkPennsieveAgent function will unhide it when called)
-    document
-      .getElementById("guided-mode-post-log-in-pennsieve-agent-check")
-      .classList.add("hidden");
+    document.getElementById("guided-section-pennsieve-agent-check").classList.add("hidden");
+
+    const elementsToShowWhenLoggedInToPennsieve = document.querySelectorAll(".show-when-logged-in");
+    const elementsToShowWhenNotLoggedInToPennsieve =
+      document.querySelectorAll(".show-when-logged-out");
+
+    if (!window.defaultBfAccount) {
+      elementsToShowWhenLoggedInToPennsieve.forEach((element) => {
+        element.classList.add("hidden");
+      });
+      elementsToShowWhenNotLoggedInToPennsieve.forEach((element) => {
+        element.classList.remove("hidden");
+      });
+    } else {
+      elementsToShowWhenLoggedInToPennsieve.forEach((element) => {
+        element.classList.remove("hidden");
+      });
+      elementsToShowWhenNotLoggedInToPennsieve.forEach((element) => {
+        element.classList.add("hidden");
+      });
+
+      // Auto select the confirm account checkbox if the user has already logged in to Pennsieve
+      // and hasn't changed their account
+      const lastConfirmedAccount = window.sodaJSONObj?.["last-confirmed-ps-account-details"];
+      if (window.defaultBfAccount === lastConfirmedAccount) {
+        document.getElementById("guided-confirm-pennsieve-account-button").click();
+      }
+
+      const pennsieveIntroText = document.getElementById("guided-pennsieve-intro-ps-account");
+      // fetch the user's email and set that as the account field's value
+      const userInformation = await api.getUserInformation();
+      const userEmail = userInformation.email;
+      pennsieveIntroText.innerHTML = userEmail;
+
+      try {
+        if (window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"]) {
+          if (
+            window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"] ===
+            guidedGetCurrentUserWorkSpace()
+          ) {
+            console.log(
+              "Auto-confirming organization since user is on the same workspace as last time: ",
+              guidedGetCurrentUserWorkSpace()
+            );
+            document.getElementById("guided-confirm-pennsieve-organization-button").click();
+          }
+        }
+      } catch (error) {
+        console.error("Error auto-confirming organization: ", error);
+      }
+    }
   }
 
   if (targetPageID === "guided-generate-dataset-locally") {
