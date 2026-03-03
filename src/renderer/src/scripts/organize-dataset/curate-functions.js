@@ -421,6 +421,7 @@ window.handleLocalDatasetImport = async (path) => {
     return;
   }
 
+  console.log("Setting dataset structure JSON object with the following structure: ", structure);
   window.sodaJSONObj["dataset-structure"] = structure[0];
   window.sodaJSONObj["dataset-structure"]["files"] = list.files;
   const forbiddenFileNames = [];
@@ -2238,22 +2239,10 @@ window.addManifestFilesForTreeView = () => {
   }
 };
 
-// if unchecked
-const revertManifestForTreeView = () => {
-  for (var key in datasetStructureJSONObj["folders"]) {
-    if (highLevelFolders.includes(key)) {
-      var fileKey = datasetStructureJSONObj["folders"][key]["files"];
-      if ("manifest.xlsx" in fileKey && fileKey["manifest.xlsx"]["forTreeview"] === true) {
-        delete fileKey["manifest.xlsx"];
-      }
-    }
-  }
-};
-
 // PRE-REQ: Happens after the dataset name has been selected
 window.ffmCreateManifest = async () => {
   let datasetStructure = window.sodaJSONObj["dataset-structure"];
-
+  console.log("datasetStructure in ffmCreateManifest", datasetStructure);
   let manifestStructure = [];
 
   // recursively go through the dataset structure
@@ -2380,6 +2369,7 @@ $("#generate-manifest-curate").change(async function () {
 
     $("#ffm-manifest-generator").show();
     let manifestStructure = await window.ffmCreateManifest();
+    console.log(manifestStructure);
     if (!window.sodaJSONObj["dataset_metadata"]) {
       window.sodaJSONObj["dataset_metadata"] = {};
     }

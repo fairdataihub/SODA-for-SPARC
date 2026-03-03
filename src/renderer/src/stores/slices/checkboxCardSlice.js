@@ -234,8 +234,7 @@ export const checkboxCardSlice = (set) => ({
       Icon: null,
       mutuallyExclusiveWithCards: ["guided-button-switch-organization"],
       checked: false,
-      configValue: null,
-      configValueState: null,
+
       customOnClick: "window.handleGuidedModeOrganizationConfirmationClick()",
     },
     "guided-button-switch-organization": {
@@ -246,8 +245,6 @@ export const checkboxCardSlice = (set) => ({
       mutuallyExclusiveWithCards: ["guided-confirm-pennsieve-organization-button"],
       nextElementID: null,
       checked: false,
-      configValue: null,
-      configValueState: null,
       preventRadioHandler: true,
       additionalClasses: "change-current-account ds-dd organization guided-change-workspace",
     },
