@@ -372,7 +372,6 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
       return false;
     }
 
-
     let latestPennsieveAgentVersion;
 
     try {
