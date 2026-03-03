@@ -280,7 +280,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     window.sodaJSONObj["dataset_metadata"]["samples"] = samplesMetadata;
   }
 
-  if (pageBeingLeftID === "guided-submission-metatdata-tab") {
+  if (pageBeingLeftID === "guided-submission-metadata-tab") {
     const fundingAgencyDropDownValue = getDropDownState("guided-funding-agency");
     const fundingConsortiumDropDownValue = getDropDownState("guided-nih-funding-consortium");
     const awardNumber = useGlobalStore.getState().awardNumber || "";

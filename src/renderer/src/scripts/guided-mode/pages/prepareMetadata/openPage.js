@@ -44,44 +44,7 @@ while (!window.baseHtmlLoaded) {
 }
 
 export const openPagePrepareMetadata = async (targetPageID) => {
-  if (targetPageID === "guided-pennsieve-intro-tab") {
-    // Hide the Pennsieve agent check section initially (it gets shown after confirming organization)
-    document.getElementById("guided-section-pennsieve-agent-check").classList.add("hidden");
-
-    const { accountSame, workspaceSame } = guidedCheckIfUserNeedsToReconfirmAccountDetails();
-
-    const signInUI = document.getElementById("guided-select-pennsieve-account");
-    const confirmAccountUi = document.getElementById("guided-confirm-pennsieve-account");
-
-    if (!window.defaultBfAccount) {
-      signInUI.classList.remove("hidden");
-      confirmAccountUi.classList.add("hidden");
-    } else {
-      signInUI.classList.add("hidden");
-      confirmAccountUi.classList.remove("hidden");
-      if (accountSame) {
-        // Since this is the same account as last time, auto-click the confirm account checkbox
-        document.getElementById("guided-confirm-pennsieve-account-button").click();
-      }
-
-      if (workspaceSame) {
-        // Since this is the same workspace as last time, auto-click the confirm organization checkbox
-        document.getElementById("guided-confirm-pennsieve-organization-button").click();
-      }
-
-      const pennsieveIntroText = document.getElementById("guided-pennsieve-intro-ps-account");
-      // fetch the user's email and set that as the account field's value
-      try {
-        const userInformation = await api.getUserInformation();
-        const userEmail = userInformation.email;
-        pennsieveIntroText.innerHTML = userEmail;
-      } catch (err) {
-        pennsieveIntroText.innerHTML = "";
-      }
-    }
-  }
-
-  if (targetPageID === "guided-submission-metatdata-tab") {
+  if (targetPageID === "guided-submission-metadata-tab") {
     // Set the funding agency (currently either NIH or Other)
     const fundingAgency = window.sodaJSONObj["funding_agency"] || "";
     const fundingConsortium =
