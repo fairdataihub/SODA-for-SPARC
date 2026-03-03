@@ -162,7 +162,7 @@ const guidedGetPageToReturnTo = async () => {
       "Your Pennsieve account or workspace has changed since you last worked on this dataset.",
       "Please confirm your Pennsieve account and workspace details."
     );
-    return "guided-pennsieve-login-tab";
+    return "gm-pennsieve-login-tab";
   }
 
   // If the page the user was last on no longer exists, return them to the first page

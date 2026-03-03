@@ -707,9 +707,7 @@ window.deleteProgressCard = async (datasetName, progressFileName) => {
 
 export const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
   // Determine individual status flags
-  const completedIntro = window.sodaJSONObj["completed-tabs"].includes(
-    "guided-pennsieve-login-tab"
-  );
+  const completedIntro = window.sodaJSONObj["completed-tabs"].includes("gm-pennsieve-login-tab");
   const accountSame =
     window.sodaJSONObj?.["last-confirmed-ps-account-details"] === window.defaultBfAccount;
   const currentWorkspace = guidedGetCurrentUserWorkSpace();
@@ -725,9 +723,16 @@ export const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
     needsReconfirm,
   };
 };
-window.handleGuidedModeOrganizationConfirmationClick = async () => {
-  document.getElementById("guided-section-pennsieve-agent-check").classList.remove("hidden");
-  await window.checkPennsieveAgent("guided-mode-post-log-in-pennsieve-agent-check");
+window.handleGuidedModeOrganizationConfirmationClick = async (curationModePrefix) => {
+  console.log("curationModePrefix", curationModePrefix);
+  const agentCheckElementId = `${curationModePrefix}-section-pennsieve-agent-check`;
+  const agentCheckElement = document.getElementById(agentCheckElementId);
+  if (agentCheckElement) {
+    agentCheckElement.classList.remove("hidden");
+  } else {
+    console.warn(`Agent check element not found: ${agentCheckElementId}`);
+  }
+  await window.checkPennsieveAgent(`${curationModePrefix}-mode-post-log-in-pennsieve-agent-check`);
 };
 
 window.guidedOpenManifestEditSwal = async () => {

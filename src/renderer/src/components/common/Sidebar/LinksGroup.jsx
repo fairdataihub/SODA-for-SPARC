@@ -135,7 +135,6 @@ function PageButton({ page, isActive, isNextPageToComplete }) {
 const LinksGroup = ({ label, pages }) => {
   const hasPages = Array.isArray(pages) && pages.length > 0;
 
-  console.log(`[LinksGroup] Rendering LinksGroup for ${label} with pages:`, pages);
   // Don't render if there are no pages
   if (!hasPages) {
     console.log(`[LinksGroup] No pages found for ${label}, not rendering this section.`);

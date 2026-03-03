@@ -294,6 +294,7 @@ window.CHECK_FOR_PENNSIEVE_AGENT_STATUS = {
 };
 
 window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
+  console.log("Checking Pennsieve Agent status...", pennsieveAgentStatusDivId);
   window.unHideAndSmoothScrollToElement(pennsieveAgentStatusDivId);
 
   try {

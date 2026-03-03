@@ -10,16 +10,16 @@ import {
 } from "../../../../stores/slices/guidedModeSlice.js";
 
 export const openPageSharedWorkflowSteps = async (targetPageID) => {
-  if (targetPageID === "guided-pennsieve-login-tab" || targetPageID === "ffm-pennsieve-login-tab") {
+  if (targetPageID === "gm-pennsieve-login-tab" || targetPageID === "ffm-pennsieve-login-tab") {
+    let prefix;
     if (targetPageID === "ffm-pennsieve-login-tab") {
       initializeGuidedDatasetObject();
       guidedResetSkippedPages("ffm");
+      prefix = "ffm";
+    } else {
+      prefix = "guided";
     }
-    const tabType = targetPageID.includes("ffm") ? "ffm" : "guided";
-    const prefix = tabType;
     const agentCheckElementId = `${prefix}-section-pennsieve-agent-check`;
-    const selectAccountId = `${prefix}-select-pennsieve-account`;
-    const confirmAccountId = `${prefix}-confirm-pennsieve-account`;
     const confirmAccountButtonId = `${prefix}-confirm-pennsieve-account-button`;
     const confirmOrgButtonId = `${prefix}-confirm-pennsieve-organization-button`;
     const psAccountTextId = `${prefix}-pennsieve-intro-ps-account`;

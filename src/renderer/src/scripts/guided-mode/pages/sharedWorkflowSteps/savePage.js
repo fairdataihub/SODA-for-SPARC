@@ -3,12 +3,16 @@ import { guidedGetCurrentUserWorkSpace } from "../../workspaces/workspaces";
 
 export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
   const errorArray = [];
-  if (pageBeingLeftID === "guided-pennsieve-login-tab") {
-    // Check if the user has confirmed their Pennsieve account
+  if (
+    pageBeingLeftID === "gm-pennsieve-login-tab" ||
+    pageBeingLeftID === "ffm-pennsieve-login-tab"
+  ) {
+    const prefix = pageBeingLeftID === "gm-pennsieve-login-tab" ? "guided" : "ffm";
+    const confirmAccountButtonId = `${prefix}-confirm-pennsieve-account-button`;
+    const confirmOrgButtonId = `${prefix}-confirm-pennsieve-organization-button`;
 
-    const userConfirmedPennsieveAccount = isCheckboxCardChecked(
-      "guided-confirm-pennsieve-account-button"
-    );
+    // Check if the user has confirmed their Pennsieve account
+    const userConfirmedPennsieveAccount = isCheckboxCardChecked(confirmAccountButtonId);
     if (!userConfirmedPennsieveAccount) {
       if (!window.defaultBfAccount) {
         // If the user has not logged in, throw an error
@@ -27,9 +31,7 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
       }
     }
     // Check if the user has confirmed their organization
-    const userConfirmedOrganization = isCheckboxCardChecked(
-      "guided-confirm-pennsieve-organization-button"
-    );
+    const userConfirmedOrganization = isCheckboxCardChecked(confirmOrgButtonId);
     if (!userConfirmedOrganization) {
       // If the user has not confirmed their organization, throw an error
       errorArray.push({
@@ -59,7 +61,8 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
 
     const pennsieveAgentChecksPassed = await window.getPennsieveAgentStatus();
     if (!pennsieveAgentChecksPassed) {
-      window.unHideAndSmoothScrollToElement("guided-mode-post-log-in-pennsieve-agent-check");
+      const agentCheckElementId = `${prefix}-mode-post-log-in-pennsieve-agent-check`;
+      window.unHideAndSmoothScrollToElement(agentCheckElementId);
       errorArray.push({
         type: "notyf",
         message: "The Pennsieve Agent must be installed and running to continue.",
