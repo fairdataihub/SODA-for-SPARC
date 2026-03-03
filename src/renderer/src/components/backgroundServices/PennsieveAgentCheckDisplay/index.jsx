@@ -69,6 +69,7 @@ const ContinueWithOldAgentButton = () => (
 
 const PennsieveAgentErrorMessageDisplay = ({ errorMessage }) => {
   const isKnownError = KNOWN_ERROR_MESSAGES.some((msg) => errorMessage.includes(msg));
+  const pennsieveAgentDownloadURL = useGlobalStore((state) => state.pennsieveAgentDownloadURL);
 
   return (
     <FullWidthContainer>
@@ -76,11 +77,20 @@ const PennsieveAgentErrorMessageDisplay = ({ errorMessage }) => {
         <Alert
           variant="light"
           color="blue"
-          title="An error occurred while starting the Pennsieve Agent"
+          title="SODA was not able to start the Pennsieve Agent"
           icon={<IconAlertCircle />}
           style={{ width: "100%" }}
         >
           <CodeTextDisplay text={errorMessage} />
+          <Text mt="sm">
+            You can download the latest Pennsieve Agent here:{" "}
+            <ExternalLink
+              href={pennsieveAgentDownloadURL}
+              buttonText="Download Pennsieve Agent"
+              buttonType="button"
+              buttonSize="md"
+            />
+          </Text>
           <Stack mt="sm" align="center">
             {isKnownError ? (
               <>
@@ -127,17 +137,21 @@ const PennsieveAgentErrorMessageDisplay = ({ errorMessage }) => {
 };
 
 const PennsieveAgentCheckDisplay = () => {
-  const {
-    pennsieveAgentInstalled,
-    pennsieveAgentUpToDate,
-    pennsieveAgentDownloadURL,
-    pennsieveAgentOutputErrorMessage,
-    pennsieveAgentCheckInProgress,
-    pennsieveAgentCheckError,
-    usersPennsieveAgentVersion,
-    latestPennsieveAgentVersion,
-    postPennsieveAgentCheckAction,
-  } = useGlobalStore();
+  const pennsieveAgentInstalled = useGlobalStore((state) => state.pennsieveAgentInstalled);
+  const pennsieveAgentUpToDate = useGlobalStore((state) => state.pennsieveAgentUpToDate);
+  const pennsieveAgentDownloadURL = useGlobalStore((state) => state.pennsieveAgentDownloadURL);
+  const pennsieveAgentOutputErrorMessage = useGlobalStore(
+    (state) => state.pennsieveAgentOutputErrorMessage
+  );
+  const pennsieveAgentCheckInProgress = useGlobalStore(
+    (state) => state.pennsieveAgentCheckInProgress
+  );
+  const pennsieveAgentCheckError = useGlobalStore((state) => state.pennsieveAgentCheckError);
+  const usersPennsieveAgentVersion = useGlobalStore((state) => state.usersPennsieveAgentVersion);
+  const latestPennsieveAgentVersion = useGlobalStore((state) => state.latestPennsieveAgentVersion);
+  const postPennsieveAgentCheckAction = useGlobalStore(
+    (state) => state.postPennsieveAgentCheckAction
+  );
 
   // If the Pennsieve agent check is in progress, display a loading spinner
   if (pennsieveAgentCheckInProgress === true) {
@@ -148,6 +162,74 @@ const PennsieveAgentCheckDisplay = () => {
             Checking the status of the Pennsieve agent
           </Text>
           <Loader color="primary" type="bars" />
+        </Stack>
+      </FullWidthContainer>
+    );
+  }
+
+  // If the Pennsieve agent is not installed, display a message with a download link
+  if (pennsieveAgentInstalled === false) {
+    return (
+      <FullWidthContainer>
+        <Stack align="center">
+          <Alert
+            variant="light"
+            color="blue"
+            title="SODA was not able to start the Pennsieve Agent"
+            icon={<IconTool />}
+          >
+            <Text mb="sm">
+              The Pennsieve Agent is required to upload data to Pennsieve from SODA. If you do not
+              have the Pennsieve Agent, please download it using the button below. For help
+              installing the Pennsieve Agent refer to the
+              <ExternalLink
+                href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/installing-the-pennsieve-agent"
+                buttonText="SODA documentation"
+                buttonType="anchor"
+              />
+              .
+            </Text>
+            <Center>
+              <ExternalLink
+                href={pennsieveAgentDownloadURL}
+                buttonText="Download the Pennsieve Agent"
+                buttonType="button"
+                buttonSize="md"
+              />
+            </Center>
+            <Text mt="sm" mb="sm">
+              After installing the agent, you must restart SODA using the {CLOSE_SODA_BUTTON_TEXT}{" "}
+              button below and return to this section to ensure the agent was installed properly.
+            </Text>
+            <Center>
+              <RestartSodaButton />
+            </Center>
+            <Text mt="sm" size="lg" fw={600}>
+              Already have the Pennsieve Agent installed?
+            </Text>
+            <Text mt="md">
+              Review the output of the Pennsieve agent below when attempting to start it:
+            </Text>
+            {pennsieveAgentOutputErrorMessage && (
+              <>
+                <Text mt="sm" fw={500}>
+                  Error encountered while starting agent:
+                </Text>
+                <CodeTextDisplay text={pennsieveAgentOutputErrorMessage} />
+              </>
+            )}
+            <Text mt="md">
+              The Pennsieve Agent not starting can be caused by a variety of issues. If you are not
+              able to get the Pennsieve Agent working, please refer to the{" "}
+              <ExternalLink
+                href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/trouble-starting-the-pennsieve-agent-in-soda"
+                buttonText="SODA documentation"
+                buttonType="anchor"
+              />
+              for troubleshooting steps. If you need further assistance, please contact the SODA
+              support team by returning to the home page and going to the "Contact Us" section.
+            </Text>
+          </Alert>
         </Stack>
       </FullWidthContainer>
     );
@@ -168,49 +250,6 @@ const PennsieveAgentCheckDisplay = () => {
             <Text>{pennsieveAgentCheckError.message}</Text>
             <Center mt="sm">
               <RetryButton />
-            </Center>
-          </Alert>
-        </Stack>
-      </FullWidthContainer>
-    );
-  }
-
-  // If the Pennsieve agent is not installed, display a message with a download link
-  if (pennsieveAgentInstalled === false) {
-    return (
-      <FullWidthContainer>
-        <Stack mt="sm" align="center">
-          <Alert
-            variant="light"
-            color="blue"
-            title="Pennsieve Agent not installed"
-            icon={<IconTool />}
-            style={{ width: "100%" }}
-          >
-            <Text mb="sm">
-              The Pennsieve agent is required to upload data to Pennsieve from SODA. Please download
-              and install the Pennsieve Agent by clicking the button below.
-              {window.process.platform() === "darwin" && (
-                <>
-                  {" "}
-                  <b>NOTE:</b> The Pennsieve Agent 1.8.10 does not work for some Mac users. If you
-                  are seeing this please click the Download button to get the version 1.8.9 of the
-                  Pennsieve Agent.
-                </>
-              )}
-            </Text>
-            <ExternalLink
-              href={pennsieveAgentDownloadURL}
-              buttonText="Download the Pennsieve Agent"
-              buttonType="button"
-              buttonSize="md"
-            />
-            <Text mt="sm">
-              After installing the agent, you must restart SODA using the {CLOSE_SODA_BUTTON_TEXT}{" "}
-              button below and return to this section to ensure the agent was installed properly.
-            </Text>
-            <Center mt="sm">
-              <RestartSodaButton />
             </Center>
           </Alert>
         </Stack>

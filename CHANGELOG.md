@@ -5,7 +5,14 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## v 17.0.1 - 2026-02-23
+
+## v 17.0.1 - 2026-02-27
+
+## Feature Additions:
+
+- Updated the Agent Check Display component in Free Form Mode to have a max height and be scrollable so that users with many Pennsieve Agents installed can see all of their agents.
+- Updated the Agent Check Display to treat a failed start of the Agent and a failure to find the Agent the same. This is because in both cases the user cannot use the Agent and the troubleshooting steps are the same. The check includes links on how to install and how to run the Agent if it is already installed but not running.
+
 
 ## Bug fixes:
 

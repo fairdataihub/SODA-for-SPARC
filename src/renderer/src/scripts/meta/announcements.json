@@ -1,4 +1,14 @@
 {
+  "17.0.1": {
+    "announcements": {
+      "features": [
+        "SODA will guide Windows 11 users who have Smart App Control or SmartScreen Defender enabled with running the Pennsieve Agent."
+      ],
+      "bug-fixes": [
+        "Fixed an issue where SODA was populating the Data standard in the Standards information section of the dataset_description metadata file with 'SODA version' instead of just 'SODA'."
+      ]
+    }
+  },
   "17.0.0": {
     "announcements": {
       "features": ["SODA has been updated to support the latest version of the SDS (3.0.2)."],
