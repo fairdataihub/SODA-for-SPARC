@@ -138,6 +138,15 @@ const getFilesAndFolders = async (directoryPath) => {
       }
     });
 
+    // if only 1 folder this allows the code to work without needing subfodlers; helpful for users who have all their files in one folder without subfolders
+    if (folders.length === 0) {
+      folders.push(directoryPath);
+      // files for the single folder will be added in next step so remove added files now
+      for (let file in files) {
+        delete files[file];
+      }
+    }
+
     // itereate through the folders and get the files. If any of the files are names "manifest.csv" or "manifest.xlsx", save them to the variable manifestFiles
     let manifestFiles = {};
     for (let i = 0; i < folders.length; i++) {
@@ -400,12 +409,19 @@ window.uploadDatasetClickHandler = async () => {
 
 window.handleLocalDatasetImport = async (path) => {
   const list = await getFilesAndFolders(path);
-  const structure = await window.buildDatasetStructureJsonFromImportedData(
-    list.folders,
-    "dataset_root/", // Use dataset_root as the root folder since we are importing the root in this case
-    true
-  );
+  let structure = {};
+  try {
+    structure = await window.buildDatasetStructureJsonFromImportedData(
+      list.folders || [],
+      "dataset_root/", // Use dataset_root as the root folder since we are importing the root in this case
+      true
+    );
+  } catch (e) {
+    console.error("Error building dataset structure from imported data:", e);
+    return;
+  }
 
+  console.log("Setting dataset structure JSON object with the following structure: ", structure);
   window.sodaJSONObj["dataset-structure"] = structure[0];
   window.sodaJSONObj["dataset-structure"]["files"] = list.files;
   const forbiddenFileNames = [];
@@ -2223,22 +2239,10 @@ window.addManifestFilesForTreeView = () => {
   }
 };
 
-// if unchecked
-const revertManifestForTreeView = () => {
-  for (var key in datasetStructureJSONObj["folders"]) {
-    if (highLevelFolders.includes(key)) {
-      var fileKey = datasetStructureJSONObj["folders"][key]["files"];
-      if ("manifest.xlsx" in fileKey && fileKey["manifest.xlsx"]["forTreeview"] === true) {
-        delete fileKey["manifest.xlsx"];
-      }
-    }
-  }
-};
-
 // PRE-REQ: Happens after the dataset name has been selected
 window.ffmCreateManifest = async () => {
   let datasetStructure = window.sodaJSONObj["dataset-structure"];
-
+  console.log("datasetStructure in ffmCreateManifest", datasetStructure);
   let manifestStructure = [];
 
   // recursively go through the dataset structure
@@ -2365,6 +2369,7 @@ $("#generate-manifest-curate").change(async function () {
 
     $("#ffm-manifest-generator").show();
     let manifestStructure = await window.ffmCreateManifest();
+    console.log(manifestStructure);
     if (!window.sodaJSONObj["dataset_metadata"]) {
       window.sodaJSONObj["dataset_metadata"] = {};
     }
