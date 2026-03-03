@@ -372,13 +372,30 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
       return false;
     }
 
-    if (usersPennsieveAgentVersion !== latestPennsieveAgentVersion) {
-      console.log("User's Pennsieve Agent version:", usersPennsieveAgentVersion);
-      console.log("Latest Pennsieve Agent version:", latestPennsieveAgentVersion);
-      setPennsieveAgentDownloadURL(platformSpecificAgentDownloadURL);
-      setPennsieveAgentOutOfDate(usersPennsieveAgentVersion, latestPennsieveAgentVersion);
+
+    let latestPennsieveAgentVersion;
+
+    try {
+      const [_, version] = await getLatestPennsieveAgentVersion();
+      latestPennsieveAgentVersion = version;
+    } catch (error) {
+      const emessage = userErrorMessage(error);
+      setPennsieveAgentCheckError(
+        "Unable to get information about the latest Pennsieve Agent release",
+        emessage
+      );
       abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
       return false;
+    }
+
+    if (usersPennsieveAgentVersion !== latestPennsieveAgentVersion) {
+      if (!window.allowOutdatedPennsieveAgentForThisSession === true) {
+        const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
+        setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
+        setPennsieveAgentOutOfDate(usersPennsieveAgentVersion, latestPennsieveAgentVersion);
+        abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+        return false;
+      }
     }
 
     // If we get to this point, it means all the background services are operational
