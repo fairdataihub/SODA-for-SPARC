@@ -74,10 +74,6 @@ export const openPageGenerateDataset = async (targetPageID) => {
             window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"] ===
             guidedGetCurrentUserWorkSpace()
           ) {
-            console.log(
-              "Auto-confirming organization since user is on the same workspace as last time: ",
-              guidedGetCurrentUserWorkSpace()
-            );
             document.getElementById("guided-confirm-pennsieve-organization-button").click();
           }
         }

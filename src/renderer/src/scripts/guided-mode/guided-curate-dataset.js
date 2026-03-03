@@ -5,7 +5,6 @@ import {
   editContributorByOrcid,
   renderContributorsTable,
 } from "./metadata/contributors/contributors";
-import { setNavButtonDisabled } from "../../stores/slices/navButtonStateSlice";
 import {
   CONTRIBUTORS_REGEX,
   CONTRIBUTORS_LAST_NAME_REGEX,
@@ -3323,31 +3322,11 @@ gmDragDropElementId.addEventListener("drop", (event) => {
 const ffmDragDropElementId = document.getElementById("ffm-data-importer-dropzone");
 ffmDragDropElementId.addEventListener("click", (event) => {
   event.preventDefault();
-  window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog", {
-    importRelativePath: "/",
-  });
+  window.uploadDatasetClickHandler();
 });
 ffmDragDropElementId.addEventListener("drop", (event) => {
   event.preventDefault();
-  const itemsDroppedInFileExplorer = Array.from(event.dataTransfer.files).map((file) => file.path);
-  window.electron.ipcRenderer.send("file-explorer-dropped-datasets", {
-    filePaths: itemsDroppedInFileExplorer,
-    importRelativePath: "/",
-  });
-  window.sodaJSONObj = {
-    "ps-account-selected": {},
-    "ps-dataset-selected": {},
-    "dataset-structure": {},
-    "metadata-files": {},
-    "manifest-files": {},
-    "generate-dataset": {},
-    "starting-point": {
-      origin: "local",
-      "local-path": "",
-    },
-  };
-  window.sodaJSONObj["dataset-structure"] = window.datasetStructureJSONObj;
-  setNavButtonDisabled("nextBtn", false);
+  window.uploadDatasetDropHandler(event);
 });
 
 $("#guided-button-add-additional-link").on("click", async () => {

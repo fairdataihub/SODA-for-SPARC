@@ -1023,7 +1023,6 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
       );
       window.sodaJSONObj["starting-point"] = {};
       window.sodaJSONObj["starting-point"]["origin"] = "new";
-      console.log("Resetting dataset structure and metadata files for new dataset starting point");
       window.sodaJSONObj["dataset-structure"] = {};
       window.datasetStructureJSONObj = { folders: {}, files: {} };
       window.sodaJSONObj["metadata-files"] = {};

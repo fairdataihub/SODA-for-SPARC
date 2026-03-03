@@ -21,7 +21,7 @@ const initialState = {
   fileVisibilityFilterActive: false,
   fileVisibilityFilters: { include: [], exclude: [] },
   datasetMetadataToPreview: null,
-  activeFileExplorer: "ffm-unstructured-data-import-tab",
+  activeFileExplorer: null,
   allowDatasetStructureEditing: false,
 };
 
