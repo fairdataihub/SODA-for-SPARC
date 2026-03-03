@@ -372,19 +372,6 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
       return false;
     }
 
-    try {
-      const [_, version] = await getLatestPennsieveAgentVersion();
-      latestPennsieveAgentVersion = version;
-    } catch (error) {
-      const emessage = userErrorMessage(error);
-      setPennsieveAgentCheckError(
-        "Unable to get information about the latest Pennsieve Agent release",
-        emessage
-      );
-      abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
-      return false;
-    }
-
     if (usersPennsieveAgentVersion !== latestPennsieveAgentVersion) {
       if (!window.allowOutdatedPennsieveAgentForThisSession === true) {
         const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
@@ -658,7 +645,7 @@ const getLatestPennsieveAgentVersion = async () => {
   const usersPlatform = window.process.platform();
   let platformSpecificAgentDownloadURL;
 
-  if (latestPennsieveAgentVersion.includes("1.8.10") && usersPlatform === "darwin") {
+  if (latestPennsieveAgentVersion.includes("1.8.13") && usersPlatform === "darwin") {
     // change asset information to 1.8.9
     const updatedReleaseAsset = await axios.get(
       "https://api.github.com/repos/Pennsieve/pennsieve-agent/releases/tags/1.8.9"
