@@ -6,7 +6,7 @@ import CodeTextDisplay from "../../common/CodeTextDisplay";
 import useGlobalStore from "../../../stores/globalStore";
 
 // Constants
-const RETRY_BUTTON_TEXT = "Retry Pennsieve Agent check";
+const RETRY_BUTTON_TEXT = "Retry Pennsieve Agent Check";
 const CLOSE_SODA_BUTTON_TEXT = "Close SODA";
 const CONTINUE_WITH_OLD_AGENT_BUTTON_TEXT = "Continue with Currently Installed Pennsieve Agent";
 const KNOWN_ERROR_MESSAGES = [
