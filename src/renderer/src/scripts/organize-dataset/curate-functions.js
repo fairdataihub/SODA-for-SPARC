@@ -579,9 +579,7 @@ document.getElementById("confirm-account-workspace").addEventListener("click", a
   const continueOnPennsieveAgentCheckSuccess = (agentMutationList) => {
     for (const agentMutation of agentMutationList) {
       if (agentMutation.type === "childList") {
-        console.log("Changes found");
         for (const node of agentMutation.addedNodes) {
-          console.log("Node added: " + node.nodeType);
           if (
             node.textContent &&
             (node.textContent.includes("You are ready to upload datasets to Pennsieve!") ||
