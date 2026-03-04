@@ -3,7 +3,7 @@ import { produce } from "immer";
 
 const initialState = {
   pennsieveAgentCheckInProgress: false,
-  pennsieveAgentCheckSuccessful: null,
+  pennsieveAgentStartedSuccessfully: null,
   pennsieveAgentCheckError: null,
   pennsieveAgentInstalled: null,
   pennsieveAgentDownloadURL: null,
@@ -34,11 +34,11 @@ export const setPennsieveAgentCheckInProgress = (inProgress) => {
   );
 };
 
-export const setPennsieveAgentCheckSuccessful = (successful) => {
+export const setPennsieveAgentStartedSuccessfully = (successful) => {
   useGlobalStore.setState(
     produce((state) => {
       state.pennsieveAgentCheckInProgress = false;
-      state.pennsieveAgentCheckSuccessful = successful;
+      state.pennsieveAgentStartedSuccessfully = successful;
     })
   );
 };

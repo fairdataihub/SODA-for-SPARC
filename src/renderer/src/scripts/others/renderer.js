@@ -69,7 +69,7 @@ import useGlobalStore from "../../stores/globalStore";
 import { reRenderTreeView } from "../../stores/slices/datasetTreeViewSlice";
 import {
   resetPennsieveAgentCheckState,
-  setPennsieveAgentCheckSuccessful,
+  setPennsieveAgentStartedSuccessfully,
   setPennsieveAgentInstalled,
   setPennsieveAgentDownloadURL,
   setPennsieveAgentOutputErrorMessage,
@@ -270,7 +270,7 @@ startBackgroundServices();
 initializeSODARenderer();
 
 const abortPennsieveAgentCheck = (pennsieveAgentStatusDivId) => {
-  setPennsieveAgentCheckSuccessful(false);
+  setPennsieveAgentStartedSuccessfully(false);
   if (!pennsieveAgentStatusDivId) {
     return;
   }
@@ -284,7 +284,7 @@ window.getPennsieveAgentStatus = async () => {
   while (useGlobalStore.getState()["pennsieveAgentCheckInProgress"] === true) {
     await window.wait(100);
   }
-  return useGlobalStore.getState()["pennsieveAgentCheckSuccessful"];
+  return useGlobalStore.getState()["pennsieveAgentStartedSuccessfully"];
 };
 
 window.CHECK_FOR_PENNSIEVE_AGENT_STATUS = {
@@ -317,35 +317,23 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
       return false;
     }
 
-    // Step 2: Check if the Pennsieve agent is installed
-    const pennsieveAgentInstalled = await window.spawn.checkForPennsieveAgent();
-    if (pennsieveAgentInstalled === window.CHECK_FOR_PENNSIEVE_AGENT_STATUS.ERROR) {
-      setPennsieveAgentInstalled(false);
+    // Declare variables to hold the latest Pennsieve agent version and
+    // the platform specific download URL for the latest Pennsieve agent.
+    let platformSpecificAgentDownloadURL;
+    let latestPennsieveAgentVersion;
+    try {
+      ({ latestPennsieveAgentVersion, platformSpecificAgentDownloadURL } =
+        await getLatestPennsieveAgentVersion());
+      setPennsieveAgentDownloadURL(platformSpecificAgentDownloadURL);
+    } catch (error) {
       setPennsieveAgentCheckError(
-        "The Pennsieve Agent is installed but not compatible with your system architecture",
-        "Please download and install the correct version of the Pennsieve Agent for your system. If you need assistance please contact us at help@fairdataihub.org"
+        "Unable to get information about the latest Pennsieve Agent release",
+        "SODA must be able to retrieve the latest Pennsieve Agent version to ensure compatibility. Please check your internet connection and try again."
       );
       abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
-      return false;
-    } else if (
-      pennsieveAgentInstalled === window.CHECK_FOR_PENNSIEVE_AGENT_STATUS.FOUND_BUT_BAD_EXECUTABLE
-    ) {
-      setPennsieveAgentInstalled(false);
-      setPennsieveAgentCheckError(
-        "The Pennsieve Agent is installed but is not able to run on your computer",
-        "There are different reasons for this to happen and the easiest way to verify is for the SODA team to check manually. Please reach out to us by using the 'Contact Us' page accessible from the sidebar to get support."
-      );
-      abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
-      return false;
-    } else if (pennsieveAgentInstalled === window.CHECK_FOR_PENNSIEVE_AGENT_STATUS.NOT_INSTALLED) {
-      const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
-      setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
-      abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
-      setPennsieveAgentInstalled(false);
+
       return false;
     }
-
-    setPennsieveAgentInstalled(true);
 
     // Stop the Pennsieve agent if it is running
     // This is to ensure that the agent is not running when we try to start it so no funny business happens
@@ -359,11 +347,14 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
     // Start the Pennsieve agent
     try {
       await window.spawn.startPennsieveAgent();
+      setPennsieveAgentInstalled(true);
     } catch (error) {
-      const emessage = userErrorMessage(error);
-      setPennsieveAgentOutputErrorMessage(emessage);
+      console.log(error);
+      setPennsieveAgentInstalled(false);
+      setPennsieveAgentOutputErrorMessage(
+        error.message || "An unknown error occurred while starting the Pennsieve Agent."
+      );
       abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
-
       return false;
     }
 
@@ -381,21 +372,6 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
       return false;
     }
 
-    let latestPennsieveAgentVersion;
-
-    try {
-      const [_, version] = await getLatestPennsieveAgentVersion();
-      latestPennsieveAgentVersion = version;
-    } catch (error) {
-      const emessage = userErrorMessage(error);
-      setPennsieveAgentCheckError(
-        "Unable to get information about the latest Pennsieve Agent release",
-        emessage
-      );
-      abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
-      return false;
-    }
-
     if (usersPennsieveAgentVersion !== latestPennsieveAgentVersion) {
       if (!window.allowOutdatedPennsieveAgentForThisSession === true) {
         const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
@@ -407,7 +383,7 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
     }
 
     // If we get to this point, it means all the background services are operational
-    setPennsieveAgentCheckSuccessful(true);
+    setPennsieveAgentStartedSuccessfully(true);
     const postAgentCheckMessages = {
       "guided-mode-post-log-in-pennsieve-agent-check":
         "Click the 'Save and Continue' button below to finish preparing your dataset to be uploaded to Pennsieve.",
@@ -497,9 +473,9 @@ window.run_pre_flight_checks = async (pennsieveAgentStatusDivId) => {
     await window.synchronizePennsieveWorkspace();
 
     // Run the Pennsieve agent checks
-    const pennsieveAgentCheckSuccessful =
+    const pennsieveAgentStartedSuccessfully =
       await window.checkPennsieveAgent(pennsieveAgentStatusDivId);
-    if (!pennsieveAgentCheckSuccessful) {
+    if (!pennsieveAgentStartedSuccessfully) {
       await swalShowInfo(
         "The Pennsieve Agent is not running",
         "Please follow the instructions to start the Pennsieve Agent and try again."
@@ -610,14 +586,28 @@ window.check_api_key = async (showNotyfs = false) => {
 };
 
 const getPlatformSpecificAgentDownloadURL = async () => {
-  // Try to the direct download url for the platform specific agent
-  // If that fails, then return the generic download url
+  // Retrieve platform‑specific download link from release metadata.  The
+  // helper `getLatestPennsieveAgentVersion` already chooses the correct
+  // asset based on OS/architecture, but it may still return undefined if the
+  // asset couldn't be found.  Always return a string so callers don't have
+  // to guard against falsy values.
   try {
-    const [directDownloadUrl, _] = await getLatestPennsieveAgentVersion();
-    return directDownloadUrl;
+    const { platformSpecificAgentDownloadURL } = await getLatestPennsieveAgentVersion();
+
+    if (platformSpecificAgentDownloadURL && typeof platformSpecificAgentDownloadURL === "string") {
+      return platformSpecificAgentDownloadURL;
+    }
+
+    // fall through to fallback below
+    window.log &&
+      window.log.warn("Platform-specific agent URL was undefined, falling back to generic page");
   } catch (error) {
-    return "https://github.com/Pennsieve/pennsieve-agent/releases";
+    // swallow and fall back
+    window.log && window.log.warn("Error fetching latest Pennsieve agent version", error);
   }
+
+  // Generic release page is the last resort
+  return "https://github.com/Pennsieve/pennsieve-agent/releases";
 };
 
 /**
@@ -655,7 +645,7 @@ const getLatestPennsieveAgentVersion = async () => {
   const usersPlatform = window.process.platform();
   let platformSpecificAgentDownloadURL;
 
-  if (latestPennsieveAgentVersion.includes("1.8.10") && usersPlatform === "darwin") {
+  if (latestPennsieveAgentVersion.includes("1.8.13") && usersPlatform === "darwin") {
     // change asset information to 1.8.9
     const updatedReleaseAsset = await axios.get(
       "https://api.github.com/repos/Pennsieve/pennsieve-agent/releases/tags/1.8.9"
@@ -697,7 +687,11 @@ const getLatestPennsieveAgentVersion = async () => {
     );
   }
 
-  return [platformSpecificAgentDownloadURL, latestPennsieveAgentVersion];
+  // returning an object makes the caller code clearer and easier to extend
+  return {
+    platformSpecificAgentDownloadURL,
+    latestPennsieveAgentVersion,
+  };
 };
 
 // Check app version on current app and display in the side bar

@@ -251,8 +251,8 @@ if (process.contextIsolated) {
           });
         });
       },
-      checkForPennsieveAgent: () => {
-        return new Promise((resolve, reject) => {
+      checkPennsieveAgentInstallation: () => {
+        return new Promise((resolve) => {
           let agentStartSpawn = spawn("pennsieve", ["agent"], {
             shell: true,
             env: window.process.env,
@@ -260,23 +260,20 @@ if (process.contextIsolated) {
 
           agentStartSpawn.stdout.on("data", (data) => {
             log.info("Pennsieve agent is installed:", data.toString()); // Log data for debugging
-            resolve("INSTALLED"); // Agent found
+            resolve({ agentInstalled: true, errorMessage: null });
           });
 
           agentStartSpawn.stderr.on("data", (data) => {
             ///bin/sh: /usr/local/bin/pennsieve: Bad CPU type in executable
-            if (data.toString().includes("Bad CPU type in executable")) {
-              resolve("FOUND_BUT_BAD_EXECUTABLE");
-            }
-
-            resolve("NOT_INSTALLED");
+            log.info("Error checking for Pennsieve Agent:", data.toString()); // Log data for debugging
+            console.log("Error checking for Pennsieve Agent:", data.toString());
+            resolve({ agentInstalled: false, errorMessage: data.toString() });
           });
 
           agentStartSpawn.on("error", (error) => {
-            if (error.toString().includes("Bad CPU type in executable")) {
-              resolve("FOUND_BUT_BAD_EXECUTABLE");
-            }
-            resolve("NOT_INSTALLED");
+            log.info("Error spawning process to check for Pennsieve Agent:", error.toString()); // Log error for debugging
+            console.log("Error spawning process to check for Pennsieve Agent:", error.toString());
+            resolve({ agentInstalled: false, errorMessage: error.toString() });
           });
         });
       },
@@ -288,13 +285,7 @@ if (process.contextIsolated) {
           // Throw an error if the agent doesn't start within 15 seconds
           const agentStartTimeout = 15000; // 15 seconds
           const versionCheckTimeout = setTimeout(() => {
-            reject(
-              new Error(
-                `Pennsieve Agent output while trying to start the agent:<br />${pennsieveAgentOutputLog.join(
-                  "<br />"
-                )}`
-              )
-            );
+            reject(new Error(`${pennsieveAgentOutputLog.join("\n")}`));
           }, agentStartTimeout);
 
           let agentStartSpawn = spawn("pennsieve", ["agent", "start"], {
