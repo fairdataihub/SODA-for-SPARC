@@ -2242,6 +2242,7 @@ window.addManifestFilesForTreeView = () => {
 const getFileExtension = (filename) => {
   const lowerName = filename.toLowerCase();
   // Sort extensions by length (longest first) to match double extensions before single ones
+  // NOTE: This list should be kept in sync with the list with the same variable in pysodafair.
   const ps_recognized_file_extensions = [
     ".cram",
     ".jp2",

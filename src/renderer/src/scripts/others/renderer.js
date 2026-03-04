@@ -397,6 +397,9 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
         "You are ready to upload datasets to Pennsieve!"
     );
 
+    // Unhide the next button in free form mode
+    setNavButtonDisabled("nextBtn", false);
+
     return true;
   } catch (error) {
     setPennsieveAgentCheckError("Error checking Pennsieve background services", error.message);
