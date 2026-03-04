@@ -5,7 +5,14 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## v 17.0.1 - 2026-02-23
+## v 17.0.1 - 2026-03-04
+
+## Feature Additions:
+
+- Updated the Agent Check Display component in Free Form Mode to have a max height and be scrollable so that users with smaller screens can see the entire content of the component.
+- Updated the Agent Check Display to treat a failed start of the Agent and a failure to find the Agent the same. This is because in both cases the user cannot use the Agent and the troubleshooting steps are the same. The check includes links on how to install and how to run the Agent if it is already installed but not running.
+- Allow users to import zip, tar, and tar.gz files into SODA. This is especially helpful for RE-JOIN datasets that need to compress their microscopy derivative files.
+- SODA guides Windows 11 users who are not able to start the Pennsieve Agent due to Smart App Control to a documentation page which helps them understand the problem and gives an overview of possible solutions.
 
 ## Bug fixes:
 
