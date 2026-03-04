@@ -576,6 +576,30 @@ document.getElementById("confirm-account-workspace").addEventListener("click", a
   // Hide the Pennsieve Agent check div
   pennsieveAgentCheckDiv.classList.add("hidden");
 
+  const continueOnPennsieveAgentCheckSuccess = (agentMutationList) => {
+    for (const agentMutation of agentMutationList) {
+      if (agentMutation.type === "childList") {
+        console.log("Changes found");
+        for (const node of agentMutation.addedNodes) {
+          console.log("Node added: " + node.nodeType);
+          if (
+            node.textContent &&
+            (node.textContent.includes("You are ready to upload datasets to Pennsieve!") ||
+              node.textContent.includes("Click the 'Continue' button below."))
+          ) {
+            setNavButtonDisabled("nextBtn", false);
+            observer.disconnect();
+          }
+        }
+      }
+    }
+  };
+
+  // add observer to the pennsieveAgentCheckDivId to setNavButton to enabled once the text "The Pennsieve Agent is ready" appears
+  const observer = new MutationObserver(continueOnPennsieveAgentCheckSuccess);
+
+  observer.observe(pennsieveAgentCheckDiv, { childList: true, subtree: true });
+
   try {
     let userInfo = await api.getUserInformation();
     let currentWorkspace = userInfo["preferredOrganization"];
@@ -629,8 +653,7 @@ document.getElementById("confirm-account-workspace").addEventListener("click", a
   try {
     pennsieveAgentCheckDiv.classList.remove("hidden");
     // Check to make sure the Pennsieve agent is installed
-    let passed = await window.checkPennsieveAgent(pennsieveAgentCheckDivId);
-    if (passed) setNavButtonDisabled("nextBtn", false);
+    await window.checkPennsieveAgent(pennsieveAgentCheckDivId);
   } catch (e) {
     console.error("Error with agent" + e);
   }
