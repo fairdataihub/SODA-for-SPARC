@@ -71,7 +71,7 @@
   ],
   "codeRepository": "https://github.com/fairdataihub/SODA-for-SPARC",
   "dateCreated": "2021-10-08",
-  "dateModified": "2025-12-10",
+  "dateModified": "2026-03-04",
   "datePublished": "2024-10-11",
   "description": "Simplifying data curation for researchers funded by the NIH SPARC initiative",
   "developmentStatus": "active",
@@ -90,7 +90,7 @@
     "Ubuntu"
   ],
   "programmingLanguage": ["JavaScript", "HTML", "Python", "CSS"],
-  "schema:releaseNotes": "## Bug Fixes:\n- Fixed an issue where Prepare Dataset Step-by-Step does not save sample files when using the save and exit button.",
-  "version": "1125.33565",
+  "schema:releaseNotes": "## Feature Additions:\n\n- Updated the Agent Check Display component in Free Form Mode to have a max height and be scrollable so that users with smaller screens can see the entire content of the component.\n- Updated the Agent Check Display to treat a failed start of the Agent and a failure to find the Agent the same. This is because in both cases the user cannot use the Agent and the troubleshooting steps are the same. The check includes links on how to install and how to run the Agent if it is already installed but not running.\n- Allow users to import zip, tar, and tar.gz files into SODA. This is especially helpful for RE-JOIN datasets that need to compress their microscopy derivative files.\n- SODA guides Windows 11 users who are not able to start the Pennsieve Agent due to Smart App Control to a documentation page which helps them understand the problem and gives an overview of possible solutions.\n\n## Bug fixes:\n\n- Fixed an issue where SODA was populating the Data standard in the Standards information section of the dataset_description metadata file with 'SODA version' instead of just 'SODA'",
+  "version": "17.1.0",
   "type": "SoftwareSourceCode"
 }
