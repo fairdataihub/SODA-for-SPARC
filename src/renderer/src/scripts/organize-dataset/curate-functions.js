@@ -138,6 +138,15 @@ const getFilesAndFolders = async (directoryPath) => {
       }
     });
 
+    // if only 1 folder this allows the code to work without needing subfodlers; helpful for users who have all their files in one folder without subfolders
+    if (folders.length === 0) {
+      folders.push(directoryPath);
+      // files for the single folder will be added in next step so remove added files now
+      for (let file in files) {
+        delete files[file];
+      }
+    }
+
     // itereate through the folders and get the files. If any of the files are names "manifest.csv" or "manifest.xlsx", save them to the variable manifestFiles
     let manifestFiles = {};
     for (let i = 0; i < folders.length; i++) {
@@ -407,6 +416,119 @@ window.handleLocalDatasetImport = async (path) => {
     true
   );
   window.datasetStructureJSONObj = structure;
+
+  /** merged in from staging can probably be deleted
+  let structure = {};
+  try {
+    structure = await window.buildDatasetStructureJsonFromImportedData(
+      list.folders || [],
+      "dataset_root/", // Use dataset_root as the root folder since we are importing the root in this case
+      true
+    );
+  } catch (e) {
+    console.error("Error building dataset structure from imported data:", e);
+    return;
+  }
+
+  window.sodaJSONObj["dataset-structure"] = structure[0];
+  window.sodaJSONObj["dataset-structure"]["files"] = list.files;
+  const forbiddenFileNames = [];
+  const problematicFiles = [];
+  const hiddenItems = [];
+
+  for (let file in list.files) {
+    const filesIsForbiddenFilesList = window.evaluateStringAgainstSdsRequirements(
+      file,
+      "is-forbidden-file"
+    );
+    if (filesIsForbiddenFilesList) {
+      forbiddenFileNames.push(file);
+    } else {
+      const fileNameIsValid = window.evaluateStringAgainstSdsRequirements(
+        file,
+        "folder-or-file-name-is-valid"
+      );
+
+      if (!fileNameIsValid) {
+        problematicFiles.push(file);
+      }
+
+      const fileIsHidden = window.evaluateStringAgainstSdsRequirements("file", "is-hidden-file");
+      if (fileIsHidden) {
+        hiddenItems.push(file);
+      }
+    }
+  }
+
+  // TODO: Handle dropped/renamed files in the manifest file
+  if (forbiddenFileNames.length > 0) {
+    await swalListSingleAction(
+      forbiddenFileNames.map((file) => `dataset_root/${file}`),
+      "Forbidden file names detected",
+      "The files listed below do not comply with the SPARC data standards and will not be imported",
+      false
+    );
+
+    const metadataFiles = Object.keys(window.sodaJSONObj["dataset-structure"]["files"]);
+    for (let file of metadataFiles) {
+      if (forbiddenFileNames.includes(file)) {
+        delete window.sodaJSONObj["dataset-structure"]["files"][file];
+      }
+    }
+  }
+
+  if (problematicFiles.length > 0) {
+    const userResponse = await swalListTripleAction(
+      problematicFiles.map((file) => `dataset_root/${file}`),
+      "<p>File name modifications</p>",
+      `The files listed below contain the special characters "#", "&", "%", or "+"
+      which are typically not recommended per the SPARC data standards.
+      You may choose to either keep them as is, or replace the characters with '-'.
+      `,
+      "Replace the special characters with '-'",
+      "Keep the file names as they are",
+      "Cancel import",
+      "What would you like to do with the files with special characters?"
+    );
+
+    if (userResponse === "confirm") {
+      window.replaceProblematicFilesWithSDSCompliantNames(window.sodaJSONObj);
+    }
+
+    if (userResponse === "cancel") {
+      throw new Error("Importation cancelled");
+    }
+  }
+
+  if (hiddenItems.length > 0) {
+    const userResponse = await swalListTripleAction(
+      hiddenItems.map((file) => `dataset_root/${file}`),
+      "<p>Hidden files detected</p>",
+      `Hidden files are typically not recommend per the SPARC data standards, but you can choose to keep them if you wish.`,
+      "Import the hidden files into SODA",
+      "Do not import the hidden files",
+      "Cancel import",
+      "What would you like to do with the hidden files?"
+    );
+
+    if (userResponse === "deny") {
+      window.removeHiddenFiles(window.sodaJSONObj["dataset-structure"]);
+    }
+
+    if (userResponse === "cancel") {
+      throw new Error("Importation cancelled");
+    }
+  }
+
+  // window.sodaJSONObj["metadata-files"] = list.files;
+  window.sodaJSONObj["starting-point"]["local-path"] = path;
+  // TODO: Add manfiest details to the dataset structure?
+  // window.sodaJSONObj = await window.addManifestDetailsToDatasetStructure(
+  //   window.sodaJSONObj,
+  //   list.manifestFiles,
+  //   builtDatasetStructure
+  // ); */
+
   return true;
 };
 
@@ -463,6 +585,30 @@ document.getElementById("confirm-account-workspace").addEventListener("click", a
   // Hide the Pennsieve Agent check div
   pennsieveAgentCheckDiv.classList.add("hidden");
 
+  const continueOnPennsieveAgentCheckSuccess = (agentMutationList) => {
+    for (const agentMutation of agentMutationList) {
+      if (agentMutation.type === "childList") {
+        console.log("Changes found");
+        for (const node of agentMutation.addedNodes) {
+          console.log("Node added: " + node.nodeType);
+          if (
+            node.textContent &&
+            (node.textContent.includes("You are ready to upload datasets to Pennsieve!") ||
+              node.textContent.includes("Click the 'Continue' button below."))
+          ) {
+            setNavButtonDisabled("nextBtn", false);
+            observer.disconnect();
+          }
+        }
+      }
+    }
+  };
+
+  // add observer to the pennsieveAgentCheckDivId to setNavButton to enabled once the text "The Pennsieve Agent is ready" appears
+  const observer = new MutationObserver(continueOnPennsieveAgentCheckSuccess);
+
+  observer.observe(pennsieveAgentCheckDiv, { childList: true, subtree: true });
+
   try {
     let userInfo = await api.getUserInformation();
     let currentWorkspace = userInfo["preferredOrganization"];
@@ -516,8 +662,7 @@ document.getElementById("confirm-account-workspace").addEventListener("click", a
   try {
     pennsieveAgentCheckDiv.classList.remove("hidden");
     // Check to make sure the Pennsieve agent is installed
-    let passed = await window.checkPennsieveAgent(pennsieveAgentCheckDivId);
-    if (passed) setNavButtonDisabled("nextBtn", false);
+    await window.checkPennsieveAgent(pennsieveAgentCheckDivId);
   } catch (e) {
     console.error("Error with agent" + e);
   }
@@ -1790,22 +1935,178 @@ window.addManifestFilesForTreeView = () => {
   }
 };
 
-// if unchecked
-const revertManifestForTreeView = () => {
-  for (var key in datasetStructureJSONObj["folders"]) {
-    if (highLevelFolders.includes(key)) {
-      var fileKey = datasetStructureJSONObj["folders"][key]["files"];
-      if ("manifest.xlsx" in fileKey && fileKey["manifest.xlsx"]["forTreeview"] === true) {
-        delete fileKey["manifest.xlsx"];
-      }
+// Helper function to get file extension, matching against recognized extensions with longest-match-first logic
+const getFileExtension = (filename) => {
+  const lowerName = filename.toLowerCase();
+  // Sort extensions by length (longest first) to match double extensions before single ones
+  // NOTE: This list should be kept in sync with the list with the same variable in pysodafair.
+  const ps_recognized_file_extensions = [
+    ".cram",
+    ".jp2",
+    ".jpx",
+    ".lsm",
+    ".ndpi",
+    ".nifti",
+    ".oib",
+    ".oif",
+    ".roi",
+    ".rtf",
+    ".swc",
+    ".abf",
+    ".acq",
+    ".adicht",
+    ".adidat",
+    ".aedt",
+    ".afni",
+    ".ai",
+    ".avi",
+    ".bam",
+    ".bash",
+    ".bcl",
+    ".bcl.gz",
+    ".bin",
+    ".brik",
+    ".brukertiff.gz",
+    ".continuous",
+    ".cpp",
+    ".csv",
+    ".curv",
+    ".cxls",
+    ".czi",
+    ".data",
+    ".dcm",
+    ".df",
+    ".dicom",
+    ".doc",
+    ".docx",
+    ".e",
+    ".edf",
+    ".eps",
+    ".events",
+    ".fasta",
+    ".fastq",
+    ".fcs",
+    ".feather",
+    ".fig",
+    ".gif",
+    ".h4",
+    ".h5",
+    ".hdf4",
+    ".hdf5",
+    ".hdr",
+    ".he2",
+    ".he5",
+    ".head",
+    ".hoc",
+    ".htm",
+    ".html",
+    ".ibw",
+    ".img",
+    ".ims",
+    ".ipynb",
+    ".jpeg",
+    ".jpg",
+    ".js",
+    ".json",
+    ".lay",
+    ".lh",
+    ".lif",
+    ".m",
+    ".mat",
+    ".md",
+    ".mef",
+    ".mefd.gz",
+    ".mex",
+    ".mgf",
+    ".mgh",
+    ".mgh.gz",
+    ".mgz",
+    ".mnc",
+    ".moberg.gz",
+    ".mod",
+    ".mov",
+    ".mp4",
+    ".mph",
+    ".mpj",
+    ".mtw",
+    ".ncs",
+    ".nd2",
+    ".nev",
+    ".nex",
+    ".nex5",
+    ".nf3",
+    ".nii",
+    ".nii.gz",
+    ".ns1",
+    ".ns2",
+    ".ns3",
+    ".ns4",
+    ".ns5",
+    ".ns6",
+    ".nwb",
+    ".ogg",
+    ".ogv",
+    ".ome.btf",
+    ".ome.tif",
+    ".ome.tif2",
+    ".ome.tif8",
+    ".ome.tiff",
+    ".ome.xml",
+    ".openephys",
+    ".pdf",
+    ".pgf",
+    ".png",
+    ".ppt",
+    ".pptx",
+    ".ps",
+    ".pul",
+    ".py",
+    ".r",
+    ".raw",
+    ".rdata",
+    ".rh",
+    ".rhd",
+    ".sh",
+    ".sldasm",
+    ".slddrw",
+    ".smr",
+    ".spikes",
+    ".svg",
+    ".svs",
+    ".tab",
+    ".tar",
+    ".tar.gz",
+    ".tcsh",
+    ".tdm",
+    ".tdms",
+    ".text",
+    ".tif",
+    ".tiff",
+    ".tsv",
+    ".txt",
+    ".vcf",
+    ".webm",
+    ".xlsx",
+    ".xml",
+    ".yaml",
+    ".yml",
+    ".zip",
+    ".zsh",
+  ];
+
+  const sortedExtensions = [...ps_recognized_file_extensions].sort((a, b) => b.length - a.length);
+  for (const ext of sortedExtensions) {
+    if (lowerName.endsWith(ext.toLowerCase())) {
+      return ext;
     }
   }
+  // Fallback to the standard extname if nothing matches
+  return window.path.extname(filename);
 };
 
 // PRE-REQ: Happens after the dataset name has been selected
 window.ffmCreateManifest = async () => {
   let datasetStructure = window.sodaJSONObj["dataset-structure"];
-
   let manifestStructure = [];
 
   // recursively go through the dataset structure
@@ -1842,7 +2143,7 @@ window.ffmCreateManifest = async () => {
       const statsObj = await window.fs.stat(datasetStructure["files"][file]["path"]);
       let timeStamp = statsObj.mtime.toISOString();
       timeStamp = timeStamp.replace(/\./g, ",");
-      const fileExtension = window.path.extname(datasetStructure["files"][file]["path"]);
+      const fileExtension = getFileExtension(datasetStructure["files"][file]["path"]);
 
       manifestStructure.push({
         filename: filePath,

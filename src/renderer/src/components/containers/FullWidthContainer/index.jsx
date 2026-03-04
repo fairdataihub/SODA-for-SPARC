@@ -1,7 +1,7 @@
 import React from "react";
 import { Container } from "@mantine/core";
 
-const FullWidthContainer = ({ children, backgroundColor, margin, padding, id }) => {
+const FullWidthContainer = ({ children, bg, margin, padding, id }) => {
   return (
     <Container
       id={id}
@@ -9,8 +9,8 @@ const FullWidthContainer = ({ children, backgroundColor, margin, padding, id }) 
       m={margin || "0px"} /* Can be "xs", "sm", "md", "lg", "xl" */
       style={{
         width: "100%",
-        // backgroundColor: backgroundColor,
       }}
+      bg={bg}
     >
       {children}
     </Container>

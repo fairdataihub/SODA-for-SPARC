@@ -75,12 +75,17 @@ ipcMain.on("open-file-dialog-uploadorganization", (event) => {
 ipcMain.on("open-file-dialog-upload-dataset", async (event) => {
   let mainWindow = BrowserWindow.getFocusedWindow();
 
-  let files = await dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
+  let files = await dialog.showOpenDialog(mainWindow, {
     properties: ["openDirectory"],
-    title: "Select a directory",
+    title: "Select a dataset or folder to upload",
+    filters: [
+      { name: "Folders and Archives", extensions: ["zip", "tar", "gz", "tar.gz", "zarr.tar", "*"] },
+      { name: "Archive Files", extensions: ["zip", "tar", "gz", "tar.gz", "zarr.tar"] },
+      { name: "All Files", extensions: ["*"] },
+    ],
   });
 
-  if (files) {
+  if (files && files.filePaths && files.filePaths.length > 0) {
     mainWindow.webContents.send("selected-destination-upload-dataset", files.filePaths);
   }
 });
@@ -598,16 +603,21 @@ ipcMain.on("open-folders-organize-datasets-dialog", async (event, args) => {
 
   let mainWindow = BrowserWindow.getFocusedWindow();
   const importRelativePath = args.importRelativePath;
-  let folders = await dialog.showOpenDialog(mainWindow, {
-    properties: ["openDirectory", "multiSelections"],
-    title: `Select folder(s) to import into SODA`,
+  let result = await dialog.showOpenDialog(mainWindow, {
+    properties: ["openDirectory", "openFile", "multiSelections"],
+    title: `Select folder(s) or archive(s) to import into SODA`,
+    filters: [
+      { name: "Folders and Archives", extensions: ["zip", "tar", "tar.gz", "gz", "zarr.tar", "*"] },
+      { name: "Archive Files", extensions: ["zip", "tar", "tar.gz", "gz", "zarr.tar"] },
+      { name: "All Files", extensions: ["*"] },
+    ],
   });
-  if (folders.canceled) {
+  if (result.canceled) {
     return; // Exit if the dialog is canceled
   }
 
   mainWindow.webContents.send("selected-folders-organize-datasets", {
-    filePaths: folders.filePaths,
+    filePaths: result.filePaths,
     importRelativePath,
   });
 });
