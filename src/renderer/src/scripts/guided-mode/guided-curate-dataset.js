@@ -3325,11 +3325,17 @@ gmDragDropElementId.addEventListener("drop", (event) => {
 const ffmDragDropElementId = document.getElementById("ffm-data-importer-dropzone");
 ffmDragDropElementId.addEventListener("click", (event) => {
   event.preventDefault();
-  window.uploadDatasetClickHandler();
+  window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog", {
+    importRelativePath: "/",
+  });
 });
 ffmDragDropElementId.addEventListener("drop", (event) => {
   event.preventDefault();
-  window.uploadDatasetDropHandler(event);
+  const itemsDroppedInFileExplorer = Array.from(event.dataTransfer.files).map((file) => file.path);
+  window.electron.ipcRenderer.send("file-explorer-dropped-datasets", {
+    filePaths: itemsDroppedInFileExplorer,
+    importRelativePath: "/",
+  });
 });
 
 $("#guided-button-add-additional-link").on("click", async () => {

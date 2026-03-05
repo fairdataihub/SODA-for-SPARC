@@ -234,8 +234,7 @@ export const checkboxCardSlice = (set) => ({
       Icon: null,
       mutuallyExclusiveWithCards: ["guided-button-switch-organization"],
       checked: false,
-
-      customOnClick: "window.handleGuidedModeOrganizationConfirmationClick()",
+      customOnClick: "window.handleGuidedModeOrganizationConfirmationClick('gm')",
     },
     "guided-button-switch-organization": {
       simpleButtonType: "Negative",
@@ -281,7 +280,7 @@ export const checkboxCardSlice = (set) => ({
       checked: false,
       configValue: null,
       configValueState: null,
-      customOnClick: "window.handleGuidedModeOrganizationConfirmationClick()",
+      customOnClick: "window.handleGuidedModeOrganizationConfirmationClick('ffm')",
     },
     "ffm-button-switch-organization": {
       simpleButtonType: "Negative",

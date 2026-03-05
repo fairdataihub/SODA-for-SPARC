@@ -53,7 +53,12 @@ const DataImporter = ({ dataImporterId }) => {
         />
       )}
       {dataImporterId === "ffm-data-importer-dropzone" && (
-        <StateDisplayContainer id="ffm-data-importer-dropzone" />
+        <DatasetTreeViewRenderer
+          allowStructureEditing={true}
+          hideSearchBar={true}
+          entityType={null}
+          fileExplorerId="ffm-unstructured-data-import-tab"
+        />
       )}
     </FullWidthContainer>
   );
