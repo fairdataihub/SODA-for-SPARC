@@ -724,7 +724,7 @@ export const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
   };
 };
 window.handleGuidedModeOrganizationConfirmationClick = async (curationModePrefix) => {
-  console.log("curationModePrefix", curationModePrefix);
+  console.log("curationModePrefix", curationModePrefix, "=> prefix", curationModePrefix);
   const agentCheckElementId = `${curationModePrefix}-section-pennsieve-agent-check`;
   const agentCheckElement = document.getElementById(agentCheckElementId);
   if (agentCheckElement) {

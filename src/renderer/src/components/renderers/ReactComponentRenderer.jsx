@@ -253,7 +253,10 @@ const componentTypeRenderers = {
     renderComponent(componentSlot, <GenerateDatasetLocationSelectorPage />);
   },
   "pennsieve-generate-target-page": (componentSlot) => {
-    renderComponent(componentSlot, <GenerateDatasetPennsieveTargetPage />);
+    const props = {
+      curationMode: componentSlot.getAttribute("data-curation-mode"),
+    };
+    renderComponent(componentSlot, <GenerateDatasetPennsieveTargetPage {...props} />);
   },
   "license-select-page": (componentSlot) => {
     renderComponent(componentSlot, <LicenseSelectPage />);

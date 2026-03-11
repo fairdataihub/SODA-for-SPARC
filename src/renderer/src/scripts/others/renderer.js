@@ -386,7 +386,7 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
     // If we get to this point, it means all the background services are operational
     setPennsieveAgentStartedSuccessfully(true);
     const postAgentCheckMessages = {
-      "guided-mode-post-log-in-pennsieve-agent-check":
+      "gm-mode-post-log-in-pennsieve-agent-check":
         "Click the 'Save and Continue' button below to finish preparing your dataset to be uploaded to Pennsieve.",
       "freeform-mode-pre-generate-pennsieve-agent-check":
         "Click the 'Upload' button below to upload your dataset to Pennsieve.",

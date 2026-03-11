@@ -621,7 +621,6 @@ window.openPage = async (targetPageID) => {
       // Show the full entity metadata forms for all other pages
       setShowFullMetadataFormFields(true);
     }
-    // await openPageFreeFormMode(targetPageID);
 
     await openPageCurationPreparation(targetPageID);
     await openPageDatasetStructure(targetPageID);
@@ -687,6 +686,17 @@ window.openPage = async (targetPageID) => {
         useGlobalStore.setState({
           datasetStructureJSONObj: window.datasetStructureJSONObj,
           calculateEntities: true,
+        });
+        reRenderTreeView(true);
+      }
+
+      // For FFM unstructured import page: use raw structure with root path
+      if (pageID === "ffm-unstructured-data-import-tab") {
+        setPathToRender([]);
+
+        useGlobalStore.setState({
+          datasetStructureJSONObj: window.datasetStructureJSONObj,
+          calculateEntities: false,
         });
         reRenderTreeView(true);
       }

@@ -1,14 +1,14 @@
-import { getGuidedDatasetName, getGuidedDatasetSubtitle } from "../curationPreparation/utils.js";
+import useGlobalStore from "../../../../stores/globalStore.js";
 import { guidedResetSkippedPages } from "../navigationUtils/pageSkipping.js";
 import { guidedCheckIfUserNeedsToReconfirmAccountDetails } from "../../guided-curate-dataset.js";
 import { initializeGuidedDatasetObject } from "../../utils/sodaJSONObj.js";
 import { guidedGetCurrentUserWorkSpace } from "../../workspaces/workspaces.js";
 import api from "../../../others/api/api.js";
+import { setPreferredPennsieveDatasetId } from "../../../../stores/slices/pennsieveDatasetSelectSlice.js";
 import {
-  setGuidedDatasetName,
-  setGuidedDatasetSubtitle,
-} from "../../../../stores/slices/guidedModeSlice.js";
-
+  setCheckboxCardChecked,
+  setCheckboxCardUnchecked,
+} from "../../../../stores/slices/checkboxCardSlice.js";
 export const openPageSharedWorkflowSteps = async (targetPageID) => {
   if (targetPageID === "gm-pennsieve-login-tab" || targetPageID === "ffm-pennsieve-login-tab") {
     let prefix;
@@ -17,7 +17,7 @@ export const openPageSharedWorkflowSteps = async (targetPageID) => {
       guidedResetSkippedPages("ffm");
       prefix = "ffm";
     } else {
-      prefix = "guided";
+      prefix = "gm";
     }
     const agentCheckElementId = `${prefix}-section-pennsieve-agent-check`;
     const confirmAccountButtonId = `${prefix}-confirm-pennsieve-account-button`;
@@ -85,6 +85,44 @@ export const openPageSharedWorkflowSteps = async (targetPageID) => {
       } catch (error) {
         console.error("Error auto-confirming organization: ", error);
       }
+    }
+  }
+  if (
+    targetPageID === "guided-pennsieve-generate-target-tab" ||
+    targetPageID === "ffm-pennsieve-generate-target-tab"
+  ) {
+    let prefix;
+    if (targetPageID === "guided-pennsieve-generate-target-tab") {
+      prefix = "gm";
+    } else {
+      prefix = "ffm";
+    }
+    console.log(
+      `Opening ${prefix}-pennsieve-generate-target-tab, checking if user needs to reconfirm account details`
+    );
+    await guidedCheckIfUserNeedsToReconfirmAccountDetails(prefix);
+    setPreferredPennsieveDatasetId(null);
+    setCheckboxCardUnchecked(`${prefix}-generate-on-new-pennsieve-dataset`);
+    setCheckboxCardUnchecked(`${prefix}-generate-on-existing-pennsieve-dataset`);
+    const previouslySelectedDatasetIdToUploadDataTo =
+      window.sodaJSONObj["previously-selected-dataset-id-to-upload-data-to"] || null;
+    // If the user selected to generate on an existing Pennsieve dataset, check the corresponding checkbox card
+    setPreferredPennsieveDatasetId(previouslySelectedDatasetIdToUploadDataTo);
+    let isGuest = await api.userIsWorkspaceGuest();
+    useGlobalStore.setState({ isGuest: isGuest });
+
+    const pennsieveGenerationTarget = window.sodaJSONObj["pennsieve-generation-target"];
+    if (pennsieveGenerationTarget === "new") {
+      // If the user selected to generate on a new Pennsieve dataset, check the corresponding checkbox card
+      setCheckboxCardChecked(`${prefix}-generate-on-new-pennsieve-dataset`);
+    }
+
+    if (pennsieveGenerationTarget === "existing") {
+      const previouslySelectedDatasetIdToUploadDataTo =
+        window.sodaJSONObj["previously-selected-dataset-id-to-upload-data-to"] || null;
+      // If the user selected to generate on an existing Pennsieve dataset, check the corresponding checkbox card
+      setPreferredPennsieveDatasetId(previouslySelectedDatasetIdToUploadDataTo);
+      setCheckboxCardChecked(`${prefix}-generate-on-existing-pennsieve-dataset`);
     }
   }
 };

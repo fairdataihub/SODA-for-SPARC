@@ -8,10 +8,6 @@ import { initializeGuidedDatasetObject } from "../../utils/sodaJSONObj.js";
 import { guidedResetSkippedPages } from "../navigationUtils/pageSkipping.js";
 
 export const openPageCurationPreparation = async (targetPageID) => {
-  if (targetPageID === "ffm-unstructured-data-import-tab") {
-    initializeGuidedDatasetObject();
-    guidedResetSkippedPages("ffm");
-  }
   if (targetPageID === "guided-select-starting-point-tab") {
     initializeGuidedDatasetObject();
     guidedResetSkippedPages("gm");

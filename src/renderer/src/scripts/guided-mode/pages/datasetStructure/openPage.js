@@ -25,6 +25,7 @@ export const openPageDatasetStructure = async (targetPageID) => {
     Object.values(window.datasetStructureJSONObj.folders).forEach((folder) => {
       delete folder.files["manifest.xlsx"];
     });
+    console.log("Dataset structure when opening review page:", window.datasetStructureJSONObj);
 
     /**
      * Purge non-existent files from the dataset structure.

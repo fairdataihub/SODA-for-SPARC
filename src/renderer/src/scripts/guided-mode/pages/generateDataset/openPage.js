@@ -36,28 +36,6 @@ export const openPageGenerateDataset = async (targetPageID) => {
     guidedResetLocalGenerationUI();
   }
 
-  if (targetPageID === "guided-pennsieve-generate-target-tab") {
-    setPreferredPennsieveDatasetId(null);
-    setCheckboxCardUnchecked("generate-on-new-pennsieve-dataset");
-    setCheckboxCardUnchecked("generate-on-existing-pennsieve-dataset");
-
-    let isGuest = await api.userIsWorkspaceGuest();
-    useGlobalStore.setState({ isGuest: isGuest });
-
-    const pennsieveGenerationTarget = window.sodaJSONObj["pennsieve-generation-target"];
-    if (pennsieveGenerationTarget === "new") {
-      // If the user selected to generate on a new Pennsieve dataset, check the corresponding checkbox card
-      setCheckboxCardChecked("generate-on-new-pennsieve-dataset");
-    }
-    if (pennsieveGenerationTarget === "existing") {
-      const previouslySelectedDatasetIdToUploadDataTo =
-        window.sodaJSONObj["previously-selected-dataset-id-to-upload-data-to"] || null;
-      // If the user selected to generate on an existing Pennsieve dataset, check the corresponding checkbox card
-      setPreferredPennsieveDatasetId(previouslySelectedDatasetIdToUploadDataTo);
-      setCheckboxCardChecked("generate-on-existing-pennsieve-dataset");
-    }
-  }
-
   if (targetPageID === "guided-pennsieve-settings-tab") {
     // Get the locally saved dataset name and subtitle to use as default values if they have not yet
     // set a dataset name or subtitle for Pennsieve

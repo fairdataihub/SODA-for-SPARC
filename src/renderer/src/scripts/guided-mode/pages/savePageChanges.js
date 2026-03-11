@@ -51,6 +51,9 @@ if (!window.fs.existsSync(guidedProgressFilePath)) {
  *
  */
 export const guidedSaveProgress = async () => {
+  // Store global variable values to the progress file before saving
+  window.sodaJSONObj["dataset-structure"] = window.datasetStructureJSONObj;
+
   const guidedProgressFileName = window.sodaJSONObj?.["save-file-name"];
   // If there is no guidedProgressFileName, return (nothing to save)
   if (!window.sodaJSONObj?.["save-file-name"]) {
@@ -61,9 +64,6 @@ export const guidedSaveProgress = async () => {
   window.sodaJSONObj["last-modified"] = new Date();
 
   const guidedFilePath = window.path.join(guidedProgressFilePath, guidedProgressFileName + ".json");
-
-  // Store global variable values to the progress file before saving
-  window.sodaJSONObj["dataset-structure"] = window.datasetStructureJSONObj;
 
   // Save the current version of SODA as the user should be taken back to the first page when the app is updated
   const appVersion = useGlobalStore.getState().appVersion;

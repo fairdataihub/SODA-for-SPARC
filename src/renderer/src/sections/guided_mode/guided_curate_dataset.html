@@ -226,6 +226,13 @@
             ></div>
           </div>
         </div>
+        <div
+          id="ffm-pennsieve-generate-target-tab"
+          class="guided--page ffm"
+          data-page-name="Pennsieve Dataset"
+          data-component-type="pennsieve-generate-target-page"
+          data-curation-mode="ffm"
+        ></div>
       </div>
 
       <div
@@ -1750,14 +1757,14 @@
 
         <div
           id="gm-pennsieve-login-tab"
-          class="guided--page gm ffm pennsieve-generation-page-set"
+          class="guided--page gm pennsieve-generation-page-set"
           data-page-name="Pennsieve log in"
         >
           <div class="guided--section">
             <h1 class="text-sub-step-title">Pennsieve Log In</h1>
           </div>
 
-          <div class="guided--section show-when-logged-out" id="guided-select-pennsieve-account">
+          <div class="guided--section show-when-logged-out" id="gm-select-pennsieve-account">
             <h2 class="text-sub-step-title">First, connect your Pennsieve account with SODA</h2>
             <button
               class="ui positive button mt-md"
@@ -1772,7 +1779,7 @@
             </button>
           </div>
 
-          <div class="guided--section show-when-logged-in" id="guided-confirm-pennsieve-account">
+          <div class="guided--section show-when-logged-in" id="gm-confirm-pennsieve-account">
             <div class="guided--input-container">
               <h2 class="text-sub-step-title">
                 Is this the Pennsieve account you would like to work with?
@@ -1786,7 +1793,7 @@
                     class="guided--dataset-content-container"
                     onclick="window.openDropdownPrompt(this, 'ps')"
                   >
-                    <h5 id="guided-pennsieve-intro-ps-account" class="guided--dataset-content"></h5>
+                    <h5 id="gm-pennsieve-intro-ps-account" class="guided--dataset-content"></h5>
                     <i class="far fa-edit jump-back" style="color: #000"></i>
                   </div>
                 </div>
@@ -1794,17 +1801,17 @@
             </div>
             <div class="guided--radio-button-container mb-sm" style="margin-top: 1rem">
               <div
-                data-button-id="guided-confirm-pennsieve-account-button"
+                data-button-id="gm-confirm-pennsieve-account-button"
                 data-component-type="checkbox-card"
               ></div>
               <div
-                data-button-id="guided-button-switch-account"
+                data-button-id="gm-button-switch-account"
                 data-component-type="checkbox-card"
               ></div>
             </div>
           </div>
 
-          <div class="guided--section" id="guided-section-select-organization">
+          <div class="guided--section" id="gm-section-select-organization">
             <div class="guided--input-container">
               <h2 class="text-sub-step-title">
                 Is this the Pennsieve workspace you want to upload your dataset to?
@@ -1830,20 +1837,20 @@
             </div>
             <div class="guided--radio-button-container mb-sm" style="margin-top: 1rem">
               <div
-                data-button-id="guided-confirm-pennsieve-organization-button"
+                data-button-id="gm-confirm-pennsieve-organization-button"
                 data-component-type="checkbox-card"
               ></div>
               <div
-                data-button-id="guided-button-switch-organization"
+                data-button-id="gm-button-switch-organization"
                 data-component-type="checkbox-card"
               ></div>
             </div>
           </div>
-          <div class="guided--section" id="guided-section-pennsieve-agent-check">
+          <div class="guided--section" id="gm-section-pennsieve-agent-check">
             <div
               data-component-type="pennsieve-agent-check-display"
               class="guided--section"
-              id="guided-mode-post-log-in-pennsieve-agent-check"
+              id="gm-mode-post-log-in-pennsieve-agent-check"
             ></div>
           </div>
         </div>
@@ -1853,11 +1860,12 @@
           class="guided--page pennsieve-generation-page-set"
           data-page-name="Pennsieve Dataset"
           data-component-type="pennsieve-generate-target-page"
+          data-curation-mode="gm"
         ></div>
 
         <div
           id="guided-pennsieve-settings-tab"
-          class="guided--page gm pennsieve-generation-page-set new-pennsieve-dataset-config-page-set"
+          class="guided--page gm ffm pennsieve-generation-page-set new-pennsieve-dataset-config-page-set"
           data-page-name="Pennsieve Settings"
         >
           <div class="guided--section">
@@ -2071,7 +2079,7 @@
         </div>
         <div
           id="guided-dataset-generation-confirmation-tab"
-          class="guided--page pennsieve-generation-page-set gm"
+          class="guided--page pennsieve-generation-page-set gm ffm"
           data-page-name="Review and Generate"
         >
           <div class="guided--section">

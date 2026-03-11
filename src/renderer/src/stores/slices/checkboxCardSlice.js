@@ -92,28 +92,53 @@ export const checkboxCardSlice = (set) => ({
       Icon: IconCloudUp,
       checked: false,
     },
-    "generate-on-existing-pennsieve-dataset": {
+    "gm-generate-on-existing-pennsieve-dataset": {
       title: "Upload to an existing empty dataset on Pennsieve",
       description:
         "Select this option if you have an existing dataset on Pennsieve you would like to use.",
       Icon: IconFolderSymlink,
-      mutuallyExclusiveWithCards: ["generate-on-new-pennsieve-dataset"],
+      mutuallyExclusiveWithCards: ["gm-generate-on-new-pennsieve-dataset"],
       checked: false,
     },
-    "generate-on-new-pennsieve-dataset": {
+    "gm-generate-on-new-pennsieve-dataset": {
       title: "Create a new dataset on Pennsieve",
       description:
         "Select this option if you would like SODA to create a new dataset for you on Pennsieve.",
       Icon: IconBrowserPlus,
-      mutuallyExclusiveWithCards: ["generate-on-existing-pennsieve-dataset"],
+      mutuallyExclusiveWithCards: ["gm-generate-on-existing-pennsieve-dataset"],
       checked: false,
     },
-    "generate-on-new-pennsieve-dataset-guest": {
+    "gm-generate-on-new-pennsieve-dataset-guest": {
       title: "Create a new dataset on Pennsieve",
       description:
         "Pennsieve workspace guests cannot create new datasets. Please use the existing dataset option to select a dataset shared with you by a collaborator.",
       Icon: IconBrowserPlus,
-      mutuallyExclusiveWithCards: ["generate-on-existing-pennsieve-dataset"],
+      mutuallyExclusiveWithCards: ["gm-generate-on-existing-pennsieve-dataset"],
+      checked: false,
+      disabledNotComingSoon: true,
+    },
+    "ffm-generate-on-existing-pennsieve-dataset": {
+      title: "Add data to an existing dataset on Pennsieve",
+      description:
+        "Select this option if you have an existing dataset on Pennsieve you would like to use.",
+      Icon: IconFolderSymlink,
+      mutuallyExclusiveWithCards: ["ffm-generate-on-new-pennsieve-dataset"],
+      checked: false,
+    },
+    "ffm-generate-on-new-pennsieve-dataset": {
+      title: "Create a new dataset on Pennsieve",
+      description:
+        "Select this option if you would like SODA to create a new dataset for you on Pennsieve.",
+      Icon: IconBrowserPlus,
+      mutuallyExclusiveWithCards: ["ffm-generate-on-existing-pennsieve-dataset"],
+      checked: false,
+    },
+    "ffm-generate-on-new-pennsieve-dataset-guest": {
+      title: "Create a new dataset on Pennsieve",
+      description:
+        "Pennsieve workspace guests cannot create new datasets. Please use the existing dataset option to select a dataset shared with you by a collaborator.",
+      Icon: IconBrowserPlus,
+      mutuallyExclusiveWithCards: ["ffm-generate-on-existing-pennsieve-dataset"],
       checked: false,
       disabledNotComingSoon: true,
     },
@@ -203,23 +228,23 @@ export const checkboxCardSlice = (set) => ({
       configValue: "categorize-remaining-data",
       configValueState: "no",
     },
-    "guided-confirm-pennsieve-account-button": {
+    "gm-confirm-pennsieve-account-button": {
       simpleButtonType: "Positive",
       title: "Yes, this is the account",
       description: null,
       Icon: null,
-      mutuallyExclusiveWithCards: ["guided-button-switch-account"],
-      nextElementID: "guided-section-select-organization",
+      mutuallyExclusiveWithCards: ["gm-button-switch-account"],
+      nextElementID: "gm-section-select-organization",
       checked: false,
       configValue: null,
       configValueState: null,
     },
-    "guided-button-switch-account": {
+    "gm-button-switch-account": {
       simpleButtonType: "Negative",
       title: "No, connect another account",
       description: null,
       Icon: null,
-      mutuallyExclusiveWithCards: ["guided-confirm-pennsieve-account-button"],
+      mutuallyExclusiveWithCards: ["gm-confirm-pennsieve-account-button"],
       nextElementID: null,
       checked: false,
       configValue: null,
@@ -227,21 +252,21 @@ export const checkboxCardSlice = (set) => ({
       preventRadioHandler: true,
       customOnClick: "window.openDropdownPrompt(this, 'ps')",
     },
-    "guided-confirm-pennsieve-organization-button": {
+    "gm-confirm-pennsieve-organization-button": {
       simpleButtonType: "Positive",
       title: "Yes, this is the organization",
       description: null,
       Icon: null,
-      mutuallyExclusiveWithCards: ["guided-button-switch-organization"],
+      mutuallyExclusiveWithCards: ["gm-button-switch-organization"],
       checked: false,
       customOnClick: "window.handleGuidedModeOrganizationConfirmationClick('gm')",
     },
-    "guided-button-switch-organization": {
+    "gm-button-switch-organization": {
       simpleButtonType: "Negative",
       title: "No, switch organization",
       description: null,
       Icon: null,
-      mutuallyExclusiveWithCards: ["guided-confirm-pennsieve-organization-button"],
+      mutuallyExclusiveWithCards: ["gm-confirm-pennsieve-organization-button"],
       nextElementID: null,
       checked: false,
       preventRadioHandler: true,
