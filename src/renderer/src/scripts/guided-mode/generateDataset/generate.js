@@ -427,6 +427,15 @@ const logProgressPostUpload = (files, bytes) => {
   let finalFilesCount = files - filesOnPreviousLogPage;
   let differenceInBytes = bytes - bytesOnPreviousLogPage;
 
+  if (finalFilesCount <= 0) {
+    // do not log when no progress has been made in the upload w.r.t. the previously logged value of files and bytes
+    return;
+  }
+
+  // update the UI file and byte count vars
+  filesOnPreviousLogPage = finalFilesCount;
+  bytesOnPreviousLogPage = differenceInBytes;
+
   fileValueToLog = finalFilesCount;
   fileSizeValueToLog = differenceInBytes;
 
@@ -605,6 +614,8 @@ const trackPennsieveDatasetGenerationProgress = async (standardizedDatasetStruct
           Status: "Dataset upload failed",
           "Error message": message,
         });
+        // Log on fail case what was actually pushed up to Pennsieve
+        logProgressPostUpload(uploadedFiles, mainTotalGenerateDatasetSize);
         amountOfTimesPennsieveUploadFailed += 1;
         window.retryGuidedMode = true;
         let supplementaryChecks = false;
