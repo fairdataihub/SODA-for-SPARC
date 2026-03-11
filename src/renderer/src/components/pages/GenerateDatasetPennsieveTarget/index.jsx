@@ -1,6 +1,17 @@
 import React from "react";
 import { useEffect } from "react";
-import { Text, Group, Select, Collapse, Center, Loader, Stack, Button } from "@mantine/core";
+import {
+  Text,
+  Group,
+  Select,
+  Collapse,
+  Center,
+  Loader,
+  Stack,
+  Button,
+  TextInput,
+  Textarea,
+} from "@mantine/core";
 import DropDownNote from "../../utils/ui/DropDownNote";
 
 import useGlobalStore from "../../../stores/globalStore";
@@ -8,7 +19,6 @@ import useGlobalStore from "../../../stores/globalStore";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import CheckboxCard from "../../cards/CheckboxCard";
-import NavigationButton from "../../buttons/Navigation";
 
 import {
   setSelectedDatasetToUploadDataTo,
@@ -17,6 +27,10 @@ import {
 } from "../../../stores/slices/pennsieveDatasetSelectSlice";
 
 import { setCheckboxCardUnchecked } from "../../../stores/slices/checkboxCardSlice";
+import {
+  setGuidedDatasetName,
+  setGuidedDatasetSubtitle,
+} from "../../../stores/slices/guidedModeSlice";
 
 const GenerateDatasetPennsieveTargetPage = ({ curationMode }) => {
   const selectedDatasetIdToUploadDataTo = useGlobalStore(
@@ -41,6 +55,27 @@ const GenerateDatasetPennsieveTargetPage = ({ curationMode }) => {
     (state) =>
       state.cardData[`${curationMode}-generate-on-existing-pennsieve-dataset`]?.checked ?? false
   );
+  const guidedDatasetName = useGlobalStore((state) => state.guidedDatasetName);
+  const guidedDatasetSubtitle = useGlobalStore((state) => state.guidedDatasetSubtitle);
+
+  // derive dataset name from the same store used on NameAndSubtitlePage
+  const newDatasetName = useGlobalStore((state) => state.guidedDatasetName);
+
+  // when ffm new-dataset is selected, keep the "selectedDataset" values
+  // in sync so downstream logic still works with the normal upload flow.
+  useEffect(() => {
+    if (isNewDatasetSelected) {
+      setSelectedDatasetToUploadDataTo(null, newDatasetName || null, null);
+    }
+  }, [newDatasetName, isNewDatasetSelected]);
+
+  // clear values when user unchecks the new-dataset card
+  useEffect(() => {
+    if (!isNewDatasetSelected) {
+      setGuidedDatasetName("");
+      setSelectedDatasetToUploadDataTo(null, null, null);
+    }
+  }, [isNewDatasetSelected]);
 
   useEffect(() => {
     if (guestUser) {
@@ -173,26 +208,37 @@ const GenerateDatasetPennsieveTargetPage = ({ curationMode }) => {
         </Group>
       </GuidedModeSection>
 
+      {curationMode === "ffm" && isNewDatasetSelected && (
+        <GuidedModeSection>
+          <TextInput
+            label="Dataset Name:"
+            required
+            description="Enter a unique and informative name for your dataset."
+            placeholder="Enter dataset name"
+            value={guidedDatasetName}
+            onChange={(event) => setGuidedDatasetName(event.target.value)}
+          />
+
+          <Textarea
+            label="Brief dataset description:"
+            description="Summarize your dataset in a few sentences (255 characters max)."
+            placeholder="Enter dataset description"
+            required
+            autosize
+            minRows={5}
+            value={guidedDatasetSubtitle}
+            onChange={(event) => setGuidedDatasetSubtitle(event.target.value)}
+            maxLength={255}
+          />
+          <Text align="right" style={{ marginTop: "-35px", zIndex: "10", marginRight: "10px" }}>
+            {255 - guidedDatasetSubtitle.length} characters remaining
+          </Text>
+        </GuidedModeSection>
+      )}
+
       <Collapse in={isExistingDatasetSelected}>
         <GuidedModeSection>{renderDatasetSection()}</GuidedModeSection>
       </Collapse>
-
-      {(isNewDatasetSelected ||
-        (isExistingDatasetSelected &&
-          selectedDatasetIdToUploadDataTo &&
-          selectedDatasetNameToUploadDataTo)) && (
-        <GuidedModeSection>
-          <Center mt="xl">
-            <NavigationButton
-              onClick={() => document.getElementById("guided-next-button")?.click()}
-              buttonCustomWidth="215px"
-              buttonText="Save and Continue"
-              navIcon="right-arrow"
-              buttonSize="md"
-            />
-          </Center>
-        </GuidedModeSection>
-      )}
     </GuidedModePage>
   );
 };

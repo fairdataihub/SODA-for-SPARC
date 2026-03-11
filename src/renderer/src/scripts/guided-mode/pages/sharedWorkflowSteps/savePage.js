@@ -117,6 +117,24 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
     }
 
     if (generateOnNewPennsieveDatasetCardChecked) {
+      // If the curation mode is freeForm Mode, validate and store the dataset name and subtitle
+      if (prefix === "ffm") {
+        const datasetNameInput = useGlobalStore.getState().guidedDatasetName.trim();
+        const datasetSubtitleInput = useGlobalStore.getState().guidedDatasetSubtitle.trim();
+
+        if (!datasetNameInput) {
+          errorArray.push({ type: "notyf", message: "Please enter a dataset name." });
+        }
+        if (!datasetSubtitleInput) {
+          errorArray.push({ type: "notyf", message: "Please enter a dataset subtitle." });
+        }
+
+        if (errorArray.length > 0) {
+          throw errorArray;
+        }
+        window.sodaJSONObj["digital-metadata"]["name"] = datasetNameInput;
+        window.sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
+      }
       // If the previous pennsieve generation target was set to "existing", we need to delete
       // the previous pennsieve dataset id and int id to ensure it's not used in the new dataset generation
       if (window.sodaJSONObj["previously-selected-dataset-id-to-upload-data-to"]) {
