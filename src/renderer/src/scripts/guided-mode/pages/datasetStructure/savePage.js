@@ -23,24 +23,12 @@ import {
   deleteSample,
   deleteSite,
 } from "../../../../stores/slices/datasetEntityStructureSlice";
+import { isCheckboxCardChecked } from "../../../../stores/slices/checkboxCardSlice";
 
 import { swalListDoubleAction } from "../../../utils/swal-utils";
 
 export const savePageDatasetStructure = async (pageBeingLeftID) => {
   const errorArray = [];
-
-  if (pageBeingLeftID === "guided-unstructured-data-import-tab") {
-    // Count the files imported into the dataset to make sure they imported something
-    const datasetFileCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
-    if (datasetFileCount === 0) {
-      errorArray.push({
-        type: "notyf",
-        message:
-          "Please select the data you would like to include in the dataset before continuing.",
-      });
-      throw errorArray;
-    }
-  }
 
   if (pageBeingLeftID === "guided-dataset-content-tab") {
     // Make local copies so we do not mutate store state directly
@@ -427,6 +415,19 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       guidedSkipPage("guided-add-code-metadata-tab");
     } else {
       guidedSkipPage("guided-add-code-metadata-tab");
+    }
+  }
+
+  if (pageBeingLeftID === "ffm-existing-files-handling-tab") {
+    const replaceExistingFilesChecked = isCheckboxCardChecked("ffm-replace-existing-files");
+    const keepExistingFilesChecked = isCheckboxCardChecked("ffm-keep-existing-files");
+    if (!replaceExistingFilesChecked && !keepExistingFilesChecked) {
+      errorArray.push({
+        type: "notyf",
+        message:
+          "Please select how you would like to handle existing files in your Pennsieve dataset.",
+      });
+      throw errorArray;
     }
   }
 

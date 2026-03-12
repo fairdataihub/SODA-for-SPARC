@@ -1,6 +1,8 @@
 import { isCheckboxCardChecked } from "../../../../stores/slices/checkboxCardSlice";
 import useGlobalStore from "../../../../stores/globalStore";
 import {
+  guidedSkipPage,
+  guidedUnSkipPage,
   guidedSkipPageSet,
   guidedUnSkipPageSet,
 } from "../../../guided-mode/pages/navigationUtils/pageSkipping";
@@ -9,6 +11,7 @@ import {
   setCheckboxCardUnchecked,
 } from "../../../../stores/slices/checkboxCardSlice";
 import { guidedGetCurrentUserWorkSpace } from "../../workspaces/workspaces";
+import { countFilesInDatasetStructure } from "../../generateDataset/generate";
 
 export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
   const errorArray = [];
@@ -117,24 +120,6 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
     }
 
     if (generateOnNewPennsieveDatasetCardChecked) {
-      // If the curation mode is freeForm Mode, validate and store the dataset name and subtitle
-      if (prefix === "ffm") {
-        const datasetNameInput = useGlobalStore.getState().guidedDatasetName.trim();
-        const datasetSubtitleInput = useGlobalStore.getState().guidedDatasetSubtitle.trim();
-
-        if (!datasetNameInput) {
-          errorArray.push({ type: "notyf", message: "Please enter a dataset name." });
-        }
-        if (!datasetSubtitleInput) {
-          errorArray.push({ type: "notyf", message: "Please enter a dataset subtitle." });
-        }
-
-        if (errorArray.length > 0) {
-          throw errorArray;
-        }
-        window.sodaJSONObj["digital-metadata"]["name"] = datasetNameInput;
-        window.sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
-      }
       // If the previous pennsieve generation target was set to "existing", we need to delete
       // the previous pennsieve dataset id and int id to ensure it's not used in the new dataset generation
       if (window.sodaJSONObj["previously-selected-dataset-id-to-upload-data-to"]) {
@@ -156,7 +141,14 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
         "if-existing": "new",
         "if-existing-files": "new",
       };
+      if (prefix === "ffm") {
+        console.log(
+          "Skipping ffm-existing-files-handling-tab since user selected to generate on a new Pennsieve dataset"
+        );
+        guidedSkipPage("ffm-existing-files-handling-tab");
+      }
     }
+
     if (generateOnExistingPennsieveDatasetCardChecked) {
       // If the datasets are still loading, wait for them to finish loading
       while (useGlobalStore.getState().isLoadingPennsieveDatasets) {
@@ -189,10 +181,32 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
       };
       window.sodaJSONObj["pennsieve-generation-target"] = "existing";
       guidedSkipPageSet("new-pennsieve-dataset-config-page-set");
+      if (prefix === "ffm") {
+        console.log(
+          "Unskipping ffm-existing-files-handling-tab since user selected to generate on an existing Pennsieve dataset"
+        );
+        guidedUnSkipPage("ffm-existing-files-handling-tab");
+      }
     }
     // (Hackish) Uncheck the checkboxes to make sure the events trigger when the page
     // is re-entered (this is necessary due to execution batching by React)
     setCheckboxCardUnchecked(`${prefix}-generate-on-new-pennsieve-dataset`);
     setCheckboxCardUnchecked(`${prefix}-generate-on-existing-pennsieve-dataset`);
+  }
+
+  if (
+    pageBeingLeftID === "guided-unstructured-data-import-tab" ||
+    pageBeingLeftID === "ffm-unstructured-data-import-tab"
+  ) {
+    // Count the files imported into the dataset to make sure they imported something
+    const datasetFileCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
+    if (datasetFileCount === 0) {
+      errorArray.push({
+        type: "notyf",
+        message:
+          "Please select the data you would like to include in the dataset before continuing.",
+      });
+      throw errorArray;
+    }
   }
 };

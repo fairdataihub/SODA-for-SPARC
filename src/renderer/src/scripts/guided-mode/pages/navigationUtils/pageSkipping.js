@@ -5,6 +5,7 @@ const PAGES_THAT_SHOULD_ALWAYS_BE_SKIPPED = [
 ];
 
 export const guidedSkipPage = (pageId) => {
+  console.log("guidedSkipPage called on pageId: ", pageId);
   const page = document.getElementById(pageId);
 
   // If the page no longer exists, return

@@ -20,6 +20,12 @@ while (!window.baseHtmlLoaded) {
 export const openPageDatasetStructure = async (targetPageID) => {
   // Add handlers for other pages without componentType
 
+  if (targetPageID === "ffm-existing-files-handling-tab") {
+    console.log(
+      "Opening ffm-existing-files-handling-tab, checking for any missing files in dataset structure"
+    );
+  }
+
   if (targetPageID === "guided-dataset-structure-and-manifest-review-tab") {
     // Remove existing manifest files from the dataset structure
     Object.values(window.datasetStructureJSONObj.folders).forEach((folder) => {
@@ -260,6 +266,7 @@ export const openPageDatasetStructure = async (targetPageID) => {
     // Save final manifest data
     window.sodaJSONObj["guided-manifest-file-data"] = guidedManifestData;
   }
+
   if (targetPageID == "guided-modalities-selection-tab") {
     let modalities = window.sodaJSONObj["button-config"]["multiple-modalities"];
     if (modalities === "yes") {

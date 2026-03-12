@@ -589,7 +589,7 @@
         <div
           id="ffm-unstructured-data-import-tab"
           class="guided--page ffm"
-          data-page-name="Select Starting Point"
+          data-page-name="Dataset Selection"
         >
           <div class="guided--section">
             <h1 class="text-sub-step-title">Dataset Selection</h1>
@@ -783,6 +783,31 @@
           data-entity-type="modalities"
           data-entity-type-string-singular="modality"
         ></div>
+        <div
+          class="guided--page ffm"
+          id="ffm-existing-files-handling-tab"
+          data-page-name="Existing Files"
+        >
+          <div class="guided--section">
+            <h1 class="text-sub-step-title">Existing Files Handling</h1>
+            <p class="help-text w-100">
+              It looks like you have already imported some files into SODA. How would you like to
+              handle these files?
+            </p>
+          </div>
+          <div class="guided--section">
+            <div class="guided--radio-button-container">
+              <div
+                data-button-id="ffm-button-replace-existing-files"
+                data-component-type="checkbox-card"
+              ></div>
+              <div
+                data-button-id="ffm-button-skip-existing-files"
+                data-component-type="checkbox-card"
+              ></div>
+            </div>
+          </div>
+        </div>
         <div
           class="guided--page gm ffm"
           id="guided-dataset-structure-and-manifest-review-tab"

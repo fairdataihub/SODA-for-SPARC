@@ -142,6 +142,27 @@ export const checkboxCardSlice = (set) => ({
       checked: false,
       disabledNotComingSoon: true,
     },
+    "ffm-button-replace-existing-files": {
+      title: "Replace existing files on Pennsieve",
+      description:
+        "Select this option if you want SODA to replace files with the same name in the Pennsieve dataset.",
+      Icon: IconReplace,
+      mutuallyExclusiveWithCards: ["ffm-button-skip-existing-files"],
+      checked: false,
+      configValue: "if-existing-files",
+      configValueState: "replace",
+    },
+    "ffm-button-skip-existing-files": {
+      title: "Skip existing files on Pennsieve",
+      description:
+        "Select this option if you want SODA to skip files with the same name in the Pennsieve dataset.",
+      Icon: IconReport,
+      mutuallyExclusiveWithCards: ["ffm-button-replace-existing-files"],
+      checked: false,
+      configValue: "if-existing-files",
+      configValueState: "skip",
+    },
+
     "guided-button-user-has-protocols": {
       title: "Yes, my dataset's protocols are ready to enter",
       description: null,
