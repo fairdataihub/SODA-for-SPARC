@@ -24,6 +24,7 @@ import {
   deleteSite,
 } from "../../../../stores/slices/datasetEntityStructureSlice";
 import { isCheckboxCardChecked } from "../../../../stores/slices/checkboxCardSlice";
+import { convertGuidedManifestToSchema } from "../../utils/sodaJSONObj";
 
 import { swalListDoubleAction } from "../../../utils/swal-utils";
 
@@ -434,38 +435,6 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
   if (pageBeingLeftID === "guided-dataset-structure-and-manifest-review-tab") {
     const guidedManifestData = window.sodaJSONObj["guided-manifest-file-data"];
     // console log the first 3 rows of data
-    const headerToSchemaKey = {
-      filename: "filename",
-      timestamp: "timestamp",
-      description: "description",
-      "file type": "file_type",
-      entity: "entity",
-      "data modality": "data_modality",
-      "also in dataset": "also_in_dataset",
-      "data dictionary path": "data_dictionary_path",
-      "entity is transitive": "entity_is_transitive",
-      "Additional Metadata": "additional_metadata",
-    };
-
-    const convertGuidedManifestToSchema = ({ headers, data }) => {
-      return data.map((row) => {
-        const obj = {};
-
-        headers.forEach((header, index) => {
-          const key = headerToSchemaKey[header];
-          if (key) {
-            let value = row[index] ?? ""; // fallback to empty string if missing
-            // Optional fix for timestamp format (replace comma with dot)
-            if (key === "timestamp") {
-              value = value.replace(",", ".");
-            }
-            obj[key] = value;
-          }
-        });
-
-        return obj;
-      });
-    };
 
     const manifestObjects = convertGuidedManifestToSchema(guidedManifestData);
     // Set the manifest objects in the sodaJSONObj at where they will be detected by pysoda

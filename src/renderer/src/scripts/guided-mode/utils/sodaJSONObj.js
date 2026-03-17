@@ -96,3 +96,36 @@ export const initializeGuidedDatasetObject = (curationMode) => {
   window.datasetStructureJSONObj = { folders: {}, files: {} };
   window.sodaJSONObj["dataset-validated"] = "false";
 };
+
+export const convertGuidedManifestToSchema = ({ headers, data }) => {
+  const headerToSchemaKey = {
+    filename: "filename",
+    timestamp: "timestamp",
+    description: "description",
+    "file type": "file_type",
+    entity: "entity",
+    "data modality": "data_modality",
+    "also in dataset": "also_in_dataset",
+    "data dictionary path": "data_dictionary_path",
+    "entity is transitive": "entity_is_transitive",
+    "Additional Metadata": "additional_metadata",
+  };
+
+  return data.map((row) => {
+    const obj = {};
+
+    headers.forEach((header, index) => {
+      const key = headerToSchemaKey[header];
+      if (key) {
+        let value = row[index] ?? ""; // fallback to empty string if missing
+        // Optional fix for timestamp format (replace comma with dot)
+        if (key === "timestamp") {
+          value = value.replace(",", ".");
+        }
+        obj[key] = value;
+      }
+    });
+
+    return obj;
+  });
+};

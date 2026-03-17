@@ -40,6 +40,7 @@ import { guidedRenderProgressCards } from "./resumeProgress/progressCards";
 
 import "bootstrap-select";
 import Cropper from "cropperjs";
+import { convertGuidedManifestToSchema } from "./utils/sodaJSONObj";
 
 import "jstree";
 import { CONTRIBUTOR_ROLE_OPTIONS } from "./metadata/contributors/contributors";
@@ -752,6 +753,74 @@ window.guidedOpenManifestEditSwal = async () => {
       await guidedSaveProgress();
     }
   });
+};
+
+/**
+ * Generates a local copy of the manifest file for the current dataset.
+ * Converts the manifest data to the proper schema format and saves it as an Excel file.
+ * User is prompted to select a destination folder.
+ */
+window.guidedCreateLocalManifestCopy = async () => {
+  try {
+    // Step 1: Prompt user to select a destination folder for the manifest file
+    const savePath = await window.electron.ipcRenderer.invoke(
+      "open-folder-path-select",
+      "Select a folder to save the manifest files to"
+    );
+
+    // User cancelled the file selection dialog
+    if (!savePath) {
+      return;
+    }
+
+    // Step 2: Generate a unique file path to avoid overwriting existing files
+    // If manifest.xlsx exists, appends (1), (2), etc. until an available name is found
+    let manifestFilePath = window.path.join(savePath, "manifest.xlsx");
+    let fileIndex = 1;
+    while (window.fs.existsSync(manifestFilePath)) {
+      manifestFilePath = window.path.join(savePath, `manifest(${fileIndex}).xlsx`);
+      fileIndex++;
+    }
+
+    // Step 3: Retrieve the manifest data from the current sodaJSONObj
+    const manifestData = window.sodaJSONObj["guided-manifest-file-data"];
+    if (!manifestData) {
+      window.notyf.open({
+        type: "error",
+        message: "No manifest data found. Please create a manifest first.",
+      });
+      return;
+    }
+
+    // Step 4: Transform the manifest data into the schema format expected by the backend
+    const shapedManifestData = convertGuidedManifestToSchema(manifestData);
+
+    // Step 5: Create a deep copy of sodaJSONObj to prevent mutating the original object
+    const sodaJSONCopy = JSON.parse(JSON.stringify(window.sodaJSONObj));
+
+    // Step 6: Initialize dataset_metadata if it doesn't exist and attach the formatted manifest
+    if (!sodaJSONCopy["dataset_metadata"]) {
+      sodaJSONCopy["dataset_metadata"] = {};
+    }
+    sodaJSONCopy["dataset_metadata"]["manifest_file"] = shapedManifestData;
+
+    // Step 7: Call the backend API to generate the Excel manifest file
+    await client.post("/prepare_metadata/manifest", {
+      soda: sodaJSONCopy,
+      path_to_manifest_file: manifestFilePath,
+      upload_boolean: false,
+    });
+
+    // Display success notification
+    window.notyf.open({
+      duration: 5000,
+      type: "success",
+      message: "Manifest file successfully generated",
+    });
+  } catch (error) {
+    window.log.error("[guidedCreateLocalManifestCopy] Error generating manifest:", error);
+    clientError(error);
+  }
 };
 
 window.diffCheckManifestFiles = (newManifestData, existingManifestData) => {

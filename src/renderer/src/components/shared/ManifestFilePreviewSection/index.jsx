@@ -2,18 +2,14 @@ import SodaPaper from "../../utils/ui/SodaPaper";
 import { Text, Center, Button, Stack } from "@mantine/core";
 import { handleOrganizeDsGenerateLocalManifestCopyButtonClick } from "./utils";
 
-const ManifestFilePreviewSection = ({ id }) => {
-  const handleClick = () => {
-    if (id === "gm-manifest-file-preview") {
-      window.guidedOpenManifestEditSwal();
-    }
-    if (id === "ffm-manifest-file-preview") {
-      window.openmanifestEditSwal();
-    }
+const ManifestFilePreviewSection = () => {
+  const handlePreviewEditManifestFileClick = () => {
+    window.guidedOpenManifestEditSwal();
   };
 
   const handleGenerateLocalCopy = async () => {
-    await handleOrganizeDsGenerateLocalManifestCopyButtonClick();
+    // await handleOrganizeDsGenerateLocalManifestCopyButtonClick();
+    await window.guidedCreateLocalManifestCopy();
   };
 
   return (
@@ -29,20 +25,16 @@ const ManifestFilePreviewSection = ({ id }) => {
             Exit" button at the bottom of the manifest file editor to save any changes you have
             made.
           </Text>
-          <Button size="md" onClick={handleClick}>
+          <Button size="md" onClick={handlePreviewEditManifestFileClick}>
             Preview/Edit Manifest file
           </Button>
-          {id === "ffm-manifest-file-preview" && (
-            <>
-              <Text>
-                You can create a local copy of your manifest files for review. Click to do so if
-                needed.
-              </Text>
-              <Button size="md" onClick={handleGenerateLocalCopy}>
-                Create local copy
-              </Button>
-            </>
-          )}
+
+          <Text>
+            You can create a local copy of your manifest files for review. Click to do so if needed.
+          </Text>
+          <Button size="md" onClick={handleGenerateLocalCopy}>
+            Create local copy
+          </Button>
         </Stack>
       </Center>
     </SodaPaper>
