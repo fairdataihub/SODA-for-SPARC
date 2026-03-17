@@ -29,6 +29,7 @@ import {
 import { setCheckboxCardUnchecked } from "../../../stores/slices/checkboxCardSlice";
 import {
   setGuidedDatasetName,
+  setFreeFormDatasetName,
   setGuidedDatasetSubtitle,
 } from "../../../stores/slices/guidedModeSlice";
 
@@ -58,6 +59,7 @@ const GenerateDatasetPennsieveTargetPage = ({ curationMode }) => {
 
   // derive dataset name from the same store used on NameAndSubtitlePage
   const newDatasetName = useGlobalStore((state) => state.guidedDatasetName);
+  const freeFormDatasetName = useGlobalStore((state) => state.freeFormDatasetName);
 
   // when ffm new-dataset is selected, keep the "selectedDataset" values
   // in sync so downstream logic still works with the normal upload flow.
@@ -208,6 +210,16 @@ const GenerateDatasetPennsieveTargetPage = ({ curationMode }) => {
 
       <Collapse in={isExistingDatasetSelected}>
         <GuidedModeSection>{renderDatasetSection()}</GuidedModeSection>
+      </Collapse>
+      <Collapse in={curationMode === "ffm" && isNewDatasetSelected}>
+        <TextInput
+          label="Dataset Name:"
+          required
+          description="Enter a unique and informative name for your dataset."
+          placeholder="Enter dataset name"
+          value={freeFormDatasetName}
+          onChange={(event) => setFreeFormDatasetName(event.target.value)}
+        />
       </Collapse>
     </GuidedModePage>
   );

@@ -12,9 +12,31 @@ import {
 } from "../../../../stores/slices/checkboxCardSlice";
 import { guidedGetCurrentUserWorkSpace } from "../../workspaces/workspaces";
 import { countFilesInDatasetStructure } from "../../generateDataset/generate";
+import { createOrUpdateProgressFileSaveInfo } from "../../resumeProgress/progressFile";
 
 export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
   const errorArray = [];
+
+  if (pageBeingLeftID === "guided-select-starting-point-tab") {
+    const startingNewCuration = isCheckboxCardChecked("guided-button-start-new-curation");
+    const resumingExistingProgress = isCheckboxCardChecked("guided-button-resume-progress-file");
+
+    if (!startingNewCuration && !resumingExistingProgress) {
+      errorArray.push({
+        type: "notyf",
+        message: "Please select a dataset start location",
+      });
+      throw errorArray;
+    }
+
+    if (resumingExistingProgress) {
+      errorArray.push({
+        type: "notyf",
+        message: "Select a dataset in progress to resume curation",
+      });
+      throw errorArray;
+    }
+  }
   if (
     pageBeingLeftID === "gm-pennsieve-login-tab" ||
     pageBeingLeftID === "ffm-pennsieve-login-tab"
@@ -145,6 +167,21 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
         console.log(
           "Skipping ffm-existing-files-handling-tab since user selected to generate on a new Pennsieve dataset"
         );
+        const freeformDatasetName = useGlobalStore.getState().freeFormDatasetName;
+        console.log("Freeform dataset name from store:", freeformDatasetName);
+        if (!freeformDatasetName) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please enter a dataset name before continuing.",
+          });
+          throw errorArray;
+        }
+        // Set the progress file name in the digital metadata
+        window.sodaJSONObj["digital-metadata"]["name"] = freeformDatasetName;
+        const saveFileErrors = createOrUpdateProgressFileSaveInfo(freeformDatasetName, errorArray);
+        if (saveFileErrors.length > 0) {
+          throw saveFileErrors;
+        }
         guidedSkipPage("ffm-existing-files-handling-tab");
       }
     }
@@ -185,6 +222,16 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
         console.log(
           "Unskipping ffm-existing-files-handling-tab since user selected to generate on an existing Pennsieve dataset"
         );
+
+        // Set the progress file name in the digital metadata
+        window.sodaJSONObj["digital-metadata"]["name"] = selectedDatasetNameToUploadDataTo;
+        const saveFileErrors = createOrUpdateProgressFileSaveInfo(
+          selectedDatasetNameToUploadDataTo,
+          errorArray
+        );
+        if (saveFileErrors.length > 0) {
+          throw saveFileErrors;
+        }
         guidedUnSkipPage("ffm-existing-files-handling-tab");
       }
     }

@@ -101,7 +101,7 @@
           </div>
 
           <div class="guided--section" id="guided-section-resume-progress-cards">
-            <div class="guided--section" id="guided-section-loading-progress-cards">
+            <div class="guided--section" id="gm-section-loading-progress-cards">
               <div class="lds-roller">
                 <div></div>
                 <div></div>
@@ -112,10 +112,61 @@
                 <div></div>
                 <div></div>
               </div>
-              <p id="guided-section-loading-progress-cards-para">Loading datasets in progress...</p>
+              <p id="gm-section-loading-progress-cards-para">Loading datasets in progress...</p>
             </div>
             <div class="guided--section" data-component-type="guided-mode-progress-cards"></div>
-            <div class="guided--section" id="guided-container-progress-cards"></div>
+            <div class="guided--section" id="gm-container-progress-cards"></div>
+          </div>
+        </div>
+
+        <div
+          id="ffm-select-starting-point-tab"
+          class="guided--page h-100 ffm"
+          data-page-name="Select Starting Point"
+        >
+          <div class="guided--section">
+            <h1 class="text-sub-step-title">Prepare Dataset Step-by-Step</h1>
+          </div>
+
+          <div class="guided--section">
+            <label class="guided--form-label centered mb-4"
+              >Select the task you would like to perform below:
+            </label>
+
+            <div class="guided--radio-button-container">
+              <div
+                data-component-type="checkbox-card"
+                data-button-id="ffm-button-start-new-curation"
+              ></div>
+              <div
+                data-component-type="checkbox-card"
+                data-button-id="ffm-button-resume-progress-file"
+              ></div>
+            </div>
+          </div>
+
+          <div class="guided--section" id="ffm-section-start-new-curation">
+            <h2 class="guided--text-user-directions">
+              Click "<span class="next-button-span"></span>" to start Prepare Dataset Step-by-Step
+            </h2>
+          </div>
+
+          <div class="guided--section" id="ffm-section-resume-progress-cards">
+            <div class="guided--section" id="ffm-section-loading-progress-cards">
+              <div class="lds-roller">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+              <p id="ffm-section-loading-progress-cards-para">Loading datasets in progress...</p>
+            </div>
+            <div class="guided--section" data-component-type="guided-mode-progress-cards"></div>
+            <div class="guided--section" id="ffm-container-progress-cards"></div>
           </div>
         </div>
 

@@ -19,5 +19,180 @@ export const getAllProgressFileData = async (progressFiles) => {
 
 const readFileAsync = async (path) => {
   let result = await window.fs.readFile(path, "utf-8");
-  return result;
+
+  // Parse if it's a string, otherwise assume it's already parsed
+  let parsedResult = typeof result === "string" ? JSON.parse(result) : result;
+
+  // Apply patches to fix any compatibility issues
+  const patched = await patchProgressFile(parsedResult);
+
+  // Create variable for the patched result
+  const patchedResult = parsedResult;
+
+  // Write the patched result back to disk only if it was patched
+  if (patched) {
+    try {
+      await window.fs.writeFile(path, JSON.stringify(patchedResult, null, 2));
+    } catch (error) {
+      console.warn(`Failed to save progress file at ${path}:`, error);
+    }
+  }
+
+  return patchedResult;
+};
+
+const patchProgressFile = async (progressFile) => {
+  let patched = false;
+
+  // If the json key was misspelled as "cuartion-mode" in previous versions, correct it to "curation-mode"
+  if (progressFile["cuartion-mode"] && !progressFile["curation-mode"]) {
+    progressFile["curation-mode"] = progressFile["cuartion-mode"];
+    delete progressFile["cuartion-mode"];
+    patched = true;
+  }
+
+  return patched;
+};
+
+export const getGuidedProgressFileNames = () => {
+  const progressFileNames = window.fs
+    .readdirSync(guidedProgressFilePath)
+    .filter((fileName) => fileName.endsWith(".json"));
+
+  const datasetNames = [];
+
+  for (const fileName of progressFileNames) {
+    try {
+      const filePath = window.path.join(guidedProgressFilePath, fileName);
+      const fileContent = window.fs.readFileSync(filePath, "utf-8");
+      const progressData = JSON.parse(fileContent);
+      const datasetName = progressData?.["digital-metadata"]?.["name"];
+      if (datasetName) {
+        datasetNames.push(datasetName);
+      }
+    } catch (error) {
+      console.error(`Error reading progress file ${fileName}:`, error);
+    }
+  }
+
+  return datasetNames;
+};
+
+export const createOrUpdateProgressFileSaveInfo = (datasetNameInput, errorArray = []) => {
+  const sanitizedDatasetName = window.sanitizeStringForSaveFileSystemSave(datasetNameInput);
+
+  const prevSaveFileName = window.sodaJSONObj?.["save-file-name"];
+  const prevRandomSuffix = window.sodaJSONObj?.["save-file-random-hash-suffix"];
+  const prevDatasetName = window.sodaJSONObj?.["digital-metadata"]?.["name"];
+
+  window.log.info("[guided-name-subtitle-tab] Previous save info:", {
+    prevDatasetName,
+    prevSaveFileName,
+    prevRandomSuffix,
+  });
+
+  if (!prevDatasetName) {
+    const existingProgressFileNames = getGuidedProgressFileNames();
+    if (existingProgressFileNames.includes(datasetNameInput)) {
+      errorArray.push({
+        type: "notyf",
+        message:
+          "A dataset with this name already exists. Please choose a different name or resume your previous progress by navigating back.",
+      });
+      return errorArray;
+    }
+  }
+
+  const randomString = Math.random().toString(16).slice(2, 10);
+  const newSaveFileName = `${sanitizedDatasetName}-${prevRandomSuffix || randomString}`;
+
+  window.log.info("[guided-name-subtitle-tab] New save file info:", {
+    sanitizedDatasetName,
+    randomString,
+    newSaveFileName,
+  });
+
+  window.sodaJSONObj["save-file-name"] = newSaveFileName;
+  if (!prevRandomSuffix) {
+    window.sodaJSONObj["save-file-random-hash-suffix"] = randomString;
+  }
+
+  const shouldRename = prevSaveFileName && prevDatasetName && prevDatasetName !== datasetNameInput;
+
+  window.log.info("[guided-name-subtitle-tab] Rename check:", {
+    prevDatasetName,
+    prevSaveFileName,
+    shouldRename,
+  });
+
+  if (shouldRename) {
+    window.log.info(
+      `[guided-name-subtitle-tab] Dataset name change detected: ${prevDatasetName} → ${datasetNameInput}`
+    );
+
+    const existingProgressFileNames = getGuidedProgressFileNames();
+    const filteredExistingProgressFileNames = existingProgressFileNames.filter(
+      (name) => name !== prevDatasetName
+    );
+
+    if (filteredExistingProgressFileNames.includes(datasetNameInput)) {
+      errorArray.push({
+        type: "notyf",
+        message: "A dataset with this name already exists. Please choose a different name.",
+      });
+      return errorArray;
+    }
+
+    const oldProgressFilePath = `${guidedProgressFilePath}/${prevSaveFileName}.json`;
+    const newProgressFilePath = `${guidedProgressFilePath}/${newSaveFileName}.json`;
+
+    window.log.info("[guided-name-subtitle-tab] Renaming progress file:", {
+      oldProgressFilePath,
+      newProgressFilePath,
+    });
+
+    if (oldProgressFilePath !== newProgressFilePath) {
+      try {
+        window.fs.renameSync(oldProgressFilePath, newProgressFilePath);
+        window.log.info(
+          `[guided-name-subtitle-tab] Successfully renamed progress file: ${prevSaveFileName} → ${newSaveFileName}`
+        );
+      } catch (error) {
+        window.log.error(
+          `[guided-name-subtitle-tab] Error renaming guided progress file from ${oldProgressFilePath} → ${newProgressFilePath}:`,
+          error
+        );
+      }
+
+      const bannerImagePathToUpdate = window.sodaJSONObj["digital-metadata"]["banner-image-path"];
+      if (bannerImagePathToUpdate) {
+        const newBannerImagePath = bannerImagePathToUpdate.replace(
+          prevSaveFileName,
+          newSaveFileName
+        );
+
+        window.log.info("[guided-name-subtitle-tab] Renaming banner image folder:", {
+          old: bannerImagePathToUpdate,
+          new: newBannerImagePath,
+        });
+
+        try {
+          window.fs.renameSync(bannerImagePathToUpdate, newBannerImagePath);
+          window.sodaJSONObj["digital-metadata"]["banner-image-path"] = newBannerImagePath;
+          window.log.info(
+            `[guided-name-subtitle-tab] Successfully renamed banner image folder: ${bannerImagePathToUpdate} → ${newBannerImagePath}`
+          );
+        } catch (error) {
+          window.log.error(
+            `[guided-name-subtitle-tab] Error renaming banner image folder from ${bannerImagePathToUpdate} → ${newBannerImagePath}:`,
+            error
+          );
+        }
+      }
+    }
+  } else {
+    window.log.info("[guided-name-subtitle-tab] Skipping rename (no previous save or no change)");
+  }
+
+  return errorArray;
 };

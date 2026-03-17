@@ -26,19 +26,26 @@ if (!window.fs.existsSync(guidedProgressFilePath)) {
 document
   .getElementById("guided-button-resume-progress-file")
   .addEventListener("click", async () => {
-    await guidedRenderProgressCards();
+    await guidedRenderProgressCards("gm");
   });
+
+document.getElementById("ffm-button-resume-progress-file").addEventListener("click", async () => {
+  await guidedRenderProgressCards("ffm");
+});
 
 const readDirAsync = async (path) => {
   let result = await window.fs.readdir(path);
   return result;
 };
 
-export const guidedRenderProgressCards = async () => {
-  const progressCardsContainer = document.getElementById("guided-container-progress-cards");
-  const progressCardLoadingDiv = document.getElementById("guided-section-loading-progress-cards");
+export const guidedRenderProgressCards = async (curationMode) => {
+  const prefix = curationMode === "ffm" ? "ffm" : "gm";
+  const progressCardsContainer = document.getElementById(`${prefix}-container-progress-cards`);
+  const progressCardLoadingDiv = document.getElementById(
+    `${prefix}-section-loading-progress-cards`
+  );
   const progressCardLoadingDivText = document.getElementById(
-    "guided-section-loading-progress-cards-para"
+    `${prefix}-section-loading-progress-cards-para`
   );
   setGuidedModeProgressCardsDataArray([]);
 
@@ -74,7 +81,14 @@ export const guidedRenderProgressCards = async () => {
     return file.endsWith(".json");
   });
 
-  const progressFileData = await getAllProgressFileData(jsonProgressFiles);
+  let progressFileData = await getAllProgressFileData(jsonProgressFiles);
+
+  // Filter progress files based on curation mode
+  const targetCurationMode = curationMode === "ffm" ? "free-form" : "guided";
+  progressFileData = progressFileData.filter((progressFile) => {
+    const progressFileCurationMode = progressFile?.["curation-mode"];
+    return progressFileCurationMode === targetCurationMode;
+  });
 
   // Sort by last modified date
   progressFileData.sort((a, b) => {

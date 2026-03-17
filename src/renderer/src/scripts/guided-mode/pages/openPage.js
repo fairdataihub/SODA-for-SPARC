@@ -129,7 +129,10 @@ const guidedRenderSideBar = (pageBeingOpenedID) => {
 
   sidebar.disabled = true;
   guidedModeSection.style.marginLeft = "-70px";
-  const pagesToNotRenderSidebarOn = ["guided-select-starting-point-tab"];
+  const pagesToNotRenderSidebarOn = [
+    "guided-select-starting-point-tab",
+    "ffm-select-starting-point-tab",
+  ];
 
   if (!pagesToNotRenderSidebarOn.includes(pageBeingOpenedID)) {
     guidedDatsetTab.style.marginLeft = "215px";

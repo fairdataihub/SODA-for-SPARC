@@ -66,11 +66,11 @@ export const guidedGetDatasetOrigin = (sodaJSON) => {
   return "New";
 };
 //dataset description (first page) functions
-export const initializeGuidedDatasetObject = () => {
+export const initializeGuidedDatasetObject = (curationMode) => {
   window.sodaJSONObj = {};
 
   window.sodaJSONObj["guided-options"] = {};
-  window.sodaJSONObj["cuartion-mode"] = "guided";
+  window.sodaJSONObj["curation-mode"] = curationMode;
   window.sodaJSONObj["ps-account-selected"] = {};
   window.sodaJSONObj["dataset-structure"] = { files: {}, folders: {} };
   window.sodaJSONObj["generate-dataset"] = {};

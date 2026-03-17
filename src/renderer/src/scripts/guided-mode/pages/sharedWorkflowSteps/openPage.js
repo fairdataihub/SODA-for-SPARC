@@ -10,15 +10,16 @@ import {
   setCheckboxCardUnchecked,
 } from "../../../../stores/slices/checkboxCardSlice.js";
 export const openPageSharedWorkflowSteps = async (targetPageID) => {
+  if (targetPageID === "guided-select-starting-point-tab") {
+    initializeGuidedDatasetObject("guided");
+    guidedResetSkippedPages("gm");
+  }
+  if (targetPageID === "ffm-select-starting-point-tab") {
+    initializeGuidedDatasetObject("free-form");
+    guidedResetSkippedPages("ffm");
+  }
   if (targetPageID === "gm-pennsieve-login-tab" || targetPageID === "ffm-pennsieve-login-tab") {
-    let prefix;
-    if (targetPageID === "ffm-pennsieve-login-tab") {
-      initializeGuidedDatasetObject();
-      guidedResetSkippedPages("ffm");
-      prefix = "ffm";
-    } else {
-      prefix = "gm";
-    }
+    let prefix = targetPageID === "guided-select-starting-point-tab" ? "gm" : "ffm";
     const agentCheckElementId = `${prefix}-section-pennsieve-agent-check`;
     const confirmAccountButtonId = `${prefix}-confirm-pennsieve-account-button`;
     const confirmOrgButtonId = `${prefix}-confirm-pennsieve-organization-button`;
@@ -101,7 +102,6 @@ export const openPageSharedWorkflowSteps = async (targetPageID) => {
       `Opening ${prefix}-pennsieve-generate-target-tab, checking if user needs to reconfirm account details`
     );
     await guidedCheckIfUserNeedsToReconfirmAccountDetails(prefix);
-    setPreferredPennsieveDatasetId(null);
     setCheckboxCardUnchecked(`${prefix}-generate-on-new-pennsieve-dataset`);
     setCheckboxCardUnchecked(`${prefix}-generate-on-existing-pennsieve-dataset`);
     const previouslySelectedDatasetIdToUploadDataTo =

@@ -61,6 +61,22 @@ export const checkboxCardSlice = (set) => ({
       nextElementID: "guided-section-resume-progress-cards",
       checked: false,
     },
+    "ffm-button-start-new-curation": {
+      title: "Prepare and optionally share a new dataset",
+      description: null,
+      Icon: IconCirclePlus,
+      mutuallyExclusiveWithCards: ["ffm-button-resume-progress-file"],
+      nextElementID: "ffm-section-start-new-curation",
+      checked: false,
+    },
+    "ffm-button-resume-progress-file": {
+      title: "Continue a dataset saved in SODA",
+      description: null,
+      Icon: IconDeviceFloppy,
+      mutuallyExclusiveWithCards: ["ffm-button-start-new-curation"],
+      nextElementID: "ffm-section-resume-progress-cards",
+      checked: false,
+    },
     "guided-button-add-entities-manually": {
       title: "Enter entity IDs manually in the SODA ui",
       description: null,
@@ -131,6 +147,7 @@ export const checkboxCardSlice = (set) => ({
         "Select this option if you would like SODA to create a new dataset for you on Pennsieve.",
       Icon: IconBrowserPlus,
       mutuallyExclusiveWithCards: ["ffm-generate-on-existing-pennsieve-dataset"],
+      nextElementID: "ffm-div-new-dataset-name-input",
       checked: false,
     },
     "ffm-generate-on-new-pennsieve-dataset-guest": {
@@ -143,7 +160,7 @@ export const checkboxCardSlice = (set) => ({
       disabledNotComingSoon: true,
     },
     "ffm-button-replace-existing-files": {
-      title: "Replace existing files on Pennsieve",
+      title: "Replace existing files",
       description:
         "Select this option if you want SODA to replace files with the same name in the Pennsieve dataset.",
       Icon: IconReplace,
@@ -153,7 +170,7 @@ export const checkboxCardSlice = (set) => ({
       configValueState: "replace",
     },
     "ffm-button-skip-existing-files": {
-      title: "Skip existing files on Pennsieve",
+      title: "Skip existing files",
       description:
         "Select this option if you want SODA to skip files with the same name in the Pennsieve dataset.",
       Icon: IconReport,

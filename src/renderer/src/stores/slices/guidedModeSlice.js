@@ -3,12 +3,17 @@ import useGlobalStore from "../globalStore";
 export const guidedModeSlice = (set) => ({
   guidedDatasetName: "",
   guidedDatasetSubtitle: "",
+  freeFormDatasetName: "",
   datasetType: null,
   hiddenGuidedModeSections: [],
 });
 
 export const setGuidedDatasetName = (datasetName) => {
   useGlobalStore.setState({ guidedDatasetName: datasetName });
+};
+
+export const setFreeFormDatasetName = (datasetName) => {
+  useGlobalStore.setState({ freeFormDatasetName: datasetName });
 };
 
 export const setGuidedDatasetSubtitle = (datasetSubtitle) => {
