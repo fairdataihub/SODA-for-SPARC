@@ -420,8 +420,8 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
   }
 
   if (pageBeingLeftID === "ffm-existing-files-handling-tab") {
-    const replaceExistingFilesChecked = isCheckboxCardChecked("ffm-replace-existing-files");
-    const keepExistingFilesChecked = isCheckboxCardChecked("ffm-keep-existing-files");
+    const replaceExistingFilesChecked = isCheckboxCardChecked("ffm-button-replace-existing-files");
+    const keepExistingFilesChecked = isCheckboxCardChecked("ffm-button-keep-existing-files");
     if (!replaceExistingFilesChecked && !keepExistingFilesChecked) {
       errorArray.push({
         type: "notyf",

@@ -1,8 +1,12 @@
 import SodaPaper from "../../utils/ui/SodaPaper";
 import { Text, Center, Button, Stack } from "@mantine/core";
 import { handleOrganizeDsGenerateLocalManifestCopyButtonClick } from "./utils";
+import useGlobalStore from "../../../stores/globalStore";
 
 const ManifestFilePreviewSection = () => {
+  const manifestFileGenerationDisabled = useGlobalStore(
+    (state) => state.manifestFileGenerationDisabled
+  );
   const handlePreviewEditManifestFileClick = () => {
     window.guidedOpenManifestEditSwal();
   };
@@ -11,6 +15,24 @@ const ManifestFilePreviewSection = () => {
     // await handleOrganizeDsGenerateLocalManifestCopyButtonClick();
     await window.guidedCreateLocalManifestCopy();
   };
+
+  if (manifestFileGenerationDisabled) {
+    return (
+      <SodaPaper>
+        <Center>
+          <Stack align="center" spacing="md">
+            <Text size="lg" fw={500}>
+              Manifest File Generation Disabled
+            </Text>
+            <Text>
+              Manifest file generation is disabled because SODA does not currently support updating
+              the manifest files of datasets already on Pennsieve.
+            </Text>
+          </Stack>
+        </Center>
+      </SodaPaper>
+    );
+  }
 
   return (
     <SodaPaper>

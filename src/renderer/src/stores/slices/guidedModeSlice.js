@@ -6,6 +6,7 @@ export const guidedModeSlice = (set) => ({
   freeFormDatasetName: "",
   datasetType: null,
   hiddenGuidedModeSections: [],
+  manifestFileGenerationDisabled: false,
 });
 
 export const setGuidedDatasetName = (datasetName) => {
@@ -39,4 +40,8 @@ export const removeHiddenGuidedModeSection = (sectionId) => {
       state.hiddenGuidedModeSections.splice(index, 1);
     }
   });
+};
+
+export const setManifestFileGenerationDisabled = (disabled) => {
+  useGlobalStore.setState({ manifestFileGenerationDisabled: disabled });
 };
