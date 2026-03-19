@@ -7,6 +7,7 @@ export const guidedModeSlice = (set) => ({
   datasetType: null,
   hiddenGuidedModeSections: [],
   manifestFileGenerationDisabled: false,
+  curationMode: null,
 });
 
 export const setGuidedDatasetName = (datasetName) => {
@@ -44,4 +45,8 @@ export const removeHiddenGuidedModeSection = (sectionId) => {
 
 export const setManifestFileGenerationDisabled = (disabled) => {
   useGlobalStore.setState({ manifestFileGenerationDisabled: disabled });
+};
+
+export const setCurationMode = (curationMode) => {
+  useGlobalStore.setState({ curationMode });
 };

@@ -62,7 +62,7 @@ export const checkboxCardSlice = (set) => ({
       checked: false,
     },
     "ffm-button-start-new-curation": {
-      title: "Prepare and optionally share a new dataset",
+      title: "Begin uploading a new dataset",
       description: null,
       Icon: IconCirclePlus,
       mutuallyExclusiveWithCards: ["ffm-button-resume-progress-file"],
@@ -70,7 +70,7 @@ export const checkboxCardSlice = (set) => ({
       checked: false,
     },
     "ffm-button-resume-progress-file": {
-      title: "Continue a dataset saved in SODA",
+      title: "Continue a work in progress",
       description: null,
       Icon: IconDeviceFloppy,
       mutuallyExclusiveWithCards: ["ffm-button-start-new-curation"],
@@ -78,7 +78,7 @@ export const checkboxCardSlice = (set) => ({
       checked: false,
     },
     "guided-button-add-entities-manually": {
-      title: "Enter entity IDs manually in the SODA ui",
+      title: "Enter entity IDs manually in the SODA UI",
       description: null,
       Icon: IconKeyboard,
       mutuallyExclusiveWithCards: ["guided-button-add-entities-via-spreadsheet"],

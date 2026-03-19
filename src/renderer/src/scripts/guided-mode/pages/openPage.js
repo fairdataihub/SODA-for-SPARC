@@ -40,7 +40,7 @@ import {
   filterRemovedFilesFromDatasetEntityObj,
   setEntityType,
 } from "../../../stores/slices/datasetEntitySelectorSlice.js";
-import { setDatasetType } from "../../../stores/slices/guidedModeSlice.js";
+import { setDatasetType, setCurationMode } from "../../../stores/slices/guidedModeSlice.js";
 import { setSelectedHierarchyEntity } from "../../../stores/slices/datasetContentSelectorSlice.js";
 import { guidedSetNavLoadingState } from "./navigationUtils/pageLoading.js";
 import Swal from "sweetalert2";
@@ -91,7 +91,10 @@ const handleNextButtonVisibility = (targetPageID) => {
 };
 
 const handleSaveAndExitButtonVisibility = (targetPageID) => {
-  if (targetPageID === "guided-select-starting-point-tab") {
+  if (
+    targetPageID === "guided-select-starting-point-tab" ||
+    targetPageID === "ffm-select-starting-point-tab"
+  ) {
     $("#guided-button-save-and-exit").css("visibility", "hidden");
   } else {
     $("#guided-button-save-and-exit").css("visibility", "visible");
@@ -199,6 +202,7 @@ window.openPage = async (targetPageID) => {
   //when the promise completes there is a catch for error handling
   //upon resolving it will set navLoadingstate to false
   try {
+    setCurationMode(window.sodaJSONObj["curation-mode"]);
     //reset the radio buttons for the page being navigated to
     resetGuidedRadioButtons(targetPageID);
     //update the radio buttons using the button config from window.sodaJSONObj

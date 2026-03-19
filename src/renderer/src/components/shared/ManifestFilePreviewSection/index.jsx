@@ -1,5 +1,6 @@
 import SodaPaper from "../../utils/ui/SodaPaper";
-import { Text, Center, Button, Stack } from "@mantine/core";
+import { Text, Center, Button, Stack, Alert } from "@mantine/core";
+import { IconAlertCircle } from "@tabler/icons-react";
 import { handleOrganizeDsGenerateLocalManifestCopyButtonClick } from "./utils";
 import useGlobalStore from "../../../stores/globalStore";
 
@@ -19,17 +20,17 @@ const ManifestFilePreviewSection = () => {
   if (manifestFileGenerationDisabled) {
     return (
       <SodaPaper>
-        <Center>
-          <Stack align="center" spacing="md">
-            <Text size="lg" fw={500}>
-              Manifest File Generation Disabled
-            </Text>
-            <Text>
-              Manifest file generation is disabled because SODA does not currently support updating
-              the manifest files of datasets already on Pennsieve.
-            </Text>
-          </Stack>
-        </Center>
+        <Alert
+          icon={<IconAlertCircle size={16} />}
+          title="Manifest file generation unavailable"
+          color="gray"
+          variant="light"
+        >
+          <Text size="sm">
+            Manifest file generation is disabled because SODA does not currently support updating
+            the manifest files of datasets already on Pennsieve.
+          </Text>
+        </Alert>
       </SodaPaper>
     );
   }

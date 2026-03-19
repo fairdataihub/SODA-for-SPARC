@@ -32,7 +32,8 @@ from manageDatasets import (
     get_dataset_readme,
     get_dataset_tags,
     update_dataset_tags,
-    scale_image
+    scale_image,
+    is_dataset_empty,
 )
 
 from pysodaUtils import get_agent_version, start_agent
@@ -454,6 +455,7 @@ model_account_datasets_list_response = api.model('AccountDatasetsResponse', {
   'datasets': fields.List(fields.Nested(model_account_dataset), required=True, description="List of the datasets in the user's organization."),
 })
 
+
 @api.route('/fetch_user_datasets')
 class BfDatasetAccount(Resource):
 
@@ -481,7 +483,34 @@ class BfDatasetAccount(Resource):
 
 
 
+model_check_dataset_empty_response = api.model('CheckDatasetEmptyResponse', {
+  'is_empty': fields.Boolean(required=True, description="Whether the dataset is empty"),
+})
 
+@api.route('/check_if_dataset_is_empty')
+class CheckDatasetEmpty(Resource):
+
+  parser_check_dataset_empty = reqparse.RequestParser(bundle_errors=True)
+  parser_check_dataset_empty.add_argument('dataset_id', type=str, required=True, location='args', help='The ID of the dataset to check.')
+
+  @api.marshal_with(model_check_dataset_empty_response, False, 200)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Check if a dataset is empty (has no files or folders).")
+  @api.expect(parser_check_dataset_empty)
+  def get(self):
+    try:
+      args = self.parser_check_dataset_empty.parse_args()
+      dataset_id = args.get('dataset_id')
+      is_empty = is_dataset_empty(dataset_id)
+      return {'is_empty': is_empty}
+    except Exception as e:
+      api.logger.exception(e)
+      if notBadRequestException(e):
+          api.abort(500, str(e))
+      if hasattr(e, 'response') and e.response is not None:
+          api.logger.info("Error message details: ", e.response.json().get('message'))
+          api.abort(e.response.status_code, e.response.json().get('message'))
+      else:
+          api.abort(e.code, e.description)
 
 
 

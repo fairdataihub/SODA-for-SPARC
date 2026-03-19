@@ -2,6 +2,7 @@ const PAGES_THAT_SHOULD_ALWAYS_BE_SKIPPED = [
   "guided-dataset-generation-tab",
   "guided-dataset-dissemination-tab",
   "guided-select-starting-point-tab",
+  "ffm-select-starting-point-tab",
 ];
 
 export const guidedSkipPage = (pageId) => {

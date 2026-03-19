@@ -5009,6 +5009,9 @@ window.showBFAddAccountSweetalert = async (ev) => {
                       if (pageToReloadId === "guided-select-starting-point-tab") {
                         document.getElementById("guided-button-resume-progress-file").click();
                       }
+                      if (pageToReloadId === "ffm-select-starting-point-tab") {
+                        document.getElementById("ffm-button-resume-progress-file").click();
+                      }
                     } else {
                       window.resetFFMUI(ev?.target || null);
                     }

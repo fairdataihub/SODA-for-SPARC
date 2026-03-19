@@ -104,6 +104,7 @@ window.guidedResumeProgress = async (progressFileName) => {
 
     // Skip this page incase it was not skipped in a previous session
     guidedSkipPage("guided-select-starting-point-tab");
+    guidedSkipPage("ffm-select-starting-point-tab");
 
     // pageToReturnTo will be set to the page the user will return to
     const pageToReturnTo = await guidedGetPageToReturnTo(window.sodaJSONObj);
