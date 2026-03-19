@@ -289,7 +289,7 @@ export const initializeSODARenderer = async () => {
   await launchAnnouncements();
 
   // Set the template paths for dataset metadata generation
-  await setTemplatePaths();
+  // await setTemplatePaths();
 
   window.log.info("Successfully initialized SODA renderer process");
 };

@@ -1,7 +1,7 @@
 from os import makedirs, path
 import logging
 import logging.handlers
-from pysoda.core import logger as pysoda_logger
+# from pysoda.core import logger as pysoda_logger
 
 def configureLogger(app):
     LOG_FOLDER = path.join(path.expanduser('~'), "SODA" , 'logs')
@@ -25,8 +25,8 @@ def configureLogger(app):
     app.logger.setLevel(logging.DEBUG)
 
     # Configure the pysoda.core logger to use the same handler
-    pysoda_logger.addHandler(handler)
-    pysoda_logger.setLevel(logging.DEBUG)
+    # pysoda_logger.addHandler(handler)
+    # pysoda_logger.setLevel(logging.DEBUG)
 
     # Optional: Ensure logs from pysoda.core propagate to the root logger
-    pysoda_logger.propagate = True
+    # pysoda_logger.propagate = True
