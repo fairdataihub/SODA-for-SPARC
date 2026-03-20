@@ -433,11 +433,19 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
   }
 
   if (pageBeingLeftID === "guided-dataset-structure-and-manifest-review-tab") {
-    const guidedManifestData = window.sodaJSONObj["guided-manifest-file-data"];
-    // console log the first 3 rows of data
+    // Skip manifest file processing if manifest generation is disabled (i.e., dataset is not empty)
+    // This is consistent with the opening logic which disables manifest generation for non-empty datasets
+    const manifestFileGenerationDisabled = useGlobalStore.getState().manifestFileGenerationDisabled;
 
-    const manifestObjects = convertGuidedManifestToSchema(guidedManifestData);
-    // Set the manifest objects in the sodaJSONObj at where they will be detected by pysoda
-    window.sodaJSONObj["dataset_metadata"]["manifest_file"] = manifestObjects;
+    if (!manifestFileGenerationDisabled) {
+      const guidedManifestData = window.sodaJSONObj["guided-manifest-file-data"];
+      // console log the first 3 rows of data
+
+      const manifestObjects = convertGuidedManifestToSchema(guidedManifestData);
+      // Set the manifest objects in the sodaJSONObj at where they will be detected by pysoda
+      window.sodaJSONObj["dataset_metadata"]["manifest_file"] = manifestObjects;
+    } else {
+      delete window.sodaJSONObj?.["dataset_metadata"]?.["manifest_file"];
+    }
   }
 };

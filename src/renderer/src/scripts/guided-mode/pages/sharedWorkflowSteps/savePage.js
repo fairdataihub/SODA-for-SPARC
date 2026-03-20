@@ -159,6 +159,9 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
       };
 
       if (isFreeform) {
+        window.sodaJSONObj["digital-metadata"]["name"] = freeformDatasetName;
+        window.sodaJSONObj["generate-dataset"]["dataset-name"] = freeformDatasetName;
+
         const freeformDatasetName = useGlobalStore.getState().freeFormDatasetName;
 
         console.log("Freeform dataset name from store:", freeformDatasetName);
@@ -170,9 +173,6 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
           });
           throw errorArray;
         }
-
-        window.sodaJSONObj["digital-metadata"]["name"] = freeformDatasetName;
-        window.sodaJSONObj["generate-dataset"]["dataset-name"] = freeformDatasetName;
 
         const saveFileErrors = createOrUpdateProgressFileSaveInfo(freeformDatasetName, errorArray);
         if (saveFileErrors.length > 0) {
@@ -239,7 +239,6 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
         }
 
         const datasetIsEmpty = await api.isDatasetEmpty(selectedDatasetIdToUploadDataTo);
-
         if (datasetIsEmpty) {
           guidedSkipPage("ffm-existing-files-handling-tab");
         } else {

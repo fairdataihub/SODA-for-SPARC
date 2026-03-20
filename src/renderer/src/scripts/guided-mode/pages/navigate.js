@@ -39,25 +39,37 @@ window.openCurationMode = async (curationMode) => {
 export const handleNextButtonClick = async () => {
   //Get the ID of the current page to handle actions on page leave (next button pressed)
   window.pageBeingLeftID = window.CURRENT_PAGE.id;
+  console.log("[handleNextButtonClick] Starting navigation from page:", window.pageBeingLeftID);
 
   try {
+    console.log("[handleNextButtonClick] Saving page changes for:", window.pageBeingLeftID);
     await window.savePageChanges(window.pageBeingLeftID);
+    console.log("[handleNextButtonClick] Page changes saved successfully");
+
     if (!window.sodaJSONObj["completed-tabs"].includes(window.pageBeingLeftID)) {
       window.sodaJSONObj["completed-tabs"].push(window.pageBeingLeftID);
+      console.log("[handleNextButtonClick] Added page to completed-tabs:", window.pageBeingLeftID);
     }
 
     // If the current page is the dataset generation page, go to the share with curation team
     // page, otherwise, go to the next page in the workflow.
 
     if (window.pageBeingLeftID === "guided-dataset-generation-tab") {
+      console.log(
+        "[handleNextButtonClick] Dataset generation page detected, navigating to dissemination"
+      );
       await window.openPage("guided-dataset-dissemination-tab");
     } else {
       const targetPage = getNextPageNotSkipped(window.CURRENT_PAGE.id);
       const targetPageID = targetPage.id;
+      console.log("[handleNextButtonClick] Target page ID:", targetPageID);
+      console.log("[handleNextButtonClick] Opening page:", targetPageID);
 
       await window.openPage(targetPageID);
+      console.log("[handleNextButtonClick] Page opened successfully:", targetPageID);
     }
   } catch (error) {
+    console.error("[handleNextButtonClick] Error encountered:", error);
     if (Array.isArray(error)) {
       for (const err of error) {
         if (err.type === "notyf") {

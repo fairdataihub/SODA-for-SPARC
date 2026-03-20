@@ -27,8 +27,8 @@ const ManifestFilePreviewSection = () => {
           variant="light"
         >
           <Text size="sm">
-            Manifest file generation is disabled because SODA does not currently support updating
-            the manifest files of datasets already on Pennsieve.
+            SODA does not currently support manifest file generation for datasets that already have
+            data on Pennsieve.
           </Text>
         </Alert>
       </SodaPaper>
