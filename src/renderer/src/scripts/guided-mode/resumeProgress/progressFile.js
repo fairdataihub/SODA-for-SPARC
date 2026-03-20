@@ -87,6 +87,9 @@ export const createOrUpdateProgressFileSaveInfo = (datasetNameInput) => {
   const prevRandomSuffix = window.sodaJSONObj?.["save-file-random-hash-suffix"];
   const prevDatasetName = window.sodaJSONObj?.["digital-metadata"]?.["name"];
   const curationMode = window.sodaJSONObj?.["curation-mode"];
+  const uploadingToExistingDatasetFreeFormDataset =
+    window.sodaJSONObj?.["pennsieve-generation-target"] === "existing" &&
+    curationMode === "free-form";
   const existingProgressFileNames = getGuidedProgressFileNames(curationMode);
 
   console.log("Curation mode in createOrUpdateProgressFileSaveInfo:", curationMode);
@@ -99,6 +102,11 @@ export const createOrUpdateProgressFileSaveInfo = (datasetNameInput) => {
 
   if (!prevDatasetName) {
     if (existingProgressFileNames.includes(datasetNameInput)) {
+      if (uploadingToExistingDatasetFreeFormDataset) {
+        throw new Error(
+          `You have already started progress on a dataset named "${datasetNameInput}". Please navigate back to that dataset to continue working on it. If you want to start fresh, please choose a different name.`
+        );
+      }
       throw new Error(
         "A dataset with this name already exists. Please choose a different name or resume your previous progress by navigating back."
       );

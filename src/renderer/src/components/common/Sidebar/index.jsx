@@ -68,6 +68,7 @@ const Sidebar = ({ id }) => {
   const showGuidedModePageNavigation = useGlobalStore(
     (state) => state.showGuidedModePageNavigation
   );
+  const curationMode = useGlobalStore((state) => state.curationMode);
 
   return (
     <nav className={classes.navbar}>
@@ -149,9 +150,13 @@ const Sidebar = ({ id }) => {
                 offsetScrollbars
                 mr="-10px"
               >
-                {Object.entries(guidedModePageStructureObject).map(([pageKey, pageChildren]) => (
-                  <LinksGroup key={pageKey} label={pageKey} pages={pageChildren} />
-                ))}
+                {Object.entries(guidedModePageStructureObject).map(([pageKey, pageChildren]) => {
+                  // Hide "Dataset Metadata" section in free-form mode
+                  if (curationMode === "free-form" && pageKey === "Dataset Metadata") {
+                    return null;
+                  }
+                  return <LinksGroup key={pageKey} label={pageKey} pages={pageChildren} />;
+                })}
               </ScrollArea.Autosize>
             )}
           </>

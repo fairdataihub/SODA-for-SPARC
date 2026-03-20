@@ -232,7 +232,6 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
       guidedSkipPage("guided-pennsieve-settings-tab");
 
       if (isFreeform) {
-        window.sodaJSONObj["digital-metadata"]["name"] = selectedDatasetNameToUploadDataTo;
         // Create a new progress file name using the dataset on Pennsieve's name, or update
         // the existing progress file if it already exists and was changed
         try {
@@ -244,6 +243,7 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
           });
           throw errorArray;
         }
+        window.sodaJSONObj["digital-metadata"]["name"] = selectedDatasetNameToUploadDataTo;
 
         const datasetIsEmpty = await api.isDatasetEmpty(selectedDatasetIdToUploadDataTo);
         if (datasetIsEmpty) {
