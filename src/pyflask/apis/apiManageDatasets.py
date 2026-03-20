@@ -483,12 +483,12 @@ class BfDatasetAccount(Resource):
 
 
 
-model_check_dataset_empty_response = api.model('CheckDatasetEmptyResponse', {
+model_check_dataset_empty_response = api.model('isDatasetEmptyResponse', {
   'is_empty': fields.Boolean(required=True, description="Whether the dataset is empty"),
 })
 
 @api.route('/check_if_dataset_is_empty')
-class CheckDatasetEmpty(Resource):
+class isDatasetEmpty(Resource):
 
   parser_check_dataset_empty = reqparse.RequestParser(bundle_errors=True)
   parser_check_dataset_empty.add_argument('dataset_id', type=str, required=True, location='args', help='The ID of the dataset to check.')

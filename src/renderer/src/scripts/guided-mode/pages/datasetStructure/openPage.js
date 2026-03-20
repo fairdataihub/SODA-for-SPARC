@@ -13,6 +13,7 @@ import {
   setCheckboxCardChecked,
 } from "../../../../stores/slices/checkboxCardSlice";
 import { setManifestFileGenerationDisabled } from "../../../../stores/slices/guidedModeSlice";
+import api from "../../../others/api/api";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -29,16 +30,20 @@ export const openPageDatasetStructure = async (targetPageID) => {
 
   if (targetPageID === "guided-dataset-structure-and-manifest-review-tab") {
     console.log("Dataset structure when opening review page:", window.datasetStructureJSONObj);
-    const curationMode = window.sodaJSONObj["curation-mode"];
-    const pennsieveGenerateOption = window.sodaJSONObj?.["generate-dataset"]?.["generate-option"];
-    if (curationMode === "free-form" && pennsieveGenerateOption === "existing-ps") {
+
+    // If we are uploading to an existing Pennsieve dataset, check if the dataset is empty or not.
+    // If it is not empty, disable manifest generation as we currently do not support manifest generation for existing Pennsieve datasets in guided mode. If it is empty, we can allow manifest generation since there will not be any conflicts with existing files on Pennsieve.
+
+    const existingTargetDataset = window.sodaJSONObj?.["generate-dataset"]?.["existing-dataset-id"];
+    const datasetIsEmpty = await api.isDatasetEmpty(existingTargetDataset);
+
+    if (!datasetIsEmpty) {
       console.log(
-        "Disabling manifest file preview and edit button because user is in free-form mode and selected to generate on existing Pennsieve dataset"
+        "Disabling manifest file preview and edit button because the target Pennsieve dataset is not empty. Manifest file generation and editing is currently not supported in guided mode when uploading to an existing Pennsieve dataset."
       );
       setManifestFileGenerationDisabled(true);
     } else {
       setManifestFileGenerationDisabled(false);
-
       // Remove existing manifest files from the dataset structure
       Object.values(window.datasetStructureJSONObj.folders).forEach((folder) => {
         delete folder.files["manifest.xlsx"];

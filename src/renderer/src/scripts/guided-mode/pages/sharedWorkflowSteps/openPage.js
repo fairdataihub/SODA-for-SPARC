@@ -9,6 +9,7 @@ import {
   setCheckboxCardChecked,
   setCheckboxCardUnchecked,
 } from "../../../../stores/slices/checkboxCardSlice.js";
+import { setFreeFormDatasetName } from "../../../../stores/slices/guidedModeSlice.js";
 export const openPageSharedWorkflowSteps = async (targetPageID) => {
   if (targetPageID === "guided-select-starting-point-tab") {
     initializeGuidedDatasetObject("guided");
@@ -97,7 +98,10 @@ export const openPageSharedWorkflowSteps = async (targetPageID) => {
       prefix = "gm";
     } else {
       prefix = "ffm";
+      window.sodaJSONObj["generate-dataset"]["dataset-name"];
+      setFreeFormDatasetName(window.sodaJSONObj?.["generate-dataset"]?.["dataset-name"] || "");
     }
+
     console.log(
       `Opening ${prefix}-pennsieve-generate-target-tab, checking if user needs to reconfirm account details`
     );

@@ -30,6 +30,13 @@ const getUsersDatasetList = async (return_only_empty_datasets = false) => {
   return sortedDatasets;
 };
 
+const isDatasetEmpty = async (datasetId) => {
+  const response = await client.get("manage_datasets/check_if_dataset_is_empty", {
+    params: { dataset_id: datasetId },
+  });
+  return response.data.is_empty;
+};
+
 const getDatasetBannerImageURL = async (selected_dataset) => {
   let bannerResponse = await client.get(`/manage_datasets/bf_banner_image`, {
     params: {
@@ -536,6 +543,7 @@ const api = {
   getUserInformation,
   getDataset,
   getUsersDatasetList,
+  isDatasetEmpty,
   getDatasetReadme,
   getDatasetBannerImageURL,
   getDatasetRole,
