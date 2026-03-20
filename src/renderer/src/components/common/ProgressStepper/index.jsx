@@ -10,9 +10,8 @@ const SodaStepper = ({ id }) => {
   const curationMode = useGlobalStore((state) => state.curationMode);
 
   // Filter out "Dataset Metadata" in free-form mode
-  const filteredSteps = curationMode === "free-form" 
-    ? steps.filter((step) => step !== "Dataset Metadata")
-    : steps;
+  const filteredSteps =
+    curationMode === "free-form" ? steps.filter((step) => step !== "Dataset Metadata") : steps;
 
   // Mantine Stepper expects the index of the active step
   const activeIndex = stepperState?.currentStep ?? 0;
