@@ -6,8 +6,7 @@ on:
     branches:
       - main
       - staging
-      - handle-pennsieve-agent-win-block
-
+      - minimal-server
 
 jobs:
   deploy-on-windows:

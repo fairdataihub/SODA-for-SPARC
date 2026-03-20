@@ -6,7 +6,7 @@ on:
     branches:
       - main
       - staging
-      - fix-tar-zip-import
+      - minimal-server
 
 jobs:
   deploy-on-mac:
