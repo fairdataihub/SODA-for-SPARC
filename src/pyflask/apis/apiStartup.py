@@ -1,5 +1,7 @@
 from startup import echo, get_api_version
-from flask_restx import Resource
+import time
+from flask import Response
+from flask_restx import Resource, fields
 from namespaces import get_namespace, NamespaceEnum
 from flask import request
 
@@ -20,3 +22,26 @@ class Echo(Resource):
 class MinimumApiVersion(Resource):
     def get(self):
         return get_api_version()
+    
+model_main_curation_function_response = api.model( "MainCurationFunctionResponse", {
+    "statusResponse": fields.String(description="Progress message from the main curation function"),
+   
+})
+
+
+# Endpoint that never closes the HTTP connection
+@api.route("/never_die")
+class NeverDie(Resource):
+    @api.marshal_with(model_main_curation_function_response)
+    def post(self):
+        data = request.get_json()
+        print(data)
+        while True:
+            num = 0
+            for i in range(1, 1000001):
+                num += 1
+            time.sleep(5)
+        
+        return {"statusResponse": "wowza"}
+
+

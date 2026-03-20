@@ -200,7 +200,7 @@ document.querySelector("#only-on-local-upload-selected").addEventListener("click
 
   if (!res) return;
 
-  document.querySelector("#button-homepage-freeform-mode").click();
+  // document.querySelector("#button-homepage-freeform-mode").click();
 
   // get the local dataset path
   const localDatasetPath = document.querySelector("#compare-local-remote-dataset-local-path").value;

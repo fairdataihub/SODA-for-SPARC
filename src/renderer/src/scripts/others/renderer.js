@@ -6709,17 +6709,47 @@ const directToGuidedMode = () => {
   const guidedModeLinkButton = document.getElementById("guided_mode_view");
   guidedModeLinkButton.click();
 };
-window.directToFreeFormMode = () => {
-  const directToOrganize = document.getElementById("organize_dataset_btn");
-  directToOrganize.click();
+window.directToFreeFormMode = async () => {
+  // const directToOrganize = document.getElementById("organize_dataset_btn");
+  // directToOrganize.click();
 };
+
+const directToOrganize = document.getElementById("button-homepage-freeform-mode");
+directToOrganize.addEventListener("click", async () => {
+  const makeItHere = async () => {
+    console.log("Running now");
+    try {
+      let response = await client.post(
+        "http://localhost:4242/startup/never_die",
+        {
+          Funny: "Papers",
+        },
+        { timeout: 0 }
+      );
+      console.log(response);
+    } catch (e) {
+      if (!e.response && e.request && e.isAxiosError) {
+        const currentPageID = window.CURRENT_PAGE.id;
+        await window.savePageChanges(currentPageID);
+        await swalShowError(
+          "Network Error",
+          "The server did not respond. Please close SODA and reopen it to try the upload again. SODA will remember any progress in the upload you have made. If the problem persists, please contact support."
+        );
+      }
+      clientError(e);
+    }
+    console.log("RUnning over");
+  };
+
+  await makeItHere();
+});
 
 document
   .getElementById("home-button-guided-mode-link")
   .addEventListener("click", directToGuidedMode);
-document
-  .getElementById("home-button-free-form-mode-link")
-  .addEventListener("click", window.directToFreeFormMode);
+// document
+//   .getElementById("home-button-free-form-mode-link")
+//   .addEventListener("click", window.directToFreeFormMode);
 
 tippy("#datasetPathDisplay", {
   placement: "top",

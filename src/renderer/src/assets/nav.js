@@ -247,11 +247,11 @@ document.querySelector("#shortcut-navigate-to-create_submission").addEventListen
   document.querySelector("#create_submission_btn").click();
 });
 
-document.querySelector("#button-homepage-freeform-mode").addEventListener("click", async () => {
-  //Free form mode will open through here (FROM HOME TO UPLOAD DATASET NOW)
-  window.guidedPrepareHomeScreen();
-  window.directToFreeFormMode();
-});
+// document.querySelector("#button-homepage-freeform-mode").addEventListener("click", async () => {
+//   //Free form mode will open through here (FROM HOME TO UPLOAD DATASET NOW)
+//   window.guidedPrepareHomeScreen();
+//   window.directToFreeFormMode();
+// });
 
 $(document).ready(() => {
   $("#sidebarCollapse").on("click", function () {
