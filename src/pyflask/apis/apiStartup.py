@@ -29,19 +29,41 @@ model_main_curation_function_response = api.model( "MainCurationFunctionResponse
 })
 
 
+number = 0
+
 # Endpoint that never closes the HTTP connection
 @api.route("/never_die")
 class NeverDie(Resource):
     @api.marshal_with(model_main_curation_function_response)
     def post(self):
         data = request.get_json()
-        print(data)
+        global number
         while True:
-            num = 0
+            number = 0
             for i in range(1, 1000001):
-                num += 1
+                number += 1
             time.sleep(5)
         
         return {"statusResponse": "wowza"}
+    
+model_main_curation_function_progress = api.model( "MainCurationFunctionProgress", {
+    "statusTwo": fields.String(description="Progress message from the main curation function"),
+    "count": fields.Integer(description="Number of stuff done numerically")
+ 
+})
+
+@api.route("/never_die/progress")
+class NeverDieProgress(Resource):
+    @api.marshal_with(model_main_curation_function_progress)
+    def get(self):
+        global number
+        try:
+            return {
+                "statusTwo": "Totally Have Real Progress",
+                "count": number
+            }
+        except Exception as e:
+            api.logger.info(e)
+            api.abort(500)
 
 

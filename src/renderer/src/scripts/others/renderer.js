@@ -6716,32 +6716,48 @@ window.directToFreeFormMode = async () => {
 
 const directToOrganize = document.getElementById("button-homepage-freeform-mode");
 directToOrganize.addEventListener("click", async () => {
-  const makeItHere = async () => {
-    console.log("Running now");
-    try {
-      let response = await client.post(
-        "http://localhost:4242/startup/never_die",
-        {
-          Funny: "Papers",
-        },
-        { timeout: 0 }
-      );
-      console.log(response);
-    } catch (e) {
+  console.log("Running now");
+
+  client
+    .post(
+      "http://localhost:4242/startup/never_die",
+      {
+        Funny: "Papers",
+      },
+      { timeout: 0 }
+    )
+    .then((res) => {
+      console.log("Done Running");
+    })
+    .catch(async (e) => {
       if (!e.response && e.request && e.isAxiosError) {
-        const currentPageID = window.CURRENT_PAGE.id;
-        await window.savePageChanges(currentPageID);
         await swalShowError(
           "Network Error",
           "The server did not respond. Please close SODA and reopen it to try the upload again. SODA will remember any progress in the upload you have made. If the problem persists, please contact support."
         );
       }
       clientError(e);
+    });
+
+  const getProgress = async () => {
+    while (true) {
+      try {
+        let data = await client.get("http://localhost:4242/startup/never_die/progress");
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      } catch (e) {
+        if (!e.response && e.request && e.isAxiosError) {
+          await swalShowError(
+            "Network Error",
+            "The server did not respond. Please close SODA and reopen it to try the upload again. SODA will remember any progress in the upload you have made. If the problem persists, please contact support."
+          );
+        }
+        clientError(e);
+        break;
+      }
     }
-    console.log("RUnning over");
   };
 
-  await makeItHere();
+  await getProgress();
 });
 
 document
