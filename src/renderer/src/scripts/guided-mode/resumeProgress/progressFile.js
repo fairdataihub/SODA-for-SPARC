@@ -54,7 +54,7 @@ const patchProgressFile = async (progressFile) => {
   return patched;
 };
 
-export const getGuidedProgressFileNames = () => {
+export const getGuidedProgressFileNames = (curationMode) => {
   const progressFileNames = window.fs
     .readdirSync(guidedProgressFilePath)
     .filter((fileName) => fileName.endsWith(".json"));
@@ -67,6 +67,8 @@ export const getGuidedProgressFileNames = () => {
       const fileContent = window.fs.readFileSync(filePath, "utf-8");
       const progressData = JSON.parse(fileContent);
       const datasetName = progressData?.["digital-metadata"]?.["name"];
+      const datasetCurationMode = progressData?.["curation-mode"];
+      console.log("dataset curation mode:", datasetCurationMode);
       if (datasetName) {
         datasetNames.push(datasetName);
       }
@@ -78,12 +80,16 @@ export const getGuidedProgressFileNames = () => {
   return datasetNames;
 };
 
-export const createOrUpdateProgressFileSaveInfo = (datasetNameInput, errorArray = []) => {
+export const createOrUpdateProgressFileSaveInfo = (datasetNameInput) => {
   const sanitizedDatasetName = window.sanitizeStringForSaveFileSystemSave(datasetNameInput);
 
   const prevSaveFileName = window.sodaJSONObj?.["save-file-name"];
   const prevRandomSuffix = window.sodaJSONObj?.["save-file-random-hash-suffix"];
   const prevDatasetName = window.sodaJSONObj?.["digital-metadata"]?.["name"];
+  const curationMode = window.sodaJSONObj?.["curation-mode"];
+  const existingProgressFileNames = getGuidedProgressFileNames(curationMode);
+
+  console.log("Curation mode in createOrUpdateProgressFileSaveInfo:", curationMode);
 
   window.log.info("[guided-name-subtitle-tab] Previous save info:", {
     prevDatasetName,
@@ -92,14 +98,10 @@ export const createOrUpdateProgressFileSaveInfo = (datasetNameInput, errorArray 
   });
 
   if (!prevDatasetName) {
-    const existingProgressFileNames = getGuidedProgressFileNames();
     if (existingProgressFileNames.includes(datasetNameInput)) {
-      errorArray.push({
-        type: "notyf",
-        message:
-          "A dataset with this name already exists. Please choose a different name or resume your previous progress by navigating back.",
-      });
-      return errorArray;
+      throw new Error(
+        "A dataset with this name already exists. Please choose a different name or resume your previous progress by navigating back."
+      );
     }
   }
 
@@ -130,17 +132,12 @@ export const createOrUpdateProgressFileSaveInfo = (datasetNameInput, errorArray 
       `[guided-name-subtitle-tab] Dataset name change detected: ${prevDatasetName} → ${datasetNameInput}`
     );
 
-    const existingProgressFileNames = getGuidedProgressFileNames();
     const filteredExistingProgressFileNames = existingProgressFileNames.filter(
       (name) => name !== prevDatasetName
     );
 
     if (filteredExistingProgressFileNames.includes(datasetNameInput)) {
-      errorArray.push({
-        type: "notyf",
-        message: "A dataset with this name already exists. Please choose a different name.",
-      });
-      return errorArray;
+      throw new Error("A dataset with this name already exists. Please choose a different name.");
     }
 
     const oldProgressFilePath = `${guidedProgressFilePath}/${prevSaveFileName}.json`;
@@ -193,6 +190,4 @@ export const createOrUpdateProgressFileSaveInfo = (datasetNameInput, errorArray 
   } else {
     window.log.info("[guided-name-subtitle-tab] Skipping rename (no previous save or no change)");
   }
-
-  return errorArray;
 };

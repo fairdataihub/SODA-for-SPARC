@@ -159,12 +159,7 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
       };
 
       if (isFreeform) {
-        window.sodaJSONObj["digital-metadata"]["name"] = freeformDatasetName;
-        window.sodaJSONObj["generate-dataset"]["dataset-name"] = freeformDatasetName;
-
         const freeformDatasetName = useGlobalStore.getState().freeFormDatasetName;
-
-        console.log("Freeform dataset name from store:", freeformDatasetName);
 
         if (!freeformDatasetName) {
           errorArray.push({
@@ -173,11 +168,20 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
           });
           throw errorArray;
         }
-
-        const saveFileErrors = createOrUpdateProgressFileSaveInfo(freeformDatasetName, errorArray);
-        if (saveFileErrors.length > 0) {
-          throw saveFileErrors;
+        // Create a new progress file with the new dataset name, or update the existing progress
+        // file if it already exists and was changed
+        try {
+          createOrUpdateProgressFileSaveInfo(freeformDatasetName);
+        } catch (error) {
+          errorArray.push({
+            type: "notyf",
+            message: error.message,
+          });
+          throw errorArray;
         }
+
+        window.sodaJSONObj["digital-metadata"]["name"] = freeformDatasetName;
+        window.sodaJSONObj["generate-dataset"]["dataset-name"] = freeformDatasetName;
 
         guidedSkipPage("ffm-existing-files-handling-tab");
 
@@ -229,13 +233,16 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
 
       if (isFreeform) {
         window.sodaJSONObj["digital-metadata"]["name"] = selectedDatasetNameToUploadDataTo;
-
-        const saveFileErrors = createOrUpdateProgressFileSaveInfo(
-          selectedDatasetNameToUploadDataTo,
-          errorArray
-        );
-        if (saveFileErrors.length > 0) {
-          throw saveFileErrors;
+        // Create a new progress file name using the dataset on Pennsieve's name, or update
+        // the existing progress file if it already exists and was changed
+        try {
+          createOrUpdateProgressFileSaveInfo(selectedDatasetNameToUploadDataTo);
+        } catch (error) {
+          errorArray.push({
+            type: "notyf",
+            message: error.message,
+          });
+          throw errorArray;
         }
 
         const datasetIsEmpty = await api.isDatasetEmpty(selectedDatasetIdToUploadDataTo);

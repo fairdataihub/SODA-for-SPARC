@@ -6,7 +6,6 @@ const PAGES_THAT_SHOULD_ALWAYS_BE_SKIPPED = [
 ];
 
 export const guidedSkipPage = (pageId) => {
-  console.log("guidedSkipPage called on pageId: ", pageId);
   const page = document.getElementById(pageId);
 
   // If the page no longer exists, return
@@ -85,8 +84,6 @@ export const guidedResetSkippedPages = (curationMode) => {
         PAGES_THAT_SHOULD_ALWAYS_BE_SKIPPED.includes(page.id)
       ) {
         guidedSkipPage(page.id);
-      } else {
-        console.log(`FFM mode: Keeping page ${page.id} (has 'ffm' class)`);
       }
     }
   }
@@ -97,8 +94,6 @@ export const guidedResetSkippedPages = (curationMode) => {
     for (const page of allPages) {
       if (!page.classList.contains("gm") || PAGES_THAT_SHOULD_ALWAYS_BE_SKIPPED.includes(page.id)) {
         guidedSkipPage(page.id);
-      } else {
-        console.log(`GM mode: Keeping page ${page.id} (has 'gm' class)`);
       }
     }
   }
@@ -132,9 +127,7 @@ export const getNextPageNotSkipped = (currentPageID) => {
       }
       nextParentContainer = nextParentContainer.nextElementSibling;
     }
-    console.log(
-      `getNextPageNotSkipped: No non-skipped pages available in any subsequent parent container from ${currentPageID}`
-    );
+
     return undefined;
   }
 };

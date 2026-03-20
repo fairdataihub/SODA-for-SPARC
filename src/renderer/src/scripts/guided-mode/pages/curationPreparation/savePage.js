@@ -22,9 +22,14 @@ export const savePageCurationPreparation = async (pageBeingLeftID) => {
 
     window.sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
 
-    const saveFileErrors = createOrUpdateProgressFileSaveInfo(datasetNameInput, errorArray);
-    if (saveFileErrors.length > 0) {
-      throw saveFileErrors;
+    try {
+      createOrUpdateProgressFileSaveInfo(datasetNameInput);
+    } catch (error) {
+      errorArray.push({
+        type: "notyf",
+        message: error.message,
+      });
+      throw errorArray;
     }
 
     window.sodaJSONObj["digital-metadata"]["name"] = datasetNameInput;

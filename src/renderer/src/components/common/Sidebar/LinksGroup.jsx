@@ -137,7 +137,6 @@ const LinksGroup = ({ label, pages }) => {
 
   // Don't render if there are no pages
   if (!hasPages) {
-    console.log(`[LinksGroup] No pages found for ${label}, not rendering this section.`);
     return null;
   }
 

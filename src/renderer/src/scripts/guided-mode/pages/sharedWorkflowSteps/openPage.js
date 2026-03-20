@@ -26,10 +26,6 @@ export const openPageSharedWorkflowSteps = async (targetPageID) => {
     const confirmOrgButtonId = `${prefix}-confirm-pennsieve-organization-button`;
     const psAccountTextId = `${prefix}-pennsieve-intro-ps-account`;
 
-    console.log(
-      `Opening ${prefix}-pennsieve-login-tab, checking if user needs to reconfirm account details`
-    );
-
     // Hide the Pennsieve agent check section initially (it gets shown after confirming organization)
     document.getElementById(agentCheckElementId).classList.add("hidden");
 
@@ -77,10 +73,6 @@ export const openPageSharedWorkflowSteps = async (targetPageID) => {
             window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"] ===
             guidedGetCurrentUserWorkSpace()
           ) {
-            console.log(
-              "Auto-confirming organization since user is on the same workspace as last time: ",
-              guidedGetCurrentUserWorkSpace()
-            );
             document.getElementById(confirmOrgButtonId).click();
           }
         }
