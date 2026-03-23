@@ -51,7 +51,6 @@ export const handleOrganizeDsGenerateLocalManifestCopyButtonClick = async () => 
   const shapedManifestData = convertGuidedManifestToSchema(
     window.sodaJSONObj["guided-manifest-file-data"]
   );
-  console.log("Shaped manifest data to send to backend: ", shapedManifestData);
   // Step 7: Create a copy of the window.sodaJSONObj so we don't mutate the original when we add the manifest
   // file data
   const sodaJSONCopy = JSON.parse(JSON.stringify(window.sodaJSONObj));

@@ -148,9 +148,7 @@ export const getPrevPageNotSkipped = (currentPageID) => {
       }
       prevParentContainer = prevParentContainer.previousElementSibling;
     }
-    console.log(
-      `getPrevPageNotSkipped: No non-skipped pages available in any previous parent container from ${currentPageID}`
-    );
+
     return undefined;
   }
 };

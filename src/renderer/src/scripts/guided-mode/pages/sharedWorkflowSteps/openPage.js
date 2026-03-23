@@ -63,7 +63,6 @@ export const openPageSharedWorkflowSteps = async (targetPageID) => {
       try {
         const userInformation = await api.getUserInformation();
         const userEmail = userInformation.email;
-        console.log("user email: ", userEmail);
         pennsieveIntroText.innerHTML = userEmail;
       } catch (err) {
         console.error("Error fetching user email:", err);
@@ -97,9 +96,6 @@ export const openPageSharedWorkflowSteps = async (targetPageID) => {
       setFreeFormDatasetName(window.sodaJSONObj?.["generate-dataset"]?.["dataset-name"] || "");
     }
 
-    console.log(
-      `Opening ${prefix}-pennsieve-generate-target-tab, checking if user needs to reconfirm account details`
-    );
     await guidedCheckIfUserNeedsToReconfirmAccountDetails(prefix);
     setCheckboxCardUnchecked(`${prefix}-generate-on-new-pennsieve-dataset`);
     setCheckboxCardUnchecked(`${prefix}-generate-on-existing-pennsieve-dataset`);

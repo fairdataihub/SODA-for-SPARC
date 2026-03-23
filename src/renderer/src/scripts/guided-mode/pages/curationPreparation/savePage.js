@@ -23,7 +23,7 @@ export const savePageCurationPreparation = async (pageBeingLeftID) => {
     window.sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
 
     try {
-      createOrUpdateProgressFileSaveInfo(datasetNameInput);
+      await createOrUpdateProgressFileSaveInfo(datasetNameInput);
     } catch (error) {
       errorArray.push({
         type: "notyf",

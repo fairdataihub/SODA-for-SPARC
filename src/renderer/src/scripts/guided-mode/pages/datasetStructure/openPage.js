@@ -22,16 +22,7 @@ while (!window.baseHtmlLoaded) {
 export const openPageDatasetStructure = async (targetPageID) => {
   // Add handlers for other pages without componentType
 
-  if (targetPageID === "ffm-existing-files-handling-tab") {
-    console.log(
-      "Opening ffm-existing-files-handling-tab, checking for any missing files in dataset structure"
-    );
-  }
-
   if (targetPageID === "guided-dataset-structure-and-manifest-review-tab") {
-    console.log("=== OPENING GUIDED DATASET STRUCTURE AND MANIFEST REVIEW TAB ===");
-    console.log("Dataset structure when opening review page:", window.datasetStructureJSONObj);
-
     // If we are uploading to an existing Pennsieve dataset, check if the dataset is empty or not.
     // If it is not empty, disable manifest generation as we currently do not support manifest generation for existing Pennsieve datasets in guided mode. If it is empty, we can allow manifest generation since there will not be any conflicts with existing files on Pennsieve.
 
@@ -53,13 +44,9 @@ export const openPageDatasetStructure = async (targetPageID) => {
     const guidedTextManifestFileInfoDiv = document.getElementById("guided-text-manifest-file-info");
 
     if (manifestGenerationDisabled) {
-      console.log(
-        "Disabling manifest file preview and edit button because the target Pennsieve dataset is not empty. Manifest file generation and editing is currently not supported in guided mode when uploading to an existing Pennsieve dataset."
-      );
       guidedTextManifestFileInfoDiv.classList.add("hidden");
       setManifestFileGenerationDisabled(true);
     } else {
-      console.log("Dataset is empty - proceeding with manifest generation and structure cleanup");
       guidedTextManifestFileInfoDiv.classList.remove("hidden");
       setManifestFileGenerationDisabled(false);
       // Remove existing manifest files from the dataset structure
@@ -91,7 +78,6 @@ export const openPageDatasetStructure = async (targetPageID) => {
 
         await collectNonExistentFiles(datasetStructure);
         if (nonExistentFiles.length > 0) {
-          console.log("Found non-existent files:", nonExistentFiles);
           const userConfirmedRemoval = await swalListDoubleAction(
             nonExistentFiles,
             "Missing files detected in your dataset",
@@ -102,7 +88,6 @@ export const openPageDatasetStructure = async (targetPageID) => {
           );
 
           if (userConfirmedRemoval) {
-            console.log("User confirmed removal of missing files");
             // Use deleteFilesByRelativePath with relative paths, not file paths
             deleteFilesByRelativePath(nonExistentRelativePaths);
             // Update the sodaJSONObj with the cleaned entity object from global store
@@ -121,13 +106,11 @@ export const openPageDatasetStructure = async (targetPageID) => {
       };
 
       await purgeNonExistentFiles(window.datasetStructureJSONObj);
-      console.log("Purge complete, removing empty folders");
 
       // Remove empty folders
       window.datasetStructureJSONObj = deleteEmptyFoldersFromStructure(
         window.datasetStructureJSONObj
       );
-      console.log("Empty folders removed, dataset structure:", window.datasetStructureJSONObj);
 
       // Prepare cleaned dataset structure for server-side processing
       const sodaCopy = {
@@ -146,7 +129,6 @@ export const openPageDatasetStructure = async (targetPageID) => {
         { soda_json_structure: sodaCopy },
         { timeout: 0 }
       );
-      console.log("Backend clean-dataset response:", cleanResponse);
 
       const responseData = cleanResponse.soda;
 
@@ -156,7 +138,6 @@ export const openPageDatasetStructure = async (targetPageID) => {
         { dataset_structure_obj: responseData["dataset-structure"] },
         { timeout: 0 }
       );
-      console.log("Manifest generation response:", manifestRes);
 
       const newManifestData = { headers: manifestRes.shift(), data: manifestRes };
 
@@ -306,11 +287,6 @@ export const openPageDatasetStructure = async (targetPageID) => {
 
       // Save final manifest data
       window.sodaJSONObj["guided-manifest-file-data"] = guidedManifestData;
-      console.log(
-        "=== MANIFEST REVIEW TAB COMPLETED ===",
-        "Final manifest data:",
-        guidedManifestData
-      );
     }
   }
 

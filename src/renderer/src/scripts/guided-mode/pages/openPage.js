@@ -716,7 +716,6 @@ window.openPage = async (targetPageID) => {
       }
     };
     renderCorrectFileExplorerByPage(targetPageID);
-    console.log("window.CURRENT_PAGE: ", window.CURRENT_PAGE);
 
     //Set all capsules to grey and set capsule of page being traversed to green
     setActiveProgressionTab(targetPageID);

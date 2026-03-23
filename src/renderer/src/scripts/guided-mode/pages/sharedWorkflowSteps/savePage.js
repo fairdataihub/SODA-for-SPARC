@@ -112,12 +112,6 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
       throw errorArray;
     }
 
-    console.log(
-      `User selected to generate on ${
-        generateOnNewPennsieveDatasetCardChecked ? "a new" : "an existing"
-      } Pennsieve dataset.`
-    );
-
     const isFreeform = prefix === "ffm";
 
     if (generateOnNewPennsieveDatasetCardChecked) {
@@ -151,7 +145,7 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
         // Create a new progress file with the new dataset name, or update the existing progress
         // file if it already exists and was changed
         try {
-          createOrUpdateProgressFileSaveInfo(freeformDatasetName);
+          await createOrUpdateProgressFileSaveInfo(freeformDatasetName);
         } catch (error) {
           errorArray.push({
             type: "notyf",
@@ -166,7 +160,6 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
         window.sodaJSONObj["generate-dataset"]["dataset-name"] = freeformDatasetName;
 
         guidedSkipPage("ffm-existing-files-handling-tab");
-
         guidedSkipPage("guided-pennsieve-settings-tab");
       } else {
         guidedUnSkipPage("guided-pennsieve-settings-tab");
@@ -217,7 +210,7 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
         // Create a new progress file name using the dataset on Pennsieve's name, or update
         // the existing progress file if it already exists and was changed
         try {
-          createOrUpdateProgressFileSaveInfo(selectedDatasetNameToUploadDataTo);
+          await createOrUpdateProgressFileSaveInfo(selectedDatasetNameToUploadDataTo);
         } catch (error) {
           errorArray.push({
             type: "notyf",

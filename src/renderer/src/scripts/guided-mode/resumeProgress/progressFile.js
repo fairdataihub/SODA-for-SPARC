@@ -1,3 +1,5 @@
+import { swalShowInfo } from "../../utils/swal-utils";
+
 const homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
 const guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
 if (!window.fs.existsSync(guidedProgressFilePath)) {
@@ -68,7 +70,6 @@ export const getGuidedProgressFileNames = (curationMode) => {
       const progressData = JSON.parse(fileContent);
       const datasetName = progressData?.["digital-metadata"]?.["name"];
       const datasetCurationMode = progressData?.["curation-mode"];
-      console.log("dataset curation mode:", datasetCurationMode);
       if (datasetName && datasetCurationMode === curationMode) {
         datasetNames.push(datasetName);
       }
@@ -80,19 +81,19 @@ export const getGuidedProgressFileNames = (curationMode) => {
   return datasetNames;
 };
 
-export const createOrUpdateProgressFileSaveInfo = (datasetNameInput) => {
+export const createOrUpdateProgressFileSaveInfo = async (datasetNameInput) => {
   const sanitizedDatasetName = window.sanitizeStringForSaveFileSystemSave(datasetNameInput);
 
   const prevSaveFileName = window.sodaJSONObj?.["save-file-name"];
   const prevRandomSuffix = window.sodaJSONObj?.["save-file-random-hash-suffix"];
   const prevDatasetName = window.sodaJSONObj?.["digital-metadata"]?.["name"];
   const curationMode = window.sodaJSONObj?.["curation-mode"];
+  const curationModeHomePageName =
+    curationMode === "guided" ? "Prepare a Dataset Step-by-Step" : "Upload a SDS Compliant Dataset";
   const uploadingToExistingDatasetFreeFormDataset =
     window.sodaJSONObj?.["pennsieve-generation-target"] === "existing" &&
     curationMode === "free-form";
   const existingProgressFileNames = getGuidedProgressFileNames(curationMode);
-
-  console.log("Curation mode in createOrUpdateProgressFileSaveInfo:", curationMode);
 
   window.log.info("[guided-name-subtitle-tab] Previous save info:", {
     prevDatasetName,
@@ -104,11 +105,11 @@ export const createOrUpdateProgressFileSaveInfo = (datasetNameInput) => {
     if (existingProgressFileNames.includes(datasetNameInput)) {
       if (uploadingToExistingDatasetFreeFormDataset) {
         throw new Error(
-          `You have already started progress on a dataset named "${datasetNameInput}". Please navigate back to that dataset to continue working on it. If you want to start fresh, please choose a different name.`
+          `You have already started progress on a dataset named "${datasetNameInput}". Please navigate back to the ${curationModeHomePageName} page to continue working on it. If you want to start fresh, please choose a different name.`
         );
       }
       throw new Error(
-        "A dataset with this name already exists. Please choose a different name or resume your previous progress by navigating back."
+        `A dataset with this name already exists. Please choose a different name or resume your previous progress by navigating back to the ${curationModeHomePageName} page.`
       );
     }
   }
@@ -197,5 +198,12 @@ export const createOrUpdateProgressFileSaveInfo = (datasetNameInput) => {
     }
   } else {
     window.log.info("[guided-name-subtitle-tab] Skipping rename (no previous save or no change)");
+  }
+  if (!prevDatasetName) {
+    // Alert the user that a progress file has been created with the new dataset name
+    await swalShowInfo(
+      "Your progress is now being saved!",
+      `A progress file has been created for your dataset "${datasetNameInput}". You can resume your progress on this dataset at any time by navigating back to the ${curationModeHomePageName} page and clicking "Resume Curation" on the corresponding card.`
+    );
   }
 };

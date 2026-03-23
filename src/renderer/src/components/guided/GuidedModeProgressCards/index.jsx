@@ -97,9 +97,6 @@ const GuidedModeProgressCards = () => {
   const guidedModeProgressCardsDataArray = useGlobalStore(
     (state) => state.guidedModeProgressCardsDataArray || []
   );
-  const curationMode = useGlobalStore((state) => state.curationMode);
-  console.log("Curation mode in GuidedModeProgressCards:", curationMode);
-
   if (guidedModeProgressCardsLoadingText) {
     return (
       <Stack align="center" gap="md">

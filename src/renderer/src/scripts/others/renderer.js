@@ -294,7 +294,6 @@ window.CHECK_FOR_PENNSIEVE_AGENT_STATUS = {
 };
 
 window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
-  console.log("Checking Pennsieve Agent status...", pennsieveAgentStatusDivId);
   window.unHideAndSmoothScrollToElement(pennsieveAgentStatusDivId);
 
   try {
@@ -350,7 +349,6 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
       await window.spawn.startPennsieveAgent();
       setPennsieveAgentInstalled(true);
     } catch (error) {
-      console.log(error);
       setPennsieveAgentInstalled(false);
       setPennsieveAgentOutputErrorMessage(
         error.message || "An unknown error occurred while starting the Pennsieve Agent."

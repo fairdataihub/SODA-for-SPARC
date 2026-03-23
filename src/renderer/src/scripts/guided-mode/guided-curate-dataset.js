@@ -1,4 +1,6 @@
 import { guidedSaveProgress } from "./pages/savePageChanges";
+import useGlobalStore from "../../stores/globalStore";
+import { setGuidedModeProgressCardsDataArray } from "../../stores/slices/guidedModeProgressCardsSlice";
 import {
   getContributorByOrcid,
   addContributor,
@@ -698,11 +700,13 @@ window.deleteProgressCard = async (datasetName, progressFileName) => {
     //delete the progress file
     deleteProgressFile(progressFileName);
 
-    // Find the card with the matching dataset name and remove it from the DOM
-    const cardToDelete = document.querySelector(`[data-progress-file-name="${progressFileName}"]`);
-    if (cardToDelete) {
-      cardToDelete.remove();
-    }
+    // Remove the card from the guidedModeProgressCardsDataArray in the store
+    const currentArray = useGlobalStore.getState().guidedModeProgressCardsDataArray || [];
+    const updatedArray = currentArray.filter(
+      (item) =>
+        (item?.["save-file-name"] || item?.["digital-metadata"]?.["name"]) !== progressFileName
+    );
+    setGuidedModeProgressCardsDataArray(updatedArray);
   }
 };
 
@@ -725,7 +729,6 @@ export const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
   };
 };
 window.handleGuidedModeOrganizationConfirmationClick = async (curationModePrefix) => {
-  console.log("curationModePrefix", curationModePrefix, "=> prefix", curationModePrefix);
   const agentCheckElementId = `${curationModePrefix}-section-pennsieve-agent-check`;
   const agentCheckElement = document.getElementById(agentCheckElementId);
   if (agentCheckElement) {
