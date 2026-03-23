@@ -958,6 +958,12 @@ const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle)
   datasetSubtitleUploadText.innerHTML = "Adding dataset subtitle...";
   guidedUploadStatusIcon("guided-dataset-subtitle-upload-status", "loading");
 
+  if (!datasetSubtitle) {
+    datasetSubtitleUploadText.innerHTML = "Skipped optional dataset subtitle...";
+    guidedUploadStatusIcon("guided-dataset-subtitle-upload-status", "success");
+    return;
+  }
+
   const previousUploadSubtitle = window.sodaJSONObj["previously-uploaded-data"]["subtitle"];
 
   if (previousUploadSubtitle === datasetSubtitle) {

@@ -827,7 +827,7 @@
                 data-component-type="checkbox-card"
               ></div>
               <div
-                data-button-id="ffm-button-keep-existing-files"
+                data-button-id="ffm-button-skip-existing-files"
                 data-component-type="checkbox-card"
               ></div>
             </div>
@@ -842,10 +842,12 @@
             <h2 class="text-sub-step-title">Dataset Structure And Manifest Preview</h2>
             <p class="help-text">
               The dataset structure below displays the folder structure of your dataset as it will
-              be when it is generated locally and/or on Pennsieve. SODA has also generated a
-              manifest file that describes the contents of your dataset. You can edit the manifest
-              file if you would like to provide more information about the files in your dataset,
-              but it is not required to do so.
+              be when it is generated locally and/or on Pennsieve.
+            </p>
+            <p class="help-text" id="guided-text-manifest-file-info">
+              SODA has also generated a manifest file that describes the contents of your dataset.
+              You can edit the manifest file if you would like to provide more information about the
+              files in your dataset, but it is not required to do so.
             </p>
           </div>
           <div class="guided--section">
@@ -2192,7 +2194,10 @@
                 <h5 class="guided--dataset-content" id="guided-review-dataset-name">None</h5>
               </div>
             </div>
-            <div class="guided--card-dataset-info pennsieve-config-info">
+            <div
+              class="guided--card-dataset-info pennsieve-config-info"
+              id="guided-subtitle-info-container"
+            >
               <div class="guided--dataset-description-container">
                 <h5 class="guided--dataset-description">Dataset subtitle:</h5>
               </div>
@@ -2205,7 +2210,11 @@
                 </h5>
               </div>
             </div>
-            <div class="guided--card-dataset-info pennsieve-config-info">
+
+            <div
+              class="guided--card-dataset-info pennsieve-config-info"
+              id="guided-license-info-container"
+            >
               <div class="guided--dataset-description-container">
                 <h5 class="guided--dataset-description">Designated license:</h5>
               </div>

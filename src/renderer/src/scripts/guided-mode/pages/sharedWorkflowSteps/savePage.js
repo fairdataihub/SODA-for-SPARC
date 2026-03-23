@@ -18,17 +18,6 @@ import api from "../../../others/api/api";
 export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
   const errorArray = [];
 
-  if (pageBeingLeftID === "guided-select-starting-point-tab") {
-    const startingNewCuration = isCheckboxCardChecked("guided-button-start-new-curation");
-
-    if (!startingNewCuration) {
-      errorArray.push({
-        type: "notyf",
-        message: "Please select to start a new curation",
-      });
-      throw errorArray;
-    }
-  }
   if (
     pageBeingLeftID === "gm-pennsieve-login-tab" ||
     pageBeingLeftID === "ffm-pennsieve-login-tab"

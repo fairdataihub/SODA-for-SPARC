@@ -97,21 +97,33 @@ export const openPageGenerateDataset = async (targetPageID) => {
       pennsieveConfigInfoElements.forEach((element) => {
         element.classList.remove("hidden");
       });
-      const pennsieveDatasetSubtitle = window.sodaJSONObj?.["pennsieve-dataset-subtitle"] ?? "";
-      const datasetLicense = window.sodaJSONObj["digital-metadata"]["license"];
-
-      const pennsieveDatasetSubtitleReviewText = document.getElementById(
-        "guided-review-dataset-subtitle"
-      );
-      const datasetLicenseReviewText = document.getElementById("guided-review-dataset-license");
-
-      pennsieveDatasetSubtitleReviewText.innerHTML = pennsieveDatasetSubtitle;
-      datasetLicenseReviewText.innerHTML = datasetLicense ? datasetLicense : "No license selected";
     } else {
       // Hide the pennsieve config info elements
       pennsieveConfigInfoElements.forEach((element) => {
         element.classList.add("hidden");
       });
+    }
+
+    const pennsieveDatasetSubtitle = window.sodaJSONObj?.["pennsieve-dataset-subtitle"];
+    const datasetSubtitleInfoContainer = document.getElementById("guided-subtitle-info-container");
+    if (pennsieveDatasetSubtitle) {
+      const pennsieveDatasetSubtitleReviewText = document.getElementById(
+        "guided-review-dataset-subtitle"
+      );
+      pennsieveDatasetSubtitleReviewText.innerHTML = pennsieveDatasetSubtitle;
+      datasetSubtitleInfoContainer.classList.remove("hidden");
+    } else {
+      datasetSubtitleInfoContainer.classList.add("hidden");
+    }
+
+    const datasetLicense = window.sodaJSONObj["digital-metadata"]?.["license"];
+    const licenseInfoContainer = document.getElementById("guided-license-info-container");
+    if (datasetLicense) {
+      const datasetLicenseReviewText = document.getElementById("guided-review-dataset-license");
+      datasetLicenseReviewText.innerHTML = datasetLicense;
+      licenseInfoContainer.classList.remove("hidden");
+    } else {
+      licenseInfoContainer.classList.add("hidden");
     }
 
     // Hide the Pennsieve agent check section (unhidden if it requires user action)

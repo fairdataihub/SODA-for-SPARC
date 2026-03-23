@@ -120,8 +120,8 @@ const GuidedModeProgressCards = () => {
             No datasets in progress found
           </Text>
           <Text c="dimmed" size="md" ta="center" maw={400}>
-            Once you save progress on a dataset, it will appear here so you can easily resume your
-            work.
+            Click the button above to start a new dataset. Once you save progress on a dataset, it
+            will appear here so you can easily resume your work.
           </Text>
         </Stack>
       ) : (
@@ -196,6 +196,7 @@ const GuidedModeProgressCards = () => {
                   align="center"
                   justify="space-between"
                   data-dataset-name={datasetName}
+                  data-progress-file-name={progressFileName}
                 >
                   <Group w="100%" align="stretch" gap={0}>
                     {/* Section 1: Image */}
@@ -281,9 +282,7 @@ const GuidedModeProgressCards = () => {
                         variant="subtle"
                         leftSection={<IconTrash size={18} />}
                         onClick={() => {
-                          if (window.deleteProgressCard) {
-                            window.deleteProgressCard(datasetName, progressFileName);
-                          }
+                          window.deleteProgressCard(datasetName, progressFileName);
                         }}
                       >
                         Delete progress file

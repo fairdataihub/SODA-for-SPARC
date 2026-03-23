@@ -23,7 +23,7 @@ export const openPageSharedWorkflowSteps = async (targetPageID) => {
     guidedRenderProgressCards("ffm");
   }
   if (targetPageID === "gm-pennsieve-login-tab" || targetPageID === "ffm-pennsieve-login-tab") {
-    let prefix = targetPageID === "guided-select-starting-point-tab" ? "gm" : "ffm";
+    let prefix = targetPageID === "gm-pennsieve-login-tab" ? "gm" : "ffm";
     const agentCheckElementId = `${prefix}-section-pennsieve-agent-check`;
     const confirmAccountButtonId = `${prefix}-confirm-pennsieve-account-button`;
     const confirmOrgButtonId = `${prefix}-confirm-pennsieve-organization-button`;

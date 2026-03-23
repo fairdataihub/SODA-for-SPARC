@@ -25,6 +25,9 @@ const heroCardData = [
     title: "Prepare and share a new dataset",
     description: null,
     onClick: () => document.getElementById("guided-next-button").click(),
+    customWidth: 800,
+    customMargin: "0",
+    customHeight: 160,
   },
   {
     id: "ffm-button-start-new-curation",
@@ -32,6 +35,9 @@ const heroCardData = [
     title: "Prepare and share a new dataset",
     description: null,
     onClick: () => document.getElementById("guided-next-button").click(),
+    customWidth: 800,
+    customMargin: "0",
+    customHeight: 160,
   },
 ];
 
@@ -47,11 +53,11 @@ const HeroCard = ({ id }) => {
     <Card
       ref={ref}
       id={id}
-      padding="lg"
-      m="sm"
+      padding="0"
+      m={card.customMargin || "sm"}
       className={classes.card}
-      w="800px"
-      h="220px"
+      w={card.customWidth || "800px"}
+      h={card.customHeight || "220px"}
       style={{
         display: "flex",
         flexDirection: "column",
@@ -62,18 +68,22 @@ const HeroCard = ({ id }) => {
       }}
       onClick={onClick}
     >
-      <Center mb={16}>
-        <ThemeIcon size={64} variant="light" radius="xl">
-          {icon}
-        </ThemeIcon>
-      </Center>
-      <Stack align="center" gap={4} style={{ width: "100%" }}>
-        <Text size="lg" fw={600} ta="center">
-          {title}
-        </Text>
-        <Text size="md" c="dimmed" ta="center" mt="md">
-          {description}
-        </Text>
+      <Stack align="center" gap="md" style={{ width: "100%", padding: "lg" }}>
+        <Center>
+          <ThemeIcon size={64} variant="light" radius="xl">
+            {icon}
+          </ThemeIcon>
+        </Center>
+        <Stack align="center" gap={4} style={{ width: "100%" }}>
+          <Text size="lg" fw={600} ta="center">
+            {title}
+          </Text>
+          {description && (
+            <Text size="md" c="dimmed" ta="center">
+              {description}
+            </Text>
+          )}
+        </Stack>
       </Stack>
     </Card>
   );

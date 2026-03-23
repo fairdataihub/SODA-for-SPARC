@@ -699,7 +699,7 @@ window.deleteProgressCard = async (datasetName, progressFileName) => {
     deleteProgressFile(progressFileName);
 
     // Find the card with the matching dataset name and remove it from the DOM
-    const cardToDelete = document.querySelector(`[data-dataset-name="${datasetName}"]`);
+    const cardToDelete = document.querySelector(`[data-progress-file-name="${progressFileName}"]`);
     if (cardToDelete) {
       cardToDelete.remove();
     }
