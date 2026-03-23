@@ -6,7 +6,7 @@ on:
     branches:
       - main
       - staging
-      - fix-tar-zip-import
+      - ffm-refactor
 
 jobs:
   deploy-on-mac:

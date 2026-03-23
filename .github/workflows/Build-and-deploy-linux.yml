@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - staging
+      - ffm-refactor
 
 jobs:
   deploy-on-linux:
