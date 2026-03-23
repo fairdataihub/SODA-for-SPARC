@@ -81,6 +81,8 @@ const handleNextButtonVisibility = (targetPageID) => {
     targetPageID === "guided-dataset-generation-confirmation-tab" ||
     targetPageID === "guided-dataset-generation-tab" ||
     targetPageID === "guided-dataset-dissemination-tab" ||
+    targetPageID === "guided-select-starting-point-tab" ||
+    targetPageID === "ffm-select-starting-point-tab" ||
     (targetPageID === "guided-generate-dataset-locally" &&
       window.sodaJSONObj["generate-dataset-on-pennsieve"] === false)
   ) {

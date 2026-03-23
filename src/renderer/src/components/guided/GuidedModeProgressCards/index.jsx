@@ -97,6 +97,8 @@ const GuidedModeProgressCards = () => {
   const guidedModeProgressCardsDataArray = useGlobalStore(
     (state) => state.guidedModeProgressCardsDataArray || []
   );
+  const curationMode = useGlobalStore((state) => state.curationMode);
+  console.log("Curation mode in GuidedModeProgressCards:", curationMode);
 
   if (guidedModeProgressCardsLoadingText) {
     return (
@@ -113,14 +115,19 @@ const GuidedModeProgressCards = () => {
   return (
     <>
       {guidedModeProgressCardsDataArray.length === 0 ? (
-        <Text c="dimmed" size="lg" ta="center" my="xl">
-          No datasets in progress found.
-        </Text>
+        <Stack align="center" gap="md" my="xl">
+          <Text c="dimmed" size="xl" ta="center">
+            No datasets in progress found
+          </Text>
+          <Text c="dimmed" size="md" ta="center" maw={400}>
+            Once you save progress on a dataset, it will appear here so you can easily resume your
+            work.
+          </Text>
+        </Stack>
       ) : (
         <>
           <Text fw={600} size="lg" ta="center" mb="sm">
-            Select the dataset that you would like to continue working with and click "Resume
-            Curation"
+            Or continue an existing dataset:
           </Text>
 
           <Stack gap="md" align="center" w="100%">

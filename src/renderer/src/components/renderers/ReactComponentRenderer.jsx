@@ -32,6 +32,7 @@ import HomePageCards from "../cards/HomePageCards";
 import GuidedModeProgressCards from "../guided/GuidedModeProgressCards";
 import { CardButton } from "../cards/CardButton";
 import CheckboxCard from "../cards/CheckboxCard";
+import HeroCard from "../cards/HeroCard";
 import { Divider } from "@mantine/core";
 import DataCategoriesQuestionnairePage from "../pages/DataCategoriesQuestionnairePage";
 import InfoList from "../shared/InfoList";
@@ -126,16 +127,15 @@ const componentTypeRenderers = {
   "checkbox-card": (componentSlot) => {
     const props = {
       id: componentSlot.getAttribute("data-button-id") || componentSlot.id,
-      heroCard: componentSlot.getAttribute("data-hero-card") === "true",
     };
-    // If the checkbox card is a hero card, set the component slot to be full
-    // width and center the card within it
-    if (props.heroCard) {
-      componentSlot.style.width = "100%";
-      componentSlot.style.display = "flex";
-      componentSlot.style.justifyContent = "center";
-    }
     renderComponent(componentSlot, <CheckboxCard {...props} />);
+  },
+  "hero-card": (componentSlot) => {
+    const id = componentSlot.getAttribute("data-button-id") || componentSlot.id;
+    componentSlot.style.width = "100%";
+    componentSlot.style.display = "flex";
+    componentSlot.style.justifyContent = "center";
+    renderComponent(componentSlot, <HeroCard id={id} />);
   },
   "progress-stepper": (componentSlot) => {
     const props = {

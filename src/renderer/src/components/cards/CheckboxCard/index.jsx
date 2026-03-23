@@ -8,7 +8,7 @@ import {
   setCheckboxCardUnchecked,
 } from "../../../stores/slices/checkboxCardSlice";
 
-const CheckboxCard = ({ id, heroCard = false }) => {
+const CheckboxCard = ({ id }) => {
   const cardData = useGlobalStore((state) => state.cardData);
   if (!cardData[id]) return <div>Invalid id: {id}</div>;
   const {
@@ -36,57 +36,6 @@ const CheckboxCard = ({ id, heroCard = false }) => {
   };
 
   const isCompact = !description;
-
-  // Special hero card rendering - prominent button-style design
-  if (heroCard) {
-    return (
-      <FullWidthContainer>
-        <Card
-          id={id}
-          data-checkbox-card-id={id}
-          ref={ref}
-          onClick={handleClick}
-          shadow={hovered ? "sm" : "xs"}
-          radius="md"
-          padding="xl"
-          withBorder
-          className={`${classes.card} ${additionalClasses}`}
-          style={{
-            width: "100%",
-            opacity: isDisabled || disabledNotComingSoon ? 0.8 : 1,
-            cursor: isDisabled || disabledNotComingSoon ? "not-allowed" : "pointer",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            textAlign: "center",
-            position: "relative",
-            minHeight: 120,
-            transition: "all 0.2s ease",
-          }}
-        >
-          {Icon && (
-            <Center mb="md">
-              <Icon
-                size={64}
-                style={{
-                  color: "var(--mantine-color-black)",
-                }}
-              />
-            </Center>
-          )}
-          <Text fw={600} size="lg" c="var(--mantine-color-black)">
-            {title}
-          </Text>
-          {description && (
-            <Text size="sm" c="var(--mantine-color-gray-7)" mt="xs">
-              {description}
-            </Text>
-          )}
-        </Card>
-      </FullWidthContainer>
-    );
-  }
 
   if (simpleButtonType) {
     // Use green for Yes, red for No
@@ -124,7 +73,7 @@ const CheckboxCard = ({ id, heroCard = false }) => {
       withBorder
       className={`${classes.card} ${checked ? classes.cardSelected : ""} ${additionalClasses}`}
       style={{
-        width: heroCard ? "100%" : isCompact ? 180 : 270,
+        width: isCompact ? 180 : 270,
         height: isCompact ? 150 : "auto",
         minHeight: isCompact ? 150 : 180,
         opacity: isDisabled || disabledNotComingSoon ? 0.8 : 1,
