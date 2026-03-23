@@ -2,12 +2,13 @@ import useGlobalStore from "../../../stores/globalStore";
 import { Checkbox, Text, Stack, Badge, Card, Center, ActionIcon, Button } from "@mantine/core";
 import { useHover } from "@mantine/hooks";
 import classes from "../cards.module.css";
+import FullWidthContainer from "../../containers/FullWidthContainer";
 import {
   setCheckboxCardChecked,
   setCheckboxCardUnchecked,
 } from "../../../stores/slices/checkboxCardSlice";
 
-const CheckboxCard = ({ id }) => {
+const CheckboxCard = ({ id, heroCard = false }) => {
   const cardData = useGlobalStore((state) => state.cardData);
   if (!cardData[id]) return <div>Invalid id: {id}</div>;
   const {
@@ -35,10 +36,62 @@ const CheckboxCard = ({ id }) => {
   };
 
   const isCompact = !description;
+
+  // Special hero card rendering - prominent button-style design
+  if (heroCard) {
+    return (
+      <FullWidthContainer>
+        <Card
+          id={id}
+          data-checkbox-card-id={id}
+          ref={ref}
+          onClick={handleClick}
+          shadow={hovered ? "sm" : "xs"}
+          radius="md"
+          padding="xl"
+          withBorder
+          className={`${classes.card} ${additionalClasses}`}
+          style={{
+            width: "100%",
+            opacity: isDisabled || disabledNotComingSoon ? 0.8 : 1,
+            cursor: isDisabled || disabledNotComingSoon ? "not-allowed" : "pointer",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            textAlign: "center",
+            position: "relative",
+            minHeight: 120,
+            transition: "all 0.2s ease",
+          }}
+        >
+          {Icon && (
+            <Center mb="md">
+              <Icon
+                size={64}
+                style={{
+                  color: "var(--mantine-color-black)",
+                }}
+              />
+            </Center>
+          )}
+          <Text fw={600} size="lg" c="var(--mantine-color-black)">
+            {title}
+          </Text>
+          {description && (
+            <Text size="sm" c="var(--mantine-color-gray-7)" mt="xs">
+              {description}
+            </Text>
+          )}
+        </Card>
+      </FullWidthContainer>
+    );
+  }
+
   if (simpleButtonType) {
     // Use green for Yes, red for No
     const color = simpleButtonType === "Positive" ? "primary" : "red";
-    return (
+    const button = (
       <Button
         id={id}
         data-checkbox-card-id={id}
@@ -54,9 +107,11 @@ const CheckboxCard = ({ id }) => {
         {title}
       </Button>
     );
+
+    return button;
   }
 
-  return (
+  const cardElement = (
     <Card
       id={id}
       data-checkbox-card-id={id}
@@ -69,7 +124,7 @@ const CheckboxCard = ({ id }) => {
       withBorder
       className={`${classes.card} ${checked ? classes.cardSelected : ""} ${additionalClasses}`}
       style={{
-        width: isCompact ? 180 : 270,
+        width: heroCard ? "100%" : isCompact ? 180 : 270,
         height: isCompact ? 150 : "auto",
         minHeight: isCompact ? 150 : 180,
         opacity: isDisabled || disabledNotComingSoon ? 0.8 : 1,
@@ -179,5 +234,7 @@ const CheckboxCard = ({ id }) => {
       )}
     </Card>
   );
+
+  return cardElement;
 };
 export default CheckboxCard;

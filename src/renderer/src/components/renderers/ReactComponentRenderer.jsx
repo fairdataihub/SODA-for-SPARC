@@ -126,7 +126,15 @@ const componentTypeRenderers = {
   "checkbox-card": (componentSlot) => {
     const props = {
       id: componentSlot.getAttribute("data-button-id") || componentSlot.id,
+      heroCard: componentSlot.getAttribute("data-hero-card") === "true",
     };
+    // If the checkbox card is a hero card, set the component slot to be full
+    // width and center the card within it
+    if (props.heroCard) {
+      componentSlot.style.width = "100%";
+      componentSlot.style.display = "flex";
+      componentSlot.style.justifyContent = "center";
+    }
     renderComponent(componentSlot, <CheckboxCard {...props} />);
   },
   "progress-stepper": (componentSlot) => {

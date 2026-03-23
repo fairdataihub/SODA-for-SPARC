@@ -20,20 +20,11 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
 
   if (pageBeingLeftID === "guided-select-starting-point-tab") {
     const startingNewCuration = isCheckboxCardChecked("guided-button-start-new-curation");
-    const resumingExistingProgress = isCheckboxCardChecked("guided-button-resume-progress-file");
 
-    if (!startingNewCuration && !resumingExistingProgress) {
+    if (!startingNewCuration) {
       errorArray.push({
         type: "notyf",
-        message: "Please select a dataset start location",
-      });
-      throw errorArray;
-    }
-
-    if (resumingExistingProgress) {
-      errorArray.push({
-        type: "notyf",
-        message: "Select a dataset in progress to resume curation",
+        message: "Please select to start a new curation",
       });
       throw errorArray;
     }

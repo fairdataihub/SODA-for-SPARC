@@ -1106,13 +1106,6 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
       if (window.CURRENT_PAGE?.id) {
         const pageToReloadId = window.CURRENT_PAGE.id;
         await window.openPage(pageToReloadId);
-
-        if (pageToReloadId === "guided-select-starting-point-tab") {
-          document.getElementById("guided-button-resume-progress-file").click();
-        }
-        if (pageToReloadId === "ffm-select-starting-point-tab") {
-          document.getElementById("ffm-button-resume-progress-file").click();
-        }
       }
     } catch (error) {
       clientError(error);
@@ -1203,12 +1196,6 @@ window.addBfAccount = async (ev, verifyingOrganization = False) => {
       if (window.CURRENT_PAGE?.id) {
         const pageToReloadId = window.CURRENT_PAGE.id;
         await window.openPage(pageToReloadId);
-        if (pageToReloadId === "guided-select-starting-point-tab") {
-          document.getElementById("guided-button-resume-progress-file").click();
-        }
-        if (pageToReloadId === "ffm-select-starting-point-tab") {
-          document.getElementById("ffm-button-resume-progress-file").click();
-        }
       }
     } catch (error) {
       clientError(error);
@@ -2044,12 +2031,6 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           if (window.CURRENT_PAGE?.id) {
             const pageToReloadId = window.CURRENT_PAGE.id;
             await window.openPage(pageToReloadId);
-            if (pageToReloadId === "guided-select-starting-point-tab") {
-              document.getElementById("guided-button-resume-progress-file").click();
-            }
-            if (pageToReloadId === "ffm-select-starting-point-tab") {
-              document.getElementById("ffm-button-resume-progress-file").click();
-            }
           }
           // confirm_click_function();
 
@@ -2075,12 +2056,6 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       if (window.CURRENT_PAGE?.id) {
         const pageToReloadId = window.CURRENT_PAGE.id;
         await window.openPage(pageToReloadId);
-        if (pageToReloadId === "guided-select-starting-point-tab") {
-          document.getElementById("guided-button-resume-progress-file").click();
-        }
-        if (pageToReloadId === "ffm-select-starting-point-tab") {
-          document.getElementById("ffm-button-resume-progress-file").click();
-        }
       } else {
         window.resetFFMUI(ev?.target || null);
       }

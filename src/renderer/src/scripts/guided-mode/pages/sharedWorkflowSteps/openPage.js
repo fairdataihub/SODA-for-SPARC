@@ -10,14 +10,17 @@ import {
   setCheckboxCardUnchecked,
 } from "../../../../stores/slices/checkboxCardSlice.js";
 import { setFreeFormDatasetName } from "../../../../stores/slices/guidedModeSlice.js";
+import { guidedRenderProgressCards } from "../../resumeProgress/progressCards.js";
 export const openPageSharedWorkflowSteps = async (targetPageID) => {
   if (targetPageID === "guided-select-starting-point-tab") {
     initializeGuidedDatasetObject("guided");
     guidedResetSkippedPages("gm");
+    guidedRenderProgressCards("gm");
   }
   if (targetPageID === "ffm-select-starting-point-tab") {
     initializeGuidedDatasetObject("free-form");
     guidedResetSkippedPages("ffm");
+    guidedRenderProgressCards("ffm");
   }
   if (targetPageID === "gm-pennsieve-login-tab" || targetPageID === "ffm-pennsieve-login-tab") {
     let prefix = targetPageID === "guided-select-starting-point-tab" ? "gm" : "ffm";

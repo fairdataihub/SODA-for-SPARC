@@ -19,20 +19,6 @@ if (!window.fs.existsSync(guidedProgressFilePath)) {
   window.fs.mkdirSync(guidedProgressFilePath, { recursive: true });
 }
 
-/**
- *  @description - Associated with a the 'Continue a dataset saved in SODA' button in the Prepare Dataset Step-by-Step menu page.
- *  Once clicked it displays a list of saved progress files that the user can use to resume any workflow progress they have made.
- */
-document
-  .getElementById("guided-button-resume-progress-file")
-  .addEventListener("click", async () => {
-    await guidedRenderProgressCards("gm");
-  });
-
-document.getElementById("ffm-button-resume-progress-file").addEventListener("click", async () => {
-  await guidedRenderProgressCards("ffm");
-});
-
 const readDirAsync = async (path) => {
   let result = await window.fs.readdir(path);
   return result;
