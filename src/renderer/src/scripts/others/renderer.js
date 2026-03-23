@@ -6720,7 +6720,7 @@ directToOrganize.addEventListener("click", async () => {
 
   client
     .post(
-      "http://localhost:4242/startup/never_die",
+      "http://localhost:4242/startup/curation",
       {
         Funny: "Papers",
       },
@@ -6742,7 +6742,7 @@ directToOrganize.addEventListener("click", async () => {
   const getProgress = async () => {
     while (true) {
       try {
-        let data = await client.get("http://localhost:4242/startup/never_die/progress");
+        let data = await client.get("http://localhost:4242/startup/curation/progress");
         await new Promise((resolve) => setTimeout(resolve, 1000));
       } catch (e) {
         if (!e.response && e.request && e.isAxiosError) {
