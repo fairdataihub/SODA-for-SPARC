@@ -25,7 +25,7 @@ const heroCardData = [
     title: "Prepare and share a new dataset",
     description: null,
     onClick: () => document.getElementById("guided-next-button").click(),
-    customWidth: 800,
+    customWidth: "800px",
     customMargin: "0",
     customHeight: 160,
   },
@@ -35,7 +35,7 @@ const heroCardData = [
     title: "Prepare and share a new dataset",
     description: null,
     onClick: () => document.getElementById("guided-next-button").click(),
-    customWidth: 800,
+    customWidth: "800px",
     customMargin: "0",
     customHeight: 160,
   },
@@ -56,8 +56,6 @@ const HeroCard = ({ id }) => {
       padding="0"
       m={card.customMargin || "sm"}
       className={classes.card}
-      w={card.customWidth || "800px"}
-      h={card.customHeight || "220px"}
       style={{
         display: "flex",
         flexDirection: "column",
@@ -65,6 +63,8 @@ const HeroCard = ({ id }) => {
         alignItems: "center",
         textAlign: "center",
         position: "relative",
+        width: card.customWidth || "700px",
+        height: card.customHeight ? `${card.customHeight}px` : "220px",
       }}
       onClick={onClick}
     >

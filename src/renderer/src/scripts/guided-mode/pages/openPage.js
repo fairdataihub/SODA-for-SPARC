@@ -201,6 +201,11 @@ window.openPage = async (targetPageID) => {
   const targetPageParentTab = targetPage.closest(".guided--parent-tab");
   const targetPageDataset = targetPage.dataset;
 
+  // Hide the current page early
+  if (window.CURRENT_PAGE) {
+    window.CURRENT_PAGE.classList.add("hidden");
+  }
+
   //when the promise completes there is a catch for error handling
   //upon resolving it will set navLoadingstate to false
   try {
@@ -726,7 +731,7 @@ window.openPage = async (targetPageID) => {
       }
     });
 
-    window.CURRENT_PAGE.classList.add("hidden");
+    // Set CURRENT_PAGE and unhide the target page
     window.CURRENT_PAGE = targetPage;
     window.CURRENT_PAGE.classList.remove("hidden");
     //smooth scroll to top of guidedBody
@@ -746,6 +751,12 @@ window.openPage = async (targetPageID) => {
   } catch (error) {
     console.error("Error opening page:", targetPageID);
     console.error("Error: ", error);
+
+    // Unhide the current page if there is an error so the user is not stuck on a blank screen
+    if (window.CURRENT_PAGE) {
+      window.CURRENT_PAGE.classList.remove("hidden");
+    }
+
     guidedSetNavLoadingState(false);
 
     // Check if user should be redirected to first page due to file purging

@@ -69,7 +69,7 @@ export const getGuidedProgressFileNames = (curationMode) => {
       const datasetName = progressData?.["digital-metadata"]?.["name"];
       const datasetCurationMode = progressData?.["curation-mode"];
       console.log("dataset curation mode:", datasetCurationMode);
-      if (datasetName) {
+      if (datasetName && datasetCurationMode === curationMode) {
         datasetNames.push(datasetName);
       }
     } catch (error) {

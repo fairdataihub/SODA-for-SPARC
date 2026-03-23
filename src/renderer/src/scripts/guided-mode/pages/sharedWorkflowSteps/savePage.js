@@ -160,6 +160,8 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
           throw errorArray;
         }
 
+        // For free-form datasets, set the digital metadata name and the generate-dataset dataset-name
+        // because they do not get set elsewhere in free-form mode.
         window.sodaJSONObj["digital-metadata"]["name"] = freeformDatasetName;
         window.sodaJSONObj["generate-dataset"]["dataset-name"] = freeformDatasetName;
 
