@@ -112,9 +112,17 @@ model_main_curation_function_response = api.model( "MainCurationFunctionResponse
 
 global generate_start_time
 global main_curate_progress_message
+global files_uploaded
+global total_bytes_uploaded 
 
+files_uploaded = 0
+total_byytes_uploaded = {"value": 0}
 generate_start_time = 0
 main_curate_progress_message = ""
+
+
+
+
 
 @api.route("/curation")
 class Curation(Resource):
@@ -129,12 +137,36 @@ class Curation(Resource):
         data = request.get_json()
 
         api.logger.info('/curation POST request')
-        
-        account_name = get_account_name()
-        ps = connect_pennsieve_client(account_name)
+        def monitor_subscriber_progress(events_dict):
+            """
+            Monitors the progress of a subscriber and unsubscribes once the upload finishes. 
+            """
 
+
+            if events_dict["type"] == 1:  # upload status: file_id, total, current, worker_id
+                file_id = events_dict["upload_status"].file_id
+                total_bytes_to_upload = events_dict["upload_status"].total
+                current_bytes_uploaded = events_dict["upload_status"].current
+
+                api.logger.info(current_bytes_uploaded)
+
+                status = events_dict["upload_status"].status
+                if status == "2" or status == 2:
+                    ps.unsubscribe(10)
+                    api.logger.info("[UPLOAD COMPLETE EVENT RECEIVED]")
+                
+
+        api.logger.info('Getting account name')
+        account_name = get_account_name()
+        api.logger.info("Got account name")
+        api.logger.info("Connecting pennsieve client")
+        ps = connect_pennsieve_client(account_name)
+        api.logger.info("Pennsieve client connected")
+
+        api.logger.info("About to create dataset")
         r = requests.post(f"{PENNSIEVE_URL}/datasets", headers={"Content-Type": "application/json", "Authorization": f"Bearer {get_access_token()}",}, json={"name": "400GB-test"})
         r.raise_for_status()
+        api.logger.info("Dataset created")
         ds_id = r.json()["content"]["id"]
         ps.use_dataset(ds_id)
         main_curate_progress_message = ("Uploading data files...")
@@ -143,11 +175,7 @@ class Curation(Resource):
 
         ps.manifest.upload(md.manifest_id)
 
-        count = 0
-        # subscribe to the manifest upload so we wait until it has finished uploading before moving on {Mock for now to verify Agent to isolate variables}
-        while True:
-            for i in range(100000):
-                count += 1
+        ps.subscribe(10, False, monitor_subscriber_progress)
 
         return {
             "main_curate_progress_message": "Finished",
