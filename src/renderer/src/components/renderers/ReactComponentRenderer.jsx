@@ -108,13 +108,6 @@ const componentTypeRenderers = {
       buttonColor: componentSlot.getAttribute("data-button-color") || "black",
       buttonCustomWidth: componentSlot.getAttribute("data-button-custom-width"),
       buttonCustomClass: componentSlot.getAttribute("data-button-custom-class"),
-      onClick: () => {
-        if (componentSlot.getAttribute("data-button-id") == "nextBtn") {
-          window.nextPrev(1);
-        } else if (componentSlot.getAttribute("data-button-id") == "prevBtn") {
-          window.nextPrev(-1);
-        }
-      },
     };
     renderComponent(componentSlot, <NavigationButton {...props} />);
   },

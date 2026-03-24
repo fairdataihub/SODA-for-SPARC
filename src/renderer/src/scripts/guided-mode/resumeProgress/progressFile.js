@@ -1,4 +1,4 @@
-import { swalShowInfo } from "../../utils/swal-utils";
+import { swalShowInfo, swalConfirmAction } from "../../utils/swal-utils";
 
 const homeDir = await window.electron.ipcRenderer.invoke("get-app-path", "home");
 const guidedProgressFilePath = window.path.join(homeDir, "SODA", "Guided-Progress");
@@ -56,12 +56,20 @@ const patchProgressFile = async (progressFile) => {
   return patched;
 };
 
+const deleteProgressFile = async (progressFilePath) => {
+  try {
+    window.fs.unlinkSync(progressFilePath);
+  } catch (error) {
+    console.error(`Error deleting progress file at ${progressFilePath}:`, error);
+  }
+};
+
 export const getGuidedProgressFileNames = (curationMode) => {
   const progressFileNames = window.fs
     .readdirSync(guidedProgressFilePath)
     .filter((fileName) => fileName.endsWith(".json"));
 
-  const datasetNames = [];
+  const progressFiles = [];
 
   for (const fileName of progressFileNames) {
     try {
@@ -70,15 +78,20 @@ export const getGuidedProgressFileNames = (curationMode) => {
       const progressData = JSON.parse(fileContent);
       const datasetName = progressData?.["digital-metadata"]?.["name"];
       const datasetCurationMode = progressData?.["curation-mode"];
+      const saveFileName = progressData?.["save-file-name"];
       if (datasetName && datasetCurationMode === curationMode) {
-        datasetNames.push(datasetName);
+        progressFiles.push({
+          datasetName,
+          saveFileName,
+          filePath,
+        });
       }
     } catch (error) {
       console.error(`Error reading progress file ${fileName}:`, error);
     }
   }
 
-  return datasetNames;
+  return progressFiles;
 };
 
 export const createOrUpdateProgressFileSaveInfo = async (datasetNameInput) => {
@@ -93,7 +106,10 @@ export const createOrUpdateProgressFileSaveInfo = async (datasetNameInput) => {
   const uploadingToExistingDatasetFreeFormDataset =
     window.sodaJSONObj?.["pennsieve-generation-target"] === "existing" &&
     curationMode === "free-form";
-  const existingProgressFileNames = getGuidedProgressFileNames(curationMode);
+  const existingProgressFiles = getGuidedProgressFileNames(curationMode);
+  const existingProgressFileObj = existingProgressFiles.find(
+    (file) => file.datasetName === datasetNameInput
+  );
 
   window.log.info("[guided-name-subtitle-tab] Previous save info:", {
     prevDatasetName,
@@ -102,15 +118,44 @@ export const createOrUpdateProgressFileSaveInfo = async (datasetNameInput) => {
   });
 
   if (!prevDatasetName) {
-    if (existingProgressFileNames.includes(datasetNameInput)) {
+    if (existingProgressFileObj) {
       if (uploadingToExistingDatasetFreeFormDataset) {
-        throw new Error(
-          `You have already started progress on a dataset named "${datasetNameInput}". Please navigate back to the ${curationModeHomePageName} page to continue working on it. If you want to start fresh, please choose a different name.`
+        const result = await swalConfirmAction(
+          "warning",
+          `You already have a dataset in progress named "${datasetNameInput}".`,
+          `
+            The existing progress file will be deleted if you proceed. If you do not want to lose progress on the
+            existing dataset in progress, please navigate back to the ${curationModeHomePageName} page and click
+            "Resume Curation" on the corresponding card.
+          `,
+          "Delete existing progress and continue",
+          "Cancel"
         );
+        if (result) {
+          deleteProgressFile(existingProgressFileObj.filePath);
+        } else {
+          throw new Error(
+            `Please navigate back to the ${curationModeHomePageName} page to continue working on your existing dataset in progress.`
+          );
+        }
+      } else {
+        const result = await swalConfirmAction(
+          "warning",
+          `You have a dataset in progress named "${datasetNameInput}".`,
+          `
+            The existing progress file will be deleted if you proceed. If you do not want to lose progress on the
+            existing dataset in progress, please navigate back to the ${curationModeHomePageName} page and click
+            "Resume Curation" on the corresponding card.
+          `,
+          "Delete existing progress and continue",
+          "Cancel"
+        );
+        if (result) {
+          deleteProgressFile(existingProgressFileObj.filePath);
+        } else {
+          throw new Error("Please choose a different dataset name.");
+        }
       }
-      throw new Error(
-        `A dataset with this name already exists. Please choose a different name or resume your previous progress by navigating back to the ${curationModeHomePageName} page.`
-      );
     }
   }
 
@@ -141,11 +186,15 @@ export const createOrUpdateProgressFileSaveInfo = async (datasetNameInput) => {
       `[guided-name-subtitle-tab] Dataset name change detected: ${prevDatasetName} → ${datasetNameInput}`
     );
 
-    const filteredExistingProgressFileNames = existingProgressFileNames.filter(
-      (name) => name !== prevDatasetName
+    const filteredExistingProgressFiles = existingProgressFiles.filter(
+      (file) => file.datasetName !== prevDatasetName
     );
 
-    if (filteredExistingProgressFileNames.includes(datasetNameInput)) {
+    const filteredProgressFileObj = filteredExistingProgressFiles.find(
+      (file) => file.datasetName === datasetNameInput
+    );
+
+    if (filteredProgressFileObj) {
       throw new Error("A dataset with this name already exists. Please choose a different name.");
     }
 

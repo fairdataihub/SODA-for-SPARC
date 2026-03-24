@@ -32,7 +32,7 @@ const heroCardData = [
   {
     id: "ffm-button-start-new-curation",
     icon: <IconCirclePlus size={32} color="black" />,
-    title: "Prepare and share a new dataset",
+    title: "Start uploading data to a new or existing dataset",
     description: null,
     onClick: () => document.getElementById("guided-next-button").click(),
     customWidth: "800px",
