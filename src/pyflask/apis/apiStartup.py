@@ -4,7 +4,7 @@ from flask import Response
 from flask_restx import Resource, fields
 from namespaces import get_namespace, NamespaceEnum
 from flask import request
-from pennsieve2.pennsieve import Pennsieve
+from pennsieve import Pennsieve
 import requests
 import boto3
 import os
@@ -148,8 +148,6 @@ class Curation(Resource):
                 total_bytes_to_upload = events_dict["upload_status"].total
                 current_bytes_uploaded = events_dict["upload_status"].current
 
-                api.logger.info(current_bytes_uploaded)
-
                 status = events_dict["upload_status"].status
                 if status == "2" or status == 2:
                     ps.unsubscribe(10)
@@ -168,7 +166,7 @@ class Curation(Resource):
         r.raise_for_status()
         api.logger.info("Dataset created")
         ds_id = r.json()["content"]["id"]
-        ps.use_dataset(ds_id)
+        ps.set_dataset(ds_id)
         main_curate_progress_message = ("Uploading data files...")
         folder_path = os.path.join(os.path.expanduser("~"), "400GB-dataset")
         md = ps.manifest.create(folder_path, "/")
