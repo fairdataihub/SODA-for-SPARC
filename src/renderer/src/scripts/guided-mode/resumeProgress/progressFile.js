@@ -56,7 +56,7 @@ const patchProgressFile = async (progressFile) => {
   return patched;
 };
 
-const deleteProgressFile = async (progressFilePath) => {
+export const deleteProgressFile = async (progressFilePath) => {
   try {
     window.fs.unlinkSync(progressFilePath);
   } catch (error) {

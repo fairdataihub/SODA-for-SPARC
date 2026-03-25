@@ -1,8 +1,7 @@
 import { guidedGetCurrentUserWorkSpace } from "../workspaces/workspaces";
-import { getAllProgressFileData } from "./progressFile";
+import { getAllProgressFileData, deleteProgressFile } from "./progressFile";
 import hasConnectedAccountWithPennsieve from "../../others/authentication/auth";
 import { swalShowInfo } from "../../utils/swal-utils";
-import tippy from "tippy.js";
 import { clientError } from "../../others/http-error-handler/error-handler";
 import {
   setGuidedModeProgressCardsText,
@@ -68,6 +67,33 @@ export const guidedRenderProgressCards = async (curationMode) => {
   });
 
   let progressFileData = await getAllProgressFileData(jsonProgressFiles);
+  console.log("Loaded progress file data:", progressFileData);
+
+  // For free-form mode, delete any already-uploaded dataset progress files (completed uploads).
+  // Use the ["save-file-name"] value for the on-disk filename.
+  if (curationMode === "ffm") {
+    const remainingFiles = [];
+
+    for (const progressFile of progressFileData) {
+      if (
+        progressFile?.["curation-mode"] === "free-form" &&
+        progressFile?.["dataset-successfully-uploaded-to-pennsieve"] === true
+      ) {
+        const progressFilePath = progressFile?.["save-file-path"];
+        console.log(
+          `Deleting progress file for already uploaded dataset at path: ${progressFilePath}`
+        );
+        if (progressFilePath) {
+          await deleteProgressFile(progressFilePath);
+        }
+      } else {
+        remainingFiles.push(progressFile);
+      }
+    }
+
+    // Replace the loaded data with remaining files after deletions
+    progressFileData = remainingFiles;
+  }
 
   // Filter progress files based on curation mode
   const targetCurationMode = curationMode === "ffm" ? "free-form" : "guided";

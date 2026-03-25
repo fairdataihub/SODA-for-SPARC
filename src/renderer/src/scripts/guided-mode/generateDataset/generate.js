@@ -124,6 +124,10 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
 
           // Show the next button
           $("#guided-next-button").css("visibility", "visible");
+          if (window.sodaJSONObj["curation-mode"] === "free-form") {
+            // hide the save and exit button since we just want to handle the continue click
+            $("#guided-button-save-and-exit").css("visibility", "hidden");
+          }
 
           // Save the window.sodaJSONObj after a successful upload
           await guidedSaveProgress();
@@ -248,6 +252,10 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
 
         // Show the next button
         $("#guided-next-button").css("visibility", "visible");
+        if (window.sodaJSONObj["curation-mode"] === "free-form") {
+          // hide the save and exit button since we just want to handle the continue click
+          $("#guided-button-save-and-exit").css("visibility", "hidden");
+        }
 
         // Save the window.sodaJSONObj after a successful upload
         await guidedSaveProgress();

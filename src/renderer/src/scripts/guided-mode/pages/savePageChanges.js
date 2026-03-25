@@ -16,6 +16,7 @@ import { savePagePrepareMetadata } from "./prepareMetadata/savePage";
 import { savePagePennsieveDetails } from "./pennsieveDetails/savePage";
 import { savePageGenerateDataset } from "./generateDataset/savePage";
 import { savePageSharedWorkflowSteps } from "./sharedWorkflowSteps/savePage";
+import { transitionFromGuidedModeToHome } from "../pages/navigate";
 import { countFilesInDatasetStructure, getFilesByEntityType } from "../../utils/datasetStructure";
 import {
   guidedSkipPage,
@@ -30,7 +31,7 @@ import {
   getExistingSamples,
   getExistingSites,
 } from "../../../stores/slices/datasetEntityStructureSlice";
-import { swalListDoubleAction, swalListSingleAction } from "../../utils/swal-utils";
+import { swalListDoubleAction, swalListSingleAction, swalShowInfo } from "../../utils/swal-utils";
 import { addEntityNameToEntityType } from "../../../stores/slices/datasetEntitySelectorSlice";
 
 while (!window.baseHtmlLoaded) {
@@ -64,6 +65,7 @@ export const guidedSaveProgress = async () => {
   window.sodaJSONObj["last-modified"] = new Date();
 
   const guidedFilePath = window.path.join(guidedProgressFilePath, guidedProgressFileName + ".json");
+  window.sodaJSONObj["save-file-path"] = guidedFilePath;
 
   // Save the current version of SODA as the user should be taken back to the first page when the app is updated
   const appVersion = useGlobalStore.getState().appVersion;
@@ -642,4 +644,29 @@ window.savePageChanges = async (pageBeingLeftID) => {
   }
 
   guidedSetNavLoadingState(false);
+
+  // Delete the free-form progress file when leaving dataset generation
+  // to avoid stale resume state after upload completion.
+  if (
+    pageBeingLeftID === "guided-dataset-generation-tab" &&
+    window.sodaJSONObj["curation-mode"] === "free-form" &&
+    window.sodaJSONObj["dataset-successfully-uploaded-to-pennsieve"] === true
+  ) {
+    const progressFilePath = window.sodaJSONObj["save-file-path"];
+    if (progressFilePath && window.fs.existsSync(progressFilePath)) {
+      try {
+        window.fs.unlinkSync(progressFilePath);
+        console.log(`Deleted free-form progress file: ${progressFilePath}`);
+
+        await swalShowInfo(
+          "Dataset Workflow Complete",
+          "Your dataset was uploaded and the workflow is complete. You will now be taken back to the home screen."
+        );
+
+        transitionFromGuidedModeToHome();
+      } catch (deleteError) {
+        console.error(`Failed to delete free-form progress file ${progressFilePath}:`, deleteError);
+      }
+    }
+  }
 };
