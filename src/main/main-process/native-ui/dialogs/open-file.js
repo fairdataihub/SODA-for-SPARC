@@ -587,6 +587,8 @@ ipcMain.on("open-files-organize-datasets-dialog", async (event) => {
 ipcMain.on("file-explorer-dropped-datasets", (event, args) => {
   const mainWindow = BrowserWindow.getFocusedWindow();
   const importRelativePath = args.importRelativePath;
+  const curationMode = args.curationMode;
+  console.log("curationMode:", curationMode);
   mainWindow.webContents.send("selected-folders-organize-datasets", {
     filePaths: args.filePaths,
     importRelativePath,

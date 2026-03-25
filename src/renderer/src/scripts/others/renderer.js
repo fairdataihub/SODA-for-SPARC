@@ -79,7 +79,7 @@ import {
   setPostPennsieveAgentCheckAction,
 } from "../../stores/slices/backgroundServicesSlice";
 import { setNavButtonDisabled, setNavButtonHidden } from "../../stores/slices/navButtonStateSlice";
-
+import { setStateDisplayData } from "../../stores/slices/stateDisplaySlice";
 // add jquery to the window object
 window.$ = jQuery;
 window.jQuery = jQuery;
@@ -2771,8 +2771,9 @@ window.CheckFileListForServerAccess = async (fileList) => {
 // Event listener for when folder(s) are imported into the file explorer
 window.electron.ipcRenderer.on(
   "selected-folders-organize-datasets",
-  async (event, { filePaths: importedFolders, importRelativePath }) => {
+  async (event, { filePaths: importedFolders, importRelativePath, curationMode }) => {
     try {
+      console.log("curationMode:", curationMode);
       if (!importRelativePath) {
         throw new Error("The 'importRelativePath' property is missing in the response.");
       }
@@ -2793,6 +2794,10 @@ window.electron.ipcRenderer.on(
 
       // Refresh the dataset tree view to reflect the newly imported data
       reRenderTreeView();
+
+      if (curationMode === "free-form") {
+        setStateDisplayData("org-dataset-folder-path", importedFolders);
+      }
 
       // Show success message
       window.notyf.open({

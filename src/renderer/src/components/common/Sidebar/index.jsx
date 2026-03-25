@@ -68,6 +68,7 @@ const Sidebar = ({ id }) => {
   const showGuidedModePageNavigation = useGlobalStore(
     (state) => state.showGuidedModePageNavigation
   );
+  const curationMode = useGlobalStore((state) => state.curationMode);
 
   return (
     <nav className={classes.navbar}>
