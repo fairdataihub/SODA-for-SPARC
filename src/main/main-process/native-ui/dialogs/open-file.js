@@ -592,6 +592,7 @@ ipcMain.on("file-explorer-dropped-datasets", (event, args) => {
   mainWindow.webContents.send("selected-folders-organize-datasets", {
     filePaths: args.filePaths,
     importRelativePath,
+    curationMode,
   });
 });
 
@@ -605,11 +606,24 @@ ipcMain.on("open-folders-organize-datasets-dialog", async (event, args) => {
 
   let mainWindow = BrowserWindow.getFocusedWindow();
   const importRelativePath = args.importRelativePath;
+  const curationMode = args.curationMode;
+  console.log("curationMode:", curationMode);
+
+  const properties =
+    curationMode === "free-form"
+      ? ["openFile", "openDirectory"]
+      : ["openFile", "openDirectory", "multiSelections"];
+
+  const title =
+    curationMode === "free-form"
+      ? "Select the path to the folder containing your dataset to import it into SODA"
+      : "Select folder(s) or archive(s) to import into SODA";
+
   let result = await dialog.showOpenDialog(mainWindow, {
-    properties: ["openDirectory", "openFile", "multiSelections"],
-    title: `Select folder(s) or archive(s) to import into SODA`,
+    properties,
+    title,
     filters: [
-      { name: "Folders and Archives", extensions: ["zip", "tar", "tar.gz", "gz", "zarr.tar", "*"] },
+      { name: "Folder and Archives", extensions: ["zip", "tar", "tar.gz", "gz", "zarr.tar", "*"] },
       { name: "Archive Files", extensions: ["zip", "tar", "tar.gz", "gz", "zarr.tar"] },
       { name: "All Files", extensions: ["*"] },
     ],
@@ -621,6 +635,7 @@ ipcMain.on("open-folders-organize-datasets-dialog", async (event, args) => {
   mainWindow.webContents.send("selected-folders-organize-datasets", {
     filePaths: result.filePaths,
     importRelativePath,
+    curationMode,
   });
 });
 

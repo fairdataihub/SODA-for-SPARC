@@ -3391,6 +3391,7 @@ gmDragDropElementId.addEventListener("drop", (event) => {
   window.electron.ipcRenderer.send("file-explorer-dropped-datasets", {
     filePaths: itemsDroppedInFileExplorer,
     importRelativePath: "data/",
+    curationMode: "guided",
   });
 });
 
@@ -3399,14 +3400,49 @@ ffmDragDropElementId.addEventListener("click", (event) => {
   event.preventDefault();
   window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog", {
     importRelativePath: "/",
+    curationMode: "free-form",
   });
 });
-ffmDragDropElementId.addEventListener("drop", (event) => {
+ffmDragDropElementId.addEventListener("drop", async (event) => {
   event.preventDefault();
   const itemsDroppedInFileExplorer = Array.from(event.dataTransfer.files).map((file) => file.path);
+
+  if (itemsDroppedInFileExplorer.length > 1) {
+    window.notyf.open({
+      type: "error",
+      message:
+        "Please select only one folder. Drop the folder that contains your dataset (root dataset folder).",
+      duration: 5000,
+    });
+    return;
+  }
+
+  const droppedPath = itemsDroppedInFileExplorer[0];
+  try {
+    const isDirectory = await window.fs.isDirectory(droppedPath);
+    if (!isDirectory) {
+      window.notyf.open({
+        type: "error",
+        message:
+          "Only folders are accepted. Please drop the folder containing your dataset (root dataset folder).",
+        duration: 5000,
+      });
+      return;
+    }
+  } catch (err) {
+    window.notyf.open({
+      type: "error",
+      message:
+        "Could not access dropped item. Please select the folder containing your dataset (root dataset folder).",
+      duration: 5000,
+    });
+    return;
+  }
+
   window.electron.ipcRenderer.send("file-explorer-dropped-datasets", {
     filePaths: itemsDroppedInFileExplorer,
     importRelativePath: "/",
+    curationMode: "free-form",
   });
 });
 

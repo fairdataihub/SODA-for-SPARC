@@ -11,6 +11,7 @@ import {
 } from "../../../../stores/slices/checkboxCardSlice.js";
 import { setFreeFormDatasetName } from "../../../../stores/slices/guidedModeSlice.js";
 import { guidedRenderProgressCards } from "../../resumeProgress/progressCards.js";
+import { setStateDisplayData } from "../../../../stores/slices/stateDisplaySlice.js";
 export const openPageSharedWorkflowSteps = async (targetPageID) => {
   if (targetPageID === "guided-select-starting-point-tab") {
     initializeGuidedDatasetObject("guided");
@@ -119,5 +120,11 @@ export const openPageSharedWorkflowSteps = async (targetPageID) => {
       setPreferredPennsieveDatasetId(previouslySelectedDatasetIdToUploadDataTo);
       setCheckboxCardChecked(`${prefix}-generate-on-existing-pennsieve-dataset`);
     }
+  }
+
+  if (targetPageID === "ffm-unstructured-data-import-tab") {
+    const ffmDatasetRoot = window.sodaJSONObj["ffm-path-to-dataset-root"] || null;
+
+    setStateDisplayData("org-dataset-folder-path", ffmDatasetRoot);
   }
 };

@@ -11,11 +11,10 @@ const DataImporter = ({ dataImporterId }) => {
     <FullWidthContainer className={classes["di"]}>
       <Box w="100%" m={0} p={0} id={dataImporterId} className={classes["di"]}>
         <Dropzone
-          onDrop={(event) => {
-            event.preventDefault();
+          onDrop={(files) => {
+            console.log("Dropped files:", files);
           }}
-          onReject={(event) => {
-            event.preventDefault();
+          onReject={(files) => {
             console.error("Rejected files:", files);
           }}
           onClick={(event) => event.preventDefault()}
@@ -36,7 +35,7 @@ const DataImporter = ({ dataImporterId }) => {
             <div>
               <Text size="xl" inline>
                 {dataImporterId === "ffm-data-importer-dropzone"
-                  ? "Drag and drop the folder containing your dataset"
+                  ? "Drag and drop the folder containing your dataset, or click to select it"
                   : "Drag and drop files or folders or click to import"}
               </Text>
               <Text size="sm" c="dimmed" inline mt={7}>
@@ -57,12 +56,7 @@ const DataImporter = ({ dataImporterId }) => {
         />
       )}
       {dataImporterId === "ffm-data-importer-dropzone" && (
-        <DatasetTreeViewRenderer
-          allowStructureEditing={true}
-          hideSearchBar={true}
-          entityType={null}
-          fileExplorerId="ffm-unstructured-data-import-tab"
-        />
+        <StateDisplayContainer id="ffm-data-importer-dropzone" />
       )}
     </FullWidthContainer>
   );

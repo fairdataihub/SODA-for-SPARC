@@ -2778,6 +2778,16 @@ window.electron.ipcRenderer.on(
         throw new Error("The 'importRelativePath' property is missing in the response.");
       }
 
+      // For free-form mode, reset the dataset structure completely so this import replaces existing data
+      if (curationMode === "free-form") {
+        window.datasetStructureJSONObj = {
+          folders: {},
+          files: {},
+          type: "",
+        };
+        useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
+      }
+
       // Use the current file explorer path or the provided relative path
       const currentFileExplorerPath = `dataset_root/${importRelativePath}`;
       const builtDatasetStructureFromImportedFolders =
@@ -2797,6 +2807,7 @@ window.electron.ipcRenderer.on(
 
       if (curationMode === "free-form") {
         setStateDisplayData("org-dataset-folder-path", importedFolders);
+        window.sodaJSONObj["ffm-path-to-dataset-root"] = importedFolders;
       }
 
       // Show success message
