@@ -6,7 +6,7 @@ on:
     branches:
       - main
       - staging
-      - minimal-server
+      - minimal-server-subscriber
 
 jobs:
   deploy-on-windows:
