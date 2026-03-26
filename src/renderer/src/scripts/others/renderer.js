@@ -6730,7 +6730,7 @@ directToOrganize.addEventListener("click", async () => {
     },
     "ps-account-selected": {
       "account-name":
-        "soda-pennsieve-d858-cmarroquin-n:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0",
+        "soda-pennsieve-c338-cmarroquin-n:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0",
     },
     "dataset-structure": {
       folders: {
