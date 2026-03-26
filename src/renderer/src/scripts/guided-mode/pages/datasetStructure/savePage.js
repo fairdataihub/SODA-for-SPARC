@@ -421,14 +421,22 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
 
   if (pageBeingLeftID === "ffm-existing-files-handling-tab") {
     const replaceExistingFilesChecked = isCheckboxCardChecked("ffm-button-replace-existing-files");
-    const keepExistingFilesChecked = isCheckboxCardChecked("ffm-button-keep-existing-files");
-    if (!replaceExistingFilesChecked && !keepExistingFilesChecked) {
+    const skipExistingFilesChecked = isCheckboxCardChecked("ffm-button-skip-existing-files");
+    if (!replaceExistingFilesChecked && !skipExistingFilesChecked) {
       errorArray.push({
         type: "notyf",
         message:
           "Please select how you would like to handle existing files in your Pennsieve dataset.",
       });
       throw errorArray;
+    }
+    if (replaceExistingFilesChecked) {
+      window.sodaJSONObj["generate-dataset"]["if-existing-files"] = "replace";
+      window.sodaJSONObj["generate-dataset"]["if-existing"] = "replace";
+    }
+    if (skipExistingFilesChecked) {
+      window.sodaJSONObj["generate-dataset"]["if-existing-files"] = "skip";
+      window.sodaJSONObj["generate-dataset"]["if-existing"] = "merge";
     }
   }
 

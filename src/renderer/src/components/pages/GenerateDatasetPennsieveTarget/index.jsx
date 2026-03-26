@@ -212,14 +212,20 @@ const GenerateDatasetPennsieveTargetPage = ({ curationMode }) => {
         <GuidedModeSection>{renderDatasetSection()}</GuidedModeSection>
       </Collapse>
       <Collapse in={curationMode === "ffm" && isNewDatasetSelected}>
-        <TextInput
-          label="Dataset Name:"
-          required
-          description="Enter a unique and informative name for your dataset."
-          placeholder="Enter dataset name"
-          value={freeFormDatasetName}
-          onChange={(event) => setFreeFormDatasetName(event.target.value)}
-        />
+        <GuidedModeSection>
+          <Center>
+            <TextInput
+              mt="md"
+              label="Dataset Name:"
+              required
+              description="Enter a unique and informative name for your dataset."
+              placeholder="Enter dataset name"
+              value={freeFormDatasetName}
+              onChange={(event) => setFreeFormDatasetName(event.target.value)}
+              style={{ width: "600px", maxWidth: "100%" }}
+            />
+          </Center>
+        </GuidedModeSection>
       </Collapse>
     </GuidedModePage>
   );

@@ -17,13 +17,24 @@ import datasetUploadSession from "../../analytics/upload-session-tracker";
 import { guidedUnSkipPage, pageIsSkipped } from "../pages/navigationUtils/pageSkipping";
 import kombuchaEnums from "../../analytics/analytics-enums";
 import Swal from "sweetalert2";
-import { swalShowError } from "../../utils/swal-utils";
+import { swalShowError, swalShowInfo } from "../../utils/swal-utils";
 import lottie from "lottie-web";
 import { getGuidedDatasetName } from "../pages/curationPreparation/utils";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
+
+const fetchProgressData = async () => {
+  const { data } = await client.get(`/curate_datasets/curation/progress`);
+  return {
+    status: data["main_curate_status"],
+    message: data["main_curate_progress_message"],
+    elapsedTime: data["elapsed_time_formatted"],
+    uploadedFiles: data["total_files_uploaded"],
+    curationErrorMessage: data["curation_error_message"],
+  };
+};
 
 /**
  *
@@ -35,138 +46,135 @@ while (!window.baseHtmlLoaded) {
  */
 export const guidedGenerateDatasetOnPennsieve = async () => {
   guidedSetNavLoadingState(true);
+
   try {
-    // Gather all required dataset info from window.sodaJSONObj
     const pennsieveDatasetName = window.sodaJSONObj["generate-dataset"]["dataset-name"];
-    // Create standardized structure
+
+    // Create standardized dataset structure and store globally
     const standardizedDatasetStructure = createStandardizedDatasetStructure(
       window.datasetStructureJSONObj,
       window.sodaJSONObj["dataset-entity-obj"]
     );
-
-    // Set the standardized dataset structure in the global SODA JSON object (used on the backend)
     window.sodaJSONObj["soda_json_structure"] = standardizedDatasetStructure;
 
-    // If retrying upload, skip to upload step
-    if (window.retryGuidedMode) {
-      if (window.sodaJSONObj["pennsieve-generation-target"] === "new") {
-        // Show Pennsieve metadata upload table
-        await uploadPennsieveMetadata(
-          window.defaultBfAccount,
-          window.sodaJSONObj["generate-dataset"]["dataset-name"],
-          window.sodaJSONObj["pennsieve-dataset-subtitle"],
-          window.sodaJSONObj?.["digital-metadata"]?.["banner-image-path"],
-          window.sodaJSONObj?.["digital-metadata"]?.["license"],
-          window.sodaJSONObj?.["dataset_metadata"]?.["dataset_description"]?.[
-            "basic_information"
-          ]?.["description"]
-        );
+    // Code that runs after a successful upload to Pennsieve (whether initial upload or retry)
+    const finalizeUpload = async (data) => {
+      console.log("Upload finalized with response data:", data);
+      window.pennsieveManifestId = data["origin_manifest_id"];
+      window.totalFilesCount = data["main_curation_total_files"];
+      window.sodaJSONObj["previously-uploaded-data"] = {};
+      window.sodaJSONObj["dataset-successfully-uploaded-to-pennsieve"] = true;
+      window.retryGuidedMode = false;
+
+      // If the message indicates that no files were uploaded (which can happen when
+      // uploading to an existing Pennsieve dataset with the "skip" option selected for existing files and
+      // the dataset being generated has the same files as the existing dataset), do not show
+      // the verify files section because there are no files to verify.
+      const { message } = await fetchProgressData();
+      if (message !== "No files were uploaded in this session") {
+        document.getElementById("guided--verify-files").classList.remove("hidden");
+        document.querySelector("#guided--verify-files-button").disabled = false;
+        document.querySelector("#guided--skip-verify-btn").disabled = false;
       }
-      window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
-      // --- Ensure all required keys are set for retry upload ---
-      window.sodaJSONObj["generate-dataset"] = {
-        "dataset-name": window.sodaJSONObj["generate-dataset"]["dataset-name"],
-        destination: "ps",
-        "generate-option": "existing-ps",
-        "if-existing": "merge",
-        "if-existing-files": "skip",
-      };
-      window.sodaJSONObj["ps-dataset-selected"] = {
-        "dataset-name": window.sodaJSONObj["generate-dataset"]["dataset-name"],
-      };
-      window.sodaJSONObj["ps-account-selected"] = {
-        "account-name": window.defaultBfAccount,
-      };
+
+      logProgressPostUpload(
+        data["main_curation_uploaded_files"],
+        data["main_total_generate_dataset_size"]
+      );
+
+      bytesOnPreviousLogPage = 0;
+      filesOnPreviousLogPage = 0;
+
+      $("#guided-next-button").css("visibility", "visible");
+      if (window.sodaJSONObj["curation-mode"] === "free-form") {
+        $("#guided-button-save-and-exit").css("visibility", "hidden");
+      }
+
+      await guidedSaveProgress();
+    };
+
+    // --- Helper: perform the upload request ---
+    const performUpload = async () => {
       datasetUploadSession.startSession();
       guidedSetNavLoadingState(true);
+
       client
         .post(
           `/curate_datasets/curation`,
-          {
-            soda_json_structure: window.sodaJSONObj,
-            resume: !!window.retryGuidedMode,
-          },
+          { soda_json_structure: window.sodaJSONObj, resume: !!window.retryGuidedMode },
           { timeout: 0 }
         )
         .then(async (response) => {
-          // ANYTHING THAT HAPPENS HERE IS AFTER THE UPLOAD IS COMPLETED SUCCESSFULLY
-
           const { data } = response;
-
-          // Verify files setup section
-          window.pennsieveManifestId = data["origin_manifest_id"];
-          window.totalFilesCount = data["main_curation_total_files"];
-
-          // show verify files section
-          document.getElementById("guided--verify-files").classList.remove("hidden");
-
-          window.retryGuidedMode = false; // Reset the retry flag
-
-          // Clear the saved upload progress data because the dataset has been successfully
-          window.sodaJSONObj["previously-uploaded-data"] = {};
-
-          // Mark "dataset-successfully-uploaded-to-pennsieve" as true in the sodaJSONObj
-          // to denote the dataset was successfully uploaded to Pennsieve
-          window.sodaJSONObj["dataset-successfully-uploaded-to-pennsieve"] = true;
-
-          // enable the verify files button
-          document.querySelector("#guided--verify-files-button").disabled = false;
-          document.querySelector("#guided--skip-verify-btn").disabled = false;
-
-          let uploadedFiles = data["main_curation_uploaded_files"];
-          let mainTotalGenerateDatasetSize = data["main_total_generate_dataset_size"];
-
-          logProgressPostUpload(uploadedFiles, mainTotalGenerateDatasetSize);
-
-          // reset the log values
-          bytesOnPreviousLogPage = 0;
-          filesOnPreviousLogPage = 0;
-
-          // Show the next button
-          $("#guided-next-button").css("visibility", "visible");
-          if (window.sodaJSONObj["curation-mode"] === "free-form") {
-            // hide the save and exit button since we just want to handle the continue click
-            $("#guided-button-save-and-exit").css("visibility", "hidden");
-          }
-
-          // Save the window.sodaJSONObj after a successful upload
-          await guidedSaveProgress();
+          console;
+          await finalizeUpload(data);
         })
-        .catch((error) => {
-          console.error("Dataset upload failed:", error);
-        });
+        .catch((error) => console.error("Dataset upload failed:", error));
 
       await window.wait(1000);
-
       await trackPennsieveDatasetGenerationProgress(standardizedDatasetStructure);
       guidedSetNavLoadingState(false);
-      return;
-    }
+    };
 
-    // Hide all upload tables
-    document
-      .querySelectorAll(".guided-upload-table")
-      .forEach((table) => table.classList.add("hidden"));
+    // --- Helper: prepare upload object for Pennsieve ---
+    const prepareUploadObj = () => {
+      window.sodaJSONObj["ps-dataset-selected"] = { "dataset-name": pennsieveDatasetName };
+      window.sodaJSONObj["ps-account-selected"] = { "account-name": window.defaultBfAccount };
+      window.sodaJSONObj["dataset-structure"] = standardizedDatasetStructure;
 
-    // Remove any permissions rows from the UI that may have been added from a previous upload
-    const pennsieveMetadataUploadTable = document.getElementById(
-      "guided-tbody-pennsieve-metadata-upload"
-    );
-    const pennsieveMetadataUploadTableRows = pennsieveMetadataUploadTable.children;
-    for (const row of pennsieveMetadataUploadTableRows) {
-      if (row.classList.contains("permissions-upload-tr")) {
-        row.remove();
-      } else {
+      if (window.retryGuidedMode) {
+        const previousExistingHandling = window.sodaJSONObj?.["generate-dataset"]?.["if-existing"];
+        const previousExistingFileHandling =
+          window.sodaJSONObj?.["generate-dataset"]?.["if-existing-files"];
+        window.sodaJSONObj["generate-dataset"] = {
+          "dataset-name": pennsieveDatasetName,
+          destination: "ps",
+          "generate-option": "existing-ps",
+          "if-existing":
+            previousExistingHandling === "new" ? "merge" : previousExistingHandling || "merge",
+          "if-existing-files":
+            previousExistingFileHandling === "new"
+              ? "skip"
+              : previousExistingFileHandling || "skip",
+        };
+      }
+
+      // Update the title in the dataset metadata to match the Pennsieve dataset name if the user is generating a new dataset on Pennsieve and has already entered dataset metadata information in the previous steps
+      if (
+        window.sodaJSONObj["pennsieve-generation-target"] === "existing" &&
+        window.sodaJSONObj?.["dataset_metadata"]?.["dataset_description"]?.["basic_information"]
+      ) {
+        window.sodaJSONObj["dataset_metadata"]["dataset_description"]["basic_information"][
+          "title"
+        ] = pennsieveDatasetName;
+      }
+    };
+
+    // --- Prepare UI for normal upload ---
+    if (!window.retryGuidedMode) {
+      document
+        .querySelectorAll(".guided-upload-table")
+        .forEach((table) => table.classList.add("hidden"));
+
+      const metadataTableRows = document.getElementById(
+        "guided-tbody-pennsieve-metadata-upload"
+      ).children;
+      for (const row of metadataTableRows) {
         row.classList.add("hidden");
       }
+
+      hideDatasetMetadataGenerationTableRows("pennsieve");
+      setGuidedProgressBarValue("pennsieve", 0);
+      updateDatasetUploadProgressTable("pennsieve", {
+        "Upload status": "Preparing dataset for upload",
+      });
+      window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
     }
 
-    // Only update Pennsieve Metadata if the user is creating a new dataset
     if (window.sodaJSONObj["pennsieve-generation-target"] === "new") {
-      // Show Pennsieve metadata upload table
       await uploadPennsieveMetadata(
         window.defaultBfAccount,
-        window.sodaJSONObj["generate-dataset"]["dataset-name"],
+        pennsieveDatasetName,
         window.sodaJSONObj["pennsieve-dataset-subtitle"],
         window.sodaJSONObj?.["digital-metadata"]?.["banner-image-path"],
         window.sodaJSONObj?.["digital-metadata"]?.["license"],
@@ -176,108 +184,17 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       );
     }
 
-    hideDatasetMetadataGenerationTableRows("pennsieve");
-
-    // Reset upload progress bar and scroll to it
-    setGuidedProgressBarValue("pennsieve", 0);
-    updateDatasetUploadProgressTable("pennsieve", {
-      "Upload status": `Preparing dataset for upload`,
-    });
-    window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
-
-    window.sodaJSONObj["ps-dataset-selected"] = {
-      "dataset-name": window.sodaJSONObj["generate-dataset"]["dataset-name"],
-    };
-    window.sodaJSONObj["ps-account-selected"] = {
-      "account-name": window.defaultBfAccount,
-    };
-    window.sodaJSONObj["dataset-structure"] = standardizedDatasetStructure;
-
-    datasetUploadSession.startSession();
-    let datasetUploadObj = JSON.parse(JSON.stringify(window.sodaJSONObj));
-
-    // If the user is uploading to an existing dataset, set the dataset title
-    // in the dataset_description file to the title of the existing dataset
-    if (
-      window.sodaJSONObj["pennsieve-generation-target"] === "existing" &&
-      datasetUploadObj?.["dataset_metadata"]?.["dataset_description"]?.["basic_information"]
-    ) {
-      datasetUploadObj["dataset_metadata"]["dataset_description"]["basic_information"]["title"] =
-        pennsieveDatasetName;
-    }
-
-    guidedSetNavLoadingState(true);
-
-    client
-      .post(
-        `/curate_datasets/curation`,
-        {
-          soda_json_structure: datasetUploadObj,
-          resume: !!window.retryGuidedMode,
-        },
-        { timeout: 0 }
-      )
-      .then(async (response) => {
-        // ANYTHING THAT HAPPENS HERE IS AFTER THE UPLOAD IS COMPLETED SUCCESSFULLY
-
-        const { data } = response;
-
-        // Verify files setup section
-        window.pennsieveManifestId = data["origin_manifest_id"];
-        window.totalFilesCount = data["main_curation_total_files"];
-        window.retryGuidedMode = false; // Reset the retry flag
-
-        // show verify files section
-        document.getElementById("guided--verify-files").classList.remove("hidden");
-
-        // Clear the saved upload progress data because the dataset has been successfully
-        window.sodaJSONObj["previously-uploaded-data"] = {};
-
-        // Mark "dataset-successfully-uploaded-to-pennsieve" as true in the sodaJSONObj
-        // to denote the dataset was successfully uploaded to Pennsieve
-        window.sodaJSONObj["dataset-successfully-uploaded-to-pennsieve"] = true;
-
-        // enable the verify files button
-        document.querySelector("#guided--verify-files-button").disabled = false;
-        document.querySelector("#guided--skip-verify-btn").disabled = false;
-
-        let uploadedFiles = data["main_curation_uploaded_files"];
-        let mainTotalGenerateDatasetSize = data["main_total_generate_dataset_size"];
-
-        logProgressPostUpload(uploadedFiles, mainTotalGenerateDatasetSize);
-
-        // reset the log values
-        bytesOnPreviousLogPage = 0;
-        filesOnPreviousLogPage = 0;
-
-        // Show the next button
-        $("#guided-next-button").css("visibility", "visible");
-        if (window.sodaJSONObj["curation-mode"] === "free-form") {
-          // hide the save and exit button since we just want to handle the continue click
-          $("#guided-button-save-and-exit").css("visibility", "hidden");
-        }
-
-        // Save the window.sodaJSONObj after a successful upload
-        await guidedSaveProgress();
-      })
-      .catch((error) => {
-        console.error("Dataset upload failed:", error);
-      });
-
-    await window.wait(1000);
-
-    await trackPennsieveDatasetGenerationProgress(standardizedDatasetStructure);
-
-    guidedSetNavLoadingState(false);
+    prepareUploadObj();
+    await performUpload();
   } catch (error) {
     clientError(error);
-    let emessage = userErrorMessage(error, false);
+    const emessage = userErrorMessage(error, false);
     amountOfTimesPennsieveUploadFailed += 1;
     window.retryGuidedMode = true;
-    let supplementaryChecks = false;
-    automaticRetry(supplementaryChecks, emessage);
+    automaticRetry(false, emessage);
     guidedSetNavLoadingState(false);
   }
+
   guidedSetNavLoadingState(false);
 };
 
@@ -356,17 +273,6 @@ const trackLocalDatasetGenerationProgress = async (standardizedDatasetStructure)
   const numberOfFilesToGenerate = countFilesInDatasetStructure(standardizedDatasetStructure);
 
   window.unHideAndSmoothScrollToElement("guided-section-local-generation-status-table");
-
-  const fetchProgressData = async () => {
-    const { data } = await client.get(`/curate_datasets/curation/progress`);
-    return {
-      status: data["main_curate_status"],
-      message: data["main_curate_progress_message"],
-      elapsedTime: data["elapsed_time_formatted"],
-      uploadedFiles: data["total_files_uploaded"],
-      curationErrorMessage: data["curation_error_message"],
-    };
-  };
 
   const updateProgressUI = (uploadedFiles, elapsedTime) => {
     const progress = Math.min(100, Math.max(0, (uploadedFiles / numberOfFilesToGenerate) * 100));
@@ -516,7 +422,7 @@ const logProgressToAnalyticsGM = (files, bytes) => {
 };
 
 // Track the status of Pennsieve dataset upload
-const trackPennsieveDatasetGenerationProgress = async (standardizedDatasetStructure) => {
+const trackPennsieveDatasetGenerationProgress = async () => {
   window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
 
   const fetchProgressData = async () => {
@@ -554,6 +460,15 @@ const trackPennsieveDatasetGenerationProgress = async (standardizedDatasetStruct
         mainTotalGenerateDatasetSize,
         mainGeneratedDatasetSize,
       } = await fetchProgressData();
+      console.log("Progress data fetched:", {
+        status,
+        message,
+        elapsedTime,
+        uploadedFiles,
+        startGenerate,
+        mainTotalGenerateDatasetSize,
+        mainGeneratedDatasetSize,
+      });
 
       logProgressToAnalyticsGM(uploadedFiles, mainGeneratedDatasetSize);
 
@@ -604,6 +519,28 @@ const trackPennsieveDatasetGenerationProgress = async (standardizedDatasetStruct
           Status: "Dataset successfully uploaded to Pennsieve",
         });
         // Break the loop to stop tracking progress (upload is complete)
+        break;
+      } else if (status === "Done" && message.includes("No files were uploaded in this session")) {
+        // Handle the special case where no files were uploaded but it's not an error
+        // (e.g., skip existing files option was selected and all files already exist on Pennsieve)
+        amountOfTimesPennsieveUploadFailed = 0;
+
+        setGuidedProgressBarValue("pennsieve", 100);
+        updateDatasetUploadProgressTable("pennsieve", {
+          Status: "Dataset upload complete (no new files)",
+        });
+
+        swalShowInfo(
+          "No files were uploaded in this session",
+          `
+          <div style="text-align: left;">
+            When uploading to an existing dataset with "Skip existing files" selected, no files are uploaded if the files you imported into SODA match what is already on Pennsieve.
+            <br><br>
+            If you believe this is a mistake, please contact the SODA team using the Contact Us page in the sidebar or follow the documentation <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here.</a>
+           </div>
+           `
+        );
+
         break;
       } else if (status === "Done" && message !== "Success: COMPLETED!") {
         console.error("The upload monitor noticed the upload failed");
@@ -692,12 +629,6 @@ const automaticRetry = async (supplementaryChecks = false, errorMessage = "") =>
       hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
     });
     if (!res.isConfirmed) {
-      const currentPageID = window.CURRENT_PAGE.id;
-      try {
-        await window.savePageChanges(currentPageID);
-      } catch (error) {
-        window.log.error("Error saving page changes", error);
-      }
       transitionFromGuidedModeToHome();
       return;
     }
@@ -717,12 +648,6 @@ const automaticRetry = async (supplementaryChecks = false, errorMessage = "") =>
       showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
       hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
     });
-    const currentPageID = window.CURRENT_PAGE.id;
-    try {
-      await window.savePageChanges(currentPageID);
-    } catch (error) {
-      window.log.error("Error saving page changes", error);
-    }
     transitionFromGuidedModeToHome();
     return;
   }
@@ -961,16 +886,14 @@ const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
   }
 };
 const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle) => {
+  if (!datasetSubtitle) {
+    return;
+  }
+
   document.getElementById("guided-dataset-subtitle-upload-tr").classList.remove("hidden");
   const datasetSubtitleUploadText = document.getElementById("guided-dataset-subtitle-upload-text");
   datasetSubtitleUploadText.innerHTML = "Adding dataset subtitle...";
   guidedUploadStatusIcon("guided-dataset-subtitle-upload-status", "loading");
-
-  if (!datasetSubtitle) {
-    datasetSubtitleUploadText.innerHTML = "Skipped optional dataset subtitle...";
-    guidedUploadStatusIcon("guided-dataset-subtitle-upload-status", "success");
-    return;
-  }
 
   const previousUploadSubtitle = window.sodaJSONObj["previously-uploaded-data"]["subtitle"];
 
@@ -1043,17 +966,14 @@ const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle)
 };
 
 const guidedAddDatasetDescription = async (bfAccount, datasetName, guidedDatasetDescription) => {
+  if (!guidedDatasetDescription) {
+    return;
+  }
+
   document.getElementById("guided-dataset-description-upload-tr").classList.remove("hidden");
   const datasetDescriptionUploadText = document.getElementById(
     "guided-dataset-description-upload-text"
   );
-
-  // If guidedDatasetDescription is empty (not enough user input to generate a description), skip adding the description
-  if (!guidedDatasetDescription) {
-    datasetDescriptionUploadText.innerHTML = "Skipped optional dataset description...";
-    guidedUploadStatusIcon("guided-dataset-description-upload-status", "success");
-    return;
-  }
   datasetDescriptionUploadText.innerHTML = "Adding dataset description...";
   guidedUploadStatusIcon("guided-dataset-description-upload-status", "loading");
 
@@ -1129,17 +1049,15 @@ const guidedAddDatasetDescription = async (bfAccount, datasetName, guidedDataset
 };
 
 const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePath) => {
+  if (!bannerImagePath) {
+    return;
+  }
+
   const bannerRow = document.getElementById("guided-dataset-banner-image-upload-tr");
   const bannerText = document.getElementById("guided-dataset-banner-image-upload-text");
   const bannerStatusId = "guided-dataset-banner-image-upload-status";
 
   bannerRow.classList.remove("hidden");
-
-  if (!bannerImagePath) {
-    bannerText.innerHTML = "Skipped optional banner image...";
-    guidedUploadStatusIcon(bannerStatusId, "success");
-    return;
-  }
 
   bannerText.innerHTML = "Adding dataset banner image...";
   guidedUploadStatusIcon(bannerStatusId, "loading");
@@ -1216,6 +1134,10 @@ const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePa
 };
 
 const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) => {
+  if (!datasetLicense) {
+    return;
+  }
+
   document.getElementById("guided-dataset-license-upload-tr").classList.remove("hidden");
   const datasetLicenseUploadText = document.getElementById("guided-dataset-license-upload-text");
   datasetLicenseUploadText.innerHTML = "Adding dataset license...";
