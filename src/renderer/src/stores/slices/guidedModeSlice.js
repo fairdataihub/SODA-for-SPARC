@@ -8,6 +8,7 @@ export const guidedModeSlice = (set) => ({
   hiddenGuidedModeSections: [],
   manifestFileGenerationDisabled: false,
   curationMode: null,
+  sidebarLoadingState: false,
 });
 
 export const setGuidedDatasetName = (datasetName) => {
@@ -49,4 +50,8 @@ export const setManifestFileGenerationDisabled = (disabled) => {
 
 export const setCurationMode = (curationMode) => {
   useGlobalStore.setState({ curationMode });
+};
+
+export const setSideBarLoadingState = (isLoading) => {
+  useGlobalStore.setState({ sidebarLoadingState: isLoading });
 };

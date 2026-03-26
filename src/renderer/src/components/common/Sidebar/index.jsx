@@ -69,6 +69,7 @@ const Sidebar = ({ id }) => {
     (state) => state.showGuidedModePageNavigation
   );
   const curationMode = useGlobalStore((state) => state.curationMode);
+  const sidebarLoadingState = useGlobalStore((state) => state.sidebarLoadingState);
 
   return (
     <nav className={classes.navbar}>
@@ -159,7 +160,14 @@ const Sidebar = ({ id }) => {
                   if (curationMode === "free-form" && pageKey === "Dataset Metadata") {
                     return null;
                   }
-                  return <LinksGroup key={pageKey} label={pageKey} pages={pageChildren} />;
+                  return (
+                    <LinksGroup
+                      key={pageKey}
+                      label={pageKey}
+                      pages={pageChildren}
+                      isLoading={sidebarLoadingState}
+                    />
+                  );
                 })}
               </ScrollArea.Autosize>
             )}

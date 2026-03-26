@@ -99,7 +99,7 @@ async function handlePageNavigation(page, currentPage) {
 /**
  * Renders a button for a given page.
  */
-function PageButton({ page, isActive, isNextPageToComplete }) {
+function PageButton({ page, isActive, isNextPageToComplete, isLoading }) {
   return (
     <Button
       variant="subtle"
@@ -115,6 +115,8 @@ function PageButton({ page, isActive, isNextPageToComplete }) {
       `}
       style={{
         fontWeight: isActive ? 600 : 400,
+        opacity: isLoading ? 0.5 : 1,
+        pointerEvents: isLoading ? "none" : "auto",
       }}
       onClick={() => handlePageNavigation(page, window.CURRENT_PAGE?.id)}
     >
@@ -132,7 +134,7 @@ function PageButton({ page, isActive, isNextPageToComplete }) {
   );
 }
 
-const LinksGroup = ({ label, pages }) => {
+const LinksGroup = ({ label, pages, isLoading }) => {
   const hasPages = Array.isArray(pages) && pages.length > 0;
 
   // Don't render if there are no pages
@@ -153,6 +155,7 @@ const LinksGroup = ({ label, pages }) => {
       page={page}
       isActive={page.pageID === currentPage}
       isNextPageToComplete={page.pageID === nextPage}
+      isLoading={isLoading}
     />
   ));
 
@@ -160,9 +163,13 @@ const LinksGroup = ({ label, pages }) => {
     <>
       <UnstyledButton
         className={`${classes.link} ${opened ? classes.linkActive : ""}`}
-        onClick={() => setOpenSidebarTab(opened ? null : label)}
+        onClick={() => !isLoading && setOpenSidebarTab(opened ? null : label)}
         p="xs"
         w="100%"
+        style={{
+          opacity: isLoading ? 0.5 : 1,
+          pointerEvents: isLoading ? "none" : "auto",
+        }}
       >
         <Group justify="space-between" w="100%">
           <Group gap={6}>
