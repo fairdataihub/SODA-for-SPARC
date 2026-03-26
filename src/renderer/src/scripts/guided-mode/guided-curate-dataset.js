@@ -3331,9 +3331,9 @@ document
     }
 
     // hide the verify files sections
-    document.querySelector("#guided--verify-files").classList.add("hidden");
-    document.querySelector("#guided--question-validate-dataset-upload-2").classList.add("hidden");
-    document.querySelector("#guided--validate-dataset-upload").classList.add("hidden");
+    document.querySelector("#guided-section-file-upload-verification").classList.add("hidden");
+    document.querySelector("#guided-section-file-verification-failure").classList.add("hidden");
+    document.querySelector("#guided-section-validate-dataset-upload").classList.add("hidden");
 
     // check if the user made it to the last step
     if (

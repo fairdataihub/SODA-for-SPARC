@@ -72,8 +72,10 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       // the verify files section because there are no files to verify.
       const { message } = await fetchProgressData();
       if (message !== "No files were uploaded in this session") {
-        document.getElementById("guided--verify-files").classList.remove("hidden");
-        document.querySelector("#guided--verify-files-button").disabled = false;
+        document
+          .getElementById("guided-section-file-upload-verification")
+          .classList.remove("hidden");
+        document.querySelector("#guided-section-file-upload-verification-button").disabled = false;
         document.querySelector("#guided--skip-verify-btn").disabled = false;
       }
 

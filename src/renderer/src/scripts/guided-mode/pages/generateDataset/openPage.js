@@ -133,7 +133,10 @@ export const openPageGenerateDataset = async (targetPageID) => {
   }
 
   if (targetPageID === "guided-dataset-generation-tab") {
-    document.getElementById("guided--verify-files").classList.add("hidden");
+    // hide the verify files sections
+    document.querySelector("#guided-section-file-upload-verification").classList.add("hidden");
+    document.querySelector("#guided-section-file-verification-failure").classList.add("hidden");
+    document.querySelector("#guided-section-validate-dataset-upload").classList.add("hidden");
   }
 
   if (targetPageID === "guided-dataset-dissemination-tab") {

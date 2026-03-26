@@ -13,47 +13,49 @@ while (!window.baseHtmlLoaded) {
 
 let failedFilesPathsList = [];
 
-document.querySelector("#guided--verify-files-button").addEventListener("click", async () => {
-  document.querySelector("#guided--validate-dataset-upload").classList.remove("hidden");
-  // scroll to the guided--validate-dataset-upload div
-  document.querySelector("#guided--validate-dataset-upload").scrollIntoView({
-    behavior: "smooth",
-  });
+document
+  .querySelector("#guided-section-file-upload-verification-button")
+  .addEventListener("click", async () => {
+    document.querySelector("#guided-section-validate-dataset-upload").classList.remove("hidden");
+    // scroll to the guided-section-validate-dataset-upload div
+    document.querySelector("#guided-section-validate-dataset-upload").scrollIntoView({
+      behavior: "smooth",
+    });
 
-  // disable self so verification cannot be re-ran without a retry
-  document.querySelector("#guided--verify-files-button").disabled = true;
-  document.querySelector("#guided--skip-verify-btn").disabled = true;
-  document.querySelector("#guided-next-button").disabled = true;
-  document.querySelector("#guided-button-save-and-exit").disabled = true;
+    // disable self so verification cannot be re-ran without a retry
+    document.querySelector("#guided-section-file-upload-verification-button").disabled = true;
+    document.querySelector("#guided--skip-verify-btn").disabled = true;
+    document.querySelector("#guided-next-button").disabled = true;
+    document.querySelector("#guided-button-save-and-exit").disabled = true;
 
-  // reset the failed files table
-  document
-    .getElementById("guided--validate-dataset-failed-table")
-    .getElementsByTagName("tbody")[0].innerHTML = "";
+    // reset the failed files table
+    document
+      .getElementById("guided--validate-dataset-failed-table")
+      .getElementsByTagName("tbody")[0].innerHTML = "";
 
-  try {
-    await window.monitorUploadFileVerificationProgressGuided();
-  } catch (err) {
-    clientError(err);
-    await swalShowError(
-      "Could Not Verify Files",
-      "An error occurred while verifying the files. You may try again by clicking 'Verify Files' again or move on by clicking 'Save and continue.'"
-    );
+    try {
+      await window.monitorUploadFileVerificationProgressGuided();
+    } catch (err) {
+      clientError(err);
+      await swalShowError(
+        "Could Not Verify Files",
+        "An error occurred while verifying the files. You may try again by clicking 'Verify Files' again or move on by clicking 'Save and continue.'"
+      );
+
+      document.querySelector("#guided-next-button").disabled = false;
+      document.querySelector("#guided-button-save-and-exit").disabled = false;
+      document.querySelector("#guided-section-file-upload-verification-button").disabled = false;
+      document.querySelector("#guided--skip-verify-btn").disabled = false;
+      return;
+    }
+
+    document.querySelector("#guided-dataset-upload-complete-message").scrollIntoView({
+      behavior: "smooth",
+    });
 
     document.querySelector("#guided-next-button").disabled = false;
     document.querySelector("#guided-button-save-and-exit").disabled = false;
-    document.querySelector("#guided--verify-files-button").disabled = false;
-    document.querySelector("#guided--skip-verify-btn").disabled = false;
-    return;
-  }
-
-  document.querySelector("#guided-dataset-upload-complete-message").scrollIntoView({
-    behavior: "smooth",
   });
-
-  document.querySelector("#guided-next-button").disabled = false;
-  document.querySelector("#guided-button-save-and-exit").disabled = false;
-});
 
 document.querySelectorAll(".verify-file-status-download-list").forEach((element) => {
   element.addEventListener("click", async () => {
@@ -255,7 +257,7 @@ window.monitorUploadFileVerificationProgressGuided = async () => {
   document.getElementById("guided--verify-dataset-upload-files-progress-para").innerText = "";
 
   if (failedFilesPathsList.length) {
-    $("#guided--question-validate-dataset-upload-2").removeClass("hidden");
+    $("#guided-section-file-verification-failure").removeClass("hidden");
     populateFailedFilePaths(
       document.getElementById("guided--validate-dataset-failed-table"),
       failedFilesPathsList
@@ -263,7 +265,7 @@ window.monitorUploadFileVerificationProgressGuided = async () => {
     return;
   }
 
-  $("#guided--question-validate-dataset-upload-3").removeClass("hidden");
+  $("#guided-section-file-verification-success").removeClass("hidden");
   $("#guided--success-validated-files-lottie").addClass("is-shown");
 };
 
