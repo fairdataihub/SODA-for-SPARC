@@ -1,5 +1,4 @@
 
-from pysoda.utils.exceptions import PennsieveAgentRPCError
 from utils import (
     generate_options_set, generating_locally, generating_on_ps, 
     uploading_with_ps_account, uploading_to_existing_ps_dataset, 
