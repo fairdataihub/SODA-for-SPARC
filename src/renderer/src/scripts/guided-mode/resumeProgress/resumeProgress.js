@@ -160,7 +160,7 @@ const guidedGetPageToReturnTo = async () => {
   console.log("[guidedGetPageToReturnTo] Checking if user needs to reconfirm account details...");
   const needsReconfirm = guidedCheckIfUserNeedsToReconfirmAccountDetails();
   console.log("[guidedGetPageToReturnTo] Reconfirm needed:", needsReconfirm);
-  
+
   if (needsReconfirm) {
     console.log("[guidedGetPageToReturnTo] User must reconfirm account/workspace details");
     await swalShowInfo(
@@ -168,10 +168,14 @@ const guidedGetPageToReturnTo = async () => {
       "Please confirm your Pennsieve account and workspace details."
     );
     const curationMode = window.sodaJSONObj["curation-mode"];
-    const targetPage = curationMode === "free-form"
-      ? "ffm-pennsieve-login-tab"
-      : "gm-pennsieve-login-tab";
-    console.log("[guidedGetPageToReturnTo] Returning user to:", targetPage, "curation mode:", curationMode);
+    const targetPage =
+      curationMode === "free-form" ? "ffm-pennsieve-login-tab" : "gm-pennsieve-login-tab";
+    console.log(
+      "[guidedGetPageToReturnTo] Returning user to:",
+      targetPage,
+      "curation mode:",
+      curationMode
+    );
     return targetPage;
   }
 
