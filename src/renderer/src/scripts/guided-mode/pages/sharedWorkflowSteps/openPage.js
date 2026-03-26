@@ -12,6 +12,7 @@ import {
 import { setFreeFormDatasetName } from "../../../../stores/slices/guidedModeSlice.js";
 import { guidedRenderProgressCards } from "../../resumeProgress/progressCards.js";
 import { setStateDisplayData } from "../../../../stores/slices/stateDisplaySlice.js";
+import { swalShowInfo } from "../../../utils/swal-utils.js";
 export const openPageSharedWorkflowSteps = async (targetPageID) => {
   if (targetPageID === "guided-select-starting-point-tab") {
     initializeGuidedDatasetObject("guided");
@@ -57,6 +58,19 @@ export const openPageSharedWorkflowSteps = async (targetPageID) => {
       const lastConfirmedAccount = window.sodaJSONObj?.["last-confirmed-ps-account-details"];
       if (window.defaultBfAccount === lastConfirmedAccount) {
         document.getElementById(confirmAccountButtonId).click();
+        // If the account is the same as last time, also auto-confirm the organization (if it didn't change)
+        try {
+          if (window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"]) {
+            if (
+              window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"] ===
+              guidedGetCurrentUserWorkSpace()
+            ) {
+              document.getElementById(confirmOrgButtonId).click();
+            }
+          }
+        } catch (error) {
+          console.error("Error auto-confirming organization: ", error);
+        }
       }
 
       const pennsieveIntroText = document.getElementById(psAccountTextId);
@@ -68,19 +82,6 @@ export const openPageSharedWorkflowSteps = async (targetPageID) => {
       } catch (err) {
         console.error("Error fetching user email:", err);
         pennsieveIntroText.innerHTML = "";
-      }
-
-      try {
-        if (window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"]) {
-          if (
-            window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"] ===
-            guidedGetCurrentUserWorkSpace()
-          ) {
-            document.getElementById(confirmOrgButtonId).click();
-          }
-        }
-      } catch (error) {
-        console.error("Error auto-confirming organization: ", error);
       }
     }
   }
@@ -97,7 +98,6 @@ export const openPageSharedWorkflowSteps = async (targetPageID) => {
       setFreeFormDatasetName(window.sodaJSONObj?.["generate-dataset"]?.["dataset-name"] || "");
     }
 
-    await guidedCheckIfUserNeedsToReconfirmAccountDetails(prefix);
     setCheckboxCardUnchecked(`${prefix}-generate-on-new-pennsieve-dataset`);
     setCheckboxCardUnchecked(`${prefix}-generate-on-existing-pennsieve-dataset`);
     const previouslySelectedDatasetIdToUploadDataTo =

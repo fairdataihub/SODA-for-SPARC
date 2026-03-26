@@ -157,13 +157,22 @@ const guidedGetPageToReturnTo = async () => {
     return firstPageID;
   }
 
-  const { needsReconfirm } = guidedCheckIfUserNeedsToReconfirmAccountDetails();
+  console.log("[guidedGetPageToReturnTo] Checking if user needs to reconfirm account details...");
+  const needsReconfirm = guidedCheckIfUserNeedsToReconfirmAccountDetails();
+  console.log("[guidedGetPageToReturnTo] Reconfirm needed:", needsReconfirm);
+  
   if (needsReconfirm) {
+    console.log("[guidedGetPageToReturnTo] User must reconfirm account/workspace details");
     await swalShowInfo(
       "Your Pennsieve account or workspace has changed since you last worked on this dataset.",
       "Please confirm your Pennsieve account and workspace details."
     );
-    return "gm-pennsieve-login-tab";
+    const curationMode = window.sodaJSONObj["curation-mode"];
+    const targetPage = curationMode === "free-form"
+      ? "ffm-pennsieve-login-tab"
+      : "gm-pennsieve-login-tab";
+    console.log("[guidedGetPageToReturnTo] Returning user to:", targetPage, "curation mode:", curationMode);
+    return targetPage;
   }
 
   // If the page the user was last on no longer exists, return them to the first page

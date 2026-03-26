@@ -712,21 +712,22 @@ window.deleteProgressCard = async (datasetName, progressFileName) => {
 
 export const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
   // Determine individual status flags
-  const completedIntro = window.sodaJSONObj["completed-tabs"].includes("gm-pennsieve-login-tab");
-  const accountSame =
-    window.sodaJSONObj?.["last-confirmed-ps-account-details"] === window.defaultBfAccount;
+  const completedTabs = window.sodaJSONObj["completed-tabs"] || [];
+  const logInPageComplete =
+    completedTabs.includes("gm-pennsieve-login-tab") ||
+    completedTabs.includes("ffm-pennsieve-login-tab");
+
+  const lastConfirmedAccount = window.sodaJSONObj?.["last-confirmed-ps-account-details"];
+  const currentAccount = window.defaultBfAccount;
+  const accountSame = lastConfirmedAccount === currentAccount;
+
   const currentWorkspace = guidedGetCurrentUserWorkSpace();
-  const workspaceSame =
-    currentWorkspace === window.sodaJSONObj?.["last-confirmed-pennsieve-workspace-details"];
+  const lastConfirmedWorkspace = window.sodaJSONObj?.["last-confirmed-pennsieve-workspace-details"];
+  const workspaceSame = currentWorkspace === lastConfirmedWorkspace;
 
-  const needsReconfirm = completedIntro && (!accountSame || !workspaceSame);
+  const needsReconfirm = logInPageComplete && (!accountSame || !workspaceSame);
 
-  return {
-    completedIntro,
-    accountSame,
-    workspaceSame,
-    needsReconfirm,
-  };
+  return needsReconfirm;
 };
 window.handleGuidedModeOrganizationConfirmationClick = async (curationModePrefix) => {
   const agentCheckElementId = `${curationModePrefix}-section-pennsieve-agent-check`;
