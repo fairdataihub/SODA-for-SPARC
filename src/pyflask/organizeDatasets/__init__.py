@@ -1,4 +1,4 @@
 from .organize_datasets import ( 
-    generate_dataset_locally,
-    monitor_pennsieve_json_progress,
+    main_curate_function,
+    main_curate_function_progress
 )

@@ -1,11 +1,11 @@
-# from flask_restx import Resource, fields, reqparse
-# import pkg_resources
-# from namespaces import NamespaceEnum, get_namespace
-# from flask import request
-# from os.path import (
-#     expanduser,
-#     join,
-# )
+from flask_restx import Resource, fields, reqparse
+import pkg_resources
+from namespaces import NamespaceEnum, get_namespace
+from flask import request
+from os.path import (
+    expanduser,
+    join,
+)
 
 # # ensure using pysodafair
 # from pysoda.core.dataset_generation import (
@@ -19,15 +19,16 @@
 #     check_server_access_to_files,
 # )
 
+from organizeDatasets import main_curate_function, main_curate_function_progress
 # from pysoda.utils import validation_error_message
 # from jsonschema import ValidationError
 # from errorHandlers import handlePysodaErrors
 
 # from manifest import create_high_level_manifest_files_existing_local_starting_point
 # from errorHandlers.notBadRequestException import notBadRequestException
-# userpath = expanduser("~")
+userpath = expanduser("~")
 
-# api = get_namespace(NamespaceEnum.CURATE_DATASETS)
+api = get_namespace(NamespaceEnum.CURATE_DATASETS)
 
 # model_check_empty_files_folders_response = api.model( "CheckEmptyFilesFoldersResponse", {
 #     "empty_files": fields.List(fields.String),
@@ -130,96 +131,97 @@
 
 
 
-# model_main_curation_function_response = api.model( "MainCurationFunctionResponse", {
-#     "main_curate_progress_message": fields.String(description="Progress message from the main curation function"),
-#     "main_total_generate_dataset_size": fields.String(description="Total size of the dataset"),
-#     "main_curation_uploaded_files": fields.Integer(description="Number of files that are being generated. "), 
-#     "local_manifest_id": fields.String(description="ID of the local manifest file created by the Pennsieve Agent for the upload."),
-#     "origin_manifest_id": fields.String(description="ID of the manifest file created on Pennsieve for the upload."),
-#     "main_curation_total_files": fields.Integer(description="Total number of files in the dataset upload session."),
-# })
+model_main_curation_function_response = api.model( "MainCurationFunctionResponse", {
+    "main_curate_progress_message": fields.String(description="Progress message from the main curation function"),
+    "main_total_generate_dataset_size": fields.String(description="Total size of the dataset"),
+    "main_curation_uploaded_files": fields.Integer(description="Number of files that are being generated. "), 
+    "local_manifest_id": fields.String(description="ID of the local manifest file created by the Pennsieve Agent for the upload."),
+    "origin_manifest_id": fields.String(description="ID of the manifest file created on Pennsieve for the upload."),
+    "main_curation_total_files": fields.Integer(description="Total number of files in the dataset upload session."),
+})
 
 # # TODO: Add example JSON structures for upload
 
-# @api.route("/curation")
-# class Curation(Resource):
+@api.route("/curation")
+class Curation(Resource):
 
-#     @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request', 403: 'Forbidden'}, 
-#     description="Given a sodajsonobject generate a dataset. Used in the final step of Organize Datasets.")   
-#     @api.marshal_with(model_main_curation_function_response)
-#     def post(self):
-#         data = request.get_json()
+    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request', 403: 'Forbidden'}, 
+    description="Given a sodajsonobject generate a dataset. Used in the final step of Organize Datasets.")   
+    @api.marshal_with(model_main_curation_function_response)
+    def post(self):
+        data = request.get_json()
 
-#         if "soda_json_structure" not in data:
-#             api.abort(400, "Missing parameter: soda_json_structure")
+        if "soda_json_structure" not in data:
+            api.abort(400, "Missing parameter: soda_json_structure")
         
 
-#         if "resume" not in data:
-#             api.abort(400, "Missing parameter: resume")
+        if "resume" not in data:
+            api.abort(400, "Missing parameter: resume")
 
-#         soda_json_structure = data["soda_json_structure"]
-#         resume = data["resume"]
+        soda_json_structure = data["soda_json_structure"]
+        resume = data["resume"]
 
-#         api.logger.info('/curation POST request')
+        api.logger.info('/curation POST request')
 
-#         try:
-#             pysoda_version = pkg_resources.get_distribution("pysodafair").version
-#             api.logger.info(f"pysodafair version: {pysoda_version}")
-#             api.logger.info("Funny it didnt work")
-#         except pkg_resources.DistributionNotFound:
-#             api.logger.info("pysodafair version: not found")
+        try:
+            pysoda_version = pkg_resources.get_distribution("pysodafair").version
+            api.logger.info(f"pysodafair version: {pysoda_version}")
+            api.logger.info("Funny it didnt work")
+        except pkg_resources.DistributionNotFound:
+            api.logger.info("pysodafair version: not found")
 
-#         try:
-#             return main_curate_function(soda_json_structure, resume)
-#         except Exception as e:
-#             api.logger.exception(e)
-#             # throws an appropriate error if the error is a pysoda specific error
-#             handlePysodaErrors(e, api)
-#             if isinstance(e, ValidationError):
-#                 # Extract properties from the ValidationError
-#                 validation_err_msg = validation_error_message(e)
-#                 # Return the ValidationError as JSON
-#                 api.abort(400, validation_err_msg)
+        try:
+            return main_curate_function(soda_json_structure, resume)
+        except Exception as e:
+            api.logger.exception(e)
+            api.abort(400, str(e))
+            # throws an appropriate error if the error is a pysoda specific error
+            # handlePysodaErrors(e, api)
+            # if isinstance(e, ValidationError):
+            #     # Extract properties from the ValidationError
+            #     validation_err_msg = validation_error_message(e)
+            #     # Return the ValidationError as JSON
+            #     api.abort(400, validation_err_msg)
             
             
-#             if notBadRequestException(e):
-#                 # general exception that was unexpected and caused by our code
-#                 api.abort(500, str(e))
-#             if e.response is not None:
-#                 # requests exeption
-#                 api.logger.info("Error message details: ", e.response.json().get('message'))
-#                 api.abort(e.response.status_code, e.response.json().get('message'))
-#             else:
-#                 # custom werkzeug.exception that we raised
-#                 api.abort(e.code, e.description)
+            # if notBadRequestException(e):
+            #     # general exception that was unexpected and caused by our code
+            #     api.abort(500, str(e))
+            # if e.response is not None:
+            #     # requests exeption
+            #     api.logger.info("Error message details: ", e.response.json().get('message'))
+            #     api.abort(e.response.status_code, e.response.json().get('message'))
+            # else:
+            #     # custom werkzeug.exception that we raised
+            #     api.abort(e.code, e.description)
 
 
 
 
 
 
-# model_curation_progress_response = api.model( "CurationProgressResponse", {
-#     "main_curate_status": fields.String(description="Status of the main curation function"),
-#     "start_generate": fields.Integer(description="True if the main curation function is running"),
-#     "main_curate_progress_message": fields.String(description="Progress message from the main curation function"),
-#     "main_total_generate_dataset_size": fields.Integer(description="Total size of the dataset"),
-#     "main_generated_dataset_size": fields.Integer(description="Size of the dataset that has been generated thus far"),
-#     "elapsed_time_formatted": fields.String(description="Elapsed time of the main curation function"),
-#     "total_files_uploaded": fields.Integer(description="Number of files that have been uploaded"),
-#     "generated_dataset_id": fields.String(description="Generated dataset ID"),
-#     "generated_dataset_int_id": fields.Integer(description="Generated dataset internal ID"),
-# })
+model_curation_progress_response = api.model( "CurationProgressResponse", {
+    "main_curate_status": fields.String(description="Status of the main curation function"),
+    "start_generate": fields.Integer(description="True if the main curation function is running"),
+    "main_curate_progress_message": fields.String(description="Progress message from the main curation function"),
+    "main_total_generate_dataset_size": fields.Integer(description="Total size of the dataset"),
+    "main_generated_dataset_size": fields.Integer(description="Size of the dataset that has been generated thus far"),
+    "elapsed_time_formatted": fields.String(description="Elapsed time of the main curation function"),
+    "total_files_uploaded": fields.Integer(description="Number of files that have been uploaded"),
+    "generated_dataset_id": fields.String(description="Generated dataset ID"),
+    "generated_dataset_int_id": fields.Integer(description="Generated dataset internal ID"),
+})
 
-# @api.route("/curation/progress")
-# class CurationProgress(Resource):
+@api.route("/curation/progress")
+class CurationProgress(Resource):
 
-#     @api.marshal_with(model_curation_progress_response, False, 200)
-#     @api.doc(responses={500: 'There was an internal server error'}, description="Return important details to the client about the state of the currently running curation function.")
-#     def get(self):
-#         try:
-#             return main_curate_function_progress()
-#         except Exception as e:
-#             api.abort(500, str(e))
+    @api.marshal_with(model_curation_progress_response, False, 200)
+    @api.doc(responses={500: 'There was an internal server error'}, description="Return important details to the client about the state of the currently running curation function.")
+    def get(self):
+        try:
+            return main_curate_function_progress()
+        except Exception as e:
+            api.abort(500, str(e))
 
 
 

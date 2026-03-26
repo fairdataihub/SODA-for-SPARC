@@ -6716,13 +6716,67 @@ window.directToFreeFormMode = async () => {
 
 const directToOrganize = document.getElementById("button-homepage-freeform-mode");
 directToOrganize.addEventListener("click", async () => {
-  console.log("Running now");
+  let homePath = window.homeDirectory;
+
+  let sodaJSONObj = {
+    "generate-dataset": {
+      destination: "ps",
+      "generate-option": "new",
+      "dataset-name": "400GB-dataset",
+    },
+    "starting-point": {
+      origin: "new",
+      "local-path": `${window.path.join(homePath, "400GB-dataset")}`,
+    },
+    "ps-account-selected": {
+      "account-name":
+        "soda-pennsieve-d858-cmarroquin-n:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0",
+    },
+    "dataset-structure": {
+      folders: {
+        primary: {
+          folders: {},
+          action: ["new"],
+          location: "local",
+          path: `${window.path.join(homePath, "400GB-dataset", "primary")}`,
+          files: {
+            "file1.bin": {
+              path: `${window.path.join(homePath, "400GB-dataset", "primary", "file1.bin")}`,
+              extension: ".bin",
+              location: "local",
+              action: ["new"],
+            },
+            "file2.bin": {
+              path: `${window.path.join(homePath, "400GB-dataset", "primary", "file2.bin")}`,
+              extension: ".bin",
+              location: "local",
+              action: ["new"],
+            },
+            "file3.bin": {
+              path: `${window.path.join(homePath, "400GB-dataset", "primary", "file3.bin")}`,
+              extension: ".bin",
+              location: "local",
+              action: ["new"],
+            },
+            "file4.bin": {
+              path: `${window.path.join(homePath, "400GB-dataset", "primary", "file4.bin")}`,
+              extension: ".bin",
+              location: "local",
+              action: ["new"],
+            },
+          },
+        },
+      },
+      files: {},
+    },
+  };
 
   client
     .post(
-      "http://localhost:4242/startup/curation",
+      "http://localhost:4242/curate_datasets/curation",
       {
-        Funny: "Papers",
+        soda_json_structure: sodaJSONObj,
+        resume: false,
       },
       { timeout: 0 }
     )
@@ -6742,7 +6796,7 @@ directToOrganize.addEventListener("click", async () => {
   const getProgress = async () => {
     while (true) {
       try {
-        let data = await client.get("http://localhost:4242/startup/curation/progress");
+        let data = await client.get("http://localhost:4242/curate_datasets/curation/progress");
         await new Promise((resolve) => setTimeout(resolve, 1000));
       } catch (e) {
         if (!e.response && e.request && e.isAxiosError) {
