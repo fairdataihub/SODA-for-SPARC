@@ -6764,6 +6764,18 @@ directToOrganize.addEventListener("click", async () => {
               location: "local",
               action: ["new"],
             },
+            "file5.bin": {
+              path: `${window.path.join(homePath, "400GB-dataset", "primary", "file5.bin")}`,
+              extension: ".bin",
+              location: "local",
+              action: ["new"],
+            },
+            "file6.bin": {
+              path: `${window.path.join(homePath, "400GB-dataset", "primary", "file6.bin")}`,
+              extension: ".bin",
+              location: "local",
+              action: ["new"],
+            },
           },
         },
       },
