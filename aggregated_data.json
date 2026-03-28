@@ -1,31 +1,52 @@
 {
-  "Number of total users": 1438,
-  "Number of new users": 729,
-  "Number of times app launched": 7147,
-  "Amount (GB) of data files processed": 50352.47909398288,
-  "Number of files processed": 462616,
-  "Number of unique dataset touched": 420,
-  "Unique datasets touched By SODA": [
-    ["Innervation of human colon by colonic nerves", 2351],
-    ["Viscerofugal neurons in human colon", 2191],
-    ["Motoneurons of the cleared lumbosacral spinal cord in male and female rats", 2490],
-    [
-      "Regional specializations of supply by efferent and afferent fiber subtypes defined by chemical markers in the human gastric mucosa",
-      532
+    "Number of total users": 1449,
+    "Number of new users": 740,
+    "Number of times app launched": 7163,
+    "Amount (GB) of data files processed": 50352.789111932885,
+    "Number of files processed": 462631,
+    "Number of unique dataset touched": 423,
+    "Unique datasets touched By SODA": [
+        [
+            "Innervation of human colon by colonic nerves",
+            2351
+        ],
+        [
+            "Viscerofugal neurons in human colon",
+            2191
+        ],
+        [
+            "Motoneurons of the cleared lumbosacral spinal cord in male and female rats",
+            2490
+        ],
+        [
+            "Regional specializations of supply by efferent and afferent fiber subtypes defined by chemical markers in the human gastric mucosa",
+            532
+        ],
+        [
+            "Immunohistochemical characterisation of myenteric neurons in human gastric corpus",
+            2404
+        ],
+        [
+            "Classes of neurons in human colonic myenteric plexus",
+            2344
+        ],
+        [
+            "Visualising mechanosensory afferents and autonomic innervation of the rat urinary bladder",
+            3475
+        ],
+        [
+            "REVEAL - January 2026",
+            3810
+        ],
+        [
+            "Electrophysiological and morphological features of myenteric neurons of the human colon",
+            2346
+        ],
+        [
+            "REVEAL - January 2026",
+            3810
+        ]
     ],
-    ["Immunohistochemical characterisation of myenteric neurons in human gastric corpus", 2404],
-    ["Classes of neurons in human colonic myenteric plexus", 2344],
-    [
-      "Visualising mechanosensory afferents and autonomic innervation of the rat urinary bladder",
-      3475
-    ],
-    ["REVEAL - January 2026", 3810],
-    [
-      "Electrophysiological and morphological features of myenteric neurons of the human colon",
-      2346
-    ],
-    ["REVEAL - January 2026", 3810]
-  ],
-  "Number of published datasets touched": 173,
-  "Number of asset downloads": 5619
+    "Number of published datasets touched": 173,
+    "Number of asset downloads": 5672
 }
