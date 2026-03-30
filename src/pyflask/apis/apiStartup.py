@@ -175,6 +175,8 @@ class Curation(Resource):
 
         ps.subscribe(10, False, monitor_subscriber_progress)
 
+        api.logger.info("Finished upload and returned from subscriber")
+
         return {
             "main_curate_progress_message": "Finished",
             "main_total_generate_dataset_size": "Bigly",
