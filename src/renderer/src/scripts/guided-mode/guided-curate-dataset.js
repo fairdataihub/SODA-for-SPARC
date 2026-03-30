@@ -26,7 +26,6 @@ import {
   guidedGenerateDatasetLocally,
   guidedGenerateDatasetOnPennsieve,
 } from "./generateDataset/generate";
-import { guidedDatasetKeywordsTagify } from "./tagifies/tagifies";
 import {
   swalConfirmAction,
   swalShowError,

@@ -136,8 +136,7 @@ const GuidedModeProgressCards = () => {
               } else {
                 progressFileName = datasetName;
               }
-              const progressFileSubtitle =
-                progressFile["digital-metadata"]["subtitle"] || "No designated subtitle";
+              const progressFileSubtitle = progressFile["digital-metadata"]["subtitle"] || null;
               const bannerImagePath =
                 progressFile?.["digital-metadata"]?.["banner-image-path"] || "";
               const progressFileLastModified = new Date(
@@ -148,11 +147,11 @@ const GuidedModeProgressCards = () => {
                 day: "numeric",
               });
               const failedUploadInProgress =
-                progressFile["previously-uploaded-data"] &&
-                Object.keys(progressFile["previously-uploaded-data"]).length > 0;
+                progressFile["at-least-one-file-uploaded-to-pennsieve"] === true &&
+                progressFile["dataset-successfully-uploaded-to-pennsieve"] !== true;
 
               const subtitleDisplay =
-                progressFileSubtitle.length > 70
+                progressFileSubtitle && progressFileSubtitle.length > 70
                   ? `${progressFileSubtitle.substring(0, 70)}...`
                   : progressFileSubtitle;
 
@@ -224,15 +223,17 @@ const GuidedModeProgressCards = () => {
                       >
                         {datasetName}
                       </Text>
-                      <Text
-                        c="dimmed"
-                        size="sm"
-                        lineClamp={2}
-                        title={progressFileSubtitle}
-                        fw={400}
-                      >
-                        {subtitleDisplay}
-                      </Text>
+                      {subtitleDisplay && (
+                        <Text
+                          c="dimmed"
+                          size="sm"
+                          lineClamp={2}
+                          title={progressFileSubtitle}
+                          fw={400}
+                        >
+                          {subtitleDisplay}
+                        </Text>
+                      )}
 
                       <Group gap="xs" align="center" mt={4}>
                         <Tooltip

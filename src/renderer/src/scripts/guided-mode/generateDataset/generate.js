@@ -119,7 +119,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     };
 
     // --- Helper: prepare upload object for Pennsieve ---
-    const prepareUploadObj = () => {
+    const prepareUploadObj = async () => {
       console.log("[prepareUploadObj] Starting upload object preparation");
 
       window.sodaJSONObj["ps-dataset-selected"] = { "dataset-name": pennsieveDatasetName };
@@ -130,32 +130,40 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       const initialIfExistingFileHandling =
         window.sodaJSONObj?.["generate-dataset"]?.["if-existing-files"];
 
-      console.log("[prepareUploadObj] Initial values captured:", {
-        initialIfExistingHandling,
-        initialIfExistingFileHandling,
-        generateOption: window.sodaJSONObj?.["generate-dataset"]?.["generate-option"],
-      });
+      // Check if we're uploading to an existing dataset and determine if it's empty
+      const pennsieveDatasetId = window.sodaJSONObj?.["digital-metadata"]?.["pennsieve-dataset-id"];
+      let datasetIsEmpty = null;
+      if (pennsieveDatasetId) {
+        try {
+          datasetIsEmpty = await api.isDatasetEmpty(pennsieveDatasetId);
+          console.log("[prepareUploadObj] Dataset empty check:", {
+            datasetId: pennsieveDatasetId,
+            isEmpty: datasetIsEmpty,
+          });
+        } catch (error) {
+          console.error("[prepareUploadObj] Error checking if dataset is empty:", error);
+        }
+      } else {
+        console.log("[prepareUploadObj] No existing dataset ID found - creating new dataset");
+      }
 
-      const atLeastOneFileHasBeenUploaded =
-        window.sodaJSONObj?.["at-least-one-file-uploaded-to-pennsieve"] === true;
-
-      console.log("[prepareUploadObj] Upload flag status:", {
-        atLeastOneFileHasBeenUploaded,
-        flagValue: window.sodaJSONObj?.["at-least-one-file-uploaded-to-pennsieve"],
-      });
+      const shouldUseMergeSkip = datasetIsEmpty === false;
 
       if (
         window.sodaJSONObj["generate-dataset"]["generate-option"] === "new" &&
         !window.retryGuidedMode
       ) {
-        // Check if files were uploaded in a previous attempt - use flag to inform retry strategy
+        // Check if dataset already has files - if so, switch to merge/skip strategy
         // (Only run on first upload, not on retries since retry block handles it)
 
-        console.log("[prepareUploadObj] Running first-upload detection block");
+        console.log("[prepareUploadObj] Running first-upload detection block", {
+          shouldUseMergeSkip,
+          datasetIsEmpty,
+        });
 
-        if (atLeastOneFileHasBeenUploaded) {
+        if (shouldUseMergeSkip) {
           console.log(
-            "[prepareUploadObj] Files were previously uploaded - switching to existing-ps mode with merge/skip"
+            "[prepareUploadObj] Existing dataset has content - switching to existing-ps mode with merge/skip"
           );
 
           window.sodaJSONObj["pennsieve-generation-target"] = "existing";
@@ -164,20 +172,21 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
           window.sodaJSONObj["generate-dataset"]["if-existing"] = "merge";
           window.sodaJSONObj["generate-dataset"]["if-existing-files"] = "skip";
         } else {
-          console.log("[prepareUploadObj] No prior files uploaded - keeping new mode");
+          console.log("[prepareUploadObj] Dataset is empty or not yet checked - keeping new mode");
         }
       }
 
       if (window.retryGuidedMode) {
         console.log("[prepareUploadObj] Retry mode active:", {
           retryMode: window.retryGuidedMode,
-          atLeastOneFileHasBeenUploaded,
+          shouldUseMergeSkip,
+          datasetIsEmpty,
           initialIfExistingHandling,
           initialIfExistingFileHandling,
         });
 
-        const mergeSkipOnRetries = atLeastOneFileHasBeenUploaded ? "merge" : "new";
-        const mergeSkipFilesOnRetries = atLeastOneFileHasBeenUploaded ? "skip" : "new";
+        const mergeSkipOnRetries = shouldUseMergeSkip ? "merge" : "new";
+        const mergeSkipFilesOnRetries = shouldUseMergeSkip ? "skip" : "new";
 
         const finalIfExisting =
           initialIfExistingHandling === "new" ? mergeSkipOnRetries : initialIfExistingHandling;
@@ -187,7 +196,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
             : initialIfExistingFileHandling;
 
         console.log("[prepareUploadObj] Setting retry strategy:", {
-          atLeastOneFileHasBeenUploaded,
+          shouldUseMergeSkip,
           mergeSkipOnRetries,
           mergeSkipFilesOnRetries,
           finalIfExisting,
@@ -260,7 +269,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       );
     }
 
-    prepareUploadObj();
+    await prepareUploadObj();
     await performUpload();
   } catch (error) {
     clientError(error);
