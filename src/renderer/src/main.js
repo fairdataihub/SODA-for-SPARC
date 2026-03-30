@@ -56,6 +56,7 @@ import "./scripts/sds-templates/sds_templates";
 import "./scripts/organize-dataset/verify-file-statuses";
 import "./scripts/advanced-features/compare-local-remote-dataset";
 import "./scripts/accounts/accounts";
+import "./scripts/contact-us/contact-us";
 
 // Application Lotties
 import "./assets/lotties/activate-lotties";
