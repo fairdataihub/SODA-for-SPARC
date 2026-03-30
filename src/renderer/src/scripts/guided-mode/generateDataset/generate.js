@@ -120,36 +120,110 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
 
     // --- Helper: prepare upload object for Pennsieve ---
     const prepareUploadObj = () => {
+      console.log("[prepareUploadObj] Starting upload object preparation");
+
       window.sodaJSONObj["ps-dataset-selected"] = { "dataset-name": pennsieveDatasetName };
       window.sodaJSONObj["ps-account-selected"] = { "account-name": window.defaultBfAccount };
       window.sodaJSONObj["dataset-structure"] = standardizedDatasetStructure;
 
+      const initialIfExistingHandling = window.sodaJSONObj?.["generate-dataset"]?.["if-existing"];
+      const initialIfExistingFileHandling =
+        window.sodaJSONObj?.["generate-dataset"]?.["if-existing-files"];
+
+      console.log("[prepareUploadObj] Initial values captured:", {
+        initialIfExistingHandling,
+        initialIfExistingFileHandling,
+        generateOption: window.sodaJSONObj?.["generate-dataset"]?.["generate-option"],
+      });
+
+      const atLeastOneFileHasBeenUploaded =
+        window.sodaJSONObj?.["at-least-one-file-uploaded-to-pennsieve"] === true;
+
+      console.log("[prepareUploadObj] Upload flag status:", {
+        atLeastOneFileHasBeenUploaded,
+        flagValue: window.sodaJSONObj?.["at-least-one-file-uploaded-to-pennsieve"],
+      });
+
+      if (
+        window.sodaJSONObj["generate-dataset"]["generate-option"] === "new" &&
+        !window.retryGuidedMode
+      ) {
+        // Check if files were uploaded in a previous attempt - use flag to inform retry strategy
+        // (Only run on first upload, not on retries since retry block handles it)
+
+        console.log("[prepareUploadObj] Running first-upload detection block");
+
+        if (atLeastOneFileHasBeenUploaded) {
+          console.log(
+            "[prepareUploadObj] Files were previously uploaded - switching to existing-ps mode with merge/skip"
+          );
+
+          window.sodaJSONObj["pennsieve-generation-target"] = "existing";
+          window.sodaJSONObj["starting-point"]["origin"] = "ps"; // triggers uploading_to_existing_ps_dataset flow
+          window.sodaJSONObj["generate-dataset"]["generate-option"] = "existing-ps";
+          window.sodaJSONObj["generate-dataset"]["if-existing"] = "merge";
+          window.sodaJSONObj["generate-dataset"]["if-existing-files"] = "skip";
+        } else {
+          console.log("[prepareUploadObj] No prior files uploaded - keeping new mode");
+        }
+      }
+
       if (window.retryGuidedMode) {
-        const previousExistingHandling = window.sodaJSONObj?.["generate-dataset"]?.["if-existing"];
-        const previousExistingFileHandling =
-          window.sodaJSONObj?.["generate-dataset"]?.["if-existing-files"];
+        console.log("[prepareUploadObj] Retry mode active:", {
+          retryMode: window.retryGuidedMode,
+          atLeastOneFileHasBeenUploaded,
+          initialIfExistingHandling,
+          initialIfExistingFileHandling,
+        });
+
+        const mergeSkipOnRetries = atLeastOneFileHasBeenUploaded ? "merge" : "new";
+        const mergeSkipFilesOnRetries = atLeastOneFileHasBeenUploaded ? "skip" : "new";
+
+        const finalIfExisting =
+          initialIfExistingHandling === "new" ? mergeSkipOnRetries : initialIfExistingHandling;
+        const finalIfExistingFiles =
+          initialIfExistingFileHandling === "new"
+            ? mergeSkipFilesOnRetries
+            : initialIfExistingFileHandling;
+
+        console.log("[prepareUploadObj] Setting retry strategy:", {
+          atLeastOneFileHasBeenUploaded,
+          mergeSkipOnRetries,
+          mergeSkipFilesOnRetries,
+          finalIfExisting,
+          finalIfExistingFiles,
+        });
+
         window.sodaJSONObj["generate-dataset"] = {
           "dataset-name": pennsieveDatasetName,
           destination: "ps",
           "generate-option": "existing-ps",
-          "if-existing":
-            previousExistingHandling === "new" ? "merge" : previousExistingHandling || "merge",
-          "if-existing-files":
-            previousExistingFileHandling === "new"
-              ? "skip"
-              : previousExistingFileHandling || "skip",
+          "if-existing": finalIfExisting,
+          "if-existing-files": finalIfExistingFiles,
         };
       }
+
+      console.log("[prepareUploadObj] Final generate-dataset object:", {
+        "dataset-name": window.sodaJSONObj["generate-dataset"]["dataset-name"],
+        destination: window.sodaJSONObj["generate-dataset"]["destination"],
+        "generate-option": window.sodaJSONObj["generate-dataset"]["generate-option"],
+        "if-existing": window.sodaJSONObj["generate-dataset"]["if-existing"],
+        "if-existing-files": window.sodaJSONObj["generate-dataset"]["if-existing-files"],
+      });
 
       // Update the title in the dataset metadata to match the Pennsieve dataset name if the user is generating a new dataset on Pennsieve and has already entered dataset metadata information in the previous steps
       if (
         window.sodaJSONObj["pennsieve-generation-target"] === "existing" &&
         window.sodaJSONObj?.["dataset_metadata"]?.["dataset_description"]?.["basic_information"]
       ) {
+        console.log("[prepareUploadObj] Updating dataset metadata title to:", pennsieveDatasetName);
+
         window.sodaJSONObj["dataset_metadata"]["dataset_description"]["basic_information"][
           "title"
         ] = pennsieveDatasetName;
       }
+
+      console.log("[prepareUploadObj] Upload object preparation complete");
     };
 
     // --- Prepare UI for normal upload ---
@@ -473,6 +547,13 @@ const trackPennsieveDatasetGenerationProgress = async () => {
       });
 
       logProgressToAnalyticsGM(uploadedFiles, mainGeneratedDatasetSize);
+
+      if (Number.isInteger(uploadedFiles) && uploadedFiles > 0) {
+        if (!window.sodaJSONObj["at-least-one-file-uploaded-to-pennsieve"]) {
+          window.sodaJSONObj["at-least-one-file-uploaded-to-pennsieve"] = true;
+          guidedSaveProgress();
+        }
+      }
 
       if (message && message.includes("Preparing files to be renamed")) {
         setGuidedProgressBarValue("pennsieve", 0);

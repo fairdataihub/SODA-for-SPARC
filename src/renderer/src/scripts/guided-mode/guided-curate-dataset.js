@@ -3402,6 +3402,7 @@ ffmDragDropElementId.addEventListener("click", (event) => {
   window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog", {
     importRelativePath: "/",
     curationMode: "free-form",
+    useContentsOfFolder: true,
   });
 });
 ffmDragDropElementId.addEventListener("drop", async (event) => {
@@ -3444,6 +3445,7 @@ ffmDragDropElementId.addEventListener("drop", async (event) => {
     filePaths: itemsDroppedInFileExplorer,
     importRelativePath: "/",
     curationMode: "free-form",
+    useContentsOfFolder: true,
   });
 });
 

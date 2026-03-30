@@ -123,7 +123,7 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
       }
 
       window.sodaJSONObj["pennsieve-generation-target"] = "new";
-
+      window.sodaJSONObj["starting-point"]["origin"] = "new";
       window.sodaJSONObj["generate-dataset"] = {
         "dataset-name": null,
         destination: "ps",
@@ -170,7 +170,6 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
       while (useGlobalStore.getState().isLoadingPennsieveDatasets) {
         await new Promise((resolve) => setTimeout(resolve, 300));
       }
-      window.sodaJSONObj["pennsieve-generation-target"] = "existing";
 
       const selectedDatasetIdToUploadDataTo =
         useGlobalStore.getState().selectedDatasetIdToUploadDataTo;
@@ -195,6 +194,8 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
 
       window.sodaJSONObj["digital-metadata"]["pennsieve-int-id"] = selectedDatasetIntIdToUploadTo;
 
+      window.sodaJSONObj["pennsieve-generation-target"] = "existing";
+      window.sodaJSONObj["starting-point"]["origin"] = "ps";
       window.sodaJSONObj["generate-dataset"] = {
         "dataset-name": selectedDatasetNameToUploadDataTo,
         destination: "ps",

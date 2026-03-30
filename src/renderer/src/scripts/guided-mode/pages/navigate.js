@@ -43,7 +43,10 @@ export const handleNextButtonClick = async () => {
   try {
     await window.savePageChanges(window.pageBeingLeftID);
 
-    if (!window.sodaJSONObj["completed-tabs"].includes(window.pageBeingLeftID)) {
+    if (
+      window.sodaJSONObj["completed-tabs"] &&
+      !window.sodaJSONObj["completed-tabs"].includes(window.pageBeingLeftID)
+    ) {
       window.sodaJSONObj["completed-tabs"].push(window.pageBeingLeftID);
     }
 

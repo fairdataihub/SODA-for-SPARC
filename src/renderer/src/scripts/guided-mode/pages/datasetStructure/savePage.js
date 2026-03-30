@@ -431,12 +431,12 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       throw errorArray;
     }
     if (replaceExistingFilesChecked) {
-      window.sodaJSONObj["generate-dataset"]["if-existing-files"] = "replace";
       window.sodaJSONObj["generate-dataset"]["if-existing"] = "replace";
+      window.sodaJSONObj["generate-dataset"]["if-existing-files"] = "replace";
     }
     if (skipExistingFilesChecked) {
-      window.sodaJSONObj["generate-dataset"]["if-existing-files"] = "skip";
       window.sodaJSONObj["generate-dataset"]["if-existing"] = "merge";
+      window.sodaJSONObj["generate-dataset"]["if-existing-files"] = "skip";
     }
   }
 

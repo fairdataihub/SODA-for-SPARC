@@ -76,7 +76,7 @@ export const initializeGuidedDatasetObject = (curationMode) => {
   window.sodaJSONObj["generate-dataset"] = {};
   window.sodaJSONObj["generate-dataset"]["destination"] = "ps";
   window.sodaJSONObj["guided-manifest-file-data"] = {};
-  window.sodaJSONObj["starting-point"] = { origin: "new" };
+  window.sodaJSONObj["starting-point"] = {};
   window.sodaJSONObj["dataset_metadata"] = {};
   window.sodaJSONObj["dataset_contributors"] = [];
   window.sodaJSONObj["dataset_additional_links"] = [];

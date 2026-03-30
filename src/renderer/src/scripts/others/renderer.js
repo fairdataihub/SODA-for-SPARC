@@ -2771,7 +2771,10 @@ window.CheckFileListForServerAccess = async (fileList) => {
 // Event listener for when folder(s) are imported into the file explorer
 window.electron.ipcRenderer.on(
   "selected-folders-organize-datasets",
-  async (event, { filePaths: importedFolders, importRelativePath, curationMode }) => {
+  async (
+    event,
+    { filePaths: importedFolders, importRelativePath, curationMode, useContentsOfFolder }
+  ) => {
     try {
       console.log("curationMode:", curationMode);
       if (!importRelativePath) {
@@ -2788,11 +2791,40 @@ window.electron.ipcRenderer.on(
         useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
       }
 
+      // If useContentsOfFolder is true, get the contents of the folder instead of using the folder itself
+      let foldersToImport = importedFolders;
+      console.log(
+        "[selected-folders-organize-datasets] useContentsOfFolder flag:",
+        useContentsOfFolder
+      );
+      console.log(
+        "[selected-folders-organize-datasets] Original importedFolders:",
+        importedFolders
+      );
+
+      if (useContentsOfFolder && importedFolders.length === 1) {
+        const folderPath = importedFolders[0];
+        console.log(
+          "[selected-folders-organize-datasets] Folder path to extract contents from:",
+          folderPath
+        );
+
+        const contents = await window.fs.readdirSync(folderPath);
+        console.log("[selected-folders-organize-datasets] All contents of folder:", contents);
+
+        foldersToImport = contents.map((item) => window.path.join(folderPath, item));
+
+        console.log(
+          "[selected-folders-organize-datasets] Final foldersToImport (all contents):",
+          foldersToImport
+        );
+      }
+
       // Use the current file explorer path or the provided relative path
       const currentFileExplorerPath = `dataset_root/${importRelativePath}`;
       const builtDatasetStructureFromImportedFolders =
         await window.buildDatasetStructureJsonFromImportedData(
-          importedFolders,
+          foldersToImport,
           currentFileExplorerPath
         );
 

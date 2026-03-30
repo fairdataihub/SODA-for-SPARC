@@ -588,11 +588,13 @@ ipcMain.on("file-explorer-dropped-datasets", (event, args) => {
   const mainWindow = BrowserWindow.getFocusedWindow();
   const importRelativePath = args.importRelativePath;
   const curationMode = args.curationMode;
+  const useContentsOfFolder = args.useContentsOfFolder;
   console.log("curationMode:", curationMode);
   mainWindow.webContents.send("selected-folders-organize-datasets", {
     filePaths: args.filePaths,
     importRelativePath,
     curationMode,
+    useContentsOfFolder,
   });
 });
 
@@ -607,6 +609,7 @@ ipcMain.on("open-folders-organize-datasets-dialog", async (event, args) => {
   let mainWindow = BrowserWindow.getFocusedWindow();
   const importRelativePath = args.importRelativePath;
   const curationMode = args.curationMode;
+  const useContentsOfFolder = args.useContentsOfFolder;
   console.log("curationMode:", curationMode);
 
   const properties =
@@ -636,6 +639,7 @@ ipcMain.on("open-folders-organize-datasets-dialog", async (event, args) => {
     filePaths: result.filePaths,
     importRelativePath,
     curationMode,
+    useContentsOfFolder,
   });
 });
 
