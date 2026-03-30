@@ -6717,6 +6717,7 @@ window.directToFreeFormMode = async () => {
 const directToOrganize = document.getElementById("button-homepage-freeform-mode");
 directToOrganize.addEventListener("click", async () => {
   console.log("Running now");
+  let now = Date.now();
 
   client
     .post(
@@ -6728,8 +6729,14 @@ directToOrganize.addEventListener("click", async () => {
     )
     .then((res) => {
       console.log("Done Running");
+      let stop = Date.now();
+      let timeElapsed = (stop - now) / 1000; // in seconds
+      console.log(timeElapsed);
     })
     .catch(async (e) => {
+      let stop = Date.now();
+      let timeElapsed = (stop - now) / 1000; // in seconds
+      console.log(timeElapsed);
       if (!e.response && e.request && e.isAxiosError) {
         await swalShowError(
           "Network Error",
@@ -6745,6 +6752,9 @@ directToOrganize.addEventListener("click", async () => {
         let data = await client.get("http://localhost:4242/startup/curation/progress");
         await new Promise((resolve) => setTimeout(resolve, 1000));
       } catch (e) {
+        let stop = Date.now();
+        let timeElapsed = (stop - now) / 1000; // in seconds
+        console.log(timeElapsed);
         if (!e.response && e.request && e.isAxiosError) {
           await swalShowError(
             "Network Error",
