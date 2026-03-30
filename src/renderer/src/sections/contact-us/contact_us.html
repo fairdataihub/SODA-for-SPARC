@@ -13,20 +13,17 @@
             <div id="contact-us-lottie" class="documentation-lottie_style"></div>
           </div>
 
-          <div class="docu-content-container">
-            <h2 class="document_text">
-              Reach out to us if you are experiencing an issue, have any feedback, or want to
-              request or delete your data as per GDPR.
-            </h2>
+          <div class="docu-content-container" style="margin-bottom: 1rem">
+            <h2 class="document_text">What would you like to contact us about?</h2>
           </div>
-          <div class="docu-content-container">
-            <div class="guided--radio-button-container">
+          <div class="docu-content-container" style="width: 100%">
+            <div class="guided--radio-button-container" style="margin-bottom: 3rem">
               <div
                 data-component-type="checkbox-card"
                 data-button-id="contact-feedback-issue"
                 data-variant="outline"
                 data-size="lg"
-                data-text="Contact Us About an Issue or With General Feedback"
+                data-text="General Feedback or and Issue With SODA"
               ></div>
 
               <div
@@ -34,16 +31,19 @@
                 data-button-id="contact-gdpr"
                 data-variant="outline"
                 data-size="lg"
-                data-text="Contact Us About GDPR"
+                data-text="GDPR Request"
               ></div>
             </div>
 
-            <div id="contact-gather-logs-question" class="hidden">
-              <p class="help-text">
-                If you are reaching out about an issue with SODA please use the gather logs button
-                below to store your logs in a location of your choosing. You will attach these logs
-                to the form below.
-              </p>
+            <div
+              id="contact-gather-logs-question"
+              class="hidden"
+              style="margin-bottom: 3rem; width: 100%"
+            >
+              <h2 class="document_text" style="margin-bottom: 1rem">
+                If you are reaching out about an issue, please use the button below to gather your
+                log files. You will attach these logs as a zip to the form below.
+              </h2>
 
               <div
                 data-component-type="generic-button"
@@ -51,36 +51,39 @@
                 data-variant="outline"
                 data-size="lg"
                 data-text="Gather Logs"
+                style="display: flex; justify-content: center"
               ></div>
             </div>
 
-            <div id="contact-gdpr-question" class="hidden">
-              <p class="help-text">
+            <div id="contact-gdpr-question" class="hidden" style="margin-bottom: 3rem; width: 100%">
+              <h2 class="document_text" style="margin-bottom: 1rem; text-align: left">
                 If you are reaching to request your data or have it deleted as per-GDPR then please
                 copy your client id. You will send this in the form below in the describe your query
                 section.
-              </p>
+              </h2>
               <div
                 data-component-type="generic-button"
                 data-button-id="button-display-client-id"
                 data-variant="outline"
                 data-size="lg"
                 data-text="Display Client ID"
+                style="display: flex; justify-content: center"
               ></div>
             </div>
 
-            <div id="contact-tally-container" class="hidden">
-              <iframe
-                data-tally-src="https://tally.so/embed/Gxz1gO?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
-                loading="lazy"
-                width="100%"
-                height="723"
-                frameborder="0"
-                marginheight="0"
-                marginwidth="0"
-                title="Contact Us"
-              ></iframe>
-            </div>
+            <iframe
+              data-tally-src="https://tally.so/embed/Gxz1gO?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
+              loading="lazy"
+              width="100%"
+              height="723"
+              frameborder="0"
+              marginheight="0"
+              marginwidth="0"
+              title="Contact Us"
+              id="contact-tally"
+              class="hidden"
+            ></iframe>
+
             <div class="flex w-full items-center justify-center pb-2" style="margin-top: 1.3rem">
               <p class="mr-2" style="margin: 0">Made with</p>
               <div id="made-with-love-lottie" class="heart-lottie"></div>

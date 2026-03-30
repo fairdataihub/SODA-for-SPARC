@@ -1,4 +1,4 @@
 // Remove tally hidden state
 window.removeContactUsTallyHiddenState = () => {
-  document.getElementById("contact-tally-container").classList.remove("hidden");
+  document.getElementById("contact-tally").classList.remove("hidden");
 };

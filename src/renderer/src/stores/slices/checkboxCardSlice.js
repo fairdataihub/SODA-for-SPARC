@@ -253,7 +253,7 @@ export const checkboxCardSlice = (set) => ({
     },
     "contact-feedback-issue": {
       simpleButtonType: "Positive",
-      title: "Contact Us About A SODA Issue or With Feedback",
+      title: "SODA Issue/General Feedback",
       description: null,
       Icon: null,
       mutuallyExclusiveWithCards: ["contact-gdpr"],
@@ -265,7 +265,7 @@ export const checkboxCardSlice = (set) => ({
     },
     "contact-gdpr": {
       simpleButtonType: "Positive",
-      title: "Contact Us About GDPR",
+      title: "GDPR Request",
       description: null,
       Icon: null,
       mutuallyExclusiveWithCards: ["contact-feedback-issue"],
