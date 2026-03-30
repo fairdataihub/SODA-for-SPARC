@@ -213,6 +213,12 @@ window.handleSideBarTabClick = async (id, section) => {
   }
 
   document.getElementById(sectionId).classList.add("is-shown");
+
+  if (sectionId === "contact-us-section") {
+    if (typeof Tally !== "undefined") {
+      Tally.loadEmbeds();
+    }
+  }
 };
 
 function showMainContent() {
