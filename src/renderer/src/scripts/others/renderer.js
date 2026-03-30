@@ -6718,6 +6718,7 @@ const directToOrganize = document.getElementById("button-homepage-freeform-mode"
 directToOrganize.addEventListener("click", async () => {
   console.log("Running now");
   let now = Date.now();
+  let uploading = true;
 
   client
     .post(
@@ -6728,7 +6729,8 @@ directToOrganize.addEventListener("click", async () => {
       { timeout: 0 }
     )
     .then((res) => {
-      console.log("Done Running");
+      console.log("Done Running [ /curation endpoing]");
+      uploading = false;
       let stop = Date.now();
       let timeElapsed = (stop - now) / 1000; // in seconds
       console.log(timeElapsed);
@@ -6747,7 +6749,7 @@ directToOrganize.addEventListener("click", async () => {
     });
 
   const getProgress = async () => {
-    while (true) {
+    while (uploading) {
       try {
         let data = await client.get("http://localhost:4242/startup/curation/progress");
         await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -6765,6 +6767,7 @@ directToOrganize.addEventListener("click", async () => {
         break;
       }
     }
+    console.log("Progress checking noticed uploading flag is false and stopped polling");
   };
 
   await getProgress();
