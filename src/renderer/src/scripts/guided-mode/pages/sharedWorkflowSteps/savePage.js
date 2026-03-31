@@ -107,7 +107,7 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
     ) {
       errorArray.push({
         type: "notyf",
-        message: "Please select where you would like to generate your dataset.",
+        message: "Please select where you would like to generate.// your dataset.",
       });
       throw errorArray;
     }
@@ -194,16 +194,32 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
 
       window.sodaJSONObj["digital-metadata"]["pennsieve-int-id"] = selectedDatasetIntIdToUploadTo;
 
+      const datasetIsEmpty = await api.isDatasetEmpty(selectedDatasetIdToUploadDataTo);
+
       window.sodaJSONObj["pennsieve-generation-target"] = "existing";
-      window.sodaJSONObj["starting-point"]["origin"] = "ps";
-      window.sodaJSONObj["generate-dataset"] = {
-        "dataset-name": selectedDatasetNameToUploadDataTo,
-        destination: "ps",
-        "generate-option": "existing-ps",
-        "if-existing": "merge",
-        "if-existing-files": "replace",
-        "existing-dataset-id": selectedDatasetIdToUploadDataTo,
-      };
+
+      if (datasetIsEmpty) {
+        // If the dataset is empty, treat it as a new dataset
+        window.sodaJSONObj["starting-point"]["origin"] = "new";
+        window.sodaJSONObj["generate-dataset"] = {
+          "dataset-name": selectedDatasetNameToUploadDataTo,
+          destination: "ps",
+          "generate-option": "new",
+          "if-existing": "new",
+          "if-existing-files": "new",
+        };
+      } else {
+        // If the dataset has content, use existing mode
+        window.sodaJSONObj["starting-point"]["origin"] = "ps";
+        window.sodaJSONObj["generate-dataset"] = {
+          "dataset-name": selectedDatasetNameToUploadDataTo,
+          destination: "ps",
+          "generate-option": "existing-ps",
+          "if-existing": "merge",
+          "if-existing-files": "replace",
+          "existing-dataset-id": selectedDatasetIdToUploadDataTo,
+        };
+      }
 
       guidedSkipPage("guided-pennsieve-settings-tab");
 
@@ -221,7 +237,6 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
         }
         window.sodaJSONObj["digital-metadata"]["name"] = selectedDatasetNameToUploadDataTo;
 
-        const datasetIsEmpty = await api.isDatasetEmpty(selectedDatasetIdToUploadDataTo);
         if (datasetIsEmpty) {
           guidedSkipPage("ffm-existing-files-handling-tab");
         } else {

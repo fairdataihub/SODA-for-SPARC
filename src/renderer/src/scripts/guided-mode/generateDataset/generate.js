@@ -122,6 +122,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     const prepareUploadObj = async () => {
       console.log("[prepareUploadObj] Starting upload object preparation");
 
+      // --- Base assignments ---
       window.sodaJSONObj["ps-dataset-selected"] = { "dataset-name": pennsieveDatasetName };
       window.sodaJSONObj["ps-account-selected"] = { "account-name": window.defaultBfAccount };
       window.sodaJSONObj["dataset-structure"] = standardizedDatasetStructure;
@@ -130,101 +131,62 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       const initialIfExistingFileHandling =
         window.sodaJSONObj?.["generate-dataset"]?.["if-existing-files"];
 
-      // Check if we're uploading to an existing dataset and determine if it's empty
+      // --- Dataset state detection ---
       const pennsieveDatasetId = window.sodaJSONObj?.["digital-metadata"]?.["pennsieve-dataset-id"];
+
       let datasetIsEmpty = null;
-      if (pennsieveDatasetId) {
-        try {
-          datasetIsEmpty = await api.isDatasetEmpty(pennsieveDatasetId);
-          console.log("[prepareUploadObj] Dataset empty check:", {
-            datasetId: pennsieveDatasetId,
-            isEmpty: datasetIsEmpty,
-          });
-        } catch (error) {
-          console.error("[prepareUploadObj] Error checking if dataset is empty:", error);
-        }
-      } else {
-        console.log("[prepareUploadObj] No existing dataset ID found - creating new dataset");
+
+      try {
+        datasetIsEmpty = await api.isDatasetEmpty(pennsieveDatasetId);
+        console.log("[prepareUploadObj] Dataset empty check:", {
+          datasetId: pennsieveDatasetId,
+          isEmpty: datasetIsEmpty,
+        });
+      } catch (error) {
+        console.error("[prepareUploadObj] Error checking if dataset is empty:", error);
       }
 
-      const shouldUseMergeSkip = datasetIsEmpty === false;
-
+      // --- First upload logic ---
+      // If not retrying and target is "new" but dataset has content, switch to existing mode
+      // Note we only do this when it's the first upload of the session (for when a dataset upload
+      // fails, the user closes out of the progress file, and they begin uploading again)
       if (
-        window.sodaJSONObj["generate-dataset"]["generate-option"] === "new" &&
-        !window.retryGuidedMode
+        !window.retryGuidedMode &&
+        window.sodaJSONObj["pennsieve-generation-target"] === "new" &&
+        datasetIsEmpty === false
       ) {
-        // Check if dataset already has files - if so, switch to merge/skip strategy
-        // (Only run on first upload, not on retries since retry block handles it)
+        console.log(
+          "[prepareUploadObj] Dataset has content - switching to existing-ps mode with merge/replace"
+        );
 
-        console.log("[prepareUploadObj] Running first-upload detection block", {
-          shouldUseMergeSkip,
-          datasetIsEmpty,
-        });
-
-        if (shouldUseMergeSkip) {
-          console.log(
-            "[prepareUploadObj] Existing dataset has content - switching to existing-ps mode with merge/skip"
-          );
-
-          window.sodaJSONObj["pennsieve-generation-target"] = "existing";
-          window.sodaJSONObj["starting-point"]["origin"] = "ps"; // triggers uploading_to_existing_ps_dataset flow
-          window.sodaJSONObj["generate-dataset"]["generate-option"] = "existing-ps";
-          window.sodaJSONObj["generate-dataset"]["if-existing"] = "merge";
-          window.sodaJSONObj["generate-dataset"]["if-existing-files"] = "skip";
-        } else {
-          console.log("[prepareUploadObj] Dataset is empty or not yet checked - keeping new mode");
-        }
-      }
-
-      if (window.retryGuidedMode) {
-        console.log("[prepareUploadObj] Retry mode active:", {
-          retryMode: window.retryGuidedMode,
-          shouldUseMergeSkip,
-          datasetIsEmpty,
-          initialIfExistingHandling,
-          initialIfExistingFileHandling,
-        });
-
-        const mergeSkipOnRetries = shouldUseMergeSkip ? "merge" : "new";
-        const mergeSkipFilesOnRetries = shouldUseMergeSkip ? "skip" : "new";
-
-        const finalIfExisting =
-          initialIfExistingHandling === "new" ? mergeSkipOnRetries : initialIfExistingHandling;
-        const finalIfExistingFiles =
-          initialIfExistingFileHandling === "new"
-            ? mergeSkipFilesOnRetries
-            : initialIfExistingFileHandling;
-
-        console.log("[prepareUploadObj] Setting retry strategy:", {
-          shouldUseMergeSkip,
-          mergeSkipOnRetries,
-          mergeSkipFilesOnRetries,
-          finalIfExisting,
-          finalIfExistingFiles,
-        });
-
+        window.sodaJSONObj["pennsieve-generation-target"] = "existing";
+        window.sodaJSONObj["starting-point"]["origin"] = "ps";
         window.sodaJSONObj["generate-dataset"] = {
           "dataset-name": pennsieveDatasetName,
           destination: "ps",
           "generate-option": "existing-ps",
-          "if-existing": finalIfExisting,
-          "if-existing-files": finalIfExistingFiles,
+          "if-existing": "merge",
+          "if-existing-files": "replace",
+          "existing-dataset-id": pennsieveDatasetId,
         };
       }
 
+      // --- Final logging ---
+      const generateDataset = window.sodaJSONObj["generate-dataset"] || {};
       console.log("[prepareUploadObj] Final generate-dataset object:", {
-        "dataset-name": window.sodaJSONObj["generate-dataset"]["dataset-name"],
-        destination: window.sodaJSONObj["generate-dataset"]["destination"],
-        "generate-option": window.sodaJSONObj["generate-dataset"]["generate-option"],
-        "if-existing": window.sodaJSONObj["generate-dataset"]["if-existing"],
-        "if-existing-files": window.sodaJSONObj["generate-dataset"]["if-existing-files"],
+        "dataset-name": generateDataset["dataset-name"],
+        destination: generateDataset["destination"],
+        "generate-option": generateDataset["generate-option"],
+        "if-existing": generateDataset["if-existing"],
+        "if-existing-files": generateDataset["if-existing-files"],
       });
 
-      // Update the title in the dataset metadata to match the Pennsieve dataset name if the user is generating a new dataset on Pennsieve and has already entered dataset metadata information in the previous steps
-      if (
+      // --- Metadata sync ---
+      const shouldUpdateTitle =
         window.sodaJSONObj["pennsieve-generation-target"] === "existing" &&
-        window.sodaJSONObj?.["dataset_metadata"]?.["dataset_description"]?.["basic_information"]
-      ) {
+        window.sodaJSONObj?.["dataset_metadata"]?.["dataset_description"]?.["basic_information"];
+
+      if (shouldUpdateTitle) {
         console.log("[prepareUploadObj] Updating dataset metadata title to:", pennsieveDatasetName);
 
         window.sodaJSONObj["dataset_metadata"]["dataset_description"]["basic_information"][
