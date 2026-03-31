@@ -108,7 +108,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         )
         .then(async (response) => {
           const { data } = response;
-          console;
           await finalizeUpload(data);
         })
         .catch((error) => console.error("Dataset upload failed:", error));
@@ -151,24 +150,28 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       // Note we only do this when it's the first upload of the session (for when a dataset upload
       // fails, the user closes out of the progress file, and they begin uploading again)
       if (
-        !window.retryGuidedMode &&
-        window.sodaJSONObj["pennsieve-generation-target"] === "new" &&
-        datasetIsEmpty === false
+        (!window.retryGuidedMode &&
+          window.sodaJSONObj["pennsieve-generation-target"] === "new" &&
+          datasetIsEmpty === false) ||
+        (window.sodaJSONObj["pennsieve-generation-target"] === "existing" &&
+          datasetIsEmpty === false &&
+          window.sodaJSONObj["generate-dataset"]?.["generate-option"] === "new")
       ) {
         console.log(
-          "[prepareUploadObj] Dataset has content - switching to existing-ps mode with merge/replace"
+          "[prepareUploadObj] Dataset has content - switching to existing-ps mode with merge/skip"
         );
 
-        window.sodaJSONObj["pennsieve-generation-target"] = "existing";
         window.sodaJSONObj["starting-point"]["origin"] = "ps";
         window.sodaJSONObj["generate-dataset"] = {
           "dataset-name": pennsieveDatasetName,
           destination: "ps",
           "generate-option": "existing-ps",
           "if-existing": "merge",
-          "if-existing-files": "replace",
+          "if-existing-files": "skip",
           "existing-dataset-id": pennsieveDatasetId,
         };
+      } else {
+        console.log("[prepareUploadObj] Using existing upload options:");
       }
 
       // --- Final logging ---

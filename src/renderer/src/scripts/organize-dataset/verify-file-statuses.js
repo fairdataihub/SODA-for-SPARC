@@ -49,7 +49,17 @@ document
       return;
     }
 
-    document.querySelector("#guided-dataset-upload-complete-message").scrollIntoView({
+    const curationMode = window.sodaJSONObj["curation-mode"];
+    const prefix = curationMode === "free-form" ? "ffm" : "guided";
+    const oppositePrefix = curationMode === "free-form" ? "guided" : "ffm";
+
+    // Hide the opposite mode's success message and show the current mode's
+    document
+      .getElementById(`${oppositePrefix}-dataset-upload-complete-message`)
+      .classList.add("hidden");
+    document.getElementById(`${prefix}-dataset-upload-complete-message`).classList.remove("hidden");
+
+    document.getElementById(`${prefix}-dataset-upload-complete-message`).scrollIntoView({
       behavior: "smooth",
     });
 

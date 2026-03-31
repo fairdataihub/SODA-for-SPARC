@@ -589,7 +589,6 @@ ipcMain.on("file-explorer-dropped-datasets", (event, args) => {
   const importRelativePath = args.importRelativePath;
   const curationMode = args.curationMode;
   const useContentsOfFolder = args.useContentsOfFolder;
-  console.log("curationMode:", curationMode);
   mainWindow.webContents.send("selected-folders-organize-datasets", {
     filePaths: args.filePaths,
     importRelativePath,
@@ -610,7 +609,6 @@ ipcMain.on("open-folders-organize-datasets-dialog", async (event, args) => {
   const importRelativePath = args.importRelativePath;
   const curationMode = args.curationMode;
   const useContentsOfFolder = args.useContentsOfFolder;
-  console.log("curationMode:", curationMode);
 
   const properties =
     curationMode === "free-form"

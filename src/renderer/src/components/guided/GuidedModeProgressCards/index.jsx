@@ -67,9 +67,12 @@ const generateProgressResumptionButton = (
   } else if (datasetStartingPoint === "new") {
     buttonText = "Resume Curation";
     color = "primary";
-  } else {
+  } else if (datasetStartingPoint === "existing-ps") {
     buttonText = "Continue updating Pennsieve Dataset";
     color = "orange";
+  } else {
+    buttonText = "Resume Curation";
+    color = "primary";
   }
 
   if (lastVersionOfSodaUsed < "16.0.0") {
@@ -113,10 +116,10 @@ const GuidedModeProgressCards = () => {
     <>
       {guidedModeProgressCardsDataArray.length === 0 ? (
         <Stack align="center" gap="md" my="xl">
-          <Text c="dimmed" size="xl" ta="center">
-            No datasets in progress found
+          <Text c="dimmed" size="lg" fw={500} ta="center">
+            No datasets in progress
           </Text>
-          <Text c="dimmed" size="md" ta="center" maw={400}>
+          <Text c="dimmed" size="md" ta="center" maw={600}>
             Click the button above to start a new dataset. Once you save progress on a dataset, it
             will appear here so you can easily resume your work.
           </Text>
@@ -124,7 +127,7 @@ const GuidedModeProgressCards = () => {
       ) : (
         <>
           <Text fw={600} size="lg" ta="center" mb="sm">
-            Or continue an existing dataset:
+            Or continue an existing dataset in progress:
           </Text>
 
           <Stack gap="md" align="center" w="100%">

@@ -1,7 +1,7 @@
 import { getNextPageNotSkipped, getPrevPageNotSkipped } from "./navigationUtils/pageSkipping";
 import { prepareGuidedSidebar } from "../../../assets/nav";
 import Swal from "sweetalert2";
-import { swalShowError } from "../../utils/swal-utils";
+import { swalShowError, swalShowInfo } from "../../utils/swal-utils";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -42,6 +42,41 @@ export const handleNextButtonClick = async () => {
 
   try {
     await window.savePageChanges(window.pageBeingLeftID);
+
+    // check if window.sodaJSONObj is empty, if it is, do nothing
+    if (JSON.stringify(window.sodaJSONObj) === "{}") {
+      console.log("No sodaJSONObj found, not saving progress");
+      return;
+    }
+
+    // Delete the free-form progress file when leaving dataset generation
+    // because the workflow is complete at this point.
+    if (
+      window.pageBeingLeftID === "guided-dataset-generation-tab" &&
+      window.sodaJSONObj["curation-mode"] === "free-form" &&
+      window.sodaJSONObj["dataset-successfully-uploaded-to-pennsieve"] === true
+    ) {
+      const progressFilePath = window.sodaJSONObj["save-file-path"];
+      if (progressFilePath && window.fs.existsSync(progressFilePath)) {
+        try {
+          window.fs.unlinkSync(progressFilePath);
+          console.log(`Deleted free-form progress file: ${progressFilePath}`);
+
+          await swalShowInfo(
+            "Dataset Workflow Complete",
+            "Your dataset was uploaded and the workflow is complete. You will now be taken back to the home screen."
+          );
+
+          transitionFromGuidedModeToHome();
+          return;
+        } catch (deleteError) {
+          console.error(
+            `Failed to delete free-form progress file ${progressFilePath}:`,
+            deleteError
+          );
+        }
+      }
+    }
 
     if (
       window.sodaJSONObj["completed-tabs"] &&
