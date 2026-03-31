@@ -55,7 +55,7 @@ dependencies:
     - openpyxl==3.0.9
     - pandas==1.4.2
     - pefile==2023.2.7
-    - pennsieve
+    - pennsieve==7.0.1
     - protobuf==4.21.12
     - pycparser==2.21
     - python-dateutil==2.8.2
