@@ -67,7 +67,6 @@ export const guidedRenderProgressCards = async (curationMode) => {
   });
 
   let progressFileData = await getAllProgressFileData(jsonProgressFiles);
-  console.log("Loaded progress file data:", progressFileData);
 
   // For free-form mode, delete any already-uploaded dataset progress files (completed uploads).
   // Use the ["save-file-name"] value for the on-disk filename.
@@ -80,9 +79,7 @@ export const guidedRenderProgressCards = async (curationMode) => {
         progressFile?.["dataset-successfully-uploaded-to-pennsieve"] === true
       ) {
         const progressFilePath = progressFile?.["save-file-path"];
-        console.log(
-          `Deleting progress file for already uploaded dataset at path: ${progressFilePath}`
-        );
+
         if (progressFilePath) {
           await deleteProgressFile(progressFilePath);
         }

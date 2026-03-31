@@ -59,7 +59,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
 
     // Code that runs after a successful upload to Pennsieve (whether initial upload or retry)
     const finalizeUpload = async (data) => {
-      console.log("Upload finalized with response data:", data);
       window.pennsieveManifestId = data["origin_manifest_id"];
       window.totalFilesCount = data["main_curation_total_files"];
       window.sodaJSONObj["previously-uploaded-data"] = {};
@@ -119,16 +118,10 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
 
     // --- Helper: prepare upload object for Pennsieve ---
     const prepareUploadObj = async () => {
-      console.log("[prepareUploadObj] Starting upload object preparation");
-
       // --- Base assignments ---
       window.sodaJSONObj["ps-dataset-selected"] = { "dataset-name": pennsieveDatasetName };
       window.sodaJSONObj["ps-account-selected"] = { "account-name": window.defaultBfAccount };
       window.sodaJSONObj["dataset-structure"] = standardizedDatasetStructure;
-
-      const initialIfExistingHandling = window.sodaJSONObj?.["generate-dataset"]?.["if-existing"];
-      const initialIfExistingFileHandling =
-        window.sodaJSONObj?.["generate-dataset"]?.["if-existing-files"];
 
       // --- Dataset state detection ---
       const pennsieveDatasetId = window.sodaJSONObj?.["digital-metadata"]?.["pennsieve-dataset-id"];
@@ -137,10 +130,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
 
       try {
         datasetIsEmpty = await api.isDatasetEmpty(pennsieveDatasetId);
-        console.log("[prepareUploadObj] Dataset empty check:", {
-          datasetId: pennsieveDatasetId,
-          isEmpty: datasetIsEmpty,
-        });
       } catch (error) {
         console.error("[prepareUploadObj] Error checking if dataset is empty:", error);
       }
@@ -157,10 +146,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
           datasetIsEmpty === false &&
           window.sodaJSONObj["generate-dataset"]?.["generate-option"] === "new")
       ) {
-        console.log(
-          "[prepareUploadObj] Dataset has content - switching to existing-ps mode with merge/skip"
-        );
-
         window.sodaJSONObj["starting-point"]["origin"] = "ps";
         window.sodaJSONObj["generate-dataset"] = {
           "dataset-name": pennsieveDatasetName,
@@ -170,19 +155,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
           "if-existing-files": "skip",
           "existing-dataset-id": pennsieveDatasetId,
         };
-      } else {
-        console.log("[prepareUploadObj] Using existing upload options:");
       }
-
-      // --- Final logging ---
-      const generateDataset = window.sodaJSONObj["generate-dataset"] || {};
-      console.log("[prepareUploadObj] Final generate-dataset object:", {
-        "dataset-name": generateDataset["dataset-name"],
-        destination: generateDataset["destination"],
-        "generate-option": generateDataset["generate-option"],
-        "if-existing": generateDataset["if-existing"],
-        "if-existing-files": generateDataset["if-existing-files"],
-      });
 
       // --- Metadata sync ---
       const shouldUpdateTitle =
@@ -190,14 +163,10 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         window.sodaJSONObj?.["dataset_metadata"]?.["dataset_description"]?.["basic_information"];
 
       if (shouldUpdateTitle) {
-        console.log("[prepareUploadObj] Updating dataset metadata title to:", pennsieveDatasetName);
-
         window.sodaJSONObj["dataset_metadata"]["dataset_description"]["basic_information"][
           "title"
         ] = pennsieveDatasetName;
       }
-
-      console.log("[prepareUploadObj] Upload object preparation complete");
     };
 
     // --- Prepare UI for normal upload ---
@@ -510,15 +479,6 @@ const trackPennsieveDatasetGenerationProgress = async () => {
         mainTotalGenerateDatasetSize,
         mainGeneratedDatasetSize,
       } = await fetchProgressData();
-      console.log("Progress data fetched:", {
-        status,
-        message,
-        elapsedTime,
-        uploadedFiles,
-        startGenerate,
-        mainTotalGenerateDatasetSize,
-        mainGeneratedDatasetSize,
-      });
 
       logProgressToAnalyticsGM(uploadedFiles, mainGeneratedDatasetSize);
 

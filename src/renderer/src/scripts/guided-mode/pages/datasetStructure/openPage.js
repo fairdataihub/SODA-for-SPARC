@@ -99,7 +99,7 @@ export const openPageDatasetStructure = async (targetPageID) => {
             // Set flag that user should be redirected to first page
             window.sodaJSONObj["redirect-to-first-page-after-error"] = true;
             // Throw an error to trigger the error handler which will handle the redirect
-            console.log("Throwing error to redirect to first page");
+            console.info("Throwing error to redirect to first page");
             throw new Error("Files were purged - redirecting to first page");
           }
         }

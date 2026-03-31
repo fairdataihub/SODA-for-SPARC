@@ -43,12 +43,6 @@ export const handleNextButtonClick = async () => {
   try {
     await window.savePageChanges(window.pageBeingLeftID);
 
-    // check if window.sodaJSONObj is empty, if it is, do nothing
-    if (JSON.stringify(window.sodaJSONObj) === "{}") {
-      console.log("No sodaJSONObj found, not saving progress");
-      return;
-    }
-
     // Delete the free-form progress file when leaving dataset generation
     // because the workflow is complete at this point.
     if (
@@ -60,7 +54,6 @@ export const handleNextButtonClick = async () => {
       if (progressFilePath && window.fs.existsSync(progressFilePath)) {
         try {
           window.fs.unlinkSync(progressFilePath);
-          console.log(`Deleted free-form progress file: ${progressFilePath}`);
 
           await swalShowInfo(
             "Dataset Workflow Complete",

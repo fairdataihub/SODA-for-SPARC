@@ -671,8 +671,13 @@ window.openPage = async (targetPageID) => {
 
         if (pageID === "guided-dataset-structure-and-manifest-review-tab") {
           // Only show the manifest file for the dataset metadata preview
-          // even if there are other metadata files like sites or performances
-          setDatasetMetadataToPreview(["manifest.xlsx"]);
+          // if it exists in the dataset_metadata
+          const datasetMetadata = window.sodaJSONObj["dataset_metadata"] || {};
+          if ("manifest.xlsx" in datasetMetadata) {
+            setDatasetMetadataToPreview(["manifest.xlsx"]);
+          } else {
+            setDatasetMetadataToPreview(null);
+          }
         } else {
           setDatasetMetadataToPreview(Object.keys(window.sodaJSONObj["dataset_metadata"] || {}));
         }

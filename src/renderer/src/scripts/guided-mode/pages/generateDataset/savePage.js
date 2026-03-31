@@ -89,7 +89,7 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
       if (datasetSaveFilePath && window.fs.existsSync(datasetSaveFilePath)) {
         try {
           window.fs.unlinkSync(datasetSaveFilePath);
-          console.log(`Deleted free-form progress file: ${datasetSaveFilePath}`);
+          console.info(`Deleted free-form progress file: ${datasetSaveFilePath}`);
         } catch (error) {
           console.error(`Failed to delete free-form progress file ${datasetSaveFilePath}:`, error);
         }

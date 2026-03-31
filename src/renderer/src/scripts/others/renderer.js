@@ -2776,7 +2776,6 @@ window.electron.ipcRenderer.on(
     { filePaths: importedFolders, importRelativePath, curationMode, useContentsOfFolder }
   ) => {
     try {
-      console.log("curationMode:", curationMode);
       if (!importRelativePath) {
         throw new Error("The 'importRelativePath' property is missing in the response.");
       }
@@ -2793,31 +2792,13 @@ window.electron.ipcRenderer.on(
 
       // If useContentsOfFolder is true, get the contents of the folder instead of using the folder itself
       let foldersToImport = importedFolders;
-      console.log(
-        "[selected-folders-organize-datasets] useContentsOfFolder flag:",
-        useContentsOfFolder
-      );
-      console.log(
-        "[selected-folders-organize-datasets] Original importedFolders:",
-        importedFolders
-      );
 
       if (useContentsOfFolder && importedFolders.length === 1) {
         const folderPath = importedFolders[0];
-        console.log(
-          "[selected-folders-organize-datasets] Folder path to extract contents from:",
-          folderPath
-        );
 
         const contents = await window.fs.readdirSync(folderPath);
-        console.log("[selected-folders-organize-datasets] All contents of folder:", contents);
 
         foldersToImport = contents.map((item) => window.path.join(folderPath, item));
-
-        console.log(
-          "[selected-folders-organize-datasets] Final foldersToImport (all contents):",
-          foldersToImport
-        );
       }
 
       // Use the current file explorer path or the provided relative path
