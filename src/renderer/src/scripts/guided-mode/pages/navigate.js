@@ -136,6 +136,12 @@ nextButton.addEventListener("click", handleNextButtonClick);
 
 const backButton = document.getElementById("guided-back-button");
 backButton.addEventListener("click", handleBackButtonClick);
+
+// Exit button click handler (exit without saving)
+document.getElementById("guided-button-exit").addEventListener("click", async () => {
+  await guidedSaveAndExit();
+});
+
 // Save and exit button click handlers
 document.getElementById("guided-button-save-and-exit").addEventListener("click", async () => {
   await guidedSaveAndExit();

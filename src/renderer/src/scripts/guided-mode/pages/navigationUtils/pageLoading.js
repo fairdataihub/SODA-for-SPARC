@@ -54,12 +54,14 @@ export const guidedSetNavLoadingState = (loadingState) => {
   const mainBackButton = document.getElementById("guided-back-button");
   const mainContinueButton = document.getElementById("guided-next-button");
   const saveAndExitButton = document.getElementById("guided-button-save-and-exit");
+  const exitButton = document.getElementById("guided-button-exit");
   setSideBarLoadingState(loadingState);
 
   if (loadingState === true) {
     mainBackButton.disabled = true;
     mainContinueButton.disabled = true;
     saveAndExitButton.disabled = true;
+    exitButton.disabled = true;
     mainBackButton.classList.add("loading");
     mainContinueButton.classList.add("loading");
   }
@@ -70,6 +72,7 @@ export const guidedSetNavLoadingState = (loadingState) => {
     mainBackButton.classList.remove("loading");
     mainContinueButton.classList.remove("loading");
     saveAndExitButton.disabled = false;
+    exitButton.disabled = false;
 
     // Hide the loading div if the loading div was showing
     setPageLoadingState(false);

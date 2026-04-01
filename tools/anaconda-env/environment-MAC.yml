@@ -34,5 +34,8 @@ dependencies:
   - requests == 2.31.0
   - backports.tarfile
   - setuptools == 71.0.4
+  # NOTE: Keep pysodafair and the --extra-index-url line at the bottom of this file.
+  # The GitHub Actions build workflow automatically uncomments the extra-index-url line
+  # for beta versions to install pysodafair from TestPyPI instead of PyPI.
   # - --extra-index-url https://test.pypi.org/simple/
   - pysodafair

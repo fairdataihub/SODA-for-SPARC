@@ -93,13 +93,26 @@ const handleNextButtonVisibility = (targetPageID) => {
 };
 
 const handleSaveAndExitButtonVisibility = (targetPageID) => {
+  const exitButton = document.getElementById("guided-button-exit");
+  const saveAndExitButton = document.getElementById("guided-button-save-and-exit");
+
   if (
     targetPageID === "guided-select-starting-point-tab" ||
     targetPageID === "ffm-select-starting-point-tab"
   ) {
-    $("#guided-button-save-and-exit").css("visibility", "hidden");
+    exitButton.classList.add("hidden");
+    saveAndExitButton.classList.add("hidden");
   } else {
-    $("#guided-button-save-and-exit").css("visibility", "visible");
+    // If the datasetName is set (required for save and exit) show the save and exit button,
+    // otherwise show the exit button (skips the saving process)
+    const datasetName = window.sodaJSONObj?.["digital-metadata"]?.["name"];
+    if (datasetName) {
+      saveAndExitButton.classList.remove("hidden");
+      exitButton.classList.add("hidden");
+    } else {
+      exitButton.classList.remove("hidden");
+      saveAndExitButton.classList.add("hidden");
+    }
   }
 };
 
