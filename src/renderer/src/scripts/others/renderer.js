@@ -6729,11 +6729,7 @@ directToOrganize.addEventListener("click", async () => {
       { timeout: 0 }
     )
     .then((res) => {
-      console.log("Done Running [ /curation endpoing]");
-      uploading = false;
-      let stop = Date.now();
-      let timeElapsed = (stop - now) / 1000; // in seconds
-      console.log(timeElapsed);
+      console.log("Done Running [ /curation endpoint]");
     })
     .catch(async (e) => {
       let stop = Date.now();
@@ -6749,9 +6745,10 @@ directToOrganize.addEventListener("click", async () => {
     });
 
   const getProgress = async () => {
-    while (uploading) {
+    while (!uploading) {
       try {
         let data = await client.get("http://localhost:4242/startup/curation/progress");
+        uploading = data["done"];
         await new Promise((resolve) => setTimeout(resolve, 1000));
       } catch (e) {
         let stop = Date.now();

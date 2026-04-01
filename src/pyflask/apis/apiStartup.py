@@ -9,6 +9,7 @@ import requests
 import boto3
 import os
 from configparser import ConfigParser
+import threading
 
 
 
@@ -121,6 +122,34 @@ generate_start_time = 0
 main_curate_progress_message = ""
 
 
+upload_subprocess = None
+ps = None
+thread = None
+session_manifest_id = None
+done = False
+
+def monitor_subscriber_progress(events_dict):
+    """
+    Monitors the progress of a subscriber and unsubscribes once the upload finishes. 
+    """
+    global done
+
+
+    if events_dict["type"] == 1:  # upload status: file_id, total, current, worker_id
+        file_id = events_dict["upload_status"].file_id
+        total_bytes_to_upload = events_dict["upload_status"].total
+        current_bytes_uploaded = events_dict["upload_status"].current
+
+        status = events_dict["upload_status"].status
+        if status == "2" or status == 2:
+            done = True
+            ps.unsubscribe(10)
+            api.logger.info("[UPLOAD COMPLETE EVENT RECEIVED]")
+
+
+def subscribe_manifest(ps, manifest_id):
+    ps.manifest.upload(manifest_id)
+    ps.subscribe(10, False, monitor_subscriber_progress)
 
 
 
@@ -131,29 +160,16 @@ class Curation(Resource):
     description="Given a sodajsonobject generate a dataset. Used in the final step of Organize Datasets.")   
     @api.marshal_with(model_main_curation_function_response)
     def post(self):
-        global generate_start_time 
+        global generate_start_time
+        global ps
+        global upload_subprocess
+        global thread
+        global session_manifest_id
         generate_start_time = time.time()
 
         data = request.get_json()
 
         api.logger.info('/curation POST request')
-        def monitor_subscriber_progress(events_dict):
-            """
-            Monitors the progress of a subscriber and unsubscribes once the upload finishes. 
-            """
-
-
-            if events_dict["type"] == 1:  # upload status: file_id, total, current, worker_id
-                file_id = events_dict["upload_status"].file_id
-                total_bytes_to_upload = events_dict["upload_status"].total
-                current_bytes_uploaded = events_dict["upload_status"].current
-
-                status = events_dict["upload_status"].status
-                if status == "2" or status == 2:
-                    ps.unsubscribe(10)
-                    api.logger.info("[UPLOAD COMPLETE EVENT RECEIVED]")
-                
-
         api.logger.info('Getting account name')
         account_name = get_account_name()
         api.logger.info("Got account name")
@@ -171,9 +187,8 @@ class Curation(Resource):
         folder_path = os.path.join(os.path.expanduser("~"), "400GB-dataset")
         md = ps.manifest.create(folder_path, "/")
 
-        ps.manifest.upload(md.manifest_id)
-
-        ps.subscribe(10, False, monitor_subscriber_progress)
+        thread = threading.Thread(target=subscribe_manifest, args=(ps, md.manifest_id))
+        thread.start()
 
         api.logger.info("Finished upload and returned from subscriber")
 
@@ -195,6 +210,7 @@ class CurationProgress(Resource):
     def get(self):
         global generate_start_time
         global main_curate_progress_message
+        global done
         return {
             "main_curate_status": "Generating that dataset",
             "start_generate": 1,
@@ -206,6 +222,7 @@ class CurationProgress(Resource):
             "generated_dataset_id": "N:dataset:test",
             "generated_dataset_int_id": 1234,
             "curation_error_message": "Whoops forry folks",
+            "done": done
         }
 
 
