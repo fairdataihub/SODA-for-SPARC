@@ -6745,10 +6745,13 @@ directToOrganize.addEventListener("click", async () => {
     });
 
   const getProgress = async () => {
-    while (!uploading) {
+    while (true) {
       try {
         let data = await client.get("http://localhost:4242/startup/curation/progress");
-        uploading = data["done"];
+        let done = data["done"];
+        if (done) {
+          break;
+        }
         await new Promise((resolve) => setTimeout(resolve, 1000));
       } catch (e) {
         let stop = Date.now();
