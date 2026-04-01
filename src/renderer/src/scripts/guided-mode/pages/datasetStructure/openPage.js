@@ -23,6 +23,17 @@ export const openPageDatasetStructure = async (targetPageID) => {
   // Add handlers for other pages without componentType
 
   if (targetPageID === "guided-dataset-structure-and-manifest-review-tab") {
+    // Update the description text based on curation mode
+    const datasetStructureInfoText = document.getElementById("guided-text-dataset-structure-info");
+    const curationMode = window.sodaJSONObj?.["curation-mode"];
+    if (curationMode === "free-form") {
+      datasetStructureInfoText.textContent =
+        "The dataset structure below displays the folder structure of your dataset as it will be when uploaded to Pennsieve.";
+    } else {
+      datasetStructureInfoText.textContent =
+        "The dataset structure below displays the folder structure of your dataset as it will be when it is generated locally and/or on Pennsieve.";
+    }
+
     // If we are uploading to an existing Pennsieve dataset, check if the dataset is empty or not.
     // If it is not empty, disable manifest generation as we currently do not support manifest generation for existing Pennsieve datasets in guided mode. If it is empty, we can allow manifest generation since there will not be any conflicts with existing files on Pennsieve.
 
