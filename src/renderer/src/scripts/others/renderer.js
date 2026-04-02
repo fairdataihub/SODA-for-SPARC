@@ -6730,6 +6730,7 @@ directToOrganize.addEventListener("click", async () => {
     )
     .then((res) => {
       console.log("Done Running [ /curation endpoint]");
+      subscribe();
     })
     .catch(async (e) => {
       let stop = Date.now();
@@ -6795,7 +6796,6 @@ directToOrganize.addEventListener("click", async () => {
     console.log("Subscriber noticed upload is complete and stopped subscribing");
   };
 
-  subscribe();
   getProgress();
 });
 
