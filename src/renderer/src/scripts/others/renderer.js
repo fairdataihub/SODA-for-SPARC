@@ -6770,7 +6770,33 @@ directToOrganize.addEventListener("click", async () => {
     console.log("Progress checking noticed uploading flag is false and stopped polling");
   };
 
-  await getProgress();
+  const subscribe = async () => {
+    while (true) {
+      try {
+        console.log(`Started one subscriber session at ${new Date().toLocaleTimeString()}`);
+        let data = await client.post("http://localhost:4242/startup/curation/subscribe");
+        let done = data.data()["done"];
+        if (done) {
+          break;
+        }
+        console.log(`Returned from one subscriber session at ${new Date().toLocaleTimeString()}`);
+        await new Promise((resolve) => setTimeout(resolve, 10000));
+      } catch (e) {
+        if (!e.response && e.request && e.isAxiosError) {
+          await swalShowError(
+            "Network Error",
+            "The server did not respond. Please close SODA and reopen it to try the upload again. SODA will remember any progress in the upload you have made. If the problem persists, please contact support."
+          );
+        }
+        clientError(e);
+        break;
+      }
+    }
+    console.log("Subscriber noticed upload is complete and stopped subscribing");
+  };
+
+  subscribe();
+  getProgress();
 });
 
 document

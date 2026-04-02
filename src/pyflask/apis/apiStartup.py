@@ -127,13 +127,22 @@ ps = None
 thread = None
 session_manifest_id = None
 done = False
+session_timer = None
 
 def monitor_subscriber_progress(events_dict):
     """
     Monitors the progress of a subscriber and unsubscribes once the upload finishes. 
     """
     global done
+    global session_timer
 
+    now = time.time()
+
+    elapsed_time = now - session_timer
+
+    if elapsed_time > 1800:
+        ps.unsubscribe(10)
+        api.logger.info("[SUBSCRIBER PAUSED]")
 
     if events_dict["type"] == 1:  # upload status: file_id, total, current, worker_id
         file_id = events_dict["upload_status"].file_id
@@ -149,7 +158,6 @@ def monitor_subscriber_progress(events_dict):
 
 def subscribe_manifest(ps, manifest_id):
     ps.manifest.upload(manifest_id)
-    ps.subscribe(10, False, monitor_subscriber_progress)
 
 
 
@@ -202,6 +210,18 @@ class Curation(Resource):
         }
 
 
+@api.route("/curation/subscribe")
+class CurationSubscription(Resource):
+    def post(self):
+        global ps
+        global session_timer
+        global done
+
+        session_timer = time.time()
+
+        ps.subscribe(10, False, monitor_subscriber_progress)
+
+        return {"session_complete": True, "done": done}
 
 
 
