@@ -135,6 +135,7 @@ def monitor_subscriber_progress(events_dict):
     """
     global done
     global session_timer
+    global ps
 
     now = time.time()
 
