@@ -6775,8 +6775,8 @@ directToOrganize.addEventListener("click", async () => {
     while (true) {
       try {
         console.log(`Started one subscriber session at ${new Date().toLocaleTimeString()}`);
-        let data = await client.post("http://localhost:4242/startup/curation/subscribe");
-        let done = data.data()["done"];
+        let r = await client.post("http://localhost:4242/startup/curation/subscribe");
+        let done = r.data["done"];
         if (done) {
           break;
         }
