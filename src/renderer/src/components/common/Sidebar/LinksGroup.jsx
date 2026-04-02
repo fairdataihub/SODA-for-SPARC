@@ -100,6 +100,9 @@ async function handlePageNavigation(page, currentPage) {
  * Renders a button for a given page.
  */
 function PageButton({ page, isActive, isNextPageToComplete, isLoading }) {
+  const isClickable = page.completed || isActive || isNextPageToComplete;
+  const isDisabled = !isClickable && !isLoading;
+
   return (
     <Button
       variant="subtle"
@@ -111,14 +114,15 @@ function PageButton({ page, isActive, isNextPageToComplete, isLoading }) {
       className={`
         ${classes.pageButton} ${isActive ? classes.pageButtonActive : ""}
         ${isNextPageToComplete ? classes.nextPageToComplete : ""}
-        ${!page.completed && !isActive && !isNextPageToComplete ? classes.disabled : ""}
+        ${isDisabled ? classes.disabled : ""}
       `}
       style={{
         fontWeight: isActive ? 600 : 400,
-        opacity: isLoading ? 0.5 : 1,
-        pointerEvents: isLoading ? "none" : "auto",
+        opacity: isDisabled ? 0.3 : isLoading ? 0.5 : 1,
+        pointerEvents: isDisabled || isLoading ? "none" : "auto",
+        cursor: isClickable && !isLoading ? "pointer" : "not-allowed",
       }}
-      onClick={() => handlePageNavigation(page, window.CURRENT_PAGE?.id)}
+      onClick={() => isClickable && handlePageNavigation(page, window.CURRENT_PAGE?.id)}
     >
       <Text
         style={{
