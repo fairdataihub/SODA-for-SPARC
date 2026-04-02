@@ -2776,7 +2776,7 @@ window.electron.ipcRenderer.on(
     { filePaths: importedFolders, importRelativePath, curationMode, useContentsOfFolder }
   ) => {
     try {
-      if (!importRelativePath) {
+      if (importRelativePath == null) {
         throw new Error("The 'importRelativePath' property is missing in the response.");
       }
 

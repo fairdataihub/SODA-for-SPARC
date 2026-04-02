@@ -3396,16 +3396,19 @@ gmDragDropElementId.addEventListener("drop", (event) => {
 });
 
 const ffmDragDropElementId = document.getElementById("ffm-data-importer-dropzone");
+
 ffmDragDropElementId.addEventListener("click", (event) => {
   event.preventDefault();
+
   window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog", {
-    importRelativePath: "/",
+    importRelativePath: "",
     curationMode: "free-form",
     useContentsOfFolder: true,
   });
 });
 ffmDragDropElementId.addEventListener("drop", async (event) => {
   event.preventDefault();
+
   const itemsDroppedInFileExplorer = Array.from(event.dataTransfer.files).map((file) => file.path);
 
   if (itemsDroppedInFileExplorer.length > 1) {
@@ -3419,8 +3422,10 @@ ffmDragDropElementId.addEventListener("drop", async (event) => {
   }
 
   const droppedPath = itemsDroppedInFileExplorer[0];
+
   try {
     const isDirectory = await window.fs.isDirectory(droppedPath);
+
     if (!isDirectory) {
       window.notyf.open({
         type: "error",
@@ -3442,7 +3447,7 @@ ffmDragDropElementId.addEventListener("drop", async (event) => {
 
   window.electron.ipcRenderer.send("file-explorer-dropped-datasets", {
     filePaths: itemsDroppedInFileExplorer,
-    importRelativePath: "/",
+    importRelativePath: "",
     curationMode: "free-form",
     useContentsOfFolder: true,
   });

@@ -598,7 +598,7 @@ ipcMain.on("file-explorer-dropped-datasets", (event, args) => {
 });
 
 ipcMain.on("open-folders-organize-datasets-dialog", async (event, args) => {
-  if (!args?.importRelativePath) {
+  if (args?.importRelativePath == null) {
     console.error(
       "[main-process] The 'importRelativePath' property is required but was not provided."
     );
