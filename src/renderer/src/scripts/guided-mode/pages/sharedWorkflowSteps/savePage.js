@@ -107,7 +107,7 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
     ) {
       errorArray.push({
         type: "notyf",
-        message: "Please select where you would like to generate.// your dataset.",
+        message: "Please select where you would like to generate your dataset.",
       });
       throw errorArray;
     }
