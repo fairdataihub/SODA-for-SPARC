@@ -157,9 +157,6 @@ def monitor_subscriber_progress(events_dict):
             api.logger.info("[UPLOAD COMPLETE EVENT RECEIVED]")
 
 
-def subscribe_manifest(ps, manifest_id):
-    ps.manifest.upload(manifest_id)
-
 
 
 @api.route("/curation")
@@ -196,16 +193,13 @@ class Curation(Resource):
         folder_path = os.path.join(os.path.expanduser("~"), "400GB-dataset")
         md = ps.manifest.create(folder_path, "/")
 
-        thread = threading.Thread(target=subscribe_manifest, args=(ps, md.manifest_id))
-        thread.start()
-
-        api.logger.info("Finished upload and returned from subscriber")
+        api.logger.info("Finished creating the upload manifest and returned from /curation/manifest")
 
         return {
             "main_curate_progress_message": "Finished",
             "main_total_generate_dataset_size": "Bigly",
             "main_curation_uploaded_files": 400,
-            "local_manifest_id": "23",
+            "local_manifest_id": md.manifest_id,
             "origin_manifest_id": "24",
             "main_curation_total_files": 24456
         }

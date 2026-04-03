@@ -23,6 +23,7 @@ import "./spreadsheet-import-gm";
 import "./shell";
 import "./templates";
 import "./clipboard";
+import "./pennsieve-agent";
 
 app.showExitPrompt = true;
 

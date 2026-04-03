@@ -6728,9 +6728,26 @@ directToOrganize.addEventListener("click", async () => {
       },
       { timeout: 0 }
     )
-    .then((res) => {
+    .then(async (res) => {
       console.log("Done Running [ /curation endpoint]");
+      let manifestId = res.data["local_manifest_id"];
+
+      const removeListener = window.pennsieve.onUploadProgress((line) => {
+        console.log("Upload progress:", line);
+      });
+
       subscribe();
+
+      try {
+        await window.pennsieve.uploadManifest(manifestId);
+        console.log("Upload complete");
+      } catch (err) {
+        console.error("Upload failed:", err.message);
+      } finally {
+        removeListener(); // Always clean up the listener
+      }
+
+      // make a pennsieve agent cli command to start the upload
     })
     .catch(async (e) => {
       let stop = Date.now();

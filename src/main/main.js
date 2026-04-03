@@ -9,6 +9,7 @@ const contextMenu = require("electron-context-menu");
 const log = require("electron-log");
 require("v8-compile-cache");
 const { ipcMain } = require("electron");
+const { spawn } = require("node:child_process");
 const { autoUpdater } = require("electron-updater");
 const { JSONStorage } = require("node-localstorage");
 const { trackEvent, trackKombuchaEvent } = require("./scripts/others/analytics/analytics");
@@ -231,6 +232,37 @@ const sendUserAnalytics = () => {
 // 5.4.1 change: We call createPyProc in a spearate ready event
 // app.on("ready", createPyProc);
 // 5.4.1 change: We call exitPyreProc when all windows are killed so it has time to kill the process before closing
+
+/*************************************************************
+ *
+ *
+ * PENNSIEVE AGENT UPLOAD
+ */
+
+ipcMain.handle("pennsieve:upload-manifest", (event, manifestId) => {
+  return new Promise((resolve, reject) => {
+    const proc = spawn("pennsieve", ["upload", "manifest", manifestId], {
+      shell: true,
+      env: process.env,
+    });
+
+    proc.stdout.on("data", (data) => {
+      // Stream progress lines back to the renderer
+      event.sender.send("pennsieve:upload-progress", data.toString());
+    });
+
+    proc.stderr.on("data", (data) => {
+      event.sender.send("pennsieve:upload-progress", data.toString());
+    });
+
+    proc.on("close", (code) => {
+      if (code === 0) resolve({ success: true });
+      else reject(new Error(`pennsieve agent exited with code ${code}`));
+    });
+
+    proc.on("error", (err) => reject(err));
+  });
+});
 /*************************************************************
  * Main app window
  *************************************************************/
