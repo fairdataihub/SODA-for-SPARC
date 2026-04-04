@@ -446,7 +446,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     const manifestFileGenerationDisabled = useGlobalStore.getState().manifestFileGenerationDisabled;
 
     if (!manifestFileGenerationDisabled) {
-      const guidedManifestData = window.sodaJSONObj["guided-manifest-file-data"];
+      const guidedManifestData = window.sodaJSONObj["dataset_metadata"]?.["manifest_file"];
       // console log the first 3 rows of data
 
       const manifestObjects = convertGuidedManifestToSchema(guidedManifestData);

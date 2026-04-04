@@ -149,6 +149,7 @@ export const openPageDatasetStructure = async (targetPageID) => {
         { dataset_structure_obj: responseData["dataset-structure"] },
         { timeout: 0 }
       );
+      console.log("manifestRes:", manifestRes);
 
       const newManifestData = { headers: manifestRes.shift(), data: manifestRes };
 
@@ -285,10 +286,10 @@ export const openPageDatasetStructure = async (targetPageID) => {
       };
 
       // Merge with existing manifest diff (if any)
-      const guidedManifestData = window.sodaJSONObj["guided-manifest-file-data"]
+      const guidedManifestData = window.sodaJSONObj["dataset_metadata"]?.["manifest_file"]
         ? window.diffCheckManifestFiles(
             newManifestData,
-            window.sodaJSONObj["guided-manifest-file-data"]
+            window.sodaJSONObj["dataset_metadata"]["manifest_file"]
           )
         : newManifestData;
 
@@ -297,7 +298,10 @@ export const openPageDatasetStructure = async (targetPageID) => {
       updateAlsoInDatasetColumn(guidedManifestData.data);
 
       // Save final manifest data
-      window.sodaJSONObj["guided-manifest-file-data"] = guidedManifestData;
+      if (!window.sodaJSONObj["dataset_metadata"]) {
+        window.sodaJSONObj["dataset_metadata"] = {};
+      }
+      window.sodaJSONObj["dataset_metadata"]["manifest_file"] = guidedManifestData;
     }
   }
 

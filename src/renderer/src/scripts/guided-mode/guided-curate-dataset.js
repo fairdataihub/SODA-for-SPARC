@@ -740,7 +740,7 @@ window.handleGuidedModeOrganizationConfirmationClick = async (curationModePrefix
 };
 
 window.guidedOpenManifestEditSwal = async () => {
-  const existingManifestData = window.sodaJSONObj["guided-manifest-file-data"];
+  const existingManifestData = window.sodaJSONObj["dataset_metadata"]["manifest_file"];
   //send manifest data to main.js to then send to child window
   window.electron.ipcRenderer.invoke("spreadsheet", existingManifestData);
 
@@ -752,7 +752,13 @@ window.guidedOpenManifestEditSwal = async () => {
     } else {
       window.electron.ipcRenderer.removeAllListeners("spreadsheet-reply");
 
-      window.sodaJSONObj["guided-manifest-file-data"] = { headers: result[0], data: result[1] };
+      if (!window.sodaJSONObj["dataset_metadata"]) {
+        window.sodaJSONObj["dataset_metadata"] = {};
+      }
+      window.sodaJSONObj["dataset_metadata"]["manifest_file"] = {
+        headers: result[0],
+        data: result[1],
+      };
       await guidedSaveProgress();
     }
   });
@@ -786,7 +792,7 @@ window.guidedCreateLocalManifestCopy = async () => {
     }
 
     // Step 3: Retrieve the manifest data from the current sodaJSONObj
-    const manifestData = window.sodaJSONObj["guided-manifest-file-data"];
+    const manifestData = window.sodaJSONObj["dataset_metadata"]?.["manifest_file"];
     if (!manifestData) {
       window.notyf.open({
         type: "error",
