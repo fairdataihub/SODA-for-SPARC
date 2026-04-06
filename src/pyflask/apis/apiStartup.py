@@ -128,6 +128,7 @@ thread = None
 session_manifest_id = None
 done = False
 session_timer = None
+session_dataset_id = None
 
 def monitor_subscriber_progress(events_dict):
     """
@@ -171,6 +172,7 @@ class Curation(Resource):
         global upload_subprocess
         global thread
         global session_manifest_id
+        global session_dataset_id
         generate_start_time = time.time()
 
         data = request.get_json()
@@ -189,9 +191,12 @@ class Curation(Resource):
         api.logger.info("Dataset created")
         ds_id = r.json()["content"]["id"]
         ps.set_dataset(ds_id)
+        session_dataset_id = ds_id
         main_curate_progress_message = ("Uploading data files...")
         folder_path = os.path.join(os.path.expanduser("~"), "400GB-dataset")
         md = ps.manifest.create(folder_path, "/")
+
+        ps = None
 
         api.logger.info("Finished creating the upload manifest and returned from /curation/manifest")
 
@@ -211,10 +216,18 @@ class CurationSubscription(Resource):
         global ps
         global session_timer
         global done
+        global session_dataset_id
 
         session_timer = time.time()
+        account_name = get_account_name()
+        ps = connect_pennsieve_client(account_name)
+        ps.set_dataset(session_dataset_id)
 
+        api.logger.info("Creating subscription session")
         ps.subscribe(10, False, monitor_subscriber_progress)
+        api.logger.info("End of subscription session")
+
+        ps = None
 
         return {"session_complete": True, "done": done}
 
