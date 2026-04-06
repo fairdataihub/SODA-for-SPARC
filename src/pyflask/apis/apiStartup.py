@@ -144,7 +144,8 @@ def monitor_subscriber_progress(events_dict):
 
     if elapsed_time > 1800:
         ps.unsubscribe(10)
-        api.logger.info("[SUBSCRIBER PAUSED]")
+        ps = None
+        api.logger.info("[SUBSCRIBER Ended]")
 
     if events_dict["type"] == 1:  # upload status: file_id, total, current, worker_id
         file_id = events_dict["upload_status"].file_id
@@ -154,8 +155,10 @@ def monitor_subscriber_progress(events_dict):
         status = events_dict["upload_status"].status
         if status == "2" or status == 2:
             done = True
-            ps.unsubscribe(10)
+            ps.unsubscribe(10) 
+            ps = None
             api.logger.info("[UPLOAD COMPLETE EVENT RECEIVED]")
+
 
 
 
@@ -218,16 +221,17 @@ class CurationSubscription(Resource):
         global done
         global session_dataset_id
 
-        session_timer = time.time()
+
         account_name = get_account_name()
+        api.logger.info("Trying to connect to the Pennsieve client")
         ps = connect_pennsieve_client(account_name)
+        api.logger.info("Connected to the Pennsieve client")
         ps.set_dataset(session_dataset_id)
 
         api.logger.info("Creating subscription session")
-        ps.subscribe(10, False, monitor_subscriber_progress)
-        api.logger.info("End of subscription session")
-
-        ps = None
+        session_timer = time.time()
+        thread = threading.Thread(target=ps.subscribe, args=(10, False, monitor_subscriber_progress))
+        thread.start()
 
         return {"session_complete": True, "done": done}
 

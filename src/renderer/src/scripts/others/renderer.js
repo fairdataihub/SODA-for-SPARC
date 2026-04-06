@@ -6795,23 +6795,27 @@ directToOrganize.addEventListener("click", async () => {
         let r = await client.post(
           "http://localhost:4242/startup/curation/subscribe",
           { basic: "data" },
-          { timeout: 0 }
+          { timeout: 60000 }
         );
         let done = r.data["done"];
         if (done) {
           break;
         }
-        console.log(`Returned from one subscriber session at ${new Date().toLocaleTimeString()}`);
+        console.log(
+          `Returned from one subscriber session at ${new Date().toLocaleTimeString()}. Check backend for when this sub ends. `
+        );
         await new Promise((resolve) => setTimeout(resolve, 10000));
       } catch (e) {
-        if (!e.response && e.request && e.isAxiosError) {
+        if (e.request?.code === "ECONNABORTED") {
+          console.log("PS took more than 1 minute to connect. Ending attempt and trying again.");
+        } else if (!e.response && e.request && e.isAxiosError) {
           await swalShowError(
             "Network Error",
             "The server did not respond. Please close SODA and reopen it to try the upload again. SODA will remember any progress in the upload you have made. If the problem persists, please contact support."
           );
+          break;
         }
         clientError(e);
-        break;
       }
     }
     console.log("Subscriber noticed upload is complete and stopped subscribing");
