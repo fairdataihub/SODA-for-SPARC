@@ -6804,7 +6804,7 @@ directToOrganize.addEventListener("click", async () => {
         console.log(
           `Returned from one subscriber session at ${new Date().toLocaleTimeString()}. Check backend for when this sub ends. `
         );
-        await new Promise((resolve) => setTimeout(resolve, 10000));
+        await new Promise((resolve) => setTimeout(resolve, 1800000));
       } catch (e) {
         if (e.request?.code === "ECONNABORTED") {
           console.log("PS took more than 1 minute to connect. Ending attempt and trying again.");
