@@ -3357,32 +3357,6 @@ document
     }
   });
 
-const doTheHack = async () => {
-  // wait for a second
-  await new Promise((resolve) => setTimeout(resolve, 5000));
-  document.getElementById("button-homepage-guided-mode").click();
-  document.getElementById("guided-button-resume-progress-file").click();
-  // wait for 5 seconds
-  await new Promise((resolve) => setTimeout(resolve, 4000));
-
-  // Search the dom for the first button with data-progress-file-name attribute
-  const progressFileButton = document.querySelector("button[data-progress-file-name]");
-  if (progressFileButton) {
-    progressFileButton.click();
-  } else {
-    // wait for 3 more seconds then click
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    const fallbackButton = document.querySelector("button[data-progress-file-name]");
-    if (fallbackButton) {
-      fallbackButton.click();
-    }
-  }
-  // wait for 4 seconds then click the next button
-  await new Promise((resolve) => setTimeout(resolve, 4000));
-  document.querySelector(".primary-selection-aside-item.selection-aside-item").click();
-};
-
-// Add the event listener for the Data importation component
 const gmDragDropElementId = document.getElementById("gm-data-importer-dropzone");
 gmDragDropElementId.addEventListener("click", (event) => {
   event.preventDefault();
