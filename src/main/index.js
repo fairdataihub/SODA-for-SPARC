@@ -417,7 +417,7 @@ const createPyProc = async () => {
     return;
   }
 
-  uploadAppProcess = execFile(script, [port], (error, stdout, stderr) => {
+  uploadAppProcess = execFile(uploadScript, [port], (error, stdout, stderr) => {
     if (error) {
       console.error(error);
       log.error(error);
