@@ -21,7 +21,7 @@ win:
       to: ./file_templates
     - from: ./metadata_templates
       to: ./metadata_templates
-    - from: ./pyflaskdist/uploadApp
+    - from: ./pyflaskdist/app
     - from: ./dist/uploadApp
     - from: ./schema
       to: ./schema
@@ -37,7 +37,7 @@ mac:
   icon: "app-icon/png/icon.png"
   entitlementsInherit: ./entitlements.mac.inherit.plist
   extraResources:
-    - from: ./pyflaskdist/uploadApp
+    - from: ./pyflaskdist/app
     - from: ./dist/uploadApp
     - from: ./file_templates
       to: ./file_templates
@@ -53,7 +53,7 @@ linux:
   target:
     - AppImage
   extraResources:
-    - from: ./pyflaskdist/uploadApp
+    - from: ./pyflaskdist/app
     - from: ./dist/uploadApp
     - from: ./file_templates
       to: ./file_templates
