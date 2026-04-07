@@ -88,7 +88,8 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
 
       $("#guided-next-button").css("visibility", "visible");
       if (window.sodaJSONObj["curation-mode"] === "free-form") {
-        $("#guided-button-save-and-exit").css("visibility", "hidden");
+        // Hide the save and exit button (continue will exit them out automatically)
+        document.getElementById("guided-button-save-and-exit").classList.add("hidden");
       }
 
       await guidedSaveProgress();
