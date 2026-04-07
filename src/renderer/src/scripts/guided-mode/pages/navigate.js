@@ -160,17 +160,20 @@ const guidedSaveAndExit = async () => {
     transitionFromGuidedModeToHome();
     return;
   }
+  const curationMode = window.sodaJSONObj["curation-mode"];
+  const curationModeText =
+    curationMode === "guided" ? "Prepare a Dataset Step-by-Step" : "Upload a SDS Compliant Dataset";
+
   const { value: returnToGuidedHomeScreen } = await Swal.fire({
     title: "Are you sure?",
-    text: `Exiting Guided Mode will discard any changes you have made on the
-      current page. You will be taken back to the homescreen, where you will be able
+    text: `Exiting ${curationModeText} will take you back to the homescreen, where you will be able
       to continue the current dataset you are curating which will be located under datasets
       in progress.`,
     icon: "warning",
     showCancelButton: true,
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
-    confirmButtonText: "Exit guided mode",
+    confirmButtonText: "Exit to Home Screen",
     heightAuto: false,
     backdrop: "rgba(0,0,0,0.4)",
   });
