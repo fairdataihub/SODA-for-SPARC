@@ -6719,6 +6719,12 @@ directToOrganize.addEventListener("click", async () => {
   console.log("Running now");
   let now = Date.now();
   let uploading = true;
+  let datasetId = null;
+
+  let uploadSubClient = axios.create({
+    baseURL: `http://127.0.0.1:${8000}`,
+    timeout: 0,
+  });
 
   client
     .post(
@@ -6731,6 +6737,7 @@ directToOrganize.addEventListener("click", async () => {
     .then(async (res) => {
       console.log("Done Running [ /curation endpoint]");
       let manifestId = res.data["local_manifest_id"];
+      datasetId = res.data["dataset_id"];
 
       const removeListener = window.pennsieve.onUploadProgress((line) => {
         console.log("Upload progress:", line);
@@ -6792,11 +6799,7 @@ directToOrganize.addEventListener("click", async () => {
     while (true) {
       try {
         console.log(`Started one subscriber session at ${new Date().toLocaleTimeString()}`);
-        let r = await client.post(
-          "http://localhost:4242/startup/curation/subscribe",
-          { basic: "data" },
-          { timeout: 60000 }
-        );
+        let r = await uploadSubClient.post("/curation/subscribe", { dataset_id: datasetId });
         let done = r.data["done"];
         if (done) {
           break;

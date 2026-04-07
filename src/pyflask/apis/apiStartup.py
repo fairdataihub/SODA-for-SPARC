@@ -209,7 +209,8 @@ class Curation(Resource):
             "main_curation_uploaded_files": 400,
             "local_manifest_id": md.manifest_id,
             "origin_manifest_id": "24",
-            "main_curation_total_files": 24456
+            "main_curation_total_files": 24456,
+            "dataset_id": ds_id
         }
 
 

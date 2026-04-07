@@ -114,13 +114,13 @@ def connect_pennsieve_client(account_name):
     return Pennsieve(profile_name=account_name)
 
 
-@app.route("/curation/subscribe", methods=["GET"])
+@app.route("/curation/subscribe", methods=["POST"])
 def curationSubscription():
       global session_timer
       global done
 
       # get query args
-      d_id = request.args.get('dataset_id')
+      d_id = request.get_json('dataset_id')
 
       account_name = get_account_name()
       app.logger.info("Trying to connect to the Pennsieve client")
