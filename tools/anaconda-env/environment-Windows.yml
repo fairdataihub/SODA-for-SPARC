@@ -78,3 +78,4 @@ dependencies:
     - zope-interface==6.1
     - backports.tarfile
     - pysodafair
+    - gunicorn
