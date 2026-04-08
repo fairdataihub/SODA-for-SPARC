@@ -13,58 +13,104 @@ while (!window.baseHtmlLoaded) {
 
 let failedFilesPathsList = [];
 
+/**
+ * Updates UI to show the appropriate success message based on curation mode
+ */
+const showVerificationCompleteMessage = () => {
+  const curationMode = window.sodaJSONObj["curation-mode"];
+  const prefix = curationMode === "free-form" ? "ffm" : "guided";
+  const oppositePrefix = curationMode === "free-form" ? "guided" : "ffm";
+
+  console.log(`[Verification] Showing verification complete message for mode: ${prefix}`);
+
+  document
+    .getElementById(`${oppositePrefix}-dataset-upload-complete-message`)
+    .classList.add("hidden");
+  document.getElementById(`${prefix}-dataset-upload-complete-message`).classList.remove("hidden");
+  document.getElementById(`${prefix}-dataset-upload-complete-message`).scrollIntoView({
+    behavior: "smooth",
+  });
+};
+
+/**
+ * Handles the file verification process when user clicks "Verify Files" button
+ * - Disables relevant UI controls
+ * - Runs file verification against Pennsieve manifest
+ * - Displays appropriate success/failure message
+ * - Re-enables UI controls
+ */
 document
   .querySelector("#guided-section-file-upload-verification-button")
   .addEventListener("click", async () => {
+    console.log("[Verification] File verification button clicked");
+
+    // Prepare UI
+    console.log("[Verification] Preparing verification UI");
     document.querySelector("#guided-section-validate-dataset-upload").classList.remove("hidden");
-    // scroll to the guided-section-validate-dataset-upload div
     document.querySelector("#guided-section-validate-dataset-upload").scrollIntoView({
       behavior: "smooth",
     });
+    document
+      .getElementById("guided--validate-dataset-failed-table")
+      .getElementsByTagName("tbody")[0].innerHTML = "";
 
-    // disable self so verification cannot be re-ran without a retry
+    // Disable buttons
+    console.log("[Verification] Disabling verification buttons");
     document.querySelector("#guided-section-file-upload-verification-button").disabled = true;
     document.querySelector("#guided--skip-verify-btn").disabled = true;
     document.querySelector("#guided-next-button").disabled = true;
     document.querySelector("#guided-button-save-and-exit").disabled = true;
 
-    // reset the failed files table
-    document
-      .getElementById("guided--validate-dataset-failed-table")
-      .getElementsByTagName("tbody")[0].innerHTML = "";
-
     try {
-      await window.monitorUploadFileVerificationProgressGuided();
+      console.log("[Verification] Starting file verification process");
+
+      // Monitor file verification
+      const manifestId = window.pennsieveManifestId;
+      let verifiedFilesCount = 0;
+      failedFilesPathsList = [];
+
+      updateGuidedVerificationProgress(verifiedFilesCount, 0);
+
+      while (true) {
+        document.getElementById("guided--verify-dataset-upload-files-progress-para").innerText =
+          "Determining if all local files have been successfully imported by Pennsieve...";
+
+        const { finalizedFiles, failedFilesPathsList: failed } =
+          await getVerifiedFilesFromManifest(manifestId);
+        failedFilesPathsList = failed;
+        const updatedVerifiedFilesCount = finalizedFiles.length + failedFilesPathsList.length;
+
+        if (updatedVerifiedFilesCount > verifiedFilesCount) {
+          const difference = updatedVerifiedFilesCount - verifiedFilesCount;
+          verifiedFilesCount = updatedVerifiedFilesCount;
+          updateGuidedVerificationProgress(verifiedFilesCount, difference);
+        } else {
+          updateGuidedVerificationProgress(verifiedFilesCount, 0);
+        }
+
+        if (verifiedFilesCount === window.totalFilesCount) {
+          break;
+        }
+
+        await waitWithCountdown();
+      }
+
+      showGuidedVerificationResult();
+
+      console.log("[Verification] File verification completed successfully");
+      showVerificationCompleteMessage();
     } catch (err) {
+      console.error("[Verification] Error during file verification:", err);
       clientError(err);
       await swalShowError(
         "Could Not Verify Files",
         "An error occurred while verifying the files. You may try again by clicking 'Verify Files' again or move on by clicking 'Save and continue.'"
       );
-
+    } finally {
+      console.log("[Verification] Re-enabling verification buttons");
       document.querySelector("#guided-next-button").disabled = false;
       document.querySelector("#guided-button-save-and-exit").disabled = false;
-      document.querySelector("#guided-section-file-upload-verification-button").disabled = false;
-      document.querySelector("#guided--skip-verify-btn").disabled = false;
-      return;
     }
-
-    const curationMode = window.sodaJSONObj["curation-mode"];
-    const prefix = curationMode === "free-form" ? "ffm" : "guided";
-    const oppositePrefix = curationMode === "free-form" ? "guided" : "ffm";
-
-    // Hide the opposite mode's success message and show the current mode's
-    document
-      .getElementById(`${oppositePrefix}-dataset-upload-complete-message`)
-      .classList.add("hidden");
-    document.getElementById(`${prefix}-dataset-upload-complete-message`).classList.remove("hidden");
-
-    document.getElementById(`${prefix}-dataset-upload-complete-message`).scrollIntoView({
-      behavior: "smooth",
-    });
-
-    document.querySelector("#guided-next-button").disabled = false;
-    document.querySelector("#guided-button-save-and-exit").disabled = false;
   });
 
 document.querySelectorAll(".verify-file-status-download-list").forEach((element) => {
@@ -216,54 +262,25 @@ window.monitorUploadFileVerificationProgress = async () => {
   $("#success-validated-files-lottie").addClass("is-shown");
 };
 
-window.monitorUploadFileVerificationProgressGuided = async () => {
-  let manifestId = window.pennsieveManifestId;
-  let verifiedFilesCount = 0;
-  failedFilesPathsList = [];
-  let finalizedFiles = [];
-
-  // initalize the UI with the total files count
+const updateGuidedVerificationProgress = (verifiedCount, difference) => {
   document.getElementById("guided--verify-dataset-upload-files-count").innerText =
-    `${verifiedFilesCount} / ${window.totalFilesCount} Files`;
+    `${verifiedCount} / ${window.totalFilesCount} Files`;
+  const message =
+    difference > 0
+      ? `Pennsieve imported ${difference} more local files.`
+      : "Pennsieve imported 0 more local files.";
+  document.getElementById("guided--verify-dataset-upload-files-progress-para").innerText = message;
+};
 
-  // loop until all files are verified
-  while (true) {
+const waitWithCountdown = async () => {
+  for (let time = 60; time > 0; time--) {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     document.getElementById("guided--verify-dataset-upload-files-progress-para").innerText =
-      "Determining if all local files have been successfully imported by Pennsieve...";
-    let verifiedFiles = await getVerifiedFilesFromManifest(manifestId);
-    finalizedFiles = verifiedFiles["finalizedFiles"];
-    failedFilesPathsList = verifiedFiles["failedFilesPathsList"];
-    let updatedVerifiedFilesCount = finalizedFiles.length + failedFilesPathsList.length;
-
-    if (updatedVerifiedFilesCount > verifiedFilesCount) {
-      // update the UI with the verified files count
-      let difference = updatedVerifiedFilesCount - verifiedFilesCount;
-      verifiedFilesCount = updatedVerifiedFilesCount;
-      document.getElementById("guided--verify-dataset-upload-files-count").innerText =
-        `${verifiedFilesCount} / ${window.totalFilesCount} Files`;
-      document.getElementById("guided--verify-dataset-upload-files-progress-para").innerText =
-        `Pennsieve imported ${difference} more local files.`;
-    } else {
-      document.getElementById("guided--verify-dataset-upload-files-progress-para").innerText =
-        "Pennsieve imported 0 more local files.";
-    }
-
-    if (verifiedFilesCount === window.totalFilesCount) {
-      break;
-    }
-
-    // allow the prior status to be read
-    await new Promise((resolve) => setTimeout(resolve, 5000));
-
-    // wait 55 seconds before checking again so we are not spamming the Pennsieve API for large datasets + to give files time to process
-    for (let time = 60; time > 0; time--) {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      document.getElementById("guided--verify-dataset-upload-files-progress-para").innerText =
-        `Waiting ${time} seconds for Pennsieve to import more local files...`;
-    }
+      `Waiting ${time} seconds for Pennsieve to import more local files...`;
   }
+};
 
-  // all file statuses fetched
+const showGuidedVerificationResult = () => {
   document.getElementById("guided--verify-dataset-upload-files-progress-para").innerText = "";
 
   if (failedFilesPathsList.length) {
