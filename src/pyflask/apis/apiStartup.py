@@ -214,30 +214,6 @@ class Curation(Resource):
         }
 
 
-@api.route("/curation/subscribe")
-class CurationSubscription(Resource):
-    def post(self):
-        global ps
-        global session_timer
-        global done
-        global session_dataset_id
-
-
-        account_name = get_account_name()
-        api.logger.info("Trying to connect to the Pennsieve client")
-        ps = connect_pennsieve_client(account_name)
-        api.logger.info("Connected to the Pennsieve client")
-        ps.set_dataset(session_dataset_id)
-
-        api.logger.info("Creating subscription session")
-        session_timer = time.time()
-        thread = threading.Thread(target=ps.subscribe, args=(10, False, monitor_subscriber_progress))
-        thread.start()
-
-        return {"session_complete": True, "done": done}
-
-
-
 @api.route("/curation/progress")
 class CurationProgress(Resource):
     def get(self):

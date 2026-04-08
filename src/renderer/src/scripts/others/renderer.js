@@ -6796,31 +6796,25 @@ directToOrganize.addEventListener("click", async () => {
   };
 
   const subscribe = async () => {
-    while (true) {
-      try {
-        console.log(`Started one subscriber session at ${new Date().toLocaleTimeString()}`);
-        let r = await uploadSubClient.post("/curation/subscribe", { dataset_id: datasetId });
-        let done = r.data["done"];
-        if (done) {
-          break;
-        }
-        console.log(
-          `Returned from one subscriber session at ${new Date().toLocaleTimeString()}. Check backend for when this sub ends. `
+    try {
+      console.log(`The dataset id given is: ${datasetId}`);
+      console.log(`Started one subscriber session at ${new Date().toLocaleTimeString()}`);
+      await uploadSubClient.post("/curation/subscribe", { dataset_id: datasetId });
+      console.log(
+        `Returned from one subscriber session at ${new Date().toLocaleTimeString()}. Check backend for when this sub ends. `
+      );
+    } catch (e) {
+      if (e.request?.code === "ECONNABORTED") {
+        console.log("PS took more than 1 minute to connect. Ending attempt and trying again.");
+      } else if (!e.response && e.request && e.isAxiosError) {
+        await swalShowError(
+          "Network Error",
+          "The server did not respond. Please close SODA and reopen it to try the upload again. SODA will remember any progress in the upload you have made. If the problem persists, please contact support."
         );
-        await new Promise((resolve) => setTimeout(resolve, 1800000));
-      } catch (e) {
-        if (e.request?.code === "ECONNABORTED") {
-          console.log("PS took more than 1 minute to connect. Ending attempt and trying again.");
-        } else if (!e.response && e.request && e.isAxiosError) {
-          await swalShowError(
-            "Network Error",
-            "The server did not respond. Please close SODA and reopen it to try the upload again. SODA will remember any progress in the upload you have made. If the problem persists, please contact support."
-          );
-          break;
-        }
-        clientError(e);
       }
+      clientError(e);
     }
+
     console.log("Subscriber noticed upload is complete and stopped subscribing");
   };
 

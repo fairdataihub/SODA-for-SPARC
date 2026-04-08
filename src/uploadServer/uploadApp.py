@@ -39,7 +39,7 @@ def monitor_subscriber_progress(events_dict):
 
     elapsed_time = now - session_timer
 
-    if elapsed_time > 1800:
+    if elapsed_time > 10000:
         ps.unsubscribe(10)
         ps = None
         # app.logger.info("[SUBSCRIBER Ended]")
@@ -119,14 +119,18 @@ def curationSubscription():
       global session_timer
       global done
 
+
       # get query args
       d_id = request.get_json('dataset_id')
 
+
+
       account_name = get_account_name()
-      app.logger.info("Trying to connect to the Pennsieve client")
+
       ps = connect_pennsieve_client(account_name)
-      app.logger.info("Connected to the Pennsieve client")
-      ps.set_dataset(d_id)
+   
+      ps.set_dataset(d_id['dataset_id'])
+
       ps.subscribe(10, False, monitor_subscriber_progress)
       done = True
 
