@@ -456,6 +456,7 @@ const createPyProc = async () => {
     return;
   }
 
+  let sessionServerOutputUpload = "";
   uploadAppProcess = execFile(uploadScript, (error, stdout, stderr) => {
     if (error) {
       console.error(error);
@@ -467,18 +468,18 @@ const createPyProc = async () => {
   // log the stdout and stderr
   uploadAppProcess.stdout.on("data", (data) => {
     const logOutput = `[uploadAppProcess output] ${data.toString()}`;
-    sessionServerOutput += `${logOutput}`;
+    sessionServerOutputUpload += `${logOutput}`;
   });
   uploadAppProcess.stderr.on("data", (data) => {
     const logOutput = `[uploadAppProcess stderr] ${data.toString()}`;
-    sessionServerOutput += `${logOutput}`;
+    sessionServerOutputUpload += `${logOutput}`;
     global.serverLive = false;
   });
   // On close, log the outputs and the exit code
   uploadAppProcess.on("close", (code) => {
     log.info(`child process exited with code ${code}`);
     log.info("Server output during session found below:");
-    log.info(sessionServerOutput);
+    log.info(sessionServerOutputUpload);
     global.serverLive = false;
   });
   // Event listener for when the process exits
