@@ -275,8 +275,11 @@ const getScriptPath = () => {
   }
   if (process.platform === "win32") {
     const winPathPyflask = join(process.resourcesPath, PY_FLASK_MODULE + ".exe");
-    log.info("App is packaged [Windows]; Path to server executable: " + winPath);
+    log.info("App is packaged [Windows]; Path to server executable: " + winPathPyflask);
+
     const winPathUploadServer = join(process.resourcesPath, UPLOAD_MODULE + ".exe");
+    log.info("UploadApp is packaged [Windows]; Path to server executable: " + winPathUploadServer);
+
     return [winPathPyflask, winPathUploadServer];
   } else {
     const unixPath = join(process.resourcesPath, PY_FLASK_MODULE);
