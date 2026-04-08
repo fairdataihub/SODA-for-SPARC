@@ -227,6 +227,7 @@ ipcMain.on("resize-window", (event, dir) => {
 const PY_FLASK_DIST_FOLDER = "pyflaskdist";
 const PY_FLASK_FOLDER = "../src/pyflask";
 const PY_FLASK_MODULE = "app";
+const UPLOAD_MODULE_FOLDER = "../src/uploadServer";
 const UPLOAD_MODULE = "uploadApp";
 let PORT = 4242;
 const portRange = 100;
@@ -267,17 +268,21 @@ const getScriptPath = () => {
   if (!guessPackaged()) {
     log.info("App is not packaged returning path: ");
     log.info(join(__dirname, "..", PY_FLASK_FOLDER, PY_FLASK_MODULE + ".py"));
-    return join(__dirname, "..", PY_FLASK_FOLDER, PY_FLASK_MODULE + ".py");
+    return [
+      join(__dirname, "..", PY_FLASK_FOLDER, PY_FLASK_MODULE + ".py"),
+      join(__dirname, "..", UPLOAD_MODULE_FOLDER),
+    ];
   }
   if (process.platform === "win32") {
     const winPathPyflask = join(process.resourcesPath, PY_FLASK_MODULE + ".exe");
     log.info("App is packaged [Windows]; Path to server executable: " + winPath);
     const winPathUploadServer = join(process.resourcesPath, UPLOAD_MODULE + ".exe");
-    return [winPath, winPathUploadServer];
+    return [winPathPyflask, winPathUploadServer];
   } else {
     const unixPath = join(process.resourcesPath, PY_FLASK_MODULE);
+    const unixPathUpload = join(process.resourcesPath, UPLOAD_MODULE);
     log.info("App is packaged [ Unix ]; Path to server executable: " + unixPath);
-    return unixPath;
+    return [unixPath, unixPathUpload];
   }
 };
 
@@ -315,7 +320,7 @@ const createPyProc = async () => {
   }
 
   if (existsSync(uploadScript)) {
-    log.info("Upload server exists at specified location", script);
+    log.info("Upload server exists at specified location", uploadScript);
   } else {
     log.info("Server doesn't exist at specified location");
   }
@@ -401,6 +406,39 @@ const createPyProc = async () => {
             log.info("Process exited successfully");
           }
         });
+
+        uploadAppProcess = spawn("gunicorn", ["uploadApp:app"], {
+          cwd: uploadScript,
+          stdio: "ignore",
+        });
+
+        uploadAppProcess.on("data", function () {});
+
+        uploadAppProcess.on("error", function (err) {
+          console.error("Failed to start uploadAppProcess:", err);
+          global.serverLive = false;
+        });
+
+        uploadAppProcess.on("close", function (err) {
+          console.error("Failed to start uploadAppProcess:", err);
+          global.serverLive = false;
+        });
+
+        uploadAppProcess.on("exit", (code, signal) => {
+          if (signal) {
+            global.serverLive = false;
+
+            log.info(`uploadAppProcess was killed by signal: ${signal}`);
+          } else if (code !== 0) {
+            global.serverLive = false;
+
+            log.info(`uploadAppProcess exited with error code: ${code}`);
+          } else {
+            global.serverLive = false;
+
+            log.info("uploadAppProcess exited successfully");
+          }
+        });
       }
       if (pyflaskProcess != null) {
         log.info("child process success on port " + port);
@@ -411,13 +449,14 @@ const createPyProc = async () => {
     })
     .catch((err) => {
       log.error("Error starting the python server");
+      log.error(err);
     });
 
   if (!guessPackaged()) {
     return;
   }
 
-  uploadAppProcess = execFile(uploadScript, [port], (error, stdout, stderr) => {
+  uploadAppProcess = execFile(uploadScript, (error, stdout, stderr) => {
     if (error) {
       console.error(error);
       log.error(error);
