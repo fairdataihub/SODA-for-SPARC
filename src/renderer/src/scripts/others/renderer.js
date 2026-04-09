@@ -5325,6 +5325,55 @@ const initiate_generate = async (resume = false) => {
       let { data } = response;
       amountOfTimesPennsieveUploadFailed = 0;
 
+      console.log("Done Running [ /curation endpoint]");
+      console.log(data);
+      let manifestId = data["local_manifest_id"];
+      let datasetId = data["dataset_id"];
+      console.log("Dataset id returned is : ", datasetId);
+
+      const removeListener = window.pennsieve.onUploadProgress((line) => {
+        console.log("Upload progress:", line);
+      });
+
+      let uploadSubClient = axios.create({
+        baseURL: `http://127.0.0.1:${8000}`,
+        timeout: 0,
+      });
+
+      const subscribe = async (datasetId) => {
+        try {
+          console.log(`The dataset id given is: ${datasetId}`);
+          console.log(`Started one subscriber session at ${new Date().toLocaleTimeString()}`);
+          await uploadSubClient.post("/curation/subscribe", { dataset_id: datasetId });
+          console.log(
+            `Returned from one subscriber session at ${new Date().toLocaleTimeString()}. Check backend for when this sub ends. `
+          );
+        } catch (e) {
+          if (e.request?.code === "ECONNABORTED") {
+            console.log("PS took more than 1 minute to connect. Ending attempt and trying again.");
+          } else if (!e.response && e.request && e.isAxiosError) {
+            await swalShowError(
+              "Network Error",
+              "The server did not respond. Please close SODA and reopen it to try the upload again. SODA will remember any progress in the upload you have made. If the problem persists, please contact support."
+            );
+          }
+          clientError(e);
+        }
+
+        console.log("Subscriber noticed upload is complete and stopped subscribing");
+      };
+
+      subscribe(datasetId);
+
+      try {
+        await window.pennsieve.uploadManifest(manifestId);
+        console.log("Upload complete");
+      } catch (err) {
+        console.error("Upload failed:", err.message);
+      } finally {
+        removeListener(); // Always clean up the listener
+      }
+
       $("#party-lottie").show();
 
       main_total_generate_dataset_size = data["main_total_generate_dataset_size"];

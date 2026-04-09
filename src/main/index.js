@@ -23,6 +23,7 @@ import "./spreadsheet-import-gm";
 import "./shell";
 import "./templates";
 import "./clipboard";
+import "./pennsieve-agent";
 
 app.showExitPrompt = true;
 
@@ -226,9 +227,12 @@ ipcMain.on("resize-window", (event, dir) => {
 const PY_FLASK_DIST_FOLDER = "pyflaskdist";
 const PY_FLASK_FOLDER = "../src/pyflask";
 const PY_FLASK_MODULE = "app";
+const UPLOAD_MODULE_FOLDER = "../src/uploadServer";
+const UPLOAD_MODULE = "uploadApp";
 let PORT = 4242;
 const portRange = 100;
 let pyflaskProcess = null;
+let uploadAppProcess = null;
 let selectedPort = null;
 const kombuchaURL = "https://analytics-nine-ashen.vercel.app/api";
 const localKombuchaURL = "http://localhost:3000/api";
@@ -264,16 +268,24 @@ const getScriptPath = () => {
   if (!guessPackaged()) {
     log.info("App is not packaged returning path: ");
     log.info(join(__dirname, "..", PY_FLASK_FOLDER, PY_FLASK_MODULE + ".py"));
-    return join(__dirname, "..", PY_FLASK_FOLDER, PY_FLASK_MODULE + ".py");
+    return [
+      join(__dirname, "..", PY_FLASK_FOLDER, PY_FLASK_MODULE + ".py"),
+      join(__dirname, "..", UPLOAD_MODULE_FOLDER),
+    ];
   }
   if (process.platform === "win32") {
-    const winPath = join(process.resourcesPath, PY_FLASK_MODULE + ".exe");
-    log.info("App is packaged [Windows]; Path to server executable: " + winPath);
-    return winPath;
+    const winPathPyflask = join(process.resourcesPath, PY_FLASK_MODULE + ".exe");
+    log.info("App is packaged [Windows]; Path to server executable: " + winPathPyflask);
+
+    const winPathUploadServer = join(process.resourcesPath, UPLOAD_MODULE + ".exe");
+    log.info("UploadApp is packaged [Windows]; Path to server executable: " + winPathUploadServer);
+
+    return [winPathPyflask, winPathUploadServer];
   } else {
     const unixPath = join(process.resourcesPath, PY_FLASK_MODULE);
+    const unixPathUpload = join(process.resourcesPath, UPLOAD_MODULE);
     log.info("App is packaged [ Unix ]; Path to server executable: " + unixPath);
-    return unixPath;
+    return [unixPath, unixPathUpload];
   }
 };
 
@@ -296,7 +308,9 @@ const selectPort = () => {
 };
 
 const createPyProc = async () => {
-  let script = getScriptPath();
+  let scripts = getScriptPath();
+  let script = scripts[0];
+  let uploadScript = scripts[1];
   log.info(`Path to server executable: ${script}`);
   let port = "" + selectPort();
   try {
@@ -307,6 +321,13 @@ const createPyProc = async () => {
   } else {
     log.info("Server doesn't exist at specified location");
   }
+
+  if (existsSync(uploadScript)) {
+    log.info("Upload server exists at specified location", uploadScript);
+  } else {
+    log.info("Server doesn't exist at specified location");
+  }
+
   fp(PORT, PORT + portRange)
     .then(([freePort]) => {
       let port = freePort;
@@ -388,6 +409,39 @@ const createPyProc = async () => {
             log.info("Process exited successfully");
           }
         });
+
+        uploadAppProcess = spawn("gunicorn", ["uploadApp:app"], {
+          cwd: uploadScript,
+          stdio: "ignore",
+        });
+
+        uploadAppProcess.on("data", function () {});
+
+        uploadAppProcess.on("error", function (err) {
+          console.error("Failed to start uploadAppProcess:", err);
+          global.serverLive = false;
+        });
+
+        uploadAppProcess.on("close", function (err) {
+          console.error("Failed to start uploadAppProcess:", err);
+          global.serverLive = false;
+        });
+
+        uploadAppProcess.on("exit", (code, signal) => {
+          if (signal) {
+            global.serverLive = false;
+
+            log.info(`uploadAppProcess was killed by signal: ${signal}`);
+          } else if (code !== 0) {
+            global.serverLive = false;
+
+            log.info(`uploadAppProcess exited with error code: ${code}`);
+          } else {
+            global.serverLive = false;
+
+            log.info("uploadAppProcess exited successfully");
+          }
+        });
       }
       if (pyflaskProcess != null) {
         log.info("child process success on port " + port);
@@ -398,7 +452,52 @@ const createPyProc = async () => {
     })
     .catch((err) => {
       log.error("Error starting the python server");
+      log.error(err);
     });
+
+  if (!guessPackaged()) {
+    return;
+  }
+
+  let sessionServerOutputUpload = "";
+  uploadAppProcess = execFile(uploadScript, (error, stdout, stderr) => {
+    if (error) {
+      console.error(error);
+      log.error(error);
+      // console.error(stderr)
+      // throw error;
+    }
+  });
+  // log the stdout and stderr
+  uploadAppProcess.stdout.on("data", (data) => {
+    const logOutput = `[uploadAppProcess output] ${data.toString()}`;
+    sessionServerOutputUpload += `${logOutput}`;
+  });
+  uploadAppProcess.stderr.on("data", (data) => {
+    const logOutput = `[uploadAppProcess stderr] ${data.toString()}`;
+    sessionServerOutputUpload += `${logOutput}`;
+    global.serverLive = false;
+  });
+  // On close, log the outputs and the exit code
+  uploadAppProcess.on("close", (code) => {
+    log.info(`child process exited with code ${code}`);
+    log.info("Server output during session found below:");
+    log.info(sessionServerOutputUpload);
+    global.serverLive = false;
+  });
+  // Event listener for when the process exits
+  uploadAppProcess.on("exit", (code, signal) => {
+    if (signal) {
+      log.info(`Process was killed by signal: ${signal}`);
+      global.serverLive = false;
+    } else if (code !== 0) {
+      log.info(`Process exited with error code: ${code}`);
+      global.serverLive = false;
+    } else {
+      log.info("Process exited successfully");
+      global.serverLive = false;
+    }
+  });
 };
 
 const exitPyProc = async () => {
@@ -407,6 +506,7 @@ const exitPyProc = async () => {
   const killPythonProcess = () => {
     // kill pyproc with command line
     const cmd = spawnSync("taskkill", ["/pid", pyflaskProcess.pid, "/f", "/t"]);
+    const cmd2 = spawnSync("taskkill", ["/pid", uploadAppProcess.pid, "/f", "/t"]);
   };
   try {
     await killAllPreviousProcesses();
@@ -417,6 +517,7 @@ const exitPyProc = async () => {
       killPythonProcess();
     }
     pyflaskProcess = null;
+    uploadAppProcess = null;
     PORT = null;
     return;
   }
@@ -425,6 +526,10 @@ const exitPyProc = async () => {
     if (pyflaskProcess != null) {
       pyflaskProcess.kill();
       pyflaskProcess = null;
+    }
+    if (uploadAppProcess != null) {
+      uploadAppProcess.kill();
+      uploadAppProcess = null;
     }
   } catch (e) {}
   PORT = null;
