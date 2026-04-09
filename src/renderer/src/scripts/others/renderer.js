@@ -6736,14 +6736,16 @@ directToOrganize.addEventListener("click", async () => {
     )
     .then(async (res) => {
       console.log("Done Running [ /curation endpoint]");
+      console.log(res.data);
       let manifestId = res.data["local_manifest_id"];
       datasetId = res.data["dataset_id"];
+      console.log("Dataset id returned is : ", datasetId);
 
       const removeListener = window.pennsieve.onUploadProgress((line) => {
         console.log("Upload progress:", line);
       });
 
-      subscribe();
+      subscribe(datasetId);
 
       try {
         await window.pennsieve.uploadManifest(manifestId);
@@ -6795,7 +6797,7 @@ directToOrganize.addEventListener("click", async () => {
     console.log("Progress checking noticed uploading flag is false and stopped polling");
   };
 
-  const subscribe = async () => {
+  const subscribe = async (datasetId) => {
     try {
       console.log(`The dataset id given is: ${datasetId}`);
       console.log(`Started one subscriber session at ${new Date().toLocaleTimeString()}`);

@@ -122,13 +122,14 @@ def curationSubscription():
 
 
         # get query args
-        d_id = request.get_json()
+        data = request.get_json()
+        dataset_id = data["dataset_id"]
 
         account_name = get_account_name()
 
         ps = connect_pennsieve_client(account_name)
     
-        ps.set_dataset(d_id['dataset_id'])
+        ps.set_dataset(dataset_id)
 
         ps.subscribe(10, False, monitor_subscriber_progress)
         done = True
@@ -141,6 +142,7 @@ def curationSubscription():
 
     except Exception as e:
         print(e)
+        return {"error": str(e), "session_completed": False, "done": False}, 500
 
 
 

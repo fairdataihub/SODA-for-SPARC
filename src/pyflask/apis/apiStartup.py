@@ -105,6 +105,7 @@ model_main_curation_function_response = api.model( "MainCurationFunctionResponse
     "local_manifest_id": fields.String(description="ID of the local manifest file created by the Pennsieve Agent for the upload."),
     "origin_manifest_id": fields.String(description="ID of the manifest file created on Pennsieve for the upload."),
     "main_curation_total_files": fields.Integer(description="Total number of files in the dataset upload session."),
+    "dataset_id": fields.String(description="UUID for pennsieve dataset")
 })
 
 
