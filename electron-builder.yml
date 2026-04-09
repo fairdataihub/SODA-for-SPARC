@@ -22,7 +22,7 @@ win:
     - from: ./metadata_templates
       to: ./metadata_templates
     - from: ./pyflaskdist/app
-    - from: ./dist/uploadApp
+    - from: ./dist/uploadApp.exe
     - from: ./schema
       to: ./schema
   asar: true
