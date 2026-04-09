@@ -116,30 +116,32 @@ def connect_pennsieve_client(account_name):
 
 @app.route("/curation/subscribe", methods=["POST"])
 def curationSubscription():
-      global session_timer
-      global done
+    try:
+        global session_timer
+        global done
 
 
-      # get query args
-      d_id = request.get_json('dataset_id')
+        # get query args
+        d_id = request.get_json()
 
+        account_name = get_account_name()
 
+        ps = connect_pennsieve_client(account_name)
+    
+        ps.set_dataset(d_id['dataset_id'])
 
-      account_name = get_account_name()
+        ps.subscribe(10, False, monitor_subscriber_progress)
+        done = True
 
-      ps = connect_pennsieve_client(account_name)
-   
-      ps.set_dataset(d_id['dataset_id'])
+        #   app.logger.info("Creating subscription session")
+        #   session_timer = time.time()
+        #   thread = threading.Thread(target=ps.subscribe, args=(10, False, monitor_subscriber_progress))
+        #   thread.start()
+        return {"session_complete": True, "done": done}
 
-      ps.subscribe(10, False, monitor_subscriber_progress)
-      done = True
+    except Exception as e:
+        print(e)
 
-    #   app.logger.info("Creating subscription session")
-    #   session_timer = time.time()
-    #   thread = threading.Thread(target=ps.subscribe, args=(10, False, monitor_subscriber_progress))
-    #   thread.start()
-
-      return {"session_complete": True, "done": done}
 
 
 
