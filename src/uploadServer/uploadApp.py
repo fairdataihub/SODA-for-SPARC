@@ -6,7 +6,7 @@ import time
 from configparser import ConfigParser
 import boto3
 import threading
-
+import traceback
 
 app = Flask(__name__)
 
@@ -26,6 +26,7 @@ session_manifest_id = None
 done = False
 session_timer = None
 session_dataset_id = None
+ps = None
 
 def monitor_subscriber_progress(events_dict):
     """
@@ -35,14 +36,6 @@ def monitor_subscriber_progress(events_dict):
     global session_timer
     global ps
 
-    now = time.time()
-
-    elapsed_time = now - session_timer
-
-    if elapsed_time > 10000:
-        ps.unsubscribe(10)
-        ps = None
-        # app.logger.info("[SUBSCRIBER Ended]")
 
     if events_dict["type"] == 1:  # upload status: file_id, total, current, worker_id
         file_id = events_dict["upload_status"].file_id
@@ -119,17 +112,27 @@ def curationSubscription():
     try:
         global session_timer
         global done
+        global ps
 
 
         # get query args
         data = request.get_json()
         dataset_id = data["dataset_id"]
 
+        print(f"Dataset id: {dataset_id}")
+
         account_name = get_account_name()
 
+        print(f"Account name: {account_name}")
+
+
         ps = connect_pennsieve_client(account_name)
+
+        print(f"PS Object created {ps}")
     
-        ps.set_dataset(dataset_id)
+        ps.use_dataset(dataset_id)
+
+        print(f"Use dataset happened successfully")
 
         ps.subscribe(10, False, monitor_subscriber_progress)
         done = True
@@ -142,6 +145,7 @@ def curationSubscription():
 
     except Exception as e:
         print(e)
+        traceback.print_exc()
         return {"error": str(e), "session_completed": False, "done": False}, 500
 
 
