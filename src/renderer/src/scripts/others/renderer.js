@@ -5325,11 +5325,14 @@ const initiate_generate = async (resume = false) => {
       let { data } = response;
       amountOfTimesPennsieveUploadFailed = 0;
 
-      console.log("Done Running [ /curation endpoint]");
+      console.log("Done Running [ /curation/manifest_file]");
       console.log(data);
-      let manifestId = data["local_manifest_id"];
+      let manifestId = data["manifest_file"];
+      let pennsieveManifestId = data["origin_manifest_id"];
+      let sizeOfDataset = data["size_of_dataset"];
+      let numberOfFiles = data["number_of_files"];
+      let listOfFilesToRename = data["list_of_files_to_rename"];
       let datasetId = data["dataset_id"];
-      console.log("Dataset id returned is : ", datasetId);
 
       const removeListener = window.pennsieve.onUploadProgress((line) => {
         console.log("Upload progress:", line);
@@ -5363,100 +5366,100 @@ const initiate_generate = async (resume = false) => {
         console.log("Subscriber noticed upload is complete and stopped subscribing");
       };
 
-      subscribe(datasetId);
+      // subscribe(datasetId);
 
-      try {
-        await window.pennsieve.uploadManifest(manifestId);
-        console.log("Upload complete");
-      } catch (err) {
-        console.error("Upload failed:", err.message);
-      } finally {
-        removeListener(); // Always clean up the listener
-      }
+      // try {
+      //   await window.pennsieve.uploadManifest(manifestId);
+      //   console.log("Upload complete");
+      // } catch (err) {
+      //   console.error("Upload failed:", err.message);
+      // } finally {
+      //   removeListener(); // Always clean up the listener
+      // }
 
       $("#party-lottie").show();
 
-      main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
-      uploadedFiles = data["main_curation_uploaded_files"];
-      window.pennsieveAgentManifestId = data["local_manifest_id"];
-      window.pennsieveManifestId = data["origin_manifest_id"];
+      // main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
+      // uploadedFiles = data["main_curation_uploaded_files"];
+      // window.pennsieveAgentManifestId = data["local_manifest_id"];
+      // window.pennsieveManifestId = data["origin_manifest_id"];
 
-      window.totalFilesCount = data["main_curation_total_files"];
+      // window.totalFilesCount = data["main_curation_total_files"];
 
-      $("#sidebarCollapse").prop("disabled", false);
-      window.log.info("Completed curate function");
+      // $("#sidebarCollapse").prop("disabled", false);
+      // window.log.info("Completed curate function");
 
-      // log high level confirmation that a dataset was generated - helps answer how many times were datasets generated in FFMs organize dataset functionality
-      window.electron.ipcRenderer.send(
-        "track-kombucha",
-        kombuchaEnums.Category.PREPARE_DATASETS,
-        kombuchaEnums.Action.GENERATE_DATASET,
-        kombuchaEnums.Label.TOTAL_UPLOADS,
-        kombuchaEnums.Status.SUCCESS,
-        createEventData(1, dataset_destination, datasetLocation, dataset_name)
-      );
+      // // log high level confirmation that a dataset was generated - helps answer how many times were datasets generated in FFMs organize dataset functionality
+      // window.electron.ipcRenderer.send(
+      //   "track-kombucha",
+      //   kombuchaEnums.Category.PREPARE_DATASETS,
+      //   kombuchaEnums.Action.GENERATE_DATASET,
+      //   kombuchaEnums.Label.TOTAL_UPLOADS,
+      //   kombuchaEnums.Status.SUCCESS,
+      //   createEventData(1, dataset_destination, datasetLocation, dataset_name)
+      // );
 
-      // get the correct value for files and file size for analytics
-      let fileValueToLog = 0;
-      let fileSizeValueToLog = 0;
-      if (dataset_destination == "ps" || dataset_destination == "Pennsieve") {
-        // log the difference again to Google Analytics
-        let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
-        let differenceInBytes = main_total_generate_dataset_size - bytesOnPreviousLogPage;
-        fileValueToLog = finalFilesCount;
-        fileSizeValueToLog = differenceInBytes;
-      } else {
-        // when generating locally we doo not log in increments so we log the total number of files and the total size generated in one go
-        fileValueToLog = uploadedFiles;
-        fileSizeValueToLog = main_total_generate_dataset_size;
-      }
+      // // get the correct value for files and file size for analytics
+      // let fileValueToLog = 0;
+      // let fileSizeValueToLog = 0;
+      // if (dataset_destination == "ps" || dataset_destination == "Pennsieve") {
+      //   // log the difference again to Google Analytics
+      //   let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
+      //   let differenceInBytes = main_total_generate_dataset_size - bytesOnPreviousLogPage;
+      //   fileValueToLog = finalFilesCount;
+      //   fileSizeValueToLog = differenceInBytes;
+      // } else {
+      //   // when generating locally we doo not log in increments so we log the total number of files and the total size generated in one go
+      //   fileValueToLog = uploadedFiles;
+      //   fileSizeValueToLog = main_total_generate_dataset_size;
+      // }
 
-      // log the file and file size values to analytics
-      if (fileValueToLog > 0) {
-        window.electron.ipcRenderer.send(
-          "track-kombucha",
-          kombuchaEnums.Category.PREPARE_DATASETS,
-          kombuchaEnums.Action.GENERATE_DATASET,
-          kombuchaEnums.Label.FILES,
-          kombuchaEnums.Status.SUCCESS,
-          createEventData(fileValueToLog, dataset_destination, datasetLocation, dataset_name)
-        );
-      }
+      // // log the file and file size values to analytics
+      // if (fileValueToLog > 0) {
+      //   window.electron.ipcRenderer.send(
+      //     "track-kombucha",
+      //     kombuchaEnums.Category.PREPARE_DATASETS,
+      //     kombuchaEnums.Action.GENERATE_DATASET,
+      //     kombuchaEnums.Label.FILES,
+      //     kombuchaEnums.Status.SUCCESS,
+      //     createEventData(fileValueToLog, dataset_destination, datasetLocation, dataset_name)
+      //   );
+      // }
 
-      if (fileSizeValueToLog > 0) {
-        window.electron.ipcRenderer.send(
-          "track-kombucha",
-          kombuchaEnums.Category.PREPARE_DATASETS,
-          kombuchaEnums.Action.GENERATE_DATASET,
-          kombuchaEnums.Label.SIZE,
-          kombuchaEnums.Status.SUCCESS,
-          createEventData(fileSizeValueToLog, dataset_destination, datasetLocation, dataset_name)
-        );
-      }
+      // if (fileSizeValueToLog > 0) {
+      //   window.electron.ipcRenderer.send(
+      //     "track-kombucha",
+      //     kombuchaEnums.Category.PREPARE_DATASETS,
+      //     kombuchaEnums.Action.GENERATE_DATASET,
+      //     kombuchaEnums.Label.SIZE,
+      //     kombuchaEnums.Status.SUCCESS,
+      //     createEventData(fileSizeValueToLog, dataset_destination, datasetLocation, dataset_name)
+      //   );
+      // }
 
-      // log folder and file options selected ( can be merge, skip, replace, duplicate)
-      logSelectedUpdateExistingDatasetOptions(datasetLocation);
+      // // log folder and file options selected ( can be merge, skip, replace, duplicate)
+      // logSelectedUpdateExistingDatasetOptions(datasetLocation);
 
-      // hide the retry button
-      $("#wrapper-wrap").show();
-      $("#button-retry").hide();
-      $("#button-generate-validate").show();
+      // // hide the retry button
+      // $("#wrapper-wrap").show();
+      // $("#button-retry").hide();
+      // $("#button-generate-validate").show();
 
-      // update dataset list; set the dataset id and int id
-      try {
-        const datasetList = await api.getUsersDatasetList(false);
-        window.datasetList = datasetList;
-        window.refreshDatasetList();
-      } catch (error) {
-        clientError(error);
-      }
+      // // update dataset list; set the dataset id and int id
+      // try {
+      //   const datasetList = await api.getUsersDatasetList(false);
+      //   window.datasetList = datasetList;
+      //   window.refreshDatasetList();
+      // } catch (error) {
+      //   clientError(error);
+      // }
 
-      //Allow guided_mode_view to be clicked again
-      document.getElementById("guided_mode_view").style.pointerEvents = "";
-      // Allow documentation view to be clicked again
-      document.getElementById("documentation-view").style.pointerEvents = "";
-      // Allow contact us view to be clicked again
-      document.getElementById("contact-us-view").style.pointerEvents = "";
+      // //Allow guided_mode_view to be clicked again
+      // document.getElementById("guided_mode_view").style.pointerEvents = "";
+      // // Allow documentation view to be clicked again
+      // document.getElementById("documentation-view").style.pointerEvents = "";
+      // // Allow contact us view to be clicked again
+      // document.getElementById("contact-us-view").style.pointerEvents = "";
     })
     .catch(async (error) => {
       amountOfTimesPennsieveUploadFailed += 1;

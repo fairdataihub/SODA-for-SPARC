@@ -17,7 +17,7 @@ import shutil
 from configparser import ConfigParser
 import re
 
-from pennsieve2.pennsieve import Pennsieve
+# from pennsieve2.pennsieve import Pennsieve
 from threading import Thread
 
 import requests
@@ -525,239 +525,239 @@ def ps_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
 completed_files = []
 files_uploaded = 0
 total_files_to_upload = 0
-def bf_submit_dataset(accountname, bfdataset, pathdataset):
-    """
-    Associated with 'Submit dataset' button in 'Submit new dataset' section
-    Uploads the specified folder to the specified dataset on Pennsieve account
+# def bf_submit_dataset(accountname, bfdataset, pathdataset):
+#     """
+#     Associated with 'Submit dataset' button in 'Submit new dataset' section
+#     Uploads the specified folder to the specified dataset on Pennsieve account
 
-    Input:
-        accountname: account in which the dataset needs to be created (string)
-        bfdataset: name of the dataset on Pennsieve (string)
-        pathdataset: path of dataset on local machine (string)
-    Action:
-        Uploads dataset on Pennsieve account
-    """
-    global submitdataprogress
-    global submitdatastatus
-    global total_file_size
-    global uploaded_file_size
-    global submitprintstatus
-    global start_time_bf_upload
-    global ps
-    global myds
-    global start_submit
-    global initial_bfdataset_size_submit
-    global completed_files
-    global did_upload
-    global did_fail
-    global upload_folder_count
-    global namespace_logger
-    global files_uploaded
-    global total_files_to_upload
-    global total_bytes_uploaded
+#     Input:
+#         accountname: account in which the dataset needs to be created (string)
+#         bfdataset: name of the dataset on Pennsieve (string)
+#         pathdataset: path of dataset on local machine (string)
+#     Action:
+#         Uploads dataset on Pennsieve account
+#     """
+#     global submitdataprogress
+#     global submitdatastatus
+#     global total_file_size
+#     global uploaded_file_size
+#     global submitprintstatus
+#     global start_time_bf_upload
+#     global ps
+#     global myds
+#     global start_submit
+#     global initial_bfdataset_size_submit
+#     global completed_files
+#     global did_upload
+#     global did_fail
+#     global upload_folder_count
+#     global namespace_logger
+#     global files_uploaded
+#     global total_files_to_upload
+#     global total_bytes_uploaded
 
-    files_uploaded = 0
-    total_files_to_upload = 0
-    submitdataprogress = " "
-    submitdatastatus = " "
-    uploaded_file_size = 0
-    submitprintstatus = " "
-    start_time_bf_upload = 0
-    initial_bfdataset_size_submit = 0
-    start_submit = 0
-    did_upload = False
-    did_fail = False
-    upload_folder_count = 0
-    bytes_uploaded_per_file = {}
-    total_bytes_uploaded = {"value": 0}
+#     files_uploaded = 0
+#     total_files_to_upload = 0
+#     submitdataprogress = " "
+#     submitdatastatus = " "
+#     uploaded_file_size = 0
+#     submitprintstatus = " "
+#     start_time_bf_upload = 0
+#     initial_bfdataset_size_submit = 0
+#     start_submit = 0
+#     did_upload = False
+#     did_fail = False
+#     upload_folder_count = 0
+#     bytes_uploaded_per_file = {}
+#     total_bytes_uploaded = {"value": 0}
 
-    def monitor_subscriber_progress(events_dict):
-        """
-        Monitors the progress of a subscriber and unsubscribes once the upload finishes. 
-        """
+#     def monitor_subscriber_progress(events_dict):
+#         """
+#         Monitors the progress of a subscriber and unsubscribes once the upload finishes. 
+#         """
 
-        total_dataset_files = total_files_to_upload
-        global files_uploaded
-        global total_bytes_uploaded
+#         total_dataset_files = total_files_to_upload
+#         global files_uploaded
+#         global total_bytes_uploaded
 
-        if events_dict["type"] == 1:  # upload status: file_id, total, current, worker_id
-            file_id = events_dict["upload_status"].file_id
-            total_bytes_to_upload = events_dict["upload_status"].total
-            current_bytes_uploaded = events_dict["upload_status"].current
+#         if events_dict["type"] == 1:  # upload status: file_id, total, current, worker_id
+#             file_id = events_dict["upload_status"].file_id
+#             total_bytes_to_upload = events_dict["upload_status"].total
+#             current_bytes_uploaded = events_dict["upload_status"].current
 
 
             
-            # get the previous bytes uploaded for the given file id - use 0 if no bytes have been uploaded for this file id yet
-            previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
+#             # get the previous bytes uploaded for the given file id - use 0 if no bytes have been uploaded for this file id yet
+#             previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
 
-            # update the file id's current total bytes uploaded value 
-            bytes_uploaded_per_file[file_id] = current_bytes_uploaded
+#             # update the file id's current total bytes uploaded value 
+#             bytes_uploaded_per_file[file_id] = current_bytes_uploaded
 
-            # calculate the additional amount of bytes that have just been uploaded for the given file id
-            total_bytes_uploaded["value"] += current_bytes_uploaded - previous_bytes_uploaded
-
-
-
-            # check if the given file has finished uploading
-            if current_bytes_uploaded == total_bytes_to_upload and file_id != "":
-                files_uploaded += 1
+#             # calculate the additional amount of bytes that have just been uploaded for the given file id
+#             total_bytes_uploaded["value"] += current_bytes_uploaded - previous_bytes_uploaded
 
 
-            # check if the upload has finished
-            if files_uploaded == total_dataset_files:
-                # unsubscribe from the agent's upload messages since the upload has finished
-                ps.unsubscribe(10)
+
+#             # check if the given file has finished uploading
+#             if current_bytes_uploaded == total_bytes_to_upload and file_id != "":
+#                 files_uploaded += 1
 
 
-    # check if the local dataset folder exists
-    if not isdir(pathdataset):
-        submitdatastatus = "Done"
-        error_message = (
-            f"{error_message} Please select a valid local dataset folder<br>"
-        )
-        did_fail = True
-        did_upload = False
-        abort(400, error_message)
+#             # check if the upload has finished
+#             if files_uploaded == total_dataset_files:
+#                 # unsubscribe from the agent's upload messages since the upload has finished
+#                 ps.unsubscribe(10)
 
-    total_file_size = 1
+
+#     # check if the local dataset folder exists
+#     if not isdir(pathdataset):
+#         submitdatastatus = "Done"
+#         error_message = (
+#             f"{error_message} Please select a valid local dataset folder<br>"
+#         )
+#         did_fail = True
+#         did_upload = False
+#         abort(400, error_message)
+
+#     total_file_size = 1
    
 
-    # initialize the Pennsieve client 
-    try:
-        ps = Pennsieve(profile_name=accountname)
-    except Exception as e:
-        submitdatastatus = "Done"
-        did_fail = True
-        did_upload = False
-        error_message = "Please select a valid Pennsieve account"
-        abort(400, e)
+#     # initialize the Pennsieve client 
+#     try:
+#         ps = Pennsieve(profile_name=accountname)
+#     except Exception as e:
+#         submitdatastatus = "Done"
+#         did_fail = True
+#         did_upload = False
+#         error_message = "Please select a valid Pennsieve account"
+#         abort(400, e)
 
 
-    # select the user
-    try:
-        ps.user.switch(accountname)
-    except Exception as e:
-        submitdatastatus = "Done"
-        did_fail = True
-        did_upload = False
-        error_message = "Please select a valid Pennsieve account"
-        abort(400, error_message)
+#     # select the user
+#     try:
+#         ps.user.switch(accountname)
+#     except Exception as e:
+#         submitdatastatus = "Done"
+#         did_fail = True
+#         did_upload = False
+#         error_message = "Please select a valid Pennsieve account"
+#         abort(400, error_message)
 
-    selected_dataset_id = get_dataset_id(bfdataset)
+#     selected_dataset_id = get_dataset_id(bfdataset)
 
-        # reauthenticate the user
-    try:
-        ps.user.reauthenticate()
-    except Exception as e:
-        submitdatastatus = "Done"
-        did_fail = True
-        did_upload = False
-        error_message = "Could not reauthenticate this user"
-        abort(401, error_message)
+#         # reauthenticate the user
+#     try:
+#         ps.user.reauthenticate()
+#     except Exception as e:
+#         submitdatastatus = "Done"
+#         did_fail = True
+#         did_upload = False
+#         error_message = "Could not reauthenticate this user"
+#         abort(401, error_message)
 
-    # select the dataset 
-    try:
-        ps.use_dataset(selected_dataset_id)
-    except Exception as e:
-        submitdatastatus = "Done"
-        did_fail = True
-        did_upload = False
-        error_message = "Please select a valid Pennsieve dataset"
+#     # select the dataset 
+#     try:
+#         ps.use_dataset(selected_dataset_id)
+#     except Exception as e:
+#         submitdatastatus = "Done"
+#         did_fail = True
+#         did_upload = False
+#         error_message = "Please select a valid Pennsieve dataset"
 
-    # get the dataset size before starting the upload
-    total_file_size, invalid_dataset_messages, total_files_to_upload = get_dataset_size(pathdataset)
+#     # get the dataset size before starting the upload
+#     total_file_size, invalid_dataset_messages, total_files_to_upload = get_dataset_size(pathdataset)
 
-    namespace_logger.info(f"Size of the dataset: {total_file_size} bytes")
+#     namespace_logger.info(f"Size of the dataset: {total_file_size} bytes")
 
-    if invalid_dataset_messages != "":
-        submitdatastatus = "Done"
-        invalid_dataset_messages = (
-            invalid_dataset_messages
-            + "<br>Please remove invalid files/folders from your dataset before uploading. If you have hidden files present please remove them before upload. You can find more details <a target='_blank' rel='noopener noreferrer' href='https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/issues-regarding-hidden-files-or-folders'>here </a> on how to fix this issue."
-        )
-        did_fail = True
-        did_upload = False
-        abort(400, invalid_dataset_messages)
+#     if invalid_dataset_messages != "":
+#         submitdatastatus = "Done"
+#         invalid_dataset_messages = (
+#             invalid_dataset_messages
+#             + "<br>Please remove invalid files/folders from your dataset before uploading. If you have hidden files present please remove them before upload. You can find more details <a target='_blank' rel='noopener noreferrer' href='https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/issues-regarding-hidden-files-or-folders'>here </a> on how to fix this issue."
+#         )
+#         did_fail = True
+#         did_upload = False
+#         abort(400, invalid_dataset_messages)
 
-    if not has_edit_permissions(get_access_token(), selected_dataset_id):
-        submitdatastatus = "Done"
-        did_fail = True
-        did_upload = False
-        abort(403, "You don't have permissions for uploading to this Pennsieve dataset")
+#     if not has_edit_permissions(get_access_token(), selected_dataset_id):
+#         submitdatastatus = "Done"
+#         did_fail = True
+#         did_upload = False
+#         abort(403, "You don't have permissions for uploading to this Pennsieve dataset")
 
 
-    # create the manifest file for the dataset
-    try:
-        manifest_data = ps.manifest.create(pathdataset, os.path.basename(pathdataset))
-    except Exception as e:
-        submitdatastatus = "Done"
-        did_fail = True
-        did_upload = False
-        error_message = "Could not create manifest file for this dataset"
-        abort(500, e)
+#     # create the manifest file for the dataset
+#     try:
+#         manifest_data = ps.manifest.create(pathdataset, os.path.basename(pathdataset))
+#     except Exception as e:
+#         submitdatastatus = "Done"
+#         did_fail = True
+#         did_upload = False
+#         error_message = "Could not create manifest file for this dataset"
+#         abort(500, e)
     
 
-    # upload the dataset
-    try:
-        submitprintstatus = "Uploading"
-        start_time_bf_upload = time.time()
-        start_submit = 1
-        manifest_id = manifest_data.manifest_id
-        try: 
-            ps.manifest.upload(manifest_id)
-            ps.subscribe(10, False, monitor_subscriber_progress)
-        except Exception as e:
-            namespace_logger.error("Error uploading dataset files")
-            namespace_logger.error(e)
-            raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a target='_blank' rel='noopener noreferrer' href='https://docs.sodaforsparc.io/docs/miscellaneous/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
+#     # upload the dataset
+#     try:
+#         submitprintstatus = "Uploading"
+#         start_time_bf_upload = time.time()
+#         start_submit = 1
+#         manifest_id = manifest_data.manifest_id
+#         try: 
+#             ps.manifest.upload(manifest_id)
+#             ps.subscribe(10, False, monitor_subscriber_progress)
+#         except Exception as e:
+#             namespace_logger.error("Error uploading dataset files")
+#             namespace_logger.error(e)
+#             raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a target='_blank' rel='noopener noreferrer' href='https://docs.sodaforsparc.io/docs/miscellaneous/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
 
-        submitdatastatus = "Done"
-    except Exception as e:
-        submitdatastatus = "Done"
-        did_fail = True
-        raise e
+#         submitdatastatus = "Done"
+#     except Exception as e:
+#         submitdatastatus = "Done"
+#         did_fail = True
+#         raise e
 
-    return "Done"
+#     return "Done"
 
 
-def submit_dataset_progress():
-    """
-    Keeps track of the dataset submission progress
-    """
-    global submitdataprogress
-    global submitdatastatus
-    global submitprintstatus
-    global total_file_size
-    global uploaded_file_size
-    global start_time_bf_upload
-    global start_submit
-    global initial_bfdataset_size_submit
-    global completed_files
-    global files_uploaded
-    global total_files_to_upload
-    global total_bytes_uploaded
+# def submit_dataset_progress():
+#     """
+#     Keeps track of the dataset submission progress
+#     """
+#     global submitdataprogress
+#     global submitdatastatus
+#     global submitprintstatus
+#     global total_file_size
+#     global uploaded_file_size
+#     global start_time_bf_upload
+#     global start_submit
+#     global initial_bfdataset_size_submit
+#     global completed_files
+#     global files_uploaded
+#     global total_files_to_upload
+#     global total_bytes_uploaded
 
-    if start_submit == 1:
-        elapsed_time = time.time() - start_time_bf_upload
-        elapsed_time_formatted = time_format(elapsed_time)
-        elapsed_time_formatted_display = (
-            "<br>" + "Elapsed time: " + elapsed_time_formatted + "<br>"
-        )
-    else:
-        elapsed_time_formatted = 0
-        elapsed_time_formatted_display = "<br>" + "Initiating..." + "<br>"
+#     if start_submit == 1:
+#         elapsed_time = time.time() - start_time_bf_upload
+#         elapsed_time_formatted = time_format(elapsed_time)
+#         elapsed_time_formatted_display = (
+#             "<br>" + "Elapsed time: " + elapsed_time_formatted + "<br>"
+#         )
+#     else:
+#         elapsed_time_formatted = 0
+#         elapsed_time_formatted_display = "<br>" + "Initiating..." + "<br>"
 
         
-    return {
-        'progress': submitdataprogress + elapsed_time_formatted_display,
-        'submit_dataset_status': submitdatastatus,
-        'submit_print_status': submitprintstatus,
-        'total_file_size': total_file_size,
-        'upload_file_size': total_bytes_uploaded["value"],
-        'uploaded_files': files_uploaded,
-        'elapsed_time_formatted': elapsed_time_formatted,
-        'files_uploaded_status': f"Uploaded {files_uploaded} of {total_files_to_upload} files",
-    }
+#     return {
+#         'progress': submitdataprogress + elapsed_time_formatted_display,
+#         'submit_dataset_status': submitdatastatus,
+#         'submit_print_status': submitprintstatus,
+#         'total_file_size': total_file_size,
+#         'upload_file_size': total_bytes_uploaded["value"],
+#         'uploaded_files': files_uploaded,
+#         'elapsed_time_formatted': elapsed_time_formatted,
+#         'files_uploaded_status': f"Uploaded {files_uploaded} of {total_files_to_upload} files",
+#     }
 
 
 # Also delete selected_bfaccount since it is not used

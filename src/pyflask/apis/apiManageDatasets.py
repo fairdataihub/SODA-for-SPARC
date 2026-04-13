@@ -1,12 +1,12 @@
 from flask_restx import Resource, fields, reqparse
 from manageDatasets import ( 
     get_number_of_files_and_folders_locally,
-    submit_dataset_progress,
+    # submit_dataset_progress,
     bf_add_account_api_key,
     bf_account_list,
     fetch_user_datasets,
     bf_account_details,
-    bf_submit_dataset,
+    # bf_submit_dataset,
     create_new_dataset,
     ps_rename_dataset,
     ps_add_permission,
@@ -957,60 +957,60 @@ class BfCreateDatasetFolder(Resource):
   parser_submit_dataset.add_argument('selected_dataset', type=str, required=True, location='args', help='The name of the dataset to create.')
   parser_submit_dataset.add_argument('filepath', type=str, required=True, location='json', help='The local data/dataset folder that will upload to the target dataset.')
 
-  @api.expect(parser_submit_dataset)
-  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 200: 'OK'}, description="Add data to an existing dataset entity on the Pennsieve platform.")
-  def put(self):
+  # @api.expect(parser_submit_dataset)
+  # @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 200: 'OK'}, description="Add data to an existing dataset entity on the Pennsieve platform.")
+  # def put(self):
 
 
-    data = self.parser_submit_dataset.parse_args()
+  #   data = self.parser_submit_dataset.parse_args()
 
-    selected_account = data.get('selected_account')
-    selected_dataset = data.get('selected_dataset')
-    filepath = data.get('filepath')
-
-
-    try:
-      return bf_submit_dataset(selected_account, selected_dataset, filepath)
-    except Exception as e:
-      api.logger.exception(e)
-      if notBadRequestException(e):
-          # general exception that was unexpected and caused by our code
-          api.abort(500, str(e))
-      if e.response is not None:
-          # requests exeption
-          api.logger.info("Error message details: ", e.response.json().get('message'))
-          api.abort(e.response.status_code, e.response.json().get('message'))
-      else:
-          # custom werkzeug.exception that we raised
-          api.abort(e.code, e.description)
+  #   selected_account = data.get('selected_account')
+  #   selected_dataset = data.get('selected_dataset')
+  #   filepath = data.get('filepath')
 
 
-
+    # try:
+    #   return bf_submit_dataset(selected_account, selected_dataset, filepath)
+    # except Exception as e:
+    #   api.logger.exception(e)
+    #   if notBadRequestException(e):
+    #       # general exception that was unexpected and caused by our code
+    #       api.abort(500, str(e))
+    #   if e.response is not None:
+    #       # requests exeption
+    #       api.logger.info("Error message details: ", e.response.json().get('message'))
+    #       api.abort(e.response.status_code, e.response.json().get('message'))
+    #   else:
+    #       # custom werkzeug.exception that we raised
+    #       api.abort(e.code, e.description)
 
 
 
 
-model_upload_progress_response = api.model("UploadProgressResponse", {
-  'progress': fields.String(required=True, description="The current progress of the upload."),
-  'submit_dataset_status': fields.String(required=True, description="The status of the upload."),
-  'submit_print_status': fields.String(required=True, description="The status of the print."),
-  'total_file_size': fields.Integer(required=True, description="The total size of the file being uploaded."),
-  'upload_file_size': fields.Integer(required=True, description="The size of the file being uploaded."),
-  'uploaded_files': fields.Integer(required=True, description="The amount of files uploaded."),
-  'elapsed_time_formatted': fields.String(required=True, description="The elapsed time of the upload."),
-  'files_uploaded_status': fields.String(required=True, description="The amount of files uploaded vs the amount to upload."),
-})
 
-@api.route('/datasets/upload_progress')
-class BfGetUploadProgress(Resource):
 
-  @api.doc(responses={500: 'There was an internal server error'}, description="Get the progress of the upload.")
-  @api.marshal_with(model_upload_progress_response, 200, False)
-  def get(self):
-    try:
-      return submit_dataset_progress()
-    except Exception as e:
-      api.abort(500, str(e))
+
+# model_upload_progress_response = api.model("UploadProgressResponse", {
+#   'progress': fields.String(required=True, description="The current progress of the upload."),
+#   'submit_dataset_status': fields.String(required=True, description="The status of the upload."),
+#   'submit_print_status': fields.String(required=True, description="The status of the print."),
+#   'total_file_size': fields.Integer(required=True, description="The total size of the file being uploaded."),
+#   'upload_file_size': fields.Integer(required=True, description="The size of the file being uploaded."),
+#   'uploaded_files': fields.Integer(required=True, description="The amount of files uploaded."),
+#   'elapsed_time_formatted': fields.String(required=True, description="The elapsed time of the upload."),
+#   'files_uploaded_status': fields.String(required=True, description="The amount of files uploaded vs the amount to upload."),
+# })
+
+# @api.route('/datasets/upload_progress')
+# class BfGetUploadProgress(Resource):
+
+#   @api.doc(responses={500: 'There was an internal server error'}, description="Get the progress of the upload.")
+#   @api.marshal_with(model_upload_progress_response, 200, False)
+#   def get(self):
+#     try:
+#       return submit_dataset_progress()
+#     except Exception as e:
+#       api.abort(500, str(e))
 
 
 

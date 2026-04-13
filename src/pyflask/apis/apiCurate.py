@@ -10,7 +10,7 @@ from os.path import (
 # ensure using pysodafair
 from pysoda.core.dataset_generation import (
     check_empty_files_folders,
-    main_curate_function,
+    create_upload_manifest_pipeline,
     main_curate_function_progress,
     generate_manifest_file_locally,
     generate_manifest_file_data,
@@ -130,24 +130,15 @@ class Curation(Resource):
 
 
 
-model_main_curation_function_response = api.model( "MainCurationFunctionResponse", {
-    "main_curate_progress_message": fields.String(description="Progress message from the main curation function"),
-    "main_total_generate_dataset_size": fields.String(description="Total size of the dataset"),
-    "main_curation_uploaded_files": fields.Integer(description="Number of files that are being generated. "), 
-    "local_manifest_id": fields.String(description="ID of the local manifest file created by the Pennsieve Agent for the upload."),
-    "origin_manifest_id": fields.String(description="ID of the manifest file created on Pennsieve for the upload."),
-    "main_curation_total_files": fields.Integer(description="Total number of files in the dataset upload session."),
-    "dataset_id": fields.String(description="The UUID of the Pennsieve Dataset")
-})
+
 
 # TODO: Add example JSON structures for upload
 
-@api.route("/curation")
+@api.route("/curation/manifest_file")
 class Curation(Resource):
 
     @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request', 403: 'Forbidden'}, 
-    description="Given a sodajsonobject generate a dataset. Used in the final step of Organize Datasets.")   
-    @api.marshal_with(model_main_curation_function_response)
+    description="Given a sodajsonobject generate a manifest file and information key to the dataset upload such as number of files and total size.")   
     def post(self):
         data = request.get_json()
 
@@ -171,7 +162,7 @@ class Curation(Resource):
             api.logger.info("pysodafair version: not found")
 
         try:
-            return main_curate_function(soda_json_structure, resume)
+            return create_upload_manifest_pipeline(soda_json_structure)
         except Exception as e:
             api.logger.exception(e)
             # throws an appropriate error if the error is a pysoda specific error
