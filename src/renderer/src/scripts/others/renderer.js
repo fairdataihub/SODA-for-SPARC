@@ -3131,7 +3131,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
 
         const fileIsInForbiddenFilesList = window.evaluateStringAgainstSdsRequirements(
           fileName,
-          "file-is-in-forbidden-files-list"
+          "is-forbidden-file"
         );
 
         const fileIsEmpty = window.fs.fileSizeSync(pathToExplore) === 0;
