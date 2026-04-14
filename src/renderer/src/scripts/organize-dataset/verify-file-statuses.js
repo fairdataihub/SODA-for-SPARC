@@ -21,8 +21,6 @@ const showVerificationCompleteMessage = () => {
   const prefix = curationMode === "free-form" ? "ffm" : "guided";
   const oppositePrefix = curationMode === "free-form" ? "guided" : "ffm";
 
-  console.log(`[Verification] Showing verification complete message for mode: ${prefix}`);
-
   document
     .getElementById(`${oppositePrefix}-dataset-upload-complete-message`)
     .classList.add("hidden");
@@ -42,10 +40,8 @@ const showVerificationCompleteMessage = () => {
 document
   .querySelector("#guided-section-file-upload-verification-button")
   .addEventListener("click", async () => {
-    console.log("[Verification] File verification button clicked");
-
+    ``;
     // Prepare UI
-    console.log("[Verification] Preparing verification UI");
     document.querySelector("#guided-section-validate-dataset-upload").classList.remove("hidden");
     document.querySelector("#guided-section-validate-dataset-upload").scrollIntoView({
       behavior: "smooth",
@@ -55,15 +51,12 @@ document
       .getElementsByTagName("tbody")[0].innerHTML = "";
 
     // Disable buttons
-    console.log("[Verification] Disabling verification buttons");
     document.querySelector("#guided-section-file-upload-verification-button").disabled = true;
     document.querySelector("#guided--skip-verify-btn").disabled = true;
     document.querySelector("#guided-next-button").disabled = true;
     document.querySelector("#guided-button-save-and-exit").disabled = true;
 
     try {
-      console.log("[Verification] Starting file verification process");
-
       // Monitor file verification
       const manifestId = window.pennsieveManifestId;
       let verifiedFilesCount = 0;
@@ -97,7 +90,6 @@ document
 
       showGuidedVerificationResult();
 
-      console.log("[Verification] File verification completed successfully");
       showVerificationCompleteMessage();
     } catch (err) {
       console.error("[Verification] Error during file verification:", err);
@@ -107,7 +99,6 @@ document
         "An error occurred while verifying the files. You may try again by clicking 'Verify Files' again or move on by clicking 'Save and continue.'"
       );
     } finally {
-      console.log("[Verification] Re-enabling verification buttons");
       document.querySelector("#guided-next-button").disabled = false;
       document.querySelector("#guided-button-save-and-exit").disabled = false;
     }
@@ -273,7 +264,7 @@ const updateGuidedVerificationProgress = (verifiedCount, difference) => {
 };
 
 const waitWithCountdown = async () => {
-  for (let time = 60; time > 0; time--) {
+  for (let time = 30; time > 0; time--) {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     document.getElementById("guided--verify-dataset-upload-files-progress-para").innerText =
       `Waiting ${time} seconds for Pennsieve to import more local files...`;

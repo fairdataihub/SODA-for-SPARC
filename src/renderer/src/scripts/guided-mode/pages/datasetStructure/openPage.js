@@ -149,7 +149,6 @@ export const openPageDatasetStructure = async (targetPageID) => {
         { dataset_structure_obj: responseData["dataset-structure"] },
         { timeout: 0 }
       );
-      console.log("manifestRes:", manifestRes);
 
       const newManifestData = { headers: manifestRes.shift(), data: manifestRes };
 

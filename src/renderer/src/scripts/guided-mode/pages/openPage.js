@@ -687,10 +687,8 @@ window.openPage = async (targetPageID) => {
           // if it exists in the dataset_metadata
           const datasetMetadata = window.sodaJSONObj["dataset_metadata"] || {};
           if ("manifest_file" in datasetMetadata) {
-            console.log("Manifest file found in dataset metadata, showing in preview");
             setDatasetMetadataToPreview(["manifest_file"]);
           } else {
-            console.log("No manifest file found in dataset metadata, not showing in preview");
             setDatasetMetadataToPreview(null);
           }
         } else {
