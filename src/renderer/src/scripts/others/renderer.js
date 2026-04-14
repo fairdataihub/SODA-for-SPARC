@@ -5314,7 +5314,7 @@ const initiate_generate = async (resume = false) => {
 
   client
     .post(
-      `/curate_datasets/curation`,
+      `/curate_datasets/curation/manifest_file`,
       {
         soda_json_structure: window.sodaJSONObj,
         resume,
@@ -5326,58 +5326,60 @@ const initiate_generate = async (resume = false) => {
       amountOfTimesPennsieveUploadFailed = 0;
 
       console.log("Done Running [ /curation/manifest_file]");
-      console.log(data);
-      let manifestId = data["manifest_file"];
-      let pennsieveManifestId = data["origin_manifest_id"];
+      let manifestId = data["manifest_id"];
       let sizeOfDataset = data["size_of_dataset"];
       let numberOfFiles = data["number_of_files"];
       let listOfFilesToRename = data["list_of_files_to_rename"];
       let datasetId = data["dataset_id"];
 
+      // TODO: Add code to save progress information to SODA object here so SODA can resume where upload left off
+      // Stage 2 of upload pipeline: Start upload
+
+      // TODO: Add error handling code for random Agent errors. Probably just retry. Could lead to awkward overcounting but not too much ways around it for the progress bar.
       const removeListener = window.pennsieve.onUploadProgress((line) => {
         console.log("Upload progress:", line);
       });
 
-      let uploadSubClient = axios.create({
-        baseURL: `http://127.0.0.1:${8000}`,
-        timeout: 0,
-      });
-
       const subscribe = async (datasetId) => {
         try {
-          console.log(`The dataset id given is: ${datasetId}`);
           console.log(`Started one subscriber session at ${new Date().toLocaleTimeString()}`);
-          await uploadSubClient.post("/curation/subscribe", { dataset_id: datasetId });
+          await client.post("/curate_datasets/curation/subscribe", {
+            dataset_id: datasetId,
+            account_name: window.sodaJSONObj["ps-account-selected"]["account-name"],
+          });
           console.log(
-            `Returned from one subscriber session at ${new Date().toLocaleTimeString()}. Check backend for when this sub ends. `
+            `Returned from one subscriber session at ${new Date().toLocaleTimeString()}. `
           );
         } catch (e) {
-          if (e.request?.code === "ECONNABORTED") {
-            console.log("PS took more than 1 minute to connect. Ending attempt and trying again.");
-          } else if (!e.response && e.request && e.isAxiosError) {
-            await swalShowError(
-              "Network Error",
-              "The server did not respond. Please close SODA and reopen it to try the upload again. SODA will remember any progress in the upload you have made. If the problem persists, please contact support."
-            );
-          }
+          console.log(
+            `Crashed from one subscriber session at ${new Date().toLocaleTimeString()}. `
+          );
+          // if (e.request?.code === "ECONNABORTED") {
+          //   console.log("PS took more than 1 minute to connect. Ending attempt and trying again.");
+          // } else if (!e.response && e.request && e.isAxiosError) {
+          await swalShowError(
+            "Network Error",
+            "The server did not respond. Please close SODA and reopen it to try the upload again. SODA will remember any progress in the upload you have made. If the problem persists, please contact support."
+          );
           clientError(e);
         }
-
-        console.log("Subscriber noticed upload is complete and stopped subscribing");
       };
 
-      // subscribe(datasetId);
+      subscribe(datasetId);
 
-      // try {
-      //   await window.pennsieve.uploadManifest(manifestId);
-      //   console.log("Upload complete");
-      // } catch (err) {
-      //   console.error("Upload failed:", err.message);
-      // } finally {
-      //   removeListener(); // Always clean up the listener
-      // }
+      try {
+        await window.pennsieve.uploadManifest(manifestId);
+      } catch (err) {
+        console.error("Upload failed:", err.message);
+      } finally {
+        removeListener(); // Always clean up the listener
+      }
+
+      // Stage 3 of upload pipline: Rename files
 
       $("#party-lottie").show();
+
+      // Stage 4 of upload pipeline: Optionally verify files
 
       // main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
       // uploadedFiles = data["main_curation_uploaded_files"];

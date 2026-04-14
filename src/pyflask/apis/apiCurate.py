@@ -17,6 +17,7 @@ from pysoda.core.dataset_generation import (
     check_json_size,
     clean_json_structure,
     check_server_access_to_files,
+    start_subscriber
 )
 
 from pysoda.utils import validation_error_message
@@ -214,7 +215,19 @@ class CurationProgress(Resource):
             api.abort(500, str(e))
 
 
+@api.route("/curation/subscribe")
+class CurationSubscribe(Resource):
+    def post(self):
+        global ps 
+        data = request.get_json()
+        dataset_id = data["dataset_id"]
+        account_name = data["account_name"]
 
+        try:
+            start_subscriber(dataset_id, account_name)
+        except Exception as e:
+            api.abort(500, str(e))
+            
 
 
 
