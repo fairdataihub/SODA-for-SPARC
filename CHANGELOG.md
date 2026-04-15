@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Feature Additions:
 
-- placeholder
+- placeholder 1
 
 ## Bug fixes:
 
