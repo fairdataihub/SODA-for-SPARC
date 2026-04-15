@@ -421,7 +421,7 @@ if (process.contextIsolated) {
         restart: (port) => ipcRenderer.invoke("restart-server", port),
         onRestartProgress: (callback) => {
           const handler = (_, data) => callback(data);
-          ipcRenderer.on("pennsieve:upload-progress", handler);
+          ipcRenderer.on("restart-server:upload-progress", handler);
           // Return cleanup function
           return () => ipcRenderer.removeListener("restart-serer:progress", handler);
         },
