@@ -25,7 +25,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "lts/hydrogen"
+          node-version: "25.9.0"
 
       - name: Configure pysodafair source based on version
         run: |
