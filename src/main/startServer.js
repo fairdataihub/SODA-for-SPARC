@@ -223,7 +223,7 @@ export const exitPyProc = async () => {
 ipcMain.handle("start-server", (event, port) => {
   return new Promise((resolve, reject) => {
     let serverReady = false;
-    let scriptPath = getScriptPath()[0];
+    let scriptPath = getScriptPath();
     if (!guessPackaged()) {
       pyflaskProcess = spawn("python", [scriptPath, port], {
         stdio: ["ignore", "pipe", "pipe"],
