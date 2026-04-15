@@ -22,7 +22,7 @@ import "./templates";
 import "./clipboard";
 import "./pennsieve-agent";
 import "./startServer";
-import { createPyProc, exitPyProc } from "./startServer";
+import { createPyProc, exitPyProc, PORT, portRange } from "./startServer";
 
 app.showExitPrompt = true;
 
@@ -225,20 +225,6 @@ const kombuchaServer = axios.create({
   timeout: 0,
 });
 let updatechecked = false;
-
-const killAllPreviousProcesses = async () => {
-  // kill all previous python processes that could be running.
-  let promisesArray = [];
-  let endRange = PORT + portRange;
-  // create a loop of 100
-  for (let currentPort = PORT; currentPort <= endRange; currentPort++) {
-    promisesArray.push(
-      axios.get(`http://127.0.0.1:${currentPort}/sodaforsparc_server_shutdown`, {})
-    );
-  }
-  // wait for all the promises to resolve
-  await Promise.allSettled(promisesArray);
-};
 
 // analytics function
 // Sends user information to Kombucha server

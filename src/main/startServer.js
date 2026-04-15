@@ -13,10 +13,9 @@ const PY_FLASK_FOLDER = "../src/pyflask";
 const PY_FLASK_MODULE = "app";
 const UPLOAD_MODULE_FOLDER = "../src/uploadServer";
 const UPLOAD_MODULE = "uploadApp";
-let PORT = 4242;
-const portRange = 100;
+export let PORT = 4242;
+export const portRange = 100;
 let pyflaskProcess = null;
-let uploadAppProcess = null;
 let selectedPort = null;
 
 const selectPort = () => {
@@ -49,32 +48,36 @@ const getScriptPath = () => {
   if (!guessPackaged()) {
     log.info("App is not packaged returning path: ");
     log.info(join(__dirname, "..", PY_FLASK_FOLDER, PY_FLASK_MODULE + ".py"));
-    return [
-      join(__dirname, "..", PY_FLASK_FOLDER, PY_FLASK_MODULE + ".py"),
-      join(__dirname, "..", UPLOAD_MODULE_FOLDER),
-    ];
+    return join(__dirname, "..", PY_FLASK_FOLDER, PY_FLASK_MODULE + ".py");
   }
   if (process.platform === "win32") {
     const winPathPyflask = join(process.resourcesPath, PY_FLASK_MODULE + ".exe");
     log.info("App is packaged [Windows]; Path to server executable: " + winPathPyflask);
-
-    const winPathUploadServer = join(process.resourcesPath, UPLOAD_MODULE + ".exe");
-    log.info("UploadApp is packaged [Windows]; Path to server executable: " + winPathUploadServer);
-
-    return [winPathPyflask, winPathUploadServer];
+    return winPathPyflask;
   } else {
     const unixPath = join(process.resourcesPath, PY_FLASK_MODULE);
-    const unixPathUpload = join(process.resourcesPath, UPLOAD_MODULE);
     log.info("App is packaged [ Unix ]; Path to server executable: " + unixPath);
-    return [unixPath, unixPathUpload];
+    return unixPath;
   }
 };
 
+const killAllPreviousProcesses = async () => {
+  // kill all previous python processes that could be running.
+  let promisesArray = [];
+  let endRange = PORT + portRange;
+  // create a loop of 100
+  for (let currentPort = PORT; currentPort <= endRange; currentPort++) {
+    promisesArray.push(
+      axios.get(`http://127.0.0.1:${currentPort}/sodaforsparc_server_shutdown`, {})
+    );
+  }
+  // wait for all the promises to resolve
+  await Promise.allSettled(promisesArray);
+};
+
 export const createPyProc = async () => {
-  let scripts = getScriptPath();
-  let script = scripts[0];
+  let script = getScriptPath();
   global.script = script;
-  let uploadScript = scripts[1];
   log.info(`Path to server executable: ${script}`);
   let port = "" + selectPort();
   try {
@@ -82,12 +85,6 @@ export const createPyProc = async () => {
   } catch (e) {}
   if (existsSync(script)) {
     log.info("Server exists at specified location", script);
-  } else {
-    log.info("Server doesn't exist at specified location");
-  }
-
-  if (existsSync(uploadScript)) {
-    log.info("Upload server exists at specified location", uploadScript);
   } else {
     log.info("Server doesn't exist at specified location");
   }
@@ -199,7 +196,6 @@ export const exitPyProc = async () => {
   const killPythonProcess = () => {
     // kill pyproc with command line
     const cmd = spawnSync("taskkill", ["/pid", pyflaskProcess.pid, "/f", "/t"]);
-    const cmd2 = spawnSync("taskkill", ["/pid", uploadAppProcess.pid, "/f", "/t"]);
   };
   try {
     await killAllPreviousProcesses();
@@ -210,7 +206,7 @@ export const exitPyProc = async () => {
       killPythonProcess();
     }
     pyflaskProcess = null;
-    uploadAppProcess = null;
+
     PORT = null;
     return;
   }
@@ -220,20 +216,23 @@ export const exitPyProc = async () => {
       pyflaskProcess.kill();
       pyflaskProcess = null;
     }
-    if (uploadAppProcess != null) {
-      uploadAppProcess.kill();
-      uploadAppProcess = null;
-    }
   } catch (e) {}
   PORT = null;
 };
 
-ipcMain.handle("restart-server", (event, port) => {
+ipcMain.handle("start-server", (event, port) => {
   return new Promise((resolve, reject) => {
     let serverReady = false;
-    const pyflaskProcess = spawn("python", [global.script, port], {
-      stdio: ["ignore", "pipe", "pipe"],
-    });
+    let scriptPath = getScriptPath()[0];
+    if (!guessPackaged()) {
+      pyflaskProcess = spawn("python", [scriptPath, port], {
+        stdio: ["ignore", "pipe", "pipe"],
+      });
+    } else {
+      pyflaskProcess = spawn(executablePath, [port], {
+        stdio: "inherit", // or ["ignore", "pipe", "pipe"] for custom streams
+      });
+    }
 
     const READY_MESSAGE = "Running on"; // <-- Change this to match your server's ready output
 
