@@ -6784,3 +6784,18 @@ tippy("#datasetPathDisplay", {
 // const createSpreadSheetWindow = async (spreadsheet) => {
 //   window.electron.ipcRenderer.send("spreadsheet", spreadsheet);
 // };
+
+window.restartServer = () => {
+  try {
+    window.server.restart(window.port);
+  } catch (err) {
+    console.error("Upload failed:", err.message);
+  } finally {
+    console.log("Finally reached");
+    // removeListener(); // Always clean up the listener
+  }
+
+  // const removeListener = window.server.onRestartProgress((line) => {
+  //   console.log("Restart progress:", line);
+  // });
+};

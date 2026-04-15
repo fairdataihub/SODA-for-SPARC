@@ -418,6 +418,13 @@ if (process.contextIsolated) {
           const status = await ipcRenderer.invoke("get-server-live-status");
           return status;
         },
+        restart: (port) => ipcRenderer.invoke("restart-server", port),
+        onRestartProgress: (callback) => {
+          const handler = (_, data) => callback(data);
+          ipcRenderer.on("pennsieve:upload-progress", handler);
+          // Return cleanup function
+          return () => ipcRenderer.removeListener("restart-serer:progress", handler);
+        },
       });
   } catch (error) {
     log.error(error);
