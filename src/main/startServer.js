@@ -220,7 +220,7 @@ export const exitPyProc = async () => {
   PORT = null;
 };
 
-ipcMain.handle("start-server", (event, port) => {
+ipcMain.handle("restart-server", (event, port) => {
   return new Promise((resolve, reject) => {
     let serverReady = false;
     let scriptPath = getScriptPath();

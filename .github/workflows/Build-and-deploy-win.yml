@@ -6,7 +6,7 @@ on:
     branches:
       - main
       - staging
-      - handle-pennsieve-agent-win-block
+      - server-gunicorn-pysoda-startup
 
 
 jobs:
