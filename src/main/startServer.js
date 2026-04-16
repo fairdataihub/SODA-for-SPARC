@@ -231,6 +231,8 @@ ipcMain.handle("restart-server", (event, port) => {
     } else {
       pyflaskProcess = spawn(scriptPath, [port], {
         stdio: "inherit", // or ["ignore", "pipe", "pipe"] for custom streams
+        shell: false,
+        windowsHide: true,
       });
     }
 
