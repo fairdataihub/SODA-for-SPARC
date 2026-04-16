@@ -423,7 +423,7 @@ if (process.contextIsolated) {
           const handler = (_, data) => callback(data);
           ipcRenderer.on("restart-server:upload-progress", handler);
           // Return cleanup function
-          return () => ipcRenderer.removeListener("restart-serer:progress", handler);
+          return () => ipcRenderer.removeListener("restart-server:progress", handler);
         },
       });
   } catch (error) {

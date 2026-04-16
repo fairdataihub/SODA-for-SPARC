@@ -5201,6 +5201,21 @@ window.folder_counter = 0;
 
 let amountOfTimesPennsieveUploadFailed = 0;
 
+const restartServer = async () => {
+  try {
+    await window.server.restart(window.port);
+  } catch (err) {
+    console.error("Upload failed:", err.message);
+  } finally {
+    console.log("Server is live");
+    removeListener(); // Always clean up the listener
+  }
+
+  const removeListener = window.server.onRestartProgress((line) => {
+    console.log("Restart progress:", line);
+  });
+};
+
 // Generates a dataset organized in the Organize Dataset feature locally, or on Pennsieve
 const initiate_generate = async (resume = false) => {
   // Disable the Guided Mode sidebar button to prevent the sodaJSONObj from being modified
@@ -5209,6 +5224,9 @@ const initiate_generate = async (resume = false) => {
   document.getElementById("documentation-view").style.pointerEvents = "none";
   // Disable the Contact Us sidebar button to prevent the sodaJSONObj from being modified
   document.getElementById("contact-us-view").style.pointerEvents = "none";
+
+  let UPLOAD_COMPLETE = false;
+  let SERVER_IS_LIVE = true;
 
   // Initiate curation by calling Python function
   var main_curate_status = "Solving";
@@ -5354,21 +5372,24 @@ const initiate_generate = async (resume = false) => {
           console.log(
             `Crashed from one subscriber session at ${new Date().toLocaleTimeString()}. `
           );
-          // if (e.request?.code === "ECONNABORTED") {
-          //   console.log("PS took more than 1 minute to connect. Ending attempt and trying again.");
-          // } else if (!e.response && e.request && e.isAxiosError) {
-          await swalShowError(
-            "Network Error",
-            "The server did not respond. Please close SODA and reopen it to try the upload again. SODA will remember any progress in the upload you have made. If the problem persists, please contact support."
-          );
           clientError(e);
+          if (!e.response && e.request && e.isAxiosError) {
+            await restartServer();
+
+            // CHECK IF UPLOAD IS COMPLETE BEFORE RESTARTING PROGRESS AND SUBSCRIPTION
+            if (!UPLOAD_COMPLETE) {
+              subscribe(datasetId);
+            }
+          }
         }
       };
 
       subscribe(datasetId);
 
+      // TODO: ADD ERROR HANDLING TO RETRY IF UPLOAD FAILS - AUTO RETRY 3 TIMES AS WE NORMALLY DO
       try {
         await window.pennsieve.uploadManifest(manifestId);
+        UPLOAD_COMPLETE = true;
       } catch (err) {
         console.error("Upload failed:", err.message);
       } finally {
@@ -5646,7 +5667,7 @@ const initiate_generate = async (resume = false) => {
     });
 
   // Progress tracking function for main curate
-  var timerProgress = setInterval(mainProgressFunction, 1000);
+  var timerProgress = setInterval(mainProgressFunction, 2000);
   var successful = false;
 
   async function mainProgressFunction() {
@@ -5656,6 +5677,28 @@ const initiate_generate = async (resume = false) => {
     } catch (error) {
       clientError(error);
       let emessage = userErrorMessage(error, false);
+
+      if (!error.response && error.request && error.isAxiosError) {
+        console.log("ERROR SERVER CRASHED");
+        clearInterval(timerProgress);
+
+        // IF UPLOAD IS COMPLETE SET PROGRESS BAR TO 100%
+        if (UPLOAD_COMPLETE) {
+          return;
+        }
+
+        // ADD MESSAGE TO PROGRESS BAR THAT SAYS MOMENTARY PAUSE IN PROGRESS TRACKING. TRACKING WILL RESUME SHORTLY....
+
+        // RESTART PROGRESS POLLING ONCE SERVER IS LIVE
+        while (true) {
+          let live = await window.ipcRenderer.invoke("get-server-live-status");
+          if (live) {
+            timerProgress = setInterval(mainProgressFunction, 2000);
+            return;
+          }
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+      }
 
       if (progressStatus.innerHTML.split("<br>").length > 1) {
         progressStatus.innerHTML = `Upload Failed<br>${progressStatus.innerHTML
@@ -6784,18 +6827,3 @@ tippy("#datasetPathDisplay", {
 // const createSpreadSheetWindow = async (spreadsheet) => {
 //   window.electron.ipcRenderer.send("spreadsheet", spreadsheet);
 // };
-
-window.restartServer = () => {
-  try {
-    window.server.restart(window.port);
-  } catch (err) {
-    console.error("Upload failed:", err.message);
-  } finally {
-    console.log("Finally reached");
-    // removeListener(); // Always clean up the listener
-  }
-
-  // const removeListener = window.server.onRestartProgress((line) => {
-  //   console.log("Restart progress:", line);
-  // });
-};
