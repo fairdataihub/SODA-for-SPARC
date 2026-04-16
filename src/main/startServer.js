@@ -229,7 +229,7 @@ ipcMain.handle("restart-server", (event, port) => {
         stdio: ["ignore", "pipe", "pipe"],
       });
     } else {
-      pyflaskProcess = spawn(executablePath, [port], {
+      pyflaskProcess = spawn(scriptPath, [port], {
         stdio: "inherit", // or ["ignore", "pipe", "pipe"] for custom streams
       });
     }
