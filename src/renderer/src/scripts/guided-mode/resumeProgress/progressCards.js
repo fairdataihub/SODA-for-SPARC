@@ -1,8 +1,7 @@
 import { guidedGetCurrentUserWorkSpace } from "../workspaces/workspaces";
-import { getAllProgressFileData } from "./progressFile";
+import { getAllProgressFileData, deleteProgressFile } from "./progressFile";
 import hasConnectedAccountWithPennsieve from "../../others/authentication/auth";
 import { swalShowInfo } from "../../utils/swal-utils";
-import tippy from "tippy.js";
 import { clientError } from "../../others/http-error-handler/error-handler";
 import {
   setGuidedModeProgressCardsText,
@@ -19,26 +18,19 @@ if (!window.fs.existsSync(guidedProgressFilePath)) {
   window.fs.mkdirSync(guidedProgressFilePath, { recursive: true });
 }
 
-/**
- *  @description - Associated with a the 'Continue a dataset saved in SODA' button in the Prepare Dataset Step-by-Step menu page.
- *  Once clicked it displays a list of saved progress files that the user can use to resume any workflow progress they have made.
- */
-document
-  .getElementById("guided-button-resume-progress-file")
-  .addEventListener("click", async () => {
-    await guidedRenderProgressCards();
-  });
-
 const readDirAsync = async (path) => {
   let result = await window.fs.readdir(path);
   return result;
 };
 
-export const guidedRenderProgressCards = async () => {
-  const progressCardsContainer = document.getElementById("guided-container-progress-cards");
-  const progressCardLoadingDiv = document.getElementById("guided-section-loading-progress-cards");
+export const guidedRenderProgressCards = async (curationMode) => {
+  const prefix = curationMode === "ffm" ? "ffm" : "gm";
+  const progressCardsContainer = document.getElementById(`${prefix}-container-progress-cards`);
+  const progressCardLoadingDiv = document.getElementById(
+    `${prefix}-section-loading-progress-cards`
+  );
   const progressCardLoadingDivText = document.getElementById(
-    "guided-section-loading-progress-cards-para"
+    `${prefix}-section-loading-progress-cards-para`
   );
   setGuidedModeProgressCardsDataArray([]);
 
@@ -74,7 +66,38 @@ export const guidedRenderProgressCards = async () => {
     return file.endsWith(".json");
   });
 
-  const progressFileData = await getAllProgressFileData(jsonProgressFiles);
+  let progressFileData = await getAllProgressFileData(jsonProgressFiles);
+
+  // For free-form mode, delete any already-uploaded dataset progress files (completed uploads).
+  // Use the ["save-file-name"] value for the on-disk filename.
+  if (curationMode === "ffm") {
+    const remainingFiles = [];
+
+    for (const progressFile of progressFileData) {
+      if (
+        progressFile?.["curation-mode"] === "free-form" &&
+        progressFile?.["dataset-successfully-uploaded-to-pennsieve"] === true
+      ) {
+        const progressFilePath = progressFile?.["save-file-path"];
+
+        if (progressFilePath) {
+          await deleteProgressFile(progressFilePath);
+        }
+      } else {
+        remainingFiles.push(progressFile);
+      }
+    }
+
+    // Replace the loaded data with remaining files after deletions
+    progressFileData = remainingFiles;
+  }
+
+  // Filter progress files based on curation mode
+  const targetCurationMode = curationMode === "ffm" ? "free-form" : "guided";
+  progressFileData = progressFileData.filter((progressFile) => {
+    const progressFileCurationMode = progressFile?.["curation-mode"];
+    return progressFileCurationMode === targetCurationMode;
+  });
 
   // Sort by last modified date
   progressFileData.sort((a, b) => {

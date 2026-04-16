@@ -22,43 +22,6 @@
         "account-name": { "type": "string" }
       }
     },
-    "guided-manifest-file-data": {
-      "type": "object",
-      "properties": {
-        "headers": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minItems": 1,
-            "maxItems": 11,
-            "enum": [
-              "filename",
-              "timestamp",
-              "description",
-              "file type",
-              "entity",
-              "data modality",
-              "also in dataset",
-              "also in dataset path",
-              "data dictionary path",
-              "entity is transitive",
-              "Additional Metadata"
-            ]
-          }
-        },
-        "data": {
-          "type": "array",
-          "items": {
-            "type": "array",
-            "minItems": 1,
-            "maxItems": 11,
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      }
-    },
     "dataset-validated": {
       "type": "boolean"
     },

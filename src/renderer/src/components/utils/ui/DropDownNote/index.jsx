@@ -74,6 +74,7 @@ const DropDownNote = ({ id }) => {
     selectedEntities.includes("subjectSites") || selectedEntities.includes("sampleSites");
   const datasetIncludesCode = selectedEntities.includes("code");
   const datasetType = useGlobalStore((state) => state.datasetType);
+  const curationMode = useGlobalStore((state) => state.curationMode);
 
   const configMap = {
     "data-categories-list": {
@@ -177,19 +178,25 @@ const DropDownNote = ({ id }) => {
     "user-retrieved-datasets-but-missing-desired-dataset": {
       dropDownIcon: "question",
       dropDownButtonText: "Why can't I find my dataset?",
-      dropDownNote: (
-        <>
-          <Text size="sm" mb="sm">
-            Only datasets that are empty (have no folders or files) are shown in the dropdown above.
-            SODA does not currently support uploading to datasets that are not empty in the "Prepare
-            dataset step-by-step" because of potential conflicts with existing data.
-          </Text>
+      dropDownNote:
+        curationMode === "guided" ? (
+          <>
+            <Text size="sm" mb="sm">
+              Only datasets that are empty (have no folders or files) are shown in the dropdown
+              above. SODA does not currently support uploading to datasets that are not empty in the
+              "Prepare dataset step-by-step" because of potential conflicts with existing data.
+            </Text>
+            <Text size="sm">
+              You must also have <strong>"Owner"</strong> or <strong>"Manager"</strong> or{" "}
+              <strong>"Editor"</strong> permissions on the dataset in order for SODA to retrieve it.
+            </Text>
+          </>
+        ) : (
           <Text size="sm">
-            You must also have <strong>"Owner"</strong> or <strong>"Manager"</strong> or{" "}
+            You must have <strong>"Owner"</strong> or <strong>"Manager"</strong> or{" "}
             <strong>"Editor"</strong> permissions on the dataset in order for SODA to retrieve it.
           </Text>
-        </>
-      ),
+        ),
     },
     "user-doesnt-have-any-empty-datasets": {
       dropDownIcon: "question",

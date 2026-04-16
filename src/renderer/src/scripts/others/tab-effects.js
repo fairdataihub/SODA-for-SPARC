@@ -3057,8 +3057,6 @@ window.resetCurationTabs = () => {
   // Disable continue button
   setNavButtonDisabled("nextBtn", true);
 
-  window.hasFiles = false;
-
   window.currentTab = 0;
   window.wipeOutCurateProgress();
   window.showParentTab(0, 1);

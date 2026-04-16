@@ -285,11 +285,33 @@ def bf_get_accounts():
 
 
 
+
+def is_dataset_empty(dataset_id):
+    """
+    Check if a dataset is empty (has no files or folders)
+    
+    Args:
+        dataset_id: ID of the dataset to check (string)
+    
+    Returns:
+        True if dataset has no files/folders, False otherwise
+    """
+    try:
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{str(dataset_id)}", headers=create_request_headers(get_access_token()))
+        r.raise_for_status()
+        dataset = r.json()
+        dataset_packages = dataset.get("packageTypeCounts", {})
+        return dataset_packages == {}
+    except Exception as e:
+        namespace_logger.error(f"Error checking if dataset {dataset_id} is empty: {e}")
+        return None
+
+
 def fetch_user_datasets(return_only_empty_datasets=False):
     """
     This function filters dataset dropdowns across SODA by the permissions granted to users.
     If return_only_empty_datasets is True, only datasets with no files or folders are returned.
-    Output: a filtered dataset list with objects as elements: {"name": dataset's name, "id": dataset's id, "role": permission}
+    Output: a filtered dataset list with objects as elements: {"name": dataset's name, "id": dataset's id, "role": permission, "intId": dataset's internal id}
     """
     global namespace_logger
 
@@ -335,15 +357,8 @@ def fetch_user_datasets(return_only_empty_datasets=False):
         filtered_datasets = []
         for ds in sorted_bf_datasets:
             try:
-                r = requests.get(f"{PENNSIEVE_URL}/datasets/{ds['id']}", headers=create_request_headers(get_access_token()))
-                r.raise_for_status()
-                dataset = r.json()
-                namespace_logger.info(f"Package type counts is {dataset.get('packageTypeCounts', {})}")
-                dataset_packages = dataset.get("packageTypeCounts", {})
-                if dataset_packages != {}:
-                    continue
-                filtered_datasets.append(ds)
-                
+                if is_dataset_empty(ds['id']):
+                    filtered_datasets.append(ds)
             except Exception as e:
                 namespace_logger.error(f"Error checking files for dataset {ds['id']}: {e}")
         return {"datasets": filtered_datasets}

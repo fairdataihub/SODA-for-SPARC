@@ -1,7 +1,7 @@
 import { getNextPageNotSkipped, getPrevPageNotSkipped } from "./navigationUtils/pageSkipping";
-import { guidedUnLockSideBar, resetLazyLoading } from "../../../assets/nav";
+import { prepareGuidedSidebar } from "../../../assets/nav";
 import Swal from "sweetalert2";
-import { swalShowError } from "../../utils/swal-utils";
+import { swalShowError, swalShowInfo } from "../../utils/swal-utils";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -13,6 +13,26 @@ if (!window.fs.existsSync(guidedProgressFilePath)) {
   window.fs.mkdirSync(guidedProgressFilePath, { recursive: true });
 }
 
+window.openCurationMode = async (curationMode) => {
+  const isGuided = curationMode === "guided";
+  const isFreeform = curationMode === "freeform";
+
+  if (!isGuided && !isFreeform) {
+    window.notyf.open({
+      type: "error",
+      message: "Invalid curation mode selected",
+    });
+    return;
+  }
+
+  if (isGuided) {
+    transitionFromHomePageToGuidedMode("guided-select-starting-point-tab");
+  }
+  if (isFreeform) {
+    transitionFromHomePageToGuidedMode("ffm-select-starting-point-tab");
+  }
+};
+
 /**
  * @description Navigate to the next page in the active prepare datasets step-by-step workflow.
  */
@@ -22,7 +42,39 @@ export const handleNextButtonClick = async () => {
 
   try {
     await window.savePageChanges(window.pageBeingLeftID);
-    if (!window.sodaJSONObj["completed-tabs"].includes(window.pageBeingLeftID)) {
+
+    // Delete the free-form progress file when leaving dataset generation
+    // because the workflow is complete at this point.
+    if (
+      window.pageBeingLeftID === "guided-dataset-generation-tab" &&
+      window.sodaJSONObj["curation-mode"] === "free-form" &&
+      window.sodaJSONObj["dataset-successfully-uploaded-to-pennsieve"] === true
+    ) {
+      const progressFilePath = window.sodaJSONObj["save-file-path"];
+      if (progressFilePath && window.fs.existsSync(progressFilePath)) {
+        try {
+          window.fs.unlinkSync(progressFilePath);
+
+          await swalShowInfo(
+            "Dataset Workflow Complete",
+            "Your dataset was uploaded and the workflow is complete. You will now be taken back to the home screen."
+          );
+
+          transitionFromGuidedModeToHome();
+          return;
+        } catch (deleteError) {
+          console.error(
+            `Failed to delete free-form progress file ${progressFilePath}:`,
+            deleteError
+          );
+        }
+      }
+    }
+
+    if (
+      window.sodaJSONObj["completed-tabs"] &&
+      !window.sodaJSONObj["completed-tabs"].includes(window.pageBeingLeftID)
+    ) {
       window.sodaJSONObj["completed-tabs"].push(window.pageBeingLeftID);
     }
 
@@ -38,6 +90,7 @@ export const handleNextButtonClick = async () => {
       await window.openPage(targetPageID);
     }
   } catch (error) {
+    console.error("[handleNextButtonClick] Error encountered:", error);
     if (Array.isArray(error)) {
       for (const err of error) {
         if (err.type === "notyf") {
@@ -83,6 +136,12 @@ nextButton.addEventListener("click", handleNextButtonClick);
 
 const backButton = document.getElementById("guided-back-button");
 backButton.addEventListener("click", handleBackButtonClick);
+
+// Exit button click handler (exit without saving)
+document.getElementById("guided-button-exit").addEventListener("click", async () => {
+  await guidedSaveAndExit();
+});
+
 // Save and exit button click handlers
 document.getElementById("guided-button-save-and-exit").addEventListener("click", async () => {
   await guidedSaveAndExit();
@@ -96,22 +155,25 @@ document.getElementById("guided-button-save-and-exit").addEventListener("click",
  *              Progress is saved to a progress file that can be resumed by the user.
  */
 const guidedSaveAndExit = async () => {
-  if (!window.sodaJSONObj["digital-metadata"]["name"]) {
+  if (!window.sodaJSONObj?.["digital-metadata"]?.["name"]) {
     // If a progress file has not been created, then we don't need to save anything
-    guidedTransitionToHome();
+    transitionFromGuidedModeToHome();
     return;
   }
+  const curationMode = window.sodaJSONObj["curation-mode"];
+  const curationModeText =
+    curationMode === "guided" ? "Prepare a Dataset Step-by-Step" : "Upload a SDS Compliant Dataset";
+
   const { value: returnToGuidedHomeScreen } = await Swal.fire({
     title: "Are you sure?",
-    text: `Exiting Guided Mode will discard any changes you have made on the
-      current page. You will be taken back to the homescreen, where you will be able
+    text: `Exiting ${curationModeText} will take you back to the homescreen, where you will be able
       to continue the current dataset you are curating which will be located under datasets
       in progress.`,
     icon: "warning",
     showCancelButton: true,
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
-    confirmButtonText: "Exit guided mode",
+    confirmButtonText: "Exit to Home Screen",
     heightAuto: false,
     backdrop: "rgba(0,0,0,0.4)",
   });
@@ -145,17 +207,34 @@ const guidedSaveAndExit = async () => {
         width: 700,
       });
       if (continueWithoutSavingCurrPageChanges) {
-        guidedTransitionToHome();
+        transitionFromGuidedModeToHome();
       } else {
         return;
       }
     }
-    guidedTransitionToHome();
+    transitionFromGuidedModeToHome();
   }
 };
 
-export const guidedTransitionToHome = () => {
-  guidedUnLockSideBar();
+export const transitionFromHomePageToGuidedMode = async (startingPageId) => {
+  //Hide the home screen
+  document.getElementById("soda-home-page").classList.add("hidden");
+  document.getElementById("guided-header-div").classList.remove("hidden");
+
+  //Hide all guided pages (first one will be unHidden automatically)
+  const guidedPages = document.querySelectorAll(".guided--page");
+  guidedPages.forEach((page) => {
+    page.classList.add("hidden");
+  });
+
+  window.CURRENT_PAGE = document.getElementById(startingPageId);
+  await window.openPage(startingPageId);
+
+  document.getElementById("guided-footer-div").classList.remove("hidden");
+};
+
+export const transitionFromGuidedModeToHome = () => {
+  prepareGuidedSidebar();
   window.guidedPrepareHomeScreen();
 
   document.getElementById("soda-home-page").classList.remove("hidden");
@@ -177,45 +256,7 @@ window.guidedPrepareHomeScreen = async () => {
   //Wipe out existing progress if it exists
   guidedResetProgressVariables();
 
-  guidedUnLockSideBar();
-};
-
-const itemsContainer = document.getElementById("items");
-const freeFormItemsContainer = document.getElementById("free-form-folder-structure-container");
-const freeFormButtons = document.getElementById("organize-path-and-back-button-div");
-
-document.getElementById("button-homepage-guided-mode").addEventListener("click", async () => {
-  //Transition file explorer elements to guided mode
-  window.organizeDSglobalPath = document.getElementById("guided-input-global-path");
-  window.organizeDSglobalPath.value = "";
-  window.dataset_path = document.getElementById("guided-input-global-path");
-  window.scroll_box = document.querySelector("#guided-body");
-  itemsContainer.innerHTML = "";
-  resetLazyLoading();
-  freeFormItemsContainer.classList.remove("freeform-file-explorer");
-  freeFormButtons.classList.remove("freeform-file-explorer-buttons");
-  $(".shared-folder-structure-element").appendTo($("#guided-folder-structure-container"));
-  guidedTransitionFromHome();
-  guidedUnLockSideBar();
-  await window.openPage("guided-select-starting-point-tab");
-});
-
-export const guidedTransitionFromHome = async () => {
-  //Hide the home screen
-  document.getElementById("soda-home-page").classList.add("hidden");
-  document.getElementById("curation-preparation-parent-tab").classList.remove("hidden");
-  document.getElementById("guided-header-div").classList.remove("hidden");
-
-  //Hide all guided pages (first one will be unHidden automatically)
-  const guidedPages = document.querySelectorAll(".guided--page");
-  guidedPages.forEach((page) => {
-    page.classList.add("hidden");
-  });
-
-  window.CURRENT_PAGE = document.getElementById("guided-select-starting-point-tab");
-  await window.openPage("guided-select-starting-point-tab");
-
-  document.getElementById("guided-footer-div").classList.remove("hidden");
+  prepareGuidedSidebar();
 };
 
 const guidedResetProgressVariables = () => {

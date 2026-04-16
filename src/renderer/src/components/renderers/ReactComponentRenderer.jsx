@@ -32,6 +32,7 @@ import HomePageCards from "../cards/HomePageCards";
 import GuidedModeProgressCards from "../guided/GuidedModeProgressCards";
 import { CardButton } from "../cards/CardButton";
 import CheckboxCard from "../cards/CheckboxCard";
+import HeroCard from "../cards/HeroCard";
 import { Divider } from "@mantine/core";
 import DataCategoriesQuestionnairePage from "../pages/DataCategoriesQuestionnairePage";
 import InfoList from "../shared/InfoList";
@@ -107,13 +108,6 @@ const componentTypeRenderers = {
       buttonColor: componentSlot.getAttribute("data-button-color") || "black",
       buttonCustomWidth: componentSlot.getAttribute("data-button-custom-width"),
       buttonCustomClass: componentSlot.getAttribute("data-button-custom-class"),
-      onClick: () => {
-        if (componentSlot.getAttribute("data-button-id") == "nextBtn") {
-          window.nextPrev(1);
-        } else if (componentSlot.getAttribute("data-button-id") == "prevBtn") {
-          window.nextPrev(-1);
-        }
-      },
     };
     renderComponent(componentSlot, <NavigationButton {...props} />);
   },
@@ -128,6 +122,13 @@ const componentTypeRenderers = {
       id: componentSlot.getAttribute("data-button-id") || componentSlot.id,
     };
     renderComponent(componentSlot, <CheckboxCard {...props} />);
+  },
+  "hero-card": (componentSlot) => {
+    const id = componentSlot.getAttribute("data-button-id") || componentSlot.id;
+    componentSlot.style.width = "100%";
+    componentSlot.style.display = "flex";
+    componentSlot.style.justifyContent = "center";
+    renderComponent(componentSlot, <HeroCard id={id} />);
   },
   "progress-stepper": (componentSlot) => {
     const props = {
@@ -253,7 +254,10 @@ const componentTypeRenderers = {
     renderComponent(componentSlot, <GenerateDatasetLocationSelectorPage />);
   },
   "pennsieve-generate-target-page": (componentSlot) => {
-    renderComponent(componentSlot, <GenerateDatasetPennsieveTargetPage />);
+    const props = {
+      curationMode: componentSlot.getAttribute("data-curation-mode"),
+    };
+    renderComponent(componentSlot, <GenerateDatasetPennsieveTargetPage {...props} />);
   },
   "license-select-page": (componentSlot) => {
     renderComponent(componentSlot, <LicenseSelectPage />);
@@ -283,6 +287,18 @@ const componentTypeRenderers = {
     };
     renderComponent(componentSlot, <InfoList {...props} />);
   },
+};
+
+export const setRender = (componentType, componentSlot) => {
+  const renderFunction = componentTypeRenderers[componentType];
+
+  if (renderFunction) {
+    try {
+      renderFunction(componentSlot);
+    } catch (error) {
+      console.error(`Error rendering component of type: ${componentType}`, error);
+    }
+  }
 };
 
 // Query all DOM nodes with the data attribute "data-component-type" and render the appropriate component

@@ -15,51 +15,6 @@
         data-stepper-id="guided-mode-progress-stepper"
         class="w-100"
       ></div>
-      <!--
-      <div class="guided--progression-tab-container">
-        <div
-          class="guided--progression-tab guided--progression-tab-triangle selected-tab"
-          id="curation-preparation-progression-tab"
-        >
-          <div class="guided--progression-tab-content">
-            <span class="dot">0</span>
-            <div class="guided--progression-tab-labels">
-              <h1 class="guided--progression-tab-label-main">Getting Started</h1>
-            </div>
-          </div>
-        </div>
-        <div
-          class="guided--progression-tab guided--progression-tab-triangle"
-          id="prepare-dataset-progression-tab"
-        >
-          <div class="guided--progression-tab-content">
-            <span class="dot">1</span>
-            <div class="guided--progression-tab-labels">
-              <h1 class="guided--progression-tab-label-main">Dataset Structure</h1>
-            </div>
-          </div>
-        </div>
-        <div
-          class="guided--progression-tab guided--progression-tab-triangle"
-          id="prepare-dataset-metadata-progression-tab"
-        >
-          <div class="guided--progression-tab-content">
-            <span class="dot">2</span>
-            <div class="guided--progression-tab-labels">
-              <h1 class="guided--progression-tab-label-main">Dataset Metadata</h1>
-            </div>
-          </div>
-        </div>
-        <div class="guided--progression-tab" id="disseminate-dataset-progression-tab">
-          <div class="guided--progression-tab-content">
-            <span class="dot">3</span>
-            <div class="guided--progression-tab-labels">
-              <h1 class="guided--progression-tab-label-main">Generate Dataset</h1>
-            </div>
-          </div>
-        </div>
-      </div>
-      -->
     </header>
 
     <div id="guided-body" class="guided--body">
@@ -115,7 +70,7 @@
       >
         <div
           id="guided-select-starting-point-tab"
-          class="guided--page h-100 hidden"
+          class="guided--page h-100 gm"
           data-page-name="Select Starting Point"
         >
           <div class="guided--section">
@@ -123,30 +78,16 @@
           </div>
 
           <div class="guided--section">
-            <label class="guided--form-label centered mb-4"
-              >Select the task you would like to perform below:
-            </label>
-
-            <div class="guided--radio-button-container">
+            <div class="guided--radio-button-container w-100">
               <div
-                data-component-type="checkbox-card"
+                data-component-type="hero-card"
                 data-button-id="guided-button-start-new-curation"
-              ></div>
-              <div
-                data-component-type="checkbox-card"
-                data-button-id="guided-button-resume-progress-file"
               ></div>
             </div>
           </div>
 
-          <div class="guided--section" id="guided-section-start-new-curation">
-            <h2 class="guided--text-user-directions">
-              Click "<span class="next-button-span"></span>" to start Prepare Dataset Step-by-Step
-            </h2>
-          </div>
-
           <div class="guided--section" id="guided-section-resume-progress-cards">
-            <div class="guided--section" id="guided-section-loading-progress-cards">
+            <div class="guided--section" id="gm-section-loading-progress-cards">
               <div class="lds-roller">
                 <div></div>
                 <div></div>
@@ -157,18 +98,163 @@
                 <div></div>
                 <div></div>
               </div>
-              <p id="guided-section-loading-progress-cards-para">Loading datasets in progress...</p>
+              <p id="gm-section-loading-progress-cards-para">Loading datasets in progress...</p>
             </div>
             <div class="guided--section" data-component-type="guided-mode-progress-cards"></div>
-            <div class="guided--section" id="guided-container-progress-cards"></div>
+            <div class="guided--section" id="gm-container-progress-cards"></div>
           </div>
         </div>
+
+        <div
+          id="ffm-select-starting-point-tab"
+          class="guided--page h-100 ffm"
+          data-page-name="Select Starting Point"
+        >
+          <div class="guided--section">
+            <h1 class="text-sub-step-title">Upload a SDS Compliant Dataset</h1>
+          </div>
+
+          <div class="guided--section">
+            <div class="guided--radio-button-container w-100">
+              <div
+                data-component-type="hero-card"
+                data-button-id="ffm-button-start-new-curation"
+              ></div>
+            </div>
+          </div>
+
+          <div class="guided--section" id="ffm-section-resume-progress-cards">
+            <div class="guided--section" id="ffm-section-loading-progress-cards">
+              <div class="lds-roller">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+              <p id="ffm-section-loading-progress-cards-para">Loading datasets in progress...</p>
+            </div>
+            <div class="guided--section" data-component-type="guided-mode-progress-cards"></div>
+            <div class="guided--section" id="ffm-container-progress-cards"></div>
+          </div>
+        </div>
+
         <div
           id="guided-name-subtitle-tab"
-          class="guided--page"
+          class="guided--page gm"
           data-component-type="guided-mode-page"
           data-page-header="Dataset Name"
           data-page-name="Dataset Name"
+        ></div>
+
+        <div
+          id="ffm-pennsieve-login-tab"
+          class="guided--page ffm pennsieve-generation-page-set"
+          data-page-name="Pennsieve Log In"
+        >
+          <div class="guided--section">
+            <h1 class="text-sub-step-title">Pennsieve Log In</h1>
+          </div>
+
+          <div class="guided--section show-when-logged-out" id="ffm-select-pennsieve-account">
+            <h2 class="text-sub-step-title">Sign in to your Pennsieve account to continue</h2>
+            <button
+              class="ui positive button mt-md"
+              data-reset-guided-mode-page="true"
+              onclick="window.openDropdownPrompt(this, 'ps')"
+              style="
+                background-color: var(--color-soda-primary) !important;
+                width: 200px !important;
+              "
+            >
+              Log in to Pennsieve
+            </button>
+          </div>
+
+          <div class="guided--section show-when-logged-in" id="ffm-confirm-pennsieve-account">
+            <div class="guided--input-container">
+              <h2 class="text-sub-step-title">
+                Is this the Pennsieve account you would like to work with?
+              </h2>
+              <div class="guided--container-data-display mt-sm" style="width: 100%">
+                <div class="guided--card-dataset-info">
+                  <div class="guided--dataset-description-container">
+                    <h5 class="guided--dataset-description">Current account:</h5>
+                  </div>
+                  <div
+                    class="guided--dataset-content-container"
+                    onclick="window.openDropdownPrompt(this, 'ps')"
+                  >
+                    <h5 id="ffm-pennsieve-intro-ps-account" class="guided--dataset-content"></h5>
+                    <i class="far fa-edit jump-back" style="color: #000"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="guided--radio-button-container mb-sm" style="margin-top: 1rem">
+              <div
+                data-button-id="ffm-confirm-pennsieve-account-button"
+                data-component-type="checkbox-card"
+              ></div>
+              <div
+                data-button-id="ffm-button-switch-account"
+                data-component-type="checkbox-card"
+              ></div>
+            </div>
+          </div>
+
+          <div class="guided--section" id="ffm-section-select-organization">
+            <div class="guided--input-container">
+              <h2 class="text-sub-step-title">
+                Is this the Pennsieve workspace you want to upload your data to?
+              </h2>
+              <div class="guided--container-data-display mt-sm" style="width: 100%">
+                <div class="guided--card-dataset-info">
+                  <div class="guided--dataset-description-container">
+                    <h5 class="guided--dataset-description">Current workspace:</h5>
+                  </div>
+                  <div
+                    class="guided--dataset-content-container change-current-account ds-dd organization"
+                  >
+                    <h5
+                      id="ffm-pennsieve-selected-organization"
+                      class="guided--dataset-content ps-organization-span"
+                    >
+                      Click here to select workspace
+                    </h5>
+                    <i class="far fa-edit jump-back" style="color: #000"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="guided--radio-button-container mb-sm" style="margin-top: 1rem">
+              <div
+                data-button-id="ffm-confirm-pennsieve-organization-button"
+                data-component-type="checkbox-card"
+              ></div>
+              <div
+                data-button-id="ffm-button-switch-organization"
+                data-component-type="checkbox-card"
+              ></div>
+            </div>
+          </div>
+          <div class="guided--section" id="ffm-section-pennsieve-agent-check">
+            <div
+              data-component-type="pennsieve-agent-check-display"
+              class="guided--section"
+              id="ffm-mode-post-log-in-pennsieve-agent-check"
+            ></div>
+          </div>
+        </div>
+        <div
+          id="ffm-pennsieve-generate-target-tab"
+          class="guided--page ffm"
+          data-page-name="Pennsieve Dataset"
+          data-component-type="pennsieve-generate-target-page"
+          data-curation-mode="ffm"
         ></div>
       </div>
 
@@ -177,7 +263,7 @@
         class="guided--parent-tab hidden"
         data-parent-tab-name="Dataset Structure"
       >
-        <div class="guided--page" id="guided-dataset-structure-intro-tab" data-page-name="Intro">
+        <div class="guided--page gm" id="guided-dataset-structure-intro-tab" data-page-name="Intro">
           <h1 class="text-sub-step-title">Dataset Structure Introduction</h1>
           <div class="guided--section">
             <p class="help-text">
@@ -203,7 +289,7 @@
         <!--
         <div
           id="guided-subject-structure-spreadsheet-importation-tab"
-          class="guided--page"
+          class="guided--page gm"
           data-page-name="Subject/sample IDs specification"
         >
           <div class="guided--section">
@@ -506,7 +592,7 @@
         -->
         <div
           id="guided-unstructured-data-import-tab"
-          class="guided--page"
+          class="guided--page gm"
           data-page-name="Data Selection"
         >
           <div class="guided--section">
@@ -524,15 +610,34 @@
           ></div>
         </div>
         <div
+          id="ffm-unstructured-data-import-tab"
+          class="guided--page ffm"
+          data-page-name="Dataset Selection"
+        >
+          <div class="guided--section">
+            <h1 class="text-sub-step-title">Dataset Selection</h1>
+            <p class="help-text w-100">
+              Select the path to the dataset containing the data you would like to upload to
+              Pennsieve.
+            </p>
+          </div>
+          <div
+            data-component-type="data-importer"
+            data-importer-id="ffm-data-importer-dropzone"
+            data-relative-folder-path-to-import-data-into="data/"
+            class="guided--section"
+          ></div>
+        </div>
+        <div
           id="guided-dataset-content-tab"
           data-page-name="Dataset Content"
-          class="guided--page"
+          class="guided--page gm"
           data-component-type="dataset-content-selector"
         ></div>
         <div
           id="non-data-categorization-tab"
           data-page-name="Data Categorization"
-          class="guided--page"
+          class="guided--page gm"
           data-component-type="data-categorization-page"
           data-entity-type="non-data-folders"
           data-entity-type-string-singular="Data category"
@@ -540,7 +645,7 @@
         <div
           id="experimental-data-tab"
           data-page-name="Experimental Data Selection"
-          class="guided--page guided-subject-related-page-set"
+          class="guided--page guided-subject-related-page-set gm"
           data-component-type="data-categorization-page"
           data-entity-type="experimental"
           data-entity-type-string-singular="Experimental data"
@@ -550,7 +655,7 @@
         <div
           id="guided-entity-addition-method-selection-tab"
           data-page-name="Entity Addition Method"
-          class="guided--page guided-subject-related-page-set"
+          class="guided--page guided-subject-related-page-set gm"
         >
           <div class="guided--section">
             <h1 class="text-sub-step-title">Entity Addition Method</h1>
@@ -597,21 +702,21 @@
         <div
           id="guided-manual-dataset-entity-and-metadata-tab"
           data-page-name="Experimental Data Metadata"
-          class="guided--page guided-subject-related-page-set"
+          class="guided--page guided-subject-related-page-set gm"
           data-component-type="entity-metadata-page"
         ></div>
         <!--
         <div
           id="guided-spreadsheet-import-dataset-entity-and-metadata-tab"
           data-page-name="Designate Entity IDs Using Spreadsheets"
-          class="guided--page guided-subject-related-page-set"
+          class="guided--page guided-subject-related-page-set gm"
           data-component-type="entity-spreadsheet-import-page"
         ></div>
         -->
         <div
           id="guided-sites-selection-tab"
           data-page-name="Sites Data Selection"
-          class="guided--page guided-sites-metadata-page-set guided-subject-related-page-set"
+          class="guided--page guided-sites-metadata-page-set guided-subject-related-page-set gm"
           data-component-type="data-categorization-page"
           data-entity-type="sites"
           data-entity-type-string-singular="site"
@@ -619,7 +724,7 @@
         <div
           id="guided-derived-samples-selection-tab"
           data-page-name="Derived Samples Data Selection"
-          class="guided--page guided-samples-metadata-page-set guided-derived-samples-metadata-page-set guided-subject-related-page-set"
+          class="guided--page guided-samples-metadata-page-set guided-derived-samples-metadata-page-set guided-subject-related-page-set gm"
           data-component-type="data-categorization-page"
           data-entity-type="derived-samples"
           data-entity-type-string-singular="derived sample"
@@ -627,7 +732,7 @@
         <div
           id="guided-samples-selection-tab"
           data-page-name="Samples Data Selection"
-          class="guided--page guided-samples-metadata-page-set guided-subject-related-page-set"
+          class="guided--page guided-samples-metadata-page-set guided-subject-related-page-set gm"
           data-component-type="data-categorization-page"
           data-entity-type="samples"
           data-entity-type-string-singular="sample"
@@ -635,7 +740,7 @@
         <div
           id="guided-subjects-selection-tab"
           data-page-name="Subjects Data Selection"
-          class="guided--page guided-subjects-metadata-page-set guided-subject-related-page-set"
+          class="guided--page guided-subjects-metadata-page-set guided-subject-related-page-set gm"
           data-component-type="data-categorization-page"
           data-entity-type="subjects"
           data-entity-type-string-singular="subject"
@@ -644,14 +749,14 @@
         <div
           id="experimental-data-categories-questionnaire-tab"
           data-page-name="Experimental Data Categorization"
-          class="guided--page guided-subject-related-page-set"
+          class="guided--page guided-subject-related-page-set gm"
           data-component-type="data-categories-questionnaire-page"
           data-questionnaire-entity-type="experimental-data-categorization"
         ></div>
         <div
           id="experimental-data-categorization-tab"
           data-page-name="Experimental Data Categorization"
-          class="guided--page guided-subject-related-page-set"
+          class="guided--page guided-subject-related-page-set gm"
           data-component-type="data-categorization-page"
           data-entity-type="experimental-data-categorization"
           data-entity-type-string-singular="Data Category"
@@ -659,14 +764,14 @@
         <div
           id="remaining-data-categories-questionnaire-tab"
           data-page-name="Remaining Data Categorization"
-          class="guided--page guided-remaining-data-categorization-page-set"
+          class="guided--page guided-remaining-data-categorization-page-set gm"
           data-component-type="data-categories-questionnaire-page"
           data-questionnaire-entity-type="remaining-data-categorization"
         ></div>
         <div
           id="remaining-data-categorization-tab"
           data-page-name="Remaining Data Categorization"
-          class="guided--page guided-remaining-data-categorization-page-set"
+          class="guided--page guided-remaining-data-categorization-page-set gm"
           data-component-type="data-categorization-page"
           data-entity-type="remaining-data-categorization"
           data-entity-type-string-singular="Data Category"
@@ -674,7 +779,7 @@
         <div
           id="guided-performances-entity-addition-tab"
           data-page-name="Description Of Performances"
-          class="guided--page guided-performances-metadata-page-set guided-subject-related-page-set"
+          class="guided--page guided-performances-metadata-page-set guided-subject-related-page-set gm"
           data-component-type="performance-id-management-page"
           data-entity-type="performances"
           data-entity-type-string-singular="performance"
@@ -682,7 +787,7 @@
         <div
           id="guided-Performances-selection-tab"
           data-page-name="Performances Data Selection"
-          class="guided--page guided-performances-metadata-page-set guided-subject-related-page-set"
+          class="guided--page guided-performances-metadata-page-set guided-subject-related-page-set gm"
           data-component-type="data-categorization-page"
           data-entity-type="performances"
           data-entity-type-string-singular="performance"
@@ -690,30 +795,55 @@
         <div
           id="guided-modalities-selection-tab"
           data-page-name="Dataset Modalities"
-          class="guided--page guided-subject-related-page-set"
+          class="guided--page guided-subject-related-page-set gm"
           data-component-type="modality-selection-page"
         ></div>
         <div
           id="guided-modalities-data-selection-tab"
           data-page-name="Modalities Data Selection"
-          class="guided--page guided-subject-related-page-set"
+          class="guided--page guided-subject-related-page-set gm"
           data-component-type="data-categorization-page"
           data-entity-type="modalities"
           data-entity-type-string-singular="modality"
         ></div>
         <div
-          class="guided--page"
+          class="guided--page ffm"
+          id="ffm-existing-files-handling-tab"
+          data-page-name="Existing Files"
+        >
+          <div class="guided--section">
+            <h1 class="text-sub-step-title">Existing Files Handling</h1>
+            <p class="help-text w-100">
+              If any of your imported files already exist on Pennsieve, how should SODA handle them?
+              Replace them with what you imported in the previous step or skip them and keep the
+              existing files?
+            </p>
+          </div>
+          <div class="guided--section">
+            <div class="guided--radio-button-container">
+              <div
+                data-button-id="ffm-button-replace-existing-files"
+                data-component-type="checkbox-card"
+              ></div>
+              <div
+                data-button-id="ffm-button-skip-existing-files"
+                data-component-type="checkbox-card"
+              ></div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="guided--page gm ffm"
           id="guided-dataset-structure-and-manifest-review-tab"
           data-page-name="Dataset Structure And Manifest Preview"
         >
           <div class="guided--section" id="guided-section-auto-generate-manifest-files">
             <h2 class="text-sub-step-title">Dataset Structure And Manifest Preview</h2>
-            <p class="help-text">
-              The dataset structure below displays the folder structure of your dataset as it will
-              be when it is generated locally and/or on Pennsieve. SODA has also generated a
-              manifest file that describes the contents of your dataset. You can edit the manifest
-              file if you would like to provide more information about the files in your dataset,
-              but it is not required to do so.
+            <p class="help-text" id="guided-text-dataset-structure-info"></p>
+            <p class="help-text" id="guided-text-manifest-file-info">
+              SODA has also generated a manifest file that describes the contents of your dataset.
+              You can edit the manifest file if you would like to provide more information about the
+              files in your dataset, but it is not required to do so.
             </p>
           </div>
           <div class="guided--section">
@@ -739,7 +869,7 @@
         class="guided--parent-tab hidden"
         data-parent-tab-name="Dataset Metadata"
       >
-        <div class="guided--page" id="guided-dataset-metadata-intro-tab" data-page-name="Intro">
+        <div class="guided--page gm" id="guided-dataset-metadata-intro-tab" data-page-name="Intro">
           <h1 class="text-sub-step-title">Dataset Metadata Introduction</h1>
           <div class="guided--section">
             <p class="help-text">
@@ -765,14 +895,14 @@
         </div>
 
         <div
-          class="guided--page"
+          class="guided--page gm"
           id="guided-submission-metadata-tab"
           data-page-name="Funding And Submission Metadata"
           data-component-type="submission-metadata-form"
         ></div>
         <div
           id="guided-contributors-tab"
-          class="guided--page"
+          class="guided--page gm"
           data-page-name="Contributor information"
         >
           <div class="guided--section">
@@ -839,7 +969,7 @@
           </div>
         </div>
 
-        <div id="guided-protocols-tab" class="guided--page" data-page-name="Dataset protocols">
+        <div id="guided-protocols-tab" class="guided--page gm" data-page-name="Dataset protocols">
           <div class="guided--section">
             <h1 class="text-sub-step-title">Dataset protocols</h1>
             <p class="help-text">
@@ -907,7 +1037,7 @@
 
         <div
           id="guided-subjects-metadata-tab"
-          class="guided--page guided-subjects-metadata-page-set"
+          class="guided--page guided-subjects-metadata-page-set gm"
           data-page-name="Subjects Metadata"
           data-component-type="entity-metadata-page"
           data-entity-type="subjects"
@@ -915,13 +1045,17 @@
 
         <div
           id="guided-samples-metadata-tab"
-          class="guided--page guided-samples-metadata-page-set"
+          class="guided--page guided-samples-metadata-page-set gm"
           data-page-name="Samples Metadata"
           data-component-type="entity-metadata-page"
           data-entity-type="samples"
         ></div>
 
-        <div id="guided-add-code-metadata-tab" class="guided--page" data-page-name="Code metadata">
+        <div
+          id="guided-add-code-metadata-tab"
+          class="guided--page gm"
+          data-page-name="Code metadata"
+        >
           <div class="guided--section">
             <h1 class="text-sub-step-title">Code-related metadata</h1>
           </div>
@@ -1067,12 +1201,12 @@
         <div
           id="guided-resources-entity-addition-tab"
           data-page-name="Experimental Resources"
-          class="guided--page"
+          class="guided--page gm"
           data-component-type="resources-management-page"
         ></div>
         <div
           id="guided-create-description-metadata-tab"
-          class="guided--page"
+          class="guided--page gm"
           data-page-name="Dataset description"
         >
           <div class="guided--section">
@@ -1267,7 +1401,7 @@
             </p>
           </div>
         </div>
-        <div id="guided-create-readme-metadata-tab" class="guided--page" data-page-name="README">
+        <div id="guided-create-readme-metadata-tab" class="guided--page gm" data-page-name="README">
           <div class="guided--section">
             <h1 class="text-sub-step-title">README information</h1>
             <p class="help-text">
@@ -1316,12 +1450,12 @@
         </div>
         <div
           id="guided-create-license-metadata-tab"
-          class="guided--page"
+          class="guided--page gm"
           data-page-name="LICENSE"
           data-component-type="license-select-page"
         ></div>
         <!--
-        <div id="guided-create-changes-metadata-tab" class="guided--page" data-page-name="CHANGES">
+        <div id="guided-create-changes-metadata-tab" class="guided--page gm" data-page-name="CHANGES">
           <div class="guided--section">
             <h1 class="text-sub-step-title">CHANGES information</h1>
             <p class="help-text">
@@ -1353,7 +1487,7 @@
         -->
         <div
           id="guided-dataset-structure-review-tab"
-          class="guided--page"
+          class="guided--page gm"
           data-page-name="Final Dataset Review"
         >
           <div class="guided--section">
@@ -1378,7 +1512,7 @@
         class="guided--parent-tab hidden"
         data-parent-tab-name="Pennsieve metadata"
       >
-        <div class="guided--page" id="guided-pennsieve-metadata-intro-tab" data-page-name="Intro">
+        <div class="guided--page gm" id="guided-pennsieve-metadata-intro-tab" data-page-name="Intro">
           <h1 class="text-sub-step-title">Pennsieve metadata Introduction</h1>
           <div class="guided--section">
             <p class="help-text">
@@ -1592,13 +1726,13 @@
       >
         <div
           id="guided-dataset-generation-options-tab"
-          class="guided--page"
+          class="guided--page gm"
           data-page-name="Options"
           data-component-type="generate-dataset-location-selector-page"
         ></div>
         <div
           id="guided-generate-dataset-locally"
-          class="guided--page local-generation-page-set"
+          class="guided--page gm local-generation-page-set"
           data-page-name="Local Dataset Generation"
         >
           <div class="guided--section">
@@ -1670,16 +1804,16 @@
         </div>
 
         <div
-          id="guided-pennsieve-intro-tab"
-          class="guided--page pennsieve-generation-page-set"
-          data-page-name="Pennsieve log in"
+          id="gm-pennsieve-login-tab"
+          class="guided--page gm pennsieve-generation-page-set"
+          data-page-name="Pennsieve Log In"
         >
           <div class="guided--section">
             <h1 class="text-sub-step-title">Pennsieve Log In</h1>
           </div>
 
-          <div class="guided--section show-when-logged-out" id="guided-select-pennsieve-account">
-            <h2 class="text-sub-step-title">First, connect your Pennsieve account with SODA</h2>
+          <div class="guided--section show-when-logged-out" id="gm-select-pennsieve-account">
+            <h2 class="text-sub-step-title">Sign in to your Pennsieve account to continue</h2>
             <button
               class="ui positive button mt-md"
               data-reset-guided-mode-page="true"
@@ -1693,7 +1827,7 @@
             </button>
           </div>
 
-          <div class="guided--section show-when-logged-in" id="guided-confirm-pennsieve-account">
+          <div class="guided--section show-when-logged-in" id="gm-confirm-pennsieve-account">
             <div class="guided--input-container">
               <h2 class="text-sub-step-title">
                 Is this the Pennsieve account you would like to work with?
@@ -1707,7 +1841,7 @@
                     class="guided--dataset-content-container"
                     onclick="window.openDropdownPrompt(this, 'ps')"
                   >
-                    <h5 id="guided-pennsieve-intro-ps-account" class="guided--dataset-content"></h5>
+                    <h5 id="gm-pennsieve-intro-ps-account" class="guided--dataset-content"></h5>
                     <i class="far fa-edit jump-back" style="color: #000"></i>
                   </div>
                 </div>
@@ -1715,20 +1849,20 @@
             </div>
             <div class="guided--radio-button-container mb-sm" style="margin-top: 1rem">
               <div
-                data-button-id="guided-confirm-pennsieve-account-button"
+                data-button-id="gm-confirm-pennsieve-account-button"
                 data-component-type="checkbox-card"
               ></div>
               <div
-                data-button-id="guided-button-switch-account"
+                data-button-id="gm-button-switch-account"
                 data-component-type="checkbox-card"
               ></div>
             </div>
           </div>
 
-          <div class="guided--section" id="guided-section-select-organization">
+          <div class="guided--section" id="gm-section-select-organization">
             <div class="guided--input-container">
               <h2 class="text-sub-step-title">
-                Is this the Pennsieve workspace you want to upload your dataset to?
+                Is this the Pennsieve workspace you want to upload your data to?
               </h2>
               <div class="guided--container-data-display mt-sm" style="width: 100%">
                 <div class="guided--card-dataset-info">
@@ -1736,10 +1870,10 @@
                     <h5 class="guided--dataset-description">Current workspace:</h5>
                   </div>
                   <div
-                    class="guided--dataset-content-container change-current-account ds-dd organization guided-change-workspace"
+                    class="guided--dataset-content-container change-current-account ds-dd organization"
                   >
                     <h5
-                      id="guided-pennsive-selected-organization"
+                      id="guided-pennsieve-selected-organization"
                       class="guided--dataset-content ps-organization-span"
                     >
                       Click here to select workspace
@@ -1751,20 +1885,20 @@
             </div>
             <div class="guided--radio-button-container mb-sm" style="margin-top: 1rem">
               <div
-                data-button-id="guided-confirm-pennsieve-organization-button"
+                data-button-id="gm-confirm-pennsieve-organization-button"
                 data-component-type="checkbox-card"
               ></div>
               <div
-                data-button-id="guided-button-switch-organization"
+                data-button-id="gm-button-switch-organization"
                 data-component-type="checkbox-card"
               ></div>
             </div>
           </div>
-          <div class="guided--section" id="guided-section-pennsieve-agent-check">
+          <div class="guided--section" id="gm-section-pennsieve-agent-check">
             <div
               data-component-type="pennsieve-agent-check-display"
               class="guided--section"
-              id="guided-mode-post-log-in-pennsieve-agent-check"
+              id="gm-mode-post-log-in-pennsieve-agent-check"
             ></div>
           </div>
         </div>
@@ -1774,11 +1908,12 @@
           class="guided--page pennsieve-generation-page-set"
           data-page-name="Pennsieve Dataset"
           data-component-type="pennsieve-generate-target-page"
+          data-curation-mode="gm"
         ></div>
 
         <div
           id="guided-pennsieve-settings-tab"
-          class="guided--page pennsieve-generation-page-set new-pennsieve-dataset-config-page-set"
+          class="guided--page gm ffm pennsieve-generation-page-set"
           data-page-name="Pennsieve Settings"
         >
           <div class="guided--section">
@@ -1992,7 +2127,7 @@
         </div>
         <div
           id="guided-dataset-generation-confirmation-tab"
-          class="guided--page pennsieve-generation-page-set"
+          class="guided--page pennsieve-generation-page-set gm ffm"
           data-page-name="Review and Generate"
         >
           <div class="guided--section">
@@ -2028,7 +2163,7 @@
             </div>
             <div class="guided--card-dataset-info">
               <label class="guided--form-label mt-md mb-sm" style="text-align: center"
-                >Other dataset info:</label
+                >Dataset info:</label
               >
             </div>
             <div class="guided--card-dataset-info">
@@ -2036,15 +2171,14 @@
                 <h5 class="guided--dataset-description">Dataset workspace:</h5>
               </div>
               <div
-                class="guided--dataset-content-container change-current-account ds-dd organization guided-change-workspace"
+                class="guided--dataset-content-container change-current-account ds-dd organization"
               >
                 <h5
-                  id="guided-pennsive-selected-organization-review-generate"
+                  id="guided-pennsieve-selected-organization-review-generate"
                   class="guided--dataset-content ps-organization-span"
                 >
                   Click here to select workspace
                 </h5>
-                <i class="far fa-edit jump-back" style="color: #000"></i>
               </div>
             </div>
             <div class="guided--card-dataset-info">
@@ -2055,7 +2189,10 @@
                 <h5 class="guided--dataset-content" id="guided-review-dataset-name">None</h5>
               </div>
             </div>
-            <div class="guided--card-dataset-info pennsieve-config-info">
+            <div
+              class="guided--card-dataset-info pennsieve-config-info"
+              id="guided-subtitle-info-container"
+            >
               <div class="guided--dataset-description-container">
                 <h5 class="guided--dataset-description">Dataset subtitle:</h5>
               </div>
@@ -2068,7 +2205,11 @@
                 </h5>
               </div>
             </div>
-            <div class="guided--card-dataset-info pennsieve-config-info">
+
+            <div
+              class="guided--card-dataset-info pennsieve-config-info"
+              id="guided-license-info-container"
+            >
               <div class="guided--dataset-description-container">
                 <h5 class="guided--dataset-description">Designated license:</h5>
               </div>
@@ -2387,7 +2528,7 @@
             </table>
           </div>
 
-          <div class="guided--section hidden" id="guided--verify-files">
+          <div class="guided--section hidden" id="guided-section-file-upload-verification">
             <h2 class="text-sub-step-title">
               Would you like to verify your dataset files have been uploaded to Pennsieve?
             </h2>
@@ -2418,7 +2559,7 @@
               <button
                 class="ui primary basic button"
                 style="margin: 5px 7px !important"
-                id="guided--verify-files-button"
+                id="guided-section-file-upload-verification-button"
               >
                 Verify Files
               </button>
@@ -2433,7 +2574,7 @@
 
             <div
               class="guided--section hidden"
-              id="guided--validate-dataset-upload"
+              id="guided-section-validate-dataset-upload"
               style="width: 70%"
             >
               <div class="ui form" style="width: 100%">
@@ -2474,7 +2615,7 @@
 
             <div
               class="guided--section hidden"
-              id="guided--question-validate-dataset-upload-2"
+              id="guided-section-file-verification-failure"
               style="width: 70%"
             >
               <div class="ui form" style="width: 100%">
@@ -2558,7 +2699,7 @@
               </div>
             </div>
 
-            <div class="guided--section hidden" id="guided--question-validate-dataset-upload-3">
+            <div class="guided--section hidden" id="guided-section-file-verification-success">
               <div class="ui form" style="width: 100%">
                 <div class="grouped fields">
                   <div id="guided--div-validate-dataset-success">
@@ -2579,17 +2720,16 @@
                       Click "<span class="next-button-span"></span>" to go to the last step of the
                       data curation and sharing process
                     </h2>
+                    <h2
+                      class="guided--text-user-directions"
+                      id="ffm-dataset-upload-complete-message"
+                    >
+                      Click "<span class="next-button-span"></span>" to return to the home page.
+                    </h2>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-
-          <div
-            class="guided--section mt-lg hidden neumorphic"
-            id="guided-div-dataset-upload-progress-bar"
-          >
-            <div class="guided--panel" id="guided-upload-status-container"></div>
           </div>
         </div>
 
@@ -2895,6 +3035,15 @@
         ></div>
         <div
           data-component-type="navigation-button"
+          data-button-id="guided-button-exit"
+          data-button-text="Exit"
+          data-button-custom-width="150px"
+          data-nav-icon="exit"
+          data-button-size="md"
+          data-button-color="blue"
+        ></div>
+        <div
+          data-component-type="navigation-button"
           data-button-id="guided-button-save-and-exit"
           data-button-text="Save and Exit"
           data-nav-icon="save"
@@ -2905,133 +3054,3 @@
     </footer>
   </div>
 </section>
-
-<div id="guided-structure-folder-tab" class="guided--panel hidden">
-  <div
-    class="guided--section"
-    id="guided-file-explorer-elements"
-    style="padding: 0; border-radius: 4px; height: 476px"
-  >
-    <!-- <h2 class="text-sub-step-title mt-0" id="structure-folder-header"></h2>
-    <p class="help-text" id="structure-folder-contents"></p> -->
-    <div id="items-guided-container" style="width: 100%; display: flex; flex-direction: column">
-      <div
-        class="guided--folder-organization-buttons-container"
-        style="margin-top: 0.44rem; width: 97% !important; align-self: center"
-      >
-        <div class="guided--folder-organization-buttons-container-sub" style="flex-grow: 1">
-          <button
-            class="ui secondary basic button small onHoverBlackBoxShadow"
-            id="guided-button-back"
-          >
-            <i class="fas fa-arrow-up"></i>
-          </button>
-          <input
-            style="
-              margin: 0px 7px;
-              display: flex;
-              flex-grow: 1;
-              border: none;
-              font-size: 16px;
-              font-weight: 600;
-              cursor: default;
-              color: #898989;
-              display: none;
-            "
-            id="guided-input-global-path"
-            value="dataset_root/"
-            readonly
-          />
-        </div>
-        <div class="guided--folder-organization-buttons-container-sub">
-          <button
-            class="ui primary basic button small onHoverBlueBoxShadow"
-            id="guided-new-folder"
-            style="margin-right: 7px; height: 34px"
-          >
-            <i class="fas fa-folder-plus" style="margin-right: 7px"></i>New folder
-          </button>
-          <button
-            class="ui primary basic button small remove-margin-right onHoverBlueBoxShadow"
-            id="guided-import-folder"
-            style="width: 147px; margin-right: 7px !important; height: 34px"
-          >
-            <svg
-              style="margin-right: 7px"
-              width="1em"
-              height=".9em"
-              viewbox="0 0 16 16"
-              class="bi bi-upload"
-              fill="currentColor"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"
-              />
-              <path
-                fill-rule="evenodd"
-                d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"
-              />
-            </svg>
-            Import folder
-          </button>
-          <button
-            class="ui primary basic button small remove-margin-right onHoverBlueBoxShadow"
-            id="guided-imoprt-file"
-            style="width: 140x; height: 34px"
-          >
-            <svg
-              style="margin-right: 7px"
-              width="1em"
-              height=".9em"
-              viewbox="0 0 16 16"
-              class="bi bi-upload"
-              fill="currentColor"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"
-              />
-              <path
-                fill-rule="evenodd"
-                d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"
-              />
-            </svg>
-            Import file
-          </button>
-        </div>
-      </div>
-      <div
-        id="guided-folder-structure-container"
-        class="w-100"
-        style="border-top: 2px solid lightgray; margin-top: 0"
-      >
-        <div
-          style="
-            display: flex;
-            justify-content: center;
-            font-weight: 600;
-            padding-top: 0.5rem;
-            padding-bottom: 0.5rem;
-            font-weight: 600;
-            border-bottom: 2px solid lightgray;
-          "
-        >
-          <p
-            id="datasetPathDisplay"
-            style="
-              vertical-align: bottom;
-              text-overflow: ellipsis;
-              max-width: 600px;
-              overflow: hidden;
-              white-space: nowrap;
-              margin-right: 2px;
-            "
-          ></p>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>

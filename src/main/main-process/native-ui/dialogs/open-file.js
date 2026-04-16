@@ -585,16 +585,19 @@ ipcMain.on("open-files-organize-datasets-dialog", async (event) => {
 });
 
 ipcMain.on("file-explorer-dropped-datasets", (event, args) => {
-  const mainWindow = BrowserWindow.getFocusedWindow();
   const importRelativePath = args.importRelativePath;
-  mainWindow.webContents.send("selected-folders-organize-datasets", {
+  const curationMode = args.curationMode;
+  const useContentsOfFolder = args.useContentsOfFolder;
+  event.sender.send("selected-folders-organize-datasets", {
     filePaths: args.filePaths,
     importRelativePath,
+    curationMode,
+    useContentsOfFolder,
   });
 });
 
 ipcMain.on("open-folders-organize-datasets-dialog", async (event, args) => {
-  if (!args?.importRelativePath) {
+  if (args?.importRelativePath == null) {
     console.error(
       "[main-process] The 'importRelativePath' property is required but was not provided."
     );
@@ -603,11 +606,24 @@ ipcMain.on("open-folders-organize-datasets-dialog", async (event, args) => {
 
   let mainWindow = BrowserWindow.getFocusedWindow();
   const importRelativePath = args.importRelativePath;
+  const curationMode = args.curationMode;
+  const useContentsOfFolder = args.useContentsOfFolder;
+
+  const properties =
+    curationMode === "free-form"
+      ? ["openFile", "openDirectory"]
+      : ["openFile", "openDirectory", "multiSelections"];
+
+  const title =
+    curationMode === "free-form"
+      ? "Select the path to the folder containing your dataset to import it into SODA"
+      : "Select folder(s) or archive(s) to import into SODA";
+
   let result = await dialog.showOpenDialog(mainWindow, {
-    properties: ["openDirectory", "openFile", "multiSelections"],
-    title: `Select folder(s) or archive(s) to import into SODA`,
+    properties,
+    title,
     filters: [
-      { name: "Folders and Archives", extensions: ["zip", "tar", "tar.gz", "gz", "zarr.tar", "*"] },
+      { name: "Folder and Archives", extensions: ["zip", "tar", "tar.gz", "gz", "zarr.tar", "*"] },
       { name: "Archive Files", extensions: ["zip", "tar", "tar.gz", "gz", "zarr.tar"] },
       { name: "All Files", extensions: ["*"] },
     ],
@@ -619,6 +635,8 @@ ipcMain.on("open-folders-organize-datasets-dialog", async (event, args) => {
   mainWindow.webContents.send("selected-folders-organize-datasets", {
     filePaths: result.filePaths,
     importRelativePath,
+    curationMode,
+    useContentsOfFolder,
   });
 });
 

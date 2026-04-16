@@ -3,12 +3,20 @@ import useGlobalStore from "../globalStore";
 export const guidedModeSlice = (set) => ({
   guidedDatasetName: "",
   guidedDatasetSubtitle: "",
+  freeFormDatasetName: "",
   datasetType: null,
   hiddenGuidedModeSections: [],
+  manifestFileGenerationDisabled: false,
+  curationMode: null,
+  sidebarLoadingState: false,
 });
 
 export const setGuidedDatasetName = (datasetName) => {
   useGlobalStore.setState({ guidedDatasetName: datasetName });
+};
+
+export const setFreeFormDatasetName = (datasetName) => {
+  useGlobalStore.setState({ freeFormDatasetName: datasetName });
 };
 
 export const setGuidedDatasetSubtitle = (datasetSubtitle) => {
@@ -34,4 +42,16 @@ export const removeHiddenGuidedModeSection = (sectionId) => {
       state.hiddenGuidedModeSections.splice(index, 1);
     }
   });
+};
+
+export const setManifestFileGenerationDisabled = (disabled) => {
+  useGlobalStore.setState({ manifestFileGenerationDisabled: disabled });
+};
+
+export const setCurationMode = (curationMode) => {
+  useGlobalStore.setState({ curationMode });
+};
+
+export const setSideBarLoadingState = (isLoading) => {
+  useGlobalStore.setState({ sidebarLoadingState: isLoading });
 };

@@ -1,5 +1,7 @@
 import client from "../../../scripts/client";
 import { clientError } from "../../../scripts/others/http-error-handler/error-handler";
+import { convertGuidedManifestToSchema } from "../../../scripts/guided-mode/utils/sodaJSONObj";
+
 export const handleOrganizeDsGenerateLocalManifestCopyButtonClick = async () => {
   // Step 1: Prompt the user to select a folder to save the dataset
   const savePath = await window.electron.ipcRenderer.invoke(
@@ -45,10 +47,22 @@ export const handleOrganizeDsGenerateLocalManifestCopyButtonClick = async () => 
 
   window.fs.mkdirSync(manifestFolderSavePath, { recursive: true });
 
+  // Step 6: Shape the manifest data in the way expected by the backend
+  const shapedManifestData = convertGuidedManifestToSchema(
+    window.sodaJSONObj["dataset_metadata"]?.["manifest_file"]
+  );
+  // Step 7: Create a copy of the window.sodaJSONObj so we don't mutate the original when we add the manifest
+  // file data
+  const sodaJSONCopy = JSON.parse(JSON.stringify(window.sodaJSONObj));
+  if (!sodaJSONCopy["dataset_metadata"]) {
+    sodaJSONCopy["dataset_metadata"] = {};
+  }
+  sodaJSONCopy["dataset_metadata"]["manifest_file"] = shapedManifestData;
+
   // TODO: Use sodaCopy once we have fully featured merge existing back again
   try {
     await client.post("/prepare_metadata/manifest", {
-      soda: window.sodaJSONObj,
+      soda: sodaJSONCopy,
       path_to_manifest_file: manifestPath,
       upload_boolean: false,
     });
