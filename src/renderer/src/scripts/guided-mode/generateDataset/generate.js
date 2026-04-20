@@ -25,6 +25,35 @@ while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
+let restartServerLock = false;
+const restartServer = async () => {
+  if (restartServerLock) return;
+  restartServerLock = true;
+  try {
+    await window.server.restart(window.port);
+  } catch (err) {
+    console.error("Upload failed:", err.message);
+  } finally {
+    console.log("Server is live");
+    removeListener(); // Always clean up the listener
+    restartServerLock = false;
+  }
+
+  const removeListener = window.server.onRestartProgress((line) => {
+    console.log("Restart progress:", line);
+  });
+};
+
+const waitForServerRestart = async () => {
+  while (true) {
+    let live = await window.ipcRenderer.invoke("get-server-live-status");
+    if (live) {
+      return;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
+};
+
 const fetchProgressData = async () => {
   const { data } = await client.get(`/curate_datasets/curation/progress`);
   return {
@@ -95,26 +124,67 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       await guidedSaveProgress();
     };
 
-    // --- Helper: perform the upload request ---
-    const performUpload = async () => {
-      datasetUploadSession.startSession();
+    const createUploadData = async () => {
       guidedSetNavLoadingState(true);
 
-      client
-        .post(
-          `/curate_datasets/curation`,
-          { soda_json_structure: window.sodaJSONObj, resume: !!window.retryGuidedMode },
+      try {
+        const { data } = await client.post(
+          `/curate_datasets/curation/manifest_file`,
+          { soda_json_structure: window.sodaJSONObj },
           { timeout: 0 }
-        )
-        .then(async (response) => {
-          const { data } = response;
-          await finalizeUpload(data);
-        })
-        .catch((error) => console.error("Dataset upload failed:", error));
+        );
 
-      await window.wait(1000);
-      await trackPennsieveDatasetGenerationProgress(standardizedDatasetStructure);
-      guidedSetNavLoadingState(false);
+        return data;
+      } catch (e) {
+        clientError(e);
+      }
+    };
+
+    // --- Helper: perform the upload request ---
+    const performUpload = async () => {
+      let manifestId = window.sodaJSONObj["upload-progress"]["manifest-id"];
+      let datasetId = window.sodaJSONObj["upload-progress"]["dataset-id"];
+
+      const subscribe = async (datasetId) => {
+        try {
+          console.log(`Started one subscriber session at ${new Date().toLocaleTimeString()}`);
+          await client.post("/curate_datasets/curation/subscribe", {
+            dataset_id: datasetId,
+            account_name: window.sodaJSONObj["ps-account-selected"]["account-name"],
+          });
+          console.log(
+            `Returned from one subscriber session at ${new Date().toLocaleTimeString()}. `
+          );
+        } catch (e) {
+          console.log(
+            `Crashed from one subscriber session at ${new Date().toLocaleTimeString()}. `
+          );
+          clientError(e);
+          if (!e.response && e.request && e.isAxiosError) {
+            await restartServer();
+            await waitForServerRestart();
+
+            // CHECK IF UPLOAD IS COMPLETE BEFORE RESTARTING PROGRESS AND SUBSCRIPTION
+            if (!window.UPLOAD_COMPLETE) {
+              subscribe(datasetId);
+            }
+          }
+        }
+      };
+
+      subscribe(datasetId);
+      const removeListener = window.pennsieve.onUploadProgress((line) => {
+        console.log("Upload progress:", line);
+      });
+
+      try {
+        await window.pennsieve.uploadManifest(manifestId);
+        window.UPLOAD_COMPLETE = true;
+      } catch (err) {
+        console.error("Upload failed:", err.message);
+      } finally {
+        removeListener(); // Always clean up the listener
+      }
     };
 
     // --- Helper: prepare upload object for Pennsieve ---
@@ -170,6 +240,20 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       }
     };
 
+    const renameFiles = async () => {
+      try {
+        await client.put(
+          `/curate_datasets/curation/rename_files`,
+          {
+            soda: window.sodaJSONObj,
+          },
+          { timeout: 0 }
+        );
+      } catch (e) {
+        clientError(e);
+      }
+    };
+
     // --- Prepare UI for normal upload ---
     if (!window.retryGuidedMode) {
       document
@@ -204,8 +288,57 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       );
     }
 
-    await prepareUploadObj();
-    await performUpload();
+    // START SESSION AND TRACKING
+    datasetUploadSession.startSession();
+    trackPennsieveDatasetGenerationProgress(standardizedDatasetStructure);
+    window.UPLOAD_COMPLETE = false;
+
+    if (!window.sodaJSONObj["upload-progress"]) {
+      // initialize upload pipeline progress
+      window.sodaJSONObj["upload-progress"] = {
+        "manifest-id": "",
+        "size-of-dataset": "",
+        "number-of-files": "",
+        "list-of-files-to-rename": "",
+        "current-stage": "setup",
+      };
+    }
+
+    // STAGE 1: Create Manifest File + Upload Data
+    if (window.sodaJSONObj["upload-progress"]["current-stage"] == "setup") {
+      await prepareUploadObj();
+      let uploadData = await createUploadData();
+      window.sodaJSONObj["upload-progress"] = {
+        "manifest-id": uploadData["manifest_id"],
+        "size-of-dataset": uploadData["size_of_dataset"],
+        "number-of-files": uploadData["number_of_files"],
+        "list-of-files-to-rename": uploadData["list_of_files_to_rename"],
+        "current-stage": "upload",
+      };
+      await guidedSaveProgress();
+    }
+
+    // STAGE 2: Upload Using Agent + Subscribe for Progress
+    if (window.sodaJSONObj["upload-progress"]["current-stage"] == "upload") {
+      let origin_manifest_id = await performUpload();
+      window.UPLOAD_COMPLETE = true;
+      window.sodaJSONObj["upload-progress"]["current-stage"] =
+        window.sodaJSONObj["upload-progress"]["list-of-files-to-rename"].length >= 1
+          ? "rename"
+          : "verify";
+      window.sodaJSONObj["upload-progress"]["origin-manifest-id"] = origin_manifest_id;
+      await guidedSaveProgress();
+    }
+
+    // TODO: Possibly switch rename and verify order since to rename we need to know the files exist on Pennsieve.
+
+    // STAGE 3: RENAME FILES
+    if (window.sodaJSONObj["upload-progress"]["current-stage"] == "rename") {
+      await renameFiles();
+      await guidedSaveProgress();
+    }
+
+    // STAGE 4: (Optional) VERIFY FILES
   } catch (error) {
     clientError(error);
     const emessage = userErrorMessage(error, false);
@@ -591,16 +724,20 @@ const trackPennsieveDatasetGenerationProgress = async () => {
     } catch (error) {
       // Check for network error
       if (!error.response && error.request && error.isAxiosError) {
+        clientError(error);
         const currentPageID = window.CURRENT_PAGE.id;
         await window.savePageChanges(currentPageID);
-        clientError(error);
-        await swalShowError(
-          "Network Error",
-          "The server did not respond. Please close SODA and reopen it to try the upload again. SODA will remember any progress in the upload you have made. If the problem persists, please contact support."
-        );
-        guidedSetNavLoadingState(false);
-        transitionFromGuidedModeToHome();
-        return;
+        await restartServer();
+
+        await waitForServerRestart();
+
+        if (window.UPLOAD_COMPLETE) {
+          setStateCompleteUpload();
+          return;
+        }
+
+        // RETRY UPLOAD ONCE SERVER HAS BEEN RESTARTED AND UPLOAD IS NOT COMPLETED
+        trackPennsieveDatasetGenerationProgress();
       }
       console.error("[Pennsieve Progress] Error tracking upload progress:", error);
       throw new Error(userErrorMessage(error));
