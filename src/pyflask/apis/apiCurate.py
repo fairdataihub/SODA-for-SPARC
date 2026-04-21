@@ -147,11 +147,7 @@ class Curation(Resource):
             api.abort(400, "Missing parameter: soda_json_structure")
         
 
-        if "resume" not in data:
-            api.abort(400, "Missing parameter: resume")
-
         soda_json_structure = data["soda_json_structure"]
-        resume = data["resume"]
 
         api.logger.info('/curation POST request')
 
