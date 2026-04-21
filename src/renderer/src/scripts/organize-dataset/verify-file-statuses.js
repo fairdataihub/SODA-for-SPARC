@@ -190,7 +190,7 @@ const processFilesPage = (filePage, finalizedFiles, failedFilesPathsList) => {
   }
 };
 
-window.monitorUploadFileVerificationProgress = async () => {
+/*window.monitorUploadFileVerificationProgress = async () => {
   let manifestId = window.pennsieveManifestId;
   let verifiedFilesCount = 0;
   failedFilesPathsList = [];
@@ -251,7 +251,7 @@ window.monitorUploadFileVerificationProgress = async () => {
 
   $("#Question-validate-dataset-upload-3").show();
   $("#success-validated-files-lottie").addClass("is-shown");
-};
+};*/
 
 const updateGuidedVerificationProgress = (verifiedCount, difference) => {
   document.getElementById("guided--verify-dataset-upload-files-count").innerText =

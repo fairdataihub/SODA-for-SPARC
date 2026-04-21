@@ -64,13 +64,15 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       window.sodaJSONObj["previously-uploaded-data"] = {};
       window.sodaJSONObj["dataset-successfully-uploaded-to-pennsieve"] = true;
       window.retryGuidedMode = false;
+      console.log("window.pennsieveManifestId:", window.pennsieveManifestId);
+      console.log("window.totalFilesCount:", window.totalFilesCount);
 
       // If the message indicates that no files were uploaded (which can happen when
       // uploading to an existing Pennsieve dataset with the "skip" option selected for existing files and
       // the dataset being generated has the same files as the existing dataset), do not show
       // the verify files section because there are no files to verify.
       const { message } = await fetchProgressData();
-      if (message !== "No files were uploaded in this session") {
+      if (message !== "No files were uploaded in this session" || window.totalFilesCount === 0) {
         document
           .getElementById("guided-section-file-upload-verification")
           .classList.remove("hidden");

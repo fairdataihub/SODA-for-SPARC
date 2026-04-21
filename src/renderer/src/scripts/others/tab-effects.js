@@ -203,7 +203,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     document.getElementById("documentation-view").style.pointerEvents = "none";
     // disable contact us view to be clicked again
     document.getElementById("contact-us-view").style.pointerEvents = "none";
-    await window.monitorUploadFileVerificationProgress();
+    // await window.monitorUploadFileVerificationProgress();
     // disable guided_mode_view
     document.getElementById("guided_mode_view").style.pointerEvents = "";
     // disable documentation view to be clicked again
