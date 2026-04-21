@@ -762,7 +762,7 @@ const trackPennsieveDatasetGenerationProgress = async () => {
 
         break;
       } else if (status === "Done" && message !== "Success: COMPLETED!") {
-        console.error("The upload monitor noticed the upload failed");
+        console.error("The upload monitor noticed an error during the upload process.");
         // Handle the case where upload error happens
         setGuidedProgressBarValue("pennsieve", 0);
         updateDatasetUploadProgressTable("pennsieve", {
@@ -771,7 +771,6 @@ const trackPennsieveDatasetGenerationProgress = async () => {
         });
         // fix: Log on fail case what was actually pushed up to Pennsieve
         logProgressPostUpload(uploadedFiles, mainTotalGenerateDatasetSize);
-        amountOfTimesPennsieveUploadFailed += 1;
         let supplementaryChecks = false;
         automaticRetry(supplementaryChecks, message);
         break;
