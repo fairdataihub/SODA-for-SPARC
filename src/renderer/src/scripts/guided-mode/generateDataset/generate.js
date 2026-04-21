@@ -319,7 +319,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     // CASE 2: NEW DATSETS HAS UPLOAD PROGRESS and IS AUTO RETRY; soda["pennsieve-generation-target"] == NEW
     // RESULT: PROGRESS ALREADY EXISTS AND SKIPS THIS STEP
     // CASE 3: NEW DATASET UPLOAD FAILED and IS SAVE & EXIT AND RESUME; soda["pennsieve-generation-target"] == EXISTING in this case
-    // RESULT: PROGRESS ALREADY EXISTS AND SKIPS THIS STEP
+    // RESULT: PROGRESS ALREADY EXISTS AND SKIPS THIS STEP (save)
     // CASE 4:  EXISTING DATASET BEING UPDATED
     // RESULT: PROGRESS ALREADY EXISTS AND SKIPS THIS STEP
     if (!window.sodaJSONObj["upload-progress"]) {
