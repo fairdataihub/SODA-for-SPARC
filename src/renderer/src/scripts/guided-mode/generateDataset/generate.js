@@ -353,6 +353,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         "size-of-dataset": uploadData["size_of_dataset"],
         "number-of-files": uploadData["number_of_files"],
         "list-of-files-to-rename": uploadData["list_of_files_to_rename"],
+        "dataset-id": uploadData["dataset_id"],
         "current-stage": "upload",
       };
       await guidedSaveProgress();
