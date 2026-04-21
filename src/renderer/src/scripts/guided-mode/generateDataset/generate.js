@@ -124,6 +124,57 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       await guidedSaveProgress();
     };
 
+    // --- Helper: prepare upload object for Pennsieve ---
+    const prepareUploadObj = async () => {
+      // --- Base assignments ---
+      window.sodaJSONObj["ps-dataset-selected"] = { "dataset-name": pennsieveDatasetName };
+      window.sodaJSONObj["ps-account-selected"] = { "account-name": window.defaultBfAccount };
+      window.sodaJSONObj["dataset-structure"] = standardizedDatasetStructure;
+
+      // --- Dataset state detection ---
+      const pennsieveDatasetId = window.sodaJSONObj?.["digital-metadata"]?.["pennsieve-dataset-id"];
+
+      let datasetIsEmpty = null;
+
+      try {
+        datasetIsEmpty = await api.isDatasetEmpty(pennsieveDatasetId);
+      } catch (error) {
+        console.error("[prepareUploadObj] Error checking if dataset is empty:", error);
+      }
+
+      // --- First upload logic ---
+      // If not retrying and target is "new" but dataset has content, switch to existing mode
+      // Note we only do this when it's the first upload of the session (for when a dataset upload
+      // fails, the user closes out of the progress file, and they begin uploading again)
+      if (
+        (window.sodaJSONObj["pennsieve-generation-target"] === "new" && datasetIsEmpty === false) ||
+        (window.sodaJSONObj["pennsieve-generation-target"] === "existing" &&
+          datasetIsEmpty === false &&
+          window.sodaJSONObj["generate-dataset"]?.["generate-option"] === "new")
+      ) {
+        window.sodaJSONObj["starting-point"]["origin"] = "ps";
+        window.sodaJSONObj["generate-dataset"] = {
+          "dataset-name": pennsieveDatasetName,
+          destination: "ps",
+          "generate-option": "existing-ps",
+          "if-existing": "merge",
+          "if-existing-files": "skip",
+          "existing-dataset-id": pennsieveDatasetId,
+        };
+      }
+
+      // --- Metadata sync ---
+      const shouldUpdateTitle =
+        window.sodaJSONObj["pennsieve-generation-target"] === "existing" &&
+        window.sodaJSONObj?.["dataset_metadata"]?.["dataset_description"]?.["basic_information"];
+
+      if (shouldUpdateTitle) {
+        window.sodaJSONObj["dataset_metadata"]["dataset_description"]["basic_information"][
+          "title"
+        ] = pennsieveDatasetName;
+      }
+    };
+
     const createUploadData = async () => {
       guidedSetNavLoadingState(true);
 
@@ -165,10 +216,12 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
             await waitForServerRestart();
 
             // CHECK IF UPLOAD IS COMPLETE BEFORE RESTARTING PROGRESS AND SUBSCRIPTION
-            if (!window.UPLOAD_COMPLETE) {
+            if (!window.UPLOAD_STAGE_COMPLETE) {
               subscribe(datasetId);
             }
           }
+          // IF NOT ERROR CRASH HANDLE AS NORMAL WITH AUTOMATIC RETRY
+          throw e;
         }
       };
 
@@ -179,64 +232,11 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
 
       try {
         await window.pennsieve.uploadManifest(manifestId);
-        window.UPLOAD_COMPLETE = true;
+        window.UPLOAD_STAGE_COMPLETE = true;
       } catch (err) {
         console.error("Upload failed:", err.message);
       } finally {
         removeListener(); // Always clean up the listener
-      }
-    };
-
-    // --- Helper: prepare upload object for Pennsieve ---
-    const prepareUploadObj = async () => {
-      // --- Base assignments ---
-      window.sodaJSONObj["ps-dataset-selected"] = { "dataset-name": pennsieveDatasetName };
-      window.sodaJSONObj["ps-account-selected"] = { "account-name": window.defaultBfAccount };
-      window.sodaJSONObj["dataset-structure"] = standardizedDatasetStructure;
-
-      // --- Dataset state detection ---
-      const pennsieveDatasetId = window.sodaJSONObj?.["digital-metadata"]?.["pennsieve-dataset-id"];
-
-      let datasetIsEmpty = null;
-
-      try {
-        datasetIsEmpty = await api.isDatasetEmpty(pennsieveDatasetId);
-      } catch (error) {
-        console.error("[prepareUploadObj] Error checking if dataset is empty:", error);
-      }
-
-      // --- First upload logic ---
-      // If not retrying and target is "new" but dataset has content, switch to existing mode
-      // Note we only do this when it's the first upload of the session (for when a dataset upload
-      // fails, the user closes out of the progress file, and they begin uploading again)
-      if (
-        (!window.retryGuidedMode &&
-          window.sodaJSONObj["pennsieve-generation-target"] === "new" &&
-          datasetIsEmpty === false) ||
-        (window.sodaJSONObj["pennsieve-generation-target"] === "existing" &&
-          datasetIsEmpty === false &&
-          window.sodaJSONObj["generate-dataset"]?.["generate-option"] === "new")
-      ) {
-        window.sodaJSONObj["starting-point"]["origin"] = "ps";
-        window.sodaJSONObj["generate-dataset"] = {
-          "dataset-name": pennsieveDatasetName,
-          destination: "ps",
-          "generate-option": "existing-ps",
-          "if-existing": "merge",
-          "if-existing-files": "skip",
-          "existing-dataset-id": pennsieveDatasetId,
-        };
-      }
-
-      // --- Metadata sync ---
-      const shouldUpdateTitle =
-        window.sodaJSONObj["pennsieve-generation-target"] === "existing" &&
-        window.sodaJSONObj?.["dataset_metadata"]?.["dataset_description"]?.["basic_information"];
-
-      if (shouldUpdateTitle) {
-        window.sodaJSONObj["dataset_metadata"]["dataset_description"]["basic_information"][
-          "title"
-        ] = pennsieveDatasetName;
       }
     };
 
@@ -254,8 +254,18 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       }
     };
 
+    // HAS TO WORK FOR NEW DATASETS, AUTO RETRIES, and EXIT and RETRIES
+    // CASE 1: NEW DATSETS Has no upload-progress and soda["pennsieve-generation-target"] === new
+    // RESULT: Works by creating metadata upload tables then moving on to the stages
+    // CASE 2: NEW DATSETS HAS UPLOAD PROGRESS and IS AUTO RETRY; soda["pennsieve-generation-target"] == NEW
+    // RESULT: DATASET HAS MOVED PAST THIS STAGE AND SKIPS IF SO, OTHERWISE HANDLES THIS STAGE
+    // CASE 3: NEW DATASET UPLOAD FAILED and IS SAVE & EXIT AND RESUME; soda["pennsieve-generation-target"] == EXISTING in this case
+    // RESULT: IF THERE IS ALREADY UPLOAD PROGRESS THEN RIGHTFULLY SKIPS THIS STAGE
+    // CASE 4: EXISTING DATASET BEING UPDATED
+    // RESULT: IF WORK ALREADY DONE FOR THIS DATASET THE STAGE IS CORRECTLY SKIPPED
     // --- Prepare UI for normal upload ---
-    if (!window.retryGuidedMode) {
+    if (!window.sodaJSONObj["upload-progress"]) {
+      // TODO: RESET KEYS IF DATA CHANGES IN GM
       document
         .querySelectorAll(".guided-upload-table")
         .forEach((table) => table.classList.add("hidden"));
@@ -275,7 +285,18 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
     }
 
-    if (window.sodaJSONObj["pennsieve-generation-target"] === "new") {
+    // CASE 1: NEW DATSETS Has no upload-progress and soda["pennsieve-generation-target"] === new
+    // RESULT: UPLOADS PENNSIEVE METADATA AS EXPECTED
+    // CASE 2: NEW DATSETS HAS UPLOAD PROGRESS and IS AUTO RETRY; soda["pennsieve-generation-target"] == NEW
+    // RESULT: SKIPS THIS STEP B/C UPLOAD PROGRESS MEANS THIS IS ALREADY COMPLETED
+    // CASE 3: NEW DATASET UPLOAD FAILED and IS SAVE & EXIT AND RESUME; soda["pennsieve-generation-target"] == EXISTING in this case
+    // RESULT: SKIPS THIS STEP B/C DATASET ALREADY EXISTS.
+    // CASE 4:  EXISTING DATASET BEING UPDATED
+    // RESULT: SKIPS THIS STEP WHICH CAN BE ERRONEOUS IF NON-GUEST USER (GUEST USERS CANNOT EDIT PENNSIEVE METADATA) UPDATING AN EMPTY EXISTING DATASET; HOWEVER MANUALLY CHECKING FOR EXISTING PENNSIEVE METADATA IS FLAWED AS IF IT ALREADY EXISTS WE SHOULD NOT OVERWRITE IT. SO KEEP AS IS.
+    if (
+      !window.sodaJSONObj["upload-progress"] &&
+      window.sodaJSONObj["pennsieve-generation-target"] === "new"
+    ) {
       await uploadPennsieveMetadata(
         window.defaultBfAccount,
         pennsieveDatasetName,
@@ -291,8 +312,16 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     // START SESSION AND TRACKING
     datasetUploadSession.startSession();
     trackPennsieveDatasetGenerationProgress(standardizedDatasetStructure);
-    window.UPLOAD_COMPLETE = false;
+    window.UPLOAD_STAGE_COMPLETE = false;
 
+    // CASE 1: NEW DATSETS Has no upload-progress and soda["pennsieve-generation-target"] === new
+    // RESULT: EXECUTES THE CODE AND CREATES THE NECESSARY PIPELINE STAGE STATE
+    // CASE 2: NEW DATSETS HAS UPLOAD PROGRESS and IS AUTO RETRY; soda["pennsieve-generation-target"] == NEW
+    // RESULT: PROGRESS ALREADY EXISTS AND SKIPS THIS STEP
+    // CASE 3: NEW DATASET UPLOAD FAILED and IS SAVE & EXIT AND RESUME; soda["pennsieve-generation-target"] == EXISTING in this case
+    // RESULT: PROGRESS ALREADY EXISTS AND SKIPS THIS STEP
+    // CASE 4:  EXISTING DATASET BEING UPDATED
+    // RESULT: PROGRESS ALREADY EXISTS AND SKIPS THIS STEP
     if (!window.sodaJSONObj["upload-progress"]) {
       // initialize upload pipeline progress
       window.sodaJSONObj["upload-progress"] = {
@@ -304,6 +333,18 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       };
     }
 
+    // CASE 1: NEW DATSETS Has upload-progress and soda["pennsieve-generation-target"] === new
+    // RESULT: EXECUTES THIS CODE; SAVES STATE IF IT SUCCEEDS AND RETURNS NECESSARY UPLOAD INFORMATION FOR LATER STAGES
+    // CASE 2: NEW DATSETS HAS UPLOAD PROGRESS; stage set to setup; a dataset was created; and IS AUTO RETRY (auto retry is no different from new runs but with progress and key set to new atm); soda["pennsieve-generation-target"] == NEW
+    // RESULT: UI will see that there is a dataset but it is empty so keep keys in new workflow. Backend checks and finds dataset already exists. So goes ahead and gets the existing ID and works on creating a manifest for the empty dataset.
+    // CASE 2.5: NEW DATASET HAS UPLOAD PROGRESS; stage step is setup; a dataset was not created before failure; this is a retry
+    // RESULT: UI WILL NOT CHANGE KEYS DUE TO NOT FINDING A DATASET; BACKEND WILL CREATE THE DATASET AND CREATE A MANIFEST
+    // CASE 3: NEW DATASET UPLOAD FAILED and IS SAVE & EXIT AND RESUME; soda["pennsieve-generation-target"] == ? in this case
+    // RESULT: TODO: RUN TEST
+    // CASE 4:  EXISTING DATASET BEING UPDATED
+    // RESULT:
+    // CASE 5: GUEST USER IS UPDATING AN EXISTING DATASET THAT ALREADY HAS DATA
+    // RESULT: SHOULD BE ABLE TO MERGE AND SKIP OR MERGE AND REPLACE AS DESIRED TODO: RUN TEST
     // STAGE 1: Create Manifest File + Upload Data
     if (window.sodaJSONObj["upload-progress"]["current-stage"] == "setup") {
       await prepareUploadObj();
@@ -318,10 +359,18 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       await guidedSaveProgress();
     }
 
+    // CASE 1: NEW DATSETS Has no upload-progress and soda["pennsieve-generation-target"] === new
+    // RESULT:
+    // CASE 2: NEW DATSETS HAS UPLOAD PROGRESS and IS AUTO RETRY; soda["pennsieve-generation-target"] == NEW
+    // RESULT:
+    // CASE 3: NEW DATASET UPLOAD FAILED and IS SAVE & EXIT AND RESUME; soda["pennsieve-generation-target"] == EXISTING in this case
+    // RESULT:
+    // CASE 4:  EXISTING DATASET BEING UPDATED
+    // RESULT:
     // STAGE 2: Upload Using Agent + Subscribe for Progress
     if (window.sodaJSONObj["upload-progress"]["current-stage"] == "upload") {
       let origin_manifest_id = await performUpload();
-      window.UPLOAD_COMPLETE = true;
+      window.UPLOAD_STAGE_COMPLETE = true;
       window.sodaJSONObj["upload-progress"]["current-stage"] =
         window.sodaJSONObj["upload-progress"]["list-of-files-to-rename"].length >= 1
           ? "rename"
@@ -332,6 +381,14 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
 
     // TODO: Possibly switch rename and verify order since to rename we need to know the files exist on Pennsieve.
 
+    // CASE 1: NEW DATSETS Has no upload-progress and soda["pennsieve-generation-target"] === new
+    // RESULT:
+    // CASE 2: NEW DATSETS HAS UPLOAD PROGRESS and IS AUTO RETRY; soda["pennsieve-generation-target"] == NEW
+    // RESULT:
+    // CASE 3: NEW DATASET UPLOAD FAILED and IS SAVE & EXIT AND RESUME; soda["pennsieve-generation-target"] == EXISTING in this case
+    // RESULT:
+    // CASE 4:  EXISTING DATASET BEING UPDATED
+    // RESULT:
     // STAGE 3: RENAME FILES
     if (window.sodaJSONObj["upload-progress"]["current-stage"] == "rename") {
       await renameFiles();
@@ -419,6 +476,15 @@ export const countFilesInDatasetStructure = (datasetStructure) => {
     }
   }
   return totalFiles;
+};
+
+const setStateComplete = () => {
+  amountOfTimesPennsieveUploadFailed = 0;
+
+  setGuidedProgressBarValue("pennsieve", 100);
+  updateDatasetUploadProgressTable("pennsieve", {
+    Status: "Dataset successfully uploaded to Pennsieve",
+  });
 };
 
 // Track the status of local dataset generation
@@ -672,12 +738,7 @@ const trackPennsieveDatasetGenerationProgress = async () => {
       }
 
       if (status === "Done" && message == "Success: COMPLETED!") {
-        amountOfTimesPennsieveUploadFailed = 0;
-
-        setGuidedProgressBarValue("pennsieve", 100);
-        updateDatasetUploadProgressTable("pennsieve", {
-          Status: "Dataset successfully uploaded to Pennsieve",
-        });
+        setStateComplete();
         // Break the loop to stop tracking progress (upload is complete)
         break;
       } else if (status === "Done" && message.includes("No files were uploaded in this session")) {
@@ -725,15 +786,11 @@ const trackPennsieveDatasetGenerationProgress = async () => {
       // Check for network error
       if (!error.response && error.request && error.isAxiosError) {
         clientError(error);
-        const currentPageID = window.CURRENT_PAGE.id;
-        await window.savePageChanges(currentPageID);
         await restartServer();
-
         await waitForServerRestart();
-
-        if (window.UPLOAD_COMPLETE) {
-          setStateCompleteUpload();
-          return;
+        if (window.UPLOAD_STAGE_COMPLETE) {
+          setStateComplete();
+          break;
         }
 
         // RETRY UPLOAD ONCE SERVER HAS BEEN RESTARTED AND UPLOAD IS NOT COMPLETED
@@ -746,27 +803,7 @@ const trackPennsieveDatasetGenerationProgress = async () => {
 };
 
 const automaticRetry = async (supplementaryChecks = false, errorMessage = "") => {
-  if (amountOfTimesPennsieveUploadFailed <= 3) {
-    await Swal.fire({
-      title: `Retrying upload ${amountOfTimesPennsieveUploadFailed} of 3 times`,
-      icon: "error",
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      showConfirmButton: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
-      hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
-      timer: 5000,
-      timerProgressBar: true,
-    });
-    while (!supplementaryChecks && amountOfTimesPennsieveUploadFailed <= 3) {
-      supplementaryChecks = await window.run_pre_flight_checks(
-        "guided-mode-pre-generate-pennsieve-agent-check"
-      );
-      if (!supplementaryChecks) amountOfTimesPennsieveUploadFailed += 1;
-    }
-  } else {
+  if (amountOfTimesPennsieveUploadFailed > 3) {
     let res = await Swal.fire({
       allowOutsideClick: false,
       allowEscapeKey: false,
@@ -801,6 +838,28 @@ const automaticRetry = async (supplementaryChecks = false, errorMessage = "") =>
     supplementaryChecks = await window.run_pre_flight_checks(
       "guided-mode-pre-generate-pennsieve-agent-check"
     );
+  }
+
+  if (amountOfTimesPennsieveUploadFailed <= 3) {
+    await Swal.fire({
+      title: `Retrying upload ${amountOfTimesPennsieveUploadFailed} of 3 times`,
+      icon: "error",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+      hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
+      timer: 5000,
+      timerProgressBar: true,
+    });
+    while (!supplementaryChecks && amountOfTimesPennsieveUploadFailed <= 3) {
+      supplementaryChecks = await window.run_pre_flight_checks(
+        "guided-mode-pre-generate-pennsieve-agent-check"
+      );
+      if (!supplementaryChecks) amountOfTimesPennsieveUploadFailed += 1;
+    }
   }
 
   if (!supplementaryChecks) {
