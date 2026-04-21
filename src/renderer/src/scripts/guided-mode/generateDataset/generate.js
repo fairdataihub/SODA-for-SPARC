@@ -92,7 +92,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       window.totalFilesCount = data["main_curation_total_files"];
       window.sodaJSONObj["previously-uploaded-data"] = {};
       window.sodaJSONObj["dataset-successfully-uploaded-to-pennsieve"] = true;
-      window.retryGuidedMode = false;
 
       // If the message indicates that no files were uploaded (which can happen when
       // uploading to an existing Pennsieve dataset with the "skip" option selected for existing files and
@@ -400,7 +399,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     clientError(error);
     const emessage = userErrorMessage(error, false);
     amountOfTimesPennsieveUploadFailed += 1;
-    window.retryGuidedMode = true;
     automaticRetry(false, emessage);
     guidedSetNavLoadingState(false);
   }
@@ -774,7 +772,6 @@ const trackPennsieveDatasetGenerationProgress = async () => {
         // fix: Log on fail case what was actually pushed up to Pennsieve
         logProgressPostUpload(uploadedFiles, mainTotalGenerateDatasetSize);
         amountOfTimesPennsieveUploadFailed += 1;
-        window.retryGuidedMode = true;
         let supplementaryChecks = false;
         automaticRetry(supplementaryChecks, message);
         break;
@@ -802,7 +799,10 @@ const trackPennsieveDatasetGenerationProgress = async () => {
   }
 };
 
+let retryingLock = false;
 const automaticRetry = async (supplementaryChecks = false, errorMessage = "") => {
+  if (retryingLock) return;
+  retryingLock = true;
   if (amountOfTimesPennsieveUploadFailed > 3) {
     let res = await Swal.fire({
       allowOutsideClick: false,
@@ -861,6 +861,8 @@ const automaticRetry = async (supplementaryChecks = false, errorMessage = "") =>
       if (!supplementaryChecks) amountOfTimesPennsieveUploadFailed += 1;
     }
   }
+
+  retryingLock = false;
 
   if (!supplementaryChecks) {
     Swal.fire({
