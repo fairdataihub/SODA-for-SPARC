@@ -184,7 +184,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       );
 
       return data;
-
     };
 
     // --- Helper: perform the upload request ---
@@ -310,7 +309,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     trackPennsieveDatasetGenerationProgress(standardizedDatasetStructure);
     window.UPLOAD_STAGE_COMPLETE = false;
 
-    console.log(`Run ${amountOfTimesPennsieveUploadFailed} of Upload.`)
+    console.log(`Run ${amountOfTimesPennsieveUploadFailed} of Upload.`);
     console.log(`Current object state: ${window.sodaJSONObj}}`);
 
     // CASE 1: NEW DATSETS Has no upload-progress and soda["pennsieve-generation-target"] === new
@@ -339,10 +338,10 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     // CASE 2.5: NEW DATASET HAS UPLOAD PROGRESS; stage step is setup; a dataset was not created before failure; this is a retry
     // RESULT: UI WILL NOT CHANGE KEYS DUE TO NOT FINDING A DATASET; BACKEND WILL CREATE THE DATASET AND CREATE A MANIFEST
     // CASE 3: NEW DATASET UPLOAD FAILED and IS SAVE & EXIT AND RESUME; soda["pennsieve-generation-target"] == ? in this case
-    // CASE 4: RESUMING PROGRESS ON A PREVIOUSLY NEW DATASET THAT HAS DATA NOW 
+    // CASE 4: RESUMING PROGRESS ON A PREVIOUSLY NEW DATASET THAT HAS DATA NOW
     // RESULT: ui NOTICES DATA EXISTS AND USES MERGE & SKIP OPTIONS IN AN UPDATE EXISTING WORKFLOW
     // CASE 4: EXISTING DATASET BEING UPDATED
-    // RESULT: 
+    // RESULT:
     // CASE 5: GUEST USER IS UPDATING AN EXISTING DATASET THAT ALREADY HAS DATA
     // RESULT: SHOULD BE ABLE TO MERGE AND SKIP OR MERGE AND REPLACE AS DESIRED TODO: RUN TEST
     // STAGE 1: Create Manifest File + Upload Data
@@ -359,9 +358,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       };
       await guidedSaveProgress();
     }
-
-
-
 
     // CASE 1: NEW DATSETS Has no upload-progress and soda["pennsieve-generation-target"] === new
     // RESULT:
