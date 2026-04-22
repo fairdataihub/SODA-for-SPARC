@@ -36,6 +36,18 @@ const fetchProgressData = async () => {
   };
 };
 
+const disableFileVerificationSection = () => {
+  document.getElementById("guided-section-file-upload-verification").classList.add("hidden");
+  document.querySelector("#guided-section-file-upload-verification-button").disabled = true;
+  document.querySelector("#guided--skip-verify-btn").disabled = true;
+};
+
+const enableFileVerificationSection = () => {
+  document.getElementById("guided-section-file-upload-verification").classList.remove("hidden");
+  document.querySelector("#guided-section-file-upload-verification-button").disabled = false;
+  document.querySelector("#guided--skip-verify-btn").disabled = false;
+};
+
 /**
  *
  * @returns {Promise<void>}
@@ -71,13 +83,12 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       // uploading to an existing Pennsieve dataset with the "skip" option selected for existing files and
       // the dataset being generated has the same files as the existing dataset), do not show
       // the verify files section because there are no files to verify.
+      // Also hide the verify section if totalFilesCount is 0 (e.g., when only files were renamed).
       const { message } = await fetchProgressData();
-      if (message !== "No files were uploaded in this session" || window.totalFilesCount === 0) {
-        document
-          .getElementById("guided-section-file-upload-verification")
-          .classList.remove("hidden");
-        document.querySelector("#guided-section-file-upload-verification-button").disabled = false;
-        document.querySelector("#guided--skip-verify-btn").disabled = false;
+      if (message === "No files were uploaded in this session" || window.totalFilesCount === 0) {
+        disableFileVerificationSection();
+      } else {
+        enableFileVerificationSection();
       }
 
       logProgressPostUpload(
