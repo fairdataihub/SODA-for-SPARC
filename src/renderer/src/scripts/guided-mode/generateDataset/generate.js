@@ -184,7 +184,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       );
 
       return data;
-
     };
 
     // --- Helper: perform the upload request ---
@@ -308,7 +307,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     datasetUploadSession.startSession();
     trackPennsieveDatasetGenerationProgress(standardizedDatasetStructure);
 
-    console.log(`Run ${amountOfTimesPennsieveUploadFailed} of Upload.`)
+    console.log(`Run ${amountOfTimesPennsieveUploadFailed} of Upload.`);
     console.log(`Current object state: ${window.sodaJSONObj}}`);
 
     // CASE 1: NEW DATSETS Has no upload-progress and soda["pennsieve-generation-target"] === new
@@ -337,7 +336,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     // CASE 2.5: NEW DATASET HAS UPLOAD PROGRESS; stage step is setup; a dataset was not created before failure; this is a retry
     // RESULT: UI WILL NOT CHANGE KEYS DUE TO NOT FINDING A DATASET; BACKEND WILL CREATE THE DATASET AND CREATE A MANIFEST
     // CASE 3: NEW DATASET UPLOAD FAILED and IS SAVE & EXIT AND RESUME; soda["pennsieve-generation-target"] == ? in this case
-    // CASE 4: RESUMING PROGRESS ON A PREVIOUSLY NEW DATASET THAT HAS DATA NOW 
+    // CASE 4: RESUMING PROGRESS ON A PREVIOUSLY NEW DATASET THAT HAS DATA NOW
     // RESULT: ui NOTICES DATA EXISTS AND USES MERGE & SKIP OPTIONS IN AN UPDATE EXISTING WORKFLOW
     // CASE 4: EXISTING DATASET BEING UPDATED for first time with replace option selected
     // RESULT: EXPECTATION: Create manifest for dataset. Deletes files marked to be replaced woprks as expected. 
@@ -357,7 +356,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       };
       await guidedSaveProgress();
     }
-
 
     // CASE 1: NEW DATSETS Has no upload-progress and soda["pennsieve-generation-target"] === new
     // RESULT: Progress bar updates and is set to 100% once upload is completed
