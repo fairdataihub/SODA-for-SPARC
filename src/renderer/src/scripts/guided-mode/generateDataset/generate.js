@@ -212,7 +212,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
             await waitForServerRestart();
 
             // CHECK IF UPLOAD IS COMPLETE BEFORE RESTARTING PROGRESS AND SUBSCRIPTION
-            if (!window.UPLOAD_STAGE_COMPLETE) {
+            if (window.sodaJSONObj["upload-progress"]?.["current-stage"] === "upload") {
               subscribe(datasetId);
             }
           }
@@ -228,7 +228,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
 
       try {
         await window.pennsieve.uploadManifest(manifestId);
-        window.UPLOAD_STAGE_COMPLETE = true;
       } catch (err) {
         console.error("Upload failed:", err.message);
       } finally {
@@ -308,7 +307,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     // START SESSION AND TRACKING
     datasetUploadSession.startSession();
     trackPennsieveDatasetGenerationProgress(standardizedDatasetStructure);
-    window.UPLOAD_STAGE_COMPLETE = false;
 
     console.log(`Run ${amountOfTimesPennsieveUploadFailed} of Upload.`)
     console.log(`Current object state: ${window.sodaJSONObj}}`);
@@ -341,9 +339,8 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     // CASE 3: NEW DATASET UPLOAD FAILED and IS SAVE & EXIT AND RESUME; soda["pennsieve-generation-target"] == ? in this case
     // CASE 4: RESUMING PROGRESS ON A PREVIOUSLY NEW DATASET THAT HAS DATA NOW 
     // RESULT: ui NOTICES DATA EXISTS AND USES MERGE & SKIP OPTIONS IN AN UPDATE EXISTING WORKFLOW
-    // CASE 4: EXISTING DATASET BEING UPDATED
-    // RESULT: 
-    // CASE 5: GUEST USER IS UPDATING AN EXISTING DATASET THAT ALREADY HAS DATA
+    // CASE 4: EXISTING DATASET BEING UPDATED for first time with replace option selected
+    // RESULT: EXPECTATION: Create manifest for dataset. Deletes files marked to be replaced woprks as expected. 
     // RESULT: SHOULD BE ABLE TO MERGE AND SKIP OR MERGE AND REPLACE AS DESIRED TODO: RUN TEST
     // STAGE 1: Create Manifest File + Upload Data
     if (window.sodaJSONObj["upload-progress"]["current-stage"] == "setup") {
@@ -356,15 +353,14 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         "list-of-files-to-rename": uploadData["list_of_files_to_rename"],
         "dataset-id": uploadData["dataset_id"],
         "current-stage": "upload",
+        "status": "in progress"
       };
       await guidedSaveProgress();
     }
 
 
-
-
     // CASE 1: NEW DATSETS Has no upload-progress and soda["pennsieve-generation-target"] === new
-    // RESULT:
+    // RESULT: Progress bar updates and is set to 100% once upload is completed
     // CASE 2: NEW DATSETS HAS UPLOAD PROGRESS and IS AUTO RETRY; soda["pennsieve-generation-target"] == NEW
     // RESULT:
     // CASE 3: NEW DATASET UPLOAD FAILED and IS SAVE & EXIT AND RESUME; soda["pennsieve-generation-target"] == EXISTING in this case
@@ -374,7 +370,9 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     // STAGE 2: Upload Using Agent + Subscribe for Progress
     if (window.sodaJSONObj["upload-progress"]["current-stage"] == "upload") {
       let origin_manifest_id = await performUpload();
-      window.UPLOAD_STAGE_COMPLETE = true;
+      window.sodaJSONObj["upload-progress"]["status"] = "complete";
+      // small wait for progress bar to show 100 before resetting for any next stage
+      await window.wait(2000)
       window.sodaJSONObj["upload-progress"]["current-stage"] =
         window.sodaJSONObj["upload-progress"]["list-of-files-to-rename"].length >= 1
           ? "rename"
@@ -382,6 +380,11 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       window.sodaJSONObj["upload-progress"]["origin-manifest-id"] = origin_manifest_id;
       await guidedSaveProgress();
     }
+
+
+    console.log("Finished upload stage. Current object state: ", window.sodaJSONObj);
+
+    return 
 
     // TODO: Possibly switch rename and verify order since to rename we need to know the files exist on Pennsieve.
 
@@ -397,7 +400,11 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     if (window.sodaJSONObj["upload-progress"]["current-stage"] == "rename") {
       await renameFiles();
       await guidedSaveProgress();
+
     }
+
+    // TODO: Dynamically decide to verify or complete per user instruction/workflow
+    window.sodaJSONObj["upload-progress"]["current-stage"] = "complete";
 
     // STAGE 4: (Optional) VERIFY FILES
   } catch (error) {
@@ -716,6 +723,8 @@ const trackPennsieveDatasetGenerationProgress = async () => {
           "files renamed": `${mainGeneratedDatasetSize} of ${mainTotalGenerateDatasetSize}`,
         });
       } else {
+
+        // Stage 2 in progress
         if (mainGeneratedDatasetSize && mainTotalGenerateDatasetSize) {
           // Default progress update
           const progress = Math.min(
@@ -740,11 +749,20 @@ const trackPennsieveDatasetGenerationProgress = async () => {
         }
       }
 
-      if (status === "Done" && message == "Success: COMPLETED!") {
+      // Stage 2 is completed. Other stages can begin or upload is completed and this will be penultimate progress bar update.
+      if (window.sodaJSONObj["upload-progress"]?.["current-stage"] === "upload" && window.sodaJSONObj["upload-progress"]?.["status"] == "complete") {
+        setGuidedProgressBarValue("pennsieve", 100);
+        updateDatasetUploadProgressTable("pennsieve", {
+          Status: "All files uploaded to Pennsieve",
+        });
+        break;
+      }
+
+      if (window.sodaJSONObj["upload-progress"]?.["current-stage"] === "complete" && window.sodaJSONObj["upload-progress"]?.["uploaded-files"] > 0) {
         setStateComplete();
         // Break the loop to stop tracking progress (upload is complete)
         break;
-      } else if (status === "Done" && message.includes("No files were uploaded in this session")) {
+      } else if (window.sodaJSONObj["upload-progress"]?.["current-stage"] === "complete" && window.sodaJSONObj["upload-progress"]?.["uploaded-files"] === 0) {
         // Handle the special case where no files were uploaded but it's not an error
         // (e.g., skip existing files option was selected and all files already exist on Pennsieve)
         amountOfTimesPennsieveUploadFailed = 0;
@@ -789,7 +807,7 @@ const trackPennsieveDatasetGenerationProgress = async () => {
         clientError(error);
         await restartServer();
         await waitForServerRestart();
-        if (window.UPLOAD_STAGE_COMPLETE) {
+        if (window.sodaJSONObj["upload-progress"]?.["current-stage"] === "rename" || window.sodaJSONObj["upload-progress"]?.["current-stage"] === "verify") {
           setStateComplete();
           break;
         }
