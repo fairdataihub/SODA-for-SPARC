@@ -111,4 +111,3 @@ dependencies:
       - werkzeug==2.3.8
       - zope-event==6.1
       - zope-interface==8.3
-prefix: /Users/aaronm/anaconda3/envs/myenvv
