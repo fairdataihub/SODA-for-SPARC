@@ -1,3 +1,10 @@
+const PAGES_THAT_SHOULD_ALWAYS_BE_SKIPPED = [
+  "guided-dataset-generation-tab",
+  "guided-dataset-dissemination-tab",
+  "guided-select-starting-point-tab",
+  "ffm-select-starting-point-tab",
+];
+
 export const guidedSkipPage = (pageId) => {
   const page = document.getElementById(pageId);
 
@@ -29,6 +36,11 @@ export const guidedUnSkipPageSet = (className) => {
 };
 
 export const guidedUnSkipPage = (pageId) => {
+  // Prevent unskipping pages that should always be skipped
+  if (PAGES_THAT_SHOULD_ALWAYS_BE_SKIPPED.includes(pageId)) {
+    return;
+  }
+
   const page = document.getElementById(pageId);
 
   // If the page no longer exists, return
@@ -47,23 +59,43 @@ export const guidedUnSkipPage = (pageId) => {
   }
 };
 
-export const guidedResetSkippedPages = () => {
-  const pagesThatShouldAlwaysBeskipped = [
-    "guided-dataset-generation-tab",
-    "guided-dataset-dissemination-tab",
-    "guided-select-starting-point-tab",
-  ];
-  for (const page of pagesThatShouldAlwaysBeskipped) {
+export const guidedResetSkippedPages = (curationMode) => {
+  // Skip pages that should always be skipped
+  for (const page of PAGES_THAT_SHOULD_ALWAYS_BE_SKIPPED) {
     guidedSkipPage(page);
   }
 
-  // Reset parent pages
-  const parentPagesToResetSkip = Array.from(document.querySelectorAll(".guided--page"))
+  // Reset (unskip) all regular guided pages (excluding pages that should always be skipped)
+  const pagesToUnskip = Array.from(document.querySelectorAll(".guided--page"))
     .map((page) => page.id)
-    .filter((pageID) => !pagesThatShouldAlwaysBeskipped.includes(pageID));
+    .filter((pageID) => !PAGES_THAT_SHOULD_ALWAYS_BE_SKIPPED.includes(pageID));
 
-  for (const pageID of parentPagesToResetSkip) {
+  for (const pageID of pagesToUnskip) {
     guidedUnSkipPage(pageID);
+  }
+
+  // Handle FFM vs GM mode page skipping
+  if (curationMode === "ffm") {
+    // In FFM mode, skip all pages that don't have "ffm" in their class
+    const allPages = Array.from(document.querySelectorAll(".guided--page"));
+    for (const page of allPages) {
+      if (
+        !page.classList.contains("ffm") ||
+        PAGES_THAT_SHOULD_ALWAYS_BE_SKIPPED.includes(page.id)
+      ) {
+        guidedSkipPage(page.id);
+      }
+    }
+  }
+
+  if (curationMode === "gm") {
+    // In GM mode, skip all pages that don't have "gm" in their class
+    const allPages = Array.from(document.querySelectorAll(".guided--page"));
+    for (const page of allPages) {
+      if (!page.classList.contains("gm") || PAGES_THAT_SHOULD_ALWAYS_BE_SKIPPED.includes(page.id)) {
+        guidedSkipPage(page.id);
+      }
+    }
   }
 };
 
@@ -86,8 +118,17 @@ export const getNextPageNotSkipped = (currentPageID) => {
   if (currentPageIndex != siblingPages.length - 1) {
     return document.getElementById(siblingPages[currentPageIndex + 1]);
   } else {
-    const nextParentContainer = parentContainer.nextElementSibling;
-    return getNonSkippedGuidedModePages(nextParentContainer)[0];
+    // Keep searching through subsequent parent containers until we find a non-skipped page
+    let nextParentContainer = parentContainer.nextElementSibling;
+    while (nextParentContainer) {
+      const nextPages = getNonSkippedGuidedModePages(nextParentContainer);
+      if (nextPages.length > 0) {
+        return nextPages[0];
+      }
+      nextParentContainer = nextParentContainer.nextElementSibling;
+    }
+
+    return undefined;
   }
 };
 
@@ -98,9 +139,17 @@ export const getPrevPageNotSkipped = (currentPageID) => {
   if (currentPageIndex != 0) {
     return document.getElementById(siblingPages[currentPageIndex - 1]);
   } else {
-    const prevParentContainer = parentContainer.previousElementSibling;
-    const prevParentContainerPages = getNonSkippedGuidedModePages(prevParentContainer);
-    return prevParentContainerPages[prevParentContainerPages.length - 1];
+    // Keep searching through previous parent containers until we find a non-skipped page
+    let prevParentContainer = parentContainer.previousElementSibling;
+    while (prevParentContainer) {
+      const prevPages = getNonSkippedGuidedModePages(prevParentContainer);
+      if (prevPages.length > 0) {
+        return prevPages[prevPages.length - 1];
+      }
+      prevParentContainer = prevParentContainer.previousElementSibling;
+    }
+
+    return undefined;
   }
 };
 

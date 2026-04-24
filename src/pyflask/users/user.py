@@ -196,7 +196,6 @@ def get_user_organizations():
   r.raise_for_status()
 
   organizations_list = r.json()["organizations"]
-  logger.info(organizations_list)
   
   return {"organizations": organizations_list}
 

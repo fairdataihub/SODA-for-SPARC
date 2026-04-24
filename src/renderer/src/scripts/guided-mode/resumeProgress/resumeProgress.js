@@ -104,6 +104,7 @@ window.guidedResumeProgress = async (progressFileName) => {
 
     // Skip this page incase it was not skipped in a previous session
     guidedSkipPage("guided-select-starting-point-tab");
+    guidedSkipPage("ffm-select-starting-point-tab");
 
     // pageToReturnTo will be set to the page the user will return to
     const pageToReturnTo = await guidedGetPageToReturnTo(window.sodaJSONObj);
@@ -156,13 +157,15 @@ const guidedGetPageToReturnTo = async () => {
     return firstPageID;
   }
 
-  const { needsReconfirm } = guidedCheckIfUserNeedsToReconfirmAccountDetails();
+  const needsReconfirm = guidedCheckIfUserNeedsToReconfirmAccountDetails();
   if (needsReconfirm) {
     await swalShowInfo(
       "Your Pennsieve account or workspace has changed since you last worked on this dataset.",
       "Please confirm your Pennsieve account and workspace details."
     );
-    return "guided-pennsieve-intro-tab";
+    return window.sodaJSONObj["curation-mode"] === "free-form"
+      ? "ffm-pennsieve-login-tab"
+      : "gm-pennsieve-login-tab";
   }
 
   // If the page the user was last on no longer exists, return them to the first page
@@ -180,9 +183,21 @@ const guidedGetPageToReturnTo = async () => {
 
 const patchPreviousGuidedModeVersions = async () => {
   const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
-  const datasetMetadata = window.sodaJSONObj["dataset_metadata"] || {};
   const oldHighLevelFolders = datasetEntityObj?.["high-level-folder-data-categorization"];
   const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
+
+  // Migrate old manifest file data to new location
+  const oldManifestData = window.sodaJSONObj["guided-manifest-file-data"];
+  if (oldManifestData && Object.keys(oldManifestData).length > 0) {
+    // Ensure dataset_metadata exists
+    if (!window.sodaJSONObj["dataset_metadata"]) {
+      window.sodaJSONObj["dataset_metadata"] = {};
+    }
+    // Migrate to new location
+    window.sodaJSONObj["dataset_metadata"]["manifest_file"] = oldManifestData;
+    // Remove old key
+    delete window.sodaJSONObj["guided-manifest-file-data"];
+  }
 
   if (oldHighLevelFolders && Object.keys(oldHighLevelFolders).length > 0) {
     // Ensure new keys exist

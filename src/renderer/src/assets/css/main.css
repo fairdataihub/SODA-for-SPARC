@@ -226,6 +226,14 @@ button[data-id="common-strain-rrid-dropdown"] {
   z-index: 999999 !important;
 }
 
+#global-workspace-select {
+  z-index: 999999 !important;
+}
+
+#global-dataset-select {
+  z-index: 999999 !important;
+}
+
 .sidebar {
   background-color: var(--color-teal);
   height: 100%;
@@ -405,19 +413,6 @@ button[data-id="common-strain-rrid-dropdown"] {
   font-size: 12px;
   z-index: 5;
   overflow: hidden;
-}
-
-.hoverFullName {
-  max-width: auto;
-  min-height: auto;
-  background-color: #f4f4f4;
-  color: #333;
-  border: 1px solid #aaa;
-  border-radius: 3px;
-  position: absolute;
-  padding: 5px 5px;
-  font-size: 12px;
-  z-index: 1000;
 }
 
 .switch {

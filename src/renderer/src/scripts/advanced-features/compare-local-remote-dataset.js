@@ -186,33 +186,6 @@ document.querySelector("#only-on-local-get-list").addEventListener("click", asyn
   window.electron.ipcRenderer.send("open-file-at-path", csvFilePath);
 });
 
-document.querySelector("#only-on-local-upload-selected").addEventListener("click", async () => {
-  let res = await swalConfirmAction(
-    "warning",
-    "Navigate to Upload Dataset and Upload Files",
-    "Clicking this button will take you to the Upload Dataset feature where we will upload the listed files to the selected Pennsieve dataset for you. All steps will have the options pre-selected for you to correctly upload only these files. Please note if some of your files are not SDS-compliant the dataset cannot be uploaded. Are you sure you want to do this?",
-    "yes",
-    "no"
-  );
-
-  document.getElementById("compare-local-remote-feature").classList.add("hidden"); // Compare local remote feature
-  document.getElementById("compare-local-remote-feature").classList.remove("is-shown");
-
-  if (!res) return;
-
-  document.querySelector("#button-homepage-freeform-mode").click();
-
-  // get the local dataset path
-  const localDatasetPath = document.querySelector("#compare-local-remote-dataset-local-path").value;
-  await window.importLocalDataset(localDatasetPath);
-
-  document.querySelector("#confirm-account-workspace").click();
-
-  document.querySelector("#confirm-account-workspace").click();
-
-  document.querySelector("#dataset-upload-existing-dataset").click();
-});
-
 document.querySelector("#only-on-pennsieve-delete-selected").addEventListener("click", async () => {
   let filesToDelete = comparisonResults.files_only_on_pennsieve_ids;
   try {

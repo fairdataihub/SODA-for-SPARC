@@ -50,7 +50,7 @@ export const renderSideBar = (activePage) => {
       newPageStructureObject[parentTabName].push({
         pageID,
         pageName,
-        completed: completedTabs.includes(pageID),
+        completed: completedTabs?.includes(pageID),
       });
 
       // Expand whichever high-level tab the active page belongs to

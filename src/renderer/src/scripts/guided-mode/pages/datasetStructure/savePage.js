@@ -23,24 +23,13 @@ import {
   deleteSample,
   deleteSite,
 } from "../../../../stores/slices/datasetEntityStructureSlice";
+import { isCheckboxCardChecked } from "../../../../stores/slices/checkboxCardSlice";
+import { convertGuidedManifestToSchema } from "../../utils/sodaJSONObj";
 
 import { swalListDoubleAction } from "../../../utils/swal-utils";
 
 export const savePageDatasetStructure = async (pageBeingLeftID) => {
   const errorArray = [];
-
-  if (pageBeingLeftID === "guided-unstructured-data-import-tab") {
-    // Count the files imported into the dataset to make sure they imported something
-    const datasetFileCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
-    if (datasetFileCount === 0) {
-      errorArray.push({
-        type: "notyf",
-        message:
-          "Please select the data you would like to include in the dataset before continuing.",
-      });
-      throw errorArray;
-    }
-  }
 
   if (pageBeingLeftID === "guided-dataset-content-tab") {
     // Make local copies so we do not mutate store state directly
@@ -430,44 +419,41 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     }
   }
 
-  if (pageBeingLeftID === "guided-dataset-structure-and-manifest-review-tab") {
-    const guidedManifestData = window.sodaJSONObj["guided-manifest-file-data"];
-    // console log the first 3 rows of data
-    const headerToSchemaKey = {
-      filename: "filename",
-      timestamp: "timestamp",
-      description: "description",
-      "file type": "file_type",
-      entity: "entity",
-      "data modality": "data_modality",
-      "also in dataset": "also_in_dataset",
-      "data dictionary path": "data_dictionary_path",
-      "entity is transitive": "entity_is_transitive",
-      "Additional Metadata": "additional_metadata",
-    };
-
-    const convertGuidedManifestToSchema = ({ headers, data }) => {
-      return data.map((row) => {
-        const obj = {};
-
-        headers.forEach((header, index) => {
-          const key = headerToSchemaKey[header];
-          if (key) {
-            let value = row[index] ?? ""; // fallback to empty string if missing
-            // Optional fix for timestamp format (replace comma with dot)
-            if (key === "timestamp") {
-              value = value.replace(",", ".");
-            }
-            obj[key] = value;
-          }
-        });
-
-        return obj;
+  if (pageBeingLeftID === "ffm-existing-files-handling-tab") {
+    const replaceExistingFilesChecked = isCheckboxCardChecked("ffm-button-replace-existing-files");
+    const skipExistingFilesChecked = isCheckboxCardChecked("ffm-button-skip-existing-files");
+    if (!replaceExistingFilesChecked && !skipExistingFilesChecked) {
+      errorArray.push({
+        type: "notyf",
+        message:
+          "Please select how you would like to handle existing files in your Pennsieve dataset.",
       });
-    };
+      throw errorArray;
+    }
+    if (replaceExistingFilesChecked) {
+      window.sodaJSONObj["generate-dataset"]["if-existing"] = "replace";
+      window.sodaJSONObj["generate-dataset"]["if-existing-files"] = "replace";
+    }
+    if (skipExistingFilesChecked) {
+      window.sodaJSONObj["generate-dataset"]["if-existing"] = "merge";
+      window.sodaJSONObj["generate-dataset"]["if-existing-files"] = "skip";
+    }
+  }
 
-    const manifestObjects = convertGuidedManifestToSchema(guidedManifestData);
-    // Set the manifest objects in the sodaJSONObj at where they will be detected by pysoda
-    window.sodaJSONObj["dataset_metadata"]["manifest_file"] = manifestObjects;
+  if (pageBeingLeftID === "guided-dataset-structure-and-manifest-review-tab") {
+    // Skip manifest file processing if manifest generation is disabled (i.e., dataset is not empty)
+    // This is consistent with the opening logic which disables manifest generation for non-empty datasets
+    const manifestFileGenerationDisabled = useGlobalStore.getState().manifestFileGenerationDisabled;
+
+    if (!manifestFileGenerationDisabled) {
+      const guidedManifestData = window.sodaJSONObj["dataset_metadata"]?.["manifest_file"];
+      // console log the first 3 rows of data
+
+      const manifestObjects = convertGuidedManifestToSchema(guidedManifestData);
+      // Set the manifest objects in the sodaJSONObj at where they will be detected by pysoda
+      window.sodaJSONObj["dataset_metadata"]["manifest_file"] = manifestObjects;
+    } else {
+      delete window.sodaJSONObj?.["dataset_metadata"]?.["manifest_file"];
+    }
   }
 };

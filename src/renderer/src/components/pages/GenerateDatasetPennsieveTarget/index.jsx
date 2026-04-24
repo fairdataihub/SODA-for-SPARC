@@ -1,6 +1,17 @@
 import React from "react";
 import { useEffect } from "react";
-import { Text, Group, Select, Collapse, Center, Loader, Stack, Button } from "@mantine/core";
+import {
+  Text,
+  Group,
+  Select,
+  Collapse,
+  Center,
+  Loader,
+  Stack,
+  Button,
+  TextInput,
+  Textarea,
+} from "@mantine/core";
 import DropDownNote from "../../utils/ui/DropDownNote";
 
 import useGlobalStore from "../../../stores/globalStore";
@@ -8,7 +19,6 @@ import useGlobalStore from "../../../stores/globalStore";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import CheckboxCard from "../../cards/CheckboxCard";
-import NavigationButton from "../../buttons/Navigation";
 
 import {
   setSelectedDatasetToUploadDataTo,
@@ -16,12 +26,14 @@ import {
   fetchDatasetsToUploadDataTo,
 } from "../../../stores/slices/pennsieveDatasetSelectSlice";
 
+import { setCheckboxCardUnchecked } from "../../../stores/slices/checkboxCardSlice";
 import {
-  isCheckboxCardChecked,
-  setCheckboxCardUnchecked,
-} from "../../../stores/slices/checkboxCardSlice";
+  setGuidedDatasetName,
+  setFreeFormDatasetName,
+  setGuidedDatasetSubtitle,
+} from "../../../stores/slices/guidedModeSlice";
 
-const GenerateDatasetPennsieveTargetPage = () => {
+const GenerateDatasetPennsieveTargetPage = ({ curationMode }) => {
   const selectedDatasetIdToUploadDataTo = useGlobalStore(
     (state) => state.selectedDatasetIdToUploadDataTo
   );
@@ -35,16 +47,39 @@ const GenerateDatasetPennsieveTargetPage = () => {
   const datasetFetchErrorMessage = useGlobalStore((state) => state.datasetFetchErrorMessage);
   const guestUser = useGlobalStore((state) => state.isGuest);
   const isNewDatasetSelected = useGlobalStore(
-    (state) => state.cardData["generate-on-new-pennsieve-dataset"].checked
+    (state) =>
+      state.cardData[
+        `${curationMode}-generate-on-new-pennsieve-dataset${guestUser ? "-guest" : ""}`
+      ]?.checked ?? false
   );
   const isExistingDatasetSelected = useGlobalStore(
-    (state) => state.cardData["generate-on-existing-pennsieve-dataset"].checked
+    (state) =>
+      state.cardData[`${curationMode}-generate-on-existing-pennsieve-dataset`]?.checked ?? false
   );
 
-  // ✅ Move setState to useEffect
+  // derive dataset name from the same store used on NameAndSubtitlePage
+  const newDatasetName = useGlobalStore((state) => state.guidedDatasetName);
+  const freeFormDatasetName = useGlobalStore((state) => state.freeFormDatasetName);
+
+  // when ffm new-dataset is selected, keep the "selectedDataset" values
+  // in sync so downstream logic still works with the normal upload flow.
+  useEffect(() => {
+    if (isNewDatasetSelected) {
+      setSelectedDatasetToUploadDataTo(null, newDatasetName || null, null);
+    }
+  }, [newDatasetName, isNewDatasetSelected]);
+
+  // clear values when user unchecks the new-dataset card
+  useEffect(() => {
+    if (!isNewDatasetSelected) {
+      setGuidedDatasetName("");
+      setSelectedDatasetToUploadDataTo(null, null, null);
+    }
+  }, [isNewDatasetSelected]);
+
   useEffect(() => {
     if (guestUser) {
-      setCheckboxCardUnchecked("generate-on-new-pennsieve-dataset");
+      setCheckboxCardUnchecked(`${curationMode}-generate-on-new-pennsieve-dataset`);
     }
   });
 
@@ -59,11 +94,11 @@ const GenerateDatasetPennsieveTargetPage = () => {
 
   useEffect(() => {
     if (isExistingDatasetSelected) {
-      fetchDatasetsToUploadDataTo();
+      fetchDatasetsToUploadDataTo(curationMode === "gm");
     } else {
       setAvailableDatasetsToUploadDataTo([]);
     }
-  }, [isExistingDatasetSelected]);
+  }, [isExistingDatasetSelected, curationMode]);
 
   const renderDatasetSection = () => {
     if (isLoadingPennsieveDatasets) {
@@ -71,7 +106,7 @@ const GenerateDatasetPennsieveTargetPage = () => {
         <Stack align="center" mt="md">
           <Loader size="md" color="primary" type="bars" />
           <Text size="md" align="center" fw={500}>
-            Retrieving empty datasets from Pennsieve...
+            Retrieving {curationMode === "gm" ? "empty" : "existing"} datasets from Pennsieve...
           </Text>
         </Stack>
       );
@@ -83,7 +118,7 @@ const GenerateDatasetPennsieveTargetPage = () => {
           <Text size="md" align="center" fw={500} c="red">
             {datasetFetchErrorMessage}
           </Text>
-          <Button onClick={fetchDatasetsToUploadDataTo} w="230px">
+          <Button onClick={() => fetchDatasetsToUploadDataTo(curationMode === "gm")} w="230px">
             Retry dataset retrieval
           </Button>
         </Stack>
@@ -133,7 +168,7 @@ const GenerateDatasetPennsieveTargetPage = () => {
               here.
             </a>
           </Text>
-          <Button onClick={fetchDatasetsToUploadDataTo} w="230px">
+          <Button onClick={() => fetchDatasetsToUploadDataTo(curationMode === "gm")} w="230px">
             Retry dataset retrieval
           </Button>
           <DropDownNote id="user-doesnt-have-any-empty-datasets" />
@@ -146,7 +181,7 @@ const GenerateDatasetPennsieveTargetPage = () => {
         <Text size="md" align="center" fw={500}>
           No empty datasets were found that you have permission to upload to.
         </Text>
-        <Button onClick={fetchDatasetsToUploadDataTo} w="230px">
+        <Button onClick={() => fetchDatasetsToUploadDataTo(curationMode === "gm")} w="230px">
           Retry dataset retrieval
         </Button>
         <DropDownNote id="user-doesnt-have-any-empty-datasets" />
@@ -165,34 +200,33 @@ const GenerateDatasetPennsieveTargetPage = () => {
           <CheckboxCard
             id={
               guestUser
-                ? "generate-on-new-pennsieve-dataset-guest"
-                : "generate-on-new-pennsieve-dataset"
+                ? `${curationMode}-generate-on-new-pennsieve-dataset-guest`
+                : `${curationMode}-generate-on-new-pennsieve-dataset`
             }
           />
-          <CheckboxCard id="generate-on-existing-pennsieve-dataset" />
+          <CheckboxCard id={`${curationMode}-generate-on-existing-pennsieve-dataset`} />
         </Group>
       </GuidedModeSection>
 
       <Collapse in={isExistingDatasetSelected}>
         <GuidedModeSection>{renderDatasetSection()}</GuidedModeSection>
       </Collapse>
-
-      {(isNewDatasetSelected ||
-        (isExistingDatasetSelected &&
-          selectedDatasetIdToUploadDataTo &&
-          selectedDatasetNameToUploadDataTo)) && (
+      <Collapse in={curationMode === "ffm" && isNewDatasetSelected}>
         <GuidedModeSection>
-          <Center mt="xl">
-            <NavigationButton
-              onClick={() => document.getElementById("guided-next-button")?.click()}
-              buttonCustomWidth="215px"
-              buttonText="Save and Continue"
-              navIcon="right-arrow"
-              buttonSize="md"
+          <Center>
+            <TextInput
+              mt="md"
+              label="Dataset Name:"
+              required
+              description="Enter a unique and informative name for your dataset."
+              placeholder="Enter dataset name"
+              value={freeFormDatasetName}
+              onChange={(event) => setFreeFormDatasetName(event.target.value)}
+              style={{ width: "600px", maxWidth: "100%" }}
             />
           </Center>
         </GuidedModeSection>
-      )}
+      </Collapse>
     </GuidedModePage>
   );
 };

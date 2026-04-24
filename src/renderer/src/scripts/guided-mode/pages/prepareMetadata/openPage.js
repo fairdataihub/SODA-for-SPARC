@@ -37,7 +37,6 @@ import {
   setMilestones,
   setMilestoneDate,
 } from "../../../../stores/slices/datasetMetadataSlice";
-import { guidedCheckIfUserNeedsToReconfirmAccountDetails } from "../../guided-curate-dataset";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));

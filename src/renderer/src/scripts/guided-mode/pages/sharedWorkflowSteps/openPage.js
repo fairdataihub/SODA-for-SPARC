@@ -1,24 +1,32 @@
-import { getGuidedDatasetName, getGuidedDatasetSubtitle } from "../curationPreparation/utils.js";
+import useGlobalStore from "../../../../stores/globalStore.js";
 import { guidedResetSkippedPages } from "../navigationUtils/pageSkipping.js";
 import { guidedCheckIfUserNeedsToReconfirmAccountDetails } from "../../guided-curate-dataset.js";
 import { initializeGuidedDatasetObject } from "../../utils/sodaJSONObj.js";
+import { guidedGetCurrentUserWorkSpace } from "../../workspaces/workspaces.js";
 import api from "../../../others/api/api.js";
+import { setPreferredPennsieveDatasetId } from "../../../../stores/slices/pennsieveDatasetSelectSlice.js";
 import {
-  setGuidedDatasetName,
-  setGuidedDatasetSubtitle,
-} from "../../../../stores/slices/guidedModeSlice.js";
-
+  setCheckboxCardChecked,
+  setCheckboxCardUnchecked,
+} from "../../../../stores/slices/checkboxCardSlice.js";
+import { setFreeFormDatasetName } from "../../../../stores/slices/guidedModeSlice.js";
+import { guidedRenderProgressCards } from "../../resumeProgress/progressCards.js";
+import { setStateDisplayData } from "../../../../stores/slices/stateDisplaySlice.js";
+import { swalShowInfo } from "../../../utils/swal-utils.js";
 export const openPageSharedWorkflowSteps = async (targetPageID) => {
-  if (targetPageID === "guided-pennsieve-login-tab" || targetPageID === "ffm-pennsieve-login-tab") {
-    if (targetPageID === "ffm-pennsieve-login-tab") {
-      initializeGuidedDatasetObject();
-      guidedResetSkippedPages("ffm");
-    }
-    const tabType = targetPageID.includes("ffm") ? "ffm" : "guided";
-    const prefix = tabType;
+  if (targetPageID === "guided-select-starting-point-tab") {
+    initializeGuidedDatasetObject("guided");
+    guidedResetSkippedPages("gm");
+    guidedRenderProgressCards("gm");
+  }
+  if (targetPageID === "ffm-select-starting-point-tab") {
+    initializeGuidedDatasetObject("free-form");
+    guidedResetSkippedPages("ffm");
+    guidedRenderProgressCards("ffm");
+  }
+  if (targetPageID === "gm-pennsieve-login-tab" || targetPageID === "ffm-pennsieve-login-tab") {
+    let prefix = targetPageID === "gm-pennsieve-login-tab" ? "gm" : "ffm";
     const agentCheckElementId = `${prefix}-section-pennsieve-agent-check`;
-    const selectAccountId = `${prefix}-select-pennsieve-account`;
-    const confirmAccountId = `${prefix}-confirm-pennsieve-account`;
     const confirmAccountButtonId = `${prefix}-confirm-pennsieve-account-button`;
     const confirmOrgButtonId = `${prefix}-confirm-pennsieve-organization-button`;
     const psAccountTextId = `${prefix}-pennsieve-intro-ps-account`;
@@ -26,41 +34,97 @@ export const openPageSharedWorkflowSteps = async (targetPageID) => {
     // Hide the Pennsieve agent check section initially (it gets shown after confirming organization)
     document.getElementById(agentCheckElementId).classList.add("hidden");
 
-    // Check if this page has been completed before
-    const completedIntro = window.sodaJSONObj?.["completed-tabs"]?.includes(targetPageID) || false;
+    const elementsToShowWhenLoggedInToPennsieve = document.querySelectorAll(".show-when-logged-in");
+    const elementsToShowWhenNotLoggedInToPennsieve =
+      document.querySelectorAll(".show-when-logged-out");
 
-    if (completedIntro) {
-      const { accountSame, workspaceSame } = guidedCheckIfUserNeedsToReconfirmAccountDetails();
+    if (!window.defaultBfAccount) {
+      elementsToShowWhenLoggedInToPennsieve.forEach((element) => {
+        element.classList.add("hidden");
+      });
+      elementsToShowWhenNotLoggedInToPennsieve.forEach((element) => {
+        element.classList.remove("hidden");
+      });
+    } else {
+      elementsToShowWhenLoggedInToPennsieve.forEach((element) => {
+        element.classList.remove("hidden");
+      });
+      elementsToShowWhenNotLoggedInToPennsieve.forEach((element) => {
+        element.classList.add("hidden");
+      });
 
-      const signInUI = document.getElementById(selectAccountId);
-      const confirmAccountUi = document.getElementById(confirmAccountId);
-
-      if (!window.defaultBfAccount) {
-        signInUI.classList.remove("hidden");
-        confirmAccountUi.classList.add("hidden");
-      } else {
-        signInUI.classList.add("hidden");
-        confirmAccountUi.classList.remove("hidden");
-        if (accountSame) {
-          // Since this is the same account as last time, auto-click the confirm account checkbox
-          document.getElementById(confirmAccountButtonId).click();
-        }
-
-        if (workspaceSame) {
-          // Since this is the same workspace as last time, auto-click the confirm organization checkbox
-          document.getElementById(confirmOrgButtonId).click();
-        }
-
-        const pennsieveIntroText = document.getElementById(psAccountTextId);
-        // fetch the user's email and set that as the account field's value
+      // Auto select the confirm account checkbox if the user has already logged in to Pennsieve
+      // and hasn't changed their account
+      const lastConfirmedAccount = window.sodaJSONObj?.["last-confirmed-ps-account-details"];
+      if (window.defaultBfAccount === lastConfirmedAccount) {
+        document.getElementById(confirmAccountButtonId).click();
+        // If the account is the same as last time, also auto-confirm the organization (if it didn't change)
         try {
-          const userInformation = await api.getUserInformation();
-          const userEmail = userInformation.email;
-          pennsieveIntroText.innerHTML = userEmail;
-        } catch (err) {
-          pennsieveIntroText.innerHTML = "";
+          if (window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"]) {
+            if (
+              window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"] ===
+              guidedGetCurrentUserWorkSpace()
+            ) {
+              document.getElementById(confirmOrgButtonId).click();
+            }
+          }
+        } catch (error) {
+          console.error("Error auto-confirming organization: ", error);
         }
       }
+
+      const pennsieveIntroText = document.getElementById(psAccountTextId);
+      // fetch the user's email and set that as the account field's value
+      try {
+        const userInformation = await api.getUserInformation();
+        const userEmail = userInformation.email;
+        pennsieveIntroText.innerHTML = userEmail;
+      } catch (err) {
+        console.error("Error fetching user email:", err);
+        pennsieveIntroText.innerHTML = "";
+      }
     }
+  }
+  if (
+    targetPageID === "guided-pennsieve-generate-target-tab" ||
+    targetPageID === "ffm-pennsieve-generate-target-tab"
+  ) {
+    let prefix;
+    if (targetPageID === "guided-pennsieve-generate-target-tab") {
+      prefix = "gm";
+    } else {
+      prefix = "ffm";
+      window.sodaJSONObj["generate-dataset"]["dataset-name"];
+      setFreeFormDatasetName(window.sodaJSONObj?.["generate-dataset"]?.["dataset-name"] || "");
+    }
+
+    setCheckboxCardUnchecked(`${prefix}-generate-on-new-pennsieve-dataset`);
+    setCheckboxCardUnchecked(`${prefix}-generate-on-existing-pennsieve-dataset`);
+    const previouslySelectedDatasetIdToUploadDataTo =
+      window.sodaJSONObj["previously-selected-dataset-id-to-upload-data-to"] || null;
+    // If the user selected to generate on an existing Pennsieve dataset, check the corresponding checkbox card
+    setPreferredPennsieveDatasetId(previouslySelectedDatasetIdToUploadDataTo);
+    let isGuest = await api.userIsWorkspaceGuest();
+    useGlobalStore.setState({ isGuest: isGuest });
+
+    const pennsieveGenerationTarget = window.sodaJSONObj["pennsieve-generation-target"];
+    if (pennsieveGenerationTarget === "new") {
+      // If the user selected to generate on a new Pennsieve dataset, check the corresponding checkbox card
+      setCheckboxCardChecked(`${prefix}-generate-on-new-pennsieve-dataset`);
+    }
+
+    if (pennsieveGenerationTarget === "existing") {
+      const previouslySelectedDatasetIdToUploadDataTo =
+        window.sodaJSONObj["previously-selected-dataset-id-to-upload-data-to"] || null;
+      // If the user selected to generate on an existing Pennsieve dataset, check the corresponding checkbox card
+      setPreferredPennsieveDatasetId(previouslySelectedDatasetIdToUploadDataTo);
+      setCheckboxCardChecked(`${prefix}-generate-on-existing-pennsieve-dataset`);
+    }
+  }
+
+  if (targetPageID === "ffm-unstructured-data-import-tab") {
+    const ffmDatasetRoot = window.sodaJSONObj["ffm-path-to-dataset-root"] || null;
+
+    setStateDisplayData("org-dataset-folder-path", ffmDatasetRoot);
   }
 };

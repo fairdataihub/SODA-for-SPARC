@@ -6,7 +6,6 @@ on:
     branches:
       - main
       - staging
-      - fix-tar-zip-import
 
 jobs:
   deploy-on-mac:
@@ -23,6 +22,21 @@ jobs:
         with:
           python-version: 3.9
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "25.9.0"
+
+      - name: Configure pysodafair source based on version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          ENV_FILE="tools/anaconda-env/environment-MAC.yml"
+          if [[ "$VERSION" == *"beta"* ]]; then
+            echo "Beta version detected ($VERSION) - using TestPyPI for pysodafair"
+            sed -i '' 's/# - --extra-index-url/- --extra-index-url/' "$ENV_FILE"
+          else
+            echo "Production version detected ($VERSION) - using PyPI for pysodafair"
+          fi
+
       - uses: conda-incubator/setup-miniconda@v2
         with:
           miniconda-version: "latest"
@@ -34,10 +48,6 @@ jobs:
           conda activate  env-electron-python
           conda info
           conda list
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "lts/hydrogen"
 
       - name: Install package.json modules and their dependencies
         run: npm install --ignore-scripts

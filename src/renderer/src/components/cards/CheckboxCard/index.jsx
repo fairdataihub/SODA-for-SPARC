@@ -2,6 +2,7 @@ import useGlobalStore from "../../../stores/globalStore";
 import { Checkbox, Text, Stack, Badge, Card, Center, ActionIcon, Button } from "@mantine/core";
 import { useHover } from "@mantine/hooks";
 import classes from "../cards.module.css";
+import FullWidthContainer from "../../containers/FullWidthContainer";
 import {
   setCheckboxCardChecked,
   setCheckboxCardUnchecked,
@@ -35,10 +36,11 @@ const CheckboxCard = ({ id }) => {
   };
 
   const isCompact = !description;
+
   if (simpleButtonType) {
     // Use green for Yes, red for No
     const color = simpleButtonType === "Positive" ? "primary" : "red";
-    return (
+    const button = (
       <Button
         id={id}
         data-checkbox-card-id={id}
@@ -54,9 +56,11 @@ const CheckboxCard = ({ id }) => {
         {title}
       </Button>
     );
+
+    return button;
   }
 
-  return (
+  const cardElement = (
     <Card
       id={id}
       data-checkbox-card-id={id}
@@ -179,5 +183,7 @@ const CheckboxCard = ({ id }) => {
       )}
     </Card>
   );
+
+  return cardElement;
 };
 export default CheckboxCard;

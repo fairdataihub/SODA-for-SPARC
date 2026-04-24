@@ -1,4 +1,6 @@
 import { guidedSaveProgress } from "./pages/savePageChanges";
+import useGlobalStore from "../../stores/globalStore";
+import { setGuidedModeProgressCardsDataArray } from "../../stores/slices/guidedModeProgressCardsSlice";
 import {
   getContributorByOrcid,
   addContributor,
@@ -24,7 +26,6 @@ import {
   guidedGenerateDatasetLocally,
   guidedGenerateDatasetOnPennsieve,
 } from "./generateDataset/generate";
-import { guidedDatasetKeywordsTagify } from "./tagifies/tagifies";
 import {
   swalConfirmAction,
   swalShowError,
@@ -40,6 +41,7 @@ import { guidedRenderProgressCards } from "./resumeProgress/progressCards";
 
 import "bootstrap-select";
 import Cropper from "cropperjs";
+import { convertGuidedManifestToSchema } from "./utils/sodaJSONObj";
 
 import "jstree";
 import { CONTRIBUTOR_ROLE_OPTIONS } from "./metadata/contributors/contributors";
@@ -697,41 +699,48 @@ window.deleteProgressCard = async (datasetName, progressFileName) => {
     //delete the progress file
     deleteProgressFile(progressFileName);
 
-    // Find the card with the matching dataset name and remove it from the DOM
-    const cardToDelete = document.querySelector(`[data-dataset-name="${datasetName}"]`);
-    if (cardToDelete) {
-      cardToDelete.remove();
-    }
+    // Remove the card from the guidedModeProgressCardsDataArray in the store
+    const currentArray = useGlobalStore.getState().guidedModeProgressCardsDataArray || [];
+    const updatedArray = currentArray.filter(
+      (item) =>
+        (item?.["save-file-name"] || item?.["digital-metadata"]?.["name"]) !== progressFileName
+    );
+    setGuidedModeProgressCardsDataArray(updatedArray);
   }
 };
 
 export const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
   // Determine individual status flags
-  const completedIntro = window.sodaJSONObj["completed-tabs"].includes(
-    "guided-pennsieve-intro-tab"
-  );
-  const accountSame =
-    window.sodaJSONObj?.["last-confirmed-ps-account-details"] === window.defaultBfAccount;
+  const completedTabs = window.sodaJSONObj["completed-tabs"] || [];
+  const logInPageComplete =
+    completedTabs.includes("gm-pennsieve-login-tab") ||
+    completedTabs.includes("ffm-pennsieve-login-tab");
+
+  const lastConfirmedAccount = window.sodaJSONObj?.["last-confirmed-ps-account-details"];
+  const currentAccount = window.defaultBfAccount;
+  const accountSame = lastConfirmedAccount === currentAccount;
+
   const currentWorkspace = guidedGetCurrentUserWorkSpace();
-  const workspaceSame =
-    currentWorkspace === window.sodaJSONObj?.["last-confirmed-pennsieve-workspace-details"];
+  const lastConfirmedWorkspace = window.sodaJSONObj?.["last-confirmed-pennsieve-workspace-details"];
+  const workspaceSame = currentWorkspace === lastConfirmedWorkspace;
 
-  const needsReconfirm = completedIntro && (!accountSame || !workspaceSame);
+  const needsReconfirm = logInPageComplete && (!accountSame || !workspaceSame);
 
-  return {
-    completedIntro,
-    accountSame,
-    workspaceSame,
-    needsReconfirm,
-  };
+  return needsReconfirm;
 };
-window.handleGuidedModeOrganizationConfirmationClick = async () => {
-  document.getElementById("guided-section-pennsieve-agent-check").classList.remove("hidden");
-  await window.checkPennsieveAgent("guided-mode-post-log-in-pennsieve-agent-check");
+window.handleGuidedModeOrganizationConfirmationClick = async (curationModePrefix) => {
+  const agentCheckElementId = `${curationModePrefix}-section-pennsieve-agent-check`;
+  const agentCheckElement = document.getElementById(agentCheckElementId);
+  if (agentCheckElement) {
+    agentCheckElement.classList.remove("hidden");
+  } else {
+    console.warn(`Agent check element not found: ${agentCheckElementId}`);
+  }
+  await window.checkPennsieveAgent(`${curationModePrefix}-mode-post-log-in-pennsieve-agent-check`);
 };
 
 window.guidedOpenManifestEditSwal = async () => {
-  const existingManifestData = window.sodaJSONObj["guided-manifest-file-data"];
+  const existingManifestData = window.sodaJSONObj["dataset_metadata"]["manifest_file"];
   //send manifest data to main.js to then send to child window
   window.electron.ipcRenderer.invoke("spreadsheet", existingManifestData);
 
@@ -743,10 +752,84 @@ window.guidedOpenManifestEditSwal = async () => {
     } else {
       window.electron.ipcRenderer.removeAllListeners("spreadsheet-reply");
 
-      window.sodaJSONObj["guided-manifest-file-data"] = { headers: result[0], data: result[1] };
+      if (!window.sodaJSONObj["dataset_metadata"]) {
+        window.sodaJSONObj["dataset_metadata"] = {};
+      }
+      window.sodaJSONObj["dataset_metadata"]["manifest_file"] = {
+        headers: result[0],
+        data: result[1],
+      };
       await guidedSaveProgress();
     }
   });
+};
+
+/**
+ * Generates a local copy of the manifest file for the current dataset.
+ * Converts the manifest data to the proper schema format and saves it as an Excel file.
+ * User is prompted to select a destination folder.
+ */
+window.guidedCreateLocalManifestCopy = async () => {
+  try {
+    // Step 1: Prompt user to select a destination folder for the manifest file
+    const savePath = await window.electron.ipcRenderer.invoke(
+      "open-folder-path-select",
+      "Select a folder to save the manifest files to"
+    );
+
+    // User cancelled the file selection dialog
+    if (!savePath) {
+      return;
+    }
+
+    // Step 2: Generate a unique file path to avoid overwriting existing files
+    // If manifest.xlsx exists, appends (1), (2), etc. until an available name is found
+    let manifestFilePath = window.path.join(savePath, "manifest.xlsx");
+    let fileIndex = 1;
+    while (window.fs.existsSync(manifestFilePath)) {
+      manifestFilePath = window.path.join(savePath, `manifest(${fileIndex}).xlsx`);
+      fileIndex++;
+    }
+
+    // Step 3: Retrieve the manifest data from the current sodaJSONObj
+    const manifestData = window.sodaJSONObj["dataset_metadata"]?.["manifest_file"];
+    if (!manifestData) {
+      window.notyf.open({
+        type: "error",
+        message: "No manifest data found. Please create a manifest first.",
+      });
+      return;
+    }
+
+    // Step 4: Transform the manifest data into the schema format expected by the backend
+    const shapedManifestData = convertGuidedManifestToSchema(manifestData);
+
+    // Step 5: Create a deep copy of sodaJSONObj to prevent mutating the original object
+    const sodaJSONCopy = JSON.parse(JSON.stringify(window.sodaJSONObj));
+
+    // Step 6: Initialize dataset_metadata if it doesn't exist and attach the formatted manifest
+    if (!sodaJSONCopy["dataset_metadata"]) {
+      sodaJSONCopy["dataset_metadata"] = {};
+    }
+    sodaJSONCopy["dataset_metadata"]["manifest_file"] = shapedManifestData;
+
+    // Step 7: Call the backend API to generate the Excel manifest file
+    await client.post("/prepare_metadata/manifest", {
+      soda: sodaJSONCopy,
+      path_to_manifest_file: manifestFilePath,
+      upload_boolean: false,
+    });
+
+    // Display success notification
+    window.notyf.open({
+      duration: 5000,
+      type: "success",
+      message: "Manifest file successfully generated",
+    });
+  } catch (error) {
+    window.log.error("[guidedCreateLocalManifestCopy] Error generating manifest:", error);
+    clientError(error);
+  }
 };
 
 window.diffCheckManifestFiles = (newManifestData, existingManifestData) => {
@@ -3254,9 +3337,9 @@ document
     }
 
     // hide the verify files sections
-    document.querySelector("#guided--verify-files").classList.add("hidden");
-    document.querySelector("#guided--question-validate-dataset-upload-2").classList.add("hidden");
-    document.querySelector("#guided--validate-dataset-upload").classList.add("hidden");
+    document.querySelector("#guided-section-file-upload-verification").classList.add("hidden");
+    document.querySelector("#guided-section-file-verification-failure").classList.add("hidden");
+    document.querySelector("#guided-section-validate-dataset-upload").classList.add("hidden");
 
     // check if the user made it to the last step
     if (
@@ -3274,32 +3357,6 @@ document
     }
   });
 
-const doTheHack = async () => {
-  // wait for a second
-  await new Promise((resolve) => setTimeout(resolve, 5000));
-  document.getElementById("button-homepage-guided-mode").click();
-  document.getElementById("guided-button-resume-progress-file").click();
-  // wait for 5 seconds
-  await new Promise((resolve) => setTimeout(resolve, 4000));
-
-  // Search the dom for the first button with data-progress-file-name attribute
-  const progressFileButton = document.querySelector("button[data-progress-file-name]");
-  if (progressFileButton) {
-    progressFileButton.click();
-  } else {
-    // wait for 3 more seconds then click
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    const fallbackButton = document.querySelector("button[data-progress-file-name]");
-    if (fallbackButton) {
-      fallbackButton.click();
-    }
-  }
-  // wait for 4 seconds then click the next button
-  await new Promise((resolve) => setTimeout(resolve, 4000));
-  document.querySelector(".primary-selection-aside-item.selection-aside-item").click();
-};
-
-// Add the event listener for the Data importation component
 const gmDragDropElementId = document.getElementById("gm-data-importer-dropzone");
 gmDragDropElementId.addEventListener("click", (event) => {
   event.preventDefault();
@@ -3314,17 +3371,66 @@ gmDragDropElementId.addEventListener("drop", (event) => {
   window.electron.ipcRenderer.send("file-explorer-dropped-datasets", {
     filePaths: itemsDroppedInFileExplorer,
     importRelativePath: "data/",
+    curationMode: "guided",
   });
 });
 
 const ffmDragDropElementId = document.getElementById("ffm-data-importer-dropzone");
+
 ffmDragDropElementId.addEventListener("click", (event) => {
   event.preventDefault();
-  window.uploadDatasetClickHandler();
+
+  window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog", {
+    importRelativePath: "",
+    curationMode: "free-form",
+    useContentsOfFolder: true,
+  });
 });
-ffmDragDropElementId.addEventListener("drop", (event) => {
+ffmDragDropElementId.addEventListener("drop", async (event) => {
   event.preventDefault();
-  window.uploadDatasetDropHandler(event);
+
+  const itemsDroppedInFileExplorer = Array.from(event.dataTransfer.files).map((file) => file.path);
+
+  if (itemsDroppedInFileExplorer.length > 1) {
+    window.notyf.open({
+      type: "error",
+      message:
+        "Please select only one folder. Drop the folder that contains your dataset (root dataset folder).",
+      duration: 5000,
+    });
+    return;
+  }
+
+  const droppedPath = itemsDroppedInFileExplorer[0];
+
+  try {
+    const isDirectory = await window.fs.isDirectory(droppedPath);
+
+    if (!isDirectory) {
+      window.notyf.open({
+        type: "error",
+        message:
+          "Only folders are accepted. Please drop the folder containing your dataset (root dataset folder).",
+        duration: 5000,
+      });
+      return;
+    }
+  } catch (err) {
+    window.notyf.open({
+      type: "error",
+      message:
+        "Could not access dropped item. Please select the folder containing your dataset (root dataset folder).",
+      duration: 5000,
+    });
+    return;
+  }
+
+  window.electron.ipcRenderer.send("file-explorer-dropped-datasets", {
+    filePaths: itemsDroppedInFileExplorer,
+    importRelativePath: "",
+    curationMode: "free-form",
+    useContentsOfFolder: true,
+  });
 });
 
 $("#guided-button-add-additional-link").on("click", async () => {

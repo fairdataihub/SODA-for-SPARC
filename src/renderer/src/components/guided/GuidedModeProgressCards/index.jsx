@@ -67,9 +67,12 @@ const generateProgressResumptionButton = (
   } else if (datasetStartingPoint === "new") {
     buttonText = "Resume Curation";
     color = "primary";
-  } else {
+  } else if (datasetStartingPoint === "existing-ps") {
     buttonText = "Continue updating Pennsieve Dataset";
     color = "orange";
+  } else {
+    buttonText = "Resume Curation";
+    color = "primary";
   }
 
   if (lastVersionOfSodaUsed < "16.0.0") {
@@ -97,7 +100,6 @@ const GuidedModeProgressCards = () => {
   const guidedModeProgressCardsDataArray = useGlobalStore(
     (state) => state.guidedModeProgressCardsDataArray || []
   );
-
   if (guidedModeProgressCardsLoadingText) {
     return (
       <Stack align="center" gap="md">
@@ -113,14 +115,19 @@ const GuidedModeProgressCards = () => {
   return (
     <>
       {guidedModeProgressCardsDataArray.length === 0 ? (
-        <Text c="dimmed" size="lg" ta="center" my="xl">
-          No datasets in progress found.
-        </Text>
+        <Stack align="center" gap="md" my="xl">
+          <Text c="dimmed" size="lg" fw={500} ta="center">
+            No datasets in progress
+          </Text>
+          <Text c="dimmed" size="md" ta="center" maw={600}>
+            Click the button above to start a new dataset. Once you save progress on a dataset, it
+            will appear here so you can easily resume your work.
+          </Text>
+        </Stack>
       ) : (
         <>
           <Text fw={600} size="lg" ta="center" mb="sm">
-            Select the dataset that you would like to continue working with and click "Resume
-            Curation"
+            Or continue an existing dataset in progress:
           </Text>
 
           <Stack gap="md" align="center" w="100%">
@@ -132,8 +139,7 @@ const GuidedModeProgressCards = () => {
               } else {
                 progressFileName = datasetName;
               }
-              const progressFileSubtitle =
-                progressFile["digital-metadata"]["subtitle"] || "No designated subtitle";
+              const progressFileSubtitle = progressFile["digital-metadata"]["subtitle"] || null;
               const bannerImagePath =
                 progressFile?.["digital-metadata"]?.["banner-image-path"] || "";
               const progressFileLastModified = new Date(
@@ -144,11 +150,11 @@ const GuidedModeProgressCards = () => {
                 day: "numeric",
               });
               const failedUploadInProgress =
-                progressFile["previously-uploaded-data"] &&
-                Object.keys(progressFile["previously-uploaded-data"]).length > 0;
+                progressFile["at-least-one-file-uploaded-to-pennsieve"] === true &&
+                progressFile["dataset-successfully-uploaded-to-pennsieve"] !== true;
 
               const subtitleDisplay =
-                progressFileSubtitle.length > 70
+                progressFileSubtitle && progressFileSubtitle.length > 70
                   ? `${progressFileSubtitle.substring(0, 70)}...`
                   : progressFileSubtitle;
 
@@ -189,6 +195,7 @@ const GuidedModeProgressCards = () => {
                   align="center"
                   justify="space-between"
                   data-dataset-name={datasetName}
+                  data-progress-file-name={progressFileName}
                 >
                   <Group w="100%" align="stretch" gap={0}>
                     {/* Section 1: Image */}
@@ -219,15 +226,17 @@ const GuidedModeProgressCards = () => {
                       >
                         {datasetName}
                       </Text>
-                      <Text
-                        c="dimmed"
-                        size="sm"
-                        lineClamp={2}
-                        title={progressFileSubtitle}
-                        fw={400}
-                      >
-                        {subtitleDisplay}
-                      </Text>
+                      {subtitleDisplay && (
+                        <Text
+                          c="dimmed"
+                          size="sm"
+                          lineClamp={2}
+                          title={progressFileSubtitle}
+                          fw={400}
+                        >
+                          {subtitleDisplay}
+                        </Text>
+                      )}
 
                       <Group gap="xs" align="center" mt={4}>
                         <Tooltip
@@ -274,9 +283,7 @@ const GuidedModeProgressCards = () => {
                         variant="subtle"
                         leftSection={<IconTrash size={18} />}
                         onClick={() => {
-                          if (window.deleteProgressCard) {
-                            window.deleteProgressCard(datasetName, progressFileName);
-                          }
+                          window.deleteProgressCard(datasetName, progressFileName);
                         }}
                       >
                         Delete progress file
