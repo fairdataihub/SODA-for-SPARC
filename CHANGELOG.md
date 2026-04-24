@@ -5,15 +5,11 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## v 18.0.0 - 2026-04-23
+## v 18.0.0 - 2026-04-27
 
 ## Feature Additions:
 
-- placeholder 1
-
-## Bug fixes:
-
-- placeholder
+- Refactored the 'Upload a SDS compliant Dataset' workflow to share architecture with the "Prepare a Dataset Step-by-Step" workflow.
 
 ## v 17.0.1 - 2026-02-27
 
