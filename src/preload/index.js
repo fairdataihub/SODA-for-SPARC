@@ -9,7 +9,6 @@ import log from "electron-log";
 import imageDataURI from "image-data-uri"; // TODO: fix this
 import Jimp from "jimp";
 import excel4node from "excel4node";
-// import * as excel4node from 'excel4node';
 import { spawn } from "node:child_process";
 import fixPath from "./update-path-darwin";
 
