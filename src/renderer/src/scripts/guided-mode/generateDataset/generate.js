@@ -65,7 +65,6 @@ const fetchProgressData = async () => {
   };
 };
 
-
 // Subscriber will always run until upload is completed or until the upload fails 3 times
 let subscriberLock = false;
 const subscribe = async (datasetId) => {
@@ -373,9 +372,9 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     // CASE 1: NEW DATSETS Has no upload-progress and soda["pennsieve-generation-target"] === new
     // RESULT: Progress bar updates and is set to 100% once upload is completed
     // CASE 2: NEW DATSETS HAS UPLOAD PROGRESS; Server crashes; Subscriber throws. soda["pennsieve-generation-target"] == NEW.
-    // RESULT: Counter incremented 1 - 3 before stops. Only one subscriber runs at a time. Progress monitor continues running and has momentary pause while upload resumes. The upload does not stop until final error. 
+    // RESULT: Counter incremented 1 - 3 before stops. Only one subscriber runs at a time. Progress monitor continues running and has momentary pause while upload resumes. The upload does not stop until final error.
     // CASE 3: NEW DATASET UPLOAD FAILED and IS SAVE & EXIT AND RESUME; soda["pennsieve-generation-target"] == EXISTING in this case
-    // RESULT: 
+    // RESULT:
     // CASE 4:  EXISTING DATASET BEING UPDATED
     // RESULT:
     // STAGE 2: Upload Using Agent + Subscribe for Progress
@@ -670,7 +669,7 @@ const logProgressToAnalyticsGM = (files, bytes) => {
 let progressMonitorLock = false;
 // Track the status of Pennsieve dataset upload
 const trackPennsieveDatasetGenerationProgress = async () => {
-  if (progressMonitorLock) return
+  if (progressMonitorLock) return;
   window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
   progressMonitorLock = true;
 
