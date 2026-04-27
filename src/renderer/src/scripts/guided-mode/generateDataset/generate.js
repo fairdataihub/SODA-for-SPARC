@@ -65,6 +65,44 @@ const fetchProgressData = async () => {
   };
 };
 
+let subscriberLock = false;
+const subscribe = async (datasetId) => {
+  if (subscriberLock) return;
+  subscriberLock = true;
+  try {
+    console.log(`Started one subscriber session at ${new Date().toLocaleTimeString()}`);
+    await client.post("/curate_datasets/curation/subscribe", {
+      dataset_id: datasetId,
+      account_name: window.sodaJSONObj["ps-account-selected"]["account-name"],
+    });
+    subscriberLock = false;
+    console.log(`Returned from one subscriber session at ${new Date().toLocaleTimeString()}. `);
+  } catch (e) {
+    subscriberLock = false;
+    console.log(`Crashed from one subscriber session at ${new Date().toLocaleTimeString()}. `);
+    clientError(e);
+    if (!e.response && e.request && e.isAxiosError) {
+      await restartServer();
+      await waitForServerRestart();
+
+      // CHECK IF UPLOAD IS COMPLETE BEFORE RESTARTING PROGRESS AND SUBSCRIPTION
+      if (
+        window.sodaJSONObj["upload-progress"]?.["current-stage"] === "upload" &&
+        amountOfTimesPennsieveUploadFailed < 3
+      ) {
+        subscribe(datasetId);
+      }
+    }
+    // Auto retry if upload is still in progress or if it hasn't failed 3 times
+    if (
+      window.sodaJSONObj["upload-progress"]?.["current-stage"] === "upload" &&
+      amountOfTimesPennsieveUploadFailed < 3
+    ) {
+      subscribe();
+    }
+  }
+};
+
 /**
  *
  * @returns {Promise<void>}
@@ -191,36 +229,8 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       let manifestId = window.sodaJSONObj["upload-progress"]["manifest-id"];
       let datasetId = window.sodaJSONObj["upload-progress"]["dataset-id"];
 
-      const subscribe = async (datasetId) => {
-        try {
-          console.log(`Started one subscriber session at ${new Date().toLocaleTimeString()}`);
-          await client.post("/curate_datasets/curation/subscribe", {
-            dataset_id: datasetId,
-            account_name: window.sodaJSONObj["ps-account-selected"]["account-name"],
-          });
-          console.log(
-            `Returned from one subscriber session at ${new Date().toLocaleTimeString()}. `
-          );
-        } catch (e) {
-          console.log(
-            `Crashed from one subscriber session at ${new Date().toLocaleTimeString()}. `
-          );
-          clientError(e);
-          if (!e.response && e.request && e.isAxiosError) {
-            await restartServer();
-            await waitForServerRestart();
+      subscribe();
 
-            // CHECK IF UPLOAD IS COMPLETE BEFORE RESTARTING PROGRESS AND SUBSCRIPTION
-            if (window.sodaJSONObj["upload-progress"]?.["current-stage"] === "upload") {
-              subscribe(datasetId);
-            }
-          }
-          // IF NOT ERROR CRASH HANDLE AS NORMAL WITH AUTOMATIC RETRY
-          throw e;
-        }
-      };
-
-      subscribe(datasetId);
       const removeListener = window.pennsieve.onUploadProgress((line) => {
         console.log("Upload progress:", line);
       });
@@ -229,6 +239,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         await window.pennsieve.uploadManifest(manifestId);
       } catch (err) {
         console.error("Upload failed:", err.message);
+        throw err;
       } finally {
         removeListener(); // Always clean up the listener
       }
@@ -381,8 +392,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
 
     console.log("Finished upload stage. Current object state: ", window.sodaJSONObj);
 
-    return;
-
     // TODO: Possibly switch rename and verify order since to rename we need to know the files exist on Pennsieve.
 
     // CASE 1: NEW DATSETS Has no upload-progress and soda["pennsieve-generation-target"] === new
@@ -404,6 +413,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
 
     // STAGE 4: (Optional) VERIFY FILES
   } catch (error) {
+    console.log("ERROR RECEIVED IN CODE CATCH");
     clientError(error);
     const emessage = userErrorMessage(error, false);
     amountOfTimesPennsieveUploadFailed += 1;
