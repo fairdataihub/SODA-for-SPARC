@@ -1,19 +1,24 @@
 import Swal from "sweetalert2";
-import { guidedTransitionFromHome } from "../pages/navigate";
 import { checkIfDatasetExistsOnPennsieve } from "../pennsieveUtils";
 import {
   guidedSkipPage,
-  guidedUnSkipPage,
   getNonSkippedGuidedModePages,
 } from "../pages/navigationUtils/pageSkipping";
 import { guidedGetCurrentUserWorkSpace } from "../workspaces/workspaces";
 import { getProgressFileData } from "./progressFile";
-import api from "../../others/api/api";
-import client from "../../client";
+
 import { clientError } from "../../others/http-error-handler/error-handler";
 import { swalShowInfo } from "../../utils/swal-utils";
-import { setDatasetEntityObj } from "../../../stores/slices/datasetEntitySelectorSlice";
-import { setDatasetEntityArray } from "../../../stores/slices/datasetEntityStructureSlice";
+
+import useGlobalStore from "../../../stores/globalStore";
+import {
+  addSubject,
+  addSample,
+  addSiteToSample,
+  getExistingSamples,
+} from "../../../stores/slices/datasetEntityStructureSlice";
+import { guidedCheckIfUserNeedsToReconfirmAccountDetails } from "../guided-curate-dataset";
+import { normalizeToMMDDYYYY } from "../../utils/date-utils";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -21,10 +26,10 @@ while (!window.baseHtmlLoaded) {
 
 /**
  *
- * @param {string} datasetNameToResume - The name of the dataset associated with the save progress file the user wants to resume.
+ * @param {string} progressFileName - The name of the dataset associated with the save progress file the user wants to resume.
  * @description Read the given progress file and resume the Prepare Dataset Step-by-Step workflow where the user last left off.
  */
-window.guidedResumeProgress = async (datasetNameToResume) => {
+window.guidedResumeProgress = async (progressFileName) => {
   const loadingSwal = Swal.fire({
     title: "Resuming where you last left off",
     html: `
@@ -53,7 +58,7 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
   try {
-    const datasetResumeJsonObj = await getProgressFileData(datasetNameToResume);
+    const datasetResumeJsonObj = await getProgressFileData(progressFileName);
     // Datasets successfully uploaded will have the "dataset-successfully-uploaded-to-pennsieve" key
     const datasetHasAlreadyBeenSuccessfullyUploaded =
       datasetResumeJsonObj["dataset-successfully-uploaded-to-pennsieve"];
@@ -88,15 +93,10 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
     await patchPreviousGuidedModeVersions();
 
     window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
-    const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
-    setDatasetEntityObj(savedDatasetEntityObj);
-    const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
-    setDatasetEntityArray(datasetEntityArray);
 
     // Save the skipped pages in a temp variable since guidedTransitionFromHome will remove them
     const prevSessionSkikppedPages = [...window.sodaJSONObj["skipped-pages"]];
 
-    guidedTransitionFromHome();
     // Reskip the pages from a previous session
     for (const pageID of prevSessionSkikppedPages) {
       guidedSkipPage(pageID);
@@ -104,6 +104,7 @@ window.guidedResumeProgress = async (datasetNameToResume) => {
 
     // Skip this page incase it was not skipped in a previous session
     guidedSkipPage("guided-select-starting-point-tab");
+    guidedSkipPage("ffm-select-starting-point-tab");
 
     // pageToReturnTo will be set to the page the user will return to
     const pageToReturnTo = await guidedGetPageToReturnTo(window.sodaJSONObj);
@@ -144,11 +145,10 @@ const guidedGetPageToReturnTo = async () => {
 
   // returns the id of the first page of guided mode
   const firstPageID = getNonSkippedGuidedModePages(document)[0].id;
-
-  const currentSodaVersion = document.getElementById("version").innerHTML;
+  const appVersion = await useGlobalStore.getState().appVersion;
   const lastVersionOfSodaUsedOnProgressFile = window.sodaJSONObj["last-version-of-soda-used"];
 
-  if (lastVersionOfSodaUsedOnProgressFile != currentSodaVersion) {
+  if (lastVersionOfSodaUsedOnProgressFile != appVersion) {
     // If the progress file was last edited in a previous SODA version, reset to the first page
     await swalShowInfo(
       "SODA has been updated since you last worked on this dataset.",
@@ -157,12 +157,15 @@ const guidedGetPageToReturnTo = async () => {
     return firstPageID;
   }
 
-  if (guidedCheckIfUserNeedsToReconfirmAccountDetails() === true) {
+  const needsReconfirm = guidedCheckIfUserNeedsToReconfirmAccountDetails();
+  if (needsReconfirm) {
     await swalShowInfo(
       "Your Pennsieve account or workspace has changed since you last worked on this dataset.",
       "Please confirm your Pennsieve account and workspace details."
     );
-    return "guided-pennsieve-intro-tab";
+    return window.sodaJSONObj["curation-mode"] === "free-form"
+      ? "ffm-pennsieve-login-tab"
+      : "gm-pennsieve-login-tab";
   }
 
   // If the page the user was last on no longer exists, return them to the first page
@@ -179,37 +182,176 @@ const guidedGetPageToReturnTo = async () => {
 };
 
 const patchPreviousGuidedModeVersions = async () => {
-  // Empty since this is the first SDS3 release and no changes need be modified
-};
+  const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
+  const oldHighLevelFolders = datasetEntityObj?.["high-level-folder-data-categorization"];
+  const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
 
-const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
-  // Check if guided-pennsieve-intro-tab is in completed tabs
-  if (!window.sodaJSONObj["completed-tabs"].includes("guided-pennsieve-intro-tab")) {
-    return false;
+  // Migrate old manifest file data to new location
+  const oldManifestData = window.sodaJSONObj["guided-manifest-file-data"];
+  if (oldManifestData && Object.keys(oldManifestData).length > 0) {
+    // Ensure dataset_metadata exists
+    if (!window.sodaJSONObj["dataset_metadata"]) {
+      window.sodaJSONObj["dataset_metadata"] = {};
+    }
+    // Migrate to new location
+    window.sodaJSONObj["dataset_metadata"]["manifest_file"] = oldManifestData;
+    // Remove old key
+    delete window.sodaJSONObj["guided-manifest-file-data"];
   }
 
-  // Check if the user has changed their Pennsieve account
-  if (window.sodaJSONObj?.["last-confirmed-ps-account-details"] !== window.defaultBfAccount) {
-    if (window.sodaJSONObj["button-config"]?.["pennsieve-account-has-been-confirmed"]) {
-      delete window.sodaJSONObj["button-config"]["pennsieve-account-has-been-confirmed"];
+  if (oldHighLevelFolders && Object.keys(oldHighLevelFolders).length > 0) {
+    // Ensure new keys exist
+    datasetEntityObj["experimental"] = {};
+    datasetEntityObj["non-data-folders"] = {};
+
+    // Patch Experimental files
+    const experimentalFiles = oldHighLevelFolders["Experimental"];
+    if (experimentalFiles && Object.keys(experimentalFiles).length > 0) {
+      datasetEntityObj["experimental"]["experimental"] = experimentalFiles;
     }
-    if (window.sodaJSONObj["button-config"]?.["organization-has-been-confirmed"]) {
-      delete window.sodaJSONObj["button-config"]["organization-has-been-confirmed"];
+
+    // Patch Non-data folders
+    const codeFiles = oldHighLevelFolders["Code"];
+    if (codeFiles && Object.keys(codeFiles).length > 0) {
+      datasetEntityObj["non-data-folders"]["Code"] = codeFiles;
     }
-    return true;
+
+    const protocolFiles = oldHighLevelFolders["Protocol"];
+    if (protocolFiles && Object.keys(protocolFiles).length > 0) {
+      datasetEntityObj["non-data-folders"]["Protocol"] = protocolFiles;
+    }
+
+    const docsFiles = oldHighLevelFolders["Documentation"];
+    if (docsFiles && Object.keys(docsFiles).length > 0) {
+      datasetEntityObj["non-data-folders"]["Docs"] = docsFiles;
+    }
+
+    // Remove old key
+    delete datasetEntityObj["high-level-folder-data-categorization"];
   }
 
-  // Log current and previously confirmed workspace details
-  const currentWorkspace = guidedGetCurrentUserWorkSpace();
+  // specimen_id should be added to the old sites
+  if (selectedEntities.includes("sites")) {
+    // This indicates an old dataset - convert the entity structure using proper methods
+    const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
 
-  // Check if the user has changed their Pennsieve workspace
-  if (currentWorkspace != window.sodaJSONObj?.["last-confirmed-pennsieve-workspace-details"]) {
-    if (window.sodaJSONObj["button-config"]?.["organization-has-been-confirmed"]) {
-      delete window.sodaJSONObj["button-config"]["organization-has-been-confirmed"];
+    if (datasetEntityArray.length > 0) {
+      // Extract data from old structure before clearing
+      const oldSubjects = [...datasetEntityArray];
+
+      // Clear old structure and reset the global store
+      window.sodaJSONObj["dataset-entity-array"] = [];
+      useGlobalStore.setState({ datasetEntityArray: [] });
+
+      // Recreate structure using proper methods with preserved metadata
+      for (const oldSubject of oldSubjects) {
+        try {
+          // Add subject with its metadata
+          addSubject(oldSubject.id, oldSubject.metadata || {});
+
+          // Add samples with their metadata
+          if (oldSubject.samples && Array.isArray(oldSubject.samples)) {
+            for (const oldSample of oldSubject.samples) {
+              try {
+                addSample(oldSubject.id, null, oldSample.id, oldSample.metadata || {});
+
+                // Add sites to samples (old structure: all sites were on samples)
+                if (oldSample.sites && Array.isArray(oldSample.sites)) {
+                  for (const oldSite of oldSample.sites) {
+                    try {
+                      addSiteToSample(
+                        oldSubject.id,
+                        oldSample.id,
+                        oldSite.id,
+                        oldSite.metadata || {}
+                      );
+                    } catch (error) {
+                      console.warn(
+                        `Failed to add site ${oldSite.id} to sample ${oldSample.id}:`,
+                        error
+                      );
+                    }
+                  }
+                }
+              } catch (error) {
+                console.warn(
+                  `Failed to add sample ${oldSample.id} to subject ${oldSubject.id}:`,
+                  error
+                );
+              }
+            }
+          }
+
+          // Note: Performances are handled similarly but not commonly used in old datasets
+        } catch (error) {
+          console.warn(`Failed to add subject ${oldSubject.id}:`, error);
+        }
+      }
+
+      // Update the SODA JSON object with the newly created structure
+      window.sodaJSONObj["dataset-entity-array"] = useGlobalStore.getState().datasetEntityArray;
     }
-    return true;
+
+    // Add sampleSites because old save files had sites only applicable to samples
+    window.sodaJSONObj["selected-entities"] = selectedEntities
+      .filter((entity) => entity.toLowerCase() !== "sites")
+      .concat("sampleSites");
   }
 
-  // If no reconfirmation is needed, log that information
-  return false;
+  // Update "code" in selected-entities to "Code"
+  if (selectedEntities.includes("code")) {
+    window.sodaJSONObj["selected-entities"] = selectedEntities
+      .filter((entity) => entity.toLowerCase() !== "code")
+      .concat("Code");
+  }
+
+  // Create a mutable copy of the dataset entity array to modify and then replace the original
+  const datasetEntityArray = JSON.parse(
+    JSON.stringify(window.sodaJSONObj["dataset-entity-array"] || [])
+  );
+  for (const subject of datasetEntityArray) {
+    if (subject.type === "subject" && subject.metadata) {
+      // Replace the disease_or_disorder field with disease for consistency with the current expected format
+      if (subject.metadata.disease_or_disorder !== undefined) {
+        subject.metadata.disease = subject.metadata.disease_or_disorder;
+        delete subject.metadata.disease_or_disorder;
+      }
+
+      // Update the date_of_birth field to MM/DD/YYYY format
+      if (subject.metadata.date_of_birth) {
+        const normalized = normalizeToMMDDYYYY(subject.metadata.date_of_birth);
+        if (normalized) {
+          subject.metadata.date_of_birth = normalized;
+        }
+      }
+      // Update the experiment_date field to MM/DD/YYYY format
+      if (subject.metadata.experiment_date) {
+        const normalized = normalizeToMMDDYYYY(subject.metadata.experiment_date);
+        if (normalized) {
+          subject.metadata.experiment_date = normalized;
+        }
+      }
+    }
+    for (const sample of subject.samples || []) {
+      // Update the date_of_derivation field to MM/DD/YYYY format
+      if (sample.metadata?.date_of_derivation) {
+        const normalized = normalizeToMMDDYYYY(sample.metadata.date_of_derivation);
+        if (normalized) {
+          sample.metadata.date_of_derivation = normalized;
+        }
+      }
+    }
+  }
+
+  // Reset the dataset-entity-array with the migrated/copy version
+  window.sodaJSONObj["dataset-entity-array"] = datasetEntityArray;
+
+  // Change the contributor role field to an array if it is a string
+  const contributors = window.sodaJSONObj["dataset_contributors"];
+  for (const contributor of contributors) {
+    if (contributor.contributor_role && typeof contributor.contributor_role === "string") {
+      contributor.contributor_roles = [contributor.contributor_role];
+      delete contributor.contributor_role;
+    }
+  }
 };

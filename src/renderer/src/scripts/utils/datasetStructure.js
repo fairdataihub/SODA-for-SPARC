@@ -5,6 +5,7 @@ import {
   getInvertedDatasetEntityObj,
   filePassesAllFilters,
 } from "../../stores/slices/datasetTreeViewSlice";
+import { modifyDatasetEntityForRelativeFilePath } from "../../stores/slices/datasetEntitySelectorSlice";
 
 export const countFilesInDatasetStructure = (datasetStructure) => {
   // If datasetStructure is an array (datasetRenderArray), count file items
@@ -30,6 +31,32 @@ export const countFilesInDatasetStructure = (datasetStructure) => {
   return totalFiles;
 };
 
+export const getFileTypesArrayInDatasetStructure = (datasetStructure) => {
+  // Collect unique file extensions from a nested dataset structure and return them sorted.
+
+  const fileTypes = new Set();
+
+  const walk = (node) => {
+    if (node.files) {
+      for (const fileObj of Object.values(node.files)) {
+        if (typeof fileObj.extension === "string") {
+          fileTypes.add(fileObj.extension);
+        }
+      }
+    }
+
+    if (node.folders) {
+      for (const folderObj of Object.values(node.folders)) {
+        walk(folderObj);
+      }
+    }
+  };
+
+  walk(datasetStructure);
+
+  return Array.from(fileTypes).sort((a, b) => a.localeCompare(b));
+};
+
 /**
  * Creates a new empty folder object with standard properties
  * @returns {Object} A new empty folder object
@@ -52,6 +79,40 @@ export const countSelectedFilesByEntityType = (entityType) => {
   });
 
   return totalCount;
+};
+
+/**
+ * Gets an array of file paths that are attributed to specific entity type(s)
+ * @param {string|Array<string>} entityType - The entity type(s) to get files for (e.g., "data-folders", ["subjects", "samples"])
+ * @param {string} [entityName] - Optional specific entity name to get files for
+ * @returns {Array} Array of file relative paths attributed to the entity type(s)/name
+ */
+export const getFilesByEntityType = (entityType, entityName = null) => {
+  const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
+
+  // Handle both string and array inputs
+  const entityTypes = Array.isArray(entityType) ? entityType : [entityType];
+  let allFilePaths = [];
+
+  entityTypes.forEach((type) => {
+    if (!datasetEntityObj?.[type]) return;
+
+    if (entityName) {
+      // Get files for a specific entity within the type
+      const entityFiles = datasetEntityObj[type][entityName] || {};
+      const filePaths = Object.keys(entityFiles).filter((filePath) => entityFiles[filePath]);
+      allFilePaths = allFilePaths.concat(filePaths);
+    } else {
+      // Get files for all entities of this type
+      const allEntities = Object.values(datasetEntityObj[type] || {});
+      allEntities.forEach((entityFiles) => {
+        const filePaths = Object.keys(entityFiles).filter((filePath) => entityFiles[filePath]);
+        allFilePaths = allFilePaths.concat(filePaths);
+      });
+    }
+  });
+
+  return allFilePaths;
 };
 
 const getNestedObjectAtPathArray = (pathArray) => {
@@ -136,6 +197,9 @@ export const deleteFoldersByRelativePath = (arrayOfRelativePaths) => {
 };
 
 export const deleteFilesByRelativePath = (arrayOfRelativePaths) => {
+  // Get the inverted entity object to find which entities each file belongs to
+  const invertedDatasetEntityObj = getInvertedDatasetEntityObj();
+
   for (const relativePathToDelete of arrayOfRelativePaths) {
     const { parentFolder, itemName, itemObject } =
       getFileDetailsByRelativePath(relativePathToDelete);
@@ -144,12 +208,37 @@ export const deleteFilesByRelativePath = (arrayOfRelativePaths) => {
     } else {
       delete parentFolder["files"][itemName];
     }
+
+    // Remove from datasetEntityObj using existing utility functions
+    const fileEntityMapping = invertedDatasetEntityObj[relativePathToDelete];
+    if (fileEntityMapping) {
+      Object.keys(fileEntityMapping).forEach((entityType) => {
+        const entityNames = fileEntityMapping[entityType];
+        entityNames.forEach((entityName) => {
+          modifyDatasetEntityForRelativeFilePath(
+            entityType,
+            entityName,
+            relativePathToDelete,
+            "remove",
+            false
+          );
+        });
+      });
+    }
   }
   useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
   reRenderTreeView();
 };
 
 export const moveFileToTargetLocation = (relativePathToMove, destionationRelativeFolderPath) => {
+  const { parentFolder, itemName, itemObject } = getFileDetailsByRelativePath(relativePathToMove);
+
+  // Check if the file exists before trying to move it
+  if (!itemObject || !parentFolder || !parentFolder.files || !parentFolder.files[itemName]) {
+    console.warn(`moveFileToTargetLocation: File not found, skipping: ${relativePathToMove}`);
+    return;
+  }
+
   const filePathSegments = relativePathToMove.split("/").filter(Boolean);
   const subfolders = filePathSegments.slice(1, -1);
   const destinationPathSegments = destionationRelativeFolderPath
@@ -159,14 +248,27 @@ export const moveFileToTargetLocation = (relativePathToMove, destionationRelativ
 
   let currentFolder = window.datasetStructureJSONObj;
   for (const segment of destinationPathSegments) {
-    if (!currentFolder.folders) currentFolder.folders = {};
+    if (!currentFolder || !currentFolder.folders) {
+      if (!currentFolder) {
+        console.error("moveFileToTargetLocation: currentFolder is null/undefined");
+        return;
+      }
+      currentFolder.folders = {};
+    }
     if (!currentFolder.folders[segment]) {
       currentFolder.folders[segment] = newEmptyFolderObj();
     }
     currentFolder = currentFolder.folders[segment];
   }
 
-  const { parentFolder, itemName, itemObject } = getFileDetailsByRelativePath(relativePathToMove);
+  if (!currentFolder) {
+    console.error("moveFileToTargetLocation: target folder is null after path traversal");
+    return;
+  }
+
+  if (!currentFolder.files) {
+    currentFolder.files = {};
+  }
 
   currentFolder["files"][itemName] = itemObject;
   delete parentFolder["files"][itemName];
@@ -179,39 +281,63 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
   // Remove any empty folders from the original structure
   originalStructure = deleteEmptyFoldersFromStructure(originalStructure);
 
-  // Helper to move files by mapping
   const moveFilesByCategory = (categoryObj, destFolder) => {
     if (!categoryObj) return;
-    const files = Object.keys(categoryObj);
-    for (const [i, file] of files.entries()) {
-      moveFileToTargetLocation(file, destFolder);
-    }
-  };
 
+    Object.keys(categoryObj).forEach((file) => {
+      moveFileToTargetLocation(file, destFolder);
+    });
+  };
   try {
     // Move Code files into the code/ folder
+    moveFilesByCategory(datasetEntityObj?.["non-data-folders"]?.["Code"], "code/");
+    moveFilesByCategory(datasetEntityObj?.["non-data-folders"]?.["Docs"], "docs/");
+    moveFilesByCategory(datasetEntityObj?.["non-data-folders"]?.["Protocol"], "protocol/");
+
+    // Move Primary files into the primary/ folder
+    // (Files that are marked as primary during the computational workflow)
     moveFilesByCategory(
-      datasetEntityObj?.["high-level-folder-data-categorization"]?.["Code"],
-      "code/"
+      datasetEntityObj?.["experimental-data-categorization"]?.["Source"],
+      "source/"
+    );
+    moveFilesByCategory(
+      datasetEntityObj?.["experimental-data-categorization"]?.["Derivative"],
+      "derivative/"
     );
 
-    // Move Experimental files into the primary/ folder
+    moveFilesByCategory(datasetEntityObj?.["remaining-data-categorization"]?.["Source"], "source/");
     moveFilesByCategory(
-      datasetEntityObj?.["high-level-folder-data-categorization"]?.["Experimental"],
-      "primary/"
+      datasetEntityObj?.["remaining-data-categorization"]?.["Derivative"],
+      "derivative/"
     );
 
-    // Move Documentation files into the docs/ folder
-    moveFilesByCategory(
-      datasetEntityObj?.["high-level-folder-data-categorization"]?.["Documentation"],
-      "docs/"
-    );
+    // Get list of files in data folder and move them to primary
+    const getDataFolderFiles = () => {
+      const dataFolder = window.datasetStructureJSONObj?.folders?.data;
+      if (!dataFolder) return [];
 
-    // Move Protocol files into the protocols/ folder
-    moveFilesByCategory(
-      datasetEntityObj?.["high-level-folder-data-categorization"]?.["Protocol"],
-      "protocol/"
-    );
+      const collectFiles = (folderObj) => {
+        let files = [];
+        if (folderObj?.files) {
+          Object.values(folderObj.files).forEach((fileObj) => {
+            if (fileObj.relativePath) {
+              files.push(fileObj.relativePath);
+            }
+          });
+        }
+        if (folderObj?.folders) {
+          Object.values(folderObj.folders).forEach((subFolder) => {
+            files = files.concat(collectFiles(subFolder));
+          });
+        }
+        return files;
+      };
+
+      return collectFiles(dataFolder);
+    };
+
+    const dataFolderFiles = getDataFolderFiles();
+    dataFolderFiles.forEach((filePath) => moveFileToTargetLocation(filePath, "primary/"));
 
     // Delete any empty folders in the dataset structure
     // (The window.datasetStructureJSONObj can be used since the move fns already update it)

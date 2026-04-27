@@ -1,25 +1,23 @@
-import React from "react";
-import { MantineProvider, createTheme, Stack } from "@mantine/core";
-import FullWidthContainer from "../../containers/FullWidthContainer";
-import { Tooltip } from "bootstrap";
-import { root } from "postcss";
+import { MantineProvider, createTheme, MantineColorsTuple } from "@mantine/core";
+
+const lightBlue: MantineColorsTuple = [
+  "#dffbff",
+  "#caf2ff",
+  "#99e2ff",
+  "#64d2ff",
+  "#3cc4fe",
+  "#23bcfe", // primary shade
+  "#00b5ff",
+  "#00a1e4",
+  "#008fcd",
+  "#007cb6",
+];
 
 const theme = createTheme({
   colors: {
-    SodaGreen: [
-      "#13716d",
-      "#13716d",
-      "#13716d",
-      "#13716d",
-      "#13716d",
-      "#13716d",
-      "#13716d",
-      "#13716d",
-      "#13716d",
-      "#13716d",
-    ],
+    primary: lightBlue, // ✅ register palette as "primary"
   },
-  primaryColor: "SodaGreen",
+  primaryColor: "primary", // ✅ Mantine now uses this as the main brand color
   fontSizes: {
     xs: "0.8rem",
     sm: "0.9rem",
@@ -28,6 +26,11 @@ const theme = createTheme({
     xl: "1.4rem",
   },
   components: {
+    Paper: {
+      styles: {
+        root: {},
+      },
+    },
     Tooltip: {
       styles: {
         root: {

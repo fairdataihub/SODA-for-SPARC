@@ -22,7 +22,7 @@
   height: 2px;
   margin: 0 auto;
   display: block;
-  background: var(--color-light-green);
+  background: var(--mantine-color-primary-7);
   transition: all 0.25s linear;
   /* transition: all 0.1s cubic-bezier(0.81, -0.33, 0.345, 1.375); */
 }
@@ -51,7 +51,6 @@
   min-width: 240px;
   max-width: 240px;
   background: var(--color-sidebar);
-  border-top: 1px solid #d5d5d5;
   color: #f0f0f0;
   font-family: "Poppins", sans-serif;
   transition: all 0.25s linear;
@@ -132,10 +131,6 @@ a[data-toggle="collapse"] {
   border-left: 4px solid transparent;
 }
 
-#main-nav ul li a svg {
-  fill: #000;
-}
-
 #main-nav ul li a a {
   padding-left: 10px;
   text-align: left;
@@ -154,20 +149,16 @@ a[data-toggle="collapse"] {
 }
 
 #main-nav ul li a.is-selected {
-  color: var(--color-light-green);
+  color: var(--color-soda-primary);
   background: none;
   font-weight: 600;
-  border-left: 4px solid var(--color-light-green);
+  border-left: 4px solid var(--color-soda-primary);
   /* margin-left: -3px; */
   border-radius: 0;
 }
 
 #main-nav ul li a.is-selected i {
-  color: var(--color-light-green);
-}
-
-#main-nav ul li a.is-selected svg {
-  fill: var(--color-light-green);
+  color: var(--color-soda-primary);
 }
 
 .help-section {
@@ -280,7 +271,7 @@ a[data-toggle="collapse"] {
 }
 
 .nav-title strong {
-  color: var(--color-light-green);
+  color: var(--color-soda-primary);
   opacity: 0.8;
   transition: color 0.1s ease-in;
 }
@@ -298,7 +289,7 @@ a[data-toggle="collapse"] {
 }
 
 .nav-item {
-  padding: 0.5em 0;
+  padding: 0.1em 0;
   vertical-align: middle;
   width: 240px !important;
 }
@@ -454,12 +445,11 @@ a[data-toggle="collapse"] {
 
 .guided--nav {
   min-height: 100vh;
-  width: 220px;
+  width: 240px;
   margin: 0px !important;
   position: fixed;
   background-color: var(--color-border);
   z-index: 1001;
-  padding: 7px;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
@@ -503,22 +493,21 @@ a[data-toggle="collapse"] {
 }
 
 .guided--nav-bar-section-page.completed {
-  border-left: 3px solid green;
+  border-left: 3px solid var(--mantine-color-primary-6);
 }
 
 .guided--nav-bar-section-page.not-completed {
-  border-left: 3px solid var(--color-transparent-soda-green);
+  border-left: 3px solid var(--mantine-color-primary-2);
   pointer-events: none;
   opacity: 0.5;
 }
 
 .guided--nav-bar-section-page.active {
-  background-color: var(--color-transparent-soda-green);
+  background-color: var(--mantine-color-primary-2);
 }
 
 .guided--nav-bar-section-page:hover {
-  background-color: var(--color-transparent-soda-green);
-  border-left: 5px solid var(--color-light-green);
+  border-left: 5px solid var(--mantine-color-primary-8);
   cursor: pointer;
 }
 

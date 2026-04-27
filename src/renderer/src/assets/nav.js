@@ -1,13 +1,15 @@
 import Swal from "sweetalert2";
-import { swalConfirmAction } from "../scripts/utils/swal-utils";
+import { swalConfirmAction, swalShowInfo } from "../scripts/utils/swal-utils";
 import lottie from "lottie-web";
 import { existingDataset, modifyDataset } from "../assets/lotties/lotties";
+import { setActiveSidebarTab } from "../stores/slices/sideBarSlice";
+import { setNavButtonDisabled } from "../stores/slices/navButtonStateSlice";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
-const leavingUploadDatasets = () => {
+window.leavingUploadDatasets = () => {
   let activeTabs = document.querySelectorAll(".tab-active");
   for (const tab of activeTabs) {
     if (
@@ -25,47 +27,9 @@ const leavingUploadDatasets = () => {
   return false;
 };
 
-const uploadComplete = () => {
+window.uploadComplete = () => {
   return $("#wrapper-wrap").is(":visible") && $("#validate-upload-status-tab").is(":visible");
 };
-
-// this variable is here to keep track of when the Organize datasets/Continue button is enabled or disabled
-document.body.addEventListener("click", async (event) => {
-  if (event.target.dataset.section) {
-    if (leavingUploadDatasets() && window.sodaJSONHasProgress() && !uploadComplete()) {
-      let leaveUploadDataset = await swalConfirmAction(
-        "warning",
-        "Are you sure you want to exit?",
-        "Any progress made importing your dataset and creating manifest files will not be saved. Do you want to continue?",
-        "Yes",
-        "Cancel"
-      );
-      if (!leaveUploadDataset) return;
-      window.resetCurationTabs();
-    } else if (leavingUploadDatasets() && window.sodaJSONHasProgress() && uploadComplete()) {
-      let leaveUploadDataset = await swalConfirmAction(
-        "warning",
-        "Are you sure you want to exit?",
-        "",
-        "Yes",
-        "Cancel"
-      );
-      if (!leaveUploadDataset) return;
-      window.resetCurationTabs();
-    }
-    handleSectionTrigger(event);
-  } else if (event.target.dataset.modal) {
-    handleModalTrigger(event);
-  } else if (event.target.classList.contains("modal-hide")) {
-    hideAllModals();
-  }
-});
-
-document.body.addEventListener("custom-back", (e) => {
-  handleSectionTrigger(e);
-});
-// Variable used to determine the disabled status of the organize datasets next button
-let boolNextButtonDisabled = true;
 
 // function to hide the sidebar and disable the sidebar expand button
 function forceActionSidebar(action) {
@@ -79,23 +43,17 @@ function forceActionSidebar(action) {
   }
 }
 
-const resetLazyLoading = () => {
-  window.already_created_elem = [];
-  window.listed_count = 0;
-  window.start = 0;
-  window.preprended_items = 0;
-  window.amount = 500;
-};
-
-const guidedUnLockSideBar = () => {
+const prepareGuidedSidebar = () => {
+  // Click the home page sidebar button if
   const sidebar = document.getElementById("sidebarCollapse");
+  if (sidebar.classList.contains("active")) {
+    sidebar.click();
+  }
+
   const guidedModeSection = document.getElementById("guided_mode-section");
   const guidedDatsetTab = document.getElementById("guided_curate_dataset-tab");
   const guidedNav = document.getElementById("guided-nav");
 
-  if (sidebar.classList.contains("active")) {
-    sidebar.click();
-  }
   sidebar.disabled = false;
   guidedModeSection.style.marginLeft = "-15px";
   //remove the marginLeft style from guidedDatasetTab
@@ -103,176 +61,77 @@ const guidedUnLockSideBar = () => {
   guidedNav.style.display = "none";
 };
 
-const handleSectionTriggerOrganize = async (
-  event,
-  sectionId,
-  freeFormItemsContainer,
-  freeFormButtons
-) => {};
+window.handleSideBarTabClick = async (id, section) => {
+  // Always set activeTab to section, not id
+  setActiveSidebarTab(section);
+  const sectionId = `${section}-section`;
 
-const handleSectionTrigger = async (event) => {
-  // Display the current section
-  const sectionId = `${event.target.dataset.section}-section`;
-  const itemsContainer = document.getElementById("items");
   const freeFormItemsContainer = document.getElementById("free-form-folder-structure-container");
   const freeFormButtons = document.getElementById("organize-path-and-back-button-div");
-  const sectionRenderFileExplorer = event.target.dataset.render;
 
-  // In Free Form Mode -> Organize dataset, the sodaJSONObj has
-  // keys if the user has started the first step. The user must
-  // be warned because Guided Mode uses shared variables and FF progress
-  // must be wiped out.
-  //Update: Swal will only pop up if user is on organize datasets page only
-  // Update 2: If user has not selected any of the radio buttons in step 1, then swal
-  // will not pop up
-  let boolRadioButtonsSelected = false;
-  let organizeDatasetRadioButtons = Array.from(
-    document.querySelectorAll(".getting-started-1st-question")
-  );
-
-  organizeDatasetRadioButtons.forEach((radioButton) => {
-    if (radioButton.classList.contains("checked")) {
-      boolRadioButtonsSelected = true;
-    }
-  });
-
-  // check if we are entering the organize datasets section
+  // --- Organize section ---
   if (sectionId === "organize-section") {
-    //reset lazyloading values
-    resetLazyLoading();
-    window.hasFiles = false;
-    //Transition file explorer elements to freeform mode
-    window.scroll_box = document.querySelector("#organize-dataset-tab");
-    $(".shared-folder-structure-element").appendTo($("#free-form-folder-structure-container"));
-    freeFormItemsContainer.classList.add("freeform-file-explorer"); //add styling for free form mode
+    freeFormItemsContainer.classList.add("freeform-file-explorer");
     freeFormButtons.classList.add("freeform-file-explorer-buttons");
+
     window.organizeDSglobalPath = document.getElementById("input-global-path");
-    window.dataset_path = document.getElementById("input-global-path");
-    document.getElementById("nextBtn").disabled = boolNextButtonDisabled;
+    window.dataset_path = window.organizeDSglobalPath;
+    setNavButtonDisabled("nextBtn", true);
   }
 
-  if (sectionId === "guided_mode-section") {
-    // check if the
-    // Disallow the transition if an upload is in progress
-    if (document.getElementById("returnButton") !== null) {
-      Swal.fire({
-        icon: "warning",
-        text: "You cannot curate another dataset while an upload is in progress but you can still modify dataset components.",
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: "OK",
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-      });
-      document.getElementById("main_tabs_view").click();
-      document.getElementById("organize_dataset_btn").click();
-    }
-
-    if (sectionRenderFileExplorer != "file-explorer") {
-      window.sodaJSONObj = {};
-      window.datasetStructureJSONObj = {};
-      window.subjectsTableData = [];
-      window.samplesTableData = [];
-    }
-
-    //Transition file explorer elements to guided mode
-    window.organizeDSglobalPath = document.getElementById("guided-input-global-path");
-    window.organizeDSglobalPath.value = "";
-    window.dataset_path = document.getElementById("guided-input-global-path");
-    window.scroll_box = document.querySelector("#guided-body");
-    itemsContainer.innerHTML = "";
-    resetLazyLoading();
-    freeFormItemsContainer.classList.remove("freeform-file-explorer"); //add styling for free form mode
+  // --- Guided mode section ---
+  if (
+    sectionId === "guided_mode-section" ||
+    sectionId === "documentation-section" ||
+    sectionId === "account-section" ||
+    sectionId === "contact-us-section" ||
+    sectionId === "about-us-section"
+  ) {
+    freeFormItemsContainer.classList.remove("freeform-file-explorer");
     freeFormButtons.classList.remove("freeform-file-explorer-buttons");
-    document.querySelectorAll(".shared-folder-structure-element").forEach((folderElement) => {
-      document.querySelector("#guided-folder-structure-container").appendChild(folderElement);
-    });
 
-    let guidedModeSection = document.getElementById("guided_mode-section");
-    if (!guidedModeSection.classList.contains("is-shown")) {
-      guidedModeSection.classList.add("is-shown");
-    }
-
-    // Transition back to the home screen
+    // UI visibility updates
     document.getElementById("soda-home-page").classList.remove("hidden");
     document.getElementById("guided_mode-section").classList.add("is-shown");
     document.getElementById("guided_curate_dataset-tab").classList.add("show");
 
-    // Remove hidden class from the advanced features page to display it
-    document.getElementById("advanced-features-selection-page").classList.add("hidden");
-    document.getElementById("advanced-features-selection-page").classList.remove("is-shown");
-    document.getElementById("advanced_mode-section").classList.remove("is-shown");
-    document.getElementById("advanced_mode-section").classList.remove("fullShown");
-    document.getElementById("advanced_mode-section").classList.add("hidden");
+    const advancedFeaturesPage = document.getElementById("advanced-features-selection-page");
+    advancedFeaturesPage.classList.add("hidden");
+    advancedFeaturesPage.classList.remove("is-shown");
+
+    const advancedModeSection = document.getElementById("advanced_mode-section");
+    advancedModeSection.classList.remove("is-shown", "fullShown");
+    advancedModeSection.classList.add("hidden");
+
     document.getElementById("advanced-footer").classList.add("hidden");
 
-    // Ensure all sections are hidden and buttons are deselected
-    document.getElementById("validate-dataset-feature").classList.add("hidden");
-    document.getElementById("validate-dataset-feature").classList.remove("is-shown");
-    document.getElementById("banner-image-feature").classList.add("hidden");
-    document.getElementById("banner-image-feature").classList.remove("is-shown");
-    document.getElementById("manifest-creation-feature").classList.add("hidden");
-    document.getElementById("manifest-creation-feature").classList.remove("is-shown");
+    ["validate-dataset-feature", "banner-image-feature", "manifest-creation-feature"].forEach(
+      (id) => {
+        const el = document.getElementById(id);
+        el.classList.add("hidden");
+        el.classList.remove("is-shown");
+      }
+    );
 
-    // Remove lotties from the home screen to prevent double lotties
-    if (document.getElementById("existing-dataset-lottie").innerHTML == "") {
-      // Add the lotties back to the home screen
-      lottie.loadAnimation({
-        container: document.getElementById("existing-dataset-lottie"),
-        animationData: existingDataset,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
-    }
-
-    if (document.getElementById("edit-dataset-component-lottie").innerHTML == "") {
-      lottie.loadAnimation({
-        container: document.getElementById("edit-dataset-component-lottie"),
-        animationData: modifyDataset,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
-    }
-
-    guidedUnLockSideBar();
+    prepareGuidedSidebar();
   }
 
+  // --- Handle section switching ---
   hideAllSectionsAndDeselectButtons();
-  if (event.detail.target) {
-    let previous_section = `${event.detail.target.dataset.section}-section`;
-    document.getElementById(previous_section).classList.add("is-shown");
-    forceActionSidebar("show");
-    return;
-  }
 
-  document.getElementById(sectionId).classList.add("is-shown");
-
-  let showSidebarSections = [
-    "main_tabs-section", //Free form mode
-    "getting_started-section", //Overview page
-    "guided_mode-section", //Guided Mode
-    "documentation-section", //Documentation
-    "contact-us-section", //Contact us
+  const showSidebarSections = [
+    "main_tabs-section",
+    "guided_mode-section",
+    "documentation-section",
+    "contact-us-section",
     "about-us-section",
   ];
+  forceActionSidebar(showSidebarSections.includes(sectionId) ? "show" : "hide");
 
-  if (showSidebarSections.includes(sectionId)) {
-    forceActionSidebar("show");
-  } else {
-    forceActionSidebar("hide");
-  }
-
-  boolNextButtonDisabled = document.getElementById("nextBtn").disabled;
-
+  // --- Validate dataset section ---
   if (sectionId === "validate_dataset-section") {
-    let localDatasetButton = document.getElementById("validate_dataset-1-local");
-    let pennsieveDatasetButton = document.getElementById("validate_dataset-1-pennsieve");
+    const localDatasetButton = document.getElementById("validate_dataset-1-local");
+    const pennsieveDatasetButton = document.getElementById("validate_dataset-1-pennsieve");
 
     if (
       !localDatasetButton.classList.contains("checked") &&
@@ -280,31 +139,17 @@ const handleSectionTrigger = async (event) => {
       !pennsieveDatasetButton.classList.contains("checked") &&
       !pennsieveDatasetButton.classList.contains("non-selected")
     ) {
-      $("#validate_dataset-question-2").removeClass("show");
-      $("#validate_dataset-question-1").removeClass("prev");
-      $("#validate_dataset-question-2").removeClass("prev");
-      $("#validate_dataset-question-3").removeClass("show");
+      document.getElementById("validate_dataset-question-2").classList.remove("show", "prev");
+      document.getElementById("validate_dataset-question-1").classList.remove("prev");
+      document.getElementById("validate_dataset-question-3").classList.remove("show");
     }
   }
+
+  document.getElementById(sectionId).classList.add("is-shown");
 };
 
 function showMainContent() {
-  document.querySelector(".js-nav").classList.add("is-shown");
   document.querySelector(".js-content").classList.add("is-shown");
-}
-
-function handleModalTrigger(event) {
-  hideAllModals();
-  const modalId = `${event.target.dataset.modal}-modal`;
-  document.getElementById(modalId).classList.add("is-shown");
-}
-
-function hideAllModals() {
-  const modals = document.querySelectorAll(".modal.is-shown");
-  Array.prototype.forEach.call(modals, (modal) => {
-    modal.classList.remove("is-shown");
-  });
-  showMainContent();
 }
 
 function hideAllSectionsAndDeselectButtons() {
@@ -347,11 +192,6 @@ $(document).ready(() => {
     $(this).toggleClass("active");
     $(".section").toggleClass("fullShown");
   });
-
-  $("a").on("click", function () {
-    $($(this).parents()[1]).find("a").removeClass("is-selected");
-    $(this).addClass("is-selected");
-  });
 });
 
-export { resetLazyLoading, guidedUnLockSideBar, hideAllSectionsAndDeselectButtons };
+export { prepareGuidedSidebar, hideAllSectionsAndDeselectButtons };

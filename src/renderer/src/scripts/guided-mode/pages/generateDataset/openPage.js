@@ -11,16 +11,20 @@ import {
   reRenderTreeView,
   setPathToRender,
 } from "../../../../stores/slices/datasetTreeViewSlice.js";
+import useGlobalStore from "../../../../stores/globalStore";
 import {
   guidedResetLocalGenerationUI,
   guidedSetDOIUI,
   guidedSetPublishingStatusUI,
 } from "../../guided-curate-dataset.js";
-import { setPreferredPennsieveDatasetId } from "../../../../stores/slices/pennsieveDatasetSelectSlice.js";
+import {
+  setPreferredPennsieveDatasetId,
+  setPreferredPennsieveDatasetIntId,
+} from "../../../../stores/slices/pennsieveDatasetSelectSlice.js";
 import api from "../../../others/api/api.js";
+import { guidedGetCurrentUserWorkSpace } from "../../workspaces/workspaces.js";
 
 export const openPageGenerateDataset = async (targetPageID) => {
-  const targetPageDataset = document.getElementById(targetPageID).dataset;
   if (targetPageID === "guided-dataset-generation-options-tab") {
     ["generate-dataset-locally", "generate-dataset-on-pennsieve"].forEach((key) => {
       const isChecked = window.sodaJSONObj[key] === true;
@@ -29,30 +33,7 @@ export const openPageGenerateDataset = async (targetPageID) => {
   }
 
   if (targetPageID === "guided-generate-dataset-locally") {
-    // Create a deep copy of the dataset structure JSON object
-    const datasetStructureJSONObjCopy = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
-    // Restore the original dataset structure
-    window.datasetStructureJSONObj = datasetStructureJSONObjCopy;
     guidedResetLocalGenerationUI();
-  }
-
-  if (targetPageID === "guided-pennsieve-generate-target-tab") {
-    setPreferredPennsieveDatasetId(null);
-    setCheckboxCardUnchecked("generate-on-new-pennsieve-dataset");
-    setCheckboxCardUnchecked("generate-on-existing-pennsieve-dataset");
-
-    const pennsieveGenerationTarget = window.sodaJSONObj["pennsieve-generation-target"];
-    if (pennsieveGenerationTarget === "new") {
-      // If the user selected to generate on a new Pennsieve dataset, check the corresponding checkbox card
-      setCheckboxCardChecked("generate-on-new-pennsieve-dataset");
-    }
-    if (pennsieveGenerationTarget === "existing") {
-      const previouslySelectedDatasetIdToUploadDataTo =
-        window.sodaJSONObj["previously-selected-dataset-id-to-upload-data-to"] || null;
-      // If the user selected to generate on an existing Pennsieve dataset, check the corresponding checkbox card
-      setPreferredPennsieveDatasetId(previouslySelectedDatasetIdToUploadDataTo);
-      setCheckboxCardChecked("generate-on-existing-pennsieve-dataset");
-    }
   }
 
   if (targetPageID === "guided-pennsieve-settings-tab") {
@@ -116,21 +97,33 @@ export const openPageGenerateDataset = async (targetPageID) => {
       pennsieveConfigInfoElements.forEach((element) => {
         element.classList.remove("hidden");
       });
-      const pennsieveDatasetSubtitle = window.sodaJSONObj?.["pennsieve-dataset-subtitle"] ?? "";
-      const datasetLicense = window.sodaJSONObj["digital-metadata"]["license"];
-
-      const pennsieveDatasetSubtitleReviewText = document.getElementById(
-        "guided-review-dataset-subtitle"
-      );
-      const datasetLicenseReviewText = document.getElementById("guided-review-dataset-license");
-
-      pennsieveDatasetSubtitleReviewText.innerHTML = pennsieveDatasetSubtitle;
-      datasetLicenseReviewText.innerHTML = datasetLicense ? datasetLicense : "No license selected";
     } else {
       // Hide the pennsieve config info elements
       pennsieveConfigInfoElements.forEach((element) => {
         element.classList.add("hidden");
       });
+    }
+
+    const pennsieveDatasetSubtitle = window.sodaJSONObj?.["pennsieve-dataset-subtitle"];
+    const datasetSubtitleInfoContainer = document.getElementById("guided-subtitle-info-container");
+    if (pennsieveDatasetSubtitle) {
+      const pennsieveDatasetSubtitleReviewText = document.getElementById(
+        "guided-review-dataset-subtitle"
+      );
+      pennsieveDatasetSubtitleReviewText.innerHTML = pennsieveDatasetSubtitle;
+      datasetSubtitleInfoContainer.classList.remove("hidden");
+    } else {
+      datasetSubtitleInfoContainer.classList.add("hidden");
+    }
+
+    const datasetLicense = window.sodaJSONObj["digital-metadata"]?.["license"];
+    const licenseInfoContainer = document.getElementById("guided-license-info-container");
+    if (datasetLicense) {
+      const datasetLicenseReviewText = document.getElementById("guided-review-dataset-license");
+      datasetLicenseReviewText.innerHTML = datasetLicense;
+      licenseInfoContainer.classList.remove("hidden");
+    } else {
+      licenseInfoContainer.classList.add("hidden");
     }
 
     // Hide the Pennsieve agent check section (unhidden if it requires user action)
@@ -140,7 +133,11 @@ export const openPageGenerateDataset = async (targetPageID) => {
   }
 
   if (targetPageID === "guided-dataset-generation-tab") {
-    document.getElementById("guided--verify-files").classList.add("hidden");
+    // hide the verify files sections
+    document.getElementById("guided-section-file-upload-verification").classList.add("hidden");
+    document.getElementById("guided-section-file-verification-success").classList.add("hidden");
+    document.getElementById("guided-section-file-verification-failure").classList.add("hidden");
+    document.getElementById("guided-section-validate-dataset-upload").classList.add("hidden");
   }
 
   if (targetPageID === "guided-dataset-dissemination-tab") {

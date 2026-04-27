@@ -1,20 +1,39 @@
 import SodaPaper from "../../utils/ui/SodaPaper";
-import { Text, Center, Button, Stack } from "@mantine/core";
+import { Text, Center, Button, Stack, Alert } from "@mantine/core";
+import { IconAlertCircle } from "@tabler/icons-react";
 import { handleOrganizeDsGenerateLocalManifestCopyButtonClick } from "./utils";
+import useGlobalStore from "../../../stores/globalStore";
 
-const ManifestFilePreviewSection = ({ id }) => {
-  const handleClick = () => {
-    if (id === "gm-manifest-file-preview") {
-      window.guidedOpenManifestEditSwal();
-    }
-    if (id === "ffm-manifest-file-preview") {
-      window.openmanifestEditSwal();
-    }
+const ManifestFilePreviewSection = () => {
+  const manifestFileGenerationDisabled = useGlobalStore(
+    (state) => state.manifestFileGenerationDisabled
+  );
+  const handlePreviewEditManifestFileClick = () => {
+    window.guidedOpenManifestEditSwal();
   };
 
   const handleGenerateLocalCopy = async () => {
-    await handleOrganizeDsGenerateLocalManifestCopyButtonClick();
+    // await handleOrganizeDsGenerateLocalManifestCopyButtonClick();
+    await window.guidedCreateLocalManifestCopy();
   };
+
+  if (manifestFileGenerationDisabled) {
+    return (
+      <SodaPaper>
+        <Alert
+          icon={<IconAlertCircle size={16} />}
+          title="Manifest file generation unavailable"
+          color="gray"
+          variant="light"
+        >
+          <Text size="sm">
+            SODA does not currently support manifest file generation for datasets that already have
+            data on Pennsieve.
+          </Text>
+        </Alert>
+      </SodaPaper>
+    );
+  }
 
   return (
     <SodaPaper>
@@ -29,20 +48,16 @@ const ManifestFilePreviewSection = ({ id }) => {
             Exit" button at the bottom of the manifest file editor to save any changes you have
             made.
           </Text>
-          <Button size="md" onClick={handleClick}>
+          <Button size="md" onClick={handlePreviewEditManifestFileClick}>
             Preview/Edit Manifest file
           </Button>
-          {id === "ffm-manifest-file-preview" && (
-            <>
-              <Text>
-                You can create a local copy of your manifest files for review. Click to do so if
-                needed.
-              </Text>
-              <Button size="md" onClick={handleGenerateLocalCopy}>
-                Create local copy
-              </Button>
-            </>
-          )}
+
+          <Text>
+            You can create a local copy of your manifest files for review. Click to do so if needed.
+          </Text>
+          <Button size="md" onClick={handleGenerateLocalCopy}>
+            Create local copy
+          </Button>
         </Stack>
       </Center>
     </SodaPaper>

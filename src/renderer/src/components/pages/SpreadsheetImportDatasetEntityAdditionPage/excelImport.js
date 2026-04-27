@@ -1,4 +1,4 @@
-import { swalFileListDoubleAction, swalConfirmAction } from "../../../scripts/utils/swal-utils";
+import { swalListDoubleAction, swalConfirmAction } from "../../../scripts/utils/swal-utils";
 
 export const handleEntityFileImport = async (files, entityType, setImportResults) => {
   if (!files?.length) return;
@@ -26,7 +26,7 @@ export const handleEntityFileImport = async (files, entityType, setImportResults
     // Show confirmation with processed entities
     const entityList = result.entities.map((entity) => config.formatDisplayId(entity));
 
-    const confirmed = await swalFileListDoubleAction(
+    const confirmed = await swalListDoubleAction(
       entityList,
       `Confirm ${entityType.charAt(0).toUpperCase() + entityType.slice(1)} Import`,
       `The following ${entityList.length} ${entityType} were detected in your spreadsheet and will be imported into SODA:`,
@@ -92,7 +92,7 @@ export const handleFileRejection = () => {
 import * as XLSX from "xlsx";
 import {
   addSubject,
-  addSampleToSubject,
+  addSample,
   addSiteToSubject,
   addSiteToSample,
   normalizeEntityId,
@@ -153,7 +153,7 @@ export const entityConfigs = {
         metadata: { ...item, sample_id: id, subject_id: subjectId },
       };
     },
-    saveEntity: (entity) => addSampleToSubject(entity.parentSubject, entity.id, entity.metadata),
+    saveEntity: (entity) => addSample(entity.parentSubject, null, entity.id, entity.metadata),
     formatDisplayId: (entity) => `${entity.id}`,
     templateFileName: "samples.xlsx",
   },

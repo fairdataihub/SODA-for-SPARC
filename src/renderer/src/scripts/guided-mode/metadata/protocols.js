@@ -79,7 +79,7 @@ const generateProtocolField = (identifier, identifier_description) => {
           <button
             type="button"
             class="btn btn-sm"
-            style="color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);"
+            style="color: white; background-color: var(--color-soda-primary); border-color: var(--color-soda-primary);"
             onclick="window.guidedOpenAddOrEditProtocolSwal('${identifier}')"
           >
           View/Edit
@@ -110,8 +110,10 @@ window.guidedOpenAddOrEditProtocolSwal = async (editIdentifier = null) => {
   await Swal.fire({
     title: protocolToEdit ? "Edit protocol" : "Add a protocol",
     html:
-      `<label>Protocol URL or DOI: <i class="fas fa-info-circle swal-popover" data-content="Enter a protocol link or DOI." rel="popover" data-placement="right" data-html="true" data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL or DOI" value="${initialIdentifier}">` +
-      `<label>Protocol description: <i class="fas fa-info-circle swal-popover" data-content="Provide a brief description for this protocol." rel="popover" data-placement="right" data-html="true" data-trigger="hover"></i></label><textarea id="DD-protocol-description" class="swal2-textarea" placeholder="Enter a description">${initialDescription}</textarea>`,
+      `<label>Protocol URL or DOI: <i class="fas fa-info-circle swal-popover" data-content="Enter a protocol link or DOI." rel="popover" data-placement="right" data-html="true" data-trigger="hover"></i></label>
+          <input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL or DOI" value="${initialIdentifier}">` +
+      `<label>Protocol description: <i class="fas fa-info-circle swal-popover" data-content="Provide a brief description for this protocol." rel="popover" data-placement="right" data-html="true" data-trigger="hover"></i></label>
+          <textarea id="DD-protocol-description" class="swal2-textarea" placeholder="Enter a description">${initialDescription}</textarea>`,
     focusConfirm: false,
     confirmButtonText: protocolToEdit ? "Save" : "Add",
     cancelButtonText: "Cancel",

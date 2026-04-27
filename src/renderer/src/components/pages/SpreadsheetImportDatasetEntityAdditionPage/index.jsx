@@ -4,10 +4,16 @@ import GuidedModeSection from "../../containers/GuidedModeSection";
 import { IconUser, IconFlask, IconPin, IconFileSpreadsheet, IconCheck } from "@tabler/icons-react";
 import { Text, Grid, Stack, Group, Button, Paper, Box, Divider, List, Card } from "@mantine/core";
 import useGlobalStore from "../../../stores/globalStore";
-
-import { swalConfirmAction } from "../../../scripts/utils/swal-utils";
-import { DownloadCard, ImportCard, EntityImportCompleteCard } from "./SpreadsheetDownloadImport";
+import { importEntitiesFromExcel, entityConfigs, saveEntities } from "./excelImport";
+import { swalListDoubleAction, swalConfirmAction } from "../../../scripts/utils/swal-utils";
 import SodaPaper from "../../utils/ui/SodaPaper";
+import {
+  getExistingSubjects,
+  getExistingSamples,
+  getExistingSites,
+} from "../../../stores/slices/datasetEntityStructureSlice";
+import { normalizeEntityId } from "../../../stores/slices/datasetEntityStructureSlice";
+import { DownloadCard, ImportCard } from "./SpreadsheetDownloadImport";
 
 const SpreadsheetImportDatasetEntityAdditionPage = () => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
@@ -53,10 +59,10 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
       title: "Provide Sample Metadata",
       singular: "sample",
       icon: <IconFlask size={24} />,
-      color: "green",
-      description: "Import sample IDs and metadata from an Excel file.",
-      dependsOn: ["entity-structure", "subjects"],
-      metadataFileName: "samples.xlsx",
+      color: "black",
+      description: "Import sample IDs and metadata from an Excel file",
+      dependsOn: ["subjects"], // Depends on subjects being imported first
+      sequence: 2,
     },
     sites: {
       title: "Provide Site Metadata",
@@ -74,7 +80,7 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
     const importResult = importResults[entityType];
 
     return (
-      <SodaPaper>
+      <SodaPaper key={entityType}>
         <Stack>
           <Text size="lg" fw={600}>
             {config.title}

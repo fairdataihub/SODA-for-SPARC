@@ -57,18 +57,19 @@ import {
 } from "../globals";
 import checkForAnnouncements from "./announcements";
 import {
-  swalFileListSingleAction,
-  swalFileListTripleAction,
-  swalFileListDoubleAction,
+  swalListSingleAction,
+  swalListTripleAction,
+  swalListDoubleAction,
   swalShowError,
   swalShowInfo,
+  swalShowSuccess,
 } from "../utils/swal-utils";
 
 import useGlobalStore from "../../stores/globalStore";
 import { reRenderTreeView } from "../../stores/slices/datasetTreeViewSlice";
 import {
   resetPennsieveAgentCheckState,
-  setPennsieveAgentCheckSuccessful,
+  setPennsieveAgentStartedSuccessfully,
   setPennsieveAgentInstalled,
   setPennsieveAgentDownloadURL,
   setPennsieveAgentOutputErrorMessage,
@@ -77,7 +78,8 @@ import {
   setPennsieveAgentCheckInProgress,
   setPostPennsieveAgentCheckAction,
 } from "../../stores/slices/backgroundServicesSlice";
-
+import { setNavButtonDisabled, setNavButtonHidden } from "../../stores/slices/navButtonStateSlice";
+import { setStateDisplayData } from "../../stores/slices/stateDisplaySlice";
 // add jquery to the window object
 window.$ = jQuery;
 window.jQuery = jQuery;
@@ -86,8 +88,6 @@ window.select2 = select2;
 document.addEventListener("DOMContentLoaded", function () {
   $("select").select2();
 });
-
-window.nextBtnDisabledVariable = true;
 
 window.datasetStructureJSONObj = {
   folders: {},
@@ -119,7 +119,7 @@ window.wait = async (delay) => {
 const appVersion = await window.electron.ipcRenderer.invoke("app-version");
 window.log.info(`Current SODA version: ${appVersion}`);
 
-document.getElementById("guided_mode_view").click();
+// document.getElementById("guided_mode_view").click();
 
 window.notyf = new Notyf({
   position: { x: "right", y: "bottom" },
@@ -270,7 +270,7 @@ startBackgroundServices();
 initializeSODARenderer();
 
 const abortPennsieveAgentCheck = (pennsieveAgentStatusDivId) => {
-  setPennsieveAgentCheckSuccessful(false);
+  setPennsieveAgentStartedSuccessfully(false);
   if (!pennsieveAgentStatusDivId) {
     return;
   }
@@ -284,10 +284,18 @@ window.getPennsieveAgentStatus = async () => {
   while (useGlobalStore.getState()["pennsieveAgentCheckInProgress"] === true) {
     await window.wait(100);
   }
-  return useGlobalStore.getState()["pennsieveAgentCheckSuccessful"];
+  return useGlobalStore.getState()["pennsieveAgentStartedSuccessfully"];
+};
+
+window.CHECK_FOR_PENNSIEVE_AGENT_STATUS = {
+  NOT_INSTALLED: "NOT_INSTALLED",
+  INSTALLED: "INSTALLED",
+  FOUND_BUT_BAD_EXECUTABLE: "FOUND_BUT_BAD_EXECUTABLE",
 };
 
 window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
+  window.unHideAndSmoothScrollToElement(pennsieveAgentStatusDivId);
+
   try {
     // Step 0: abort if the background services are already running
     if (useGlobalStore.getState()["pennsieveAgentCheckInProgress"] === true) {
@@ -309,15 +317,21 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
       return false;
     }
 
-    // Step 2: Check if the Pennsieve agent is installed
-    const pennsieveAgentInstalled = await window.spawn.checkForPennsieveAgent();
-    setPennsieveAgentInstalled(pennsieveAgentInstalled);
-
-    if (!pennsieveAgentInstalled) {
-      // If the Pennsieve agent is not installed, get the download URL and set it in the store
-      const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
-      setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
+    // Declare variables to hold the latest Pennsieve agent version and
+    // the platform specific download URL for the latest Pennsieve agent.
+    let platformSpecificAgentDownloadURL;
+    let latestPennsieveAgentVersion;
+    try {
+      ({ latestPennsieveAgentVersion, platformSpecificAgentDownloadURL } =
+        await getLatestPennsieveAgentVersion());
+      setPennsieveAgentDownloadURL(platformSpecificAgentDownloadURL);
+    } catch (error) {
+      setPennsieveAgentCheckError(
+        "Unable to get information about the latest Pennsieve Agent release",
+        "SODA must be able to retrieve the latest Pennsieve Agent version to ensure compatibility. Please check your internet connection and try again."
+      );
       abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+
       return false;
     }
 
@@ -333,11 +347,13 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
     // Start the Pennsieve agent
     try {
       await window.spawn.startPennsieveAgent();
+      setPennsieveAgentInstalled(true);
     } catch (error) {
-      const emessage = userErrorMessage(error);
-      setPennsieveAgentOutputErrorMessage(emessage);
+      setPennsieveAgentInstalled(false);
+      setPennsieveAgentOutputErrorMessage(
+        error.message || "An unknown error occurred while starting the Pennsieve Agent."
+      );
       abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
-
       return false;
     }
 
@@ -352,39 +368,23 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
         "Please check the Pennsieve Agent logs for more information."
       );
       abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
-
       return false;
     }
 
-    let latestPennsieveAgentVersion;
-
-    try {
-      const [_, version] = await getLatestPennsieveAgentVersion();
-      latestPennsieveAgentVersion = version;
-    } catch (error) {
-      const emessage = userErrorMessage(error);
-      setPennsieveAgentCheckError(
-        "Unable to get information about the latest Pennsieve Agent release",
-        emessage
-      );
-      // abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
-
-      // return false;
-    }
-
     if (usersPennsieveAgentVersion !== latestPennsieveAgentVersion) {
-      const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
-      setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
-      setPennsieveAgentOutOfDate(usersPennsieveAgentVersion, latestPennsieveAgentVersion);
-      // abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
-
-      // return false;
+      if (!window.allowOutdatedPennsieveAgentForThisSession === true) {
+        const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
+        setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
+        setPennsieveAgentOutOfDate(usersPennsieveAgentVersion, latestPennsieveAgentVersion);
+        abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+        return false;
+      }
     }
 
     // If we get to this point, it means all the background services are operational
-    setPennsieveAgentCheckSuccessful(true);
+    setPennsieveAgentStartedSuccessfully(true);
     const postAgentCheckMessages = {
-      "guided-mode-post-log-in-pennsieve-agent-check":
+      "gm-mode-post-log-in-pennsieve-agent-check":
         "Click the 'Save and Continue' button below to finish preparing your dataset to be uploaded to Pennsieve.",
       "freeform-mode-pre-generate-pennsieve-agent-check":
         "Click the 'Upload' button below to upload your dataset to Pennsieve.",
@@ -472,9 +472,9 @@ window.run_pre_flight_checks = async (pennsieveAgentStatusDivId) => {
     await window.synchronizePennsieveWorkspace();
 
     // Run the Pennsieve agent checks
-    const pennsieveAgentCheckSuccessful =
+    const pennsieveAgentStartedSuccessfully =
       await window.checkPennsieveAgent(pennsieveAgentStatusDivId);
-    if (!pennsieveAgentCheckSuccessful) {
+    if (!pennsieveAgentStartedSuccessfully) {
       await swalShowInfo(
         "The Pennsieve Agent is not running",
         "Please follow the instructions to start the Pennsieve Agent and try again."
@@ -585,14 +585,28 @@ window.check_api_key = async (showNotyfs = false) => {
 };
 
 const getPlatformSpecificAgentDownloadURL = async () => {
-  // Try to the direct download url for the platform specific agent
-  // If that fails, then return the generic download url
+  // Retrieve platform‑specific download link from release metadata.  The
+  // helper `getLatestPennsieveAgentVersion` already chooses the correct
+  // asset based on OS/architecture, but it may still return undefined if the
+  // asset couldn't be found.  Always return a string so callers don't have
+  // to guard against falsy values.
   try {
-    const [directDownloadUrl, _] = await getLatestPennsieveAgentVersion();
-    return directDownloadUrl;
+    const { platformSpecificAgentDownloadURL } = await getLatestPennsieveAgentVersion();
+
+    if (platformSpecificAgentDownloadURL && typeof platformSpecificAgentDownloadURL === "string") {
+      return platformSpecificAgentDownloadURL;
+    }
+
+    // fall through to fallback below
+    window.log &&
+      window.log.warn("Platform-specific agent URL was undefined, falling back to generic page");
   } catch (error) {
-    return "https://github.com/Pennsieve/pennsieve-agent/releases";
+    // swallow and fall back
+    window.log && window.log.warn("Error fetching latest Pennsieve agent version", error);
   }
+
+  // Generic release page is the last resort
+  return "https://github.com/Pennsieve/pennsieve-agent/releases";
 };
 
 /**
@@ -616,8 +630,8 @@ const getLatestPennsieveAgentVersion = async () => {
     "https://api.github.com/repos/Pennsieve/pennsieve-agent/releases/latest"
   );
 
-  const latestReleaseAssets = res.data?.assets;
-  const latestPennsieveAgentVersion = res.data?.tag_name;
+  let latestReleaseAssets = res.data?.assets;
+  let latestPennsieveAgentVersion = res.data?.tag_name;
 
   if (!latestReleaseAssets) {
     throw new Error("Failed to extract assets from the latest Pennsieve agent release");
@@ -627,13 +641,24 @@ const getLatestPennsieveAgentVersion = async () => {
     throw new Error("Failed to retrieve the latest Pennsieve agent version");
   }
 
-  // Find the platform specific agent download url based on the user's platform
   const usersPlatform = window.process.platform();
   let platformSpecificAgentDownloadURL;
+
+  if (latestPennsieveAgentVersion.includes("1.8.13") && usersPlatform === "darwin") {
+    // change asset information to 1.8.9
+    const updatedReleaseAsset = await axios.get(
+      "https://api.github.com/repos/Pennsieve/pennsieve-agent/releases/tags/1.8.9"
+    );
+    latestReleaseAssets = updatedReleaseAsset.data.assets;
+    latestPennsieveAgentVersion = updatedReleaseAsset.data.tag_name;
+  }
+
+  // Find the platform specific agent download url based on the user's platform
+  let systemArchitecture;
   switch (usersPlatform) {
     case "darwin":
       // The Pennsieve has different agent releases for different architectures on MacOS
-      const systemArchitecture = window.process.architecture();
+      systemArchitecture = window.process.architecture();
       if (systemArchitecture === "x64") {
         platformSpecificAgentDownloadURL = findDownloadURL("x86_64.pkg", latestReleaseAssets);
       }
@@ -661,7 +686,11 @@ const getLatestPennsieveAgentVersion = async () => {
     );
   }
 
-  return [platformSpecificAgentDownloadURL, latestPennsieveAgentVersion];
+  // returning an object makes the caller code clearer and easier to extend
+  return {
+    platformSpecificAgentDownloadURL,
+    latestPennsieveAgentVersion,
+  };
 };
 
 // Check app version on current app and display in the side bar
@@ -740,11 +769,6 @@ const restartApp = async () => {
 
 // /////// New Organize Datasets /////////////////////
 
-const organizeDSbackButton = document.getElementById("button-back");
-const organizeDSaddFiles = document.getElementById("add-files");
-const organizeDSaddNewFolder = document.getElementById("new-folder");
-const organizeDSaddFolders = document.getElementById("add-folders");
-const fullNameValue = document.querySelector(".hoverFullName");
 window.menuFolder = document.querySelector(".menu.reg-folder");
 window.menuFile = document.querySelector(".menu.file");
 window.menuHighLevelFolders = document.querySelector(".menu.high-level-folder");
@@ -801,27 +825,6 @@ window.delayAnimation = 250;
 //////////////////////////////////
 
 // Sidebar Navigation //
-
-// Assign dragable area in the code to allow for dragging and selecting items//
-let drag_event_fired = false;
-let dragselect_area = new DragSelect({
-  selectables: document.querySelectorAll(".single-item"),
-  draggability: false,
-  area: document.getElementById("items"),
-});
-
-// Assign the callback event for selecting items
-dragselect_area.subscribe("callback", ({ items }) => {
-  select_items(items);
-});
-
-// Assign an additional event to allow for ctrl drag behaviour
-dragselect_area.subscribe("dragstart", ({ event }) => {
-  select_items_ctrl(event);
-});
-
-// ///////////////////// Prepare Metadata Section ////////////////////////////////
-// ///////////////////////////////////////////////////////////////////////////////
 
 // ///// Global variables for this section
 
@@ -1578,21 +1581,6 @@ window.loadSamplesFileToDataframe = async (filePath) => {
       "Existing",
       Destinations.LOCAL
     );
-  }
-};
-
-// load and parse json file
-window.parseJson = (path) => {
-  if (!window.fs.existsSync(path)) {
-    return {};
-  }
-  try {
-    var content = window.fs.readFileSync(path, "utf8");
-    let contentJson = JSON.parse(content);
-    return contentJson;
-  } catch (error) {
-    window.log.error(error);
-    return {};
   }
 };
 
@@ -2477,6 +2465,7 @@ const populateDatasetDropdowns = (mylist) => {
 
     window.curateDatasetDropdown.appendChild(option2);
   }
+
   // metadataDatasetlistChange();
   permissionDatasetlistChange();
   // postCurationListChange();
@@ -2635,7 +2624,7 @@ window.showPublishingStatus = async (callback, curationMode = "") => {
 
     Swal.fire({
       title: "Could not get your publishing status!",
-      text: userErrorMessage(error),
+      html: userErrorMessage(error),
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Ok",
@@ -2661,180 +2650,6 @@ window.showPublishingStatus = async (callback, curationMode = "") => {
 
 window.highLevelFolders = ["code", "derivative", "docs", "source", "primary", "protocol"];
 window.sodaJSONObj = {};
-
-/// back button Curate
-organizeDSbackButton.addEventListener("click", function () {
-  let slashCount = window.organizeDSglobalPath.value.trim().split("/").length - 1;
-  if (slashCount !== 1) {
-    let filtered = window.getGlobalPath(window.organizeDSglobalPath);
-
-    if (filtered.length === 1) {
-      window.organizeDSglobalPath.value = filtered[0] + "/";
-    } else {
-      window.organizeDSglobalPath.value = filtered.slice(0, filtered.length - 1).join("/") + "/";
-    }
-    let myPath = window.datasetStructureJSONObj;
-    for (var item of filtered.slice(1, filtered.length - 1)) {
-      myPath = myPath["folders"][item];
-    }
-    // construct UI with files and folders
-    $("#items").empty();
-    window.already_created_elem = [];
-    window.loadFileFolder(myPath); //array -
-    //we have some items to display
-    window.listItems(myPath, "#items", 500, true);
-    window.organizeLandingUIEffect();
-    // reconstruct div with new elements
-    window.getInFolder(
-      ".single-item",
-      "#items",
-      window.organizeDSglobalPath,
-      window.datasetStructureJSONObj
-    );
-  }
-});
-
-// Add folder button
-organizeDSaddNewFolder.addEventListener("click", function (event) {
-  event.preventDefault();
-  let slashCount = window.organizeDSglobalPath.value.trim().split("/").length - 1;
-  if (slashCount !== 1) {
-    let newFolderName = "New Folder";
-    Swal.fire({
-      title: "Add new folder...",
-      text: "Enter a name below:",
-      heightAuto: false,
-      input: "text",
-      backdrop: "rgba(0,0,0, 0.4)",
-      showCancelButton: "Cancel",
-      confirmButtonText: "Add folder",
-      reverseButtons: window.reverseSwalButtons,
-      showClass: {
-        popup: "animate__animated animate__fadeInDown animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__fadeOutUp animate__faster",
-      },
-      didOpen: () => {
-        let swal_container = document.getElementsByClassName("swal2-popup")[0];
-        swal_container.style.width = "600px";
-        swal_container.style.padding = "1.5rem";
-        $(".swal2-input").attr("id", "add-new-folder-input");
-        $(".swal2-confirm").attr("id", "add-new-folder-button");
-        $("#add-new-folder-input").keyup(function () {
-          let val = $("#add-new-folder-input").val();
-          const folderNameIsValid = window.evaluateStringAgainstSdsRequirements(
-            val,
-            "folder-or-file-name-is-valid"
-          );
-
-          if (folderNameIsValid) {
-            $("#add-new-folder-button").attr("disabled", false);
-          } else {
-            Swal.showValidationMessage(`The folder name contains non-allowed characters.`);
-            $("#add-new-folder-button").attr("disabled", true);
-            return;
-          }
-        });
-      },
-      didDestroy: () => {
-        $(".swal2-confirm").attr("id", "");
-        $(".swal2-input").attr("id", "");
-      },
-    }).then((result) => {
-      if (result.value && result.value !== null && result.value !== "") {
-        newFolderName = result.value.trim();
-        // check for duplicate or files with the same name
-        let duplicate = false;
-        let itemDivElements = document.getElementById("items").children;
-        for (let i = 0; i < itemDivElements.length; i++) {
-          if (newFolderName === itemDivElements[i].innerText) {
-            duplicate = true;
-            break;
-          }
-        }
-        if (duplicate) {
-          Swal.fire({
-            icon: "error",
-            text: "Duplicate folder name: " + newFolderName,
-            confirmButtonText: "OK",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-
-          window.logCurationForAnalytics(
-            "Error",
-            window.PrepareDatasetsAnalyticsPrefix.CURATE,
-            window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-            ["Step 3", "Add", "Folder"],
-            determineDatasetLocation()
-          );
-        } else {
-          /// update window.datasetStructureJSONObj
-          let currentPath = window.organizeDSglobalPath.value;
-          let jsonPathArray = currentPath.split("/");
-          let filtered = jsonPathArray.slice(1).filter(function (el) {
-            return el != "";
-          });
-
-          let myPath = window.getRecursivePath(filtered, window.datasetStructureJSONObj);
-          let renamedNewFolder = newFolderName;
-          // update Json object with new folder created
-          myPath["folders"][renamedNewFolder] = {
-            folders: {},
-            files: {},
-            type: "virtual",
-            action: ["new"],
-          };
-
-          window.listItems(myPath, "#items", 500, true);
-          window.getInFolder(
-            ".single-item",
-            "#items",
-            window.organizeDSglobalPath,
-            window.datasetStructureJSONObj
-          );
-
-          // log that the folder was successfully added
-          window.logCurationForAnalytics(
-            "Success",
-            window.PrepareDatasetsAnalyticsPrefix.CURATE,
-            window.AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-            ["Step 3", "Add", "Folder"],
-            determineDatasetLocation()
-          );
-
-          window.hideMenu(
-            "folder",
-            window.menuFolder,
-            window.menuHighLevelFolders,
-            window.menuFile
-          );
-          window.hideMenu(
-            "high-level-folder",
-            window.menuFolder,
-            window.menuHighLevelFolders,
-            window.menuFile
-          );
-        }
-      }
-    });
-  } else {
-    Swal.fire({
-      icon: "error",
-      text: "New folders cannot be added at this level. If you want to add high-level SPARC folder(s), please go back to the previous step to do so.",
-      confirmButtonText: "OK",
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    });
-  }
-});
 
 // ///////////////////////////////////////////////////////////////////////////
 // recursively populate json object
@@ -2891,51 +2706,6 @@ window.populateJSONObjFolder = (action, jsonObject, folderPath) => {
     }
   });
 };
-
-let full_name_show = false;
-
-window.hideFullName = () => {
-  full_name_show = false;
-  fullNameValue.style.display = "none";
-  fullNameValue.style.top = "-250%";
-  fullNameValue.style.left = "-250%";
-};
-
-//// HOVER FOR FULL NAME (FOLDERS WITH WRAPPED NAME IN UI)
-const showFullName = (ev, element, text) => {
-  /// check if the full name of the folder is overflowing or not, if so, show full name on hover
-  full_name_show = true;
-  let mouseX = ev.pageX - 200;
-  let mouseY = ev.pageY;
-  let isOverflowing =
-    element.clientWidth < element.scrollWidth || element.clientHeight < element.scrollHeight;
-  if (isOverflowing) {
-    fullNameValue.innerHTML = text;
-    $(".hoverFullName").css({ top: mouseY, left: mouseX });
-    setTimeout(() => {
-      if (full_name_show) {
-        // fullNameValue.style.display = "block";
-        $(".hoverFullName").fadeIn("slow");
-      }
-    }, 800);
-  }
-};
-
-/// hover over a function for full name
-window.hoverForFullName = (ev) => {
-  let fullPath = ev.innerText;
-  // ev.children[1] is the child element folder_desc of div.single-item,
-  // which we will put through the overflowing check in showFullName function
-  showFullName(event, ev.children[1], fullPath);
-};
-
-document.addEventListener("onmouseover", function (e) {
-  if (e.target.classList.value === "fas fa-folder") {
-    window.hoverForFullName(e);
-  } else {
-    window.hideFullName();
-  }
-});
 
 // if a file/folder is clicked -> show details in right "sidebar"
 const showDetailsFile = () => {
@@ -2998,29 +2768,44 @@ window.CheckFileListForServerAccess = async (fileList) => {
   }
 };
 
-//////////// FILE BROWSERS to import existing files and folders /////////////////////
-organizeDSaddFiles.addEventListener("click", function () {
-  window.electron.ipcRenderer.send("open-files-organize-datasets-dialog");
-});
-
-organizeDSaddFolders.addEventListener("click", function () {
-  window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog");
-});
-
 // Event listener for when folder(s) are imported into the file explorer
 window.electron.ipcRenderer.on(
   "selected-folders-organize-datasets",
-  async (event, { filePaths: importedFolders, importRelativePath }) => {
+  async (
+    event,
+    { filePaths: importedFolders, importRelativePath, curationMode, useContentsOfFolder }
+  ) => {
     try {
-      if (!importRelativePath) {
+      if (importRelativePath == null) {
         throw new Error("The 'importRelativePath' property is missing in the response.");
+      }
+
+      // For free-form mode, reset the dataset structure completely so this import replaces existing data
+      if (curationMode === "free-form") {
+        window.datasetStructureJSONObj = {
+          folders: {},
+          files: {},
+          type: "",
+        };
+        useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
+      }
+
+      // If useContentsOfFolder is true, get the contents of the folder instead of using the folder itself
+      let foldersToImport = importedFolders;
+
+      if (useContentsOfFolder && importedFolders.length === 1) {
+        const folderPath = importedFolders[0];
+
+        const contents = await window.fs.readdirSync(folderPath);
+
+        foldersToImport = contents.map((item) => window.path.join(folderPath, item));
       }
 
       // Use the current file explorer path or the provided relative path
       const currentFileExplorerPath = `dataset_root/${importRelativePath}`;
       const builtDatasetStructureFromImportedFolders =
         await window.buildDatasetStructureJsonFromImportedData(
-          importedFolders,
+          foldersToImport,
           currentFileExplorerPath
         );
 
@@ -3032,6 +2817,11 @@ window.electron.ipcRenderer.on(
 
       // Refresh the dataset tree view to reflect the newly imported data
       reRenderTreeView();
+
+      if (curationMode === "free-form") {
+        setStateDisplayData("org-dataset-folder-path", importedFolders);
+        window.sodaJSONObj["ffm-path-to-dataset-root"] = importedFolders;
+      }
 
       // Show success message
       window.notyf.open({
@@ -3173,6 +2963,16 @@ const forbiddenFileNameRegex = /^(CON|PRN|AUX|NUL|(COM|LPT)[0-9])$/;
 const forbiddenFiles = new Set([".DS_Store", "Thumbs.db"]);
 const forbiddenFilesRegex = /^(CON|PRN|AUX|NUL|(COM|LPT)[0-9])$/;
 const forbiddenCharacters = /[@#$%^&*()+=\/\\|"'~;:<>{}\[\]?]/;
+const forbiddenCharactersRegex = /[@#$%^&*()+=\/\\|"'~;:<>{}\[\]?]/g;
+const forbiddenPennsieveDatasetNameCharacters = /[\/:*?'<>.,]/;
+
+// URL and DOI validation patterns
+const urlOrDoiPatterns = [
+  /^$/, // Empty string
+  /^https:\/\/[A-Za-z0-9.-]+[A-Za-z0-9](:[0-9]+)?(\/.*)?$/, // HTTPS URL
+  /^10\.\d{4,9}\/[-._;()/:A-Za-z0-9]+$/, // DOI pattern
+  /^https:\/\/doi\.org\/10\.\d{4,9}\/[-._;()/:A-Za-z0-9]+$/, // DOI URL
+];
 
 window.evaluateStringAgainstSdsRequirements = (stringToTest, testType) => {
   const tests = {
@@ -3182,9 +2982,20 @@ window.evaluateStringAgainstSdsRequirements = (stringToTest, testType) => {
     "is-hidden-file": stringToTest.startsWith("."),
     "is-forbidden-file": forbiddenFiles.has(stringToTest) || forbiddenFilesRegex.test(stringToTest),
     "string-contains-forbidden-characters": forbiddenCharacters.test(stringToTest),
+    "string-contains-forbidden-pennsieve-dataset-name-characters":
+      forbiddenPennsieveDatasetNameCharacters.test(stringToTest),
+    "string-is-valid-rrid": /^$|^RRID:/.test(stringToTest),
+    "string-is-valid-url-or-doi": (() => {
+      const result = urlOrDoiPatterns.some((pattern) => pattern.test(stringToTest));
+      return result;
+    })(),
   };
 
   return tests[testType];
+};
+
+window.sanitizeStringForSaveFileSystemSave = (stringToSanitize) => {
+  return stringToSanitize.replace(forbiddenCharactersRegex, "-");
 };
 
 // Create some test case examples
@@ -3320,7 +3131,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
 
         const fileIsInForbiddenFilesList = window.evaluateStringAgainstSdsRequirements(
           fileName,
-          "file-is-in-forbidden-files-list"
+          "is-forbidden-file"
         );
 
         const fileIsEmpty = window.fs.fileSizeSync(pathToExplore) === 0;
@@ -3386,7 +3197,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
   closeFileImportLoadingSweetAlert();
 
   if (inaccessibleItems.length > 0) {
-    await swalFileListSingleAction(
+    await swalListSingleAction(
       inaccessibleItems,
       "SODA was unable to access some of your imported files",
       "The files listed below will not be imported into SODA:",
@@ -3395,7 +3206,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
   }
 
   if (forbiddenFileNames.length > 0) {
-    await swalFileListSingleAction(
+    await swalListSingleAction(
       forbiddenFileNames.map((file) => file.relativePath),
       "Forbidden file names detected",
       "The files listed below do not comply with the SPARC data standards and will not be imported:",
@@ -3404,7 +3215,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
   }
 
   if (emptyFolders.length > 0) {
-    await swalFileListSingleAction(
+    await swalListSingleAction(
       emptyFolders,
       "Empty folders detected",
       "The following folders are empty or contain only other empty folders or files (0 KB). These will not be imported into SODA:",
@@ -3413,7 +3224,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
   }
 
   if (emptyFiles.length > 0) {
-    await swalFileListSingleAction(
+    await swalListSingleAction(
       emptyFiles.map((file) => file.relativePath),
       "Empty files detected",
       "The files listed below are empty (0 KB) and will not be imported into SODA:",
@@ -3422,7 +3233,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
   }
 
   if (problematicFolderNames.length > 0) {
-    const replaceFoldersForUser = await swalFileListDoubleAction(
+    const replaceFoldersForUser = await swalListDoubleAction(
       problematicFolderNames,
       "Folder names not compliant with SPARC data standards detected",
       `
@@ -3444,7 +3255,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
   }
 
   if (problematicFileNames.length > 0) {
-    const replaceFilesForUser = await swalFileListDoubleAction(
+    const replaceFilesForUser = await swalListDoubleAction(
       problematicFileNames.map((file) => file.relativePath),
       "File names not compliant with SPARC data standards detected",
       `
@@ -3465,7 +3276,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
   }
 
   if (hiddenItems.length > 0) {
-    const userResponse = await swalFileListTripleAction(
+    const userResponse = await swalListTripleAction(
       hiddenItems.map((file) => file.relativePath),
       "<p>Hidden files detected</p>",
       `Hidden files are typically not recommend per the SPARC data standards, but you can choose to keep them if you wish.`,
@@ -3489,10 +3300,6 @@ window.buildDatasetStructureJsonFromImportedData = async (
     Object.keys(datasetStructure?.["files"]).length === 0
   ) {
     throw new Error("Error building dataset structure");
-  }
-
-  if (datasetImport) {
-    return [datasetStructure, problematicFolderNames, problematicFileNames];
   }
 
   return datasetStructure;
@@ -3557,7 +3364,7 @@ const mergeLocalAndRemoteDatasetStructure = async (
   closeFileImportLoadingSweetAlert();
 
   if (duplicateFiles.length > 0) {
-    const userConfirmedFileOverwrite = await swalFileListDoubleAction(
+    const userConfirmedFileOverwrite = await swalListDoubleAction(
       duplicateFiles.map((file) => `${file.virtualFilePath}${file.fileName}`),
       `Duplicate files detected  <p>You have two options for the duplicate files:</p>`,
       ` 
@@ -3601,18 +3408,7 @@ const mergeLocalAndRemoteDatasetStructure = async (
       }
     }
   }
-  const currentPathArray = window.getGlobalPath(currentFileExplorerPath); // ['dataset_root', 'code']
-  const nestedJsonDatasetStructure = window.getRecursivePath(
-    currentPathArray.slice(1),
-    window.datasetStructureJSONObj
-  );
-  window.listItems(nestedJsonDatasetStructure, "#items", 500, true);
-  window.getInFolder(
-    ".single-item",
-    "#items",
-    window.organizeDSglobalPath,
-    window.datasetStructureJSONObj
-  );
+
   useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
   reRenderTreeView();
 };
@@ -3625,19 +3421,6 @@ const mergeNewDatasetStructureToExistingDatasetStructureAtPath = async (
     // Step 2: Add the imported data to the dataset structure (This function handles duplicate files, etc)
     await mergeLocalAndRemoteDatasetStructure(builtDatasetStructure, currentFileExplorerPath);
 
-    // Step 3: Update the UI
-    const currentPathArray = window.getGlobalPath(window.organizeDSglobalPath); // ['dataset_root', 'code']
-    const nestedJsonDatasetStructure = window.getRecursivePath(
-      currentPathArray.slice(1),
-      window.datasetStructureJSONObj
-    );
-    window.listItems(nestedJsonDatasetStructure, "#items", 500, true);
-    window.getInFolder(
-      ".single-item",
-      "#items",
-      window.organizeDSglobalPath,
-      window.datasetStructureJSONObj
-    );
     // Step 4: Update successful, show success message
     window.notyf.open({
       type: "success",
@@ -3701,7 +3484,7 @@ window.drop = async (ev) => {
 
   if (inaccessibleItems.length > 0) {
     if (accessibleItems.length === 0) {
-      await swalFileListSingleAction(
+      await swalListSingleAction(
         inaccessibleItems,
         "SODA was unable import your dropped files/folders",
         "The files listed below will not be imported into SODA. If this issue persists, please try importing the folders/files via the import button.",
@@ -3709,7 +3492,7 @@ window.drop = async (ev) => {
       );
       return;
     } else {
-      const importAccessibleItemsOnly = await swalFileListDoubleAction(
+      const importAccessibleItemsOnly = await swalListDoubleAction(
         accessibleItems,
         "<p>SODA was unable to import some of your dropped files/folders</p>",
         "A list of the folders/files that SODA was not able to import is shown below:",
@@ -3991,266 +3774,6 @@ window.handleSelectedBannerImage = async (path, curationMode) => {
   }
 };
 
-//////////////////////////////////////////////////////////////////////////////
-/////////////////// CONTEXT MENU OPTIONS FOR FOLDERS AND FILES ///////////////
-//////////////////////////////////////////////////////////////////////////////
-
-//// helper functions for hiding/showing context menus
-const showmenu = (ev, category, deleted = false) => {
-  //stop the real right click menu
-  let guidedModeFileExporer = false;
-  let activePages = Array.from(document.querySelectorAll(".is-shown"));
-
-  ev.preventDefault();
-  var mouseX;
-  if (ev.pageX <= 200) {
-    mouseX = ev.pageX + 10;
-  } else {
-    let active_class = $("#sidebarCollapse").attr("class");
-    if (active_class.search("active") == -1) {
-      mouseX = ev.pageX - 210;
-    } else {
-      mouseX = ev.pageX - 50;
-    }
-  }
-
-  var mouseY = ev.pageY - 10;
-
-  activePages.forEach((page) => {
-    if (page.id === "guided_mode-section") {
-      guidedModeFileExporer = true;
-      mouseX = ev.pageX - 210;
-      mouseY = ev.pageY - 10;
-    }
-  });
-
-  if (category === "folder") {
-    if (deleted) {
-      $(window.menuFolder)
-        .children("#reg-folder-delete")
-        .html("<i class='fas fa-undo-alt'></i> Restore");
-      $(window.menuFolder).children("#reg-folder-rename").hide();
-      $(window.menuFolder).children("#folder-move").hide();
-      $(window.menuFolder).children("#folder-description").hide();
-    } else {
-      if ($(".selected-item").length > 2) {
-        $(window.menuFolder)
-          .children("#reg-folder-delete")
-          .html('<i class="fas fa-minus-circle"></i> Delete All');
-        $(window.menuFolder)
-          .children("#folder-move")
-          .html('<i class="fas fa-external-link-alt"></i> Move All');
-        $(window.menuFolder).children("#reg-folder-rename").hide();
-        $(window.menuFolder).children("#folder-description").hide();
-      } else {
-        $(window.menuFolder)
-          .children("#reg-folder-delete")
-          .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
-        $(window.menuFolder)
-          .children("#folder-move")
-          .html('<i class="fas fa-external-link-alt"></i> Move');
-        $(window.menuFolder).children("#folder-move").show();
-        $(window.menuFolder).children("#reg-folder-rename").show();
-        $(window.menuFolder).children("#folder-description").show();
-      }
-    }
-    // This is where regular folders context menu will appear
-    window.menuFolder.style.display = "block";
-    if (guidedModeFileExporer) {
-      // $(".menu.reg-folder").css({ top: mouseY, left: mouseX }).fadeIn("slow");
-    }
-    $(".menu.reg-folder").css({ top: mouseY, left: mouseX }).fadeIn("slow");
-  } else if (category === "high-level-folder") {
-    if (deleted) {
-      $(window.menuHighLevelFolders)
-        .children("#high-folder-delete")
-        .html("<i class='fas fa-undo-alt'></i> Restore");
-      $(window.menuHighLevelFolders).children("#high-folder-rename").hide();
-      $(window.menuHighLevelFolders).children("#folder-move").hide();
-      $(window.menuHighLevelFolders).children("#tooltip-folders").show();
-    } else {
-      if ($(".selected-item").length > 2) {
-        $(window.menuHighLevelFolders)
-          .children("#high-folder-delete")
-          .html('<i class="fas fa-minus-circle"></i> Delete All');
-        $(window.menuHighLevelFolders).children("#high-folder-delete").show();
-        $(window.menuHighLevelFolders).children("#high-folder-rename").hide();
-        $(window.menuHighLevelFolders).children("#folder-move").hide();
-        $(window.menuHighLevelFolders).children("#tooltip-folders").show();
-      } else {
-        $(window.menuHighLevelFolders)
-          .children("#high-folder-delete")
-          .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
-        $(window.menuHighLevelFolders).children("#high-folder-delete").show();
-        $(window.menuHighLevelFolders).children("#high-folder-rename").hide();
-        $(window.menuHighLevelFolders).children("#folder-move").hide();
-        $(window.menuHighLevelFolders).children("#tooltip-folders").show();
-      }
-    }
-    window.menuHighLevelFolders.style.display = "block";
-    if (guidedModeFileExporer) {
-      // $(".menu.high-level-folder").css({ top: mouseY, left: mouseX }).fadeIn("slow");
-    }
-    $(".menu.high-level-folder").css({ top: mouseY, left: mouseX }).fadeIn("slow");
-  } else {
-    if (deleted) {
-      $(window.menuFile).children("#file-delete").html("<i class='fas fa-undo-alt'></i> Restore");
-      $(window.menuFile).children("#file-rename").hide();
-      $(window.menuFile).children("#file-move").hide();
-      $(window.menuFile).children("#file-description").hide();
-    } else {
-      if ($(".selected-item").length > 2) {
-        $(window.menuFile)
-          .children("#file-delete")
-          .html('<i class="fas fa-minus-circle"></i> Delete All');
-        $(window.menuFile)
-          .children("#file-move")
-          .html('<i class="fas fa-external-link-alt"></i> Move All');
-        $(window.menuFile).children("#file-rename").hide();
-        $(window.menuFile).children("#file-description").hide();
-      } else {
-        $(window.menuFile)
-          .children("#file-delete")
-          .html("<i class='far fa-trash-alt fa-fw'></i>Delete");
-        $(window.menuFile)
-          .children("#file-move")
-          .html('<i class="fas fa-external-link-alt"></i> Move');
-        $(window.menuFile).children("#file-rename").show();
-        $(window.menuFile).children("#file-move").show();
-        $(window.menuFile).children("#file-description").show();
-      }
-    }
-
-    // This is where the context menu for regular files will be displayed
-    window.menuFile.style.display = "block";
-    $(".menu.file").css({ top: mouseY, left: mouseX }).fadeIn("slow");
-  }
-};
-
-/// options for regular sub-folders
-window.folderContextMenu = (event) => {
-  $(".menu.reg-folder li")
-    .unbind()
-    .click(function () {
-      if ($(this).attr("id") === "reg-folder-rename") {
-        var itemDivElements = document.getElementById("items").children;
-        window.renameFolder(
-          event,
-          window.organizeDSglobalPath,
-          itemDivElements,
-          window.datasetStructureJSONObj,
-          "#items",
-          ".single-item"
-        );
-      } else if ($(this).attr("id") === "reg-folder-delete") {
-        window.delFolder(
-          event,
-          window.organizeDSglobalPath,
-          "#items",
-          ".single-item",
-          window.datasetStructureJSONObj
-        );
-      } else if ($(this).attr("id") === "folder-move") {
-        window.moveItems(event);
-      }
-      // Hide it AFTER the action was triggered
-      window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-      window.hideMenu(
-        "high-level-folder",
-        window.menuFolder,
-        window.menuHighLevelFolders,
-        window.menuFile
-      );
-      window.hideFullName();
-    });
-
-  /// options for high-level folders
-  $(".menu.high-level-folder li")
-    .unbind()
-    .click(function () {
-      if ($(this).attr("id") === "high-folder-rename") {
-        var itemDivElements = document.getElementById("items").children;
-        window.renameFolder(
-          event,
-          window.organizeDSglobalPath,
-          itemDivElements,
-          window.datasetStructureJSONObj,
-          "#items",
-          ".single-item"
-        );
-      } else if ($(this).attr("id") === "high-folder-delete") {
-        window.delFolder(
-          event,
-          window.organizeDSglobalPath,
-          "#items",
-          ".single-item",
-          window.datasetStructureJSONObj
-        );
-      } else if ($(this).attr("id") === "tooltip-folders") {
-        showTooltips(event);
-      }
-      // Hide it AFTER the action was triggered
-      window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-      window.hideMenu(
-        "high-level-folder",
-        window.menuFolder,
-        window.menuHighLevelFolders,
-        window.menuFile
-      );
-      window.hideFullName();
-    });
-  /// hide both menus after an option is clicked
-  window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-  window.hideMenu(
-    "high-level-folder",
-    window.menuFolder,
-    window.menuHighLevelFolders,
-    window.menuFile
-  );
-  window.hideFullName();
-};
-
-//////// options for files
-window.fileContextMenu = (event) => {
-  try {
-    if ($(".div-display-details.file").hasClass("show")) {
-      $(".div-display-details.file").removeClass("show");
-    }
-    $(".menu.file li")
-      .unbind()
-      .click(function () {
-        if ($(this).attr("id") === "file-rename") {
-          var itemDivElements = document.getElementById("items").children;
-          window.renameFolder(
-            event,
-            window.organizeDSglobalPath,
-            itemDivElements,
-            window.datasetStructureJSONObj,
-            "#items",
-            ".single-item"
-          );
-        } else if ($(this).attr("id") === "file-delete") {
-          window.delFolder(
-            event,
-            window.organizeDSglobalPath,
-            "#items",
-            ".single-item",
-            window.datasetStructureJSONObj
-          );
-        } else if ($(this).attr("id") === "file-move") {
-          window.moveItems(event);
-        } else if ($(this).attr("id") === "file-description") {
-          manageDesc(event);
-        }
-        // Hide it AFTER the action was triggered
-        window.hideMenu("file", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-      });
-    window.hideMenu("file", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-  } catch (e) {
-    console.error(e);
-  }
-};
-
 $(document).ready(function () {
   tippy("[data-tippy-content]:not(.tippy-content-main):not(.guided-tippy-wrapper)", {
     allowHTML: true,
@@ -4274,137 +3797,6 @@ $(document).ready(function () {
     /*apply -5 bottom margin to negate button bottom margin*/
     offset: [0, -3],
   });
-});
-
-// Trigger action when the contexmenu is about to be shown
-$(document).bind("contextmenu", function (event) {
-  // Avoid the real one
-  event.preventDefault();
-
-  // Right click behaviour for multiple files (Linux os behaviour)
-  // ** if right click with ctrl -> include file in selection
-  // ** if right click without ctrl -> remove selection from other files
-  if (!$(event.target).hasClass("selected-item")) {
-    if (event.ctrlKey) {
-      $(event.target).addClass("selected-item");
-      $(event.target).parent().addClass("selected-item");
-    } else {
-      $(".selected-item").removeClass("selected-item");
-      dragselect_area.clearSelection();
-    }
-  }
-
-  /// check for high level folders
-  var highLevelFolderBool = false;
-  var folderName = event.target.parentElement.innerText;
-  if (folderName.lastIndexOf("-") != -1) {
-    folderName = folderName.substring(0, folderName.lastIndexOf("-"));
-  }
-  if (window.highLevelFolders.includes(folderName)) {
-    highLevelFolderBool = true;
-  }
-  // Show the rightcontextmenu for each clicked
-  // category (high-level folders, regular sub-folders, and files)
-  // The third parameter in show menu is used to show the restore option
-  if (event.target.classList[0] === "myFol") {
-    if (highLevelFolderBool) {
-      if (event.target.classList.contains("deleted_folder")) {
-        showmenu(event, "high-level-folder", true);
-      } else {
-        showmenu(event, "high-level-folder");
-      }
-      window.hideMenu("file", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-    } else {
-      if (event.target.classList.contains("deleted_folder")) {
-        showmenu(event, "folder", true);
-      } else {
-        showmenu(event, "folder");
-      }
-      window.hideMenu("file", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-    }
-  } else if (event.target.classList[0] === "myFile") {
-    if (event.target.classList.contains("deleted_file")) {
-      showmenu(event, "file", true);
-    } else {
-      showmenu(event, "file");
-    }
-    window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-    window.hideMenu(
-      "high-level-folder",
-      window.menuFolder,
-      window.menuHighLevelFolders,
-      window.menuFile
-    );
-    // otherwise, do not show any menu
-  } else {
-    window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-    window.hideMenu(
-      "high-level-folder",
-      window.menuFolder,
-      window.menuHighLevelFolders,
-      window.menuFile
-    );
-    window.hideMenu("file", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-    // hideFullPath()
-    window.hideFullName();
-  }
-});
-
-const select_items_ctrl = (event) => {
-  if (event["ctrlKey"]) {
-  } else {
-    $(".selected-item").removeClass("selected-item");
-    dragselect_area.clearSelection();
-  }
-};
-
-const select_items = (items) => {
-  let selected_class = "";
-
-  items.forEach((event_item) => {
-    let target_element = null;
-    let parent_element = null;
-
-    if (event_item.classList[0] === "single-item") {
-      parent_element = event_item;
-      target_element = $(parent_element).children()[0];
-      if ($(target_element).hasClass("myFol") || $(target_element).hasClass("myFile")) {
-        selected_class = "selected-item";
-        drag_event_fired = true;
-      }
-    }
-
-    $(".selected-item").removeClass("selected-item");
-    $(".ds-selected").addClass(selected_class);
-    $(".ds-selected").each((index, element) => {
-      target_element = $(element).children()[0];
-      $(target_element).addClass(selected_class);
-    });
-  });
-};
-
-$(document).bind("click", (event) => {
-  // If there is weird right click menu behaviour, check the window.hideMenu block
-  window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-  window.hideMenu(
-    "high-level-folder",
-    window.menuFolder,
-    window.menuHighLevelFolders,
-    window.menuFile
-  );
-  window.hideMenu("file", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-  // hideFullPath()
-  window.hideFullName();
-
-  // Handle clearing selection when clicked outside.
-  // Currently only handles clicks inside the folder holder area
-  if (event.target.classList[0] === "div-organize-items") {
-    if (drag_event_fired) {
-      drag_event_fired = false;
-    } else {
-      $(".selected-item").removeClass("selected-item");
-    }
-  }
 });
 
 // sort JSON objects by keys alphabetically (folder by folder, file by file)
@@ -4434,453 +3826,10 @@ window.sortObjByKeys = (object) => {
   return orderedObject;
 };
 
-window.listItems = async (jsonObj, uiItem, amount_req, reset) => {
-  //allow amount to choose how many elements to create
-  //break elements into sets of 100
-  const rootFolders = ["primary", "source", "derivative"];
-  const datasetPath = document.getElementById("guided-input-global-path");
-  const pathDisplay = document.getElementById("datasetPathDisplay");
-  let hideSampleFolders = false;
-  let hideSubjectFolders = false;
-  let splitPath = datasetPath.value.split("/");
-  let fullPath = datasetPath.value;
-
-  var appendString = "";
-  var sortedObj = window.sortObjByKeys(jsonObj);
-  let file_elements = [],
-    folder_elements = [];
-  let count = 0;
-  let cloud_item = "";
-  let deleted_folder = false;
-  let deleted_file = false;
-
-  //start creating folder elements to be rendered
-  if (Object.keys(sortedObj["folders"]).length > 0) {
-    for (var item in sortedObj["folders"]) {
-      count += 1;
-      var emptyFolder = "";
-      if (!window.highLevelFolders.includes(item)) {
-        if (
-          JSON.stringify(sortedObj["folders"][item]["folders"]) === "{}" &&
-          JSON.stringify(sortedObj["folders"][item]["files"]) === "{}"
-        ) {
-          emptyFolder = " empty";
-        }
-      }
-
-      cloud_item = "";
-      deleted_folder = false;
-
-      if ("action" in sortedObj["folders"][item]) {
-        if (
-          sortedObj["folders"][item]["action"].includes("deleted") ||
-          sortedObj["folders"][item]["action"].includes("recursive_deleted")
-        ) {
-          emptyFolder += " deleted_folder";
-          deleted_folder = true;
-          if (sortedObj["folders"][item]["action"].includes("recursive_deleted")) {
-            emptyFolder += " recursive_deleted_file";
-          }
-        }
-      }
-
-      if (sortedObj["folders"][item]["location"] == "ps") {
-        cloud_item = " pennsieve_folder";
-        if (deleted_folder) {
-          cloud_item = " pennsieve_folder_deleted";
-        }
-      }
-
-      if (
-        sortedObj["folders"][item]["location"] == "local" &&
-        sortedObj["folders"][item]["action"].includes("existing")
-      ) {
-        cloud_item = " local_folder";
-        if (deleted_folder) {
-          cloud_item = " local_folder_deleted";
-        }
-      }
-
-      if (sortedObj["folders"][item]["action"].includes("updated")) {
-        cloud_item = " update-file";
-        let elem_creation =
-          '<div class="single-item updated-file" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 oncontextmenu="window.folderContextMenu(this)" class="myFol' +
-          emptyFolder +
-          '"></h1><div class="folder_desc' +
-          cloud_item +
-          '">' +
-          item +
-          "</div></div>";
-
-        appendString = appendString + elem_creation;
-        if (count === 100) {
-          //every one hundred elements created we put it into one element within the array
-          folder_elements.push(appendString);
-          count = 0;
-          appendString = "";
-          continue;
-        }
-      } else {
-        let element_creation =
-          '<div class="single-item" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 oncontextmenu="window.folderContextMenu(this)" class="myFol' +
-          emptyFolder +
-          '"></h1><div class="folder_desc' +
-          cloud_item +
-          '">' +
-          item +
-          "</div></div>";
-
-        appendString = appendString + element_creation;
-        if (count === 100) {
-          //every one hundred elements created we put it into one element within the array
-          folder_elements.push(appendString);
-          count = 0;
-          appendString = "";
-          continue;
-        }
-      }
-    }
-    if (count < 100) {
-      //if items to be rendered is less than 100 we push whatever we have to the array element
-      if (!folder_elements.includes(appendString) && appendString != "") {
-        folder_elements.push(appendString);
-        count = 0;
-      }
-    }
-  }
-  //reset count and string for file elements
-  count = 0;
-  appendString = "";
-  if (Object.keys(sortedObj["files"]).length > 0) {
-    for (var item in sortedObj["files"]) {
-      count += 1;
-      // not the auto-generated manifest
-      if (sortedObj["files"][item].length !== 1) {
-        if ("path" in sortedObj["files"][item]) {
-          var extension = window.path.extname(sortedObj["files"][item]["path"]).slice(1);
-        } else {
-          var extension = "other";
-        }
-        if (sortedObj["files"][item]["location"] == "ps") {
-          if (sortedObj["files"][item]["action"].includes("deleted")) {
-            let original_file_name = item.substring(0, item.lastIndexOf("-"));
-            extension = original_file_name.split(".").pop();
-          } else {
-            extension = item.split(".").pop();
-          }
-        }
-        if (
-          ![
-            "docx",
-            "doc",
-            "pdf",
-            "txt",
-            "jpg",
-            "JPG",
-            "jpeg",
-            "JPEG",
-            "xlsx",
-            "xls",
-            "csv",
-            "png",
-            "PNG",
-          ].includes(extension)
-        ) {
-          extension = "other";
-        }
-      } else {
-        extension = "other";
-      }
-
-      cloud_item = "";
-      deleted_file = false;
-
-      if ("action" in sortedObj["files"][item]) {
-        if (
-          sortedObj["files"][item]["action"].includes("deleted") ||
-          sortedObj["files"][item]["action"].includes("recursive_deleted")
-        ) {
-          extension += " deleted_file";
-          deleted_file = true;
-          if (sortedObj["files"][item]["action"].includes("recursive_deleted")) {
-            extension += " recursive_deleted_file";
-          }
-        }
-      }
-
-      if (sortedObj["files"][item]["location"] == "ps") {
-        cloud_item = " pennsieve_file";
-        if (deleted_file) {
-          cloud_item = " pennsieve_file_deleted";
-        }
-      }
-
-      if (
-        sortedObj["files"][item]["location"] == "local" &&
-        sortedObj["files"][item]["action"].includes("existing")
-      ) {
-        cloud_item = " local_file";
-        if (deleted_file) {
-          cloud_item = " local_file_deleted";
-        }
-      }
-      if (
-        sortedObj["files"][item]["location"] == "local" &&
-        sortedObj["files"][item]["action"].includes("updated")
-      ) {
-        cloud_item = " update-file";
-        if (deleted_file) {
-          cloud_item = "pennsieve_file_deleted";
-        }
-        let elem_creation =
-          '<div class="single-item updated-file" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 class="myFile ' +
-          extension +
-          '" oncontextmenu="window.fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
-          cloud_item +
-          '">' +
-          item +
-          "</div></div>";
-
-        appendString = appendString + elem_creation;
-        if (count === 100) {
-          file_elements.push(appendString);
-          count = 0;
-          appendString = "";
-          continue;
-        }
-      } else {
-        let element_creation =
-          '<div class="single-item" onmouseover="window.hoverForFullName(this)" onmouseleave="window.hideFullName()"><h1 class="myFile ' +
-          extension +
-          '" oncontextmenu="window.fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
-          cloud_item +
-          '">' +
-          item +
-          "</div></div>";
-
-        appendString = appendString + element_creation;
-        if (count === 100) {
-          file_elements.push(appendString);
-          count = 0;
-          appendString = "";
-          continue;
-        }
-      }
-    }
-    if (count < 100) {
-      if (!file_elements.includes(appendString) && appendString != "") {
-        file_elements.push(appendString);
-        count = 0;
-      }
-      // continue;
-    }
-  }
-  if (folder_elements[0] === "") {
-    folder_elements.splice(0, 1);
-  }
-  if (file_elements[0] === "") {
-    file_elements.splice(0, 1);
-  }
-  let items = [folder_elements, file_elements];
-
-  if (amount_req != undefined) {
-    //add items using a different function
-    //want the initial files to be imported
-    new Promise(async (resolved) => {
-      if (reset != undefined) {
-        await window.add_items_to_view(items, amount_req, reset);
-        resolved();
-      } else {
-        await window.add_items_to_view(items, amount_req);
-        resolved();
-      }
-    });
-  } else {
-    //load everything in place
-    new Promise(async (resolved) => {
-      // $(uiItem).empty();
-      await window.add_items_to_view(items, 500);
-      resolved();
-    });
-  }
-
-  dragselect_area.stop();
-
-  dragselect_area = new DragSelect({
-    selectables: document.querySelectorAll(".single-item"),
-    draggability: false,
-    area: document.getElementById("items"),
-  });
-
-  dragselect_area.subscribe("callback", ({ items, event, isDragging }) => {
-    select_items(items, event, isDragging);
-  });
-
-  dragselect_area.subscribe("dragstart", ({ event }) => {
-    select_items_ctrl(event);
-  });
-  drag_event_fired = false;
-
-  //check if folder_elements is an empty object and file_elements is an empty array
-  if (folder_elements.length == 0 && file_elements.length == 0) {
-    //Fired when no folders are to be appended to the folder structure element.
-    //Gets the name of the current folder from window.organizeDSglobalPath and instructs the user
-    //on what to do in the empty folder.
-    let currentFolder = "";
-    let folderType;
-
-    if (window.organizeDSglobalPath.value == undefined) {
-      currentFolder = "dataset_root";
-    } else {
-      //Get the name of the folder the user is currently in.
-      currentFolder = window.organizeDSglobalPath.value.split("/").slice(-2)[0];
-      if (currentFolder.startsWith("sub-")) {
-        folderType = "subject";
-      }
-      if (currentFolder.startsWith("sam-")) {
-        folderType = "sample";
-      }
-      if (currentFolder.startsWith("pool-")) {
-        folderType = "pool";
-      }
-    }
-
-    let dragDropInstructionsText;
-    if (folderType === undefined) {
-      dragDropInstructionsText = `Drag and Drop folders and files to be included in the <b>${currentFolder}</b> folder.`;
-    }
-    if (folderType == "subject") {
-      dragDropInstructionsText = `Drag and drop folders and files associated with the subject ${currentFolder}`;
-    }
-    if (folderType === "sample") {
-      dragDropInstructionsText = `Drag and drop folders and files associated with the sample ${currentFolder}`;
-    }
-    if (folderType === "pool") {
-      dragDropInstructionsText = `Drag and drop folders and files associated with the pool ${currentFolder}`;
-    }
-
-    $("#items").html(
-      `<div class="drag-drop-container-instructions">
-        <div id="dragDropLottieContainer" style="height: 100px; width: 100px;"></div>
-        <p class="text-center large">
-          ${dragDropInstructionsText}
-        </p>
-        <p class="text-center">
-          You may also <b>add</b> or <b>import</b> ${
-            folderType === undefined ? "folders or files" : folderType + " data"
-          } using the buttons in the upper right corner
-        </p>
-      </div>`
-    );
-    const dragDropLottieContainer = document.getElementById("dragDropLottieContainer");
-
-    dragDropLottieContainer.innerHTML = ``;
-
-    lottie.loadAnimation({
-      container: dragDropLottieContainer,
-      animationData: dragDrop,
-      renderer: "svg",
-      loop: true,
-      autoplay: true,
-    });
-  }
-};
-
-window.getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
-  $(singleUIItem).dblclick(async function () {
-    if ($(this).children("h1").hasClass("myFol")) {
-      window.start = 0;
-      window.listed_count = 0;
-      window.amount = 0;
-      var folderName = this.innerText;
-      currentLocation.value = currentLocation.value + folderName + "/";
-
-      var currentPath = currentLocation.value;
-      var jsonPathArray = currentPath.split("/");
-      var filtered = jsonPathArray.slice(1).filter(function (el) {
-        return el.trim() != "";
-      });
-      var myPath = window.getRecursivePath(filtered, globalObj);
-      if (myPath.length === 2) {
-        filtered = myPath[1];
-        currentLocation.value = "dataset_root/" + filtered.join("/") + "/";
-      }
-      $("#items").empty();
-      window.already_created_elem = [];
-      // let items = window.loadFileFolder(myPath);
-      //we have some items to display
-      window.listItems(myPath, "#items", 500, true);
-      window.getInFolder(
-        ".single-item",
-        "#items",
-        window.organizeDSglobalPath,
-        window.datasetStructureJSONObj
-      );
-      window.organizeLandingUIEffect();
-      // reconstruct folders and files (child elements after emptying the Div)
-      // window.getInFolder(singleUIItem, uiItem, currentLocation, globalObj);
-    }
-  });
-};
-
 // const sliceStringByValue = (string, endingValue) => {
 //   var newString = string.slice(string.indexOf(endingValue) + 1);
 //   return newString;
 // };
-
-var fileNameForEdit;
-///// Option to manage description for files
-const manageDesc = (ev) => {
-  var fileName = ev.parentElement.innerText;
-  /// get current location of files in JSON object
-  var filtered = window.getGlobalPath(window.organizeDSglobalPath);
-  var myPath = window.getRecursivePath(filtered.slice(1), window.datasetStructureJSONObj);
-  //// load existing metadata/description
-  window.loadDetailsContextMenu(
-    fileName,
-    myPath,
-    "textarea-file-description",
-    "textarea-file-metadata",
-    "para-local-path-file"
-  );
-  $("#button-confirm-display-details-file").html("Confirm");
-  showDetailsFile();
-  window.hideMenu("folder", window.menuFolder, window.menuHighLevelFolders, window.menuFile);
-  window.hideMenu(
-    "high-level-folder",
-    window.menuFolder,
-    window.menuHighLevelFolders,
-    window.menuFile
-  );
-  fileNameForEdit = fileName;
-};
-
-const updateFileDetails = (ev) => {
-  var fileName = fileNameForEdit;
-  var filtered = window.getGlobalPath(window.organizeDSglobalPath);
-  var myPath = window.getRecursivePath(filtered.slice(1), window.datasetStructureJSONObj);
-  triggerManageDetailsPrompts(
-    ev,
-    fileName,
-    myPath,
-    "textarea-file-description",
-    "textarea-file-metadata"
-  );
-  /// list Items again with new updated JSON structure
-  window.listItems(myPath, "#items");
-  window.getInFolder(
-    ".single-item",
-    "#items",
-    window.organizeDSglobalPath,
-    window.datasetStructureJSONObj
-  );
-  // find checkboxes here and uncheck them
-  for (var ele of $($(ev).siblings().find("input:checkbox"))) {
-    document.getElementById(ele.id).checked = false;
-  }
-  // close the display
-  showDetailsFile();
-};
 
 window.addDetailsForFile = (ev) => {
   var checked = false;
@@ -4921,14 +3870,14 @@ window.addDetailsForFile = (ev) => {
 };
 
 $("#inputNewNameDataset").on("click", () => {
-  $("#nextBtn").prop("disabled", true);
+  setNavButtonDisabled("nextBtn", true);
   $("#inputNewNameDataset").keyup();
 });
 
 $("#inputNewNameDataset").keyup(function () {
   let step6 = document.getElementById("generate-dataset-tab");
   if (step6.classList.contains("tab-active")) {
-    $("#nextBtn").prop("disabled", true);
+    setNavButtonDisabled("nextBtn", true);
   }
 
   var newName = $("#inputNewNameDataset").val().trim();
@@ -4948,7 +3897,6 @@ $("#inputNewNameDataset").keyup(function () {
       document.getElementById("para-new-name-dataset-message").innerHTML =
         "Error: A Pennsieve dataset name cannot contain any of the following characters: \\/:*?'<>.,";
 
-      // $("#nextBtn").prop("disabled", true)
       $("#Question-generate-dataset-generate-div-old").removeClass("show");
       $("#div-confirm-inputNewNameDataset").css("display", "none");
       $("#btn-confirm-new-dataset-name").hide();
@@ -4977,7 +3925,7 @@ window.electron.ipcRenderer.on(
         document.getElementById("input-destination-generate-dataset-locally").placeholder =
           filepath[0];
         document.getElementById("input-destination-generate-dataset-locally").value = filepath[0];
-        document.getElementById("nextBtn").disabled = true;
+        setNavButtonDisabled("nextBtn", true);
       } else {
         $("#div-confirm-destination-locally").css("display", "none");
         $("#div-confirm-destination-locally button").hide();
@@ -4992,37 +3940,6 @@ window.electron.ipcRenderer.on(
     }
   }
 );
-
-document.getElementById("button-generate-validate").addEventListener("click", function () {
-  // setTimeout(function () {
-  //   document.getElementById("generate-dataset-progress-tab").style.display = "none";
-  //   document.getElementById("div-vertical-progress-bar").style.display = "flex";
-  //   document.getElementById("prevBtn").style.display = "inline";
-  //   document.getElementById("nextBtn").style.display = "inline";
-  //   document.getElementById("start-over-btn").style.display = "inline-block";
-  //   window.showParentTab(window.currentTab, 1);
-  //   if (
-  //     window.sodaJSONObj["starting-point"]["origin"] == "new" &&
-  //     "local-path" in window.sodaJSONObj["starting-point"]
-  //   ) {
-  //     window.sodaJSONObj["starting-point"]["origin"] = "local";ps-account
-  //   }
-  // }, window.delayAnimation);
-});
-
-// function to hide the sidebar and disable the sidebar expand button
-// function forceActionSidebar(action) {
-//   if (action === "show") {
-//     $("#sidebarCollapse").removeClass("active");
-//     $("#main-nav").removeClass("active");
-//   } else {
-//     $("#sidebarCollapse").addClass("active");
-//     $("#main-nav").addClass("active");
-//     // $("#sidebarCollapse").prop("disabled", false);
-//   }
-// }
-
-// /// MAIN CURATE NEW ///
 
 const progressBarNewCurate = document.getElementById("progress-bar-new-curate");
 const divGenerateProgressBar = document.getElementById("div-new-curate-meter-progress");
@@ -5080,9 +3997,8 @@ const setupCode = async (resume = false) => {
   $("#generate-dataset-progress-tab").addClass("tab-active");
   document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
   document.getElementById("para-please-wait-new-curate").innerHTML = "";
-  document.getElementById("prevBtn").style.display = "none";
+  setNavButtonHidden("prevBtn", true);
   document.getElementById("start-over-btn").style.display = "none";
-  document.getElementById("div-vertical-progress-bar").style.display = "none";
   document.getElementById("div-generate-comeback").style.display = "none";
   document.getElementById("wrapper-wrap").style.display = "none";
   document.getElementById("generate-dataset-progress-tab").style.display = "flex";
@@ -5130,9 +4046,8 @@ const setupCode = async (resume = false) => {
       // $($($(this).parent()[0]).parents()[0]).addClass("tab-active");
       document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
       document.getElementById("para-please-wait-new-curate").innerHTML = "";
-      document.getElementById("prevBtn").style.display = "inline";
+      setNavButtonHidden("prevBtn", false);
       document.getElementById("start-over-btn").style.display = "inline-block";
-      document.getElementById("div-vertical-progress-bar").style.display = "flex";
       document.getElementById("div-generate-comeback").style.display = "flex";
       document.getElementById("generate-dataset-progress-tab").style.display = "none";
       $("#generate-dataset-progress-tab").removeClass("tab-active");
@@ -5163,7 +4078,7 @@ const setupCode = async (resume = false) => {
 };
 
 const preGenerateSetup = async (e, elementContext) => {
-  $($($(elementContext).parent().parent()[0]).parents()[0]).removeClass("tab-active");
+  $("#preview-dataset-tab").removeClass("tab-active");
   let resume = e.target.textContent.trim() == "Retry";
   setupCode(resume);
 };
@@ -5195,23 +4110,6 @@ window.dismissStatus = (id) => {
 
 window.file_counter = 0;
 window.folder_counter = 0;
-window.uploadComplete = new Notyf({
-  position: { x: "right", y: "bottom" },
-  dismissible: true,
-  ripple: false,
-  types: [
-    {
-      type: "success",
-      background: "#13716D",
-      icon: {
-        className: "fas fa-check-circle",
-        tagName: "i",
-        color: "white",
-      },
-      duration: 4000,
-    },
-  ],
-});
 
 let amountOfTimesPennsieveUploadFailed = 0;
 
@@ -5287,9 +4185,8 @@ const initiate_generate = async (resume = false) => {
     organizeDataset.click();
     let button = document.getElementById("button-generate");
     $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
-    document.getElementById("prevBtn").style.display = "none";
+    setNavButtonHidden("prevBtn", true);
     document.getElementById("start-over-btn").style.display = "none";
-    document.getElementById("div-vertical-progress-bar").style.display = "none";
     document.getElementById("div-generate-comeback").style.display = "none";
     document.getElementById("generate-dataset-progress-tab").style.display = "flex";
     organizeDataset.disabled = true;
@@ -5297,11 +4194,8 @@ const initiate_generate = async (resume = false) => {
     organizeDataset.style = "background-color: #f6f6f6;  border: #fff;";
   };
 
-  let sparc_container = document.getElementById("sparc-logo-container");
-  sparc_container.style.display = "none";
-  navContainer.appendChild(statusBarClone);
   let navbar = document.getElementById("main-nav");
-  if (navbar.classList.contains("active")) {
+  if (!navbar.classList.contains("active")) {
     document.getElementById("sidebarCollapse").click();
   }
 
@@ -5344,17 +4238,6 @@ const initiate_generate = async (resume = false) => {
       amountOfTimesPennsieveUploadFailed = 0;
 
       $("#party-lottie").show();
-
-      // check if we updated an existing dataset
-      // const mergeSelectedCard = document
-      //   .querySelector("#dataset-upload-existing-dataset")
-      //   .classList.contains("checked");
-      // if (mergeSelectedCard) {
-      //   await swalShowInfo(
-      //     "Manifest Files Not Updated With New Files",
-      //     "Please navigate to the `Advanced Features` tab and use the standalone manifest generator to update your manifest files with the new files."
-      //   );
-      // }
 
       main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
       uploadedFiles = data["main_curation_uploaded_files"];
@@ -5418,6 +4301,7 @@ const initiate_generate = async (resume = false) => {
       logSelectedUpdateExistingDatasetOptions(datasetLocation);
 
       // hide the retry button
+      $("#wrapper-wrap").show();
       $("#button-retry").hide();
       $("#button-generate-validate").show();
 
@@ -5464,7 +4348,7 @@ const initiate_generate = async (resume = false) => {
       document.getElementById("contact-us-view").style.pointerEvents = "";
 
       clientError(error);
-      let emessage = userErrorMessage(error);
+      let emessage = userErrorMessage(error, false);
 
       // log high level confirmation that a dataset was generation run failed
       window.electron.ipcRenderer.send(
@@ -5546,8 +4430,22 @@ const initiate_generate = async (resume = false) => {
       uploadLocally.className = "content-button is-selected";
       uploadLocally.style = "background-color: #fff";
 
+      // Check for network error that generally happens when the server dies TODO: UI reactivity post close soda message
+      if (!error.response && error.request && error.isAxiosError) {
+        await swalShowError(
+          "Network Error",
+          "The server did not respond. Please close SODA and reopen it to try the upload again. SODA will remember any progress in the upload you have made. If the problem persists, please contact support."
+        );
+        return;
+      }
+
       document.getElementById("para-new-curate-progress-bar-error-status").innerHTML =
-        `<span style='color: red;'>${emessage}</span>`;
+        `<div style='color: red; text-align: left;'>
+        <p style="overflow-y: auto; max-height: 120px; color: red;">Error: ${emessage}</p>
+        SODA could not upload your dataset after three automatic attempts. You can use the 'Retry' button to try again—this sometimes fixes temporary network issues.  
+        If the problem continues, please contact the SODA team by following the documentation 
+        <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here.</a></div>
+        `;
 
       if (amountOfTimesPennsieveUploadFailed > 3) {
         Swal.fire({
@@ -5568,13 +4466,12 @@ const initiate_generate = async (resume = false) => {
           },
         }).then((result) => {
           statusBarClone.remove();
-          sparc_container.style.display = "inline";
+          // sparc_container.style.display = "inline";
           if (result.isConfirmed) {
             let button = document.getElementById("button-generate");
             $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
-            document.getElementById("prevBtn").style.display = "none";
+            setNavButtonHidden("prevBtn", true);
             document.getElementById("start-over-btn").style.display = "none";
-            document.getElementById("div-vertical-progress-bar").style.display = "none";
             document.getElementById("wrapper-wrap").style.display = "flex";
             document.getElementById("div-generate-comeback").style.display = "flex";
             document.getElementById("generate-dataset-progress-tab").style.display = "flex";
@@ -5616,7 +4513,7 @@ const initiate_generate = async (resume = false) => {
       mainCurationProgressResponse = await client.get(`/curate_datasets/curation/progress`);
     } catch (error) {
       clientError(error);
-      let emessage = userErrorMessage(error);
+      let emessage = userErrorMessage(error, false);
 
       if (progressStatus.innerHTML.split("<br>").length > 1) {
         progressStatus.innerHTML = `Upload Failed<br>${progressStatus.innerHTML
@@ -5628,7 +4525,12 @@ const initiate_generate = async (resume = false) => {
       }
 
       document.getElementById("para-new-curate-progress-bar-error-status").innerHTML =
-        `<span style='color: red;'>${emessage}</span>`;
+        `<span style='color: red;'>
+        ${emessage}
+        SODA was unable to successfully upload your dataset after three automatic attempts. If you would like you can use the 'Retry' button 
+        to manually try again. Sometimes this can resolve the issue in the case of temporary network problems.
+        However, if the issue persists please reach out to the SODA team by following the documentation <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here</a>.</span>
+        `;
       window.log.error(error);
 
       //Enable the buttons (organize datasets, upload locally, curate existing dataset, curate new dataset)
@@ -5665,9 +4567,8 @@ const initiate_generate = async (resume = false) => {
         if (result.isConfirmed) {
           let button = document.getElementById("button-generate");
           $($($(button).parent()[0]).parents()[0]).removeClass("tab-active");
-          document.getElementById("prevBtn").style.display = "none";
+          setNavButtonHidden("prevBtn", true);
           document.getElementById("start-over-btn").style.display = "none";
-          document.getElementById("div-vertical-progress-bar").style.display = "none";
           document.getElementById("wrapper-wrap").style.display = "flex";
           document.getElementById("div-generate-comeback").style.display = "none";
           document.getElementById("generate-dataset-progress-tab").style.display = "flex";
@@ -5786,7 +4687,7 @@ const initiate_generate = async (resume = false) => {
       successful = true;
       $("#sidebarCollapse").prop("disabled", false);
       statusBarClone.remove();
-      sparc_container.style.display = "inline";
+      // sparc_container.style.display = "inline";
       organizeDataset.disabled = false;
       guidedModeHomePageButton.disabled = false;
       uploadLocally.disabled = false;
@@ -5800,7 +4701,13 @@ const initiate_generate = async (resume = false) => {
       clearInterval(timerProgress);
       swalShowInfo(
         "No files were uploaded in this session",
-        "This happens when trying to update an existing dataset while using the skip options (selected on step 3) in a way that unintentionally ask SODA to skip files you want to upload to Pennsieve. Please try again by clicking the Curate and Share button in the sidebar."
+        `
+        <div style="text-align: left;">
+          This happens when updating an existing dataset with the 'merge' option for folders and the 'skip' option for files selected, and not adding new files to your local dataset.
+          You may try the upload again by clicking the Curate and Share button in the sidebar to get back to the upload process. If you believe this is an error, please contact us using the Contact Us page available in the side bar.
+          For more instructions on how to do that you may reference our documentation page <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here.</a>
+         </div>
+         `
       );
       return;
     }
@@ -5813,7 +4720,7 @@ const initiate_generate = async (resume = false) => {
       $("#sidebarCollapse").prop("disabled", false);
       window.log.info("Done curate track");
       statusBarClone.remove();
-      sparc_container.style.display = "inline";
+      // sparc_container.style.display = "inline";
       if (successful === true) {
         //Enable the buttons (organize datasets, upload locally, curate existing dataset, curate new dataset)
         organizeDataset.disabled = false;
@@ -5829,7 +4736,7 @@ const initiate_generate = async (resume = false) => {
         uploadLocally.className = "content-button is-selected";
         uploadLocally.style = "background-color: #fff";
 
-        window.uploadComplete.open({
+        window.notyf.open({
           type: "success",
           message: "Dataset created successfully",
         });
@@ -6055,7 +4962,6 @@ window.electron.ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
 });
 
 window.showBFAddAccountSweetalert = async (ev) => {
-  let target = ev.target;
   await Swal.fire({
     title: bfaddaccountTitle,
     html: bfAddAccountBootboxMessage,
@@ -6067,11 +4973,12 @@ window.showBFAddAccountSweetalert = async (ev) => {
     reverseButtons: window.reverseSwalButtons,
     backdrop: "rgba(0,0,0, 0.4)",
     heightAuto: false,
+    width: "80rem",
     allowOutsideClick: false,
     footer: `<a target="_blank" href="https://docs.sodaforsparc.io/docs/soda-features/connecting-to-pennsieve/connecting-with-api-key" style="text-decoration: none;">Help me get an API key</a>`,
     didOpen: () => {
       let swal_container = document.getElementsByClassName("swal2-popup")[0];
-      swal_container.style.width = "43rem";
+      swal_container.style.width = "50rem";
     },
     showClass: {
       popup: "animate__animated animate__fadeInDown animate__faster",
@@ -6122,14 +5029,12 @@ window.showBFAddAccountSweetalert = async (ev) => {
                     confirm_click_account_function();
                     window.updateBfAccountList();
 
-                    // If the clicked button has the data attribute "reset-guided-mode-page" and the value is "true"
-                    // then reset the guided mode page
-                    if (target?.getAttribute("data-reset-guided-mode-page") == "true") {
-                      // Get the current page that the user is on in the guided mode
-                      const currentPage = window.CURRENT_PAGE.id;
-                      if (currentPage) {
-                        await window.openPage(currentPage);
-                      }
+                    // If the user is on a current guided mode page, then reload that page
+                    if (window.CURRENT_PAGE?.id) {
+                      const pageToReloadId = window.CURRENT_PAGE.id;
+                      await window.openPage(pageToReloadId);
+                    } else {
+                      window.resetFFMUI(ev?.target || null);
                     }
 
                     // reset the selected dataset to None
@@ -6138,21 +5043,33 @@ window.showBFAddAccountSweetalert = async (ev) => {
                     $(".current-permissions").html("None");
 
                     window.refreshOrganizationList();
-
-                    // If the button that triggered the organization has the class
-                    // guided-change-workspace (from guided mode), handle changes based on the ev id
-                    // otherwise, reset the FFM UI based on the ev class
-                    // NOTE: For API Key sign in flow it is more simple to just reset the UI as the new user may be in a separate workspace than the prior user.
-                    target?.classList.contains("data-reset-guided-mode-page")
-                      ? window.handleGuidedModeOrgSwitch(target)
-                      : window.resetFFMUI(target);
-
                     window.datasetList = [];
                     window.defaultBfDataset = null;
                     window.clearDatasetDropdowns();
+
+                    Swal.fire({
+                      icon: "success",
+                      title: "Successfully added! <br/>Loading your account details...",
+                      timer: 3000,
+                      timerProgressBar: true,
+                      allowEscapeKey: false,
+                      heightAuto: false,
+                      backdrop: "rgba(0,0,0, 0.4)",
+                      showConfirmButton: false,
+                    });
                   })
                   .catch((error) => {
-                    Swal.showValidationMessage(userErrorMessage(error));
+                    clientError(error);
+                    let message = `
+                    <div style="text-align: left;">
+                      <p>
+                          ${userErrorMessage(error, false)}
+                          If you are adding your API Key and Secret as per the documentation available <a href="https://docs.sodaforsparc.io/docs/soda-features/connecting-to-pennsieve/connecting-with-api-key" target="_blank">here</a> and the issue persists
+                          reach out to the SODA team by following the instructions
+                          <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here</a>
+                      </p>
+                    </div>`;
+                    Swal.showValidationMessage(message);
                     document.getElementsByClassName("swal2-actions")[0].children[1].disabled =
                       false;
                     document.getElementsByClassName("swal2-actions")[0].children[3].disabled =
@@ -6164,22 +5081,20 @@ window.showBFAddAccountSweetalert = async (ev) => {
                     showHideDropdownButtons("account", "hide");
                     confirm_click_account_function();
                   });
-
-                Swal.fire({
-                  icon: "success",
-                  title: "Successfully added! <br/>Loading your account details...",
-                  timer: 3000,
-                  timerProgressBar: true,
-                  allowEscapeKey: false,
-                  heightAuto: false,
-                  backdrop: "rgba(0,0,0, 0.4)",
-                  showConfirmButton: false,
-                });
               });
             })
             .catch((error) => {
+              let message = `
+                    <div style="text-align: left;">
+                      <p>
+                          ${userErrorMessage(error, false)}
+                          If you are adding your API Key and Secret per the documentation available <a href="https://docs.sodaforsparc.io/docs/soda-features/connecting-to-pennsieve/connecting-with-api-key" target="_blank">here</a> and the issue persists
+                          reach out to the SODA team by following the instructions
+                          <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here</a>
+                      </p>
+                    </div>`;
               clientError(error);
-              Swal.showValidationMessage(userErrorMessage(error));
+              Swal.showValidationMessage(message);
               document.getElementsByClassName("swal2-actions")[0].children[1].disabled = false;
               document.getElementsByClassName("swal2-actions")[0].children[3].disabled = false;
               document.getElementsByClassName("swal2-actions")[0].children[0].style.display =
@@ -6474,27 +5389,6 @@ window.logCurationForAnalytics = (
   }
 };
 
-window.getMetadataFileNameFromStatus = (metadataFileStatus) => {
-  // get the UI text that displays the file path
-  let filePath = metadataFileStatus.text();
-
-  let fileName = window.path.basename(filePath);
-
-  // remove the extension
-  fileName = fileName.slice(0, fileName.indexOf("."));
-
-  return fileName;
-};
-
-window.determineLocationFromStatus = (metadataFileStatus) => {
-  let filePath = metadataFileStatus.text();
-
-  // determine if the user imported from Pennsieve or Locally
-  let pennsieveFile = filePath.toUpperCase().includes("Pennsieve".toUpperCase());
-
-  return pennsieveFile;
-};
-
 window.logGeneralOperationsForAnalytics = (category, analyticsPrefix, granularity, actions) => {
   // if no actions to log return
   if (!actions) {
@@ -6560,132 +5454,143 @@ document.getElementById("button-view-impact").addEventListener("click", () => {
 });
 
 document.getElementById("button-gather-logs").addEventListener("click", () => {
-  //function will be used to gather all logs on all OS's
-  let homedir = window.os.homedir();
-  let file_path = "";
-  let clientLogsPath = "";
-  let serverLogsPath = window.path.join(homedir, "SODA", "logs");
-  let logFiles = ["main.log", "renderer.log", "agent.log", "api.log"];
+  const homedir = window.os.homedir();
+  const platform = window.os.platform();
+  const appName = "SODA for SPARC";
 
-  if (window.os.platform() === "darwin") {
-    clientLogsPath = window.path.join(homedir, "/Library/Logs/soda-for-sparc/");
-  } else if (window.os.platform() === "win32") {
-    clientLogsPath = window.path.join(homedir, "AppData", "Roaming", "soda-for-sparc", "logs");
-  } else {
-    clientLogsPath = window.path.join(homedir, ".config", "soda-for-sparc", "logs");
-  }
+  const serverLogsPath = window.path.join(homedir, "SODA", "logs");
+
+  const CLIENT_LOG_PATHS = {
+    darwin: window.path.join(homedir, "Library", "Logs", appName),
+    win32: window.path.join(homedir, "AppData", "Roaming", appName, "logs"),
+    linux: window.path.join(homedir, ".config", appName, "logs"),
+  };
+
+  const clientLogsPath = CLIENT_LOG_PATHS[platform] || CLIENT_LOG_PATHS.linux;
+
+  // Base logs only
+  const logFiles = ["main.log", "agent.log", "api.log"];
+
+  let selectedDestination = "";
 
   Swal.fire({
     title: "Select a destination to create log folder",
-    html: `<div style="margin-bottom:1rem;"><p>Please note that any log files that are in your destination already will be overwritten.</p></div><input class="form-control" id="selected-log-destination" type="text" readonly="" placeholder="Select a destination">`,
+    html: `
+      <div style="margin-bottom:1rem;">
+        <p>Please note that any log files that are in your destination already will be overwritten.</p>
+      </div>
+      <input 
+        class="form-control" 
+        id="selected-log-destination" 
+        type="text" 
+        readonly 
+        placeholder="Select a destination"
+      >
+    `,
+    width: 800,
     heightAuto: false,
     showCancelButton: true,
     allowOutsideClick: false,
     allowEscapeKey: true,
     didOpen: () => {
-      let swal_alert_confirm = document.getElementsByClassName("swal2-confirm swal2-styled")[0];
-      swal_alert_confirm.setAttribute("disabled", true);
+      const confirmBtn = document.querySelector(".swal2-confirm");
+      confirmBtn.setAttribute("disabled", true);
 
-      let log_destination_input = document.getElementById("selected-log-destination");
-      log_destination_input.addEventListener("click", function () {
+      const input = document.getElementById("selected-log-destination");
+
+      input.addEventListener("click", () => {
         window.electron.ipcRenderer.send("open-file-dialog-log-destination");
       });
-      window.electron.ipcRenderer.on("selected-log-folder", (event, result) => {
-        file_path = result["filePaths"][0];
-        if (file_path != undefined) {
-          log_destination_input.value = file_path;
-          swal_alert_confirm.removeAttribute("disabled");
+
+      const folderListener = (event, result) => {
+        const selected = result?.filePaths?.[0];
+
+        if (selected) {
+          selectedDestination = selected;
+          input.value = selected;
+          confirmBtn.removeAttribute("disabled");
         } else {
-          Swal.showValidationMessage(`Please enter a destination`);
+          Swal.showValidationMessage("Please enter a destination");
         }
-      });
+
+        window.electron.ipcRenderer.removeListener("selected-log-folder", folderListener);
+      };
+
+      window.electron.ipcRenderer.on("selected-log-folder", folderListener);
     },
     preConfirm: () => {
-      let log_destination_input = document.getElementById("selected-log-destination");
-      if (log_destination_input.value === "" || log_destination_input.value === undefined) {
-        Swal.showValidationMessage(`Please enter a destination`);
+      if (!selectedDestination) {
+        Swal.showValidationMessage("Please enter a destination");
       }
     },
-  }).then((result) => {
-    if (result.isConfirmed === true) {
-      if (file_path !== undefined || file_path !== "") {
-        Swal.fire({
-          title: "Creating log folder",
-          html: "Please wait...",
-          // timer: 5000,
-          allowEscapeKey: false,
-          allowOutsideClick: false,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          timerProgressBar: false,
-          didOpen: () => {
-            Swal.showLoading();
-          },
-        });
+  }).then(async (result) => {
+    if (!result.isConfirmed || !selectedDestination) return;
 
-        let log_folder = window.path.join(file_path, "/SODA-For-SPARC-Logs/");
-        try {
-          window.fs.mkdirSync(log_folder, { recursive: true });
-          // destination will be created or overwritten by default.
-          for (const logFile of logFiles) {
-            let logFilePath;
-            let missingLog = false;
-            if (logFile === "agent.log") {
-              logFilePath = window.path.join(homedir, ".pennsieve", logFile);
-              if (!window.fs.existsSync(logFilePath)) missingLog = true;
-            } else if (logFile === "api.log") {
-              logFilePath = window.path.join(serverLogsPath, logFile);
-              if (!window.fs.existsSync(logFilePath)) missingLog = true;
-            } else {
-              logFilePath = window.path.join(clientLogsPath, logFile);
-              if (!window.fs.existsSync(logFilePath)) missingLog = true;
-            }
-            if (!missingLog) {
-              let log_copy = window.path.join(log_folder, logFile);
+    const logFolder = window.path.join(selectedDestination, "SODA-For-SPARC-Logs");
 
-              window.fs.copyFileSync(logFilePath, log_copy);
-            }
+    try {
+      window.fs.mkdirSync(logFolder, { recursive: true });
+
+      for (const logFile of logFiles) {
+        let basePath;
+
+        if (logFile === "agent.log") {
+          basePath = window.path.join(homedir, ".pennsieve");
+        } else if (logFile === "api.log") {
+          basePath = serverLogsPath;
+        } else {
+          basePath = clientLogsPath;
+        }
+
+        // Always copy base log if it exists
+        const mainSource = window.path.join(basePath, logFile);
+        const mainExists = window.fs.existsSync(mainSource);
+        if (mainExists) {
+          window.fs.copyFileSync(mainSource, window.path.join(logFolder, logFile));
+        }
+
+        // Handle overflow logs for main.log (main.old.log)
+        if (logFile === "main.log") {
+          const overflow = window.path.join(basePath, "main.old.log");
+          if (window.fs.existsSync(overflow)) {
+            window.fs.copyFileSync(overflow, window.path.join(logFolder, "main.old.log"));
           }
-          Swal.close();
+        }
 
-          Swal.fire({
-            title: "Success!",
-            text: `Successfully created SODA-For-SPARC-Logs in ${file_path}`,
-            icon: "success",
-            showConfirmButton: true,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            didOpen: () => {
-              if (document.getElementsByClassName("swal2-loader").length > 0) {
-                document.getElementsByClassName("swal2-loader")[0].style.display = "none";
-                document.getElementsByClassName("swal2-confirm swal2-styled")[0].style.display =
-                  "block";
-              }
-            },
-          });
-        } catch (error) {
-          clientError(error);
-          Swal.fire({
-            title: "Failed to create log folder!",
-            text: error,
-            icon: "error",
-            showConfirmButton: true,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            didOpen: () => {
-              if (document.getElementsByClassName("swal2-loader").length > 0) {
-                document.getElementsByClassName("swal2-loader")[0].style.display = "none";
-                document.getElementsByClassName("swal2-confirm swal2-styled")[0].style.display =
-                  "block";
-              }
-            },
-          });
+        // Handle overflow logs for api.log (api.log.1, api.log.2...)
+        if (logFile === "api.log") {
+          let index = 1;
+          while (true) {
+            const overflowName = `api.log.${index}`;
+            const overflowPath = window.path.join(basePath, overflowName);
+
+            if (!window.fs.existsSync(overflowPath)) break;
+
+            window.fs.copyFileSync(overflowPath, window.path.join(logFolder, overflowName));
+
+            index++;
+          }
         }
       }
+
+      await swalShowSuccess(
+        "Log folder created successfully!",
+        `Successfully created SODA-For-SPARC-Logs in ${selectedDestination}`
+      );
+    } catch (error) {
+      clientError(error);
+
+      Swal.fire({
+        title: "Failed to create log folder!",
+        text: String(error),
+        icon: "error",
+        showConfirmButton: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
     }
   });
 });
-
 /**
  * Gather the client's analytics ID and save it in a file of the user's choosing. The user can then send this to use when requesting to have their data
  * removed from our analytics database. For each computer/profile the user has they may have to perform this operation if they want all of their data

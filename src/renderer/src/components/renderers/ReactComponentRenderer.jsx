@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import SodaComponentWrapper from "../utils/SodaComponentWrapper";
 import ExternalLink from "../buttons/ExternalLink";
+import IconButton from "../buttons/IconButton";
 import NavigationButton from "../buttons/Navigation";
 import NameAndSubtitlePage from "../pages/NameAndSubtitle";
 import DropdownSelect from "../common/DropdownSelect";
@@ -23,9 +24,18 @@ import DataImporter from "../shared/DataImporter";
 import SubmissionMetadataForm from "../pages/SubmissionMetadataForm";
 import Icon from "../shared/Icon";
 import SodaTextInput from "../common/SodaTextInput";
+import ProgressStepper from "../common/ProgressStepper";
 import ManifestFilePreviewSection from "../shared/ManifestFilePreviewSection";
 import DropDownNote from "../utils/ui/DropDownNote";
+import Sidebar from "../common/Sidebar";
+import HomePageCards from "../cards/HomePageCards";
+import GuidedModeProgressCards from "../guided/GuidedModeProgressCards";
+import { CardButton } from "../cards/CardButton";
+import CheckboxCard from "../cards/CheckboxCard";
+import HeroCard from "../cards/HeroCard";
 import { Divider } from "@mantine/core";
+import DataCategoriesQuestionnairePage from "../pages/DataCategoriesQuestionnairePage";
+import InfoList from "../shared/InfoList";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
 while (!window.htmlSectionsAdded) {
@@ -33,13 +43,20 @@ while (!window.htmlSectionsAdded) {
 }
 
 // Helper function to create a React root and render the component inside SodaComponentWrapper
-const renderComponent = (componentSlot, component) => {
-  const root = createRoot(componentSlot);
-  root.render(<SodaComponentWrapper>{component}</SodaComponentWrapper>);
+export const renderComponent = (componentSlot, component) => {
+  try {
+    const root = createRoot(componentSlot);
+    root.render(<SodaComponentWrapper>{component}</SodaComponentWrapper>);
+  } catch (error) {
+    console.error("Error rendering component:", error);
+  }
 };
 
 // Mapping of component types to their render functions
 const componentTypeRenderers = {
+  "home-page-cards": (componentSlot) => {
+    renderComponent(componentSlot, <HomePageCards />);
+  },
   "guided-mode-page": (componentSlot) => {
     const pageIdToPageComponentMap = {
       "guided-name-subtitle-tab": <NameAndSubtitlePage />,
@@ -51,6 +68,9 @@ const componentTypeRenderers = {
       renderComponent(componentSlot, pageComponent);
     }
   },
+  "guided-mode-progress-cards": (componentSlot) => {
+    renderComponent(componentSlot, <GuidedModeProgressCards />);
+  },
   "external-link": (componentSlot) => {
     const props = {
       href: componentSlot.getAttribute("data-href"),
@@ -58,6 +78,12 @@ const componentTypeRenderers = {
       buttonType: componentSlot.getAttribute("data-button-type"),
     };
     renderComponent(componentSlot, <ExternalLink {...props} />);
+  },
+  "icon-button": (componentSlot) => {
+    const props = {
+      buttonSize: componentSlot.getAttribute("data-button-size"),
+    };
+    renderComponent(componentSlot, <IconButton {...props} />);
   },
   "dynamic-link": (componentSlot) => {
     const props = {
@@ -79,11 +105,42 @@ const componentTypeRenderers = {
       buttonText: componentSlot.getAttribute("data-button-text"),
       navIcon: componentSlot.getAttribute("data-nav-icon"),
       buttonSize: componentSlot.getAttribute("data-button-size"),
-      buttonColor: componentSlot.getAttribute("data-button-color"),
+      buttonColor: componentSlot.getAttribute("data-button-color") || "black",
       buttonCustomWidth: componentSlot.getAttribute("data-button-custom-width"),
       buttonCustomClass: componentSlot.getAttribute("data-button-custom-class"),
     };
     renderComponent(componentSlot, <NavigationButton {...props} />);
+  },
+  "card-button": (componentSlot) => {
+    const props = {
+      id: componentSlot.id,
+    };
+    renderComponent(componentSlot, <CardButton {...props} />);
+  },
+  "checkbox-card": (componentSlot) => {
+    const props = {
+      id: componentSlot.getAttribute("data-button-id") || componentSlot.id,
+    };
+    renderComponent(componentSlot, <CheckboxCard {...props} />);
+  },
+  "hero-card": (componentSlot) => {
+    const id = componentSlot.getAttribute("data-button-id") || componentSlot.id;
+    componentSlot.style.width = "100%";
+    componentSlot.style.display = "flex";
+    componentSlot.style.justifyContent = "center";
+    renderComponent(componentSlot, <HeroCard id={id} />);
+  },
+  "progress-stepper": (componentSlot) => {
+    const props = {
+      id: componentSlot.getAttribute("data-stepper-id"),
+    };
+    renderComponent(componentSlot, <ProgressStepper {...props} />);
+  },
+  sidebar: (componentSlot) => {
+    const props = {
+      id: componentSlot.getAttribute("data-sidebar-id"),
+    };
+    renderComponent(componentSlot, <Sidebar {...props} />);
   },
   "generic-button": (componentSlot) => {
     const props = {
@@ -116,6 +173,7 @@ const componentTypeRenderers = {
 
   "data-importer": (componentSlot) => {
     const props = {
+      dataImporterId: componentSlot.getAttribute("data-importer-id"),
       relativeFolderPathToImportDataInto: componentSlot.getAttribute(
         "data-relative-folder-path-to-import-data-into"
       ),
@@ -126,8 +184,9 @@ const componentTypeRenderers = {
     const props = {
       pageName: componentSlot.getAttribute("data-page-name"),
       entityTypeStringSingular: componentSlot.getAttribute("data-entity-type-string-singular"),
-      entityTypeStringPlural: componentSlot.getAttribute("data-entity-type-string-plural"),
       entityTypePrefix: componentSlot.getAttribute("data-entity-type-prefix"),
+      entityTypeOnlyHasOneCategory:
+        componentSlot.getAttribute("data-entity-type-only-has-one-category") === "true",
     };
     renderComponent(componentSlot, <PerformanceIdManagementPage {...props} />);
   },
@@ -166,11 +225,22 @@ const componentTypeRenderers = {
     const props = {
       pageName: componentSlot.getAttribute("data-page-name"),
       entityTypeStringSingular: componentSlot.getAttribute("data-entity-type-string-singular"),
-      entityTypeStringPlural: componentSlot.getAttribute("data-entity-type-string-plural"),
       showProgress: componentSlot.getAttribute("data-show-progress") || false,
+      entityTypeOnlyHasOneCategory:
+        componentSlot.getAttribute("data-entity-type-only-has-one-category") === "true",
     };
     renderComponent(componentSlot, <EntityDataSelectorPage {...props} />);
   },
+
+  "data-categories-questionnaire-page": (componentSlot) => {
+    const props = {
+      pageID: componentSlot.id,
+      pageName: componentSlot.getAttribute("data-page-name"),
+      questionnaireEntityType: componentSlot.getAttribute("data-questionnaire-entity-type"),
+    };
+    renderComponent(componentSlot, <DataCategoriesQuestionnairePage {...props} />);
+  },
+
   "modality-selection-page": (componentSlot) => {
     renderComponent(componentSlot, <ModalitySelectionPage />);
   },
@@ -184,7 +254,10 @@ const componentTypeRenderers = {
     renderComponent(componentSlot, <GenerateDatasetLocationSelectorPage />);
   },
   "pennsieve-generate-target-page": (componentSlot) => {
-    renderComponent(componentSlot, <GenerateDatasetPennsieveTargetPage />);
+    const props = {
+      curationMode: componentSlot.getAttribute("data-curation-mode"),
+    };
+    renderComponent(componentSlot, <GenerateDatasetPennsieveTargetPage {...props} />);
   },
   "license-select-page": (componentSlot) => {
     renderComponent(componentSlot, <LicenseSelectPage />);
@@ -208,6 +281,24 @@ const componentTypeRenderers = {
     };
     renderComponent(componentSlot, <DropDownNote {...props} />);
   },
+  "info-list": (componentSlot) => {
+    const props = {
+      id: componentSlot.id,
+    };
+    renderComponent(componentSlot, <InfoList {...props} />);
+  },
+};
+
+export const setRender = (componentType, componentSlot) => {
+  const renderFunction = componentTypeRenderers[componentType];
+
+  if (renderFunction) {
+    try {
+      renderFunction(componentSlot);
+    } catch (error) {
+      console.error(`Error rendering component of type: ${componentType}`, error);
+    }
+  }
 };
 
 // Query all DOM nodes with the data attribute "data-component-type" and render the appropriate component
@@ -216,7 +307,11 @@ document.querySelectorAll("[data-component-type]").forEach((componentSlot) => {
   const renderFunction = componentTypeRenderers[componentType];
 
   if (renderFunction) {
-    renderFunction(componentSlot);
+    try {
+      renderFunction(componentSlot);
+    } catch (error) {
+      console.error(`Error rendering component of type: ${componentType}`, error);
+    }
   } else {
     console.error(`No render function found for component type: ${componentType}`);
   }

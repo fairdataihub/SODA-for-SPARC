@@ -1,51 +1,50 @@
-import { guidedSetNavLoadingState } from "./pages/navigationUtils/pageLoading";
 import { guidedSaveProgress } from "./pages/savePageChanges";
+import useGlobalStore from "../../stores/globalStore";
+import { setGuidedModeProgressCardsDataArray } from "../../stores/slices/guidedModeProgressCardsSlice";
 import {
   getContributorByOrcid,
   addContributor,
   editContributorByOrcid,
   renderContributorsTable,
-} from "./metadata/contributors";
+} from "./metadata/contributors/contributors";
+import {
+  CONTRIBUTORS_REGEX,
+  CONTRIBUTORS_LAST_NAME_REGEX,
+  CONTRIBUTORS_FIRST_NAME_REGEX,
+  orcidIsValid,
+  affiliationRorIsValid,
+} from "./metadata/contributors/contributorsValidation";
 import { generateAlertElement } from "./metadata/utils";
-import determineDatasetLocation from "../analytics/analytics-utils";
 import { clientError, userErrorMessage } from "../others/http-error-handler/error-handler";
 import api from "../others/api/api";
 import kombuchaEnums from "../analytics/analytics-enums";
 import Swal from "sweetalert2";
 import Tagify from "@yaireo/tagify/dist/tagify.esm.js";
-import { v4 as uuid } from "uuid";
+
 import client from "../client";
 import {
   guidedGenerateDatasetLocally,
   guidedGenerateDatasetOnPennsieve,
 } from "./generateDataset/generate";
-import { guidedDatasetKeywordsTagify } from "./tagifies/tagifies";
-import { updateDatasetUploadProgressTable } from "./generateDataset/uploadProgressBar";
 import {
   swalConfirmAction,
   swalShowError,
-  swalFileListSingleAction,
-  swalFileListDoubleAction,
-  swalShowInfo,
+  swalListSingleAction,
+  swalListDoubleAction,
 } from "../utils/swal-utils";
 import DatePicker from "tui-date-picker";
 import { loadStoredContributors } from "../others/contributor-storage";
 import { ORCID } from "orcid-utils";
+import { guidedGetCurrentUserWorkSpace } from "./workspaces/workspaces";
 
-import { guidedCreateManifestFilesAndAddToDatasetStructure } from "./manifests/manifest";
-import { createStandardizedDatasetStructure } from "../utils/datasetStructure";
 import { guidedRenderProgressCards } from "./resumeProgress/progressCards";
-
-import { guidedGetDatasetName } from "./utils/sodaJSONObj";
-
-import { getDatasetEntityObj } from "../../stores/slices/datasetEntitySelectorSlice";
 
 import "bootstrap-select";
 import Cropper from "cropperjs";
+import { convertGuidedManifestToSchema } from "./utils/sodaJSONObj";
 
 import "jstree";
-
-import { newEmptyFolderObj } from "../utils/datasetStructure";
+import { CONTRIBUTOR_ROLE_OPTIONS } from "./metadata/contributors/contributors";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -57,7 +56,7 @@ if (!window.fs.existsSync(guidedProgressFilePath)) {
   window.fs.mkdirSync(guidedProgressFilePath, { recursive: true });
 }
 
-window.returnToGuided = () => {
+window.clickGuidedModeButton = () => {
   document.getElementById("guided_mode_view").click();
 };
 
@@ -80,8 +79,6 @@ export const guidedResetLocalGenerationUI = () => {
   document.getElementById("guided-section-local-generation-status-table").classList.add("hidden");
   // Hide the local dataset generation success section
   document.getElementById("guided-section-post-local-generation-success").classList.add("hidden");
-  // Hide the local dataset generation retry section
-  document.getElementById("guided-section-retry-local-generation").classList.add("hidden");
 };
 
 // This function reads the innerText of the textSharedWithCurationTeamStatus element
@@ -142,7 +139,7 @@ const withdrawDatasetSubmission = async () => {
 
     Swal.fire({
       title: "Could not withdraw dataset from publication!",
-      text: `${userErrorMessage(error)}`,
+      html: `${userErrorMessage(error)}`,
       icon: "error",
       heightAuto: false,
       confirmButtonText: "Ok",
@@ -226,6 +223,7 @@ const guidedSubmitDatasetForReview = async (embargoReleaseDate = "") => {
     });
   } catch (error) {
     console.error("[Dataset Submission] Error:", error);
+    window.log.error("[Dataset Submission] Error:", error);
 
     // Track failure
     window.electron.ipcRenderer.send(
@@ -249,7 +247,7 @@ const guidedSubmitDatasetForReview = async (embargoReleaseDate = "") => {
       title: "Could not submit your dataset to the Curation Team",
       icon: "error",
       reverseButtons: window.reverseSwalButtons,
-      text: userErrorMessage(error),
+      html: userErrorMessage(error),
       showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
       hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
     });
@@ -284,6 +282,7 @@ const guidedUnSubmitDatasetForReview = async () => {
     // Track success
   } catch (error) {
     console.error("[Dataset Unsubmission] Error:", error);
+    window.log.error("[Dataset Unsubmission] Error:", error);
   }
 };
 
@@ -319,9 +318,10 @@ export const guidedSetPublishingStatusUI = async () => {
     }
   } catch (error) {
     console.error("[PrepublishingFlow] Error fetching publishing status:", error);
+    window.log.error("[PrepublishingFlow] Error fetching publishing status:", error);
     await Swal.fire({
       title: "Error fetching publishing status",
-      text: userErrorMessage(error),
+      html: userErrorMessage(error),
       icon: "error",
       confirmButtonText: "Ok",
       heightAuto: false,
@@ -467,10 +467,11 @@ window.guidedModifyCurationTeamAccess = async (action) => {
       setButtonState(shareBtn, { disabled: false, loading: false });
     } catch (error) {
       console.error("[Curation Access] Share flow error:", error);
+      window.log.error("[Curation Access] Share flow error:", error);
       setButtonState(shareBtn, { disabled: false, loading: false });
       await Swal.fire({
         title: "Failed to share dataset with Curation Team",
-        text: userErrorMessage(error),
+        html: userErrorMessage(error),
         icon: "error",
         confirmButtonText: "Ok",
         heightAuto: false,
@@ -518,10 +519,11 @@ window.guidedModifyCurationTeamAccess = async (action) => {
       setButtonState(unshareBtn, { disabled: false, loading: false });
     } catch (error) {
       console.error("[Curation Access] Unshare flow error:", error);
+      window.log.error("[Curation Access] Unshare flow error:", error);
       setButtonState(unshareBtn, { disabled: false, loading: false });
       await Swal.fire({
         title: "Failed to unshare dataset from Curation Team",
-        text: userErrorMessage(error),
+        html: userErrorMessage(error),
         icon: "error",
         confirmButtonText: "Ok",
         heightAuto: false,
@@ -593,7 +595,7 @@ document.querySelectorAll(".pass-button-click-to-next-button").forEach((element)
   });
 });
 
-const deleteProgresFile = async (progressFileName) => {
+const deleteProgressFile = async (progressFileName) => {
   //Get the path of the progress file to delete
   const progressFilePathToDelete = window.path.join(
     guidedProgressFilePath,
@@ -617,6 +619,27 @@ document
     let datasetLink;
     if (preferredOrganization && pennsieveDatasetID) {
       datasetLink = `https://app.pennsieve.io/${preferredOrganization}/datasets/${pennsieveDatasetID}/overview`;
+    } else {
+      datasetLink = "https://app.pennsieve.io";
+    }
+
+    window.open(datasetLink, "_blank");
+  });
+
+// Add event listener to open dataset link in new tab
+document
+  .getElementById("guided-button-open-link-on-pennsieve-publishing")
+  .addEventListener("click", async (event) => {
+    event.preventDefault();
+    const userInformation = await api.getUserInformation();
+    const preferredOrganization = userInformation.preferredOrganization;
+    const pennsieveDatasetID = window.sodaJSONObj?.["digital-metadata"]?.["pennsieve-dataset-id"];
+
+    // If the user has a preferred organization and a dataset ID, construct the dataset link
+    // Otherwise, default to the Pennsieve app homepage
+    let datasetLink;
+    if (preferredOrganization && pennsieveDatasetID) {
+      datasetLink = `https://app.pennsieve.io/${preferredOrganization}/datasets/${pennsieveDatasetID}/publishing-settings`;
     } else {
       datasetLink = "https://app.pennsieve.io";
     }
@@ -659,12 +682,9 @@ document.querySelectorAll(".guided-curation-team-task-button").forEach((button) 
   });
 });
 
-window.deleteProgressCard = async (progressCardDeleteButton) => {
-  const progressCard = progressCardDeleteButton.parentElement.parentElement;
-  const progressCardNameToDelete = progressCard.querySelector(".progress-file-name").textContent;
-
+window.deleteProgressCard = async (datasetName, progressFileName) => {
   const result = await Swal.fire({
-    title: `Are you sure you would like to delete SODA progress made on the dataset: ${progressCardNameToDelete}?`,
+    title: `Are you sure you would like to delete SODA progress made on the dataset: ${datasetName}?`,
     text: "Your progress file will be deleted permanently, and all existing progress will be lost.",
     icon: "warning",
     heightAuto: false,
@@ -677,15 +697,50 @@ window.deleteProgressCard = async (progressCardDeleteButton) => {
   });
   if (result.isConfirmed) {
     //delete the progress file
-    deleteProgresFile(progressCardNameToDelete);
+    deleteProgressFile(progressFileName);
 
-    //remove the progress card from the DOM
-    progressCard.remove();
+    // Remove the card from the guidedModeProgressCardsDataArray in the store
+    const currentArray = useGlobalStore.getState().guidedModeProgressCardsDataArray || [];
+    const updatedArray = currentArray.filter(
+      (item) =>
+        (item?.["save-file-name"] || item?.["digital-metadata"]?.["name"]) !== progressFileName
+    );
+    setGuidedModeProgressCardsDataArray(updatedArray);
   }
 };
 
+export const guidedCheckIfUserNeedsToReconfirmAccountDetails = () => {
+  // Determine individual status flags
+  const completedTabs = window.sodaJSONObj["completed-tabs"] || [];
+  const logInPageComplete =
+    completedTabs.includes("gm-pennsieve-login-tab") ||
+    completedTabs.includes("ffm-pennsieve-login-tab");
+
+  const lastConfirmedAccount = window.sodaJSONObj?.["last-confirmed-ps-account-details"];
+  const currentAccount = window.defaultBfAccount;
+  const accountSame = lastConfirmedAccount === currentAccount;
+
+  const currentWorkspace = guidedGetCurrentUserWorkSpace();
+  const lastConfirmedWorkspace = window.sodaJSONObj?.["last-confirmed-pennsieve-workspace-details"];
+  const workspaceSame = currentWorkspace === lastConfirmedWorkspace;
+
+  const needsReconfirm = logInPageComplete && (!accountSame || !workspaceSame);
+
+  return needsReconfirm;
+};
+window.handleGuidedModeOrganizationConfirmationClick = async (curationModePrefix) => {
+  const agentCheckElementId = `${curationModePrefix}-section-pennsieve-agent-check`;
+  const agentCheckElement = document.getElementById(agentCheckElementId);
+  if (agentCheckElement) {
+    agentCheckElement.classList.remove("hidden");
+  } else {
+    console.warn(`Agent check element not found: ${agentCheckElementId}`);
+  }
+  await window.checkPennsieveAgent(`${curationModePrefix}-mode-post-log-in-pennsieve-agent-check`);
+};
+
 window.guidedOpenManifestEditSwal = async () => {
-  const existingManifestData = window.sodaJSONObj["guided-manifest-file-data"];
+  const existingManifestData = window.sodaJSONObj["dataset_metadata"]["manifest_file"];
   //send manifest data to main.js to then send to child window
   window.electron.ipcRenderer.invoke("spreadsheet", existingManifestData);
 
@@ -697,10 +752,84 @@ window.guidedOpenManifestEditSwal = async () => {
     } else {
       window.electron.ipcRenderer.removeAllListeners("spreadsheet-reply");
 
-      window.sodaJSONObj["guided-manifest-file-data"] = { headers: result[0], data: result[1] };
+      if (!window.sodaJSONObj["dataset_metadata"]) {
+        window.sodaJSONObj["dataset_metadata"] = {};
+      }
+      window.sodaJSONObj["dataset_metadata"]["manifest_file"] = {
+        headers: result[0],
+        data: result[1],
+      };
       await guidedSaveProgress();
     }
   });
+};
+
+/**
+ * Generates a local copy of the manifest file for the current dataset.
+ * Converts the manifest data to the proper schema format and saves it as an Excel file.
+ * User is prompted to select a destination folder.
+ */
+window.guidedCreateLocalManifestCopy = async () => {
+  try {
+    // Step 1: Prompt user to select a destination folder for the manifest file
+    const savePath = await window.electron.ipcRenderer.invoke(
+      "open-folder-path-select",
+      "Select a folder to save the manifest files to"
+    );
+
+    // User cancelled the file selection dialog
+    if (!savePath) {
+      return;
+    }
+
+    // Step 2: Generate a unique file path to avoid overwriting existing files
+    // If manifest.xlsx exists, appends (1), (2), etc. until an available name is found
+    let manifestFilePath = window.path.join(savePath, "manifest.xlsx");
+    let fileIndex = 1;
+    while (window.fs.existsSync(manifestFilePath)) {
+      manifestFilePath = window.path.join(savePath, `manifest(${fileIndex}).xlsx`);
+      fileIndex++;
+    }
+
+    // Step 3: Retrieve the manifest data from the current sodaJSONObj
+    const manifestData = window.sodaJSONObj["dataset_metadata"]?.["manifest_file"];
+    if (!manifestData) {
+      window.notyf.open({
+        type: "error",
+        message: "No manifest data found. Please create a manifest first.",
+      });
+      return;
+    }
+
+    // Step 4: Transform the manifest data into the schema format expected by the backend
+    const shapedManifestData = convertGuidedManifestToSchema(manifestData);
+
+    // Step 5: Create a deep copy of sodaJSONObj to prevent mutating the original object
+    const sodaJSONCopy = JSON.parse(JSON.stringify(window.sodaJSONObj));
+
+    // Step 6: Initialize dataset_metadata if it doesn't exist and attach the formatted manifest
+    if (!sodaJSONCopy["dataset_metadata"]) {
+      sodaJSONCopy["dataset_metadata"] = {};
+    }
+    sodaJSONCopy["dataset_metadata"]["manifest_file"] = shapedManifestData;
+
+    // Step 7: Call the backend API to generate the Excel manifest file
+    await client.post("/prepare_metadata/manifest", {
+      soda: sodaJSONCopy,
+      path_to_manifest_file: manifestFilePath,
+      upload_boolean: false,
+    });
+
+    // Display success notification
+    window.notyf.open({
+      duration: 5000,
+      type: "success",
+      message: "Manifest file successfully generated",
+    });
+  } catch (error) {
+    window.log.error("[guidedCreateLocalManifestCopy] Error generating manifest:", error);
+    clientError(error);
+  }
 };
 
 window.diffCheckManifestFiles = (newManifestData, existingManifestData) => {
@@ -1191,29 +1320,6 @@ const generateadditionalLinkRowElement = (link, linkType, linkRelation) => {
   `;
 };
 
-window.removeContributorField = (contributorDeleteButton) => {
-  const contributorField = contributorDeleteButton.parentElement;
-  const { contributorFirstName, contributorLastName } = contributorField.dataset;
-
-  const contributorsBeforeDelete = window.sodaJSONObj["dataset_contributors"];
-  //If the contributor has data-first-name and data-last-name, then it is a contributor that
-  //already been added. Delete it from the contributors array.
-  if (contributorFirstName && contributorLastName) {
-    const filteredContributors = contributorsBeforeDelete.filter((contributor) => {
-      //remove contributors with matching first and last name
-      return !(
-        contributor.contributorFirstName == contributorFirstName &&
-        contributor.contributorLastName == contributorLastName
-      );
-    });
-
-    window.sodaJSONObj["dataset_contributors"];
-    filteredContributors;
-  }
-
-  contributorField.remove();
-};
-
 const getExistingContributorORCiDs = () => {
   return window.sodaJSONObj["dataset_contributors"].map((contributor) => {
     return contributor.contributor_orcid_id;
@@ -1238,64 +1344,62 @@ const handleAddOrEditContributorHeaderUI = (boolEditingContributor) => {
   }
 
   const contributorOptions = locallyStoredContributorArray.map((contributor) => {
+    const escapeName = (str) => (str || "").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+
     return `
         <option
-          value="${contributor.contributor_last_name}, ${contributor.contributor_first_name}"
-          data-first-name="${contributor.contributor_first_name ?? ""}"
-          data-last-name="${contributor.contributor_last_name ?? ""}"
-          data-orcid="${contributor.contributor_orcid_id ?? ""}"
-          data-affiliation="${contributor.contributor_affiliation ?? ""}"
-          data-roles="${contributor.contributor_role ?? ""}"
+          value="${escapeName(contributor.contributor_name)}"
+          data-contributor-name="${escapeName(contributor.contributor_name)}"
+          data-orcid="${escapeName(contributor.contributor_orcid_id)}"
+          data-affiliation="${escapeName(contributor.contributor_affiliation)}"
+          data-roles="${contributor.contributor_roles.join(",")}"
         >
-          ${contributor.contributor_last_name}, ${contributor.contributor_first_name}
+          ${escapeName(contributor.contributor_name)}
         </option>
       `;
   });
 
   return `
-    <label class="guided--form-label centered mb-2" style="font-size: 1em !important;">
-      If the contributor has been previously added, select them from the dropdown below.
-    </label>
-    <select
-      class="w-100 SODA-select-picker"
-      id="guided-stored-contributors-select"
-      data-live-search="true"
-      name="Dataset contributor"
-    >
-      <option
-        value=""
-        data-first-name=""
-        data-last-name=""
-        data-orcid=""
-        data-affiliation=""
-        data-roles=""
+      <label class="guided--form-label centered mb-2" style="font-size: 1em !important;">
+        If the contributor has been previously added, select them from the dropdown below.
+      </label>
+      <select
+        class="w-100 SODA-select-picker"
+        id="guided-stored-contributors-select"
+        data-live-search="true"
+        name="Dataset contributor"
       >
-        Select a saved contributor
-      </option>
-      ${contributorOptions}
-    </select>
-    <label class="guided--form-label centered mt-2" style="font-size: 1em !important;">
-      Otherwise, enter the contributor's information below.
-    </label>
+        <option
+          value=""
+          data-contributor-name=""
+          data-orcid=""
+          data-affiliation=""
+          data-roles=""
+        >
+          Select a saved contributor
+        </option>
+        ${contributorOptions}
+      </select>
+      <label class="guided--form-label centered mt-2" style="font-size: 1em !important;">
+        Otherwise, enter the contributor's information below.
+      </label>
   `;
 };
 
 window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) => {
-  let defaultFirstName = "";
-  let defaultLastName = "";
+  let defaultContributorName = "";
   let defaultOrcid = "";
   let defaultAffiliation = "";
-  let defaultRole = "";
+  let defaultRole = [];
   let contributorSwalTitle = "Adding a new contributor";
 
   if (contributorIdToEdit) {
     const contributorData = getContributorByOrcid(contributorIdToEdit);
-    defaultFirstName = contributorData.contributor_first_name || "";
-    defaultLastName = contributorData.contributor_last_name || "";
+    defaultContributorName = contributorData.contributor_name || "";
     defaultOrcid = contributorData.contributor_orcid_id || "";
     defaultAffiliation = contributorData.contributor_affiliation || "";
-    defaultRole = contributorData.contributor_role || "";
-    contributorSwalTitle = `Edit contributor ${defaultLastName}, ${defaultFirstName}`;
+    defaultRole = contributorData.contributor_roles || [];
+    contributorSwalTitle = `Edit contributor ${defaultContributorName}`;
   }
 
   await Swal.fire({
@@ -1308,55 +1412,33 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
     html: `
       <div class="guided--flex-center mb-1" style="font-size: 1em !important; height: 550px;">
         ${handleAddOrEditContributorHeaderUI(!!contributorIdToEdit)}
-        <div class="space-between w-100">
-          <div class="guided--flex-center mt-sm" style="width: 45%">
-            <label class="guided--form-label required">Last name:</label>
-            <input class="guided--input" id="guided-contributor-last-name" type="text" placeholder="Contributor's last name" value="${defaultLastName}" />
-          </div>
-          <div class="guided--flex-center mt-sm" style="width: 45%">
-            <label class="guided--form-label required">First name:</label>
-            <input class="guided--input" id="guided-contributor-first-name" type="text" placeholder="Contributor's first name" value="${defaultFirstName}" />
-          </div>
-        </div>
+          <label class="guided--form-label required">Contributor Name:</label>
+          <input 
+            class="guided--input" 
+            id="guided-contributor-name"
+            type="text" 
+            placeholder="Last, First Middle (e.g., Smith, John A)" 
+            value="${defaultContributorName.trim()}" 
+          />
+        <p class="guided--text-input-instructions mb-0 text-left">
+          Should follow this format: Last, First Middle. For information on what family name prefixes are allowed <a target="_blank" href="https://en.wikipedia.org/wiki/List_of_family_name_affixes">click here</a>.
+        </p>
         <label class="guided--form-label mt-md required">ORCID:</label>
         <input class="guided--input" id="guided-contributor-orcid" type="text" placeholder="https://orcid.org/0000-0000-0000-0000 OR 0000-0000-0000-0000" value="${defaultOrcid}" />
         <p class="guided--text-input-instructions mb-0 text-left">
           If your contributor does not have an ORCID, have the contributor <a target="_blank" href="https://orcid.org/register">sign up for one here</a>.
         </p>
         <label class="guided--form-label mt-md required">Affiliation:</label>
-        <input class="guided--input" id="guided-contributor-affiliation-input" type="text" placeholder="Institution name" value="${defaultAffiliation}" />
-        <p class="guided--text-input-instructions mb-0 text-left">Institution the contributor is affiliated with.</p>
-        <label class="guided--form-label mt-md required">Role:</label>
-        <select id="guided-contributor-role-select" class="w-100 SODA-select-picker" title="Select a role" data-live-search="true">
-          <option value="">Select a role</option>
-          <option value="ContactPerson">Contact Person</option>
-          <option value="CoInvestigator">Co-Investigator</option>
-          <option value="CorrespondingAuthor">Corresponding Author</option>
-          <option value="Creator">Creator</option>
-          <option value="DataCollector">Data Collector</option>
-          <option value="DataCurator">Data Curator</option>
-          <option value="DataManager">Data Manager</option>
-          <option value="Distributor">Distributor</option>
-          <option value="Editor">Editor</option>
-          <option value="HostingInstitution">Hosting Institution</option>
-          <option value="PrincipalInvestigator">Principal Investigator</option>
-          <option value="Producer">Producer</option>
-          <option value="ProjectLeader">Project Leader</option>
-          <option value="ProjectManager">Project Manager</option>
-          <option value="ProjectMember">Project Member</option>
-          <option value="RegistrationAgency">Registration Agency</option>
-          <option value="RegistrationAuthority">Registration Authority</option>
-          <option value="RelatedPerson">Related Person</option>
-          <option value="ResearchGroup">Research Group</option>
-          <option value="Researcher">Researcher</option>
-          <option value="RightsHolder">Rights Holder</option>
-          <option value="Sponsor">Sponsor</option>
-          <option value="Supervisor">Supervisor</option>
-          <option value="WorkPackageLeader">Work Package Leader</option>
-          <option value="Other">Other</option>
+        <input class="guided--input" id="guided-contributor-affiliation-input" type="text" placeholder="Institution ROR" value="${defaultAffiliation}" />
+        <p class="guided--text-input-instructions mb-0 text-left">Institution the contributor is affiliated with. Should be formatted as an ROR organization identifier(e.g., https://ror.org/00abcdef).</p>
+        <label class="guided--form-label mt-md required">Role(s):</label>
+        <select id="guided-contributor-role-select" class="w-100 SODA-select-picker" title="Select one or more roles" data-live-search="true" multiple>
+          ${Object.entries(CONTRIBUTOR_ROLE_OPTIONS)
+            .map(([value, label]) => `<option value="${value}">${label}</option>`)
+            .join("")}
         </select>
         <p class="guided--text-input-instructions mb-0 text-left">
-          Role the contributor played in the creation of the dataset. Visit <a target="_blank" href="https://schema.datacite.org/meta/kernel-4.4/doc/DataCite-MetadataKernel_v4.4.pdf">DataCite</a> for definitions.<br /><b>Select a role from the dropdown.</b>
+          Role(s) the contributor played in the creation of the dataset. Visit <a target="_blank" href="https://schema.datacite.org/meta/kernel-4.4/doc/DataCite-MetadataKernel_v4.4.pdf">DataCite</a> for definitions.<br /><b>Select one or more roles from the dropdown.</b>
         </p>
       </div>
     `,
@@ -1370,56 +1452,103 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
       $("#guided-contributor-role-select")
         .selectpicker({ style: "SODA-select-picker" })
         .selectpicker("refresh");
-      if (defaultRole) $("#guided-contributor-role-select").selectpicker("val", defaultRole);
+      if (defaultRole) {
+        const roles = Array.isArray(defaultRole) ? defaultRole : [defaultRole];
+        $("#guided-contributor-role-select").selectpicker("val", roles);
+        // Track the initial order
+        $("#guided-contributor-role-select").data("prevOrder", roles);
+      }
+
+      $(".SODA-select-picker button").on("click", (e) => {
+        const dropdownParent = e.target.closest(".dropdown");
+        const dropdownMenu = dropdownParent.querySelector(".dropdown-menu.inner");
+        if (dropdownMenu) {
+          dropdownMenu.style.display = "block";
+          dropdownMenu.parentElement.style.display = "block";
+        }
+      });
 
       $("#guided-stored-contributors-select").on("change", function () {
         const selectedOption = $("#guided-stored-contributors-select option:selected");
-        document.getElementById("guided-contributor-first-name").value =
-          selectedOption.data("first-name") || "";
-        document.getElementById("guided-contributor-last-name").value =
-          selectedOption.data("last-name") || "";
+        document.getElementById("guided-contributor-name").value =
+          selectedOption.data("contributor-name") || "";
         document.getElementById("guided-contributor-orcid").value =
           selectedOption.data("orcid") || "";
         document.getElementById("guided-contributor-affiliation-input").value =
           selectedOption.data("affiliation") || "";
         $("#guided-contributor-role-select").selectpicker(
           "val",
-          selectedOption.data("roles") || ""
+          selectedOption.data("roles") ? selectedOption.data("roles").split(",") : []
         );
       });
     },
     preConfirm: () => {
-      const contributorFirstNameValue = document
-        .getElementById("guided-contributor-first-name")
-        .value.trim();
-      const contributorLastNameValue = document
-        .getElementById("guided-contributor-last-name")
-        .value.trim();
+      let contributorName = document.querySelector("#guided-contributor-name").value.trim();
       const contributorOrcidInput = document
         .getElementById("guided-contributor-orcid")
         .value.trim();
       const contributorAffiliation = document
         .getElementById("guided-contributor-affiliation-input")
         .value.trim();
-      const contributorRole = document.getElementById("guided-contributor-role-select").value;
+      const contributorRoles = $("#guided-contributor-role-select").val() || [];
 
       if (
-        !contributorFirstNameValue ||
-        !contributorLastNameValue ||
+        !contributorName ||
         !contributorOrcidInput ||
         !contributorAffiliation ||
-        !contributorRole
+        contributorRoles.length === 0
       ) {
         return Swal.showValidationMessage("Please fill out all required fields");
       }
 
-      if (contributorFirstNameValue.includes(",") || contributorLastNameValue.includes(",")) {
-        return Swal.showValidationMessage("Please remove commas from the name fields");
+      // Check if name has more than one comma
+      const commaCount = (contributorName.match(/,/g) || []).length;
+      if (commaCount > 1) {
+        return Swal.showValidationMessage(
+          "Per the Sparc Dataset Structure, the accepted name format is as follows: Last, First Middle. Please ensure the name you inputted matches this format."
+        );
       }
 
-      // Regex to check ORCID format (plain or full URL)
-      const orcidFormatRegex = /^(https:\/\/orcid\.org\/)?\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/i;
-      if (!orcidFormatRegex.test(contributorOrcidInput)) {
+      if (commaCount === 0) {
+        return Swal.showValidationMessage(
+          "Per the Sparc Dataset Structure, the accepted name format is as follows: Last, First Middle. Please ensure the name you inputted matches this format."
+        );
+      }
+
+      let lastName = contributorName.substring(0, contributorName.indexOf(",")).trim();
+      let firstAndMiddleName = contributorName.substring(contributorName.indexOf(",") + 1).trim();
+
+      // check if the last name is the part that is failing the regex
+      if (!CONTRIBUTORS_LAST_NAME_REGEX.test(lastName)) {
+        return Swal.showValidationMessage(
+          `The given last name does not conform to the SPARC Dataset Structure format. 
+           The last name should not contain numbers or special characters (except hyphens, apostrophes, and spaces for certain family name prefixes).
+           If your name matches the format but you are still seeing this error, please contact us by clicking 'Save & Exit' and navigating to the 'Contact Us' page in the sidebar.`
+        );
+      }
+
+      if (!firstAndMiddleName) {
+        return Swal.showValidationMessage("Please provide at least a first name.");
+      }
+
+      // add required space before first and middle name for regex validation
+      if (firstAndMiddleName[0] !== " ") {
+        firstAndMiddleName = " " + firstAndMiddleName;
+      }
+
+      // Only check the first and middle name if it exists (middle name is optional)
+      if (!CONTRIBUTORS_FIRST_NAME_REGEX.test(firstAndMiddleName)) {
+        return Swal.showValidationMessage(
+          `The given first and/or middle name does not conform to the SPARC Dataset Structure format. 
+               The first and middle names should only contain letters, hyphens, apostrophes, and spaces. 
+               Moreover, the middle name is optional.`
+        );
+      }
+
+      // merge the name back together after validation to ensure proper spacing was added to first and middle name section
+      contributorName = `${lastName},${firstAndMiddleName}`;
+
+      if (!orcidIsValid(contributorOrcidInput)) {
         return Swal.showValidationMessage(
           "ORCID must be in the format https://orcid.org/0000-0000-0000-0000 OR 0000-0000-0000-0000"
         );
@@ -1437,24 +1566,24 @@ window.guidedOpenAddOrEditContributorSwal = async (contributorIdToEdit = null) =
 
       const storedOrcid = ORCID.toUriWithProtocol(normalizedOrcid);
 
+      // validate that the affiliation is a valid ROR
+      if (!affiliationRorIsValid(contributorAffiliation)) {
+        return Swal.showValidationMessage(
+          "The affiliation must be a valid ROR. For example: https://ror.org/04ttjf776"
+        );
+      }
+
       try {
         if (contributorIdToEdit) {
           editContributorByOrcid(
             contributorIdToEdit,
-            contributorLastNameValue,
-            contributorFirstNameValue,
+            contributorName,
             storedOrcid,
             contributorAffiliation,
-            contributorRole
+            contributorRoles
           );
         } else {
-          addContributor(
-            contributorLastNameValue,
-            contributorFirstNameValue,
-            storedOrcid,
-            contributorAffiliation,
-            contributorRole
-          );
+          addContributor(contributorName, storedOrcid, contributorAffiliation, contributorRoles);
         }
       } catch (error) {
         return Swal.showValidationMessage(error);
@@ -1863,31 +1992,6 @@ const updatePoolDropdown = (poolDropDown, poolName) => {
   }
 };
 
-//On edit button click, creates a new subject ID rename input box
-window.openSubjectRenameInput = (subjectNameEditButton) => {
-  const subjectIdCellToRename = subjectNameEditButton.closest("td");
-  const prevSubjectName = subjectIdCellToRename.find(".subject-id").text();
-  let prevSubjectInput = prevSubjectName.substr(prevSubjectName.search("-") + 1);
-  const subjectRenameElement = `
-    <div class="space-between w-100" style="align-items: center">
-      <span style="margin-right: 5px;">sub-</span>
-      <input
-        class="guided--input"
-        type="text"
-        name="guided-subject-id"
-        value=${prevSubjectInput}
-        placeholder="Enter subject ID and press enter"
-        onkeyup="specifySubject(event, window.$(this))"
-        data-alert-message="Subject IDs may not contain spaces or special characters"
-        data-alert-type="danger"
-        data-prev-name="${prevSubjectName}"
-      />
-      <i class="far fa-check-circle fa-solid" style="cursor: pointer; margin-left: 15px; color: var(--color-light-green); font-size: 1.24rem;" onclick="window.confirmEnter(this)"></i>
-    </div>
-  `;
-  subjectIdCellToRename.html(subjectRenameElement);
-};
-
 const generateSampleSpecificationRowElement = () => {
   return `
     <tr>
@@ -1905,7 +2009,7 @@ const generateSampleSpecificationRowElement = () => {
             data-alert-type="danger"
             style="margin-right: 5px;"
           />
-          <i class="far fa-check-circle fa-solid" style="cursor: pointer; margin-left: 15px; color: var(--color-light-green); font-size: 1.24rem;" onclick="window.confirmEnter(this)"></i>
+          <i class="far fa-check-circle fa-solid" style="cursor: pointer; margin-left: 15px; color: var(--color-soda-primary); font-size: 1.24rem;" onclick="window.confirmEnter(this)"></i>
         </div>
       </td>
       <td class="middle aligned collapsing text-center remove-left-border">
@@ -2132,7 +2236,7 @@ const guidedAddListOfSubjects = async (subjectNameArray, showWarningForExistingS
     }
   }
   if (invalidSubjectNames.length > 0) {
-    await swalFileListSingleAction(
+    await swalListSingleAction(
       invalidSubjectNames,
       "Invalid subject names detected",
       "Subject names can not contain spaces or special characters. The following subjects will not be imported into SODA:",
@@ -2165,7 +2269,7 @@ const guidedAddListOfSubjects = async (subjectNameArray, showWarningForExistingS
 
   if (showWarningForExistingSubjects && duplicateSubjects.length > 0) {
     // Let the user know that duplicate subjects will not be added
-    await swalFileListSingleAction(
+    await swalListSingleAction(
       duplicateSubjects,
       "Duplicate subjects detected",
       "The following subjects have already been specified and will not be added:",
@@ -2175,7 +2279,7 @@ const guidedAddListOfSubjects = async (subjectNameArray, showWarningForExistingS
 
   if (newSubjects.length > 0) {
     // Confirm that the user wants to add the subjects
-    const subjectAdditionConfirmed = await swalFileListDoubleAction(
+    const subjectAdditionConfirmed = await swalListDoubleAction(
       newSubjects,
       `${newSubjects.length} subjects will be added to the dataset`,
       "Please review the list of subjects before proceeding:",
@@ -2526,31 +2630,6 @@ window.deleteSample = async (sampleDeleteButton) => {
   renderSamplesTable();
 };
 
-//SAMPLE TABLE FUNCTIONS
-window.openSampleRenameInput = (subjectNameEditButton) => {
-  const sampleIdCellToRename = subjectNameEditButton.closest("td");
-  const prevSampleName = sampleIdCellToRename.find(".sample-id").text();
-  const prevSampleInput = prevSampleName.substr(prevSampleName.search("-") + 1);
-  const sampleRenameElement = `
-    <div class="space-between w-100" style="align-items: center">
-      <span style="margin-right: 5px;">sam-</span>
-      <input
-        class="guided--input"
-        type="text"
-        value=${prevSampleInput}
-        name="guided-sample-id"
-        placeholder="Enter new sample ID"
-        onkeyup="specifySample(event, window.$(this))"
-        data-alert-message="Sample IDs may not contain spaces or special characters"
-        data-alert-type="danger"
-        data-prev-name="${prevSampleName}"
-      />
-      <i class="far fa-check-circle fa-solid" style="cursor: pointer; margin-left: 15px; color: var(--color-light-green); font-size: 1.24rem;" onclick="window.confirmEnter(this)"></i>
-    </div>
-  `;
-  sampleIdCellToRename.html(sampleRenameElement);
-};
-
 window.removePennsievePermission = (clickedPermissionRemoveButton) => {
   let permissionElementToRemove = clickedPermissionRemoveButton.closest("tr");
   let permissionEntityType = permissionElementToRemove.attr("data-entity-type");
@@ -2682,7 +2761,7 @@ const createPennsievePermissionsTableRowElement = (entityType, name, permission,
       <td style="opacity: 0.5" class="middle aligned remove-left-border permission-type-cell">${permission}</td>
       <td class="middle aligned text-center remove-left-border" style="width: 20px">
         <button type="button" style="display: none" class="btn btn-danger btn-sm" onclick="window.removePennsievePermission($(this))">Delete</button>
-        <button type="button" class="btn btn-sm" style="display: inline-block;color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);" onclick="window.removePennsievePermission($(this))">Restore</button>
+        <button type="button" class="btn btn-sm" style="display: inline-block;color: white; background-color: var(--color-soda-primary); border-color: var(--color-soda-primary);" onclick="window.removePennsievePermission($(this))">Restore</button>
       </td>
     </tr>
   `;
@@ -2693,7 +2772,7 @@ const createPennsievePermissionsTableRowElement = (entityType, name, permission,
         <td class="middle aligned remove-left-border permission-type-cell">${permission}</td>
         <td class="middle aligned text-center remove-left-border" style="width: 20px">
           <button type="button" class="btn btn-danger btn-sm" onclick="window.removePennsievePermission($(this))">Delete</button>
-          <button type="button" class="btn btn-sm" style="display: none;color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);" onclick="window.removePennsievePermission($(this))">Restore</button>
+          <button type="button" class="btn btn-sm" style="display: none;color: white; background-color: var(--color-soda-primary); border-color: var(--color-soda-primary);" onclick="window.removePennsievePermission($(this))">Restore</button>
         </td>
       </tr>
     `;
@@ -3258,9 +3337,9 @@ document
     }
 
     // hide the verify files sections
-    document.querySelector("#guided--verify-files").classList.add("hidden");
-    document.querySelector("#guided--question-validate-dataset-upload-2").classList.add("hidden");
-    document.querySelector("#guided--validate-dataset-upload").classList.add("hidden");
+    document.querySelector("#guided-section-file-upload-verification").classList.add("hidden");
+    document.querySelector("#guided-section-file-verification-failure").classList.add("hidden");
+    document.querySelector("#guided-section-validate-dataset-upload").classList.add("hidden");
 
     // check if the user made it to the last step
     if (
@@ -3278,227 +3357,82 @@ document
     }
   });
 
-$("#guided-button-save-other-link-fields").on("click", () => {
-  let allInputsValid = true;
-  //get all contributor fields
-  const otherLinkFields = document.querySelectorAll(".guided-other-links-field-container");
-  //check if contributorFields is empty
-  if (otherLinkFields.length === 0) {
-    window.notyf.error("Please add at least one other link");
-    return;
-  }
-
-  //loop through contributor fields and get values
-  const otherLinkFieldsArray = Array.from(otherLinkFields);
-  ///////////////////////////////////////////////////////////////////////////////
-  otherLinkFieldsArray.forEach((otherLinkField) => {
-    const linkUrl = otherLinkField.querySelector(".guided-other-link-url-input");
-    const linkDescription = otherLinkField.querySelector(".guided-other-link-description-input");
-    const linkRelation = otherLinkField.querySelector(".guided-other-link-relation-dropdown");
-
-    const textInputs = [linkUrl, linkDescription];
-
-    //check if all text inputs are valid
-    textInputs.forEach((textInput) => {
-      if (textInput.value === "") {
-        textInput.style.setProperty("border-color", "red", "important");
-        allInputsValid = false;
-      } else {
-        textInput.style.setProperty("border-color", "hsl(0, 0%, 88%)", "important");
-      }
-    });
-    if (linkRelation.value === "Select") {
-      linkRelation.style.setProperty("border-color", "red", "important");
-      allInputsValid = false;
-    } else {
-      linkRelation.style.setProperty("border-color", "hsl(0, 0%, 88%)", "important");
-    }
-  });
-  ///////////////////////////////////////////////////////////////////////////////
-  if (!allInputsValid) {
-    window.notyf.error("Please fill out all link fields");
-    return;
-  }
-
-  //set opacity and remove pointer events for table and show edit button
-  disableElementById("other-links-container");
-  disableElementById("guided-button-add-other-link");
-
-  //switch button from save to edit
-  document.getElementById("guided-button-save-other-link-fields").style.display = "none";
-  document.getElementById("guided-button-edit-other-link-fields").style.display = "flex";
-});
-$("#guided-button-add-additional-link").on("click", async () => {
-  openAddAdditionLinkSwal();
-});
-$("#guided-button-edit-other-link-fields").on("click", () => {
-  enableElementById("other-links-container");
-  enableElementById("guided-button-add-other-link");
-  //switch button from edit to save
-  document.getElementById("guided-button-edit-other-link-fields").style.display = "none";
-  document.getElementById("guided-button-save-other-link-fields").style.display = "flex";
-});
-
-const guidedGenerateRCFilesHelper = (type) => {
-  let textValue = $(`#guided-textarea-create-${type}`).val().trim();
-  if (textValue === "") {
-    Swal.fire({
-      title: "Incomplete information",
-      text: "Plase fill in the textarea.",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      icon: "error",
-      showCancelButton: false,
-      showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
-      hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
-    });
-    return "empty";
-  }
-};
-const guidedSaveRCFile = async (type) => {
-  var result = guidedGenerateRCFilesHelper(type);
-  if (result === "empty") {
-    return;
-  }
-  var { value: continueProgress } = await Swal.fire({
-    title: `Any existing ${type.toUpperCase()}.txt file in the specified location will be replaced.`,
-    text: "Are you sure you want to continue?",
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    showConfirmButton: true,
-    showCancelButton: true,
-    cancelButtonText: "Cancel",
-    confirmButtonText: "Yes",
-  });
-  if (!continueProgress) {
-    return;
-  }
-  let data = $(`#guided-textarea-create-${type}`).val().trim();
-  let destinationPath;
-  if (type === "changes") {
-    destinationPath = window.path.join($("#guided-dataset-path").text().trim(), "CHANGES.xlsx");
-  } else {
-    destinationPath = window.path.join($("#guided-dataset-path").text().trim(), "README.xlsx");
-  }
-  window.fs.writeFile(destinationPath, data, (err) => {
-    if (err) {
-      window.log.error(err);
-      var emessage = userErrorMessage(err);
-      Swal.fire({
-        title: `Failed to generate the existing ${type}.txt file`,
-        html: emessage,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        icon: "error",
-        didOpen: () => {
-          Swal.hideLoading();
-        },
-      });
-    } else {
-      var newName =
-        type === "changes"
-          ? window.path.join(window.path.dirname(destinationPath), "CHANGES.txt")
-          : window.path.join(window.path.dirname(destinationPath), "README.txt");
-      window.fs.rename(destinationPath, newName, async (err) => {
-        if (err) {
-          window.log.error(err);
-          Swal.fire({
-            title: `Failed to generate the ${type}.txt file`,
-            html: err,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            icon: "error",
-            didOpen: () => {
-              Swal.hideLoading();
-            },
-          });
-        } else {
-          Swal.fire({
-            title: `The ${type.toUpperCase()}.txt file has been successfully generated at the specified location.`,
-            icon: "success",
-            showConfirmButton: true,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            didOpen: () => {
-              Swal.hideLoading();
-            },
-          });
-        }
-      });
-    }
-  });
-};
-$("#guided-generate-subjects-file").on("click", () => {
-  window.addSubject("guided");
-  window.clearAllSubjectFormFields(window.guidedSubjectsFormDiv);
-});
-
-$("#guided-generate-submission-file").on("click", () => {
-  guidedSaveSubmissionFile();
-});
-$("#guided-generate-readme-file").on("click", () => {
-  guidedSaveRCFile("readme");
-});
-$("#guided-generate-changes-file").on("click", () => {
-  guidedSaveRCFile("changes");
-});
-
-const doTheHack = async () => {
-  // Check if the dth.json progress file exists in the guidedProgressFilePath
-  const files = window.fs.readdirSync(guidedProgressFilePath);
-
-  if (!files.includes("dth.json")) {
-    console.log("No dth.json progress file found. Exiting hack.");
-    return;
-  }
-
-  console.log("dth.json progress file found.");
-  // wait for a second
-  await new Promise((resolve) => setTimeout(resolve, 5000));
-  document.getElementById("button-homepage-guided-mode").click();
-  document.getElementById("guided-button-resume-progress-file").click();
-  // wait for 5 seconds
-  await new Promise((resolve) => setTimeout(resolve, 4000));
-
-  // Search the dom for a button with the classes "ui positive button guided--progress-button-resume-curation"
-  const resumeCurationButton = document.querySelector(
-    ".ui.positive.button.guided--progress-button-resume-curation"
-  );
-  if (resumeCurationButton) {
-    resumeCurationButton.click();
-  } else {
-    // wait for 3 more seconds then click
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    document.querySelector(".ui.positive.button.guided--progress-button-resume-curation").click();
-  }
-  // wait for 4 seconds then click the next button
-  await new Promise((resolve) => setTimeout(resolve, 4000));
-  document.querySelector(".primary-selection-aside-item.selection-aside-item").click();
-};
-
-// If this variable is set to true, you will be taken back to the last guided mode page you were working on
-// (always set to false when making production builds)
-const continueHackGm = true;
-if (continueHackGm) {
-  doTheHack();
-}
-
-// Add the event listener for the Data importation component
-const dragDropElementId = document.getElementById("data-importer-dropzone");
-dragDropElementId.addEventListener("click", (event) => {
+const gmDragDropElementId = document.getElementById("gm-data-importer-dropzone");
+gmDragDropElementId.addEventListener("click", (event) => {
   event.preventDefault();
   window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog", {
     importRelativePath: "data/",
   });
 });
 // Add a drop listener that handles the drop event
-dragDropElementId.addEventListener("drop", (event) => {
+gmDragDropElementId.addEventListener("drop", (event) => {
   event.preventDefault();
   const itemsDroppedInFileExplorer = Array.from(event.dataTransfer.files).map((file) => file.path);
   window.electron.ipcRenderer.send("file-explorer-dropped-datasets", {
     filePaths: itemsDroppedInFileExplorer,
     importRelativePath: "data/",
+    curationMode: "guided",
   });
+});
+
+const ffmDragDropElementId = document.getElementById("ffm-data-importer-dropzone");
+
+ffmDragDropElementId.addEventListener("click", (event) => {
+  event.preventDefault();
+
+  window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog", {
+    importRelativePath: "",
+    curationMode: "free-form",
+    useContentsOfFolder: true,
+  });
+});
+ffmDragDropElementId.addEventListener("drop", async (event) => {
+  event.preventDefault();
+
+  const itemsDroppedInFileExplorer = Array.from(event.dataTransfer.files).map((file) => file.path);
+
+  if (itemsDroppedInFileExplorer.length > 1) {
+    window.notyf.open({
+      type: "error",
+      message:
+        "Please select only one folder. Drop the folder that contains your dataset (root dataset folder).",
+      duration: 5000,
+    });
+    return;
+  }
+
+  const droppedPath = itemsDroppedInFileExplorer[0];
+
+  try {
+    const isDirectory = await window.fs.isDirectory(droppedPath);
+
+    if (!isDirectory) {
+      window.notyf.open({
+        type: "error",
+        message:
+          "Only folders are accepted. Please drop the folder containing your dataset (root dataset folder).",
+        duration: 5000,
+      });
+      return;
+    }
+  } catch (err) {
+    window.notyf.open({
+      type: "error",
+      message:
+        "Could not access dropped item. Please select the folder containing your dataset (root dataset folder).",
+      duration: 5000,
+    });
+    return;
+  }
+
+  window.electron.ipcRenderer.send("file-explorer-dropped-datasets", {
+    filePaths: itemsDroppedInFileExplorer,
+    importRelativePath: "",
+    curationMode: "free-form",
+    useContentsOfFolder: true,
+  });
+});
+
+$("#guided-button-add-additional-link").on("click", async () => {
+  openAddAdditionLinkSwal();
 });

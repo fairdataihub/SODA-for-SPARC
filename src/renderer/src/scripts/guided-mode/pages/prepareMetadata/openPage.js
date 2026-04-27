@@ -1,6 +1,6 @@
 import { setPageLoadingState } from "../navigationUtils/pageLoading";
 import useGlobalStore from "../../../../stores/globalStore";
-import { addContributor, renderContributorsTable } from "../../metadata/contributors";
+import { addContributor, renderContributorsTable } from "../../metadata/contributors/contributors";
 import { addGuidedProtocol } from "../../metadata/protocols";
 import Swal from "sweetalert2";
 import Cropper from "cropperjs";
@@ -25,7 +25,7 @@ import { setResourceList } from "../../../../stores/slices/resourceMetadataSlice
 import { guidedGetCurrentUserWorkSpace } from "../../../guided-mode/workspaces/workspaces";
 import { dragDrop, successCheck } from "../../../../assets/lotties/lotties";
 import { renderProtocolsTable } from "../../metadata/protocols";
-import { swalFileListSingleAction, swalShowInfo } from "../../../utils/swal-utils";
+import { swalListSingleAction, swalShowInfo } from "../../../utils/swal-utils";
 import { guidedDatasetKeywordsTagify } from "../../tagifies/tagifies";
 import lottie from "lottie-web";
 import { renderAdditionalLinksTable } from "../../guided-curate-dataset";
@@ -43,51 +43,7 @@ while (!window.baseHtmlLoaded) {
 }
 
 export const openPagePrepareMetadata = async (targetPageID) => {
-  if (targetPageID === "guided-pennsieve-metadata-intro-tab") {
-    // Page-specific initialization code will go here
-  }
-
-  if (targetPageID === "guided-pennsieve-intro-tab") {
-    const elementsToShowWhenLoggedInToPennsieve = document.querySelectorAll(".show-when-logged-in");
-    const elementsToShowWhenNotLoggedInToPennsieve =
-      document.querySelectorAll(".show-when-logged-out");
-    if (!window.defaultBfAccount) {
-      elementsToShowWhenLoggedInToPennsieve.forEach((element) => {
-        element.classList.add("hidden");
-      });
-      elementsToShowWhenNotLoggedInToPennsieve.forEach((element) => {
-        element.classList.remove("hidden");
-      });
-    } else {
-      elementsToShowWhenLoggedInToPennsieve.forEach((element) => {
-        element.classList.remove("hidden");
-      });
-      elementsToShowWhenNotLoggedInToPennsieve.forEach((element) => {
-        element.classList.add("hidden");
-      });
-
-      const pennsieveIntroText = document.getElementById("guided-pennsive-intro-ps-account");
-      // fetch the user's email and set that as the account field's value
-      const userInformation = await api.getUserInformation();
-      const userEmail = userInformation.email;
-      pennsieveIntroText.innerHTML = userEmail;
-
-      try {
-        if (window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"]) {
-          if (
-            window.sodaJSONObj["last-confirmed-pennsieve-workspace-details"] ===
-            guidedGetCurrentUserWorkSpace()
-          ) {
-            document.getElementById("guided-confirm-pennsieve-organization-button").click();
-          }
-        }
-      } catch (error) {
-        pennsieveIntroAccountDetailsText.innerHTML = "Error loading account details";
-      }
-    }
-  }
-
-  if (targetPageID === "guided-submission-metatdata-tab") {
+  if (targetPageID === "guided-submission-metadata-tab") {
     // Set the funding agency (currently either NIH or Other)
     const fundingAgency = window.sodaJSONObj["funding_agency"] || "";
     const fundingConsortium =
@@ -217,7 +173,6 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     const datasetMetadata = window.sodaJSONObj["dataset_metadata"]?.["dataset_description"] || {};
     const basicInformation = datasetMetadata?.["basic_information"] || {};
     const studyInformation = datasetMetadata?.["study_information"] || {};
-    const fundingInformation = datasetMetadata?.["funding_information"] || {};
 
     // Set basic information fields
     guidedDatasetKeywordsTagify.removeAllTags();
@@ -225,6 +180,8 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     guidedDatasetKeywordsTagify.addTags(keywords);
 
     // Set the Study information fields
+    const studyDescription = window.sodaJSONObj["dataset-description"] || "";
+    document.getElementById("guided-ds-study-description").value = studyDescription;
     const studyPurpose = studyInformation["study_purpose"] || "";
     document.getElementById("guided-ds-study-purpose").value = studyPurpose;
     const studyDataCollection = studyInformation["study_data_collection"] || "";
@@ -249,12 +206,13 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     document.getElementById("guided-ds-study-collection-title").value = studyCollectionTitle;
 
     guidedOtherFundingsourcesTagify.removeAllTags();
-    ///////////
+    const funding = basicInformation?.["funding"] || "";
+    if (funding) {
+      guidedOtherFundingsourcesTagify.addTags(funding);
+    }
 
     const acknowledgments = basicInformation["acknowledgments"] || "";
     document.getElementById("guided-ds-acknowledgments").value = acknowledgments;
-
-    const license = basicInformation["license"] || "";
 
     renderAdditionalLinksTable();
   }

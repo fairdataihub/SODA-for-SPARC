@@ -8,6 +8,14 @@ import { clientError, userErrorMessage } from "./http-error-handler/error-handle
 import Swal from "sweetalert2";
 import api from "../others/api/api";
 import { swalShowInfo } from "../utils/swal-utils";
+import { setNavButtonDisabled, setNavButtonHidden } from "../../stores/slices/navButtonStateSlice";
+import { setCurrentStep } from "../../stores/slices/stepperSlice";
+import { setStateDisplayData } from "../../stores/slices/stateDisplaySlice";
+import useGlobalStore from "../../stores/globalStore";
+import {
+  isCheckboxCardChecked,
+  setCheckboxCardUnchecked,
+} from "../../stores/slices/checkboxCardSlice";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -32,7 +40,7 @@ const delay = 250;
 window.showParentTab = async (tabNow, nextOrPrev) => {
   // tabNow represent the current tab
   // nextOrPrev represent the direction of the tab (1 or -1)
-  $("#nextBtn").prop("disabled", true);
+  setNavButtonDisabled("nextBtn", true);
   if (tabNow == -1) {
     // When exiting upload dataset workflow, the tabNow state changes to -1 which will cause an error
     // Reset the tabNow state to 0
@@ -42,8 +50,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
 
   // This function will display the specified tab of the form ...
   var x = document.getElementsByClassName("parent-tabs");
-  fixStepIndicator(tabNow);
-  fixStepDone(tabNow);
+  setCurrentStep("freeform-mode-progress-stepper", tabNow);
 
   $(x[tabNow]).addClass("tab-active");
   setTimeout(() => {
@@ -59,12 +66,11 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     $(x[tabNow]).css("overflow", "hidden");
   }
 
-  $("#nextBtn").css("display", "inline");
-  $("#prevBtn").css("display", "inline");
-  $("#nextBtn").html("Continue");
+  setNavButtonHidden("prevBtn", false);
+  setNavButtonHidden("nextBtn", false);
 
   if (nextOrPrev === -1) {
-    $("#nextBtn").prop("disabled", false);
+    setNavButtonDisabled("nextBtn", true);
   }
 
   const pennsieveAgentCheckDivId = "freeform-mode-post-account-confirmation-pennsieve-agent-check";
@@ -86,44 +92,41 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     }
   }
   if (tabNow === 1 && continueBtnYes) {
-    $("#nextBtn").prop("disabled", false);
+    setNavButtonDisabled("nextBtn", false);
   } else {
-    $("#nextBtn").prop("disabled", true);
+    setNavButtonDisabled("nextBtn", true);
   }
 
   if (tabNow == 2) {
-    if (document.getElementById("dataset-upload-existing-dataset").classList.contains("checked")) {
+    if (isCheckboxCardChecked("dataset-upload-existing-dataset")) {
       // If merge options are selected, enable the continue button
-      if (
-        $('input[name="generate-5"]:checked').length === 1 &&
-        $('input[name="generate-6"]:checked').length === 1
-      ) {
-        $("#nextBtn").prop("disabled", false);
+      if (isCheckboxCardChecked("replace-file-card") || isCheckboxCardChecked("skip-file-card")) {
+        setNavButtonDisabled("nextBtn", false);
       }
     }
 
     if (
-      document.getElementById("dataset-upload-new-dataset").classList.contains("checked") &&
+      isCheckboxCardChecked("dataset-upload-new-dataset") &&
       document.getElementById("inputNewNameDataset-upload-dataset").value !== ""
     ) {
       // If new dataset is selected and name confirmed, enable the continue button
-      $("#nextBtn").prop("disabled", false);
+      setNavButtonDisabled("nextBtn", false);
     }
   }
 
   if (tabNow == 3) {
     if (nextOrPrev === -1) {
       // enable continue button
-      $("#nextBtn").prop("disabled", false);
+      setNavButtonDisabled("nextBtn", false);
       return;
     }
 
     // enable continue button
-    $("#nextBtn").prop("disabled", false);
+    setNavButtonDisabled("nextBtn", false);
 
     // if the user has files already on their dataset when starting from new/local and merging to existing pennsieve then
     // show them a message detailing why they cannot create manifest files
-    if (document.getElementById("dataset-upload-existing-dataset").classList.contains("checked")) {
+    if (isCheckboxCardChecked("dataset-upload-existing-dataset")) {
       // check if the dataset has files already
       let packageTypeCounts = {};
       let gotPackageCount = true;
@@ -147,7 +150,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
           $("#generate-manifest-curate").click();
         }
         $("#generate-manifest-curate").prop("disabled", true);
-        $("#nextBtn").prop("disabled", false);
+        setNavButtonDisabled("nextBtn", false);
         $("#generate-manifest-curate").prop("disabled", true);
         document.getElementById("manifest-information-container").classList.add("hidden");
         document.getElementById("manifest-intro-info").classList.add("hidden");
@@ -176,9 +179,9 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
 
   // preview dataset tab
   if (tabNow == 4) {
-    $("#nextBtn").css("display", "none");
-    if (document.getElementById("dataset-upload-existing-dataset").classList.contains("checked")) {
-      $("#inputNewNameDataset-upload-dataset").val(defaultBfDataset);
+    setNavButtonHidden("nextBtn", true);
+    if (isCheckboxCardChecked("dataset-upload-existing-dataset")) {
+      $("#inputNewNameDataset-upload-dataset").val(window.defaultBfDataset);
     }
     fill_info_details();
     // window.datasetStructureJSONObj["files"] = window.sodaJSONObj["metadata-files"];
@@ -191,9 +194,8 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
   }
 
   if (tabNow == 5) {
-    $("#nextBtn").css("display", "none");
-    $("#prevBtn").css("display", "none");
-    // $("#nextBtn").html("Continue");
+    setNavButtonHidden("nextBtn", true);
+    setNavButtonHidden("prevBtn", true);
     $("#Question-validate-dataset-upload").show();
     // disable guided_mode_view
     document.getElementById("guided_mode_view").style.pointerEvents = "none";
@@ -201,7 +203,7 @@ window.showParentTab = async (tabNow, nextOrPrev) => {
     document.getElementById("documentation-view").style.pointerEvents = "none";
     // disable contact us view to be clicked again
     document.getElementById("contact-us-view").style.pointerEvents = "none";
-    await window.monitorUploadFileVerificationProgress();
+    // await window.monitorUploadFileVerificationProgress();
     // disable guided_mode_view
     document.getElementById("guided_mode_view").style.pointerEvents = "";
     // disable documentation view to be clicked again
@@ -234,50 +236,14 @@ const fill_info_details = () => {
     true
   );
 
-  // check if the user is generating on an existing dataset
-
-  if ($('input[name="generate-5"]:checked')[0]?.id === "existing-folders-duplicate") {
-    addCardDetail(
-      "For existing folders",
-      "Create a duplicate",
-      2,
-      "Question-generate-dataset-existing-folders-options",
-      true
-    );
-  } else if ($('input[name="generate-5"]:checked')[0]?.id === "existing-folders-replace") {
-    addCardDetail(
-      "For existing folders",
-      "Replace",
-      2,
-      "Question-generate-dataset-existing-folders-options",
-      true
-    );
-  } else if ($('input[name="generate-5"]:checked')[0]?.id === "existing-folders-merge") {
-    addCardDetail(
-      "For existing folders",
-      "Merge",
-      2,
-      "Question-generate-dataset-existing-folders-options",
-      true
-    );
-  } else if ($('input[name="generate-5"]:checked')[0]?.id === "existing-folders-skip") {
-    addCardDetail(
-      "For existing folders",
-      "Skip",
-      2,
-      "Question-generate-dataset-existing-folders-options",
-      true
-    );
-  } else {
-    // generating a new dataset show local dataset path
-    addCardDetail(
-      "Local dataset path",
-      document.getElementById("org-dataset-folder-path").innerHTML,
-      4,
-      "Question-getting-started-1",
-      true
-    );
-  }
+  // generating a new dataset show local dataset path
+  addCardDetail(
+    "Local dataset path",
+    useGlobalStore.getState()?.stateDisplay?.["org-dataset-folder-path"],
+    4,
+    "Question-getting-started-1",
+    true
+  );
 
   if (window.manifestFileCheck.checked) {
     addCardDetail("Manifest files", "Requested from SODA", 2, "pulse-manifest-checkbox", true);
@@ -292,10 +258,6 @@ const fill_info_details = () => {
 // element => element to scroll to in the page
 // pulse_animation => whether to pulse the element
 window.traverse_back = (amount, element = "", pulse_animation = false) => {
-  if (element === "Question-generate-dataset-existing-folders-options") {
-    $("#button-confirm-ps-dataset").click();
-    $("nextBtn").prop("disabled", true);
-  }
   for (i = 0; i < amount; i++) {
     window.nextPrev(-1);
   }
@@ -353,7 +315,7 @@ const addCardDetail = (card_left, card_right, parent_tab = -1, element_id = "", 
 };
 
 const checkHighLevelFoldersInput = () => {
-  $("#nextBtn").prop("disabled", true);
+  setNavButtonDisabled("nextBtn", true);
   var optionCards = document.getElementsByClassName("option-card high-level-folders");
   var checked = false;
   for (var card of optionCards) {
@@ -363,7 +325,7 @@ const checkHighLevelFoldersInput = () => {
     }
   }
   if (checked) {
-    $("#nextBtn").prop("disabled", false);
+    setNavButtonDisabled("nextBtn", false);
   }
   return checked;
 };
@@ -452,14 +414,14 @@ window.nextPrev = async (pageIndex) => {
   let parentTabs = document.getElementsByClassName("parent-tabs");
 
   if (pageIndex == -1 && parentTabs[window.currentTab].id === "getting-started-tab") {
-    window.returnToGuided();
+    window.clickGuidedModeButton();
   }
 
   if (pageIndex == -1 && window.currentTab === 1) {
     // show the continue button
     window.currentTab = window.currentTab + pageIndex;
     window.showParentTab(window.currentTab, pageIndex);
-    $("#nextBtn").prop("disabled", false);
+    setNavButtonDisabled("nextBtn", false);
     return;
   }
 
@@ -641,7 +603,7 @@ window.nextPrev = async (pageIndex) => {
     $(parentTabs[window.currentTab]).removeClass("tab-active");
     window.currentTab = window.currentTab - 1;
     window.showParentTab(window.currentTab, pageIndex);
-    $("#nextBtn").prop("disabled", false);
+    setNavButtonDisabled("nextBtn", false);
   } else if (
     parentTabs[window.currentTab].id === "manifest-file-tab" &&
     (window.sodaJSONObj["starting-point"]["origin"] === "new" ||
@@ -680,7 +642,8 @@ window.nextPrev = async (pageIndex) => {
       $("#generate-dataset-replace-existing").hide();
       $("#generate-dataset-replace-existing").children().hide();
     }
-    $("#nextBtn").prop("disabled", true);
+    setNavButtonDisabled("nextBtn", true);
+    // TODO: FIND IT HERE
     window.showParentTab(window.currentTab, pageIndex);
   } else if (
     parentTabs[window.currentTab].id === "validate-dataset-tab" &&
@@ -692,7 +655,7 @@ window.nextPrev = async (pageIndex) => {
     // skip step 6 ( options irrelevant for existing ps/pennsieve workflow)
     window.currentTab = window.currentTab - 2;
     window.showParentTab(window.currentTab, pageIndex);
-    $("#nextBtn").prop("disabled", false);
+    setNavButtonDisabled("nextBtn", false);
   } else if (parentTabs[window.currentTab].id === "generate-dataset-tab") {
     // Hide the current tab:
     $(parentTabs[window.currentTab]).removeClass("tab-active");
@@ -732,22 +695,6 @@ window.nextPrev = async (pageIndex) => {
     // Display the correct tab:
     window.showParentTab(window.currentTab, pageIndex);
   }
-};
-
-const fixStepIndicator = (pageIndex) => {
-  // This function removes the "is-current" class of all steps...
-  let progressSteps = document.getElementsByClassName("vertical-progress-bar-step");
-  if (progressSteps != undefined) {
-    for (let step of progressSteps) {
-      step.className = step.className.replace(" is-current", "");
-    }
-    progressSteps[pageIndex].className += " is-current";
-  }
-};
-
-const fixStepDone = (pageIndex) => {
-  let progressSteps = document.getElementsByClassName("vertical-progress-bar-step");
-  $(progressSteps[pageIndex]).addClass("done");
 };
 
 //// High level folders check mark effect
@@ -880,28 +827,25 @@ const raiseWarningGettingStarted = () => {
   });
 };
 
-window.handleValidateCardSelection = async (ev) => {
-  $(ev).children().find(".folder-input-check").prop("checked", true);
-  $(ev).addClass("checked");
+document.querySelector("#replace-file-card").addEventListener("click", (event) => {
+  window.transitionSubQuestions(
+    event.currentTarget, // Note: 'this' doesn't work the same way in arrow functions
+    "Question-generate-dataset-existing-files-options",
+    "upload-destination-selection-tab",
+    "",
+    "generate-dataset"
+  );
+});
 
-  // uncheck the other radio buttons
-  $($(ev).parents()[0]).siblings().find(".option-card.radio-button").removeClass("checked");
-  $($(ev).parents()[0]).siblings().find(".option-card.radio-button").addClass("non-selected");
-
-  // check which card is selected
-  let selectedCard = document.querySelector("#validate-dataset-tab input[type=radio]:checked");
-
-  if (selectedCard.id === "validate-organize-1-A") {
-    // run validation
-    await window.validateOrganizedDataset();
-
-    // scroll to the results table
-    document.querySelector("#organize--table-validation-errors").scrollIntoView();
-  } // else the user skipped validation
-
-  // enable the continue button
-  $("#nextBtn").prop("disabled", false);
-};
+document.querySelector("#skip-file-card").addEventListener("click", (event) => {
+  window.transitionSubQuestions(
+    event.currentTarget, // Note: 'this' doesn't work the same way in arrow functions
+    "Question-generate-dataset-existing-files-options",
+    "upload-destination-selection-tab",
+    "",
+    "generate-dataset"
+  );
+});
 
 window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, category) => {
   if (currentDiv === "Question-getting-started-1") {
@@ -909,7 +853,7 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
     if (window.globalGettingStarted1stQuestionBool) {
       $("#progress-files-dropdown").val("Select");
       $("#para-progress-file-status").text("");
-      $("#nextBtn").prop("disabled", true);
+      setNavButtonDisabled("nextBtn", true);
       window.exitCurate(false);
       window.globalGettingStarted1stQuestionBool = false;
     } else {
@@ -920,22 +864,17 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
 
   if (currentDiv === "Question-new-dataset-upload-name") {
     // TODO: Ensure the dataset name is valid with the character list we have
-    $("#nextBtn").prop("disabled", true);
+    setNavButtonDisabled("nextBtn", true);
     $(ev).hide();
     return;
   }
 
-  if (currentDiv === "Question-generate-dataset-existing-folders-options") {
-    // show the existing file options div
-    $("#Question-generate-dataset-existing-files-options").show();
-    $("#Question-generate-dataset-existing-files-options").removeClass("hidden");
-  }
-
   if (currentDiv === "Question-generate-dataset-existing-files-options") {
     // activate the continue button
-    $("#nextBtn").prop("disabled", false);
+    setNavButtonDisabled("nextBtn", false);
     // show the continue para text
     $("#para-continue-existing-files-generate").show();
+    $("#Question-generate-dataset-existing-files-options").removeClass("hidden");
     $("#para-continue-existing-files-generate").text("Please continue to the next step");
   }
 
@@ -1002,9 +941,8 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
   // under Step 6
   let step6 = document.getElementById("generate-dataset-tab");
   if (ev.getAttribute("data-next") === "Question-generate-dataset-ps-dataset") {
-    // $("#nextBtn").prop("disabled", true);
     if (step6.classList.contains("tab-active")) {
-      $("#nextBtn").prop("disabled", true);
+      setNavButtonDisabled("nextBtn", true);
     }
 
     // hide the para para-continue-empty-ds-selected
@@ -1024,7 +962,7 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
   }
   if (ev.getAttribute("data-next") === "Question-generate-dataset-choose-ds-name") {
     if (step6.classList.contains("tab-active")) {
-      $("#nextBtn").prop("disabled", true);
+      setNavButtonDisabled("nextBtn", true);
       if (document.getElementById("inputNewNameDataset").val != "") {
         document.getElementById("btn-confirm-new-dataset-name").style.display = "inline-block";
       }
@@ -1074,7 +1012,7 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
   if (ev.getAttribute("data-next") === "Question-getting-started-final") {
     $("#progress-files-dropdown").val("Select");
     $("#para-progress-file-status").text("");
-    $("#nextBtn").prop("disabled", true);
+    setNavButtonDisabled("nextBtn", true);
     $("#para-continue-prepare-new-getting-started").text("");
     if ($("#prepare-new").prop("checked")) {
       window.exitCurate(false);
@@ -1090,18 +1028,18 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
       window.sodaJSONObj["metadata-files"] = {};
       reset_ui();
       setTimeout(() => {
-        $("#nextBtn").prop("disabled", false);
+        setNavButtonDisabled("nextBtn", false);
         $("#para-continue-prepare-new-getting-started").text("Please continue below.");
       }, 600);
     } else if ($("#existing-ps").is(":checked")) {
-      $("#nextBtn").prop("disabled", true);
+      setNavButtonDisabled("nextBtn", true);
       // this window.exitCurate function gets called in the beginning here
       // in case users have existing, non-empty SODA object structure due to previous progress option was selected prior to this "existing-ps" option
       $("#Question-getting-started-existing-ps-account").show();
       $("#Question-getting-started-existing-ps-account").children().show();
       if (window.sodaJSONObj["dataset-structure"] != {}) {
         reset_ui();
-        $("#nextBtn").prop("disabled", false);
+        setNavButtonDisabled("nextBtn", false);
       }
     }
   }
@@ -1122,7 +1060,7 @@ window.transitionSubQuestions = async (ev, currentDiv, parentDiv, button, catego
       };
       // reset the UI back to fresh new
       reset_ui();
-      $("#nextBtn").prop("disabled", true);
+      setNavButtonDisabled("nextBtn", true);
     }
   }
 };
@@ -1640,8 +1578,8 @@ window.verifySparcFolder = (rootFolderPath, type) => {
     "dataset_description",
     "subjects",
     "samples",
-    "README",
-    "CHANGES",
+    "readme",
+    "changes",
     ".dss",
     "sites",
     "license",
@@ -1650,20 +1588,29 @@ window.verifySparcFolder = (rootFolderPath, type) => {
     "code_description",
     "manifest",
     "code_parameters",
+    "performances",
   ];
 
   const folderContents = window.fs
     .readdirSync(rootFolderPath)
-    .map((item) => window.path.parse(item).name.toLowerCase());
+    .map((item) => window.path.parse(item).name.toLowerCase())
+    .filter((item) => !item.startsWith("."));
+
   const highLevelFolders = window.highLevelFolders.map((folder) => folder.toLowerCase());
 
-  const isValidItem = (item) =>
-    highLevelFolders.includes(item) ||
-    metadataFiles.includes(item) ||
-    (type === "pennsieve" && !item.startsWith("."));
+  const datasetItemsValidSDS = (item) => {
+    return highLevelFolders.includes(item) || metadataFiles.includes(item);
+  };
 
-  // Returns true if the folder contains at least one valid item (high level folder or metadata file)
-  return folderContents.some(isValidItem);
+  const datasetHasHighLevelFolder = (item) => {
+    return highLevelFolders.includes(item);
+  };
+
+  // Returns true if none of the
+  // NOTE: For the moment we will not require metadata files in the workflow
+  return (
+    folderContents.every(datasetItemsValidSDS) && folderContents.some(datasetHasHighLevelFolder)
+  );
 };
 
 // function similar to window.transitionSubQuestions, but for buttons
@@ -1677,7 +1624,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
 
   if (currentDiv === "Question-getting-started-ps-dataset") {
     let selectedDataset = $("#current-ps-dataset").text();
-    $("#nextBtn").prop("disabled", true);
+    setNavButtonDisabled("nextBtn", true);
     window.sodaJSONObj = {
       "ps-account-selected": {
         "account-name": {},
@@ -1725,7 +1672,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
         allowOutsideClick: false,
       });
 
-      $("#nextBtn").prop("disabled", true);
+      setNavButtonDisabled("nextBtn", true);
       $("#para-continue-ps-dataset-getting-started").text("");
       $("body").removeClass("waiting");
       showHideDropdownButtons("dataset", "hide");
@@ -1768,7 +1715,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
       });
-      $("#nextBtn").prop("disabled", true);
+      setNavButtonDisabled("nextBtn", true);
       $("#para-continue-ps-dataset-getting-started").text("");
       $("body").removeClass("waiting");
       // $("#ps-dataset-spinner").css("visibility", "hidden");
@@ -1828,7 +1775,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
           }
           window.populate_existing_folders(window.datasetStructureJSONObj);
           window.populate_existing_metadata(window.sodaJSONObj);
-          $("#nextBtn").prop("disabled", false);
+          setNavButtonDisabled("nextBtn", false);
           $("#para-continue-ps-dataset-getting-started").text("Please continue below.");
           showHideDropdownButtons("dataset", "show");
           // log the successful Pennsieve import to analytics- no matter if the user decided to cancel
@@ -1854,7 +1801,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
 
       window.populate_existing_folders(window.datasetStructureJSONObj);
       window.populate_existing_metadata(window.sodaJSONObj);
-      $("#nextBtn").prop("disabled", false);
+      setNavButtonDisabled("nextBtn", false);
       $("#para-continue-ps-dataset-getting-started").text("Please continue below.");
       showHideDropdownButtons("dataset", "show");
 
@@ -1889,39 +1836,6 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
     target.classList.add("show");
   }
 
-  // Step 6 - The Merge/Skip/Replace options for selecting how to upload data to an existing Pennsieve dataset
-  if (ev.getAttribute("data-next") === "Question-generate-dataset-existing-folders-options") {
-    if (!window.hasFiles) {
-      // select the Merge option for Folders
-      document.getElementById("existing-folders-merge").checked = true;
-      $("#existing-folders-merge").hide();
-      $("#Question-generate-dataset-existing-folders-options").hide();
-      // select the Skip option for Files
-      document.getElementById("existing-files-replace").checked = true;
-
-      // enable the continue button
-      $("#nextBtn").prop("disabled", false);
-
-      $("#para-continue-empty-ds-selected").text("Please continue below.");
-      $("#para-continue-empty-ds-selected").show();
-
-      // hide the confirm button
-      $("#button-confirm-ps-dataset").hide();
-
-      return;
-    }
-
-    // hide the confirm button
-    $("#button-confirm-ps-dataset").hide();
-
-    $("#Question-generate-dataset-existing-folders-options").show();
-    $("#Question-generate-dataset-existing-folders-options").removeClass("hidden");
-    document.getElementById("existing-folders-merge").checked = false;
-    document.getElementById("existing-files-replace").checked = false;
-
-    // continue as usual otherwise
-  }
-
   // if buttons: Add account and Confirm account were hidden, show them again here
   if (ev.getAttribute("data-next") === "Question-generate-dataset-ps-account") {
     $("#" + ev.getAttribute("data-next") + " button").show();
@@ -1929,6 +1843,10 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
 
   if (ev.getAttribute("data-next") === "Question-generate-dataset-ps-workspace") {
     document.getElementById("btn-ps-workspace").style.display = "block";
+  }
+
+  if (ev.getAttribute("data-next") === "Question-generate-dataset-existing-files-options") {
+    $("#Question-generate-dataset-existing-files-options").removeClass("hidden");
   }
 
   document.getElementById(currentDiv).classList.add("prev");
@@ -1955,9 +1873,9 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
     ev.getAttribute("data-next") === "Question-getting-started-final" &&
     $("#existing-ps").is(":checked")
   ) {
-    $("#nextBtn").prop("disabled", true);
+    setNavButtonDisabled("nextBtn", true);
     if (window.sodaJSONObj["dataset-structure"] != {}) {
-      $("#nextBtn").prop("disabled", false);
+      setNavButtonDisabled("nextBtn", false);
     }
   }
 
@@ -1981,7 +1899,7 @@ window.transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, 
 
     // this should run after a folder is selected
     reset_ui();
-    $("#nextBtn").prop("disabled", true);
+    setNavButtonDisabled("nextBtn", true);
   }
 };
 
@@ -2589,7 +2507,7 @@ const reset_ui = () => {
   $("#Question-getting-started-existing-ps-account").children().hide();
   $("#Question-getting-started-existing-ps-dataset").hide();
   $("#Question-getting-started-existing-ps-dataset").children().hide();
-  $("#nextBtn").prop("disabled", true);
+  setNavButtonDisabled("nextBtn", true);
 
   // clear the validation table results
   let validationErrorsTable = document.querySelector("#organize--table-validation-errors tbody");
@@ -2823,48 +2741,6 @@ const hidePrevDivs = (currentDiv, category) => {
   // hide all other div siblings
   for (var i = 0; i < individualQuestions.length; i++) {
     if (currentDiv === individualQuestions[i].id) {
-      if (!(currentDiv === "Question-generate-dataset-existing-folders-options")) {
-        $(`#${currentDiv}`).nextAll().removeClass("show");
-        $(`#${currentDiv}`).nextAll().removeClass("prev");
-        $(`#${currentDiv}`).nextAll().removeClass("test2");
-
-        // /// remove all checkmarks and previous data input
-        $(`#${currentDiv}`).nextAll().find(".option-card.radio-button").removeClass("checked");
-        $(`#${currentDiv}`).nextAll().find(".option-card.radio-button").removeClass("non-selected");
-        $(`#${currentDiv}`).nextAll().find(".folder-input-check").prop("checked", false);
-        $(`#${currentDiv}`).nextAll().find("#curatebfdatasetlist").prop("selectedIndex", 0);
-
-        var childElements2 = $(`#${currentDiv}`).nextAll().find(".form-control");
-
-        for (var child of childElements2) {
-          if (child.id === "inputNewNameDataset" || child.id === "ps-rename-dataset-name") {
-            if (child.id === "ps-rename-dataset-name") {
-              if (
-                $(".ps-dataset-span")
-                  .html()
-                  .replace(/^\s+|\s+$/g, "") == "None" ||
-                $(".ps-dataset-span")
-                  .html()
-                  .replace(/^\s+|\s+$/g, "") == ""
-              ) {
-                $("#ps-rename-dataset-name").val(
-                  `${$(".ps-dataset-span")
-                    .html()
-                    .replace(/^\s+|\s+$/g, "")}`
-                );
-              }
-            } else {
-              $(`${child.id}`).val("");
-              $(`${child.id}`).attr("placeholder", "Type here");
-            }
-          } else {
-            if (document.getElementById(child.id)) {
-              $(`${child.id}`).val("");
-              $(`${child.id}`).attr("placeholder", "Browse here");
-            }
-          }
-        }
-      }
       break;
     }
   }
@@ -3025,7 +2901,7 @@ window.updateJSONStructureGenerate = (sodaJSONObject) => {
 
 const updateJSONStructureBfDestination = () => {
   // check which option-card is selected in the upload destination selection tab
-  if ($("#dataset-upload-new-dataset").hasClass("checked")) {
+  if (isCheckboxCardChecked("dataset-upload-new-dataset")) {
     window.sodaJSONObj["generate-dataset"] = {
       destination: "ps",
       "generate-option": "new",
@@ -3039,41 +2915,20 @@ const updateJSONStructureBfDestination = () => {
     window.sodaJSONObj["generate-dataset"] = {
       destination: "ps",
       "generate-option": "existing-ps",
+      "if-existing": "merge",
     };
 
-    if (window.sodaJSONObj["ps-dataset-selected"]) {
-      window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = $(
-        "#current-ps-dataset-generate"
-      ).text();
-    } else {
-      window.sodaJSONObj["ps-dataset-selected"] = {
-        "dataset-name": $("#current-ps-dataset-generate").text(),
-      };
-    }
+    window.sodaJSONObj["ps-dataset-selected"]["dataset-name"] = $(
+      "#current-ps-dataset-generate"
+    ).text();
 
-    // folder selection options
-    // answer to Question if generate on ps, then: how to handle existing files and folders
-    // The user selected to generate to an existing dataset on Pennsieve
-    // Set the generate option to existing-ps
-    if ($('input[name="generate-5"]:checked').length > 0) {
-      if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-duplicate") {
-        window.sodaJSONObj["generate-dataset"]["if-existing"] = "create-duplicate";
-      } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-replace") {
-        window.sodaJSONObj["generate-dataset"]["if-existing"] = "replace";
-      } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-merge") {
-        window.sodaJSONObj["generate-dataset"]["if-existing"] = "merge";
-      } else if ($('input[name="generate-5"]:checked')[0].id === "existing-folders-skip") {
-        window.sodaJSONObj["generate-dataset"]["if-existing"] = "skip";
-      }
-    }
-    if ($('input[name="generate-6"]:checked').length > 0) {
-      if ($('input[name="generate-6"]:checked')[0].id === "existing-files-duplicate") {
-        window.sodaJSONObj["generate-dataset"]["if-existing-files"] = "create-duplicate";
-      } else if ($('input[name="generate-6"]:checked')[0].id === "existing-files-replace") {
-        window.sodaJSONObj["generate-dataset"]["if-existing-files"] = "replace";
-      } else if ($('input[name="generate-6"]:checked')[0].id === "existing-files-skip") {
-        window.sodaJSONObj["generate-dataset"]["if-existing-files"] = "skip";
-      }
+    let replaceCheckboxCardChecked = isCheckboxCardChecked("replace-file-card");
+    let skipCheckboxCardChecked = isCheckboxCardChecked("skip-file-card");
+
+    if (replaceCheckboxCardChecked) {
+      window.sodaJSONObj["generate-dataset"]["if-existing-files"] = "replace";
+    } else if (skipCheckboxCardChecked) {
+      window.sodaJSONObj["generate-dataset"]["if-existing-files"] = "skip";
     }
   }
 };
@@ -3105,8 +2960,6 @@ const updateOverallJSONStructure = (id) => {
 
 window.resetCuration = () => {
   $("#dataset-loaded-message").hide();
-  $(".vertical-progress-bar-step").removeClass("is-current");
-  $(".vertical-progress-bar-step").removeClass("done");
   $(".getting-started").removeClass("prev");
   $(".getting-started").removeClass("show");
   $(".getting-started").removeClass("test2");
@@ -3160,8 +3013,6 @@ window.resetCuration = () => {
 };
 
 window.resetCurationTabs = () => {
-  $(".vertical-progress-bar-step").removeClass("is-current");
-  $(".vertical-progress-bar-step").removeClass("done");
   $(".getting-started").removeClass("prev");
   $(".getting-started").removeClass("show");
   $(".getting-started").removeClass("test2");
@@ -3169,7 +3020,7 @@ window.resetCurationTabs = () => {
   $("#generate-dataset-progress-tab").css("display", "none");
 
   // step 1
-  $("#org-dataset-folder-path").text("");
+  setStateDisplayData("org-dataset-folder-path", null);
 
   // step 2
   $("#confirm-account-workspace").removeClass("selected");
@@ -3184,29 +3035,13 @@ window.resetCurationTabs = () => {
   // step 3
   document.getElementById("existing-dataset-upload").classList.add("hidden");
   document.getElementById("current-ps-dataset-generate").innerText = "";
-  document.getElementById("dataset-upload-existing-dataset").classList.remove("checked");
-  document.getElementById("dataset-upload-new-dataset").classList.remove("checked");
+  setCheckboxCardUnchecked("dataset-upload-existing-dataset");
+  setCheckboxCardUnchecked("dataset-upload-new-dataset");
   document.getElementById("inputNewNameDataset-upload-dataset").value = "";
   document.getElementById("button-confirm-ps-dataset").parentNode.style.display = "flex";
-  document.getElementsByName("generate-5").forEach((element) => {
-    element.checked = false;
-  });
 
-  document.getElementsByName("generate-6").forEach((element) => {
-    element.checked = false;
-  });
-  // Remove checks from all the cards in step 3 (merge option cards)
-  document.getElementById("skip-folder-card").classList.remove("checked");
-  document.getElementById("skip-folder-card").classList.remove("non-selected");
-  document.getElementById("merge-folder-card").classList.remove("checked");
-  document.getElementById("merge-folder-card").classList.remove("non-selected");
-  document.getElementById("replace-folder-card").classList.remove("checked");
-  document.getElementById("replace-folder-card").classList.remove("non-selected");
-
-  document.getElementById("replace-file-card").classList.remove("non-selected");
-  document.getElementById("replace-file-card").classList.remove("checked");
-  document.getElementById("skip-file-card").classList.remove("checked");
-  document.getElementById("skip-file-card").classList.remove("non-selected");
+  setCheckboxCardUnchecked("replace-file-card");
+  setCheckboxCardUnchecked("skip-file-card");
 
   // Step 4
   if (document.getElementById("generate-manifest-curate").checked) {
@@ -3220,9 +3055,7 @@ window.resetCurationTabs = () => {
   }
 
   // Disable continue button
-  $("#nextBtn").prop("disabled", true);
-
-  window.hasFiles = false;
+  setNavButtonDisabled("nextBtn", true);
 
   window.currentTab = 0;
   window.wipeOutCurateProgress();
@@ -3230,9 +3063,9 @@ window.resetCurationTabs = () => {
   window.globalGettingStarted1stQuestionBool = false;
 };
 
-window.exitCurate = async (resetProgressTabs) => {
+window.exitCurate = async () => {
   $("#dataset-loaded-message").hide();
-  document.getElementById("guided_mode_view").click();
+  $("#guided_mode_view").click();
 };
 
 window.wipeOutCurateProgress = () => {
@@ -3245,7 +3078,7 @@ window.wipeOutCurateProgress = () => {
   };
 
   // reset imported dataset path
-  document.querySelector("#org-dataset-folder-path").textContent = "";
+  setStateDisplayData("org-dataset-folder-path", null);
 
   // reset page 2 button selections
   $("#confirm-account-workspace").removeClass("selected");
@@ -3265,7 +3098,7 @@ window.wipeOutCurateProgress = () => {
   // reset page 3 dataset upload options
 
   // reset the two option card selections
-  document.getElementById("dataset-upload-existing-dataset").classList.remove("checked");
+  setCheckboxCardUnchecked("dataset-upload-existing-dataset");
   document.getElementById("Question-new-dataset-upload-name").classList.remove("checked");
 
   // reset the dataset name input field
@@ -3273,15 +3106,8 @@ window.wipeOutCurateProgress = () => {
   document.getElementById("Question-new-dataset-upload-name").classList.add("hidden");
   $("#upload-dataset-btn-confirm-new-dataset-name").addClass("hidden");
 
-  // get every input with name="generate-5" and remove the checked property
-  let inputs = document.querySelectorAll('input[name="generate-5"]');
-  inputs.forEach((input) => {
-    input.checked = false;
-    input.classList.remove("checked");
-  });
   document.getElementById("current-ps-dataset-generate").textContent = "None";
   // hide the existing folder/files options
-  $("#Question-generate-dataset-existing-folders-options").addClass("hidden");
   $("#Question-generate-dataset-existing-files-options").addClass("hidden");
   $("#please-wait-new-curate-div").show();
 
@@ -3313,6 +3139,7 @@ window.wipeOutCurateProgress = () => {
   $("#generate-manifest-curate").prop("checked", false);
 
   // reset dataset selection options
+
   $("#current-ps-dataset").text("None"); // step 1
   $("#current-ps-dataset-generate").text("None"); // step 6 for when merging a new dataset into an existing dataset
   $("#button-confirm-ps-dataset").hide(); // hide step 6 confirm button until the user selects the dataset again
@@ -3323,13 +3150,11 @@ window.wipeOutCurateProgress = () => {
 
 // once users click on option card: Organize dataset
 document.getElementById("button-section-organize-dataset").addEventListener("click", () => {
-  $(".vertical-progress-bar").css("display", "flex");
   document.getElementById("generate-dataset-progress-tab").style.display = "none";
   window.showParentTab(window.currentTab, 1);
 });
 
 document.getElementById("organize_dataset_btn").addEventListener("click", () => {
-  $(".vertical-progress-bar").css("display", "flex");
   document.getElementById("generate-dataset-progress-tab").style.display = "none";
   $("#save-progress-btn").css("display", "none");
   $("#start-over-btn").css("display", "none");
@@ -3504,30 +3329,6 @@ $(document).ready(() => {
     $(".section").removeClass("fullShown");
   });
 
-  // Blackfynn transition warning message
-  //TODO: Dorian -> Remove this as it is no longer needed
-  const url =
-    "https://raw.githubusercontent.com/bvhpatel/SODA/master/src/assets/blackfynn-warning-message.txt";
-  fetch(url).then(function (response) {
-    response.text().then(function (text) {
-      let warning_obj = JSON.parse(text);
-
-      if (warning_obj["show-warning-message"]) {
-        Swal.fire({
-          icon: "info",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          html: `${warning_obj["warning-message"]}`,
-          showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster",
-          },
-        });
-      }
-    });
-  });
   $(".content-button").popover();
 });
 

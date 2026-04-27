@@ -5,25 +5,54 @@ import useGlobalStore from "../../../../stores/globalStore";
 import ExternalLink from "../../../buttons/ExternalLink";
 
 const dropDownIcons = {
-  info: <IconInfoCircle size={18} color="gray" />,
+  info: <IconInfoCircle size={18} color="var(--mantine-color-primary-6)" />,
   question: <IconInfoCircle size={18} color="gray" />,
 };
 
-const renderDataCategoriesNote = (datasetIncludesCode) => (
+const renderDataCategoriesNote = (datasetType, datasetIncludesCode) => (
   <>
-    <SodaPaper>
-      <Text fw={600}>Experimental</Text>
-      <Text size="sm">
-        Data collected from experiments, such as raw or processed measurements, images, recordings,
-        or any primary data generated during the study.
-      </Text>
-    </SodaPaper>
+    {datasetType === "experimental" && (
+      <SodaPaper>
+        <Text fw={600}>Experimental</Text>
+        <Text size="sm">
+          Data collected from experiments, such as raw or processed measurements, images,
+          recordings, or any primary data generated during the study.
+        </Text>
+      </SodaPaper>
+    )}
     {datasetIncludesCode && (
       <SodaPaper>
         <Text fw={600}>Code</Text>
         <Text size="sm">
           Scripts, computational models, analysis pipelines, or other software used for data
           processing, analysis, or simulation in the study.
+        </Text>
+      </SodaPaper>
+    )}
+    {datasetType === "computational" && (
+      <SodaPaper>
+        <Text fw={600}>Primary</Text>
+        <Text size="sm">
+          Data generated or processed through computational methods, such as simulation results,
+          model outputs, or tabular data.
+        </Text>
+      </SodaPaper>
+    )}
+    {datasetType === "experimental" && (
+      <SodaPaper>
+        <Text fw={600}>Protocol</Text>
+        <Text size="sm">
+          Protocols such as standard operating procedures or step-by-step instructions describing
+          how experiments or analyses were performed.
+        </Text>
+      </SodaPaper>
+    )}
+    {datasetType === "computational" && (
+      <SodaPaper>
+        <Text fw={600}>Protocol</Text>
+        <Text size="sm">
+          Protocols such as workflows, step-by-step instructions, or documentation describing how
+          your data was generated, processed, or analyzed.
         </Text>
       </SodaPaper>
     )}
@@ -34,13 +63,6 @@ const renderDataCategoriesNote = (datasetIncludesCode) => (
         users understand and reuse the dataset.
       </Text>
     </SodaPaper>
-    <SodaPaper>
-      <Text fw={600}>Protocol</Text>
-      <Text size="sm">
-        Protocols, standard operating procedures, or step-by-step instructions describing how
-        experiments or analyses were performed.
-      </Text>
-    </SodaPaper>
   </>
 );
 
@@ -48,14 +70,17 @@ const DropDownNote = ({ id }) => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const datasetIncludesSubjects = selectedEntities.includes("subjects");
   const datasetIncludesSamples = selectedEntities.includes("samples");
-  const datasetIncludesSites = selectedEntities.includes("sites");
+  const datasetIncludesSites =
+    selectedEntities.includes("subjectSites") || selectedEntities.includes("sampleSites");
   const datasetIncludesCode = selectedEntities.includes("code");
+  const datasetType = useGlobalStore((state) => state.datasetType);
+  const curationMode = useGlobalStore((state) => state.curationMode);
 
   const configMap = {
     "data-categories-list": {
       dropDownIcon: "info",
-      dropDownButtonText: "Learn more about the data categories",
-      dropDownNote: renderDataCategoriesNote(datasetIncludesCode),
+      dropDownButtonText: `Learn more about the data categories for ${datasetType} datasets`,
+      dropDownNote: renderDataCategoriesNote(datasetType, datasetIncludesCode),
     },
     "entity-types-list": {
       dropDownIcon: "info",
@@ -107,37 +132,42 @@ const DropDownNote = ({ id }) => {
       dropDownButtonText: "Learn more about managing the structure of your entities",
       dropDownNote: (
         <>
-          <Text size="sm">
-            The SPARC Dataset Structure (SDS) requires you to denote entities and their
-            relationships. This page allows you to add, edit, or remove entities such as subjects,
-            samples, and sites. The recommended workflow for this page is:
-          </Text>
-          <List type="ordered" mt="md">
+          <Text mt="md">The recommended workflow for specifying entity IDs on this page is:</Text>
+          <List type="ordered" mt="md" withPadding>
             {datasetIncludesSubjects && (
               <List.Item>
-                <Text size="sm">
-                  <strong>Add subjects</strong> - Click the "Add Subject" button, enter some
-                  metadata for the subject (at minimum the subject's ID), and click the "Add
-                  subject" button at the bottom of the form.
+                <Text mb="sm">
+                  <strong>Specify subject IDs</strong> – For each subject, click the “Add Subject”
+                  button, enter metadata for the subject (at minimum the subject ID), then click the
+                  blue “Add Subject” button at the top or bottom of the form.
                 </Text>
               </List.Item>
             )}
+
             {datasetIncludesSamples && (
               <List.Item>
-                <Text size="sm">
-                  <strong>Add samples</strong> - Click the "Add Sample" button underneath the
-                  subject that the sample was taken from, enter some metadata for the sample (at
-                  minimum the sample's ID), and click the "Add Sample" button at the bottom of the
-                  form.
+                <Text mb="sm">
+                  <strong>Specify sample IDs</strong> – For each sample, click the “Add Sample”
+                  button under the subject the sample belongs to, enter metadata for the sample (at
+                  minimum the sample ID), then click the blue “Add Sample” button at the top or
+                  bottom of the form.
                 </Text>
               </List.Item>
             )}
+
             {datasetIncludesSites && (
               <List.Item>
-                <Text size="sm">
-                  <strong>Add sites</strong> - Click the "Add site" button underneath the sample the
-                  site is from, enter some metadata for the site (at minimum the site's ID), and
-                  click the "Add site" button at the bottom of the form.
+                <Text>
+                  <strong>Specify site IDs</strong> – For each site, click the “Add Site” button
+                  under the{" "}
+                  {selectedEntities.includes("subjectSites") &&
+                  selectedEntities.includes("sampleSites")
+                    ? "subject or sample"
+                    : selectedEntities.includes("subjectSites")
+                      ? "subject"
+                      : "sample"}{" "}
+                  the site belongs to, enter metadata for the site (at minimum the site ID), then
+                  click the blue “Add Site” button at the top or bottom of the form.
                 </Text>
               </List.Item>
             )}
@@ -148,19 +178,25 @@ const DropDownNote = ({ id }) => {
     "user-retrieved-datasets-but-missing-desired-dataset": {
       dropDownIcon: "question",
       dropDownButtonText: "Why can't I find my dataset?",
-      dropDownNote: (
-        <>
-          <Text size="sm" mb="sm">
-            Only datasets that are empty (have no folders or files) are shown in the dropdown above.
-            SODA does not currently support uploading to datasets that are not empty in the "Prepare
-            dataset step-by-step" because of potential conflicts with existing data.
-          </Text>
+      dropDownNote:
+        curationMode === "guided" ? (
+          <>
+            <Text size="sm" mb="sm">
+              Only datasets that are empty (have no folders or files) are shown in the dropdown
+              above. SODA does not currently support uploading to datasets that are not empty in the
+              "Prepare dataset step-by-step" because of potential conflicts with existing data.
+            </Text>
+            <Text size="sm">
+              You must also have <strong>"Owner"</strong> or <strong>"Manager"</strong> or{" "}
+              <strong>"Editor"</strong> permissions on the dataset in order for SODA to retrieve it.
+            </Text>
+          </>
+        ) : (
           <Text size="sm">
-            You must also have <strong>"Owner"</strong> or <strong>"Manager"</strong> permissions on
-            the dataset in order for SODA to retrieve it.
+            You must have <strong>"Owner"</strong> or <strong>"Manager"</strong> or{" "}
+            <strong>"Editor"</strong> permissions on the dataset in order for SODA to retrieve it.
           </Text>
-        </>
-      ),
+        ),
     },
     "user-doesnt-have-any-empty-datasets": {
       dropDownIcon: "question",
@@ -173,8 +209,8 @@ const DropDownNote = ({ id }) => {
             dataset step-by-step" because of potential conflicts with existing data.
           </Text>
           <Text size="sm">
-            You must also have <strong>"Owner"</strong> or <strong>"Manager"</strong> permissions on
-            the dataset in order for SODA to retrieve it.
+            You must also have <strong>"Owner"</strong> or <strong>"Manager"</strong> or{" "}
+            <strong>"Editor"</strong> permissions on the dataset in order for SODA to retrieve it.
           </Text>
         </>
       ),
@@ -197,6 +233,28 @@ const DropDownNote = ({ id }) => {
         </>
       ),
     },
+    "data-categories-explanation": {
+      dropDownIcon: "info",
+      dropDownButtonText: "Learn more about Primary, Source, and Derivative data",
+      dropDownNote: (
+        <List spacing="sm" mt="sm">
+          <List.Item>
+            <b>Primary data:</b> Minimally processed data collected directly in your study (e.g.
+            time‑series recordings, raw imaging or microscopy data, genomic or tabular outputs).
+          </List.Item>
+          <List.Item>
+            <b>Source data:</b> Unaltered, raw input data or instrument outputs (e.g. raw signals,
+            original k‑space MRI data, unprocessed imaging data) that preceded any reconstruction,
+            conversion or analysis.
+          </List.Item>
+          <List.Item>
+            <b>Derivative data:</b> Data derived from primary or source data by processing,
+            analysis, conversion or annotation (e.g. processed images, segmentation results,
+            statistical summaries, converted formats, model outputs).
+          </List.Item>
+        </List>
+      ),
+    },
   };
 
   const config = configMap[id];
@@ -208,6 +266,13 @@ const DropDownNote = ({ id }) => {
       defaultValue={null} // closed by default
       chevronPosition="right"
       mt="md"
+      styles={{
+        chevron: {
+          color: "var(--mantine-color-primary-6)",
+        },
+
+        panel: { backgroundColor: "var(--mantine-color-primary-0)" },
+      }}
     >
       <Accordion.Item value={id}>
         <Accordion.Control>

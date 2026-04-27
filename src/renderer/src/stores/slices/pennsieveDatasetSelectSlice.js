@@ -6,6 +6,7 @@ export const pennsieveDatasetSelectSlice = (set) => ({
   selectableDatasets: [],
   selectedDatasetIdToUploadDataTo: null,
   selectedDatasetNameToUploadDataTo: null,
+  selectedDatasetIntIdToUploadTo: null,
   availableDatasetsToUploadDataTo: [],
   isLoadingPennsieveDatasets: false,
   preferredPennsieveDatasetId: null,
@@ -29,20 +30,26 @@ export const setPreferredPennsieveDatasetId = (preferredPennsieveDatasetId) => {
   useGlobalStore.setState({ preferredPennsieveDatasetId });
 };
 
+export const setPreferredPennsieveDatasetIntId = (preferredPennsieveDatasetIntId) => {
+  useGlobalStore.setState({ preferredPennsieveDatasetIntId });
+};
+
 export const setSelectedDatasetToUploadDataTo = (
   selectedDatasetIdToUploadDataTo,
-  selectedDatasetNameToUploadDataTo
+  selectedDatasetNameToUploadDataTo,
+  selectedDatasetIntIdToUploadTo
 ) => {
   useGlobalStore.setState({
     selectedDatasetIdToUploadDataTo,
     selectedDatasetNameToUploadDataTo,
+    selectedDatasetIntIdToUploadTo,
   });
 };
 
 // Fetch logic
-export const fetchDatasetsToUploadDataTo = async () => {
+export const fetchDatasetsToUploadDataTo = async (fetchOnlyEmptyDatasets) => {
   // Reset selection
-  setSelectedDatasetToUploadDataTo(null, null);
+  setSelectedDatasetToUploadDataTo(null, null, null);
 
   const preferredPennsieveDatasetId = useGlobalStore.getState().preferredPennsieveDatasetId;
 
@@ -50,11 +57,12 @@ export const fetchDatasetsToUploadDataTo = async () => {
   useGlobalStore.setState({ datasetFetchErrorMessage: null });
 
   try {
-    const datasets = await api.getUsersDatasetList(true);
+    const datasets = await api.getUsersDatasetList(fetchOnlyEmptyDatasets);
 
     const formattedOptions = (datasets || []).map((dataset) => ({
       value: dataset.id,
       label: dataset.name,
+      intId: dataset.intId,
     }));
 
     setAvailableDatasetsToUploadDataTo(formattedOptions);
@@ -66,7 +74,11 @@ export const fetchDatasetsToUploadDataTo = async () => {
       );
 
       if (preferredDataset) {
-        setSelectedDatasetToUploadDataTo(preferredDataset.id, preferredDataset.name);
+        setSelectedDatasetToUploadDataTo(
+          preferredDataset.id,
+          preferredDataset.name,
+          preferredDataset.intId
+        );
       } else {
         console.warn(
           `⚠️ Preferred dataset with ID ${preferredPennsieveDatasetId} not found in fetched datasets.`

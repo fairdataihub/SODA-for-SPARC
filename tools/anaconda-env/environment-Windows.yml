@@ -79,5 +79,8 @@ dependencies:
     - zope-interface==6.1
     - setuptools == 71.0.4
     - backports.tarfile
-    - pysoda-fairdataihub-tools==0.1.61
-
+    # NOTE: Keep pysodafair and the --extra-index-url line at the bottom of this file.
+    # The GitHub Actions build workflow automatically uncomments the extra-index-url line
+    # for beta versions to install pysodafair from TestPyPI instead of PyPI.
+    # - --extra-index-url https://test.pypi.org/simple/
+    - pysodafair

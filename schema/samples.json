@@ -8,11 +8,13 @@
       "properties": {
         "sample_id": {
           "type": "string",
-          "description": "Unique identifier for the sample within the dataset."
+          "description": "Unique identifier for the sample within the dataset.",
+          "pattern": "^(pop-)?sam-[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?$"
         },
         "subject_id": {
           "type": "string",
-          "description": "Unique identifier for the subject from which the sample was derived."
+          "description": "Unique identifier for the subject from which the sample was derived.",
+          "pattern": "^(pop-)?sub-[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?$"
         },
         "was_derived_from": {
           "type": "string",
@@ -31,8 +33,18 @@
           "description": "Type of sample (e.g., blood, tissue, etc.)."
         },
         "sample_anatomical_location": {
-          "type": "string",
-          "description": "Anatomical location of the sample."
+          "description": "Anatomical location of the sample. Can be a single string or an array of strings.",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
         },
         "also_in_dataset": {
           "type": "string",
@@ -84,7 +96,21 @@
         },
         "protocol_url_or_doi": {
           "type": "string",
-          "description": "URL or DOI of the protocol used in the experiment."
+          "description": "URL or DOI of the protocol used for the subject.",
+          "anyOf": [
+            { "pattern": "^$" },
+            {
+              "pattern": "^https://[A-Za-z0-9.-]+[A-Za-z0-9](:[0-9]+)?(/.*)?$"
+            },
+            { "pattern": "^10\\.\\d{4,9}/[-._;()/:A-Za-z0-9]+$" },
+            {
+              "pattern": "^https://doi\\.org/10\\.\\d{4,9}/[-._;()/:A-Za-z0-9]+$"
+            }
+          ]
+        },
+        "number_of_directly_derived_samples": {
+          "type": "string",
+          "description": "Number of samples directly derived from this sample."
         }
       },
       "required": ["sample_id", "subject_id"],

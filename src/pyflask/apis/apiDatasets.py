@@ -226,7 +226,6 @@ class ComparisonResults(Resource):
 
         try:
             v =  get_local_dataset_comparison(dataset_id, local_dataset_path)
-            # api.logger.info("FUn It Finished")
             return v
 
         except Exception as e:

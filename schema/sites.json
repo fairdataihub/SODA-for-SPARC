@@ -6,11 +6,13 @@
     "properties": {
       "site_id": {
         "type": "string",
-        "description": "Unique identifier for the site"
+        "description": "Unique identifier for the site",
+        "pattern": "^(pop-)?site-[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?$"
       },
       "specimen_id": {
         "type": "string",
-        "description": "Unique identifier for the specimen associated with the site"
+        "description": "Unique identifier for the specimen associated with the site",
+        "pattern": "^(pop-)?(sub|sam)-[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?$"
       },
       "site_type": {
         "type": "string",

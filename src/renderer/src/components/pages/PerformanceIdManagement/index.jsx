@@ -80,6 +80,16 @@ const PerformanceMetadataForm = () => {
         placeholder="Enter protocol URL or DOI (e.g., doi:10.1000/xyz123 or https://protocol.io/...)"
         value={protocol_url_or_doi}
         onChange={(event) => setProtocolUrlOrDoi(event.currentTarget.value)}
+        error={
+          protocol_url_or_doi &&
+          protocol_url_or_doi.length > 5 &&
+          !window.evaluateStringAgainstSdsRequirements(
+            protocol_url_or_doi,
+            "string-is-valid-url-or-doi"
+          )
+            ? "Invalid format. Please enter a valid HTTPS URL, DOI, or DOI URL."
+            : undefined
+        }
       />
 
       <Group grow>
@@ -87,16 +97,20 @@ const PerformanceMetadataForm = () => {
           label="Start Date & Time"
           description="Enter the date and time when the performance started."
           placeholder="Select start date and time"
-          value={start_datetime ? new Date(start_datetime) : null}
+          value={start_datetime ? new Date(start_datetime.replace(" ", "T")) : null}
           onChange={(val) => setStartDatetime(val ? val.toISOString() : "")}
+          withSeconds
+          valueFormat="YYYY-MM-DD HH:mm:ss"
           clearable
         />
         <DateTimePicker
           label="End Date & Time"
           description="Enter the date and time when the performance ended."
           placeholder="Select end date and time"
-          value={end_datetime ? new Date(end_datetime) : null}
+          value={end_datetime ? new Date(end_datetime.replace(" ", "T")) : null}
           onChange={(val) => setEndDatetime(val ? val.toISOString() : "")}
+          withSeconds
+          valueFormat="YYYY-MM-DD HH:mm:ss"
           clearable
         />
       </Group>
@@ -107,6 +121,7 @@ const PerformanceMetadataForm = () => {
 const PerformanceIdManagement = () => {
   const IsPerformanceFormVisible = useGlobalStore((state) => state.IsPerformanceFormVisible);
   const performance_id = useGlobalStore((state) => state.performance_id);
+  const protocol_url_or_doi = useGlobalStore((state) => state.protocol_url_or_doi);
 
   const performanceList = useGlobalStore((state) => state.performanceList);
 
@@ -117,6 +132,11 @@ const PerformanceIdManagement = () => {
   const isPerformanceIdValid = window.evaluateStringAgainstSdsRequirements?.(
     performance_id,
     "string-adheres-to-identifier-conventions"
+  );
+
+  const isProtocolUrlOrDoiValid = window.evaluateStringAgainstSdsRequirements?.(
+    protocol_url_or_doi,
+    "string-is-valid-url-or-doi"
   );
 
   // Function to handle selecting a performance for editing
@@ -152,7 +172,10 @@ const PerformanceIdManagement = () => {
     <GuidedModePage pageHeader="Description of Performances">
       <GuidedModeSection>
         <Text mb="md">
-          Provide information for each performance of the experimental protocol below.
+          You indicated that your dataset includes data collected from subjects across multiple
+          sessions or time points. According to the SDS, each session must be categorized as a
+          performance. Use the interface below to add a performance ID and enter details for each
+          performance.
         </Text>
       </GuidedModeSection>
 
@@ -290,7 +313,9 @@ const PerformanceIdManagement = () => {
                     <Button
                       color="blue"
                       onClick={isEditMode ? updatePerformance : addPerformance}
-                      disabled={!performance_id || !isPerformanceIdValid}
+                      disabled={
+                        !performance_id || !isPerformanceIdValid || !isProtocolUrlOrDoiValid
+                      }
                     >
                       {isEditMode ? "Update Performance" : "Add Performance"}
                     </Button>

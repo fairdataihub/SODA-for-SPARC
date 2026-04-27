@@ -1,0 +1,11 @@
+.checkboxHidden {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+
+.checkboxVisible {
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 0.15s;
+}

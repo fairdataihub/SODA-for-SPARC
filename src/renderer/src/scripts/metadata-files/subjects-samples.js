@@ -46,30 +46,6 @@ window.samplesFileData = [];
 var headersArrSubjects = [];
 var headersArrSamples = [];
 
-window.showForm = (type) => {
-  if (type !== "edit") {
-    window.clearAllSubjectFormFields(subjectsFormDiv);
-  }
-  subjectsFormDiv.style.display = "flex";
-  $("#create_subjects-tab").removeClass("show");
-  $("#create_subjects-tab").css("display", "none");
-  $("#footer-div-subjects").css("display", "none");
-  $("#btn-add-custom-field").show();
-  $("#sidebarCollapse").prop("disabled", "true");
-};
-
-window.showFormSamples = (type) => {
-  if (type !== "edit") {
-    window.clearAllSubjectFormFields(samplesFormDiv);
-  }
-  samplesFormDiv.style.display = "flex";
-  $("#create_samples-tab").removeClass("show");
-  $("#create_samples-tab").css("display", "none");
-  $("#footer-div-samples").css("display", "none");
-  $("#btn-add-custom-field-samples").show();
-  $("#sidebarCollapse").prop("disabled", "true");
-};
-
 var prevSubID = "";
 var prevSubIDSingle = "";
 var selectHTMLSubjects =
@@ -848,18 +824,6 @@ const addSampleIDtoJSON = () => {
   }
 };
 
-// associated with the edit icon (edit a subject)
-window.edit_current_subject_id = (ev) => {
-  var currentRow = $(ev).parents()[2];
-  var subjectID = $(currentRow)[0].cells[1].innerText;
-  loadSubjectInformation(ev, subjectID);
-};
-window.edit_current_sample_id = (ev) => {
-  var currentRow = $(ev).parents()[2];
-  var subjectID = $(currentRow)[0].cells[1].innerText;
-  var sampleID = $(currentRow)[0].cells[2].innerText;
-  loadSampleInformation(ev, subjectID, sampleID);
-};
 window.edit_current_protocol_id = async (ev) => {
   let oldProtocolLink = "";
   var currentRow = $(ev).parents()[2];
@@ -1005,27 +969,6 @@ window.edit_current_additional_link_id = async (ev) => {
     $(currentRow)[0].cells[3].innerText = values[2];
     $(currentRow)[0].cells[4].innerText = values[3];
   }
-};
-
-const loadSubjectInformation = (ev, subjectID) => {
-  // 1. load fields for form
-  window.showForm("display", true);
-  $("#btn-edit-subject").css("display", "inline-block");
-  $("#btn-add-subject").css("display", "none");
-  window.clearAllSubjectFormFields(subjectsFormDiv);
-  window.populateForms(subjectID, "", "free-form");
-  $("#btn-edit-subject").unbind("click");
-  $("#btn-edit-subject").click(function () {
-    editSubject(ev, subjectID);
-  });
-  $("#new-custom-header-name").keyup(function () {
-    var customName = $(this).val().trim();
-    if (customName !== "") {
-      $("#button-confirm-custom-header-name").show();
-    } else {
-      $("#button-confirm-custom-header-name").hide();
-    }
-  });
 };
 
 window.populateForms = (subjectID, type, curationMode) => {
@@ -1243,195 +1186,6 @@ window.populateFormsSamples = (subjectID, sampleID, type, curationMode) => {
   }
 };
 
-const loadSampleInformation = (ev, subjectID, sampleID) => {
-  // 1. load fields for form
-  window.showFormSamples("display", true);
-  $("#btn-edit-sample").css("display", "inline-block");
-  $("#btn-add-sample").css("display", "none");
-  window.clearAllSubjectFormFields(samplesFormDiv);
-  window.populateFormsSamples(subjectID, sampleID, "", "free-form");
-  $("#btn-edit-sample").unbind("click");
-  $("#btn-edit-sample").click(function () {
-    editSample(ev, sampleID);
-  });
-  $("#new-custom-header-name-samples").keyup(function () {
-    var customName = $(this).val().trim();
-    if (customName !== "") {
-      $("#button-confirm-custom-header-name-samples").show();
-    } else {
-      $("#button-confirm-custom-header-name-samples").hide();
-    }
-  });
-};
-
-const editSubject = (ev, subjectID) => {
-  for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
-    if (field.value.trim() !== "" && field.value !== undefined && field.value !== "Select") {
-      // if it's age, then add age info input (day/week/month/year)
-      if (field.name === "Age") {
-        if ($("#bootbox-subject-age-info").val() !== "Select") {
-          field.value = field.value + " " + $("#bootbox-subject-age-info").val();
-        }
-      }
-      if (field.name === "Sex") {
-        if ($("#bootbox-subject-sex").val() === "Unknown") {
-          field.value = "";
-        } else {
-          field.value = field.value;
-        }
-      }
-      window.subjectsFileData.push(field.value);
-    } else {
-      window.subjectsFileData.push("");
-    }
-  }
-  var currentRow = $(ev).parents()[2];
-  var newID = $("#bootbox-subject-id").val();
-  if (newID === subjectID) {
-    for (var i = 1; i < window.subjectsTableData.length; i++) {
-      if (window.subjectsTableData[i][0] === subjectID) {
-        window.subjectsTableData[i] = window.subjectsFileData;
-        break;
-      }
-    }
-    hideForm("subject");
-  } else {
-    var table = document.getElementById("table-subjects");
-    var duplicate = false;
-    var error = "";
-    var rowcount = table.rows.length;
-    for (var i = 1; i < rowcount; i++) {
-      if (newID === table.rows[i].cells[1].innerText) {
-        duplicate = true;
-        break;
-      }
-    }
-    if (duplicate) {
-      error =
-        "A similar subject_id already exists. Please either delete the existing subject_id or choose a different subject_id.";
-      Swal.fire("Duplicate subject_id", error, "error");
-    } else {
-      for (var i = 1; i < window.subjectsTableData.length; i++) {
-        if (window.subjectsTableData[i][0] === subjectID) {
-          window.subjectsTableData[i] = window.subjectsFileData;
-          break;
-        }
-      }
-      $(currentRow)[0].cells[1].innerText = newID;
-      hideForm("subject");
-    }
-  }
-  window.subjectsFileData = [];
-};
-
-const editSample = (ev, sampleID) => {
-  for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
-    if (field.value.trim() !== "" && field.value !== undefined && field.value !== "Select") {
-      window.samplesFileData.push(field.value);
-    } else {
-      window.samplesFileData.push("");
-    }
-  }
-  var currentRow = $(ev).parents()[2];
-  var newID = $("#bootbox-sample-id").val();
-  if (newID === sampleID) {
-    for (var i = 1; i < window.samplesTableData.length; i++) {
-      if (window.samplesTableData[i][1] === sampleID) {
-        window.samplesTableData[i] = window.samplesFileData;
-        break;
-      }
-    }
-    $(currentRow)[0].cells[1].innerText = window.samplesFileData[0];
-    hideForm("sample");
-  } else {
-    var table = document.getElementById("table-samples");
-    var duplicate = false;
-    var error = "";
-    var rowcount = table.rows.length;
-    for (var i = 1; i < rowcount; i++) {
-      if (newID === table.rows[i].cells[1].innerText) {
-        duplicate = true;
-        break;
-      }
-    }
-    if (duplicate) {
-      error =
-        "A similar sample_id already exists. Please either delete the existing sample_id or choose a different sample_id.";
-      Swal.fire("Duplicate sample_id", error, "error");
-    } else {
-      for (var i = 1; i < window.samplesTableData.length; i++) {
-        if (window.samplesTableData[i][1] === sampleID) {
-          window.samplesTableData[i] = window.samplesFileData;
-          break;
-        }
-      }
-      $(currentRow)[0].cells[1].innerText = newID;
-      hideForm("sample");
-    }
-  }
-  window.samplesFileData = [];
-};
-
-window.delete_current_subject_id = (ev) => {
-  Swal.fire({
-    title: "Are you sure you want to delete this subject?",
-    showCancelButton: true,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    cancelButtonText: `No!`,
-    cancelButtonColor: "#f44336",
-    confirmButtonColor: "#3085d6",
-    reverseButtons: window.reverseSwalButtons,
-    confirmButtonText: "Yes",
-  }).then((boolean) => {
-    if (boolean.isConfirmed) {
-      // 1. Delete from table
-      var currentRow = $(ev).parents()[2];
-      var currentRowid = $(currentRow).prop("id");
-      document.getElementById(currentRowid).outerHTML = "";
-      window.updateIndexForTable(document.getElementById("table-subjects"));
-      // 2. Delete from JSON
-      var subjectID = $(currentRow)[0].cells[1].innerText;
-      for (var i = 1; i < window.subjectsTableData.length; i++) {
-        if (window.subjectsTableData[i][0] === subjectID) {
-          window.subjectsTableData.splice(i, 1);
-          break;
-        }
-      }
-    }
-  });
-};
-
-window.delete_current_sample_id = (ev) => {
-  Swal.fire({
-    title: "Are you sure you want to delete this sample?",
-    showCancelButton: true,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    cancelButtonText: `No!`,
-    cancelButtonColor: "#f44336",
-    confirmButtonColor: "#3085d6",
-    reverseButtons: window.reverseSwalButtons,
-    confirmButtonText: "Yes",
-  }).then((boolean) => {
-    if (boolean.isConfirmed) {
-      // 1. Delete from table
-      var currentRow = $(ev).parents()[2];
-      var currentRowid = $(currentRow).prop("id");
-      document.getElementById(currentRowid).outerHTML = "";
-      window.updateIndexForTable(document.getElementById("table-samples"));
-      // 2. Delete from JSON
-      var sampleId = $(currentRow)[0].cells[1].innerText;
-      for (var i = 1; i < window.samplesTableData.length; i++) {
-        if (window.samplesTableData[i][1] === sampleId) {
-          window.samplesTableData.splice(i, 1);
-          break;
-        }
-      }
-    }
-  });
-};
-
 window.delete_current_protocol_id = (ev) => {
   Swal.fire({
     title: "Are you sure you want to delete this protocol?",
@@ -1452,113 +1206,6 @@ window.delete_current_protocol_id = (ev) => {
       window.updateIndexForTable(document.getElementById("protocol-link-table-dd"));
     }
   });
-};
-
-window.delete_current_additional_link_id = (ev) => {
-  Swal.fire({
-    title: "Are you sure you want to delete this link?",
-    showCancelButton: true,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    cancelButtonText: `No!`,
-    cancelButtonColor: "#f44336",
-    confirmButtonColor: "#3085d6",
-    confirmButtonText: "Yes",
-    reverseButtons: window.reverseSwalButtons,
-  }).then((boolean) => {
-    if (boolean.isConfirmed) {
-      // 1. Delete from table
-      var currentRow = $(ev).parents()[2];
-      var currentRowid = $(currentRow).prop("id");
-      document.getElementById(currentRowid).outerHTML = "";
-      window.updateIndexForTable(document.getElementById("other-link-table-dd"));
-    }
-  });
-};
-
-window.copy_current_subject_id = async (ev) => {
-  const { value: newSubject } = await Swal.fire({
-    title: "Enter an ID for the new subject:",
-    input: "text",
-    showCancelButton: true,
-    reverseButtons: window.reverseSwalButtons,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    inputValidator: (value) => {
-      if (!value) {
-        return "Please enter an ID";
-      }
-    },
-  });
-  if (newSubject && newSubject !== "") {
-    // // add new row to table
-    var message = addNewIDToTableStrict(newSubject, null, "subjects");
-    if (message !== "") {
-      Swal.fire(message, "", "warning");
-    } else {
-      var res = addNewIDToTable(newSubject, null, "subjects");
-      // add new subject_id to JSON
-      // 1. copy from current ev.id (the whole array)
-      var currentRow = $(ev).parents()[2];
-      var id = currentRow.cells[1].innerText;
-      // 2. append that to the end of matrix
-      for (var subArr of window.subjectsTableData.slice(1)) {
-        if (subArr[0] === id) {
-          var ind = window.subjectsTableData.indexOf(subArr);
-          var newArr = [...window.subjectsTableData[ind]];
-          window.subjectsTableData.push(newArr);
-          // 3. change first entry of that array
-          window.subjectsTableData[window.subjectsTableData.length - 1][0] = newSubject;
-          break;
-        }
-      }
-    }
-  }
-};
-
-window.copy_current_sample_id = async (ev) => {
-  const { value: newSubSam } = await Swal.fire({
-    title: "Enter an ID for the new subject and sample: ",
-    html:
-      '<input id="new-subject" class="swal2-input" placeholder="Subject ID">' +
-      '<input id="new-sample" class="swal2-input" placeholder="Sample ID">',
-    focusConfirm: false,
-    showCancelButton: true,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    preConfirm: () => {
-      return [
-        document.getElementById("new-subject").value,
-        document.getElementById("new-sample").value,
-      ];
-    },
-  });
-  if (newSubSam && (newSubSam[0] !== "") & (newSubSam[1] !== "")) {
-    var message = addNewIDToTableStrict(newSubSam[1], newSubSam[0], "samples");
-    if (message !== "") {
-      Swal.fire(message, "", "warning");
-    } else {
-      var res = addNewIDToTable(newSubSam[1], newSubSam[0], "samples");
-      // // add new row to table
-      // add new subject_id to JSON
-      // 1. copy from current ev.id (the whole array)
-      var currentRow = $(ev).parents()[2];
-      var id1 = currentRow.cells[1].innerText;
-      var id2 = currentRow.cells[2].innerText;
-      // 2. append that to the end of matrix
-      for (var samArr of window.samplesTableData.slice(1)) {
-        if (samArr[0] === id1 && samArr[1] === id2) {
-          var ind = window.samplesTableData.indexOf(samArr);
-          var newArr = [...window.samplesTableData[ind]];
-          window.samplesTableData.push(newArr);
-          // 3. change first entry of that array
-          window.samplesTableData[window.samplesTableData.length - 1][0] = newSubSam[0];
-          window.samplesTableData[window.samplesTableData.length - 1][1] = newSubSam[1];
-          break;
-        }
-      }
-    }
-  }
 };
 
 window.updateIndexForTable = (table, boolUpdateIndex) => {
@@ -2714,9 +2361,6 @@ window.addAdditionalLink = async () => {
       ];
     },
   });
-  if (values) {
-    window.addAdditionalLinktoTableDD(values[0], values[1], values[2], values[3]);
-  }
 };
 
 window.checkLinkDuplicate = (link, table) => {

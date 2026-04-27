@@ -1,0 +1,4 @@
+.di:hover {
+  background-color: var(--mantine-color-primary-1) !important;
+  z-index: 10000;
+}

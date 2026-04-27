@@ -1,6 +1,7 @@
 import { useState } from "react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
+import ExternalLink from "../../buttons/ExternalLink";
 import {
   IconPlus,
   IconTrash,
@@ -39,6 +40,7 @@ import {
   setVendor,
   setVersion,
   setIdInProtocol,
+  setAdditionalMetadata,
   addResource,
   updateResource,
   deleteResource,
@@ -59,11 +61,6 @@ const toOxfordCommaString = (arr) => {
   return `${arr.slice(0, -1).join(", ")}, and ${arr[len - 1]}`;
 };
 
-const matchesHttpPattern = (str) => {
-  const pattern = /^https?:\/\/.+/;
-  return pattern.test(str);
-};
-
 // Resource metadata form component with store-based state
 const ResourceMetadataForm = () => {
   // Get form values from the global store
@@ -74,9 +71,36 @@ const ResourceMetadataForm = () => {
   const vendor = useGlobalStore((state) => state.vendor);
   const version = useGlobalStore((state) => state.version);
   const id_in_protocol = useGlobalStore((state) => state.id_in_protocol);
+  const additional_metadata = useGlobalStore((state) => state.additional_metadata);
 
   return (
     <Stack spacing="md">
+      <TextInput
+        label="RRID (Research Resource Identifier)"
+        description={
+          <>
+            Enter the RRID for this resource. If you don't already have the RRID, you can look it up
+            at
+            <ExternalLink
+              buttonType="anchor"
+              href="https://rrid.site/"
+              buttonText="rrid.site"
+              buttonSize="xs"
+            />
+          </>
+        }
+        placeholder="e.g., RRID:AB_123456"
+        value={rrid}
+        onChange={(event) => setRrid(event.currentTarget.value)}
+        error={
+          rrid &&
+          rrid.length > 5 &&
+          !window.evaluateStringAgainstSdsRequirements(rrid, "string-is-valid-rrid")
+            ? "Invalid resource RRID format. Use: RRID:rrid_identifier (e.g., RRID:AB_123456)"
+            : undefined
+        }
+        required
+      />
       <TextInput
         label="Resource Name"
         description="Enter the name of the resource"
@@ -93,20 +117,21 @@ const ResourceMetadataForm = () => {
         onChange={(value) => setType(value)}
       />
       <TextInput
-        label="RRID (Research Resource Identifier)"
-        description="Enter the standardized RRID if available"
-        placeholder="e.g., RRID:AB_123456"
-        value={rrid}
-        onChange={(event) => setRrid(event.currentTarget.value)}
-      />
-
-      <TextInput
         label="URL"
-        description="Link to the resource documentation or website"
+        description="Link to the resource documentation or website (HTTPS URL)"
         placeholder="e.g., https://example.com"
         value={url}
-        onChange={(event) => setUrl(event.currentTarget.value)}
-        error={url && !matchesHttpPattern(url) ? "URL must start with http:// or https://" : null}
+        onChange={(event) => {
+          const trimmedValue = event.currentTarget.value.trim();
+          setUrl(trimmedValue);
+        }}
+        error={
+          url &&
+          url.length > 5 &&
+          !window.evaluateStringAgainstSdsRequirements(url, "string-is-valid-url-or-doi")
+            ? "Invalid format. Please enter a valid HTTPS URL or DOI."
+            : undefined
+        }
       />
 
       <TextInput
@@ -132,12 +157,21 @@ const ResourceMetadataForm = () => {
         value={id_in_protocol}
         onChange={(event) => setIdInProtocol(event.currentTarget.value)}
       />
+
+      <TextInput
+        label="Additional Metadata"
+        description="Any additional information about the resource"
+        placeholder="e.g., Specific usage notes or details"
+        value={additional_metadata}
+        onChange={(event) => setAdditionalMetadata(event.currentTarget.value)}
+      />
     </Stack>
   );
 };
 
 const ResourcesManagementPage = () => {
   const isResourceFormVisible = useGlobalStore((state) => state.isResourceFormVisible);
+  const rrid = useGlobalStore((state) => state.rrid);
   const name = useGlobalStore((state) => state.name);
   const url = useGlobalStore((state) => state.url);
   const resourceList = useGlobalStore((state) => state.resourceList);
@@ -145,9 +179,19 @@ const ResourcesManagementPage = () => {
   const originalResourceName = useGlobalStore((state) => state.originalResourceName);
 
   const validateResourceForm = () => {
-    const resourceNameIsValid = name && name.trim().length > 0;
-    const urlIsValid = !url || matchesHttpPattern(url);
-    return resourceNameIsValid && urlIsValid;
+    const rridIsValid =
+      rrid &&
+      rrid.trim().length > 0 &&
+      window.evaluateStringAgainstSdsRequirements(rrid, "string-is-valid-rrid");
+    const nameIsValid = name && name.trim().length > 0;
+
+    // Additional URL format validation (only if URL is provided)
+    const urlFormatValid =
+      !url ||
+      url.trim() === "" ||
+      window.evaluateStringAgainstSdsRequirements(url, "string-is-valid-url-or-doi");
+
+    return rridIsValid && nameIsValid && urlFormatValid;
   };
 
   // Validation for add/update button
@@ -164,6 +208,7 @@ const ResourcesManagementPage = () => {
     setVendor(resource.vendor || "");
     setVersion(resource.version || "");
     setIdInProtocol(resource.id_in_protocol || "");
+    setAdditionalMetadata(resource.additional_metadata || "");
     setResourceFormVisible(true);
   };
 
@@ -178,6 +223,7 @@ const ResourcesManagementPage = () => {
     setVendor("");
     setVersion("");
     setIdInProtocol("");
+    setAdditionalMetadata("");
     setResourceFormVisible(true);
   };
 
@@ -193,7 +239,8 @@ const ResourcesManagementPage = () => {
       <GuidedModeSection>
         <Text mb="md">
           Provide information about the resources used in the experiments below. The currently
-          supported resources are: {toOxfordCommaString(resourceTypes)}.
+          supported resources are: {toOxfordCommaString(resourceTypes)}. You must provide a valid
+          RRID for each resource.
         </Text>
       </GuidedModeSection>
 
@@ -310,7 +357,7 @@ const ResourcesManagementPage = () => {
                   {/* Header section with entity type and title */}
                   <Group justify="space-between">
                     <Group>
-                      <IconFlask size={20} color="#ae3ec9" />
+                      <IconFlask size={20} color="var(--mantine-color-primary-6)" />
                       <Title order={4}>
                         {isEditMode ? "Edit research resource" : "Add new research resource"}
                       </Title>

@@ -107,9 +107,12 @@ document.getElementById("guided-generate-dataset-button").addEventListener("clic
       const existingDatasetNames = datasetList.map((dataset) => dataset.name);
       const datasetAlreadyExists = existingDatasetNames.includes(datasetName);
       if (datasetAlreadyExists) {
+        const curationMode = window.sodaJSONObj["curation-mode"];
         swalShowError(
           "Dataset name already exists",
-          `A dataset with the name "${datasetName}" already exists on Pennsieve. Please return to the Pennsieve settings page and choose a new name.`
+          `A dataset with the name "${datasetName}" already exists on Pennsieve. Please return to the ${
+            curationMode === "free-form" ? "Pennsieve Dataset page" : "Pennsieve settings page"
+          } and choose a new name.`
         );
         return;
       } else {

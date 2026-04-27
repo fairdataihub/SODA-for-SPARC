@@ -5,7 +5,109 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## c16.2.1 - 2025-09-05
+## v 18.0.0 - 2026-04-27
+
+## Feature Additions:
+
+- Refactored the 'Upload a SDS compliant Dataset' workflow to share architecture with the "Prepare a Dataset Step-by-Step" workflow.
+
+## v 17.0.1 - 2026-02-27
+
+## Feature Additions:
+
+- Updated the Agent Check Display component in Free Form Mode to have a max height and be scrollable so that users with smaller screens can see the entire content of the component.
+- Updated the Agent Check Display to treat a failed start of the Agent and a failure to find the Agent the same. This is because in both cases the user cannot use the Agent and the troubleshooting steps are the same. The check includes links on how to install and how to run the Agent if it is already installed but not running.
+- Allow users to import zip, tar, and tar.gz files into SODA. This is especially helpful for RE-JOIN datasets that need to compress their microscopy derivative files.
+- SODA guides Windows 11 users who are not able to start the Pennsieve Agent due to Smart App Control to a documentation page which helps them understand the problem and gives an overview of possible solutions.
+
+## Bug fixes:
+
+- Fixed an issue where SODA was populating the Data standard in the Standards information section of the dataset_description metadata file with 'SODA version' instead of just 'SODA'
+
+## v 17.0.0 - 2026-02-04
+
+## Feature Additions:
+
+- SODA supports 3.0.2 of the SDS specification in both Prepare Dataset Step-by-Step and Upload Dataset features.
+- The dataset description file version will include a SODA version and the version number of SODA.
+- General tightening of allowable fields. For example, DOIs must match a DOI prefix.
+- Added the ability to specify sites as belonging to both subjects and samples instead of just samples.
+- Added the ability to specify samples as being derived from both subjects or samples.
+- Added sweet alerts for metadata entities that are missing required metadata fields.
+- Added a derived samples file -> entity association page.
+- Updated contributors metadata sweet alerts to allow users to assign multiple roles.
+
+## Bug fixes:
+
+- Fixed an issue where certain datasets would fail to upload in the Update Existing dataset features of SODA.
+
+## v 16.6.0 - 2025-12-15
+
+## Feature Additions:
+
+- The `Prepare Dataset Step-by-Step` data categorization workflow was updated and now allows users to categorize non-data folders (code, protocol, and docs) in a more efficient manner.
+
+- The `Prepare Dataset Step-by-Step` now allows users to separate experimental data on a dedicated page, enabling more streamlined file-to-entity association.
+
+- The `Prepare Dataset Step-by-Step` now allows users to categorize experimental data into the Primary, Source, and Derivative folders.
+
+- The `Prepare Dataset Step-by-Step` now allows users to review all unclassified files on a new page called 'Remaining Data Categorization' and sort the remaining data into the Primary, Source, and Derivative folders.
+
+## Bug fixes:
+
+- Both the `Prepare Dataset Step-by-Step` and `Upload Dataset` upload functions were updated to stop the upload and notify the user when SODA's server crashes.
+
+## v 16.5.0 - 2025-12-01
+
+## Feature Additions:
+
+- SODA's Prepare Dataset Step-by-Step UI has been updated to use Mantine components. This provides a more extensible theming system for future UI updates. It also provides a more modern and consistent look and feel.
+- SODA's Upload Dataset UI has been updated to use some Mantine components. It has also been updated to use mantine's color theming system. It is aesthetically consistent with the rest of SODA's UI and is easier to change for future UI updates.
+- The dataset description metadata file in Prepare Dataset Step-by-Step has had its schema updated to match Pysoda 0.1.66. Funding is treated as an array, standards information is an array of objects to allow for multiple standards.
+- The manifest timestamp in Upload Dataset and Prepare Dataset Step-by-Step has a simplified iso 8601 format. The timezone offset has been removed. A comma is used to separate fractional seconds instead of a period to match the SDS3 specification.
+
+## v 16.4.0 - 2025-10-27
+
+## Feature Additions:
+
+- Added SDS3 computational dataset workflow
+- Loosened naming restrictions for the dataset name field and implemented random IDs for guided mode progress file storage.
+
+## Bug fixes:
+
+- Fixed an issue where renamed files were not updated in the manifest file
+- Fixed Pennsieve Banner Images and Dataset Descriptions not uploading to Pennsieve due to the wrong keys being plugged into the upload function.
+- Fixed an issue that would cause SODA to access a null event target value when signing via api key and secret on the Manage Accounts page.
+- Fixed an issue where the Guided Mode manifest editor has an extra column.
+- Fixed an issue where the dataset_description.xlsx files outputted from SODA did not have a responsive Value header.
+- Fixed an issue where the resources metadata page was not requiring an RRID.
+
+## v16.3.2 - 2025-10-03
+
+## Bug fixes:
+
+- Dataset Metadata Entity section now properly scrolls.
+
+## v 16.3.1 - 2025-10-01
+
+## Bug fixes:
+
+- Fixed an issue where the Pennsieve intId was not being saved when selecting an existing Pennsieve dataset to upload to in the `Prepare Dataset Step-by-Step` feature.
+
+## v16.3.0 - 2025-09-23
+
+## Feature Additions:
+
+- The `Prepare Dataset Step-by-Step` feature is now easier to use for users that are Pennsieve workspace guests - more common user error messages + links to docs + updates to the UI.
+- Every error message now has an addendum that helps users reach out to the SODA team for assistance.
+- The `Upload Dataset` page now always merges existing folders when updating a dataset. The option to choose how to handle existing folders has been removed.
+
+## Bug fixes
+
+- The `Prepare Dataset Step-by-Step` Pennsieve Log In page now responds to API Key and Secret sign-ins without needing a Save and Exit action.
+- The `Prepare Dataset Step-by-Step` feature now handles the modalities page case where a user says they have modalities but selects none of the options.
+
+## v16.2.1 - 2025-09-05
 
 ## Bug Fixes:
 

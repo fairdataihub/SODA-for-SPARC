@@ -58,7 +58,7 @@ export const swalShowError = async (title, errorText) => {
   await new Promise((resolve) => setTimeout(resolve, 200));
   await Swal.fire({
     title: title,
-    html: errorText,
+    html: `<div class="swal-scroll-box">${errorText}</div>`,
     icon: "error",
     width: 800,
     heightAuto: false,
@@ -83,7 +83,7 @@ export const swalShowInfo = async (title, infoText) => {
   });
 };
 
-export const swalFileListSingleAction = async (fileList, title, helpText, postActionText) => {
+export const swalListSingleAction = async (fileList, title, helpText, postActionText) => {
   await Swal.fire({
     title: title,
     html: `
@@ -99,8 +99,6 @@ export const swalFileListSingleAction = async (fileList, title, helpText, postAc
     `,
     width: 800,
     heightAuto: false,
-    width: 800,
-    heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     allowOutsideClick: false,
     allowEscapeKey: false,
@@ -109,7 +107,7 @@ export const swalFileListSingleAction = async (fileList, title, helpText, postAc
   });
 };
 
-export const swalFileListDisplayOnly = async (fileList, title, helpText) => {
+export const swalListDisplayOnly = async (fileList, title, helpText) => {
   await Swal.fire({
     title: title,
     html: `
@@ -137,7 +135,7 @@ export const swalFileListDisplayOnly = async (fileList, title, helpText) => {
   });
 };
 
-export const swalFileListDoubleAction = async (
+export const swalListDoubleAction = async (
   fileList,
   title,
   helpText,
@@ -171,7 +169,7 @@ export const swalFileListDoubleAction = async (
   return action;
 };
 
-export const swalFileListTripleAction = async (
+export const swalListTripleAction = async (
   fileList,
   title,
   helpText,
@@ -219,11 +217,11 @@ export const swalFileListTripleAction = async (
   }
 };
 
-export const swalConfirmAction = async (icon, title, text, confirmButtonText, cancelButtonText) => {
+export const swalConfirmAction = async (icon, title, html, confirmButtonText, cancelButtonText) => {
   const { value: action } = await Swal.fire({
     icon: icon,
     title: title,
-    html: text,
+    html: html,
     width: 800,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",

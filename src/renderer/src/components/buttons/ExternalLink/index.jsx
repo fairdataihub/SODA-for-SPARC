@@ -24,7 +24,7 @@ const ExternalLink = ({ href, buttonText, buttonType, buttonSize }) => {
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        size="md"
+        size={buttonSize || "md"}
         ml={6}
         style={{ whiteSpace: "nowrap", color: "#0070f3" }}
       >

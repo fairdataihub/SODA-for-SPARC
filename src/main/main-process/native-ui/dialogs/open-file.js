@@ -75,12 +75,17 @@ ipcMain.on("open-file-dialog-uploadorganization", (event) => {
 ipcMain.on("open-file-dialog-upload-dataset", async (event) => {
   let mainWindow = BrowserWindow.getFocusedWindow();
 
-  let files = await dialog.showOpenDialog(BrowserWindow.getFocusedWindow(), {
+  let files = await dialog.showOpenDialog(mainWindow, {
     properties: ["openDirectory"],
-    title: "Select a directory",
+    title: "Select a dataset or folder to upload",
+    filters: [
+      { name: "Folders and Archives", extensions: ["zip", "tar", "gz", "tar.gz", "zarr.tar", "*"] },
+      { name: "Archive Files", extensions: ["zip", "tar", "gz", "tar.gz", "zarr.tar"] },
+      { name: "All Files", extensions: ["*"] },
+    ],
   });
 
-  if (files) {
+  if (files && files.filePaths && files.filePaths.length > 0) {
     mainWindow.webContents.send("selected-destination-upload-dataset", files.filePaths);
   }
 });
@@ -580,16 +585,19 @@ ipcMain.on("open-files-organize-datasets-dialog", async (event) => {
 });
 
 ipcMain.on("file-explorer-dropped-datasets", (event, args) => {
-  const mainWindow = BrowserWindow.getFocusedWindow();
   const importRelativePath = args.importRelativePath;
-  mainWindow.webContents.send("selected-folders-organize-datasets", {
+  const curationMode = args.curationMode;
+  const useContentsOfFolder = args.useContentsOfFolder;
+  event.sender.send("selected-folders-organize-datasets", {
     filePaths: args.filePaths,
     importRelativePath,
+    curationMode,
+    useContentsOfFolder,
   });
 });
 
 ipcMain.on("open-folders-organize-datasets-dialog", async (event, args) => {
-  if (!args?.importRelativePath) {
+  if (args?.importRelativePath == null) {
     console.error(
       "[main-process] The 'importRelativePath' property is required but was not provided."
     );
@@ -598,17 +606,37 @@ ipcMain.on("open-folders-organize-datasets-dialog", async (event, args) => {
 
   let mainWindow = BrowserWindow.getFocusedWindow();
   const importRelativePath = args.importRelativePath;
-  let folders = await dialog.showOpenDialog(mainWindow, {
-    properties: ["openDirectory", "multiSelections"],
-    title: `Select folder(s) to import into SODA`,
+  const curationMode = args.curationMode;
+  const useContentsOfFolder = args.useContentsOfFolder;
+
+  const properties =
+    curationMode === "free-form"
+      ? ["openFile", "openDirectory"]
+      : ["openFile", "openDirectory", "multiSelections"];
+
+  const title =
+    curationMode === "free-form"
+      ? "Select the path to the folder containing your dataset to import it into SODA"
+      : "Select folder(s) or archive(s) to import into SODA";
+
+  let result = await dialog.showOpenDialog(mainWindow, {
+    properties,
+    title,
+    filters: [
+      { name: "Folder and Archives", extensions: ["zip", "tar", "tar.gz", "gz", "zarr.tar", "*"] },
+      { name: "Archive Files", extensions: ["zip", "tar", "tar.gz", "gz", "zarr.tar"] },
+      { name: "All Files", extensions: ["*"] },
+    ],
   });
-  if (folders.canceled) {
+  if (result.canceled) {
     return; // Exit if the dialog is canceled
   }
 
   mainWindow.webContents.send("selected-folders-organize-datasets", {
-    filePaths: folders.filePaths,
+    filePaths: result.filePaths,
     importRelativePath,
+    curationMode,
+    useContentsOfFolder,
   });
 });
 

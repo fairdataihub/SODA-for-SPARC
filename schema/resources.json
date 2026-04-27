@@ -6,7 +6,12 @@
     "properties": {
       "rrid": {
         "type": "string",
-        "description": "Unique identifier for the site, typically an RRID"
+        "pattern": "^$|^RRID:",
+        "description": "Research Resource Identifier (RRID) for the resource. Accepts RRID:SCR_003070 or RRID:SCR:003070 formats. Also captures legacy format."
+      },
+      "type": {
+        "type": "string",
+        "description": "The type of resource, e.g., 'instrument', 'software', 'reagent', etc."
       },
       "name": {
         "type": "string",
@@ -34,6 +39,6 @@
         "description": "Additional metadata about the resource, such as usage notes or specific details"
       }
     },
-    "required": ["rrid", "name", "url", "vendor", "version", "id_in_protocol"]
+    "required": ["rrid"]
   }
 }

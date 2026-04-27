@@ -1,17 +1,25 @@
 {
-  "$schema": "https://json.schemastore.org/performances.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "array",
   "items": {
     "type": "object",
     "properties": {
       "performance_id": {
         "type": "string",
-        "description": "Unique identifier for the performance"
+        "description": "Unique identifier for the performance",
+        "pattern": "^(pop-)?perf-[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?$"
       },
       "protocol_url_or_doi": {
         "type": "string",
-        "description": "URL or DOI of the protocol associated with the performance",
-        "pattern": "^$|^(https?://|doi:).+"
+        "description": "URL or DOI of the protocol used for the subject.",
+        "anyOf": [
+          { "pattern": "^$" },
+          { "pattern": "^https://[A-Za-z0-9.-]+[A-Za-z0-9](:[0-9]+)?(/.*)?$" },
+          { "pattern": "^10\\.\\d{4,9}/[-._;()/:A-Za-z0-9]+$" },
+          {
+            "pattern": "^https://doi\\.org/10\\.\\d{4,9}/[-._;()/:A-Za-z0-9]+$"
+          }
+        ]
       },
       "date": {
         "type": "string",
@@ -21,12 +29,14 @@
       "start_datetime": {
         "type": "string",
         "format": "date-time",
-        "description": "Start date and time of the performance in ISO 8601 format"
+        "description": "Start date and time of the performance in ISO 8601 format",
+        "pattern": "^([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9]([.,][0-9]{1,9})?)?(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9]))?$"
       },
       "end_datetime": {
         "type": "string",
         "format": "date-time",
-        "description": "End date and time of the performance in ISO 8601 format"
+        "description": "End date and time of the performance in ISO 8601 format",
+        "pattern": "^([0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9]([.,][0-9]{1,9})?)?(Z|[+-]([01][0-9]|2[0-3]):[0-5][0-9]))?$"
       },
       "participants": {
         "type": "array",

@@ -917,7 +917,7 @@
 }
 
 .text-soda-green {
-  color: var(--color-light-green);
+  color: var(--color-soda-primary);
 }
 
 .text-soda-plum {
@@ -972,16 +972,16 @@
 }
 
 .soda-green-background {
-  background-color: var(--color-light-green) !important;
+  background-color: var(--color-soda-primary) !important;
   color: white !important;
   font-weight: 600 !important;
 }
 
 .soda-green-border {
-  border: 0px solid var(--color-light-green) !important;
+  border: 0px solid var(--color-soda-primary) !important;
   background: 0 0;
-  box-shadow: 0 0 0 1px var(--color-light-green) inset !important;
-  color: var(--color-light-green) !important;
+  box-shadow: 0 0 0 1px var(--color-soda-primary) inset !important;
+  color: var(--color-soda-primary) !important;
 }
 
 .required:after {
@@ -994,6 +994,22 @@
 }
 
 /////////////////////////  SWEET ALERT CLASSES /////////////////////////
+
+.swal2-popup .swal-scroll-box {
+  max-height: 400px !important;
+  overflow-y: auto !important;
+  text-align: left !important;
+  padding: 10px !important;
+  margin: 0 !important;
+}
+
+/* Also target it without the parent selector in case of different SweetAlert versions */
+.swal-scroll-box {
+  max-height: 400px !important;
+  overflow-y: auto !important;
+  text-align: left !important;
+  padding: 10px !important;
+}
 
 .animate_fastest {
   --animate-duration: 0.3s;
@@ -1052,7 +1068,7 @@
 .swal2-input:focus {
   outline: none !important;
   border-width: 0 0 2px !important;
-  border-color: #13716d !important;
+  border-color: var(--mantine-primary-color-6) !important;
 }
 
 .swal2-input::-webkit-input-placeholder {
@@ -1083,7 +1099,7 @@ body.swal2-shown > [aria-hidden="true"] {
 
 .swal2-footer a {
   text-decoration: underline;
-  /* color: var(--color-light-green) !important; */
+  /* color: var(--color-soda-primary) !important; */
 }
 
 .swal-left-align {
@@ -1106,7 +1122,7 @@ body.swal2-shown > [aria-hidden="true"] {
 }
 
 .swal2-confirm {
-  background-color: var(--color-light-green) !important;
+  background-color: var(--color-soda-primary) !important;
 }
 
 .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {

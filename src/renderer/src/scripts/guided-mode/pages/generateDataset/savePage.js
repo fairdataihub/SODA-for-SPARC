@@ -1,6 +1,4 @@
-import { countFilesInDatasetStructure } from "../../../utils/datasetStructure";
 import useGlobalStore from "../../../../stores/globalStore";
-import { contentOptionsMap } from "../../../../components/pages/DatasetContentSelector";
 import {
   guidedSkipPageSet,
   guidedUnSkipPageSet,
@@ -10,14 +8,10 @@ import {
   setCheckboxCardUnchecked,
 } from "../../../../stores/slices/checkboxCardSlice";
 import { getSodaTextInputValue } from "../../../../stores/slices/sodaTextInputSlice";
-import api from "../../../others/api/api";
-import { userErrorMessage } from "../../../others/http-error-handler/error-handler";
+
+import { guidedGetCurrentUserWorkSpace } from "../../../guided-mode/workspaces/workspaces";
 export const savePageGenerateDataset = async (pageBeingLeftID) => {
   const errorArray = [];
-
-  // Check if the page being left is part of a page set
-  const pageBeingLeftElement = document.getElementById(pageBeingLeftID);
-  const pageBeingLeftDataSet = pageBeingLeftElement.dataset;
   if (pageBeingLeftID === "guided-dataset-generation-options-tab") {
     const generateDatasetLocallyCardChecked = isCheckboxCardChecked("generate-dataset-locally");
     const generateDatasetOnPennsieveCardChecked = isCheckboxCardChecked(
@@ -51,89 +45,6 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
     }
   }
 
-  if (pageBeingLeftID === "guided-pennsieve-generate-target-tab") {
-    const generateOnNewPennsieveDatasetCardChecked = isCheckboxCardChecked(
-      "generate-on-new-pennsieve-dataset"
-    );
-    const generateOnExistingPennsieveDatasetCardChecked = isCheckboxCardChecked(
-      "generate-on-existing-pennsieve-dataset"
-    );
-
-    if (
-      !generateOnNewPennsieveDatasetCardChecked &&
-      !generateOnExistingPennsieveDatasetCardChecked
-    ) {
-      errorArray.push({
-        type: "notyf",
-        message: "Please select where you would like to generate your dataset.",
-      });
-      throw errorArray;
-    }
-
-    if (generateOnNewPennsieveDatasetCardChecked) {
-      // Check if the user is a guest
-      const userIsGuest = await api.userIsWorkspaceGuest();
-      if (userIsGuest) {
-        errorArray.push({
-          type: "swal",
-          errorTitle: "Guests cannot create datasets on Pennsieve",
-          errorText:
-            "You are currently a guest user in your workspace and do not have permission to create new datasets. If an empty dataset has already been created for you, select 'Upload to an existing empty dataset on Pennsieve'.",
-        });
-        throw errorArray;
-      }
-      // If the previous pennsieve generation target was set to "existing", we need to delete
-      // the previous pennsieve dataset id to ensure it's not used in the new dataset generation
-      if (window.sodaJSONObj["pennsieve-generation-target"] === "existing") {
-        delete window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
-      }
-
-      window.sodaJSONObj["pennsieve-generation-target"] = "new";
-      guidedUnSkipPageSet("new-pennsieve-dataset-config-page-set");
-      window.sodaJSONObj["generate-dataset"] = {
-        "dataset-name": null, // This will be set later in the new dataset config page
-        destination: "ps",
-        "generate-option": "new",
-        "if-existing": "new",
-        "if-existing-files": "new",
-      };
-    }
-    if (generateOnExistingPennsieveDatasetCardChecked) {
-      // If the datasets are still loading, wait for them to finish loading
-      while (useGlobalStore.getState().isLoadingPennsieveDatasets) {
-        await new Promise((resolve) => setTimeout(resolve, 300));
-      }
-      const selectedDatasetIdToUploadDataTo =
-        useGlobalStore.getState().selectedDatasetIdToUploadDataTo;
-      const selectedDatasetNameToUploadDataTo =
-        useGlobalStore.getState().selectedDatasetNameToUploadDataTo;
-      if (!selectedDatasetIdToUploadDataTo) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please select an existing Pennsieve dataset to upload data to.",
-        });
-        throw errorArray;
-      }
-      window.sodaJSONObj["previously-selected-dataset-id-to-upload-data-to"] =
-        selectedDatasetIdToUploadDataTo;
-      window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] =
-        selectedDatasetIdToUploadDataTo;
-      window.sodaJSONObj["generate-dataset"] = {
-        "dataset-name": selectedDatasetNameToUploadDataTo,
-        destination: "ps",
-        "generate-option": "existing-ps",
-        "if-existing": "merge",
-        "if-existing-files": "replace",
-      };
-      window.sodaJSONObj["pennsieve-generation-target"] = "existing";
-      guidedSkipPageSet("new-pennsieve-dataset-config-page-set");
-    }
-    // (Hackish) Uncheck the checkboxes to make sure the events trigger when the page
-    // is re-entered (this is necessary due to execution batching by React)
-    setCheckboxCardUnchecked("generate-on-new-pennsieve-dataset");
-    setCheckboxCardUnchecked("generate-on-existing-pennsieve-dataset");
-  }
-
   if (pageBeingLeftID === "guided-pennsieve-settings-tab") {
     // Handle saving the Pennsieve dataset name
     const pennsieveDatasetName = getSodaTextInputValue("pennsieve-dataset-name");
@@ -141,6 +52,19 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
       errorArray.push({
         type: "notyf",
         message: "Please enter a dataset name for Pennsieve.",
+      });
+      throw errorArray;
+    }
+    const pennsieveDatasetNameContainsForbiddenCharacters =
+      window.evaluateStringAgainstSdsRequirements(
+        pennsieveDatasetName,
+        "string-contains-forbidden-pennsieve-dataset-name-characters"
+      );
+    if (pennsieveDatasetNameContainsForbiddenCharacters) {
+      errorArray.push({
+        type: "notyf",
+        message:
+          'Pennsieve dataset names cannot contain any of the following characters: / ? % * : | " < > .',
       });
       throw errorArray;
     }
@@ -156,5 +80,20 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
       throw errorArray;
     }
     window.sodaJSONObj["pennsieve-dataset-subtitle"] = pennsieveDatasetSubtitle;
+  }
+
+  if (pageBeingLeftID === "guided-dataset-generation-tab") {
+    if (window.sodaJSONObj["curation-mode"] === "free-form") {
+      const datasetSaveFilePath = window.sodaJSONObj["save-file-path"];
+
+      if (datasetSaveFilePath && window.fs.existsSync(datasetSaveFilePath)) {
+        try {
+          window.fs.unlinkSync(datasetSaveFilePath);
+          console.info(`Deleted free-form progress file: ${datasetSaveFilePath}`);
+        } catch (error) {
+          console.error(`Failed to delete free-form progress file ${datasetSaveFilePath}:`, error);
+        }
+      }
+    }
   }
 };

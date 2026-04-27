@@ -1,4 +1,78 @@
 {
+  "17.0.1": {
+    "announcements": {
+      "features": [
+        "SODA will guide Windows 11 users who have Smart App Control or SmartScreen Defender enabled with running the Pennsieve Agent.",
+        "SODA allows RE-JOIN users to import compressed file types into SODA for upload."
+      ],
+      "bug-fixes": [
+        "Fixed an issue where SODA was populating the Data standard in the Standards information section of the dataset_description metadata file with 'SODA version' instead of just 'SODA'."
+      ]
+    }
+  },
+  "17.0.0": {
+    "announcements": {
+      "features": ["SODA has been updated to support the latest version of the SDS (3.0.2)."],
+      "bug-fixes": [
+        "Fixed an issue where certain datasets would fail to upload in the Update Existing dataset features of SODA."
+      ]
+    }
+  },
+  "16.7.0": {
+    "announcements": {
+      "features": [
+        "The Prepare Dataset Step by Step workflow has been updated to support the latest version of the SDS (3.0.2)"
+      ],
+      "bug-fixes": []
+    }
+  },
+  "16.6.0": {
+    "announcements": {
+      "features": [
+        "The dataset structuring step in the Prepare Dataset Step by Step workflow has been improved for easier data categorization and SDS entity creation and file association."
+      ],
+      "bug-fixes": [
+        "Uploads now stop gracefully and notify you if the SODA server crashes during an upload."
+      ]
+    }
+  },
+  "16.5.0": {
+    "announcements": {
+      "features": ["SODA has been given a visual refresh!"],
+      "bug-fixes": []
+    }
+  },
+  "16.4.0": {
+    "announcements": {
+      "features": [
+        "A new workflow has been added to the `Prepare Dataset Step-by-Step` for purely computational workflows."
+      ],
+      "bug-fixes": ["Added various improvements to the `Prepare Dataset Step-by-Step` feature."]
+    }
+  },
+  "16.3.2": {
+    "announcements": {
+      "features": [],
+      "bug-fixes": ["Dataset Entity Metadata section now properly scrolls."]
+    }
+  },
+  "16.3.1": {
+    "announcements": {
+      "features": [],
+      "bug-fixes": ["Minor adjustment for Prepare Dataset Step-by-Step."]
+    }
+  },
+  "16.3.0": {
+    "announcements": {
+      "features": [
+        "The `Prepare Dataset Step-by-Step` feature is now easier to use for users that are Pennsieve workspace guests.",
+        "The `Upload Dataset` page now always merges existing folders when updating a dataset. The option to choose how to handle existing folders has been removed."
+      ],
+      "bug-fixes": [
+        "The `Prepare Dataset Step-by-Step` Pennsieve Log In page now responds to API Key and Secret sign-ins without needing a Save and Exit action."
+      ]
+    }
+  },
   "16.2.0": {
     "announcements": {
       "bug-fixes": [],

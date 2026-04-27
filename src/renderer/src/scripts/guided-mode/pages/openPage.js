@@ -2,6 +2,7 @@ import { openPageCurationPreparation } from "./curationPreparation/openPage.js";
 import { openPageDatasetStructure } from "./datasetStructure/openPage.js";
 import { openPagePrepareMetadata } from "./prepareMetadata/openPage.js";
 import { openPageGenerateDataset } from "./generateDataset/openPage.js";
+import { openPageSharedWorkflowSteps } from "./sharedWorkflowSteps/openPage.js";
 import {
   resetGuidedRadioButtons,
   updateGuidedRadioButtonsFromJSON,
@@ -9,14 +10,15 @@ import {
 import {
   externallySetSearchFilterValue,
   reRenderTreeView,
-  clearEntityFilter,
-  setEntityFilter,
+  clearFileVisibilityFilter,
+  setFileVisibilityFilter,
   setDatasetMetadataToPreview,
   setActiveFileExplorer,
   setPathToRender,
 } from "../../../stores/slices/datasetTreeViewSlice.js";
 import {
-  addEntityToEntityList,
+  addEntityNameToEntityType,
+  getEntityNamesByEntityType,
   removeEntityFromEntityList,
   setActiveEntity,
   setShowFullMetadataFormFields,
@@ -31,17 +33,22 @@ import {
 import {
   setSelectedEntities,
   setDeSelectedEntities,
+  setSelectedDataCategoriesByEntityType,
 } from "../../../stores/slices/datasetContentSelectorSlice.js";
 import {
   setDatasetEntityObj,
   filterRemovedFilesFromDatasetEntityObj,
   setEntityType,
 } from "../../../stores/slices/datasetEntitySelectorSlice.js";
+import { setDatasetType, setCurationMode } from "../../../stores/slices/guidedModeSlice.js";
 import { setSelectedHierarchyEntity } from "../../../stores/slices/datasetContentSelectorSlice.js";
 import { guidedSetNavLoadingState } from "./navigationUtils/pageLoading.js";
 import Swal from "sweetalert2";
 import { userErrorMessage } from "../../others/http-error-handler/error-handler.js";
-import { getNonSkippedGuidedModePages } from "./navigationUtils/pageSkipping.js";
+import {
+  getNonSkippedGuidedModePages,
+  returnUserToFirstPage,
+} from "./navigationUtils/pageSkipping.js";
 import { startOrStopAnimationsInContainer } from "../lotties/lottie.js";
 import { renderSideBar } from "./sidebar.js";
 import useGlobalStore from "../../../stores/globalStore.js";
@@ -49,6 +56,9 @@ import { setPerformanceList } from "../../../stores/slices/performancesSlice.js"
 import { setSelectedModalities } from "../../../stores/slices/modalitiesSlice.js";
 import { guidedSaveProgress } from "./savePageChanges.js";
 import { createStandardizedDatasetStructure } from "../../utils/datasetStructure.js";
+import { setCurrentStep } from "../../../stores/slices/stepperSlice.js";
+import { setGuidedModeSidebarDatasetName } from "../../../stores/slices/sideBarSlice.js";
+
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
@@ -70,7 +80,11 @@ const handleNextButtonVisibility = (targetPageID) => {
   if (
     targetPageID === "guided-dataset-generation-confirmation-tab" ||
     targetPageID === "guided-dataset-generation-tab" ||
-    targetPageID === "guided-dataset-dissemination-tab"
+    targetPageID === "guided-dataset-dissemination-tab" ||
+    targetPageID === "guided-select-starting-point-tab" ||
+    targetPageID === "ffm-select-starting-point-tab" ||
+    (targetPageID === "guided-generate-dataset-locally" &&
+      window.sodaJSONObj["generate-dataset-on-pennsieve"] === false)
   ) {
     $("#guided-next-button").css("visibility", "hidden");
   } else {
@@ -79,10 +93,26 @@ const handleNextButtonVisibility = (targetPageID) => {
 };
 
 const handleSaveAndExitButtonVisibility = (targetPageID) => {
-  if (targetPageID === "guided-select-starting-point-tab") {
-    $("#guided-button-save-and-exit").css("visibility", "hidden");
+  const exitButton = document.getElementById("guided-button-exit");
+  const saveAndExitButton = document.getElementById("guided-button-save-and-exit");
+
+  if (
+    targetPageID === "guided-select-starting-point-tab" ||
+    targetPageID === "ffm-select-starting-point-tab"
+  ) {
+    exitButton.classList.add("hidden");
+    saveAndExitButton.classList.add("hidden");
   } else {
-    $("#guided-button-save-and-exit").css("visibility", "visible");
+    // If the datasetName is set (required for save and exit) show the save and exit button,
+    // otherwise show the exit button (skips the saving process)
+    const datasetName = window.sodaJSONObj?.["digital-metadata"]?.["name"];
+    if (datasetName) {
+      saveAndExitButton.classList.remove("hidden");
+      exitButton.classList.add("hidden");
+    } else {
+      exitButton.classList.remove("hidden");
+      saveAndExitButton.classList.add("hidden");
+    }
   }
 };
 
@@ -104,7 +134,7 @@ const handleGuidedValidationState = (targetPageID) => {
   }
 };
 
-const guidedLockSideBar = (boolShowGuidedModeContainerElements) => {
+const guidedRenderSideBar = (pageBeingOpenedID) => {
   const sidebar = document.getElementById("sidebarCollapse");
   const guidedModeSection = document.getElementById("guided_mode-section");
   const guidedDatsetTab = document.getElementById("guided_curate_dataset-tab");
@@ -117,8 +147,12 @@ const guidedLockSideBar = (boolShowGuidedModeContainerElements) => {
 
   sidebar.disabled = true;
   guidedModeSection.style.marginLeft = "-70px";
+  const pagesToNotRenderSidebarOn = [
+    "guided-select-starting-point-tab",
+    "ffm-select-starting-point-tab",
+  ];
 
-  if (boolShowGuidedModeContainerElements) {
+  if (!pagesToNotRenderSidebarOn.includes(pageBeingOpenedID)) {
     guidedDatsetTab.style.marginLeft = "215px";
     guidedNav.style.display = "flex";
     guidedProgressContainer.classList.remove("hidden");
@@ -153,11 +187,10 @@ const hideAndShowElementsDependingOnStartType = (pageElement) => {
 };
 
 const setActiveProgressionTab = (targetPageID) => {
-  $(".guided--progression-tab").removeClass("selected-tab");
   let targetPageParentID = $(`#${targetPageID}`).parent().attr("id");
-  let targetProgressionTabID = targetPageParentID.replace("parent-tab", "progression-tab");
-  let targetProgressionTab = $(`#${targetProgressionTabID}`);
-  targetProgressionTab.addClass("selected-tab");
+  // Get the text for the current step from the target page's data attribute
+  const stepText = document.getElementById(targetPageParentID).getAttribute("data-parent-tab-name");
+  setCurrentStep("guided-mode-progress-stepper", stepText);
 };
 
 /**
@@ -176,15 +209,20 @@ window.openPage = async (targetPageID) => {
   // this function is async because we sometimes need to fetch data before the page is ready to be opened
 
   guidedSetNavLoadingState(true);
-
   const targetPage = document.getElementById(targetPageID);
   const targetPageName = targetPage.dataset.pageName || targetPageID;
   const targetPageParentTab = targetPage.closest(".guided--parent-tab");
   const targetPageDataset = targetPage.dataset;
 
+  // Hide the current page early
+  if (window.CURRENT_PAGE) {
+    window.CURRENT_PAGE.classList.add("hidden");
+  }
+
   //when the promise completes there is a catch for error handling
   //upon resolving it will set navLoadingstate to false
   try {
+    setCurationMode(window.sodaJSONObj["curation-mode"]);
     //reset the radio buttons for the page being navigated to
     resetGuidedRadioButtons(targetPageID);
     //update the radio buttons using the button config from window.sodaJSONObj
@@ -193,13 +231,17 @@ window.openPage = async (targetPageID) => {
     // Reset the zustand store search filter value
     externallySetSearchFilterValue("");
 
-    // clear the entity filter when navigating to a new page
-    clearEntityFilter();
+    // clear the file visibility filter when navigating to a new page
+    clearFileVisibilityFilter();
     setSelectedHierarchyEntity(null);
     setActiveEntity(null);
 
     if (targetPageDataset.entityType) {
       setEntityType(targetPageDataset.entityType);
+      // For single-category entity pages (like experimental), set activeEntity to entityType
+      if (targetPageDataset.entityTypeOnlyHasOneCategory === "true") {
+        setActiveEntity(targetPageDataset.entityType);
+      }
     } else {
       setEntityType(null);
     }
@@ -207,12 +249,20 @@ window.openPage = async (targetPageID) => {
     // Synchronize state between the SODA JSON object and the zustand store
     setSelectedEntities(window.sodaJSONObj["selected-entities"] || []);
     setDeSelectedEntities(window.sodaJSONObj["deSelected-entities"] || []);
-    setPerformanceList(window.sodaJSONObj["dataset_metadata"]?.["performance_metadata"] || []);
+
+    setDatasetEntityArray(window.sodaJSONObj["dataset-entity-array"] || []);
+
+    // Filter out any file/folder references from the entity object that no longer exist in the dataset structure
+    // This prevents errors when users delete files/folders after previously assigning them to entities
+    const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
+    const filteredDatasetEntityObj = filterRemovedFilesFromDatasetEntityObj(savedDatasetEntityObj);
+    setDatasetEntityObj(filteredDatasetEntityObj);
 
     handleNextButtonVisibility(targetPageID);
     handleBackButtonVisibility(targetPageID);
     handleSaveAndExitButtonVisibility(targetPageID);
     handleGuidedValidationState(targetPageID);
+    guidedRenderSideBar(targetPageID);
 
     // If the user has not saved the dataset name and subtitle, then the next button should say "Continue"
     // as they are not really saving anything
@@ -228,17 +278,13 @@ window.openPage = async (targetPageID) => {
       nextButtonSpans.forEach((span) => {
         span.innerHTML = "Continue";
       });
-      guidedLockSideBar(false);
+      setGuidedModeSidebarDatasetName(null);
     } else {
-      // Set the dataset name display in the side bar
-      const datasetNameDisplay = document.getElementById("guided-navbar-dataset-name-display");
-      datasetNameDisplay.innerHTML = datasetName;
-
+      setGuidedModeSidebarDatasetName(datasetName);
       nextButton.querySelector("span.nav-button-text").innerHTML = "Save and Continue";
       nextButtonSpans.forEach((span) => {
         span.innerHTML = "Save and Continue";
       });
-      guidedLockSideBar(true);
     }
 
     if (targetPageDataset.componentType) {
@@ -255,68 +301,329 @@ window.openPage = async (targetPageID) => {
 
       if (targetPageComponentType === "data-categorization-page") {
         const pageEntityType = targetPageDataset.entityType;
-        const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
-        const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
-        const filteredDatasetEntityObj =
-          filterRemovedFilesFromDatasetEntityObj(savedDatasetEntityObj);
-        setDatasetEntityObj(filteredDatasetEntityObj);
+        // Delete the manifest file because it throws off the count of files selected
+        delete window.datasetStructureJSONObj?.["files"]?.["manifest.xlsx"];
+        const datasetType = window.sodaJSONObj["dataset-type"];
+        setDatasetType(datasetType);
+
+        if (pageEntityType === "non-data-folders") {
+          // Filter files that may have been marked as experimental in a previous step
+          setFileVisibilityFilter([], [{ type: "experimental", names: ["experimental"] }]);
+        }
 
         // Make any adjustments to the dataset entity object before setting it in the zustand store
-        if (pageEntityType === "high-level-folder-data-categorization") {
-          // Delete the manifest file because it throws off the count of files selected
-          delete window.datasetStructureJSONObj?.["files"]?.["manifest.xlsx"];
-          const bucketTypes = ["Experimental", "Protocol", "Documentation"];
-          if (selectedEntities.includes("code")) {
-            bucketTypes.push("Code");
-          } else {
-            removeEntityFromEntityList("high-level-folder-data-categorization", "Code");
-          }
+        if (pageEntityType === "experimental") {
+          // Filter out files that are selected as belonging to the supporting data folders
+          setFileVisibilityFilter(
+            [],
+            [
+              {
+                type: "non-data-folders",
+                names: ["Protocol", "Docs", "Code"],
+              },
+            ]
+          );
+        }
 
-          for (const bucketType of bucketTypes) {
-            addEntityToEntityList("high-level-folder-data-categorization", bucketType);
-          }
+        if (pageEntityType === "experimental-data-categorization") {
+          // Filter out files that are selected as belonging to the supporting data folders
+          setFileVisibilityFilter(
+            [
+              {
+                type: "experimental",
+                names: ["experimental"],
+              },
+            ],
+            [
+              {
+                type: "non-data-folders",
+                names: ["Protocol", "Docs", "Code"],
+              },
+            ]
+          );
+        }
+        if (pageEntityType === "remaining-data-categorization") {
+          // Filter out files that are selected as belonging to the supporting data folders
+          setFileVisibilityFilter(
+            [],
+            [
+              {
+                type: "experimental",
+                names: ["experimental"],
+              },
+              {
+                type: "non-data-folders",
+                names: ["Protocol", "Docs", "Code"],
+              },
+            ]
+          );
         }
 
         if (pageEntityType === "sites") {
           const sites = getExistingSites().map((site) => site.id);
           for (const site of sites) {
-            addEntityToEntityList("sites", site);
+            addEntityNameToEntityType("sites", site);
           }
+
+          const prevSiteNames = getEntityNamesByEntityType("sites");
+          for (const siteName of prevSiteNames) {
+            if (!sites.includes(siteName)) {
+              removeEntityFromEntityList("sites", siteName);
+            }
+          }
+
+          const filterList = [
+            {
+              type: "non-data-folders",
+              names: ["Protocol", "Docs", "Code"],
+            },
+          ];
+          setFileVisibilityFilter(
+            [
+              {
+                type: "experimental",
+                names: ["experimental"],
+              },
+            ],
+            filterList
+          );
+        }
+
+        if (pageEntityType === "derived-samples") {
+          const derivedSamples = getExistingSamples("derived-from-samples").map(
+            (sample) => sample.id
+          );
+
+          for (const derivedSample of derivedSamples) {
+            addEntityNameToEntityType("derived-samples", derivedSample);
+          }
+
+          const prevDerivedSampleNames = getEntityNamesByEntityType("derived-samples");
+          for (const derivedSampleName of prevDerivedSampleNames) {
+            if (!derivedSamples.includes(derivedSampleName)) {
+              removeEntityFromEntityList("derived-samples", derivedSampleName);
+            }
+          }
+
+          const sites = getExistingSites().map((site) => site.id);
+          const samples = getExistingSamples("derived-from-subjects").map((sample) => sample.id);
+          const filterList = [
+            {
+              type: "non-data-folders",
+              names: ["Protocol", "Docs", "Code"],
+            },
+            {
+              type: "sites",
+              names: sites,
+            },
+            {
+              type: "samples",
+              names: samples,
+            },
+          ];
+          setFileVisibilityFilter(
+            [
+              {
+                type: "experimental",
+                names: ["experimental"],
+              },
+            ],
+            filterList
+          );
         }
 
         if (pageEntityType === "samples") {
-          const samples = getExistingSamples().map((sample) => sample.id);
+          const samples = getExistingSamples("derived-from-subjects").map((sample) => sample.id);
           for (const sample of samples) {
-            addEntityToEntityList("samples", sample);
+            addEntityNameToEntityType("samples", sample);
           }
+          const prevSampleNames = getEntityNamesByEntityType("samples");
+          for (const sampleName of prevSampleNames) {
+            if (!samples.includes(sampleName)) {
+              removeEntityFromEntityList("samples", sampleName);
+            }
+          }
+
+          const sites = getExistingSites().map((site) => site.id);
+          const derivedSamples = getExistingSamples("derived-from-samples").map(
+            (sample) => sample.id
+          );
+          const filterList = [
+            {
+              type: "non-data-folders",
+              names: ["Protocol", "Docs", "Code"],
+            },
+            {
+              type: "sites",
+              names: sites,
+            },
+            {
+              type: "derived-samples",
+              names: derivedSamples,
+            },
+          ];
+          setFileVisibilityFilter(
+            [
+              {
+                type: "experimental",
+                names: ["experimental"],
+              },
+            ],
+            filterList
+          );
         }
 
         if (pageEntityType === "subjects") {
           const subjects = getExistingSubjects().map((subject) => subject.id);
           for (const subject of subjects) {
-            addEntityToEntityList("subjects", subject);
+            addEntityNameToEntityType("subjects", subject);
           }
+
+          const prevSubjectNames = getEntityNamesByEntityType("subjects");
+          for (const subjectName of prevSubjectNames) {
+            if (!subjects.includes(subjectName)) {
+              removeEntityFromEntityList("subjects", subjectName);
+            }
+          }
+
+          const sites = getExistingSites().map((site) => site.id);
+          const samples = getExistingSamples("derived-from-subjects").map((sample) => sample.id);
+          const derivedSamples = getExistingSamples("derived-from-samples").map(
+            (sample) => sample.id
+          );
+          const filterList = [
+            {
+              type: "non-data-folders",
+              names: ["Protocol", "Docs", "Code"],
+            },
+            {
+              type: "sites",
+              names: sites,
+            },
+            {
+              type: "samples",
+              names: samples,
+            },
+            {
+              type: "derived-samples",
+              names: derivedSamples,
+            },
+          ];
+
+          setFileVisibilityFilter(
+            [
+              {
+                type: "experimental",
+                names: ["experimental"],
+              },
+            ],
+            filterList
+          );
         }
 
         if (pageEntityType === "performances") {
-          const performanceList = window.sodaJSONObj["dataset_performances"];
+          const performanceList = window.sodaJSONObj["dataset_performances"] || [];
           for (const performance of performanceList) {
-            addEntityToEntityList("performances", performance.performance_id);
+            addEntityNameToEntityType("performances", performance.performance_id);
           }
-          setEntityFilter(
-            [{ type: "high-level-folder-data-categorization", names: ["Experimental"] }],
-            []
+
+          const prevPerformanceNames = getEntityNamesByEntityType("performances");
+          for (const performanceName of prevPerformanceNames) {
+            const performanceExists = performanceList.some(
+              (p) => p.performance_id === performanceName
+            );
+            if (!performanceExists) {
+              removeEntityFromEntityList("performances", performanceName);
+            }
+          }
+
+          setFileVisibilityFilter(
+            [
+              {
+                type: "experimental",
+                names: ["experimental"],
+              },
+            ],
+            [
+              {
+                type: "non-data-folders",
+                names: ["Protocol", "Docs", "Code"],
+              },
+            ]
           );
         }
 
         if (pageEntityType === "modalities") {
           const modalities = window.sodaJSONObj["selected-modalities"] || [];
           for (const modality of modalities) {
-            addEntityToEntityList("modalities", modality);
+            addEntityNameToEntityType("modalities", modality);
           }
-          setEntityFilter(
-            [{ type: "high-level-folder-data-categorization", names: ["Experimental"] }],
-            []
+
+          const prevModalityNames = getEntityNamesByEntityType("modalities");
+          for (const modalityName of prevModalityNames) {
+            if (!modalities.includes(modalityName)) {
+              removeEntityFromEntityList("modalities", modalityName);
+            }
+          }
+
+          setFileVisibilityFilter(
+            [],
+            [
+              {
+                type: "non-data-folders",
+                names: ["Protocol", "Docs", "Code"],
+              },
+            ]
+          );
+        }
+      }
+      if (targetPageComponentType === "data-categories-questionnaire-page") {
+        // Extract the questionnaire entity type from the data attribute
+        const questionnaireEntityType = targetPageDataset.questionnaireEntityType;
+
+        // Restore user selections from JSON
+        if (questionnaireEntityType === "experimental-data-categorization") {
+          const savedExperimentalCategories =
+            window.sodaJSONObj["selected-experimental-data-categories"] || [];
+          setSelectedDataCategoriesByEntityType({
+            "experimental-data-categorization": savedExperimentalCategories,
+          });
+
+          setFileVisibilityFilter(
+            [
+              {
+                type: "experimental",
+                names: ["experimental"],
+              },
+            ],
+            [
+              {
+                type: "non-data-folders",
+                names: ["Protocol", "Docs", "Code"],
+              },
+            ]
+          );
+        }
+
+        if (questionnaireEntityType === "remaining-data-categorization") {
+          const savedNonExperimentalCategories =
+            window.sodaJSONObj["selected-remaining-data-categories"] || [];
+          setSelectedDataCategoriesByEntityType({
+            "remaining-data-categorization": savedNonExperimentalCategories,
+          });
+
+          setFileVisibilityFilter(
+            [],
+            [
+              {
+                type: "non-data-folders",
+                names: ["Protocol", "Docs", "Code"],
+              },
+              {
+                type: "experimental",
+                names: ["experimental"],
+              },
+            ]
           );
         }
       }
@@ -324,39 +631,12 @@ window.openPage = async (targetPageID) => {
       if (targetPageComponentType === "entity-file-mapping-page") {
         /* ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** ***** */
         setSelectedHierarchyEntity(null);
-
-        const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
-        const savedDatasetEntityObj = window.sodaJSONObj["dataset-entity-obj"] || {};
-
-        // Make sure the datasetEntityObj is set before applying filters
-        setDatasetEntityObj(savedDatasetEntityObj);
-
-        // Check if there are files in the Experimental data bucket
-        const hasExperimentalData =
-          !!savedDatasetEntityObj?.["high-level-folder-data-categorization"]?.["Experimental"] &&
-          Object.keys(
-            savedDatasetEntityObj["high-level-folder-data-categorization"]["Experimental"]
-          ).length > 0;
-
-        // If experimental data exists, apply the filter
-        if (hasExperimentalData) {
-          // Apply the filter for experimental data
-          setEntityFilter(
-            [{ type: "high-level-folder-data-categorization", names: ["Experimental"] }],
-            []
-          );
-        }
-
-        setDatasetEntityArray(datasetEntityArray);
       }
 
       if (
         targetPageComponentType === "entity-metadata-page" ||
         targetPageComponentType === "entity-spreadsheet-import-page"
       ) {
-        const datasetEntityArray = window.sodaJSONObj["dataset-entity-array"] || [];
-
-        setDatasetEntityArray(datasetEntityArray);
         setActiveFormType(null);
       }
     }
@@ -373,6 +653,7 @@ window.openPage = async (targetPageID) => {
     await openPageDatasetStructure(targetPageID);
     await openPagePrepareMetadata(targetPageID);
     await openPageGenerateDataset(targetPageID);
+    await openPageSharedWorkflowSteps(targetPageID);
 
     const showCorrectFileExplorerByPage = (pageID) => {
       // Get the element for the pageId
@@ -400,7 +681,19 @@ window.openPage = async (targetPageID) => {
           window.datasetStructureJSONObj,
           window.sodaJSONObj["dataset-entity-obj"]
         );
-        setDatasetMetadataToPreview(Object.keys(window.sodaJSONObj["dataset_metadata"] || {}));
+
+        if (pageID === "guided-dataset-structure-and-manifest-review-tab") {
+          // Only show the manifest file for the dataset metadata preview
+          // if it exists in the dataset_metadata
+          const datasetMetadata = window.sodaJSONObj["dataset_metadata"] || {};
+          if ("manifest_file" in datasetMetadata) {
+            setDatasetMetadataToPreview(["manifest_file"]);
+          } else {
+            setDatasetMetadataToPreview(null);
+          }
+        } else {
+          setDatasetMetadataToPreview(Object.keys(window.sodaJSONObj["dataset_metadata"] || {}));
+        }
 
         setPathToRender([]);
         useGlobalStore.setState({
@@ -417,47 +710,52 @@ window.openPage = async (targetPageID) => {
       // For categorization or unstructured import pages: use raw structure
       if (
         targetPageDataset.componentType === "data-categorization-page" ||
+        targetPageDataset.componentType === "data-categories-questionnaire-page" ||
         pageID === "guided-unstructured-data-import-tab"
       ) {
         setPathToRender(["data"]);
+
         useGlobalStore.setState({
           datasetStructureJSONObj: window.datasetStructureJSONObj,
           calculateEntities: true,
         });
         reRenderTreeView(true);
       }
+
+      // For FFM unstructured import page: use raw structure with root path
+      if (pageID === "ffm-unstructured-data-import-tab") {
+        setPathToRender([]);
+
+        useGlobalStore.setState({
+          datasetStructureJSONObj: window.datasetStructureJSONObj,
+          calculateEntities: false,
+        });
+        reRenderTreeView(true);
+      }
     };
     renderCorrectFileExplorerByPage(targetPageID);
-
-    let currentParentTab = window.CURRENT_PAGE.closest(".guided--parent-tab");
 
     //Set all capsules to grey and set capsule of page being traversed to green
     setActiveProgressionTab(targetPageID);
 
     renderSideBar(targetPageID);
+    const allParentTabs = document.querySelectorAll(".guided--parent-tab");
+    allParentTabs.forEach((tab) => {
+      if (tab.id !== targetPageParentTab.id) {
+        tab.classList.add("hidden");
+      } else {
+        tab.classList.remove("hidden");
+      }
+    });
 
-    const guidedBody = document.getElementById("guided-body");
-    //Check to see if target element has the same parent as current sub step
-    if (currentParentTab.id === targetPageParentTab.id) {
-      window.CURRENT_PAGE.classList.add("hidden");
-      window.CURRENT_PAGE = targetPage;
-      window.CURRENT_PAGE.classList.remove("hidden");
-      //smooth scroll to top of guidedBody
-      guidedBody.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
-    } else {
-      window.CURRENT_PAGE.classList.add("hidden");
-      currentParentTab.classList.add("hidden");
-      targetPageParentTab.classList.remove("hidden");
-      window.CURRENT_PAGE = targetPage;
-      window.CURRENT_PAGE.classList.remove("hidden");
-      //smooth scroll to top of guidedBody
-      guidedBody.scrollTo({
-        top: 0,
-      });
-    }
+    // Set CURRENT_PAGE and unhide the target page
+    window.CURRENT_PAGE = targetPage;
+    window.CURRENT_PAGE.classList.remove("hidden");
+    //smooth scroll to top of guidedBody
+    document.getElementById("guided-body").scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
 
     // Start any animations that need to be started
     startOrStopAnimationsInContainer(targetPageID, "start");
@@ -470,6 +768,23 @@ window.openPage = async (targetPageID) => {
   } catch (error) {
     console.error("Error opening page:", targetPageID);
     console.error("Error: ", error);
+
+    // Unhide the current page if there is an error so the user is not stuck on a blank screen
+    if (window.CURRENT_PAGE) {
+      window.CURRENT_PAGE.classList.remove("hidden");
+    }
+
+    guidedSetNavLoadingState(false);
+
+    // Check if user should be redirected to first page due to file purging
+    if (window.sodaJSONObj?.["redirect-to-first-page-after-error"]) {
+      // Clear the flag
+      delete window.sodaJSONObj["redirect-to-first-page-after-error"];
+      await returnUserToFirstPage();
+      guidedSetNavLoadingState(false);
+      return;
+    }
+
     const eMessage = userErrorMessage(error);
     Swal.fire({
       icon: "error",
@@ -483,7 +798,6 @@ window.openPage = async (targetPageID) => {
       allowOutsideClick: false,
     });
 
-    guidedSetNavLoadingState(false);
     throw error;
   }
 

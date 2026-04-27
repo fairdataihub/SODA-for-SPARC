@@ -6,6 +6,13 @@
   animation: moveRight 0.5s infinite alternate;
 }
 
+.nav-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(76, 175, 80, 0.16);
+  border-color: var(--mantine-color-primary-3);
+  background-color: var(--mantine-color-primary-1) !important;
+}
+
 @keyframes moveLeft {
   0% {
     transform: translateX(0);

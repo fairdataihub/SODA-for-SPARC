@@ -313,7 +313,7 @@ document.querySelectorAll(".button-import-data-deliverables-document").forEach(a
         backdrop: "rgba(0,0,0, 0.4)",
         heightAuto: false,
         icon: "error",
-        text: userErrorMessage(error),
+        html: userErrorMessage(error),
       });
     }
   });
