@@ -1,6 +1,6 @@
 import { Button, Group } from "@mantine/core";
 import { useHover } from "@mantine/hooks";
-import { IconArrowLeft, IconArrowRight, IconDeviceFloppy } from "@tabler/icons-react";
+import { IconArrowLeft, IconArrowRight, IconDeviceFloppy, IconLogout } from "@tabler/icons-react";
 import classes from "./NavigationButton.module.css";
 import { useEffect } from "react";
 
@@ -40,6 +40,7 @@ const NavigationButton = ({
     >
       <Group>
         {navIcon === "save" && <IconDeviceFloppy />}
+        {navIcon === "exit" && <IconLogout />}
         {navIcon === "left-arrow" && (
           <IconArrowLeft className={hovered && classes.hoveredArrowLeft} />
         )}

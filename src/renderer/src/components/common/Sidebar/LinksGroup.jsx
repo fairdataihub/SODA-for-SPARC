@@ -99,7 +99,10 @@ async function handlePageNavigation(page, currentPage) {
 /**
  * Renders a button for a given page.
  */
-function PageButton({ page, isActive, isNextPageToComplete }) {
+function PageButton({ page, isActive, isNextPageToComplete, isLoading }) {
+  const isClickable = page.completed || isActive || isNextPageToComplete;
+  const isDisabled = !isClickable && !isLoading;
+
   return (
     <Button
       variant="subtle"
@@ -111,12 +114,15 @@ function PageButton({ page, isActive, isNextPageToComplete }) {
       className={`
         ${classes.pageButton} ${isActive ? classes.pageButtonActive : ""}
         ${isNextPageToComplete ? classes.nextPageToComplete : ""}
-        ${!page.completed && !isActive && !isNextPageToComplete ? classes.disabled : ""}
+        ${isDisabled ? classes.disabled : ""}
       `}
       style={{
         fontWeight: isActive ? 600 : 400,
+        opacity: isDisabled ? 0.3 : isLoading ? 0.5 : 1,
+        pointerEvents: isDisabled || isLoading ? "none" : "auto",
+        cursor: isClickable && !isLoading ? "pointer" : "not-allowed",
       }}
-      onClick={() => handlePageNavigation(page, window.CURRENT_PAGE?.id)}
+      onClick={() => isClickable && handlePageNavigation(page, window.CURRENT_PAGE?.id)}
     >
       <Text
         style={{
@@ -132,33 +138,41 @@ function PageButton({ page, isActive, isNextPageToComplete }) {
   );
 }
 
-const LinksGroup = ({ label, pages }) => {
+const LinksGroup = ({ label, pages, isLoading }) => {
+  const hasPages = Array.isArray(pages) && pages.length > 0;
   const openSidebarTab = useGlobalStore((state) => state.openSidebarTab);
   const opened = openSidebarTab === label;
-  const hasPages = Array.isArray(pages);
   const currentPage = window.CURRENT_PAGE?.id;
   const allPages = getNonSkippedGuidedModePages(document).map((el) => el.id);
   const userCompletedPages = window.sodaJSONObj["completed-tabs"] || [];
   const nextPage = allPages.find((page) => !userCompletedPages.includes(page)) || null;
 
-  const items = hasPages
-    ? pages.map((page) => (
-        <PageButton
-          key={page.pageID || page.pageName}
-          page={page}
-          isActive={page.pageID === currentPage}
-          isNextPageToComplete={page.pageID === nextPage}
-        />
-      ))
-    : null;
+  // Don't render if there are no pages
+  if (!hasPages) {
+    return null;
+  }
+
+  const items = pages.map((page) => (
+    <PageButton
+      key={page.pageID || page.pageName}
+      page={page}
+      isActive={page.pageID === currentPage}
+      isNextPageToComplete={page.pageID === nextPage}
+      isLoading={isLoading}
+    />
+  ));
 
   return (
     <>
       <UnstyledButton
         className={`${classes.link} ${opened ? classes.linkActive : ""}`}
-        onClick={() => setOpenSidebarTab(opened ? null : label)}
+        onClick={() => !isLoading && setOpenSidebarTab(opened ? null : label)}
         p="xs"
         w="100%"
+        style={{
+          opacity: isLoading ? 0.5 : 1,
+          pointerEvents: isLoading ? "none" : "auto",
+        }}
       >
         <Group justify="space-between" w="100%">
           <Group gap={6}>

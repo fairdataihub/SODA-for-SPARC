@@ -47,7 +47,7 @@ export const setSelectedDatasetToUploadDataTo = (
 };
 
 // Fetch logic
-export const fetchDatasetsToUploadDataTo = async () => {
+export const fetchDatasetsToUploadDataTo = async (fetchOnlyEmptyDatasets) => {
   // Reset selection
   setSelectedDatasetToUploadDataTo(null, null, null);
 
@@ -57,7 +57,7 @@ export const fetchDatasetsToUploadDataTo = async () => {
   useGlobalStore.setState({ datasetFetchErrorMessage: null });
 
   try {
-    const datasets = await api.getUsersDatasetList(true);
+    const datasets = await api.getUsersDatasetList(fetchOnlyEmptyDatasets);
 
     const formattedOptions = (datasets || []).map((dataset) => ({
       value: dataset.id,

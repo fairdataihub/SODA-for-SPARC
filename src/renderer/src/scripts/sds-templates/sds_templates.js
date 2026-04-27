@@ -1,9 +1,4 @@
 import { hideAllSectionsAndDeselectButtons } from "../../assets/nav";
-import { resetLazyLoading } from "../../assets/nav";
-import lottie from "lottie-web";
-import { existingDataset, modifyDataset } from "../../assets/lotties/lotties";
-import fs from "fs";
-import path from "path";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -25,12 +20,6 @@ const transitionToSDSPage = () => {
 };
 
 $("#sds-templates").on("click", () => {
-  // window.organizeDSglobalPath.value = "";
-
-  // Reset lazy loading
-  resetLazyLoading();
-
-  // Transition to sds templates page
   transitionToSDSPage();
 });
 

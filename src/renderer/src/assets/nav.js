@@ -43,23 +43,17 @@ function forceActionSidebar(action) {
   }
 }
 
-const resetLazyLoading = () => {
-  window.already_created_elem = [];
-  window.listed_count = 0;
-  window.start = 0;
-  window.preprended_items = 0;
-  window.amount = 500;
-};
-
-const guidedUnLockSideBar = () => {
+const prepareGuidedSidebar = () => {
+  // Click the home page sidebar button if
   const sidebar = document.getElementById("sidebarCollapse");
+  if (sidebar.classList.contains("active")) {
+    sidebar.click();
+  }
+
   const guidedModeSection = document.getElementById("guided_mode-section");
   const guidedDatsetTab = document.getElementById("guided_curate_dataset-tab");
   const guidedNav = document.getElementById("guided-nav");
 
-  if (sidebar.classList.contains("active")) {
-    sidebar.click();
-  }
   sidebar.disabled = false;
   guidedModeSection.style.marginLeft = "-15px";
   //remove the marginLeft style from guidedDatasetTab
@@ -68,29 +62,6 @@ const guidedUnLockSideBar = () => {
 };
 
 window.handleSideBarTabClick = async (id, section) => {
-  const leavingUpload = window.leavingUploadDatasets();
-  const hasProgress = window.sodaJSONHasProgress();
-  const uploadDone = window.uploadComplete();
-
-  // Handle confirmation when leaving upload datasets
-  if (leavingUpload && hasProgress) {
-    const leaveUploadDataset = await swalConfirmAction(
-      "warning",
-      "Are you sure you want to exit?",
-      uploadDone
-        ? "" // after upload complete
-        : "Any progress made importing your dataset and creating manifest files will not be saved. Do you want to continue?", // during upload
-      "Yes",
-      "Cancel"
-    );
-    if (!leaveUploadDataset) return;
-    window.resetCurationTabs();
-  } else if (uploadDone) {
-    window.resetCurationTabs();
-  }
-
-  window.resetCurationTabs();
-
   // Always set activeTab to section, not id
   setActiveSidebarTab(section);
   const sectionId = `${section}-section`;
@@ -100,14 +71,6 @@ window.handleSideBarTabClick = async (id, section) => {
 
   // --- Organize section ---
   if (sectionId === "organize-section") {
-    resetLazyLoading();
-    window.hasFiles = false;
-
-    window.scroll_box = document.querySelector("#organize-dataset-tab");
-    document.querySelectorAll(".shared-folder-structure-element").forEach((el) => {
-      freeFormItemsContainer.appendChild(el);
-    });
-
     freeFormItemsContainer.classList.add("freeform-file-explorer");
     freeFormButtons.classList.add("freeform-file-explorer-buttons");
 
@@ -124,38 +87,8 @@ window.handleSideBarTabClick = async (id, section) => {
     sectionId === "contact-us-section" ||
     sectionId === "about-us-section"
   ) {
-    // Block transition if upload in progress
-    if (document.getElementById("returnButton") !== null) {
-      Swal.fire({
-        icon: "warning",
-        text: "You cannot curate another dataset while an upload is in progress but you can still modify dataset components.",
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: "OK",
-        showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
-        hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
-      });
-      document.getElementById("main_tabs_view").click();
-      document.getElementById("organize_dataset_btn").click();
-    }
-
-    window.sodaJSONObj = {};
-    window.datasetStructureJSONObj = {};
-    window.subjectsTableData = [];
-    window.samplesTableData = [];
-
-    window.organizeDSglobalPath = document.getElementById("guided-input-global-path");
-    window.organizeDSglobalPath.value = "";
-    window.dataset_path = window.organizeDSglobalPath;
-    window.scroll_box = document.querySelector("#guided-body");
-    resetLazyLoading();
-
     freeFormItemsContainer.classList.remove("freeform-file-explorer");
     freeFormButtons.classList.remove("freeform-file-explorer-buttons");
-
-    document.querySelectorAll(".shared-folder-structure-element").forEach((el) => {
-      document.querySelector("#guided-folder-structure-container").appendChild(el);
-    });
 
     // UI visibility updates
     document.getElementById("soda-home-page").classList.remove("hidden");
@@ -180,7 +113,7 @@ window.handleSideBarTabClick = async (id, section) => {
       }
     );
 
-    guidedUnLockSideBar();
+    prepareGuidedSidebar();
   }
 
   // --- Handle section switching ---
@@ -261,4 +194,4 @@ $(document).ready(() => {
   });
 });
 
-export { resetLazyLoading, guidedUnLockSideBar, hideAllSectionsAndDeselectButtons };
+export { prepareGuidedSidebar, hideAllSectionsAndDeselectButtons };

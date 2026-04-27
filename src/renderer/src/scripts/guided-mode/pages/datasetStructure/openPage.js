@@ -12,6 +12,8 @@ import {
   isCheckboxCardChecked,
   setCheckboxCardChecked,
 } from "../../../../stores/slices/checkboxCardSlice";
+import { setManifestFileGenerationDisabled } from "../../../../stores/slices/guidedModeSlice";
+import api from "../../../others/api/api";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -21,244 +23,287 @@ export const openPageDatasetStructure = async (targetPageID) => {
   // Add handlers for other pages without componentType
 
   if (targetPageID === "guided-dataset-structure-and-manifest-review-tab") {
-    // Remove existing manifest files from the dataset structure
-    Object.values(window.datasetStructureJSONObj.folders).forEach((folder) => {
-      delete folder.files["manifest.xlsx"];
-    });
+    // Update the description text based on curation mode
+    const datasetStructureInfoText = document.getElementById("guided-text-dataset-structure-info");
+    const curationMode = window.sodaJSONObj?.["curation-mode"];
+    if (curationMode === "free-form") {
+      datasetStructureInfoText.textContent =
+        "The dataset structure below displays the folder structure of your dataset as it will be when uploaded to Pennsieve.";
+    } else {
+      datasetStructureInfoText.textContent =
+        "The dataset structure below displays the folder structure of your dataset as it will be when it is generated locally and/or on Pennsieve.";
+    }
 
-    /**
-     * Purge non-existent files from the dataset structure.
-     */
-    const purgeNonExistentFiles = async (datasetStructure) => {
-      const nonExistentFiles = [];
-      const nonExistentRelativePaths = [];
+    // If we are uploading to an existing Pennsieve dataset, check if the dataset is empty or not.
+    // If it is not empty, disable manifest generation as we currently do not support manifest generation for existing Pennsieve datasets in guided mode. If it is empty, we can allow manifest generation since there will not be any conflicts with existing files on Pennsieve.
 
-      const collectNonExistentFiles = async (current) => {
-        for (const [fileName, fileData] of Object.entries(current.files || {})) {
-          if (fileData.location === "local" && !window.fs.existsSync(fileData.path)) {
-            // Use the actual file path so users can see what's missing
-            nonExistentFiles.push(fileData.path);
-            // Also collect relative paths for deletion function
-            nonExistentRelativePaths.push(fileData.relativePath);
-          }
+    let manifestGenerationDisabled = false;
+    const existingTargetDataset = window.sodaJSONObj?.["generate-dataset"]?.["existing-dataset-id"];
+    if (existingTargetDataset) {
+      // Check and see if the existing target dataset is empty or not
+      try {
+        const datasetIsEmpty = await api.isDatasetEmpty(existingTargetDataset);
+        if (!datasetIsEmpty) {
+          manifestGenerationDisabled = true;
         }
-
-        await Promise.all(
-          Object.values(current.folders || {}).map((folder) => collectNonExistentFiles(folder))
-        );
-      };
-
-      await collectNonExistentFiles(datasetStructure);
-      if (nonExistentFiles.length > 0) {
-        const userConfirmedRemoval = await swalListDoubleAction(
-          nonExistentFiles,
-          "Missing files detected in your dataset",
-          "The following files were imported into SODA but can no longer be found on your computer. SODA can remove these missing files from your dataset structure, but then will have to take you back to the first page to continue (you will only lose progress regarding the files not found). It would be better to restore these files to their original locations if possible.",
-          "Remove missing files",
-          "Keep references",
-          "Would you like SODA to remove these missing files from your dataset?"
-        );
-
-        if (userConfirmedRemoval) {
-          // Use deleteFilesByRelativePath with relative paths, not file paths
-          deleteFilesByRelativePath(nonExistentRelativePaths);
-          // Update the sodaJSONObj with the cleaned entity object from global store
-          window.sodaJSONObj["dataset-entity-obj"] = useGlobalStore.getState().datasetEntityObj;
-          // Ensure dataset structure is not undefined after purging
-          if (!window.datasetStructureJSONObj) {
-            window.datasetStructureJSONObj = { folders: {}, files: {} };
-          }
-          // Set flag that user should be redirected to first page
-          window.sodaJSONObj["redirect-to-first-page-after-error"] = true;
-          // Throw an error to trigger the error handler which will handle the redirect
-          throw new Error("Files were purged - redirecting to first page");
-        }
+      } catch (error) {
+        console.error("Error checking if dataset is empty:", error);
+        manifestGenerationDisabled = true; // Default to disabling manifest generation if we cannot confirm the dataset is empty
       }
-    };
+    }
 
-    await purgeNonExistentFiles(window.datasetStructureJSONObj);
+    const guidedTextManifestFileInfoDiv = document.getElementById("guided-text-manifest-file-info");
 
-    // Remove empty folders
-    window.datasetStructureJSONObj = deleteEmptyFoldersFromStructure(
-      window.datasetStructureJSONObj
-    );
-
-    // Prepare cleaned dataset structure for server-side processing
-    const sodaCopy = {
-      ...window.sodaJSONObj,
-      "metadata-files": {},
-      "dataset-structure": createStandardizedDatasetStructure(
-        window.datasetStructureJSONObj,
-        window.sodaJSONObj["dataset-entity-obj"]
-      ),
-    };
-    delete sodaCopy["generate-dataset"];
-
-    // Clean dataset via backend
-    const { data: cleanResponse } = await client.post(
-      "/curate_datasets/clean-dataset",
-      { soda_json_structure: sodaCopy },
-      { timeout: 0 }
-    );
-
-    const responseData = cleanResponse.soda;
-
-    // Generate manifest file data
-    const { data: manifestRes } = await client.post(
-      "/curate_datasets/generate_manifest_file_data",
-      { dataset_structure_obj: responseData["dataset-structure"] },
-      { timeout: 0 }
-    );
-
-    const newManifestData = { headers: manifestRes.shift(), data: manifestRes };
-
-    const entityColumnIndex = newManifestData.headers.indexOf("entity");
-
-    /**
-     * Sort manifest rows based on top-level folder order.
-     */
-    const sortManifestDataRows = (rows) => {
-      const folderOrder = {
-        data: 0,
-        primary: 1,
-        source: 2,
-        derivative: 3,
-        code: 4,
-        protocol: 5,
-        docs: 6,
-      };
-
-      const getTopLevelFolder = (path) => (path.includes("/") ? path.split("/")[0] : path);
-
-      return rows.sort((a, b) => {
-        const pathA = a[0] || "";
-        const pathB = b[0] || "";
-        const folderA = getTopLevelFolder(pathA);
-        const folderB = getTopLevelFolder(pathB);
-        const priorityA = folderOrder[folderA] ?? Infinity;
-        const priorityB = folderOrder[folderB] ?? Infinity;
-
-        if (priorityA !== priorityB) return priorityA - priorityB;
-        if (folderA === "data" && folderB !== "data") return -1;
-        if (folderB === "data" && folderA !== "data") return 1;
-
-        return pathA.localeCompare(pathB);
+    if (manifestGenerationDisabled) {
+      guidedTextManifestFileInfoDiv.classList.add("hidden");
+      setManifestFileGenerationDisabled(true);
+    } else {
+      guidedTextManifestFileInfoDiv.classList.remove("hidden");
+      setManifestFileGenerationDisabled(false);
+      // Remove existing manifest files from the dataset structure
+      Object.values(window.datasetStructureJSONObj.folders).forEach((folder) => {
+        delete folder.files["manifest.xlsx"];
       });
-    };
 
-    newManifestData.data = sortManifestDataRows(newManifestData.data);
+      /**
+       * Purge non-existent files from the dataset structure.
+       */
+      const purgeNonExistentFiles = async (datasetStructure) => {
+        const nonExistentFiles = [];
+        const nonExistentRelativePaths = [];
 
-    const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
-
-    /**
-     * Update entity column values.
-     */
-    const updateEntityColumn = (rows) => {
-      const entityTypes = ["sites", "derived-samples", "samples", "subjects"];
-
-      rows.forEach((row) => {
-        let path = row[0];
-        const pathSegments = path.split("/");
-        if (pathSegments.length > 0) pathSegments[0] = "data";
-        path = pathSegments.join("/");
-
-        let entityId = "";
-
-        for (const type of entityTypes) {
-          const entities = datasetEntityObj?.[type] || {};
-          for (const [entity, paths] of Object.entries(entities)) {
-            if (paths?.[path]) {
-              const { entityMetadata } = getEntityDataById(entity) || {};
-              if (!entityMetadata) continue;
-
-              entityId = entityMetadata.id;
-              break;
+        const collectNonExistentFiles = async (current) => {
+          for (const [fileName, fileData] of Object.entries(current.files || {})) {
+            if (fileData.location === "local" && !window.fs.existsSync(fileData.path)) {
+              // Use the actual file path so users can see what's missing
+              nonExistentFiles.push(fileData.path);
+              // Also collect relative paths for deletion function
+              nonExistentRelativePaths.push(fileData.relativePath);
             }
           }
-          if (entityId) break;
+
+          await Promise.all(
+            Object.values(current.folders || {}).map((folder) => collectNonExistentFiles(folder))
+          );
+        };
+
+        await collectNonExistentFiles(datasetStructure);
+        if (nonExistentFiles.length > 0) {
+          const userConfirmedRemoval = await swalListDoubleAction(
+            nonExistentFiles,
+            "Missing files detected in your dataset",
+            "The following files were imported into SODA but can no longer be found on your computer. SODA can remove these missing files from your dataset structure, but then will have to take you back to the first page to continue (you will only lose progress regarding the files not found). It would be better to restore these files to their original locations if possible.",
+            "Remove missing files",
+            "Keep references",
+            "Would you like SODA to remove these missing files from your dataset?"
+          );
+
+          if (userConfirmedRemoval) {
+            // Use deleteFilesByRelativePath with relative paths, not file paths
+            deleteFilesByRelativePath(nonExistentRelativePaths);
+            // Update the sodaJSONObj with the cleaned entity object from global store
+            window.sodaJSONObj["dataset-entity-obj"] = useGlobalStore.getState().datasetEntityObj;
+            // Ensure dataset structure is not undefined after purging
+            if (!window.datasetStructureJSONObj) {
+              window.datasetStructureJSONObj = { folders: {}, files: {} };
+            }
+            // Set flag that user should be redirected to first page
+            window.sodaJSONObj["redirect-to-first-page-after-error"] = true;
+            // Throw an error to trigger the error handler which will handle the redirect
+            console.info("Throwing error to redirect to first page");
+            throw new Error("Files were purged - redirecting to first page");
+          }
         }
+      };
 
-        row[entityColumnIndex] = entityId;
-      });
+      await purgeNonExistentFiles(window.datasetStructureJSONObj);
 
-      return rows;
-    };
+      // Remove empty folders
+      window.datasetStructureJSONObj = deleteEmptyFoldersFromStructure(
+        window.datasetStructureJSONObj
+      );
 
-    /**
-     * Update modalities column values.
-     */
-    const updateModalitiesColumn = (rows) => {
-      const modalitiesColumnIndex = newManifestData.headers.indexOf("data modality");
+      // Prepare cleaned dataset structure for server-side processing
+      const sodaCopy = {
+        ...window.sodaJSONObj,
+        "metadata-files": {},
+        "dataset-structure": createStandardizedDatasetStructure(
+          window.datasetStructureJSONObj,
+          window.sodaJSONObj["dataset-entity-obj"]
+        ),
+      };
+      delete sodaCopy["generate-dataset"];
 
-      rows.forEach((row) => {
-        let path = row[0];
-        const pathSegments = path.split("/");
-        if (pathSegments.length > 0) pathSegments[0] = "data";
-        path = pathSegments.join("/");
+      // Clean dataset via backend
+      const { data: cleanResponse } = await client.post(
+        "/curate_datasets/clean-dataset",
+        { soda_json_structure: sodaCopy },
+        { timeout: 0 }
+      );
 
-        const modalitiesList = [];
-        for (const [modality, paths] of Object.entries(datasetEntityObj?.modalities || {})) {
-          if (paths?.[path]) modalitiesList.push(modality);
-        }
+      const responseData = cleanResponse.soda;
 
-        row[modalitiesColumnIndex] = modalitiesList.join(" ");
-      });
+      // Generate manifest file data
+      const { data: manifestRes } = await client.post(
+        "/curate_datasets/generate_manifest_file_data",
+        { dataset_structure_obj: responseData["dataset-structure"] },
+        { timeout: 0 }
+      );
 
-      return rows;
-    };
+      const newManifestData = { headers: manifestRes.shift(), data: manifestRes };
 
-    /**
-     * Update also in dataset column values from entity metadata.
-     */
-    const updateAlsoInDatasetColumn = (rows) => {
-      const alsoInDatasetColumnIndex = newManifestData.headers.indexOf("also in dataset");
+      const entityColumnIndex = newManifestData.headers.indexOf("entity");
 
-      if (alsoInDatasetColumnIndex === -1) return rows; // Column doesn't exist
+      /**
+       * Sort manifest rows based on top-level folder order.
+       */
+      const sortManifestDataRows = (rows) => {
+        const folderOrder = {
+          data: 0,
+          primary: 1,
+          source: 2,
+          derivative: 3,
+          code: 4,
+          protocol: 5,
+          docs: 6,
+        };
 
-      rows.forEach((row) => {
-        let path = row[0];
-        const pathSegments = path.split("/");
-        if (pathSegments.length > 0) pathSegments[0] = "data";
-        path = pathSegments.join("/");
+        const getTopLevelFolder = (path) => (path.includes("/") ? path.split("/")[0] : path);
 
-        let alsoInDatasetValue = "";
+        return rows.sort((a, b) => {
+          const pathA = a[0] || "";
+          const pathB = b[0] || "";
+          const folderA = getTopLevelFolder(pathA);
+          const folderB = getTopLevelFolder(pathB);
+          const priorityA = folderOrder[folderA] ?? Infinity;
+          const priorityB = folderOrder[folderB] ?? Infinity;
 
-        const entityTypes = ["samples", "subjects"];
-        for (const type of entityTypes) {
-          const entities = datasetEntityObj?.[type] || {};
-          for (const [entity, paths] of Object.entries(entities)) {
-            if (paths?.[path]) {
-              const { entityMetadata } = getEntityDataById(entity) || {};
-              if (entityMetadata?.metadata?.also_in_dataset) {
-                alsoInDatasetValue = entityMetadata.metadata.also_in_dataset;
+          if (priorityA !== priorityB) return priorityA - priorityB;
+          if (folderA === "data" && folderB !== "data") return -1;
+          if (folderB === "data" && folderA !== "data") return 1;
+
+          return pathA.localeCompare(pathB);
+        });
+      };
+
+      newManifestData.data = sortManifestDataRows(newManifestData.data);
+
+      const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
+
+      /**
+       * Update entity column values.
+       */
+      const updateEntityColumn = (rows) => {
+        const entityTypes = ["sites", "derived-samples", "samples", "subjects"];
+
+        rows.forEach((row) => {
+          let path = row[0];
+          const pathSegments = path.split("/");
+          if (pathSegments.length > 0) pathSegments[0] = "data";
+          path = pathSegments.join("/");
+
+          let entityId = "";
+
+          for (const type of entityTypes) {
+            const entities = datasetEntityObj?.[type] || {};
+            for (const [entity, paths] of Object.entries(entities)) {
+              if (paths?.[path]) {
+                const { entityMetadata } = getEntityDataById(entity) || {};
+                if (!entityMetadata) continue;
+
+                entityId = entityMetadata.id;
                 break;
               }
             }
+            if (entityId) break;
           }
-          if (alsoInDatasetValue) break;
-        }
 
-        row[alsoInDatasetColumnIndex] = alsoInDatasetValue;
-      });
+          row[entityColumnIndex] = entityId;
+        });
 
-      return rows;
-    };
+        return rows;
+      };
 
-    // Merge with existing manifest diff (if any)
-    const guidedManifestData = window.sodaJSONObj["guided-manifest-file-data"]
-      ? window.diffCheckManifestFiles(
-          newManifestData,
-          window.sodaJSONObj["guided-manifest-file-data"]
-        )
-      : newManifestData;
+      /**
+       * Update modalities column values.
+       */
+      const updateModalitiesColumn = (rows) => {
+        const modalitiesColumnIndex = newManifestData.headers.indexOf("data modality");
 
-    updateEntityColumn(guidedManifestData.data);
-    updateModalitiesColumn(guidedManifestData.data);
-    updateAlsoInDatasetColumn(guidedManifestData.data);
+        rows.forEach((row) => {
+          let path = row[0];
+          const pathSegments = path.split("/");
+          if (pathSegments.length > 0) pathSegments[0] = "data";
+          path = pathSegments.join("/");
 
-    // Save final manifest data
-    window.sodaJSONObj["guided-manifest-file-data"] = guidedManifestData;
+          const modalitiesList = [];
+          for (const [modality, paths] of Object.entries(datasetEntityObj?.modalities || {})) {
+            if (paths?.[path]) modalitiesList.push(modality);
+          }
+
+          row[modalitiesColumnIndex] = modalitiesList.join(" ");
+        });
+
+        return rows;
+      };
+
+      /**
+       * Update also in dataset column values from entity metadata.
+       */
+      const updateAlsoInDatasetColumn = (rows) => {
+        const alsoInDatasetColumnIndex = newManifestData.headers.indexOf("also in dataset");
+
+        if (alsoInDatasetColumnIndex === -1) return rows; // Column doesn't exist
+
+        rows.forEach((row) => {
+          let path = row[0];
+          const pathSegments = path.split("/");
+          if (pathSegments.length > 0) pathSegments[0] = "data";
+          path = pathSegments.join("/");
+
+          let alsoInDatasetValue = "";
+
+          const entityTypes = ["samples", "subjects"];
+          for (const type of entityTypes) {
+            const entities = datasetEntityObj?.[type] || {};
+            for (const [entity, paths] of Object.entries(entities)) {
+              if (paths?.[path]) {
+                const { entityMetadata } = getEntityDataById(entity) || {};
+                if (entityMetadata?.metadata?.also_in_dataset) {
+                  alsoInDatasetValue = entityMetadata.metadata.also_in_dataset;
+                  break;
+                }
+              }
+            }
+            if (alsoInDatasetValue) break;
+          }
+
+          row[alsoInDatasetColumnIndex] = alsoInDatasetValue;
+        });
+
+        return rows;
+      };
+
+      // Merge with existing manifest diff (if any)
+      const guidedManifestData = window.sodaJSONObj["dataset_metadata"]?.["manifest_file"]
+        ? window.diffCheckManifestFiles(
+            newManifestData,
+            window.sodaJSONObj["dataset_metadata"]["manifest_file"]
+          )
+        : newManifestData;
+
+      updateEntityColumn(guidedManifestData.data);
+      updateModalitiesColumn(guidedManifestData.data);
+      updateAlsoInDatasetColumn(guidedManifestData.data);
+
+      // Save final manifest data
+      if (!window.sodaJSONObj["dataset_metadata"]) {
+        window.sodaJSONObj["dataset_metadata"] = {};
+      }
+      window.sodaJSONObj["dataset_metadata"]["manifest_file"] = guidedManifestData;
+    }
   }
+
   if (targetPageID == "guided-modalities-selection-tab") {
     let modalities = window.sodaJSONObj["button-config"]["multiple-modalities"];
     if (modalities === "yes") {

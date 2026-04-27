@@ -1,3 +1,5 @@
+import { setSideBarLoadingState } from "../../../../stores/slices/guidedModeSlice";
+
 export const setPageLoadingState = (boolLoadingState) => {
   const pageParentContainers = document.querySelectorAll(".guided--parent-tab");
 
@@ -52,19 +54,16 @@ export const guidedSetNavLoadingState = (loadingState) => {
   const mainBackButton = document.getElementById("guided-back-button");
   const mainContinueButton = document.getElementById("guided-next-button");
   const saveAndExitButton = document.getElementById("guided-button-save-and-exit");
-
-  const navItems = document.querySelectorAll(".guided--nav-bar-section-page");
+  const exitButton = document.getElementById("guided-button-exit");
+  setSideBarLoadingState(loadingState);
 
   if (loadingState === true) {
     mainBackButton.disabled = true;
     mainContinueButton.disabled = true;
     saveAndExitButton.disabled = true;
+    exitButton.disabled = true;
     mainBackButton.classList.add("loading");
     mainContinueButton.classList.add("loading");
-
-    navItems.forEach((nav) => {
-      nav.classList.add("disabled-nav");
-    });
   }
 
   if (loadingState === false) {
@@ -73,11 +72,9 @@ export const guidedSetNavLoadingState = (loadingState) => {
     mainBackButton.classList.remove("loading");
     mainContinueButton.classList.remove("loading");
     saveAndExitButton.disabled = false;
+    exitButton.disabled = false;
 
-    navItems.forEach((nav) => {
-      nav.classList.remove("disabled-nav");
-    });
-    // Hide the lading div if the loading div was showing
+    // Hide the loading div if the loading div was showing
     setPageLoadingState(false);
   }
 };

@@ -68,6 +68,8 @@ const Sidebar = ({ id }) => {
   const showGuidedModePageNavigation = useGlobalStore(
     (state) => state.showGuidedModePageNavigation
   );
+  const curationMode = useGlobalStore((state) => state.curationMode);
+  const sidebarLoadingState = useGlobalStore((state) => state.sidebarLoadingState);
 
   return (
     <nav className={classes.navbar}>
@@ -125,21 +127,25 @@ const Sidebar = ({ id }) => {
         {id === "guided-sidebar" && (
           <>
             <Stack gap={2} align="center" mb="lg">
-              <Text size="md" fw={800}>
-                Current Dataset
-              </Text>
-              <Tooltip
-                label={guidedModeSidebarDatasetName}
-                withArrow
-                position="right"
-                multiline
-                maw={300}
-                zIndex={3000}
-              >
-                <Text fw={550} mt={-5} lineClamp={2} ta="center">
-                  {guidedModeSidebarDatasetName}
-                </Text>
-              </Tooltip>
+              {guidedModeSidebarDatasetName && (
+                <>
+                  <Text size="md" fw={800}>
+                    Current Dataset
+                  </Text>
+                  <Tooltip
+                    label={guidedModeSidebarDatasetName}
+                    withArrow
+                    position="right"
+                    multiline
+                    maw={300}
+                    zIndex={3000}
+                  >
+                    <Text fw={550} mt={-5} lineClamp={2} ta="center">
+                      {guidedModeSidebarDatasetName}
+                    </Text>
+                  </Tooltip>
+                </>
+              )}
             </Stack>
             {showGuidedModePageNavigation && (
               <ScrollArea.Autosize
@@ -149,9 +155,20 @@ const Sidebar = ({ id }) => {
                 offsetScrollbars
                 mr="-10px"
               >
-                {Object.entries(guidedModePageStructureObject).map(([pageKey, pageChildren]) => (
-                  <LinksGroup key={pageKey} label={pageKey} pages={pageChildren} />
-                ))}
+                {Object.entries(guidedModePageStructureObject).map(([pageKey, pageChildren]) => {
+                  // Hide "Dataset Metadata" section in free-form mode
+                  if (curationMode === "free-form" && pageKey === "Dataset Metadata") {
+                    return null;
+                  }
+                  return (
+                    <LinksGroup
+                      key={pageKey}
+                      label={pageKey}
+                      pages={pageChildren}
+                      isLoading={sidebarLoadingState}
+                    />
+                  );
+                })}
               </ScrollArea.Autosize>
             )}
           </>

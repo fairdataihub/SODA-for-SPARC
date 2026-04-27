@@ -9,10 +9,10 @@ export const guidedCreateManifestFilesAndAddToDatasetStructure = async () => {
   window.fs.emptyDirSync(window.guidedManifestFilePath);
 
   // Retrieve manifest data from the global SODA JSON object
-  const guidedManifestData = window.sodaJSONObj["guided-manifest-file-data"];
+  const guidedManifestData = window.sodaJSONObj["dataset_metadata"]?.["manifest_file"];
   const manifestJson = window.processManifestInfo(
-    guidedManifestData["headers"],
-    guidedManifestData["data"]
+    guidedManifestData?.["headers"],
+    guidedManifestData?.["data"]
   );
 
   // Ensure the manifest directory exists

@@ -2,6 +2,7 @@ import { openPageCurationPreparation } from "./curationPreparation/openPage.js";
 import { openPageDatasetStructure } from "./datasetStructure/openPage.js";
 import { openPagePrepareMetadata } from "./prepareMetadata/openPage.js";
 import { openPageGenerateDataset } from "./generateDataset/openPage.js";
+import { openPageSharedWorkflowSteps } from "./sharedWorkflowSteps/openPage.js";
 import {
   resetGuidedRadioButtons,
   updateGuidedRadioButtonsFromJSON,
@@ -39,7 +40,7 @@ import {
   filterRemovedFilesFromDatasetEntityObj,
   setEntityType,
 } from "../../../stores/slices/datasetEntitySelectorSlice.js";
-import { setDatasetType } from "../../../stores/slices/guidedModeSlice.js";
+import { setDatasetType, setCurationMode } from "../../../stores/slices/guidedModeSlice.js";
 import { setSelectedHierarchyEntity } from "../../../stores/slices/datasetContentSelectorSlice.js";
 import { guidedSetNavLoadingState } from "./navigationUtils/pageLoading.js";
 import Swal from "sweetalert2";
@@ -80,6 +81,8 @@ const handleNextButtonVisibility = (targetPageID) => {
     targetPageID === "guided-dataset-generation-confirmation-tab" ||
     targetPageID === "guided-dataset-generation-tab" ||
     targetPageID === "guided-dataset-dissemination-tab" ||
+    targetPageID === "guided-select-starting-point-tab" ||
+    targetPageID === "ffm-select-starting-point-tab" ||
     (targetPageID === "guided-generate-dataset-locally" &&
       window.sodaJSONObj["generate-dataset-on-pennsieve"] === false)
   ) {
@@ -90,10 +93,26 @@ const handleNextButtonVisibility = (targetPageID) => {
 };
 
 const handleSaveAndExitButtonVisibility = (targetPageID) => {
-  if (targetPageID === "guided-select-starting-point-tab") {
-    $("#guided-button-save-and-exit").css("visibility", "hidden");
+  const exitButton = document.getElementById("guided-button-exit");
+  const saveAndExitButton = document.getElementById("guided-button-save-and-exit");
+
+  if (
+    targetPageID === "guided-select-starting-point-tab" ||
+    targetPageID === "ffm-select-starting-point-tab"
+  ) {
+    exitButton.classList.add("hidden");
+    saveAndExitButton.classList.add("hidden");
   } else {
-    $("#guided-button-save-and-exit").css("visibility", "visible");
+    // If the datasetName is set (required for save and exit) show the save and exit button,
+    // otherwise show the exit button (skips the saving process)
+    const datasetName = window.sodaJSONObj?.["digital-metadata"]?.["name"];
+    if (datasetName) {
+      saveAndExitButton.classList.remove("hidden");
+      exitButton.classList.add("hidden");
+    } else {
+      exitButton.classList.remove("hidden");
+      saveAndExitButton.classList.add("hidden");
+    }
   }
 };
 
@@ -115,7 +134,7 @@ const handleGuidedValidationState = (targetPageID) => {
   }
 };
 
-const guidedLockSideBar = (boolShowGuidedModeContainerElements) => {
+const guidedRenderSideBar = (pageBeingOpenedID) => {
   const sidebar = document.getElementById("sidebarCollapse");
   const guidedModeSection = document.getElementById("guided_mode-section");
   const guidedDatsetTab = document.getElementById("guided_curate_dataset-tab");
@@ -128,8 +147,12 @@ const guidedLockSideBar = (boolShowGuidedModeContainerElements) => {
 
   sidebar.disabled = true;
   guidedModeSection.style.marginLeft = "-70px";
+  const pagesToNotRenderSidebarOn = [
+    "guided-select-starting-point-tab",
+    "ffm-select-starting-point-tab",
+  ];
 
-  if (boolShowGuidedModeContainerElements) {
+  if (!pagesToNotRenderSidebarOn.includes(pageBeingOpenedID)) {
     guidedDatsetTab.style.marginLeft = "215px";
     guidedNav.style.display = "flex";
     guidedProgressContainer.classList.remove("hidden");
@@ -186,15 +209,20 @@ window.openPage = async (targetPageID) => {
   // this function is async because we sometimes need to fetch data before the page is ready to be opened
 
   guidedSetNavLoadingState(true);
-
   const targetPage = document.getElementById(targetPageID);
   const targetPageName = targetPage.dataset.pageName || targetPageID;
   const targetPageParentTab = targetPage.closest(".guided--parent-tab");
   const targetPageDataset = targetPage.dataset;
 
+  // Hide the current page early
+  if (window.CURRENT_PAGE) {
+    window.CURRENT_PAGE.classList.add("hidden");
+  }
+
   //when the promise completes there is a catch for error handling
   //upon resolving it will set navLoadingstate to false
   try {
+    setCurationMode(window.sodaJSONObj["curation-mode"]);
     //reset the radio buttons for the page being navigated to
     resetGuidedRadioButtons(targetPageID);
     //update the radio buttons using the button config from window.sodaJSONObj
@@ -234,6 +262,7 @@ window.openPage = async (targetPageID) => {
     handleBackButtonVisibility(targetPageID);
     handleSaveAndExitButtonVisibility(targetPageID);
     handleGuidedValidationState(targetPageID);
+    guidedRenderSideBar(targetPageID);
 
     // If the user has not saved the dataset name and subtitle, then the next button should say "Continue"
     // as they are not really saving anything
@@ -250,15 +279,12 @@ window.openPage = async (targetPageID) => {
         span.innerHTML = "Continue";
       });
       setGuidedModeSidebarDatasetName(null);
-      guidedLockSideBar(false);
     } else {
       setGuidedModeSidebarDatasetName(datasetName);
-
       nextButton.querySelector("span.nav-button-text").innerHTML = "Save and Continue";
       nextButtonSpans.forEach((span) => {
         span.innerHTML = "Save and Continue";
       });
-      guidedLockSideBar(true);
     }
 
     if (targetPageDataset.componentType) {
@@ -627,6 +653,7 @@ window.openPage = async (targetPageID) => {
     await openPageDatasetStructure(targetPageID);
     await openPagePrepareMetadata(targetPageID);
     await openPageGenerateDataset(targetPageID);
+    await openPageSharedWorkflowSteps(targetPageID);
 
     const showCorrectFileExplorerByPage = (pageID) => {
       // Get the element for the pageId
@@ -657,8 +684,13 @@ window.openPage = async (targetPageID) => {
 
         if (pageID === "guided-dataset-structure-and-manifest-review-tab") {
           // Only show the manifest file for the dataset metadata preview
-          // even if there are other metadata files like sites or performances
-          setDatasetMetadataToPreview(["manifest.xlsx"]);
+          // if it exists in the dataset_metadata
+          const datasetMetadata = window.sodaJSONObj["dataset_metadata"] || {};
+          if ("manifest_file" in datasetMetadata) {
+            setDatasetMetadataToPreview(["manifest_file"]);
+          } else {
+            setDatasetMetadataToPreview(null);
+          }
         } else {
           setDatasetMetadataToPreview(Object.keys(window.sodaJSONObj["dataset_metadata"] || {}));
         }
@@ -689,38 +721,41 @@ window.openPage = async (targetPageID) => {
         });
         reRenderTreeView(true);
       }
+
+      // For FFM unstructured import page: use raw structure with root path
+      if (pageID === "ffm-unstructured-data-import-tab") {
+        setPathToRender([]);
+
+        useGlobalStore.setState({
+          datasetStructureJSONObj: window.datasetStructureJSONObj,
+          calculateEntities: false,
+        });
+        reRenderTreeView(true);
+      }
     };
     renderCorrectFileExplorerByPage(targetPageID);
-
-    let currentParentTab = window.CURRENT_PAGE.closest(".guided--parent-tab");
 
     //Set all capsules to grey and set capsule of page being traversed to green
     setActiveProgressionTab(targetPageID);
 
     renderSideBar(targetPageID);
+    const allParentTabs = document.querySelectorAll(".guided--parent-tab");
+    allParentTabs.forEach((tab) => {
+      if (tab.id !== targetPageParentTab.id) {
+        tab.classList.add("hidden");
+      } else {
+        tab.classList.remove("hidden");
+      }
+    });
 
-    const guidedBody = document.getElementById("guided-body");
-    //Check to see if target element has the same parent as current sub step
-    if (currentParentTab.id === targetPageParentTab.id) {
-      window.CURRENT_PAGE.classList.add("hidden");
-      window.CURRENT_PAGE = targetPage;
-      window.CURRENT_PAGE.classList.remove("hidden");
-      //smooth scroll to top of guidedBody
-      guidedBody.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
-    } else {
-      window.CURRENT_PAGE.classList.add("hidden");
-      currentParentTab.classList.add("hidden");
-      targetPageParentTab.classList.remove("hidden");
-      window.CURRENT_PAGE = targetPage;
-      window.CURRENT_PAGE.classList.remove("hidden");
-      //smooth scroll to top of guidedBody
-      guidedBody.scrollTo({
-        top: 0,
-      });
-    }
+    // Set CURRENT_PAGE and unhide the target page
+    window.CURRENT_PAGE = targetPage;
+    window.CURRENT_PAGE.classList.remove("hidden");
+    //smooth scroll to top of guidedBody
+    document.getElementById("guided-body").scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
 
     // Start any animations that need to be started
     startOrStopAnimationsInContainer(targetPageID, "start");
@@ -733,6 +768,12 @@ window.openPage = async (targetPageID) => {
   } catch (error) {
     console.error("Error opening page:", targetPageID);
     console.error("Error: ", error);
+
+    // Unhide the current page if there is an error so the user is not stuck on a blank screen
+    if (window.CURRENT_PAGE) {
+      window.CURRENT_PAGE.classList.remove("hidden");
+    }
+
     guidedSetNavLoadingState(false);
 
     // Check if user should be redirected to first page due to file purging
