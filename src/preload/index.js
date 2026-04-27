@@ -12,10 +12,8 @@ import excel4node from "excel4node";
 // import * as excel4node from 'excel4node';
 import { spawn } from "node:child_process";
 import fixPath from "./update-path-darwin";
-
-fixPath();
-
 import "v8-compile-cache";
+fixPath();
 
 log.initialize();
 
