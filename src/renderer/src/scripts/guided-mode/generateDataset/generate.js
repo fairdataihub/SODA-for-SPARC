@@ -81,6 +81,7 @@ const subscribe = async (datasetId) => {
   } catch (e) {
     subscriberLock = false;
     console.log(`Crashed from one subscriber session at ${new Date().toLocaleTimeString()}. `);
+    await window.wait(2000);
     clientError(e);
     if (!e.response && e.request && e.isAxiosError) {
       await restartServer();
