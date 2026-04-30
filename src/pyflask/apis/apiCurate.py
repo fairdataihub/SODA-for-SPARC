@@ -187,22 +187,23 @@ class Curation(Resource):
 
 
 
-model_curation_progress_response = api.model( "CurationProgressResponse", {
-    "main_curate_status": fields.String(description="Status of the main curation function"),
-    "start_generate": fields.Integer(description="True if the main curation function is running"),
-    "main_curate_progress_message": fields.String(description="Progress message from the main curation function"),
-    "main_total_generate_dataset_size": fields.Integer(description="Total size of the dataset"),
-    "main_generated_dataset_size": fields.Integer(description="Size of the dataset that has been generated thus far"),
-    "elapsed_time_formatted": fields.String(description="Elapsed time of the main curation function"),
-    "total_files_uploaded": fields.Integer(description="Number of files that have been uploaded"),
-    "generated_dataset_id": fields.String(description="Generated dataset ID"),
-    "generated_dataset_int_id": fields.Integer(description="Generated dataset internal ID"),
-})
+# model_curation_progress_response = api.model( "CurationProgressResponse", {
+#     "main_curate_status": fields.String(description="Status of the main curation function"),
+#     "start_generate": fields.Integer(description="True if the main curation function is running"),
+#     "main_curate_progress_message": fields.String(description="Progress message from the main curation function"),
+#     "main_total_generate_dataset_size": fields.Integer(description="Total size of the dataset"),
+#     "main_generated_dataset_size": fields.Integer(description="Size of the dataset that has been generated thus far"),
+#     "bytes_per_file_dict": fields
+#     "elapsed_time_formatted": fields.String(description="Elapsed time of the main curation function"),
+#     "total_files_uploaded": fields.Integer(description="Number of files that have been uploaded"),
+#     "generated_dataset_id": fields.String(description="Generated dataset ID"),
+#     "generated_dataset_int_id": fields.Integer(description="Generated dataset internal ID"),
+# })
 
 @api.route("/curation/progress")
 class CurationProgress(Resource):
 
-    @api.marshal_with(model_curation_progress_response, False, 200)
+    # @api.marshal_with(model_curation_progress_response, False, 200)
     @api.doc(responses={500: 'There was an internal server error'}, description="Return important details to the client about the state of the currently running curation function.")
     def get(self):
         try:
@@ -218,9 +219,10 @@ class CurationSubscribe(Resource):
         data = request.get_json()
         dataset_id = data["dataset_id"]
         account_name = data["account_name"]
+        bytes_per_file_dict = data["bytes_per_file_dict"]
 
         try:
-            start_subscriber(dataset_id, account_name)
+            start_subscriber(dataset_id, account_name, bytes_per_file_dict)
         except Exception as e:
             api.abort(500, str(e))
             

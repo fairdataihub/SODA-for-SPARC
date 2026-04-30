@@ -75,6 +75,7 @@ const subscribe = async (datasetId) => {
     await client.post("/curate_datasets/curation/subscribe", {
       dataset_id: datasetId,
       account_name: window.sodaJSONObj["ps-account-selected"]["account-name"],
+      bytes_per_file_dict: window.sodaJSONObj["upload-progress"]?.["bytesPerFile"] || null,
     });
     subscriberLock = false;
     console.log(`Returned from one subscriber session at ${new Date().toLocaleTimeString()}. `);
@@ -478,6 +479,7 @@ const trackPennsieveDatasetGenerationProgress = async () => {
       startGenerate: data["start_generate"],
       mainTotalGenerateDatasetSize: data["main_total_generate_dataset_size"],
       mainGeneratedDatasetSize: data["main_generated_dataset_size"],
+      bytesPerFile: data["bytes_per_file_dict"],
     };
   };
 
@@ -502,6 +504,7 @@ const trackPennsieveDatasetGenerationProgress = async () => {
         startGenerate,
         mainTotalGenerateDatasetSize,
         mainGeneratedDatasetSize,
+        bytesPerFile,
       } = await fetchProgressData();
 
       logProgressToAnalyticsGM(uploadedFiles, mainGeneratedDatasetSize);
@@ -535,16 +538,25 @@ const trackPennsieveDatasetGenerationProgress = async () => {
           continue;
         }
 
+        console.log(`Bytes per file is ${bytesPerFile}`);
+
+        window.sodaJSONObj["upload-progress"]["bytesPerFile"] = bytesPerFile;
+        guidedSaveProgress();
+
         // Default progress update
         const progress = Math.min(
           100,
-          Math.max(0, (mainGeneratedDatasetSize / mainTotalGenerateDatasetSize) * 100)
+          Math.max(
+            0,
+            (mainGeneratedDatasetSize / window.sodaJSONObj["upload-progress"]["size-of-dataset"]) *
+              100
+          )
         );
         setGuidedProgressBarValue("pennsieve", progress);
         updateDatasetUploadProgressTable("pennsieve", {
           "Current action": "Uploading dataset",
           "Data Uploaded": `${formatBytes(mainGeneratedDatasetSize)} of ${formatBytes(
-            mainTotalGenerateDatasetSize
+            window.sodaJSONObj["upload-progress"]["size-of-dataset"]
           )}`,
           "Percent uploaded": `${progress.toFixed(2)}%`,
           "Elapsed time": elapsedTime,
