@@ -9,6 +9,7 @@ import { successCheck, errorMark } from "../../../assets/lotties/lotties";
 import { guidedGetDatasetName, guidedGetDatasetId } from "../utils/sodaJSONObj";
 import { getExistingSubjects } from "../../../stores/slices/datasetEntityStructureSlice";
 import { createStandardizedDatasetStructure } from "../../utils/datasetStructure";
+import getVerifiedFilesFromManifest from "../../organize-dataset/verify-file-statuses";
 import api from "../../others/api/api";
 
 import { guidedResetLocalGenerationUI } from "../guided-curate-dataset";
@@ -246,6 +247,15 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       } finally {
         removeListener(); // Always clean up the listener
       }
+
+      // get the origin manifest ID (id of manifest on Pennsieve)
+      let origin_manifest_id = "";
+
+      origin_manifest_id = await client.get(
+        `/curate_datasets/curation/dataset/${datasetId}/origin_manifest`
+      );
+
+      return origin_manifest_id.data;
     };
 
     const verifyFiles = async () => {
@@ -253,17 +263,69 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     };
 
     const renameFiles = async () => {
-      try {
-        await client.put(
-          `/curate_datasets/curation/rename_files`,
-          {
-            soda: window.sodaJSONObj,
-          },
-          { timeout: 0 }
-        );
-      } catch (e) {
-        clientError(e);
-      }
+      const allFilesReadyToBeRenamed = (finalizedFiles) => {
+        let numberOfFiles = window.sodaJSONObj["upload-progress"]["number-of-files"];
+        return numberOfFiles == finalizedFiles.length;
+      };
+
+      const anyFilesFailedToUpload = (failed) => {
+        return failed.length;
+      };
+
+      const waitForFilesToBeVerified = async () => {
+        setGuidedProgressBarValue("pennsieve", 0);
+
+        while (true) {
+          // first ensure files that need to be renamed are verified
+          const { finalizedFiles, failedFilesPathsList: failed } =
+            await getVerifiedFilesFromManifest(
+              window.sodaJSONObj["upload-progress"]["origin-manifest-id"]
+            );
+
+          let numberOfFiles = window.sodaJSONObj["upload-progress"]["number-of-files"];
+          let numberOfFilesFinalized = finalizedFiles.length;
+
+          let allReady = allFilesReadyToBeRenamed(finalizedFiles);
+          let anyFailed = anyFilesFailedToUpload(failed);
+
+          // files ready to be renamed
+          if (allReady) {
+            updateDatasetUploadProgressTable("pennsieve", {
+              "current action": "All files processed",
+              "Data Uploaded": `${finalizedFiles.length} of ${window.sodaJSONObj["upload-progress"]["number-of-files"]}`,
+            });
+            setGuidedProgressBarValue("pennsieve", (numberOfFiles / numberOfFilesFinalized) * 100);
+            break;
+          }
+
+          if (anyFailed) {
+            throw Error("Some files that need to be renamed did not upload successfully.");
+          }
+
+          updateDatasetUploadProgressTable("pennsieve", {
+            "current action":
+              "Waiting for files to process before the renaming step. 60 seconds until next check.",
+            "Files processed": `${finalizedFiles.length} of ${window.sodaJSONObj["upload-progress"]["number-of-files"]}`,
+          });
+
+          setGuidedProgressBarValue("pennsieve", (numberOfFiles / numberOfFilesFinalized) * 100);
+
+          // Wait a minute to retry
+          await window.wait(60000);
+        }
+      };
+
+      await waitForFilesToBeVerified();
+
+      window.sodaJSONObj["upload-progress"]["status"] = "in progress";
+
+      await client.post(
+        `/curate_datasets/curation/files/rename`,
+        {
+          soda: window.sodaJSONObj,
+        },
+        { timeout: 0 }
+      );
     };
 
     // HAS TO WORK FOR NEW DATASETS, AUTO RETRIES, and EXIT and RETRIES
@@ -372,7 +434,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         status: "in progress",
       };
       await guidedSaveProgress();
-      console.log("Moving on to step 2");
     }
 
     // CASE 1: NEW DATSETS Has no upload-progress and soda["pennsieve-generation-target"] === new
@@ -392,10 +453,9 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       // small wait for progress bar to show 100 before resetting for any next stage
       await window.wait(2000);
       window.sodaJSONObj["upload-progress"]["current-stage"] =
-        window.sodaJSONObj["upload-progress"]["list-of-files-to-rename"].length >= 1
+        Object.keys(window.sodaJSONObj["upload-progress"]["list-of-files-to-rename"]).length >= 1
           ? "rename"
           : "verify";
-      window.sodaJSONObj["upload-progress"]["status"] = "setup";
       window.sodaJSONObj["upload-progress"]["origin-manifest-id"] = origin_manifest_id;
       await guidedSaveProgress();
     }
@@ -414,10 +474,11 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     // RESULT:
     // STAGE 3: RENAME FILES
     if (window.sodaJSONObj["upload-progress"]["current-stage"] == "rename") {
+      window.sodaJSONObj["upload-progress"]["status"] = "setup";
       await renameFiles();
       window.sodaJSONObj["upload-progress"]["status"] = "complete";
-
       await guidedSaveProgress();
+      await window.wait(2000);
     }
 
     // TODO: Dynamically decide to verify or complete per user instruction/workflow
@@ -575,12 +636,11 @@ const trackPennsieveDatasetGenerationProgress = async () => {
 
       if (
         window.sodaJSONObj["upload-progress"]?.["current-stage"] === "rename" &&
-        window.sodaJSONObj["upload-progress"]?.["status"] === "preparing"
+        window.sodaJSONObj["upload-progress"]?.["status"] === "setup"
       ) {
-        setGuidedProgressBarValue("pennsieve", 0);
-        updateDatasetUploadProgressTable("pennsieve", {
-          "Current action": "Preparing files to be renamed...",
-        });
+        //do nothing while front end waits or all files to be verified
+        await window.wait(1000);
+        continue;
       }
 
       if (
@@ -594,6 +654,16 @@ const trackPennsieveDatasetGenerationProgress = async () => {
         updateDatasetUploadProgressTable("pennsieve", {
           "Current action": "Renaming files...",
           "files renamed": `${mainGeneratedDatasetSize} of ${mainTotalGenerateDatasetSize}`,
+        });
+      }
+
+      if (
+        window.sodaJSONObj["upload-progress"]?.["current-stage"] === "rename" &&
+        window.sodaJSONObj["upload-progress"]?.["status"] === "complete"
+      ) {
+        setGuidedProgressBarValue("pennsieve", 100);
+        updateDatasetUploadProgressTable("pennsieve", {
+          Status: "Success! All files renamed on Pennsieve!",
         });
       }
 

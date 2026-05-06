@@ -17,7 +17,9 @@ from pysoda.core.dataset_generation import (
     check_json_size,
     clean_json_structure,
     check_server_access_to_files,
-    start_subscriber
+    start_subscriber,
+    rename_files,
+    get_origin_manifest_id
 )
 
 from pysoda.utils import validation_error_message
@@ -183,9 +185,38 @@ class Curation(Resource):
                 api.abort(e.code, e.description)
 
 
+@api.route("/curation/dataset/<string:dataset_id>/origin_manifest")
+class CurationOriginManifest(Resource):
 
+    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request', 403: 'Forbidden'}, 
+    description="Given a pennsieve dataset id return the latest upload manifest.")   
+    def get(self, dataset_id):
+        return get_origin_manifest_id(dataset_id)
 
+@api.route("/curation/files/rename")
+class CurationFilesRename(Resource):
+    @api.doc(responses={500: "There was an internal server error", 400: "Bad Request", 200: "Ok"},
+             description="Given a soda object read the upload-progress list of renamed files and rename them on pennsieve.")
+    def post(self):
+        data = request.get_json()
 
+        soda = data.get("soda")
+
+        if "upload-progress" not in soda:
+            api.abort(400, "Missing parameter: upload-progress")
+        
+        upload_progress = soda["upload-progress"]
+
+        if "list-of-files-to-rename" not in upload_progress:
+            api.abort(400, "Missing parameter: list of files to rename")
+
+        
+        try:
+            rename_files(upload_progress["dataset-id"], upload_progress["list-of-files-to-rename"])
+        except Exception as e:
+             api.abort(e.code, e.description)
+
+        
 
 # model_curation_progress_response = api.model( "CurationProgressResponse", {
 #     "main_curate_status": fields.String(description="Status of the main curation function"),
