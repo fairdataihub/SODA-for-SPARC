@@ -667,9 +667,9 @@
               each entity in your dataset (such as subjects and samples). You can do this manually
               in the SODA interface or by importing a spreadsheet.
 
-              <br /><br /><b>Note:</b> If your dataset includes many entities, importing from a
-              spreadsheet is recommend to avoid having to type out all of your entity IDs within the
-              SODA UI.
+              <br /><br /><b>Note:</b> If your dataset includes many entities, or if you have
+              already filled out the SPARC metadata templates, importing from a spreadsheet is
+              recommend to avoid having to type out all of your entity IDs within the SODA UI.
             </p>
             <div
               data-component-type="info-list"
@@ -690,34 +690,14 @@
               >How would you like to assign IDs to the entities in your dataset?
             </label>
             <div class="guided--radio-button-container">
-              <button
-                class="guided--radio-button tile-button"
-                id="guided-button-add-entities-manually"
-                data-next-element="guided-section-start-new-curation"
-                data-button-config-value="entity-addition-method"
-                data-button-config-value-state="manual"
-              >
-                <div class="tile-button-icon">
-                  <div data-component-type="icon" data-icon-type="keyboard"></div>
-                </div>
-                <div class="tile-button-text">
-                  <h2>Enter entity IDs manually in the SODA UI</h2>
-                </div>
-              </button>
-              <button
-                class="guided--radio-button tile-button"
-                id="guided-button-add-entities-via-spreadsheet"
-                data-next-element="guided-section-start-new-curation"
-                data-button-config-value="entity-addition-method"
-                data-button-config-value-state="spreadsheet"
-              >
-                <div class="tile-button-icon">
-                  <div data-component-type="icon" data-icon-type="spreadsheet-import"></div>
-                </div>
-                <div class="tile-button-text">
-                  <h2>Import entity IDs using a spreadsheet</h2>
-                </div>
-              </button>
+              <div
+                data-component-type="checkbox-card"
+                data-button-id="guided-button-add-entities-manually"
+              ></div>
+              <div
+                data-component-type="checkbox-card"
+                data-button-id="guided-button-add-entities-via-spreadsheet"
+              ></div>
             </div>
           </div>
         </div>
@@ -729,7 +709,7 @@
         ></div>
         <div
           id="guided-spreadsheet-import-dataset-entity-and-metadata-tab"
-          data-page-name="Designate Entity IDs Using Spreadsheets"
+          data-page-name="Designate Entity Metadata via Spreadsheets"
           class="guided--page guided-subject-related-page-set gm"
           data-component-type="entity-spreadsheet-import-page"
         ></div>

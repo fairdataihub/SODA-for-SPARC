@@ -23,9 +23,8 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
   console.log("Entity import completion status:", entityImportCompletionStatus);
   const importResults = {};
 
-  // Build list of enabled entity types
+  // Build list of enabled entity types (removed legacy `entity-structure` option)
   const enabledEntities = [
-    "entity-structure",
     ...(selectedEntities?.includes("subjects") ? ["subjects"] : []),
     ...(selectedEntities?.includes("samples") ? ["samples"] : []),
     ...(selectedEntities?.includes("sites") ? ["sites"] : []),
@@ -33,19 +32,7 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
 
   // --- Entity type configuration ---
   const entityTypeConfig = {
-    "entity-structure": {
-      title: "Assign IDs to all entities in your dataset",
-      singular: "entity",
-      spreadsheetInstructions: [
-        "Save the entity-structure.xlsx file by clicking the button below.",
-      ],
-      icon: <IconFileSpreadsheet size={24} />,
-      color: "teal",
-      description:
-        "Assign unique IDs to each entity in your dataset using the template below. Once you have filled out the template and re-import it into SODA, you will be able to provide metadata for each entity.",
-      dependsOn: [],
-      metadataFileName: "entity-structure.xlsx",
-    },
+    /* `entity-structure` option removed per request */
     subjects: {
       title: "Provide Subject Metadata",
       singular: "subject",
@@ -59,7 +46,7 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
       title: "Provide Sample Metadata",
       singular: "sample",
       icon: <IconFlask size={24} />,
-      color: "black",
+      color: "cyan",
       description: "Import sample IDs and metadata from an Excel file",
       dependsOn: ["subjects"], // Depends on subjects being imported first
       sequence: 2,
@@ -122,7 +109,13 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
   };
 
   return (
-    <GuidedModePage pageHeader="Designate entity IDs using spreadsheets">
+    <GuidedModePage pageHeader="Designate Entity Metadata via Spreadsheets">
+      <GuidedModeSection>
+        <Text>
+          Assign unique IDs and metadata for entities (e.g., subjects, samples). Download SDS
+          templates to fill in Excel or another spreadsheet program, or import your completed files.
+        </Text>
+      </GuidedModeSection>
       <GuidedModeSection>
         {enabledEntities.map((entityType) => renderEntityImport(entityType))}
       </GuidedModeSection>

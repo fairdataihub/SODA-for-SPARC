@@ -19,7 +19,7 @@ export const DownloadCard = ({ entityType, config }) => {
         </Group>
       </Card.Section>
 
-      <Box mt="md" mb="lg" h={130}>
+      <Box mt="md" mb="lg" h={130} px="xs">
         <List type="ordered" spacing="sm" withPadding>
           <List.Item>Download the {entityType}.xlsx template</List.Item>
           <List.Item>

@@ -61,7 +61,6 @@ export const checkboxCardSlice = (set) => ({
       mutuallyExclusiveWithCards: ["guided-button-add-entities-manually"],
       configValue: "entity-addition-method",
       configValueState: "spreadsheet",
-      comingSoon: true,
       checked: false,
     },
     "generate-dataset-locally": {
