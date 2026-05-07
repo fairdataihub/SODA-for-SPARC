@@ -129,12 +129,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     window.sodaJSONObj["soda_json_structure"] = standardizedDatasetStructure;
 
     // Code that runs after a successful upload to Pennsieve (whether initial upload or retry)
-    const finalizeUpload = async (data) => {
-      window.pennsieveManifestId = data["origin_manifest_id"];
-      window.totalFilesCount = data["main_curation_total_files"];
-      window.sodaJSONObj["previously-uploaded-data"] = {};
-      window.sodaJSONObj["dataset-successfully-uploaded-to-pennsieve"] = true;
-
+    const finalizeUpload = async () => {
       // If the message indicates that no files were uploaded (which can happen when
       // uploading to an existing Pennsieve dataset with the "skip" option selected for existing files and
       // the dataset being generated has the same files as the existing dataset), do not show
@@ -155,14 +150,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
 
       bytesOnPreviousLogPage = 0;
       filesOnPreviousLogPage = 0;
-
-      $("#guided-next-button").css("visibility", "visible");
-      if (window.sodaJSONObj["curation-mode"] === "free-form") {
-        // Hide the save and exit button (continue will exit them out automatically)
-        document.getElementById("guided-button-save-and-exit").classList.add("hidden");
-      }
-
-      await guidedSaveProgress();
     };
 
     // --- Helper: prepare upload object for Pennsieve ---
@@ -258,8 +245,11 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       return origin_manifest_id.data;
     };
 
-    const verifyFiles = async () => {
+    const showVerifyFiles = async () => {
       // verify that all files uploaded in the session have been uploaded to Pennsieve successfully
+      document.getElementById("guided-section-file-upload-verification").classList.remove("hidden");
+      document.querySelector("#guided-section-file-upload-verification-button").disabled = false;
+      document.querySelector("#guided--skip-verify-btn").disabled = false;
     };
 
     const renameFiles = async () => {
@@ -455,12 +445,10 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       window.sodaJSONObj["upload-progress"]["current-stage"] =
         Object.keys(window.sodaJSONObj["upload-progress"]["list-of-files-to-rename"]).length >= 1
           ? "rename"
-          : "verify";
+          : "complete";
       window.sodaJSONObj["upload-progress"]["origin-manifest-id"] = origin_manifest_id;
       await guidedSaveProgress();
     }
-
-    // TODO: Possibly switch rename and verify order since to rename we need to know the files exist on Pennsieve.
 
     // CASE 1: NEW DATSETS Has no upload-progress and soda["pennsieve-generation-target"] === new
     // RESULT:
@@ -479,10 +467,23 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       await window.wait(2000);
     }
 
-    // TODO: Dynamically decide to verify or complete per user instruction/workflow
     window.sodaJSONObj["upload-progress"]["current-stage"] = "complete";
+    delete window.sodaJSONObj["upload-progress"]["status"];
 
-    // STAGE 4: (Optional) VERIFY FILES
+    // STAGE 4: (Optional) VERIFY FILES otherwise just click save & exit
+    showVerifyFiles();
+
+    // Display UI Exit Buttons
+    $("#guided-next-button").css("visibility", "visible");
+    if (window.sodaJSONObj["curation-mode"] === "free-form") {
+      // Hide the save and exit button (continue will exit them out automatically)
+      document.getElementById("guided-button-save-and-exit").classList.add("hidden");
+    }
+
+    window.pennsieveManifestId = window.sodaJSONObj["upload-progress"]["origin-manifest-id"];
+    window.totalFilesCount = window.sodaJSONObj["upload-progress"]["number-of-files"];
+    window.sodaJSONObj["previously-uploaded-data"] = {};
+    window.sodaJSONObj["dataset-successfully-uploaded-to-pennsieve"] = true;
   } catch (error) {
     console.log("ERROR RECEIVED IN CODE CATCH");
     clientError(error);
