@@ -13,7 +13,7 @@ const downloadHighLvlFolders = document.getElementById("download-high-level-fold
 const downloadMetadataFiles = document.getElementById("download-manifest-only-btn");
 
 // If files are added or removed from the file_templates folder, update the templateArray and templateHighLvlFolders
-let templateArray = [
+const templateArray = [
   "submission.xlsx",
   "dataset_description.xlsx",
   "subjects.xlsx",
@@ -28,7 +28,7 @@ let templateArray = [
   ".dss",
 ];
 
-let templateHighLvlFolders = ["code", "derivative", "docs", "primary", "protocol", "source"];
+const templateHighLvlFolders = ["code", "derivative", "docs", "primary", "protocol", "source"];
 
 const resolveTemplatePath = async (templateName) => {
   const currentDirectory = await window.electron.ipcRenderer.invoke("get-current-directory");

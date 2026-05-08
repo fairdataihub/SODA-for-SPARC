@@ -7,13 +7,14 @@ import useGlobalStore from "../../../stores/globalStore";
 import { importEntitiesFromExcel, entityConfigs, saveEntities } from "./excelImport";
 import { swalListDoubleAction, swalConfirmAction } from "../../../scripts/utils/swal-utils";
 import SodaPaper from "../../utils/ui/SodaPaper";
+import { removeSuccessfullyImportedEntityType } from "../../../stores/slices/datasetContentSelectorSlice";
 import {
   getExistingSubjects,
   getExistingSamples,
   getExistingSites,
 } from "../../../stores/slices/datasetEntityStructureSlice";
 import { normalizeEntityId } from "../../../stores/slices/datasetEntityStructureSlice";
-import { DownloadCard, ImportCard } from "./SpreadsheetDownloadImport";
+import { DownloadCard, ImportCard, EntityImportCompleteCard } from "./SpreadsheetDownloadImport";
 
 const SpreadsheetImportDatasetEntityAdditionPage = () => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
@@ -21,7 +22,14 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
     (state) => state.entityImportCompletionStatus
   );
   console.log("Entity import completion status:", entityImportCompletionStatus);
-  const importResults = {};
+  const successfullyImportedEntityTypes = useGlobalStore(
+    (state) => state.successfullyImportedEntityTypes || []
+  );
+
+  // Helper to get imported counts for display when available
+  const subjectsCount = getExistingSubjects()?.length || 0;
+  const samplesCount = getExistingSamples()?.length || 0;
+  const sitesCount = getExistingSites()?.length || 0;
 
   // Build list of enabled entity types (removed legacy `entity-structure` option)
   const enabledEntities = [
@@ -34,29 +42,30 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
   const entityTypeConfig = {
     /* `entity-structure` option removed per request */
     subjects: {
-      title: "Provide Subject Metadata",
+      title: "Step 1: Subject IDs",
       singular: "subject",
       icon: <IconUser size={24} />,
       color: "blue",
-      description: "Assign unique IDs to each subject in your dataset using the template below.",
+      description: "Download the template, assign unique IDs, and upload the completed file.",
       dependsOn: ["entity-structure"],
       metadataFileName: "subjects.xlsx",
     },
     samples: {
-      title: "Provide Sample Metadata",
+      title: "Step 2: Sample IDs",
       singular: "sample",
       icon: <IconFlask size={24} />,
       color: "cyan",
-      description: "Import sample IDs and metadata from an Excel file",
+      description: "Link samples to subjects and add metadata.",
       dependsOn: ["subjects"], // Depends on subjects being imported first
       sequence: 2,
+      metadataFileName: "samples.xlsx",
     },
     sites: {
-      title: "Provide Site Metadata",
+      title: "Step 3: Site IDs",
       singular: "site",
       icon: <IconPin size={24} />,
       color: "grape",
-      description: "Import site IDs and metadata from an Excel file.",
+      description: "Link sites to subjects and/or samples with metadata.",
       dependsOn: ["entity-structure", "subjects", "samples"],
       metadataFileName: "sites.xlsx",
     },
@@ -64,7 +73,24 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
 
   const renderEntityImport = (entityType) => {
     const config = entityTypeConfig[entityType];
-    const importResult = importResults[entityType];
+
+    // Locked when any real dependency (not "entity-structure") is not satisfied
+    const locked =
+      config.dependsOn?.some(
+        (dep) => dep !== "entity-structure" && !successfullyImportedEntityTypes.includes(dep)
+      ) ?? false;
+
+    // Determine import result from global successfullyImportedEntityTypes and compute counts
+    let importResult = null;
+    if (successfullyImportedEntityTypes.includes(entityType)) {
+      const count =
+        entityType === "subjects"
+          ? subjectsCount
+          : entityType === "samples"
+            ? samplesCount
+            : sitesCount;
+      importResult = { success: true, imported: count };
+    }
 
     return (
       <SodaPaper key={entityType}>
@@ -78,10 +104,15 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
           {!importResult?.success ? (
             <Grid gutter={32} mt="sm">
               <Grid.Col span={6}>
-                <DownloadCard entityType={entityType} config={config} />
+                <DownloadCard entityType={entityType} config={config} locked={locked} />
               </Grid.Col>
               <Grid.Col span={6}>
-                <ImportCard entityType={entityType} config={config} importResult={importResult} />
+                <ImportCard
+                  entityType={entityType}
+                  config={config}
+                  importResult={importResult}
+                  locked={locked}
+                />
               </Grid.Col>
             </Grid>
           ) : (
@@ -97,7 +128,8 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
                   "Cancel"
                 ).then((confirmed) => {
                   if (confirmed) {
-                    setImportResults((prev) => ({ ...prev, [entityType]: null }));
+                    // Remove success flag for this entity type so it can be re-imported
+                    removeSuccessfullyImportedEntityType(entityType);
                   }
                 })
               }
@@ -112,8 +144,11 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
     <GuidedModePage pageHeader="Designate Entity Metadata via Spreadsheets">
       <GuidedModeSection>
         <Text>
-          Assign unique IDs and metadata for entities (e.g., subjects, samples). Download SDS
-          templates to fill in Excel or another spreadsheet program, or import your completed files.
+          Use the interface below to assign unique IDs and provide metadata for the entities in your
+          dataset (for example, subjects and samples). If you haven't yet prepared the SDS metadata
+          templates, you can download them here, fill them out in Excel or another spreadsheet
+          program, and then import the completed files. If you already have SDS metadata files
+          ready, you can progress to the next step to import them directly.
         </Text>
       </GuidedModeSection>
       <GuidedModeSection>

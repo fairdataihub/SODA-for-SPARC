@@ -1,6 +1,10 @@
 import { swalListDoubleAction, swalConfirmAction } from "../../../scripts/utils/swal-utils";
+import {
+  addSuccessfullyImportedEntityType,
+  removeSuccessfullyImportedEntityType,
+} from "../../../stores/slices/datasetContentSelectorSlice";
 
-export const handleEntityFileImport = async (files, entityType, setImportResults) => {
+export const handleEntityFileImport = async (files, entityType) => {
   if (!files?.length) return;
 
   const config = entityConfigs[entityType];
@@ -44,18 +48,14 @@ export const handleEntityFileImport = async (files, entityType, setImportResults
 
     // Save the entities to the data store
     const saveResult = saveEntities(result.entities, entityType);
-    setImportResults((prev) => ({ ...prev, [entityType]: saveResult }));
 
+    // Update global successfullyImportedEntityTypes using provided helpers
     if (saveResult.success) {
-      window.notyf.open({
-        type: "success",
-        message: saveResult.message,
-      });
+      addSuccessfullyImportedEntityType(entityType);
+      window.notyf.open({ type: "success", message: saveResult.message });
     } else {
-      window.notyf.open({
-        type: "error",
-        message: saveResult.message,
-      });
+      removeSuccessfullyImportedEntityType(entityType);
+      window.notyf.open({ type: "error", message: saveResult.message });
     }
   } catch (error) {
     window.notyf.open({
@@ -125,13 +125,13 @@ export const readExcelFile = (file) => {
  */
 export const entityConfigs = {
   subjects: {
-    idField: "subject_id",
+    idField: "subject id",
     prefix: "sub-",
-    requiredFields: ["subject_id"],
+    requiredFields: ["subject id"],
     formatEntity: (item, id) => ({
       id,
       type: "subject",
-      metadata: { ...item, subject_id: id },
+      metadata: { ...item, "subject id": id },
     }),
     saveEntity: (entity) => addSubject(entity.id, entity.metadata),
     formatDisplayId: (entity) => entity.id,
@@ -139,18 +139,18 @@ export const entityConfigs = {
   },
 
   samples: {
-    idField: "sample_id",
+    idField: "sample id",
     prefix: "sam-",
-    requiredFields: ["sample_id", "subject_id"],
+    requiredFields: ["sample id", "subject id"],
     formatEntity: (item, id) => {
       // Normalize the subject ID using the imported function
-      const subjectId = normalizeEntityId("sub-", item["subject_id"]);
+      const subjectId = normalizeEntityId("sub-", item["subject id"]);
 
       return {
         id,
         type: "sample",
         parentSubject: subjectId,
-        metadata: { ...item, sample_id: id, subject_id: subjectId },
+        metadata: { ...item, "sample id": id, "subject id": subjectId },
       };
     },
     saveEntity: (entity) => addSample(entity.parentSubject, null, entity.id, entity.metadata),
@@ -159,27 +159,27 @@ export const entityConfigs = {
   },
 
   sites: {
-    idField: "site_id",
+    idField: "site id",
     prefix: "site-",
-    requiredFields: ["site_id", "subject_id"],
-    optionalFields: ["sample_id"],
+    requiredFields: ["site id", "subject id"],
+    optionalFields: ["sample id"],
     formatEntity: (item, id) => {
       // Normalize parent IDs consistently using the imported function
-      const subjectId = normalizeEntityId("sub-", item["subject_id"]);
+      const subjectId = normalizeEntityId("sub-", item["subject id"]);
 
       // Create base entity with subject parent
       const entity = {
         id,
         type: "site",
         parentSubject: subjectId,
-        metadata: { ...item, site_id: id, subject_id: subjectId },
+        metadata: { ...item, "site id": id, "subject id": subjectId },
       };
 
-      // Add sample parent if it exists
-      if (item["sample_id"]) {
-        const sampleId = normalizeEntityId("sam-", item["sample_id"]);
+      // Add sample parent if it exists (spreadsheet header "sample id")
+      if (item["sample id"]) {
+        const sampleId = normalizeEntityId("sam-", item["sample id"]);
         entity.parentSample = sampleId;
-        entity.metadata["sample_id"] = sampleId;
+        entity.metadata["sample id"] = sampleId;
       }
 
       return entity;
@@ -207,6 +207,7 @@ export const entityConfigs = {
  * Process entities from Excel file with validation
  */
 export const processEntityData = (rawData, entityType) => {
+  console.log(`Processing ${entityType} data:`, rawData);
   const config = entityConfigs[entityType];
   if (!config) {
     return {
@@ -217,6 +218,7 @@ export const processEntityData = (rawData, entityType) => {
   }
 
   const { idField, prefix, requiredFields } = config;
+  console.log("idField:", idField, "prefix:", prefix, "requiredFields:", requiredFields);
 
   // Check if data exists
   if (!rawData || rawData.length === 0) {
@@ -315,6 +317,7 @@ export const saveEntities = (entities, entityType) => {
       savedEntities.push(entity);
     } catch (error) {
       errors.push(`Failed to import ${entity.id}: ${error.message}`);
+      console.error(`Error saving entity ${entity.id}:`, error);
     }
   }
 

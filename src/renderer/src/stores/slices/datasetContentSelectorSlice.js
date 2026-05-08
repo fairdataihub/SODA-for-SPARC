@@ -4,6 +4,7 @@ import useGlobalStore from "../globalStore";
 export const datasetContentSelectorSlice = (set, get) => ({
   selectedEntities: [],
   deSelectedEntities: [],
+  successfullyImportedEntityTypes: [],
   selectedDataCategories: [],
   deSelectedDataCategories: [],
   selectedHierarchyEntity: null,
@@ -11,6 +12,23 @@ export const datasetContentSelectorSlice = (set, get) => ({
   currentSelectedHierarchyEntityParentSample: null,
   selectedDataCategoriesByEntityType: {},
 });
+
+export const setSuccessfullyImportedEntityTypes = (entityTypes) => {
+  useGlobalStore.setState({ successfullyImportedEntityTypes: entityTypes });
+};
+
+export const addSuccessfullyImportedEntityType = (entityType) => {
+  const currentTypes = useGlobalStore.getState().successfullyImportedEntityTypes || [];
+  if (!currentTypes.includes(entityType)) {
+    useGlobalStore.setState({ successfullyImportedEntityTypes: [...currentTypes, entityType] });
+  }
+};
+export const removeSuccessfullyImportedEntityType = (entityType) => {
+  const currentTypes = useGlobalStore.getState().successfullyImportedEntityTypes || [];
+  useGlobalStore.setState({
+    successfullyImportedEntityTypes: currentTypes.filter((type) => type !== entityType),
+  });
+};
 
 export const setSelectedDataCategoriesByEntityType = (selectedDataCategoriesByEntityType) => {
   useGlobalStore.setState({ selectedDataCategoriesByEntityType });
