@@ -485,9 +485,17 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     window.sodaJSONObj["previously-uploaded-data"] = {};
     window.sodaJSONObj["dataset-successfully-uploaded-to-pennsieve"] = true;
   } catch (error) {
-    console.log("ERROR RECEIVED IN CODE CATCH");
+    // TODO: AARON Handle NoUploadAction error with SWAL that just exits the upload.
     clientError(error);
     const emessage = userErrorMessage(error, false);
+    if (emessage.includes("No files need to be uploaded or renamed")) {
+      await swalShowError(
+        "No Upload Actions Need to be Taken",
+        emessage + "SODA will exit the upload process."
+      );
+      document.querySelector("#guided-button-exit").click();
+      return;
+    }
     amountOfTimesPennsieveUploadFailed += 1;
     automaticRetry(false, emessage);
     guidedSetNavLoadingState(false);
