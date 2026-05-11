@@ -489,11 +489,18 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     clientError(error);
     const emessage = userErrorMessage(error, false);
     if (emessage.includes("No files need to be uploaded or renamed")) {
-      await swalShowError(
-        "No Upload Actions Need to be Taken",
-        emessage + "SODA will exit the upload process."
+      await swalShowInfo(
+        "No files were uploaded in this session and no files need to be renamed",
+        `
+          <div style="text-align: left;">
+            When uploading to an existing dataset with "Skip existing files" selected, no files are uploaded if the files you imported into SODA match what is already on Pennsieve.
+            <br><br>
+            If you believe this is a mistake, please contact the SODA team using the Contact Us page in the sidebar or follow the documentation <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here.</a>
+           </div>
+           `
       );
-      document.querySelector("#guided-button-exit").click();
+      guidedSetNavLoadingState(false);
+
       return;
     }
     amountOfTimesPennsieveUploadFailed += 1;
@@ -710,6 +717,13 @@ const trackPennsieveDatasetGenerationProgress = async () => {
            `
         );
 
+        break;
+      } else if (status === "Done" && message === "No files were uploaded in this session") {
+        setGuidedProgressBarValue("pennsieve", 0);
+        updateDatasetUploadProgressTable("pennsieve", {
+          Status: "Dataset contains all imported files and all files have SDS compliant names.",
+        });
+        // stop monitoring
         break;
       } else if (status === "Done" && message !== "Success: COMPLETED!") {
         console.error("The upload monitor noticed an error during the upload process.");
