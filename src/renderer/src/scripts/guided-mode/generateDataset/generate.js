@@ -305,7 +305,9 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         }
       };
 
-      await waitForFilesToBeVerified();
+      // only verify if there are files uploaded in this session. If no files uploaded then there are files to rename that have already been uploaded in a separate session
+      // that are ready to be renamed.
+      if (window.sodaJSONObj["upload-progress"]["manifest-id"]) await waitForFilesToBeVerified();
 
       window.sodaJSONObj["upload-progress"]["status"] = "in progress";
 
@@ -420,8 +422,8 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         "number-of-files": uploadData["number_of_files"],
         "list-of-files-to-rename": uploadData["list_of_files_to_rename"],
         "dataset-id": uploadData["dataset_id"],
-        "current-stage": "upload",
-        status: "in progress",
+        "current-stage": !uploadData["manifest-id"] ? "rename" : "upload",
+        status: !uploadData["manifest-id"] ? "setup" : "in progress",
       };
       await guidedSaveProgress();
     }
@@ -717,13 +719,6 @@ const trackPennsieveDatasetGenerationProgress = async () => {
            `
         );
 
-        break;
-      } else if (status === "Done" && message === "No files were uploaded in this session") {
-        setGuidedProgressBarValue("pennsieve", 0);
-        updateDatasetUploadProgressTable("pennsieve", {
-          Status: "Dataset contains all imported files and all files have SDS compliant names.",
-        });
-        // stop monitoring
         break;
       } else if (status === "Done" && message !== "Success: COMPLETED!") {
         console.error("The upload monitor noticed an error during the upload process.");
