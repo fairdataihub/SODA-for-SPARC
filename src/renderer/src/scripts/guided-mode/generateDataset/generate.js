@@ -242,6 +242,8 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         `/curate_datasets/curation/dataset/${datasetId}/origin_manifest`
       );
 
+      console.log(origin_manifest_id);
+
       return origin_manifest_id.data;
     };
 
@@ -422,8 +424,8 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         "number-of-files": uploadData["number_of_files"],
         "list-of-files-to-rename": uploadData["list_of_files_to_rename"],
         "dataset-id": uploadData["dataset_id"],
-        "current-stage": !uploadData["manifest-id"] ? "rename" : "upload",
-        status: !uploadData["manifest-id"] ? "setup" : "in progress",
+        "current-stage": !uploadData["manifest_id"] ? "rename" : "upload",
+        status: !uploadData["manifest_id"] ? "setup" : "in progress",
       };
       await guidedSaveProgress();
     }
