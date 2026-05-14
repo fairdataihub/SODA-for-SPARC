@@ -6,7 +6,7 @@ on:
     branches:
       - main
       - staging
-      - ffm-refactor
+      - server-gunicorn-pysoda-startup
 
 jobs:
   deploy-on-mac:

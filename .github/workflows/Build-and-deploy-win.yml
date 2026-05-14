@@ -7,7 +7,6 @@ on:
       - main
       - staging
       - server-gunicorn-pysoda-startup
-      - ffm-refactor
 jobs:
   deploy-on-windows:
     runs-on: windows-latest
