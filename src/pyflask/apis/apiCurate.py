@@ -19,7 +19,8 @@ from pysoda.core.dataset_generation import (
     check_server_access_to_files,
     start_subscriber,
     rename_files,
-    get_origin_manifest_id
+    get_origin_manifest_id,
+    generate_local_dataset
 )
 
 from pysoda.utils import validation_error_message
@@ -183,6 +184,21 @@ class Curation(Resource):
             else:
                 # custom werkzeug.exception that we raised
                 api.abort(e.code, e.description)
+
+
+@api.route("/curation/local_dataset")
+class CurationCreateLocalDataset(Resource):
+    @api.doc(responses={500: "There was an internal server error", 400: "Bad Request"}, 
+             description="Create a local dataset")
+    def post(self):
+        data = request.get_json()
+        soda = data["soda"]
+        try:
+            return generate_local_dataset(soda)
+        except Exception as e:
+            api.logger.info("Error message details: ", str(e))
+            api.abort(e.code, str(e))
+            
 
 
 @api.route("/curation/dataset/<string:dataset_id>/origin_manifest")

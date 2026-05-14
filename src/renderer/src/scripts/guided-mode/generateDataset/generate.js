@@ -923,12 +923,9 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
 
     // Start local generation - catch immediate errors (like validation) without blocking
     client
-      .post(
-        "/curate_datasets/curation",
-        { soda_json_structure: sodaJSONObjCopy, resume: false },
-        { timeout: 0 }
-      )
+      .post("/curate_datasets/curation/local_dataset", { soda: sodaJSONObjCopy }, { timeout: 0 })
       .catch(async (error) => {
+        clientError(error);
         console.error("Error during local dataset generation:", error);
         await handleLocalGenerationFailure(error);
       });
@@ -951,8 +948,9 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
       Status: "Dataset successfully generated locally",
     });
     window.unHideAndSmoothScrollToElement("guided-section-post-local-generation-success");
+    guidedSetNavLoadingState(false);
   } catch (error) {
-    console.error("Error during local dataset generation:2", error);
+    console.error("Error during local dataset generation:", error);
 
     await handleLocalGenerationFailure(error);
   } finally {
