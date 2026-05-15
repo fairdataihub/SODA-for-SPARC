@@ -21,7 +21,7 @@
     "build:win": "npm run python-onefile-build-win && npm run build && electron-builder --win --config",
     "build:mac": "npm run build && electron-builder --mac --config",
     "build:linux": "npm run build && electron-builder --linux --config",
-    "python-folder-build-unix": "python -m PyInstaller --onedir --clean ./src/pyflask/app.py --additional-hooks-dir=./hooks --collect-all numpy --hidden-import=urllib3.util.ssl_ --distpath ./pyflaskdist",
+    "python-folder-build-unix": "python -m PyInstaller --onedir --clean ./src/pyflask/app.py --additional-hooks-dir=./hooks --runtime-hook=./hooks/rthook-ssl.py --collect-all numpy --hidden-import=ssl --hidden-import=_ssl --distpath ./pyflaskdist",
     "python-folder-build-win": "python -m PyInstaller --onedir --add-data ./src/pyflask/libcrypto-1_1-x64.dll;. --add-data ./src/pyflask/libssl-1_1-x64.dll;. --additional-hooks-dir=./hooks --collect-all numpy --clean ./src/pyflask/app.py --distpath ./pyflaskdist",
     "gunicorn-folder-build-unix": "python -m PyInstaller --onefile --clean ./src/uploadServer/uploadApp.py",
     "gunicorn-folder-build-win": "python -m PyInstaller --onefile --clean ./src/uploadServer/uploadApp.py",

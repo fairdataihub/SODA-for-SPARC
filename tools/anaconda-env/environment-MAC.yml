@@ -71,7 +71,6 @@ dependencies:
       - biopython==1.87
       - blinker==1.9.0
       - boto3==1.42.95
-      - botocore==1.42.95
       - certifi==2026.4.22
       - charset-normalizer==3.4.7
       - click==8.3.3
@@ -98,7 +97,6 @@ dependencies:
       - pennsieve==7.0.1
       - protobuf==4.25.9
       - pyjwt==2.12.1
-      - pysodafair
       - python-docx==1.2.0
       - referencing==0.37.0
       - requests==2.33.1
@@ -107,7 +105,12 @@ dependencies:
       - setuptools==68.2.2
       - tqdm==4.67.3
       - typing-extensions==4.15.0
-      - urllib3==2.6.3
+      - urllib3==1.26.20
       - werkzeug==2.3.8
       - zope-event==6.1
       - zope-interface==8.3
+      - pysodafair
+      # NOTE: Keep pysodafair and the --extra-index-url line at the bottom of this file.
+      # The GitHub Actions build workflow automatically uncomments the extra-index-url line
+      # for beta versions to install pysodafair from TestPyPI instead of PyPI.
+      - --extra-index-url https://test.pypi.org/simple/
