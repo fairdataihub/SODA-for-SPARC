@@ -309,6 +309,8 @@ export const getExistingSubjects = () => {
 
 // Sample management functions
 export const addSample = (subjectId, parentSampleId, sampleId, metadata = {}) => {
+  // Validate sample metadata before making changes
+  validateEntityMetadata("sample", metadata);
   // Use normalizeEntityId for both sample and subject IDs
   const normalizedSampleId = normalizeEntityId("sam-", sampleId);
   const normalizedSubjectId = normalizeEntityId("sub-", subjectId);
@@ -428,6 +430,8 @@ export const modifySampleId = (subjectId, oldSampleId, newSampleId) => {
 
 // Subject site management functions
 export const addSiteToSubject = (subjectId, siteId, metadata = {}) => {
+  // Validate site metadata before adding
+  validateEntityMetadata("site", metadata);
   // Use normalizeEntityId for both site and subject IDs
   const normalizedSiteId = normalizeEntityId("site-", siteId);
   const normalizedSubjectId = normalizeEntityId("sub-", subjectId);
@@ -470,6 +474,8 @@ export const addSiteToSubject = (subjectId, siteId, metadata = {}) => {
 
 // Sample site management functions
 export const addSiteToSample = (subjectId, sampleId, siteId, metadata = {}) => {
+  // Validate site metadata before adding
+  validateEntityMetadata("site", metadata);
   // Use normalizeEntityId for all IDs
   const normalizedSiteId = normalizeEntityId("site-", siteId);
   const normalizedSubjectId = normalizeEntityId("sub-", subjectId);

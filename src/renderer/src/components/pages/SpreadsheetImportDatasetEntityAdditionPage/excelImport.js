@@ -316,8 +316,16 @@ export const saveEntities = (entities, entityType) => {
       importedCount++;
       savedEntities.push(entity);
     } catch (error) {
-      errors.push(`Failed to import ${entity.id}: ${error.message}`);
+      // Fail-fast: stop importing further entities if any save/validation error occurs
+      const msg = `Failed to import ${entity.id}: ${error.message}`;
       console.error(`Error saving entity ${entity.id}:`, error);
+      return {
+        success: false,
+        message: msg,
+        imported: importedCount,
+        errors: [msg],
+        entities: savedEntities,
+      };
     }
   }
 
