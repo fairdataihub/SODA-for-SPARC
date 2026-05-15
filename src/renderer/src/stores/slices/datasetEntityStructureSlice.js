@@ -64,6 +64,88 @@ export const normalizeEntityId = (entityPrefix, entityId) => {
 };
 
 /**
+ * Validates subject metadata for required fields and specific formats.
+ * Throws an Error with a user-friendly message when validation fails.
+ *
+ * @param {Object} metadata - Subject metadata object to validate
+ */
+export const validateEntityMetadata = (entityType, metadata = {}) => {
+  switch (entityType) {
+    case "subject": {
+      if (!metadata || !metadata["subject_id"]) {
+        throw new Error("You must assign this subject an ID.");
+      }
+
+      if (!metadata || !metadata["species"]) {
+        throw new Error("You must provide the species for this subject.");
+      }
+
+      if (
+        metadata["rrid_for_strain"] &&
+        metadata["rrid_for_strain"].length > 5 &&
+        typeof window !== "undefined" &&
+        window.evaluateStringAgainstSdsRequirements &&
+        !window.evaluateStringAgainstSdsRequirements(
+          metadata["rrid_for_strain"],
+          "string-is-valid-rrid"
+        )
+      ) {
+        throw new Error(
+          "Invalid strain RRID format. Use: RRID:rrid_identifier (e.g., RRID:IMSR_JAX:000664)"
+        );
+      }
+
+      if (
+        metadata["protocol_url_or_doi"] &&
+        metadata["protocol_url_or_doi"].length > 5 &&
+        typeof window !== "undefined" &&
+        window.evaluateStringAgainstSdsRequirements &&
+        !window.evaluateStringAgainstSdsRequirements(
+          metadata["protocol_url_or_doi"],
+          "string-is-valid-url-or-doi"
+        )
+      ) {
+        throw new Error(
+          "Invalid protocol URL or DOI format. Please enter a valid HTTPS URL, DOI, or DOI URL."
+        );
+      }
+
+      return;
+    }
+    case "sample": {
+      // Validate protocol URL or DOI for samples when provided
+      if (
+        metadata["protocol_url_or_doi"] &&
+        metadata["protocol_url_or_doi"].length > 5 &&
+        typeof window !== "undefined" &&
+        window.evaluateStringAgainstSdsRequirements &&
+        !window.evaluateStringAgainstSdsRequirements(
+          metadata["protocol_url_or_doi"],
+          "string-is-valid-url-or-doi"
+        )
+      ) {
+        throw new Error(
+          "Invalid protocol URL or DOI format. Please enter a valid HTTPS URL, DOI, or DOI URL."
+        );
+      }
+
+      return;
+    }
+    case "site": {
+      // Ensure site_id exists for site entities
+      if (!metadata || !metadata["site_id"]) {
+        throw new Error("You must assign this site an ID.");
+      }
+
+      return;
+    }
+    default:
+      console.warn(`No specific validation rules defined for entity type: ${entityType}`);
+      return;
+  }
+};
+
+/**
  * Gets entity data by ID and returns the entity plus an explicit children object.
  * Only `subject` and `sample` entities will have populated children; other entity types return an empty children object.
  * Return value: { entity: <entityObject>, children: { ... } }
@@ -159,6 +241,10 @@ export const getEntityDataById = (entityId) => {
 
 // Subject management functions
 export const addSubject = (subjectId, metadata = {}) => {
+  // Delegate metadata validation to the shared helper so other flows (spreadsheet, guided)
+  // can reuse the same checks and error messages.
+  validateEntityMetadata("subject", metadata);
+
   // Use normalizeEntityId for consistency
   const normalizedSubjectId = normalizeEntityId("sub-", subjectId);
 
