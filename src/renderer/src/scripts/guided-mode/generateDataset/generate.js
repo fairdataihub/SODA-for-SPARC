@@ -605,9 +605,6 @@ const trackPennsieveDatasetGenerationProgress = async () => {
         window.sodaJSONObj["upload-progress"]?.["current-stage"] === "upload" &&
         window.sodaJSONObj["upload-progress"]?.["status"] == "in progress"
       ) {
-        console.log(`Total amount to upload: ${mainTotalGenerateDatasetSize}`);
-        console.log(`Total amount uploaded: ${mainGeneratedDatasetSize}`);
-
         if (!(mainGeneratedDatasetSize && mainTotalGenerateDatasetSize)) {
           // Fallback for when mainGeneratedDatasetSize or mainTotalGenerateDatasetSize is not available
           setGuidedProgressBarValue("pennsieve", 0);
@@ -616,8 +613,6 @@ const trackPennsieveDatasetGenerationProgress = async () => {
           });
           continue;
         }
-
-        console.log(`Bytes per file is ${bytesPerFile}`);
 
         window.sodaJSONObj["upload-progress"]["bytesPerFile"] = bytesPerFile;
         guidedSaveProgress();
