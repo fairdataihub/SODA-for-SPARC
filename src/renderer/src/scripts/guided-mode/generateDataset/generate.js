@@ -33,7 +33,7 @@ const restartServer = async () => {
   try {
     await window.server.restart(window.port);
   } catch (err) {
-    console.error("Upload failed:", err.message);
+    console.error("Server restart failed:", err.message);
   } finally {
     console.log("Server is live");
     removeListener(); // Always clean up the listener
