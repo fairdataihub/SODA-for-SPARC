@@ -13,73 +13,106 @@ const downloadHighLvlFolders = document.getElementById("download-high-level-fold
 const downloadMetadataFiles = document.getElementById("download-manifest-only-btn");
 
 // If files are added or removed from the file_templates folder, update the templateArray and templateHighLvlFolders
-let templateArray = [
-  "submission.xlsx",
-  "dataset_description.xlsx",
-  "subjects.xlsx",
-  "samples.xlsx",
-  "manifest.xlsx",
-  "code_description.xlsx",
-  "resources.xlsx",
-  "performances.xlsx",
-  "code_description.xlsx",
+const templateArray = [
   "CHANGES",
+  "code_description.xlsx",
+  "code_parameters.xlsx",
+  "dataset_description.xlsx",
+  "LICENSE",
+  "manifest.xlsx",
+  "performances.xlsx",
   "README.md",
+  "resources.xlsx",
+  "samples.xlsx",
+  "sites.xlsx",
+  "subjects.xlsx",
   ".dss",
+  "submission.xlsx",
 ];
 
-let templateHighLvlFolders = ["code", "derivative", "docs", "primary", "protocol", "source"];
+const templateHighLvlFolders = ["code", "derivative", "docs", "primary", "protocol", "source"];
+
+const resolveTemplatePath = async (templateName) => {
+  const currentDirectory = await window.electron.ipcRenderer.invoke("get-current-directory");
+  const appPath = await window.electron.ipcRenderer.invoke("get-app-path");
+
+  const candidateTemplateDirs = [
+    // Dev/workspace root
+    window.path.join(appPath, "file_templates"),
+    // Renderer public assets location
+    window.path.join(appPath, "src", "renderer", "public", "file_templates"),
+    // Legacy path from main build output
+    window.path.join(currentDirectory, "..", "renderer", "file_templates"),
+  ];
+
+  console.log("Template directory candidates:", candidateTemplateDirs);
+
+  for (const [index, templateDir] of candidateTemplateDirs.entries()) {
+    const candidatePath = window.path.join(templateDir, templateName);
+    console.log("Checking template candidate:", index, candidatePath);
+    if (window.fs.existsSync(candidatePath)) {
+      console.log("Resolved template path:", candidatePath, "index:", index);
+      return candidatePath;
+    }
+  }
+
+  throw new Error(
+    `Could not locate template '${templateName}'. Checked: ${candidateTemplateDirs.join(", ")}`
+  );
+};
 
 const downloadTemplates = async (templateItem, destinationFolder) => {
-  let currentDirectory = await window.electron.ipcRenderer.invoke("get-current-directory");
+  console.log("downloadTemplates called", { templateItem, destinationFolder });
 
   if (Array.isArray(templateItem)) {
     // Verify if SDS Templates folder exists
     let sds_folder = "SDS Templates";
     let templatesFolderPath = window.path.join(destinationFolder, sds_folder);
-    if (!fs.existsSync(templatesFolderPath)) {
-      fs.mkdirSync(templatesFolderPath);
+    if (!window.fs.existsSync(templatesFolderPath)) {
+      window.fs.mkdirSync(templatesFolderPath);
     } else {
       // Create a duplicate folder with a number appended to the end
       let j = 1;
-      while (fs.existsSync(window.path.join(destinationFolder, sds_folder + "(" + j + ")"))) {
+      while (
+        window.fs.existsSync(window.path.join(destinationFolder, sds_folder + "(" + j + ")"))
+      ) {
         j++;
       }
       templatesFolderPath = window.path.join(
         window.path.join(destinationFolder, sds_folder + "(" + j + ")")
       );
       sds_folder = sds_folder + "(" + j + ")";
-      fs.mkdirSync(templatesFolderPath);
+      window.fs.mkdirSync(templatesFolderPath);
     }
-    for (let i = 0; i < templateItem.length; i++) {
-      // Create a path for each template index
-      let templatePath = window.path.join(
-        currentDirectory,
-        "..",
-        "renderer",
-        "file_templates",
-        templateItem[i]
-      );
 
-      // Verify if templateItem[i] is a high level folder
-      if (templateHighLvlFolders.includes(templateItem[i])) {
-        let destinationPath = window.path.join(templatesFolderPath, templateItem[i]);
-
-        if (!fs.existsSync(destinationPath)) {
-          // Create the folder if it does not exist
-          fs.mkdirSync(destinationPath);
+    for (const name of templateItem) {
+      // High-level folder: create directory and skip file resolution
+      if (templateHighLvlFolders.includes(name)) {
+        const destinationPath = window.path.join(templatesFolderPath, name);
+        if (!window.fs.existsSync(destinationPath)) {
+          window.fs.mkdirSync(destinationPath);
         }
-        // The create a .gitkeep file in the destinationPath
-        fs.writeFileSync(window.path.join(destinationPath, ".gitkeep"), "");
         continue;
       }
-      let destinationPath = window.path.join(destinationFolder, sds_folder, templateItem[i]);
 
+      // Resolve actual template file path for non-folder entries
+      let templatePath;
+      try {
+        templatePath = await resolveTemplatePath(name);
+      } catch (err) {
+        // Log and skip missing optional templates instead of throwing
+        console.warn(`Template not found for '${name}':`, err.message);
+        window.log?.warn && window.log.warn(`Template not found for '${name}'`, err.message);
+        continue;
+      }
+
+      const destinationPath = window.path.join(destinationFolder, sds_folder, name);
       if (!window.fs.existsSync(destinationPath)) {
         await window.electron.ipcRenderer.invoke("write-template", templatePath, destinationPath);
       }
     }
-    let emessage = `Successfully saved to ${destinationFolder}`;
+
+    const emessage = `Successfully saved to ${destinationFolder}`;
     Swal.fire({
       icon: "success",
       title: "Download successful",
@@ -93,10 +126,6 @@ const downloadTemplates = async (templateItem, destinationFolder) => {
       `Download Template - ${templateItem}`
     );
 
-    // let templateLabel = Object.values(kombuchaEnums.Label).find((label) => {
-    //   return label === templateItem;
-    // });
-
     window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.PREPARE_METADATA,
@@ -108,16 +137,10 @@ const downloadTemplates = async (templateItem, destinationFolder) => {
       }
     );
   } else {
-    let templatePath = window.path.join(
-      currentDirectory,
-      "..",
-      "renderer",
-      "file_templates",
-      templateItem
-    );
+    const templatePath = await resolveTemplatePath(templateItem);
 
     // Fix: Define destinationPath before using it
-    let destinationPath = window.path.join(destinationFolder, templateItem);
+    const destinationPath = window.path.join(destinationFolder, templateItem);
 
     if (window.fs.existsSync(destinationPath)) {
       const isConfirmed = await swalConfirmAction(
@@ -136,8 +159,9 @@ const downloadTemplates = async (templateItem, destinationFolder) => {
         return;
       }
     }
+
     await window.electron.ipcRenderer.invoke("write-template", templatePath, destinationPath);
-    let emessage = `Successfully saved '${templateItem}' to ${destinationFolder}`;
+    const emessage = `Successfully saved '${templateItem}' to ${destinationFolder}`;
 
     Swal.fire({
       icon: "success",
@@ -151,9 +175,9 @@ const downloadTemplates = async (templateItem, destinationFolder) => {
       "Success",
       `Download Template - ${templateItem}`
     );
-    let templateLabel = Object.values(kombuchaEnums.Label).find((label) => {
-      return label === templateItem;
-    });
+    const templateLabel = Object.values(kombuchaEnums.Label).find(
+      (label) => label === templateItem
+    );
     window.electron.ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.PREPARE_METADATA,
@@ -165,29 +189,18 @@ const downloadTemplates = async (templateItem, destinationFolder) => {
       }
     );
   }
+
+  console.log("downloadTemplates completed", { templateItem, destinationFolder });
 };
 
-downloadHighLvlFolders.addEventListener("click", (event) => {
+downloadHighLvlFolders.addEventListener("click", () => {
   const combinedArray = [...templateHighLvlFolders, ...templateArray];
   window.electron.ipcRenderer.send("open-folder-dialog-save-metadata", combinedArray);
 });
 
-// Rest of the code...
-
-downloadMetadataFiles.addEventListener("click", (event) => {
+downloadMetadataFiles.addEventListener("click", () => {
   window.electron.ipcRenderer.send("open-folder-dialog-save-metadata", templateArray);
 });
-
-document
-  .querySelectorAll(".guided-subject-sample-pool-structure-download-button")
-  .forEach((button) => {
-    button.addEventListener("click", (event) => {
-      window.electron.ipcRenderer.send(
-        "open-folder-dialog-save-metadata",
-        "subjects_pools_samples_structure.xlsx"
-      );
-    });
-  });
 
 window.electron.ipcRenderer.on("selected-metadata-download-folder", (event, path, filename) => {
   if (path.length > 0) {
