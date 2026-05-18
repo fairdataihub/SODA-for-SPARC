@@ -28,21 +28,27 @@ while (!window.baseHtmlLoaded) {
 
 let restartServerLock = false;
 const restartServer = async () => {
-  if (restartServerLock) return;
+  if (restartServerLock) {
+    console.log("Hit restart server lock and will return.");
+    return;
+  }
+  console.log("Passed restart server lock and will restart server.");
+
   restartServerLock = true;
+
+  const removeListener = window.server.onRestartProgress((line) => {
+    console.log("Restart progress:", line);
+  });
+
   try {
     await window.server.restart(window.port);
   } catch (err) {
     console.error("Server restart failed:", err.message);
   } finally {
-    console.log("Server is live");
     removeListener(); // Always clean up the listener
     restartServerLock = false;
   }
-
-  const removeListener = window.server.onRestartProgress((line) => {
-    console.log("Restart progress:", line);
-  });
+  console.log("Returning from restart server after success");
 };
 
 const waitForServerRestart = async () => {
