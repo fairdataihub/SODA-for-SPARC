@@ -65,8 +65,9 @@ export const handleEntityFileImport = async (files, entityType) => {
   }
 };
 
-export const handleDownloadTemplate = (entityType) => {
+export const handleDownloadTemplate = (entityType, helperConfig) => {
   console.log("Downloading template for:", entityType);
+  console.log("Helper config:", helperConfig);
   const config = entityConfigs[entityType];
   if (!config) {
     window.notyf.open({
@@ -77,7 +78,11 @@ export const handleDownloadTemplate = (entityType) => {
   }
 
   try {
-    window.electron.ipcRenderer.send("open-folder-dialog-save-metadata", config.templateFileName);
+    window.electron.ipcRenderer.send(
+      "open-folder-dialog-save-metadata",
+      config.templateFileName,
+      helperConfig
+    );
   } catch (error) {
     console.error(`Error sending IPC message for ${entityType} template:`, error);
   }

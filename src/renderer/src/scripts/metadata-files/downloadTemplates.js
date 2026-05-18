@@ -58,8 +58,8 @@ const resolveTemplatePath = async (templateName) => {
   );
 };
 
-const downloadTemplates = async (templateItem, destinationFolder) => {
-  console.log("downloadTemplates called", { templateItem, destinationFolder });
+const downloadTemplates = async (templateItem, destinationFolder, helperConfig) => {
+  console.log("downloadTemplates called", { templateItem, destinationFolder, helperConfig });
 
   const ensureDir = (dirPath) => {
     if (!window.fs.existsSync(dirPath)) {
@@ -196,46 +196,43 @@ const downloadTemplates = async (templateItem, destinationFolder) => {
 
 downloadHighLvlFolders.addEventListener("click", () => {
   const combinedArray = [...templateHighLvlFolders, ...templateArray];
-  window.electron.ipcRenderer.send("open-folder-dialog-save-metadata", combinedArray);
+  window.electron.ipcRenderer.send("open-folder-dialog-save-metadata", combinedArray, null);
 });
 
 downloadMetadataFiles.addEventListener("click", () => {
-  window.electron.ipcRenderer.send("open-folder-dialog-save-metadata", templateArray);
+  window.electron.ipcRenderer.send("open-folder-dialog-save-metadata", templateArray, null);
 });
 
-document
-  .querySelectorAll(".guided-subject-sample-pool-structure-download-button")
-  .forEach((button) => {
-    button.addEventListener("click", () => {
-      window.electron.ipcRenderer.send(
-        "open-folder-dialog-save-metadata",
-        "subjects_pools_samples_structure.xlsx"
-      );
-    });
-  });
-
-window.electron.ipcRenderer.on("selected-metadata-download-folder", (event, path, filename) => {
-  window.log?.info && window.log.info("selected-metadata-download-folder", { path, filename });
-  console.log("selected-metadata-download-folder", { path, filename });
-  if (Array.isArray(path) && path.length > 0) {
-    try {
-      downloadTemplates(filename, path[0]);
-      window.log?.info &&
-        window.log.info("downloadTemplates invoked", { filename, destination: path[0] });
-    } catch (err) {
-      window.log?.error && window.log.error("downloadTemplates failed", err);
-      console.error("downloadTemplates failed", err);
-      window.electron.ipcRenderer.send(
-        "track-event",
-        "Error",
-        `Download Template - ${filename} (Error)`
-      );
+window.electron.ipcRenderer.on(
+  "selected-metadata-download-folder",
+  (event, path, filename, helperConfig) => {
+    window.log?.info &&
+      window.log.info("selected-metadata-download-folder", { path, filename, helperConfig });
+    console.log("selected-metadata-download-folder", { path, filename, helperConfig });
+    if (Array.isArray(path) && path.length > 0) {
+      try {
+        downloadTemplates(filename, path[0], helperConfig);
+        window.log?.info &&
+          window.log.info("downloadTemplates invoked", {
+            filename,
+            destination: path[0],
+            helperConfig,
+          });
+      } catch (err) {
+        window.log?.error && window.log.error("downloadTemplates failed", err);
+        console.error("downloadTemplates failed", err);
+        window.electron.ipcRenderer.send(
+          "track-event",
+          "Error",
+          `Download Template - ${filename} (Error)`
+        );
+      }
+    } else {
+      window.log?.warn && window.log.warn("No path selected for metadata download", { filename });
+      console.warn("No path selected for metadata download", filename);
     }
-  } else {
-    window.log?.warn && window.log.warn("No path selected for metadata download", { filename });
-    console.warn("No path selected for metadata download", filename);
   }
-});
+);
 
 window.electron.ipcRenderer.on("selected-DDD-download-folder", (event, path, filename) => {
   if (path.length > 0) {

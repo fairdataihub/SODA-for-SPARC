@@ -8,6 +8,12 @@ import {
   entityConfigs,
 } from "./excelImport";
 
+const helperConfig = {
+  subjects: {
+    disabledColumns: ["metadata only", "number of directly derived samples"],
+  },
+};
+
 export const DownloadCard = ({ entityType, config, locked = false }) => {
   // Get real dependencies (filter out "entity-structure")
   const realDeps = config.dependsOn?.filter((dep) => dep !== "entity-structure") || [];
@@ -55,7 +61,7 @@ export const DownloadCard = ({ entityType, config, locked = false }) => {
         fullWidth
         variant="light"
         color={config.color}
-        onClick={() => handleDownloadTemplate(entityType)}
+        onClick={() => handleDownloadTemplate(entityType, helperConfig[entityType])}
       >
         Download {config["metadataFileName"] || `${entityType}.xlsx`}
       </Button>

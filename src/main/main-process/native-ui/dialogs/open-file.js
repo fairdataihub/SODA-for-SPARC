@@ -434,7 +434,7 @@ ipcMain.on("open-file-dialog-validate-local-ds", (event) => {
 });
 
 // Metadata template download
-ipcMain.on("open-folder-dialog-save-metadata", async (event, filename) => {
+ipcMain.on("open-folder-dialog-save-metadata", async (event, filename, helperConfig) => {
   let mainWindow = BrowserWindow.getFocusedWindow();
 
   let files = await dialog.showOpenDialog(mainWindow, {
@@ -443,7 +443,12 @@ ipcMain.on("open-folder-dialog-save-metadata", async (event, filename) => {
   });
 
   if (files) {
-    mainWindow.webContents.send("selected-metadata-download-folder", files.filePaths, filename);
+    mainWindow.webContents.send(
+      "selected-metadata-download-folder",
+      files.filePaths,
+      filename,
+      helperConfig
+    );
   }
 });
 
