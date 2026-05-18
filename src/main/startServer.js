@@ -4,6 +4,7 @@ import fp from "find-free-port";
 import { ipcMain } from "electron";
 import log from "electron-log/main";
 import { join } from "path";
+import axios from "axios";
 
 global.serverLive = true;
 global.script = null;

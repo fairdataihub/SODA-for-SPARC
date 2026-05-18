@@ -1,5 +1,18 @@
 import { ipcMain } from "electron";
 import { spawn } from "node:child_process";
+import os from "os";
+
+const getPennsievePath = () => {
+  if (os.platform() !== "darwin") return process.env.PATH;
+  return [
+    "./node_modules/.bin",
+    "/.nodebrew/current/bin",
+    "/usr/local/bin",
+    "/usr/local/opt",
+    "/usr/local/opt/pennsieve", // Ventura installation folder; Note: On Ventura the Agent isn't added to the Path
+    process.env.PATH,
+  ].join(":");
+};
 
 ipcMain.handle("pennsieve:upload-manifest", (event, manifestId) => {
   return new Promise((resolve, reject) => {
@@ -12,7 +25,7 @@ ipcMain.handle("pennsieve:upload-manifest", (event, manifestId) => {
 
     const proc = spawn("pennsieve", ["upload", "manifest", manifestId], {
       shell: true,
-      env: process.env,
+      env: { ...process.env, PATH: getPennsievePath() },
     });
 
     const checkForTextError = (data) => {
