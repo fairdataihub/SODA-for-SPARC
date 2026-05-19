@@ -237,13 +237,18 @@ ipcMain.handle("restart-server", (event, port) => {
       });
     }
 
-    const READY_MESSAGE = "Running on"; // <-- Change this to match your server's ready output
+    const READY_MESSAGE = ["running on", "started on"]; // <-- Change this to match your server's ready output
 
     pyflaskProcess.stdout.on("data", (data) => {
       const output = data.toString();
       const logOutput = `[pyflaskProcess output] ${output}`;
       event.sender.send("restart-server:progress", logOutput);
-      if (!serverReady && output.includes(READY_MESSAGE)) {
+      let serverStarted = false;
+      for (const msg in READY_MESSAGE) {
+        if (output.includes(msg)) serverStarted = true;
+      }
+
+      if (!serverReady && serverStarted) {
         serverReady = true;
         global.serverLive = true;
         resolve("Server is live");

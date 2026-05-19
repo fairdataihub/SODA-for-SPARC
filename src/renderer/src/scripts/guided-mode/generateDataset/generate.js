@@ -55,9 +55,10 @@ const waitForServerRestart = async () => {
   while (true) {
     console.log("Getting server live status");
     let live = await window.server.serverIsLive();
-    console.log("Server is live");
+
     if (live) {
-      return;
+      console.log("Server is live");
+      break;
     }
     await new Promise((resolve) => setTimeout(resolve, 1000));
   }
@@ -746,20 +747,24 @@ const trackPennsieveDatasetGenerationProgress = async () => {
       progressMonitorLock = false;
       // Check for network error
       if (!error.response && error.request && error.isAxiosError) {
+        console.log(
+          "Inside track generation error code. About to try to restart server and wait for it."
+        );
         clientError(error);
         await restartServer();
         await waitForServerRestart();
         if (
           window.sodaJSONObj["upload-progress"]?.["current-stage"] === "rename" ||
-          window.sodaJSONObj["upload-progress"]?.["current-stage"] === "verify"
+          window.sodaJSONObj["upload-progress"]?.["current-stage"] === "verify" ||
+          window.sodaJSONObj["upload-progress"]?.["current-stage"] === "complete"
         ) {
           setStateComplete();
           break;
         }
-
-        // RETRY UPLOAD ONCE SERVER HAS BEEN RESTARTED AND UPLOAD IS NOT COMPLETED
-        trackPennsieveDatasetGenerationProgress();
+        // continue loop now that server is back up
+        continue;
       }
+      // unexpected error; stop tracking progress
       console.error("[Pennsieve Progress] Error tracking upload progress:", error);
       throw new Error(userErrorMessage(error));
     }
