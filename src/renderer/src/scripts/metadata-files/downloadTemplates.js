@@ -14,58 +14,39 @@ const downloadMetadataFiles = document.getElementById("download-manifest-only-bt
 
 // If files are added or removed from the file_templates folder, update the templateArray and templateHighLvlFolders
 const templateArray = [
-  "submission.xlsx",
-  "dataset_description.xlsx",
-  "subjects.xlsx",
-  "samples.xlsx",
-  "manifest.xlsx",
-  "code_description.xlsx",
-  "resources.xlsx",
-  "performances.xlsx",
-  "code_description.xlsx",
   "CHANGES",
+  "code_description.xlsx",
+  "code_parameters.xlsx",
+  "dataset_description.xlsx",
+  "LICENSE",
+  "manifest.xlsx",
+  "performances.xlsx",
   "README.md",
+  "resources.xlsx",
+  "samples.xlsx",
+  "sites.xlsx",
+  "subjects.xlsx",
   ".dss",
+  "submission.xlsx",
 ];
 
 const templateHighLvlFolders = ["code", "derivative", "docs", "primary", "protocol", "source"];
 
 const resolveTemplatePath = async (templateName) => {
-  const currentDirectory = await window.electron.ipcRenderer.invoke("get-current-directory");
   const appPath = await window.electron.ipcRenderer.invoke("get-app-path");
+  const templatePath = window.path.join(appPath, "file_templates", templateName);
 
-  const candidateTemplateDirs = [
-    // Dev/workspace root
-    window.path.join(appPath, "file_templates"),
-    // Renderer public assets location
-    window.path.join(appPath, "src", "renderer", "public", "file_templates"),
-    // Legacy path from main build output
-    window.path.join(currentDirectory, "..", "renderer", "file_templates"),
-  ];
-
-  console.log("Template directory candidates:", candidateTemplateDirs);
-
-  for (const templateDir of candidateTemplateDirs) {
-    const candidatePath = window.path.join(templateDir, templateName);
-    if (window.fs.existsSync(candidatePath)) {
-      console.log("Resolved template path:", candidatePath);
-      return candidatePath;
-    }
+  if (!window.fs.existsSync(templatePath)) {
+    throw new Error(`Could not locate template '${templateName}'. Checked: ${templatePath}`);
   }
 
-  throw new Error(
-    `Could not locate template '${templateName}'. Checked: ${candidateTemplateDirs.join(", ")}`
-  );
+  console.log("Resolved template path:", templatePath);
+
+  return templatePath;
 };
 
-const downloadTemplates = async (templateItem, destinationFolder, helperConfig) => {
-  console.log("downloadTemplates called", { templateItem, destinationFolder, helperConfig });
-
-  const ensureDir = (dirPath) => {
-    if (!window.fs.existsSync(dirPath)) {
-      window.fs.mkdirSync(dirPath);
-    }
-  };
+const downloadTemplates = async (templateItem, destinationFolder) => {
+  console.log("downloadTemplates called", { templateItem, destinationFolder });
 
   if (Array.isArray(templateItem)) {
     // Verify if SDS Templates folder exists
@@ -92,7 +73,9 @@ const downloadTemplates = async (templateItem, destinationFolder, helperConfig) 
       // High-level folder: create directory and skip file resolution
       if (templateHighLvlFolders.includes(name)) {
         const destinationPath = window.path.join(templatesFolderPath, name);
-        ensureDir(destinationPath);
+        if (!window.fs.existsSync(destinationPath)) {
+          window.fs.mkdirSync(destinationPath);
+        }
         continue;
       }
 
