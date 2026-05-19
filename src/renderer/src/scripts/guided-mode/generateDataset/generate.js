@@ -53,7 +53,9 @@ const restartServer = async () => {
 
 const waitForServerRestart = async () => {
   while (true) {
-    let live = await window.ipcRenderer.invoke("get-server-live-status");
+    console.log("Getting server live status");
+    let live = await window.server.serverIsLive();
+    console.log("Server is live");
     if (live) {
       return;
     }
