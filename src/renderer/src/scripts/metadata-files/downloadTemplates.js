@@ -33,32 +33,16 @@ const templateArray = [
 const templateHighLvlFolders = ["code", "derivative", "docs", "primary", "protocol", "source"];
 
 const resolveTemplatePath = async (templateName) => {
-  const currentDirectory = await window.electron.ipcRenderer.invoke("get-current-directory");
   const appPath = await window.electron.ipcRenderer.invoke("get-app-path");
+  const templatePath = window.path.join(appPath, "file_templates", templateName);
 
-  const candidateTemplateDirs = [
-    // Dev/workspace root
-    window.path.join(appPath, "file_templates"),
-    // Renderer public assets location
-    window.path.join(appPath, "src", "renderer", "public", "file_templates"),
-    // Legacy path from main build output
-    window.path.join(currentDirectory, "..", "renderer", "file_templates"),
-  ];
-
-  console.log("Template directory candidates:", candidateTemplateDirs);
-
-  for (const [index, templateDir] of candidateTemplateDirs.entries()) {
-    const candidatePath = window.path.join(templateDir, templateName);
-    console.log("Checking template candidate:", index, candidatePath);
-    if (window.fs.existsSync(candidatePath)) {
-      console.log("Resolved template path:", candidatePath, "index:", index);
-      return candidatePath;
-    }
+  if (!window.fs.existsSync(templatePath)) {
+    throw new Error(`Could not locate template '${templateName}'. Checked: ${templatePath}`);
   }
 
-  throw new Error(
-    `Could not locate template '${templateName}'. Checked: ${candidateTemplateDirs.join(", ")}`
-  );
+  console.log("Resolved template path:", templatePath);
+
+  return templatePath;
 };
 
 const downloadTemplates = async (templateItem, destinationFolder) => {
