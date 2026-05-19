@@ -225,11 +225,16 @@ ipcMain.handle("restart-server", (event, port) => {
   return new Promise((resolve, reject) => {
     let serverReady = false;
     let scriptPath = getScriptPath();
+    log.info(`Server relaunch attempt at ${scriptPath}`);
+
     if (!guessPackaged()) {
+      log.info(`Server relaunch not packaged`);
+
       pyflaskProcess = spawn("python", [scriptPath, port], {
         stdio: ["ignore", "pipe", "pipe"],
       });
     } else {
+      log.info(`Server relaunch packaged`);
       pyflaskProcess = spawn(scriptPath, [port], {
         stdio: ["ignore", "pipe", "pipe"],
         shell: false,
@@ -237,18 +242,22 @@ ipcMain.handle("restart-server", (event, port) => {
       });
     }
 
-    const READY_MESSAGE = ["running on", "started on"]; // <-- Change this to match your server's ready output
+    const READY_MESSAGE = ["running on"]; // <-- Change this to match your server's ready output
 
     pyflaskProcess.stdout.on("data", (data) => {
+      log.info(`stdout data check: ${data.toString()}`);
+
       const output = data.toString();
       const logOutput = `[pyflaskProcess output] ${output}`;
       event.sender.send("restart-server:progress", logOutput);
       let serverStarted = false;
-      for (const msg in READY_MESSAGE) {
-        if (output.includes(msg)) serverStarted = true;
+      for (const msg of READY_MESSAGE) {
+        if (output.toLowerCase().includes(msg)) serverStarted = true;
       }
 
       if (!serverReady && serverStarted) {
+        log.info("About to resolve");
+
         serverReady = true;
         global.serverLive = true;
         resolve("Server is live");
@@ -256,20 +265,26 @@ ipcMain.handle("restart-server", (event, port) => {
     });
 
     pyflaskProcess.stderr.on("data", (data) => {
-      const logOutput = `[pyflaskProcess stderr] ${data.toString()}`;
+      log.info(`stderr data check: ${data.toString()}`);
+      const output = data.toString();
+      const logOutput = `[pyflaskProcess stderr] ${output}`;
       event.sender.send("restart-server:progress", logOutput);
-    });
 
-    pyflaskProcess.on("close", (code) => {
-      global.serverLive = false;
-      if (!serverReady) {
-        reject(new Error(`Server process closed before ready. Exit code: ${code}`));
-      } else {
-        event.sender.send("restart-server:progress", `child process closed with code ${code}`);
+      // Flask/Werkzeug writes to stderr and stdout
+      let serverStarted = false;
+      for (const msg of READY_MESSAGE) {
+        if (output.toLowerCase().includes(msg)) serverStarted = true;
+      }
+      if (!serverReady && serverStarted) {
+        log.info("About to resolve");
+        serverReady = true;
+        global.serverLive = true;
+        resolve("Server is live");
       }
     });
 
     pyflaskProcess.on("exit", (code, signal) => {
+      log.info("exit data check");
       global.serverLive = false;
       if (!serverReady) {
         if (signal) {

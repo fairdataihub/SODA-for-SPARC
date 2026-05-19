@@ -385,7 +385,9 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
 
     // START SESSION AND TRACKING
     datasetUploadSession.startSession();
-    trackPennsieveDatasetGenerationProgress(standardizedDatasetStructure);
+    trackPennsieveDatasetGenerationProgress(standardizedDatasetStructure).catch((err) => {
+      console.error("[Pennsieve Progress] Unhandled error in progress monitor:", err);
+    });
 
     console.log(`Run ${amountOfTimesPennsieveUploadFailed} of Upload.`);
     console.log(`Current object state: ${window.sodaJSONObj}}`);
@@ -516,6 +518,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
 
       return;
     }
+    console.log("In main area commented out auto retry to see if it was causing break");
     amountOfTimesPennsieveUploadFailed += 1;
     automaticRetry(false, emessage);
     guidedSetNavLoadingState(false);
@@ -751,8 +754,16 @@ const trackPennsieveDatasetGenerationProgress = async () => {
           "Inside track generation error code. About to try to restart server and wait for it."
         );
         clientError(error);
-        await restartServer();
-        await waitForServerRestart();
+        try {
+          await restartServer();
+          await waitForServerRestart();
+        } catch (e) {
+          // do not let an error rise unguarded or get crash.
+          // TODO: IF error happens repeatedly break and find graceful way to let calling function/upload function know to stop
+          // (though presumably it will fail 3 times since server is fead so may be unnecessary)
+          clientError(e);
+          continue;
+        }
         if (
           window.sodaJSONObj["upload-progress"]?.["current-stage"] === "rename" ||
           window.sodaJSONObj["upload-progress"]?.["current-stage"] === "verify" ||
