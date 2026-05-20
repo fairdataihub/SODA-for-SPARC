@@ -18,6 +18,7 @@ import { DownloadCard, ImportCard, EntityImportCompleteCard } from "./Spreadshee
 
 const SpreadsheetImportDatasetEntityAdditionPage = () => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
+  console.log("Selected entities for import:", selectedEntities);
   const entityImportCompletionStatus = useGlobalStore(
     (state) => state.entityImportCompletionStatus
   );
