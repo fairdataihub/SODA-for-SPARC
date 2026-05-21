@@ -69,7 +69,6 @@ const fetchProgressData = async () => {
   return {
     status: data["main_curate_status"],
     message: data["main_curate_progress_message"],
-    elapsedTime: data["elapsed_time_formatted"],
     uploadedFiles: data["total_files_uploaded"],
     curationErrorMessage: data["curation_error_message"],
   };
@@ -116,6 +115,8 @@ const subscribe = async (datasetId) => {
   }
 };
 
+let psGenerateTimer = null;
+
 /**
  *
  * @returns {Promise<void>}
@@ -127,6 +128,9 @@ const subscribe = async (datasetId) => {
 export const guidedGenerateDatasetOnPennsieve = async () => {
   guidedSetNavLoadingState(true);
 
+  // start timer if it is null; otherwise use existing time
+  psGenerateTimer = psGenerateTimer || Date.now();
+
   try {
     const pennsieveDatasetName = window.sodaJSONObj["generate-dataset"]["dataset-name"];
 
@@ -136,30 +140,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       window.sodaJSONObj["dataset-entity-obj"]
     );
     window.sodaJSONObj["soda_json_structure"] = standardizedDatasetStructure;
-
-    // Code that runs after a successful upload to Pennsieve (whether initial upload or retry)
-    const finalizeUpload = async () => {
-      // If the message indicates that no files were uploaded (which can happen when
-      // uploading to an existing Pennsieve dataset with the "skip" option selected for existing files and
-      // the dataset being generated has the same files as the existing dataset), do not show
-      // the verify files section because there are no files to verify.
-      const { message } = await fetchProgressData();
-      if (message !== "No files were uploaded in this session") {
-        document
-          .getElementById("guided-section-file-upload-verification")
-          .classList.remove("hidden");
-        document.querySelector("#guided-section-file-upload-verification-button").disabled = false;
-        document.querySelector("#guided--skip-verify-btn").disabled = false;
-      }
-
-      logProgressPostUpload(
-        data["main_curation_uploaded_files"],
-        data["main_total_generate_dataset_size"]
-      );
-
-      bytesOnPreviousLogPage = 0;
-      filesOnPreviousLogPage = 0;
-    };
 
     // --- Helper: prepare upload object for Pennsieve ---
     const prepareUploadObj = async () => {
@@ -215,6 +195,8 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     const createUploadData = async () => {
       guidedSetNavLoadingState(true);
 
+      // TODO: AARON: Wrap this in a wait for us to know server has been started to prevent race condition with restarting server and
+      // auto retry manifest creation
       const { data } = await client.post(
         `/curate_datasets/curation/manifest_file`,
         { soda_json_structure: window.sodaJSONObj },
@@ -565,7 +547,6 @@ const trackPennsieveDatasetGenerationProgress = async () => {
     return {
       status: data["main_curate_status"],
       message: data["main_curate_progress_message"],
-      elapsedTime: data["elapsed_time_formatted"],
       uploadedFiles: data["total_files_uploaded"],
       startGenerate: data["start_generate"],
       mainTotalGenerateDatasetSize: data["main_total_generate_dataset_size"],
@@ -585,12 +566,22 @@ const trackPennsieveDatasetGenerationProgress = async () => {
     return `${value.toFixed(2)} ${sizes[i]}`;
   };
 
+  const formatElapsedTime = (startTime) => {
+    if (!startTime) return "0s";
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const hours = Math.floor(elapsed / 3600);
+    const minutes = Math.floor((elapsed % 3600) / 60);
+    const seconds = elapsed % 60;
+    if (hours > 0) return `${hours}h ${minutes}m ${seconds}s`;
+    if (minutes > 0) return `${minutes}m ${seconds}s`;
+    return `${seconds}s`;
+  };
+
   while (true) {
     try {
       const {
         status,
         message,
-        elapsedTime,
         uploadedFiles,
         startGenerate,
         mainTotalGenerateDatasetSize,
@@ -610,6 +601,7 @@ const trackPennsieveDatasetGenerationProgress = async () => {
       if (window.sodaJSONObj["upload-progress"]?.["current-stage"] === "setup") {
         updateDatasetUploadProgressTable("pennsieve", {
           "Current action": message || "Preparing to create manifest file",
+          "Elapsed time": formatElapsedTime(psGenerateTimer),
         });
       }
 
@@ -622,6 +614,7 @@ const trackPennsieveDatasetGenerationProgress = async () => {
           setGuidedProgressBarValue("pennsieve", 0);
           updateDatasetUploadProgressTable("pennsieve", {
             "Current action": "Initiating upload...",
+            "Elapsed time": formatElapsedTime(psGenerateTimer),
           });
           continue;
         }
@@ -645,7 +638,7 @@ const trackPennsieveDatasetGenerationProgress = async () => {
             window.sodaJSONObj["upload-progress"]["size-of-dataset"]
           )}`,
           "Percent uploaded": `${progress.toFixed(2)}%`,
-          "Elapsed time": elapsedTime,
+          "Elapsed time": formatElapsedTime(psGenerateTimer),
         });
       }
 
@@ -679,6 +672,7 @@ const trackPennsieveDatasetGenerationProgress = async () => {
         updateDatasetUploadProgressTable("pennsieve", {
           "Current action": "Renaming files...",
           "files renamed": `${mainGeneratedDatasetSize} of ${mainTotalGenerateDatasetSize}`,
+          "Elapsed time": formatElapsedTime(psGenerateTimer),
         });
       }
 
@@ -817,6 +811,7 @@ const automaticRetry = async (supplementaryChecks = false, errorMessage = "") =>
       hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
     });
     if (!res.isConfirmed) {
+      psGenerateTimer = null;
       transitionFromGuidedModeToHome();
       return;
     }
@@ -860,6 +855,7 @@ const automaticRetry = async (supplementaryChecks = false, errorMessage = "") =>
       showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
       hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
     });
+    psGenerateTimer = null;
     transitionFromGuidedModeToHome();
     return;
   }
@@ -1142,6 +1138,7 @@ export const countFilesInDatasetStructure = (datasetStructure) => {
 
 const setStateComplete = () => {
   amountOfTimesPennsieveUploadFailed = 0;
+  psGenerateTimer = null;
 
   setGuidedProgressBarValue("pennsieve", 100);
   updateDatasetUploadProgressTable("pennsieve", {
