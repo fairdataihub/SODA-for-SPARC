@@ -27,12 +27,12 @@ while (!window.baseHtmlLoaded) {
 }
 
 let restartServerLock = false;
-const restartServer = async () => {
+const restartServer = async (caller) => {
   if (restartServerLock) {
-    console.log("Hit restart server lock and will return.");
+    console.log("Hit restart server lock and will return. Caller: ", caller);
     return;
   }
-  console.log("Passed restart server lock and will restart server.");
+  console.log("Passed restart server lock and will restart server. Caller: ", caller);
 
   restartServerLock = true;
 
@@ -48,7 +48,7 @@ const restartServer = async () => {
     removeListener(); // Always clean up the listener
     restartServerLock = false;
   }
-  console.log("Returning from restart server after success");
+  console.log("Returning from restart server after success. Caller: ", caller);
 };
 
 const waitForServerRestart = async () => {
@@ -94,7 +94,7 @@ const subscribe = async (datasetId) => {
     await window.wait(2000);
     clientError(e);
     if (!e.response && e.request && e.isAxiosError) {
-      await restartServer();
+      await restartServer("subscriber");
       await waitForServerRestart();
 
       // CHECK IF UPLOAD IS COMPLETE BEFORE RESTARTING PROGRESS AND SUBSCRIPTION
@@ -749,7 +749,7 @@ const trackPennsieveDatasetGenerationProgress = async () => {
         );
         clientError(error);
         try {
-          await restartServer();
+          await restartServer("progress tracking");
           await waitForServerRestart();
         } catch (e) {
           // do not let an error rise unguarded or get crash.
