@@ -45,6 +45,7 @@ const restartServer = async (caller) => {
   } catch (err) {
     console.error("Server restart failed:", err.message);
   } finally {
+    console.log("Listener has been removed; Caller: ", caller);
     removeListener(); // Always clean up the listener
     restartServerLock = false;
   }
@@ -94,7 +95,7 @@ const subscribe = async (datasetId) => {
     await window.wait(2000);
     clientError(e);
     if (!e.response && e.request && e.isAxiosError) {
-      await restartServer("subscriber");
+      // wait for the progress tracker to determine the server is live
       await waitForServerRestart();
 
       // CHECK IF UPLOAD IS COMPLETE BEFORE RESTARTING PROGRESS AND SUBSCRIPTION
@@ -750,7 +751,6 @@ const trackPennsieveDatasetGenerationProgress = async () => {
         clientError(error);
         try {
           await restartServer("progress tracking");
-          await waitForServerRestart();
         } catch (e) {
           // do not let an error rise unguarded or get crash.
           // TODO: IF error happens repeatedly break and find graceful way to let calling function/upload function know to stop
