@@ -4,7 +4,7 @@ import GuidedModeSection from "../../containers/GuidedModeSection";
 import { IconUser, IconFlask, IconPin, IconFileSpreadsheet, IconCheck } from "@tabler/icons-react";
 import { Text, Grid, Stack, Group, Button, Paper, Box, Divider, List, Card } from "@mantine/core";
 import useGlobalStore from "../../../stores/globalStore";
-import { importEntitiesFromExcel, entityConfigs, saveEntities } from "./excelImport";
+import { handleEntityMetadataFileImport, entityConfigs, saveEntities } from "./excelImport";
 import { swalListDoubleAction, swalConfirmAction } from "../../../scripts/utils/swal-utils";
 import SodaPaper from "../../utils/ui/SodaPaper";
 import { removeSuccessfullyImportedEntityType } from "../../../stores/slices/datasetContentSelectorSlice";

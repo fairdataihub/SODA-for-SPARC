@@ -1,4 +1,8 @@
-import { swalListDoubleAction, swalConfirmAction } from "../../../scripts/utils/swal-utils";
+import {
+  swalListDoubleAction,
+  swalListSingleAction,
+  swalConfirmAction,
+} from "../../../scripts/utils/swal-utils";
 import {
   addSuccessfullyImportedEntityType,
   removeSuccessfullyImportedEntityType,
@@ -6,12 +10,14 @@ import {
 
 export const handleEntityFileImport = async (files, entityType) => {
   if (!files?.length) {
-    console.log("No files provided for import");
+    window.notyf.open({
+      type: "error",
+      message: "No file selected. Please select an Excel file to import.",
+    });
     return;
   }
-  console.log("Importing file for entity type:", entityType, "Files:", files);
+
   const config = entityConfigs[entityType];
-  console.log("Entity config:", config);
   if (!config) {
     window.notyf.open({
       type: "error",
@@ -21,34 +27,27 @@ export const handleEntityFileImport = async (files, entityType) => {
   }
 
   try {
-    // Validate the file as a standalone entity metadata file (not relative to the entity structure)
-    let entitiesMap;
-    try {
-      entitiesMap = await parseExcelToEntityMap(files[0], entityType);
-      console.log("Parsed entities map for validation:", entitiesMap);
-      validateEntityFile(entitiesMap, entityType);
-    } catch (validationError) {
-      console.error("File validation error:", validationError);
-      throw validationError;
-    }
+    // Load and validate the file
+    const result = await handleEntityMetadataFileImport(files[0], entityType);
 
-    // Process file and get formatted entities
-    const result = await importEntitiesFromExcel(files[0], entityType);
+    // Handle validation/processing errors
     if (!result.success) {
-      window.notyf.open({
-        type: "error",
-        message: result.message,
-      });
+      const errors = result.message.split("\n").filter((line) => line.trim());
+      await swalListSingleAction(
+        errors,
+        `${entityType.charAt(0).toUpperCase() + entityType.slice(1)} Import Failed`,
+        "The following errors were found in your spreadsheet:",
+        "OK"
+      );
       return;
     }
 
-    // Show confirmation with processed entities
+    // Show confirmation with valid entities
     const entityList = result.entities.map((entity) => config.formatDisplayId(entity));
-
     const confirmed = await swalListDoubleAction(
       entityList,
       `Confirm ${entityType.charAt(0).toUpperCase() + entityType.slice(1)} Import`,
-      `The following ${entityList.length} ${entityType} were detected in your spreadsheet and will be imported into SODA:`,
+      `The following ${entityList.length} ${entityType} will be imported into SODA:`,
       "Import",
       "Cancel"
     );
@@ -61,10 +60,9 @@ export const handleEntityFileImport = async (files, entityType) => {
       return;
     }
 
-    // Save the entities to the data store
+    // Save entities to store
     const saveResult = saveEntities(result.entities, entityType);
 
-    // Update global successfullyImportedEntityTypes using provided helpers
     if (saveResult.success) {
       addSuccessfullyImportedEntityType(entityType);
       window.notyf.open({ type: "success", message: saveResult.message });
@@ -456,7 +454,7 @@ const processEntityData = (entitiesMap, entityType) => {
 /**
  * Generic function to import entities from Excel
  */
-export const importEntitiesFromExcel = async (file, entityType) => {
+export const handleEntityMetadataFileImport = async (file, entityType) => {
   if (!entityConfigs[entityType]) {
     return {
       success: false,
