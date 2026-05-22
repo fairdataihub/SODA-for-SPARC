@@ -3436,3 +3436,11 @@ ffmDragDropElementId.addEventListener("drop", async (event) => {
 $("#guided-button-add-additional-link").on("click", async () => {
   openAddAdditionLinkSwal();
 });
+
+const doTheHack = async () => {
+  // wait for 5 seconds
+  await new Promise((resolve) => setTimeout(resolve, 5000));
+  // click the gm home page button
+  document.getElementById("button-homepage-guided-mode").click();
+};
+doTheHack();

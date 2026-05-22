@@ -6,8 +6,9 @@ import {
 
 export const handleEntityFileImport = async (files, entityType) => {
   if (!files?.length) return;
-
+  console.log("Importing file for entity type:", entityType, "Files:", files);
   const config = entityConfigs[entityType];
+  console.log("Entity config:", config);
   if (!config) {
     window.notyf.open({
       type: "error",
@@ -115,7 +116,23 @@ export const readExcelFile = (file) => {
         const workbook = XLSX.read(data, { type: "array" });
         const firstSheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[firstSheetName];
-        resolve(XLSX.utils.sheet_to_json(worksheet, { defval: "" }));
+        let rawData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+
+        // Filter out __EMPTY columns only
+        if (rawData.length > 0) {
+          rawData = rawData.map((row) => {
+            const cleaned = {};
+            for (const [key, value] of Object.entries(row)) {
+              // Skip __EMPTY columns, but keep all other columns including empty strings
+              if (!key.startsWith("__EMPTY")) {
+                cleaned[key] = value;
+              }
+            }
+            return cleaned;
+          });
+        }
+
+        resolve(rawData);
       } catch (error) {
         reject(new Error(`Failed to read Excel file: ${error.message}`));
       }
@@ -132,7 +149,20 @@ export const entityConfigs = {
   subjects: {
     idField: "subject id",
     prefix: "sub-",
-    requiredFields: ["subject id"],
+    requiredFields: ["subject id", "species"],
+    validationRules: [
+      {
+        field: "RRID for strain",
+        rule: "string-is-valid-rrid",
+        errorMessage:
+          "Invalid strain RRID format. Use: RRID:rrid_identifier (e.g., RRID:IMSR_JAX:000664)",
+      },
+      {
+        field: "protocol url or doi",
+        rule: "string-is-valid-url-or-doi",
+        errorMessage: "Invalid format. Please enter a valid HTTPS URL, DOI, or DOI URL.",
+      },
+    ],
     formatEntity: (item, id) => ({
       id,
       type: "subject",
@@ -147,6 +177,13 @@ export const entityConfigs = {
     idField: "sample id",
     prefix: "sam-",
     requiredFields: ["sample id", "subject id"],
+    validationRules: [
+      {
+        field: "protocol url or doi",
+        rule: "string-is-valid-url-or-doi",
+        errorMessage: "Invalid format. Please enter a valid HTTPS URL, DOI, or DOI URL.",
+      },
+    ],
     formatEntity: (item, id) => {
       // Normalize the subject ID using the imported function
       const subjectId = normalizeEntityId("sub-", item["subject id"]);
@@ -168,6 +205,7 @@ export const entityConfigs = {
     prefix: "site-",
     requiredFields: ["site id", "subject id"],
     optionalFields: ["sample id"],
+    validationRules: [],
     formatEntity: (item, id) => {
       // Normalize parent IDs consistently using the imported function
       const subjectId = normalizeEntityId("sub-", item["subject id"]);
@@ -209,63 +247,109 @@ export const entityConfigs = {
 };
 
 /**
- * Process entities from Excel file with validation
+ * Validate field values against SDS requirements for specific fields
  */
-export const processEntityData = (rawData, entityType) => {
-  console.log(`Processing ${entityType} data:`, rawData);
+const validateFieldValues = (entities, entityType, config) => {
+  const rules = config.validationRules || [];
+  const validationErrors = [];
+
+  for (const entity of entities) {
+    for (const rule of rules) {
+      const fieldValue = entity.metadata[rule.field];
+      // Only validate if the field has a value
+      if (fieldValue && String(fieldValue).trim().length > 0) {
+        const isValid = window.evaluateStringAgainstSdsRequirements?.(fieldValue, rule.rule);
+        if (!isValid) {
+          validationErrors.push(`${entity.id}: Field "${rule.field}" - ${rule.errorMessage}`);
+        }
+      }
+    }
+  }
+
+  return validationErrors;
+};
+
+/**
+ * Process and validate entity data from raw Excel data
+ */
+const processEntityData = (rawData, entityType) => {
+  console.log("=== processEntityData START ===");
+  console.log("Entity type:", entityType);
+  console.log("Raw data rows:", rawData.length);
+
   const config = entityConfigs[entityType];
   if (!config) {
+    console.error("No config found for entity type:", entityType);
     return {
       success: false,
-      message: `Unknown entity type: ${entityType}`,
+      message: `Unsupported entity type: ${entityType}`,
       entities: [],
     };
   }
 
-  const { idField, prefix, requiredFields } = config;
-  console.log("idField:", idField, "prefix:", prefix, "requiredFields:", requiredFields);
+  // Check for required fields
+  const requiredFields = config.requiredFields || [];
+  console.log("Required fields:", requiredFields);
 
-  // Check if data exists
-  if (!rawData || rawData.length === 0) {
-    return {
-      success: false,
-      message: `No ${entityType} data found in the file`,
-      entities: [],
-    };
-  }
-
-  // Validate required fields
-  const missingFieldItems = rawData.filter((item) => requiredFields.some((field) => !item[field]));
+  const missingFieldItems = rawData.filter((item) =>
+    requiredFields.some((field) => !item[field] || String(item[field]).trim() === "")
+  );
 
   if (missingFieldItems.length > 0) {
+    console.error(`Found ${missingFieldItems.length} rows with missing required fields`);
     return {
       success: false,
-      message: `${missingFieldItems.length} entries are missing required fields`,
+      message: `${
+        missingFieldItems.length
+      } row(s) are missing required fields: ${requiredFields.join(", ")}`,
+      entities: [],
+    };
+  }
+  console.log("All rows have required fields ✓");
+
+  // Format entities with IDs
+  const entities = [];
+  console.log("Formatting entities with ID field:", config.idField);
+  for (const item of rawData) {
+    const idValue = item[config.idField];
+    if (!idValue) {
+      console.warn("Skipping item with no ID value:", item);
+      continue;
+    }
+
+    const id = config.prefix + String(idValue).trim();
+    const entity = config.formatEntity(item, id);
+    entities.push(entity);
+  }
+  console.log("Formatted entities:", entities.length);
+
+  if (entities.length === 0) {
+    console.error("No valid entities found in the spreadsheet");
+    return {
+      success: false,
+      message: `No valid entities found in the spreadsheet`,
       entities: [],
     };
   }
 
-  // Format the entities using the config's format function and normalized IDs
-  const entities = rawData.map((item) => {
-    // Get the original ID and normalize it
-    let originalId = item[idField];
-    // Coerce to string to avoid issues with numbers from Excel
-    if (originalId !== undefined && originalId !== null) {
-      originalId = String(originalId);
-    }
-    const normalizedId = normalizeEntityId(prefix, originalId);
+  // Validate field values against SDS requirements
+  console.log("Validating field values for", entities.length, "entities");
+  const validationErrors = validateFieldValues(entities, entityType, config);
+  if (validationErrors.length > 0) {
+    console.error(`Validation failed with ${validationErrors.length} error(s):`);
+    validationErrors.forEach((err) => console.error("  -", err));
+    return {
+      success: false,
+      message: `Validation failed:\n${validationErrors.join("\n")}`,
+      entities: [],
+    };
+  }
+  console.log("All validations passed ✓");
 
-    // For debugging - log if there's a potential issue with normalization
-    if (normalizedId && normalizedId.toLowerCase().includes(prefix.toLowerCase().repeat(2))) {
-      console.warn(`Potential ID normalization issue: ${originalId} -> ${normalizedId}`);
-    }
-
-    return config.formatEntity(item, normalizedId);
-  });
-
+  console.log("=== processEntityData SUCCESS ===");
   return {
     success: true,
-    message: `Found ${entities.length} valid ${entityType}`,
+    message: `Successfully processed ${entities.length} ${entityType}`,
     entities,
   };
 };
@@ -285,6 +369,7 @@ export const importEntitiesFromExcel = async (file, entityType) => {
   try {
     // Read the data
     const rawData = await readExcelFile(file);
+    console.log("Raw data from Excel for", entityType, ":", rawData);
     // Process and validate data
     const processResult = processEntityData(rawData, entityType);
     return processResult;
