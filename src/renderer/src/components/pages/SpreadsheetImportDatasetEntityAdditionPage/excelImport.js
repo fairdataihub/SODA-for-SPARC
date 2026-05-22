@@ -5,7 +5,10 @@ import {
 } from "../../../stores/slices/datasetContentSelectorSlice";
 
 export const handleEntityFileImport = async (files, entityType) => {
-  if (!files?.length) return;
+  if (!files?.length) {
+    console.log("No files provided for import");
+    return;
+  }
   console.log("Importing file for entity type:", entityType, "Files:", files);
   const config = entityConfigs[entityType];
   console.log("Entity config:", config);
@@ -18,6 +21,17 @@ export const handleEntityFileImport = async (files, entityType) => {
   }
 
   try {
+    // Validate the file as a standalone entity metadata file (not relative to the entity structure)
+    let entitiesMap;
+    try {
+      entitiesMap = await parseExcelToEntityMap(files[0], entityType);
+      console.log("Parsed entities map for validation:", entitiesMap);
+      validateEntityFile(entitiesMap, entityType);
+    } catch (validationError) {
+      console.error("File validation error:", validationError);
+      throw validationError;
+    }
+
     // Process file and get formatted entities
     const result = await importEntitiesFromExcel(files[0], entityType);
     if (!result.success) {
@@ -105,9 +119,9 @@ import {
 } from "../../../stores/slices/datasetEntityStructureSlice";
 
 /**
- * Read an Excel file and convert to JSON data
+ * Parse an Excel file and return entities as a map keyed by entity ID (with prefix)
  */
-export const readExcelFile = (file) => {
+export const parseExcelToEntityMap = (file, entityType) => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -132,7 +146,41 @@ export const readExcelFile = (file) => {
           });
         }
 
-        resolve(rawData);
+        // Convert array to map keyed by entity ID
+        const entitiesMap = {};
+        const config = entityType ? entityConfigs[entityType] : null;
+        const idField = config?.idField;
+        const expectedPrefix = config?.prefix;
+
+        rawData.forEach((row, index) => {
+          // Get the ID value from the appropriate field
+          let idValue = row[idField];
+
+          // Check if row has any data (not completely empty)
+          const hasData = Object.values(row).some((val) => val && String(val).trim());
+
+          if (hasData) {
+            // Row has data, so it MUST have a valid ID
+            if (!idValue || !String(idValue).trim()) {
+              throw new Error(`Row ${index + 2} has data but is missing the ${idField} field`);
+            }
+
+            const entityId = String(idValue).trim();
+
+            // Validate that the ID starts with the expected prefix
+            if (expectedPrefix && !entityId.startsWith(expectedPrefix)) {
+              throw new Error(
+                `Row ${
+                  index + 2
+                }: Invalid ID format. Expected prefix "${expectedPrefix}", got "${entityId}"`
+              );
+            }
+
+            entitiesMap[entityId] = row;
+          }
+        });
+
+        resolve(entitiesMap);
       } catch (error) {
         reject(new Error(`Failed to read Excel file: ${error.message}`));
       }
@@ -247,6 +295,56 @@ export const entityConfigs = {
 };
 
 /**
+ * Validate entity file structure and data integrity (standalone validation)
+ */
+const validateEntityFile = (entitiesMap, entityType) => {
+  console.log("=== validateEntityFile START ===");
+  console.log("Entity type:", entityType);
+  const entitiesArray = Object.values(entitiesMap);
+  console.log("Entity rows:", entitiesArray.length);
+
+  if (entitiesArray.length === 0) {
+    console.error("No data found in spreadsheet");
+    throw new Error("No data found in spreadsheet");
+  }
+
+  const config = entityConfigs[entityType];
+  if (!config) {
+    console.error("No config found for entity type:", entityType);
+    throw new Error(`Unsupported entity type: ${entityType}`);
+  }
+
+  // Check for required fields
+  const requiredFields = config.requiredFields || [];
+  console.log("Required fields:", requiredFields);
+
+  const missingFieldItems = entitiesArray.filter((item) =>
+    requiredFields.some((field) => !item[field] || String(item[field]).trim() === "")
+  );
+
+  if (missingFieldItems.length > 0) {
+    console.error(`Found ${missingFieldItems.length} rows with missing required fields`);
+    throw new Error(
+      `${missingFieldItems.length} row(s) are missing required fields: ${requiredFields.join(", ")}`
+    );
+  }
+  console.log("All rows have required fields ✓");
+
+  // Check for ID field presence
+  console.log("Checking ID field:", config.idField);
+  const missingIdItems = entitiesArray.filter(
+    (item) => !item[config.idField] || String(item[config.idField]).trim() === ""
+  );
+  if (missingIdItems.length > 0) {
+    console.error(`Found ${missingIdItems.length} rows with missing ID field`);
+    throw new Error(`${missingIdItems.length} row(s) are missing the ${config.idField} field`);
+  }
+  console.log("All rows have ID field ✓");
+
+  console.log("=== validateEntityFile SUCCESS ===");
+};
+
+/**
  * Validate field values against SDS requirements for specific fields
  */
 const validateFieldValues = (entities, entityType, config) => {
@@ -270,12 +368,13 @@ const validateFieldValues = (entities, entityType, config) => {
 };
 
 /**
- * Process and validate entity data from raw Excel data
+ * Process and validate entity data from Excel entities map
  */
-const processEntityData = (rawData, entityType) => {
+const processEntityData = (entitiesMap, entityType) => {
   console.log("=== processEntityData START ===");
   console.log("Entity type:", entityType);
-  console.log("Raw data rows:", rawData.length);
+  const entitiesArray = Object.values(entitiesMap);
+  console.log("Entity rows:", entitiesArray.length);
 
   const config = entityConfigs[entityType];
   if (!config) {
@@ -291,7 +390,7 @@ const processEntityData = (rawData, entityType) => {
   const requiredFields = config.requiredFields || [];
   console.log("Required fields:", requiredFields);
 
-  const missingFieldItems = rawData.filter((item) =>
+  const missingFieldItems = entitiesArray.filter((item) =>
     requiredFields.some((field) => !item[field] || String(item[field]).trim() === "")
   );
 
@@ -310,7 +409,7 @@ const processEntityData = (rawData, entityType) => {
   // Format entities with IDs
   const entities = [];
   console.log("Formatting entities with ID field:", config.idField);
-  for (const item of rawData) {
+  for (const item of entitiesArray) {
     const idValue = item[config.idField];
     if (!idValue) {
       console.warn("Skipping item with no ID value:", item);
@@ -368,10 +467,10 @@ export const importEntitiesFromExcel = async (file, entityType) => {
 
   try {
     // Read the data
-    const rawData = await readExcelFile(file);
-    console.log("Raw data from Excel for", entityType, ":", rawData);
+    const entitiesMap = await parseExcelToEntityMap(file, entityType);
+    console.log("Entities map from Excel for", entityType, ":", entitiesMap);
     // Process and validate data
-    const processResult = processEntityData(rawData, entityType);
+    const processResult = processEntityData(entitiesMap, entityType);
     return processResult;
   } catch (error) {
     console.error(`Error processing ${entityType} data:`, error);

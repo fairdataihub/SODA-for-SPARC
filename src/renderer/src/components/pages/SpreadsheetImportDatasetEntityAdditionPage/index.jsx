@@ -36,7 +36,8 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
   const enabledEntities = [
     ...(selectedEntities?.includes("subjects") ? ["subjects"] : []),
     ...(selectedEntities?.includes("samples") ? ["samples"] : []),
-    ...(selectedEntities?.includes("sites") ? ["sites"] : []),
+    ...(selectedEntities?.includes("subjectSites") ? ["subjectSites"] : []),
+    ...(selectedEntities?.includes("sampleSites") ? ["sampleSites"] : []),
   ];
 
   // --- Entity type configuration ---
@@ -48,7 +49,7 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
       icon: <IconUser size={24} />,
       color: "blue",
       description: "Download the template, assign unique IDs, and upload the completed file.",
-      dependsOn: ["entity-structure"],
+      dependsOn: [],
       metadataFileName: "subjects.xlsx",
     },
     samples: {
@@ -61,14 +62,23 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
       sequence: 2,
       metadataFileName: "samples.xlsx",
     },
-    sites: {
-      title: "Step 3: Site IDs",
+    subjectSites: {
+      title: "Step 3a: Subject Site IDs",
       singular: "site",
       icon: <IconPin size={24} />,
       color: "grape",
-      description: "Link sites to subjects and/or samples with metadata.",
-      dependsOn: ["entity-structure", "subjects", "samples"],
-      metadataFileName: "sites.xlsx",
+      description: "Link sites to subjects with metadata.",
+      dependsOn: ["subjects"],
+      metadataFileName: "subject-sites.xlsx",
+    },
+    sampleSites: {
+      title: "Step 3b: Sample Site IDs",
+      singular: "site",
+      icon: <IconPin size={24} />,
+      color: "grape",
+      description: "Link sites to samples with metadata.",
+      dependsOn: ["samples"],
+      metadataFileName: "sample-sites.xlsx",
     },
   };
 

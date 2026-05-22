@@ -9,14 +9,14 @@ import {
 } from "./excelImport";
 
 const helperConfig = {
-  subjects: {
+  "subjects.xlsx": {
     disabledColumns: ["metadata only", "number of directly derived samples"],
   },
 };
 
 export const DownloadCard = ({ entityType, config, locked = false }) => {
   // Get real dependencies (filter out "entity-structure")
-  const realDeps = config.dependsOn?.filter((dep) => dep !== "entity-structure") || [];
+  const realDeps = config.dependsOn;
   const depsText = realDeps.map((d) => `${d} metadata`).join(", ");
 
   if (locked) {
