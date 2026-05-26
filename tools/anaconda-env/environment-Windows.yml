@@ -77,11 +77,11 @@ dependencies:
     - zope-event==5.0
     - zope-interface==6.1
     - backports.tarfile
-    - pysodafair==0.1.766
+    - pysodafair
     - gunicorn
 
     # NOTE: Keep pysodafair and the --extra-index-url line at the bottom of this file.
     # The GitHub Actions build workflow automatically uncomments the extra-index-url line
     # for beta versions to install pysodafair from TestPyPI instead of PyPI.
-    # - --extra-index-url https://test.pypi.org/simple/
+    - --extra-index-url https://test.pypi.org/simple/
 
