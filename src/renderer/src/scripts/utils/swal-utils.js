@@ -107,7 +107,7 @@ export const swalListSingleAction = async (fileList, title, helpText, postAction
   });
 };
 
-export const swalListDisplayOnly = async (fileList, title, helpText) => {
+export const swalListDisplayOnly = async (fileList, title, helpText, postActionText) => {
   await Swal.fire({
     title: title,
     html: `
@@ -119,6 +119,7 @@ export const swalListDisplayOnly = async (fileList, title, helpText) => {
           )
           .join("")}
       </div>
+      ${postActionText ? `<b>${postActionText}</b>` : ""}
     `,
     width: 800,
     heightAuto: false,

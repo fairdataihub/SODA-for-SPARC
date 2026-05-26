@@ -1,12 +1,21 @@
 import {
   swalListDoubleAction,
   swalListSingleAction,
+  swalListDisplayOnly,
   swalConfirmAction,
 } from "../../../scripts/utils/swal-utils";
 import {
   addSuccessfullyImportedEntityType,
   removeSuccessfullyImportedEntityType,
 } from "../../../stores/slices/datasetContentSelectorSlice";
+import * as XLSX from "xlsx";
+import {
+  addSubject,
+  addSample,
+  addSiteToSubject,
+  addSiteToSample,
+  normalizeEntityId,
+} from "../../../stores/slices/datasetEntityStructureSlice";
 
 export const handleEntityFileImport = async (files, entityType) => {
   if (!files?.length) {
@@ -28,19 +37,7 @@ export const handleEntityFileImport = async (files, entityType) => {
 
   try {
     // Load and validate the file
-    const result = await handleEntityMetadataFileImport(files[0], entityType);
-
-    // Handle validation/processing errors
-    if (!result.success) {
-      const errors = result.message.split("\n").filter((line) => line.trim());
-      await swalListSingleAction(
-        errors,
-        `${entityType.charAt(0).toUpperCase() + entityType.slice(1)} Import Failed`,
-        "The following errors were found in your spreadsheet:",
-        "OK"
-      );
-      return;
-    }
+    const result = await importEntitiesFromExcel(files[0], entityType);
 
     // Show confirmation with valid entities
     const entityList = result.entities.map((entity) => config.formatDisplayId(entity));
@@ -71,9 +68,10 @@ export const handleEntityFileImport = async (files, entityType) => {
       window.notyf.open({ type: "error", message: saveResult.message });
     }
   } catch (error) {
+    console.error(`Error importing ${entityType}:`, error);
     window.notyf.open({
       type: "error",
-      message: `Error importing ${entityType}: ${error.message}`,
+      message: `Error importing ${entityType} metadata: ${error.message}`,
     });
   }
 };
@@ -107,87 +105,113 @@ export const handleFileRejection = () => {
     message: "Invalid file format. Please upload an Excel file (.xlsx or .xls)",
   });
 };
-import * as XLSX from "xlsx";
-import {
-  addSubject,
-  addSample,
-  addSiteToSubject,
-  addSiteToSample,
-  normalizeEntityId,
-} from "../../../stores/slices/datasetEntityStructureSlice";
 
 /**
  * Parse an Excel file and return entities as a map keyed by entity ID (with prefix)
  */
-export const parseExcelToEntityMap = (file, entityType) => {
+export const parseExcelToEntityMap = async (file, entityType) => {
+  const config = entityType ? entityConfigs[entityType] : null;
+  const idField = config?.idField;
+  const expectedPrefix = config?.prefix;
+
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const data = e.target.result;
-        const workbook = XLSX.read(data, { type: "array" });
-        const firstSheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[firstSheetName];
-        let rawData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
 
-        // Filter out __EMPTY columns only
-        if (rawData.length > 0) {
-          rawData = rawData.map((row) => {
-            const cleaned = {};
-            for (const [key, value] of Object.entries(row)) {
-              // Skip __EMPTY columns, but keep all other columns including empty strings
-              if (!key.startsWith("__EMPTY")) {
-                cleaned[key] = value;
-              }
-            }
-            return cleaned;
-          });
+    reader.onload = async ({ target }) => {
+      try {
+        const workbook = XLSX.read(target.result, { type: "array" });
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+
+        if (!worksheet || !worksheet["!ref"]) {
+          throw new Error(
+            "The worksheet appears to be empty. Please add metadata rows and import again."
+          );
         }
 
-        // Convert array to map keyed by entity ID
+        const rawData = XLSX.utils
+          .sheet_to_json(worksheet, { defval: "" })
+          .map((row) =>
+            Object.fromEntries(Object.entries(row).filter(([key]) => !key.startsWith("__EMPTY")))
+          );
+
+        if (rawData.length === 0) {
+          throw new Error(
+            "The worksheet has no metadata entries (it may only contain headers). Please add metadata rows and import again."
+          );
+        }
+
         const entitiesMap = {};
-        const config = entityType ? entityConfigs[entityType] : null;
-        const idField = config?.idField;
-        const expectedPrefix = config?.prefix;
+        const rowsWithoutId = [];
+        const rowsWithInvalidPrefix = [];
 
         rawData.forEach((row, index) => {
-          // Get the ID value from the appropriate field
-          let idValue = row[idField];
+          const rowNumber = index + 2;
 
-          // Check if row has any data (not completely empty)
-          const hasData = Object.values(row).some((val) => val && String(val).trim());
+          // Skip completely empty rows
+          const hasData = Object.values(row).some((value) => String(value).trim() !== "");
 
-          if (hasData) {
-            // Row has data, so it MUST have a valid ID
-            if (!idValue || !String(idValue).trim()) {
-              throw new Error(`Row ${index + 2} has data but is missing the ${idField} field`);
-            }
+          if (!hasData) return;
 
-            const entityId = String(idValue).trim();
+          const entityId = String(row[idField] || "").trim();
 
-            // Validate that the ID starts with the expected prefix
-            if (expectedPrefix && !entityId.startsWith(expectedPrefix)) {
-              throw new Error(
-                `Row ${
-                  index + 2
-                }: Invalid ID format. Expected prefix "${expectedPrefix}", got "${entityId}"`
-              );
-            }
-
-            entitiesMap[entityId] = row;
+          // Rows with data must contain an ID
+          if (!entityId) {
+            rowsWithoutId.push(rowNumber);
+            return;
           }
+
+          // Validate ID prefix
+          if (expectedPrefix && !entityId.startsWith(expectedPrefix)) {
+            rowsWithInvalidPrefix.push({
+              rowNumber,
+              id: entityId,
+            });
+
+            return;
+          }
+
+          entitiesMap[entityId] = row;
         });
+
+        if (rowsWithoutId.length > 0) {
+          await swalListDisplayOnly(
+            rowsWithoutId.map(
+              (rowNumber) => `Row ${rowNumber}: has data but is missing the ${idField} field`
+            ),
+            `${entityType.charAt(0).toUpperCase() + entityType.slice(1)} Metadata Import Failed`,
+            "The following rows have data but are missing the required ID field:",
+            "Please fix these issues in the spreadsheet and import again."
+          );
+          throw new Error("Please ensure every row with data has a value in the ID column.");
+        }
+
+        if (rowsWithInvalidPrefix.length > 0) {
+          await swalListDisplayOnly(
+            rowsWithInvalidPrefix.map(({ rowNumber, id }) => `Row ${rowNumber}: "${id}"`),
+            `${entityType.charAt(0).toUpperCase() + entityType.slice(1)} Metadata Import Failed`,
+            `The following rows have invalid ID prefixes (${
+              entityType.charAt(0).toUpperCase() + entityType.slice(1)
+            } IDs are expected to start with ${expectedPrefix}):`,
+            "Please fix these issues in the spreadsheet and import again."
+          );
+          throw new Error(
+            `Please ensure all IDs start with the expected prefix: ${expectedPrefix}`
+          );
+        }
 
         resolve(entitiesMap);
       } catch (error) {
         reject(new Error(`Failed to read Excel file: ${error.message}`));
       }
     };
-    reader.onerror = () => reject(new Error("Failed to read file"));
+
+    reader.onerror = () => {
+      reject(new Error("Failed to read file"));
+    };
+
     reader.readAsArrayBuffer(file);
   });
 };
-
 /**
  * Entity type configurations - using the three main entity types
  */
@@ -454,15 +478,10 @@ const processEntityData = (entitiesMap, entityType) => {
 /**
  * Generic function to import entities from Excel
  */
-export const handleEntityMetadataFileImport = async (file, entityType) => {
+export const importEntitiesFromExcel = async (file, entityType) => {
   if (!entityConfigs[entityType]) {
-    return {
-      success: false,
-      message: `Unsupported entity type: ${entityType}`,
-      entities: [],
-    };
+    throw new Error(`Unsupported entity type: ${entityType}`);
   }
-
   try {
     // Read the data
     const entitiesMap = await parseExcelToEntityMap(file, entityType);
@@ -471,12 +490,8 @@ export const handleEntityMetadataFileImport = async (file, entityType) => {
     const processResult = processEntityData(entitiesMap, entityType);
     return processResult;
   } catch (error) {
-    console.error(`Error processing ${entityType} data:`, error);
-    return {
-      success: false,
-      message: `Failed to process ${entityType}: ${error.message}`,
-      entities: [],
-    };
+    console.error(`Error importing ${entityType} from Excel:`, error);
+    throw new Error(`Failed to import ${entityType} metadata: ${error.message}`);
   }
 };
 

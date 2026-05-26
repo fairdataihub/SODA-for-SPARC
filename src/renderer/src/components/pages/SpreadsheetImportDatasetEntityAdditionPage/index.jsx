@@ -4,7 +4,7 @@ import GuidedModeSection from "../../containers/GuidedModeSection";
 import { IconUser, IconFlask, IconPin, IconFileSpreadsheet, IconCheck } from "@tabler/icons-react";
 import { Text, Grid, Stack, Group, Button, Paper, Box, Divider, List, Card } from "@mantine/core";
 import useGlobalStore from "../../../stores/globalStore";
-import { handleEntityMetadataFileImport, entityConfigs, saveEntities } from "./excelImport";
+import { importEntitiesFromExcel, entityConfigs, saveEntities } from "./excelImport";
 import { swalListDoubleAction, swalConfirmAction } from "../../../scripts/utils/swal-utils";
 import SodaPaper from "../../utils/ui/SodaPaper";
 import { removeSuccessfullyImportedEntityType } from "../../../stores/slices/datasetContentSelectorSlice";
@@ -39,6 +39,8 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
     ...(selectedEntities?.includes("subjectSites") ? ["subjectSites"] : []),
     ...(selectedEntities?.includes("sampleSites") ? ["sampleSites"] : []),
   ];
+
+  console.log("Enabled entity types for import:", enabledEntities);
 
   // --- Entity type configuration ---
   const entityTypeConfig = {
