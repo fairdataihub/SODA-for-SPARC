@@ -15,6 +15,8 @@ import {
   addSiteToSubject,
   addSiteToSample,
   normalizeEntityId,
+  getExistingSubjects,
+  getExistingSamples,
 } from "../../../stores/slices/datasetEntityStructureSlice";
 
 export const handleEntityFileImport = async (files, entityType) => {
@@ -160,6 +162,7 @@ export const parseExcelToEntityMap = async (file, entityType) => {
         const rowsWithoutId = [];
         const rowsWithInvalidPrefix = [];
         const rowsWithMissingFields = [];
+        const rowsWithMissingParents = [];
 
         rawData.forEach((row, index) => {
           const rowNumber = index + 2;
@@ -169,7 +172,10 @@ export const parseExcelToEntityMap = async (file, entityType) => {
 
           if (!hasData) return;
 
-          const entityId = String(row[idField] || "").trim();
+          // Normalize all ID fields in the row (sub-, sam-, site- prefixes)
+          row = normalizeRowIds(row);
+
+          let entityId = String(row[idField] || "").trim();
 
           // Rows with data must contain an ID
           if (!entityId) {
@@ -177,15 +183,17 @@ export const parseExcelToEntityMap = async (file, entityType) => {
             return;
           }
 
-          // Validate ID prefix
+          // Validate ID prefix (case-sensitive after normalization)
           if (expectedPrefix && !entityId.startsWith(expectedPrefix)) {
             rowsWithInvalidPrefix.push({
               rowNumber,
               id: entityId,
             });
-
             return;
           }
+
+          // Update the row with the normalized ID
+          row[idField] = entityId;
 
           // Check for required fields
           const requiredFields = config.requiredFields || [];
@@ -200,9 +208,51 @@ export const parseExcelToEntityMap = async (file, entityType) => {
             return;
           }
 
+          // Validate parent entities exist for samples and sites
+          if (entityType === "samples") {
+            const subjectIdRaw = String(row["subject id"] || "").trim();
+            const normalizedSubjectId = normalizeEntityId("sub-", subjectIdRaw);
+            const existingSubjectIds = getExistingSubjects().map((s) => s.id);
+            if (!existingSubjectIds.includes(normalizedSubjectId)) {
+              rowsWithMissingParents.push({
+                rowNumber,
+                missingParent: normalizedSubjectId,
+              });
+              return;
+            }
+          }
+
+          if (entityType === "sites") {
+            const specimenRaw = String(row["specimen id"] || "").trim();
+            const candidateSampleId = normalizeEntityId("sam-", specimenRaw);
+            const candidateSubjectId = normalizeEntityId("sub-", specimenRaw);
+            const existingSampleIds = getExistingSamples().map((s) => s.id);
+            const existingSubjectIds = getExistingSubjects().map((s) => s.id);
+
+            if (existingSampleIds.includes(candidateSampleId)) {
+              // Site belongs to a sample - mark this for formatEntity
+              row._parentType = "sample";
+              row._parentId = candidateSampleId;
+            } else if (existingSubjectIds.includes(candidateSubjectId)) {
+              // Site belongs to a subject
+              row._parentType = "subject";
+              row._parentId = candidateSubjectId;
+            } else {
+              rowsWithMissingParents.push({
+                rowNumber,
+                missingParent: specimenRaw,
+              });
+              return;
+            }
+          }
+
+          // Normalize the entity ID to the correct prefix and casing
+          const normalizedEntityId =
+            expectedPrefix + entityId.slice(expectedPrefix.length);
+
           // Format entity and store in map
-          const entity = config.formatEntity(row, entityId);
-          entitiesMap[entityId] = entity;
+          const entity = config.formatEntity(row, normalizedEntityId);
+          entitiesMap[normalizedEntityId] = entity;
         });
 
         if (rowsWithoutId.length > 0) {
@@ -241,6 +291,20 @@ export const parseExcelToEntityMap = async (file, entityType) => {
           throw new Error(`${rowsWithMissingFields.length} row(s) are missing required fields`);
         }
 
+        if (rowsWithMissingParents.length > 0) {
+          await swalListDisplayOnly(
+            rowsWithMissingParents.map(({ rowNumber, missingParent }) =>
+              `Row ${rowNumber}: parent entity not found (${missingParent})`
+            ),
+            `${capitalizedPluralEntityType} Metadata Import Failed`,
+            `The following rows reference parent entities that do not exist:`,
+            "Please add the parent subjects/samples to the dataset first and try again."
+          );
+          throw new Error(
+            `${rowsWithMissingParents.length} row(s) reference parent entities that do not exist`
+          );
+        }
+
         // Validate field values against SDS requirements (entities already formatted in map)
         const entities = Object.values(entitiesMap);
         console.log("Validating field values for", entities.length, "entities");
@@ -270,6 +334,61 @@ export const parseExcelToEntityMap = async (file, entityType) => {
     reader.readAsArrayBuffer(file);
   });
 };
+
+/**
+ * Normalize all ID fields in a row (sub-, sam-, site- prefixes)
+ */
+const normalizeRowIds = (row) => {
+  const normalized = { ...row };
+  const idPrefixes = ["sub-", "sam-", "site-"];
+
+  for (const [key, value] of Object.entries(normalized)) {
+    if (typeof value === "string") {
+      const valueTrimmed = value.trim();
+      const valueLower = valueTrimmed.toLowerCase();
+
+      // Check if this value starts with any of the ID prefixes
+      for (const prefix of idPrefixes) {
+        const prefixUpper = prefix.toUpperCase();
+        if (valueLower.startsWith(prefix)) {
+          // Already has correct prefix, just ensure it's lowercase
+          normalized[key] = prefix + valueTrimmed.slice(prefix.length);
+          break;
+        } else if (valueTrimmed.toUpperCase().startsWith(prefixUpper)) {
+          // Has uppercase prefix, normalize it
+          normalized[key] = prefix + valueTrimmed.slice(prefixUpper.length);
+          break;
+        }
+      }
+    }
+  }
+
+  return normalized;
+};
+
+/**
+ * Validate field values against SDS requirements for specific fields
+ */
+const validateFieldValues = (entities, entityType, config) => {
+  const rules = config.validationRules || [];
+  const validationErrors = [];
+
+  for (const entity of entities) {
+    for (const rule of rules) {
+      const fieldValue = entity.metadata[rule.field];
+      // Only validate if the field has a value
+      if (fieldValue && String(fieldValue).trim().length > 0) {
+        const isValid = window.evaluateStringAgainstSdsRequirements?.(fieldValue, rule.rule);
+        if (!isValid) {
+          validationErrors.push(`${entity.id}: Field "${rule.field}" - ${rule.errorMessage}`);
+        }
+      }
+    }
+  }
+
+  return validationErrors;
+};
+
 /**
  * Entity type configurations - using the three main entity types
  */
@@ -328,74 +447,46 @@ export const entityConfigs = {
     templateFileName: "samples.xlsx",
   },
 
-  subjectSites: {
+  sites: {
     idField: "site id",
     prefix: "site-",
     requiredFields: ["site id", "specimen id"],
     validationRules: [],
     formatEntity: (item, id) => {
-      const specimenId = normalizeEntityId("sub-", item["specimen id"]);
+      // Specimen ID should be either sub-xxx or sam-xxx
+      const parentId = item._parentId;
 
+      // Check if site belongs to a sample or subject
+      if (item._parentType === "sample") {
+        // Find the subject ID from the sample's parent
+        const sample = getExistingSamples().find((s) => s.id === parentId);
+        const subjectId = sample ? sample.parentSubject : parentId;
+
+        return {
+          id,
+          type: "site",
+          parentSubject: subjectId,
+          parentSample: parentId,
+          metadata: { ...item, "site id": id, "specimen id": parentId },
+        };
+      }
+
+      // Default: site belongs to a subject
       return {
         id,
         type: "site",
-        parentSubject: specimenId,
-        metadata: { ...item, "site id": id, "specimen id": specimenId },
+        parentSubject: parentId,
+        metadata: { ...item, "site id": id, "specimen id": parentId },
       };
     },
     saveEntity: (entity) => {
-      addSiteToSubject(entity.parentSubject, entity.id, entity.metadata);
-    },
-    formatDisplayId: (entity) => {
-      return `${entity.id} (Subject: ${entity.parentSubject})`;
-    },
-    templateFileName: "subject-sites.xlsx",
-  },
-
-  sampleSites: {
-    idField: "site id",
-    prefix: "site-",
-    requiredFields: ["site id", "specimen id"],
-    validationRules: [],
-    formatEntity: (item, id) => {
-      const specimenId = normalizeEntityId("sam-", item["specimen id"]);
-
-      // Extract subject ID from specimen's parent (samples know their parent subject)
-      // For now, we'll need to look this up or require it in the spreadsheet
-      // This is a limitation - we need the subject ID for the addSiteToSample call
-      throw new Error(
-        "Sample sites import requires additional parent subject information. This feature is not yet fully implemented."
-      );
-    },
-    saveEntity: (entity) => {
-      addSiteToSample(entity.parentSubject, entity.parentSample, entity.id, entity.metadata);
-    },
-    formatDisplayId: (entity) => {
-      return `${entity.id} (Sample: ${entity.parentSample}, Subject: ${entity.parentSubject})`;
-    },
-    templateFileName: "sample-sites.xlsx",
-  },
-};
-
-/**
- * Validate field values against SDS requirements for specific fields
- */
-const validateFieldValues = (entities, entityType, config) => {
-  const rules = config.validationRules || [];
-  const validationErrors = [];
-
-  for (const entity of entities) {
-    for (const rule of rules) {
-      const fieldValue = entity.metadata[rule.field];
-      // Only validate if the field has a value
-      if (fieldValue && String(fieldValue).trim().length > 0) {
-        const isValid = window.evaluateStringAgainstSdsRequirements?.(fieldValue, rule.rule);
-        if (!isValid) {
-          validationErrors.push(`${entity.id}: Field "${rule.field}" - ${rule.errorMessage}`);
-        }
+      if (entity.parentSample) {
+        addSiteToSample(entity.parentSubject, entity.parentSample, entity.id, entity.metadata);
+      } else {
+        addSiteToSubject(entity.parentSubject, entity.id, entity.metadata);
       }
-    }
-  }
-
-  return validationErrors;
+    },
+    formatDisplayId: (entity) => entity.id,
+    templateFileName: "sites.xlsx",
+  },
 };
