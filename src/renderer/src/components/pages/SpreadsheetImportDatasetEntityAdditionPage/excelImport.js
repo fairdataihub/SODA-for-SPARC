@@ -35,15 +35,26 @@ export const handleEntityFileImport = async (files, entityType) => {
     return;
   }
 
+  const singularEntityType = entityType ? entityType.slice(0, -1) : "entity";
+  const capitalizedSingularEntityType =
+    singularEntityType.charAt(0).toUpperCase() + singularEntityType.slice(1);
+  const capitalizedPluralEntityType = entityType
+    ? entityType.charAt(0).toUpperCase() + entityType.slice(1)
+    : "entities";
+
   try {
     // Load and validate the file
-    const result = await importEntitiesFromExcel(files[0], entityType);
+    const entitiesMap = await parseExcelToEntityMap(files[0], entityType);
+    console.log("Entities map from Excel for", entityType, ":", entitiesMap);
+    const notSureWhatReturnIs = validateAndFormatEntities(entitiesMap, entityType);
 
     // Show confirmation with valid entities
-    const entityList = result.entities.map((entity) => config.formatDisplayId(entity));
+    const entityList = Object.keys(entitiesMap).map((entityId) =>
+      config.formatDisplayId(entitiesMap[entityId])
+    );
     const confirmed = await swalListDoubleAction(
       entityList,
-      `Confirm ${entityType.charAt(0).toUpperCase() + entityType.slice(1)} Import`,
+      `Confirm ${capitalizedPluralEntityType} Import`,
       `The following ${entityList.length} ${entityType} will be imported into SODA:`,
       "Import",
       "Cancel"
@@ -58,20 +69,21 @@ export const handleEntityFileImport = async (files, entityType) => {
     }
 
     // Save entities to store
-    const saveResult = saveEntities(result.entities, entityType);
-
-    if (saveResult.success) {
-      addSuccessfullyImportedEntityType(entityType);
-      window.notyf.open({ type: "success", message: saveResult.message });
-    } else {
-      removeSuccessfullyImportedEntityType(entityType);
-      window.notyf.open({ type: "error", message: saveResult.message });
+    const entities = Object.values(entitiesMap);
+    for (const entity of entities) {
+      config.saveEntity(entity);
     }
+    addSuccessfullyImportedEntityType(entityType);
+    window.notyf.open({
+      type: "success",
+      message: `Successfully imported ${entities.length} ${entityType}`,
+    });
   } catch (error) {
     console.error(`Error importing ${entityType}:`, error);
     window.notyf.open({
       type: "error",
       message: `Error importing ${entityType} metadata: ${error.message}`,
+      duration: 8000,
     });
   }
 };
@@ -113,6 +125,12 @@ export const parseExcelToEntityMap = async (file, entityType) => {
   const config = entityType ? entityConfigs[entityType] : null;
   const idField = config?.idField;
   const expectedPrefix = config?.prefix;
+  const singularEntityType = entityType ? entityType.slice(0, -1) : "entity";
+  const capitalizedSingularEntityType =
+    singularEntityType.charAt(0).toUpperCase() + singularEntityType.slice(1);
+  const capitalizedPluralEntityType = entityType
+    ? entityType.charAt(0).toUpperCase() + entityType.slice(1)
+    : "entities";
 
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -136,13 +154,16 @@ export const parseExcelToEntityMap = async (file, entityType) => {
 
         if (rawData.length === 0) {
           throw new Error(
-            "The worksheet has no metadata entries (it may only contain headers). Please add metadata rows and import again."
+            "The worksheet has no metadata entries. Please add metadata rows and import again."
           );
+        } else {
+          console.log("Raw data extracted from Excel:", rawData);
         }
 
         const entitiesMap = {};
         const rowsWithoutId = [];
         const rowsWithInvalidPrefix = [];
+        const rowsWithMissingFields = [];
 
         rawData.forEach((row, index) => {
           const rowNumber = index + 2;
@@ -170,16 +191,31 @@ export const parseExcelToEntityMap = async (file, entityType) => {
             return;
           }
 
-          entitiesMap[entityId] = row;
+          // Check for required fields
+          const requiredFields = config.requiredFields || [];
+          const missingFields = requiredFields.filter(
+            (field) => !row[field] || String(row[field]).trim() === ""
+          );
+
+          if (missingFields.length > 0) {
+            missingFields.forEach((field) => {
+              rowsWithMissingFields.push({ rowNumber, field });
+            });
+            return;
+          }
+
+          // Format entity and store in map
+          const entity = config.formatEntity(row, entityId);
+          entitiesMap[entityId] = entity;
         });
 
         if (rowsWithoutId.length > 0) {
           await swalListDisplayOnly(
             rowsWithoutId.map(
-              (rowNumber) => `Row ${rowNumber}: has data but is missing the ${idField} field`
+              (rowNumber) => `Row ${rowNumber}: has metadata but is missing the ${idField} field`
             ),
-            `${entityType.charAt(0).toUpperCase() + entityType.slice(1)} Metadata Import Failed`,
-            "The following rows have data but are missing the required ID field:",
+            `${capitalizedSingularEntityType} Metadata Import Failed`,
+            `The following rows have data but are missing the required ID field:`,
             "Please fix these issues in the spreadsheet and import again."
           );
           throw new Error("Please ensure every row with data has a value in the ID column.");
@@ -188,15 +224,41 @@ export const parseExcelToEntityMap = async (file, entityType) => {
         if (rowsWithInvalidPrefix.length > 0) {
           await swalListDisplayOnly(
             rowsWithInvalidPrefix.map(({ rowNumber, id }) => `Row ${rowNumber}: "${id}"`),
-            `${entityType.charAt(0).toUpperCase() + entityType.slice(1)} Metadata Import Failed`,
-            `The following rows have invalid ID prefixes (${
-              entityType.charAt(0).toUpperCase() + entityType.slice(1)
-            } IDs are expected to start with ${expectedPrefix}):`,
+            `${capitalizedPluralEntityType} Metadata Import Failed`,
+            `The following rows have invalid ID prefixes (${capitalizedPluralEntityType} IDs are expected to start with ${expectedPrefix}):`,
             "Please fix these issues in the spreadsheet and import again."
           );
           throw new Error(
             `Please ensure all IDs start with the expected prefix: ${expectedPrefix}`
           );
+        }
+
+        if (rowsWithMissingFields.length > 0) {
+          await swalListDisplayOnly(
+            rowsWithMissingFields.map(
+              ({ rowNumber, field }) => `Row ${rowNumber}: missing ${field}`
+            ),
+            `${capitalizedSingularEntityType} Metadata Import Failed`,
+            `The following rows are missing required fields:`,
+            "Please fix these issues in the spreadsheet and import again."
+          );
+          throw new Error(`${rowsWithMissingFields.length} row(s) are missing required fields`);
+        }
+
+        // Validate field values against SDS requirements (entities already formatted in map)
+        const entities = Object.values(entitiesMap);
+        console.log("Validating field values for", entities.length, "entities");
+        const validationErrors = validateFieldValues(entities, entityType, config);
+        if (validationErrors.length > 0) {
+          console.error(`Validation failed with ${validationErrors.length} error(s):`);
+          validationErrors.forEach((err) => console.error("  -", err));
+          await swalListDisplayOnly(
+            validationErrors,
+            `${capitalizedSingularEntityType} Metadata Import Failed`,
+            `The following validation errors were found:`,
+            "Please fix these issues in the spreadsheet and import again."
+          );
+          throw new Error(`Validation failed with ${validationErrors.length} error(s)`);
         }
 
         resolve(entitiesMap);
@@ -317,56 +379,6 @@ export const entityConfigs = {
 };
 
 /**
- * Validate entity file structure and data integrity (standalone validation)
- */
-const validateEntityFile = (entitiesMap, entityType) => {
-  console.log("=== validateEntityFile START ===");
-  console.log("Entity type:", entityType);
-  const entitiesArray = Object.values(entitiesMap);
-  console.log("Entity rows:", entitiesArray.length);
-
-  if (entitiesArray.length === 0) {
-    console.error("No data found in spreadsheet");
-    throw new Error("No data found in spreadsheet");
-  }
-
-  const config = entityConfigs[entityType];
-  if (!config) {
-    console.error("No config found for entity type:", entityType);
-    throw new Error(`Unsupported entity type: ${entityType}`);
-  }
-
-  // Check for required fields
-  const requiredFields = config.requiredFields || [];
-  console.log("Required fields:", requiredFields);
-
-  const missingFieldItems = entitiesArray.filter((item) =>
-    requiredFields.some((field) => !item[field] || String(item[field]).trim() === "")
-  );
-
-  if (missingFieldItems.length > 0) {
-    console.error(`Found ${missingFieldItems.length} rows with missing required fields`);
-    throw new Error(
-      `${missingFieldItems.length} row(s) are missing required fields: ${requiredFields.join(", ")}`
-    );
-  }
-  console.log("All rows have required fields ✓");
-
-  // Check for ID field presence
-  console.log("Checking ID field:", config.idField);
-  const missingIdItems = entitiesArray.filter(
-    (item) => !item[config.idField] || String(item[config.idField]).trim() === ""
-  );
-  if (missingIdItems.length > 0) {
-    console.error(`Found ${missingIdItems.length} rows with missing ID field`);
-    throw new Error(`${missingIdItems.length} row(s) are missing the ${config.idField} field`);
-  }
-  console.log("All rows have ID field ✓");
-
-  console.log("=== validateEntityFile SUCCESS ===");
-};
-
-/**
  * Validate field values against SDS requirements for specific fields
  */
 const validateFieldValues = (entities, entityType, config) => {
@@ -390,23 +402,15 @@ const validateFieldValues = (entities, entityType, config) => {
 };
 
 /**
- * Process and validate entity data from Excel entities map
+ * Validate and format entity data from Excel entities map
  */
-const processEntityData = (entitiesMap, entityType) => {
-  console.log("=== processEntityData START ===");
+const validateAndFormatEntities = (entitiesMap, entityType) => {
+  console.log("=== validateAndFormatEntities START ===");
   console.log("Entity type:", entityType);
   const entitiesArray = Object.values(entitiesMap);
   console.log("Entity rows:", entitiesArray.length);
 
   const config = entityConfigs[entityType];
-  if (!config) {
-    console.error("No config found for entity type:", entityType);
-    return {
-      success: false,
-      message: `Unsupported entity type: ${entityType}`,
-      entities: [],
-    };
-  }
 
   // Check for required fields
   const requiredFields = config.requiredFields || [];
@@ -428,18 +432,11 @@ const processEntityData = (entitiesMap, entityType) => {
   }
   console.log("All rows have required fields ✓");
 
-  // Format entities with IDs
+  // Format entities with IDs (IDs already validated upstream)
   const entities = [];
-  console.log("Formatting entities with ID field:", config.idField);
-  for (const item of entitiesArray) {
-    const idValue = item[config.idField];
-    if (!idValue) {
-      console.warn("Skipping item with no ID value:", item);
-      continue;
-    }
-
-    const id = config.prefix + String(idValue).trim();
-    const entity = config.formatEntity(item, id);
+  console.log("Formatting entities from validated data");
+  for (const [entityId, item] of Object.entries(entitiesMap)) {
+    const entity = config.formatEntity(item, entityId);
     entities.push(entity);
   }
   console.log("Formatted entities:", entities.length);
@@ -467,7 +464,7 @@ const processEntityData = (entitiesMap, entityType) => {
   }
   console.log("All validations passed ✓");
 
-  console.log("=== processEntityData SUCCESS ===");
+  console.log("=== validateAndFormatEntities SUCCESS ===");
   return {
     success: true,
     message: `Successfully processed ${entities.length} ${entityType}`,
@@ -479,65 +476,15 @@ const processEntityData = (entitiesMap, entityType) => {
  * Generic function to import entities from Excel
  */
 export const importEntitiesFromExcel = async (file, entityType) => {
-  if (!entityConfigs[entityType]) {
-    throw new Error(`Unsupported entity type: ${entityType}`);
-  }
   try {
     // Read the data
     const entitiesMap = await parseExcelToEntityMap(file, entityType);
     console.log("Entities map from Excel for", entityType, ":", entitiesMap);
-    // Process and validate data
-    const processResult = processEntityData(entitiesMap, entityType);
+    // Validate and format data
+    const processResult = validateAndFormatEntities(entitiesMap, entityType);
     return processResult;
   } catch (error) {
     console.error(`Error importing ${entityType} from Excel:`, error);
     throw new Error(`Failed to import ${entityType} metadata: ${error.message}`);
   }
-};
-
-/**
- * Save entities to the data store
- */
-export const saveEntities = (entities, entityType) => {
-  const config = entityConfigs[entityType];
-  if (!config) {
-    return {
-      success: false,
-      message: `Unknown entity type: ${entityType}`,
-      imported: 0,
-    };
-  }
-
-  let importedCount = 0;
-  const errors = [];
-  const savedEntities = [];
-
-  for (const entity of entities) {
-    try {
-      config.saveEntity(entity);
-      importedCount++;
-      savedEntities.push(entity);
-    } catch (error) {
-      // Fail-fast: stop importing further entities if any save/validation error occurs
-      const msg = `Failed to import ${entity.id}: ${error.message}`;
-      console.error(`Error saving entity ${entity.id}:`, error);
-      return {
-        success: false,
-        message: msg,
-        imported: importedCount,
-        errors: [msg],
-        entities: savedEntities,
-      };
-    }
-  }
-
-  return {
-    success: importedCount > 0,
-    message: errors.length
-      ? `Imported ${importedCount} ${entityType} with ${errors.length} errors`
-      : `Successfully imported ${importedCount} ${entityType}`,
-    imported: importedCount,
-    errors: errors.length ? errors : undefined,
-    entities: savedEntities,
-  };
 };
