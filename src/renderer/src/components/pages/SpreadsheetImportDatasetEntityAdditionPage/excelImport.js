@@ -4,10 +4,7 @@ import {
   swalListDisplayOnly,
   swalConfirmAction,
 } from "../../../scripts/utils/swal-utils";
-import {
-  addSuccessfullyImportedEntityType,
-  removeSuccessfullyImportedEntityType,
-} from "../../../stores/slices/datasetContentSelectorSlice";
+
 import * as XLSX from "xlsx";
 import {
   addSubject,
@@ -71,7 +68,6 @@ export const handleEntityFileImport = async (files, entityType) => {
     for (const entity of entities) {
       config.saveEntity(entity);
     }
-    addSuccessfullyImportedEntityType(entityType);
     window.notyf.open({
       type: "success",
       message: `Successfully imported ${entities.length} ${entityType}`,

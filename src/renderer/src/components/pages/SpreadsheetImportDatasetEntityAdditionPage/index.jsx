@@ -22,9 +22,6 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
     (state) => state.entityImportCompletionStatus
   );
   console.log("Entity import completion status:", entityImportCompletionStatus);
-  const successfullyImportedEntityTypes = useGlobalStore(
-    (state) => state.successfullyImportedEntityTypes || []
-  );
 
   // Helper to get imported counts for display when available
   const subjectsCount = getExistingSubjects()?.length || 0;
@@ -80,9 +77,7 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
 
     // Locked when any real dependency (not "entity-structure") is not satisfied
     const locked =
-      config.dependsOn?.some(
-        (dep) => dep !== "entity-structure" && !successfullyImportedEntityTypes.includes(dep)
-      ) ?? false;
+      config.dependsOn?.some((dep) => !successfullyImportedEntityTypes.includes(dep)) ?? false;
 
     // Determine import result based on actual counts from store
     let importResult = null;
@@ -91,7 +86,9 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
         ? subjectsCount
         : entityType === "samples"
           ? samplesCount
-          : sitesCount;
+          : entityType === "sites"
+            ? sitesCount
+            : 0;
 
     // Import is complete if there are entities of this type in the store
     if (count > 0) {
