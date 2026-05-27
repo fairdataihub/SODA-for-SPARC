@@ -175,6 +175,9 @@ export const parseExcelToEntityMap = async (file, entityType) => {
           // Normalize all ID fields in the row (sub-, sam-, site- prefixes)
           row = normalizeRowIds(row);
 
+          // Transform row keys to snake_case (e.g., "subject id" -> "subject_id")
+          row = transformRowKeys(row);
+
           let entityId = String(row[idField] || "").trim();
 
           // Rows with data must contain an ID
@@ -210,7 +213,7 @@ export const parseExcelToEntityMap = async (file, entityType) => {
 
           // Validate parent entities exist for samples and sites
           if (entityType === "samples") {
-            const subjectIdRaw = String(row["subject id"] || "").trim();
+            const subjectIdRaw = String(row["subject_id"] || "").trim();
             const normalizedSubjectId = normalizeEntityId("sub-", subjectIdRaw);
             const existingSubjectIds = getExistingSubjects().map((s) => s.id);
             if (!existingSubjectIds.includes(normalizedSubjectId)) {
@@ -223,7 +226,7 @@ export const parseExcelToEntityMap = async (file, entityType) => {
           }
 
           if (entityType === "sites") {
-            const specimenRaw = String(row["specimen id"] || "").trim();
+            const specimenRaw = String(row["specimen_id"] || "").trim();
             const candidateSampleId = normalizeEntityId("sam-", specimenRaw);
             const candidateSubjectId = normalizeEntityId("sub-", specimenRaw);
             const existingSampleIds = getExistingSamples().map((s) => s.id);
@@ -367,6 +370,27 @@ const normalizeRowIds = (row) => {
 };
 
 /**
+ * Transform row keys from space-separated format (e.g., "subject id") to snake_case (e.g., "subject_id")
+ * This ensures compatibility with the backend schema which expects snake_case keys
+ */
+const transformRowKeys = (row) => {
+  const transformed = {};
+
+  for (const [key, value] of Object.entries(row)) {
+    // Convert spaces and hyphens to underscores, and normalize to lowercase
+    const transformedKey = key
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, "_")
+      .replace(/-+/g, "_");
+
+    transformed[transformedKey] = value;
+  }
+
+  return transformed;
+};
+
+/**
  * Validate field values against SDS requirements for specific fields
  */
 const validateFieldValues = (entities, entityType, config) => {
@@ -394,18 +418,18 @@ const validateFieldValues = (entities, entityType, config) => {
  */
 export const entityConfigs = {
   subjects: {
-    idField: "subject id",
+    idField: "subject_id",
     prefix: "sub-",
-    requiredFields: ["subject id", "species"],
+    requiredFields: ["subject_id", "species"],
     validationRules: [
       {
-        field: "RRID for strain",
+        field: "rrid_for_strain",
         rule: "string-is-valid-rrid",
         errorMessage:
           "Invalid strain RRID format. Use: RRID:rrid_identifier (e.g., RRID:IMSR_JAX:000664)",
       },
       {
-        field: "protocol url or doi",
+        field: "protocol_url_or_doi",
         rule: "string-is-valid-url-or-doi",
         errorMessage: "Invalid format. Please enter a valid HTTPS URL, DOI, or DOI URL.",
       },
@@ -413,7 +437,7 @@ export const entityConfigs = {
     formatEntity: (item, id) => ({
       id,
       type: "subject",
-      metadata: { ...item, "subject id": id },
+      metadata: { ...item, subject_id: id },
     }),
     saveEntity: (entity) => addSubject(entity.id, entity.metadata),
     formatDisplayId: (entity) => entity.id,
@@ -421,25 +445,25 @@ export const entityConfigs = {
   },
 
   samples: {
-    idField: "sample id",
+    idField: "sample_id",
     prefix: "sam-",
-    requiredFields: ["sample id", "subject id"],
+    requiredFields: ["sample_id", "subject_id"],
     validationRules: [
       {
-        field: "protocol url or doi",
+        field: "protocol_url_or_doi",
         rule: "string-is-valid-url-or-doi",
         errorMessage: "Invalid format. Please enter a valid HTTPS URL, DOI, or DOI URL.",
       },
     ],
     formatEntity: (item, id) => {
       // Normalize the subject ID using the imported function
-      const subjectId = normalizeEntityId("sub-", item["subject id"]);
+      const subjectId = normalizeEntityId("sub-", item["subject_id"]);
 
       return {
         id,
         type: "sample",
         parentSubject: subjectId,
-        metadata: { ...item, "sample id": id, "subject id": subjectId },
+        metadata: { ...item, sample_id: id, subject_id: subjectId },
       };
     },
     saveEntity: (entity) => addSample(entity.parentSubject, null, entity.id, entity.metadata),
@@ -448,9 +472,9 @@ export const entityConfigs = {
   },
 
   sites: {
-    idField: "site id",
+    idField: "site_id",
     prefix: "site-",
-    requiredFields: ["site id", "specimen id"],
+    requiredFields: ["site_id", "specimen_id"],
     validationRules: [],
     formatEntity: (item, id) => {
       // Specimen ID should be either sub-xxx or sam-xxx
@@ -467,7 +491,7 @@ export const entityConfigs = {
           type: "site",
           parentSubject: subjectId,
           parentSample: parentId,
-          metadata: { ...item, "site id": id, "specimen id": parentId },
+          metadata: { ...item, site_id: id, specimen_id: parentId },
         };
       }
 
@@ -476,7 +500,7 @@ export const entityConfigs = {
         id,
         type: "site",
         parentSubject: parentId,
-        metadata: { ...item, "site id": id, "specimen id": parentId },
+        metadata: { ...item, site_id: id, specimen_id: parentId },
       };
     },
     saveEntity: (entity) => {

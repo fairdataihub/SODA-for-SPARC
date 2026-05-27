@@ -35,8 +35,7 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
   const enabledEntities = [
     ...(selectedEntities?.includes("subjects") ? ["subjects"] : []),
     ...(selectedEntities?.includes("samples") ? ["samples"] : []),
-    ...(selectedEntities?.includes("subjectSites") ? ["subjectSites"] : []),
-    ...(selectedEntities?.includes("sampleSites") ? ["sampleSites"] : []),
+    ...(selectedEntities?.includes("subjectSites") || selectedEntities?.includes("sampleSites") ? ["sites"] : []),
   ];
 
   console.log("Enabled entity types for import:", enabledEntities);
@@ -63,23 +62,14 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
       sequence: 2,
       metadataFileName: "samples.xlsx",
     },
-    subjectSites: {
-      title: "Step 3a: Subject Site IDs",
+    sites: {
+      title: "Step 3: Site IDs",
       singular: "site",
       icon: <IconPin size={24} />,
       color: "grape",
-      description: "Link sites to subjects with metadata.",
-      dependsOn: ["subjects"],
-      metadataFileName: "subject-sites.xlsx",
-    },
-    sampleSites: {
-      title: "Step 3b: Sample Site IDs",
-      singular: "site",
-      icon: <IconPin size={24} />,
-      color: "grape",
-      description: "Link sites to samples with metadata.",
-      dependsOn: ["samples"],
-      metadataFileName: "sample-sites.xlsx",
+      description: "Link sites to subjects or samples with metadata.",
+      dependsOn: ["subjects", "samples"],
+      metadataFileName: "sites.xlsx",
     },
   };
 
@@ -92,15 +82,17 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
         (dep) => dep !== "entity-structure" && !successfullyImportedEntityTypes.includes(dep)
       ) ?? false;
 
-    // Determine import result from global successfullyImportedEntityTypes and compute counts
+    // Determine import result based on actual counts from store
     let importResult = null;
-    if (successfullyImportedEntityTypes.includes(entityType)) {
-      const count =
-        entityType === "subjects"
-          ? subjectsCount
-          : entityType === "samples"
-            ? samplesCount
-            : sitesCount;
+    const count =
+      entityType === "subjects"
+        ? subjectsCount
+        : entityType === "samples"
+          ? samplesCount
+          : sitesCount;
+
+    // Import is complete if there are entities of this type in the store
+    if (count > 0) {
       importResult = { success: true, imported: count };
     }
 
