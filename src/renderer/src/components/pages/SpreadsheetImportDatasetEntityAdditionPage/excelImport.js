@@ -378,11 +378,7 @@ const transformRowKeys = (row) => {
 
   for (const [key, value] of Object.entries(row)) {
     // Convert spaces and hyphens to underscores, and normalize to lowercase
-    const transformedKey = key
-      .toLowerCase()
-      .trim()
-      .replace(/\s+/g, "_")
-      .replace(/-+/g, "_");
+    const transformedKey = key.toLowerCase().trim().replace(/\s+/g, "_").replace(/-+/g, "_");
 
     transformed[transformedKey] = value;
   }

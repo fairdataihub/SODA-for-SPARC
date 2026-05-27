@@ -35,7 +35,9 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
   const enabledEntities = [
     ...(selectedEntities?.includes("subjects") ? ["subjects"] : []),
     ...(selectedEntities?.includes("samples") ? ["samples"] : []),
-    ...(selectedEntities?.includes("subjectSites") || selectedEntities?.includes("sampleSites") ? ["sites"] : []),
+    ...(selectedEntities?.includes("subjectSites") || selectedEntities?.includes("sampleSites")
+      ? ["sites"]
+      : []),
   ];
 
   console.log("Enabled entity types for import:", enabledEntities);
