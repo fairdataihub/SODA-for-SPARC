@@ -35,9 +35,6 @@ export const handleEntityFileImport = async (files, entityType) => {
     return;
   }
 
-  const singularEntityType = entityType ? entityType.slice(0, -1) : "entity";
-  const capitalizedSingularEntityType =
-    singularEntityType.charAt(0).toUpperCase() + singularEntityType.slice(1);
   const capitalizedPluralEntityType = entityType
     ? entityType.charAt(0).toUpperCase() + entityType.slice(1)
     : "entities";
@@ -331,49 +328,52 @@ export const entityConfigs = {
     templateFileName: "samples.xlsx",
   },
 
-  sites: {
+  subjectSites: {
     idField: "site id",
     prefix: "site-",
-    requiredFields: ["site id", "subject id"],
-    optionalFields: ["sample id"],
+    requiredFields: ["site id", "specimen id"],
     validationRules: [],
     formatEntity: (item, id) => {
-      // Normalize parent IDs consistently using the imported function
-      const subjectId = normalizeEntityId("sub-", item["subject id"]);
+      const specimenId = normalizeEntityId("sub-", item["specimen id"]);
 
-      // Create base entity with subject parent
-      const entity = {
+      return {
         id,
         type: "site",
-        parentSubject: subjectId,
-        metadata: { ...item, "site id": id, "subject id": subjectId },
+        parentSubject: specimenId,
+        metadata: { ...item, "site id": id, "specimen id": specimenId },
       };
-
-      // Add sample parent if it exists (spreadsheet header "sample id")
-      if (item["sample id"]) {
-        const sampleId = normalizeEntityId("sam-", item["sample id"]);
-        entity.parentSample = sampleId;
-        entity.metadata["sample id"] = sampleId;
-      }
-
-      return entity;
     },
     saveEntity: (entity) => {
-      if (entity.parentSample) {
-        // Site belongs to a sample
-        addSiteToSample(entity.parentSubject, entity.parentSample, entity.id, entity.metadata);
-      } else {
-        // Site belongs directly to a subject
-        addSiteToSubject(entity.parentSubject, entity.id, entity.metadata);
-      }
+      addSiteToSubject(entity.parentSubject, entity.id, entity.metadata);
     },
     formatDisplayId: (entity) => {
-      if (entity.parentSample) {
-        return `${entity.id} (Sample: ${entity.parentSample}, Subject: ${entity.parentSubject})`;
-      }
       return `${entity.id} (Subject: ${entity.parentSubject})`;
     },
-    templateFileName: "sites.xlsx",
+    templateFileName: "subject-sites.xlsx",
+  },
+
+  sampleSites: {
+    idField: "site id",
+    prefix: "site-",
+    requiredFields: ["site id", "specimen id"],
+    validationRules: [],
+    formatEntity: (item, id) => {
+      const specimenId = normalizeEntityId("sam-", item["specimen id"]);
+
+      // Extract subject ID from specimen's parent (samples know their parent subject)
+      // For now, we'll need to look this up or require it in the spreadsheet
+      // This is a limitation - we need the subject ID for the addSiteToSample call
+      throw new Error(
+        "Sample sites import requires additional parent subject information. This feature is not yet fully implemented."
+      );
+    },
+    saveEntity: (entity) => {
+      addSiteToSample(entity.parentSubject, entity.parentSample, entity.id, entity.metadata);
+    },
+    formatDisplayId: (entity) => {
+      return `${entity.id} (Sample: ${entity.parentSample}, Subject: ${entity.parentSubject})`;
+    },
+    templateFileName: "sample-sites.xlsx",
   },
 };
 
