@@ -46,7 +46,6 @@ export const handleEntityFileImport = async (files, entityType) => {
     // Load and validate the file
     const entitiesMap = await parseExcelToEntityMap(files[0], entityType);
     console.log("Entities map from Excel for", entityType, ":", entitiesMap);
-    const notSureWhatReturnIs = validateAndFormatEntities(entitiesMap, entityType);
 
     // Show confirmation with valid entities
     const entityList = Object.keys(entitiesMap).map((entityId) =>
@@ -399,92 +398,4 @@ const validateFieldValues = (entities, entityType, config) => {
   }
 
   return validationErrors;
-};
-
-/**
- * Validate and format entity data from Excel entities map
- */
-const validateAndFormatEntities = (entitiesMap, entityType) => {
-  console.log("=== validateAndFormatEntities START ===");
-  console.log("Entity type:", entityType);
-  const entitiesArray = Object.values(entitiesMap);
-  console.log("Entity rows:", entitiesArray.length);
-
-  const config = entityConfigs[entityType];
-
-  // Check for required fields
-  const requiredFields = config.requiredFields || [];
-  console.log("Required fields:", requiredFields);
-
-  const missingFieldItems = entitiesArray.filter((item) =>
-    requiredFields.some((field) => !item[field] || String(item[field]).trim() === "")
-  );
-
-  if (missingFieldItems.length > 0) {
-    console.error(`Found ${missingFieldItems.length} rows with missing required fields`);
-    return {
-      success: false,
-      message: `${
-        missingFieldItems.length
-      } row(s) are missing required fields: ${requiredFields.join(", ")}`,
-      entities: [],
-    };
-  }
-  console.log("All rows have required fields ✓");
-
-  // Format entities with IDs (IDs already validated upstream)
-  const entities = [];
-  console.log("Formatting entities from validated data");
-  for (const [entityId, item] of Object.entries(entitiesMap)) {
-    const entity = config.formatEntity(item, entityId);
-    entities.push(entity);
-  }
-  console.log("Formatted entities:", entities.length);
-
-  if (entities.length === 0) {
-    console.error("No valid entities found in the spreadsheet");
-    return {
-      success: false,
-      message: `No valid entities found in the spreadsheet`,
-      entities: [],
-    };
-  }
-
-  // Validate field values against SDS requirements
-  console.log("Validating field values for", entities.length, "entities");
-  const validationErrors = validateFieldValues(entities, entityType, config);
-  if (validationErrors.length > 0) {
-    console.error(`Validation failed with ${validationErrors.length} error(s):`);
-    validationErrors.forEach((err) => console.error("  -", err));
-    return {
-      success: false,
-      message: `Validation failed:\n${validationErrors.join("\n")}`,
-      entities: [],
-    };
-  }
-  console.log("All validations passed ✓");
-
-  console.log("=== validateAndFormatEntities SUCCESS ===");
-  return {
-    success: true,
-    message: `Successfully processed ${entities.length} ${entityType}`,
-    entities,
-  };
-};
-
-/**
- * Generic function to import entities from Excel
- */
-export const importEntitiesFromExcel = async (file, entityType) => {
-  try {
-    // Read the data
-    const entitiesMap = await parseExcelToEntityMap(file, entityType);
-    console.log("Entities map from Excel for", entityType, ":", entitiesMap);
-    // Validate and format data
-    const processResult = validateAndFormatEntities(entitiesMap, entityType);
-    return processResult;
-  } catch (error) {
-    console.error(`Error importing ${entityType} from Excel:`, error);
-    throw new Error(`Failed to import ${entityType} metadata: ${error.message}`);
-  }
 };
