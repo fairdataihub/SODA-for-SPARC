@@ -118,6 +118,58 @@ const subscribe = async (datasetId) => {
 
 let psGenerateTimer = null;
 
+const trackUpload = (status) => {
+  let curationMode = window.sodaJSONObj["curation-mode"];
+
+  window.electron.ipcRenderer.send(
+    "track-kombucha",
+    curationMode == "free-form"
+      ? kombuchaEnums.Category.PREPARE_DATASETS
+      : kombuchaEnums.Category.GUIDED_MODE,
+    kombuchaEnums.Action.GENERATE_DATASET,
+    kombuchaEnums.Label.FILES,
+    status,
+    createEventData(
+      window.sodaJSONObj["upload-progress"]
+        ? window.sodaJSONObj["upload-progress"]["number-of-files"]
+        : 0,
+      "Pennsieve",
+      "Local",
+      window.sodaJSONObj["generate-dataset"]["dataset-name"],
+      window.sodaJSONObj["upload-progress"]
+        ? window.sodaJSONObj["upload-progress"]["dataset-id"]
+        : "None",
+      window.sodaJSONObj["upload-progress"]
+        ? window.sodaJSONObj["upload-progress"]["current-stage"]
+        : "None"
+    )
+  );
+
+  window.electron.ipcRenderer.send(
+    "track-kombucha",
+    curationMode == "free-form"
+      ? kombuchaEnums.Category.PREPARE_DATASETS
+      : kombuchaEnums.Category.GUIDED_MODE,
+    kombuchaEnums.Action.GENERATE_DATASET,
+    kombuchaEnums.Label.SIZE,
+    status,
+    createEventData(
+      window.sodaJSONObj["upload-progress"]
+        ? window.sodaJSONObj["upload-progress"]["size-of-dataset"]
+        : 0,
+      "Pennsieve",
+      "Local",
+      window.sodaJSONObj["generate-dataset"]["dataset-name"],
+      window.sodaJSONObj["upload-progress"]
+        ? window.sodaJSONObj["upload-progress"]["dataset-id"]
+        : "None",
+      window.sodaJSONObj["upload-progress"]
+        ? window.sodaJSONObj["upload-progress"]["current-stage"]
+        : "None"
+    )
+  );
+};
+
 /**
  *
  * @returns {Promise<void>}
@@ -234,8 +286,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         `/curate_datasets/curation/dataset/${datasetId}/origin_manifest`
       );
 
-      console.log(origin_manifest_id);
-
       return origin_manifest_id.data;
     };
 
@@ -314,16 +364,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       );
     };
 
-    // HAS TO WORK FOR NEW DATASETS, AUTO RETRIES, and EXIT and RETRIES
-    // CASE 1: NEW DATSETS Has no upload-progress and soda["pennsieve-generation-target"] === new
-    // RESULT: Works by creating metadata upload tables then moving on to the stages
-    // CASE 2: NEW DATSETS HAS UPLOAD PROGRESS and IS AUTO RETRY; soda["pennsieve-generation-target"] == NEW
-    // RESULT: DATASET HAS MOVED PAST THIS STAGE AND SKIPS IF SO, OTHERWISE HANDLES THIS STAGE
-    // CASE 3: NEW DATASET UPLOAD FAILED and IS SAVE & EXIT AND RESUME; soda["pennsieve-generation-target"] == EXISTING in this case
-    // RESULT: IF THERE IS ALREADY UPLOAD PROGRESS THEN RIGHTFULLY SKIPS THIS STAGE
-    // CASE 4: EXISTING DATASET BEING UPDATED
-    // RESULT: IF WORK ALREADY DONE FOR THIS DATASET THE STAGE IS CORRECTLY SKIPPED
-    // --- Prepare UI for normal upload ---
     if (!window.sodaJSONObj["upload-progress"]) {
       // TODO: RESET KEYS IF DATA CHANGES IN GM
       document
@@ -342,14 +382,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
     }
 
-    // CASE 1: NEW DATSETS Has no upload-progress and soda["pennsieve-generation-target"] === new
-    // RESULT: UPLOADS PENNSIEVE METADATA AS EXPECTED
-    // CASE 2: NEW DATSETS HAS UPLOAD PROGRESS and IS AUTO RETRY; soda["pennsieve-generation-target"] == NEW
-    // RESULT: SKIPS THIS STEP B/C UPLOAD PROGRESS MEANS THIS IS ALREADY COMPLETED
-    // CASE 3: NEW DATASET UPLOAD FAILED and IS SAVE & EXIT AND RESUME; soda["pennsieve-generation-target"] == EXISTING in this case
-    // RESULT: SKIPS THIS STEP B/C DATASET ALREADY EXISTS.
-    // CASE 4:  EXISTING DATASET BEING UPDATED
-    // RESULT: SKIPS THIS STEP WHICH CAN BE ERRONEOUS IF NON-GUEST USER (GUEST USERS CANNOT EDIT PENNSIEVE METADATA) UPDATING AN EMPTY EXISTING DATASET; HOWEVER MANUALLY CHECKING FOR EXISTING PENNSIEVE METADATA IS FLAWED AS IF IT ALREADY EXISTS WE SHOULD NOT OVERWRITE IT. SO KEEP AS IS.
     if (
       !window.sodaJSONObj["upload-progress"] &&
       window.sodaJSONObj["pennsieve-generation-target"] === "new"
@@ -372,17 +404,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       console.error("[Pennsieve Progress] Unhandled error in progress monitor:", err);
     });
 
-    console.log(`Run ${amountOfTimesPennsieveUploadFailed} of Upload.`);
-    console.log(`Current object state: ${window.sodaJSONObj}}`);
-
-    // CASE 1: NEW DATSETS Has no upload-progress and soda["pennsieve-generation-target"] === new
-    // RESULT: EXECUTES THE CODE AND CREATES THE NECESSARY PIPELINE STAGE STATE
-    // CASE 2: NEW DATSETS HAS UPLOAD PROGRESS and IS AUTO RETRY; soda["pennsieve-generation-target"] == NEW
-    // RESULT: PROGRESS ALREADY EXISTS AND SKIPS THIS STEP
-    // CASE 3: NEW DATASET UPLOAD FAILED and IS SAVE & EXIT AND RESUME; soda["pennsieve-generation-target"] == EXISTING in this case
-    // RESULT: PROGRESS ALREADY EXISTS AND SKIPS THIS STEP (save)
-    // CASE 4:  EXISTING DATASET BEING UPDATED
-    // RESULT: PROGRESS ALREADY EXISTS AND SKIPS THIS STEP
     if (!window.sodaJSONObj["upload-progress"]) {
       // initialize upload pipeline progress
       window.sodaJSONObj["upload-progress"] = {
@@ -390,22 +411,11 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         "size-of-dataset": "",
         "number-of-files": "",
         "list-of-files-to-rename": "",
+        "dataset-id": "",
         "current-stage": "setup",
       };
     }
 
-    // CASE 1: NEW DATSETS Has upload-progress and soda["pennsieve-generation-target"] === new
-    // RESULT: EXECUTES THIS CODE; SAVES STATE IF IT SUCCEEDS AND RETURNS NECESSARY UPLOAD INFORMATION FOR LATER STAGES
-    // CASE 2: NEW DATSETS HAS UPLOAD PROGRESS; stage set to setup; a dataset was created; and IS AUTO RETRY (auto retry is no different from new runs but with progress and key set to new atm); soda["pennsieve-generation-target"] == NEW
-    // RESULT: UI will see that there is a dataset but it is empty so keep keys in new workflow. Backend checks and finds dataset already exists. So goes ahead and gets the existing ID and works on creating a manifest for the empty dataset.
-    // CASE 2.5: NEW DATASET HAS UPLOAD PROGRESS; stage step is setup; a dataset was not created before failure; this is a retry
-    // RESULT: UI WILL NOT CHANGE KEYS DUE TO NOT FINDING A DATASET; BACKEND WILL CREATE THE DATASET AND CREATE A MANIFEST
-    // CASE 3: NEW DATASET UPLOAD FAILED and IS SAVE & EXIT AND RESUME; soda["pennsieve-generation-target"] == ? in this case
-    // CASE 4: RESUMING PROGRESS ON A PREVIOUSLY NEW DATASET THAT HAS DATA NOW
-    // RESULT: ui NOTICES DATA EXISTS AND USES MERGE & SKIP OPTIONS IN AN UPDATE EXISTING WORKFLOW
-    // CASE 4: EXISTING DATASET BEING UPDATED for first time with replace option selected
-    // RESULT: EXPECTATION: Create manifest for dataset. Deletes files marked to be replaced woprks as expected.
-    // RESULT: SHOULD BE ABLE TO MERGE AND SKIP OR MERGE AND REPLACE AS DESIRED TODO: RUN TEST
     // STAGE 1: Create Manifest File + Upload Data
     if (window.sodaJSONObj["upload-progress"]["current-stage"] == "setup") {
       await prepareUploadObj();
@@ -422,18 +432,9 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         status: !uploadData["manifest_id"] ? "setup" : "in progress",
       };
       await guidedSaveProgress();
+      trackUpload(kombuchaEnums.Status.SUCCESS);
     }
 
-    // CASE 1: NEW DATSETS Has no upload-progress and soda["pennsieve-generation-target"] === new
-    // RESULT: Progress bar updates and is set to 100% once upload is completed
-    // CASE 2: [TODO: RUN TEST ]NEW DATSETS HAS UPLOAD PROGRESS; Server crashes; Subscriber throws. soda["pennsieve-generation-target"] == NEW.
-    // RESULT: Counter incremented 1 - 3 before stops. Only one subscriber runs at a time. Progress monitor continues running and has momentary pause while upload resumes. The upload does not stop until final error.
-    // CASE 3: NEW DATASET BEING UPLOADED; AGENT CRASHES OR RECEIVES ERROR;
-    // RESULT: guidedGenerateDatasetOnPennsieve error gets caught. Auto retry happens and retry counter increments; Subscriber and monitor lock prevents duplicate calls on retry. Progress bar continues where it left off or before it if file in progress not completed.
-    // CASE 4: NEW DATASET UPLOAD FAILED and IS SAVE & EXIT AND RESUME; soda["pennsieve-generation-target"] == EXISTING in this case
-    // RESULT:
-    // CASE 5:  EXISTING DATASET BEING UPDATED
-    // RESULT:
     // STAGE 2: Upload Using Agent + Subscribe for Progress
     if (window.sodaJSONObj["upload-progress"]["current-stage"] == "upload") {
       let origin_manifest_id = await performUpload();
@@ -446,27 +447,23 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
           : "complete";
       window.sodaJSONObj["upload-progress"]["origin-manifest-id"] = origin_manifest_id;
       await guidedSaveProgress();
+      trackUpload(kombuchaEnums.Status.SUCCESS);
     }
 
-    // CASE 1: NEW DATSETS Has no upload-progress and soda["pennsieve-generation-target"] === new
-    // RESULT:
-    // CASE 2: NEW DATSETS HAS UPLOAD PROGRESS and IS AUTO RETRY; soda["pennsieve-generation-target"] == NEW
-    // RESULT:
-    // CASE 3: NEW DATASET UPLOAD FAILED and IS SAVE & EXIT AND RESUME; soda["pennsieve-generation-target"] == EXISTING in this case
-    // RESULT:
-    // CASE 4:  EXISTING DATASET BEING UPDATED
-    // RESULT:
     // STAGE 3: RENAME FILES
     if (window.sodaJSONObj["upload-progress"]["current-stage"] == "rename") {
       window.sodaJSONObj["upload-progress"]["status"] = "setup";
       await renameFiles();
       window.sodaJSONObj["upload-progress"]["status"] = "complete";
       await guidedSaveProgress();
+      trackUpload(kombuchaEnums.Status.SUCCESS);
       await window.wait(2000);
     }
 
     window.sodaJSONObj["upload-progress"]["current-stage"] = "complete";
     delete window.sodaJSONObj["upload-progress"]["status"];
+
+    trackUpload(kombuchaEnums.Status.SUCCESS);
 
     // STAGE 4: (Optional) VERIFY FILES otherwise just click save & exit
     showVerifyFiles();
@@ -486,6 +483,10 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     // TODO: AARON Handle NoUploadAction error with SWAL that just exits the upload.
     clientError(error);
     const emessage = userErrorMessage(error, false);
+
+    // send the error to Kombucha analytics along with the upload-progress object
+    trackUpload(kombuchaEnums.Status.FAIL);
+
     if (emessage.includes("No files need to be uploaded or renamed")) {
       await swalShowInfo(
         "No files were uploaded in this session and no files need to be renamed",
@@ -1194,7 +1195,7 @@ const trackLocalDatasetGenerationProgress = async (standardizedDatasetStructure)
   }
 };
 
-const createEventData = (value, destination, origin, dataset_name, dataset_id) => {
+const createEventData = (value, destination, origin, dataset_name, dataset_id, stage) => {
   if (destination === "Pennsieve") {
     return {
       value: value,
@@ -1203,6 +1204,7 @@ const createEventData = (value, destination, origin, dataset_name, dataset_id) =
       origin: origin,
       destination: destination,
       dataset_int_id: window.sodaJSONObj["digital-metadata"]["pennsieve-int-id"],
+      stage: stage,
     };
   }
 
@@ -1211,6 +1213,7 @@ const createEventData = (value, destination, origin, dataset_name, dataset_id) =
     dataset_name: dataset_name,
     origin: origin,
     destination: destination,
+    stage: stage,
   };
 };
 
