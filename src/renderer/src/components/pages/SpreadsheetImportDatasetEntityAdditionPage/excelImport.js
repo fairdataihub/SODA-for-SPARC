@@ -247,8 +247,7 @@ export const parseExcelToEntityMap = async (file, entityType) => {
           }
 
           // Normalize the entity ID to the correct prefix and casing
-          const normalizedEntityId =
-            expectedPrefix + entityId.slice(expectedPrefix.length);
+          const normalizedEntityId = expectedPrefix + entityId.slice(expectedPrefix.length);
 
           // Format entity and store in map
           const entity = config.formatEntity(row, normalizedEntityId);
@@ -293,8 +292,9 @@ export const parseExcelToEntityMap = async (file, entityType) => {
 
         if (rowsWithMissingParents.length > 0) {
           await swalListDisplayOnly(
-            rowsWithMissingParents.map(({ rowNumber, missingParent }) =>
-              `Row ${rowNumber}: parent entity not found (${missingParent})`
+            rowsWithMissingParents.map(
+              ({ rowNumber, missingParent }) =>
+                `Row ${rowNumber}: parent entity not found (${missingParent})`
             ),
             `${capitalizedPluralEntityType} Metadata Import Failed`,
             `The following rows reference parent entities that do not exist:`,
