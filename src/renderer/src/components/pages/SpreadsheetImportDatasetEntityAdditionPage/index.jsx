@@ -6,11 +6,13 @@ import { Text, Grid, Stack, Group, Button, Paper, Box, Divider, List, Card } fro
 import useGlobalStore from "../../../stores/globalStore";
 import { swalListDoubleAction, swalConfirmAction } from "../../../scripts/utils/swal-utils";
 import SodaPaper from "../../utils/ui/SodaPaper";
-import { removeSuccessfullyImportedEntityType } from "../../../stores/slices/datasetContentSelectorSlice";
 import {
   getExistingSubjects,
   getExistingSamples,
   getExistingSites,
+  deleteSubject,
+  deleteSample,
+  deleteSite,
 } from "../../../stores/slices/datasetEntityStructureSlice";
 import { normalizeEntityId } from "../../../stores/slices/datasetEntityStructureSlice";
 import { DownloadCard, ImportCard, EntityImportCompleteCard } from "./SpreadsheetDownloadImport";
@@ -18,10 +20,6 @@ import { DownloadCard, ImportCard, EntityImportCompleteCard } from "./Spreadshee
 const SpreadsheetImportDatasetEntityAdditionPage = () => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   console.log("Selected entities for import:", selectedEntities);
-  const entityImportCompletionStatus = useGlobalStore(
-    (state) => state.entityImportCompletionStatus
-  );
-  console.log("Entity import completion status:", entityImportCompletionStatus);
 
   // Helper to get imported counts for display when available
   const subjectsCount = getExistingSubjects()?.length || 0;
@@ -76,8 +74,7 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
     const config = entityTypeConfig[entityType];
 
     // Locked when any real dependency (not "entity-structure") is not satisfied
-    const locked =
-      config.dependsOn?.some((dep) => !successfullyImportedEntityTypes.includes(dep)) ?? false;
+    const locked = false;
 
     // Determine import result based on actual counts from store
     let importResult = null;
@@ -122,20 +119,35 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
             <EntityImportCompleteCard
               entityType={entityType}
               importResult={importResult}
-              onReimport={() =>
-                swalConfirmAction(
+              onReimport={async () => {
+                const confirmed = await swalConfirmAction(
                   "warning",
                   "Replace imported data?",
                   `This will remove the existing ${importResult.imported} ${entityType} and let you import new ones.`,
                   "Replace",
                   "Cancel"
-                ).then((confirmed) => {
-                  if (confirmed) {
-                    // Remove success flag for this entity type so it can be re-imported
-                    removeSuccessfullyImportedEntityType(entityType);
+                );
+                if (confirmed) {
+                  if (entityType === "subjects") {
+                    const existingSubjectIDs = getExistingSubjects().map((s) => s.id);
+                    existingSubjectIDs.forEach((id) => {
+                      deleteSubject(id);
+                    });
                   }
-                })
-              }
+                  if (entityType === "samples") {
+                    const existingSampleIDs = getExistingSamples().map((s) => s.id);
+                    existingSampleIDs.forEach((id) => {
+                      deleteSample(id);
+                    });
+                  }
+                  if (entityType === "sites") {
+                    const existingSiteIDs = getExistingSites().map((s) => s.id);
+                    existingSiteIDs.forEach((id) => {
+                      deleteSite(id);
+                    });
+                  }
+                }
+              }}
             />
           )}
         </Stack>

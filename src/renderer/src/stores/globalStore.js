@@ -23,7 +23,6 @@ import { navButtonStateSlice } from "./slices/navButtonStateSlice";
 import { appConfigSlice } from "./slices/appConfigSlice";
 import { stateDisplaySlice } from "./slices/stateDisplaySlice";
 import { isGuestSlice } from "./slices/isGuestSlice";
-import { entitySpreadsheetImportSlice } from "./slices/entitySpreadsheetImportSlice";
 
 const useGlobalStore = create(
   immer((set, ...a) => ({
@@ -50,7 +49,6 @@ const useGlobalStore = create(
     ...navButtonStateSlice(set, ...a),
     ...stateDisplaySlice(set, ...a),
     ...isGuestSlice(set, ...a),
-    ...entitySpreadsheetImportSlice(set, ...a),
   }))
 );
 

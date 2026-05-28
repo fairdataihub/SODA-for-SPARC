@@ -12,6 +12,12 @@ const helperConfig = {
   "subjects.xlsx": {
     disabledColumns: ["metadata only", "number of directly derived samples"],
   },
+  "samples.xlsx": {
+    disabledColumns: ["metadata only"],
+  },
+  "sites.xlsx": {
+    disabledColumns: ["metadata only"],
+  },
 };
 
 export const DownloadCard = ({ entityType, config, locked = false }) => {
