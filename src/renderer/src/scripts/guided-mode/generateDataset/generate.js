@@ -119,6 +119,7 @@ const subscribe = async (datasetId) => {
 let psGenerateTimer = null;
 
 const trackUpload = (status) => {
+  console.log("Calling trackUpload");
   let curationMode = window.sodaJSONObj["curation-mode"];
 
   window.electron.ipcRenderer.send(
@@ -168,6 +169,8 @@ const trackUpload = (status) => {
         : "None"
     )
   );
+
+  console.log("Track upload finished");
 };
 
 /**
