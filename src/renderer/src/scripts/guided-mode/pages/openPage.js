@@ -289,6 +289,12 @@ window.openPage = async (targetPageID) => {
 
     if (targetPageDataset.componentType) {
       const targetPageComponentType = targetPageDataset.componentType;
+
+      if (targetPageComponentType === "entity-spreadsheet-import-page") {
+        const importedMetadataFilePaths = window.sodaJSONObj["imported-metadata-file-paths"] || {};
+        useGlobalStore.setState({ importedMetadataFilePaths });
+      }
+
       if (targetPageComponentType === "performance-id-management-page") {
         const performanceList = window.sodaJSONObj["dataset_performances"] || [];
         setPerformanceList(performanceList);

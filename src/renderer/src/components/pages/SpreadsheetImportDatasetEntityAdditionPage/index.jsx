@@ -15,10 +15,12 @@ import {
   deleteSite,
 } from "../../../stores/slices/datasetEntityStructureSlice";
 import { normalizeEntityId } from "../../../stores/slices/datasetEntityStructureSlice";
+import { clearImportedMetadataFilePath } from "../../../stores/slices/datasetContentSelectorSlice";
 import { DownloadCard, ImportCard, EntityImportCompleteCard } from "./SpreadsheetDownloadImport";
 
 const SpreadsheetImportDatasetEntityAdditionPage = () => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
+  const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
   console.log("Selected entities for import:", selectedEntities);
 
   // Helper to get imported counts for display when available
@@ -30,9 +32,9 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
   const enabledEntities = [
     ...(selectedEntities?.includes("subjects") ? ["subjects"] : []),
     ...(selectedEntities?.includes("samples") ? ["samples"] : []),
-    ...(selectedEntities?.includes("subjectSites") || selectedEntities?.includes("sampleSites")
-      ? ["sites"]
-      : []),
+    // ...(selectedEntities?.includes("subjectSites") || selectedEntities?.includes("sampleSites")
+    //   ? ["sites"]
+    //   : []),
   ];
 
   console.log("Enabled entity types for import:", enabledEntities);
@@ -59,15 +61,15 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
       sequence: 2,
       metadataFileName: "samples.xlsx",
     },
-    sites: {
-      title: "Step 3: Site IDs",
-      singular: "site",
-      icon: <IconPin size={24} />,
-      color: "grape",
-      description: "Link sites to subjects or samples with metadata.",
-      dependsOn: ["subjects", "samples"],
-      metadataFileName: "sites.xlsx",
-    },
+    // sites: {
+    //   title: "Step 3: Site IDs",
+    //   singular: "site",
+    //   icon: <IconPin size={24} />,
+    //   color: "grape",
+    //   description: "Link sites to subjects or samples with metadata.",
+    //   dependsOn: ["subjects", "samples"],
+    //   metadataFileName: "sites.xlsx",
+    // },
   };
 
   const renderEntityImport = (entityType) => {
@@ -128,6 +130,16 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
                   "Cancel"
                 );
                 if (confirmed) {
+                  // Clear the stored file path for this entity type
+                  clearImportedMetadataFilePath(entityType);
+
+                  const importedMetadataFilePaths =
+                    window.sodaJSONObj["imported-metadata-file-paths"] || {};
+                  const updatedImportedMetadataFilePaths = { ...importedMetadataFilePaths };
+                  delete updatedImportedMetadataFilePaths[entityType];
+                  window.sodaJSONObj["imported-metadata-file-paths"] =
+                    updatedImportedMetadataFilePaths;
+
                   if (entityType === "subjects") {
                     const existingSubjectIDs = getExistingSubjects().map((s) => s.id);
                     existingSubjectIDs.forEach((id) => {

@@ -466,17 +466,13 @@ window.savePageChanges = async (pageBeingLeftID) => {
       ) {
         const datasetEntityArray = useGlobalStore.getState().datasetEntityArray;
         window.sodaJSONObj["dataset-entity-array"] = datasetEntityArray;
+        console.log("Dataset entity array being saved:", datasetEntityArray);
+
+        const isSpreadsheetImport = pageBeingLeftComponentType === "entity-spreadsheet-import-page";
+
         // Save progress early because a lot of work managing entities could have happened here
         // and we don't want the user to lost it.
         await guidedSaveProgress();
-
-        if (datasetEntityArray.length === 0) {
-          errorArray.push({
-            type: "notyf",
-            message: "You must add at least one subject to your dataset before continuing",
-          });
-          throw errorArray;
-        }
 
         // Check that the species was added for each subject in the datasetEntityArray
         // (This is to throw an error for old progress files that did not require species)
@@ -484,16 +480,29 @@ window.savePageChanges = async (pageBeingLeftID) => {
           .filter((entity) => !entity.metadata.species || entity.metadata.species.trim() === "")
           .map((entity) => entity.metadata.subject_id);
         if (subjectsWithoutSpecies.length > 0) {
-          await swalListSingleAction(
-            subjectsWithoutSpecies,
-            "Required Species Information Missing",
-            "Species information is now mandatory for all subjects in SPARC datasets. The following subject IDs are missing this required field. Please specify the taxonomic species (e.g., Homo sapiens, Rattus norvegicus, Mus musculus) for each subject.",
-            "Please provide a species for each subject in the list above."
-          );
-          errorArray.push({
-            type: "notyf",
-            message: `Please complete species information for all subjects before continuing.`,
-          });
+          if (isSpreadsheetImport) {
+            await swalListSingleAction(
+              subjectsWithoutSpecies,
+              "Required Species Information Missing",
+              "Species information is now mandatory for all subjects in SPARC datasets. The following subject IDs from your imported spreadsheet are missing this required field. Please add the taxonomic species (e.g., Homo sapiens, Rattus norvegicus, Mus musculus) to the 'species' column in your subjects.xlsx file and re-import.",
+              "Please update your subjects.xlsx file with species information for each subject listed above."
+            );
+            errorArray.push({
+              type: "notyf",
+              message: `Please update your subjects spreadsheet with species information and re-import before continuing.`,
+            });
+          } else {
+            await swalListSingleAction(
+              subjectsWithoutSpecies,
+              "Required Species Information Missing",
+              "Species information is now mandatory for all subjects in SPARC datasets. The following subject IDs are missing this required field. Please specify the taxonomic species (e.g., Homo sapiens, Rattus norvegicus, Mus musculus) for each subject.",
+              "Please provide a species for each subject in the list above."
+            );
+            errorArray.push({
+              type: "notyf",
+              message: `Please complete species information for all subjects before continuing.`,
+            });
+          }
           throw errorArray;
         }
 
@@ -504,10 +513,18 @@ window.savePageChanges = async (pageBeingLeftID) => {
         // This should always be true if the user is leaving this page but check just in case
         if (selectedEntities.includes("subjects")) {
           if (subjects.length === 0) {
-            errorArray.push({
-              type: "notyf",
-              message: "You must add at least one subject to your dataset before continuing",
-            });
+            if (isSpreadsheetImport) {
+              errorArray.push({
+                type: "notyf",
+                message:
+                  "You must import at least one subject from your subjects.xlsx file before continuing",
+              });
+            } else {
+              errorArray.push({
+                type: "notyf",
+                message: "You must add at least one subject to your dataset before continuing",
+              });
+            }
             throw errorArray;
           }
         }
@@ -515,21 +532,37 @@ window.savePageChanges = async (pageBeingLeftID) => {
         // If the user said they had samples but did not add or import any, throw an error
         if (selectedEntities.includes("samples")) {
           if (getExistingSamples().length === 0) {
-            errorArray.push({
-              type: "notyf",
-              message: "You must add at least one sample to your dataset before continuing",
-            });
+            if (isSpreadsheetImport) {
+              errorArray.push({
+                type: "notyf",
+                message:
+                  "You must import at least one sample from your samples.xlsx file before continuing",
+              });
+            } else {
+              errorArray.push({
+                type: "notyf",
+                message: "You must add at least one sample to your dataset before continuing",
+              });
+            }
             throw errorArray;
           }
         }
         // If the user said they had derived samples but did not add or import any, throw an error
         if (selectedEntities.includes("derivedSamples")) {
           if (getExistingSamples("derived-from-samples").length === 0) {
-            errorArray.push({
-              type: "notyf",
-              message:
-                "You indicated that your dataset contains derived samples (samples derived from other samples), but did not add any samples derived from other samples.",
-            });
+            if (isSpreadsheetImport) {
+              errorArray.push({
+                type: "notyf",
+                message:
+                  "You indicated that your dataset contains derived samples (samples derived from other samples), but your imported samples.xlsx file contains no samples derived from other samples. Please ensure the 'was_derived_from' column in your samples.xlsx file includes sample IDs (e.g., sam-001) for derived samples.",
+              });
+            } else {
+              errorArray.push({
+                type: "notyf",
+                message:
+                  "You indicated that your dataset contains derived samples (samples derived from other samples), but did not add any samples derived from other samples.",
+              });
+            }
             throw errorArray;
           }
         }
@@ -539,11 +572,19 @@ window.savePageChanges = async (pageBeingLeftID) => {
             site.specimen_id.startsWith("sub-")
           );
           if (subjectSites.length === 0) {
-            errorArray.push({
-              type: "notyf",
-              message:
-                "You indicated that you collected data from specific locations within your subjects, but did not add any site IDs for those subjects.",
-            });
+            if (isSpreadsheetImport) {
+              errorArray.push({
+                type: "notyf",
+                message:
+                  "You indicated that you collected data from specific locations within your subjects, but your imported sites.xlsx file contains no subject site IDs. Please ensure your sites.xlsx file includes site IDs with subject IDs (e.g., sub-001) in the 'specimen_id' column.",
+              });
+            } else {
+              errorArray.push({
+                type: "notyf",
+                message:
+                  "You indicated that you collected data from specific locations within your subjects, but did not add any site IDs for those subjects.",
+              });
+            }
             throw errorArray;
           }
         }
@@ -553,11 +594,19 @@ window.savePageChanges = async (pageBeingLeftID) => {
             site.specimen_id.startsWith("sam-")
           );
           if (sampleSites.length === 0) {
-            errorArray.push({
-              type: "notyf",
-              message:
-                "You indicated that you collected data from specific locations within your samples, but did not add any site IDs for those samples.",
-            });
+            if (isSpreadsheetImport) {
+              errorArray.push({
+                type: "notyf",
+                message:
+                  "You indicated that you collected data from specific locations within your samples, but your imported sites.xlsx file contains no sample site IDs. Please ensure your sites.xlsx file includes site IDs with sample IDs (e.g., sam-001) in the 'specimen_id' column.",
+              });
+            } else {
+              errorArray.push({
+                type: "notyf",
+                message:
+                  "You indicated that you collected data from specific locations within your samples, but did not add any site IDs for those samples.",
+              });
+            }
             throw errorArray;
           }
         }
@@ -574,6 +623,13 @@ window.savePageChanges = async (pageBeingLeftID) => {
           if (window.sodaJSONObj["dataset_metadata"]?.["sites"]) {
             delete window.sodaJSONObj["dataset_metadata"]["sites"];
           }
+        }
+
+        // Save imported metadata file paths for spreadsheet import (after validation)
+        if (isSpreadsheetImport) {
+          const importedMetadataFilePaths = useGlobalStore.getState().importedMetadataFilePaths;
+          window.sodaJSONObj["imported-metadata-file-paths"] = importedMetadataFilePaths;
+          console.log("Imported metadata file paths being saved:", importedMetadataFilePaths);
         }
       }
     }

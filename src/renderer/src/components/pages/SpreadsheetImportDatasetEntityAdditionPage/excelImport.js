@@ -4,7 +4,7 @@ import {
   swalListDisplayOnly,
   swalConfirmAction,
 } from "../../../scripts/utils/swal-utils";
-
+import { setImportedMetadataFilePath } from "../../../stores/slices/datasetContentSelectorSlice";
 import * as XLSX from "xlsx";
 import {
   addSubject,
@@ -68,6 +68,11 @@ export const handleEntityFileImport = async (files, entityType) => {
     for (const entity of entities) {
       config.saveEntity(entity);
     }
+
+    // Save the file path to the store for tracking
+    const filePath = files[0].path || files[0].name;
+    setImportedMetadataFilePath(entityType, filePath);
+
     window.notyf.open({
       type: "success",
       message: `Successfully imported ${entities.length} ${entityType}`,
@@ -313,16 +318,17 @@ export const parseExcelToEntityMap = async (file, entityType) => {
           validationErrors.forEach((err) => console.error("  -", err));
           await swalListDisplayOnly(
             validationErrors,
-            `${capitalizedSingularEntityType} Metadata Import Failed`,
-            `The following validation errors were found:`,
-            "Please fix these issues in the spreadsheet and import again."
+            `${capitalizedSingularEntityType} Metadata Validation Issues`,
+            `The following validation issues were found:`,
+            "Please fix these validation issues in the spreadsheet and import again."
           );
+
           throw new Error(`Validation failed with ${validationErrors.length} error(s)`);
         }
 
         resolve(entitiesMap);
       } catch (error) {
-        reject(new Error(`Failed to read Excel file: ${error.message}`));
+        reject(new Error(`${error.message}`));
       }
     };
 
@@ -383,6 +389,25 @@ const transformRowKeys = (row) => {
 };
 
 /**
+ * Convert all values in an object to strings
+ * This ensures metadata is stored consistently as strings
+ */
+const convertMetadataToStrings = (metadata) => {
+  const converted = {};
+
+  for (const [key, value] of Object.entries(metadata)) {
+    // Convert all values to strings, handling null/undefined
+    if (value === null || value === undefined) {
+      converted[key] = "";
+    } else {
+      converted[key] = String(value);
+    }
+  }
+
+  return converted;
+};
+
+/**
  * Validate field values against SDS requirements for specific fields
  */
 const validateFieldValues = (entities, entityType, config) => {
@@ -423,13 +448,14 @@ export const entityConfigs = {
       {
         field: "protocol_url_or_doi",
         rule: "string-is-valid-url-or-doi",
-        errorMessage: "Invalid format. Please enter a valid HTTPS URL, DOI, or DOI URL.",
+        errorMessage:
+          "Invalid format. URLs must begin with https://. Please enter a valid HTTPS URL, DOI, or DOI URL.",
       },
     ],
     formatEntity: (item, id) => ({
       id,
       type: "subject",
-      metadata: { ...item, subject_id: id },
+      metadata: convertMetadataToStrings({ ...item, subject_id: id }),
     }),
     saveEntity: (entity) => addSubject(entity.id, entity.metadata),
     formatDisplayId: (entity) => entity.id,
@@ -444,7 +470,8 @@ export const entityConfigs = {
       {
         field: "protocol_url_or_doi",
         rule: "string-is-valid-url-or-doi",
-        errorMessage: "Invalid format. Please enter a valid HTTPS URL, DOI, or DOI URL.",
+        errorMessage:
+          "Invalid format. URLs must begin with https://. Please enter a valid HTTPS URL, DOI, or DOI URL.",
       },
     ],
     formatEntity: (item, id) => {
@@ -455,10 +482,26 @@ export const entityConfigs = {
         id,
         type: "sample",
         parentSubject: subjectId,
-        metadata: { ...item, sample_id: id, subject_id: subjectId },
+        metadata: convertMetadataToStrings({ ...item, sample_id: id, subject_id: subjectId }),
       };
     },
-    saveEntity: (entity) => addSample(entity.parentSubject, null, entity.id, entity.metadata),
+    saveEntity: (entity) => {
+      const derivedFrom = entity.metadata?.was_derived_from;
+      const parentSampleId =
+        typeof derivedFrom === "string" && derivedFrom.trim().toLowerCase().startsWith("sam-")
+          ? normalizeEntityId("sam-", derivedFrom)
+          : null;
+      console.log(
+        "Saving sample with id:",
+        entity.id,
+        "parentSubject:",
+        entity.parentSubject,
+        "parentSampleId:",
+        parentSampleId
+      );
+
+      addSample(entity.parentSubject, parentSampleId, entity.id, entity.metadata);
+    },
     formatDisplayId: (entity) => `${entity.id}`,
     templateFileName: "samples.xlsx",
   },
@@ -483,7 +526,7 @@ export const entityConfigs = {
           type: "site",
           parentSubject: subjectId,
           parentSample: parentId,
-          metadata: { ...item, site_id: id, specimen_id: parentId },
+          metadata: convertMetadataToStrings({ ...item, site_id: id, specimen_id: parentId }),
         };
       }
 
@@ -492,7 +535,7 @@ export const entityConfigs = {
         id,
         type: "site",
         parentSubject: parentId,
-        metadata: { ...item, site_id: id, specimen_id: parentId },
+        metadata: convertMetadataToStrings({ ...item, site_id: id, specimen_id: parentId }),
       };
     },
     saveEntity: (entity) => {
