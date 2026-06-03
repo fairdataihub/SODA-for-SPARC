@@ -347,6 +347,33 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
 
     // --- Step 6: Capture the modified structure before reverting changes ---
     const standardizedStructure = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
+
+    const entityAdditionMethod = window.sodaJSONObj["entity-addition-method"];
+    if (entityAdditionMethod === "spreadsheet") {
+      // --- Step 6a: Add imported metadata files to the root of the standardized structure ---
+      const importedMetadataFilePaths = window.sodaJSONObj?.["imported-metadata-file-paths"];
+      if (importedMetadataFilePaths && typeof importedMetadataFilePaths === "object") {
+        // Ensure files object exists at root
+        if (!standardizedStructure.files) {
+          standardizedStructure.files = {};
+        }
+
+        // Add each imported metadata file to the root
+        for (const [metadataKey, filePath] of Object.entries(importedMetadataFilePaths)) {
+          if (!filePath) continue;
+
+          standardizedStructure.files[metadataKey + ".xlsx"] = {
+            path: filePath,
+            extension: "xlsx",
+            type: "file",
+            action: ["new"],
+            location: "local",
+            relativePath: filePath,
+          };
+        }
+      }
+    }
+
     useGlobalStore.setState({ datasetStructureJSONObj: standardizedStructure });
     reRenderTreeView();
     // --- Step 7: Revert any global changes to window.datasetStructureJSONObj ---

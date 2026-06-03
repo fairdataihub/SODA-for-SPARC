@@ -68,6 +68,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       window.sodaJSONObj["dataset-entity-obj"]
     );
     window.sodaJSONObj["soda_json_structure"] = standardizedDatasetStructure;
+    console.log("Standardized dataset structure created", { standardizedDatasetStructure });
 
     // Code that runs after a successful upload to Pennsieve (whether initial upload or retry)
     const finalizeUpload = async (data) => {

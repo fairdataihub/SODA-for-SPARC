@@ -481,21 +481,20 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
           existingSubjectIDs.forEach((id) => {
             deleteSubject(id);
           });
-
-          // Delete all of the potentially generated subject, samples, and sites metadata created
-          // by soda
-          if (window.sodaJSONObj["dataset_metadata"]?.["subjects"]) {
-            delete window.sodaJSONObj["dataset_metadata"]["subjects"];
-          }
-          if (window.sodaJSONObj["dataset_metadata"]?.["samples"]) {
-            delete window.sodaJSONObj["dataset_metadata"]["samples"];
-          }
-          if (window.sodaJSONObj["dataset_metadata"]?.["sites"]) {
-            delete window.sodaJSONObj["dataset_metadata"]["sites"];
-          }
         }
       }
 
+      // Delete all of the potentially generated subject, samples, and sites metadata created
+      // by soda
+      if (window.sodaJSONObj["dataset_metadata"]?.["subjects"]) {
+        delete window.sodaJSONObj["dataset_metadata"]["subjects"];
+      }
+      if (window.sodaJSONObj["dataset_metadata"]?.["samples"]) {
+        delete window.sodaJSONObj["dataset_metadata"]["samples"];
+      }
+      if (window.sodaJSONObj["dataset_metadata"]?.["sites"]) {
+        delete window.sodaJSONObj["dataset_metadata"]["sites"];
+      }
       guidedSkipPage("guided-manual-dataset-entity-and-metadata-tab");
       guidedUnSkipPage("guided-spreadsheet-import-dataset-entity-and-metadata-tab");
     }
@@ -520,10 +519,6 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
             throw errorArray;
           }
 
-          // Delete the imported metadata file paths from the progress file because they will no longer be relevant
-          if (window.sodaJSONObj["imported-metadata-file-paths"]) {
-            delete window.sodaJSONObj["imported-metadata-file-paths"];
-          }
           // Get all subject IDs before deletion and store in a copy to avoid issues with store updates during iteration
           const subjectIDsToDelete = getExistingSubjects().map((s) => s.id);
 
@@ -532,6 +527,11 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
             deleteSubject(id);
           });
         }
+      }
+
+      // Delete the imported metadata file paths from the progress file because they will no longer be relevant
+      if (window.sodaJSONObj["imported-metadata-file-paths"]) {
+        delete window.sodaJSONObj["imported-metadata-file-paths"];
       }
       guidedSkipPage("guided-spreadsheet-import-dataset-entity-and-metadata-tab");
       guidedUnSkipPage("guided-manual-dataset-entity-and-metadata-tab");
