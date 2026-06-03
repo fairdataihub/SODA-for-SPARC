@@ -85,33 +85,25 @@ ipcMain.handle("write-template", async (event, templatePath, destinationPath, he
 
         if (firstSheet) {
           const headerRow = firstSheet.getRow(1);
-          let siteIdColNumber = null;
           let specimenIdColNumber = null;
 
           headerRow.eachCell((cell, colNumber) => {
             const headerValue = String(cell.value || "")
               .toLowerCase()
               .trim();
-            if (headerValue === "site id") {
-              siteIdColNumber = colNumber;
-            }
             if (headerValue === "specimen id") {
               specimenIdColNumber = colNumber;
             }
           });
 
-          if (siteIdColNumber && specimenIdColNumber) {
+          if (specimenIdColNumber) {
             let currentRow = 2;
-            let siteCounter = 1;
 
             const siteCountsBySubject = helperConfig.siteCountsBySubject || {};
             for (const [subjectId, countRaw] of Object.entries(siteCountsBySubject)) {
               const count = Number(countRaw) || 0;
               for (let i = 0; i < count; i++) {
-                firstSheet.getRow(currentRow).getCell(siteIdColNumber).value =
-                  `site-${siteCounter}`;
                 firstSheet.getRow(currentRow).getCell(specimenIdColNumber).value = subjectId;
-                siteCounter += 1;
                 currentRow += 1;
               }
             }
@@ -120,10 +112,7 @@ ipcMain.handle("write-template", async (event, templatePath, destinationPath, he
             for (const [sampleId, countRaw] of Object.entries(siteCountsBySample)) {
               const count = Number(countRaw) || 0;
               for (let i = 0; i < count; i++) {
-                firstSheet.getRow(currentRow).getCell(siteIdColNumber).value =
-                  `site-${siteCounter}`;
                 firstSheet.getRow(currentRow).getCell(specimenIdColNumber).value = sampleId;
-                siteCounter += 1;
                 currentRow += 1;
               }
             }

@@ -75,8 +75,16 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
   const renderEntityImport = (entityType) => {
     const config = entityTypeConfig[entityType];
 
-    // Locked when any real dependency (not "entity-structure") is not satisfied
-    const locked = false;
+    // Locked when any dependency is not satisfied
+    const locked = !config.dependsOn.every((dep) => {
+      if (dep === "subjects") {
+        return subjectsCount > 0;
+      }
+      if (dep === "samples") {
+        return samplesCount > 0;
+      }
+      return true;
+    });
 
     // Determine import result based on actual counts from store
     let importResult = null;

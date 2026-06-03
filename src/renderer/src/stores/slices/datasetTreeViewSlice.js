@@ -340,6 +340,28 @@ export const reRenderTreeView = (resetOpenFolders = false) => {
     if (renderStructure) addRelativePaths(renderStructure, pathToRender);
     if (window.datasetStructureJSONObj) addRelativePaths(window.datasetStructureJSONObj, []);
 
+    // Add imported metadata files from spreadsheet import (use actual file paths)
+    const importedMetadataFilePaths = window.sodaJSONObj?.["imported-metadata-file-paths"];
+    if (importedMetadataFilePaths && typeof importedMetadataFilePaths === "object") {
+      let metadataItemIndex = datasetRenderArray.length;
+      for (const [metadataKey, filePath] of Object.entries(importedMetadataFilePaths)) {
+        if (!filePath) continue;
+
+        // Extract file name from path
+        const fileName = filePath.split(/[\\/]/).pop() || metadataKey;
+
+        datasetRenderArray.push({
+          itemType: "metadataFile",
+          fileName,
+          relativePath: `metadata/${metadataKey}`,
+          fileIsSelected: false,
+          entitiesAssociatedWithFile: [],
+          itemIndent: 0,
+          itemIndex: metadataItemIndex++,
+        });
+      }
+    }
+
     // Only iterate if datasetMetadataToPreview is a non-null array
     if (Array.isArray(datasetMetadataToPreview)) {
       const metadataKeyToFileNameMapping = {
@@ -358,6 +380,10 @@ export const reRenderTreeView = (resetOpenFolders = false) => {
       };
       let metadataItemIndex = datasetRenderArray.length;
       for (const metadataKey of datasetMetadataToPreview) {
+        // Skip if this metadata was already added from imported files
+        if (importedMetadataFilePaths && importedMetadataFilePaths[metadataKey]) {
+          continue;
+        }
         const fileName = metadataKeyToFileNameMapping[metadataKey] || metadataKey;
         datasetRenderArray.push({
           itemType: "metadataFile",

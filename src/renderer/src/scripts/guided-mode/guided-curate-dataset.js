@@ -3233,40 +3233,6 @@ $("#guided-button-add-permission-team").on("click", function () {
   guidedAddTeamPermission(newTeamPermissionObj);
 });
 
-const arraysHaveSameElements = (arr1, arr2) => {
-  if (arr1.length != arr2.length) {
-    return false;
-  }
-  for (const elementValue of arr1) {
-    if (!arr2.includes(elementValue)) {
-      return false;
-    }
-  }
-  return true;
-};
-
-const showCorrectSpreadsheetInstructionSection = (datasetEntities) => {
-  if (arraysHaveSameElements(datasetEntities, ["subjects"])) {
-    // show the subjects only spreadsheet instructions
-    document.getElementById("import-instructions-subjects").classList.remove("hidden");
-  }
-  if (arraysHaveSameElements(datasetEntities, ["subjects", "pools"])) {
-    // show the subjects and pools spreadsheet instructions
-    document.getElementById("import-instructions-subjects-pools").classList.remove("hidden");
-  }
-  if (arraysHaveSameElements(datasetEntities, ["subjects", "samples"])) {
-    // show the subjects and samples spreadsheet instructions
-
-    document.getElementById("import-instructions-subjects-samples").classList.remove("hidden");
-  }
-  if (arraysHaveSameElements(datasetEntities, ["subjects", "pools", "samples"])) {
-    // show the subjects, pools, and samples spreadsheet instructions
-    document
-      .getElementById("import-instructions-subjects-pools-samples")
-      .classList.remove("hidden");
-  }
-};
-
 $("#guided-button-samples-not-same").on("click", () => {
   $("#guided-button-generate-subjects-table").show();
 });

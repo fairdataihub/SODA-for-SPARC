@@ -29,8 +29,13 @@ import {
   getExistingSubjects,
   getExistingSamples,
   getExistingSites,
+  deleteSubject,
 } from "../../../stores/slices/datasetEntityStructureSlice";
-import { swalListDoubleAction, swalListSingleAction } from "../../utils/swal-utils";
+import {
+  swalConfirmAction,
+  swalListDoubleAction,
+  swalListSingleAction,
+} from "../../utils/swal-utils";
 import { addEntityNameToEntityType } from "../../../stores/slices/datasetEntitySelectorSlice";
 
 while (!window.baseHtmlLoaded) {
@@ -647,33 +652,6 @@ window.savePageChanges = async (pageBeingLeftID) => {
 
     const datasetEntityObj = useGlobalStore.getState().datasetEntityObj;
     window.sodaJSONObj["dataset-entity-obj"] = datasetEntityObj;
-
-    if (pageBeingLeftID === "guided-entity-addition-method-selection-tab") {
-      const userSelectedAddEntitiesFromSpreadsheet = isCheckboxCardChecked(
-        "guided-button-add-entities-via-spreadsheet"
-      );
-      const userSelectedAddEntitiesManually = isCheckboxCardChecked(
-        "guided-button-add-entities-manually"
-      );
-
-      if (!userSelectedAddEntitiesFromSpreadsheet && !userSelectedAddEntitiesManually) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please indicate how you would like to add your entity IDs",
-        });
-        throw errorArray;
-      }
-
-      if (userSelectedAddEntitiesFromSpreadsheet) {
-        guidedSkipPage("guided-manual-dataset-entity-and-metadata-tab");
-        guidedUnSkipPage("guided-spreadsheet-import-dataset-entity-and-metadata-tab");
-      }
-
-      if (userSelectedAddEntitiesManually) {
-        guidedSkipPage("guided-spreadsheet-import-dataset-entity-and-metadata-tab");
-        guidedUnSkipPage("guided-manual-dataset-entity-and-metadata-tab");
-      }
-    }
 
     startOrStopAnimationsInContainer(pageBeingLeftID, "stop");
 

@@ -606,6 +606,25 @@ export const parseExcelToEntityMap = async (file, entityType) => {
         const rowsWithInvalidPrefix = [];
         const rowsWithMissingFields = [];
         const rowsWithMissingParents = [];
+        const derivativeSampleErrors = [];
+
+        // For samples, pre-build a set of all sample IDs being imported to validate derivative samples
+        let allSamplesBeingImported = new Set();
+        if (entityType === "samples") {
+          rawData.forEach((row) => {
+            const hasData = Object.values(row).some((value) => String(value).trim() !== "");
+            if (!hasData) return;
+
+            const normalizedRow = normalizeRowIds(row);
+            const transformedRow = transformRowKeys(normalizedRow);
+            const entityId = String(transformedRow[idField] || "").trim();
+
+            if (entityId && entityId.toLowerCase().startsWith(expectedPrefix)) {
+              const normalizedEntityId = expectedPrefix + entityId.slice(expectedPrefix.length);
+              allSamplesBeingImported.add(normalizedEntityId);
+            }
+          });
+        }
 
         rawData.forEach((row, index) => {
           const rowNumber = index + 2;
@@ -662,9 +681,75 @@ export const parseExcelToEntityMap = async (file, entityType) => {
             if (!existingSubjectIds.includes(normalizedSubjectId)) {
               rowsWithMissingParents.push({
                 rowNumber,
-                missingParent: normalizedSubjectId,
+                sampleId: entityId,
+                issue: `subject_id "${normalizedSubjectId}" does not exist`,
               });
               return;
+            }
+
+            // Validate derivative samples if was_derived_from is specified
+            const derivedFrom = row["was_derived_from"];
+            if (derivedFrom && String(derivedFrom).trim()) {
+              const derivedFromTrimmed = String(derivedFrom).trim();
+              const allSubjectIds = new Set(getExistingSubjects().map((s) => s.id));
+
+              // Check if was_derived_from is a sample
+              if (derivedFromTrimmed.toLowerCase().startsWith("sam-")) {
+                const derivedFromNormalized = normalizeEntityId("sam-", derivedFromTrimmed);
+
+                // Check that the parent sample exists in this batch or was already imported
+                if (!allSamplesBeingImported.has(derivedFromNormalized)) {
+                  derivativeSampleErrors.push({
+                    rowNumber,
+                    sampleId: entityId,
+                    error: `parent sample not found (${derivedFromNormalized}) - parent samples must be in the same import batch`,
+                  });
+                  return;
+                }
+
+                // Check that the parent sample belongs to the same subject
+                const parentSample = entitiesMap[derivedFromNormalized];
+                if (parentSample && parentSample.parentSubject !== normalizedSubjectId) {
+                  derivativeSampleErrors.push({
+                    rowNumber,
+                    sampleId: entityId,
+                    error: `parent sample (${derivedFromNormalized}) belongs to a different subject (${parentSample.parentSubject} instead of ${normalizedSubjectId})`,
+                  });
+                  return;
+                }
+              }
+              // Check if was_derived_from is a subject
+              else if (derivedFromTrimmed.toLowerCase().startsWith("sub-")) {
+                const derivedFromNormalized = normalizeEntityId("sub-", derivedFromTrimmed);
+
+                // Check that the subject exists
+                if (!allSubjectIds.has(derivedFromNormalized)) {
+                  derivativeSampleErrors.push({
+                    rowNumber,
+                    sampleId: entityId,
+                    error: `parent subject not found (${derivedFromNormalized})`,
+                  });
+                  return;
+                }
+
+                // Check that the parent subject matches this sample's subject
+                if (derivedFromNormalized !== normalizedSubjectId) {
+                  derivativeSampleErrors.push({
+                    rowNumber,
+                    sampleId: entityId,
+                    error: `parent subject (${derivedFromNormalized}) does not match the sample's subject (${normalizedSubjectId})`,
+                  });
+                  return;
+                }
+              } else {
+                // was_derived_from must be either sam- or sub- prefixed
+                derivativeSampleErrors.push({
+                  rowNumber,
+                  sampleId: entityId,
+                  error: `was_derived_from value must start with either "sam-" or "sub-" (got: ${derivedFromTrimmed})`,
+                });
+                return;
+              }
             }
           }
 
@@ -686,7 +771,9 @@ export const parseExcelToEntityMap = async (file, entityType) => {
             } else {
               rowsWithMissingParents.push({
                 rowNumber,
+                siteId: entityId,
                 missingParent: specimenRaw,
+                issue: `specimen_id "${specimenRaw}" does not match any existing sample or subject`,
               });
               return;
             }
@@ -739,8 +826,8 @@ export const parseExcelToEntityMap = async (file, entityType) => {
         if (rowsWithMissingParents.length > 0) {
           await swalListDisplayOnly(
             rowsWithMissingParents.map(
-              ({ rowNumber, missingParent }) =>
-                `Row ${rowNumber}: parent entity not found (${missingParent})`
+              ({ rowNumber, siteId, issue }) =>
+                `Row ${rowNumber}${siteId ? ` (${siteId})` : ""}: ${issue}`
             ),
             `${capitalizedPluralEntityType} Metadata Import Failed`,
             `The following rows reference parent entities that do not exist:`,
@@ -748,6 +835,20 @@ export const parseExcelToEntityMap = async (file, entityType) => {
           );
           throw new Error(
             `${rowsWithMissingParents.length} row(s) reference parent entities that do not exist`
+          );
+        }
+
+        if (derivativeSampleErrors.length > 0) {
+          await swalListDisplayOnly(
+            derivativeSampleErrors.map(
+              ({ rowNumber, sampleId, error }) => `Row ${rowNumber} (${sampleId}): ${error}`
+            ),
+            `${capitalizedSingularEntityType} Derivative Sample Structure Failed`,
+            `The following derivative samples have structural issues:`,
+            "Please fix these issues in the spreadsheet and import again."
+          );
+          throw new Error(
+            `${derivativeSampleErrors.length} derivative sample(s) have structural issues`
           );
         }
 
