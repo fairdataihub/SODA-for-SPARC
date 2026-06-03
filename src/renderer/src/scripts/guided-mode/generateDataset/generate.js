@@ -8,7 +8,10 @@ import { checkIfDatasetExistsOnPennsieve } from "../pennsieveUtils";
 import { successCheck, errorMark } from "../../../assets/lotties/lotties";
 import { guidedGetDatasetName, guidedGetDatasetId } from "../utils/sodaJSONObj";
 import { getExistingSubjects } from "../../../stores/slices/datasetEntityStructureSlice";
-import { createStandardizedDatasetStructure } from "../../utils/datasetStructure";
+import {
+  createStandardizedDatasetStructure,
+  addImportedMetadataFilesToStructure,
+} from "../../utils/datasetStructure";
 import api from "../../others/api/api";
 
 import { guidedResetLocalGenerationUI } from "../guided-curate-dataset";
@@ -67,6 +70,8 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       window.datasetStructureJSONObj,
       window.sodaJSONObj["dataset-entity-obj"]
     );
+    // Add imported metadata files to the structure
+    addImportedMetadataFilesToStructure(standardizedDatasetStructure);
     window.sodaJSONObj["soda_json_structure"] = standardizedDatasetStructure;
     console.log("Standardized dataset structure created", { standardizedDatasetStructure });
 
@@ -721,6 +726,11 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
       window.datasetStructureJSONObj,
       window.sodaJSONObj["dataset-entity-obj"]
     );
+    // Add imported metadata files to the structure
+    addImportedMetadataFilesToStructure(standardizedDatasetStructure);
+    console.log("Standardized dataset structure created for local generation", {
+      standardizedDatasetStructure,
+    });
     // Set the standardized dataset structure in the global SODA JSON object (used on the backend)
     window.sodaJSONObj["soda_json_structure"] = standardizedDatasetStructure;
 

@@ -496,6 +496,8 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
         delete window.sodaJSONObj["dataset_metadata"]["sites"];
       }
       guidedSkipPage("guided-manual-dataset-entity-and-metadata-tab");
+      guidedSkipPage("guided-subjects-metadata-tab");
+      guidedSkipPage("guided-samples-metadata-tab");
       guidedUnSkipPage("guided-spreadsheet-import-dataset-entity-and-metadata-tab");
     }
 
@@ -534,6 +536,8 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
         delete window.sodaJSONObj["imported-metadata-file-paths"];
       }
       guidedSkipPage("guided-spreadsheet-import-dataset-entity-and-metadata-tab");
+      guidedUnSkipPage("guided-subjects-metadata-tab");
+      guidedUnSkipPage("guided-samples-metadata-tab");
       guidedUnSkipPage("guided-manual-dataset-entity-and-metadata-tab");
     }
 
