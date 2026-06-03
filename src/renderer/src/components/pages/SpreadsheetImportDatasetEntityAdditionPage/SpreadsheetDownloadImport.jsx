@@ -10,13 +10,19 @@ import {
 
 const helperConfig = {
   "subjects.xlsx": {
-    disabledColumns: ["metadata only", "number of directly derived samples"],
+    disabledColumns: [
+      /*"metadata only", "number of directly derived samples"*/
+    ],
   },
   "samples.xlsx": {
-    disabledColumns: ["metadata only"],
+    disabledColumns: [
+      /*"metadata only"*/
+    ],
   },
   "sites.xlsx": {
-    disabledColumns: ["metadata only"],
+    disabledColumns: [
+      /*"metadata only"*/
+    ],
   },
 };
 
