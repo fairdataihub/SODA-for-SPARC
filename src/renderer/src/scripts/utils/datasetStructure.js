@@ -362,13 +362,16 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
         for (const [metadataKey, filePath] of Object.entries(importedMetadataFilePaths)) {
           if (!filePath) continue;
 
-          standardizedStructure.files[metadataKey + ".xlsx"] = {
+          // Extract the actual file name from the full path
+          const fileName = `${metadataKey}.xlsx`;
+
+          standardizedStructure.files[fileName] = {
             path: filePath,
             extension: "xlsx",
             type: "file",
             action: ["new"],
             location: "local",
-            relativePath: filePath,
+            relativePath: "/" + fileName,
           };
         }
       }
