@@ -67,7 +67,7 @@ export const DownloadCard = ({ entityType, config, locked = false }) => {
         fullWidth
         variant="light"
         color={config.color}
-        onClick={() => handleDownloadTemplate(entityType, helperConfig[entityType])}
+        onClick={() => handleDownloadTemplate(entityType, helperConfig[config.metadataFileName])}
       >
         Download {config["metadataFileName"] || `${entityType}.xlsx`}
       </Button>

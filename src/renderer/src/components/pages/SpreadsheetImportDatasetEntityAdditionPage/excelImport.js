@@ -4,6 +4,7 @@ import {
   swalListDisplayOnly,
   swalConfirmAction,
 } from "../../../scripts/utils/swal-utils";
+import Swal from "sweetalert2";
 import { setImportedMetadataFilePath } from "../../../stores/slices/datasetContentSelectorSlice";
 import * as XLSX from "xlsx";
 import {
@@ -15,6 +16,7 @@ import {
   getExistingSubjects,
   getExistingSamples,
 } from "../../../stores/slices/datasetEntityStructureSlice";
+import useGlobalStore from "../../../stores/globalStore";
 
 export const handleEntityFileImport = async (files, entityType) => {
   if (!files?.length) {
@@ -87,7 +89,405 @@ export const handleEntityFileImport = async (files, entityType) => {
   }
 };
 
-export const handleDownloadTemplate = (entityType, helperConfig) => {
+const promptCountByEntity = async ({
+  entityIds,
+  title,
+  promptText,
+  inputIdPrefix,
+  noEntitiesTitle,
+  noEntitiesMessage,
+}) => {
+  if (entityIds.length === 0) {
+    const response = await Swal.fire({
+      icon: "info",
+      title: noEntitiesTitle,
+      html: noEntitiesMessage,
+      showCancelButton: true,
+      confirmButtonText: "Download blank template",
+      cancelButtonText: "Cancel",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+
+    return response.isConfirmed ? {} : null;
+  }
+
+  const popupHtml = `
+    <div style="max-height: 380px; overflow-y: auto; text-align: left; padding-right: 0.5rem;">
+      <p style="margin-bottom: 0.75rem;">${promptText}</p>
+      ${entityIds
+        .map(
+          (entityId) => `
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.5rem;">
+          <label for="${inputIdPrefix}-${entityId}" style="margin: 0; font-weight: 600;">${entityId}</label>
+          <input
+            id="${inputIdPrefix}-${entityId}"
+            type="number"
+            min="0"
+            step="1"
+            value="0"
+            style="width: 120px; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem;"
+            class="swal2-input"
+          />
+        </div>
+      `
+        )
+        .join("")}
+    </div>
+  `;
+
+  const response = await Swal.fire({
+    title,
+    html: popupHtml,
+    showCancelButton: true,
+    confirmButtonText: "Continue",
+    cancelButtonText: "Cancel",
+    width: 700,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    focusConfirm: false,
+    preConfirm: () => {
+      const countsByEntity = {};
+
+      for (const entityId of entityIds) {
+        const inputEl = document.getElementById(`${inputIdPrefix}-${entityId}`);
+        const rawValue = inputEl?.value ?? "0";
+        const parsedValue = Number(rawValue);
+
+        if (!Number.isInteger(parsedValue) || parsedValue < 0) {
+          Swal.showValidationMessage(`Please enter a non-negative whole number for ${entityId}.`);
+          return;
+        }
+
+        countsByEntity[entityId] = parsedValue;
+      }
+
+      return countsByEntity;
+    },
+  });
+
+  return response.isConfirmed ? response.value : null;
+};
+
+const promptSamplesPerSubject = async () => {
+  const subjectIds = getExistingSubjects().map((subject) => subject.id);
+
+  // If no subjects, show the no entities dialog
+  if (subjectIds.length === 0) {
+    const response = await Swal.fire({
+      icon: "info",
+      title: "No subjects found",
+      html: "Add or import subjects first to pre-populate samples by subject. A blank samples template will be downloaded.",
+      showCancelButton: true,
+      confirmButtonText: "Download blank template",
+      cancelButtonText: "Cancel",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+    return response.isConfirmed ? {} : null;
+  }
+
+  // Ask if all subjects have the same number of samples
+  const sameCountResponse = await Swal.fire({
+    title: "Sample Distribution",
+    html: "Do all subjects have the same number of samples?",
+    showDenyButton: true,
+    showCancelButton: true,
+    confirmButtonText: "Yes, same number",
+    denyButtonText: "No, different amounts",
+    cancelButtonText: "Cancel",
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+  });
+
+  if (
+    sameCountResponse.isDismissed ||
+    (!sameCountResponse.isConfirmed && !sameCountResponse.isDenied)
+  ) {
+    // Cancel was clicked
+    return null;
+  }
+
+  if (sameCountResponse.isConfirmed) {
+    // All subjects have the same number of samples - ask for a single number
+    const countResponse = await Swal.fire({
+      title: "Samples per subject",
+      html: "Enter the number of samples each subject has:",
+      input: "number",
+      inputAttributes: {
+        min: "0",
+        step: "1",
+      },
+      showCancelButton: true,
+      confirmButtonText: "Continue",
+      cancelButtonText: "Cancel",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      inputValidator: (value) => {
+        const parsed = Number(value);
+        if (!Number.isInteger(parsed) || parsed < 0) {
+          return "Please enter a non-negative whole number.";
+        }
+      },
+    });
+
+    if (countResponse.isConfirmed) {
+      const sampleCount = Number(countResponse.value);
+      // Create a map with the same count for all subjects
+      const countsBySubject = {};
+      for (const subjectId of subjectIds) {
+        countsBySubject[subjectId] = sampleCount;
+      }
+      return countsBySubject;
+    } else {
+      return null;
+    }
+  } else {
+    // Different subjects - ask if they want to provide per-subject counts
+    const provideCountsResponse = await Swal.fire({
+      title: "Pre-populate samples by subject?",
+      html: `<p>Would you like to specify how many samples each subject has?</p>
+             <p style="font-size: 0.9em; color: #666; margin-top: 1rem;">
+               <strong>Why this helps:</strong> This will pre-populate the subject ID column in the template, 
+               making it easier to enter sample metadata. You'll have one row per sample, already assigned to the correct subject.
+             </p>`,
+      showCancelButton: true,
+      confirmButtonText: "Yes, specify counts",
+      cancelButtonText: "Skip, download blank template",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+
+    if (!provideCountsResponse.isConfirmed) {
+      return {};
+    }
+
+    // Use the existing prompt for per-subject counts
+    return promptCountByEntity({
+      entityIds: subjectIds,
+      title: "Samples per subject",
+      promptText: "Enter how many samples each subject has:",
+      inputIdPrefix: "sample-count",
+      noEntitiesTitle: "No subjects found",
+      noEntitiesMessage:
+        "Add or import subjects first to pre-populate samples by subject. A blank samples template will be downloaded.",
+    });
+  }
+};
+
+const promptSitesPerSubject = async () => {
+  const subjectIds = getExistingSubjects().map((subject) => subject.id);
+
+  // If no subjects, show the no entities dialog
+  if (subjectIds.length === 0) {
+    const response = await Swal.fire({
+      icon: "info",
+      title: "No subjects found",
+      html: "Add or import subjects first to pre-populate subject sites. A blank sites template will be downloaded.",
+      showCancelButton: true,
+      confirmButtonText: "Download blank template",
+      cancelButtonText: "Cancel",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+    return response.isConfirmed ? {} : null;
+  }
+
+  // Ask if all subjects have the same number of sites
+  const sameCountResponse = await Swal.fire({
+    title: "Site Distribution",
+    html: "Do all subjects have the same number of sites?",
+    showDenyButton: true,
+    showCancelButton: true,
+    confirmButtonText: "Yes, same number",
+    denyButtonText: "No, different amounts",
+    cancelButtonText: "Cancel",
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+  });
+
+  if (
+    sameCountResponse.isDismissed ||
+    (!sameCountResponse.isConfirmed && !sameCountResponse.isDenied)
+  ) {
+    // Cancel was clicked
+    return null;
+  }
+
+  if (sameCountResponse.isConfirmed) {
+    // All subjects have the same number of sites - ask for a single number
+    const countResponse = await Swal.fire({
+      title: "Sites per subject",
+      html: "Enter the number of sites each subject has:",
+      input: "number",
+      inputAttributes: {
+        min: "0",
+        step: "1",
+      },
+      showCancelButton: true,
+      confirmButtonText: "Continue",
+      cancelButtonText: "Cancel",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      inputValidator: (value) => {
+        const parsed = Number(value);
+        if (!Number.isInteger(parsed) || parsed < 0) {
+          return "Please enter a non-negative whole number.";
+        }
+      },
+    });
+
+    if (countResponse.isConfirmed) {
+      const siteCount = Number(countResponse.value);
+      // Create a map with the same count for all subjects
+      const countsBySubject = {};
+      for (const subjectId of subjectIds) {
+        countsBySubject[subjectId] = siteCount;
+      }
+      return countsBySubject;
+    } else {
+      return null;
+    }
+  } else {
+    // Different subjects - ask if they want to provide per-subject counts
+    const provideCountsResponse = await Swal.fire({
+      title: "Pre-populate sites by subject?",
+      html: `<p>Would you like to specify how many sites each subject has?</p>
+             <p style="font-size: 0.9em; color: #666; margin-top: 1rem;">
+               <strong>Why this helps:</strong> This will pre-populate the specimen ID column in the template, 
+               making it easier to enter site metadata. You'll have one row per site, already assigned to the correct subject.
+             </p>`,
+      showCancelButton: true,
+      confirmButtonText: "Yes, specify counts",
+      cancelButtonText: "Skip, download blank template",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+
+    if (!provideCountsResponse.isConfirmed) {
+      return {};
+    }
+
+    // Use the existing prompt for per-subject counts
+    return promptCountByEntity({
+      entityIds: subjectIds,
+      title: "Sites per subject",
+      promptText: "Enter how many sites each subject has:",
+      inputIdPrefix: "subject-site-count",
+      noEntitiesTitle: "No subjects found",
+      noEntitiesMessage:
+        "Add or import subjects first to pre-populate subject sites. A blank sites template will be downloaded.",
+    });
+  }
+};
+
+const promptSitesPerSample = async () => {
+  const sampleIds = getExistingSamples().map((sample) => sample.id);
+
+  // If no samples, show the no entities dialog
+  if (sampleIds.length === 0) {
+    const response = await Swal.fire({
+      icon: "info",
+      title: "No samples found",
+      html: "Add or import samples first to pre-populate sample sites. A blank sites template will be downloaded.",
+      showCancelButton: true,
+      confirmButtonText: "Download blank template",
+      cancelButtonText: "Cancel",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+    return response.isConfirmed ? {} : null;
+  }
+
+  // Ask if all samples have the same number of sites
+  const sameCountResponse = await Swal.fire({
+    title: "Site Distribution",
+    html: "Do all samples have the same number of sites?",
+    showDenyButton: true,
+    showCancelButton: true,
+    confirmButtonText: "Yes, same number",
+    denyButtonText: "No, different amounts",
+    cancelButtonText: "Cancel",
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+  });
+
+  if (
+    sameCountResponse.isDismissed ||
+    (!sameCountResponse.isConfirmed && !sameCountResponse.isDenied)
+  ) {
+    // Cancel was clicked
+    return null;
+  }
+
+  if (sameCountResponse.isConfirmed) {
+    // All samples have the same number of sites - ask for a single number
+    const countResponse = await Swal.fire({
+      title: "Sites per sample",
+      html: "Enter the number of sites each sample has:",
+      input: "number",
+      inputAttributes: {
+        min: "0",
+        step: "1",
+      },
+      showCancelButton: true,
+      confirmButtonText: "Continue",
+      cancelButtonText: "Cancel",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      inputValidator: (value) => {
+        const parsed = Number(value);
+        if (!Number.isInteger(parsed) || parsed < 0) {
+          return "Please enter a non-negative whole number.";
+        }
+      },
+    });
+
+    if (countResponse.isConfirmed) {
+      const siteCount = Number(countResponse.value);
+      // Create a map with the same count for all samples
+      const countsBySample = {};
+      for (const sampleId of sampleIds) {
+        countsBySample[sampleId] = siteCount;
+      }
+      return countsBySample;
+    } else {
+      return null;
+    }
+  } else {
+    // Different samples - ask if they want to provide per-sample counts
+    const provideCountsResponse = await Swal.fire({
+      title: "Pre-populate sites by sample?",
+      html: `<p>Would you like to specify how many sites each sample has?</p>
+             <p style="font-size: 0.9em; color: #666; margin-top: 1rem;">
+               <strong>Why this helps:</strong> This will pre-populate the specimen ID column in the template, 
+               making it easier to enter site metadata. You'll have one row per site, already assigned to the correct sample.
+             </p>`,
+      showCancelButton: true,
+      confirmButtonText: "Yes, specify counts",
+      cancelButtonText: "Skip, download blank template",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
+
+    if (!provideCountsResponse.isConfirmed) {
+      return {};
+    }
+
+    // Use the existing prompt for per-sample counts
+    return promptCountByEntity({
+      entityIds: sampleIds,
+      title: "Sites per sample",
+      promptText: "Enter how many sites each sample has:",
+      inputIdPrefix: "sample-site-count",
+      noEntitiesTitle: "No samples found",
+      noEntitiesMessage:
+        "Add or import samples first to pre-populate sample sites. A blank sites template will be downloaded.",
+    });
+  }
+};
+
+export const handleDownloadTemplate = async (entityType, helperConfig) => {
   console.log("Downloading template for:", entityType);
   console.log("Helper config:", helperConfig);
   const config = entityConfigs[entityType];
@@ -100,6 +500,48 @@ export const handleDownloadTemplate = (entityType, helperConfig) => {
   }
 
   try {
+    if (entityType === "samples") {
+      const sampleCountsBySubject = await promptSamplesPerSubject();
+      if (sampleCountsBySubject === null) {
+        window.notyf.open({
+          type: "info",
+          message: "Template download cancelled",
+        });
+        return;
+      }
+      helperConfig.sampleCountsBySubject = sampleCountsBySubject;
+    }
+
+    if (entityType === "sites") {
+      const selectedEntities = useGlobalStore.getState().selectedEntities || [];
+      const hasSubjectSites = selectedEntities.includes("subjectSites");
+      const hasSampleSites = selectedEntities.includes("sampleSites");
+
+      if (hasSubjectSites) {
+        const siteCountsBySubject = await promptSitesPerSubject();
+        if (siteCountsBySubject === null) {
+          window.notyf.open({
+            type: "info",
+            message: "Template download cancelled",
+          });
+          return;
+        }
+        helperConfig.siteCountsBySubject = siteCountsBySubject;
+      }
+
+      if (hasSampleSites) {
+        const siteCountsBySample = await promptSitesPerSample();
+        if (siteCountsBySample === null) {
+          window.notyf.open({
+            type: "info",
+            message: "Template download cancelled",
+          });
+          return;
+        }
+        helperConfig.siteCountsBySample = siteCountsBySample;
+      }
+    }
+
     window.electron.ipcRenderer.send(
       "open-folder-dialog-save-metadata",
       config.templateFileName,

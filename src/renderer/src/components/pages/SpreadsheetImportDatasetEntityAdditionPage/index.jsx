@@ -32,9 +32,9 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
   const enabledEntities = [
     ...(selectedEntities?.includes("subjects") ? ["subjects"] : []),
     ...(selectedEntities?.includes("samples") ? ["samples"] : []),
-    // ...(selectedEntities?.includes("subjectSites") || selectedEntities?.includes("sampleSites")
-    //   ? ["sites"]
-    //   : []),
+    ...(selectedEntities?.includes("subjectSites") || selectedEntities?.includes("sampleSites")
+      ? ["sites"]
+      : []),
   ];
 
   console.log("Enabled entity types for import:", enabledEntities);
@@ -61,15 +61,15 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
       sequence: 2,
       metadataFileName: "samples.xlsx",
     },
-    // sites: {
-    //   title: "Step 3: Site IDs",
-    //   singular: "site",
-    //   icon: <IconPin size={24} />,
-    //   color: "grape",
-    //   description: "Link sites to subjects or samples with metadata.",
-    //   dependsOn: ["subjects", "samples"],
-    //   metadataFileName: "sites.xlsx",
-    // },
+    sites: {
+      title: "Step 3: Site IDs",
+      singular: "site",
+      icon: <IconPin size={24} />,
+      color: "grape",
+      description: "Link sites to subjects or samples with metadata.",
+      dependsOn: ["subjects", "samples"],
+      metadataFileName: "sites.xlsx",
+    },
   };
 
   const renderEntityImport = (entityType) => {
