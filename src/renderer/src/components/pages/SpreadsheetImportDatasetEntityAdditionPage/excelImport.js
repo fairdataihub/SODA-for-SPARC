@@ -43,7 +43,6 @@ export const handleEntityFileImport = async (files, entityType) => {
   try {
     // Load and validate the file
     const entitiesMap = await parseExcelToEntityMap(files[0], entityType);
-    console.log("Entities map from Excel for", entityType, ":", entitiesMap);
 
     // Show confirmation with valid entities
     const entityList = Object.keys(entitiesMap).map((entityId) =>
@@ -488,8 +487,6 @@ const promptSitesPerSample = async () => {
 };
 
 export const handleDownloadTemplate = async (entityType, helperConfig) => {
-  console.log("Downloading template for:", entityType);
-  console.log("Helper config:", helperConfig);
   const config = entityConfigs[entityType];
   if (!config) {
     window.notyf.open({
@@ -597,8 +594,6 @@ export const parseExcelToEntityMap = async (file, entityType) => {
           throw new Error(
             "The worksheet has no metadata entries. Please add metadata rows and import again."
           );
-        } else {
-          console.log("Raw data extracted from Excel:", rawData);
         }
 
         const entitiesMap = {};
@@ -854,7 +849,6 @@ export const parseExcelToEntityMap = async (file, entityType) => {
 
         // Validate field values against SDS requirements (entities already formatted in map)
         const entities = Object.values(entitiesMap);
-        console.log("Validating field values for", entities.length, "entities");
         const validationErrors = validateFieldValues(entities, entityType, config);
         if (validationErrors.length > 0) {
           console.error(`Validation failed with ${validationErrors.length} error(s):`);
@@ -1034,14 +1028,6 @@ export const entityConfigs = {
         typeof derivedFrom === "string" && derivedFrom.trim().toLowerCase().startsWith("sam-")
           ? normalizeEntityId("sam-", derivedFrom)
           : null;
-      console.log(
-        "Saving sample with id:",
-        entity.id,
-        "parentSubject:",
-        entity.parentSubject,
-        "parentSampleId:",
-        parentSampleId
-      );
 
       addSample(entity.parentSubject, parentSampleId, entity.id, entity.metadata);
     },

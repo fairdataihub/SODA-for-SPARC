@@ -526,7 +526,6 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
           }
           // Get all subject IDs before deletion and store in a copy to avoid issues with store updates during iteration
           const subjectIDsToDelete = getExistingSubjects().map((s) => s.id);
-          console.log("existingSubjectIDs to be deleted:", subjectIDsToDelete);
 
           // Delete all subjects
           subjectIDsToDelete.forEach((id) => {

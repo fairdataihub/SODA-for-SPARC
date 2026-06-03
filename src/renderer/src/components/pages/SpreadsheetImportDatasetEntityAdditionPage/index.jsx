@@ -21,7 +21,6 @@ import { DownloadCard, ImportCard, EntityImportCompleteCard } from "./Spreadshee
 const SpreadsheetImportDatasetEntityAdditionPage = () => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
-  console.log("Selected entities for import:", selectedEntities);
 
   // Helper to get imported counts for display when available
   const subjectsCount = getExistingSubjects()?.length || 0;
@@ -36,8 +35,6 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
       ? ["sites"]
       : []),
   ];
-
-  console.log("Enabled entity types for import:", enabledEntities);
 
   // --- Entity type configuration ---
   const entityTypeConfig = {

@@ -471,7 +471,6 @@ window.savePageChanges = async (pageBeingLeftID) => {
       ) {
         const datasetEntityArray = useGlobalStore.getState().datasetEntityArray;
         window.sodaJSONObj["dataset-entity-array"] = datasetEntityArray;
-        console.log("Dataset entity array being saved:", datasetEntityArray);
 
         const isSpreadsheetImport = pageBeingLeftComponentType === "entity-spreadsheet-import-page";
 
@@ -634,7 +633,6 @@ window.savePageChanges = async (pageBeingLeftID) => {
         if (isSpreadsheetImport) {
           const importedMetadataFilePaths = useGlobalStore.getState().importedMetadataFilePaths;
           window.sodaJSONObj["imported-metadata-file-paths"] = importedMetadataFilePaths;
-          console.log("Imported metadata file paths being saved:", importedMetadataFilePaths);
         }
       }
     }

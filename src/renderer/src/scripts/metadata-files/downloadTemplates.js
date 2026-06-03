@@ -40,18 +40,10 @@ const resolveTemplatePath = async (templateName) => {
     throw new Error(`Could not locate template '${templateName}'. Checked: ${templatePath}`);
   }
 
-  console.log("Resolved template path:", templatePath);
-
   return templatePath;
 };
 
 const downloadTemplates = async (templateItem, destinationFolder, helperConfig) => {
-  console.log("downloadTemplates called", {
-    templateItem,
-    destinationFolder,
-    helperConfig,
-  });
-
   const isMultipleTemplates = Array.isArray(templateItem);
   const templatesToDownload = isMultipleTemplates ? templateItem : [templateItem];
 
@@ -167,11 +159,6 @@ const downloadTemplates = async (templateItem, destinationFolder, helperConfig) 
       value: 1,
     }
   );
-
-  console.log("downloadTemplates completed", {
-    templateItem,
-    destinationFolder,
-  });
 };
 downloadHighLvlFolders.addEventListener("click", () => {
   const combinedArray = [...templateHighLvlFolders, ...templateArray];
@@ -186,7 +173,6 @@ window.electron.ipcRenderer.on(
   "selected-metadata-download-folder",
   (event, path, filename, helperConfig) => {
     window.log.info("selected-metadata-download-folder", { path, filename, helperConfig });
-    console.log("selected-metadata-download-folder", { path, filename, helperConfig });
     if (Array.isArray(path) && path.length > 0) {
       try {
         downloadTemplates(filename, path[0], helperConfig);
