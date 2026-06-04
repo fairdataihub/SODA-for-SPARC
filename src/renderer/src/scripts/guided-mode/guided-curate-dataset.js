@@ -3409,4 +3409,4 @@ const doTheHack = async () => {
   // click the gm home page button
   document.getElementById("button-homepage-guided-mode").click();
 };
-doTheHack();
+// doTheHack();
