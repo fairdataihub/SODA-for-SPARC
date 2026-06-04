@@ -1078,3 +1078,107 @@ export const entityConfigs = {
     templateFileName: "sites.xlsx",
   },
 };
+
+export const handleEntityFileImportWithPath = async (filePath, entityType) => {
+  console.log(
+    `[handleEntityFileImportWithPath] Starting import for ${entityType} from path:`,
+    filePath
+  );
+
+  if (!filePath) {
+    console.error("[handleEntityFileImportWithPath] No file path provided");
+    window.notyf.open({
+      type: "error",
+      message: "No file selected. Please select an Excel file to import.",
+    });
+    return;
+  }
+
+  const config = entityConfigs[entityType];
+  if (!config) {
+    console.error(`[handleEntityFileImportWithPath] Unsupported entity type: ${entityType}`);
+    window.notyf.open({
+      type: "error",
+      message: `Unsupported entity type: ${entityType}`,
+    });
+    return;
+  }
+
+  const capitalizedPluralEntityType = entityType
+    ? entityType.charAt(0).toUpperCase() + entityType.slice(1)
+    : "entities";
+
+  try {
+    console.log(`[handleEntityFileImportWithPath] Reading file buffer via IPC for ${entityType}`);
+
+    // Read the file through IPC to bypass renderer sandboxing
+    const fileBuffer = await window.electron.ipcRenderer.invoke("read-file-buffer", filePath);
+    console.log(
+      `[handleEntityFileImportWithPath] File buffer received, size: ${fileBuffer.length} bytes`
+    );
+
+    const workbook = XLSX.read(fileBuffer, { type: "buffer" });
+    console.log(`[handleEntityFileImportWithPath] Workbook parsed, sheets:`, workbook.SheetNames);
+
+    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+    const rawData = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+    console.log(`[handleEntityFileImportWithPath] Raw data extracted, rows: ${rawData.length}`);
+
+    // Parse the data into entities using the config
+    console.log(`[handleEntityFileImportWithPath] Parsing raw data into entities`);
+    const entitiesMap = await config.parseRawData(rawData);
+    console.log(`[handleEntityFileImportWithPath] Entities parsed:`, Object.keys(entitiesMap));
+
+    // Show confirmation with valid entities
+    const entityList = Object.keys(entitiesMap).map((entityId) =>
+      config.formatDisplayId(entitiesMap[entityId])
+    );
+    console.log(
+      `[handleEntityFileImportWithPath] Showing confirmation dialog with ${entityList.length} entities`
+    );
+
+    const confirmed = await swalListDoubleAction(
+      entityList,
+      `Confirm ${capitalizedPluralEntityType} Import`,
+      `The following ${entityList.length} ${entityType} will be imported into SODA:`,
+      "Import",
+      "Cancel"
+    );
+
+    if (!confirmed) {
+      console.log(`[handleEntityFileImportWithPath] Import cancelled by user`);
+      window.notyf.open({
+        type: "info",
+        message: `${entityType} import cancelled`,
+      });
+      return;
+    }
+
+    console.log(`[handleEntityFileImportWithPath] User confirmed import, saving entities`);
+
+    // Save entities to store
+    const entities = Object.values(entitiesMap);
+    for (const entity of entities) {
+      config.saveEntity(entity);
+    }
+
+    // Save the file path to the store for tracking
+    console.log(`[handleEntityFileImportWithPath] Saving file path to store: ${filePath}`);
+    setImportedMetadataFilePath(entityType, filePath);
+
+    console.log(
+      `[handleEntityFileImportWithPath] Import successful! ${entities.length} ${entityType} imported`
+    );
+    window.notyf.open({
+      type: "success",
+      message: `Successfully imported ${entities.length} ${entityType}`,
+    });
+  } catch (error) {
+    console.error(`[handleEntityFileImportWithPath] Error importing ${entityType}:`, error);
+    window.notyf.open({
+      type: "error",
+      message: `Error importing ${entityType} metadata: ${error.message}`,
+      duration: 8000,
+    });
+  }
+};

@@ -13,6 +13,7 @@ const { autoUpdater } = require("electron-updater");
 const { JSONStorage } = require("node-localstorage");
 const { trackEvent, trackKombuchaEvent } = require("./scripts/others/analytics/analytics");
 const { fstat } = require("fs");
+const fs = require("fs");
 const { resolve } = require("path");
 const axios = require("axios");
 const { info } = require("console");
@@ -507,6 +508,16 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
       // spreadSheetModal.close();
     } catch (e) {}
   });
+});
+
+ipcMain.handle("read-file-buffer", async (event, filePath) => {
+  try {
+    log.info(`Reading file from path: ${filePath}`);
+    return fs.readFileSync(filePath);
+  } catch (error) {
+    log.error("Error reading file:", error);
+    throw error;
+  }
 });
 
 ipcMain.handle("");

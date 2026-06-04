@@ -1,11 +1,13 @@
 import { Card, Group, Text, Box, List, Button, Stack, Paper } from "@mantine/core";
 import { Dropzone, MIME_TYPES } from "@mantine/dropzone";
 import { IconCheck, IconAlertCircle, IconFileSpreadsheet } from "@tabler/icons-react";
+import { useRef, useEffect, useCallback } from "react";
 import {
   handleDownloadTemplate,
   handleEntityFileImport,
   handleFileRejection,
   entityConfigs,
+  handleEntityFileImportWithPath,
 } from "./excelImport";
 
 const helperConfig = {
@@ -82,9 +84,62 @@ export const DownloadCard = ({ entityType, config, locked = false }) => {
 };
 
 export const ImportCard = ({ entityType, config, importResult, locked = false }) => {
+  const dropzoneRef = useRef(null);
+
   // Get real dependencies (filter out "entity-structure")
   const realDeps = config.dependsOn?.filter((dep) => dep !== "entity-structure") || [];
   const depsText = realDeps.map((d) => `${d} metadata`).join(", ");
+
+  useEffect(() => {
+    const dropzoneElement = dropzoneRef.current;
+    if (!dropzoneElement) {
+      console.log("[ImportCard] Dropzone element not found");
+      return;
+    }
+
+    const handleDrop = (event) => {
+      console.log("[ImportCard] Drop event triggered");
+      event.preventDefault();
+      event.stopPropagation();
+      const filePath = event.dataTransfer.files[0]?.path;
+      console.log("[ImportCard] File dropped with path:", filePath);
+      if (filePath) {
+        handleEntityFileImportWithPath(filePath, entityType);
+      }
+    };
+
+    const handleDragOver = (event) => {
+      console.log("[ImportCard] Drag over event");
+      event.preventDefault();
+      event.stopPropagation();
+    };
+
+    console.log("[ImportCard] Setting up drop/dragover listeners");
+    dropzoneElement.addEventListener("drop", handleDrop);
+    dropzoneElement.addEventListener("dragover", handleDragOver);
+
+    return () => {
+      console.log("[ImportCard] Cleaning up drop/dragover listeners");
+      dropzoneElement.removeEventListener("drop", handleDrop);
+      dropzoneElement.removeEventListener("dragover", handleDragOver);
+    };
+  }, [entityType, handleEntityFileImportWithPath]);
+
+  const handleClickImport = useCallback(async () => {
+    console.log("[ImportCard] Click import triggered for", entityType);
+    try {
+      console.log("[ImportCard] Opening file dialog");
+      const filePath = await window.electron.ipcRenderer.invoke("open-file-dialog-import-metadata");
+      console.log("[ImportCard] File dialog returned path:", filePath);
+      if (filePath) {
+        handleEntityFileImportWithPath(filePath, entityType);
+      } else {
+        console.log("[ImportCard] No file path selected");
+      }
+    } catch (error) {
+      console.error("[ImportCard] Error opening file dialog:", error);
+    }
+  }, [entityType, handleEntityFileImportWithPath]);
 
   if (locked) {
     return (
@@ -116,14 +171,15 @@ export const ImportCard = ({ entityType, config, importResult, locked = false })
         </Group>
       </Card.Section>
 
-      <Box mt="md" h={185}>
+      <Box mt="md" h={185} ref={dropzoneRef}>
         <Dropzone
-          onDrop={(files) => handleEntityFileImport(files, entityType)}
+          onDrop={() => {}}
           onReject={handleFileRejection}
           maxSize={5 * 1024 * 1024}
           accept={[MIME_TYPES.xlsx, MIME_TYPES.xls]}
           h={140}
           mt="md"
+          onClick={handleClickImport}
         >
           <Stack align="center" spacing="sm" style={{ pointerEvents: "none" }}>
             <Dropzone.Accept>
