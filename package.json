@@ -68,7 +68,6 @@
     "electron-updater": "^6.1.7",
     "esbuild": "^0.21.3",
     "excel4node": "^1.8.2",
-    "exceljs": "^4.4.0",
     "find-free-port": "^2.0.0",
     "fomantic-ui": "^2.9.3",
     "fs-extra": "^11.1.1",
