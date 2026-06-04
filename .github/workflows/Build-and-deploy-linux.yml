@@ -6,7 +6,7 @@ on:
     branches:
       - main
       - staging
-      - entity-spreadsheet-import
+      - spreadsheet-import-exeljs-removed
 
 jobs:
   deploy-on-linux:
