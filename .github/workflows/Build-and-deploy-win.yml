@@ -27,6 +27,9 @@ jobs:
         with:
           node-version: "25.9.0"
 
+      - name: Enable symlink support (fix electron-builder winCodeSign issue)
+        run: fsutil behavior set SymlinkEvaluation R2L:1 L2R:1
+
       - name: Configure pysodafair source based on version
         run: |
           VERSION=$(node -p "require('./package.json').version")
