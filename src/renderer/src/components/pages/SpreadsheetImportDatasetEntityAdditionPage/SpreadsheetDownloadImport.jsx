@@ -1,5 +1,5 @@
-import { Card, Group, Text, Box, List, Button, Stack, Paper } from "@mantine/core";
-import { IconCheck } from "@tabler/icons-react";
+import { Card, Group, Text, Box, List, Button, Stack, Paper, ThemeIcon } from "@mantine/core";
+import { IconCheck, IconUpload, IconFileSpreadsheet, IconDownload } from "@tabler/icons-react";
 import { handleDownloadTemplate, handleEntityFileImport, entityConfigs } from "./excelImport";
 
 const helperConfig = {
@@ -51,16 +51,47 @@ export const DownloadCard = ({ entityType, config, locked = false }) => {
         </Group>
       </Card.Section>
 
-      <Box mt="md" mb="lg" h={130} px="xs">
-        <List type="ordered" spacing="sm" withPadding>
-          <List.Item>
-            Download the {config.metadataFileName || `${entityType}.xlsx`} template
-          </List.Item>
-          <List.Item>
-            Assign every {config.singular} a unique ID in the {config.singular} ID column.
-          </List.Item>
-          <List.Item>Save the file and continue to step 2.</List.Item>
-        </List>
+      <Box mt="md" mb="lg">
+        <Stack spacing="md">
+          <Group spacing="xs" noWrap>
+            <ThemeIcon
+              size="lg"
+              variant="light"
+              color={config.color}
+              radius="md"
+              style={{ flexShrink: 0 }}
+            >
+              <IconDownload size={18} />
+            </ThemeIcon>
+            <Box style={{ flex: 1 }}>
+              <Text size="sm" fw={500}>
+                Download if not already prepared
+              </Text>
+              <Text size="xs" c="dimmed">
+                Skip if you already have the template completed
+              </Text>
+            </Box>
+          </Group>
+          <Group spacing="xs" noWrap>
+            <ThemeIcon
+              size="lg"
+              variant="light"
+              color={config.color}
+              radius="md"
+              style={{ flexShrink: 0 }}
+            >
+              <IconFileSpreadsheet size={18} />
+            </ThemeIcon>
+            <Box style={{ flex: 1 }}>
+              <Text size="sm" fw={500}>
+                Fill in the metadata
+              </Text>
+              <Text size="xs" c="dimmed">
+                Add unique IDs and complete all required fields
+              </Text>
+            </Box>
+          </Group>
+        </Stack>
       </Box>
 
       <Button
@@ -68,6 +99,7 @@ export const DownloadCard = ({ entityType, config, locked = false }) => {
         variant="light"
         color={config.color}
         onClick={() => handleDownloadTemplate(entityType, helperConfig[config.metadataFileName])}
+        leftIcon={<IconDownload size={16} />}
       >
         Download {config["metadataFileName"] || `${entityType}.xlsx`}
       </Button>
@@ -110,25 +142,66 @@ export const ImportCard = ({ entityType, config, importResult, locked = false })
         </Group>
       </Card.Section>
 
-      <Box mt="md" h={185}>
-        <Button
-          fullWidth
-          variant="light"
-          color={config.color}
-          onClick={() => handleEntityFileImport(entityType)}
-          mt="md"
-        >
-          Import {config["metadataFileName"] || `${entityType}.xlsx`}
-        </Button>
-
-        {importResult && !importResult.success && (
-          <Box mt="md" p="xs" bg="red.0" style={{ borderRadius: "4px" }}>
-            <Text fw={500} c="red.8">
-              {importResult.message}
-            </Text>
-          </Box>
-        )}
+      <Box mt="md" mb="lg">
+        <Stack spacing="md">
+          <Group spacing="xs" noWrap>
+            <ThemeIcon
+              size="lg"
+              variant="light"
+              color={config.color}
+              radius="md"
+              style={{ flexShrink: 0 }}
+            >
+              <IconUpload size={18} />
+            </ThemeIcon>
+            <Box style={{ flex: 1 }}>
+              <Text size="sm" fw={500}>
+                Click the import button below
+              </Text>
+              <Text size="xs" c="dimmed">
+                Select your completed spreadsheet file to import
+              </Text>
+            </Box>
+          </Group>
+          <Group spacing="xs" noWrap>
+            <ThemeIcon
+              size="lg"
+              variant="light"
+              color={config.color}
+              radius="md"
+              style={{ flexShrink: 0 }}
+            >
+              <IconFileSpreadsheet size={18} />
+            </ThemeIcon>
+            <Box style={{ flex: 1 }}>
+              <Text size="sm" fw={500}>
+                SODA will notify you of any errors
+              </Text>
+              <Text size="xs" c="dimmed">
+                If the import fails, fix issues in your file and try again
+              </Text>
+            </Box>
+          </Group>
+        </Stack>
       </Box>
+
+      <Button
+        fullWidth
+        variant="light"
+        color={config.color}
+        onClick={() => handleEntityFileImport(entityType)}
+        leftIcon={<IconUpload size={16} />}
+      >
+        Import {config["metadataFileName"] || `${entityType}.xlsx`}
+      </Button>
+
+      {importResult && !importResult.success && (
+        <Box mt="md" p="xs" bg="red.0" style={{ borderRadius: "4px" }}>
+          <Text fw={500} c="red.8">
+            {importResult.message}
+          </Text>
+        </Box>
+      )}
     </Card>
   );
 };
