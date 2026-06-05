@@ -1,4 +1,5 @@
 import { Card, Group, Text, Box, List, Button, Stack, Paper } from "@mantine/core";
+import { IconCheck } from "@tabler/icons-react";
 import { handleDownloadTemplate, handleEntityFileImport, entityConfigs } from "./excelImport";
 
 const helperConfig = {

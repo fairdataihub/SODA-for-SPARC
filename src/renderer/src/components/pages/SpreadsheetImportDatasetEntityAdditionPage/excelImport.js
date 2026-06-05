@@ -25,7 +25,17 @@ export const handleEntityFileImport = async (entityType) => {
   );
 
   console.log("Selected file paths:", filePaths);
-  return;
+
+  if (!filePaths?.length) {
+    window.notyf.open({
+      type: "error",
+      message: "No file selected. Please select an Excel file to import.",
+    });
+    return;
+  }
+
+  const filePath = filePaths[0];
+  console.log("filePath to import:", filePath);
 
   const config = entityConfigs[entityType];
   if (!config) {
@@ -42,7 +52,7 @@ export const handleEntityFileImport = async (entityType) => {
 
   try {
     // Load and validate the file
-    const entitiesMap = await parseExcelToEntityMap(files[0], entityType);
+    const entitiesMap = await parseExcelToEntityMap(filePath, entityType);
 
     // Show confirmation with valid entities
     const entityList = Object.keys(entitiesMap).map((entityId) =>
@@ -71,7 +81,6 @@ export const handleEntityFileImport = async (entityType) => {
     }
 
     // Save the file path to the store for tracking
-    const filePath = files[0].path || files[0].name;
     setImportedMetadataFilePath(entityType, filePath);
 
     window.notyf.open({
@@ -557,9 +566,9 @@ export const handleFileRejection = () => {
 };
 
 /**
- * Parse an Excel file and return entities as a map keyed by entity ID (with prefix)
+ * Parse an Excel file at a given file path and return entities as a map keyed by entity ID (with prefix)
  */
-export const parseExcelToEntityMap = async (file, entityType) => {
+export const parseExcelToEntityMap = async (filePath, entityType) => {
   const config = entityType ? entityConfigs[entityType] : null;
   const idField = config?.idField;
   const expectedPrefix = config?.prefix;
@@ -570,311 +579,303 @@ export const parseExcelToEntityMap = async (file, entityType) => {
     ? entityType.charAt(0).toUpperCase() + entityType.slice(1)
     : "entities";
 
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
+  try {
+    // Read the file buffer via IPC
+    const buffer = await window.electron.ipcRenderer.invoke("read-file-buffer", filePath);
 
-    reader.onload = async ({ target }) => {
-      try {
-        const workbook = XLSX.read(target.result, { type: "array" });
-        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+    if (!buffer) {
+      throw new Error("Failed to read file from disk");
+    }
 
-        if (!worksheet || !worksheet["!ref"]) {
-          throw new Error(
-            "The worksheet appears to be empty. Please add metadata rows and import again."
-          );
+    // Parse the buffer as Excel
+    const workbook = XLSX.read(buffer, { type: "buffer" });
+    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+
+    if (!worksheet || !worksheet["!ref"]) {
+      throw new Error(
+        "The worksheet appears to be empty. Please add metadata rows and import again."
+      );
+    }
+
+    const rawData = XLSX.utils
+      .sheet_to_json(worksheet, { defval: "" })
+      .map((row) =>
+        Object.fromEntries(Object.entries(row).filter(([key]) => !key.startsWith("__EMPTY")))
+      );
+
+    if (rawData.length === 0) {
+      throw new Error(
+        "The worksheet has no metadata entries. Please add metadata rows and import again."
+      );
+    }
+
+    const entitiesMap = {};
+    const rowsWithoutId = [];
+    const rowsWithInvalidPrefix = [];
+    const rowsWithMissingFields = [];
+    const rowsWithMissingParents = [];
+    const derivativeSampleErrors = [];
+
+    // For samples, pre-build a set of all sample IDs being imported to validate derivative samples
+    let allSamplesBeingImported = new Set();
+    if (entityType === "samples") {
+      rawData.forEach((row) => {
+        const hasData = Object.values(row).some((value) => String(value).trim() !== "");
+        if (!hasData) return;
+
+        const normalizedRow = normalizeRowIds(row);
+        const transformedRow = transformRowKeys(normalizedRow);
+        const entityId = String(transformedRow[idField] || "").trim();
+
+        if (entityId && entityId.toLowerCase().startsWith(expectedPrefix)) {
+          const normalizedEntityId = expectedPrefix + entityId.slice(expectedPrefix.length);
+          allSamplesBeingImported.add(normalizedEntityId);
         }
+      });
+    }
 
-        const rawData = XLSX.utils
-          .sheet_to_json(worksheet, { defval: "" })
-          .map((row) =>
-            Object.fromEntries(Object.entries(row).filter(([key]) => !key.startsWith("__EMPTY")))
-          );
+    rawData.forEach((row, index) => {
+      const rowNumber = index + 2;
 
-        if (rawData.length === 0) {
-          throw new Error(
-            "The worksheet has no metadata entries. Please add metadata rows and import again."
-          );
-        }
+      // Skip completely empty rows
+      const hasData = Object.values(row).some((value) => String(value).trim() !== "");
 
-        const entitiesMap = {};
-        const rowsWithoutId = [];
-        const rowsWithInvalidPrefix = [];
-        const rowsWithMissingFields = [];
-        const rowsWithMissingParents = [];
-        const derivativeSampleErrors = [];
+      if (!hasData) return;
 
-        // For samples, pre-build a set of all sample IDs being imported to validate derivative samples
-        let allSamplesBeingImported = new Set();
-        if (entityType === "samples") {
-          rawData.forEach((row) => {
-            const hasData = Object.values(row).some((value) => String(value).trim() !== "");
-            if (!hasData) return;
+      // Normalize all ID fields in the row (sub-, sam-, site- prefixes)
+      row = normalizeRowIds(row);
 
-            const normalizedRow = normalizeRowIds(row);
-            const transformedRow = transformRowKeys(normalizedRow);
-            const entityId = String(transformedRow[idField] || "").trim();
+      // Transform row keys to snake_case (e.g., "subject id" -> "subject_id")
+      row = transformRowKeys(row);
 
-            if (entityId && entityId.toLowerCase().startsWith(expectedPrefix)) {
-              const normalizedEntityId = expectedPrefix + entityId.slice(expectedPrefix.length);
-              allSamplesBeingImported.add(normalizedEntityId);
-            }
+      let entityId = String(row[idField] || "").trim();
+
+      // Rows with data must contain an ID
+      if (!entityId) {
+        rowsWithoutId.push(rowNumber);
+        return;
+      }
+
+      // Validate ID prefix (case-sensitive after normalization)
+      if (expectedPrefix && !entityId.startsWith(expectedPrefix)) {
+        rowsWithInvalidPrefix.push({
+          rowNumber,
+          id: entityId,
+        });
+        return;
+      }
+
+      // Update the row with the normalized ID
+      row[idField] = entityId;
+
+      // Check for required fields
+      const requiredFields = config.requiredFields || [];
+      const missingFields = requiredFields.filter(
+        (field) => !row[field] || String(row[field]).trim() === ""
+      );
+
+      if (missingFields.length > 0) {
+        missingFields.forEach((field) => {
+          rowsWithMissingFields.push({ rowNumber, field });
+        });
+        return;
+      }
+
+      // Validate parent entities exist for samples and sites
+      if (entityType === "samples") {
+        const subjectIdRaw = String(row["subject_id"] || "").trim();
+        const normalizedSubjectId = normalizeEntityId("sub-", subjectIdRaw);
+        const existingSubjectIds = getExistingSubjects().map((s) => s.id);
+        if (!existingSubjectIds.includes(normalizedSubjectId)) {
+          rowsWithMissingParents.push({
+            rowNumber,
+            sampleId: entityId,
+            issue: `subject_id "${normalizedSubjectId}" does not exist`,
           });
+          return;
         }
 
-        rawData.forEach((row, index) => {
-          const rowNumber = index + 2;
+        // Validate derivative samples if was_derived_from is specified
+        const derivedFrom = row["was_derived_from"];
+        if (derivedFrom && String(derivedFrom).trim()) {
+          const derivedFromTrimmed = String(derivedFrom).trim();
+          const allSubjectIds = new Set(getExistingSubjects().map((s) => s.id));
 
-          // Skip completely empty rows
-          const hasData = Object.values(row).some((value) => String(value).trim() !== "");
+          // Check if was_derived_from is a sample
+          if (derivedFromTrimmed.toLowerCase().startsWith("sam-")) {
+            const derivedFromNormalized = normalizeEntityId("sam-", derivedFromTrimmed);
 
-          if (!hasData) return;
-
-          // Normalize all ID fields in the row (sub-, sam-, site- prefixes)
-          row = normalizeRowIds(row);
-
-          // Transform row keys to snake_case (e.g., "subject id" -> "subject_id")
-          row = transformRowKeys(row);
-
-          let entityId = String(row[idField] || "").trim();
-
-          // Rows with data must contain an ID
-          if (!entityId) {
-            rowsWithoutId.push(rowNumber);
-            return;
-          }
-
-          // Validate ID prefix (case-sensitive after normalization)
-          if (expectedPrefix && !entityId.startsWith(expectedPrefix)) {
-            rowsWithInvalidPrefix.push({
-              rowNumber,
-              id: entityId,
-            });
-            return;
-          }
-
-          // Update the row with the normalized ID
-          row[idField] = entityId;
-
-          // Check for required fields
-          const requiredFields = config.requiredFields || [];
-          const missingFields = requiredFields.filter(
-            (field) => !row[field] || String(row[field]).trim() === ""
-          );
-
-          if (missingFields.length > 0) {
-            missingFields.forEach((field) => {
-              rowsWithMissingFields.push({ rowNumber, field });
-            });
-            return;
-          }
-
-          // Validate parent entities exist for samples and sites
-          if (entityType === "samples") {
-            const subjectIdRaw = String(row["subject_id"] || "").trim();
-            const normalizedSubjectId = normalizeEntityId("sub-", subjectIdRaw);
-            const existingSubjectIds = getExistingSubjects().map((s) => s.id);
-            if (!existingSubjectIds.includes(normalizedSubjectId)) {
-              rowsWithMissingParents.push({
+            // Check that the parent sample exists in this batch or was already imported
+            if (!allSamplesBeingImported.has(derivedFromNormalized)) {
+              derivativeSampleErrors.push({
                 rowNumber,
                 sampleId: entityId,
-                issue: `subject_id "${normalizedSubjectId}" does not exist`,
+                error: `parent sample not found (${derivedFromNormalized}) - parent samples must be in the same import batch`,
               });
               return;
             }
 
-            // Validate derivative samples if was_derived_from is specified
-            const derivedFrom = row["was_derived_from"];
-            if (derivedFrom && String(derivedFrom).trim()) {
-              const derivedFromTrimmed = String(derivedFrom).trim();
-              const allSubjectIds = new Set(getExistingSubjects().map((s) => s.id));
-
-              // Check if was_derived_from is a sample
-              if (derivedFromTrimmed.toLowerCase().startsWith("sam-")) {
-                const derivedFromNormalized = normalizeEntityId("sam-", derivedFromTrimmed);
-
-                // Check that the parent sample exists in this batch or was already imported
-                if (!allSamplesBeingImported.has(derivedFromNormalized)) {
-                  derivativeSampleErrors.push({
-                    rowNumber,
-                    sampleId: entityId,
-                    error: `parent sample not found (${derivedFromNormalized}) - parent samples must be in the same import batch`,
-                  });
-                  return;
-                }
-
-                // Check that the parent sample belongs to the same subject
-                const parentSample = entitiesMap[derivedFromNormalized];
-                if (parentSample && parentSample.parentSubject !== normalizedSubjectId) {
-                  derivativeSampleErrors.push({
-                    rowNumber,
-                    sampleId: entityId,
-                    error: `parent sample (${derivedFromNormalized}) belongs to a different subject (${parentSample.parentSubject} instead of ${normalizedSubjectId})`,
-                  });
-                  return;
-                }
-              }
-              // Check if was_derived_from is a subject
-              else if (derivedFromTrimmed.toLowerCase().startsWith("sub-")) {
-                const derivedFromNormalized = normalizeEntityId("sub-", derivedFromTrimmed);
-
-                // Check that the subject exists
-                if (!allSubjectIds.has(derivedFromNormalized)) {
-                  derivativeSampleErrors.push({
-                    rowNumber,
-                    sampleId: entityId,
-                    error: `parent subject not found (${derivedFromNormalized})`,
-                  });
-                  return;
-                }
-
-                // Check that the parent subject matches this sample's subject
-                if (derivedFromNormalized !== normalizedSubjectId) {
-                  derivativeSampleErrors.push({
-                    rowNumber,
-                    sampleId: entityId,
-                    error: `parent subject (${derivedFromNormalized}) does not match the sample's subject (${normalizedSubjectId})`,
-                  });
-                  return;
-                }
-              } else {
-                // was_derived_from must be either sam- or sub- prefixed
-                derivativeSampleErrors.push({
-                  rowNumber,
-                  sampleId: entityId,
-                  error: `was_derived_from value must start with either "sam-" or "sub-" (got: ${derivedFromTrimmed})`,
-                });
-                return;
-              }
-            }
-          }
-
-          if (entityType === "sites") {
-            const specimenRaw = String(row["specimen_id"] || "").trim();
-            const candidateSampleId = normalizeEntityId("sam-", specimenRaw);
-            const candidateSubjectId = normalizeEntityId("sub-", specimenRaw);
-            const existingSampleIds = getExistingSamples().map((s) => s.id);
-            const existingSubjectIds = getExistingSubjects().map((s) => s.id);
-
-            if (existingSampleIds.includes(candidateSampleId)) {
-              // Site belongs to a sample - mark this for formatEntity
-              row._parentType = "sample";
-              row._parentId = candidateSampleId;
-            } else if (existingSubjectIds.includes(candidateSubjectId)) {
-              // Site belongs to a subject
-              row._parentType = "subject";
-              row._parentId = candidateSubjectId;
-            } else {
-              rowsWithMissingParents.push({
+            // Check that the parent sample belongs to the same subject
+            const parentSample = entitiesMap[derivedFromNormalized];
+            if (parentSample && parentSample.parentSubject !== normalizedSubjectId) {
+              derivativeSampleErrors.push({
                 rowNumber,
-                siteId: entityId,
-                missingParent: specimenRaw,
-                issue: `specimen_id "${specimenRaw}" does not match any existing sample or subject`,
+                sampleId: entityId,
+                error: `parent sample (${derivedFromNormalized}) belongs to a different subject (${parentSample.parentSubject} instead of ${normalizedSubjectId})`,
               });
               return;
             }
           }
+          // Check if was_derived_from is a subject
+          else if (derivedFromTrimmed.toLowerCase().startsWith("sub-")) {
+            const derivedFromNormalized = normalizeEntityId("sub-", derivedFromTrimmed);
 
-          // Normalize the entity ID to the correct prefix and casing
-          const normalizedEntityId = expectedPrefix + entityId.slice(expectedPrefix.length);
+            // Check that the subject exists
+            if (!allSubjectIds.has(derivedFromNormalized)) {
+              derivativeSampleErrors.push({
+                rowNumber,
+                sampleId: entityId,
+                error: `parent subject not found (${derivedFromNormalized})`,
+              });
+              return;
+            }
 
-          // Format entity and store in map
-          const entity = config.formatEntity(row, normalizedEntityId);
-          entitiesMap[normalizedEntityId] = entity;
-        });
-
-        if (rowsWithoutId.length > 0) {
-          await swalListDisplayOnly(
-            rowsWithoutId.map(
-              (rowNumber) => `Row ${rowNumber}: has metadata but is missing the ${idField} field`
-            ),
-            `${capitalizedSingularEntityType} Metadata Import Failed`,
-            `The following rows have data but are missing the required ID field:`,
-            "Please fix these issues in the spreadsheet and import again."
-          );
-          throw new Error("Please ensure every row with data has a value in the ID column.");
+            // Check that the parent subject matches this sample's subject
+            if (derivedFromNormalized !== normalizedSubjectId) {
+              derivativeSampleErrors.push({
+                rowNumber,
+                sampleId: entityId,
+                error: `parent subject (${derivedFromNormalized}) does not match the sample's subject (${normalizedSubjectId})`,
+              });
+              return;
+            }
+          } else {
+            // was_derived_from must be either sam- or sub- prefixed
+            derivativeSampleErrors.push({
+              rowNumber,
+              sampleId: entityId,
+              error: `was_derived_from value must start with either "sam-" or "sub-" (got: ${derivedFromTrimmed})`,
+            });
+            return;
+          }
         }
-
-        if (rowsWithInvalidPrefix.length > 0) {
-          await swalListDisplayOnly(
-            rowsWithInvalidPrefix.map(({ rowNumber, id }) => `Row ${rowNumber}: "${id}"`),
-            `${capitalizedPluralEntityType} Metadata Import Failed`,
-            `The following rows have invalid ID prefixes (${capitalizedPluralEntityType} IDs are expected to start with ${expectedPrefix}):`,
-            "Please fix these issues in the spreadsheet and import again."
-          );
-          throw new Error(
-            `Please ensure all IDs start with the expected prefix: ${expectedPrefix}`
-          );
-        }
-
-        if (rowsWithMissingFields.length > 0) {
-          await swalListDisplayOnly(
-            rowsWithMissingFields.map(
-              ({ rowNumber, field }) => `Row ${rowNumber}: missing ${field}`
-            ),
-            `${capitalizedSingularEntityType} Metadata Import Failed`,
-            `The following rows are missing required fields:`,
-            "Please fix these issues in the spreadsheet and import again."
-          );
-          throw new Error(`${rowsWithMissingFields.length} row(s) are missing required fields`);
-        }
-
-        if (rowsWithMissingParents.length > 0) {
-          await swalListDisplayOnly(
-            rowsWithMissingParents.map(
-              ({ rowNumber, siteId, issue }) =>
-                `Row ${rowNumber}${siteId ? ` (${siteId})` : ""}: ${issue}`
-            ),
-            `${capitalizedPluralEntityType} Metadata Import Failed`,
-            `The following rows reference parent entities that do not exist:`,
-            "Please add the parent subjects/samples to the dataset first and try again."
-          );
-          throw new Error(
-            `${rowsWithMissingParents.length} row(s) reference parent entities that do not exist`
-          );
-        }
-
-        if (derivativeSampleErrors.length > 0) {
-          await swalListDisplayOnly(
-            derivativeSampleErrors.map(
-              ({ rowNumber, sampleId, error }) => `Row ${rowNumber} (${sampleId}): ${error}`
-            ),
-            `${capitalizedSingularEntityType} Derivative Sample Structure Failed`,
-            `The following derivative samples have structural issues:`,
-            "Please fix these issues in the spreadsheet and import again."
-          );
-          throw new Error(
-            `${derivativeSampleErrors.length} derivative sample(s) have structural issues`
-          );
-        }
-
-        // Validate field values against SDS requirements (entities already formatted in map)
-        const entities = Object.values(entitiesMap);
-        const validationErrors = validateFieldValues(entities, entityType, config);
-        if (validationErrors.length > 0) {
-          console.error(`Validation failed with ${validationErrors.length} error(s):`);
-          validationErrors.forEach((err) => console.error("  -", err));
-          await swalListDisplayOnly(
-            validationErrors,
-            `${capitalizedSingularEntityType} Metadata Validation Issues`,
-            `The following validation issues were found:`,
-            "Please fix these validation issues in the spreadsheet and import again."
-          );
-
-          throw new Error(`Validation failed with ${validationErrors.length} error(s)`);
-        }
-
-        resolve(entitiesMap);
-      } catch (error) {
-        reject(new Error(`${error.message}`));
       }
-    };
 
-    reader.onerror = () => {
-      reject(new Error("Failed to read file"));
-    };
+      if (entityType === "sites") {
+        const specimenRaw = String(row["specimen_id"] || "").trim();
+        const candidateSampleId = normalizeEntityId("sam-", specimenRaw);
+        const candidateSubjectId = normalizeEntityId("sub-", specimenRaw);
+        const existingSampleIds = getExistingSamples().map((s) => s.id);
+        const existingSubjectIds = getExistingSubjects().map((s) => s.id);
 
-    reader.readAsArrayBuffer(file);
-  });
+        if (existingSampleIds.includes(candidateSampleId)) {
+          // Site belongs to a sample - mark this for formatEntity
+          row._parentType = "sample";
+          row._parentId = candidateSampleId;
+        } else if (existingSubjectIds.includes(candidateSubjectId)) {
+          // Site belongs to a subject
+          row._parentType = "subject";
+          row._parentId = candidateSubjectId;
+        } else {
+          rowsWithMissingParents.push({
+            rowNumber,
+            siteId: entityId,
+            missingParent: specimenRaw,
+            issue: `specimen_id "${specimenRaw}" does not match any existing sample or subject`,
+          });
+          return;
+        }
+      }
+
+      // Normalize the entity ID to the correct prefix and casing
+      const normalizedEntityId = expectedPrefix + entityId.slice(expectedPrefix.length);
+
+      // Format entity and store in map
+      const entity = config.formatEntity(row, normalizedEntityId);
+      entitiesMap[normalizedEntityId] = entity;
+    });
+
+    if (rowsWithoutId.length > 0) {
+      await swalListDisplayOnly(
+        rowsWithoutId.map(
+          (rowNumber) => `Row ${rowNumber}: has metadata but is missing the ${idField} field`
+        ),
+        `${capitalizedSingularEntityType} Metadata Import Failed`,
+        `The following rows have data but are missing the required ID field:`,
+        "Please fix these issues in the spreadsheet and import again."
+      );
+      throw new Error("Please ensure every row with data has a value in the ID column.");
+    }
+
+    if (rowsWithInvalidPrefix.length > 0) {
+      await swalListDisplayOnly(
+        rowsWithInvalidPrefix.map(({ rowNumber, id }) => `Row ${rowNumber}: "${id}"`),
+        `${capitalizedPluralEntityType} Metadata Import Failed`,
+        `The following rows have invalid ID prefixes (${capitalizedPluralEntityType} IDs are expected to start with ${expectedPrefix}):`,
+        "Please fix these issues in the spreadsheet and import again."
+      );
+      throw new Error(`Please ensure all IDs start with the expected prefix: ${expectedPrefix}`);
+    }
+
+    if (rowsWithMissingFields.length > 0) {
+      await swalListDisplayOnly(
+        rowsWithMissingFields.map(({ rowNumber, field }) => `Row ${rowNumber}: missing ${field}`),
+        `${capitalizedSingularEntityType} Metadata Import Failed`,
+        `The following rows are missing required fields:`,
+        "Please fix these issues in the spreadsheet and import again."
+      );
+      throw new Error(`${rowsWithMissingFields.length} row(s) are missing required fields`);
+    }
+
+    if (rowsWithMissingParents.length > 0) {
+      await swalListDisplayOnly(
+        rowsWithMissingParents.map(
+          ({ rowNumber, siteId, issue }) =>
+            `Row ${rowNumber}${siteId ? ` (${siteId})` : ""}: ${issue}`
+        ),
+        `${capitalizedPluralEntityType} Metadata Import Failed`,
+        `The following rows reference parent entities that do not exist:`,
+        "Please add the parent subjects/samples to the dataset first and try again."
+      );
+      throw new Error(
+        `${rowsWithMissingParents.length} row(s) reference parent entities that do not exist`
+      );
+    }
+
+    if (derivativeSampleErrors.length > 0) {
+      await swalListDisplayOnly(
+        derivativeSampleErrors.map(
+          ({ rowNumber, sampleId, error }) => `Row ${rowNumber} (${sampleId}): ${error}`
+        ),
+        `${capitalizedSingularEntityType} Derivative Sample Structure Failed`,
+        `The following derivative samples have structural issues:`,
+        "Please fix these issues in the spreadsheet and import again."
+      );
+      throw new Error(
+        `${derivativeSampleErrors.length} derivative sample(s) have structural issues`
+      );
+    }
+
+    // Validate field values against SDS requirements (entities already formatted in map)
+    const entities = Object.values(entitiesMap);
+    const validationErrors = validateFieldValues(entities, entityType, config);
+    if (validationErrors.length > 0) {
+      console.error(`Validation failed with ${validationErrors.length} error(s):`);
+      validationErrors.forEach((err) => console.error("  -", err));
+      await swalListDisplayOnly(
+        validationErrors,
+        `${capitalizedSingularEntityType} Metadata Validation Issues`,
+        `The following validation issues were found:`,
+        "Please fix these validation issues in the spreadsheet and import again."
+      );
+
+      throw new Error(`Validation failed with ${validationErrors.length} error(s)`);
+    }
+
+    return entitiesMap;
+  } catch (error) {
+    throw new Error(`${error.message}`);
+  }
 };
 
 /**

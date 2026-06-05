@@ -403,6 +403,16 @@ ipcMain.handle("open-file-dialog-import-metadata-file", async (event) => {
   return [];
 });
 
+ipcMain.handle("read-file-buffer", async (event, filePath) => {
+  const fs = require("fs");
+  try {
+    const buffer = fs.readFileSync(filePath);
+    return buffer;
+  } catch (err) {
+    throw new Error(`Failed to read file: ${err.message}`);
+  }
+});
+
 ipcMain.handle("open-file-dialog-submit-dataset", async (event) => {
   let mainWindow = BrowserWindow.getFocusedWindow();
 
