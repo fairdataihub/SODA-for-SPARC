@@ -143,6 +143,17 @@ const downloadTemplates = async (templateItem, destinationFolder, helperConfig) 
     backdrop: "rgba(0,0,0, 0.4)",
   });
 
+  // Open the downloaded file or folder
+  try {
+    const pathToOpen = isMultipleTemplates
+      ? templatesFolderPath
+      : window.path.join(destinationFolder, templateItem);
+    await window.electron.ipcRenderer.invoke("shell-open-path", pathToOpen);
+  } catch (err) {
+    window.log?.warn?.("Failed to open downloaded file", err.message);
+    console.warn("Failed to open downloaded file", err);
+  }
+
   window.electron.ipcRenderer.send("track-event", "Success", `Download Template - ${templateItem}`);
 
   const kombuchaLabel = isMultipleTemplates
