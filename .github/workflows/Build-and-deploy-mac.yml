@@ -26,16 +26,16 @@ jobs:
         with:
           node-version: "25.9.0"
 
-      - name: Configure pysodafair source based on version
-        run: |
-          VERSION=$(node -p "require('./package.json').version")
-          ENV_FILE="tools/anaconda-env/environment-MAC.yml"
-          if [[ "$VERSION" == *"beta"* ]]; then
-            echo "Beta version detected ($VERSION) - using TestPyPI for pysodafair"
-            sed -i '' 's/# - --extra-index-url/- --extra-index-url/' "$ENV_FILE"
-          else
-            echo "Production version detected ($VERSION) - using PyPI for pysodafair"
-          fi
+      # - name: Configure pysodafair source based on version
+      #   run: |
+      #     VERSION=$(node -p "require('./package.json').version")
+      #     ENV_FILE="tools/anaconda-env/environment-MAC.yml"
+      #     if [[ "$VERSION" == *"beta"* ]]; then
+      #       echo "Beta version detected ($VERSION) - using TestPyPI for pysodafair"
+      #       sed -i '' 's/# - --extra-index-url/- --extra-index-url/' "$ENV_FILE"
+      #     else
+      #       echo "Production version detected ($VERSION) - using PyPI for pysodafair"
+      #     fi
 
       - uses: conda-incubator/setup-miniconda@v2
         with:
