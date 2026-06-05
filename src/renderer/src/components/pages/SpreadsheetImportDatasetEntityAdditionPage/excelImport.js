@@ -18,14 +18,14 @@ import {
 } from "../../../stores/slices/datasetEntityStructureSlice";
 import useGlobalStore from "../../../stores/globalStore";
 
-export const handleEntityFileImport = async (files, entityType) => {
-  if (!files?.length) {
-    window.notyf.open({
-      type: "error",
-      message: "No file selected. Please select an Excel file to import.",
-    });
-    return;
-  }
+export const handleEntityFileImport = async (entityType) => {
+  // Open file picker dialog
+  const filePaths = await window.electron.ipcRenderer.invoke(
+    "open-file-dialog-import-metadata-file"
+  );
+
+  console.log("Selected file paths:", filePaths);
+  return;
 
   const config = entityConfigs[entityType];
   if (!config) {

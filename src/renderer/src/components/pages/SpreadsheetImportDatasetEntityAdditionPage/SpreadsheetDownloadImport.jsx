@@ -1,12 +1,5 @@
 import { Card, Group, Text, Box, List, Button, Stack, Paper } from "@mantine/core";
-import { Dropzone, MIME_TYPES } from "@mantine/dropzone";
-import { IconCheck, IconAlertCircle, IconFileSpreadsheet } from "@tabler/icons-react";
-import {
-  handleDownloadTemplate,
-  handleEntityFileImport,
-  handleFileRejection,
-  entityConfigs,
-} from "./excelImport";
+import { handleDownloadTemplate, handleEntityFileImport, entityConfigs } from "./excelImport";
 
 const helperConfig = {
   "subjects.xlsx": {
@@ -117,32 +110,15 @@ export const ImportCard = ({ entityType, config, importResult, locked = false })
       </Card.Section>
 
       <Box mt="md" h={185}>
-        <Dropzone
-          onDrop={(files) => handleEntityFileImport(files, entityType)}
-          onReject={handleFileRejection}
-          maxSize={5 * 1024 * 1024}
-          accept={[MIME_TYPES.xlsx, MIME_TYPES.xls]}
-          h={140}
+        <Button
+          fullWidth
+          variant="light"
+          color={config.color}
+          onClick={() => handleEntityFileImport(entityType)}
           mt="md"
         >
-          <Stack align="center" spacing="sm" style={{ pointerEvents: "none" }}>
-            <Dropzone.Accept>
-              <IconCheck size={32} color={config.color} />
-            </Dropzone.Accept>
-            <Dropzone.Reject>
-              <IconAlertCircle size={32} color="red" />
-            </Dropzone.Reject>
-            <Dropzone.Idle>
-              <IconFileSpreadsheet size={32} color="var(--color-light-green)" />
-            </Dropzone.Idle>
-            <Text size="md" ta="center" fw={500}>
-              Drop your {config["metadataFileName"] || `${entityType}.xlsx`} file here
-            </Text>
-            <Text size="xs" c="dimmed" ta="center">
-              Or click to import from your computer
-            </Text>
-          </Stack>
-        </Dropzone>
+          Import {config["metadataFileName"] || `${entityType}.xlsx`}
+        </Button>
 
         {importResult && !importResult.success && (
           <Box mt="md" p="xs" bg="red.0" style={{ borderRadius: "4px" }}>
