@@ -9,6 +9,7 @@ const nodeStorage = new JSONStorage(app.getPath("userData"));
 const configFolderPath = path.join(app.getPath("home"), ".soda-config"); // more config files will be placed here
 let dnt = false;
 
+// TODO: FIX cert
 const kombuchaURL = "https://kombucha.fairdataihub.org/api/";
 const localKombuchaURL = "http://localhost:3000/api/";
 
