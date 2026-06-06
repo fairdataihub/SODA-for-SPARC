@@ -373,12 +373,12 @@ export const addImportedMetadataFilesToStructure = (datasetStructure) => {
         if (!filePath) continue;
         const fileName = `${metadataKey}.xlsx`;
         datasetStructure.files[fileName] = {
-          path: filePath,
-          extension: "xlsx",
-          type: "file",
           action: ["new"],
+          "additional-metadata": "",
+          description: "",
           location: "local",
-          relativePath: "/" + fileName,
+          path: filePath,
+          relativePath: fileName,
         };
       }
     }

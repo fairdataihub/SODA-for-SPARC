@@ -6,6 +6,7 @@ import { Text, Grid, Stack, Group, Button, Paper, Box, Divider, List, Card } fro
 import useGlobalStore from "../../../stores/globalStore";
 import { swalListDoubleAction, swalConfirmAction } from "../../../scripts/utils/swal-utils";
 import SodaPaper from "../../utils/ui/SodaPaper";
+import PageCompleteIndicator from "../../common/PageCompleteIndicator";
 import {
   getExistingSubjects,
   getExistingSamples,
@@ -35,6 +36,18 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
       ? ["sites"]
       : []),
   ];
+
+  // Determine which entities are required based on selection
+  const requiredEntities = enabledEntities;
+
+  // Check if all required entities have been imported
+  const entityCounts = {
+    subjects: subjectsCount,
+    samples: samplesCount,
+    sites: sitesCount,
+  };
+
+  const allRequiredEntitiesImported = requiredEntities.every((type) => entityCounts[type] > 0);
 
   // --- Entity type configuration ---
   const entityTypeConfig = {
@@ -196,6 +209,9 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
       </GuidedModeSection>
       <GuidedModeSection>
         {enabledEntities.map((entityType) => renderEntityImport(entityType))}
+        {allRequiredEntitiesImported && (
+          <PageCompleteIndicator message="All required entities have been imported successfully!" />
+        )}
       </GuidedModeSection>
     </GuidedModePage>
   );
