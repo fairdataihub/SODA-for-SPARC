@@ -150,12 +150,20 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
                     existingSubjectIDs.forEach((id) => {
                       deleteSubject(id);
                     });
+                    // When subjects are removed, also clear dependent file paths
+                    clearImportedMetadataFilePath("samples");
+                    clearImportedMetadataFilePath("sites");
+                    delete updatedImportedMetadataFilePaths["samples"];
+                    delete updatedImportedMetadataFilePaths["sites"];
                   }
                   if (entityType === "samples") {
                     const existingSampleIDs = getExistingSamples().map((s) => s.id);
                     existingSampleIDs.forEach((id) => {
                       deleteSample(id);
                     });
+                    // When samples are removed, also clear dependent file paths
+                    clearImportedMetadataFilePath("sites");
+                    delete updatedImportedMetadataFilePaths["sites"];
                   }
                   if (entityType === "sites") {
                     const existingSiteIDs = getExistingSites().map((s) => s.id);
@@ -163,6 +171,9 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
                       deleteSite(id);
                     });
                   }
+
+                  window.sodaJSONObj["imported-metadata-file-paths"] =
+                    updatedImportedMetadataFilePaths;
                 }
               }}
             />
