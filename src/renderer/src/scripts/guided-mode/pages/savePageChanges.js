@@ -621,7 +621,9 @@ window.savePageChanges = async (pageBeingLeftID) => {
           const sitesMetadata = sitesCopy.map((site) => ({
             ...site.metadata,
           }));
-          window.sodaJSONObj["dataset_metadata"]["sites"] = sitesMetadata;
+          if (!isSpreadsheetImport) {
+            window.sodaJSONObj["dataset_metadata"]["sites"] = sitesMetadata;
+          }
         } else {
           // If sites metadata has been added, remove it (It shouldn't be there but just in case)
           if (window.sodaJSONObj["dataset_metadata"]?.["sites"]) {
