@@ -29,7 +29,6 @@ import { swalListSingleAction, swalShowInfo } from "../../../utils/swal-utils";
 import { guidedDatasetKeywordsTagify } from "../../tagifies/tagifies";
 import lottie from "lottie-web";
 import { renderAdditionalLinksTable } from "../../guided-curate-dataset";
-import { createStandardizedDatasetStructure } from "../../../../scripts/utils/datasetStructure";
 import { setDropdownState } from "../../../../stores/slices/dropDownSlice";
 import {
   setManualFundingAgency,
