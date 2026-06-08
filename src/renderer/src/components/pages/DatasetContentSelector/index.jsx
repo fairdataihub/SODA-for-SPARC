@@ -32,7 +32,7 @@ export const contentOptionsMap = {
     ml: 20,
   },
   subjectSites: {
-    label: "Did you collect data from specific locations within your subjects?",
+    label: "Did you collect data from multiple distinct locations within your subjects?",
     dropDownDescription:
       "Select yes if you collected data from distinct anatomical locations within a subject without creating a physical sample, and those locations require separate metadata. Examples include recordings from different brain regions, measurements from multiple organs, or sensors placed on different body locations of the same subject.",
     requiresAnswer: ["subjects"],

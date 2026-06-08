@@ -580,13 +580,13 @@ window.savePageChanges = async (pageBeingLeftID) => {
               errorArray.push({
                 type: "notyf",
                 message:
-                  "You indicated that you collected data from specific locations within your subjects, but your imported sites.xlsx file contains no subject site IDs. Please ensure your sites.xlsx file includes site IDs with subject IDs (e.g., sub-001) in the 'specimen_id' column.",
+                  "You indicated that you collected data from multiple distinct locations within your subjects, but your imported sites.xlsx file contains no subject site IDs. Please ensure your sites.xlsx file includes site IDs with subject IDs (e.g., sub-001) in the 'specimen_id' column.",
               });
             } else {
               errorArray.push({
                 type: "notyf",
                 message:
-                  "You indicated that you collected data from specific locations within your subjects, but did not add any site IDs for those subjects.",
+                  "You indicated that you collected data from multiple distinct locations within your subjects, but did not add any site IDs for those subjects.",
               });
             }
             throw errorArray;
@@ -602,13 +602,13 @@ window.savePageChanges = async (pageBeingLeftID) => {
               errorArray.push({
                 type: "notyf",
                 message:
-                  "You indicated that you collected data from specific locations within your samples, but your imported sites.xlsx file contains no sample site IDs. Please ensure your sites.xlsx file includes site IDs with sample IDs (e.g., sam-001) in the 'specimen_id' column.",
+                  "You indicated that you collected data from multiple distinct locations within your samples, but your imported sites.xlsx file contains no sample site IDs. Please ensure your sites.xlsx file includes site IDs with sample IDs (e.g., sam-001) in the 'specimen_id' column.",
               });
             } else {
               errorArray.push({
                 type: "notyf",
                 message:
-                  "You indicated that you collected data from specific locations within your samples, but did not add any site IDs for those samples.",
+                  "You indicated that you collected data from multiple distinct locations within your samples, but did not add any site IDs for those samples.",
               });
             }
             throw errorArray;
