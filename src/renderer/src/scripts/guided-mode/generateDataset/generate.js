@@ -736,9 +736,11 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
     console.log("Standardized dataset structure created for local generation", {
       standardizedDatasetStructure,
     });
+    // Create a copy of the dataset structure to avoid modifying the original
+    const datasetStructureCopy = JSON.parse(JSON.stringify(window.sodaJSONObj));
     // Set the standardized dataset structure in the global SODA JSON object (used on the backend)
-    window.sodaJSONObj["soda_json_structure"] = standardizedDatasetStructure;
-    // window.sodaJSONObj["dataset-structure"] = standardizedDatasetStructure;
+    datasetStructureCopy["soda_json_structure"] = standardizedDatasetStructure;
+    datasetStructureCopy["dataset-structure"] = standardizedDatasetStructure;
     console.log("dataset structure being sent to backend:", standardizedDatasetStructure);
 
     // Prepare progress UI
@@ -754,7 +756,7 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
     // Get dataset size
     const localDatasetSizeReq = await client.post(
       "/curate_datasets/dataset_size",
-      { soda_json_structure: window.sodaJSONObj },
+      { soda_json_structure: datasetStructureCopy },
       { timeout: 0 }
     );
     const localDatasetSizeInBytes = localDatasetSizeReq.data.dataset_size;
@@ -768,8 +770,7 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
     }
 
     // Copy and prepare SODA object
-    const sodaJSONObjCopy = JSON.parse(JSON.stringify(window.sodaJSONObj));
-    sodaJSONObjCopy["generate-dataset"] = {
+    datasetStructureCopy["generate-dataset"] = {
       "dataset-name": sanitizedDatasetName,
       destination: "local",
       "generate-option": "new",
@@ -777,10 +778,10 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
       path: filePath,
     };
 
-    // Remove unnecessary key from sodaJSONObjCopy since we don't need to
+    // Remove unnecessary key from datasetStructureCopy since we don't need to
     // check if the account details are valid during local generation
-    delete sodaJSONObjCopy["ps-account-selected"];
-    delete sodaJSONObjCopy["ps-dataset-selected"];
+    delete datasetStructureCopy["ps-account-selected"];
+    delete datasetStructureCopy["ps-dataset-selected"];
 
     updateDatasetUploadProgressTable("local", {
       "Current action": "Preparing dataset for local generation",
@@ -790,7 +791,7 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
     client
       .post(
         "/curate_datasets/curation",
-        { soda_json_structure: sodaJSONObjCopy, resume: false },
+        { soda_json_structure: datasetStructureCopy, resume: false },
         { timeout: 0 }
       )
       .catch(async (error) => {
