@@ -6,7 +6,6 @@ import {
 import { getGuidedDatasetName, getGuidedDatasetSubtitle } from "../curationPreparation/utils.js";
 import { setSodaTextInputValue } from "../../../../stores/slices/sodaTextInputSlice.js";
 import { guidedShowBannerImagePreview } from "../../bannerImage/bannerImage";
-import { createStandardizedDatasetStructure } from "../../../utils/datasetStructure.js";
 import {
   reRenderTreeView,
   setPathToRender,

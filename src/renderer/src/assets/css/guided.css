@@ -56,24 +56,6 @@
   margin: 0px 10px 10px 10px;
 }
 
-.file-import-container {
-  display: flex;
-  border-radius: 10px;
-  border: 1px dashed #258193;
-}
-
-.file-import-container.horizontal {
-  width: 100%;
-  flex-direction: row;
-  align-items: center;
-  margin: 0px 10px 10px 10px;
-}
-
-.file-import-container.vertical {
-  flex-direction: column;
-  justify-content: center;
-}
-
 .guided--container {
   overflow-y: auto;
   display: flex;

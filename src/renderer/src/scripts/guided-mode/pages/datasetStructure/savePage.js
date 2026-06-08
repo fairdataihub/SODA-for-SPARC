@@ -26,7 +26,7 @@ import {
 import { isCheckboxCardChecked } from "../../../../stores/slices/checkboxCardSlice";
 import { convertGuidedManifestToSchema } from "../../utils/sodaJSONObj";
 
-import { swalListDoubleAction } from "../../../utils/swal-utils";
+import { swalListDoubleAction, swalConfirmAction } from "../../../utils/swal-utils";
 
 export const savePageDatasetStructure = async (pageBeingLeftID) => {
   const errorArray = [];
@@ -438,6 +438,113 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       window.sodaJSONObj["generate-dataset"]["if-existing"] = "merge";
       window.sodaJSONObj["generate-dataset"]["if-existing-files"] = "skip";
     }
+  }
+
+  if (pageBeingLeftID === "guided-entity-addition-method-selection-tab") {
+    const userSelectedAddEntitiesFromSpreadsheet = isCheckboxCardChecked(
+      "guided-button-add-entities-via-spreadsheet"
+    );
+    const userSelectedAddEntitiesManually = isCheckboxCardChecked(
+      "guided-button-add-entities-manually"
+    );
+
+    if (!userSelectedAddEntitiesFromSpreadsheet && !userSelectedAddEntitiesManually) {
+      errorArray.push({
+        type: "notyf",
+        message: "Please indicate how you would like to add your entity IDs",
+      });
+      throw errorArray;
+    }
+
+    if (userSelectedAddEntitiesFromSpreadsheet) {
+      if (window.sodaJSONObj["entity-addition-method"] === "manual") {
+        const existingSubjects = getExistingSubjects();
+        if (existingSubjects.length > 0) {
+          const confirmChange = await swalConfirmAction(
+            null,
+            "Confirm Change in Entity Addition Method",
+            "You have already added subjects manually. If you switch to adding entities via spreadsheet, your manually added subjects will be removed. Are you sure you want to switch to adding entities via spreadsheet?",
+            "Yes, switch to spreadsheet import",
+            "No, keep manual addition"
+          );
+          if (!confirmChange) {
+            errorArray.push({
+              type: "notyf",
+              message:
+                "Please revert to indicating that you want to add entities manually before continuing.",
+            });
+            throw errorArray;
+          }
+
+          // Delete all manually added subjects
+          const existingSubjectIDs = getExistingSubjects().map((s) => s.id);
+          existingSubjectIDs.forEach((id) => {
+            deleteSubject(id);
+          });
+        }
+      }
+
+      // Delete all of the potentially generated subject, samples, and sites metadata created
+      // by soda
+      if (window.sodaJSONObj["dataset_metadata"]?.["subjects"]) {
+        delete window.sodaJSONObj["dataset_metadata"]["subjects"];
+      }
+      if (window.sodaJSONObj["dataset_metadata"]?.["samples"]) {
+        delete window.sodaJSONObj["dataset_metadata"]["samples"];
+      }
+      if (window.sodaJSONObj["dataset_metadata"]?.["sites"]) {
+        delete window.sodaJSONObj["dataset_metadata"]["sites"];
+      }
+      guidedSkipPage("guided-manual-dataset-entity-and-metadata-tab");
+      guidedSkipPage("guided-subjects-metadata-tab");
+      guidedSkipPage("guided-samples-metadata-tab");
+      guidedUnSkipPage("guided-spreadsheet-import-dataset-entity-and-metadata-tab");
+    }
+
+    if (userSelectedAddEntitiesManually) {
+      if (window.sodaJSONObj["entity-addition-method"] === "spreadsheet") {
+        const existingSubjects = getExistingSubjects();
+        if (existingSubjects.length > 0) {
+          const confirmChange = await swalConfirmAction(
+            null,
+            "Confirm Change in Entity Addition Method",
+            "You have already imported subjects via spreadsheet. If you switch to adding entities manually, your imported subjects will be removed. Are you sure you want to switch to manual addition?",
+            "Yes, switch to manual addition",
+            "No, keep spreadsheet import"
+          );
+          if (!confirmChange) {
+            errorArray.push({
+              type: "notyf",
+              message:
+                "Please revert to indicating that you want to add entities via spreadsheet before continuing.",
+            });
+            throw errorArray;
+          }
+
+          // Get all subject IDs before deletion and store in a copy to avoid issues with store updates during iteration
+          const subjectIDsToDelete = getExistingSubjects().map((s) => s.id);
+
+          // Delete all subjects
+          subjectIDsToDelete.forEach((id) => {
+            deleteSubject(id);
+          });
+        }
+      }
+
+      // Delete the imported metadata file paths from the progress file because they will no longer be relevant
+      if (window.sodaJSONObj["imported-metadata-file-paths"]) {
+        delete window.sodaJSONObj["imported-metadata-file-paths"];
+      }
+      guidedSkipPage("guided-spreadsheet-import-dataset-entity-and-metadata-tab");
+      guidedUnSkipPage("guided-subjects-metadata-tab");
+      guidedUnSkipPage("guided-samples-metadata-tab");
+      guidedUnSkipPage("guided-manual-dataset-entity-and-metadata-tab");
+    }
+
+    // Save the user's selection for how they want to add entities to the dataset in the progress file
+    window.sodaJSONObj["entity-addition-method"] = userSelectedAddEntitiesFromSpreadsheet
+      ? "spreadsheet"
+      : "manual";
   }
 
   if (pageBeingLeftID === "guided-dataset-structure-and-manifest-review-tab") {

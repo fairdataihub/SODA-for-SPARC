@@ -8,7 +8,10 @@ import { checkIfDatasetExistsOnPennsieve } from "../pennsieveUtils";
 import { successCheck, errorMark } from "../../../assets/lotties/lotties";
 import { guidedGetDatasetName, guidedGetDatasetId } from "../utils/sodaJSONObj";
 import { getExistingSubjects } from "../../../stores/slices/datasetEntityStructureSlice";
-import { createStandardizedDatasetStructure } from "../../utils/datasetStructure";
+import {
+  createStandardizedDatasetStructure,
+  addImportedMetadataFilesToStructure,
+} from "../../utils/datasetStructure";
 import api from "../../others/api/api";
 
 import { guidedResetLocalGenerationUI } from "../guided-curate-dataset";
@@ -67,6 +70,8 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       window.datasetStructureJSONObj,
       window.sodaJSONObj["dataset-entity-obj"]
     );
+    // Add imported metadata files to the structure
+    addImportedMetadataFilesToStructure(standardizedDatasetStructure);
     window.sodaJSONObj["soda_json_structure"] = standardizedDatasetStructure;
 
     // Code that runs after a successful upload to Pennsieve (whether initial upload or retry)
@@ -720,8 +725,14 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
       window.datasetStructureJSONObj,
       window.sodaJSONObj["dataset-entity-obj"]
     );
+    // Add imported metadata files to the structure
+    addImportedMetadataFilesToStructure(standardizedDatasetStructure);
+
+    // Create a copy of the dataset structure to avoid modifying the original
+    const datasetStructureCopy = JSON.parse(JSON.stringify(window.sodaJSONObj));
     // Set the standardized dataset structure in the global SODA JSON object (used on the backend)
-    window.sodaJSONObj["soda_json_structure"] = standardizedDatasetStructure;
+    datasetStructureCopy["soda_json_structure"] = standardizedDatasetStructure;
+    datasetStructureCopy["dataset-structure"] = standardizedDatasetStructure;
 
     // Prepare progress UI
     setGuidedProgressBarValue("local", 0);
@@ -736,7 +747,7 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
     // Get dataset size
     const localDatasetSizeReq = await client.post(
       "/curate_datasets/dataset_size",
-      { soda_json_structure: window.sodaJSONObj },
+      { soda_json_structure: datasetStructureCopy },
       { timeout: 0 }
     );
     const localDatasetSizeInBytes = localDatasetSizeReq.data.dataset_size;
@@ -750,8 +761,7 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
     }
 
     // Copy and prepare SODA object
-    const sodaJSONObjCopy = JSON.parse(JSON.stringify(window.sodaJSONObj));
-    sodaJSONObjCopy["generate-dataset"] = {
+    datasetStructureCopy["generate-dataset"] = {
       "dataset-name": sanitizedDatasetName,
       destination: "local",
       "generate-option": "new",
@@ -759,10 +769,10 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
       path: filePath,
     };
 
-    // Remove unnecessary key from sodaJSONObjCopy since we don't need to
+    // Remove unnecessary key from datasetStructureCopy since we don't need to
     // check if the account details are valid during local generation
-    delete sodaJSONObjCopy["ps-account-selected"];
-    delete sodaJSONObjCopy["ps-dataset-selected"];
+    delete datasetStructureCopy["ps-account-selected"];
+    delete datasetStructureCopy["ps-dataset-selected"];
 
     updateDatasetUploadProgressTable("local", {
       "Current action": "Preparing dataset for local generation",
@@ -772,7 +782,7 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
     client
       .post(
         "/curate_datasets/curation",
-        { soda_json_structure: sodaJSONObjCopy, resume: false },
+        { soda_json_structure: datasetStructureCopy, resume: false },
         { timeout: 0 }
       )
       .catch(async (error) => {

@@ -179,7 +179,6 @@ window.addManifestDetailsToDatasetStructure = async (
                 location: "local",
                 extension: metadata.extension,
                 path: metadata.path,
-                extension: metadata.extension,
               };
             }
 

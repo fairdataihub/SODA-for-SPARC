@@ -10,6 +10,7 @@ export const datasetContentSelectorSlice = (set, get) => ({
   currentSelectedHierarchyEntityParentSubject: null,
   currentSelectedHierarchyEntityParentSample: null,
   selectedDataCategoriesByEntityType: {},
+  importedMetadataFilePaths: {}, // Tracks file paths for imported metadata files by entity type
 });
 
 export const setSelectedDataCategoriesByEntityType = (selectedDataCategoriesByEntityType) => {
@@ -141,4 +142,28 @@ export const setCurrentSelectedHierarchyEntityParentSample = (sampleId) => {
   useGlobalStore.setState({
     currentSelectedHierarchyEntityParentSample: sampleId,
   });
+};
+
+export const setImportedMetadataFilePath = (entityType, filePath) => {
+  const currentPaths = useGlobalStore.getState().importedMetadataFilePaths || {};
+  useGlobalStore.setState({
+    importedMetadataFilePaths: {
+      ...currentPaths,
+      [entityType]: filePath,
+    },
+  });
+};
+
+export const clearImportedMetadataFilePath = (entityType) => {
+  const currentPaths = useGlobalStore.getState().importedMetadataFilePaths || {};
+  const updatedPaths = { ...currentPaths };
+  delete updatedPaths[entityType];
+  useGlobalStore.setState({
+    importedMetadataFilePaths: updatedPaths,
+  });
+};
+
+export const getImportedMetadataFilePath = (entityType) => {
+  const paths = useGlobalStore.getState().importedMetadataFilePaths || {};
+  return paths[entityType] || null;
 };

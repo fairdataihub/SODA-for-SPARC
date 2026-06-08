@@ -5,6 +5,7 @@
   align-items: center;
   max-height: 300px;
   overflow-y: auto;
+  overflow-x: auto;
   margin-bottom: 5px;
   border: 2px solid var(--color-soda-primary);
   margin-top: 5px;
