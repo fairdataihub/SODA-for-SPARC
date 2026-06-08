@@ -1307,6 +1307,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Unshare with the Curation team
   - If you have already shared your dataset with the Curation team, you can now remove it from this state with a click of just one button
 - Unshare with the SPARC Consortium
+
   - If you have already shared your dataset with the SPARC consortium, you can now remove it from this state with a click of just one button
 
 - Search dropdowns:
