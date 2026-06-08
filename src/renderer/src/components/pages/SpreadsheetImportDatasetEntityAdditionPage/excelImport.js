@@ -24,8 +24,6 @@ export const handleEntityFileImport = async (entityType) => {
     "open-file-dialog-import-metadata-file"
   );
 
-  console.log("Selected file paths:", filePaths);
-
   if (!filePaths?.length) {
     window.notyf.open({
       type: "error",
@@ -35,7 +33,6 @@ export const handleEntityFileImport = async (entityType) => {
   }
 
   const filePath = filePaths[0];
-  console.log("filePath to import:", filePath);
 
   const config = entityConfigs[entityType];
   if (!config) {

@@ -72,9 +72,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     );
     // Add imported metadata files to the structure
     addImportedMetadataFilesToStructure(standardizedDatasetStructure);
-    console.log("standardizedDatasetStructure", standardizedDatasetStructure);
     window.sodaJSONObj["soda_json_structure"] = standardizedDatasetStructure;
-    console.log("Standardized dataset structure created", { standardizedDatasetStructure });
 
     // Code that runs after a successful upload to Pennsieve (whether initial upload or retry)
     const finalizeUpload = async (data) => {
@@ -141,10 +139,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       window.sodaJSONObj["ps-dataset-selected"] = { "dataset-name": pennsieveDatasetName };
       window.sodaJSONObj["ps-account-selected"] = { "account-name": window.defaultBfAccount };
       window.sodaJSONObj["dataset-structure"] = standardizedDatasetStructure;
-      console.log(
-        'window.sodaJSONObj["dataset-structure"]',
-        window.sodaJSONObj["dataset-structure"]
-      );
 
       // --- Dataset state detection ---
       const pennsieveDatasetId = window.sodaJSONObj?.["digital-metadata"]?.["pennsieve-dataset-id"];
@@ -733,15 +727,12 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
     );
     // Add imported metadata files to the structure
     addImportedMetadataFilesToStructure(standardizedDatasetStructure);
-    console.log("Standardized dataset structure created for local generation", {
-      standardizedDatasetStructure,
-    });
+
     // Create a copy of the dataset structure to avoid modifying the original
     const datasetStructureCopy = JSON.parse(JSON.stringify(window.sodaJSONObj));
     // Set the standardized dataset structure in the global SODA JSON object (used on the backend)
     datasetStructureCopy["soda_json_structure"] = standardizedDatasetStructure;
     datasetStructureCopy["dataset-structure"] = standardizedDatasetStructure;
-    console.log("dataset structure being sent to backend:", standardizedDatasetStructure);
 
     // Prepare progress UI
     setGuidedProgressBarValue("local", 0);

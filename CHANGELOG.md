@@ -5,6 +5,12 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v 18.1.0 - 2026-06-08
+
+## Feature Additions:
+
+- Released a new feature allowing users import entities and metadata from the "subjects.xlsx', 'samples.xlsx', and 'sites.xlsx' files.
+
 ## v 18.0.0 - 2026-04-27
 
 ## Feature Additions:
@@ -1301,7 +1307,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Unshare with the Curation team
   - If you have already shared your dataset with the Curation team, you can now remove it from this state with a click of just one button
 - Unshare with the SPARC Consortium
-
   - If you have already shared your dataset with the SPARC consortium, you can now remove it from this state with a click of just one button
 
 - Search dropdowns:
