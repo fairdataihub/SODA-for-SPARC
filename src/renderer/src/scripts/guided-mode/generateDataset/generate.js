@@ -119,8 +119,41 @@ const subscribe = async (datasetId) => {
 let psGenerateTimer = null;
 
 const trackUpload = (status) => {
-  console.log("Calling trackUpload");
+  console.log("**********************Calling trackUpload************************");
   let curationMode = window.sodaJSONObj["curation-mode"];
+
+  console.log(`Files:`);
+  console.log(`${curationMode}`);
+  console.log(
+    `${
+      curationMode == "free-form"
+        ? kombuchaEnums.Category.PREPARE_DATASETS
+        : kombuchaEnums.Category.GUIDED_MODE
+    },`
+  );
+  console.log(`${status}`);
+  console.log(
+    `${
+      window.sodaJSONObj["upload-progress"]
+        ? window.sodaJSONObj["upload-progress"]["number-of-files"]
+        : 0
+    }`
+  );
+  console.log(`${window.sodaJSONObj["generate-dataset"]["dataset-name"]}`);
+  console.log(
+    `${
+      window.sodaJSONObj["upload-progress"]
+        ? window.sodaJSONObj["upload-progress"]["dataset-id"]
+        : "None"
+    }`
+  );
+  console.log(
+    `${
+      window.sodaJSONObj["upload-progress"]
+        ? window.sodaJSONObj["upload-progress"]["current-stage"]
+        : "None"
+    }`
+  );
 
   window.electron.ipcRenderer.send(
     "track-kombucha",
@@ -168,6 +201,38 @@ const trackUpload = (status) => {
         ? window.sodaJSONObj["upload-progress"]["current-stage"]
         : "None"
     )
+  );
+
+  console.log(`Size:`);
+  console.log(
+    `${
+      curationMode == "free-form"
+        ? kombuchaEnums.Category.PREPARE_DATASETS
+        : kombuchaEnums.Category.GUIDED_MODE
+    },`
+  );
+  console.log(`${status}`);
+  console.log(
+    `${
+      window.sodaJSONObj["upload-progress"]
+        ? window.sodaJSONObj["upload-progress"]["size-of-dataset"]
+        : 0
+    }`
+  );
+  console.log(`${window.sodaJSONObj["generate-dataset"]["dataset-name"]}`);
+  console.log(
+    `${
+      window.sodaJSONObj["upload-progress"]
+        ? window.sodaJSONObj["upload-progress"]["dataset-id"]
+        : "None"
+    }`
+  );
+  console.log(
+    `${
+      window.sodaJSONObj["upload-progress"]
+        ? window.sodaJSONObj["upload-progress"]["current-stage"]
+        : "None"
+    }`
   );
 
   console.log("Track upload finished");
