@@ -469,7 +469,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     // START SESSION AND TRACKING
     datasetUploadSession.startSession();
     trackPennsieveDatasetGenerationProgress(standardizedDatasetStructure).catch((err) => {
-      console.error("[Pennsieve Progress] Unhandled error in progress monitor:", err);
+      clientError(err);
     });
 
     if (!window.sodaJSONObj["upload-progress"]) {
@@ -605,6 +605,7 @@ const uploadPennsieveMetadata = async (
 
 let progressMonitorLock = false;
 // Track the status of Pennsieve dataset upload
+// NOTE: In general this functions as such during an upload: 1). if server dies restart and do not throw an error, 2). If an error occurs throw so error is logged, and stop polling
 const trackPennsieveDatasetGenerationProgress = async () => {
   if (progressMonitorLock) return;
   window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
