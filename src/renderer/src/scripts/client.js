@@ -4,6 +4,7 @@ window.log.info("Requesting the port");
 window.port = await window.electron.ipcRenderer.invoke("get-port");
 window.log.info("Port is: " + window.port);
 
+// Port is determined in startup code in src/main/index.js
 let client = axios.create({
   baseURL: `http://127.0.0.1:${window.port}`,
   timeout: 300000,
