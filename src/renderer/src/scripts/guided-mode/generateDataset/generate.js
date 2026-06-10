@@ -486,6 +486,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
 
     // STAGE 1: Create Manifest File + Upload Data
     if (window.sodaJSONObj["upload-progress"]["current-stage"] == "setup") {
+      trackUpload(kombuchaEnums.Status.SUCCESS);
       await prepareUploadObj();
       let uploadData = await createUploadData();
       // wait for progress bar to show success message before continuing
@@ -500,7 +501,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         status: !uploadData["manifest_id"] ? "setup" : "in progress",
       };
       await guidedSaveProgress();
-      trackUpload(kombuchaEnums.Status.SUCCESS);
     }
 
     // STAGE 2: Upload Using Agent + Subscribe for Progress
