@@ -524,14 +524,12 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       await renameFiles();
       window.sodaJSONObj["upload-progress"]["status"] = "complete";
       await guidedSaveProgress();
-      trackUpload(kombuchaEnums.Status.SUCCESS);
       await window.wait(2000);
+      trackUpload(kombuchaEnums.Status.SUCCESS);
     }
 
     window.sodaJSONObj["upload-progress"]["current-stage"] = "complete";
     delete window.sodaJSONObj["upload-progress"]["status"];
-
-    trackUpload(kombuchaEnums.Status.SUCCESS);
 
     // STAGE 4: (Optional) VERIFY FILES otherwise just click save & exit
     showVerifyFiles();
