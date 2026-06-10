@@ -29,10 +29,8 @@ while (!window.baseHtmlLoaded) {
 let restartServerLock = false;
 const restartServer = async (caller) => {
   if (restartServerLock) {
-    console.log("Hit restart server lock and will return. Caller: ", caller);
     return;
   }
-  console.log("Passed restart server lock and will restart server. Caller: ", caller);
 
   restartServerLock = true;
 
