@@ -45,7 +45,7 @@ export const swalShowLoading = (title, text) => {
     showCloseButton: false,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
-    width: 800,
+    width: 1200,
     didOpen: () => {
       Swal.showLoading();
     },
@@ -60,7 +60,7 @@ export const swalShowError = async (title, errorText) => {
     title: title,
     html: `<div class="swal-scroll-box">${errorText}</div>`,
     icon: "error",
-    width: 800,
+    width: 1200,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     showConfirmButton: true,
@@ -75,7 +75,7 @@ export const swalShowInfo = async (title, infoText) => {
     title: title,
     html: infoText,
     icon: "info",
-    width: 800,
+    width: 1200,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     showConfirmButton: true,
@@ -97,7 +97,7 @@ export const swalListSingleAction = async (fileList, title, helpText, postAction
       </div>
       ${postActionText ? `<b>${postActionText}</b>` : ""}
     `,
-    width: 800,
+    width: 1200,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     allowOutsideClick: false,
@@ -121,7 +121,7 @@ export const swalListDisplayOnly = async (fileList, title, helpText, postActionT
       </div>
       ${postActionText ? `<b>${postActionText}</b>` : ""}
     `,
-    width: 800,
+    width: 1200,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     allowOutsideClick: false,
@@ -157,7 +157,7 @@ export const swalListDoubleAction = async (
       </div>
       ${confirmationText ? `<b>${confirmationText}</b>` : ""}
     `,
-    width: 800,
+    width: 1200,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     allowOutsideClick: false,
@@ -192,7 +192,7 @@ export const swalListTripleAction = async (
       </div>
       <b>${confirmationText}</b>
     `,
-    width: 800,
+    width: 1200,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     allowOutsideClick: false,
@@ -223,7 +223,7 @@ export const swalConfirmAction = async (icon, title, html, confirmButtonText, ca
     icon: icon,
     title: title,
     html: html,
-    width: 800,
+    width: 1200,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     allowOutsideClick: false,
@@ -243,7 +243,7 @@ export const swalShowSuccess = async (title, successText) => {
     title: title,
     html: successText,
     icon: "success",
-    width: 800,
+    width: 1200,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     showConfirmButton: true,
