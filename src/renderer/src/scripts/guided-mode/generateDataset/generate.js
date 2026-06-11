@@ -173,7 +173,8 @@ const trackUpload = (status) => {
         : "None",
       window.sodaJSONObj["upload-progress"]
         ? window.sodaJSONObj["upload-progress"]["current-stage"]
-        : "None"
+        : "None",
+      datasetUploadSession.id
     )
   );
 
@@ -197,7 +198,8 @@ const trackUpload = (status) => {
         : "None",
       window.sodaJSONObj["upload-progress"]
         ? window.sodaJSONObj["upload-progress"]["current-stage"]
-        : "None"
+        : "None",
+      datasetUploadSession.id
     )
   );
 
@@ -251,6 +253,11 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
   psGenerateTimer = psGenerateTimer || Date.now();
 
   try {
+    // groups analytics calls into a session. New session is created when user starts new dataset or exits progress file and resumes at later date
+    if (!datasetUploadSession.id) {
+      datasetUploadSession.startSession();
+    }
+
     const pennsieveDatasetName = window.sodaJSONObj["generate-dataset"]["dataset-name"];
 
     // Create standardized dataset structure and store globally
@@ -464,8 +471,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       );
     }
 
-    // START SESSION AND TRACKING
-    datasetUploadSession.startSession();
     trackPennsieveDatasetGenerationProgress(standardizedDatasetStructure).catch((err) => {
       clientError(err);
     });
@@ -484,9 +489,9 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
 
     // STAGE 1: Create Manifest File + Upload Data
     if (window.sodaJSONObj["upload-progress"]["current-stage"] == "setup") {
-      trackUpload(kombuchaEnums.Status.SUCCESS);
       await prepareUploadObj();
       let uploadData = await createUploadData();
+      trackUpload(kombuchaEnums.Status.SUCCESS);
       // wait for progress bar to show success message before continuing
       await window.wait(2000);
       window.sodaJSONObj["upload-progress"] = {
@@ -504,6 +509,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     // STAGE 2: Upload Using Agent + Subscribe for Progress
     if (window.sodaJSONObj["upload-progress"]["current-stage"] == "upload") {
       let origin_manifest_id = await performUpload();
+      trackUpload(kombuchaEnums.Status.SUCCESS);
       window.sodaJSONObj["upload-progress"]["status"] = "complete";
       // small wait for progress bar to show 100 before resetting for any next stage
       await window.wait(2000);
@@ -513,24 +519,27 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
           : "complete";
       window.sodaJSONObj["upload-progress"]["origin-manifest-id"] = origin_manifest_id;
       await guidedSaveProgress();
-      trackUpload(kombuchaEnums.Status.SUCCESS);
     }
 
     // STAGE 3: RENAME FILES
     if (window.sodaJSONObj["upload-progress"]["current-stage"] == "rename") {
       window.sodaJSONObj["upload-progress"]["status"] = "setup";
       await renameFiles();
+      trackUpload(kombuchaEnums.Status.SUCCESS);
       window.sodaJSONObj["upload-progress"]["status"] = "complete";
       await guidedSaveProgress();
       await window.wait(2000);
-      trackUpload(kombuchaEnums.Status.SUCCESS);
     }
 
     window.sodaJSONObj["upload-progress"]["current-stage"] = "complete";
     delete window.sodaJSONObj["upload-progress"]["status"];
 
+    trackUpload(kombuchaEnums.Status.SUCCESS);
+
     // STAGE 4: (Optional) VERIFY FILES otherwise just click save & exit
     showVerifyFiles();
+
+    datasetUploadSession.endSession();
 
     // Display UI Exit Buttons
     $("#guided-next-button").css("visibility", "visible");
@@ -655,8 +664,6 @@ const trackPennsieveDatasetGenerationProgress = async () => {
         mainGeneratedDatasetSize,
         bytesPerFile,
       } = await fetchProgressData();
-
-      logProgressToAnalyticsGM(uploadedFiles, mainGeneratedDatasetSize);
 
       if (Number.isInteger(uploadedFiles) && uploadedFiles > 0) {
         if (!window.sodaJSONObj["at-least-one-file-uploaded-to-pennsieve"]) {
@@ -798,8 +805,6 @@ const trackPennsieveDatasetGenerationProgress = async () => {
           Status: "Dataset upload failed",
           "Error message": message,
         });
-        // fix: Log on fail case what was actually pushed up to Pennsieve
-        logProgressPostUpload(uploadedFiles, mainTotalGenerateDatasetSize);
         let supplementaryChecks = false;
         automaticRetry(supplementaryChecks, message);
         break;
@@ -879,6 +884,7 @@ const automaticRetry = async (supplementaryChecks = false, errorMessage = "") =>
     if (!res.isConfirmed) {
       psGenerateTimer = null;
       transitionFromGuidedModeToHome();
+      datasetUploadSession.endSession();
       return;
     }
     supplementaryChecks = await window.run_pre_flight_checks(
@@ -1260,7 +1266,15 @@ const trackLocalDatasetGenerationProgress = async (standardizedDatasetStructure)
   }
 };
 
-const createEventData = (value, destination, origin, dataset_name, dataset_id, stage) => {
+const createEventData = (
+  value,
+  destination,
+  origin,
+  dataset_name,
+  dataset_id,
+  stage,
+  sessionId
+) => {
   if (destination === "Pennsieve") {
     return {
       value: value,
@@ -1270,6 +1284,7 @@ const createEventData = (value, destination, origin, dataset_name, dataset_id, s
       destination: destination,
       dataset_int_id: window.sodaJSONObj["digital-metadata"]["pennsieve-int-id"],
       stage: stage,
+      sessionId,
     };
   }
 
@@ -1280,106 +1295,6 @@ const createEventData = (value, destination, origin, dataset_name, dataset_id, s
     destination: destination,
     stage: stage,
   };
-};
-
-// Used to properly track the Progress of the upload to Pennsieve
-let bytesOnPreviousLogPage = 0;
-let filesOnPreviousLogPage = 0;
-
-const logProgressPostUpload = (files, bytes) => {
-  let fileValueToLog = 0;
-  let fileSizeValueToLog = 0;
-
-  let finalFilesCount = files - filesOnPreviousLogPage;
-  let differenceInBytes = bytes - bytesOnPreviousLogPage;
-
-  if (finalFilesCount <= 0) {
-    // do not log when no progress has been made in the upload w.r.t. the previously logged value of files and bytes
-    return;
-  }
-
-  // update the UI file and byte count vars
-  filesOnPreviousLogPage = finalFilesCount;
-  bytesOnPreviousLogPage = differenceInBytes;
-
-  fileValueToLog = finalFilesCount;
-  fileSizeValueToLog = differenceInBytes;
-
-  // log the file and file size values to analytics
-  if (fileValueToLog > 0) {
-    window.electron.ipcRenderer.send(
-      "track-kombucha",
-      kombuchaEnums.Category.GUIDED_MODE,
-      kombuchaEnums.Action.GENERATE_DATASET,
-      kombuchaEnums.Label.FILES,
-      kombuchaEnums.Status.SUCCESS,
-      createEventData(
-        fileValueToLog,
-        "Pennsieve",
-        "Local",
-        window.sodaJSONObj["generate-dataset"]["dataset-name"],
-        guidedGetDatasetId(window.sodaJSONObj)
-      )
-    );
-  }
-
-  if (fileSizeValueToLog > 0) {
-    window.electron.ipcRenderer.send(
-      "track-kombucha",
-      kombuchaEnums.Category.GUIDED_MODE,
-      kombuchaEnums.Action.GENERATE_DATASET,
-      kombuchaEnums.Label.SIZE,
-      kombuchaEnums.Status.SUCCESS,
-      createEventData(
-        fileSizeValueToLog,
-        "Pennsieve",
-        "Local",
-        window.sodaJSONObj["generate-dataset"]["dataset-name"],
-        guidedGetDatasetId(window.sodaJSONObj)
-      )
-    );
-  }
-};
-
-const logProgressToAnalyticsGM = (files, bytes) => {
-  // log every 500 files -- will log on success/failure as well so if there are less than 500 files we will log what we uploaded ( all in success case and some of them in failure case )
-  if (files >= filesOnPreviousLogPage + 500) {
-    filesOnPreviousLogPage += 500;
-    window.electron.ipcRenderer.send(
-      "track-kombucha",
-      kombuchaEnums.Category.GUIDED_MODE,
-      kombuchaEnums.Action.GENERATE_DATASET,
-      kombuchaEnums.Label.FILES,
-      kombuchaEnums.Status.SUCCESS,
-      createEventData(
-        500,
-        "Pennsieve",
-        "Local",
-        window.sodaJSONObj["generate-dataset"]["dataset-name"],
-        guidedGetDatasetId(window.sodaJSONObj)
-      )
-    );
-
-    let differenceInBytes = bytes - bytesOnPreviousLogPage;
-    bytesOnPreviousLogPage = bytes;
-
-    if (differenceInBytes > 0) {
-      window.electron.ipcRenderer.send(
-        "track-kombucha",
-        kombuchaEnums.Category.GUIDED_MODE,
-        kombuchaEnums.Action.GENERATE_DATASET,
-        kombuchaEnums.Label.SIZE,
-        kombuchaEnums.Status.SUCCESS,
-        createEventData(
-          differenceInBytes,
-          "Pennsieve",
-          "Local",
-          window.sodaJSONObj["generate-dataset"]["dataset-name"],
-          guidedGetDatasetId(window.sodaJSONObj)
-        )
-      );
-    }
-  }
 };
 
 const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle) => {

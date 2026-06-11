@@ -11,6 +11,9 @@ const datasetUploadSession = {
   startSession: function () {
     this.id = uuid();
   },
+  endSession: function () {
+    this.id = null;
+  },
 };
 
 export default datasetUploadSession;
