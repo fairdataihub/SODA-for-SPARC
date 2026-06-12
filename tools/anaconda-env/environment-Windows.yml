@@ -7,7 +7,7 @@ dependencies:
   - ca-certificates=2023.08.22
   - expat=2.5.0
   - libffi=3.4.4
-  - nodejs=20.8.0
+  - nodejs>=20.9.0
   - openssl=1.1.1w
   - pip=23.2.1
   - python=3.9.7
