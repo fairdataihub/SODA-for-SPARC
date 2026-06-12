@@ -219,10 +219,16 @@ export const swalListTripleAction = async (
 };
 
 export const swalConfirmAction = async (icon, title, html, confirmButtonText, cancelButtonText) => {
+  const formattedHtml = `
+    <div style="text-align: center;">
+      ${html}
+    </div>
+  `;
+
   const { value: action } = await Swal.fire({
     icon: icon,
     title: title,
-    html: html,
+    html: formattedHtml,
     width: 800,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",

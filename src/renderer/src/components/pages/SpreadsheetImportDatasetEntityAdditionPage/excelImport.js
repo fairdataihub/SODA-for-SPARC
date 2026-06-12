@@ -88,19 +88,11 @@ export const handleEntityFileImport = async (entityType) => {
     console.error(`Error importing ${entityType}:`, error);
 
     // Ask if user would like to open the file
-    const result = await Swal.fire({
-      icon: "question",
-      title: "",
-      html: "Would you like SODA to open the file for you?",
-      showCancelButton: true,
-      confirmButtonText: "Open File",
-      cancelButtonText: "Dismiss",
-      confirmButtonColor: "#0066cc",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-    });
+    const fileName = window.path.basename(filePath);
+    const html = `Would you like SODA to open the ${entityType} metadata file <br/>(<strong>${fileName}</strong>)<br/>so you can fix the issues?`;
+    const confirmed = await swalConfirmAction("question", "", html, "Open File", "Dismiss");
 
-    if (result.isConfirmed) {
+    if (confirmed) {
       try {
         await window.electron.ipcRenderer.invoke("shell-open-path", filePath);
       } catch (err) {
