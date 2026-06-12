@@ -10,13 +10,17 @@ from os.path import (
 # ensure using pysodafair
 from pysoda.core.dataset_generation import (
     check_empty_files_folders,
-    main_curate_function,
+    create_upload_manifest_pipeline,
     main_curate_function_progress,
     generate_manifest_file_locally,
     generate_manifest_file_data,
     check_json_size,
     clean_json_structure,
     check_server_access_to_files,
+    start_subscriber,
+    rename_files,
+    get_origin_manifest_id,
+    generate_local_dataset
 )
 
 from pysoda.utils import validation_error_message
@@ -130,23 +134,15 @@ class Curation(Resource):
 
 
 
-model_main_curation_function_response = api.model( "MainCurationFunctionResponse", {
-    "main_curate_progress_message": fields.String(description="Progress message from the main curation function"),
-    "main_total_generate_dataset_size": fields.String(description="Total size of the dataset"),
-    "main_curation_uploaded_files": fields.Integer(description="Number of files that are being generated. "), 
-    "local_manifest_id": fields.String(description="ID of the local manifest file created by the Pennsieve Agent for the upload."),
-    "origin_manifest_id": fields.String(description="ID of the manifest file created on Pennsieve for the upload."),
-    "main_curation_total_files": fields.Integer(description="Total number of files in the dataset upload session."),
-})
+
 
 # TODO: Add example JSON structures for upload
 
-@api.route("/curation")
+@api.route("/curation/manifest_file")
 class Curation(Resource):
 
     @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request', 403: 'Forbidden'}, 
-    description="Given a sodajsonobject generate a dataset. Used in the final step of Organize Datasets.")   
-    @api.marshal_with(model_main_curation_function_response)
+    description="Given a sodajsonobject generate a manifest file and information key to the dataset upload such as number of files and total size.")   
     def post(self):
         data = request.get_json()
 
@@ -154,11 +150,7 @@ class Curation(Resource):
             api.abort(400, "Missing parameter: soda_json_structure")
         
 
-        if "resume" not in data:
-            api.abort(400, "Missing parameter: resume")
-
         soda_json_structure = data["soda_json_structure"]
-        resume = data["resume"]
 
         api.logger.info('/curation POST request')
 
@@ -170,7 +162,7 @@ class Curation(Resource):
             api.logger.info("pysodafair version: not found")
 
         try:
-            return main_curate_function(soda_json_structure, resume)
+            return create_upload_manifest_pipeline(soda_json_structure)
         except Exception as e:
             api.logger.exception(e)
             # throws an appropriate error if the error is a pysoda specific error
@@ -194,26 +186,71 @@ class Curation(Resource):
                 api.abort(e.code, e.description)
 
 
+@api.route("/curation/local_dataset")
+class CurationCreateLocalDataset(Resource):
+    @api.doc(responses={500: "There was an internal server error", 400: "Bad Request"}, 
+             description="Create a local dataset")
+    def post(self):
+        data = request.get_json()
+        soda = data["soda"]
+        try:
+            return generate_local_dataset(soda)
+        except Exception as e:
+            api.logger.info("Error message details: ", str(e))
+            api.abort(e.code, str(e))
+            
 
 
+@api.route("/curation/dataset/<string:dataset_id>/origin_manifest")
+class CurationOriginManifest(Resource):
 
+    @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request', 403: 'Forbidden'}, 
+    description="Given a pennsieve dataset id return the latest upload manifest.")   
+    def get(self, dataset_id):
+        return get_origin_manifest_id(dataset_id)
 
-model_curation_progress_response = api.model( "CurationProgressResponse", {
-    "main_curate_status": fields.String(description="Status of the main curation function"),
-    "start_generate": fields.Integer(description="True if the main curation function is running"),
-    "main_curate_progress_message": fields.String(description="Progress message from the main curation function"),
-    "main_total_generate_dataset_size": fields.Integer(description="Total size of the dataset"),
-    "main_generated_dataset_size": fields.Integer(description="Size of the dataset that has been generated thus far"),
-    "elapsed_time_formatted": fields.String(description="Elapsed time of the main curation function"),
-    "total_files_uploaded": fields.Integer(description="Number of files that have been uploaded"),
-    "generated_dataset_id": fields.String(description="Generated dataset ID"),
-    "generated_dataset_int_id": fields.Integer(description="Generated dataset internal ID"),
-})
+@api.route("/curation/files/rename")
+class CurationFilesRename(Resource):
+    @api.doc(responses={500: "There was an internal server error", 400: "Bad Request", 200: "Ok"},
+             description="Given a soda object read the upload-progress list of renamed files and rename them on pennsieve.")
+    def post(self):
+        data = request.get_json()
+
+        soda = data.get("soda")
+
+        if "upload-progress" not in soda:
+            api.abort(400, "Missing parameter: upload-progress")
+        
+        upload_progress = soda["upload-progress"]
+
+        if "list-of-files-to-rename" not in upload_progress:
+            api.abort(400, "Missing parameter: list of files to rename")
+
+        
+        try:
+            rename_files(upload_progress["dataset-id"], upload_progress["list-of-files-to-rename"])
+        except Exception as e:
+             api.abort(e.code, e.description)
+
+        
+
+# model_curation_progress_response = api.model( "CurationProgressResponse", {
+#     "main_curate_status": fields.String(description="Status of the main curation function"),
+#     "start_generate": fields.Integer(description="True if the main curation function is running"),
+#     "main_curate_progress_message": fields.String(description="Progress message from the main curation function"),
+#     "main_total_generate_dataset_size": fields.Integer(description="Total size of the dataset"),
+#     "main_generated_dataset_size": fields.Integer(description="Size of the dataset that has been generated thus far"),
+#     "bytes_per_file_dict": fields
+#     "elapsed_time_formatted": fields.String(description="Elapsed time of the main curation function"),
+#     "total_files_uploaded": fields.Integer(description="Number of files that have been uploaded"),
+#     "generated_dataset_id": fields.String(description="Generated dataset ID"),
+#     "generated_dataset_int_id": fields.Integer(description="Generated dataset internal ID"),
+# })
 
 @api.route("/curation/progress")
 class CurationProgress(Resource):
 
-    @api.marshal_with(model_curation_progress_response, False, 200)
+    # @api.marshal_with(model_curation_progress_response, False, 200)
     @api.doc(responses={500: 'There was an internal server error'}, description="Return important details to the client about the state of the currently running curation function.")
     def get(self):
         try:
@@ -222,7 +259,20 @@ class CurationProgress(Resource):
             api.abort(500, str(e))
 
 
+@api.route("/curation/subscribe")
+class CurationSubscribe(Resource):
+    def post(self):
+        global ps 
+        data = request.get_json()
+        dataset_id = data["dataset_id"]
+        account_name = data["account_name"]
+        bytes_per_file_dict = data["bytes_per_file_dict"]
 
+        try:
+            start_subscriber(dataset_id, account_name, bytes_per_file_dict)
+        except Exception as e:
+            api.abort(500, str(e))
+            
 
 
 

@@ -1,0 +1,1 @@
+hiddenimports = ['ssl', '_ssl']

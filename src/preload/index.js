@@ -401,12 +401,29 @@ if (process.contextIsolated) {
         });
       },
     });
-    contextBridge.exposeInMainWorld("server", {
-      serverIsLive: async () => {
-        const status = await ipcRenderer.invoke("get-server-live-status");
-        return status;
+    contextBridge.exposeInMainWorld("pennsieve", {
+      uploadManifest: (manifestId) => ipcRenderer.invoke("pennsieve:upload-manifest", manifestId),
+
+      onUploadProgress: (callback) => {
+        const handler = (_, data) => callback(data);
+        ipcRenderer.on("pennsieve:upload-progress", handler);
+        // Return cleanup function
+        return () => ipcRenderer.removeListener("pennsieve:upload-progress", handler);
       },
-    });
+    }),
+      contextBridge.exposeInMainWorld("server", {
+        serverIsLive: async () => {
+          const status = await ipcRenderer.invoke("get-server-live-status");
+          return status;
+        },
+        restart: (port) => ipcRenderer.invoke("restart-server", port),
+        onRestartProgress: (callback) => {
+          const handler = (_, data) => callback(data);
+          ipcRenderer.on("restart-server:progress", handler);
+          // Return cleanup function
+          return () => ipcRenderer.removeListener("restart-server:progress", handler);
+        },
+      });
   } catch (error) {
     log.error(error);
   }

@@ -1,0 +1,308 @@
+import { spawn, execFile, spawnSync } from "node:child_process";
+import { existsSync } from "fs";
+import fp from "find-free-port";
+import { ipcMain } from "electron";
+import log from "electron-log/main";
+import { join } from "path";
+import axios from "axios";
+
+global.serverLive = true;
+global.script = null;
+
+const PY_FLASK_DIST_FOLDER = "pyflaskdist";
+const PY_FLASK_FOLDER = "../src/pyflask";
+const PY_FLASK_MODULE = "app";
+const UPLOAD_MODULE_FOLDER = "../src/uploadServer";
+const UPLOAD_MODULE = "uploadApp";
+export let PORT = 4242;
+export const portRange = 100;
+let pyflaskProcess = null;
+let selectedPort = null;
+
+const selectPort = () => {
+  return PORT;
+};
+
+/**
+ * Determine if the application is running from a packaged version or from a dev version.
+ * The resources path is used for Linux and Mac builds and the app.getAppPath() is used for Windows builds.
+ * @returns {boolean} True if the app is packaged, false if it is running from a dev version.
+ */
+const guessPackaged = () => {
+  const executablePathUnix = join(process.resourcesPath, PY_FLASK_MODULE);
+  const executablePathWindows = join(process.resourcesPath, PY_FLASK_MODULE + ".exe");
+
+  if (existsSync(executablePathUnix) || existsSync(executablePathWindows)) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+/**
+ * Get the system path to the api server script.
+ * The script is located in the resources folder for packaged Linux and Mac builds and in the app.getAppPath() for Windows builds.
+ * It is relative to the main.js file directory when in dev mode.
+ * @returns {string} The path to the api server script that needs to be executed to start the Python server
+ */
+const getScriptPath = () => {
+  if (!guessPackaged()) {
+    log.info("App is not packaged returning path: ");
+    log.info(join(__dirname, "..", PY_FLASK_FOLDER, PY_FLASK_MODULE + ".py"));
+    return join(__dirname, "..", PY_FLASK_FOLDER, PY_FLASK_MODULE + ".py");
+  }
+  if (process.platform === "win32") {
+    const winPathPyflask = join(process.resourcesPath, PY_FLASK_MODULE + ".exe");
+    log.info("App is packaged [Windows]; Path to server executable: " + winPathPyflask);
+    return winPathPyflask;
+  } else {
+    const unixPath = join(process.resourcesPath, PY_FLASK_MODULE);
+    log.info("App is packaged [ Unix ]; Path to server executable: " + unixPath);
+    return unixPath;
+  }
+};
+
+const killAllPreviousProcesses = async () => {
+  // kill all previous python processes that could be running.
+  let promisesArray = [];
+  let endRange = PORT + portRange;
+  // create a loop of 100
+  for (let currentPort = PORT; currentPort <= endRange; currentPort++) {
+    promisesArray.push(
+      axios.get(`http://127.0.0.1:${currentPort}/sodaforsparc_server_shutdown`, {})
+    );
+  }
+  // wait for all the promises to resolve
+  await Promise.allSettled(promisesArray);
+};
+
+export const createPyProc = async () => {
+  let script = getScriptPath();
+  global.script = script;
+  log.info(`Path to server executable: ${script}`);
+  let port = "" + selectPort();
+  try {
+    await killAllPreviousProcesses();
+  } catch (e) {}
+  if (existsSync(script)) {
+    log.info("Server exists at specified location", script);
+  } else {
+    log.info("Server doesn't exist at specified location");
+  }
+
+  fp(PORT, PORT + portRange)
+    .then(([freePort]) => {
+      let port = freePort;
+      if (guessPackaged()) {
+        log.info("Application is packaged");
+        // Store the stdout and stederr in a string to log later
+        let sessionServerOutput = "";
+        log.info(`Starting server on port ${port}`);
+        pyflaskProcess = execFile(script, [port], (error, stdout, stderr) => {
+          if (error) {
+            console.error(error);
+            log.error(error);
+            // console.error(stderr)
+            // throw error;
+          }
+        });
+        // log the stdout and stderr
+        pyflaskProcess.stdout.on("data", (data) => {
+          const logOutput = `[pyflaskProcess output] ${data.toString()}`;
+          sessionServerOutput += `${logOutput}`;
+        });
+        pyflaskProcess.stderr.on("data", (data) => {
+          const logOutput = `[pyflaskProcess stderr] ${data.toString()}`;
+          sessionServerOutput += `${logOutput}`;
+          global.serverLive = false;
+        });
+        // On close, log the outputs and the exit code
+        pyflaskProcess.on("close", (code) => {
+          log.info(`child process exited with code ${code}`);
+          log.info("Server output during session found below:");
+          log.info(sessionServerOutput);
+          global.serverLive = false;
+        });
+        // Event listener for when the process exits
+        pyflaskProcess.on("exit", (code, signal) => {
+          if (signal) {
+            log.info(`Process was killed by signal: ${signal}`);
+            global.serverLive = false;
+          } else if (code !== 0) {
+            log.info(`Process exited with error code: ${code}`);
+            global.serverLive = false;
+          } else {
+            log.info("Process exited successfully");
+            global.serverLive = false;
+          }
+        });
+      } else {
+        log.info("Application is not packaged");
+        // update code here
+        pyflaskProcess = spawn("python", [script, port], {
+          stdio: "ignore",
+        });
+
+        pyflaskProcess.on("data", function () {});
+
+        pyflaskProcess.on("error", function (err) {
+          console.error("Failed to start pyflaskProcess:", err);
+          global.serverLive = false;
+        });
+
+        pyflaskProcess.on("close", function (err) {
+          console.error("Failed to start pyflaskProcess:", err);
+          global.serverLive = false;
+        });
+
+        // Event listener for when the process exits
+        pyflaskProcess.on("exit", (code, signal) => {
+          if (signal) {
+            global.serverLive = false;
+
+            log.info(`Process was killed by signal: ${signal}`);
+          } else if (code !== 0) {
+            global.serverLive = false;
+
+            log.info(`Process exited with error code: ${code}`);
+          } else {
+            global.serverLive = false;
+
+            log.info("Process exited successfully");
+          }
+        });
+      }
+      if (pyflaskProcess != null) {
+        log.info("child process success on port " + port);
+      } else {
+        console.error("child process failed to start on port" + port);
+      }
+      selectedPort = port;
+    })
+    .catch((err) => {
+      log.error("Error starting the python server");
+      log.error(err);
+    });
+
+  if (!guessPackaged()) {
+    return;
+  }
+
+  let sessionServerOutputUpload = "";
+};
+
+export const exitPyProc = async () => {
+  log.info("Killing python server process");
+  // Windows does not properly shut off the python server process. This ensures it is killed.
+  const killPythonProcess = () => {
+    // kill pyproc with command line
+    const cmd = spawnSync("taskkill", ["/pid", pyflaskProcess.pid, "/f", "/t"]);
+  };
+  try {
+    await killAllPreviousProcesses();
+  } catch (e) {}
+  // check if the platform is Windows
+  if (process.platform === "win32") {
+    if (pyflaskProcess != null) {
+      killPythonProcess();
+    }
+    pyflaskProcess = null;
+
+    PORT = null;
+    return;
+  }
+  // kill signal to pyProc
+  try {
+    if (pyflaskProcess != null) {
+      pyflaskProcess.kill();
+      pyflaskProcess = null;
+    }
+  } catch (e) {}
+  PORT = null;
+};
+
+ipcMain.handle("restart-server", (event, port) => {
+  return new Promise((resolve, reject) => {
+    let serverReady = false;
+    let scriptPath = getScriptPath();
+    log.info(`Server relaunch attempt at ${scriptPath}`);
+
+    if (!guessPackaged()) {
+      log.info(`Server relaunch not packaged`);
+
+      pyflaskProcess = spawn("python", [scriptPath, port], {
+        stdio: ["ignore", "pipe", "pipe"],
+      });
+    } else {
+      log.info(`Server relaunch packaged`);
+      pyflaskProcess = spawn(scriptPath, [port], {
+        stdio: ["ignore", "pipe", "pipe"],
+        shell: false,
+        windowsHide: true,
+      });
+    }
+
+    const READY_MESSAGE = ["running on"]; // <-- Change this to match your server's ready output
+
+    pyflaskProcess.stdout.on("data", (data) => {
+      log.info(`stdout data check: ${data.toString()}`);
+
+      const output = data.toString();
+      const logOutput = `[pyflaskProcess output] ${output}`;
+      event.sender.send("restart-server:progress", logOutput);
+      let serverStarted = false;
+      for (const msg of READY_MESSAGE) {
+        if (output.toLowerCase().includes(msg)) serverStarted = true;
+      }
+
+      if (!serverReady && serverStarted) {
+        log.info("About to resolve");
+
+        serverReady = true;
+        global.serverLive = true;
+        resolve("Server is live");
+      }
+    });
+
+    pyflaskProcess.stderr.on("data", (data) => {
+      log.info(`stderr data check: ${data.toString()}`);
+      const output = data.toString();
+      const logOutput = `[pyflaskProcess stderr] ${output}`;
+      event.sender.send("restart-server:progress", logOutput);
+
+      // Flask/Werkzeug writes to stderr and stdout
+      let serverStarted = false;
+      for (const msg of READY_MESSAGE) {
+        if (output.toLowerCase().includes(msg)) serverStarted = true;
+      }
+      if (!serverReady && serverStarted) {
+        log.info("About to resolve");
+        serverReady = true;
+        global.serverLive = true;
+        resolve("Server is live");
+      }
+    });
+
+    pyflaskProcess.on("exit", (code, signal) => {
+      log.info("exit data check");
+      global.serverLive = false;
+      if (!serverReady) {
+        if (signal) {
+          log.info(`Process was killed by signal: ${signal}`);
+          reject(new Error(`child process killed with signal ${signal}`));
+        } else if (code !== 0) {
+          log.info(`Process exited with error code: ${code}`);
+          reject(new Error(`Process exited with error code: ${code}`));
+        }
+      } else {
+        log.info("Process exited successfully");
+        // Already resolved if serverReady
+      }
+    });
+  });
+});
+
+ipcMain.handle("get-port", () => {
+  log.info("Renderer requested port: " + selectedPort);
+  return selectedPort;
+});
