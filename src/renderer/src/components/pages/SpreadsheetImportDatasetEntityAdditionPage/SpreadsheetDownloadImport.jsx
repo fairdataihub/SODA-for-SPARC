@@ -11,14 +11,22 @@ import {
   Alert,
   Progress,
   Divider,
+  Collapse,
 } from "@mantine/core";
 import {
   IconCheck,
   IconUpload,
   IconFileSpreadsheet,
   IconDownload,
-  IconAlertCircle,
+  IconArrowForwardUp,
+  IconChevronDown,
 } from "@tabler/icons-react";
+import { useState } from "react";
+import {
+  getExistingSubjects,
+  getExistingSamples,
+  getExistingSites,
+} from "../../../stores/slices/datasetEntityStructureSlice";
 import { handleDownloadTemplate, handleEntityFileImport, entityConfigs } from "./excelImport";
 
 const helperConfig = {
@@ -225,20 +233,84 @@ export const ImportCard = ({ entityType, config, importResult, locked = false })
   );
 };
 
-export const EntityImportCompleteCard = ({ entityType, importResult, onReimport }) => (
-  <Box mt="md">
-    <Paper p="md" radius="md" withBorder bg="green.0">
-      <Group position="apart" align="center">
-        <Group spacing="md">
-          <IconCheck size={20} color="green" />
-          <Text fw={600}>
-            {importResult.imported} {entityType} imported successfully
-          </Text>
-        </Group>
-        <Button variant="light" color="blue" onClick={onReimport}>
-          Re-import {entityType}
-        </Button>
-      </Group>
-    </Paper>
-  </Box>
-);
+export const EntityImportCompleteCard = ({ entityType, importResult, onReimport }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  // Get the entity IDs from the store
+  const getEntityIds = () => {
+    if (entityType === "subjects") {
+      return getExistingSubjects().map((s) => s.id);
+    }
+    if (entityType === "samples") {
+      return getExistingSamples().map((s) => s.id);
+    }
+    if (entityType === "sites") {
+      return getExistingSites().map((s) => s.id);
+    }
+    return [];
+  };
+
+  const entityIds = getEntityIds();
+
+  return (
+    <Box mt="md">
+      <Paper p="md" radius="md" withBorder bg="green.0">
+        <Stack spacing="md">
+          <Group position="apart" align="center">
+            <Group spacing="md">
+              <IconCheck size={20} color="green" />
+              <Text fw={600}>
+                {importResult.imported} {entityType} imported successfully
+              </Text>
+            </Group>
+            <Button
+              leftSection={<IconArrowForwardUp size={16} />}
+              variant="light"
+              color="blue"
+              onClick={onReimport}
+            >
+              Re-import {entityType}
+            </Button>
+          </Group>
+
+          <Button
+            variant="light"
+            color="blue"
+            onClick={() => setIsExpanded(!isExpanded)}
+            rightSection={
+              <IconChevronDown
+                size={16}
+                style={{
+                  transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
+                  transition: "transform 200ms ease",
+                }}
+              />
+            }
+            size="sm"
+          >
+            {isExpanded ? "Hide" : "Show"} {entityType} IDs
+          </Button>
+
+          <Collapse in={isExpanded}>
+            <Box
+              p="xs"
+              bg="white"
+              style={{
+                borderRadius: "4px",
+                border: "1px solid var(--mantine-color-gray-2)",
+                maxHeight: "300px",
+                overflowY: "auto",
+              }}
+            >
+              <List size="sm" spacing="xs">
+                {entityIds.map((id) => (
+                  <List.Item key={id}>{id}</List.Item>
+                ))}
+              </List>
+            </Box>
+          </Collapse>
+        </Stack>
+      </Paper>
+    </Box>
+  );
+};
