@@ -78,7 +78,6 @@ dependencies:
     - zope-interface==6.1
     - backports.tarfile
     - pysodafair
-    - gunicorn
 
     # NOTE: Keep pysodafair and the --extra-index-url line at the bottom of this file.
     # The GitHub Actions build workflow automatically uncomments the extra-index-url line
