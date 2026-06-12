@@ -5,6 +5,18 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v 18.2.0 - 2026-06-15
+
+## Feature Additions:
+
+- SODA supports importing dataset metadata using excel spreadsheets.
+
+## Bug fixes:
+
+- SODA server will not crash when uploading for a long period of time.
+- SODA will not try to rename files if they have not been processed on Pennsieve yet.
+- SODA will not upload duplicate files if upload fails before a file was renamed on Pennsieve.
+
 ## v 18.0.0 - 2026-04-27
 
 ## Feature Additions:
