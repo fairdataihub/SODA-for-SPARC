@@ -86,11 +86,28 @@ export const handleEntityFileImport = async (entityType) => {
     });
   } catch (error) {
     console.error(`Error importing ${entityType}:`, error);
-    window.notyf.open({
-      type: "error",
-      message: `Error importing ${entityType} metadata: ${error.message}`,
-      duration: 8000,
+
+    // Ask if user would like to open the file
+    const result = await Swal.fire({
+      icon: "question",
+      title: "",
+      html: "Would you like SODA to open the file for you?",
+      showCancelButton: true,
+      confirmButtonText: "Open File",
+      cancelButtonText: "Dismiss",
+      confirmButtonColor: "#0066cc",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
     });
+
+    if (result.isConfirmed) {
+      try {
+        await window.electron.ipcRenderer.invoke("shell-open-path", filePath);
+      } catch (err) {
+        window.log?.warn?.("Failed to open file after import error", err.message);
+        console.warn("Failed to open file after import error", err);
+      }
+    }
   }
 };
 

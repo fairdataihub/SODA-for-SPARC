@@ -256,7 +256,7 @@ export const EntityImportCompleteCard = ({ entityType, importResult, onReimport 
     <Box mt="md">
       <Paper p="md" radius="md" withBorder bg="green.0">
         <Stack spacing="md">
-          <Group position="apart" align="center">
+          <Group justify="space-between">
             <Group spacing="md">
               <IconCheck size={20} color="green" />
               <Text fw={600}>
@@ -266,6 +266,7 @@ export const EntityImportCompleteCard = ({ entityType, importResult, onReimport 
             <Button
               leftSection={<IconArrowForwardUp size={16} />}
               variant="light"
+              size="sm"
               color="blue"
               onClick={onReimport}
             >
@@ -276,6 +277,8 @@ export const EntityImportCompleteCard = ({ entityType, importResult, onReimport 
           <Button
             variant="light"
             color="blue"
+            size="sm"
+            mb={0}
             onClick={() => setIsExpanded(!isExpanded)}
             rightSection={
               <IconChevronDown
@@ -286,12 +289,11 @@ export const EntityImportCompleteCard = ({ entityType, importResult, onReimport 
                 }}
               />
             }
-            size="sm"
           >
             {isExpanded ? "Hide" : "Show"} {entityType} IDs
           </Button>
 
-          <Collapse in={isExpanded}>
+          <Collapse in={isExpanded} mt={0}>
             <Box
               p="xs"
               bg="white"
