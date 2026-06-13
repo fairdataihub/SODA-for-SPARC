@@ -1020,7 +1020,11 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
 
     // Start local generation - catch immediate errors (like validation) without blocking
     client
-      .post("/curate_datasets/curation/local_dataset", { soda: sodaJSONObjCopy }, { timeout: 0 })
+      .post(
+        "/curate_datasets/curation/local_dataset",
+        { soda: datasetStructureCopy },
+        { timeout: 0 }
+      )
       .catch(async (error) => {
         clientError(error);
         console.error("Error during local dataset generation:", error);
