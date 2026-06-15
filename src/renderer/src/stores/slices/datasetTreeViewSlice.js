@@ -377,12 +377,11 @@ export const reRenderTreeView = (resetOpenFolders = false) => {
           if (!filePath) continue;
 
           // Extract file name from path
-          const fileName = filePath.split(/[\\/]/).pop() || metadataKey;
-
+          const fileName = metadataKey + ".xlsx";
           datasetRenderArray.push({
             itemType: "metadataFile",
             fileName,
-            relativePath: `metadata/${metadataKey}`,
+            relativePath: `metadata/${fileName}`,
             fileIsSelected: false,
             entitiesAssociatedWithFile: [],
             itemIndent: 0,

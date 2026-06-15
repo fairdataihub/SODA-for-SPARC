@@ -151,13 +151,6 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
                   // Clear the stored file path for this entity type
                   clearImportedMetadataFilePath(entityType);
 
-                  const importedMetadataFilePaths =
-                    window.sodaJSONObj["imported-metadata-file-paths"] || {};
-                  const updatedImportedMetadataFilePaths = { ...importedMetadataFilePaths };
-                  delete updatedImportedMetadataFilePaths[entityType];
-                  window.sodaJSONObj["imported-metadata-file-paths"] =
-                    updatedImportedMetadataFilePaths;
-
                   if (entityType === "subjects") {
                     const existingSubjectIDs = getExistingSubjects().map((s) => s.id);
                     existingSubjectIDs.forEach((id) => {
@@ -166,27 +159,19 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
                     // When subjects are removed, also clear dependent file paths
                     clearImportedMetadataFilePath("samples");
                     clearImportedMetadataFilePath("sites");
-                    delete updatedImportedMetadataFilePaths["samples"];
-                    delete updatedImportedMetadataFilePaths["sites"];
-                  }
-                  if (entityType === "samples") {
+                  } else if (entityType === "samples") {
                     const existingSampleIDs = getExistingSamples().map((s) => s.id);
                     existingSampleIDs.forEach((id) => {
                       deleteSample(id);
                     });
                     // When samples are removed, also clear dependent file paths
                     clearImportedMetadataFilePath("sites");
-                    delete updatedImportedMetadataFilePaths["sites"];
-                  }
-                  if (entityType === "sites") {
+                  } else if (entityType === "sites") {
                     const existingSiteIDs = getExistingSites().map((s) => s.id);
                     existingSiteIDs.forEach((id) => {
                       deleteSite(id);
                     });
                   }
-
-                  window.sodaJSONObj["imported-metadata-file-paths"] =
-                    updatedImportedMetadataFilePaths;
                 }
               }}
             />

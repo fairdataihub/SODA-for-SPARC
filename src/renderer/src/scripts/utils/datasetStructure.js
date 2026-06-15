@@ -362,6 +362,7 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
 };
 
 export const addImportedMetadataFilesToStructure = (datasetStructure) => {
+  console.log("Adding imported metadata files to dataset structure...");
   const entityAdditionMethod = window.sodaJSONObj?.["entity-addition-method"];
   if (entityAdditionMethod === "spreadsheet") {
     const importedMetadataFilePaths = window.sodaJSONObj?.["imported-metadata-file-paths"];
@@ -372,6 +373,7 @@ export const addImportedMetadataFilesToStructure = (datasetStructure) => {
       for (const [metadataKey, filePath] of Object.entries(importedMetadataFilePaths)) {
         if (!filePath) continue;
         const fileName = `${metadataKey}.xlsx`;
+        console.log("File name to add to dataset structure:", fileName);
         datasetStructure.files[fileName] = {
           action: ["new"],
           "additional-metadata": "",
