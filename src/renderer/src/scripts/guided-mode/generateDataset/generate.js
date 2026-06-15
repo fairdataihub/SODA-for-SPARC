@@ -350,9 +350,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
 
       try {
         await window.pennsieve.uploadManifest(manifestId);
-      } catch (err) {
-        console.error("Upload failed:", err.message);
-        throw err;
       } finally {
         removeListener(); // Always clean up the listener
       }
@@ -744,6 +741,12 @@ const trackPennsieveDatasetGenerationProgress = async () => {
         window.sodaJSONObj["upload-progress"]?.["current-stage"] === "rename" &&
         window.sodaJSONObj["upload-progress"]?.["status"] === "in progress"
       ) {
+        // wait until backend total matches rename total -- synchronization
+        if (
+          mainTotalGenerateDatasetSize !=
+          Object.keys(window.sodaJSONObj["upload-progress"]["list-of-files-to-rename"]).length
+        )
+          continue;
         setGuidedProgressBarValue(
           "pennsieve",
           (mainGeneratedDatasetSize / mainTotalGenerateDatasetSize) * 100
