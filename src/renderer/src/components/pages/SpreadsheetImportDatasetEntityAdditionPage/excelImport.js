@@ -2,6 +2,7 @@ import {
   swalListDoubleAction,
   swalListSingleAction,
   swalListDisplayOnly,
+  swalShowInfo,
   swalConfirmAction,
 } from "../../../scripts/utils/swal-utils";
 import Swal from "sweetalert2";
@@ -593,6 +594,7 @@ export const parseExcelToEntityMap = async (filePath, entityType) => {
     const buffer = await window.electron.ipcRenderer.invoke("read-file-buffer", filePath);
 
     if (!buffer) {
+      await swalShowInfo("Import Error", "Failed to read file from disk. Please try again.");
       throw new Error("Failed to read file from disk");
     }
 
@@ -601,6 +603,10 @@ export const parseExcelToEntityMap = async (filePath, entityType) => {
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
 
     if (!worksheet || !worksheet["!ref"]) {
+      await swalShowInfo(
+        `${capitalizedSingularEntityType} Metadata Import Failed`,
+        "The worksheet is empty."
+      );
       throw new Error(
         "The worksheet appears to be empty. Please add metadata rows and import again."
       );
@@ -613,6 +619,10 @@ export const parseExcelToEntityMap = async (filePath, entityType) => {
       );
 
     if (rawData.length === 0) {
+      await swalShowInfo(
+        `${capitalizedSingularEntityType} Metadata Import Failed`,
+        "The worksheet has no metadata entries. Please add metadata rows and import again."
+      );
       throw new Error(
         "The worksheet has no metadata entries. Please add metadata rows and import again."
       );
