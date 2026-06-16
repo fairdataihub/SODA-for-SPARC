@@ -64,9 +64,9 @@ export const contentOptionsMap = {
   },
   Protocol: {
     label:
-      "Does your data include any protocols describing experimental or computational procedures?",
+      "Does your data include protocol files describing experimental or computational procedures?",
     dropDownDescription:
-      "Select yes if your data contains protocol files that describe the methods and procedures used during data collection or analysis.",
+      "Select Yes if your dataset contains documents that describe how experiments were conducted, how samples were processed, or how data was analyzed (e.g., SOPs, methods documents, workflows, or Protocols.io exports).",
     ml: 0,
   },
   Docs: {
