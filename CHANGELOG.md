@@ -17,6 +17,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - SODA will not try to rename files if they have not been processed on Pennsieve yet.
 - SODA will not upload duplicate files if upload fails before a file was renamed on Pennsieve.
 
+
+## v 18.0.1 - 2026-05-08
+
+## Bug fixes:
+
+- Release made to incorporate file-rename bug fix in pysodafair.
+
 ## v 18.0.0 - 2026-04-27
 
 ## Feature Additions:
