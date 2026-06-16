@@ -80,16 +80,7 @@
   "identifier": "https://doi.org/10.5281/zenodo.20723908",
   "isPartOf": "https://fairdataihub.org/",
   "issueTracker": "https://github.com/fairdataihub/SODA-for-SPARC/issues",
-  "keywords": [
-    "SPARC",
-    "FAIR",
-    "data",
-    "curation",
-    "mac",
-    "sparc-dataset",
-    "ubuntu",
-    "windows"
-  ],
+  "keywords": ["SPARC", "FAIR", "data", "curation", "mac", "sparc-dataset", "ubuntu", "windows"],
   "license": "https://spdx.org/licenses/MIT",
   "operatingSystem": [
     "Windows 10",
@@ -98,12 +89,7 @@
     "Windows 11",
     "Ubuntu"
   ],
-  "programmingLanguage": [
-    "JavaScript",
-    "HTML",
-    "Python",
-    "CSS"
-  ],
+  "programmingLanguage": ["JavaScript", "HTML", "Python", "CSS"],
   "referencePublication": "10.5281/zenodo.5565455.svg)",
   "schema:releaseNotes": "## Feature Additions:\n\n- SODA supports importing dataset metadata using excel spreadsheets.\n\n## Bug fixes:\n\n- SODA server will not crash when uploading for a long period of time.\n- SODA will not try to rename files if they have not been processed on Pennsieve yet.\n- SODA will not upload duplicate files if upload fails before a file was renamed on Pennsieve.",
   "version": "18.1.0",
