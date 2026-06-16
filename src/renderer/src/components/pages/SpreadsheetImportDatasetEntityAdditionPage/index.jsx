@@ -16,7 +16,10 @@ import {
   deleteSite,
 } from "../../../stores/slices/datasetEntityStructureSlice";
 import { normalizeEntityId } from "../../../stores/slices/datasetEntityStructureSlice";
-import { clearImportedMetadataFilePath } from "../../../stores/slices/datasetContentSelectorSlice";
+import {
+  clearImportedMetadataFilePath,
+  getOxfordCommaSeparatedListOfEntities,
+} from "../../../stores/slices/datasetContentSelectorSlice";
 import { DownloadCard, ImportCard, EntityImportCompleteCard } from "./SpreadsheetDownloadImport";
 
 const SpreadsheetImportDatasetEntityAdditionPage = () => {
@@ -57,7 +60,7 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
       singular: "subject",
       icon: <IconUser size={24} />,
       color: "blue",
-      description: "Download the template, assign unique IDs, and upload the completed file.",
+      description: "Assign unique IDs and metadata for each subject in your study.",
       dependsOn: [],
       metadataFileName: "subjects.xlsx",
     },
@@ -66,7 +69,7 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
       singular: "sample",
       icon: <IconFlask size={24} />,
       color: "cyan",
-      description: "Link samples to subjects and add metadata.",
+      description: "Connect samples to subjects and provide sample metadata.",
       dependsOn: ["subjects"], // Depends on subjects being imported first
       sequence: 2,
       metadataFileName: "samples.xlsx",
@@ -76,7 +79,7 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
       singular: "site",
       icon: <IconPin size={24} />,
       color: "grape",
-      description: "Link sites to subjects or samples with metadata.",
+      description: "Define specific sites within subjects or samples.",
       dependsOn: ["subjects", "samples"],
       metadataFileName: "sites.xlsx",
     },
@@ -185,11 +188,9 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
     <GuidedModePage pageHeader="Designate Entity Metadata via Spreadsheets">
       <GuidedModeSection>
         <Text>
-          Use the interface below to assign unique IDs and provide metadata for the entities in your
-          dataset (for example, subjects and samples). If you haven't yet prepared the SDS metadata
-          templates, you can download them here, fill them out in Excel or another spreadsheet
-          program, and then import the completed files. If you already have SDS metadata files
-          ready, you can progress to the next step to import them directly.
+          If you already have SDS metadata files prepared, import them using the steps below.
+          Otherwise, download the template for each {getOxfordCommaSeparatedListOfEntities("and")},
+          fill in the metadata, and then import the completed file.
         </Text>
       </GuidedModeSection>
       <GuidedModeSection>
