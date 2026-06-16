@@ -12,6 +12,7 @@ import useGlobalStore from "../../../../stores/globalStore";
 import {
   getExistingSubjects,
   getExistingSamples,
+  getExistingSites,
 } from "../../../../stores/slices/datasetEntityStructureSlice";
 import {
   CONTRIBUTORS_REGEX,
@@ -454,14 +455,10 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
     const title = getGuidedDatasetName();
     const subtitle = getGuidedDatasetSubtitle();
 
-    const subjectsMetadata = window.sodaJSONObj["dataset_metadata"]["subjects"];
-    const samplesMetadata = window.sodaJSONObj["dataset_metadata"]["samples"];
-    const sitesMetadata = window.sodaJSONObj["dataset_metadata"]["sites"];
+    const numSubjects = getExistingSubjects().length;
+    const numSamples = getExistingSamples().length;
+    const numSites = getExistingSites().length;
     const performancesMetadata = window.sodaJSONObj["dataset_metadata"]["performances"];
-
-    const numSubjects = subjectsMetadata ? subjectsMetadata.length : 0;
-    const numSamples = samplesMetadata ? samplesMetadata.length : 0;
-    const numSites = sitesMetadata ? sitesMetadata.length : 0;
     const numPerformances = performancesMetadata ? performancesMetadata.length : 0;
     // Get keywords
     const keywordArray = window.getTagsFromTagifyElement(guidedDatasetKeywordsTagify);

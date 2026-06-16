@@ -347,6 +347,7 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
 
     // --- Step 6: Capture the modified structure before reverting changes ---
     const standardizedStructure = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
+
     useGlobalStore.setState({ datasetStructureJSONObj: standardizedStructure });
     reRenderTreeView();
     // --- Step 7: Revert any global changes to window.datasetStructureJSONObj ---
@@ -357,5 +358,29 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
     console.error("Error while creating standardized dataset structure:", error);
     window.datasetStructureJSONObj = originalStructure;
     throw error;
+  }
+};
+
+export const addImportedMetadataFilesToStructure = (datasetStructure) => {
+  const entityAdditionMethod = window.sodaJSONObj?.["entity-addition-method"];
+  if (entityAdditionMethod === "spreadsheet") {
+    const importedMetadataFilePaths = window.sodaJSONObj?.["imported-metadata-file-paths"];
+    if (importedMetadataFilePaths && typeof importedMetadataFilePaths === "object") {
+      if (!datasetStructure.files) {
+        datasetStructure.files = {};
+      }
+      for (const [metadataKey, filePath] of Object.entries(importedMetadataFilePaths)) {
+        if (!filePath) continue;
+        const fileName = `${metadataKey}.xlsx`;
+        datasetStructure.files[fileName] = {
+          action: ["new"],
+          "additional-metadata": "",
+          description: "",
+          location: "local",
+          path: filePath,
+          relativePath: fileName,
+        };
+      }
+    }
   }
 };

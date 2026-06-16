@@ -1,5 +1,13 @@
 {
-  "17.1.0": {
+  "18.1.0": {
+    "announcements": {
+      "features": [
+        "Prepare Dataset Step-by-Step now allows users to bulk import large number of dataset metadata using spreadsheets. Anything imported will also be validated to ensure it adhreres to the SDS. "
+      ],
+      "bug-fixes": ["SODA will no longer appear to fail during long dataset upload sessions."]
+    }
+  },
+  "17.0.1": {
     "announcements": {
       "features": [
         "SODA will guide Windows 11 users who have Smart App Control or SmartScreen Defender enabled with running the Pennsieve Agent.",

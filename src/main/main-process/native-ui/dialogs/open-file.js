@@ -387,6 +387,32 @@ ipcMain.handle("open-file-dialog-data-deliverables", async (event) => {
   return [];
 });
 
+ipcMain.handle("open-file-dialog-import-metadata-file", async (event) => {
+  let mainWindow = BrowserWindow.getFocusedWindow();
+
+  let metadataFile = await dialog.showOpenDialog(mainWindow, {
+    properties: ["openFile"],
+    filters: [{ name: "Excel", extensions: ["xlsx", "xls", "csv"] }],
+    title: "Select a metadata file",
+  });
+
+  if (metadataFile) {
+    return metadataFile.filePaths;
+  }
+
+  return [];
+});
+
+ipcMain.handle("read-file-buffer", async (event, filePath) => {
+  const fs = require("fs");
+  try {
+    const buffer = fs.readFileSync(filePath);
+    return buffer;
+  } catch (err) {
+    throw new Error(`Failed to read file: ${err.message}`);
+  }
+});
+
 ipcMain.handle("open-file-dialog-submit-dataset", async (event) => {
   let mainWindow = BrowserWindow.getFocusedWindow();
 
@@ -434,7 +460,7 @@ ipcMain.on("open-file-dialog-validate-local-ds", (event) => {
 });
 
 // Metadata template download
-ipcMain.on("open-folder-dialog-save-metadata", async (event, filename) => {
+ipcMain.on("open-folder-dialog-save-metadata", async (event, filename, helperConfig) => {
   let mainWindow = BrowserWindow.getFocusedWindow();
 
   let files = await dialog.showOpenDialog(mainWindow, {
@@ -443,7 +469,12 @@ ipcMain.on("open-folder-dialog-save-metadata", async (event, filename) => {
   });
 
   if (files) {
-    mainWindow.webContents.send("selected-metadata-download-folder", files.filePaths, filename);
+    mainWindow.webContents.send(
+      "selected-metadata-download-folder",
+      files.filePaths,
+      filename,
+      helperConfig
+    );
   }
 });
 

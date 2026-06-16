@@ -46,7 +46,7 @@ export const checkboxCardSlice = (set) => ({
       mutuallyExclusiveWithCards: ["replace-file-card"],
     },
     "guided-button-add-entities-manually": {
-      title: "Enter entity IDs manually in the SODA UI",
+      title: "Enter entity metadata manually in the SODA UI",
       description: null,
       Icon: IconKeyboard,
       mutuallyExclusiveWithCards: ["guided-button-add-entities-via-spreadsheet"],
@@ -55,13 +55,12 @@ export const checkboxCardSlice = (set) => ({
       checked: false,
     },
     "guided-button-add-entities-via-spreadsheet": {
-      title: "Import entity IDs using a spreadsheet",
+      title: "Import entity metadata using a spreadsheet",
       description: null,
       Icon: IconFileSpreadsheet,
       mutuallyExclusiveWithCards: ["guided-button-add-entities-manually"],
       configValue: "entity-addition-method",
       configValueState: "spreadsheet",
-      comingSoon: true,
       checked: false,
     },
     "generate-dataset-locally": {

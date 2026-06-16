@@ -97,7 +97,7 @@ export const swalListSingleAction = async (fileList, title, helpText, postAction
       </div>
       ${postActionText ? `<b>${postActionText}</b>` : ""}
     `,
-    width: 800,
+    width: 1200,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     allowOutsideClick: false,
@@ -107,7 +107,7 @@ export const swalListSingleAction = async (fileList, title, helpText, postAction
   });
 };
 
-export const swalListDisplayOnly = async (fileList, title, helpText) => {
+export const swalListDisplayOnly = async (fileList, title, helpText, postActionText) => {
   await Swal.fire({
     title: title,
     html: `
@@ -119,8 +119,9 @@ export const swalListDisplayOnly = async (fileList, title, helpText) => {
           )
           .join("")}
       </div>
+      ${postActionText ? `<b>${postActionText}</b>` : ""}
     `,
-    width: 800,
+    width: 1200,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     allowOutsideClick: false,
@@ -156,7 +157,7 @@ export const swalListDoubleAction = async (
       </div>
       ${confirmationText ? `<b>${confirmationText}</b>` : ""}
     `,
-    width: 800,
+    width: 1200,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     allowOutsideClick: false,
@@ -191,7 +192,7 @@ export const swalListTripleAction = async (
       </div>
       <b>${confirmationText}</b>
     `,
-    width: 800,
+    width: 1200,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     allowOutsideClick: false,
@@ -218,10 +219,16 @@ export const swalListTripleAction = async (
 };
 
 export const swalConfirmAction = async (icon, title, html, confirmButtonText, cancelButtonText) => {
+  const formattedHtml = `
+    <div style="text-align: center;">
+      ${html}
+    </div>
+  `;
+
   const { value: action } = await Swal.fire({
     icon: icon,
     title: title,
-    html: html,
+    html: formattedHtml,
     width: 800,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",

@@ -8,7 +8,11 @@ import { checkIfDatasetExistsOnPennsieve } from "../pennsieveUtils";
 import { successCheck, errorMark } from "../../../assets/lotties/lotties";
 import { guidedGetDatasetName, guidedGetDatasetId } from "../utils/sodaJSONObj";
 import { getExistingSubjects } from "../../../stores/slices/datasetEntityStructureSlice";
-import { createStandardizedDatasetStructure } from "../../utils/datasetStructure";
+import {
+  createStandardizedDatasetStructure,
+  addImportedMetadataFilesToStructure,
+} from "../../utils/datasetStructure";
+import getVerifiedFilesFromManifest from "../../organize-dataset/verify-file-statuses";
 import api from "../../others/api/api";
 
 import { guidedResetLocalGenerationUI } from "../guided-curate-dataset";
@@ -25,27 +29,141 @@ while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
 }
 
+let restartServerLock = false;
+const restartServer = async (caller) => {
+  if (restartServerLock) {
+    return;
+  }
+
+  restartServerLock = true;
+
+  const removeListener = window.server.onRestartProgress((line) => {
+    console.log("Restart progress:", line);
+  });
+
+  try {
+    await window.server.restart(window.port);
+  } catch (err) {
+    console.error("Server restart failed:", err.message);
+  } finally {
+    removeListener(); // Always clean up the listener
+    restartServerLock = false;
+  }
+};
+
+const waitForServerRestart = async () => {
+  while (true) {
+    let live = await window.server.serverIsLive();
+
+    if (live) {
+      break;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
+};
+
 const fetchProgressData = async () => {
   const { data } = await client.get(`/curate_datasets/curation/progress`);
   return {
     status: data["main_curate_status"],
     message: data["main_curate_progress_message"],
-    elapsedTime: data["elapsed_time_formatted"],
     uploadedFiles: data["total_files_uploaded"],
     curationErrorMessage: data["curation_error_message"],
   };
 };
 
-const disableFileVerificationSection = () => {
-  document.getElementById("guided-section-file-upload-verification").classList.add("hidden");
-  document.querySelector("#guided-section-file-upload-verification-button").disabled = true;
-  document.querySelector("#guided--skip-verify-btn").disabled = true;
+// Subscriber will always run until upload is completed or until the upload fails 3 times
+let subscriberLock = false;
+const subscribe = async (datasetId) => {
+  if (subscriberLock) return;
+  subscriberLock = true;
+  try {
+    await client.post("/curate_datasets/curation/subscribe", {
+      dataset_id: datasetId,
+      account_name: window.sodaJSONObj["ps-account-selected"]["account-name"],
+      bytes_per_file_dict: window.sodaJSONObj["upload-progress"]?.["bytesPerFile"] || null,
+    });
+    subscriberLock = false;
+  } catch (e) {
+    subscriberLock = false;
+    await window.wait(2000);
+    clientError(e);
+    if (!e.response && e.request && e.isAxiosError) {
+      // wait for the progress tracker to determine the server is live
+      await waitForServerRestart();
+
+      // CHECK IF UPLOAD IS COMPLETE BEFORE RESTARTING PROGRESS AND SUBSCRIPTION
+      if (
+        window.sodaJSONObj["upload-progress"]?.["current-stage"] === "upload" &&
+        amountOfTimesPennsieveUploadFailed < 3
+      ) {
+        subscribe(datasetId);
+      }
+    }
+    // Auto retry if upload is still in progress or if it hasn't failed 3 times
+    if (
+      window.sodaJSONObj["upload-progress"]?.["current-stage"] === "upload" &&
+      amountOfTimesPennsieveUploadFailed < 3
+    ) {
+      subscribe(datasetId);
+    }
+  }
 };
 
-const enableFileVerificationSection = () => {
-  document.getElementById("guided-section-file-upload-verification").classList.remove("hidden");
-  document.querySelector("#guided-section-file-upload-verification-button").disabled = false;
-  document.querySelector("#guided--skip-verify-btn").disabled = false;
+let psGenerateTimer = null;
+
+const trackUpload = (status) => {
+  let curationMode = window.sodaJSONObj["curation-mode"];
+
+  window.electron.ipcRenderer.send(
+    "track-kombucha",
+    curationMode == "free-form"
+      ? kombuchaEnums.Category.PREPARE_DATASETS
+      : kombuchaEnums.Category.GUIDED_MODE,
+    kombuchaEnums.Action.GENERATE_DATASET,
+    kombuchaEnums.Label.FILES,
+    status,
+    createEventData(
+      window.sodaJSONObj["upload-progress"]
+        ? window.sodaJSONObj["upload-progress"]["number-of-files"]
+        : 0,
+      "Pennsieve",
+      "Local",
+      window.sodaJSONObj["generate-dataset"]["dataset-name"],
+      window.sodaJSONObj["upload-progress"]
+        ? window.sodaJSONObj["upload-progress"]["dataset-id"]
+        : "None",
+      window.sodaJSONObj["upload-progress"]
+        ? window.sodaJSONObj["upload-progress"]["current-stage"]
+        : "None",
+      datasetUploadSession.id
+    )
+  );
+
+  window.electron.ipcRenderer.send(
+    "track-kombucha",
+    curationMode == "free-form"
+      ? kombuchaEnums.Category.PREPARE_DATASETS
+      : kombuchaEnums.Category.GUIDED_MODE,
+    kombuchaEnums.Action.GENERATE_DATASET,
+    kombuchaEnums.Label.SIZE,
+    status,
+    createEventData(
+      window.sodaJSONObj["upload-progress"]
+        ? window.sodaJSONObj["upload-progress"]["size-of-dataset"]
+        : 0,
+      "Pennsieve",
+      "Local",
+      window.sodaJSONObj["generate-dataset"]["dataset-name"],
+      window.sodaJSONObj["upload-progress"]
+        ? window.sodaJSONObj["upload-progress"]["dataset-id"]
+        : "None",
+      window.sodaJSONObj["upload-progress"]
+        ? window.sodaJSONObj["upload-progress"]["current-stage"]
+        : "None",
+      datasetUploadSession.id
+    )
+  );
 };
 
 /**
@@ -59,7 +177,15 @@ const enableFileVerificationSection = () => {
 export const guidedGenerateDatasetOnPennsieve = async () => {
   guidedSetNavLoadingState(true);
 
+  // start timer if it is null; otherwise use existing time
+  psGenerateTimer = psGenerateTimer || Date.now();
+
   try {
+    // groups analytics calls into a session. New session is created when user starts new dataset or exits progress file and resumes at later date
+    if (!datasetUploadSession.id) {
+      datasetUploadSession.startSession();
+    }
+
     const pennsieveDatasetName = window.sodaJSONObj["generate-dataset"]["dataset-name"];
 
     // Create standardized dataset structure and store globally
@@ -67,66 +193,9 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       window.datasetStructureJSONObj,
       window.sodaJSONObj["dataset-entity-obj"]
     );
+    // Add imported metadata files to the structure
+    addImportedMetadataFilesToStructure(standardizedDatasetStructure);
     window.sodaJSONObj["soda_json_structure"] = standardizedDatasetStructure;
-
-    // Code that runs after a successful upload to Pennsieve (whether initial upload or retry)
-    const finalizeUpload = async (data) => {
-      window.pennsieveManifestId = data["origin_manifest_id"];
-      window.totalFilesCount = data["main_curation_total_files"];
-      window.sodaJSONObj["previously-uploaded-data"] = {};
-      window.sodaJSONObj["dataset-successfully-uploaded-to-pennsieve"] = true;
-      window.retryGuidedMode = false;
-
-      // If the message indicates that no files were uploaded (which can happen when
-      // uploading to an existing Pennsieve dataset with the "skip" option selected for existing files and
-      // the dataset being generated has the same files as the existing dataset), do not show
-      // the verify files section because there are no files to verify.
-      // Also hide the verify section if totalFilesCount is 0 (e.g., when only files were renamed).
-      const { message } = await fetchProgressData();
-      if (message === "No files were uploaded in this session" || window.totalFilesCount === 0) {
-        disableFileVerificationSection();
-      } else {
-        enableFileVerificationSection();
-      }
-
-      logProgressPostUpload(
-        data["main_curation_uploaded_files"],
-        data["main_total_generate_dataset_size"]
-      );
-
-      bytesOnPreviousLogPage = 0;
-      filesOnPreviousLogPage = 0;
-
-      $("#guided-next-button").css("visibility", "visible");
-      if (window.sodaJSONObj["curation-mode"] === "free-form") {
-        // Hide the save and exit button (continue will exit them out automatically)
-        document.getElementById("guided-button-save-and-exit").classList.add("hidden");
-      }
-
-      await guidedSaveProgress();
-    };
-
-    // --- Helper: perform the upload request ---
-    const performUpload = async () => {
-      datasetUploadSession.startSession();
-      guidedSetNavLoadingState(true);
-
-      client
-        .post(
-          `/curate_datasets/curation`,
-          { soda_json_structure: window.sodaJSONObj, resume: !!window.retryGuidedMode },
-          { timeout: 0 }
-        )
-        .then(async (response) => {
-          const { data } = response;
-          await finalizeUpload(data);
-        })
-        .catch((error) => console.error("Dataset upload failed:", error));
-
-      await window.wait(1000);
-      await trackPennsieveDatasetGenerationProgress(standardizedDatasetStructure);
-      guidedSetNavLoadingState(false);
-    };
 
     // --- Helper: prepare upload object for Pennsieve ---
     const prepareUploadObj = async () => {
@@ -151,9 +220,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       // Note we only do this when it's the first upload of the session (for when a dataset upload
       // fails, the user closes out of the progress file, and they begin uploading again)
       if (
-        (!window.retryGuidedMode &&
-          window.sodaJSONObj["pennsieve-generation-target"] === "new" &&
-          datasetIsEmpty === false) ||
+        (window.sodaJSONObj["pennsieve-generation-target"] === "new" && datasetIsEmpty === false) ||
         (window.sodaJSONObj["pennsieve-generation-target"] === "existing" &&
           datasetIsEmpty === false &&
           window.sodaJSONObj["generate-dataset"]?.["generate-option"] === "new")
@@ -181,8 +248,124 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       }
     };
 
-    // --- Prepare UI for normal upload ---
-    if (!window.retryGuidedMode) {
+    const createUploadData = async () => {
+      guidedSetNavLoadingState(true);
+
+      // TODO: AARON: Wrap this in a wait for us to know server has been started to prevent race condition with restarting server and
+      // auto retry manifest creation
+      const { data } = await client.post(
+        `/curate_datasets/curation/manifest_file`,
+        { soda_json_structure: window.sodaJSONObj },
+        { timeout: 0 }
+      );
+
+      return data;
+    };
+
+    // --- Helper: perform the upload request ---
+    const performUpload = async () => {
+      let manifestId = window.sodaJSONObj["upload-progress"]["manifest-id"];
+      let datasetId = window.sodaJSONObj["upload-progress"]["dataset-id"];
+
+      subscribe(datasetId);
+
+      const removeListener = window.pennsieve.onUploadProgress((line) => {
+        console.log("Upload progress:", line);
+      });
+
+      try {
+        await window.pennsieve.uploadManifest(manifestId);
+      } finally {
+        removeListener(); // Always clean up the listener
+      }
+
+      // get the origin manifest ID (id of manifest on Pennsieve)
+      let origin_manifest_id = "";
+
+      origin_manifest_id = await client.get(
+        `/curate_datasets/curation/dataset/${datasetId}/origin_manifest`
+      );
+
+      return origin_manifest_id.data;
+    };
+
+    const showVerifyFiles = async () => {
+      // verify that all files uploaded in the session have been uploaded to Pennsieve successfully
+      document.getElementById("guided-section-file-upload-verification").classList.remove("hidden");
+      document.querySelector("#guided-section-file-upload-verification-button").disabled = false;
+      document.querySelector("#guided--skip-verify-btn").disabled = false;
+    };
+
+    const renameFiles = async () => {
+      const allFilesReadyToBeRenamed = (finalizedFiles) => {
+        let numberOfFiles = window.sodaJSONObj["upload-progress"]["number-of-files"];
+        return numberOfFiles == finalizedFiles.length;
+      };
+
+      const anyFilesFailedToUpload = (failed) => {
+        return failed.length;
+      };
+
+      const waitForFilesToBeVerified = async () => {
+        setGuidedProgressBarValue("pennsieve", 0);
+
+        while (true) {
+          // first ensure files that need to be renamed are verified
+          const { finalizedFiles, failedFilesPathsList: failed } =
+            await getVerifiedFilesFromManifest(
+              window.sodaJSONObj["upload-progress"]["origin-manifest-id"]
+            );
+
+          let numberOfFiles = window.sodaJSONObj["upload-progress"]["number-of-files"];
+          let numberOfFilesFinalized = finalizedFiles.length;
+
+          let allReady = allFilesReadyToBeRenamed(finalizedFiles);
+          let anyFailed = anyFilesFailedToUpload(failed);
+
+          // files ready to be renamed
+          if (allReady) {
+            updateDatasetUploadProgressTable("pennsieve", {
+              "current action": "All files processed",
+              "Data Uploaded": `${finalizedFiles.length} of ${window.sodaJSONObj["upload-progress"]["number-of-files"]}`,
+            });
+            setGuidedProgressBarValue("pennsieve", (numberOfFiles / numberOfFilesFinalized) * 100);
+            break;
+          }
+
+          if (anyFailed) {
+            throw Error("Some files that need to be renamed did not upload successfully.");
+          }
+
+          updateDatasetUploadProgressTable("pennsieve", {
+            "current action":
+              "Waiting for files to process before the renaming step. 60 seconds until next check.",
+            "Files processed": `${finalizedFiles.length} of ${window.sodaJSONObj["upload-progress"]["number-of-files"]}`,
+          });
+
+          setGuidedProgressBarValue("pennsieve", (numberOfFiles / numberOfFilesFinalized) * 100);
+
+          // Wait a minute to retry
+          await window.wait(60000);
+        }
+      };
+
+      // only verify if there are files uploaded in this session. If no files uploaded then there are files to rename that have already been uploaded in a separate session
+      // that are ready to be renamed.
+      if (window.sodaJSONObj["upload-progress"]["manifest-id"]) await waitForFilesToBeVerified();
+
+      window.sodaJSONObj["upload-progress"]["status"] = "in progress";
+
+      await client.post(
+        `/curate_datasets/curation/files/rename`,
+        {
+          soda: window.sodaJSONObj,
+        },
+        { timeout: 0 }
+      );
+    };
+
+    if (!window.sodaJSONObj["upload-progress"]) {
+      // TODO: RESET KEYS IF DATA CHANGES IN GM
       document
         .querySelectorAll(".guided-upload-table")
         .forEach((table) => table.classList.add("hidden"));
@@ -196,13 +379,13 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
 
       hideDatasetMetadataGenerationTableRows("pennsieve");
       setGuidedProgressBarValue("pennsieve", 0);
-      updateDatasetUploadProgressTable("pennsieve", {
-        "Upload status": "Preparing dataset for upload",
-      });
       window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
     }
 
-    if (window.sodaJSONObj["pennsieve-generation-target"] === "new") {
+    if (
+      !window.sodaJSONObj["upload-progress"] &&
+      window.sodaJSONObj["pennsieve-generation-target"] === "new"
+    ) {
       await uploadPennsieveMetadata(
         window.defaultBfAccount,
         pennsieveDatasetName,
@@ -215,13 +398,111 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       );
     }
 
-    await prepareUploadObj();
-    await performUpload();
+    trackPennsieveDatasetGenerationProgress(standardizedDatasetStructure).catch((err) => {
+      clientError(err);
+    });
+
+    if (!window.sodaJSONObj["upload-progress"]) {
+      // initialize upload pipeline progress
+      window.sodaJSONObj["upload-progress"] = {
+        "manifest-id": "",
+        "size-of-dataset": "",
+        "number-of-files": "",
+        "list-of-files-to-rename": "",
+        "dataset-id": "",
+        "current-stage": "setup",
+      };
+    }
+
+    // STAGE 1: Create Manifest File + Upload Data
+    if (window.sodaJSONObj["upload-progress"]["current-stage"] == "setup") {
+      await prepareUploadObj();
+      let uploadData = await createUploadData();
+      trackUpload(kombuchaEnums.Status.SUCCESS);
+      // wait for progress bar to show success message before continuing
+      await window.wait(2000);
+      window.sodaJSONObj["upload-progress"] = {
+        "manifest-id": uploadData["manifest_id"],
+        "size-of-dataset": uploadData["size_of_dataset"],
+        "number-of-files": uploadData["number_of_files"],
+        "list-of-files-to-rename": uploadData["list_of_files_to_rename"],
+        "dataset-id": uploadData["dataset_id"],
+        "current-stage": !uploadData["manifest_id"] ? "rename" : "upload",
+        status: !uploadData["manifest_id"] ? "setup" : "in progress",
+      };
+      await guidedSaveProgress();
+    }
+
+    // STAGE 2: Upload Using Agent + Subscribe for Progress
+    if (window.sodaJSONObj["upload-progress"]["current-stage"] == "upload") {
+      let origin_manifest_id = await performUpload();
+      trackUpload(kombuchaEnums.Status.SUCCESS);
+      window.sodaJSONObj["upload-progress"]["status"] = "complete";
+      // small wait for progress bar to show 100 before resetting for any next stage
+      await window.wait(2000);
+      window.sodaJSONObj["upload-progress"]["current-stage"] =
+        Object.keys(window.sodaJSONObj["upload-progress"]["list-of-files-to-rename"]).length >= 1
+          ? "rename"
+          : "complete";
+      window.sodaJSONObj["upload-progress"]["origin-manifest-id"] = origin_manifest_id;
+      await guidedSaveProgress();
+    }
+
+    // STAGE 3: RENAME FILES
+    if (window.sodaJSONObj["upload-progress"]["current-stage"] == "rename") {
+      window.sodaJSONObj["upload-progress"]["status"] = "setup";
+      await renameFiles();
+      trackUpload(kombuchaEnums.Status.SUCCESS);
+      window.sodaJSONObj["upload-progress"]["status"] = "complete";
+      await guidedSaveProgress();
+      await window.wait(2000);
+    }
+
+    window.sodaJSONObj["upload-progress"]["current-stage"] = "complete";
+    delete window.sodaJSONObj["upload-progress"]["status"];
+
+    trackUpload(kombuchaEnums.Status.SUCCESS);
+
+    // STAGE 4: (Optional) VERIFY FILES otherwise just click save & exit
+    showVerifyFiles();
+
+    datasetUploadSession.endSession();
+
+    // Display UI Exit Buttons
+    $("#guided-next-button").css("visibility", "visible");
+    if (window.sodaJSONObj["curation-mode"] === "free-form") {
+      // Hide the save and exit button (continue will exit them out automatically)
+      document.getElementById("guided-button-save-and-exit").classList.add("hidden");
+    }
+
+    window.pennsieveManifestId = window.sodaJSONObj["upload-progress"]["origin-manifest-id"];
+    window.totalFilesCount = window.sodaJSONObj["upload-progress"]["number-of-files"];
+    window.sodaJSONObj["previously-uploaded-data"] = {};
+    window.sodaJSONObj["dataset-successfully-uploaded-to-pennsieve"] = true;
   } catch (error) {
+    // TODO: AARON Handle NoUploadAction error with SWAL that just exits the upload.
     clientError(error);
     const emessage = userErrorMessage(error, false);
+
+    // send the error to Kombucha analytics along with the upload-progress object
+    trackUpload(kombuchaEnums.Status.FAIL);
+
+    if (emessage.includes("No files need to be uploaded or renamed")) {
+      await swalShowInfo(
+        "No files were uploaded in this session and no files need to be renamed",
+        `
+          <div style="text-align: left;">
+            When uploading to an existing dataset with "Skip existing files" selected, no files are uploaded if the files you imported into SODA match what is already on Pennsieve.
+            <br><br>
+            If you believe this is a mistake, please contact the SODA team using the Contact Us page in the sidebar or follow the documentation <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here.</a>
+           </div>
+           `
+      );
+      guidedSetNavLoadingState(false);
+
+      return;
+    }
     amountOfTimesPennsieveUploadFailed += 1;
-    window.retryGuidedMode = true;
     automaticRetry(false, emessage);
     guidedSetNavLoadingState(false);
   }
@@ -255,226 +536,24 @@ const uploadPennsieveMetadata = async (
   }
 };
 
-const roundToHundredth = (num) => {
-  return Math.round(num * 100) / 100;
-};
-
-export const convertBytesToGb = (bytes) => {
-  return roundToHundredth(bytes / 1024 ** 3);
-};
-
-export const bytesToReadableSize = (bytes) => {
-  if (!Number.isFinite(bytes) || bytes < 0) {
-    return "";
-  }
-
-  if (bytes === 0) {
-    return "0 B";
-  }
-
-  const k = 1000;
-  const units = ["B", "KB", "MB", "GB", "TB", "PB"];
-
-  const unitIndex = Math.floor(Math.log(bytes) / Math.log(k));
-  const value = bytes / Math.pow(k, unitIndex);
-
-  return `${Math.round(value)} ${units[unitIndex]}`;
-};
-// Counts the number of files in the dataset structure
-// Note: This function should only be used for local datasets (Not datasets pulled from Pennsieve)
-export const countFilesInDatasetStructure = (datasetStructure) => {
-  let totalFiles = 0;
-  const keys = Object.keys(datasetStructure);
-  for (const key of keys) {
-    if (key === "files") {
-      totalFiles += Object.keys(datasetStructure[key]).length;
-    }
-    if (key === "folders") {
-      const folders = Object.keys(datasetStructure[key]);
-      for (const folder of folders) {
-        totalFiles += countFilesInDatasetStructure(datasetStructure[key][folder]);
-      }
-    }
-  }
-  return totalFiles;
-};
-
-// Track the status of local dataset generation
-const trackLocalDatasetGenerationProgress = async (standardizedDatasetStructure) => {
-  const numberOfFilesToGenerate = countFilesInDatasetStructure(standardizedDatasetStructure);
-
-  window.unHideAndSmoothScrollToElement("guided-section-local-generation-status-table");
-
-  const updateProgressUI = (uploadedFiles, elapsedTime) => {
-    const progress = Math.min(100, Math.max(0, (uploadedFiles / numberOfFilesToGenerate) * 100));
-    setGuidedProgressBarValue("local", progress);
-    updateDatasetUploadProgressTable("local", {
-      "Files generated": `${uploadedFiles} of ${numberOfFilesToGenerate}`,
-      "Percent generated": `${progress.toFixed(2)}%`,
-      "Elapsed time": elapsedTime,
-    });
-  };
-
-  while (true) {
-    try {
-      const { status, message, elapsedTime, uploadedFiles, curationErrorMessage } =
-        await fetchProgressData();
-
-      if (curationErrorMessage !== undefined && curationErrorMessage !== "") {
-        console.error("Error message during local dataset generation:", curationErrorMessage);
-      }
-
-      if (curationErrorMessage) {
-        throw new Error(
-          "An error occurred during local dataset generation: " + curationErrorMessage
-        );
-      }
-
-      if (message === "Success: COMPLETED!" || status === "Done") break;
-
-      updateProgressUI(uploadedFiles, elapsedTime);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    } catch (error) {
-      console.error("Error tracking progress:", error);
-      throw new Error(userErrorMessage(error));
-    }
-  }
-};
-
-const createEventData = (value, destination, origin, dataset_name, dataset_id) => {
-  if (destination === "Pennsieve") {
-    return {
-      value: value,
-      dataset_id: dataset_id,
-      dataset_name: dataset_name,
-      origin: origin,
-      destination: destination,
-      dataset_int_id: window.sodaJSONObj["digital-metadata"]["pennsieve-int-id"],
-    };
-  }
-
-  return {
-    value: value,
-    dataset_name: dataset_name,
-    origin: origin,
-    destination: destination,
-  };
-};
-
-// Used to properly track the Progress of the upload to Pennsieve
-let bytesOnPreviousLogPage = 0;
-let filesOnPreviousLogPage = 0;
-
-const logProgressPostUpload = (files, bytes) => {
-  let fileValueToLog = 0;
-  let fileSizeValueToLog = 0;
-
-  let finalFilesCount = files - filesOnPreviousLogPage;
-  let differenceInBytes = bytes - bytesOnPreviousLogPage;
-
-  if (finalFilesCount <= 0) {
-    // do not log when no progress has been made in the upload w.r.t. the previously logged value of files and bytes
-    return;
-  }
-
-  // update the UI file and byte count vars
-  filesOnPreviousLogPage = finalFilesCount;
-  bytesOnPreviousLogPage = differenceInBytes;
-
-  fileValueToLog = finalFilesCount;
-  fileSizeValueToLog = differenceInBytes;
-
-  // log the file and file size values to analytics
-  if (fileValueToLog > 0) {
-    window.electron.ipcRenderer.send(
-      "track-kombucha",
-      kombuchaEnums.Category.GUIDED_MODE,
-      kombuchaEnums.Action.GENERATE_DATASET,
-      kombuchaEnums.Label.FILES,
-      kombuchaEnums.Status.SUCCESS,
-      createEventData(
-        fileValueToLog,
-        "Pennsieve",
-        "Local",
-        window.sodaJSONObj["generate-dataset"]["dataset-name"],
-        guidedGetDatasetId(window.sodaJSONObj)
-      )
-    );
-  }
-
-  if (fileSizeValueToLog > 0) {
-    window.electron.ipcRenderer.send(
-      "track-kombucha",
-      kombuchaEnums.Category.GUIDED_MODE,
-      kombuchaEnums.Action.GENERATE_DATASET,
-      kombuchaEnums.Label.SIZE,
-      kombuchaEnums.Status.SUCCESS,
-      createEventData(
-        fileSizeValueToLog,
-        "Pennsieve",
-        "Local",
-        window.sodaJSONObj["generate-dataset"]["dataset-name"],
-        guidedGetDatasetId(window.sodaJSONObj)
-      )
-    );
-  }
-};
-
-const logProgressToAnalyticsGM = (files, bytes) => {
-  // log every 500 files -- will log on success/failure as well so if there are less than 500 files we will log what we uploaded ( all in success case and some of them in failure case )
-  if (files >= filesOnPreviousLogPage + 500) {
-    filesOnPreviousLogPage += 500;
-    window.electron.ipcRenderer.send(
-      "track-kombucha",
-      kombuchaEnums.Category.GUIDED_MODE,
-      kombuchaEnums.Action.GENERATE_DATASET,
-      kombuchaEnums.Label.FILES,
-      kombuchaEnums.Status.SUCCESS,
-      createEventData(
-        500,
-        "Pennsieve",
-        "Local",
-        window.sodaJSONObj["generate-dataset"]["dataset-name"],
-        guidedGetDatasetId(window.sodaJSONObj)
-      )
-    );
-
-    let differenceInBytes = bytes - bytesOnPreviousLogPage;
-    bytesOnPreviousLogPage = bytes;
-
-    if (differenceInBytes > 0) {
-      window.electron.ipcRenderer.send(
-        "track-kombucha",
-        kombuchaEnums.Category.GUIDED_MODE,
-        kombuchaEnums.Action.GENERATE_DATASET,
-        kombuchaEnums.Label.SIZE,
-        kombuchaEnums.Status.SUCCESS,
-        createEventData(
-          differenceInBytes,
-          "Pennsieve",
-          "Local",
-          window.sodaJSONObj["generate-dataset"]["dataset-name"],
-          guidedGetDatasetId(window.sodaJSONObj)
-        )
-      );
-    }
-  }
-};
-
+let progressMonitorLock = false;
 // Track the status of Pennsieve dataset upload
+// NOTE: In general this functions as such during an upload: 1). if server dies restart and do not throw an error, 2). If an error occurs throw so error is logged, and stop polling
 const trackPennsieveDatasetGenerationProgress = async () => {
+  if (progressMonitorLock) return;
   window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
+  progressMonitorLock = true;
 
   const fetchProgressData = async () => {
     const { data } = await client.get(`/curate_datasets/curation/progress`);
     return {
       status: data["main_curate_status"],
       message: data["main_curate_progress_message"],
-      elapsedTime: data["elapsed_time_formatted"],
       uploadedFiles: data["total_files_uploaded"],
       startGenerate: data["start_generate"],
       mainTotalGenerateDatasetSize: data["main_total_generate_dataset_size"],
       mainGeneratedDatasetSize: data["main_generated_dataset_size"],
+      bytesPerFile: data["bytes_per_file_dict"],
     };
   };
 
@@ -489,19 +568,28 @@ const trackPennsieveDatasetGenerationProgress = async () => {
     return `${value.toFixed(2)} ${sizes[i]}`;
   };
 
+  const formatElapsedTime = (startTime) => {
+    if (!startTime) return "0s";
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const hours = Math.floor(elapsed / 3600);
+    const minutes = Math.floor((elapsed % 3600) / 60);
+    const seconds = elapsed % 60;
+    if (hours > 0) return `${hours}h ${minutes}m ${seconds}s`;
+    if (minutes > 0) return `${minutes}m ${seconds}s`;
+    return `${seconds}s`;
+  };
+
   while (true) {
     try {
       const {
         status,
         message,
-        elapsedTime,
         uploadedFiles,
         startGenerate,
         mainTotalGenerateDatasetSize,
         mainGeneratedDatasetSize,
+        bytesPerFile,
       } = await fetchProgressData();
-
-      logProgressToAnalyticsGM(uploadedFiles, mainGeneratedDatasetSize);
 
       if (Number.isInteger(uploadedFiles) && uploadedFiles > 0) {
         if (!window.sodaJSONObj["at-least-one-file-uploaded-to-pennsieve"]) {
@@ -510,12 +598,79 @@ const trackPennsieveDatasetGenerationProgress = async () => {
         }
       }
 
-      if (message && message.includes("Preparing files to be renamed")) {
-        setGuidedProgressBarValue("pennsieve", 0);
+      if (window.sodaJSONObj["upload-progress"]?.["current-stage"] === "setup") {
         updateDatasetUploadProgressTable("pennsieve", {
-          "Current action": "Preparing files to be renamed...",
+          "Current action": message || "Preparing to create manifest file",
+          "Elapsed time": formatElapsedTime(psGenerateTimer),
         });
-      } else if (message && message.includes("Renaming files")) {
+      }
+
+      if (
+        window.sodaJSONObj["upload-progress"]?.["current-stage"] === "upload" &&
+        window.sodaJSONObj["upload-progress"]?.["status"] == "in progress"
+      ) {
+        if (!(mainGeneratedDatasetSize && mainTotalGenerateDatasetSize)) {
+          // Fallback for when mainGeneratedDatasetSize or mainTotalGenerateDatasetSize is not available
+          setGuidedProgressBarValue("pennsieve", 0);
+          updateDatasetUploadProgressTable("pennsieve", {
+            "Current action": "Initiating upload...",
+            "Elapsed time": formatElapsedTime(psGenerateTimer),
+          });
+          continue;
+        }
+
+        window.sodaJSONObj["upload-progress"]["bytesPerFile"] = bytesPerFile;
+        guidedSaveProgress();
+
+        // Default progress update
+        const progress = Math.min(
+          100,
+          Math.max(
+            0,
+            (mainGeneratedDatasetSize / window.sodaJSONObj["upload-progress"]["size-of-dataset"]) *
+              100
+          )
+        );
+        setGuidedProgressBarValue("pennsieve", progress);
+        updateDatasetUploadProgressTable("pennsieve", {
+          "Current action": "Uploading dataset",
+          "Data Uploaded": `${formatBytes(mainGeneratedDatasetSize)} of ${formatBytes(
+            window.sodaJSONObj["upload-progress"]["size-of-dataset"]
+          )}`,
+          "Percent uploaded": `${progress.toFixed(2)}%`,
+          "Elapsed time": formatElapsedTime(psGenerateTimer),
+        });
+      }
+
+      if (
+        window.sodaJSONObj["upload-progress"]?.["current-stage"] === "upload" &&
+        window.sodaJSONObj["upload-progress"]?.["status"] == "complete"
+      ) {
+        setGuidedProgressBarValue("pennsieve", 100);
+        updateDatasetUploadProgressTable("pennsieve", {
+          Status: "Success! All files uploaded to Pennsieve",
+        });
+      }
+
+      if (
+        window.sodaJSONObj["upload-progress"]?.["current-stage"] === "rename" &&
+        window.sodaJSONObj["upload-progress"]?.["status"] === "setup"
+      ) {
+        //do nothing while front end waits or all files to be verified
+        await window.wait(1000);
+        continue;
+      }
+
+      if (
+        window.sodaJSONObj["upload-progress"]?.["current-stage"] === "rename" &&
+        window.sodaJSONObj["upload-progress"]?.["status"] === "in progress"
+      ) {
+        // wait until backend total matches rename total -- synchronization
+        if (
+          mainTotalGenerateDatasetSize !=
+          Object.keys(window.sodaJSONObj["upload-progress"]["list-of-files-to-rename"]).length
+        )
+          continue;
         setGuidedProgressBarValue(
           "pennsieve",
           (mainGeneratedDatasetSize / mainTotalGenerateDatasetSize) * 100
@@ -523,42 +678,33 @@ const trackPennsieveDatasetGenerationProgress = async () => {
         updateDatasetUploadProgressTable("pennsieve", {
           "Current action": "Renaming files...",
           "files renamed": `${mainGeneratedDatasetSize} of ${mainTotalGenerateDatasetSize}`,
+          "Elapsed time": formatElapsedTime(psGenerateTimer),
         });
-      } else {
-        if (mainGeneratedDatasetSize && mainTotalGenerateDatasetSize) {
-          // Default progress update
-          const progress = Math.min(
-            100,
-            Math.max(0, (mainGeneratedDatasetSize / mainTotalGenerateDatasetSize) * 100)
-          );
-          setGuidedProgressBarValue("pennsieve", progress);
-          updateDatasetUploadProgressTable("pennsieve", {
-            "Current action": message || "",
-            "Data Uploaded": `${formatBytes(mainGeneratedDatasetSize)} of ${formatBytes(
-              mainTotalGenerateDatasetSize
-            )}`,
-            "Percent uploaded": `${progress.toFixed(2)}%`,
-            "Elapsed time": elapsedTime,
-          });
-        } else {
-          // Fallback for when mainGeneratedDatasetSize or mainTotalGenerateDatasetSize is not available
-          setGuidedProgressBarValue("pennsieve", 0);
-          updateDatasetUploadProgressTable("pennsieve", {
-            "Current action": message || "Preparing dataset for upload",
-          });
-        }
       }
 
-      if (status === "Done" && message == "Success: COMPLETED!") {
-        amountOfTimesPennsieveUploadFailed = 0;
-
+      if (
+        window.sodaJSONObj["upload-progress"]?.["current-stage"] === "rename" &&
+        window.sodaJSONObj["upload-progress"]?.["status"] === "complete"
+      ) {
         setGuidedProgressBarValue("pennsieve", 100);
         updateDatasetUploadProgressTable("pennsieve", {
-          Status: "Dataset successfully uploaded to Pennsieve",
+          Status: "Success! All files renamed on Pennsieve!",
         });
+      }
+
+      if (
+        window.sodaJSONObj["upload-progress"]?.["current-stage"] === "complete" &&
+        window.sodaJSONObj["upload-progress"]?.["number-of-files"] > 0
+      ) {
+        setStateComplete();
         // Break the loop to stop tracking progress (upload is complete)
         break;
-      } else if (status === "Done" && message.includes("No files were uploaded in this session")) {
+      }
+
+      if (
+        window.sodaJSONObj["upload-progress"]?.["current-stage"] === "complete" &&
+        window.sodaJSONObj["upload-progress"]?.["number-of-files"] === 0
+      ) {
         // Handle the special case where no files were uploaded but it's not an error
         // (e.g., skip existing files option was selected and all files already exist on Pennsieve)
         amountOfTimesPennsieveUploadFailed = 0;
@@ -581,17 +727,13 @@ const trackPennsieveDatasetGenerationProgress = async () => {
 
         break;
       } else if (status === "Done" && message !== "Success: COMPLETED!") {
-        console.error("The upload monitor noticed the upload failed");
+        console.error("The upload monitor noticed an error during the upload process.");
         // Handle the case where upload error happens
         setGuidedProgressBarValue("pennsieve", 0);
         updateDatasetUploadProgressTable("pennsieve", {
           Status: "Dataset upload failed",
           "Error message": message,
         });
-        // fix: Log on fail case what was actually pushed up to Pennsieve
-        logProgressPostUpload(uploadedFiles, mainTotalGenerateDatasetSize);
-        amountOfTimesPennsieveUploadFailed += 1;
-        window.retryGuidedMode = true;
         let supplementaryChecks = false;
         automaticRetry(supplementaryChecks, message);
         break;
@@ -600,47 +742,44 @@ const trackPennsieveDatasetGenerationProgress = async () => {
       // Wait for a second before fetching the next progress update
       await new Promise((resolve) => setTimeout(resolve, 1000));
     } catch (error) {
+      progressMonitorLock = false;
       // Check for network error
       if (!error.response && error.request && error.isAxiosError) {
-        const currentPageID = window.CURRENT_PAGE.id;
-        await window.savePageChanges(currentPageID);
         clientError(error);
-        await swalShowError(
-          "Network Error",
-          "The server did not respond. Please close SODA and reopen it to try the upload again. SODA will remember any progress in the upload you have made. If the problem persists, please contact support."
-        );
-        guidedSetNavLoadingState(false);
-        transitionFromGuidedModeToHome();
-        return;
+        try {
+          await restartServer("progress tracking");
+        } catch (e) {
+          // do not let an error rise unguarded or get crash.
+          // TODO: IF error happens repeatedly break and find graceful way to let calling function/upload function know to stop
+          // (though presumably it will fail 3 times since server is fead so may be unnecessary)
+          clientError(e);
+          continue;
+        }
+        if (
+          window.sodaJSONObj["upload-progress"]?.["current-stage"] === "rename" ||
+          window.sodaJSONObj["upload-progress"]?.["current-stage"] === "verify" ||
+          window.sodaJSONObj["upload-progress"]?.["current-stage"] === "complete"
+        ) {
+          setStateComplete();
+          break;
+        }
+        // continue loop now that server is back up
+        continue;
       }
+      // unexpected error; stop tracking progress
       console.error("[Pennsieve Progress] Error tracking upload progress:", error);
       throw new Error(userErrorMessage(error));
     }
   }
+  progressMonitorLock = false;
 };
 
+let retryingLock = false;
 const automaticRetry = async (supplementaryChecks = false, errorMessage = "") => {
-  if (amountOfTimesPennsieveUploadFailed <= 3) {
-    await Swal.fire({
-      title: `Retrying upload ${amountOfTimesPennsieveUploadFailed} of 3 times`,
-      icon: "error",
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      showConfirmButton: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
-      hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
-      timer: 5000,
-      timerProgressBar: true,
-    });
-    while (!supplementaryChecks && amountOfTimesPennsieveUploadFailed <= 3) {
-      supplementaryChecks = await window.run_pre_flight_checks(
-        "guided-mode-pre-generate-pennsieve-agent-check"
-      );
-      if (!supplementaryChecks) amountOfTimesPennsieveUploadFailed += 1;
-    }
-  } else {
+  if (retryingLock) return;
+  retryingLock = true;
+  setStateRetrying();
+  if (amountOfTimesPennsieveUploadFailed > 3) {
     let res = await Swal.fire({
       allowOutsideClick: false,
       allowEscapeKey: false,
@@ -669,13 +808,39 @@ const automaticRetry = async (supplementaryChecks = false, errorMessage = "") =>
       hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
     });
     if (!res.isConfirmed) {
+      psGenerateTimer = null;
       transitionFromGuidedModeToHome();
+      datasetUploadSession.endSession();
       return;
     }
     supplementaryChecks = await window.run_pre_flight_checks(
       "guided-mode-pre-generate-pennsieve-agent-check"
     );
   }
+
+  if (amountOfTimesPennsieveUploadFailed <= 3) {
+    await Swal.fire({
+      title: `Retrying upload ${amountOfTimesPennsieveUploadFailed} of 3 times`,
+      icon: "error",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
+      hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
+      timer: 5000,
+      timerProgressBar: true,
+    });
+    while (!supplementaryChecks && amountOfTimesPennsieveUploadFailed <= 3) {
+      supplementaryChecks = await window.run_pre_flight_checks(
+        "guided-mode-pre-generate-pennsieve-agent-check"
+      );
+      if (!supplementaryChecks) amountOfTimesPennsieveUploadFailed += 1;
+    }
+  }
+
+  retryingLock = false;
 
   if (!supplementaryChecks) {
     Swal.fire({
@@ -688,6 +853,7 @@ const automaticRetry = async (supplementaryChecks = false, errorMessage = "") =>
       showClass: { popup: "animate__animated animate__zoomIn animate__faster" },
       hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
     });
+    psGenerateTimer = null;
     transitionFromGuidedModeToHome();
     return;
   }
@@ -720,8 +886,14 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
       window.datasetStructureJSONObj,
       window.sodaJSONObj["dataset-entity-obj"]
     );
+    // Add imported metadata files to the structure
+    addImportedMetadataFilesToStructure(standardizedDatasetStructure);
+
+    // Create a copy of the dataset structure to avoid modifying the original
+    const datasetStructureCopy = JSON.parse(JSON.stringify(window.sodaJSONObj));
     // Set the standardized dataset structure in the global SODA JSON object (used on the backend)
-    window.sodaJSONObj["soda_json_structure"] = standardizedDatasetStructure;
+    datasetStructureCopy["soda_json_structure"] = standardizedDatasetStructure;
+    datasetStructureCopy["dataset-structure"] = standardizedDatasetStructure;
 
     // Prepare progress UI
     setGuidedProgressBarValue("local", 0);
@@ -736,7 +908,7 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
     // Get dataset size
     const localDatasetSizeReq = await client.post(
       "/curate_datasets/dataset_size",
-      { soda_json_structure: window.sodaJSONObj },
+      { soda_json_structure: datasetStructureCopy },
       { timeout: 0 }
     );
     const localDatasetSizeInBytes = localDatasetSizeReq.data.dataset_size;
@@ -750,8 +922,7 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
     }
 
     // Copy and prepare SODA object
-    const sodaJSONObjCopy = JSON.parse(JSON.stringify(window.sodaJSONObj));
-    sodaJSONObjCopy["generate-dataset"] = {
+    datasetStructureCopy["generate-dataset"] = {
       "dataset-name": sanitizedDatasetName,
       destination: "local",
       "generate-option": "new",
@@ -759,10 +930,10 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
       path: filePath,
     };
 
-    // Remove unnecessary key from sodaJSONObjCopy since we don't need to
+    // Remove unnecessary key from datasetStructureCopy since we don't need to
     // check if the account details are valid during local generation
-    delete sodaJSONObjCopy["ps-account-selected"];
-    delete sodaJSONObjCopy["ps-dataset-selected"];
+    delete datasetStructureCopy["ps-account-selected"];
+    delete datasetStructureCopy["ps-dataset-selected"];
 
     updateDatasetUploadProgressTable("local", {
       "Current action": "Preparing dataset for local generation",
@@ -771,11 +942,12 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
     // Start local generation - catch immediate errors (like validation) without blocking
     client
       .post(
-        "/curate_datasets/curation",
-        { soda_json_structure: sodaJSONObjCopy, resume: false },
+        "/curate_datasets/curation/local_dataset",
+        { soda: datasetStructureCopy },
         { timeout: 0 }
       )
       .catch(async (error) => {
+        clientError(error);
         console.error("Error during local dataset generation:", error);
         await handleLocalGenerationFailure(error);
       });
@@ -798,8 +970,9 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
       Status: "Dataset successfully generated locally",
     });
     window.unHideAndSmoothScrollToElement("guided-section-post-local-generation-success");
+    guidedSetNavLoadingState(false);
   } catch (error) {
-    console.error("Error during local dataset generation:2", error);
+    console.error("Error during local dataset generation:", error);
 
     await handleLocalGenerationFailure(error);
   } finally {
@@ -925,6 +1098,140 @@ const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
     throw new Error(emessage);
   }
 };
+
+const roundToHundredth = (num) => {
+  return Math.round(num * 100) / 100;
+};
+
+export const convertBytesToGb = (bytes) => {
+  return roundToHundredth(bytes / 1024 ** 3);
+};
+
+export const bytesToReadableSize = (bytes) => {
+  if (!Number.isFinite(bytes) || bytes < 0) {
+    return "";
+  }
+
+  if (bytes === 0) {
+    return "0 B";
+  }
+
+  const k = 1000;
+  const units = ["B", "KB", "MB", "GB", "TB", "PB"];
+
+  const unitIndex = Math.floor(Math.log(bytes) / Math.log(k));
+  const value = bytes / Math.pow(k, unitIndex);
+
+  return `${Math.round(value)} ${units[unitIndex]}`;
+};
+// Counts the number of files in the dataset structure
+// Note: This function should only be used for local datasets (Not datasets pulled from Pennsieve)
+export const countFilesInDatasetStructure = (datasetStructure) => {
+  let totalFiles = 0;
+  const keys = Object.keys(datasetStructure);
+  for (const key of keys) {
+    if (key === "files") {
+      totalFiles += Object.keys(datasetStructure[key]).length;
+    }
+    if (key === "folders") {
+      const folders = Object.keys(datasetStructure[key]);
+      for (const folder of folders) {
+        totalFiles += countFilesInDatasetStructure(datasetStructure[key][folder]);
+      }
+    }
+  }
+  return totalFiles;
+};
+
+const setStateComplete = () => {
+  amountOfTimesPennsieveUploadFailed = 0;
+  psGenerateTimer = null;
+
+  setGuidedProgressBarValue("pennsieve", 100);
+  updateDatasetUploadProgressTable("pennsieve", {
+    Status: "Dataset successfully uploaded to Pennsieve",
+  });
+};
+
+const setStateRetrying = () => {
+  updateDatasetUploadProgressTable("pennsieve", {
+    "current action": "Preparing to retry the upload where it left off...",
+  });
+};
+
+// Track the status of local dataset generation
+const trackLocalDatasetGenerationProgress = async (standardizedDatasetStructure) => {
+  const numberOfFilesToGenerate = countFilesInDatasetStructure(standardizedDatasetStructure);
+
+  window.unHideAndSmoothScrollToElement("guided-section-local-generation-status-table");
+
+  const updateProgressUI = (uploadedFiles, elapsedTime) => {
+    const progress = Math.min(100, Math.max(0, (uploadedFiles / numberOfFilesToGenerate) * 100));
+    setGuidedProgressBarValue("local", progress);
+    updateDatasetUploadProgressTable("local", {
+      "Files generated": `${uploadedFiles} of ${numberOfFilesToGenerate}`,
+      "Percent generated": `${progress.toFixed(2)}%`,
+      "Elapsed time": elapsedTime,
+    });
+  };
+
+  while (true) {
+    try {
+      const { status, message, elapsedTime, uploadedFiles, curationErrorMessage } =
+        await fetchProgressData();
+
+      if (curationErrorMessage !== undefined && curationErrorMessage !== "") {
+        console.error("Error message during local dataset generation:", curationErrorMessage);
+      }
+
+      if (curationErrorMessage) {
+        throw new Error(
+          "An error occurred during local dataset generation: " + curationErrorMessage
+        );
+      }
+
+      if (message === "Success: COMPLETED!" || status === "Done") break;
+
+      updateProgressUI(uploadedFiles, elapsedTime);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    } catch (error) {
+      console.error("Error tracking progress:", error);
+      throw new Error(userErrorMessage(error));
+    }
+  }
+};
+
+const createEventData = (
+  value,
+  destination,
+  origin,
+  dataset_name,
+  dataset_id,
+  stage,
+  sessionId
+) => {
+  if (destination === "Pennsieve") {
+    return {
+      value: value,
+      dataset_id: dataset_id,
+      dataset_name: dataset_name,
+      origin: origin,
+      destination: destination,
+      dataset_int_id: window.sodaJSONObj["digital-metadata"]["pennsieve-int-id"],
+      stage: stage,
+      sessionId,
+    };
+  }
+
+  return {
+    value: value,
+    dataset_name: dataset_name,
+    origin: origin,
+    destination: destination,
+    stage: stage,
+  };
+};
+
 const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle) => {
   if (!datasetSubtitle) {
     return;

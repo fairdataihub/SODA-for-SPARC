@@ -509,10 +509,6 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
   });
 });
 
-ipcMain.handle("");
-const wait = async (delay) => {
-  return new Promise((resolve) => setTimeout(resolve, delay));
-};
 // passing in the spreadsheet data to pass to a modal
 // that will have a jspreadsheet for user edits
 ipcMain.on("orcid", (event, url) => {

@@ -3,7 +3,6 @@ import useGlobalStore from "../globalStore";
 import { swalListDoubleAction } from "../../scripts/utils/swal-utils";
 
 export const datasetEntityStructureSlice = (set) => ({
-  speciesList: [],
   datasetEntityArray: [],
   activeFormType: null, // Add this line for form type tracking
   temporaryEntityMetadata: {
@@ -14,12 +13,6 @@ export const datasetEntityStructureSlice = (set) => ({
     performance: {},
   },
 });
-
-export const setSpeciesList = (speciesList) => {
-  useGlobalStore.setState({
-    speciesList,
-  });
-};
 
 export const setDatasetEntityArray = (datasetEntityArray) => {
   useGlobalStore.setState({
@@ -68,6 +61,88 @@ export const normalizeEntityId = (entityPrefix, entityId) => {
 
   // If the ID doesn't have the prefix, add it
   return entityPrefix + trimmedId;
+};
+
+/**
+ * Validates subject metadata for required fields and specific formats.
+ * Throws an Error with a user-friendly message when validation fails.
+ *
+ * @param {Object} metadata - Subject metadata object to validate
+ */
+export const validateEntityMetadata = (entityType, metadata = {}) => {
+  switch (entityType) {
+    case "subject": {
+      if (!metadata || !metadata["subject_id"]) {
+        throw new Error("You must assign this subject an ID.");
+      }
+
+      if (!metadata || !metadata["species"]) {
+        throw new Error("You must provide the species for this subject.");
+      }
+
+      if (
+        metadata["rrid_for_strain"] &&
+        metadata["rrid_for_strain"].length > 5 &&
+        typeof window !== "undefined" &&
+        window.evaluateStringAgainstSdsRequirements &&
+        !window.evaluateStringAgainstSdsRequirements(
+          metadata["rrid_for_strain"],
+          "string-is-valid-rrid"
+        )
+      ) {
+        throw new Error(
+          "Invalid strain RRID format. Use: RRID:rrid_identifier (e.g., RRID:IMSR_JAX:000664)"
+        );
+      }
+
+      if (
+        metadata["protocol_url_or_doi"] &&
+        metadata["protocol_url_or_doi"].length > 5 &&
+        typeof window !== "undefined" &&
+        window.evaluateStringAgainstSdsRequirements &&
+        !window.evaluateStringAgainstSdsRequirements(
+          metadata["protocol_url_or_doi"],
+          "string-is-valid-url-or-doi"
+        )
+      ) {
+        throw new Error(
+          "Invalid protocol URL or DOI format. Please enter a valid HTTPS URL, DOI, or DOI URL."
+        );
+      }
+
+      return;
+    }
+    case "sample": {
+      // Validate protocol URL or DOI for samples when provided
+      if (
+        metadata["protocol_url_or_doi"] &&
+        metadata["protocol_url_or_doi"].length > 5 &&
+        typeof window !== "undefined" &&
+        window.evaluateStringAgainstSdsRequirements &&
+        !window.evaluateStringAgainstSdsRequirements(
+          metadata["protocol_url_or_doi"],
+          "string-is-valid-url-or-doi"
+        )
+      ) {
+        throw new Error(
+          "Invalid protocol URL or DOI format. Please enter a valid HTTPS URL, DOI, or DOI URL."
+        );
+      }
+
+      return;
+    }
+    case "site": {
+      // Ensure site_id exists for site entities
+      if (!metadata || !metadata["site_id"]) {
+        throw new Error("You must assign this site an ID.");
+      }
+
+      return;
+    }
+    default:
+      console.warn(`No specific validation rules defined for entity type: ${entityType}`);
+      return;
+  }
 };
 
 /**
@@ -166,6 +241,10 @@ export const getEntityDataById = (entityId) => {
 
 // Subject management functions
 export const addSubject = (subjectId, metadata = {}) => {
+  // Delegate metadata validation to the shared helper so other flows (spreadsheet, guided)
+  // can reuse the same checks and error messages.
+  validateEntityMetadata("subject", metadata);
+
   // Use normalizeEntityId for consistency
   const normalizedSubjectId = normalizeEntityId("sub-", subjectId);
 
@@ -230,6 +309,8 @@ export const getExistingSubjects = () => {
 
 // Sample management functions
 export const addSample = (subjectId, parentSampleId, sampleId, metadata = {}) => {
+  // Validate sample metadata before making changes
+  validateEntityMetadata("sample", metadata);
   // Use normalizeEntityId for both sample and subject IDs
   const normalizedSampleId = normalizeEntityId("sam-", sampleId);
   const normalizedSubjectId = normalizeEntityId("sub-", subjectId);
@@ -349,6 +430,8 @@ export const modifySampleId = (subjectId, oldSampleId, newSampleId) => {
 
 // Subject site management functions
 export const addSiteToSubject = (subjectId, siteId, metadata = {}) => {
+  // Validate site metadata before adding
+  validateEntityMetadata("site", metadata);
   // Use normalizeEntityId for both site and subject IDs
   const normalizedSiteId = normalizeEntityId("site-", siteId);
   const normalizedSubjectId = normalizeEntityId("sub-", subjectId);
@@ -391,6 +474,8 @@ export const addSiteToSubject = (subjectId, siteId, metadata = {}) => {
 
 // Sample site management functions
 export const addSiteToSample = (subjectId, sampleId, siteId, metadata = {}) => {
+  // Validate site metadata before adding
+  validateEntityMetadata("site", metadata);
   // Use normalizeEntityId for all IDs
   const normalizedSiteId = normalizeEntityId("site-", siteId);
   const normalizedSubjectId = normalizeEntityId("sub-", subjectId);

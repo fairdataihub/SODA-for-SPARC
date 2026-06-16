@@ -3576,44 +3576,6 @@ const handleFileImport = (containerID, filePath) => {
     // log the columnn headers of the first sheet
   }
 };
-const fileNamesWithExtensions = {
-  subjects_pools_samples_structure: ["xlsx"],
-};
-
-document.querySelectorAll(".file-import-container").forEach((fileImportContainer) => {
-  const fileImportContainerId = fileImportContainer.id;
-  const fileName = fileImportContainer.dataset.fileName;
-  fileImportContainer.addEventListener("dragover", (ev) => {
-    ev.preventDefault();
-  });
-  fileImportContainer.addEventListener("drop", (ev) => {
-    ev.preventDefault();
-    const droppedFilePath = ev.dataTransfer.files[0].path;
-    const dropedFileName = path.basename(droppedFilePath).split(".")[0];
-    const droppedFileExtension = path.extname(droppedFilePath).slice(1);
-    // Throw an error if the dropped file is not the expected file
-    if (fileName !== dropedFileName) {
-      notyf.open({
-        duration: "4000",
-        type: "error",
-        message: `Please drop the ${fileName} file`,
-      });
-      return;
-    }
-    //Throw an error if the dropped file does not have an expected extension
-    if (!fileNamesWithExtensions[dropedFileName].includes(droppedFileExtension)) {
-      notyf.open({
-        duration: "4000",
-        type: "error",
-        message: `File extension must be ${fileNamesWithExtensions[dropedFileName].join(", ")}`,
-      });
-      return;
-    }
-
-    // File name and extension has been validated, not handle the file import
-    handleFileImport(fileImportContainerId, droppedFilePath);
-  });
-});
 
 // displays the user selected banner image using Jimp in the edit banner image modal
 //path: array
@@ -4113,6 +4075,20 @@ window.folder_counter = 0;
 
 let amountOfTimesPennsieveUploadFailed = 0;
 
+const restartServer = async () => {
+  try {
+    await window.server.restart(window.port);
+  } catch (err) {
+    console.error("Upload failed:", err.message);
+  } finally {
+    removeListener(); // Always clean up the listener
+  }
+
+  const removeListener = window.server.onRestartProgress((line) => {
+    console.log("Restart progress:", line);
+  });
+};
+
 // Generates a dataset organized in the Organize Dataset feature locally, or on Pennsieve
 const initiate_generate = async (resume = false) => {
   // Disable the Guided Mode sidebar button to prevent the sodaJSONObj from being modified
@@ -4121,6 +4097,9 @@ const initiate_generate = async (resume = false) => {
   document.getElementById("documentation-view").style.pointerEvents = "none";
   // Disable the Contact Us sidebar button to prevent the sodaJSONObj from being modified
   document.getElementById("contact-us-view").style.pointerEvents = "none";
+
+  let UPLOAD_COMPLETE = false;
+  let SERVER_IS_LIVE = true;
 
   // Initiate curation by calling Python function
   var main_curate_status = "Solving";
@@ -4226,7 +4205,7 @@ const initiate_generate = async (resume = false) => {
 
   client
     .post(
-      `/curate_datasets/curation`,
+      `/curate_datasets/curation/manifest_file`,
       {
         soda_json_structure: window.sodaJSONObj,
         resume,
@@ -4237,89 +4216,138 @@ const initiate_generate = async (resume = false) => {
       let { data } = response;
       amountOfTimesPennsieveUploadFailed = 0;
 
+      let manifestId = data["manifest_id"];
+      let sizeOfDataset = data["size_of_dataset"];
+      let numberOfFiles = data["number_of_files"];
+      let listOfFilesToRename = data["list_of_files_to_rename"];
+      let datasetId = data["dataset_id"];
+
+      // TODO: Add code to save progress information to SODA object here so SODA can resume where upload left off
+      // Stage 2 of upload pipeline: Start upload
+
+      // TODO: Add error handling code for random Agent errors. Probably just retry. Could lead to awkward overcounting but not too much ways around it for the progress bar.
+      const removeListener = window.pennsieve.onUploadProgress((line) => {
+        console.log("Upload progress:", line);
+      });
+
+      const subscribe = async (datasetId) => {
+        try {
+          await client.post("/curate_datasets/curation/subscribe", {
+            dataset_id: datasetId,
+            account_name: window.sodaJSONObj["ps-account-selected"]["account-name"],
+          });
+        } catch (e) {
+          clientError(e);
+          if (!e.response && e.request && e.isAxiosError) {
+            await restartServer();
+
+            // CHECK IF UPLOAD IS COMPLETE BEFORE RESTARTING PROGRESS AND SUBSCRIPTION
+            if (!UPLOAD_COMPLETE) {
+              subscribe(datasetId);
+            }
+          }
+        }
+      };
+
+      subscribe(datasetId);
+
+      // TODO: ADD ERROR HANDLING TO RETRY IF UPLOAD FAILS - AUTO RETRY 3 TIMES AS WE NORMALLY DO
+      try {
+        await window.pennsieve.uploadManifest(manifestId);
+        UPLOAD_COMPLETE = true;
+      } catch (err) {
+        console.error("Upload failed:", err.message);
+      } finally {
+        removeListener(); // Always clean up the listener
+      }
+
+      // Stage 3 of upload pipline: Rename files
+
       $("#party-lottie").show();
 
-      main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
-      uploadedFiles = data["main_curation_uploaded_files"];
-      window.pennsieveAgentManifestId = data["local_manifest_id"];
-      window.pennsieveManifestId = data["origin_manifest_id"];
+      // Stage 4 of upload pipeline: Optionally verify files
 
-      window.totalFilesCount = data["main_curation_total_files"];
+      // main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
+      // uploadedFiles = data["main_curation_uploaded_files"];
+      // window.pennsieveAgentManifestId = data["local_manifest_id"];
+      // window.pennsieveManifestId = data["origin_manifest_id"];
 
-      $("#sidebarCollapse").prop("disabled", false);
-      window.log.info("Completed curate function");
+      // window.totalFilesCount = data["main_curation_total_files"];
 
-      // log high level confirmation that a dataset was generated - helps answer how many times were datasets generated in FFMs organize dataset functionality
-      window.electron.ipcRenderer.send(
-        "track-kombucha",
-        kombuchaEnums.Category.PREPARE_DATASETS,
-        kombuchaEnums.Action.GENERATE_DATASET,
-        kombuchaEnums.Label.TOTAL_UPLOADS,
-        kombuchaEnums.Status.SUCCESS,
-        createEventData(1, dataset_destination, datasetLocation, dataset_name)
-      );
+      // $("#sidebarCollapse").prop("disabled", false);
+      // window.log.info("Completed curate function");
 
-      // get the correct value for files and file size for analytics
-      let fileValueToLog = 0;
-      let fileSizeValueToLog = 0;
-      if (dataset_destination == "ps" || dataset_destination == "Pennsieve") {
-        // log the difference again to Google Analytics
-        let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
-        let differenceInBytes = main_total_generate_dataset_size - bytesOnPreviousLogPage;
-        fileValueToLog = finalFilesCount;
-        fileSizeValueToLog = differenceInBytes;
-      } else {
-        // when generating locally we doo not log in increments so we log the total number of files and the total size generated in one go
-        fileValueToLog = uploadedFiles;
-        fileSizeValueToLog = main_total_generate_dataset_size;
-      }
+      // // log high level confirmation that a dataset was generated - helps answer how many times were datasets generated in FFMs organize dataset functionality
+      // window.electron.ipcRenderer.send(
+      //   "track-kombucha",
+      //   kombuchaEnums.Category.PREPARE_DATASETS,
+      //   kombuchaEnums.Action.GENERATE_DATASET,
+      //   kombuchaEnums.Label.TOTAL_UPLOADS,
+      //   kombuchaEnums.Status.SUCCESS,
+      //   createEventData(1, dataset_destination, datasetLocation, dataset_name)
+      // );
 
-      // log the file and file size values to analytics
-      if (fileValueToLog > 0) {
-        window.electron.ipcRenderer.send(
-          "track-kombucha",
-          kombuchaEnums.Category.PREPARE_DATASETS,
-          kombuchaEnums.Action.GENERATE_DATASET,
-          kombuchaEnums.Label.FILES,
-          kombuchaEnums.Status.SUCCESS,
-          createEventData(fileValueToLog, dataset_destination, datasetLocation, dataset_name)
-        );
-      }
+      // // get the correct value for files and file size for analytics
+      // let fileValueToLog = 0;
+      // let fileSizeValueToLog = 0;
+      // if (dataset_destination == "ps" || dataset_destination == "Pennsieve") {
+      //   // log the difference again to Google Analytics
+      //   let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
+      //   let differenceInBytes = main_total_generate_dataset_size - bytesOnPreviousLogPage;
+      //   fileValueToLog = finalFilesCount;
+      //   fileSizeValueToLog = differenceInBytes;
+      // } else {
+      //   // when generating locally we doo not log in increments so we log the total number of files and the total size generated in one go
+      //   fileValueToLog = uploadedFiles;
+      //   fileSizeValueToLog = main_total_generate_dataset_size;
+      // }
 
-      if (fileSizeValueToLog > 0) {
-        window.electron.ipcRenderer.send(
-          "track-kombucha",
-          kombuchaEnums.Category.PREPARE_DATASETS,
-          kombuchaEnums.Action.GENERATE_DATASET,
-          kombuchaEnums.Label.SIZE,
-          kombuchaEnums.Status.SUCCESS,
-          createEventData(fileSizeValueToLog, dataset_destination, datasetLocation, dataset_name)
-        );
-      }
+      // // log the file and file size values to analytics
+      // if (fileValueToLog > 0) {
+      //   window.electron.ipcRenderer.send(
+      //     "track-kombucha",
+      //     kombuchaEnums.Category.PREPARE_DATASETS,
+      //     kombuchaEnums.Action.GENERATE_DATASET,
+      //     kombuchaEnums.Label.FILES,
+      //     kombuchaEnums.Status.SUCCESS,
+      //     createEventData(fileValueToLog, dataset_destination, datasetLocation, dataset_name)
+      //   );
+      // }
 
-      // log folder and file options selected ( can be merge, skip, replace, duplicate)
-      logSelectedUpdateExistingDatasetOptions(datasetLocation);
+      // if (fileSizeValueToLog > 0) {
+      //   window.electron.ipcRenderer.send(
+      //     "track-kombucha",
+      //     kombuchaEnums.Category.PREPARE_DATASETS,
+      //     kombuchaEnums.Action.GENERATE_DATASET,
+      //     kombuchaEnums.Label.SIZE,
+      //     kombuchaEnums.Status.SUCCESS,
+      //     createEventData(fileSizeValueToLog, dataset_destination, datasetLocation, dataset_name)
+      //   );
+      // }
 
-      // hide the retry button
-      $("#wrapper-wrap").show();
-      $("#button-retry").hide();
-      $("#button-generate-validate").show();
+      // // log folder and file options selected ( can be merge, skip, replace, duplicate)
+      // logSelectedUpdateExistingDatasetOptions(datasetLocation);
 
-      // update dataset list; set the dataset id and int id
-      try {
-        const datasetList = await api.getUsersDatasetList(false);
-        window.datasetList = datasetList;
-        window.refreshDatasetList();
-      } catch (error) {
-        clientError(error);
-      }
+      // // hide the retry button
+      // $("#wrapper-wrap").show();
+      // $("#button-retry").hide();
+      // $("#button-generate-validate").show();
 
-      //Allow guided_mode_view to be clicked again
-      document.getElementById("guided_mode_view").style.pointerEvents = "";
-      // Allow documentation view to be clicked again
-      document.getElementById("documentation-view").style.pointerEvents = "";
-      // Allow contact us view to be clicked again
-      document.getElementById("contact-us-view").style.pointerEvents = "";
+      // // update dataset list; set the dataset id and int id
+      // try {
+      //   const datasetList = await api.getUsersDatasetList(false);
+      //   window.datasetList = datasetList;
+      //   window.refreshDatasetList();
+      // } catch (error) {
+      //   clientError(error);
+      // }
+
+      // //Allow guided_mode_view to be clicked again
+      // document.getElementById("guided_mode_view").style.pointerEvents = "";
+      // // Allow documentation view to be clicked again
+      // document.getElementById("documentation-view").style.pointerEvents = "";
+      // // Allow contact us view to be clicked again
+      // document.getElementById("contact-us-view").style.pointerEvents = "";
     })
     .catch(async (error) => {
       amountOfTimesPennsieveUploadFailed += 1;
@@ -4504,7 +4532,7 @@ const initiate_generate = async (resume = false) => {
     });
 
   // Progress tracking function for main curate
-  var timerProgress = setInterval(mainProgressFunction, 1000);
+  var timerProgress = setInterval(mainProgressFunction, 2000);
   var successful = false;
 
   async function mainProgressFunction() {
@@ -4514,6 +4542,27 @@ const initiate_generate = async (resume = false) => {
     } catch (error) {
       clientError(error);
       let emessage = userErrorMessage(error, false);
+
+      if (!error.response && error.request && error.isAxiosError) {
+        clearInterval(timerProgress);
+
+        // IF UPLOAD IS COMPLETE SET PROGRESS BAR TO 100%
+        if (UPLOAD_COMPLETE) {
+          return;
+        }
+
+        // ADD MESSAGE TO PROGRESS BAR THAT SAYS MOMENTARY PAUSE IN PROGRESS TRACKING. TRACKING WILL RESUME SHORTLY....
+
+        // RESTART PROGRESS POLLING ONCE SERVER IS LIVE
+        while (true) {
+          let live = await window.ipcRenderer.invoke("get-server-live-status");
+          if (live) {
+            timerProgress = setInterval(mainProgressFunction, 2000);
+            return;
+          }
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+      }
 
       if (progressStatus.innerHTML.split("<br>").length > 1) {
         progressStatus.innerHTML = `Upload Failed<br>${progressStatus.innerHTML

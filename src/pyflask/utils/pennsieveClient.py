@@ -1,4 +1,4 @@
-from pennsieve2.pennsieve import Pennsieve
+from pennsieve import Pennsieve
 from flask import abort
 import requests
 

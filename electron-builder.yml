@@ -22,6 +22,7 @@ win:
     - from: ./metadata_templates
       to: ./metadata_templates
     - from: ./pyflaskdist/app
+    - from: ./dist/uploadApp.exe
     - from: ./schema
       to: ./schema
   asar: true
@@ -37,6 +38,7 @@ mac:
   entitlementsInherit: ./entitlements.mac.inherit.plist
   extraResources:
     - from: ./pyflaskdist/app
+    - from: ./dist/uploadApp
     - from: ./file_templates
       to: ./file_templates
     - from: ./metadata_templates
@@ -52,6 +54,7 @@ linux:
     - AppImage
   extraResources:
     - from: ./pyflaskdist/app
+    - from: ./dist/uploadApp
     - from: ./file_templates
       to: ./file_templates
     - from: ./pennsieve-io-chain.pem

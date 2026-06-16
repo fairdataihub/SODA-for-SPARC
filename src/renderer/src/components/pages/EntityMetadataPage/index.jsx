@@ -53,6 +53,7 @@ import {
 } from "../../../stores/slices/datasetContentSelectorSlice";
 import {
   addSubject,
+  validateEntityMetadata,
   addSample,
   addSiteToSubject,
   addSiteToSample,
@@ -207,56 +208,10 @@ const EntityMetadataForm = () => {
       if (selectedHierarchyEntity.type === "subject") {
         const currentMetadata = selectedHierarchyEntity.metadata || {};
 
-        if (!currentMetadata["subject_id"]) {
-          window.notyf.open({
-            duration: "4000",
-            type: "error",
-            message: "You must assign this subject an ID.",
-          });
-          return;
-        }
-
-        if (!currentMetadata["species"]) {
-          window.notyf.open({
-            duration: "4000",
-            type: "error",
-            message: "You must provide the species for this subject.",
-          });
-          return;
-        }
-
-        // Validate RRID if provided and over 5 characters
-        if (
-          currentMetadata["rrid_for_strain"] &&
-          currentMetadata["rrid_for_strain"].length > 5 &&
-          !window.evaluateStringAgainstSdsRequirements(
-            currentMetadata["rrid_for_strain"],
-            "string-is-valid-rrid"
-          )
-        ) {
-          window.notyf.open({
-            duration: "4000",
-            type: "error",
-            message:
-              "Invalid strain RRID format. Use: RRID:rrid_identifier (e.g., RRID:IMSR_JAX:000664)",
-          });
-          return;
-        }
-
-        // Validate protocol URL or DOI if provided and over 5 characters
-        if (
-          currentMetadata["protocol_url_or_doi"] &&
-          !window.evaluateStringAgainstSdsRequirements(
-            currentMetadata["protocol_url_or_doi"],
-            "string-is-valid-url-or-doi"
-          )
-        ) {
-          window.notyf.open({
-            duration: "4000",
-            type: "error",
-            message:
-              "Invalid protocol URL or DOI format. Please enter a valid HTTPS URL, DOI, or DOI URL.",
-          });
+        try {
+          validateEntityMetadata("subject", currentMetadata);
+        } catch (error) {
+          window.notyf.open({ duration: "4000", type: "error", message: error.message });
           return;
         }
       }
@@ -269,59 +224,7 @@ const EntityMetadataForm = () => {
         // Create subject entity
         const tempMetadata = useGlobalStore.getState().temporaryEntityMetadata?.subject || {};
 
-        // Validate required fields
-        if (!tempMetadata["subject_id"]) {
-          window.notyf.open({
-            duration: "4000",
-            type: "error",
-            message: "You must assign this subject an ID.",
-          });
-          return;
-        }
-
-        if (!tempMetadata["species"]) {
-          window.notyf.open({
-            duration: "4000",
-            type: "error",
-            message: "You must provide the species for this subject.",
-          });
-          return;
-        }
-
-        // Validate RRID if provided and over 5 characters
-        if (
-          tempMetadata["rrid_for_strain"] &&
-          tempMetadata["rrid_for_strain"].length > 5 &&
-          !window.evaluateStringAgainstSdsRequirements(
-            tempMetadata["rrid_for_strain"],
-            "string-is-valid-rrid"
-          )
-        ) {
-          window.notyf.open({
-            duration: "4000",
-            type: "error",
-            message:
-              "Invalid strain RRID format. Use: RRID:rrid_identifier (e.g., RRID:IMSR_JAX:000664)",
-          });
-          return;
-        }
-
-        // Validate protocol URL or DOI if provided and over 5 characters
-        if (
-          tempMetadata["protocol_url_or_doi"] &&
-          !window.evaluateStringAgainstSdsRequirements(
-            tempMetadata["protocol_url_or_doi"],
-            "string-is-valid-url-or-doi"
-          )
-        ) {
-          window.notyf.open({
-            duration: "4000",
-            type: "error",
-            message:
-              "Invalid protocol URL or DOI format. Please enter a valid HTTPS URL, DOI, or DOI URL.",
-          });
-          return;
-        }
+        // Validation now handled inside `addSubject`
 
         try {
           addSubject(tempMetadata["subject_id"], tempMetadata);
@@ -334,8 +237,6 @@ const EntityMetadataForm = () => {
       } else if (activeFormType === "sample") {
         // Create sample entity
         const tempMetadata = useGlobalStore.getState().temporaryEntityMetadata?.sample || {};
-
-        // Validate protocol URL or DOI if provided and over 5 characters
         if (
           tempMetadata["protocol_url_or_doi"] &&
           !window.evaluateStringAgainstSdsRequirements(

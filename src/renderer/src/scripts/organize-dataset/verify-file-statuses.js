@@ -299,3 +299,5 @@ const populateFailedFilePaths = (targetTableElement, failedFilesPathsList) => {
     cell.appendChild(newText);
   }
 };
+
+export default getVerifiedFilesFromManifest;
