@@ -46,20 +46,16 @@ const restartServer = async (caller) => {
   } catch (err) {
     console.error("Server restart failed:", err.message);
   } finally {
-    console.log("Listener has been removed; Caller: ", caller);
     removeListener(); // Always clean up the listener
     restartServerLock = false;
   }
-  console.log("Returning from restart server after success. Caller: ", caller);
 };
 
 const waitForServerRestart = async () => {
   while (true) {
-    console.log("Getting server live status");
     let live = await window.server.serverIsLive();
 
     if (live) {
-      console.log("Server is live");
       break;
     }
     await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -82,17 +78,14 @@ const subscribe = async (datasetId) => {
   if (subscriberLock) return;
   subscriberLock = true;
   try {
-    console.log(`Started one subscriber session at ${new Date().toLocaleTimeString()}`);
     await client.post("/curate_datasets/curation/subscribe", {
       dataset_id: datasetId,
       account_name: window.sodaJSONObj["ps-account-selected"]["account-name"],
       bytes_per_file_dict: window.sodaJSONObj["upload-progress"]?.["bytesPerFile"] || null,
     });
     subscriberLock = false;
-    console.log(`Returned from one subscriber session at ${new Date().toLocaleTimeString()}. `);
   } catch (e) {
     subscriberLock = false;
-    console.log(`Crashed from one subscriber session at ${new Date().toLocaleTimeString()}. `);
     await window.wait(2000);
     clientError(e);
     if (!e.response && e.request && e.isAxiosError) {
@@ -120,41 +113,7 @@ const subscribe = async (datasetId) => {
 let psGenerateTimer = null;
 
 const trackUpload = (status) => {
-  console.log("**********************Calling trackUpload************************");
   let curationMode = window.sodaJSONObj["curation-mode"];
-
-  console.log(`Files:`);
-  console.log(`${curationMode}`);
-  console.log(
-    `${
-      curationMode == "free-form"
-        ? kombuchaEnums.Category.PREPARE_DATASETS
-        : kombuchaEnums.Category.GUIDED_MODE
-    },`
-  );
-  console.log(`${status}`);
-  console.log(
-    `${
-      window.sodaJSONObj["upload-progress"]
-        ? window.sodaJSONObj["upload-progress"]["number-of-files"]
-        : 0
-    }`
-  );
-  console.log(`${window.sodaJSONObj["generate-dataset"]["dataset-name"]}`);
-  console.log(
-    `${
-      window.sodaJSONObj["upload-progress"]
-        ? window.sodaJSONObj["upload-progress"]["dataset-id"]
-        : "None"
-    }`
-  );
-  console.log(
-    `${
-      window.sodaJSONObj["upload-progress"]
-        ? window.sodaJSONObj["upload-progress"]["current-stage"]
-        : "None"
-    }`
-  );
 
   window.electron.ipcRenderer.send(
     "track-kombucha",
@@ -205,40 +164,6 @@ const trackUpload = (status) => {
       datasetUploadSession.id
     )
   );
-
-  console.log(`Size:`);
-  console.log(
-    `${
-      curationMode == "free-form"
-        ? kombuchaEnums.Category.PREPARE_DATASETS
-        : kombuchaEnums.Category.GUIDED_MODE
-    },`
-  );
-  console.log(`${status}`);
-  console.log(
-    `${
-      window.sodaJSONObj["upload-progress"]
-        ? window.sodaJSONObj["upload-progress"]["size-of-dataset"]
-        : 0
-    }`
-  );
-  console.log(`${window.sodaJSONObj["generate-dataset"]["dataset-name"]}`);
-  console.log(
-    `${
-      window.sodaJSONObj["upload-progress"]
-        ? window.sodaJSONObj["upload-progress"]["dataset-id"]
-        : "None"
-    }`
-  );
-  console.log(
-    `${
-      window.sodaJSONObj["upload-progress"]
-        ? window.sodaJSONObj["upload-progress"]["current-stage"]
-        : "None"
-    }`
-  );
-
-  console.log("Track upload finished");
 };
 
 /**
@@ -577,7 +502,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
 
       return;
     }
-    console.log("In main area commented out auto retry to see if it was causing break");
     amountOfTimesPennsieveUploadFailed += 1;
     automaticRetry(false, emessage);
     guidedSetNavLoadingState(false);
@@ -772,7 +696,6 @@ const trackPennsieveDatasetGenerationProgress = async () => {
         window.sodaJSONObj["upload-progress"]?.["current-stage"] === "complete" &&
         window.sodaJSONObj["upload-progress"]?.["number-of-files"] > 0
       ) {
-        console.log("We are done now");
         setStateComplete();
         // Break the loop to stop tracking progress (upload is complete)
         break;
@@ -782,8 +705,6 @@ const trackPennsieveDatasetGenerationProgress = async () => {
         window.sodaJSONObj["upload-progress"]?.["current-stage"] === "complete" &&
         window.sodaJSONObj["upload-progress"]?.["number-of-files"] === 0
       ) {
-        console.log("We are done now");
-
         // Handle the special case where no files were uploaded but it's not an error
         // (e.g., skip existing files option was selected and all files already exist on Pennsieve)
         amountOfTimesPennsieveUploadFailed = 0;
@@ -824,9 +745,6 @@ const trackPennsieveDatasetGenerationProgress = async () => {
       progressMonitorLock = false;
       // Check for network error
       if (!error.response && error.request && error.isAxiosError) {
-        console.log(
-          "Inside track generation error code. About to try to restart server and wait for it."
-        );
         clientError(error);
         try {
           await restartServer("progress tracking");

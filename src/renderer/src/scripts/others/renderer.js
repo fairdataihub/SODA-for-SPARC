@@ -4081,7 +4081,6 @@ const restartServer = async () => {
   } catch (err) {
     console.error("Upload failed:", err.message);
   } finally {
-    console.log("Server is live");
     removeListener(); // Always clean up the listener
   }
 
@@ -4217,7 +4216,6 @@ const initiate_generate = async (resume = false) => {
       let { data } = response;
       amountOfTimesPennsieveUploadFailed = 0;
 
-      console.log("Done Running [ /curation/manifest_file]");
       let manifestId = data["manifest_id"];
       let sizeOfDataset = data["size_of_dataset"];
       let numberOfFiles = data["number_of_files"];
@@ -4234,18 +4232,11 @@ const initiate_generate = async (resume = false) => {
 
       const subscribe = async (datasetId) => {
         try {
-          console.log(`Started one subscriber session at ${new Date().toLocaleTimeString()}`);
           await client.post("/curate_datasets/curation/subscribe", {
             dataset_id: datasetId,
             account_name: window.sodaJSONObj["ps-account-selected"]["account-name"],
           });
-          console.log(
-            `Returned from one subscriber session at ${new Date().toLocaleTimeString()}. `
-          );
         } catch (e) {
-          console.log(
-            `Crashed from one subscriber session at ${new Date().toLocaleTimeString()}. `
-          );
           clientError(e);
           if (!e.response && e.request && e.isAxiosError) {
             await restartServer();
@@ -4553,7 +4544,6 @@ const initiate_generate = async (resume = false) => {
       let emessage = userErrorMessage(error, false);
 
       if (!error.response && error.request && error.isAxiosError) {
-        console.log("ERROR SERVER CRASHED");
         clearInterval(timerProgress);
 
         // IF UPLOAD IS COMPLETE SET PROGRESS BAR TO 100%
