@@ -12,7 +12,6 @@ import {
 import {
   setActiveEntity,
   modifyDatasetEntityForRelativeFilePath,
-  modifyDatasetEntityForMultipleRelativePaths,
   checkIfRelativePathBelongsToEntity,
   checkIfFolderBelongsToEntity,
 } from "../../../stores/slices/datasetEntitySelectorSlice";
@@ -138,7 +137,9 @@ const EntityDataSelectorPage = ({
   const handleFolderClick = async (relativePath, folderIsSelected, mutuallyExclusiveSelection) => {
     const action = folderIsSelected ? "remove" : "add";
     const { childrenFileRelativePaths } = getFolderDetailsByRelativePath(relativePath);
-    if (childrenFileRelativePaths.length && childrenFileRelativePaths.length > 400) {
+
+    // Start a timer that shows loading dialog if operation takes too long (500ms)
+    const loadingTimeoutId = setTimeout(() => {
       swalShowLoading(
         folderIsSelected
           ? `Deselecting ${childrenFileRelativePaths.length} file${
@@ -149,10 +150,10 @@ const EntityDataSelectorPage = ({
             } within the selected folder...`,
         `Please wait while SODA processes your ${folderIsSelected ? "deselection" : "selection"}.`
       );
-    }
+    }, 500);
 
     // Batch all modifications into a single state update for better performance
-    modifyDatasetEntityForMultipleRelativePaths(
+    modifyDatasetEntityForRelativeFilePath(
       entityType,
       activeEntity,
       childrenFileRelativePaths,
@@ -160,6 +161,8 @@ const EntityDataSelectorPage = ({
       mutuallyExclusiveSelection
     );
 
+    // Clear the timeout and close dialog if it's still open
+    clearTimeout(loadingTimeoutId);
     Swal.close();
 
     reRenderTreeView();

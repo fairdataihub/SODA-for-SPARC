@@ -253,6 +253,8 @@ export const getSubjectEntities = () => {
 };
 
 // Remove default value to require explicit parameter
+// Unified method to modify entity for one or multiple file paths
+// entityRelativePath can be a string or an array of strings for batch operations
 export const modifyDatasetEntityForRelativeFilePath = (
   entityType,
   entityName,
@@ -264,74 +266,10 @@ export const modifyDatasetEntityForRelativeFilePath = (
     return;
   }
 
-  useGlobalStore.setState(
-    produce((state) => {
-      // Ensure the entityType object exists
-      if (!state.datasetEntityObj) {
-        state.datasetEntityObj = {};
-      }
-
-      if (!state.datasetEntityObj[entityType]) {
-        state.datasetEntityObj[entityType] = {};
-      }
-
-      if (!state.datasetEntityObj[entityType][entityName]) {
-        state.datasetEntityObj[entityType][entityName] = {};
-      }
-
-      const targetEntity = state.datasetEntityObj[entityType][entityName];
-
-      switch (action) {
-        case "toggle":
-          if (targetEntity[entityRelativePath]) {
-            delete targetEntity[entityRelativePath];
-          } else {
-            targetEntity[entityRelativePath] = true;
-            // Only remove from other entities if mutuallyExclusive is true
-            if (mutuallyExclusive) {
-              removeFromOtherEntities(
-                state.datasetEntityObj[entityType],
-                entityName,
-                entityRelativePath
-              );
-            }
-          }
-          break;
-
-        case "add":
-          targetEntity[entityRelativePath] = true;
-          // Only remove from other entities if mutuallyExclusive is true
-          if (mutuallyExclusive) {
-            removeFromOtherEntities(
-              state.datasetEntityObj[entityType],
-              entityName,
-              entityRelativePath
-            );
-          }
-          break;
-
-        case "remove":
-          delete targetEntity[entityRelativePath];
-          break;
-
-        default:
-          console.error(`Unsupported action: ${action}`);
-      }
-    })
-  );
-};
-
-// Batch modify multiple file paths in a single state update (much faster than individual updates)
-export const modifyDatasetEntityForMultipleRelativePaths = (
-  entityType,
-  entityName,
-  entityRelativePaths,
-  action,
-  mutuallyExclusive
-) => {
-  if (!entityType || !entityName || !entityRelativePaths || entityRelativePaths.length === 0) {
-    return;
-  }
+  // Normalize input to always work with an array internally
+  const pathsToModify = Array.isArray(entityRelativePath)
+    ? entityRelativePath
+    : [entityRelativePath];
 
   useGlobalStore.setState(
     produce((state) => {
@@ -350,37 +288,31 @@ export const modifyDatasetEntityForMultipleRelativePaths = (
 
       const targetEntity = state.datasetEntityObj[entityType][entityName];
 
-      // Process all file paths in one loop
-      for (const entityRelativePath of entityRelativePaths) {
+      // Process all paths in one loop
+      for (const path of pathsToModify) {
         switch (action) {
           case "toggle":
-            if (targetEntity[entityRelativePath]) {
-              delete targetEntity[entityRelativePath];
+            if (targetEntity[path]) {
+              delete targetEntity[path];
             } else {
-              targetEntity[entityRelativePath] = true;
+              targetEntity[path] = true;
+              // Only remove from other entities if mutuallyExclusive is true
               if (mutuallyExclusive) {
-                removeFromOtherEntities(
-                  state.datasetEntityObj[entityType],
-                  entityName,
-                  entityRelativePath
-                );
+                removeFromOtherEntities(state.datasetEntityObj[entityType], entityName, path);
               }
             }
             break;
 
           case "add":
-            targetEntity[entityRelativePath] = true;
+            targetEntity[path] = true;
+            // Only remove from other entities if mutuallyExclusive is true
             if (mutuallyExclusive) {
-              removeFromOtherEntities(
-                state.datasetEntityObj[entityType],
-                entityName,
-                entityRelativePath
-              );
+              removeFromOtherEntities(state.datasetEntityObj[entityType], entityName, path);
             }
             break;
 
           case "remove":
-            delete targetEntity[entityRelativePath];
+            delete targetEntity[path];
             break;
 
           default:
