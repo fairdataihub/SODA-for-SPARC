@@ -12,6 +12,7 @@ import {
 import {
   setActiveEntity,
   modifyDatasetEntityForRelativeFilePath,
+  modifyDatasetEntityForMultipleRelativePaths,
   checkIfRelativePathBelongsToEntity,
   checkIfFolderBelongsToEntity,
 } from "../../../stores/slices/datasetEntitySelectorSlice";
@@ -149,20 +150,15 @@ const EntityDataSelectorPage = ({
         `Please wait while SODA processes your ${folderIsSelected ? "deselection" : "selection"}.`
       );
     }
-    for (let index = 0; index < childrenFileRelativePaths.length; index++) {
-      const filePath = childrenFileRelativePaths[index];
-      modifyDatasetEntityForRelativeFilePath(
-        entityType,
-        activeEntity,
-        filePath,
-        action,
-        mutuallyExclusiveSelection
-      );
-      // If the index divided by 50 equals 0, yield control to the event loop
-      if (index % 50 === 0) {
-        await new Promise((resolve) => setTimeout(resolve, 0));
-      }
-    }
+
+    // Batch all modifications into a single state update for better performance
+    modifyDatasetEntityForMultipleRelativePaths(
+      entityType,
+      activeEntity,
+      childrenFileRelativePaths,
+      action,
+      mutuallyExclusiveSelection
+    );
 
     Swal.close();
 

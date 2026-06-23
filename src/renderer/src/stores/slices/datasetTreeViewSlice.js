@@ -158,6 +158,7 @@ export const filePassesAllFilters = ({
 };
 
 export const reRenderTreeView = (resetOpenFolders = false) => {
+  const startTime = performance.now();
   try {
     const pathToRender = useGlobalStore.getState().pathToRender;
     const datasetStructureJSONObj = useGlobalStore.getState().datasetStructureJSONObj;
@@ -396,6 +397,9 @@ export const reRenderTreeView = (resetOpenFolders = false) => {
       datasetRenderArray,
       datasetRenderArrayIsLoading: false,
     });
+
+    const endTime = performance.now();
+    console.log(`reRenderTreeView completed in ${(endTime - startTime).toFixed(2)}ms`);
   } catch (error) {
     console.error("Error in reRenderTreeView:", error);
   }

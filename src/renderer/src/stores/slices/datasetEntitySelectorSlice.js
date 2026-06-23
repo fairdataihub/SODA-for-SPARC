@@ -321,6 +321,76 @@ export const modifyDatasetEntityForRelativeFilePath = (
   );
 };
 
+// Batch modify multiple file paths in a single state update (much faster than individual updates)
+export const modifyDatasetEntityForMultipleRelativePaths = (
+  entityType,
+  entityName,
+  entityRelativePaths,
+  action,
+  mutuallyExclusive
+) => {
+  if (!entityType || !entityName || !entityRelativePaths || entityRelativePaths.length === 0) {
+    return;
+  }
+
+  useGlobalStore.setState(
+    produce((state) => {
+      // Ensure the entityType object exists
+      if (!state.datasetEntityObj) {
+        state.datasetEntityObj = {};
+      }
+
+      if (!state.datasetEntityObj[entityType]) {
+        state.datasetEntityObj[entityType] = {};
+      }
+
+      if (!state.datasetEntityObj[entityType][entityName]) {
+        state.datasetEntityObj[entityType][entityName] = {};
+      }
+
+      const targetEntity = state.datasetEntityObj[entityType][entityName];
+
+      // Process all file paths in one loop
+      for (const entityRelativePath of entityRelativePaths) {
+        switch (action) {
+          case "toggle":
+            if (targetEntity[entityRelativePath]) {
+              delete targetEntity[entityRelativePath];
+            } else {
+              targetEntity[entityRelativePath] = true;
+              if (mutuallyExclusive) {
+                removeFromOtherEntities(
+                  state.datasetEntityObj[entityType],
+                  entityName,
+                  entityRelativePath
+                );
+              }
+            }
+            break;
+
+          case "add":
+            targetEntity[entityRelativePath] = true;
+            if (mutuallyExclusive) {
+              removeFromOtherEntities(
+                state.datasetEntityObj[entityType],
+                entityName,
+                entityRelativePath
+              );
+            }
+            break;
+
+          case "remove":
+            delete targetEntity[entityRelativePath];
+            break;
+
+          default:
+            console.error(`Unsupported action: ${action}`);
+        }
+      }
+    })
+  );
+};
+
 // Remove a file path from all entities except the specified target
 const removeFromOtherEntities = (entityEntries, targetEntityName, entityRelativePath) => {
   // Remove the file path from all other entities
