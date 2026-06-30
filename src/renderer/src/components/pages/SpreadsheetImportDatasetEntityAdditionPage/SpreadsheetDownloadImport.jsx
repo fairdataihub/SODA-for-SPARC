@@ -80,7 +80,7 @@ export const DownloadCard = ({ entityType, config, locked = false }) => {
 
       <Box mt="md" mb="lg">
         <Stack spacing="md">
-          <Group spacing="xs" noWrap>
+          <Group spacing="xs" wrap="nowrap">
             <ThemeIcon
               size="lg"
               variant="light"
@@ -99,7 +99,7 @@ export const DownloadCard = ({ entityType, config, locked = false }) => {
               </Text>
             </Box>
           </Group>
-          <Group spacing="xs" noWrap>
+          <Group spacing="xs" wrap="nowrap">
             <ThemeIcon
               size="lg"
               variant="light"
@@ -126,7 +126,7 @@ export const DownloadCard = ({ entityType, config, locked = false }) => {
         variant="light"
         color={config.color}
         onClick={() => handleDownloadTemplate(entityType, helperConfig[config.metadataFileName])}
-        leftIcon={<IconDownload size={16} />}
+        leftSection={<IconDownload size={16} />}
       >
         Download {config["metadataFileName"] || `${entityType}.xlsx`}
       </Button>
@@ -171,7 +171,7 @@ export const ImportCard = ({ entityType, config, importResult, locked = false })
 
       <Box mt="md" mb="lg">
         <Stack spacing="md">
-          <Group spacing="xs" noWrap>
+          <Group spacing="xs" wrap="nowrap">
             <ThemeIcon
               size="lg"
               variant="light"
@@ -190,7 +190,7 @@ export const ImportCard = ({ entityType, config, importResult, locked = false })
               </Text>
             </Box>
           </Group>
-          <Group spacing="xs" noWrap>
+          <Group spacing="xs" wrap="nowrap">
             <ThemeIcon
               size="lg"
               variant="light"
@@ -217,7 +217,7 @@ export const ImportCard = ({ entityType, config, importResult, locked = false })
         variant="light"
         color={config.color}
         onClick={() => handleEntityFileImport(entityType)}
-        leftIcon={<IconUpload size={16} />}
+        leftSection={<IconUpload size={16} />}
       >
         Import {config["metadataFileName"] || `${entityType}.xlsx`}
       </Button>
