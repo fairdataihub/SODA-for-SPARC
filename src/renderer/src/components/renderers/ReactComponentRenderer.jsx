@@ -36,6 +36,7 @@ import HeroCard from "../cards/HeroCard";
 import { Divider } from "@mantine/core";
 import DataCategoriesQuestionnairePage from "../pages/DataCategoriesQuestionnairePage";
 import InfoList from "../shared/InfoList";
+import DatasetStructureVisualAid from "../common/DatasetStructureVisualization";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
 while (!window.htmlSectionsAdded) {
@@ -286,6 +287,9 @@ const componentTypeRenderers = {
       id: componentSlot.id,
     };
     renderComponent(componentSlot, <InfoList {...props} />);
+  },
+  "dataset-structure-visual-aid": (componentSlot) => {
+    renderComponent(componentSlot, <DatasetStructureVisualAid />);
   },
 };
 

@@ -3,6 +3,7 @@ import { IconInfoCircle } from "@tabler/icons-react";
 import SodaPaper from "../SodaPaper";
 import useGlobalStore from "../../../../stores/globalStore";
 import ExternalLink from "../../../buttons/ExternalLink";
+import DatasetStructureVisualAid from "../../../common/DatasetStructureVisualization";
 
 const dropDownIcons = {
   info: <IconInfoCircle size={18} color="var(--mantine-color-primary-6)" />,
@@ -254,6 +255,11 @@ const DropDownNote = ({ id }) => {
           </List.Item>
         </List>
       ),
+    },
+    "dataset-structure-visual-aid": {
+      dropDownIcon: "info",
+      dropDownButtonText: "SDS at a Glance",
+      dropDownNote: <DatasetStructureVisualAid />,
     },
   };
 
