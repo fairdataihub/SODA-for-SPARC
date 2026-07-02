@@ -258,7 +258,7 @@ const DropDownNote = ({ id }) => {
     },
     "dataset-structure-visual-aid": {
       dropDownIcon: "info",
-      dropDownButtonText: "SDS at a Glance",
+      dropDownButtonText: "Overview of the SDS",
       dropDownNote: <DatasetStructureVisualAid />,
     },
   };

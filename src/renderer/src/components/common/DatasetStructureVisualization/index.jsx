@@ -1,4 +1,14 @@
-import { Flex, Card, Box, Text, ColorSwatch, Center, Group, Tooltip } from "@mantine/core";
+import {
+  Flex,
+  Card,
+  Box,
+  Text,
+  ColorSwatch,
+  Center,
+  Group,
+  Tooltip,
+  ScrollArea,
+} from "@mantine/core";
 import { left } from "@popperjs/core";
 import SodaGreenPaper from "../../utils/ui/SodaGreenPaper";
 
@@ -14,8 +24,7 @@ const folderCardConfig = {
   primary: {
     title: "primary",
     required: true,
-    labelText:
-      "The primary folder holds all data files for experimental subjects/samples. Data is processed and analysis ready.",
+    labelText: "Contains all data that is processed and analysis ready.",
   },
   derivative: {
     title: "derivative",
@@ -25,11 +34,11 @@ const folderCardConfig = {
   source: {
     title: "source",
     required: false,
-    labelText: "The source folder holds unaltered, raw files from an experiment.",
+    labelText: "Contains unaltered, raw files.",
   },
   protocol: {
     title: "protocol",
-    labelText: "Place files that describe the experimental protocols used to gather your data.",
+    labelText: "Contains files that describe the experimental protocols used to gather your data.",
   },
   docs: {
     title: "docs",
@@ -39,7 +48,7 @@ const folderCardConfig = {
   code: {
     title: "code",
     required: false,
-    labelText: "Place any code used in the generation of your data here.",
+    labelText: "Contains any code used in the generation of your data.",
   },
 };
 
@@ -106,7 +115,12 @@ const DatasetStructureVisualAid = () => {
   };
 
   return (
-    <Box>
+    <Box mah="40rem">
+      <Text size="sm" mt="md">
+        The SDS defines folders and metadata files for organizing and describing your dataset. These
+        folders and metadata files all sit at the root of the dataset. The cards below can help you
+        learn more about the individual SDS folders and metadata files.
+      </Text>
       <div style={{ width: "100%", margin: "auto" }}>
         <Flex direction="row" justify="flex-end" p="md" columnGap="sm" mr="3.2rem" mt="1rem">
           <Flex direction="row" justify="flex-start">
@@ -122,77 +136,78 @@ const DatasetStructureVisualAid = () => {
           </Flex>
         </Flex>
       </div>
-      <Flex
-        mih={50}
-        w="100%"
-        gap="md"
-        justify="center"
-        align="center"
-        direction="row"
-        wrap="wrap"
-        mt="lg"
-      >
-        {Object.entries(folderCardConfig).map(([key, config], value) => {
-          return (
-            <Card
-              key={key}
-              withBorder
-              shadow="sm"
-              bg={config.required ? "#A8D08D" : "white"}
-              w="15rem"
-              h="13rem"
-            >
-              <Flex direction="column">
-                <Card.Section withBorder inheritPadding py="md">
-                  <IconFolder />
-                </Card.Section>
-                <Card.Section withBorder inheritPadding py="md">
-                  <Text fw={500}>{config.title}</Text>
-                  <Text fw={100} size="xs" textwrap="wrap">
-                    {config.labelText}
-                  </Text>
-                </Card.Section>
-              </Flex>
-            </Card>
-          );
-        })}
-      </Flex>
-
-      <Flex
-        mih={50}
-        gap="md"
-        justify="center"
-        align="center"
-        direction="row"
-        wrap="wrap"
-        mt="lg"
-        w="100%"
-      >
-        {Object.entries(metadataCardConfig).map(([key, config], value) => {
-          return (
-            <Card
-              key={key}
-              withBorder
-              shadow="sm"
-              bg={config.required ? "#A8D08D" : "white"}
-              w="15rem"
-              h="13rem"
-            >
-              <Flex direction="column">
-                <Card.Section withBorder inheritPadding py="md">
-                  <IconFileSpreadsheet />
-                </Card.Section>
-                <Card.Section withBorder inheritPadding py="md">
-                  <Text fw={500}>{config.title}</Text>
-                  <Text fw={100} size="xs" textwrap="wrap">
-                    {config.labelText}
-                  </Text>
-                </Card.Section>
-              </Flex>
-            </Card>
-          );
-        })}
-      </Flex>
+      <ScrollArea h={460} offsetScrollbars>
+        <Flex
+          mih={50}
+          w="100%"
+          gap="md"
+          justify="center"
+          align="center"
+          direction="row"
+          wrap="wrap"
+          mt="lg"
+        >
+          {Object.entries(folderCardConfig).map(([key, config], value) => {
+            return (
+              <Card
+                key={key}
+                withBorder
+                shadow="sm"
+                bg={config.required ? "#A8D08D" : "white"}
+                w="15rem"
+                h="13rem"
+              >
+                <Flex direction="column">
+                  <Card.Section withBorder inheritPadding py="md">
+                    <IconFolder />
+                  </Card.Section>
+                  <Card.Section withBorder inheritPadding py="md">
+                    <Text fw={500}>{config.title}</Text>
+                    <Text fw={100} size="xs" textwrap="wrap">
+                      {config.labelText}
+                    </Text>
+                  </Card.Section>
+                </Flex>
+              </Card>
+            );
+          })}
+        </Flex>
+        <Flex
+          mih={50}
+          gap="md"
+          justify="center"
+          align="center"
+          direction="row"
+          wrap="wrap"
+          mt="lg"
+          w="100%"
+        >
+          {Object.entries(metadataCardConfig).map(([key, config], value) => {
+            return (
+              <Card
+                key={key}
+                withBorder
+                shadow="sm"
+                bg={config.required ? "#A8D08D" : "white"}
+                w="15rem"
+                h="13rem"
+              >
+                <Flex direction="column">
+                  <Card.Section withBorder inheritPadding py="md">
+                    <IconFileSpreadsheet />
+                  </Card.Section>
+                  <Card.Section withBorder inheritPadding py="md">
+                    <Text fw={500}>{config.title}</Text>
+                    <Text fw={100} size="xs" textwrap="wrap">
+                      {config.labelText}
+                    </Text>
+                  </Card.Section>
+                </Flex>
+              </Card>
+            );
+          })}
+        </Flex>
+      </ScrollArea>
     </Box>
   );
 };
