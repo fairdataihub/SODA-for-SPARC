@@ -56,12 +56,18 @@ if (!window.fs.existsSync(guidedProgressFilePath)) {
  *
  */
 export const guidedSaveProgress = async () => {
+  const startTime = performance.now();
+
   // Store global variable values to the progress file before saving
   window.sodaJSONObj["dataset-structure"] = window.datasetStructureJSONObj;
 
   const guidedProgressFileName = window.sodaJSONObj?.["save-file-name"];
   // If there is no guidedProgressFileName, return (nothing to save)
   if (!window.sodaJSONObj?.["save-file-name"]) {
+    const endTime = performance.now();
+    console.log(
+      `guidedSaveProgress completed in ${(endTime - startTime).toFixed(2)}ms (early return)`
+    );
     return;
   }
 
@@ -76,6 +82,9 @@ export const guidedSaveProgress = async () => {
   window.sodaJSONObj["last-version-of-soda-used"] = appVersion;
 
   window.fs.writeFileSync(guidedFilePath, JSON.stringify(window.sodaJSONObj, null, 2));
+
+  const endTime = performance.now();
+  console.log(`guidedSaveProgress completed in ${(endTime - startTime).toFixed(2)}ms`);
 };
 
 /**

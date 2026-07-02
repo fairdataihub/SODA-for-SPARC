@@ -594,7 +594,7 @@ const trackPennsieveDatasetGenerationProgress = async () => {
       if (Number.isInteger(uploadedFiles) && uploadedFiles > 0) {
         if (!window.sodaJSONObj["at-least-one-file-uploaded-to-pennsieve"]) {
           window.sodaJSONObj["at-least-one-file-uploaded-to-pennsieve"] = true;
-          guidedSaveProgress();
+          await guidedSaveProgress();
         }
       }
 
@@ -620,7 +620,7 @@ const trackPennsieveDatasetGenerationProgress = async () => {
         }
 
         window.sodaJSONObj["upload-progress"]["bytesPerFile"] = bytesPerFile;
-        guidedSaveProgress();
+        await guidedSaveProgress();
 
         // Default progress update
         const progress = Math.min(
