@@ -759,7 +759,7 @@ window.guidedOpenManifestEditSwal = async () => {
         headers: result[0],
         data: result[1],
       };
-      await guidedSaveProgress();
+      await guidedSaveProgress("window.guidedOpenManifestEditSwal");
     }
   });
 };

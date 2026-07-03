@@ -770,7 +770,7 @@ window.openPage = async (targetPageID) => {
 
     // Set the last opened page and save it
     window.sodaJSONObj["page-before-exit"] = targetPageID;
-    await guidedSaveProgress();
+    await guidedSaveProgress("window.openPage: Saving last opened page before exit");
   } catch (error) {
     console.error("Error opening page:", targetPageID);
     console.error("Error: ", error);

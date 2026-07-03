@@ -55,36 +55,49 @@ if (!window.fs.existsSync(guidedProgressFilePath)) {
  *              Creates the directory if it does not exist. The progress file is named after the dataset the user is working on.
  *
  */
-export const guidedSaveProgress = async () => {
+export const guidedSaveProgress = async (message) => {
   const startTime = performance.now();
 
-  // Store global variable values to the progress file before saving
-  window.sodaJSONObj["dataset-structure"] = window.datasetStructureJSONObj;
+  if (message) {
+    console.log(`guidedSaveProgress: ${message} (start)`);
+  }
 
-  const guidedProgressFileName = window.sodaJSONObj?.["save-file-name"];
-  // If there is no guidedProgressFileName, return (nothing to save)
-  if (!window.sodaJSONObj?.["save-file-name"]) {
-    const endTime = performance.now();
+  const progress = window.sodaJSONObj;
+  const guidedProgressFileName = progress?.["save-file-name"];
+
+  if (!guidedProgressFileName) {
     console.log(
-      `guidedSaveProgress completed in ${(endTime - startTime).toFixed(2)}ms (early return)`
+      `guidedSaveProgress completed in ${(performance.now() - startTime).toFixed(
+        2
+      )}ms (early return)`
     );
     return;
   }
 
-  //Destination: HOMEDIR/SODA/Guided-Progress
-  window.sodaJSONObj["last-modified"] = new Date();
+  // Store global variable values to the progress file before saving
+  progress["dataset-structure"] = window.datasetStructureJSONObj;
+  progress["last-modified"] = new Date();
 
-  const guidedFilePath = window.path.join(guidedProgressFilePath, guidedProgressFileName + ".json");
-  window.sodaJSONObj["save-file-path"] = guidedFilePath;
+  const guidedFilePath = window.path.join(guidedProgressFilePath, `${guidedProgressFileName}.json`);
 
-  // Save the current version of SODA as the user should be taken back to the first page when the app is updated
-  const appVersion = useGlobalStore.getState().appVersion;
-  window.sodaJSONObj["last-version-of-soda-used"] = appVersion;
+  progress["save-file-path"] = guidedFilePath;
 
-  window.fs.writeFileSync(guidedFilePath, JSON.stringify(window.sodaJSONObj, null, 2));
+  // Save the current version of SODA
+  progress["last-version-of-soda-used"] = useGlobalStore.getState().appVersion;
 
-  const endTime = performance.now();
-  console.log(`guidedSaveProgress completed in ${(endTime - startTime).toFixed(2)}ms`);
+  const json = JSON.stringify(progress, null, 2);
+
+  await new Promise((resolve, reject) => {
+    window.fs.writeFile(guidedFilePath, json, (err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
+  });
+
+  console.log(`guidedSaveProgress completed in ${(performance.now() - startTime).toFixed(2)}ms`);
 };
 
 /**
@@ -106,7 +119,9 @@ window.savePageChanges = async (pageBeingLeftID) => {
     window.sodaJSONObj["dataset-entity-array"] = datasetEntityArray;
     // Save progress early because a lot of work managing entities could have happened here
     // and we don't want the user to lost it.
-    await guidedSaveProgress();
+    await guidedSaveProgress(
+      "Beginning of window.savePageChanges: Saving progress before leaving page " + pageBeingLeftID
+    );
 
     // Check if the page being left is part of a page set
     const pageBeingLeftElement = document.getElementById(pageBeingLeftID);
@@ -485,7 +500,10 @@ window.savePageChanges = async (pageBeingLeftID) => {
 
         // Save progress early because a lot of work managing entities could have happened here
         // and we don't want the user to lost it.
-        await guidedSaveProgress();
+        await guidedSaveProgress(
+          "Special save: Saving progress on entity metadata page before leaving page " +
+            pageBeingLeftID
+        );
 
         // Check that the species was added for each subject in the datasetEntityArray
         // (This is to throw an error for old progress files that did not require species)
@@ -665,7 +683,9 @@ window.savePageChanges = async (pageBeingLeftID) => {
     startOrStopAnimationsInContainer(pageBeingLeftID, "stop");
 
     try {
-      await guidedSaveProgress();
+      await guidedSaveProgress(
+        "End of window.savePageChanges: Saving progress after leaving page " + pageBeingLeftID
+      );
     } catch (error) {
       window.log.error(error);
     }

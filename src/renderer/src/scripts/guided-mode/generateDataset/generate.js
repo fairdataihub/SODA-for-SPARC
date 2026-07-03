@@ -430,7 +430,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         "current-stage": !uploadData["manifest_id"] ? "rename" : "upload",
         status: !uploadData["manifest_id"] ? "setup" : "in progress",
       };
-      await guidedSaveProgress();
+      await guidedSaveProgress("STAGE 1: Create Manifest File + Upload Data");
     }
 
     // STAGE 2: Upload Using Agent + Subscribe for Progress
@@ -445,7 +445,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
           ? "rename"
           : "complete";
       window.sodaJSONObj["upload-progress"]["origin-manifest-id"] = origin_manifest_id;
-      await guidedSaveProgress();
+      await guidedSaveProgress("STAGE 2: Upload Using Agent + Subscribe for Progress");
     }
 
     // STAGE 3: RENAME FILES
@@ -454,7 +454,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       await renameFiles();
       trackUpload(kombuchaEnums.Status.SUCCESS);
       window.sodaJSONObj["upload-progress"]["status"] = "complete";
-      await guidedSaveProgress();
+      await guidedSaveProgress("STAGE 3: RENAME FILES");
       await window.wait(2000);
     }
 
@@ -594,7 +594,9 @@ const trackPennsieveDatasetGenerationProgress = async () => {
       if (Number.isInteger(uploadedFiles) && uploadedFiles > 0) {
         if (!window.sodaJSONObj["at-least-one-file-uploaded-to-pennsieve"]) {
           window.sodaJSONObj["at-least-one-file-uploaded-to-pennsieve"] = true;
-          await guidedSaveProgress();
+          await guidedSaveProgress(
+            "trackPennsieveDatasetGenerationProgress: at least one file uploaded to Pennsieve"
+          );
         }
       }
 
@@ -620,7 +622,7 @@ const trackPennsieveDatasetGenerationProgress = async () => {
         }
 
         window.sodaJSONObj["upload-progress"]["bytesPerFile"] = bytesPerFile;
-        await guidedSaveProgress();
+        await guidedSaveProgress("trackPennsieveDatasetGenerationProgress: upload in progress");
 
         // Default progress update
         const progress = Math.min(
@@ -1088,7 +1090,7 @@ const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
     // Refresh dataset list and save progress
     window.refreshDatasetList();
     window.addNewDatasetToList(datasetName);
-    await guidedSaveProgress();
+    await guidedSaveProgress("guidedCreateOrRenameDataset: Created new dataset on Pennsieve");
 
     return newId;
   } catch (error) {
@@ -1267,7 +1269,7 @@ const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle)
     datasetSubtitleUploadText.innerHTML = `Successfully added dataset subtitle: ${datasetSubtitle}`;
     guidedUploadStatusIcon("guided-dataset-subtitle-upload-status", "success");
     window.sodaJSONObj["previously-uploaded-data"]["subtitle"] = datasetSubtitle;
-    await guidedSaveProgress();
+    await guidedSaveProgress("STAGE 4: Add Dataset Subtitle");
 
     // Send successful dataset subtitle upload event to Kombucha
     window.electron.ipcRenderer.send(
@@ -1343,7 +1345,7 @@ const guidedAddDatasetDescription = async (bfAccount, datasetName, guidedDataset
     datasetDescriptionUploadText.innerHTML = `Successfully added dataset description!`;
     guidedUploadStatusIcon("guided-dataset-description-upload-status", "success");
     window.sodaJSONObj["previously-uploaded-data"]["description"] = guidedDatasetDescription;
-    await guidedSaveProgress();
+    await guidedSaveProgress("STAGE 5: Add Dataset Description");
 
     // Send successful dataset description upload event to Kombucha
     window.electron.ipcRenderer.send(
@@ -1441,7 +1443,7 @@ const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePa
     guidedUploadStatusIcon(bannerStatusId, "success");
 
     window.sodaJSONObj["previously-uploaded-data"]["banner-image-path"] = bannerImagePath;
-    await guidedSaveProgress();
+    await guidedSaveProgress("STAGE 6: Add Dataset Banner Image");
 
     window.electron.ipcRenderer.send(
       "track-kombucha",
@@ -1514,7 +1516,7 @@ const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) =
     datasetLicenseUploadText.innerHTML = `Successfully added dataset license: ${datasetLicense}`;
     guidedUploadStatusIcon("guided-dataset-license-upload-status", "success");
     window.sodaJSONObj["previously-uploaded-data"]["license"] = datasetLicense;
-    await guidedSaveProgress();
+    await guidedSaveProgress("STAGE 7: Add Dataset License");
 
     // Send successful license upload event to Kombucha
     window.electron.ipcRenderer.send(
