@@ -94,7 +94,7 @@ const metadataCardConfig = {
     title: "performances.xlsx",
     required: false,
     labelText:
-      "Contains ometadata describing from multiple performances of a trial/session/visit using the same experimental protocol.",
+      "Contains metadata describing from multiple performances of a trial/session/visit using the same experimental protocol.",
   },
   code_description: {
     title: "code_description.xlsx",
