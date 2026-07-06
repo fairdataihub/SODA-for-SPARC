@@ -1,20 +1,4 @@
-import { setPageLoadingState } from "../navigationUtils/pageLoading";
-import useGlobalStore from "../../../../stores/globalStore";
-import { addContributor, renderContributorsTable } from "../../metadata/contributors/contributors";
-import { addGuidedProtocol } from "../../metadata/protocols";
-import Swal from "sweetalert2";
-import Cropper from "cropperjs";
-import client from "../../../client";
-import api from "../../../others/api/api";
-import { clientError, userErrorMessage } from "../../../others/http-error-handler/error-handler";
-import { guidedShowOptionalRetrySwal } from "../../swals/helperSwals";
-import { createParsedReadme } from "../../../metadata-files/datasetDescription";
-import { reRenderTreeView } from "../../../../stores/slices/datasetTreeViewSlice";
-import {
-  setEntityType,
-  setEntityListForEntityType,
-  setActiveEntity,
-} from "../../../../stores/slices/datasetEntitySelectorSlice";
+import { setEntityType } from "../../../../stores/slices/datasetEntitySelectorSlice";
 import {
   guidedStudyOrganSystemsTagify,
   guidedStudyApproachTagify,
@@ -22,10 +6,8 @@ import {
   guidedOtherFundingsourcesTagify,
 } from "../../tagifies/tagifies";
 import { setResourceList } from "../../../../stores/slices/resourceMetadataSlice";
-import { guidedGetCurrentUserWorkSpace } from "../../../guided-mode/workspaces/workspaces";
 import { dragDrop, successCheck } from "../../../../assets/lotties/lotties";
 import { renderProtocolsTable } from "../../metadata/protocols";
-import { swalListSingleAction, swalShowInfo } from "../../../utils/swal-utils";
 import { guidedDatasetKeywordsTagify } from "../../tagifies/tagifies";
 import lottie from "lottie-web";
 import { renderAdditionalLinksTable } from "../../guided-curate-dataset";
