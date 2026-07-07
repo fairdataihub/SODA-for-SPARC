@@ -438,18 +438,24 @@ const DatasetTreeViewRenderer = ({
 
   // Only update store and trigger re-render when debounced value changes
   useEffect(() => {
-    setDatasetStructureSearchFilter(debouncedSearchFilter);
-    reRenderTreeView();
+    // Only re-render if the filter value actually changed from the previous render
+    if (debouncedSearchFilter !== datasetStructureSearchFilter) {
+      setDatasetStructureSearchFilter(debouncedSearchFilter);
+      console.log("reRenderTreeView: search filter changed -", debouncedSearchFilter);
+      reRenderTreeView();
+    }
   }, [debouncedSearchFilter]);
 
   const handleSearchChange = (event) => {
     setInputSearchFilter(event.target.value);
   };
 
-  // Update local state when the store changes
+  // Update local state when the store changes (only if value actually changed)
   useEffect(() => {
-    setInputSearchFilter(externallySetSearchFilterValue);
-  }, [externallySetSearchFilterValue]);
+    if (inputSearchFilter !== externallySetSearchFilterValue) {
+      setInputSearchFilter(externallySetSearchFilterValue);
+    }
+  }, [externallySetSearchFilterValue, inputSearchFilter]);
 
   useEffect(() => {
     const virtualItems = rowVirtualizer.getVirtualItems();

@@ -457,6 +457,7 @@ export const moveFolderToNewLocation = (targetPath) => {
     if (!parentFolder?.folders?.[contextMenuItemName])
       throw new Error(`Folder "${contextMenuItemName}" not found`);
 
+    console.log("reRenderTreeView: moveFolderToNewLocation");
     reRenderTreeView();
   } catch (error) {
     console.error("Error in moveFolderToNewLocation:", error);

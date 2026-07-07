@@ -706,6 +706,7 @@ window.openPage = async (targetPageID) => {
           datasetStructureJSONObj: standardizedDatasetStructure,
           calculateEntities: false,
         });
+        console.log("Rendering standardized dataset structure for review pages");
         reRenderTreeView(true);
         return;
       } else {
@@ -725,6 +726,13 @@ window.openPage = async (targetPageID) => {
           datasetStructureJSONObj: window.datasetStructureJSONObj,
           calculateEntities: true,
         });
+
+        console.log(
+          "Rendering raw dataset structure for categorization or unstructured import pages - pageID:",
+          pageID,
+          "componentType:",
+          targetPageDataset.componentType
+        );
         reRenderTreeView(true);
       }
 
@@ -736,6 +744,10 @@ window.openPage = async (targetPageID) => {
           datasetStructureJSONObj: window.datasetStructureJSONObj,
           calculateEntities: false,
         });
+        console.log(
+          "Rendering raw dataset structure for FFM unstructured import page - pageID:",
+          pageID
+        );
         reRenderTreeView(true);
       }
     };
