@@ -688,7 +688,9 @@ window.openPage = async (targetPageID) => {
 
         if (pageID === "guided-dataset-structure-and-manifest-review-tab") {
           const datasetMetadata = window.sodaJSONObj["dataset_metadata"] || {};
-          setDatasetMetadataToPreview(datasetMetadata["manifest_file"] ? ["manifest_file"] : null);
+          setDatasetMetadataToPreview(
+            datasetMetadata["manifest_file"] ? datasetMetadata["manifest_file"] : null
+          );
         } else {
           setDatasetMetadataToPreview(Object.keys(window.sodaJSONObj["dataset_metadata"] || {}));
         }
