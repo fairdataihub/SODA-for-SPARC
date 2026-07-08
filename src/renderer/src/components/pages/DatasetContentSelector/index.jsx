@@ -135,8 +135,8 @@ const DatasetContentSelector = () => {
     <GuidedModePage pageHeader="Dataset content">
       <GuidedModeSection>
         <Text>
-          Answer the following questions about the data you imported in the previous step to help
-          SODA choose the best workflow for organizing your data.
+          Answer the following questions about what you imported in the previous step to help SODA
+          choose the best workflow for organizing your dataset and creating your manifest file.
         </Text>
       </GuidedModeSection>
       <GuidedModeSection withBorder>

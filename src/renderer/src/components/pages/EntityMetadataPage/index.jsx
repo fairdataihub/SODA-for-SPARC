@@ -1093,27 +1093,19 @@ const EntityMetadataPage = ({ entityType }) => {
 
   return (
     <GuidedModePage
-      pageHeader={
-        !showFullMetadataFormFields ? `Dataset Entity Metadata` : `${entityType} Metadata`
-      }
+      pageHeader={!showFullMetadataFormFields ? `Entity Definition` : `${entityType} Metadata`}
     >
       <GuidedModeSection>
         <Text>
-          {showFullMetadataFormFields
-            ? `Tell us more about the ${entityType} you collected data from in the interface below.`
-            : `The SDS requires descriptive metadata for all entities from which your experimental data were collected. These entities include ${getOxfordCommaSeparatedListOfEntities(
-                "and"
-              )}, and are used to describe and structure your dataset.`}
+          {!showFullMetadataFormFields
+            ? `Use the interface below to specify IDs and basic metadata for each entity in your
+            dataset. For more details about working with entities, expand the dropdown below.`
+            : `Tell us more about the ${entityType} you collected data from in the interface below.`}
         </Text>
         {!showFullMetadataFormFields && (
           <InfoList id="entity-addition-method-entity-explanation-list" />
         )}
-        {!showFullMetadataFormFields && (
-          <Text mb="-10px">
-            Use the interface below to specify IDs and basic metadata for each entity in your
-            dataset. For more details about working with entities, expand the dropdown below.
-          </Text>
-        )}
+
         {!showFullMetadataFormFields && <DropDownNote id="dataset-entity-management-page" />}
       </GuidedModeSection>
 

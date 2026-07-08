@@ -196,11 +196,11 @@ const EntityDataSelectorPage = ({
                       You indicated that your dataset contains {selectedSupportingEntitiesFormatted}{" "}
                       {selectedSupportingEntitiesFormatted != "Code" && "data"}. The SDS requires
                       these files to be placed into their own folders. Use the interface below to
-                      assign your supporting files to the correct folder by selecting a category on
-                      the left and then choosing the files that belong to it on the right.
+                      assign your supporting files to the correct folder by selecting a folder name
+                      on the left and then choosing the files that belong to it on the right.
                     </Text>
                     <Text>
-                      <b>Note:</b> You should have files for each category shown on the left. Any
+                      <b>Note:</b> You should have files for each folder shown on the left. Any
                       remaining files that are not categorized below will be handled in a later
                       step.
                     </Text>
@@ -213,8 +213,9 @@ const EntityDataSelectorPage = ({
                     <Text mb={0}>
                       The SDS includes specific requirements for annotating data collected from a
                       subject, whether human or non-human, which we refer to as experimental data.
-                      Select all of your experimental data below so SODA can help you annotate it in
-                      the following steps.
+                      These annotations will be used to create the dataset's manifest file. Select
+                      all of your experimental data below so SODA can help you annotate it in the
+                      following steps.
                     </Text>
                     <InfoList id="experimental-data-entity-selection-list" />
                   </>
@@ -251,21 +252,21 @@ const EntityDataSelectorPage = ({
               case "sites":
                 return (
                   <Text>
-                    The SDS requires all files associated with a site to be linked to that site
-                    entity. To do this, select a site from the list on the left, then choose the
-                    folders and files that contain data collected at that site. Any files you link
-                    to a site are automatically associated with the sample and subject that the site
-                    belongs to, so you will not need to select them again later.
+                    Link the annotations made while defining your site entities to the corresponding
+                    data files and folders. Select your sites from the list on the left, then choose
+                    the corresponding files and folders. Any files you link to a site are
+                    automatically linked with the sample and subject that the site belongs to, so
+                    you will not need to select them again later.
                   </Text>
                 );
 
               case "derived-samples":
                 return (
                   <Text>
-                    The SDS requires all files associated with derived samples (samples derived from
-                    other samples) to be linked to that derived sample. To do this, select a derived
-                    sample from the list on the left, then choose the folders and files that contain
-                    data collected from that derived sample.
+                    Link the annotations made while defining your derived samples (samples derived
+                    from other samples) to the corresponding data files and folders. Select a
+                    derived sample from the list on the left, then choose the folders and files that
+                    contain data collected from that derived sample.
                     {includesSites
                       ? " Files already linked through the sites associated with this derived sample do not appear here, so you only need to select files specific to the derived sample itself."
                       : ""}
@@ -275,8 +276,8 @@ const EntityDataSelectorPage = ({
               case "samples":
                 return (
                   <Text>
-                    The SDS requires all files associated with a sample to be linked to that sample
-                    entity. To do this, select a sample from the list on the left, then choose the
+                    Link the annotations made while defining your samples to the corresponding data
+                    files and folders. Select a sample from the list on the left, then choose the
                     folders and files that contain data collected from that sample.
                     {includesSites
                       ? " Files already linked through the sites associated with this sample do not appear here, so you only need to select files specific to the sample itself."
@@ -290,8 +291,8 @@ const EntityDataSelectorPage = ({
               case "subjects":
                 return (
                   <Text>
-                    The SDS requires all files associated with a subject to be linked to that
-                    subject entity. To do this, select a subject from the list on the left, then
+                    Link the annotations made while defining your subjects to the corresponding data
+                    files and folders. To do this, select a subject from the list on the left, then
                     choose the folders and files that contain data collected from that subject.
                     {includesSamples
                       ? " Files already linked through samples associated with this subject do not appear here, so you only need to select the files that directly relate to the subject."
@@ -313,9 +314,9 @@ const EntityDataSelectorPage = ({
               case "performances":
                 return (
                   <Text>
-                    For each performance ID you entered, associate the relevant files from your
-                    dataset. Select a performance from the list on the left, then choose the
-                    corresponding folders and files that contain data from that specific
+                    Link the annotations made while defining your performances to the corresponding
+                    data files and folders. Select a performance from the list on the left, then
+                    choose the corresponding folders and files that contain data from that specific
                     experimental session or trial.
                   </Text>
                 );
