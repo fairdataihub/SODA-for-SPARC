@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { Text, Stack, Group, Paper, Tooltip, ActionIcon, Radio, Box } from "@mantine/core";
+import { Text, Stack, Group, Paper, Tooltip, ActionIcon, Radio, Box, Image } from "@mantine/core";
 import { IconChevronDown, IconChevronUp } from "@tabler/icons-react";
 import useGlobalStore from "../../../stores/globalStore";
 import GuidedModePage from "../../containers/GuidedModePage";
@@ -14,7 +14,7 @@ export const contentOptionsMap = {
   subjects: {
     label: "Did your research involve human or animal subjects?",
     dropDownDescription:
-      "Select yes if you gathered data directly from living organisms such as human participants, laboratory animals, or other biological subjects. Examples include medical patients, experimental animals, behavioral study participants, etc.",
+      "Select yes if you gathered data directly from living organisms such as human participants, laboratory animals, or other biological subjects. Examples include medical patients, experimental animals, behavioral study participants, etc. Your subject will have metadata and in many cases, data files.",
     ml: 0,
   },
   samples: {
@@ -25,41 +25,51 @@ export const contentOptionsMap = {
     ml: 10,
   },
   derivedSamples: {
-    label: "Did you derive samples from other samples (e.g., RNA, plasma)?",
+    label: "Did you derive further samples from your physical samples (e.g., RNA, plasma)?",
     dropDownDescription:
-      "Select yes if you created additional samples from samples that were collected directly from subjects. Examples include tissue sections, cell cultures, extracted RNA or protein, or other samples created from the originally collected material.",
+      "Examples of a derived sample include the following: tissue sections, cell cultures, extracted RNA or protein. View the decision tree below if you are unsure about whether to answer yes or no to this question.",
     requiresAnswer: ["subjects", "samples"],
+    imgSrc: "/img/derivedsamplesv5.png",
+    alt: "A decision tree depicting how to determine if your dataset has derived samples.",
     ml: 20,
   },
   subjectSites: {
     label:
-      "Did you collect data from multiple locations within each subject (e.g., different brain regions, electrode placements)?",
+      "Did you collect data from multiple distinct locations within each subject (e.g., different brain regions, electrode placements)?",
     dropDownDescription:
-      "Select yes if you collected data from multiple distinct locations within individual subjects (e.g., 3 different brain regions in the same subject). Each location requires separate metadata. Examples include recordings from different brain regions, measurements from multiple organs, or sensors placed on different body locations within the same subject.",
+      "Examples include collecting data from multiple electrodes placed on a subject, or gathering readings from the left eye and right eye of a subject. For each location you will later provide location specific metadata and data files. View the decision tree below if you are unsure about whether to answer yes or no to this question.",
     requiresAnswer: ["subjects"],
+    imgSrc: "/img/subjectsitesv5.png",
+    alt: "A decision tree depicting how to determine if your dataset has site data taken from subjects.",
+
     ml: 10,
   },
   sampleSites: {
     label:
-      "Did you collect data from multiple locations within each sample (e.g., different regions of a tissue section)?",
+      "Did you collect data from multiple distinct locations within each sample (e.g., different regions of a tissue section)?",
     dropDownDescription:
-      "Select yes if you collected data from multiple distinct locations within individual samples (e.g., 5 different regions in the same tissue section). Each location requires separate metadata. Examples include imaging different regions of a tissue section, measurements from multiple areas of a single specimen, or recordings from defined locations within a prepared sample.",
+      "Examples include collecting imaging data from different locations of a tissue section. For each location you will later provide location specific metadata and data files. View the decision tree below if you are unsure about whether to answer yes or no to this question.",
     requiresAnswer: ["subjects", "samples"],
+    imgSrc: "/img/samplesitesv5.png",
+    alt: "A decision tree depicting how to determine if your dataset has site data taken from samples.",
     ml: 20,
   },
 
   performances: {
     label:
-      "Did you collect data from subjects across multiple sessions or timepoints (e.g., sequential imaging sessions, varied stimulation parameters)?",
+      "Did you collect data from subjects or samples across multiple sessions or timepoints using the same experimental protocol (e.g., sequential imaging sessions, varied stimulation parameters)?",
     dropDownDescription:
-      "Select yes if you performed procedures on the same subjects at different times or under different conditions. Examples include: follow-up measurements, varied stimulation parameters, different behavioral tests, sequential imaging sessions, or any case where you need to track which protocol or time point generated specific data.",
+      "Examples include collecting data from: follow-up measurements, varied stimulation parameters, different behavioral tests, sequential imaging sessions, or any case where you need to track which protocol or time point generated specific data. View the decision tree below if you are unsure about whether to answer yes or no to this question.",
     requiresAnswer: ["subjects"],
+    imgSrc: "/img/performancesv5.png",
+    alt: "A decision tree depicting how to determine if your dataset has data collcted during performances. ",
     ml: 10,
   },
   Code: {
     label: "Does your data include any code?",
     dropDownDescription:
       "Select yes if your data contains computational tools, scripts, or analysis pipelines that were used to generate or analyze your data. This includes custom code, analysis scripts, and simulation software relevant to understanding your results.",
+
     ml: 0,
   },
   Protocol: {
@@ -192,6 +202,7 @@ const DatasetContentSelector = () => {
                   <Box mb="md">
                     <SodaGreenPaper mt="sm" mb="sm">
                       <Text fw={500}>{option.dropDownDescription}</Text>
+                      {option.imgSrc && <Image src={option.imgSrc} alt={option.alt}></Image>}
                     </SodaGreenPaper>
                   </Box>
                 )}
