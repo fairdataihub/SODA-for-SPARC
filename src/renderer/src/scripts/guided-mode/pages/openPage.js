@@ -58,6 +58,7 @@ import { guidedSaveProgress } from "./savePageChanges.js";
 import { createStandardizedDatasetStructure } from "../../utils/datasetStructure.js";
 import { setCurrentStep } from "../../../stores/slices/stepperSlice.js";
 import { setGuidedModeSidebarDatasetName } from "../../../stores/slices/sideBarSlice.js";
+import { PAGE_CONFIG } from "./pageConfig.js";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -674,29 +675,20 @@ window.openPage = async (targetPageID) => {
     showCorrectFileExplorerByPage(targetPageID);
 
     const renderCorrectFileExplorerByPage = (pageID) => {
-      const reviewPages = [
-        "guided-dataset-structure-and-manifest-review-tab",
-        "guided-generate-dataset-locally",
-        "guided-dataset-generation-confirmation-tab",
-        "guided-dataset-structure-review-tab",
-      ];
+      const isCategorizationPageType =
+        targetPageDataset.componentType === "data-categorization-page" ||
+        targetPageDataset.componentType === "data-categories-questionnaire-page";
 
-      // For review-related pages: use standardized structure
-      if (reviewPages.includes(pageID)) {
+      // Review pages use the standardized dataset structure
+      if (PAGE_CONFIG["review-pages"].has(pageID)) {
         const standardizedDatasetStructure = createStandardizedDatasetStructure(
           window.datasetStructureJSONObj,
           window.sodaJSONObj["dataset-entity-obj"]
         );
 
         if (pageID === "guided-dataset-structure-and-manifest-review-tab") {
-          // Only show the manifest file for the dataset metadata preview
-          // if it exists in the dataset_metadata
           const datasetMetadata = window.sodaJSONObj["dataset_metadata"] || {};
-          if ("manifest_file" in datasetMetadata) {
-            setDatasetMetadataToPreview(["manifest_file"]);
-          } else {
-            setDatasetMetadataToPreview(null);
-          }
+          setDatasetMetadataToPreview(datasetMetadata["manifest_file"] ? ["manifest_file"] : null);
         } else {
           setDatasetMetadataToPreview(Object.keys(window.sodaJSONObj["dataset_metadata"] || {}));
         }
@@ -706,51 +698,49 @@ window.openPage = async (targetPageID) => {
           datasetStructureJSONObj: standardizedDatasetStructure,
           calculateEntities: false,
         });
+
         console.log("Rendering standardized dataset structure for review pages");
         reRenderTreeView(true);
         return;
-      } else {
-        // Clear the dataset metadata preview if not on the generation page
-        setDatasetMetadataToPreview(null);
       }
 
-      // For categorization or unstructured import pages: use raw structure
+      // Non-review pages don't show dataset metadata preview
+      setDatasetMetadataToPreview(null);
+
+      // Guided unstructured import / categorization pages
       if (
-        targetPageDataset.componentType === "data-categorization-page" ||
-        targetPageDataset.componentType === "data-categories-questionnaire-page" ||
-        pageID === "guided-unstructured-data-import-tab"
+        isCategorizationPageType ||
+        PAGE_CONFIG["data-categorization"].has(targetPageDataset.componentType) ||
+        PAGE_CONFIG["unstructured-import"].has(pageID)
       ) {
         setPathToRender(["data"]);
-
         useGlobalStore.setState({
           datasetStructureJSONObj: window.datasetStructureJSONObj,
           calculateEntities: true,
         });
 
         console.log(
-          "Rendering raw dataset structure for categorization or unstructured import pages - pageID:",
-          pageID,
-          "componentType:",
-          targetPageDataset.componentType
+          "Rendering raw dataset structure for categorization or unstructured import pages",
+          { pageID, componentType: targetPageDataset.componentType }
         );
+
         reRenderTreeView(true);
       }
 
-      // For FFM unstructured import page: use raw structure with root path
-      if (pageID === "ffm-unstructured-data-import-tab") {
+      // FFM unstructured import page
+      if (PAGE_CONFIG["ffm-import"].has(pageID)) {
         setPathToRender([]);
-
         useGlobalStore.setState({
           datasetStructureJSONObj: window.datasetStructureJSONObj,
           calculateEntities: false,
         });
-        console.log(
-          "Rendering raw dataset structure for FFM unstructured import page - pageID:",
-          pageID
-        );
+
+        console.log("Rendering raw dataset structure for FFM unstructured import page", { pageID });
+
         reRenderTreeView(true);
       }
     };
+
     renderCorrectFileExplorerByPage(targetPageID);
 
     //Set all capsules to grey and set capsule of page being traversed to green

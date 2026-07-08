@@ -18,6 +18,7 @@ import {
   setMilestones,
   setMilestoneDate,
 } from "../../../../stores/slices/datasetMetadataSlice";
+import { renderContributorsTable } from "../../metadata/contributors/contributors";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));

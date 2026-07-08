@@ -351,8 +351,6 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
     const standardizedStructure = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
 
     useGlobalStore.setState({ datasetStructureJSONObj: standardizedStructure });
-    console.log("reRenderTreeView: createStandardizedDatasetStructure");
-    reRenderTreeView();
     // --- Step 7: Revert any global changes to window.datasetStructureJSONObj ---
     window.datasetStructureJSONObj = originalStructure;
 
