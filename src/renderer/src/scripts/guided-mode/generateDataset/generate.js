@@ -345,7 +345,16 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
           setGuidedProgressBarValue("pennsieve", (numberOfFiles / numberOfFilesFinalized) * 100);
 
           // Wait a minute to retry
-          await window.wait(60000);
+          let countDown = 60;
+          while (true) {
+            if (countDown == 0) break;
+            await window.wait(1000);
+            countDown -= 1;
+            updateDatasetUploadProgressTable("pennsieve", {
+              "current action": `Waiting for files to process before the renaming step. ${countDown} seconds until next check.`,
+              "Files processed": `${finalizedFiles.length} of ${window.sodaJSONObj["upload-progress"]["number-of-files"]}`,
+            });
+          }
         }
       };
 

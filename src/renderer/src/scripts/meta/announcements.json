@@ -1,4 +1,13 @@
 {
+  "18.2.0": {
+    "announcements": {
+      "features": [
+        "Prepare Dataset Step-by-Step has new visual aids that break down the SDS and SDS entities.",
+        "Prepare Dataset Step-by-Step will feel faster when organizing datasets with a large number of files."
+      ],
+      "bug-fixes": []
+    }
+  },
   "18.1.0": {
     "announcements": {
       "features": [

@@ -5,6 +5,18 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v 18.2.0 - 2026-07-09
+
+## Feature Additions:
+
+- Prepare Dataset Step-by-Step has new visual aids that break down the SDS and SDS entities.
+- Prepare Dataset Step-by-Step has been optimized by reducing the amount of saves that occur when navigating between pages and switching between entities. Furthermore, assigning files to entities has been massively optimized.
+
+## Bug fixes:
+
+- PDSS Entity Addition Method cards have been made the same size.
+- UD verify files countdown timer is now a live timer.
+
 ## v 18.1.0 - 2026-06-16
 
 ## Feature Additions:

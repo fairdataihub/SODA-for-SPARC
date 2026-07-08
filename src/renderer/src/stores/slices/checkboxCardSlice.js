@@ -47,7 +47,7 @@ export const checkboxCardSlice = (set) => ({
     },
     "guided-button-add-entities-manually": {
       title: "Enter entity metadata manually in the SODA UI",
-      description: null,
+      description: "Recommended if your dataset includes fewer than 10 entities.",
       Icon: IconKeyboard,
       mutuallyExclusiveWithCards: ["guided-button-add-entities-via-spreadsheet"],
       configValue: "entity-addition-method",
@@ -56,7 +56,8 @@ export const checkboxCardSlice = (set) => ({
     },
     "guided-button-add-entities-via-spreadsheet": {
       title: "Import entity metadata using a spreadsheet",
-      description: null,
+      description:
+        "Recommended if your dataset includes many entities or if you have already filled out the SDS metadata templates.",
       Icon: IconFileSpreadsheet,
       mutuallyExclusiveWithCards: ["guided-button-add-entities-manually"],
       configValue: "entity-addition-method",
