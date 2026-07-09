@@ -29,7 +29,7 @@ export const contentOptionsMap = {
     dropDownDescription:
       "Examples of a derived sample include the following: tissue sections, cell cultures, extracted RNA or protein. View the decision tree below if you are unsure about whether to answer yes or no to this question.",
     requiresAnswer: ["subjects", "samples"],
-    imgSrc: "/img/derivedsamplesv5.png",
+    imgSrc: "./img/derivedsamplesv5.png",
     alt: "A decision tree depicting how to determine if your dataset has derived samples.",
     ml: 20,
   },
@@ -39,7 +39,7 @@ export const contentOptionsMap = {
     dropDownDescription:
       "Examples include collecting data from multiple electrodes placed on a subject, or gathering readings from the left eye and right eye of a subject. For each location you will later provide location specific metadata and data files. View the decision tree below if you are unsure about whether to answer yes or no to this question.",
     requiresAnswer: ["subjects"],
-    imgSrc: "/img/subjectsitesv5.png",
+    imgSrc: "./img/subjectsitesv5.png",
     alt: "A decision tree depicting how to determine if your dataset has site data taken from subjects.",
 
     ml: 10,
@@ -50,7 +50,7 @@ export const contentOptionsMap = {
     dropDownDescription:
       "Examples include collecting imaging data from different locations of a tissue section. For each location you will later provide location specific metadata and data files. View the decision tree below if you are unsure about whether to answer yes or no to this question.",
     requiresAnswer: ["subjects", "samples"],
-    imgSrc: "/img/samplesitesv5.png",
+    imgSrc: "./img/samplesitesv5.png",
     alt: "A decision tree depicting how to determine if your dataset has site data taken from samples.",
     ml: 20,
   },
@@ -61,7 +61,7 @@ export const contentOptionsMap = {
     dropDownDescription:
       "Examples include collecting data from: follow-up measurements, varied stimulation parameters, different behavioral tests, sequential imaging sessions, or any case where you need to track which protocol or time point generated specific data. View the decision tree below if you are unsure about whether to answer yes or no to this question.",
     requiresAnswer: ["subjects"],
-    imgSrc: "/img/performancesv5.png",
+    imgSrc: "./img/performancesv5.png",
     alt: "A decision tree depicting how to determine if your dataset has data collcted during performances. ",
     ml: 10,
   },
