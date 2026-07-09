@@ -21,6 +21,7 @@ const CheckboxCard = ({ id }) => {
     simpleButtonType,
     additionalClasses,
     disabledNotComingSoon,
+    customDescriptionHeight,
   } = cardData[id];
   const isDisabled = !!comingSoon;
   const { hovered, ref } = useHover();
@@ -176,7 +177,13 @@ const CheckboxCard = ({ id }) => {
           >
             {title}
           </Text>
-          <Text c="dimmed" size="sm" lh={1.2} align="center">
+          <Text
+            c="dimmed"
+            size="sm"
+            lh={1.2}
+            align="center"
+            style={{ height: customDescriptionHeight || null }}
+          >
             {description}
           </Text>
         </Stack>

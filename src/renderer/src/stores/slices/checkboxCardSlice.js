@@ -52,6 +52,7 @@ export const checkboxCardSlice = (set) => ({
       mutuallyExclusiveWithCards: ["guided-button-add-entities-via-spreadsheet"],
       configValue: "entity-addition-method",
       configValueState: "manual",
+      customDescriptionHeight: "60px",
       checked: false,
     },
     "guided-button-add-entities-via-spreadsheet": {
@@ -62,6 +63,7 @@ export const checkboxCardSlice = (set) => ({
       mutuallyExclusiveWithCards: ["guided-button-add-entities-manually"],
       configValue: "entity-addition-method",
       configValueState: "spreadsheet",
+      customDescriptionHeight: "60px",
       checked: false,
     },
     "generate-dataset-locally": {
