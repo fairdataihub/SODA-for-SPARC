@@ -33,14 +33,12 @@ export const toggleFolder = (folderPath) => {
 // Open a folder and re-render the tree view
 export const openFolder = (folderPath) => {
   setFolderOpenState(folderPath, true);
-  console.log("reRenderTreeView: openFolder -", folderPath);
   reRenderTreeView();
 };
 
 // Close a folder and re-render the tree view
 export const closeFolder = (folderPath) => {
   setFolderOpenState(folderPath, false);
-  console.log("reRenderTreeView: closeFolder -", folderPath);
   reRenderTreeView();
 };
 

@@ -688,8 +688,7 @@ window.openPage = async (targetPageID) => {
 
         if (pageID === "guided-dataset-structure-and-manifest-review-tab") {
           const datasetMetadata = window.sodaJSONObj["dataset_metadata"] || {};
-          console.log("Rendering dataset metadata for review pages", datasetMetadata);
-          console.log("datasetMetadata['manifest_file']", datasetMetadata["manifest_file"]);
+
           setDatasetMetadataToPreview(datasetMetadata["manifest_file"] ? ["manifest_file"] : null);
         } else {
           setDatasetMetadataToPreview(Object.keys(window.sodaJSONObj["dataset_metadata"] || {}));
@@ -701,7 +700,6 @@ window.openPage = async (targetPageID) => {
           calculateEntities: false,
         });
 
-        console.log("Rendering standardized dataset structure for review pages");
         reRenderTreeView(true);
         return;
       }
@@ -721,11 +719,6 @@ window.openPage = async (targetPageID) => {
           calculateEntities: true,
         });
 
-        console.log(
-          "Rendering raw dataset structure for categorization or unstructured import pages",
-          { pageID, componentType: targetPageDataset.componentType }
-        );
-
         reRenderTreeView(true);
       }
 
@@ -736,8 +729,6 @@ window.openPage = async (targetPageID) => {
           datasetStructureJSONObj: window.datasetStructureJSONObj,
           calculateEntities: false,
         });
-
-        console.log("Rendering raw dataset structure for FFM unstructured import page", { pageID });
 
         reRenderTreeView(true);
       }
