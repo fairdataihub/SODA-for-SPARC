@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Feature Additions:
 
 - Prepare Dataset Step-by-Step has new visual aids that break down the SDS and SDS entities.
-- Prepare Dataset Step-by-Step has been optimized by reducing the amount of saves that occur when navigating between pages and switching between entities. Furthermore, assigning files to entities has been massively optimized.
+- Prepare Dataset Step-by-Step has been optimized to reduce file explorer re-renders when opening pages and when its state changes, such as during entity selection or when expanding and collapsing folders.
 
 ## Bug fixes:
 
