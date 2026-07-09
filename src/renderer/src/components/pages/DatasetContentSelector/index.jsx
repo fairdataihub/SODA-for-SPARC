@@ -29,7 +29,7 @@ export const contentOptionsMap = {
     dropDownDescription:
       "Examples of a derived sample include the following: tissue sections, cell cultures, extracted RNA or protein. View the decision tree below if you are unsure about whether to answer yes or no to this question.",
     requiresAnswer: ["subjects", "samples"],
-    imgSrc: "/img/derivedsamplesv5.png",
+    imgSrc: "./img/derivedsamplesv5.png",
     alt: "A decision tree depicting how to determine if your dataset has derived samples.",
     ml: 20,
   },
