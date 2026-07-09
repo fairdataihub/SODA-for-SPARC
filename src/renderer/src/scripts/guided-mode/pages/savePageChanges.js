@@ -55,22 +55,11 @@ if (!window.fs.existsSync(guidedProgressFilePath)) {
  *              Creates the directory if it does not exist. The progress file is named after the dataset the user is working on.
  *
  */
-export const guidedSaveProgress = async (message) => {
-  const startTime = performance.now();
-
-  if (message) {
-    console.log(`guidedSaveProgress: ${message} (start)`);
-  }
-
+export const guidedSaveProgress = async () => {
   const progress = window.sodaJSONObj;
   const guidedProgressFileName = progress?.["save-file-name"];
 
   if (!guidedProgressFileName) {
-    console.log(
-      `guidedSaveProgress completed in ${(performance.now() - startTime).toFixed(
-        2
-      )}ms (early return)`
-    );
     return;
   }
 
@@ -90,14 +79,13 @@ export const guidedSaveProgress = async (message) => {
   await new Promise((resolve, reject) => {
     window.fs.writeFile(guidedFilePath, json, (err) => {
       if (err) {
+        window.log.error(`[guidedSaveProgress] Failed to save progress file: ${err.message}`);
         reject(err);
       } else {
         resolve();
       }
     });
   });
-
-  console.log(`guidedSaveProgress completed in ${(performance.now() - startTime).toFixed(2)}ms`);
 };
 
 /**
@@ -119,9 +107,7 @@ window.savePageChanges = async (pageBeingLeftID) => {
     window.sodaJSONObj["dataset-entity-array"] = datasetEntityArray;
     // Save progress early because a lot of work managing entities could have happened here
     // and we don't want the user to lost it.
-    await guidedSaveProgress(
-      "Beginning of window.savePageChanges: Saving progress before leaving page " + pageBeingLeftID
-    );
+    await guidedSaveProgress();
 
     // Check if the page being left is part of a page set
     const pageBeingLeftElement = document.getElementById(pageBeingLeftID);
@@ -500,10 +486,7 @@ window.savePageChanges = async (pageBeingLeftID) => {
 
         // Save progress early because a lot of work managing entities could have happened here
         // and we don't want the user to lost it.
-        await guidedSaveProgress(
-          "Special save: Saving progress on entity metadata page before leaving page " +
-            pageBeingLeftID
-        );
+        await guidedSaveProgress();
 
         // Check that the species was added for each subject in the datasetEntityArray
         // (This is to throw an error for old progress files that did not require species)
@@ -683,9 +666,7 @@ window.savePageChanges = async (pageBeingLeftID) => {
     startOrStopAnimationsInContainer(pageBeingLeftID, "stop");
 
     try {
-      await guidedSaveProgress(
-        "End of window.savePageChanges: Saving progress after leaving page " + pageBeingLeftID
-      );
+      await guidedSaveProgress();
     } catch (error) {
       window.log.error(error);
     }

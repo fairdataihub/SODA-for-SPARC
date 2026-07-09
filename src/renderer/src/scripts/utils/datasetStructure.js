@@ -193,7 +193,6 @@ export const deleteFoldersByRelativePath = (arrayOfRelativePaths) => {
     }
   }
   useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
-  console.log("reRenderTreeView: deleteFoldersByRelativePath");
   reRenderTreeView();
 };
 
@@ -228,7 +227,6 @@ export const deleteFilesByRelativePath = (arrayOfRelativePaths) => {
     }
   }
   useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
-  console.log("reRenderTreeView: deleteFilesByRelativePath - count:", arrayOfRelativePaths.length);
   reRenderTreeView();
 };
 
