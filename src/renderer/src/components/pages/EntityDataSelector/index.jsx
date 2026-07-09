@@ -32,7 +32,6 @@ const ENTITY_PREFIXES = ["sub-", "sam-", "perf-"];
 
 const handleEntityClick = (entity) => {
   setActiveEntity(entity);
-  console.log("reRenderTreeView: handleEntityClick - entity:", entity);
   reRenderTreeView();
 };
 
@@ -132,12 +131,6 @@ const EntityDataSelectorPage = ({
       mutuallyExclusiveSelection
     );
 
-    console.log(
-      "reRenderTreeView: handleFileClick - path:",
-      relativePath,
-      "entityType:",
-      entityType
-    );
     reRenderTreeView();
   };
 
@@ -172,12 +165,6 @@ const EntityDataSelectorPage = ({
     clearTimeout(loadingTimeoutId);
     Swal.close();
 
-    console.log(
-      "reRenderTreeView: handleFolderClick - path:",
-      relativePath,
-      "entityType:",
-      entityType
-    );
     reRenderTreeView();
   };
 

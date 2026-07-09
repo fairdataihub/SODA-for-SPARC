@@ -688,7 +688,6 @@ window.openPage = async (targetPageID) => {
 
         if (pageID === "guided-dataset-structure-and-manifest-review-tab") {
           const datasetMetadata = window.sodaJSONObj["dataset_metadata"] || {};
-
           setDatasetMetadataToPreview(datasetMetadata["manifest_file"] ? ["manifest_file"] : null);
         } else {
           setDatasetMetadataToPreview(Object.keys(window.sodaJSONObj["dataset_metadata"] || {}));
@@ -729,7 +728,6 @@ window.openPage = async (targetPageID) => {
           datasetStructureJSONObj: window.datasetStructureJSONObj,
           calculateEntities: false,
         });
-
         reRenderTreeView(true);
       }
     };
@@ -765,7 +763,7 @@ window.openPage = async (targetPageID) => {
 
     // Set the last opened page and save it
     window.sodaJSONObj["page-before-exit"] = targetPageID;
-    await guidedSaveProgress("window.openPage: Saving last opened page before exit");
+    await guidedSaveProgress();
   } catch (error) {
     console.error("Error opening page:", targetPageID);
     console.error("Error: ", error);

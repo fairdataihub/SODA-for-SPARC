@@ -441,7 +441,6 @@ const DatasetTreeViewRenderer = ({
     // Only re-render if the filter value actually changed from the previous render
     if (debouncedSearchFilter !== datasetStructureSearchFilter) {
       setDatasetStructureSearchFilter(debouncedSearchFilter);
-      console.log("reRenderTreeView: search filter changed -", debouncedSearchFilter);
       reRenderTreeView();
     }
   }, [debouncedSearchFilter]);

@@ -4085,7 +4085,7 @@ const restartServer = async () => {
   }
 
   const removeListener = window.server.onRestartProgress((line) => {
-    console.log("Restart progress:", line);
+    window.log.info(`Server restart progress: ${line}`);
   });
 };
 
@@ -4227,7 +4227,7 @@ const initiate_generate = async (resume = false) => {
 
       // TODO: Add error handling code for random Agent errors. Probably just retry. Could lead to awkward overcounting but not too much ways around it for the progress bar.
       const removeListener = window.pennsieve.onUploadProgress((line) => {
-        console.log("Upload progress:", line);
+        window.log.info(`Upload progress: ${line}`);
       });
 
       const subscribe = async (datasetId) => {

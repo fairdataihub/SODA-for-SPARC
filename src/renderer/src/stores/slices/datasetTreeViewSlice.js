@@ -399,7 +399,6 @@ export const reRenderTreeView = (resetOpenFolders = false) => {
     });
 
     const endTime = performance.now();
-    console.log(`reRenderTreeView completed in ${(endTime - startTime).toFixed(2)}ms`);
   } catch (error) {
     console.error("Error in reRenderTreeView:", error);
   }
@@ -457,7 +456,6 @@ export const moveFolderToNewLocation = (targetPath) => {
     if (!parentFolder?.folders?.[contextMenuItemName])
       throw new Error(`Folder "${contextMenuItemName}" not found`);
 
-    console.log("reRenderTreeView: moveFolderToNewLocation");
     reRenderTreeView();
   } catch (error) {
     console.error("Error in moveFolderToNewLocation:", error);
