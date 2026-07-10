@@ -119,20 +119,16 @@ def curationSubscription():
         data = request.get_json()
         dataset_id = data["dataset_id"]
 
-        print(f"Dataset id: {dataset_id}")
 
         account_name = get_account_name()
 
-        print(f"Account name: {account_name}")
 
 
         ps = connect_pennsieve_client(account_name)
 
-        print(f"PS Object created {ps}")
     
         ps.use_dataset(dataset_id)
 
-        print(f"Use dataset happened successfully")
 
         ps.subscribe(10, False, monitor_subscriber_progress)
         done = True
