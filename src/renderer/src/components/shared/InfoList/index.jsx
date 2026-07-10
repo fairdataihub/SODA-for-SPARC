@@ -11,9 +11,9 @@ const LIST_CONFIGS = {
         selectedEntities.includes("samples") &&
           "Samples: data from physical samples collected from subjects, like tissue or fluid.",
         (selectedEntities.includes("subjectSites") || selectedEntities.includes("sampleSites")) &&
-          "Sites: data describing the anatomical locations or extraction points of subjects or samples.",
+          "Sites: data from distinct location within a subject or sample, such as electrode placements.",
         selectedEntities.includes("performances") &&
-          "Performances: data from experimental sessions or tasks performed by subjects, including recorded outcomes.",
+          "Performances: data from experimental subjects taken over multiple sessions or timepoints while using the same experimental protocol (e.g., sequential imaging sessions). ",
       ].filter(Boolean),
   },
   "entity-addition-method-entity-explanation-list": {

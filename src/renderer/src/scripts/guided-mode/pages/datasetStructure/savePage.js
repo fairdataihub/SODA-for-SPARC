@@ -200,7 +200,6 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       if (window.sodaJSONObj["dataset_metadata"]?.["subjects"]) {
         delete window.sodaJSONObj["dataset_metadata"]["subjects"];
       }
-
       guidedSkipPageSet("guided-subjects-metadata-page-set");
     }
     if (selectedEntities.includes("samples")) {
@@ -537,7 +536,11 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       }
       guidedSkipPage("guided-spreadsheet-import-dataset-entity-and-metadata-tab");
       guidedUnSkipPage("guided-subjects-metadata-tab");
-      guidedUnSkipPage("guided-samples-metadata-tab");
+      if (window.sodaJSONObj["selected-entities"]?.includes("samples")) {
+        guidedUnSkipPage("guided-samples-metadata-tab");
+      } else {
+        guidedSkipPage("guided-samples-metadata-tab");
+      }
       guidedUnSkipPage("guided-manual-dataset-entity-and-metadata-tab");
     }
 

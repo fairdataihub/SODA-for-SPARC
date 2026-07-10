@@ -1,4 +1,3 @@
-import { guidedGetDatasetType } from "../../guided-curate-dataset.js";
 import {
   setCheckboxCardUnchecked,
   setCheckboxCardChecked,
@@ -6,22 +5,14 @@ import {
 import { getGuidedDatasetName, getGuidedDatasetSubtitle } from "../curationPreparation/utils.js";
 import { setSodaTextInputValue } from "../../../../stores/slices/sodaTextInputSlice.js";
 import { guidedShowBannerImagePreview } from "../../bannerImage/bannerImage";
-import {
-  reRenderTreeView,
-  setPathToRender,
-} from "../../../../stores/slices/datasetTreeViewSlice.js";
-import useGlobalStore from "../../../../stores/globalStore";
+
 import {
   guidedResetLocalGenerationUI,
   guidedSetDOIUI,
   guidedSetPublishingStatusUI,
 } from "../../guided-curate-dataset.js";
-import {
-  setPreferredPennsieveDatasetId,
-  setPreferredPennsieveDatasetIntId,
-} from "../../../../stores/slices/pennsieveDatasetSelectSlice.js";
+
 import api from "../../../others/api/api.js";
-import { guidedGetCurrentUserWorkSpace } from "../../workspaces/workspaces.js";
 
 export const openPageGenerateDataset = async (targetPageID) => {
   if (targetPageID === "guided-dataset-generation-options-tab") {

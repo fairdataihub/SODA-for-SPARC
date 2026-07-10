@@ -38,13 +38,13 @@ const restartServer = async (caller) => {
   restartServerLock = true;
 
   const removeListener = window.server.onRestartProgress((line) => {
-    console.log("Restart progress:", line);
+    window.log.info(`[restartServer] ${caller} - Server restart progress: ${line}`);
   });
 
   try {
     await window.server.restart(window.port);
   } catch (err) {
-    console.error("Server restart failed:", err.message);
+    window.log.error(`[restartServer] ${caller} - Server restart failed: ${err.message}`);
   } finally {
     removeListener(); // Always clean up the listener
     restartServerLock = false;
@@ -270,7 +270,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       subscribe(datasetId);
 
       const removeListener = window.pennsieve.onUploadProgress((line) => {
-        console.log("Upload progress:", line);
+        window.log.info(`[performUpload] Upload progress: ${line}`);
       });
 
       try {
@@ -345,7 +345,16 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
           setGuidedProgressBarValue("pennsieve", (numberOfFiles / numberOfFilesFinalized) * 100);
 
           // Wait a minute to retry
-          await window.wait(60000);
+          let countDown = 60;
+          while (true) {
+            if (countDown == 0) break;
+            await window.wait(1000);
+            countDown -= 1;
+            updateDatasetUploadProgressTable("pennsieve", {
+              "current action": `Waiting for files to process before the renaming step. ${countDown} seconds until next check.`,
+              "Files processed": `${finalizedFiles.length} of ${window.sodaJSONObj["upload-progress"]["number-of-files"]}`,
+            });
+          }
         }
       };
 
@@ -594,7 +603,7 @@ const trackPennsieveDatasetGenerationProgress = async () => {
       if (Number.isInteger(uploadedFiles) && uploadedFiles > 0) {
         if (!window.sodaJSONObj["at-least-one-file-uploaded-to-pennsieve"]) {
           window.sodaJSONObj["at-least-one-file-uploaded-to-pennsieve"] = true;
-          guidedSaveProgress();
+          await guidedSaveProgress();
         }
       }
 
@@ -620,7 +629,7 @@ const trackPennsieveDatasetGenerationProgress = async () => {
         }
 
         window.sodaJSONObj["upload-progress"]["bytesPerFile"] = bytesPerFile;
-        guidedSaveProgress();
+        await guidedSaveProgress();
 
         // Default progress update
         const progress = Math.min(

@@ -56,26 +56,36 @@ if (!window.fs.existsSync(guidedProgressFilePath)) {
  *
  */
 export const guidedSaveProgress = async () => {
-  // Store global variable values to the progress file before saving
-  window.sodaJSONObj["dataset-structure"] = window.datasetStructureJSONObj;
+  const progress = window.sodaJSONObj;
+  const guidedProgressFileName = progress?.["save-file-name"];
 
-  const guidedProgressFileName = window.sodaJSONObj?.["save-file-name"];
-  // If there is no guidedProgressFileName, return (nothing to save)
-  if (!window.sodaJSONObj?.["save-file-name"]) {
+  if (!guidedProgressFileName) {
     return;
   }
 
-  //Destination: HOMEDIR/SODA/Guided-Progress
-  window.sodaJSONObj["last-modified"] = new Date();
+  // Store global variable values to the progress file before saving
+  progress["dataset-structure"] = window.datasetStructureJSONObj;
+  progress["last-modified"] = new Date();
 
-  const guidedFilePath = window.path.join(guidedProgressFilePath, guidedProgressFileName + ".json");
-  window.sodaJSONObj["save-file-path"] = guidedFilePath;
+  const guidedFilePath = window.path.join(guidedProgressFilePath, `${guidedProgressFileName}.json`);
 
-  // Save the current version of SODA as the user should be taken back to the first page when the app is updated
-  const appVersion = useGlobalStore.getState().appVersion;
-  window.sodaJSONObj["last-version-of-soda-used"] = appVersion;
+  progress["save-file-path"] = guidedFilePath;
 
-  window.fs.writeFileSync(guidedFilePath, JSON.stringify(window.sodaJSONObj, null, 2));
+  // Save the current version of SODA
+  progress["last-version-of-soda-used"] = useGlobalStore.getState().appVersion;
+
+  const json = JSON.stringify(progress, null, 2);
+
+  await new Promise((resolve, reject) => {
+    window.fs.writeFile(guidedFilePath, json, (err) => {
+      if (err) {
+        window.log.error(`[guidedSaveProgress] Failed to save progress file: ${err.message}`);
+        reject(err);
+      } else {
+        resolve();
+      }
+    });
+  });
 };
 
 /**
