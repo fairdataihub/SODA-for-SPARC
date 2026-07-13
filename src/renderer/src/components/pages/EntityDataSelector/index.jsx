@@ -32,6 +32,7 @@ const ENTITY_PREFIXES = ["sub-", "sam-", "perf-"];
 
 const handleEntityClick = (entity) => {
   setActiveEntity(entity);
+  console.log(`Active entity set to: ${entity}`);
   reRenderTreeView();
 };
 

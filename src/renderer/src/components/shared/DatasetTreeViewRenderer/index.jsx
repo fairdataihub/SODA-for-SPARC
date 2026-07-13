@@ -436,29 +436,46 @@ const DatasetTreeViewRenderer = ({
   const [inputSearchFilter, setInputSearchFilter] = useState(datasetStructureSearchFilter);
   const [debouncedSearchFilter] = useDebouncedValue(inputSearchFilter, 500); // 500ms debounce
 
+  // Track when inputSearchFilter changes
+  useEffect(() => {
+    console.log("🔵 inputSearchFilter changed to:", inputSearchFilter);
+  }, [inputSearchFilter]);
+
+  // Track when debouncedSearchFilter changes
+  useEffect(() => {
+    console.log(
+      "🟢 debouncedSearchFilter changed to:",
+      debouncedSearchFilter,
+      "| current store value:",
+      datasetStructureSearchFilter
+    );
+  }, [debouncedSearchFilter]);
+
   // Only update store and trigger re-render when debounced value changes
   useEffect(() => {
-    // Only re-render if the filter value actually changed from the previous render
-    if (debouncedSearchFilter !== datasetStructureSearchFilter) {
-      setDatasetStructureSearchFilter(debouncedSearchFilter);
-      reRenderTreeView();
-    }
+    console.log("⚙️ Debounce effect firing - setting store to:", debouncedSearchFilter);
+    setDatasetStructureSearchFilter(debouncedSearchFilter);
+    reRenderTreeView();
   }, [debouncedSearchFilter]);
 
   const handleSearchChange = (event) => {
+    console.log("📝 User typed:", event.target.value);
     setInputSearchFilter(event.target.value);
   };
 
-  // Update local state when the store changes (only if value actually changed)
+  // Track external filter changes
   useEffect(() => {
-    if (inputSearchFilter !== externallySetSearchFilterValue) {
-      setInputSearchFilter(externallySetSearchFilterValue);
-    }
-  }, [externallySetSearchFilterValue, inputSearchFilter]);
+    console.log("🟣 externallySetSearchFilterValue changed to:", externallySetSearchFilterValue);
+  }, [externallySetSearchFilterValue]);
 
+  // Update local state when the store changes
   useEffect(() => {
-    const virtualItems = rowVirtualizer.getVirtualItems();
-  }, [datasetRenderArray, rowVirtualizer.getVirtualItems()]);
+    console.log(
+      "🔴 External effect firing - updating inputSearchFilter to:",
+      externallySetSearchFilterValue
+    );
+    setInputSearchFilter(externallySetSearchFilterValue);
+  }, [externallySetSearchFilterValue]);
 
   if (activeFileExplorer !== fileExplorerId) {
     return <Text>Inactive file explorer {fileExplorerId ? fileExplorerId : "NONE"}</Text>;
