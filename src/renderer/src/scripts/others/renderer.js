@@ -372,6 +372,9 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
     }
 
     if (usersPennsieveAgentVersion !== latestPennsieveAgentVersion) {
+      console.log(
+        `Value for allow outdated is: ${window.allowOutdatedPennsieveAgentForThisSession}`
+      );
       if (!window.allowOutdatedPennsieveAgentForThisSession === true) {
         const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
         setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
@@ -379,6 +382,7 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
         abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
         return false;
       }
+      console.log("We fell through hurray");
     }
 
     // If we get to this point, it means all the background services are operational
