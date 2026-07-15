@@ -239,6 +239,7 @@ const componentTypeRenderers = {
       pageID: componentSlot.id,
       pageName: componentSlot.getAttribute("data-page-name"),
       entityTypeStringSingular: componentSlot.getAttribute("data-entity-type-string-singular"),
+      entityType: componentSlot.getAttribute("data-entity-type"),
     };
     renderComponent(componentSlot, <DataBucketingPage {...props} />);
   },
