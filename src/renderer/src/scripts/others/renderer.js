@@ -56,6 +56,7 @@ import {
   bfAccountOptions,
 } from "../globals";
 import checkForAnnouncements from "./announcements";
+import { LAST_TESTED_PENNSIEVE_AGENT_VERSION } from "../../components/backgroundServices/PennsieveAgentCheckDisplay/recommendedPennsieveVersion";
 import {
   swalListSingleAction,
   swalListTripleAction,
@@ -362,6 +363,7 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
     try {
       const versionObj = await window.spawn.getPennsieveAgentVersion();
       usersPennsieveAgentVersion = versionObj["Agent Version"];
+      console.log(`renderer: $${usersPennsieveAgentVersion}`);
     } catch (error) {
       setPennsieveAgentCheckError(
         "Unable to verify the Pennsieve Agent version",
@@ -371,10 +373,15 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
       return false;
     }
 
-    if (usersPennsieveAgentVersion !== latestPennsieveAgentVersion) {
-      console.log(
-        `Value for allow outdated is: ${window.allowOutdatedPennsieveAgentForThisSession}`
-      );
+    console.log("Past version grab");
+    console.log(
+      `[renderer] usersPennsieveAgentVersion: ${usersPennsieveAgentVersion} x latestPennsieveAgentVersion: ${latestPennsieveAgentVersion}`
+    );
+
+    if (
+      usersPennsieveAgentVersion !== latestPennsieveAgentVersion ||
+      usersPennsieveAgentVersion !== LAST_TESTED_PENNSIEVE_AGENT_VERSION
+    ) {
       if (!window.allowOutdatedPennsieveAgentForThisSession === true) {
         const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
         setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
@@ -382,7 +389,6 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
         abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
         return false;
       }
-      console.log("We fell through hurray");
     }
 
     // If we get to this point, it means all the background services are operational

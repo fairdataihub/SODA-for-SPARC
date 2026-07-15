@@ -1,14 +1,16 @@
-import { Text, Stack, Group, Button, Alert, Loader, Center } from "@mantine/core";
+import { Text, Stack, Group, Button, Alert, Loader, Center, Flex } from "@mantine/core";
 import { IconTool, IconAlertCircle, IconCheck } from "@tabler/icons-react";
 import FullWidthContainer from "../../containers/FullWidthContainer";
 import ExternalLink from "../../buttons/ExternalLink";
 import CodeTextDisplay from "../../common/CodeTextDisplay";
 import useGlobalStore from "../../../stores/globalStore";
-import { LAST_TESTED_PENNSIEVE_AGENT_VERSION } from "./testedPennsieveVersion";
+import { LAST_TESTED_PENNSIEVE_AGENT_VERSION } from "./recommendedPennsieveVersion";
 // Constants
 const RETRY_BUTTON_TEXT = "Retry Pennsieve Agent Check";
 const CLOSE_SODA_BUTTON_TEXT = "Close SODA";
-const CONTINUE_WITH_OLD_AGENT_BUTTON_TEXT = "Continue with Currently Installed Pennsieve Agent";
+const CONTINUE_WITH_OLD_AGENT_BUTTON_TEXT =
+  "Continue with currently installed Pennsieve Agent (not recommended)";
+const CONTINUE_WITH_RECOMMENDED_AGENT_BUTTON_TEXT = "Continue with Recommended Pennsieve Agent";
 const KNOWN_ERROR_MESSAGES = [
   "UNIQUE constraint failed:",
   "NotAuthorizedException: Incorrect username or password.",
@@ -66,6 +68,19 @@ const ContinueWithOldAgentButton = () => (
     {CONTINUE_WITH_OLD_AGENT_BUTTON_TEXT}
   </Button>
 );
+
+const ContinueWithRecommendedAgentButton = () => {
+  <Button
+    bg="gray"
+    onClick={() => {
+      // Mark that the user has chosen to continue with the current version of the Pennsieve Agent for this session, so that they are not prompted again to update the agent until they restart SODA
+      window.allowOutdatedPennsieveAgentForThisSession = true;
+      window.checkPennsieveAgent();
+    }}
+  >
+    {CONTINUE_WITH_RECOMMENDED_AGENT_BUTTON_TEXT}
+  </Button>;
+};
 
 const PennsieveAgentErrorMessageDisplay = ({ errorMessage }) => {
   const isKnownError = KNOWN_ERROR_MESSAGES.some((msg) => errorMessage.includes(msg));
@@ -192,22 +207,21 @@ const PennsieveAgentCheckDisplay = () => {
               />
               .
             </Text>
-            <Center>
+            <Flex direction="column" gap="sm">
               <ExternalLink
                 href={pennsieveAgentDownloadURL}
-                buttonText="Download the latest tested Pennsieve Agent"
+                buttonText="Download the recommended Pennsieve Agent"
                 buttonType="button"
                 buttonSize="md"
               />
-            </Center>
-            <Center>
+
               <ExternalLink
                 href={pennsieveAgentDownloadURL}
                 buttonText="Download the latest Pennsieve Agent"
                 buttonType="button"
                 buttonSize="md"
               />
-            </Center>
+            </Flex>
             <Text mt="sm" mb="sm">
               After installing the agent, you must restart SODA using the {CLOSE_SODA_BUTTON_TEXT}{" "}
               button below and return to this section to ensure the agent was installed properly.
@@ -277,18 +291,26 @@ const PennsieveAgentCheckDisplay = () => {
     );
   }
 
-  console.log(latestPennsieveAgentVersion);
+  // upav === LTPAV && LTPAV === LATEST && UPAV === LATEST [Expect: Fall through to bottom return aka Agent up to Date; Get: Agent up to date]
+  // upav === LTPAV && LTPAV !== LATEST && UPAVE !== LATEST [ Expect: Agent not up to date case[which is awkard actually]; Get: ]
+  // upav === LTPAV && LTPAV === LATEST && UPAV !== LATEST [ Expect: Impossible case; Get: Nothin]
+  // upav === LTPAV && LTPAV !== LATEST && UPAVE === LATEST [Expect: Impossible case; Get: Nothin]
+  // UPAV !== LTPAV && LTPAV !== LATEST && UPAV === LATEST [Expect: 2nd case; Get: 2nd case]
+  // UPAV !== LTPAV && LTPAV !== LATEST && UPAV !== LATEST [Expect: 1st case; Get: 1st case]
+  // UPAV !== LTPAV && LTPAV === LATEST && UPAV !== LATEST  [ Expect: 2nd case; Get: 2nd]
+  // UPAV !== LTPAV && LTPAV === LATEST && UPAV === LATEST  [ Impossible case as UPAV must equal LTPAV]
 
-  // upav === LTPAV && LTPAV === LATEST [FALL THROUGH, aka implicit, case does not show any message]
-  // upac === LTPAV && LTPAV !== LATEST [GETS handled in pennsieveAgentUpToDate === false case]
-  // UPAV !== LTPAV && LTPAV === LATEST [GETS handled in first case, but do not show buttons for latest agent since it is same as latest tested]
-  // UPAV !== LTPAV && LTPAV !== LATEST [GETS handlded in second case]
+  console.log(usersPennsieveAgentVersion);
+  console.log(latestPennsieveAgentVersion);
+  console.log(LAST_TESTED_PENNSIEVE_AGENT_VERSION);
 
   if (
+    usersPennsieveAgentVersion !== null &&
+    latestPennsieveAgentVersion !== null &&
     usersPennsieveAgentVersion !== LAST_TESTED_PENNSIEVE_AGENT_VERSION &&
-    LAST_TESTED_PENNSIEVE_AGENT_VERSION !== latestPennsieveAgentVersion
+    LAST_TESTED_PENNSIEVE_AGENT_VERSION !== latestPennsieveAgentVersion &&
+    usersPennsieveAgentVersion !== latestPennsieveAgentVersion
   ) {
-    console.log("In case 1");
     return (
       <FullWidthContainer>
         <Stack mt="sm" align="center">
@@ -313,22 +335,25 @@ const PennsieveAgentCheckDisplay = () => {
 
             <Text mt="sm" mb="sm">
               The version of the Pennsieve Agent installed on your computer is not the one
-              recommended for use with SODA. If you experience issues while uploading we recommend
-              you try both versions of the Pennsieve Agent below to see if one resolves your issues.
+              recommended for use with SODA. You may continue, but if you experience issues while
+              uploading we recommend you try both the recommended and latest versions of the
+              Pennsieve Agent available below.
             </Text>
 
-            <ExternalLink
-              href={pennsieveAgentDownloadURL}
-              buttonText="Download the Recommended Pennsieve Agent on SODA"
-              buttonType="button"
-              buttonSize="md"
-            />
-            <ExternalLink
-              href={pennsieveAgentDownloadURL}
-              buttonText="Download the Latest Pennsieve Agent SODA"
-              buttonType="button"
-              buttonSize="md"
-            />
+            <Flex direction="column" gap="sm">
+              <ExternalLink
+                href={pennsieveAgentDownloadURL}
+                buttonText="Download the Recommended Pennsieve Agent on SODA"
+                buttonType="button"
+                buttonSize="md"
+              />
+              <ExternalLink
+                href={pennsieveAgentDownloadURL}
+                buttonText="Download the Latest Pennsieve Agent SODA"
+                buttonType="button"
+                buttonSize="md"
+              />
+            </Flex>
             <Text size="lg" fw={700} mt="lg">
               Having issues with the both versions of the Pennsieve Agent?
             </Text>
@@ -355,11 +380,12 @@ const PennsieveAgentCheckDisplay = () => {
   }
 
   if (
+    usersPennsieveAgentVersion !== null &&
+    latestPennsieveAgentVersion !== null &&
     usersPennsieveAgentVersion !== LAST_TESTED_PENNSIEVE_AGENT_VERSION &&
-    LAST_TESTED_PENNSIEVE_AGENT_VERSION === latestPennsieveAgentVersion
+    (LAST_TESTED_PENNSIEVE_AGENT_VERSION === latestPennsieveAgentVersion ||
+      usersPennsieveAgentVersion === latestPennsieveAgentVersion)
   ) {
-    console.log("In case 2");
-
     return (
       <FullWidthContainer>
         <Stack mt="sm" align="center">
@@ -430,19 +456,13 @@ const PennsieveAgentCheckDisplay = () => {
             <Text>
               Installed Pennsieve Agent version: <b>{usersPennsieveAgentVersion}</b>
             </Text>
-            <Text mt="sm" mb="sm">
-              Latest Pennsieve Agent version tested on SODA:{" "}
-              <b>{LAST_TESTED_PENNSIEVE_AGENT_VERSION}</b>
-            </Text>
             <Text>
               Latest Pennsieve Agent version available: <b>{latestPennsieveAgentVersion}</b>
             </Text>
             <Text mt="sm" mb="sm">
-              You are using the latest version of the Pennsieve Agent that has been tested on SODA.
-              There is also a new version of the Pennsieve Agent available, but it has not been
-              tested on SODA at this time. If you experience issues with your upload we recommend
-              trying the latest version of the Pennsieve Agent to see if that allows you to upload
-              your dataset.
+              You are using the recommended version of the Pennsieve Agent for SODA. If you
+              experience issues with your upload we recommend trying the latest version of the
+              Pennsieve Agent to see if that allows you to upload your dataset.
             </Text>
             <ExternalLink
               href={pennsieveAgentDownloadURL}
@@ -451,11 +471,11 @@ const PennsieveAgentCheckDisplay = () => {
               buttonSize="md"
             />
             <Text size="lg" fw={700} mt="lg">
-              Having issues with the both versions of the Pennsieve Agent?
+              Having issues with the Pennsieve Agent?
             </Text>
             <Text mt="md">
-              If you are experiencing issues with both versions of the Pennsieve Agent please refer
-              to our documentation page on how to ask the SODA team for assistance{" "}
+              If you are experiencing issues with the Pennsieve Agent please refer to our
+              documentation page on how to ask the SODA team for assistance{" "}
               <a
                 target="_blank"
                 rel="noopener noreferrer"
@@ -467,7 +487,7 @@ const PennsieveAgentCheckDisplay = () => {
             </Text>
             <Group justify="center" mt="sm">
               <RetryButton />
-              <ContinueWithOldAgentButton />
+              <ContinueWithRecommendedAgentButton />
             </Group>
           </Alert>
         </Stack>
