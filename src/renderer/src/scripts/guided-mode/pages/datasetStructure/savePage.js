@@ -31,6 +31,38 @@ import { swalListDoubleAction, swalConfirmAction } from "../../../utils/swal-uti
 export const savePageDatasetStructure = async (pageBeingLeftID) => {
   const errorArray = [];
 
+  if (pageBeingLeftID === "guided-dataset-structuring-method-selection-tab") {
+    const userSelectedEntityAssociationMethod = isCheckboxCardChecked(
+      "guided-button-organize-ds-via-entity-association"
+    );
+    const userSelectedEntityBucketsMethod = isCheckboxCardChecked(
+      "guided-button-organize-ds-via-entity-buckets"
+    );
+
+    if (!userSelectedEntityAssociationMethod && !userSelectedEntityBucketsMethod) {
+      errorArray.push({
+        type: "notyf",
+        message: "Please indicate how you would like to structure your dataset",
+      });
+      throw errorArray;
+    }
+
+    const classForEntityAssociationMethodPages = "entity-association-workflow";
+    const classForEntityBucketsMethodPages = "entity-buckets-workflow";
+
+    if (userSelectedEntityAssociationMethod) {
+      guidedUnSkipPageSet(classForEntityAssociationMethodPages);
+      guidedSkipPageSet(classForEntityBucketsMethodPages);
+      window.sodaJSONObj["dataset-structuring-method"] = "entity-association";
+    }
+
+    if (userSelectedEntityBucketsMethod) {
+      guidedUnSkipPageSet(classForEntityBucketsMethodPages);
+      guidedSkipPageSet(classForEntityAssociationMethodPages);
+      window.sodaJSONObj["dataset-structuring-method"] = "entity-buckets";
+    }
+  }
+
   if (pageBeingLeftID === "guided-dataset-content-tab") {
     // Make local copies so we do not mutate store state directly
     let selectedEntities = [...useGlobalStore.getState().selectedEntities];
@@ -441,10 +473,10 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
 
   if (pageBeingLeftID === "guided-entity-addition-method-selection-tab") {
     const userSelectedAddEntitiesFromSpreadsheet = isCheckboxCardChecked(
-      "guided-button-add-entities-via-spreadsheet"
+      "guided-button-organize-ds-via-entity-association"
     );
     const userSelectedAddEntitiesManually = isCheckboxCardChecked(
-      "guided-button-add-entities-manually"
+      "guided-button-organize-ds-via-entity-buckets"
     );
 
     if (!userSelectedAddEntitiesFromSpreadsheet && !userSelectedAddEntitiesManually) {

@@ -295,8 +295,49 @@
         </div>
 
         <div
-          id="guided-unstructured-data-import-tab"
+          id="guided-dataset-structuring-method-selection-tab"
+          data-page-name="Dataset Structuring Method"
           class="guided--page gm"
+        >
+          <div class="guided--section">
+            <h1 class="text-sub-step-title">Dataset Structuring Method</h1>
+            <p class="help-text">
+              Choose your preferred method for structuring your dataset. Select the approach that
+              best fits your workflow and data organization needs.
+            </p>
+            <div
+              data-component-type="info-list"
+              id="dataset-structuring-method-explanation-list"
+              class="w-100"
+            ></div>
+
+            <div
+              data-component-type="dropdown-note-renderer"
+              id="dataset-structuring-method-note"
+              style="align-self: flex-start"
+              class="w-100"
+            ></div>
+          </div>
+
+          <div class="guided--section">
+            <label class="guided--form-label centered"
+              >Which dataset structuring method would you like to use?
+            </label>
+            <div class="guided--radio-button-container">
+              <div
+                data-component-type="checkbox-card"
+                data-button-id="guided-button-organize-ds-via-entity-association"
+              ></div>
+              <div
+                data-component-type="checkbox-card"
+                data-button-id="guided-button-organize-ds-via-entity-buckets"
+              ></div>
+            </div>
+          </div>
+        </div>
+        <div
+          id="guided-unstructured-data-import-tab"
+          class="guided--page entity-association-workflow gm"
           data-page-name="Data, Documentation, and Protocol File Selection"
         >
           <div class="guided--section">
@@ -355,7 +396,7 @@
         <div
           id="experimental-data-tab"
           data-page-name="Experimental Data Selection"
-          class="guided--page guided-subject-related-page-set gm"
+          class="guided--page guided-subject-related-page-set entity-association-workflow gm"
           data-component-type="data-categorization-page"
           data-entity-type="experimental"
           data-entity-type-string-singular="Experimental data"
@@ -393,11 +434,11 @@
             <div class="guided--radio-button-container">
               <div
                 data-component-type="checkbox-card"
-                data-button-id="guided-button-add-entities-manually"
+                data-button-id="guided-button-organize-ds-via-entity-buckets"
               ></div>
               <div
                 data-component-type="checkbox-card"
-                data-button-id="guided-button-add-entities-via-spreadsheet"
+                data-button-id="guided-button-organize-ds-via-entity-association"
               ></div>
             </div>
           </div>
@@ -417,15 +458,23 @@
         <div
           id="guided-sites-selection-tab"
           data-page-name="Sites Data Selection"
-          class="guided--page guided-sites-metadata-page-set guided-subject-related-page-set gm"
+          class="guided--page guided-sites-metadata-page-set guided-subject-related-page-set entity-association-workflow gm"
           data-component-type="data-categorization-page"
+          data-entity-type="sites"
+          data-entity-type-string-singular="site"
+        ></div>
+        <div
+          id="guided-sites-bucketing-tab"
+          data-page-name="Sites Data Bucketing"
+          class="guided--page guided-sites-metadata-page-set guided-subject-related-page-set entity-association-workflow gm"
+          data-component-type="data-bucketing-page"
           data-entity-type="sites"
           data-entity-type-string-singular="site"
         ></div>
         <div
           id="guided-derived-samples-selection-tab"
           data-page-name="Derived Samples Data Selection"
-          class="guided--page guided-samples-metadata-page-set guided-derived-samples-metadata-page-set guided-subject-related-page-set gm"
+          class="guided--page guided-samples-metadata-page-set guided-derived-samples-metadata-page-set guided-subject-related-page-set entity-association-workflow gm"
           data-component-type="data-categorization-page"
           data-entity-type="derived-samples"
           data-entity-type-string-singular="derived sample"
@@ -433,7 +482,7 @@
         <div
           id="guided-samples-selection-tab"
           data-page-name="Samples Data Selection"
-          class="guided--page guided-samples-metadata-page-set guided-subject-related-page-set gm"
+          class="guided--page guided-samples-metadata-page-set guided-subject-related-page-set entity-association-workflow gm"
           data-component-type="data-categorization-page"
           data-entity-type="samples"
           data-entity-type-string-singular="sample"
@@ -441,7 +490,7 @@
         <div
           id="guided-subjects-selection-tab"
           data-page-name="Subjects Data Selection"
-          class="guided--page guided-subjects-metadata-page-set guided-subject-related-page-set gm"
+          class="guided--page guided-subjects-metadata-page-set guided-subject-related-page-set entity-association-workflow gm"
           data-component-type="data-categorization-page"
           data-entity-type="subjects"
           data-entity-type-string-singular="subject"
@@ -457,7 +506,7 @@
         <div
           id="experimental-data-categorization-tab"
           data-page-name="Experimental Data Categorization"
-          class="guided--page guided-subject-related-page-set gm"
+          class="guided--page guided-subject-related-page-set entity-association-workflow gm"
           data-component-type="data-categorization-page"
           data-entity-type="experimental-data-categorization"
           data-entity-type-string-singular="Data Category"

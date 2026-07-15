@@ -37,6 +37,7 @@ import { Divider } from "@mantine/core";
 import DataCategoriesQuestionnairePage from "../pages/DataCategoriesQuestionnairePage";
 import InfoList from "../shared/InfoList";
 import DatasetStructureVisualAid from "../common/DatasetStructureVisualization";
+import DataBucketingPage from "../pages/DataBucketingPage";
 
 // Wait for the HTML sections to be added to the DOM before rendering React components
 while (!window.htmlSectionsAdded) {
@@ -231,6 +232,15 @@ const componentTypeRenderers = {
         componentSlot.getAttribute("data-entity-type-only-has-one-category") === "true",
     };
     renderComponent(componentSlot, <EntityDataSelectorPage {...props} />);
+  },
+
+  "data-bucketing-page": (componentSlot) => {
+    const props = {
+      pageID: componentSlot.id,
+      pageName: componentSlot.getAttribute("data-page-name"),
+      entityTypeStringSingular: componentSlot.getAttribute("data-entity-type-string-singular"),
+    };
+    renderComponent(componentSlot, <DataBucketingPage {...props} />);
   },
 
   "data-categories-questionnaire-page": (componentSlot) => {
