@@ -1,8 +1,8 @@
-import { Text, Grid, Paper, Box } from "@mantine/core";
+import { Text, Grid, Paper, Box, Stack } from "@mantine/core";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
-import DatasetTreeViewRenderer from "../../shared/DatasetTreeViewRenderer";
 import EntityHierarchyRenderer from "../../shared/EntityHierarchyRenderer";
+import DataImporter from "../../shared/DataImporter";
 import useGlobalStore from "../../../stores/globalStore";
 
 const DataBucketingPage = ({ pageID, pageName, entityTypeStringSingular, entityType }) => {
@@ -13,8 +13,8 @@ const DataBucketingPage = ({ pageID, pageName, entityTypeStringSingular, entityT
       <GuidedModeSection>
         <Text>
           Use the interface below to organize your {entityTypeStringSingular} data files into
-          buckets. Select an entity from the hierarchy on the left, then choose the files that
-          belong to that entity on the right.
+          buckets. Select an entity from the hierarchy on the left, then import or drag and drop
+          files that belong to that entity on the right.
         </Text>
       </GuidedModeSection>
 
@@ -35,18 +35,21 @@ const DataBucketingPage = ({ pageID, pageName, entityTypeStringSingular, entityT
 
           <Grid.Col span={8}>
             {selectedHierarchyEntity ? (
-              <Paper shadow="sm" radius="md">
-                <DatasetTreeViewRenderer
-                  fileExplorerId={pageID}
-                  entityType={entityType}
-                  hideSearchBar={false}
-                />
-              </Paper>
+              <Stack gap="lg">
+                <Paper shadow="sm" radius="md" p="md" withBorder>
+                  <Text size="md" fw={500} mb="sm">
+                    Import data for {selectedHierarchyEntity.id}
+                  </Text>
+                  <DataImporter
+                    dataImporterId={`bucketing-data-importer-${pageID}`}
+                    relativeFolderPathToImportDataInto={`${entityType}/${selectedHierarchyEntity.id}`}
+                  />
+                </Paper>
+              </Stack>
             ) : (
               <Box p="xl">
                 <Text size="xl" c="gray">
-                  Select an entity from the hierarchy on the left to view and organize its data
-                  files.
+                  Select an entity from the hierarchy on the left to import files for it.
                 </Text>
               </Box>
             )}
