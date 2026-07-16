@@ -23,15 +23,25 @@ export const guidedSkipPage = (pageId) => {
 
 export const guidedSkipPageSet = (className) => {
   const pages = document.querySelectorAll(`.${className}`);
+  const curationMode = window.sodaJSONObj["curation-mode"];
+  const currentModeClass = curationMode === "guided" ? "gm" : "ffm";
+
   for (const page of pages) {
-    guidedSkipPage(page.id);
+    if (page.classList.contains(currentModeClass)) {
+      guidedSkipPage(page.id);
+    }
   }
 };
 
 export const guidedUnSkipPageSet = (className) => {
   const pages = document.querySelectorAll(`.${className}`);
+  const curationMode = window.sodaJSONObj["curation-mode"];
+  const currentModeClass = curationMode === "guided" ? "gm" : "ffm";
+
   for (const page of pages) {
-    guidedUnSkipPage(page.id);
+    if (page.classList.contains(currentModeClass)) {
+      guidedUnSkipPage(page.id);
+    }
   }
 };
 
