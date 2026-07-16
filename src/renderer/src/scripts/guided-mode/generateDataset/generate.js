@@ -196,13 +196,21 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     // Add imported metadata files to the structure
     addImportedMetadataFilesToStructure(standardizedDatasetStructure);
     window.sodaJSONObj["soda_json_structure"] = standardizedDatasetStructure;
+    window.sodaJSONObj["dataset-structure"] = standardizedDatasetStructure;
+    console.log(
+      "window.sodaJSONObj['soda_json_structure']:",
+      window.sodaJSONObj["soda_json_structure"]
+    );
+    console.log(
+      "window.sodaJSONObj['dataset-structure']:",
+      window.sodaJSONObj["dataset-structure"]
+    );
 
     // --- Helper: prepare upload object for Pennsieve ---
     const prepareUploadObj = async () => {
       // --- Base assignments ---
       window.sodaJSONObj["ps-dataset-selected"] = { "dataset-name": pennsieveDatasetName };
       window.sodaJSONObj["ps-account-selected"] = { "account-name": window.defaultBfAccount };
-      window.sodaJSONObj["dataset-structure"] = standardizedDatasetStructure;
 
       // --- Dataset state detection ---
       const pennsieveDatasetId = window.sodaJSONObj?.["digital-metadata"]?.["pennsieve-dataset-id"];
@@ -248,7 +256,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       }
     };
 
-    const createUploadData = async () => {
+    const createUploadManifest = async () => {
       guidedSetNavLoadingState(true);
 
       // TODO: AARON: Wrap this in a wait for us to know server has been started to prevent race condition with restarting server and
@@ -426,7 +434,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     // STAGE 1: Create Manifest File + Upload Data
     if (window.sodaJSONObj["upload-progress"]["current-stage"] == "setup") {
       await prepareUploadObj();
-      let uploadData = await createUploadData();
+      let uploadData = await createUploadManifest();
       trackUpload(kombuchaEnums.Status.SUCCESS);
       // wait for progress bar to show success message before continuing
       await window.wait(2000);
