@@ -26,6 +26,16 @@ export const guidedSkipPageSet = (className) => {
   const curationMode = window.sodaJSONObj["curation-mode"];
   const currentModeClass = curationMode === "guided" ? "gm" : "ffm";
 
+  // Initialize skipped-page-sets if it doesn't exist
+  if (!window.sodaJSONObj["skipped-page-sets"]) {
+    window.sodaJSONObj["skipped-page-sets"] = [];
+  }
+
+  // add the page set to window.sodaJSONObj array if it isn't there already
+  if (!window.sodaJSONObj["skipped-page-sets"].includes(className)) {
+    window.sodaJSONObj["skipped-page-sets"].push(className);
+  }
+
   for (const page of pages) {
     if (page.classList.contains(currentModeClass)) {
       guidedSkipPage(page.id);
@@ -37,6 +47,21 @@ export const guidedUnSkipPageSet = (className) => {
   const pages = document.querySelectorAll(`.${className}`);
   const curationMode = window.sodaJSONObj["curation-mode"];
   const currentModeClass = curationMode === "guided" ? "gm" : "ffm";
+
+  // Initialize skipped-page-sets if it doesn't exist
+  if (!window.sodaJSONObj["skipped-page-sets"]) {
+    window.sodaJSONObj["skipped-page-sets"] = [];
+  }
+
+  // remove the page set from window.sodaJSONObj array if it is there
+  if (window.sodaJSONObj["skipped-page-sets"]) {
+    if (window.sodaJSONObj["skipped-page-sets"].includes(className)) {
+      window.sodaJSONObj["skipped-page-sets"].splice(
+        window.sodaJSONObj["skipped-page-sets"].indexOf(className),
+        1
+      );
+    }
+  }
 
   for (const page of pages) {
     if (page.classList.contains(currentModeClass)) {
