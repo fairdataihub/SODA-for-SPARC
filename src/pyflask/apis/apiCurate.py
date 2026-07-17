@@ -157,7 +157,6 @@ class Curation(Resource):
         try:
             pysoda_version = pkg_resources.get_distribution("pysodafair").version
             api.logger.info(f"pysodafair version: {pysoda_version}")
-            
         except pkg_resources.DistributionNotFound:
             api.logger.info("pysodafair version: not found")
 
