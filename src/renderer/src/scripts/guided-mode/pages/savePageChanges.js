@@ -56,7 +56,8 @@ if (!window.fs.existsSync(guidedProgressFilePath)) {
  *
  */
 export const guidedSaveProgress = async () => {
-  const progress = window.sodaJSONObj;
+  // Create a copy to avoid modifying the original window.sodaJSONObj
+  const progress = structuredClone(window.sodaJSONObj);
   const guidedProgressFileName = progress?.["save-file-name"];
 
   if (!guidedProgressFileName) {
