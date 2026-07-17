@@ -21,8 +21,8 @@ export const guidedSkipPage = (pageId) => {
   }
 };
 
-export const guidedSkipPageSet = (className) => {
-  const pages = document.querySelectorAll(`.${className}`);
+export const guidedSkipPageSet = (pageSetName) => {
+  const pages = document.querySelectorAll(`[data-page-set~="${pageSetName}"]`);
   const curationMode = window.sodaJSONObj["curation-mode"];
   const currentModeClass = curationMode === "guided" ? "gm" : "ffm";
 
@@ -32,8 +32,8 @@ export const guidedSkipPageSet = (className) => {
   }
 
   // add the page set to window.sodaJSONObj array if it isn't there already
-  if (!window.sodaJSONObj["skipped-page-sets"].includes(className)) {
-    window.sodaJSONObj["skipped-page-sets"].push(className);
+  if (!window.sodaJSONObj["skipped-page-sets"].includes(pageSetName)) {
+    window.sodaJSONObj["skipped-page-sets"].push(pageSetName);
   }
 
   for (const page of pages) {
@@ -44,14 +44,9 @@ export const guidedSkipPageSet = (className) => {
 };
 
 export const guidedUnSkipPageSet = (className) => {
-  const pages = document.querySelectorAll(`.${className}`);
+  const pages = document.querySelectorAll(`[data-page-set~="${className}"]`);
   const curationMode = window.sodaJSONObj["curation-mode"];
   const currentModeClass = curationMode === "guided" ? "gm" : "ffm";
-
-  // Initialize skipped-page-sets if it doesn't exist
-  if (!window.sodaJSONObj["skipped-page-sets"]) {
-    window.sodaJSONObj["skipped-page-sets"] = [];
-  }
 
   // remove the page set from window.sodaJSONObj array if it is there
   if (window.sodaJSONObj["skipped-page-sets"]) {
@@ -81,6 +76,19 @@ export const guidedUnSkipPage = (pageId) => {
   // If the page no longer exists, return
   if (!page) {
     return;
+  }
+
+  // Check if this page belongs to any skipped page set
+  const pageSetAttribute = page.getAttribute("data-page-set");
+  if (pageSetAttribute) {
+    const pageSets = pageSetAttribute.split(" ");
+    const skippedPageSets = window.sodaJSONObj["skipped-page-sets"] || [];
+
+    // If any of this page's page sets are in the skipped list, don't unskip
+    const belongsToSkippedSet = pageSets.some((set) => skippedPageSets.includes(set));
+    if (belongsToSkippedSet) {
+      return; // Don't unskip this page because it belongs to a skipped page set
+    }
   }
 
   page.dataset.skipPage = "false";

@@ -337,7 +337,8 @@
         </div>
         <div
           id="guided-unstructured-data-import-tab"
-          class="guided--page entity-association-workflow gm"
+          class="guided--page gm"
+          data-page-set="entity-association-workflow"
           data-page-name="Data, Documentation, and Protocol File Selection"
         >
           <div class="guided--section">
@@ -396,7 +397,8 @@
         <div
           id="experimental-data-tab"
           data-page-name="Experimental Data Selection"
-          class="guided--page guided-subject-related-page-set entity-association-workflow gm"
+          class="guided--page gm"
+          data-page-set="guided-subject-related-page-set entity-association-workflow"
           data-component-type="data-categorization-page"
           data-entity-type="experimental"
           data-entity-type-string-singular="Experimental data"
@@ -405,7 +407,8 @@
         <div
           id="guided-entity-addition-method-selection-tab"
           data-page-name="Entity Addition Method"
-          class="guided--page guided-subject-related-page-set gm"
+          class="guided--page gm"
+          data-page-set="guided-subject-related-page-set"
         >
           <div class="guided--section">
             <h1 class="text-sub-step-title">Entity Addition Method</h1>
@@ -446,19 +449,22 @@
         <div
           id="guided-manual-dataset-entity-and-metadata-tab"
           data-page-name="Experimental Data Metadata"
-          class="guided--page guided-subject-related-page-set gm"
+          class="guided--page gm"
+          data-page-set="guided-subject-related-page-set"
           data-component-type="entity-metadata-page"
         ></div>
         <div
           id="guided-spreadsheet-import-dataset-entity-and-metadata-tab"
           data-page-name="Designate Entity Metadata via Spreadsheets"
-          class="guided--page guided-subject-related-page-set gm"
+          class="guided--page gm"
+          data-page-set="guided-subject-related-page-set"
           data-component-type="entity-spreadsheet-import-page"
         ></div>
         <div
           id="guided-sites-selection-tab"
           data-page-name="Sites Data Selection"
-          class="guided--page guided-sites-metadata-page-set guided-subject-related-page-set entity-association-workflow gm"
+          class="guided--page gm"
+          data-page-set="guided-sites-metadata-page-set guided-subject-related-page-set entity-association-workflow"
           data-component-type="data-categorization-page"
           data-entity-type="sites"
           data-entity-type-string-singular="site"
@@ -466,7 +472,8 @@
         <div
           id="guided-sites-bucketing-tab"
           data-page-name="Sites Data Bucketing"
-          class="guided--page guided-sites-metadata-page-set guided-subject-related-page-set entity-association-workflow gm"
+          class="guided--page gm"
+          data-page-set="guided-sites-metadata-page-set guided-subject-related-page-set entity-buckets-workflow"
           data-component-type="data-bucketing-page"
           data-entity-type="sites"
           data-entity-type-string-singular="site"
@@ -474,7 +481,8 @@
         <div
           id="guided-derived-samples-selection-tab"
           data-page-name="Derived Samples Data Selection"
-          class="guided--page guided-samples-metadata-page-set guided-derived-samples-metadata-page-set guided-subject-related-page-set entity-association-workflow gm"
+          class="guided--page gm"
+          data-page-set="guided-samples-metadata-page-set guided-derived-samples-metadata-page-set guided-subject-related-page-set entity-association-workflow"
           data-component-type="data-categorization-page"
           data-entity-type="derived-samples"
           data-entity-type-string-singular="derived sample"
@@ -482,7 +490,8 @@
         <div
           id="guided-samples-selection-tab"
           data-page-name="Samples Data Selection"
-          class="guided--page guided-samples-metadata-page-set guided-subject-related-page-set entity-association-workflow gm"
+          class="guided--page gm"
+          data-page-set="guided-samples-metadata-page-set guided-subject-related-page-set entity-association-workflow"
           data-component-type="data-categorization-page"
           data-entity-type="samples"
           data-entity-type-string-singular="sample"
@@ -490,8 +499,18 @@
         <div
           id="guided-subjects-selection-tab"
           data-page-name="Subjects Data Selection"
-          class="guided--page guided-subjects-metadata-page-set guided-subject-related-page-set entity-association-workflow gm"
+          class="guided--page gm"
+          data-page-set="guided-subjects-metadata-page-set guided-subject-related-page-set entity-association-workflow"
           data-component-type="data-categorization-page"
+          data-entity-type="subjects"
+          data-entity-type-string-singular="subject"
+        ></div>
+        <div
+          id="guided-subjects-bucketing-tab"
+          data-page-name="Subjects Data Bucketing"
+          class="guided--page gm"
+          data-page-set="guided-subjects-metadata-page-set guided-subject-related-page-set entity-buckets-workflow"
+          data-component-type="data-bucketing-page"
           data-entity-type="subjects"
           data-entity-type-string-singular="subject"
         ></div>
@@ -499,14 +518,16 @@
         <div
           id="experimental-data-categories-questionnaire-tab"
           data-page-name="Experimental Data Categorization"
-          class="guided--page guided-subject-related-page-set gm"
+          class="guided--page gm"
+          data-page-set="guided-subject-related-page-set"
           data-component-type="data-categories-questionnaire-page"
           data-questionnaire-entity-type="experimental-data-categorization"
         ></div>
         <div
           id="experimental-data-categorization-tab"
           data-page-name="Experimental Data Categorization"
-          class="guided--page guided-subject-related-page-set entity-association-workflow gm"
+          class="guided--page gm"
+          data-page-set="guided-subject-related-page-set entity-association-workflow"
           data-component-type="data-categorization-page"
           data-entity-type="experimental-data-categorization"
           data-entity-type-string-singular="Data Category"
@@ -514,14 +535,16 @@
         <div
           id="remaining-data-categories-questionnaire-tab"
           data-page-name="Remaining Data Categorization"
-          class="guided--page guided-remaining-data-categorization-page-set gm"
+          class="guided--page gm"
+          data-page-set="guided-remaining-data-categorization-page-set"
           data-component-type="data-categories-questionnaire-page"
           data-questionnaire-entity-type="remaining-data-categorization"
         ></div>
         <div
           id="remaining-data-categorization-tab"
           data-page-name="Remaining Data Categorization"
-          class="guided--page guided-remaining-data-categorization-page-set gm"
+          class="guided--page gm"
+          data-page-set="guided-remaining-data-categorization-page-set"
           data-component-type="data-categorization-page"
           data-entity-type="remaining-data-categorization"
           data-entity-type-string-singular="Data Category"
@@ -529,7 +552,8 @@
         <div
           id="guided-performances-entity-addition-tab"
           data-page-name="Description Of Performances"
-          class="guided--page guided-performances-metadata-page-set guided-subject-related-page-set gm"
+          class="guided--page gm"
+          data-page-set="guided-performances-metadata-page-set guided-subject-related-page-set"
           data-component-type="performance-id-management-page"
           data-entity-type="performances"
           data-entity-type-string-singular="performance"
@@ -537,7 +561,8 @@
         <div
           id="guided-Performances-selection-tab"
           data-page-name="Performances Data Selection"
-          class="guided--page guided-performances-metadata-page-set guided-subject-related-page-set gm"
+          class="guided--page gm"
+          data-page-set="guided-performances-metadata-page-set guided-subject-related-page-set"
           data-component-type="data-categorization-page"
           data-entity-type="performances"
           data-entity-type-string-singular="performance"
@@ -545,13 +570,15 @@
         <div
           id="guided-modalities-selection-tab"
           data-page-name="Dataset Modalities"
-          class="guided--page guided-subject-related-page-set gm"
+          class="guided--page gm"
+          data-page-set="guided-subject-related-page-set"
           data-component-type="modality-selection-page"
         ></div>
         <div
           id="guided-modalities-data-selection-tab"
           data-page-name="Modalities Data Selection"
-          class="guided--page guided-subject-related-page-set gm"
+          class="guided--page gm"
+          data-page-set="guided-subject-related-page-set"
           data-component-type="data-categorization-page"
           data-entity-type="modalities"
           data-entity-type-string-singular="modality"
@@ -787,7 +814,8 @@
 
         <div
           id="guided-subjects-metadata-tab"
-          class="guided--page guided-subjects-metadata-page-set gm"
+          class="guided--page gm"
+          data-page-set="guided-subjects-metadata-page-set"
           data-page-name="Subjects Metadata"
           data-component-type="entity-metadata-page"
           data-entity-type="subjects"
@@ -795,7 +823,8 @@
 
         <div
           id="guided-samples-metadata-tab"
-          class="guided--page guided-samples-metadata-page-set gm"
+          class="guided--page gm"
+          data-page-set="guided-samples-metadata-page-set"
           data-page-name="Samples Metadata"
           data-component-type="entity-metadata-page"
           data-entity-type="samples"
@@ -1269,7 +1298,8 @@
         ></div>
         <div
           id="guided-generate-dataset-locally"
-          class="guided--page gm local-generation-page-set"
+          class="guided--page gm"
+          data-page-set="local-generation-page-set"
           data-page-name="Local Dataset Generation"
         >
           <div class="guided--section">
@@ -1342,7 +1372,8 @@
 
         <div
           id="gm-pennsieve-login-tab"
-          class="guided--page gm pennsieve-generation-page-set"
+          class="guided--page gm"
+          data-page-set="pennsieve-generation-page-set"
           data-page-name="Pennsieve Log In"
         >
           <div class="guided--section">
@@ -1442,7 +1473,8 @@
 
         <div
           id="guided-pennsieve-generate-target-tab"
-          class="guided--page gm pennsieve-generation-page-set"
+          class="guided--page gm"
+          data-page-set="pennsieve-generation-page-set"
           data-page-name="Pennsieve Dataset"
           data-component-type="pennsieve-generate-target-page"
           data-curation-mode="gm"
@@ -1450,7 +1482,8 @@
 
         <div
           id="guided-pennsieve-settings-tab"
-          class="guided--page gm ffm pennsieve-generation-page-set"
+          class="guided--page gm ffm"
+          data-page-set="pennsieve-generation-page-set"
           data-page-name="Pennsieve Settings"
         >
           <div class="guided--section">
@@ -1664,7 +1697,8 @@
         </div>
         <div
           id="guided-dataset-generation-confirmation-tab"
-          class="guided--page gm ffm pennsieve-generation-page-set"
+          class="guided--page gm ffm"
+          data-page-set="pennsieve-generation-page-set"
           data-page-name="Review and Generate"
         >
           <div class="guided--section">
