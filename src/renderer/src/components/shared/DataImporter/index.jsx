@@ -41,7 +41,8 @@ const DataImporter = ({ dataImporterId }) => {
               <Text size="sm" c="dimmed" inline mt={7}>
                 {dataImporterId === "ffm-data-importer-dropzone"
                   ? "Select the dataset folder to upload to Pennsieve."
-                  : "Import all folders you would like to include in the dataset."}
+                  : "Import all folders you would like to include in the dataset." +
+                    `${dataImporterId}`}
               </Text>
             </div>
           </Group>

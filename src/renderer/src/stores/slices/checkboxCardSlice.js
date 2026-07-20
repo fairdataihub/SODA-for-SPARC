@@ -45,22 +45,22 @@ export const checkboxCardSlice = (set) => ({
       checked: false,
       mutuallyExclusiveWithCards: ["replace-file-card"],
     },
-    "guided-button-organize-ds-via-entity-buckets": {
+    "guided-button-add-entities-manually": {
       title: "Enter entity metadata manually in the SODA UI",
       description: "Recommended if your dataset includes fewer than 10 entities.",
       Icon: IconKeyboard,
-      mutuallyExclusiveWithCards: ["guided-button-organize-ds-via-entity-association"],
+      mutuallyExclusiveWithCards: ["guided-button-add-entities-via-spreadsheet"],
       configValue: "entity-addition-method",
       configValueState: "manual",
       customDescriptionHeight: "60px",
       checked: false,
     },
-    "guided-button-organize-ds-via-entity-association": {
+    "guided-button-add-entities-via-spreadsheet": {
       title: "Import entity metadata using a spreadsheet",
       description:
         "Recommended if your dataset includes many entities or if you have already filled out the SDS metadata templates.",
       Icon: IconFileSpreadsheet,
-      mutuallyExclusiveWithCards: ["guided-button-organize-ds-via-entity-buckets"],
+      mutuallyExclusiveWithCards: ["guided-button-add-entities-manually"],
       configValue: "entity-addition-method",
       configValueState: "spreadsheet",
       customDescriptionHeight: "60px",

@@ -197,14 +197,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     addImportedMetadataFilesToStructure(standardizedDatasetStructure);
     window.sodaJSONObj["soda_json_structure"] = standardizedDatasetStructure;
     window.sodaJSONObj["dataset-structure"] = standardizedDatasetStructure;
-    console.log(
-      "window.sodaJSONObj['soda_json_structure']:",
-      window.sodaJSONObj["soda_json_structure"]
-    );
-    console.log(
-      "window.sodaJSONObj['dataset-structure']:",
-      window.sodaJSONObj["dataset-structure"]
-    );
 
     // --- Helper: prepare upload object for Pennsieve ---
     const prepareUploadObj = async () => {

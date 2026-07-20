@@ -391,14 +391,28 @@ const FolderItem = ({
   );
 };
 
-const generateEmptyFolderStructureMessage = (entityType) => {
-  switch (entityType) {
-    case "samples":
-      return "No experimental files are available to assign to samples. This occurs when all experimental files have already been assigned to sites, as files linked to sites are automatically associated with their corresponding samples. No action is necessary - you can continue to the next step.";
-    case "subjects":
-      return "No experimental files are available to assign to subjects. This occurs when all experimental files have already been assigned to samples, as files linked to samples are automatically associated with their corresponding subjects. No action is necessary - you can continue to the next step.";
-    default:
-      return "No folders or files to display.";
+const generateEmptyFolderStructureMessage = (entityType, isEntityBucketingPage) => {
+  console.log(isEntityBucketingPage, "isEntityBucketingPage");
+
+  if (!isEntityBucketingPage) {
+    switch (entityType) {
+      case "samples":
+        return "No experimental files are available to assign to samples. This occurs when all experimental files have already been assigned to sites, as files linked to sites are automatically associated with their corresponding samples. No action is necessary - you can continue to the next step.";
+      case "subjects":
+        return "No experimental files are available to assign to subjects. This occurs when all experimental files have already been assigned to samples, as files linked to samples are automatically associated with their corresponding subjects. No action is necessary - you can continue to the next step.";
+      default:
+        return "No folders or files to display.";
+    }
+  }
+  if (isEntityBucketingPage) {
+    switch (entityType) {
+      case "samples":
+        return "No data has been added to this subject yet.";
+      case "subjects":
+        return "No experimental files are available to assign to subjects. This occurs when all experimental files have already been assigned to samples, as files linked to samples are automatically associated with their corresponding subjects. No action is necessary - you can continue to the next step.";
+      default:
+        return "No folders or files to display. You can import files for this entity using the interface above.";
+    }
   }
 };
 // Main component - renders the entire dataset tree structure
@@ -498,7 +512,7 @@ const DatasetTreeViewRenderer = ({
             <Text size="sm" c="gray" p="sm">
               {debouncedSearchFilter.length > 0
                 ? "No files or folders found matching the search criteria."
-                : generateEmptyFolderStructureMessage(entityType)}
+                : generateEmptyFolderStructureMessage(entityType, true)}
             </Text>
           </Center>
         ) : datasetRenderArrayIsLoading ? (

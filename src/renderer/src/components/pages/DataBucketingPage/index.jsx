@@ -2,7 +2,8 @@ import { Text, Grid, Paper, Box, Stack } from "@mantine/core";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import EntityHierarchyRenderer from "../../shared/EntityHierarchyRenderer";
-import DataImporter from "../../shared/DataImporter";
+import EntityBucketingDataImporter from "../../shared/EntityBucketingDataImporter";
+import DatasetTreeViewRenderer from "../../shared/DatasetTreeViewRenderer";
 import useGlobalStore from "../../../stores/globalStore";
 
 const DataBucketingPage = ({ pageID, pageName, entityTypeStringSingular, entityType }) => {
@@ -40,9 +41,12 @@ const DataBucketingPage = ({ pageID, pageName, entityTypeStringSingular, entityT
                   <Text size="md" fw={500} mb="sm">
                     Import data for {selectedHierarchyEntity.id}
                   </Text>
-                  <DataImporter
-                    dataImporterId={`bucketing-data-importer-${pageID}`}
-                    relativeFolderPathToImportDataInto={`${entityType}/${selectedHierarchyEntity.id}`}
+                  <EntityBucketingDataImporter pageID={pageID} entityType={entityType} />
+                  <DatasetTreeViewRenderer
+                    allowStructureEditing={true}
+                    hideSearchBar={true}
+                    entityType={entityType}
+                    fileExplorerId="entity-bucketing-data-import-tab"
                   />
                 </Paper>
               </Stack>

@@ -3054,6 +3054,30 @@ ffmDragDropElementId.addEventListener("drop", async (event) => {
   });
 });
 
+// Event delegation for entity bucketing data importer (handles re-renders)
+document.getElementById("guided_curate_dataset-tab").addEventListener("click", (event) => {
+  if (event.target.closest("#entity-bucketing-data-importer-dropzone")) {
+    event.preventDefault();
+    window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog", {
+      importRelativePath: "data/",
+    });
+  }
+});
+
+document.getElementById("guided_curate_dataset-tab").addEventListener("drop", (event) => {
+  if (event.target.closest("#entity-bucketing-data-importer-dropzone")) {
+    event.preventDefault();
+    const itemsDroppedInFileExplorer = Array.from(event.dataTransfer.files).map(
+      (file) => file.path
+    );
+    window.electron.ipcRenderer.send("file-explorer-dropped-datasets", {
+      filePaths: itemsDroppedInFileExplorer,
+      importRelativePath: "data/",
+      curationMode: "guided",
+    });
+  }
+});
+
 $("#guided-button-add-additional-link").on("click", async () => {
   openAddAdditionLinkSwal();
 });

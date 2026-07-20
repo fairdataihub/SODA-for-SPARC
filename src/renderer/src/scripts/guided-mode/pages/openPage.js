@@ -668,9 +668,13 @@ window.openPage = async (targetPageID) => {
       // Special case for data categorization pages
       if (targetPageDataset.componentType === "data-categorization-page") {
         setActiveFileExplorer("entity-data-selector");
-      } else {
-        setActiveFileExplorer(pageID);
+        return;
       }
+      if (pageID === "guided-subjects-bucketing-tab") {
+        setActiveFileExplorer("entity-bucketing-data-import-tab");
+        return;
+      }
+      setActiveFileExplorer(pageID);
     };
     showCorrectFileExplorerByPage(targetPageID);
 

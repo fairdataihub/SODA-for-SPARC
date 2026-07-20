@@ -473,10 +473,10 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
 
   if (pageBeingLeftID === "guided-entity-addition-method-selection-tab") {
     const userSelectedAddEntitiesFromSpreadsheet = isCheckboxCardChecked(
-      "guided-button-organize-ds-via-entity-association"
+      "guided-button-add-entities-via-spreadsheet"
     );
     const userSelectedAddEntitiesManually = isCheckboxCardChecked(
-      "guided-button-organize-ds-via-entity-buckets"
+      "guided-button-add-entities-manually"
     );
 
     if (!userSelectedAddEntitiesFromSpreadsheet && !userSelectedAddEntitiesManually) {
