@@ -438,6 +438,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       trackUpload(kombuchaEnums.Status.SUCCESS);
       // wait for progress bar to show success message before continuing
       await window.wait(2000);
+
       window.sodaJSONObj["upload-progress"] = {
         "manifest-id": uploadData["manifest_id"],
         "size-of-dataset": uploadData["size_of_dataset"],
@@ -447,6 +448,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         "current-stage": !uploadData["manifest_id"] ? "rename" : "upload",
         status: !uploadData["manifest_id"] ? "setup" : "in progress",
       };
+
       await guidedSaveProgress();
     }
 
@@ -504,19 +506,12 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     // send the error to Kombucha analytics along with the upload-progress object
     trackUpload(kombuchaEnums.Status.FAIL);
 
-    if (emessage.includes("No files need to be uploaded or renamed")) {
-      await swalShowInfo(
-        "No files were uploaded in this session and no files need to be renamed",
-        `
-          <div style="text-align: left;">
-            When uploading to an existing dataset with "Skip existing files" selected, no files are uploaded if the files you imported into SODA match what is already on Pennsieve.
-            <br><br>
-            If you believe this is a mistake, please contact the SODA team using the Contact Us page in the sidebar or follow the documentation <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here.</a>
-           </div>
-           `
-      );
+    if (
+      emessage.includes(
+        "There are no files to upload to Pennsieve or files to rename on Pennsieve."
+      )
+    ) {
       guidedSetNavLoadingState(false);
-
       return;
     }
     amountOfTimesPennsieveUploadFailed += 1;
@@ -719,8 +714,10 @@ const trackPennsieveDatasetGenerationProgress = async () => {
       }
 
       if (
-        window.sodaJSONObj["upload-progress"]?.["current-stage"] === "complete" &&
-        window.sodaJSONObj["upload-progress"]?.["number-of-files"] === 0
+        status === "Done" &&
+        message.includes(
+          "There are no files to upload to Pennsieve or files to rename on Pennsieve."
+        )
       ) {
         // Handle the special case where no files were uploaded but it's not an error
         // (e.g., skip existing files option was selected and all files already exist on Pennsieve)
