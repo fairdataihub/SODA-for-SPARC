@@ -381,7 +381,8 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       );
     };
 
-    if (!window.sodaJSONObj["upload-progress"]) {
+    // reset the upload progress bar and metadata table if this is first upload of the session
+    if (!window.sodaJSONObj["upload-progress"] || amountOfTimesPennsieveUploadFailed === 0) {
       // TODO: RESET KEYS IF DATA CHANGES IN GM
       document
         .querySelectorAll(".guided-upload-table")
@@ -396,6 +397,13 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
 
       hideDatasetMetadataGenerationTableRows("pennsieve");
       setGuidedProgressBarValue("pennsieve", 0);
+      updateDatasetUploadProgressTable("pennsieve", {
+        "current action": "Starting dataset curation",
+      });
+      // TODO: Reset curation progress messages and status in case prior upload did not finish
+      let res = await client.put("/curate_datasets/curation/session");
+      console.log(res);
+
       window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
     }
 
@@ -415,10 +423,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       );
     }
 
-    trackPennsieveDatasetGenerationProgress(standardizedDatasetStructure).catch((err) => {
-      clientError(err);
-    });
-
     if (!window.sodaJSONObj["upload-progress"]) {
       // initialize upload pipeline progress
       window.sodaJSONObj["upload-progress"] = {
@@ -430,6 +434,10 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         "current-stage": "setup",
       };
     }
+
+    trackPennsieveDatasetGenerationProgress().catch((err) => {
+      clientError(err);
+    });
 
     // STAGE 1: Create Manifest File + Upload Data
     if (window.sodaJSONObj["upload-progress"]["current-stage"] == "setup") {
@@ -823,6 +831,7 @@ const automaticRetry = async (supplementaryChecks = false, errorMessage = "") =>
     });
     if (!res.isConfirmed) {
       psGenerateTimer = null;
+      resetUploadProgressUI();
       transitionFromGuidedModeToHome();
       datasetUploadSession.endSession();
       return;
@@ -868,6 +877,7 @@ const automaticRetry = async (supplementaryChecks = false, errorMessage = "") =>
       hideClass: { popup: "animate__animated animate__zoomOut animate__faster" },
     });
     psGenerateTimer = null;
+    resetUploadProgressUI();
     transitionFromGuidedModeToHome();
     return;
   }
@@ -1171,6 +1181,26 @@ const setStateRetrying = () => {
   updateDatasetUploadProgressTable("pennsieve", {
     "current action": "Preparing to retry the upload where it left off...",
   });
+};
+
+const resetUploadProgressUI = () => {
+  amountOfTimesPennsieveUploadFailed = 0;
+  psGenerateTimer = null;
+
+  // TODO: RESET KEYS IF DATA CHANGES IN GM
+  document
+    .querySelectorAll(".guided-upload-table")
+    .forEach((table) => table.classList.add("hidden"));
+
+  const metadataTableRows = document.getElementById(
+    "guided-tbody-pennsieve-metadata-upload"
+  ).children;
+  for (const row of metadataTableRows) {
+    row.classList.add("hidden");
+  }
+
+  hideDatasetMetadataGenerationTableRows("pennsieve");
+  setGuidedProgressBarValue("pennsieve", 0);
 };
 
 // Track the status of local dataset generation
