@@ -9,6 +9,7 @@ export const guidedModeSlice = (set) => ({
   manifestFileGenerationDisabled: false,
   curationMode: null,
   sidebarLoadingState: false,
+  datasetStructuringMode: null,
 });
 
 export const setGuidedDatasetName = (datasetName) => {
@@ -54,4 +55,8 @@ export const setCurationMode = (curationMode) => {
 
 export const setSideBarLoadingState = (isLoading) => {
   useGlobalStore.setState({ sidebarLoadingState: isLoading });
+};
+
+export const setDatasetStructuringMode = (datasetStructuringMode) => {
+  useGlobalStore.setState({ datasetStructuringMode });
 };

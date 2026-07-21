@@ -4,6 +4,7 @@ import GuidedModeSection from "../../containers/GuidedModeSection";
 import EntityHierarchyRenderer from "../../shared/EntityHierarchyRenderer";
 import EntityBucketingDataImporter from "../../shared/EntityBucketingDataImporter";
 import DatasetTreeViewRenderer from "../../shared/DatasetTreeViewRenderer";
+import SelectedEntityPreviewer from "../../shared/SelectedEntityPreviewer";
 import useGlobalStore from "../../../stores/globalStore";
 
 const DataBucketingPage = ({ pageID, pageName, entityTypeStringSingular, entityType }) => {
@@ -13,9 +14,9 @@ const DataBucketingPage = ({ pageID, pageName, entityTypeStringSingular, entityT
     <GuidedModePage pageHeader={pageName}>
       <GuidedModeSection>
         <Text>
-          Use the interface below to organize your {entityTypeStringSingular} data files into
-          buckets. Select an entity from the hierarchy on the left, then import or drag and drop
-          files that belong to that entity on the right.
+          Use the interface below to add data collected from each {entityTypeStringSingular}. Select
+          a {entityTypeStringSingular} from the hierarchy on the left, then import or drag and drop
+          the data files that belong to that {entityTypeStringSingular} on the right.
         </Text>
       </GuidedModeSection>
 
@@ -41,6 +42,7 @@ const DataBucketingPage = ({ pageID, pageName, entityTypeStringSingular, entityT
                   <Text size="md" fw={500} mb="sm">
                     Import data for {selectedHierarchyEntity.id}
                   </Text>
+                  <SelectedEntityPreviewer />
                   <EntityBucketingDataImporter pageID={pageID} entityType={entityType} />
                   <DatasetTreeViewRenderer
                     allowStructureEditing={true}

@@ -12,6 +12,7 @@ import {
 import useGlobalStore from "../../../stores/globalStore";
 import { guidedOpenEntityEditSwal } from "./utils";
 import { setSelectedHierarchyEntity } from "../../../stores/slices/datasetContentSelectorSlice";
+import { setActiveEntity } from "../../../stores/slices/datasetEntitySelectorSlice";
 import {
   getExistingSubjects,
   getExistingSamples,
@@ -187,6 +188,8 @@ const EntityHierarchyRenderer = ({
   // Memoize the entity select handler to prevent recreation on each render
   const handleEntitySelect = useCallback((entityData) => {
     setSelectedHierarchyEntity(entityData);
+    // Also set as active entity for SelectedEntityPreviewer and other components
+    setActiveEntity(entityData.id);
   }, []);
 
   // ----- SUBJECT OPERATIONS -----

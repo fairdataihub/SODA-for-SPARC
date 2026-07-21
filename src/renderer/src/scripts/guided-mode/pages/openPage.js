@@ -40,7 +40,11 @@ import {
   filterRemovedFilesFromDatasetEntityObj,
   setEntityType,
 } from "../../../stores/slices/datasetEntitySelectorSlice.js";
-import { setDatasetType, setCurationMode } from "../../../stores/slices/guidedModeSlice.js";
+import {
+  setDatasetType,
+  setCurationMode,
+  setDatasetStructuringMode,
+} from "../../../stores/slices/guidedModeSlice.js";
 import { setSelectedHierarchyEntity } from "../../../stores/slices/datasetContentSelectorSlice.js";
 import { guidedSetNavLoadingState } from "./navigationUtils/pageLoading.js";
 import Swal from "sweetalert2";
@@ -224,6 +228,7 @@ window.openPage = async (targetPageID) => {
   //upon resolving it will set navLoadingstate to false
   try {
     setCurationMode(window.sodaJSONObj["curation-mode"]);
+    setDatasetStructuringMode(window.sodaJSONObj["dataset-structuring-method"] || null);
     //reset the radio buttons for the page being navigated to
     resetGuidedRadioButtons(targetPageID);
     //update the radio buttons using the button config from window.sodaJSONObj
@@ -670,7 +675,7 @@ window.openPage = async (targetPageID) => {
         setActiveFileExplorer("entity-data-selector");
         return;
       }
-      if (pageID === "guided-subjects-bucketing-tab") {
+      if (targetPageDataset.componentType === "data-bucketing-page") {
         setActiveFileExplorer("entity-bucketing-data-import-tab");
         return;
       }

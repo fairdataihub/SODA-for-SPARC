@@ -426,6 +426,8 @@ const DatasetTreeViewRenderer = ({
   mutuallyExclusiveSelection,
   entityType,
 }) => {
+  const datasetStructuringMode = useGlobalStore((state) => state.datasetStructuringMode);
+  console.log("DatasetTreeViewRenderer datasetStructuringMode:", datasetStructuringMode);
   const activeFileExplorer = useGlobalStore((state) => state.activeFileExplorer);
   const datasetRenderArray = useGlobalStore((state) => state.datasetRenderArray);
   const parentRef = useRef(null);
@@ -507,7 +509,7 @@ const DatasetTreeViewRenderer = ({
           position: "relative",
         }}
       >
-        {renderArrayIsEmpty ? (
+        {renderArrayIsEmpty && datasetStructuringMode !== "entity-buckets" ? (
           <Center mt="md">
             <Text size="sm" c="gray" p="sm">
               {debouncedSearchFilter.length > 0
