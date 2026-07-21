@@ -490,7 +490,7 @@ const DatasetTreeViewRenderer = ({
           <Text>{itemSelectInstructions}</Text>
         </Stack>
       )}
-      <SelectedEntityPreviewer />
+      {fileExplorerId !== "entity-bucketing-data-import-tab" && <SelectedEntityPreviewer />}
       {!hideSearchBar && (
         <TextInput
           placeholder="Search files and folders..."

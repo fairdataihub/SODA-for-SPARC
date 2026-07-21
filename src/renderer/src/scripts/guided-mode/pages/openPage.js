@@ -3,6 +3,7 @@ import { openPageDatasetStructure } from "./datasetStructure/openPage.js";
 import { openPagePrepareMetadata } from "./prepareMetadata/openPage.js";
 import { openPageGenerateDataset } from "./generateDataset/openPage.js";
 import { openPageSharedWorkflowSteps } from "./sharedWorkflowSteps/openPage.js";
+import { newEmptyFolderObj } from "../../utils/datasetStructure.js";
 import {
   resetGuidedRadioButtons,
   updateGuidedRadioButtonsFromJSON,
@@ -637,6 +638,30 @@ window.openPage = async (targetPageID) => {
               },
             ]
           );
+        }
+      }
+
+      if (targetPageComponentType === "data-bucketing-page") {
+        const pageEntityType = targetPageDataset.entityType;
+        console.log("Bucketing page entity type:", pageEntityType);
+        if (pageEntityType === "samples") {
+          const samples = getExistingSamples("derived-from-subjects").map((sample) => sample.id);
+          if (!window.datasetStructureJSONObj?.["folders"]?.["data"]?.["samples"]) {
+            console.log("Samples folder does not exist in dataset structure. Creating it.");
+            window.datasetStructureJSONObj["folders"]["data"]["folders"]["samples"] =
+              newEmptyFolderObj();
+          }
+          for (const sample of samples) {
+            const sampleAlreadyHasBeenInstantiated =
+              window.datasetStructureJSONObj?.["data"]?.["samples"]?.["folders"]?.[sample] !==
+              undefined;
+            if (!sampleAlreadyHasBeenInstantiated) {
+              console.log(`Instantiating sample folder for: ${sample}`);
+              window.datasetStructureJSONObj["folders"]["data"]["folders"]["samples"]["folders"][
+                sample
+              ] = newEmptyFolderObj();
+            }
+          }
         }
       }
 

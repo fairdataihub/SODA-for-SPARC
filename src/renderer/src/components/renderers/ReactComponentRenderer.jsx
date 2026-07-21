@@ -176,9 +176,6 @@ const componentTypeRenderers = {
   "data-importer": (componentSlot) => {
     const props = {
       dataImporterId: componentSlot.getAttribute("data-importer-id"),
-      relativeFolderPathToImportDataInto: componentSlot.getAttribute(
-        "data-relative-folder-path-to-import-data-into"
-      ),
     };
     renderComponent(componentSlot, <DataImporter {...props} />);
   },

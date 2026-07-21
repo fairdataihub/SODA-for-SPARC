@@ -3058,8 +3058,9 @@ ffmDragDropElementId.addEventListener("drop", async (event) => {
 document.getElementById("guided_curate_dataset-tab").addEventListener("click", (event) => {
   if (event.target.closest("#entity-bucketing-data-importer-dropzone")) {
     event.preventDefault();
+    const selectedHierarchyEntity = useGlobalStore.getState().selectedHierarchyEntity;
     window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog", {
-      importRelativePath: "data/",
+      importRelativePath: `data/${selectedHierarchyEntity}/`,
     });
   }
 });
@@ -3067,12 +3068,13 @@ document.getElementById("guided_curate_dataset-tab").addEventListener("click", (
 document.getElementById("guided_curate_dataset-tab").addEventListener("drop", (event) => {
   if (event.target.closest("#entity-bucketing-data-importer-dropzone")) {
     event.preventDefault();
+    const selectedHierarchyEntity = useGlobalStore.getState().selectedHierarchyEntity;
     const itemsDroppedInFileExplorer = Array.from(event.dataTransfer.files).map(
       (file) => file.path
     );
     window.electron.ipcRenderer.send("file-explorer-dropped-datasets", {
       filePaths: itemsDroppedInFileExplorer,
-      importRelativePath: "data/",
+      importRelativePath: `data/${selectedHierarchyEntity}/`,
       curationMode: "guided",
     });
   }
