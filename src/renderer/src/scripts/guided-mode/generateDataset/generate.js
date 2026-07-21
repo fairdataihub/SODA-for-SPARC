@@ -556,6 +556,22 @@ const uploadPennsieveMetadata = async (
   }
 };
 
+const getNumberOfFilesToRename = () => {
+  let filesToRename = window.sodaJSONObj["upload-progress"]["list-of-files-to-rename"];
+  let total = 0;
+
+  for (const key in filesToRename) {
+    let filesInKey = Object.keys(filesToRename[key]).length;
+
+    if ("high_lvl_folder" in filesToRename[key]) {
+      filesInKey -= 1;
+    }
+    total += filesInKey;
+  }
+
+  return total;
+};
+
 let progressMonitorLock = false;
 // Track the status of Pennsieve dataset upload
 // NOTE: In general this functions as such during an upload: 1). if server dies restart and do not throw an error, 2). If an error occurs throw so error is logged, and stop polling
@@ -685,12 +701,11 @@ const trackPennsieveDatasetGenerationProgress = async () => {
         window.sodaJSONObj["upload-progress"]?.["current-stage"] === "rename" &&
         window.sodaJSONObj["upload-progress"]?.["status"] === "in progress"
       ) {
+        console.log("Rename phase");
+        console.log(`Main generate size[# of files to rename]: ${mainTotalGenerateDatasetSize}`);
+        console.log(`Number of files to rename from object: ${getNumberOfFilesToRename()}`);
         // wait until backend total matches rename total -- synchronization
-        if (
-          mainTotalGenerateDatasetSize !=
-          Object.keys(window.sodaJSONObj["upload-progress"]["list-of-files-to-rename"]).length
-        )
-          continue;
+        if (mainTotalGenerateDatasetSize != getNumberOfFilesToRename()) continue;
         setGuidedProgressBarValue(
           "pennsieve",
           (mainGeneratedDatasetSize / mainTotalGenerateDatasetSize) * 100
