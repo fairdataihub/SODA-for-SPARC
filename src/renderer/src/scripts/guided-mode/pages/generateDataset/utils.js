@@ -72,10 +72,9 @@ document.getElementById("guided-generate-dataset-button").addEventListener("clic
   }
 
   // Check to make sure a dataset with the same name does not already exist on Pennsieve
-  // (If uploading to a new dataset)
-
+  // (If uploading to a new dataset, and not resuming a prior failed upload from a progress file)
   const pennsieveGenerationTarget = window.sodaJSONObj["pennsieve-generation-target"];
-  if (pennsieveGenerationTarget === "new") {
+  if (pennsieveGenerationTarget === "new" && !window.sodaJSONObj["upload-progress"]) {
     const pennsieveDatasetID = window.sodaJSONObj?.["digital-metadata"]?.["pennsieve-dataset-id"];
     // If the dataset id already exists, we are uploading to an existing dataset so we don't need to check for duplicates
     if (!pennsieveDatasetID) {
