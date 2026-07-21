@@ -13,6 +13,7 @@ import useGlobalStore from "../../../stores/globalStore";
 import { guidedOpenEntityEditSwal } from "./utils";
 import { setSelectedHierarchyEntity } from "../../../stores/slices/datasetContentSelectorSlice";
 import { setActiveEntity } from "../../../stores/slices/datasetEntitySelectorSlice";
+import { reRenderTreeView, setPathToRender } from "../../../stores/slices/datasetTreeViewSlice";
 import {
   getExistingSubjects,
   getExistingSamples,
@@ -159,6 +160,7 @@ const EntityHierarchyRenderer = ({
   allowEntityStructureEditing,
   allowEntitySelection,
   onlyRenderEntityType,
+  reRenderTreeViewOnEntitySelection = false,
 }) => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
@@ -186,11 +188,21 @@ const EntityHierarchyRenderer = ({
   );
 
   // Memoize the entity select handler to prevent recreation on each render
-  const handleEntitySelect = useCallback((entityData) => {
-    setSelectedHierarchyEntity(entityData);
-    // Also set as active entity for SelectedEntityPreviewer and other components
-    setActiveEntity(entityData.id);
-  }, []);
+  const handleEntitySelect = useCallback(
+    (entityData) => {
+      const entityType = useGlobalStore.getState().entityType;
+      setSelectedHierarchyEntity(entityData);
+      // Also set as active entity for SelectedEntityPreviewer and other components
+      setActiveEntity(entityData.id);
+      // Set the path to render as data/entityType/entityId
+      setPathToRender(["data", entityType, entityData.id]);
+      // Optionally trigger tree re-render when entity is selected
+      if (reRenderTreeViewOnEntitySelection) {
+        reRenderTreeView();
+      }
+    },
+    [reRenderTreeViewOnEntitySelection]
+  );
 
   // ----- SUBJECT OPERATIONS -----
   const handleAddSubjectButtonClick = useCallback(() => {

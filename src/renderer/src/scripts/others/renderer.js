@@ -3309,18 +3309,34 @@ const mergeLocalAndRemoteDatasetStructure = async (
   datasetStructureToMerge,
   currentFileExplorerPath
 ) => {
+  console.log("mergeLocalAndRemoteDatasetStructure called with:", {
+    currentFileExplorerPath,
+    datasetStructureToMerge,
+  });
   const duplicateFiles = [];
 
   const traverseAndMergeDatasetJsonObjects = async (datasetStructureToMerge, recursedFilePath) => {
+    console.log("traverseAndMergeDatasetJsonObjects called with:", {
+      recursedFilePath,
+      datasetStructureToMerge,
+    });
     const currentNestedPathArray = window.getGlobalPathFromString(recursedFilePath);
     const existingDatasetJsonAtPath = window.getRecursivePath(
       currentNestedPathArray.slice(1),
       window.datasetStructureJSONObj
     );
+    console.log("existingDatasetJsonAtPath:", existingDatasetJsonAtPath);
     const ExistingFoldersAtPath = Object.keys(existingDatasetJsonAtPath["folders"]) || [];
     const ExistingFilesAtPath = Object.keys(existingDatasetJsonAtPath["files"]) || [];
     const foldersBeingMergedToPath = Object.keys(datasetStructureToMerge["folders"]) || [];
     const filesBeingMergedToPath = Object.keys(datasetStructureToMerge["files"]) || [];
+
+    console.log("Paths at current location:", {
+      ExistingFoldersAtPath,
+      ExistingFilesAtPath,
+      foldersBeingMergedToPath,
+      filesBeingMergedToPath,
+    });
 
     for (const folder of foldersBeingMergedToPath) {
       if (ExistingFoldersAtPath.includes(folder)) {

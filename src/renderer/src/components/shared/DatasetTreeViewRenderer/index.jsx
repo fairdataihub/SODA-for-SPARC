@@ -427,7 +427,6 @@ const DatasetTreeViewRenderer = ({
   entityType,
 }) => {
   const datasetStructuringMode = useGlobalStore((state) => state.datasetStructuringMode);
-  console.log("DatasetTreeViewRenderer datasetStructuringMode:", datasetStructuringMode);
   const activeFileExplorer = useGlobalStore((state) => state.activeFileExplorer);
   const datasetRenderArray = useGlobalStore((state) => state.datasetRenderArray);
   const parentRef = useRef(null);

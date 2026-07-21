@@ -31,6 +31,7 @@ const DataBucketingPage = ({ pageID, pageName, entityTypeStringSingular, entityT
                 allowEntityStructureEditing={false}
                 allowEntitySelection={true}
                 onlyRenderEntityType={entityType}
+                reRenderTreeViewOnEntitySelection={true}
               />
             </Paper>
           </Grid.Col>
