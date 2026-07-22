@@ -194,10 +194,11 @@ const EntityHierarchyRenderer = ({
       setSelectedHierarchyEntity(entityData);
       // Also set as active entity for SelectedEntityPreviewer and other components
       setActiveEntity(entityData.id);
-      // Set the path to render as data/entityType/entityId
-      setPathToRender(["data", entityType, entityData.id]);
+
       // Optionally trigger tree re-render when entity is selected
       if (reRenderTreeViewOnEntitySelection) {
+        // Set the path to render as data/entityType/entityId
+        setPathToRender(["data", entityType, entityData.id]);
         reRenderTreeView();
       }
     },

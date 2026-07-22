@@ -1,4 +1,5 @@
-import { Text, Grid, Paper, Box, Stack } from "@mantine/core";
+import { Text, Grid, Paper, Box, Stack, Button } from "@mantine/core";
+import { IconFolderPlus } from "@tabler/icons-react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import EntityHierarchyRenderer from "../../shared/EntityHierarchyRenderer";
@@ -6,9 +7,15 @@ import EntityBucketingDataImporter from "../../shared/EntityBucketingDataImporte
 import DatasetTreeViewRenderer from "../../shared/DatasetTreeViewRenderer";
 import SelectedEntityPreviewer from "../../shared/SelectedEntityPreviewer";
 import useGlobalStore from "../../../stores/globalStore";
+import { handleAddEmptyFolder } from "./utils";
 
 const DataBucketingPage = ({ pageID, pageName, entityTypeStringSingular, entityType }) => {
   const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
+  const pathToRender = useGlobalStore((state) => state.pathToRender);
+
+  const onAddEmptyFolderClick = () => {
+    handleAddEmptyFolder(pathToRender);
+  };
 
   return (
     <GuidedModePage pageHeader={pageName}>
@@ -45,12 +52,21 @@ const DataBucketingPage = ({ pageID, pageName, entityTypeStringSingular, entityT
                   </Text>
                   <SelectedEntityPreviewer />
                   <EntityBucketingDataImporter pageID={pageID} entityType={entityType} />
-                  <DatasetTreeViewRenderer
-                    allowStructureEditing={true}
-                    hideSearchBar={true}
-                    entityType={entityType}
-                    fileExplorerId="entity-bucketing-data-import-tab"
-                  />
+                  <Stack gap="sm">
+                    <Button
+                      leftSection={<IconFolderPlus size={16} />}
+                      variant="light"
+                      onClick={onAddEmptyFolderClick}
+                    >
+                      Add empty folder
+                    </Button>
+                    <DatasetTreeViewRenderer
+                      allowStructureEditing={true}
+                      hideSearchBar={true}
+                      entityType={entityType}
+                      fileExplorerId="entity-bucketing-data-import-tab"
+                    />
+                  </Stack>
                 </Paper>
               </Stack>
             ) : (

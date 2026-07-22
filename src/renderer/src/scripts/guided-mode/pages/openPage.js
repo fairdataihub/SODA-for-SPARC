@@ -644,6 +644,8 @@ window.openPage = async (targetPageID) => {
       if (targetPageComponentType === "data-bucketing-page") {
         const pageEntityType = targetPageDataset.entityType;
         console.log("Bucketing page entity type:", pageEntityType);
+        const entityIDs = getEntityNamesByEntityType(pageEntityType);
+        console.log(`Entity IDs for ${pageEntityType}:`, entityIDs);
         if (pageEntityType === "samples") {
           const samples = getExistingSamples("derived-from-subjects").map((sample) => sample.id);
           if (!window.datasetStructureJSONObj?.["folders"]?.["data"]?.["samples"]) {
