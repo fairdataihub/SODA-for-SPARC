@@ -275,6 +275,12 @@ export const moveFileToTargetLocation = (relativePathToMove, destionationRelativ
 };
 
 export const createStandardizedDatasetStructure = (datasetStructure, datasetEntityObj) => {
+  console.log("createStandardizedDatasetStructure - Input dataset structure:", datasetStructure);
+  console.log(
+    "createStandardizedDatasetStructure - Input dataset entity object:",
+    datasetEntityObj
+  );
+
   // --- Step 1: Preserve the original global structure ---
   let originalStructure = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
 
@@ -288,56 +294,68 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
       moveFileToTargetLocation(file, destFolder);
     });
   };
+  const datasetStructuringMethod = window.sodaJSONObj["dataset-structuring-method"];
   try {
-    // Move Code files into the code/ folder
-    moveFilesByCategory(datasetEntityObj?.["non-data-folders"]?.["Code"], "code/");
-    moveFilesByCategory(datasetEntityObj?.["non-data-folders"]?.["Docs"], "docs/");
-    moveFilesByCategory(datasetEntityObj?.["non-data-folders"]?.["Protocol"], "protocol/");
+    if (datasetStructuringMethod === "entity-association") {
+      // Move Code files into the code/ folder
+      moveFilesByCategory(datasetEntityObj?.["non-data-folders"]?.["Code"], "code/");
+      moveFilesByCategory(datasetEntityObj?.["non-data-folders"]?.["Docs"], "docs/");
+      moveFilesByCategory(datasetEntityObj?.["non-data-folders"]?.["Protocol"], "protocol/");
 
-    // Move Primary files into the primary/ folder
-    // (Files that are marked as primary during the computational workflow)
-    moveFilesByCategory(
-      datasetEntityObj?.["experimental-data-categorization"]?.["Source"],
-      "source/"
-    );
-    moveFilesByCategory(
-      datasetEntityObj?.["experimental-data-categorization"]?.["Derivative"],
-      "derivative/"
-    );
+      // Move Primary files into the primary/ folder
+      // (Files that are marked as primary during the computational workflow)
+      moveFilesByCategory(
+        datasetEntityObj?.["experimental-data-categorization"]?.["Source"],
+        "source/"
+      );
+      moveFilesByCategory(
+        datasetEntityObj?.["experimental-data-categorization"]?.["Derivative"],
+        "derivative/"
+      );
 
-    moveFilesByCategory(datasetEntityObj?.["remaining-data-categorization"]?.["Source"], "source/");
-    moveFilesByCategory(
-      datasetEntityObj?.["remaining-data-categorization"]?.["Derivative"],
-      "derivative/"
-    );
+      moveFilesByCategory(
+        datasetEntityObj?.["remaining-data-categorization"]?.["Source"],
+        "source/"
+      );
+      moveFilesByCategory(
+        datasetEntityObj?.["remaining-data-categorization"]?.["Derivative"],
+        "derivative/"
+      );
 
-    // Get list of files in data folder and move them to primary
-    const getDataFolderFiles = () => {
-      const dataFolder = window.datasetStructureJSONObj?.folders?.data;
-      if (!dataFolder) return [];
+      // Get list of files in data folder and move them to primary
+      const getDataFolderFiles = () => {
+        const dataFolder = window.datasetStructureJSONObj?.folders?.data;
+        if (!dataFolder) return [];
 
-      const collectFiles = (folderObj) => {
-        let files = [];
-        if (folderObj?.files) {
-          Object.values(folderObj.files).forEach((fileObj) => {
-            if (fileObj.relativePath) {
-              files.push(fileObj.relativePath);
-            }
-          });
-        }
-        if (folderObj?.folders) {
-          Object.values(folderObj.folders).forEach((subFolder) => {
-            files = files.concat(collectFiles(subFolder));
-          });
-        }
-        return files;
+        const collectFiles = (folderObj) => {
+          let files = [];
+          if (folderObj?.files) {
+            Object.values(folderObj.files).forEach((fileObj) => {
+              if (fileObj.relativePath) {
+                files.push(fileObj.relativePath);
+              }
+            });
+          }
+          if (folderObj?.folders) {
+            Object.values(folderObj.folders).forEach((subFolder) => {
+              files = files.concat(collectFiles(subFolder));
+            });
+          }
+          return files;
+        };
+
+        return collectFiles(dataFolder);
       };
 
-      return collectFiles(dataFolder);
-    };
+      const dataFolderFiles = getDataFolderFiles();
+      dataFolderFiles.forEach((filePath) => moveFileToTargetLocation(filePath, "primary/"));
+    }
 
-    const dataFolderFiles = getDataFolderFiles();
-    dataFolderFiles.forEach((filePath) => moveFileToTargetLocation(filePath, "primary/"));
+    if (datasetStructuringMethod === "entity-buckets") {
+      console.log(
+        "createStandardizedDatasetStructure - Entity Buckets structuring method selected"
+      );
+    }
 
     // Delete any empty folders in the dataset structure
     // (The window.datasetStructureJSONObj can be used since the move fns already update it)
@@ -352,6 +370,10 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
     // --- Step 7: Revert any global changes to window.datasetStructureJSONObj ---
     window.datasetStructureJSONObj = originalStructure;
 
+    console.log(
+      "createStandardizedDatasetStructure - Return standardized dataset structure:",
+      standardizedStructure
+    );
     return standardizedStructure;
   } catch (error) {
     console.error("Error while creating standardized dataset structure:", error);

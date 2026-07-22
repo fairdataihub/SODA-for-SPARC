@@ -646,16 +646,23 @@ export const modifySampleSiteId = (subjectId, sampleId, oldSiteId, newSiteId) =>
  * Gets entity IDs by entity type
  *
  * Returns an array of entity IDs filtered by the specified entity type.
- * Supports filtering derived samples by their derivation source.
+ * Supports all entity types used in data bucketing workflows.
  *
  * @param {string} entityType - The type of entities to retrieve
  *   - "subjects": All subject IDs
  *   - "samples": All sample IDs
- *   - "samples-derived-from-subjects": Samples derived from subjects
+ *   - "derived-samples": Samples derived from other samples
+ *   - "all-samples": Samples derived from subjects
  *   - "samples-derived-from-samples": Samples derived from other samples
  *   - "sites": All site IDs
  *   - "subject-sites": Sites that belong to subjects
  *   - "sample-sites": Sites that belong to samples
+ *   - "performances": All performance IDs
+ *   - "modalities": All modality IDs
+ *   - "experimental": Experimental data IDs
+ *   - "experimental-data-categorization": Experimental data category IDs
+ *   - "remaining-data-categorization": Remaining data category IDs
+ *   - "non-data-folders": Non-data folder category IDs
  * @returns {Array<string>} Array of entity IDs matching the filter
  */
 export const getEntityIDsByEntityType = (entityType) => {
@@ -664,26 +671,16 @@ export const getEntityIDsByEntityType = (entityType) => {
       return getExistingSubjects().map((subject) => subject.id);
 
     case "samples":
-      return getExistingSamples().map((sample) => sample.id);
-
-    case "samples-derived-from-subjects":
       return getExistingSamples("derived-from-subjects").map((sample) => sample.id);
 
-    case "samples-derived-from-samples":
+    case "derived-samples":
       return getExistingSamples("derived-from-samples").map((sample) => sample.id);
+
+    case "all-samples":
+      return getExistingSamples().map((sample) => sample.id);
 
     case "sites":
       return getExistingSites().map((site) => site.id);
-
-    case "subject-sites":
-      const { datasetEntityArray } = useGlobalStore.getState();
-      return datasetEntityArray
-        .flatMap((subject) => subject.subjectSites || [])
-        .map((site) => site.id);
-
-    case "sample-sites":
-      const allSamples = getExistingSamples();
-      return allSamples.flatMap((sample) => sample.sites || []).map((site) => site.id);
 
     default:
       console.warn(`Unknown entity type: ${entityType}`);

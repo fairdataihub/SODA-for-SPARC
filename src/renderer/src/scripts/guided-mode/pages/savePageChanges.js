@@ -205,7 +205,55 @@ window.savePageChanges = async (pageBeingLeftID) => {
           guidedSkipPage("guided-modalities-data-selection-tab");
         }
       }
+      if (pageBeingLeftComponentType === "data-categories-questionnaire-page") {
+        const questionnaireEntityType = pageBeingLeftDataSet.questionnaireEntityType;
 
+        if (questionnaireEntityType === "experimental-data-categorization") {
+          const categorizeExperimentalDataYes = isCheckboxCardChecked(
+            "categorize-experimental-data-yes"
+          );
+          const categorizeExperimentalDataNo = isCheckboxCardChecked(
+            "categorize-experimental-data-no"
+          );
+          if (!categorizeExperimentalDataYes && !categorizeExperimentalDataNo) {
+            errorArray.push({
+              type: "notyf",
+              message: "Please indicate if you would like to categorize your Experimental data.",
+            });
+            throw errorArray;
+          }
+
+          if (categorizeExperimentalDataYes) {
+            guidedUnSkipPage("experimental-data-categorization-tab");
+            addEntityNameToEntityType("experimental-data-categorization", "Source");
+            addEntityNameToEntityType("experimental-data-categorization", "Derivative");
+          } else {
+            guidedSkipPage("experimental-data-categorization-tab");
+            removeEntityType("experimental-data-categorization");
+          }
+        }
+
+        if (questionnaireEntityType === "remaining-data-categorization") {
+          const categorizeRemainingDataYes = isCheckboxCardChecked("categorize-remaining-data-yes");
+          const categorizeRemainingDataNo = isCheckboxCardChecked("categorize-remaining-data-no");
+          if (!categorizeRemainingDataYes && !categorizeRemainingDataNo) {
+            errorArray.push({
+              type: "notyf",
+              message: "Please indicate if you would like to categorize your remaining data.",
+            });
+            throw errorArray;
+          }
+
+          if (categorizeRemainingDataYes) {
+            guidedUnSkipPage("remaining-data-categorization-tab");
+            addEntityNameToEntityType("remaining-data-categorization", "Source");
+            addEntityNameToEntityType("remaining-data-categorization", "Derivative");
+          } else {
+            guidedSkipPage("remaining-data-categorization-tab");
+            removeEntityType("remaining-data-categorization");
+          }
+        }
+      }
       if (pageBeingLeftComponentType === "data-categorization-page") {
         const entityType = pageBeingLeftDataSet.entityType;
         const datasetEntityObj = getDatasetEntityObj();
@@ -425,55 +473,8 @@ window.savePageChanges = async (pageBeingLeftID) => {
           }
         }
       }
-
-      if (pageBeingLeftComponentType === "data-categories-questionnaire-page") {
-        const questionnaireEntityType = pageBeingLeftDataSet.questionnaireEntityType;
-
-        if (questionnaireEntityType === "experimental-data-categorization") {
-          const categorizeExperimentalDataYes = isCheckboxCardChecked(
-            "categorize-experimental-data-yes"
-          );
-          const categorizeExperimentalDataNo = isCheckboxCardChecked(
-            "categorize-experimental-data-no"
-          );
-          if (!categorizeExperimentalDataYes && !categorizeExperimentalDataNo) {
-            errorArray.push({
-              type: "notyf",
-              message: "Please indicate if you would like to categorize your Experimental data.",
-            });
-            throw errorArray;
-          }
-
-          if (categorizeExperimentalDataYes) {
-            guidedUnSkipPage("experimental-data-categorization-tab");
-            addEntityNameToEntityType("experimental-data-categorization", "Source");
-            addEntityNameToEntityType("experimental-data-categorization", "Derivative");
-          } else {
-            guidedSkipPage("experimental-data-categorization-tab");
-            removeEntityType("experimental-data-categorization");
-          }
-        }
-
-        if (questionnaireEntityType === "remaining-data-categorization") {
-          const categorizeRemainingDataYes = isCheckboxCardChecked("categorize-remaining-data-yes");
-          const categorizeRemainingDataNo = isCheckboxCardChecked("categorize-remaining-data-no");
-          if (!categorizeRemainingDataYes && !categorizeRemainingDataNo) {
-            errorArray.push({
-              type: "notyf",
-              message: "Please indicate if you would like to categorize your remaining data.",
-            });
-            throw errorArray;
-          }
-
-          if (categorizeRemainingDataYes) {
-            guidedUnSkipPage("remaining-data-categorization-tab");
-            addEntityNameToEntityType("remaining-data-categorization", "Source");
-            addEntityNameToEntityType("remaining-data-categorization", "Derivative");
-          } else {
-            guidedSkipPage("remaining-data-categorization-tab");
-            removeEntityType("remaining-data-categorization");
-          }
-        }
+      if (pageBeingLeftComponentType === "data-bucketing-page") {
+        console.log("Leaving a data bucketing page, saving the dataset structure");
       }
 
       if (
