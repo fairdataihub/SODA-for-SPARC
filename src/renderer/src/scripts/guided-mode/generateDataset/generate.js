@@ -197,14 +197,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     addImportedMetadataFilesToStructure(standardizedDatasetStructure);
     window.sodaJSONObj["soda_json_structure"] = standardizedDatasetStructure;
     window.sodaJSONObj["dataset-structure"] = standardizedDatasetStructure;
-    console.log(
-      "window.sodaJSONObj['soda_json_structure']:",
-      window.sodaJSONObj["soda_json_structure"]
-    );
-    console.log(
-      "window.sodaJSONObj['dataset-structure']:",
-      window.sodaJSONObj["dataset-structure"]
-    );
 
     // --- Helper: prepare upload object for Pennsieve ---
     const prepareUploadObj = async () => {
@@ -401,8 +393,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         "current action": "Starting dataset curation",
       });
       // TODO: Reset curation progress messages and status in case prior upload did not finish
-      let res = await client.put("/curate_datasets/curation/session");
-      console.log(res);
+      await client.put("/curate_datasets/curation/session");
 
       window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
     }
@@ -701,9 +692,6 @@ const trackPennsieveDatasetGenerationProgress = async () => {
         window.sodaJSONObj["upload-progress"]?.["current-stage"] === "rename" &&
         window.sodaJSONObj["upload-progress"]?.["status"] === "in progress"
       ) {
-        console.log("Rename phase");
-        console.log(`Main generate size[# of files to rename]: ${mainTotalGenerateDatasetSize}`);
-        console.log(`Number of files to rename from object: ${getNumberOfFilesToRename()}`);
         // wait until backend total matches rename total -- synchronization
         if (mainTotalGenerateDatasetSize != getNumberOfFilesToRename()) continue;
         setGuidedProgressBarValue(
