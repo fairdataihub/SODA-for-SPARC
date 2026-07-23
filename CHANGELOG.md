@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - The generate-option key required to upload to Pennsieve was not set when the user saves and exits on the Pennsieve sign in page. This is because the page to choose generate-option is skipped upon resuming. This is fixed.
 - If an upload failed 3 times in PDSS, the user leaves, then resumes progress, and starts the upload again, the UI tells the user they cannot upload to their dataset because it already exists. The user is then informed that they need to rename their dataset. This is fixed. The user can now upload to their dataset after resuming progress.
 - If a user uploads their dataset in UD and chooses the skip option for existing files and nothing is uploaded, the UI will keep retrying the upload. This is fixed. Now it works as intended and a SWAL appears telling the user that nothing needs to be uploaded.
-- Uploading to an existing dataset will always overstimate the dataset size. This is fixed.
+- Uploading to an existing dataset will always overestimate the dataset size. This is fixed.
 - The rename step in the upload workflow for PDSS and UD was not showing the progress of files being renamed. This is fixed.
 - The progress bar state was not being reset after an upload in PDSS or UD. This is fixed.
 
