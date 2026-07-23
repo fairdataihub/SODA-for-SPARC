@@ -80,16 +80,7 @@
   "identifier": "https://doi.org/10.5281/zenodo.21516136",
   "isPartOf": "https://fairdataihub.org/",
   "issueTracker": "https://github.com/fairdataihub/SODA-for-SPARC/issues",
-  "keywords": [
-    "SPARC",
-    "FAIR",
-    "data",
-    "curation",
-    "mac",
-    "sparc-dataset",
-    "ubuntu",
-    "windows"
-  ],
+  "keywords": ["SPARC", "FAIR", "data", "curation", "mac", "sparc-dataset", "ubuntu", "windows"],
   "license": "https://spdx.org/licenses/MIT",
   "operatingSystem": [
     "Windows 10",
@@ -98,12 +89,7 @@
     "Windows 11",
     "Ubuntu"
   ],
-  "programmingLanguage": [
-    "JavaScript",
-    "HTML",
-    "Python",
-    "CSS"
-  ],
+  "programmingLanguage": ["JavaScript", "HTML", "Python", "CSS"],
   "referencePublication": "10.5281/zenodo.5565455.svg)",
   "schema:releaseNotes": "## Feature Additions:\n\n- Prepare Dataset Step-by-Step has new visual aids that break down the SDS and SDS entities.\n- Prepare Dataset Step-by-Step has been optimized to reduce file explorer re-renders when opening pages and when its state changes, such as during entity selection or when expanding and collapsing folders.\n- UD verify files countdown timer is now a live timer.\n\n## Bug fixes:\n\n- PDSS Entity Addition Method cards have been made the same size.\n- The generate-option key required to upload to Pennsieve was not set when the user saves and exits on the Pennsieve sign in page. This is because the page to choose generate-option is skipped upon resuming. This is fixed.\n- If an upload failed 3 times in PDSS, the user leaves, then resumes progress, and starts the upload again, the UI tells the user they cannot upload to their dataset because it already exists. The user is then informed that they need to rename their dataset. This is fixed. The user can now upload to their dataset after resuming progress.\n- If a user uploads their dataset in UD and chooses the skip option for existing files and nothing is uploaded, the UI will keep retrying the upload. This is fixed. Now it works as intended and a SWAL appears telling the user that nothing needs to be uploaded.\n- Uploading to an existing dataset will always overstimate the dataset size. This is fixed.\n- The rename step in the upload workflow for PDSS and UD was not showing the progress of files being renamed. This is fixed.\n- The progress bar state was not being reset after an upload in PDSS or UD. This is fixed.",
   "version": "18.2.0",
