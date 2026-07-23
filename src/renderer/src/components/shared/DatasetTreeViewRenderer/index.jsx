@@ -414,9 +414,7 @@ const DatasetTreeViewRenderer = ({
 }) => {
   const activeFileExplorer = useGlobalStore((state) => state.activeFileExplorer);
   const datasetRenderArray = useGlobalStore((state) => state.datasetRenderArray);
-
   const parentRef = useRef(null);
-
   const count = datasetRenderArray ? datasetRenderArray.length : 0;
   const rowVirtualizer = useVirtualizer({
     count,
@@ -428,43 +426,31 @@ const DatasetTreeViewRenderer = ({
   const datasetStructureSearchFilter = useGlobalStore(
     (state) => state.datasetStructureSearchFilter
   );
-
   const externallySetSearchFilterValue = useGlobalStore(
     (state) => state.externallySetSearchFilterValue
   );
-
   const [inputSearchFilter, setInputSearchFilter] = useState(datasetStructureSearchFilter);
   const [debouncedSearchFilter] = useDebouncedValue(inputSearchFilter, 500); // 500ms debounce
 
   // Only update store and trigger re-render when debounced value changes
   useEffect(() => {
-    // Only re-render if the filter value actually changed from the previous render
-    if (debouncedSearchFilter !== datasetStructureSearchFilter) {
-      setDatasetStructureSearchFilter(debouncedSearchFilter);
-      reRenderTreeView();
-    }
+    setDatasetStructureSearchFilter(debouncedSearchFilter);
+    reRenderTreeView();
   }, [debouncedSearchFilter]);
-
-  const handleSearchChange = (event) => {
-    setInputSearchFilter(event.target.value);
-  };
-
-  // Update local state when the store changes (only if value actually changed)
+  // Update local state when the store changes
   useEffect(() => {
-    if (inputSearchFilter !== externallySetSearchFilterValue) {
-      setInputSearchFilter(externallySetSearchFilterValue);
-    }
-  }, [externallySetSearchFilterValue, inputSearchFilter]);
-
-  useEffect(() => {
-    const virtualItems = rowVirtualizer.getVirtualItems();
-  }, [datasetRenderArray, rowVirtualizer.getVirtualItems()]);
+    setInputSearchFilter(externallySetSearchFilterValue);
+  }, [externallySetSearchFilterValue]);
 
   if (activeFileExplorer !== fileExplorerId) {
     return <Text>Inactive file explorer {fileExplorerId ? fileExplorerId : "NONE"}</Text>;
   }
   const renderArrayIsEmpty =
     !datasetRenderArray || (Array.isArray(datasetRenderArray) && datasetRenderArray.length === 0);
+
+  const handleSearchChange = (event) => {
+    setInputSearchFilter(event.target.value);
+  };
 
   const handleFileItemClick = (relativePath, fileIsSelected) => {
     if (fileActions && typeof fileActions["on-file-click"] === "function") {
