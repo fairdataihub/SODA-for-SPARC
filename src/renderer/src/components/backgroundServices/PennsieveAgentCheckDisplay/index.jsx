@@ -10,7 +10,8 @@ const RETRY_BUTTON_TEXT = "Retry Pennsieve Agent Check";
 const CLOSE_SODA_BUTTON_TEXT = "Close SODA";
 const CONTINUE_WITH_OLD_AGENT_BUTTON_TEXT =
   "Continue with currently installed Pennsieve Agent (not recommended)";
-const CONTINUE_WITH_RECOMMENDED_AGENT_BUTTON_TEXT = "Continue with Recommended Pennsieve Agent";
+const CONTINUE_WITH_RECOMMENDED_AGENT_BUTTON_TEXT =
+  "Continue with last version of the Pennsieve Agent tested for SODA";
 const KNOWN_ERROR_MESSAGES = [
   "UNIQUE constraint failed:",
   "NotAuthorizedException: Incorrect username or password.",
@@ -210,7 +211,7 @@ const PennsieveAgentCheckDisplay = () => {
             <Flex direction="column" gap="sm">
               <ExternalLink
                 href={pennsieveAgentDownloadURL}
-                buttonText="Download the recommended Pennsieve Agent"
+                buttonText="Download the last version of the Pennsieve Agent tested for SODA"
                 buttonType="button"
                 buttonSize="md"
               />
@@ -325,7 +326,7 @@ const PennsieveAgentCheckDisplay = () => {
               Installed Pennsieve Agent version: <b>{usersPennsieveAgentVersion}</b>
             </Text>
             <Text mt="sm" mb="sm">
-              Latest Pennsieve Agent recommended for SODA:{" "}
+              Last tested version of the Pennsieve Agent:{" "}
               <b>{LAST_TESTED_PENNSIEVE_AGENT_VERSION}</b>
             </Text>
 
@@ -334,16 +335,16 @@ const PennsieveAgentCheckDisplay = () => {
             </Text>
 
             <Text mt="sm" mb="sm">
-              The version of the Pennsieve Agent installed on your computer is not the one
-              recommended for use with SODA. You may continue, but if you experience issues while
-              uploading we recommend you try both the recommended and latest versions of the
-              Pennsieve Agent available below.
+              The version of the Pennsieve Agent installed on your computer is not the one last
+              version of the Pennsieve Agent tested for use with SODA. You may continue, but if you
+              experience issues while uploading we recommend you try both the last tested version
+              and latest versions of the Pennsieve Agent available below.
             </Text>
 
             <Flex direction="column" gap="sm">
               <ExternalLink
                 href={pennsieveAgentDownloadURL}
-                buttonText="Download the Recommended Pennsieve Agent on SODA"
+                buttonText="Download the last version of the Pennsieve Agent tested for SODA"
                 buttonType="button"
                 buttonSize="md"
               />
@@ -400,28 +401,27 @@ const PennsieveAgentCheckDisplay = () => {
               Installed Pennsieve Agent version: <b>{usersPennsieveAgentVersion}</b>
             </Text>
             <Text mt="sm" mb="sm">
-              Latest Pennsieve Agent recommended for SODA:{" "}
-              <b>{LAST_TESTED_PENNSIEVE_AGENT_VERSION}</b>
+              Last version tested for SODA: <b>{LAST_TESTED_PENNSIEVE_AGENT_VERSION}</b>
             </Text>
 
             <Text mt="sm" mb="sm">
-              The version of the Pennsieve Agent installed on your computer is not the recommended
-              version. If you experience issues while uploading please try the recommended version
-              of the Pennsieve Agent.
+              The version of the Pennsieve Agent installed on your computer is not the last version
+              tested for SODA. If you experience issues while uploading using your installed
+              Pennsieve Agent version please try the last tested version.
             </Text>
 
             <ExternalLink
               href={pennsieveAgentDownloadURL}
-              buttonText="Download the Recommended Pennsieve Agent for SODA"
+              buttonText="Download the last version of the Pennsieve Agent tested for SODA"
               buttonType="button"
               buttonSize="md"
             />
             <Text size="lg" fw={700} mt="lg">
-              Having issues with the recommended Pennsieve Agent?
+              Having issues with the last version of the Pennsieve Agent tested for SODA?
             </Text>
             <Text mt="md">
-              If you are experiencing issues with recommended Pennsieve Agent please refer to our
-              documentation page on how to ask the SODA team for assistance{" "}
+              If you are experiencing issues with last version of the Pennsieve Agent tested for
+              SODA please refer to our documentation page on how to ask the SODA team for assistance{" "}
               <a
                 target="_blank"
                 rel="noopener noreferrer"
@@ -460,9 +460,9 @@ const PennsieveAgentCheckDisplay = () => {
               Latest Pennsieve Agent version available: <b>{latestPennsieveAgentVersion}</b>
             </Text>
             <Text mt="sm" mb="sm">
-              You are using the recommended version of the Pennsieve Agent for SODA. If you
-              experience issues with your upload we recommend trying the latest version of the
-              Pennsieve Agent to see if that allows you to upload your dataset.
+              You are using the last version of the Pennsieve Agent that has been tested for SODA.
+              If you experience issues with your upload we recommend trying the latest version of
+              the Pennsieve Agent to see if that allows you to upload your dataset.
             </Text>
             <ExternalLink
               href={pennsieveAgentDownloadURL}
