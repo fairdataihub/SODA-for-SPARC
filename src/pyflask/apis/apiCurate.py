@@ -20,7 +20,8 @@ from pysoda.core.dataset_generation import (
     start_subscriber,
     rename_files,
     get_origin_manifest_id,
-    generate_local_dataset
+    generate_local_dataset,
+    reset_upload_session_environment
 )
 
 from pysoda.utils import validation_error_message
@@ -138,6 +139,13 @@ class Curation(Resource):
 
 # TODO: Add example JSON structures for upload
 
+@api.route("/curation/session")
+class CurationSession(Resource):
+
+    def put(self):
+        return reset_upload_session_environment()
+
+
 @api.route("/curation/manifest_file")
 class Curation(Resource):
 
@@ -157,7 +165,6 @@ class Curation(Resource):
         try:
             pysoda_version = pkg_resources.get_distribution("pysodafair").version
             api.logger.info(f"pysodafair version: {pysoda_version}")
-            
         except pkg_resources.DistributionNotFound:
             api.logger.info("pysodafair version: not found")
 
