@@ -665,27 +665,36 @@ export const modifySampleSiteId = (subjectId, sampleId, oldSiteId, newSiteId) =>
  *   - "non-data-folders": Non-data folder category IDs
  * @returns {Array<string>} Array of entity IDs matching the filter
  */
-export const getEntityIDsByEntityType = (entityType) => {
+export const getEntitiesByEntityType = (entityType, returnIdsOnly = true) => {
+  let entities = [];
+
   switch (entityType) {
     case "subjects":
-      return getExistingSubjects().map((subject) => subject.id);
+      entities = getExistingSubjects();
+      break;
 
-    case "samples":
-      return getExistingSamples("derived-from-subjects").map((sample) => sample.id);
+    case "non-derived-samples":
+      entities = getExistingSamples("derived-from-subjects");
+      break;
 
     case "derived-samples":
-      return getExistingSamples("derived-from-samples").map((sample) => sample.id);
+      entities = getExistingSamples("derived-from-samples");
+      break;
 
     case "all-samples":
-      return getExistingSamples().map((sample) => sample.id);
+      entities = getExistingSamples();
+      break;
 
     case "sites":
-      return getExistingSites().map((site) => site.id);
+      entities = getExistingSites();
+      break;
 
     default:
       console.warn(`Unknown entity type: ${entityType}`);
       return [];
   }
+
+  return returnIdsOnly ? entities.map((entity) => entity.id) : entities;
 };
 
 /**

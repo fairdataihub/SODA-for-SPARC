@@ -8,6 +8,7 @@ import {
   setActiveFormType,
   setEntityBeingAddedParentSubject,
   setEntityBeingAddedParentSample,
+  getEntitiesByEntityType,
 } from "../../../stores/slices/datasetEntityStructureSlice";
 import useGlobalStore from "../../../stores/globalStore";
 import { guidedOpenEntityEditSwal } from "./utils";
@@ -338,13 +339,17 @@ const EntityHierarchyRenderer = ({
     if (!onlyRenderEntityType) return [];
 
     if (onlyRenderEntityType === "subjects") {
-      return getExistingSubjects();
+      return getEntitiesByEntityType("subjects", false);
     }
     if (onlyRenderEntityType === "samples") {
-      return getExistingSamples();
+      return getEntitiesByEntityType("non-derived-samples", false);
     }
     if (onlyRenderEntityType === "sites") {
-      return getExistingSites();
+      return getEntitiesByEntityType("sites", false);
+    }
+
+    if (onlyRenderEntityType === "derived-samples") {
+      return getEntitiesByEntityType("derived-samples", false);
     }
 
     console.error("Invalid entity type for rendering:", onlyRenderEntityType);

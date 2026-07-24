@@ -27,7 +27,7 @@ import {
 import {
   setDatasetEntityArray,
   setActiveFormType,
-  getEntityIDsByEntityType,
+  getEntitiesByEntityType,
 } from "../../../stores/slices/datasetEntityStructureSlice.js";
 import {
   setSelectedEntities,
@@ -421,14 +421,14 @@ window.openPage = async (targetPageID) => {
         }
 
         if (pageEntityType === "sites") {
-          const sites = getEntityIDsByEntityType("sites");
-          for (const site of sites) {
+          const siteIDs = getEntitiesByEntityType("sites", true);
+          for (const site of siteIDs) {
             addEntityNameToEntityType("sites", site);
           }
 
           const prevSiteNames = getEntityNamesByEntityType("sites");
           for (const siteName of prevSiteNames) {
-            if (!sites.includes(siteName)) {
+            if (!siteIDs.includes(siteName)) {
               removeEntityFromEntityList("sites", siteName);
             }
           }
@@ -451,21 +451,21 @@ window.openPage = async (targetPageID) => {
         }
 
         if (pageEntityType === "derived-samples") {
-          const derivedSamples = getEntityIDsByEntityType("derived-samples");
+          const derivedSampleIDs = getEntitiesByEntityType("derived-samples", true);
 
-          for (const derivedSample of derivedSamples) {
+          for (const derivedSample of derivedSampleIDs) {
             addEntityNameToEntityType("derived-samples", derivedSample);
           }
 
           const prevDerivedSampleNames = getEntityNamesByEntityType("derived-samples");
           for (const derivedSampleName of prevDerivedSampleNames) {
-            if (!derivedSamples.includes(derivedSampleName)) {
+            if (!derivedSampleIDs.includes(derivedSampleName)) {
               removeEntityFromEntityList("derived-samples", derivedSampleName);
             }
           }
 
-          const sites = getEntityIDsByEntityType("sites");
-          const samples = getEntityIDsByEntityType("samples");
+          const siteIDs = getEntitiesByEntityType("sites", true);
+          const sampleIDs = getEntitiesByEntityType("non-derived-samples", true);
           const filterList = [
             {
               type: "non-data-folders",
@@ -473,11 +473,11 @@ window.openPage = async (targetPageID) => {
             },
             {
               type: "sites",
-              names: sites,
+              names: siteIDs,
             },
             {
               type: "samples",
-              names: samples,
+              names: sampleIDs,
             },
           ];
           setFileVisibilityFilter(
@@ -492,19 +492,19 @@ window.openPage = async (targetPageID) => {
         }
 
         if (pageEntityType === "samples") {
-          const samples = getEntityIDsByEntityType("samples");
-          for (const sample of samples) {
+          const sampleIDs = getEntitiesByEntityType("non-derived-samples", true);
+          for (const sample of sampleIDs) {
             addEntityNameToEntityType("samples", sample);
           }
           const prevSampleNames = getEntityNamesByEntityType("samples");
           for (const sampleName of prevSampleNames) {
-            if (!samples.includes(sampleName)) {
+            if (!sampleIDs.includes(sampleName)) {
               removeEntityFromEntityList("samples", sampleName);
             }
           }
 
-          const sites = getEntityIDsByEntityType("sites");
-          const derivedSamples = getEntityIDsByEntityType("derived-samples");
+          const siteIDs = getEntitiesByEntityType("sites", true);
+          const derivedSampleIDs = getEntitiesByEntityType("derived-samples", true);
           const filterList = [
             {
               type: "non-data-folders",
@@ -512,11 +512,11 @@ window.openPage = async (targetPageID) => {
             },
             {
               type: "sites",
-              names: sites,
+              names: siteIDs,
             },
             {
               type: "derived-samples",
-              names: derivedSamples,
+              names: derivedSampleIDs,
             },
           ];
           setFileVisibilityFilter(
@@ -531,21 +531,21 @@ window.openPage = async (targetPageID) => {
         }
 
         if (pageEntityType === "subjects") {
-          const subjects = getEntityIDsByEntityType("subjects");
-          for (const subject of subjects) {
+          const subjectIDs = getEntitiesByEntityType("subjects", true);
+          for (const subject of subjectIDs) {
             addEntityNameToEntityType("subjects", subject);
           }
 
           const prevSubjectNames = getEntityNamesByEntityType("subjects");
           for (const subjectName of prevSubjectNames) {
-            if (!subjects.includes(subjectName)) {
+            if (!subjectIDs.includes(subjectName)) {
               removeEntityFromEntityList("subjects", subjectName);
             }
           }
 
-          const sites = getEntityIDsByEntityType("sites");
-          const samples = getEntityIDsByEntityType("samples");
-          const derivedSamples = getEntityIDsByEntityType("derived-samples");
+          const siteIDs = getEntitiesByEntityType("sites", true);
+          const sampleIDs = getEntitiesByEntityType("non-derived-samples", true);
+          const derivedSampleIDs = getEntitiesByEntityType("derived-samples", true);
           const filterList = [
             {
               type: "non-data-folders",
@@ -553,15 +553,15 @@ window.openPage = async (targetPageID) => {
             },
             {
               type: "sites",
-              names: sites,
+              names: siteIDs,
             },
             {
               type: "samples",
-              names: samples,
+              names: sampleIDs,
             },
             {
               type: "derived-samples",
-              names: derivedSamples,
+              names: derivedSampleIDs,
             },
           ];
 
@@ -636,7 +636,7 @@ window.openPage = async (targetPageID) => {
       if (targetPageComponentType === "data-bucketing-page") {
         const pageEntityType = targetPageDataset.entityType;
         console.log("Bucketing page entity type:", pageEntityType);
-        const entityIDs = getEntityIDsByEntityType(pageEntityType);
+        const entityIDs = getEntitiesByEntityType(pageEntityType, true);
         console.log(`Entity IDs for ${pageEntityType}:`, entityIDs);
 
         if (entityIDs && entityIDs.length > 0) {

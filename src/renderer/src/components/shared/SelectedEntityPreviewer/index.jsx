@@ -3,7 +3,6 @@ import { Box, Text, Paper, Group, Stack } from "@mantine/core";
 import { getEntityDataById } from "../../../stores/slices/datasetEntityStructureSlice";
 const SelectedEntityPreviewer = () => {
   const activeEntity = useGlobalStore((state) => state.activeEntity);
-  console.log("SelectedEntityPreviewer activeEntity:", activeEntity);
   if (!activeEntity) {
     return null;
   }

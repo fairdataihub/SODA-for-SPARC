@@ -6,6 +6,7 @@ import {
   filePassesAllFilters,
 } from "../../stores/slices/datasetTreeViewSlice";
 import { modifyDatasetEntityForRelativeFilePath } from "../../stores/slices/datasetEntitySelectorSlice";
+import { getEntitiesByEntityType } from "../../stores/slices/datasetEntityStructureSlice";
 
 export const countFilesInDatasetStructure = (datasetStructure) => {
   // If datasetStructure is an array (datasetRenderArray), count file items
@@ -274,6 +275,56 @@ export const moveFileToTargetLocation = (relativePathToMove, destionationRelativ
   delete parentFolder["files"][itemName];
 };
 
+/**
+ * Recursively moves files from a folder to a destination, stripping the source base path
+ * @param {Object} folderObj - The folder object to recursively process
+ * @param {string} sourceBasePath - The base path to strip (e.g., "data/subjects/sub-1/")
+ * @param {string} destinationPath - The destination path (e.g., "primary/sub-1/")
+ */
+const moveFilesFromFolderRecursively = (folderObj, sourceBasePath, destinationPath) => {
+  if (folderObj?.files) {
+    Object.values(folderObj.files).forEach((fileObj) => {
+      if (fileObj.relativePath) {
+        // Get the nested path within the source folder by removing the base path
+        const nestedPath = fileObj.relativePath.substring(sourceBasePath.length);
+        // Construct the final destination path
+        const finalDestinationPath = destinationPath + nestedPath;
+
+        // Manually move the file to preserve only the nested structure
+        const destinationSegments = finalDestinationPath.split("/").filter(Boolean);
+        const fileName = destinationSegments.pop();
+
+        let currentFolder = window.datasetStructureJSONObj;
+        for (const segment of destinationSegments) {
+          if (!currentFolder.folders[segment]) {
+            currentFolder.folders[segment] = newEmptyFolderObj();
+          }
+          currentFolder = currentFolder.folders[segment];
+        }
+
+        if (!currentFolder.files) {
+          currentFolder.files = {};
+        }
+
+        // Find source file and move it
+        const { parentFolder: srcParent, itemName } = getFileDetailsByRelativePath(
+          fileObj.relativePath
+        );
+        if (srcParent?.files?.[itemName]) {
+          currentFolder.files[fileName] = srcParent.files[itemName];
+          delete srcParent.files[itemName];
+        }
+      }
+    });
+  }
+
+  if (folderObj?.folders) {
+    Object.values(folderObj.folders).forEach((subFolder) => {
+      moveFilesFromFolderRecursively(subFolder, sourceBasePath, destinationPath);
+    });
+  }
+};
+
 export const createStandardizedDatasetStructure = (datasetStructure, datasetEntityObj) => {
   console.log("createStandardizedDatasetStructure - Input dataset structure:", datasetStructure);
   console.log(
@@ -355,6 +406,141 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
       console.log(
         "createStandardizedDatasetStructure - Entity Buckets structuring method selected"
       );
+      const subjects = getEntitiesByEntityType("subjects", false);
+      const samples = getEntitiesByEntityType("non-derived-samples", false);
+      const derivedSamples = getEntitiesByEntityType("derived-samples", false);
+      const sites = getEntitiesByEntityType("sites", false);
+
+      console.log(
+        "createStandardizedDatasetStructure - Subjects:",
+        JSON.stringify(subjects, null, 2)
+      );
+      console.log(
+        "createStandardizedDatasetStructure - Samples:",
+        JSON.stringify(samples, null, 2)
+      );
+      console.log(
+        "createStandardizedDatasetStructure - Derived Samples:",
+        JSON.stringify(derivedSamples, null, 2)
+      );
+      console.log("createStandardizedDatasetStructure - Sites:", JSON.stringify(sites, null, 2));
+
+      // Step 1: Move all subject folders to primary
+      for (const subject of subjects) {
+        console.log("Iterating over subject:", subject);
+        const subjectId = subject.id;
+        const subjectFolderLocation =
+          window.datasetStructureJSONObj?.folders?.data?.folders?.["subjects"]?.folders?.[
+            subjectId
+          ];
+
+        if (subjectFolderLocation) {
+          console.log(
+            `createStandardizedDatasetStructure - Moving subject ${subjectId} files to primary`
+          );
+          const sourceBasePath = `data/subjects/${subjectId}/`;
+          const destinationPath = `primary/${subjectId}/`;
+          moveFilesFromFolderRecursively(subjectFolderLocation, sourceBasePath, destinationPath);
+        }
+      }
+
+      // Step 2: Move all sample folders to their parent subject directories
+      for (const sample of samples) {
+        console.log("Iterating over sample:", sample);
+        const sampleId = sample.id;
+        const parentSubjectId = sample.parentSubject || sample.metadata?.subject_id;
+
+        if (!parentSubjectId) {
+          console.warn(`Sample ${sampleId} has no parent subject, skipping`);
+          continue;
+        }
+
+        const sampleFolderLocation =
+          window.datasetStructureJSONObj?.folders?.data?.folders?.["samples"]?.folders?.[sampleId];
+        if (sampleFolderLocation) {
+          console.log(
+            `createStandardizedDatasetStructure - Moving sample ${sampleId} files to primary`
+          );
+          const sourceBasePath = `data/samples/${sampleId}/`;
+          const destinationPath = `primary/${parentSubjectId}/${sampleId}/`;
+          moveFilesFromFolderRecursively(sampleFolderLocation, sourceBasePath, destinationPath);
+        }
+      }
+
+      // Step 3: Move all derived-sample folders to their parent sample directories
+      for (const derivedSample of derivedSamples) {
+        console.log("Iterating over derived-sample:", derivedSample);
+        const derivedSampleId = derivedSample.id;
+        const parentSubjectId = derivedSample.parentSubject || derivedSample.metadata?.subject_id;
+        const parentSampleId = derivedSample.metadata?.was_derived_from;
+
+        if (!parentSubjectId || !parentSampleId) {
+          console.warn(
+            `Derived-sample ${derivedSampleId} has missing parent info (subject: ${parentSubjectId}, sample: ${parentSampleId}), skipping`
+          );
+          continue;
+        }
+
+        const derivedSampleFolderLocation =
+          window.datasetStructureJSONObj?.folders?.data?.folders?.["derived-samples"]?.folders?.[
+            derivedSampleId
+          ];
+        if (derivedSampleFolderLocation) {
+          console.log(
+            `createStandardizedDatasetStructure - Moving derived-sample ${derivedSampleId} files to primary`
+          );
+          const sourceBasePath = `data/derived-samples/${derivedSampleId}/`;
+          const destinationPath = `primary/${parentSubjectId}/${parentSampleId}/${derivedSampleId}/`;
+          moveFilesFromFolderRecursively(
+            derivedSampleFolderLocation,
+            sourceBasePath,
+            destinationPath
+          );
+        }
+      }
+
+      // Step 4: Move all site folders to their appropriate hierarchical locations
+      for (const site of sites) {
+        console.log("Iterating over site:", site);
+        const siteId = site.id;
+        const parentSubjectId = site.parentSubject || site.metadata?.subject_id;
+        const parentSampleId = site.parentSample || site.metadata?.sample_id;
+        const parentDerivedSampleId = site.metadata?.derived_sample_id;
+
+        if (!parentSubjectId) {
+          console.warn(`Site ${siteId} has no parent subject, skipping`);
+          continue;
+        }
+
+        const siteFolderLocation =
+          window.datasetStructureJSONObj?.folders?.data?.folders?.["sites"]?.folders?.[siteId];
+        if (siteFolderLocation) {
+          let destinationPath;
+
+          if (parentDerivedSampleId) {
+            // Site is under a derived-sample
+            destinationPath = `primary/${parentSubjectId}/${parentSampleId}/${parentDerivedSampleId}/${siteId}/`;
+            console.log(
+              `createStandardizedDatasetStructure - Moving site ${siteId} under derived-sample to primary`
+            );
+          } else if (parentSampleId) {
+            // Site is under a sample
+            destinationPath = `primary/${parentSubjectId}/${parentSampleId}/${siteId}/`;
+            console.log(
+              `createStandardizedDatasetStructure - Moving site ${siteId} under sample to primary`
+            );
+          } else {
+            // Site is under a subject
+            destinationPath = `primary/${parentSubjectId}/${siteId}/`;
+            console.log(
+              `createStandardizedDatasetStructure - Moving site ${siteId} under subject to primary`
+            );
+          }
+
+          const sourceBasePath = `data/sites/${siteId}/`;
+          moveFilesFromFolderRecursively(siteFolderLocation, sourceBasePath, destinationPath);
+        }
+      }
     }
 
     // Delete any empty folders in the dataset structure
