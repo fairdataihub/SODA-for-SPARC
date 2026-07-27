@@ -78,6 +78,7 @@ import {
   setPennsieveAgentOutOfDate,
   setPennsieveAgentCheckInProgress,
   setPostPennsieveAgentCheckAction,
+  setLatestPennsieveAgentVersion,
 } from "../../stores/slices/backgroundServicesSlice";
 import { setNavButtonDisabled, setNavButtonHidden } from "../../stores/slices/navButtonStateSlice";
 import { setStateDisplayData } from "../../stores/slices/stateDisplaySlice";
@@ -326,6 +327,7 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
       ({ latestPennsieveAgentVersion, platformSpecificAgentDownloadURL } =
         await getLatestPennsieveAgentVersion());
       setPennsieveAgentDownloadURL(platformSpecificAgentDownloadURL);
+      setLatestPennsieveAgentVersion(latestPennsieveAgentVersion);
     } catch (error) {
       setPennsieveAgentCheckError(
         "Unable to get information about the latest Pennsieve Agent release",

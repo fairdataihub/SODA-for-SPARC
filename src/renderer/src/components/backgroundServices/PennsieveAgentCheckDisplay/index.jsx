@@ -8,8 +8,7 @@ import { LAST_TESTED_PENNSIEVE_AGENT_VERSION } from "./recommendedPennsieveVersi
 // Constants
 const RETRY_BUTTON_TEXT = "Retry Pennsieve Agent Check";
 const CLOSE_SODA_BUTTON_TEXT = "Close SODA";
-const CONTINUE_WITH_OLD_AGENT_BUTTON_TEXT =
-  "Continue with currently installed Pennsieve Agent (not recommended)";
+const CONTINUE_WITH_OLD_AGENT_BUTTON_TEXT = "Continue with currently installed Pennsieve Agent";
 const CONTINUE_WITH_RECOMMENDED_AGENT_BUTTON_TEXT =
   "Continue with last version of the Pennsieve Agent tested for SODA";
 const KNOWN_ERROR_MESSAGES = [
@@ -69,19 +68,6 @@ const ContinueWithOldAgentButton = () => (
     {CONTINUE_WITH_OLD_AGENT_BUTTON_TEXT}
   </Button>
 );
-
-const ContinueWithRecommendedAgentButton = () => {
-  <Button
-    bg="gray"
-    onClick={() => {
-      // Mark that the user has chosen to continue with the current version of the Pennsieve Agent for this session, so that they are not prompted again to update the agent until they restart SODA
-      window.allowOutdatedPennsieveAgentForThisSession = true;
-      window.checkPennsieveAgent();
-    }}
-  >
-    {CONTINUE_WITH_RECOMMENDED_AGENT_BUTTON_TEXT}
-  </Button>;
-};
 
 const PennsieveAgentErrorMessageDisplay = ({ errorMessage }) => {
   const isKnownError = KNOWN_ERROR_MESSAGES.some((msg) => errorMessage.includes(msg));
@@ -194,28 +180,45 @@ const PennsieveAgentCheckDisplay = () => {
             title="SODA was not able to start the Pennsieve Agent"
             icon={<IconTool />}
           >
-            <Text mb="sm">
-              The Pennsieve Agent is required to upload data to Pennsieve from SODA.If you do not
-              have the Pennsieve Agent, please download the latest version SODA has tested and
-              supports here. You can optionally download the latest version of the Agent here. We
-              recommend you try both and if you have issues getting either to upload please contact
-              the SODA team. For help installing the Pennsieve agent please refer to our
-              documentation below.
-              <ExternalLink
-                href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/installing-the-pennsieve-agent"
-                buttonText="SODA documentation"
-                buttonType="anchor"
-              />
-              .
-            </Text>
+            {latestPennsieveAgentVersion !== null &&
+              latestPennsieveAgentVersion != LAST_TESTED_PENNSIEVE_AGENT_VERSION && (
+                <Text mb="sm">
+                  The Pennsieve Agent is required to upload data to Pennsieve from SODA. You have a
+                  choice of which Pennsieve Agent version you can download below, but we recommend
+                  starting with the first option. For help installing the Pennsieve agent please
+                  refer to the
+                  <ExternalLink
+                    href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/installing-the-pennsieve-agent"
+                    buttonText="SODA documentation"
+                    buttonType="anchor"
+                  />
+                  .
+                </Text>
+              )}
+            {latestPennsieveAgentVersion !== null &&
+              latestPennsieveAgentVersion === LAST_TESTED_PENNSIEVE_AGENT_VERSION && (
+                <Text mb="sm">
+                  The Pennsieve Agent is required to upload data to Pennsieve from SODA. You can
+                  download the pennsieve agent below. For help installing the Pennsieve agent please
+                  refer to the
+                  <ExternalLink
+                    href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/installing-the-pennsieve-agent"
+                    buttonText="SODA documentation"
+                    buttonType="anchor"
+                  />
+                  .
+                </Text>
+              )}
             <Flex direction="column" gap="sm">
-              <ExternalLink
-                href={pennsieveAgentDownloadURL}
-                buttonText="Download the last version of the Pennsieve Agent tested for SODA"
-                buttonType="button"
-                buttonSize="md"
-              />
-
+              {latestPennsieveAgentVersion !== null &&
+                latestPennsieveAgentVersion != LAST_TESTED_PENNSIEVE_AGENT_VERSION && (
+                  <ExternalLink
+                    href={pennsieveAgentDownloadURL}
+                    buttonText="Download the last version of the Pennsieve Agent tested for SODA"
+                    buttonType="button"
+                    buttonSize="md"
+                  />
+                )}
               <ExternalLink
                 href={pennsieveAgentDownloadURL}
                 buttonText="Download the latest Pennsieve Agent"
@@ -246,7 +249,7 @@ const PennsieveAgentCheckDisplay = () => {
             )}
             <Text mt="md">
               The Pennsieve Agent not starting can be caused by a variety of issues. If you are not
-              able to get the Pennsieve Agent working, please refer to the{" "}
+              able to get the Pennsieve Agent working, please refer to the
               <ExternalLink
                 href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/trouble-starting-the-pennsieve-agent-in-soda"
                 buttonText="SODA documentation"
@@ -301,16 +304,12 @@ const PennsieveAgentCheckDisplay = () => {
   // UPAV !== LTPAV && LTPAV === LATEST && UPAV !== LATEST  [ Expect: 2nd case; Get: 2nd]
   // UPAV !== LTPAV && LTPAV === LATEST && UPAV === LATEST  [ Impossible case as UPAV must equal LTPAV]
 
-  console.log(usersPennsieveAgentVersion);
-  console.log(latestPennsieveAgentVersion);
-  console.log(LAST_TESTED_PENNSIEVE_AGENT_VERSION);
-
   if (
     usersPennsieveAgentVersion !== null &&
     latestPennsieveAgentVersion !== null &&
     usersPennsieveAgentVersion !== LAST_TESTED_PENNSIEVE_AGENT_VERSION &&
-    LAST_TESTED_PENNSIEVE_AGENT_VERSION !== latestPennsieveAgentVersion &&
-    usersPennsieveAgentVersion !== latestPennsieveAgentVersion
+    usersPennsieveAgentVersion !== latestPennsieveAgentVersion &&
+    LAST_TESTED_PENNSIEVE_AGENT_VERSION !== latestPennsieveAgentVersion
   ) {
     return (
       <FullWidthContainer>
@@ -326,7 +325,7 @@ const PennsieveAgentCheckDisplay = () => {
               Installed Pennsieve Agent version: <b>{usersPennsieveAgentVersion}</b>
             </Text>
             <Text mt="sm" mb="sm">
-              Last tested version of the Pennsieve Agent:{" "}
+              Last version of the Pennsieve Agent tested for SODA:{" "}
               <b>{LAST_TESTED_PENNSIEVE_AGENT_VERSION}</b>
             </Text>
 
@@ -335,10 +334,11 @@ const PennsieveAgentCheckDisplay = () => {
             </Text>
 
             <Text mt="sm" mb="sm">
-              The version of the Pennsieve Agent installed on your computer is not the one last
-              version of the Pennsieve Agent tested for use with SODA. You may continue, but if you
-              experience issues while uploading we recommend you try both the last tested version
-              and latest versions of the Pennsieve Agent available below.
+              If you experience issues while uploading with your installed Pennsieve Agent, we
+              recommend you try both versions of the Pennsieve Agent available below. Simply
+              download your preferred version first, install it, and then click `Retry Pennsieve
+              Agent Check`. SODA will scan your new version, then you can continue to the upload
+              step.
             </Text>
 
             <Flex direction="column" gap="sm">
@@ -350,17 +350,17 @@ const PennsieveAgentCheckDisplay = () => {
               />
               <ExternalLink
                 href={pennsieveAgentDownloadURL}
-                buttonText="Download the Latest Pennsieve Agent SODA"
+                buttonText="Download the Latest Pennsieve Agent"
                 buttonType="button"
                 buttonSize="md"
               />
             </Flex>
             <Text size="lg" fw={700} mt="lg">
-              Having issues with the both versions of the Pennsieve Agent?
+              Having issues with the Pennsieve Agent?
             </Text>
             <Text mt="md">
-              If you are experiencing issues with both versions of the Pennsieve Agent please refer
-              to our documentation page on how to ask the SODA team for assistance{" "}
+              If you are experiencing issues uploading with the Pennsieve Agent please refer to our
+              documentation page on how to ask the SODA team for assistance{" "}
               <a
                 target="_blank"
                 rel="noopener noreferrer"
@@ -456,17 +456,19 @@ const PennsieveAgentCheckDisplay = () => {
             <Text>
               Installed Pennsieve Agent version: <b>{usersPennsieveAgentVersion}</b>
             </Text>
-            <Text>
+            <Text mt="sm" mb="sm">
               Latest Pennsieve Agent version available: <b>{latestPennsieveAgentVersion}</b>
             </Text>
             <Text mt="sm" mb="sm">
               You are using the last version of the Pennsieve Agent that has been tested for SODA.
-              If you experience issues with your upload we recommend trying the latest version of
-              the Pennsieve Agent to see if that allows you to upload your dataset.
+              If you experience issues with your upload, we recommend also trying the latest version
+              of the Pennsieve Agent. Simply download it below, install it, and then click `Retry
+              Pennsieve Agent Check`. SODA will scan your new version, then you continue to the
+              upload step.
             </Text>
             <ExternalLink
               href={pennsieveAgentDownloadURL}
-              buttonText="Download the Latest Pennsieve Agent SODA"
+              buttonText="Download the Latest Pennsieve Agent"
               buttonType="button"
               buttonSize="md"
             />
@@ -487,7 +489,7 @@ const PennsieveAgentCheckDisplay = () => {
             </Text>
             <Group justify="center" mt="sm">
               <RetryButton />
-              <ContinueWithRecommendedAgentButton />
+              <ContinueWithOldAgentButton />
             </Group>
           </Alert>
         </Stack>
