@@ -446,7 +446,6 @@ const DatasetTreeViewRenderer = ({
   );
   const [inputSearchFilter, setInputSearchFilter] = useState(datasetStructureSearchFilter);
   const [debouncedSearchFilter] = useDebouncedValue(inputSearchFilter, 500); // 500ms debounce
-  const pathToRender = useGlobalStore((state) => state.pathToRender);
 
   // Only update store and trigger re-render when debounced value changes
   useEffect(() => {
@@ -482,9 +481,6 @@ const DatasetTreeViewRenderer = ({
 
   return (
     <Paper padding="md" shadow="sm" radius="md" p="sm" flex={1} w="100%" withBorder>
-      <Text size="xs" c="dimmed" mb="xs">
-        {pathToRender ? `Current path: ${pathToRender}` : "Current path: /"}
-      </Text>
       {itemSelectInstructions && (
         <Stack gap="xs">
           <Text size="lg" fw={500}>

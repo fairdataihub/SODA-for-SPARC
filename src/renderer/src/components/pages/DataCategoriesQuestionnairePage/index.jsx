@@ -1,6 +1,7 @@
 import { Text, Stack, Center } from "@mantine/core";
 import useGlobalStore from "../../../stores/globalStore";
 import { isCheckboxCardChecked } from "../../../stores/slices/checkboxCardSlice";
+import { getOxfordCommaSeparatedListOfEntities } from "../../../stores/slices/datasetContentSelectorSlice";
 import NavigationButton from "../../buttons/Navigation";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
@@ -10,6 +11,7 @@ import DropDownNote from "../../utils/ui/DropDownNote";
 
 const DataCategoriesQuestionnairePage = ({ pageID, pageName, questionnaireEntityType }) => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
+  const datasetStructuringMode = useGlobalStore((state) => state.datasetStructuringMode);
 
   return (
     <GuidedModePage pageHeader={pageName}>
@@ -27,21 +29,28 @@ const DataCategoriesQuestionnairePage = ({ pageID, pageName, questionnaireEntity
         )}
         {questionnaireEntityType === "remaining-data-categorization" && (
           <Text>
-            {selectedEntities.length === 0
-              ? `You indicated that none of the typical dataset content questions applied to your dataset. 
-                  All of your data can now be organized into three categories: Primary, Source, and Derivative. 
-                  These categories correspond to the folders where your files will be placed in your final standardized dataset. 
-                  If you do not have Source or Derivative files, or do not wish to categorize your files, select "No" below. 
-                  All of your data will then be categorized as Primary and placed in the Primary folder. 
-                  If you have Source or Derivative files and want to categorize them, select "Yes" below, 
-                  and on the next page, you will be asked to assign a category to each file.`
-              : `The remaining files, shown at the bottom of this page, have not been categorized in earlier steps 
-                  and can now be organized into three categories: Primary, Source, and Derivative. 
-                  These categories correspond to the folders where your files will be placed in your final standardized dataset. 
-                  If you do not have Source or Derivative files, or do not wish to categorize your files, select "No" below. 
-                  All remaining files will then be categorized as "Primary" and placed in the Primary folder. 
-                  If you have Source or Derivative files and want to categorize them, select "Yes" below, 
-                  and on the next page, you will be asked to assign a category to each file.`}
+            {datasetStructuringMode === "entity-buckets"
+              ? `The remaining files, shown at the bottom of this page, have not been categorized in earlier steps. 
+                    Your data is organized by entities (${getOxfordCommaSeparatedListOfEntities(
+                      "and"
+                    )}).
+                    These remaining files will be organized within the appropriate entity folders based on their associations. 
+                    If you do not wish to further organize these files, you may proceed to the next page.`
+              : selectedEntities.length === 0
+                ? `You indicated that none of the typical dataset content questions applied to your dataset. 
+                    All of your data can now be organized into three categories: Primary, Source, and Derivative. 
+                    These categories correspond to the folders where your files will be placed in your final standardized dataset. 
+                    If you do not have Source or Derivative files, or do not wish to categorize your files, select "No" below. 
+                    All of your data will then be categorized as Primary and placed in the Primary folder. 
+                    If you have Source or Derivative files and want to categorize them, select "Yes" below, 
+                    and on the next page, you will be asked to assign a category to each file.`
+                : `The remaining files, shown at the bottom of this page, have not been categorized in earlier steps 
+                    and can now be organized into three categories: Primary, Source, and Derivative. 
+                    These categories correspond to the folders where your files will be placed in your final standardized dataset. 
+                    If you do not have Source or Derivative files, or do not wish to categorize your files, select "No" below. 
+                    All remaining files will then be categorized as "Primary" and placed in the Primary folder. 
+                    If you have Source or Derivative files and want to categorize them, select "Yes" below, 
+                    and on the next page, you will be asked to assign a category to each file.`}
           </Text>
         )}
 
