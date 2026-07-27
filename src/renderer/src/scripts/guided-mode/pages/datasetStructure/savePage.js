@@ -48,7 +48,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     }
 
     const classForEntityAssociationMethodPages = "entity-association-workflow";
-    const classForEntityBucketsMethodPages = "entity-buckets-workflow";
+    const classForEntityBucketsMethodPages = "entity-bucketing-workflow";
 
     if (userSelectedEntityAssociationMethod) {
       guidedUnSkipPageSet(classForEntityAssociationMethodPages);
@@ -155,9 +155,18 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     // Set up supporting data categorization entities and page visibility
     // Show/hide the supporting data categorization page based on whether user has any supporting folders
     if (nonDataFolders.length > 0) {
-      guidedUnSkipPage("non-data-categorization-tab");
+      const datasetStructuringMethod = window.sodaJSONObj["dataset-structuring-method"];
+      if (datasetStructuringMethod === "entity-association") {
+        guidedUnSkipPageSet("non-data-entity-association-workflow");
+        guidedSkipPageSet("non-data-entity-bucketing-workflow");
+      }
+      if (datasetStructuringMethod === "entity-buckets") {
+        guidedUnSkipPageSet("non-data-entity-bucketing-workflow");
+        guidedSkipPageSet("non-data-entity-association-workflow");
+      }
     } else {
-      guidedSkipPage("non-data-categorization-tab");
+      guidedSkipPageSet("non-data-entity-association-workflow");
+      guidedSkipPageSet("non-data-entity-bucketing-workflow");
     }
 
     window.sodaJSONObj["non-data-folders"] = nonDataFolders;
