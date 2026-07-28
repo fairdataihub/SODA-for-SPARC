@@ -120,7 +120,8 @@ export const createPyProc = async () => {
         pyflaskProcess.on("close", (code) => {
           log.info(`child process exited with code ${code}`);
           log.info("Server output during session found below:");
-          log.info(sessionServerOutput);
+          // Comment out when testing if necessary
+          // log.info(sessionServerOutput);
           global.serverLive = false;
         });
         // Event listener for when the process exits
