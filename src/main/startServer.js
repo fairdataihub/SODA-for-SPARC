@@ -245,8 +245,6 @@ ipcMain.handle("restart-server", (event, port) => {
     const READY_MESSAGE = ["running on"]; // <-- Change this to match your server's ready output
 
     pyflaskProcess.stdout.on("data", (data) => {
-      log.info(`stdout data check: ${data.toString()}`);
-
       const output = data.toString();
       const logOutput = `[pyflaskProcess output] ${output}`;
       event.sender.send("restart-server:progress", logOutput);
@@ -265,7 +263,6 @@ ipcMain.handle("restart-server", (event, port) => {
     });
 
     pyflaskProcess.stderr.on("data", (data) => {
-      log.info(`stderr data check: ${data.toString()}`);
       const output = data.toString();
       const logOutput = `[pyflaskProcess stderr] ${output}`;
       event.sender.send("restart-server:progress", logOutput);
