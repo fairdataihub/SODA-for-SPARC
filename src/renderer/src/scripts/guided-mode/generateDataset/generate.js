@@ -840,7 +840,8 @@ const automaticRetry = async (supplementaryChecks = false, errorMessage = "") =>
       return;
     }
     supplementaryChecks = await window.run_pre_flight_checks(
-      "guided-mode-pre-generate-pennsieve-agent-check"
+      "guided-mode-pre-generate-pennsieve-agent-check",
+      false
     );
   }
 
@@ -860,7 +861,8 @@ const automaticRetry = async (supplementaryChecks = false, errorMessage = "") =>
     });
     while (!supplementaryChecks && amountOfTimesPennsieveUploadFailed <= 3) {
       supplementaryChecks = await window.run_pre_flight_checks(
-        "guided-mode-pre-generate-pennsieve-agent-check"
+        "guided-mode-pre-generate-pennsieve-agent-check",
+        false
       );
       if (!supplementaryChecks) amountOfTimesPennsieveUploadFailed += 1;
     }
