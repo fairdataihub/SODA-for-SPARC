@@ -474,7 +474,8 @@ window.savePageChanges = async (pageBeingLeftID) => {
         }
       }
       if (pageBeingLeftComponentType === "data-bucketing-page") {
-        console.log("Leaving a data bucketing page, saving the dataset structure");
+        const entityType = pageBeingLeftDataSet.entityType;
+        console.log(`Saving changes for data bucketing page of entity type: ${entityType}`);
       }
 
       if (

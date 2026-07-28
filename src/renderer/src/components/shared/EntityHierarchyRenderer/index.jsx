@@ -336,6 +336,7 @@ const EntityHierarchyRenderer = ({
 
   // Helper function to get entities by type
   const getEntitiesToRender = () => {
+    console.log("Rendering only entity type:", onlyRenderEntityType);
     if (!onlyRenderEntityType) return [];
 
     if (onlyRenderEntityType === "subjects") {
@@ -349,7 +350,19 @@ const EntityHierarchyRenderer = ({
     }
 
     if (onlyRenderEntityType === "derived-samples") {
+      console.log(
+        "Fetching derived-samples entity types",
+        getEntitiesByEntityType("derived-samples", false)
+      );
       return getEntitiesByEntityType("derived-samples", false);
+    }
+
+    if (onlyRenderEntityType === "non-data-folders") {
+      console.log(
+        "Fetching non-data-folders entity types",
+        getEntitiesByEntityType("non-data-folders", false)
+      );
+      return getEntitiesByEntityType("non-data-folders", false);
     }
 
     console.error("Invalid entity type for rendering:", onlyRenderEntityType);
@@ -358,28 +371,35 @@ const EntityHierarchyRenderer = ({
   // Get the specific entities to render if we're only showing one type
   const entitiesToRender = onlyRenderEntityType ? getEntitiesToRender() : [];
 
-  // Fixed renderEntityList function - no hooks inside function
+  // Handles both flat arrays of strings (like non-data-folders) and objects with id property
   const renderEntityList = (entities) => {
-    return entities.map((entity) => (
-      <Box
-        key={entity.id}
-        onClick={() => handleEntitySelect(entity)}
-        p="xs"
-        style={{
-          width: "100%",
-          backgroundColor: entity.id === selectedEntityId ? "#e3f2fd" : "transparent",
-          color: entity.id === selectedEntityId ? "#0d47a1" : "#333",
-          border: "none",
-          borderLeft: `3px solid ${entity.id === selectedEntityId ? "#2196f3" : "transparent"}`,
-          cursor: "pointer",
-          transition: "background-color 0.2s ease, border-color 0.2s ease",
-          wordBreak: "break-word",
-          whiteSpace: "normal",
-        }}
-      >
-        <Text size="sm">{entity.id}</Text>
-      </Box>
-    ));
+    return entities.map((entity, index) => {
+      // Handle flat array of strings (like non-data-folders)
+      const entityId = typeof entity === "string" ? entity : entity.id;
+      const isSelected =
+        typeof entity === "string" ? selectedEntityId === entity : selectedEntityId === entity.id;
+
+      return (
+        <Box
+          key={typeof entity === "string" ? index : entity.id}
+          onClick={() => handleEntitySelect(typeof entity === "string" ? { id: entity } : entity)}
+          p="xs"
+          style={{
+            width: "100%",
+            backgroundColor: isSelected ? "#e3f2fd" : "transparent",
+            color: isSelected ? "#0d47a1" : "#333",
+            border: "none",
+            borderLeft: `3px solid ${isSelected ? "#2196f3" : "transparent"}`,
+            cursor: "pointer",
+            transition: "background-color 0.2s ease, border-color 0.2s ease",
+            wordBreak: "break-word",
+            whiteSpace: "normal",
+          }}
+        >
+          <Text size="sm">{entityId}</Text>
+        </Box>
+      );
+    });
   };
 
   // EARLY RETURN: If we're only rendering a specific entity type

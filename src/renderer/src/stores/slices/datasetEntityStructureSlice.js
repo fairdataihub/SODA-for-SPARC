@@ -689,6 +689,13 @@ export const getEntitiesByEntityType = (entityType, returnIdsOnly = true) => {
       entities = getExistingSites();
       break;
 
+    case "non-data-folders":
+      console.log(
+        "Fetching non-data-folders entity types",
+        window.sodaJSONObj?.["non-data-folders"]
+      );
+      return window.sodaJSONObj?.["non-data-folders"] || [];
+
     default:
       console.warn(`Unknown entity type: ${entityType}`);
       return [];
