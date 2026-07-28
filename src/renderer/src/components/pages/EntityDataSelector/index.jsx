@@ -109,7 +109,6 @@ const EntityDataSelectorPage = ({
     selectedEntities.includes("subjectSites") || selectedEntities.includes("sampleSites");
   const includesSamples = selectedEntities.includes("samples");
   const includesDerivedSamples = selectedEntities.includes("derived-samples");
-  const datasetIncludesCode = selectedEntities.includes("code");
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
   const datasetType = useGlobalStore((state) => state.datasetType);
 
@@ -117,6 +116,7 @@ const EntityDataSelectorPage = ({
   const supplementaryFilesCount = countSelectedFilesByEntityType("non-data-folders");
   const countItemsSelected = countSelectedFilesByEntityType(entityType);
   const totalFilesSelected = countItemsSelected + supplementaryFilesCount;
+  const datasetStructuringMode = useGlobalStore((state) => state.datasetStructuringMode);
 
   // Calculate percentages for stacked progress bar
   const categorizedPercentage = itemCount > 0 ? (countItemsSelected / itemCount) * 100 : 0;
@@ -402,6 +402,9 @@ const EntityDataSelectorPage = ({
                   }}
                   entityType={entityType}
                   fileExplorerId="entity-data-selector"
+                  excludeFolders={
+                    datasetStructuringMode === "entity-buckets" ? ["non-data-folders"] : []
+                  }
                 />
               </Paper>
             ) : (

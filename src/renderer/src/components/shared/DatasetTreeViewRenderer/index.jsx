@@ -425,10 +425,20 @@ const DatasetTreeViewRenderer = ({
   hideSearchBar,
   mutuallyExclusiveSelection,
   entityType,
+  excludeFolders = [], // Array of folder names to exclude from rendering
 }) => {
   const datasetStructuringMode = useGlobalStore((state) => state.datasetStructuringMode);
   const activeFileExplorer = useGlobalStore((state) => state.activeFileExplorer);
-  const datasetRenderArray = useGlobalStore((state) => state.datasetRenderArray);
+  let datasetRenderArray = useGlobalStore((state) => state.datasetRenderArray);
+
+  // Filter out excluded folders and their nested content if specified
+  if (excludeFolders.length > 0 && datasetRenderArray) {
+    datasetRenderArray = datasetRenderArray.filter((item) => {
+      // Check if any excluded folder appears in the path
+      const relativePath = item.relativePath || "";
+      return !excludeFolders.some((excludedFolder) => relativePath.includes(excludedFolder));
+    });
+  }
   const parentRef = useRef(null);
   const count = datasetRenderArray ? datasetRenderArray.length : 0;
   const rowVirtualizer = useVirtualizer({

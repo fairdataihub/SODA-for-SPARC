@@ -168,7 +168,12 @@ const DataCategoriesQuestionnairePage = ({ pageID, pageName, questionnaireEntity
       )}
 
       <GuidedModeSection mt="lg">
-        <DatasetTreeViewRenderer fileExplorerId={pageID} entityType={null} hideSearchBar={true} />
+        <DatasetTreeViewRenderer
+          fileExplorerId={pageID}
+          entityType={null}
+          hideSearchBar={true}
+          excludeFolders={datasetStructuringMode === "entity-buckets" ? ["non-data-folders"] : []}
+        />
       </GuidedModeSection>
     </GuidedModePage>
   );

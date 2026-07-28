@@ -207,6 +207,9 @@ window.savePageChanges = async (pageBeingLeftID) => {
       }
       if (pageBeingLeftComponentType === "data-categories-questionnaire-page") {
         const questionnaireEntityType = pageBeingLeftDataSet.questionnaireEntityType;
+        console.log(
+          `Saving changes for data categories questionnaire page of entity type: ${questionnaireEntityType}`
+        );
 
         if (questionnaireEntityType === "experimental-data-categorization") {
           const categorizeExperimentalDataYes = isCheckboxCardChecked(

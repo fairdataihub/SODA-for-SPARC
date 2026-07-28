@@ -339,25 +339,32 @@ window.openPage = async (targetPageID) => {
         }
 
         if (questionnaireEntityType === "remaining-data-categorization") {
-          const savedNonExperimentalCategories =
-            window.sodaJSONObj["selected-remaining-data-categories"] || [];
-          setSelectedDataCategoriesByEntityType({
-            "remaining-data-categorization": savedNonExperimentalCategories,
-          });
+          const datasetStructuringMode = window.sodaJSONObj["dataset-structuring-method"];
+          if (datasetStructuringMode === "entity-association") {
+            const savedNonExperimentalCategories =
+              window.sodaJSONObj["selected-remaining-data-categories"] || [];
+            setSelectedDataCategoriesByEntityType({
+              "remaining-data-categorization": savedNonExperimentalCategories,
+            });
 
-          setFileVisibilityFilter(
-            [],
-            [
-              {
-                type: "non-data-folders",
-                names: ["Protocol", "Docs", "Code"],
-              },
-              {
-                type: "experimental",
-                names: ["experimental"],
-              },
-            ]
-          );
+            setFileVisibilityFilter(
+              [],
+              [
+                {
+                  type: "non-data-folders",
+                  names: ["Protocol", "Docs", "Code"],
+                },
+                {
+                  type: "experimental",
+                  names: ["experimental"],
+                },
+              ]
+            );
+          }
+
+          if (datasetStructuringMode === "entity-buckets") {
+            console.log("Setting up page for entity-buckets mode");
+          }
         }
       }
       if (targetPageComponentType === "data-categorization-page") {
