@@ -1,4 +1,4 @@
-import { Text, Grid, Paper, Box, Stack, Button } from "@mantine/core";
+import { Text, Grid, Paper, Box, Stack, Button, Flex } from "@mantine/core";
 import { IconFolderPlus } from "@tabler/icons-react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
@@ -21,9 +21,9 @@ const DataBucketingPage = ({ pageID, pageName, entityTypeStringSingular, entityT
     <GuidedModePage pageHeader={pageName}>
       <GuidedModeSection>
         <Text>
-          Use the interface below to add data collected from each {entityTypeStringSingular}. Select
-          a {entityTypeStringSingular} from the hierarchy on the left, then import or drag and drop
-          the data files that belong to that {entityTypeStringSingular} on the right.
+          {entityType === "non-data-folders"
+            ? "Use the interface below to add data to each of the high level folders. Select the folder from the hierarchy on the left, then import or drag and drop the files that belong in that folder on the right."
+            : `Use the interface below to add data collected from each ${entityTypeStringSingular}. Select a ${entityTypeStringSingular} from the hierarchy on the left, then import or drag and drop the data files that belong to that ${entityTypeStringSingular} on the right.`}
         </Text>
       </GuidedModeSection>
 
@@ -32,7 +32,7 @@ const DataBucketingPage = ({ pageID, pageName, entityTypeStringSingular, entityT
           <Grid.Col span={4} style={{ position: "sticky", top: "20px" }}>
             <Paper shadow="sm" radius="md" p="sm" withBorder mb="md">
               <Text size="lg" fw={500} mb="sm">
-                Select an entity
+                {entityType === "non-data-folders" ? "Select a folder" : "Select an entity"}
               </Text>
               <EntityHierarchyRenderer
                 allowEntityStructureEditing={false}
@@ -52,7 +52,7 @@ const DataBucketingPage = ({ pageID, pageName, entityTypeStringSingular, entityT
                   </Text>
                   <SelectedEntityPreviewer />
                   <EntityBucketingDataImporter pageID={pageID} entityType={entityType} />
-                  <Stack gap="sm">
+                  <Flex justify="flex-end" my="xs">
                     <Button
                       leftSection={<IconFolderPlus size={16} />}
                       variant="light"
@@ -60,19 +60,21 @@ const DataBucketingPage = ({ pageID, pageName, entityTypeStringSingular, entityT
                     >
                       Add empty folder
                     </Button>
-                    <DatasetTreeViewRenderer
-                      allowStructureEditing={true}
-                      hideSearchBar={true}
-                      entityType={entityType}
-                      fileExplorerId="entity-bucketing-data-import-tab"
-                    />
-                  </Stack>
+                  </Flex>
+                  <DatasetTreeViewRenderer
+                    allowStructureEditing={true}
+                    hideSearchBar={true}
+                    entityType={entityType}
+                    fileExplorerId="entity-bucketing-data-import-tab"
+                  />
                 </Paper>
               </Stack>
             ) : (
               <Box p="xl">
                 <Text size="xl" c="gray">
-                  Select an entity from the hierarchy on the left to import files for it.
+                  {entityType === "non-data-folders"
+                    ? "Select a folder from the hierarchy on the left to import files for it."
+                    : "Select an entity from the hierarchy on the left to import files for it."}
                 </Text>
               </Box>
             )}

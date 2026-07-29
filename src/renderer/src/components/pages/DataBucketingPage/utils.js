@@ -4,10 +4,21 @@ import { newEmptyFolderObj } from "../../../scripts/utils/datasetStructure";
 import { reRenderTreeView } from "../../../stores/slices/datasetTreeViewSlice";
 
 export const handleAddEmptyFolder = async (pathToRender) => {
+  console.log("Adding empty folder at path:", pathToRender);
+  let entityBasedInputLabel = "Enter the folder name";
+  if (pathToRender.length > 0) {
+    if (pathToRender[1] === "subjects") {
+      const subjectID = pathToRender[2];
+      entityBasedInputLabel = `Enter the name of the new folder for subject "${subjectID}"`;
+    } else if (pathToRender[1] === "samples") {
+      const sampleID = pathToRender[2];
+      entityBasedInputLabel = `Enter the name of the new folder for sample "${sampleID}"`;
+    }
+  }
   const { value: folderName } = await Swal.fire({
-    title: "Create new folder",
+    title: "Add an empty folder for data import",
     input: "text",
-    inputLabel: "Folder name",
+    inputLabel: entityBasedInputLabel,
     width: 800,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
@@ -22,6 +33,7 @@ export const handleAddEmptyFolder = async (pathToRender) => {
       if (value.trim().length === 0) {
         return "Folder name cannot be empty";
       }
+
       const isValid = window.evaluateStringAgainstSdsRequirements(
         value,
         "folder-or-file-name-is-valid"

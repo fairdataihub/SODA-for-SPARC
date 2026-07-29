@@ -444,7 +444,7 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
 
         if (subjectFolderLocation) {
           console.log(
-            `createStandardizedDatasetStructure - Moving subject ${subjectId} files to primary`
+            `createStandardizedDatasetStructure - Moving subject ${subjectId} files to Primary`
           );
 
           // Move each file, checking for source/derivative categorization
@@ -455,7 +455,7 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
                   const categorySubfolder = getFileCategorySubfolder(fileObj.relativePath);
                   moveFileToTargetLocation(
                     fileObj.relativePath,
-                    `primary/${subjectId}/${categorySubfolder}`
+                    `Primary/${subjectId}/${categorySubfolder}`
                   );
                 }
               });
@@ -486,7 +486,7 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
           window.datasetStructureJSONObj?.folders?.data?.folders?.["samples"]?.folders?.[sampleId];
         if (sampleFolderLocation) {
           console.log(
-            `createStandardizedDatasetStructure - Moving sample ${sampleId} files to primary`
+            `createStandardizedDatasetStructure - Moving sample ${sampleId} files to Primary`
           );
 
           const moveSampleFilesRecursively = (folderObj) => {
@@ -496,7 +496,7 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
                   const categorySubfolder = getFileCategorySubfolder(fileObj.relativePath);
                   moveFileToTargetLocation(
                     fileObj.relativePath,
-                    `primary/${parentSubjectId}/${sampleId}/${categorySubfolder}`
+                    `Primary/${parentSubjectId}/${sampleId}/${categorySubfolder}`
                   );
                 }
               });
@@ -532,7 +532,7 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
           ];
         if (derivedSampleFolderLocation) {
           console.log(
-            `createStandardizedDatasetStructure - Moving derived-sample ${derivedSampleId} files to primary`
+            `createStandardizedDatasetStructure - Moving derived-sample ${derivedSampleId} files to Primary`
           );
 
           const moveDerivedSampleFilesRecursively = (folderObj) => {
@@ -542,7 +542,7 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
                   const categorySubfolder = getFileCategorySubfolder(fileObj.relativePath);
                   moveFileToTargetLocation(
                     fileObj.relativePath,
-                    `primary/${parentSubjectId}/${parentSampleId}/${derivedSampleId}/${categorySubfolder}`
+                    `Primary/${parentSubjectId}/${parentSampleId}/${derivedSampleId}/${categorySubfolder}`
                   );
                 }
               });
@@ -577,19 +577,19 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
           let baseDestinationPath;
 
           if (parentDerivedSampleId) {
-            baseDestinationPath = `primary/${parentSubjectId}/${parentSampleId}/${parentDerivedSampleId}/${siteId}/`;
+            baseDestinationPath = `Primary/${parentSubjectId}/${parentSampleId}/${parentDerivedSampleId}/${siteId}/`;
             console.log(
-              `createStandardizedDatasetStructure - Moving site ${siteId} under derived-sample to primary`
+              `createStandardizedDatasetStructure - Moving site ${siteId} under derived-sample to Primary`
             );
           } else if (parentSampleId) {
-            baseDestinationPath = `primary/${parentSubjectId}/${parentSampleId}/${siteId}/`;
+            baseDestinationPath = `Primary/${parentSubjectId}/${parentSampleId}/${siteId}/`;
             console.log(
-              `createStandardizedDatasetStructure - Moving site ${siteId} under sample to primary`
+              `createStandardizedDatasetStructure - Moving site ${siteId} under sample to Primary`
             );
           } else {
-            baseDestinationPath = `primary/${parentSubjectId}/${siteId}/`;
+            baseDestinationPath = `Primary/${parentSubjectId}/${siteId}/`;
             console.log(
-              `createStandardizedDatasetStructure - Moving site ${siteId} under subject to primary`
+              `createStandardizedDatasetStructure - Moving site ${siteId} under subject to Primary`
             );
           }
 
@@ -613,6 +613,23 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
           };
 
           moveSiteFilesRecursively(siteFolderLocation);
+        }
+      }
+
+      for (const folder of window.sodaJSONObj?.["non-data-folders"] || []) {
+        console.log(
+          `createStandardizedDatasetStructure - Moving non-data folder ${folder} to root`
+        );
+        const folderLocation =
+          window.datasetStructureJSONObj?.folders?.data?.folders?.["non-data-folders"]?.folders?.[
+            folder
+          ];
+        const folderLocationRelativePath = folderLocation?.relativePath;
+        console.log(
+          `createStandardizedDatasetStructure - Non-data folder ${folder} relative path: ${folderLocationRelativePath}`
+        );
+        if (folderLocation) {
+          moveFilesFromFolderRecursively(folderLocation, `data/${folder}/`, `${folder}/`);
         }
       }
     }

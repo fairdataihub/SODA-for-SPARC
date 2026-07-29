@@ -393,6 +393,9 @@ const FolderItem = ({
 
 const generateEmptyFolderStructureMessage = (entityType, isEntityBucketingPage) => {
   console.log(isEntityBucketingPage, "isEntityBucketingPage");
+  console.log("entityType", entityType);
+  const activeEntity = useGlobalStore((state) => state.activeEntity);
+  console.log("activeEntity", activeEntity);
 
   if (!isEntityBucketingPage) {
     switch (entityType) {
@@ -405,11 +408,30 @@ const generateEmptyFolderStructureMessage = (entityType, isEntityBucketingPage) 
     }
   }
   if (isEntityBucketingPage) {
+    console.log("entityType", entityType);
+
     switch (entityType) {
       case "samples":
-        return "No data has been added to this subject yet.";
+        return "No data has been added to this sample yet. Use the interface above to drag and drop or import files for this sample.";
       case "subjects":
-        return "No experimental files are available to assign to subjects. This occurs when all experimental files have already been assigned to samples, as files linked to samples are automatically associated with their corresponding subjects. No action is necessary - you can continue to the next step.";
+        return "No data has been added to this subject yet. Use the interface above to drag and drop or import files for this subject.";
+      case "sites":
+        return "No data has been added to this site yet. Use the interface above to drag and drop or import files for this site.";
+      case "derived-samples":
+        return "No data has been added to this derived sample yet. Use the interface above to drag and drop or import files for this derived sample.";
+      case "non-data-folders":
+        switch (activeEntity) {
+          case "Code":
+            return "No code files have been added to this entity yet. Use the interface above to drag and drop or import code files for this entity.";
+          case "Experimental":
+            return "No experimental files have been added to this entity yet. Use the interface above to drag and drop or import experimental files for this entity.";
+          case "Protocol":
+            return "No protocol files have been added to this entity yet. Use the interface above to drag and drop or import protocol files for this entity.";
+          case "Docs":
+            return "No documentation files have been added to this entity yet. Use the interface above to drag and drop or import documentation files for this entity.";
+          default:
+            return "No folders or files to display. You can import files for this entity using the interface above.";
+        }
       default:
         return "No folders or files to display. You can import files for this entity using the interface above.";
     }
@@ -518,8 +540,8 @@ const DatasetTreeViewRenderer = ({
           position: "relative",
         }}
       >
-        {renderArrayIsEmpty && datasetStructuringMode !== "entity-buckets" ? (
-          <Center mt="md">
+        {renderArrayIsEmpty ? (
+          <Center>
             <Text size="sm" c="gray" p="sm">
               {debouncedSearchFilter.length > 0
                 ? "No files or folders found matching the search criteria."
