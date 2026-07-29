@@ -294,15 +294,153 @@ const PennsieveAgentCheckDisplay = () => {
       </FullWidthContainer>
     );
   }
+  // a = usersPennsieveAgentVersion
+  // b = latestPennsieveAgentVersion
+  // c = LAST_TESTED_PENNSIEVE_AGENT_VERSION
 
-  // upav === LTPAV && LTPAV === LATEST && UPAV === LATEST [Expect: Fall through to bottom return aka Agent up to Date; Get: Agent up to date]
-  // upav === LTPAV && LTPAV !== LATEST && UPAVE !== LATEST [ Expect: Agent not up to date case[which is awkard actually]; Get: ]
-  // upav === LTPAV && LTPAV === LATEST && UPAV !== LATEST [ Expect: Impossible case; Get: Nothin]
-  // upav === LTPAV && LTPAV !== LATEST && UPAVE === LATEST [Expect: Impossible case; Get: Nothin]
-  // UPAV !== LTPAV && LTPAV !== LATEST && UPAV === LATEST [Expect: 2nd case; Get: 2nd case]
-  // UPAV !== LTPAV && LTPAV !== LATEST && UPAV !== LATEST [Expect: 1st case; Get: 1st case]
-  // UPAV !== LTPAV && LTPAV === LATEST && UPAV !== LATEST  [ Expect: 2nd case; Get: 2nd]
-  // UPAV !== LTPAV && LTPAV === LATEST && UPAV === LATEST  [ Impossible case as UPAV must equal LTPAV]
+  // a = b ^ (a ^ b != c)
+  if (
+    usersPennsieveAgentVersion === latestPennsieveAgentVersion &&
+    usersPennsieveAgentVersion !== LAST_TESTED_PENNSIEVE_AGENT_VERSION &&
+    latestPennsieveAgentVersion !== LAST_TESTED_PENNSIEVE_AGENT_VERSION
+  ) {
+    return (
+      <FullWidthContainer>
+        <Stack mt="sm" align="center">
+          <Alert
+            variant="light"
+            color="blue"
+            title="Pennsieve Agent Announcement"
+            icon={<IconAlertCircle />}
+            style={{ width: "100%" }}
+          >
+            <Text>
+              Installed Pennsieve Agent version: <b>{usersPennsieveAgentVersion}</b>
+            </Text>
+            <Text mt="sm" mb="sm">
+              Last version tested for SODA: <b>{LAST_TESTED_PENNSIEVE_AGENT_VERSION}</b>
+            </Text>
+
+            <Text mt="sm" mb="sm">
+              The version of the Pennsieve Agent installed on your computer is not the last version
+              tested for SODA. If you experience issues while uploading using your installed
+              Pennsieve Agent version please try the last tested version.
+            </Text>
+
+            <ExternalLink
+              href={pennsieveAgentDownloadURL}
+              buttonText="Download the last version of the Pennsieve Agent tested for SODA"
+              buttonType="button"
+              buttonSize="md"
+            />
+            <Text size="lg" fw={700} mt="lg">
+              Having issues with the last version of the Pennsieve Agent tested for SODA?
+            </Text>
+            <Text mt="md">
+              If you are experiencing issues with last version of the Pennsieve Agent tested for
+              SODA please refer to our documentation page on how to ask the SODA team for assistance{" "}
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team"
+              >
+                here
+              </a>
+              .
+            </Text>
+            <Group justify="center" mt="sm">
+              <RetryButton />
+              <ContinueWithOldAgentButton />
+            </Group>
+          </Alert>
+        </Stack>
+      </FullWidthContainer>
+    );
+  }
+
+  // a = c ^ (a ^ c !== b)
+  if (
+    usersPennsieveAgentVersion === LAST_TESTED_PENNSIEVE_AGENT_VERSION &&
+    usersPennsieveAgentVersion !== latestPennsieveAgentVersion &&
+    LAST_TESTED_PENNSIEVE_AGENT_VERSION !== latestPennsieveAgentVersion
+  ) {
+    return (
+      <FullWidthContainer>
+        <Stack mt="sm" align="center">
+          <Alert
+            variant="light"
+            color="blue"
+            title="Pennsieve Agent Announcement"
+            icon={<IconAlertCircle />}
+            style={{ width: "100%" }}
+          >
+            <Text>
+              Installed Pennsieve Agent version: <b>{usersPennsieveAgentVersion}</b>
+            </Text>
+            <Text mt="sm" mb="sm">
+              Last version tested for SODA: <b>{LAST_TESTED_PENNSIEVE_AGENT_VERSION}</b>
+            </Text>
+
+            <Text mt="sm" mb="sm">
+              The version of the Pennsieve Agent installed on your computer is not the last version
+              tested for SODA. If you experience issues while uploading using your installed
+              Pennsieve Agent version please try the last tested version.
+            </Text>
+
+            <ExternalLink
+              href={pennsieveAgentDownloadURL}
+              buttonText="Download the last version of the Pennsieve Agent tested for SODA"
+              buttonType="button"
+              buttonSize="md"
+            />
+            <Text size="lg" fw={700} mt="lg">
+              Having issues with the last version of the Pennsieve Agent tested for SODA?
+            </Text>
+            <Text mt="md">
+              If you are experiencing issues with last version of the Pennsieve Agent tested for
+              SODA please refer to our documentation page on how to ask the SODA team for assistance{" "}
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team"
+              >
+                here
+              </a>
+              .
+            </Text>
+            <Group justify="center" mt="sm">
+              <RetryButton />
+              <ContinueWithOldAgentButton />
+            </Group>
+          </Alert>
+        </Stack>
+      </FullWidthContainer>
+    );
+  }
+
+  // b = c ^ ( b ^ c !== a)
+  if (
+    latestPennsieveAgentVersion === LAST_TESTED_PENNSIEVE_AGENT_VERSION &&
+    latestPennsieveAgentVersion !== usersPennsieveAgentVersion &&
+    LAST_TESTED_PENNSIEVE_AGENT_VERSION !== usersPennsieveAgentVersion
+  ) {
+    console.log("D case");
+  }
+
+  if (
+    latestPennsieveAgentVersion === LAST_TESTED_PENNSIEVE_AGENT_VERSION &&
+    latestPennsieveAgentVersion !== usersPennsieveAgentVersion &&
+    LAST_TESTED_PENNSIEVE_AGENT_VERSION !== usersPennsieveAgentVersion
+  ) {
+    console.log("Do Case");
+  }
+
+  if (
+    latestPennsieveAgentVersion !== usersPennsieveAgentVersion &&
+    usersPennsieveAgentVersion !== LAST_TESTED_PENNSIEVE_AGENT_VERSION
+  ) {
+    console.log("Do Case");
+  }
 
   if (
     usersPennsieveAgentVersion !== null &&
