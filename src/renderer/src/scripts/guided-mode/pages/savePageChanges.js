@@ -16,7 +16,11 @@ import { savePagePrepareMetadata } from "./prepareMetadata/savePage";
 import { savePagePennsieveDetails } from "./pennsieveDetails/savePage";
 import { savePageGenerateDataset } from "./generateDataset/savePage";
 import { savePageSharedWorkflowSteps } from "./sharedWorkflowSteps/savePage";
-import { countFilesInDatasetStructure, getFilesByEntityType } from "../../utils/datasetStructure";
+import {
+  countFilesInDatasetStructure,
+  countFilesByDatasetStructureRelativePath,
+  getFilesByEntityType,
+} from "../../utils/datasetStructure";
 import {
   guidedSkipPage,
   guidedUnSkipPage,
@@ -479,6 +483,15 @@ window.savePageChanges = async (pageBeingLeftID) => {
       if (pageBeingLeftComponentType === "data-bucketing-page") {
         const entityType = pageBeingLeftDataSet.entityType;
         console.log(`Saving changes for data bucketing page of entity type: ${entityType}`);
+        if (entityType === "non-data-folders") {
+          const userSelectedNonDataFolders = window.sodaJSONObj["non-data-folders"];
+          for (const folder of userSelectedNonDataFolders) {
+            const categorizedFileCount = countFilesByDatasetStructureRelativePath(
+              `data/non-data-folders/${folder}`
+            );
+            console.log(`Categorized file count for ${folder}: ${categorizedFileCount}`);
+          }
+        }
       }
 
       if (

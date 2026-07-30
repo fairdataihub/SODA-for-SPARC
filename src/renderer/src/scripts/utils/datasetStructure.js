@@ -32,6 +32,12 @@ export const countFilesInDatasetStructure = (datasetStructure) => {
   return totalFiles;
 };
 
+export const countFilesByDatasetStructureRelativePath = (relativePath) => {
+  const { itemObject } = getFolderDetailsByRelativePath(relativePath);
+  if (!itemObject) return 0;
+  return countFilesInDatasetStructure(itemObject);
+};
+
 export const getFileTypesArrayInDatasetStructure = (datasetStructure) => {
   // Collect unique file extensions from a nested dataset structure and return them sorted.
 
@@ -444,30 +450,15 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
 
         if (subjectFolderLocation) {
           console.log(
-            `createStandardizedDatasetStructure - Moving subject ${subjectId} files to Primary`
+            `createStandardizedDatasetStructure - Moving subject ${subjectId} files to primary`
           );
 
-          // Move each file, checking for source/derivative categorization
-          const moveSubjectFilesRecursively = (folderObj, currentBasePath) => {
-            if (folderObj?.files) {
-              Object.values(folderObj.files).forEach((fileObj) => {
-                if (fileObj.relativePath) {
-                  const categorySubfolder = getFileCategorySubfolder(fileObj.relativePath);
-                  moveFileToTargetLocation(
-                    fileObj.relativePath,
-                    `Primary/${subjectId}/${categorySubfolder}`
-                  );
-                }
-              });
-            }
-            if (folderObj?.folders) {
-              Object.values(folderObj.folders).forEach((subFolder) => {
-                moveSubjectFilesRecursively(subFolder, currentBasePath);
-              });
-            }
-          };
-
-          moveSubjectFilesRecursively(subjectFolderLocation, `data/subjects/${subjectId}/`);
+          // Move all files and folders from the subject folder to primary, preserving structure
+          moveFilesFromFolderRecursively(
+            subjectFolderLocation,
+            `data/subjects/${subjectId}/`,
+            `primary/${subjectId}/`
+          );
         }
       }
 
@@ -486,29 +477,15 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
           window.datasetStructureJSONObj?.folders?.data?.folders?.["samples"]?.folders?.[sampleId];
         if (sampleFolderLocation) {
           console.log(
-            `createStandardizedDatasetStructure - Moving sample ${sampleId} files to Primary`
+            `createStandardizedDatasetStructure - Moving sample ${sampleId} files to primary`
           );
 
-          const moveSampleFilesRecursively = (folderObj) => {
-            if (folderObj?.files) {
-              Object.values(folderObj.files).forEach((fileObj) => {
-                if (fileObj.relativePath) {
-                  const categorySubfolder = getFileCategorySubfolder(fileObj.relativePath);
-                  moveFileToTargetLocation(
-                    fileObj.relativePath,
-                    `Primary/${parentSubjectId}/${sampleId}/${categorySubfolder}`
-                  );
-                }
-              });
-            }
-            if (folderObj?.folders) {
-              Object.values(folderObj.folders).forEach((subFolder) => {
-                moveSampleFilesRecursively(subFolder);
-              });
-            }
-          };
-
-          moveSampleFilesRecursively(sampleFolderLocation);
+          // Move all files and folders from the sample folder to primary, preserving structure
+          moveFilesFromFolderRecursively(
+            sampleFolderLocation,
+            `data/samples/${sampleId}/`,
+            `primary/${parentSubjectId}/${sampleId}/`
+          );
         }
       }
 
@@ -532,29 +509,15 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
           ];
         if (derivedSampleFolderLocation) {
           console.log(
-            `createStandardizedDatasetStructure - Moving derived-sample ${derivedSampleId} files to Primary`
+            `createStandardizedDatasetStructure - Moving derived-sample ${derivedSampleId} files to primary`
           );
 
-          const moveDerivedSampleFilesRecursively = (folderObj) => {
-            if (folderObj?.files) {
-              Object.values(folderObj.files).forEach((fileObj) => {
-                if (fileObj.relativePath) {
-                  const categorySubfolder = getFileCategorySubfolder(fileObj.relativePath);
-                  moveFileToTargetLocation(
-                    fileObj.relativePath,
-                    `Primary/${parentSubjectId}/${parentSampleId}/${derivedSampleId}/${categorySubfolder}`
-                  );
-                }
-              });
-            }
-            if (folderObj?.folders) {
-              Object.values(folderObj.folders).forEach((subFolder) => {
-                moveDerivedSampleFilesRecursively(subFolder);
-              });
-            }
-          };
-
-          moveDerivedSampleFilesRecursively(derivedSampleFolderLocation);
+          // Move all files and folders from the derived-sample folder to primary, preserving structure
+          moveFilesFromFolderRecursively(
+            derivedSampleFolderLocation,
+            `data/derived-samples/${derivedSampleId}/`,
+            `primary/${parentSubjectId}/${parentSampleId}/${derivedSampleId}/`
+          );
         }
       }
 
@@ -577,42 +540,28 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
           let baseDestinationPath;
 
           if (parentDerivedSampleId) {
-            baseDestinationPath = `Primary/${parentSubjectId}/${parentSampleId}/${parentDerivedSampleId}/${siteId}/`;
+            baseDestinationPath = `primary/${parentSubjectId}/${parentSampleId}/${parentDerivedSampleId}/${siteId}/`;
             console.log(
-              `createStandardizedDatasetStructure - Moving site ${siteId} under derived-sample to Primary`
+              `createStandardizedDatasetStructure - Moving site ${siteId} under derived-sample to primary`
             );
           } else if (parentSampleId) {
-            baseDestinationPath = `Primary/${parentSubjectId}/${parentSampleId}/${siteId}/`;
+            baseDestinationPath = `primary/${parentSubjectId}/${parentSampleId}/${siteId}/`;
             console.log(
-              `createStandardizedDatasetStructure - Moving site ${siteId} under sample to Primary`
+              `createStandardizedDatasetStructure - Moving site ${siteId} under sample to primary`
             );
           } else {
-            baseDestinationPath = `Primary/${parentSubjectId}/${siteId}/`;
+            baseDestinationPath = `primary/${parentSubjectId}/${siteId}/`;
             console.log(
-              `createStandardizedDatasetStructure - Moving site ${siteId} under subject to Primary`
+              `createStandardizedDatasetStructure - Moving site ${siteId} under subject to primary`
             );
           }
 
-          const moveSiteFilesRecursively = (folderObj) => {
-            if (folderObj?.files) {
-              Object.values(folderObj.files).forEach((fileObj) => {
-                if (fileObj.relativePath) {
-                  const categorySubfolder = getFileCategorySubfolder(fileObj.relativePath);
-                  moveFileToTargetLocation(
-                    fileObj.relativePath,
-                    baseDestinationPath + categorySubfolder
-                  );
-                }
-              });
-            }
-            if (folderObj?.folders) {
-              Object.values(folderObj.folders).forEach((subFolder) => {
-                moveSiteFilesRecursively(subFolder);
-              });
-            }
-          };
-
-          moveSiteFilesRecursively(siteFolderLocation);
+          // Move all files and folders from the site folder to primary, preserving structure
+          moveFilesFromFolderRecursively(
+            siteFolderLocation,
+            `data/sites/${siteId}/`,
+            baseDestinationPath
+          );
         }
       }
 
@@ -629,7 +578,11 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
           `createStandardizedDatasetStructure - Non-data folder ${folder} relative path: ${folderLocationRelativePath}`
         );
         if (folderLocation) {
-          moveFilesFromFolderRecursively(folderLocation, `data/${folder}/`, `${folder}/`);
+          moveFilesFromFolderRecursively(
+            folderLocation,
+            `data/${folder}/`,
+            `${folder.toLowerCase()}/`
+          );
         }
       }
     }
