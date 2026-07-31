@@ -194,34 +194,52 @@ export const openPageDatasetStructure = async (targetPageID) => {
        * Update entity column values.
        */
       const updateEntityColumn = (rows) => {
+        const datasetStrucutringMethod = window.sodaJSONObj?.["dataset-structuring-method"];
+        console.log(
+          "Updating entity column values based on dataset structuring method:",
+          datasetStrucutringMethod
+        );
+
         const entityTypes = ["sites", "derived-samples", "samples", "subjects"];
 
-        rows.forEach((row) => {
-          let path = row[0];
-          const pathSegments = path.split("/");
-          if (pathSegments.length > 0) pathSegments[0] = "data";
-          path = pathSegments.join("/");
+        if (datasetStrucutringMethod === "entity-association") {
+          rows.forEach((row) => {
+            let path = row[0];
+            const pathSegments = path.split("/");
+            if (pathSegments.length > 0) pathSegments[0] = "data";
+            path = pathSegments.join("/");
 
-          let entityId = "";
+            let entityId = "";
 
-          for (const type of entityTypes) {
-            const entities = datasetEntityObj?.[type] || {};
-            for (const [entity, paths] of Object.entries(entities)) {
-              if (paths?.[path]) {
-                const { entityMetadata } = getEntityDataById(entity) || {};
-                if (!entityMetadata) continue;
+            for (const type of entityTypes) {
+              const entities = datasetEntityObj?.[type] || {};
+              for (const [entity, paths] of Object.entries(entities)) {
+                if (paths?.[path]) {
+                  const { entityMetadata } = getEntityDataById(entity) || {};
+                  if (!entityMetadata) continue;
 
-                entityId = entityMetadata.id;
-                break;
+                  entityId = entityMetadata.id;
+                  break;
+                }
               }
+              if (entityId) break;
             }
-            if (entityId) break;
-          }
 
-          row[entityColumnIndex] = entityId;
-        });
+            row[entityColumnIndex] = entityId;
+          });
 
-        return rows;
+          return rows;
+        }
+
+        if (datasetStrucutringMethod === "entity-buckets") {
+          console.log("Rows before entity bucketing update:", rows);
+          rows.forEach((row) => {
+            let path = row[0];
+            const pathSegments = path.split("/");
+            if (pathSegments.length > 0) pathSegments[0] = "data";
+            path = pathSegments.join("/");
+          });
+        }
       };
 
       /**
