@@ -293,10 +293,16 @@
             </h2>
           </div>
         </div>
-
+        <div
+          id="guided-dataset-content-tab"
+          data-page-name="Dataset Content"
+          class="guided--page gm"
+          data-component-type="dataset-content-selector"
+        ></div>
         <div
           id="guided-dataset-structuring-method-selection-tab"
           data-page-name="Dataset Structuring Method"
+          data-page-set="guided-subject-related-page-set"
           class="guided--page gm"
         >
           <div class="guided--section">
@@ -338,7 +344,7 @@
         <div
           id="guided-unstructured-data-import-tab"
           class="guided--page gm"
-          data-page-set="entity-association-workflow"
+          data-page-set="guided-subject-related-page-set entity-association-workflow"
           data-page-name="Data, Documentation, and Protocol File Selection"
         >
           <div class="guided--section">
@@ -380,12 +386,7 @@
             class="guided--section"
           ></div>
         </div>
-        <div
-          id="guided-dataset-content-tab"
-          data-page-name="Dataset Content"
-          class="guided--page gm"
-          data-component-type="dataset-content-selector"
-        ></div>
+
         <div
           id="non-data-categorization-tab"
           data-page-name="Data Categorization"
@@ -564,7 +565,7 @@
           id="remaining-data-categories-questionnaire-tab"
           data-page-name="Remaining Data Categorization"
           class="guided--page gm"
-          data-page-set="guided-remaining-data-categorization-page-set"
+          data-page-set="guided-subject-related-page-set guided-remaining-data-categorization-page-set entity-association-workflow"
           data-component-type="data-categories-questionnaire-page"
           data-questionnaire-entity-type="remaining-data-categorization"
         ></div>
@@ -572,7 +573,7 @@
           id="remaining-data-categorization-tab"
           data-page-name="Remaining Data Categorization"
           class="guided--page gm"
-          data-page-set="guided-remaining-data-categorization-page-set"
+          data-page-set="guided-subject-related-page-set guided-remaining-data-categorization-page-set entity-association-workflow"
           data-component-type="data-categorization-page"
           data-entity-type="remaining-data-categorization"
           data-entity-type-string-singular="Data Category"

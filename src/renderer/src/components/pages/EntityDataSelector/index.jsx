@@ -189,11 +189,18 @@ const EntityDataSelectorPage = ({
                   false
                 );
 
-                return (
+                return selectedSupportingEntitiesFormatted === "code" ? (
+                  <Text>
+                    You indicated that your dataset contains code. The SDS requires these files to
+                    be placed into their own folders. Use the interface below to assign your code
+                    files to the correct folder by selecting a category on the left and then
+                    choosing the files that belong to it on the right.
+                  </Text>
+                ) : (
                   <>
                     <Text mb={0}>
                       You indicated that your dataset contains {selectedSupportingEntitiesFormatted}{" "}
-                      {selectedSupportingEntitiesFormatted != "Code" && "data"}. The SDS requires
+                      {selectedSupportingEntitiesFormatted != "code" && "data"}. The SDS requires
                       these files to be placed into their own folders. Use the interface below to
                       assign your supporting files to the correct folder by selecting a category on
                       the left and then choosing the files that belong to it on the right.

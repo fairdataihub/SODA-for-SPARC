@@ -580,7 +580,7 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
         if (folderLocation) {
           moveFilesFromFolderRecursively(
             folderLocation,
-            `data/${folder}/`,
+            `data/non-data-folders/${folder}/`,
             `${folder.toLowerCase()}/`
           );
         }

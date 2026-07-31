@@ -336,7 +336,6 @@ const EntityHierarchyRenderer = ({
 
   // Helper function to get entities by type
   const getEntitiesToRender = () => {
-    console.log("Rendering only entity type:", onlyRenderEntityType);
     if (!onlyRenderEntityType) return [];
 
     if (onlyRenderEntityType === "subjects") {
@@ -350,18 +349,10 @@ const EntityHierarchyRenderer = ({
     }
 
     if (onlyRenderEntityType === "derived-samples") {
-      console.log(
-        "Fetching derived-samples entity types",
-        getEntitiesByEntityType("derived-samples", false)
-      );
       return getEntitiesByEntityType("derived-samples", false);
     }
 
     if (onlyRenderEntityType === "non-data-folders") {
-      console.log(
-        "Fetching non-data-folders entity types",
-        getEntitiesByEntityType("non-data-folders", false)
-      );
       return getEntitiesByEntityType("non-data-folders", false);
     }
 
