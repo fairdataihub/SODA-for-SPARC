@@ -4,13 +4,7 @@ import FullWidthContainer from "../../containers/FullWidthContainer";
 import ExternalLink from "../../buttons/ExternalLink";
 import CodeTextDisplay from "../../common/CodeTextDisplay";
 import useGlobalStore from "../../../stores/globalStore";
-import {
-  LAST_TESTED_PENNSIEVE_AGENT_VERSION,
-  RECOMMENDED_PENNSIEVE_AGENT_URL_DEB,
-  RECOMMENDED_PENNSIEVE_AGENT_URL_MAC_86_64,
-  RECOMMENDED_PENNSIEVE_AGENT_URL_MAC_ARM,
-  RECOMMENDED_PENNSIEVE_AGENT_URL_WIN,
-} from "./recommendedPennsieveVersion";
+import { LAST_TESTED_PENNSIEVE_AGENT_VERSION } from "./pennsieveAgentResolver";
 // Constants
 const RETRY_BUTTON_TEXT = "Retry Pennsieve Agent Check";
 const CLOSE_SODA_BUTTON_TEXT = "Close SODA";
@@ -160,6 +154,9 @@ const PennsieveAgentCheckDisplay = () => {
   const postPennsieveAgentCheckAction = useGlobalStore(
     (state) => state.postPennsieveAgentCheckAction
   );
+  const lastTestedPennsieveAgentDownloadURL = useGlobalStore(
+    (state) => state.lastTestedPennsieveAgentDownloadURL
+  );
 
   // If the Pennsieve agent check is in progress, display a loading spinner
   if (pennsieveAgentCheckInProgress === true) {
@@ -304,10 +301,6 @@ const PennsieveAgentCheckDisplay = () => {
   // b = latestPennsieveAgentVersion
   // c = LAST_TESTED_PENNSIEVE_AGENT_VERSION
 
-  console.log(usersPennsieveAgentVersion);
-  console.log(latestPennsieveAgentVersion);
-  console.log(LAST_TESTED_PENNSIEVE_AGENT_VERSION);
-
   // a = b ^ (a ^ b != c)
   if (
     usersPennsieveAgentVersion === latestPennsieveAgentVersion &&
@@ -338,7 +331,7 @@ const PennsieveAgentCheckDisplay = () => {
             </Text>
 
             <ExternalLink
-              href={RECOMMENDED_PENNSIEVE_AGENT_URL_MAC_86_64}
+              href={lastTestedPennsieveAgentDownloadURL}
               buttonText="Download the last version of the Pennsieve Agent tested for SODA"
               buttonType="button"
               buttonSize="md"
@@ -460,7 +453,7 @@ const PennsieveAgentCheckDisplay = () => {
             </Text>
 
             <ExternalLink
-              href={RECOMMENDED_PENNSIEVE_AGENT_URL_MAC_86_64}
+              href={lastTestedPennsieveAgentDownloadURL}
               buttonText="Download the last version of the Pennsieve Agent tested for SODA"
               buttonType="button"
               buttonSize="md"
@@ -528,7 +521,7 @@ const PennsieveAgentCheckDisplay = () => {
 
             <Flex direction="column" gap="sm">
               <ExternalLink
-                href={RECOMMENDED_PENNSIEVE_AGENT_URL_MAC_86_64}
+                href={lastTestedPennsieveAgentDownloadURL}
                 buttonText="Download the last version of the Pennsieve Agent tested for SODA"
                 buttonType="button"
                 buttonSize="md"
