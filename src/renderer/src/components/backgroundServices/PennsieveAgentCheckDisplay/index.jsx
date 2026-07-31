@@ -297,9 +297,31 @@ const PennsieveAgentCheckDisplay = () => {
       </FullWidthContainer>
     );
   }
+
   // a = usersPennsieveAgentVersion
   // b = latestPennsieveAgentVersion
   // c = LAST_TESTED_PENNSIEVE_AGENT_VERSION
+
+  if (
+    window.allowOutdatedPennsieveAgentForThisSession ||
+    (usersPennsieveAgentVersion === latestPennsieveAgentVersion &&
+      latestPennsieveAgentVersion == LAST_TESTED_PENNSIEVE_AGENT_VERSION)
+  ) {
+    // a = b = c
+    // If the Pennsieve agent check was successful (no flags occurred), display a success message
+    return (
+      <FullWidthContainer>
+        <Stack mt="sm" align="center" mx="sm">
+          <Text size="xl" fw={700}>
+            The Pennsieve Agent is running and ready to upload!
+          </Text>
+          <Text size="lg" fw={600}>
+            {postPennsieveAgentCheckAction}
+          </Text>
+        </Stack>
+      </FullWidthContainer>
+    );
+  }
 
   // a = b ^ (a ^ b != c)
   if (
@@ -557,21 +579,6 @@ const PennsieveAgentCheckDisplay = () => {
       </FullWidthContainer>
     );
   }
-
-  // a = b = c
-  // If the Pennsieve agent check was successful (no flags occurred), display a success message
-  return (
-    <FullWidthContainer>
-      <Stack mt="sm" align="center" mx="sm">
-        <Text size="xl" fw={700}>
-          The Pennsieve Agent is running and ready to upload!
-        </Text>
-        <Text size="lg" fw={600}>
-          {postPennsieveAgentCheckAction}
-        </Text>
-      </Stack>
-    </FullWidthContainer>
-  );
 };
 
 export default PennsieveAgentCheckDisplay;

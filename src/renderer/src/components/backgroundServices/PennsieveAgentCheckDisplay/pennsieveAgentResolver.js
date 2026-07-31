@@ -20,14 +20,13 @@ const findDownloadURL = (partialStringToSearch, releaseList) => {
 };
 
 export const PennsieveAgentResolver = {
-  lastTestedPennsieveAgentVersion: "v2.0.3",
   getLastTestedPennsieveAgentUrl: async () => {
     // get the current OS
     const usersPlatform = window.process.platform();
     let platformSpecificAgentDownloadURL;
 
     const updatedReleaseAsset = await axios.get(
-      `https://api.github.com/repos/Pennsieve/pennsieve-agent/releases/tags/${PennsieveAgentResolver.lastTestedPennsieveAgentVersion}`
+      `https://api.github.com/repos/Pennsieve/pennsieve-agent/releases/tags/${LAST_TESTED_PENNSIEVE_AGENT_VERSION}`
     );
 
     let latestReleaseAssets = updatedReleaseAsset.data.assets;
