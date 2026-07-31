@@ -214,7 +214,7 @@ const FileItem = ({
       my={`${ROW_CONFIG.margin}px`}
       style={{ flexWrap: "nowrap" }}
       h={`${ROW_CONFIG.height - ROW_CONFIG.margin * 2}px`}
-      ml={`${indent * 10 + 5}px`}
+      ml={`${indent * 10}px`}
     >
       {onFileClick && (
         <Tooltip label="Select this file" zIndex={2999}>
@@ -314,6 +314,8 @@ const FolderItem = ({
     openContextMenu({ x: e.clientX, y: e.clientY }, "folder", folderName, relativePath);
   };
 
+  const folderIsPassThrough = content.passThrough;
+
   // Helper function for determining background color
   const getBackgroundColor = () => {
     if (folderIsSelected) return "var(--mantine-color-primary-0)";
@@ -349,7 +351,7 @@ const FolderItem = ({
       ) : (
         <IconFolder size={ICON_SETTINGS.folderSize} color={ICON_SETTINGS.folderColor} />
       )}
-      {typeof onFolderClick === "function" && (
+      {!folderIsPassThrough && typeof onFolderClick === "function" && (
         <Tooltip
           label={
             folderIsSelected
@@ -380,7 +382,7 @@ const FolderItem = ({
           overflow: "hidden",
           textOverflow: "ellipsis",
         }}
-        c="black"
+        c={folderIsPassThrough ? "silver" : "black"}
       >
         {folderName}
       </Text>

@@ -444,7 +444,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       guidedSkipPageSet("non-data-entity-bucketing-workflow");
     }
 
-    window.sodaJSONObj["non-data-folders"] = nonDataFolders;
+    window.sodaJSONObj["non-data-folders"] = nonDataFolders.map((folder) => folder.toLowerCase());
 
     // Update entity list: add selected folders, remove unselected ones
     for (const folder of possibleNonDataFolders) {

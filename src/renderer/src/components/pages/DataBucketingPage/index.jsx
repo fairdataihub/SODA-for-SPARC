@@ -61,6 +61,9 @@ const DataBucketingPage = ({ pageID, pageName, entityTypeStringSingular, entityT
                       Add empty folder
                     </Button>
                   </Flex>
+                  <Text size="xs" c="dimmed">
+                    Path: {pathToRender.join(" / ") || "/"}
+                  </Text>
                   <DatasetTreeViewRenderer
                     allowStructureEditing={true}
                     hideSearchBar={true}

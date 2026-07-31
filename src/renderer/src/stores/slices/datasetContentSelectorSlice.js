@@ -1,4 +1,5 @@
 import useGlobalStore from "../globalStore";
+import { setPathToRender } from "./datasetTreeViewSlice";
 
 // Define the slice with just the state properties
 export const datasetContentSelectorSlice = (set, get) => ({
@@ -108,6 +109,12 @@ export const setDeSelectedDataCategories = (deSelectedDataCategories) => {
 
 export const setSelectedHierarchyEntity = (entityObj) => {
   useGlobalStore.setState({ selectedHierarchyEntity: entityObj });
+
+  // For non-data-folders, set the path to render to that folder's location
+  if (entityObj?.type === "non-data-folder") {
+    const folderName = entityObj?.id;
+    setPathToRender(["data", "non-data-folders", folderName]);
+  }
 
   switch (entityObj?.type) {
     case "subject":
