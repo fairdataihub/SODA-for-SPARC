@@ -201,9 +201,15 @@ export const openPageDatasetStructure = async (targetPageID) => {
         );
 
         const entityTypes = ["sites", "derived-samples", "samples", "subjects"];
+        const fileTypeColumnIndex = newManifestData.headers.indexOf("file type");
 
         if (datasetStrucutringMethod === "entity-association") {
           rows.forEach((row) => {
+            // Skip processing folders - only process files
+            if (row[fileTypeColumnIndex] === "folder") {
+              return;
+            }
+
             let path = row[0];
             const pathSegments = path.split("/");
             if (pathSegments.length > 0) pathSegments[0] = "data";
@@ -234,11 +240,38 @@ export const openPageDatasetStructure = async (targetPageID) => {
         if (datasetStrucutringMethod === "entity-buckets") {
           console.log("Rows before entity bucketing update:", rows);
           rows.forEach((row) => {
+            // Skip processing folders - only process files
+            if (row[fileTypeColumnIndex] === "folder") {
+              console.log("Skipping folder row:", row);
+              return;
+            }
+
             let path = row[0];
+            console.log("Processing row with path:", path);
             const pathSegments = path.split("/");
             if (pathSegments.length > 0) pathSegments[0] = "data";
             path = pathSegments.join("/");
+            console.log("Normalized path for entity bucketing:", path);
+            let entityId = "";
+
+            for (const type of entityTypes) {
+              const entities = datasetEntityObj?.[type] || {};
+              for (const [entity, paths] of Object.entries(entities)) {
+                if (paths?.[path]) {
+                  const { entityMetadata } = getEntityDataById(entity) || {};
+                  if (!entityMetadata) continue;
+
+                  entityId = entityMetadata.id;
+                  break;
+                }
+              }
+              if (entityId) break;
+            }
+
+            row[entityColumnIndex] = entityId;
           });
+
+          return rows;
         }
       };
 
