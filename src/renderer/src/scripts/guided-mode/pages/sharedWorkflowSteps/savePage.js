@@ -13,6 +13,8 @@ import {
 import { guidedGetCurrentUserWorkSpace } from "../../workspaces/workspaces";
 import { countFilesInDatasetStructure } from "../../generateDataset/generate";
 import { createOrUpdateProgressFileSaveInfo } from "../../resumeProgress/progressFile";
+import { swalConfirmAction, swalShowInfo } from "../../../utils/swal-utils";
+
 import api from "../../../others/api/api";
 
 export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
@@ -64,6 +66,31 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
       });
       throw errorArray;
     } else {
+      // check if the prior workspace and user selected workspace
+      let priorWorkspace = window.sodaJSONObj?.["last-confirmed-pennsieve-workspace-details"];
+
+      // TODO: Only show if upload has already started
+      if (priorWorkspace !== userSelectedWorkSpace) {
+        let result = await swalConfirmAction(
+          "info",
+          "Progress File Workspace Will be Changed and Any Upload Progress Lost",
+          "If you already started an upload in the prior workspace and do not want to lose that progress it is recommended you change your workspace back before continuing.",
+          "Change Back to Prior Workspace and Keep Progress",
+          "Continue With New Workspace and Reset Progress"
+        );
+
+        if (result) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please select your prior workspace.",
+          });
+          throw errorArray;
+        }
+
+        // reset upload progress in json file here
+        delete window.sodaJSONObj?.["upload-progress"];
+      }
+
       window.sodaJSONObj["digital-metadata"]["dataset-workspace"] = userSelectedWorkSpace;
     }
     if (userSelectedWorkSpace === "Welcome") {
