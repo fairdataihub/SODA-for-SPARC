@@ -162,11 +162,17 @@ const guidedGetPageToReturnTo = async () => {
   if (needsReconfirm) {
     await swalShowInfo(
       "Your Pennsieve account or workspace has changed since you last worked on this dataset.",
-      `Your workspace when last working on this dataset was: ${
-        window.sodaJSONObj?.["last-confirmed-pennsieve-workspace-details"]
-      }. 
-       Your current active workspace is: ${guidedGetCurrentUserWorkSpace()}
-       You will be taken to the Pennsieve Login Page. Please confirm that your current workspace is the one you would like to use for your upload, and change it if not.
+      `
+      <div style="display: flex; flex-direction: row; text-align: left;">
+        Your workspace when last working on this dataset was: ${
+          window.sodaJSONObj?.["last-confirmed-pennsieve-workspace-details"]
+        }. 
+        </br>
+        Your current workspace is: ${guidedGetCurrentUserWorkSpace()}
+        </br>
+        </br>
+        You will be taken to the Pennsieve Login Page. Please confirm that your current workspace is the one you would like to use for your upload, and change it if not.
+       </div>
        `
     );
 

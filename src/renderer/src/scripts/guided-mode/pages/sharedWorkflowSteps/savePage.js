@@ -73,13 +73,19 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
       if (priorWorkspace !== userSelectedWorkSpace) {
         let result = await swalConfirmAction(
           "info",
-          "Progress File Workspace Will be Changed and Any Upload Progress Lost",
-          "If you already started an upload in the prior workspace and do not want to lose that progress it is recommended you change your workspace back before continuing.",
-          "Change Back to Prior Workspace and Keep Progress",
-          "Continue With New Workspace and Reset Progress"
+          "Workspace Will be Changed and Any Upload Progress Lost",
+          `<div style="text-align: left;"> 
+            If you have already started an upload and leave this page without switching your workspace back to the ${priorWorkspace} workspace, the following will happen:
+            <ol style="margin-top: .5rem;">
+              <li>You will lose all progress made in the upload in the ${priorWorkspace} workspace.</li>
+              <li>You will make a new dataset in the ${userSelectedWorkSpace} workspace.</li>
+            </ol>
+          </div>`,
+          "Continue",
+          "Cancel"
         );
 
-        if (result) {
+        if (!result) {
           errorArray.push({
             type: "notyf",
             message: "Please select your prior workspace.",
