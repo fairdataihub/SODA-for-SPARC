@@ -147,7 +147,7 @@ class CurationSession(Resource):
         return reset_upload_session_environment()
 
     def post(self):
-        data = request.get_json()
+        data = request.get_json() or {}
 
         # no state to set
         if "upload_progress" not in data:
