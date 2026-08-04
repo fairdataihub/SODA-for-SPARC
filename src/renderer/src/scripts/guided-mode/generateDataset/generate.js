@@ -166,6 +166,43 @@ const trackUpload = (status) => {
   );
 };
 
+const setNewSessionState = async () => {
+  // TODO: RESET KEYS IF DATA CHANGES IN GM
+  document
+    .querySelectorAll(".guided-upload-table")
+    .forEach((table) => table.classList.add("hidden"));
+
+  const metadataTableRows = document.getElementById(
+    "guided-tbody-pennsieve-metadata-upload"
+  ).children;
+  for (const row of metadataTableRows) {
+    row.classList.add("hidden");
+  }
+
+  hideDatasetMetadataGenerationTableRows("pennsieve");
+  setGuidedProgressBarValue("pennsieve", 0);
+  updateDatasetUploadProgressTable("pennsieve", {
+    "current action": "Starting dataset curation",
+  });
+  // TODO: Reset curation progress messages and status in case prior upload did not finish
+  // clear old state in case this is new upload
+  await client.put("/curate_datasets/curation/session");
+
+  // set state to prior upload-progress if it has not been reset (by changing from new to existing dataset, or changing dataset being uploaded to)
+  await client.post(
+    "/curate_datasets/curation/session",
+    { upload_progress: window.sodaJSONObj?.["upload-progress"] },
+    { timeout: 0 }
+  );
+
+  // groups analytics calls into a session. New session is created when user starts new dataset or exits progress file and resumes at later date
+  if (!datasetUploadSession.id) {
+    datasetUploadSession.startSession();
+  }
+
+  window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
+};
+
 /**
  *
  * @returns {Promise<void>}
@@ -181,9 +218,9 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
   psGenerateTimer = psGenerateTimer || Date.now();
 
   try {
-    // groups analytics calls into a session. New session is created when user starts new dataset or exits progress file and resumes at later date
-    if (!datasetUploadSession.id) {
-      datasetUploadSession.startSession();
+    //
+    if (!window.sodaJSONObj["upload-progress"] || amountOfTimesPennsieveUploadFailed === 0) {
+      await setNewSessionState();
     }
 
     const pennsieveDatasetName = window.sodaJSONObj["generate-dataset"]["dataset-name"];
@@ -372,31 +409,6 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
         { timeout: 0 }
       );
     };
-
-    // reset the upload progress bar and metadata table if this is first upload of the session
-    if (!window.sodaJSONObj["upload-progress"] || amountOfTimesPennsieveUploadFailed === 0) {
-      // TODO: RESET KEYS IF DATA CHANGES IN GM
-      document
-        .querySelectorAll(".guided-upload-table")
-        .forEach((table) => table.classList.add("hidden"));
-
-      const metadataTableRows = document.getElementById(
-        "guided-tbody-pennsieve-metadata-upload"
-      ).children;
-      for (const row of metadataTableRows) {
-        row.classList.add("hidden");
-      }
-
-      hideDatasetMetadataGenerationTableRows("pennsieve");
-      setGuidedProgressBarValue("pennsieve", 0);
-      updateDatasetUploadProgressTable("pennsieve", {
-        "current action": "Starting dataset curation",
-      });
-      // TODO: Reset curation progress messages and status in case prior upload did not finish
-      await client.put("/curate_datasets/curation/session");
-
-      window.unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
-    }
 
     if (
       !window.sodaJSONObj["upload-progress"] &&
