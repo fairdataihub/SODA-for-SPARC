@@ -392,7 +392,6 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
       return false;
     }
 
-    console.log("Past version grab");
     console.log(
       `[renderer] usersPennsieveAgentVersion: ${usersPennsieveAgentVersion} x latestPennsieveAgentVersion: ${latestPennsieveAgentVersion}`
     );

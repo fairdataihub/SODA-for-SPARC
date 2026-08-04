@@ -648,8 +648,6 @@ const trackPennsieveDatasetGenerationProgress = async () => {
         window.sodaJSONObj["upload-progress"]?.["current-stage"] === "upload" &&
         window.sodaJSONObj["upload-progress"]?.["status"] == "in progress"
       ) {
-        console.log(mainGeneratedDatasetSize);
-        console.log(mainTotalGenerateDatasetSize);
         if (!(mainGeneratedDatasetSize && mainTotalGenerateDatasetSize)) {
           // Fallback for when mainGeneratedDatasetSize or mainTotalGenerateDatasetSize is not available
           setGuidedProgressBarValue("pennsieve", 0);
