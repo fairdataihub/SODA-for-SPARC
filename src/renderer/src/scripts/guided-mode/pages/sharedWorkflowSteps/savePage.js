@@ -94,7 +94,9 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
         }
 
         // reset upload progress in json file here
-        delete window.sodaJSONObj?.["upload-progress"];
+        if (window.sodaJSONObj && "upload-progress" in window.sodaJSONObj) {
+          delete window.sodaJSONObj["upload-progress"];
+        }
       }
 
       window.sodaJSONObj["digital-metadata"]["dataset-workspace"] = userSelectedWorkSpace;
