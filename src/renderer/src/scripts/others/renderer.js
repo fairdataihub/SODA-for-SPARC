@@ -382,7 +382,6 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
     try {
       const versionObj = await window.spawn.getPennsieveAgentVersion();
       usersPennsieveAgentVersion = versionObj["Agent Version"];
-      console.log(`renderer: $${usersPennsieveAgentVersion}`);
     } catch (error) {
       setPennsieveAgentCheckError(
         "Unable to verify the Pennsieve Agent version",
@@ -391,10 +390,6 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
       abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
       return false;
     }
-
-    console.log(
-      `[renderer] usersPennsieveAgentVersion: ${usersPennsieveAgentVersion} x latestPennsieveAgentVersion: ${latestPennsieveAgentVersion}`
-    );
 
     if (!window.allowOutdatedPennsieveAgentForThisSession === true) {
       const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
