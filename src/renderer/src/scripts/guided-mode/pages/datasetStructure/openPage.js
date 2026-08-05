@@ -124,13 +124,14 @@ export const openPageDatasetStructure = async (targetPageID) => {
       );
 
       // Prepare cleaned dataset structure for server-side processing
+      const { standardizedDatasetStructure, pathMapping } = createStandardizedDatasetStructure(
+        window.datasetStructureJSONObj,
+        window.sodaJSONObj["dataset-entity-obj"]
+      );
       const sodaCopy = {
         ...window.sodaJSONObj,
         "metadata-files": {},
-        "dataset-structure": createStandardizedDatasetStructure(
-          window.datasetStructureJSONObj,
-          window.sodaJSONObj["dataset-entity-obj"]
-        ),
+        "dataset-structure": standardizedDatasetStructure,
       };
       delete sodaCopy["generate-dataset"];
 
@@ -193,17 +194,13 @@ export const openPageDatasetStructure = async (targetPageID) => {
       /**
        * Update entity column values.
        */
-      const updateEntityColumn = (rows) => {
-        const datasetStrucutringMethod = window.sodaJSONObj?.["dataset-structuring-method"];
-        console.log(
-          "Updating entity column values based on dataset structuring method:",
-          datasetStrucutringMethod
-        );
+      const updateEntityColumn = (rows, pathMapping = {}) => {
+        const datasetStructuringMethod = window.sodaJSONObj?.["dataset-structuring-method"];
 
         const entityTypes = ["sites", "derived-samples", "samples", "subjects"];
         const fileTypeColumnIndex = newManifestData.headers.indexOf("file type");
 
-        if (datasetStrucutringMethod === "entity-association") {
+        if (datasetStructuringMethod === "entity-association") {
           rows.forEach((row) => {
             // Skip processing folders - only process files
             if (row[fileTypeColumnIndex] === "folder") {
@@ -237,38 +234,22 @@ export const openPageDatasetStructure = async (targetPageID) => {
           return rows;
         }
 
-        if (datasetStrucutringMethod === "entity-buckets") {
-          console.log("Rows before entity bucketing update:", rows);
+        if (datasetStructuringMethod === "entity-buckets") {
           rows.forEach((row) => {
             // Skip processing folders - only process files
             if (row[fileTypeColumnIndex] === "folder") {
-              console.log("Skipping folder row:", row);
               return;
             }
 
-            let path = row[0];
-            console.log("Processing row with path:", path);
-            const pathSegments = path.split("/");
-            if (pathSegments.length > 0) pathSegments[0] = "data";
-            path = pathSegments.join("/");
-            console.log("Normalized path for entity bucketing:", path);
-            let entityId = "";
+            let filePath = row[0];
 
-            for (const type of entityTypes) {
-              const entities = datasetEntityObj?.[type] || {};
-              for (const [entity, paths] of Object.entries(entities)) {
-                if (paths?.[path]) {
-                  const { entityMetadata } = getEntityDataById(entity) || {};
-                  if (!entityMetadata) continue;
-
-                  entityId = entityMetadata.id;
-                  break;
-                }
-              }
-              if (entityId) break;
+            // Look up the entity from pathMapping using the file path
+            const mappingInfo = pathMapping[filePath];
+            if (mappingInfo && mappingInfo.entity) {
+              row[entityColumnIndex] = mappingInfo.entity;
+            } else {
+              row[entityColumnIndex] = "";
             }
-
-            row[entityColumnIndex] = entityId;
           });
 
           return rows;
@@ -343,7 +324,7 @@ export const openPageDatasetStructure = async (targetPageID) => {
           )
         : newManifestData;
 
-      updateEntityColumn(guidedManifestData.data);
+      updateEntityColumn(guidedManifestData.data, pathMapping);
       updateModalitiesColumn(guidedManifestData.data);
       updateAlsoInDatasetColumn(guidedManifestData.data);
 

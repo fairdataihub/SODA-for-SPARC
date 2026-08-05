@@ -13,6 +13,11 @@ export const guidedSkipPage = (pageId) => {
     return;
   }
 
+  if (pageId === "remaining-data-categories-questionnaire-tab") {
+    console.log("[PageSkipping] SKIPPING: remaining-data-categories-questionnaire-tab");
+    console.trace("  Trace:");
+  }
+
   page.dataset.skipPage = "true";
 
   // add the page to window.sodaJSONObj array if it isn't there already
@@ -87,8 +92,21 @@ export const guidedUnSkipPage = (pageId) => {
     // If any of this page's page sets are in the skipped list, don't unskip
     const belongsToSkippedSet = pageSets.some((set) => skippedPageSets.includes(set));
     if (belongsToSkippedSet) {
+      if (pageId === "remaining-data-categories-questionnaire-tab") {
+        console.log(
+          "[PageSkipping] BLOCKED UNSKIP: remaining-data-categories-questionnaire-tab (belongs to skipped page set)"
+        );
+        console.log("  Page sets:", pageSets);
+        console.log("  Skipped page sets:", skippedPageSets);
+        console.trace("  Trace:");
+      }
       return; // Don't unskip this page because it belongs to a skipped page set
     }
+  }
+
+  if (pageId === "remaining-data-categories-questionnaire-tab") {
+    console.log("[PageSkipping] UNSKIPPING: remaining-data-categories-questionnaire-tab");
+    console.trace("  Trace:");
   }
 
   page.dataset.skipPage = "false";

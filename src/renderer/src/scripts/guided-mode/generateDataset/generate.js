@@ -189,7 +189,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     const pennsieveDatasetName = window.sodaJSONObj["generate-dataset"]["dataset-name"];
 
     // Create standardized dataset structure and store globally
-    const standardizedDatasetStructure = createStandardizedDatasetStructure(
+    const { standardizedDatasetStructure } = createStandardizedDatasetStructure(
       window.datasetStructureJSONObj,
       window.sodaJSONObj["dataset-entity-obj"]
     );
@@ -891,7 +891,7 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
     );
 
     // Create standardized structure
-    const standardizedDatasetStructure = createStandardizedDatasetStructure(
+    const { standardizedDatasetStructure } = createStandardizedDatasetStructure(
       window.datasetStructureJSONObj,
       window.sodaJSONObj["dataset-entity-obj"]
     );

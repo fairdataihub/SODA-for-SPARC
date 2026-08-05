@@ -254,6 +254,9 @@ const EntityDataSelectorPage = ({
                   </Text>
                 );
 
+              case "entity-associated-data-categorization":
+                return <Text>entity-associated-data-categorization</Text>;
+
               case "sites":
                 return (
                   <Text>

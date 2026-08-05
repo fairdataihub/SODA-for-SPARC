@@ -211,9 +211,6 @@ window.savePageChanges = async (pageBeingLeftID) => {
       }
       if (pageBeingLeftComponentType === "data-categories-questionnaire-page") {
         const questionnaireEntityType = pageBeingLeftDataSet.questionnaireEntityType;
-        console.log(
-          `Saving changes for data categories questionnaire page of entity type: ${questionnaireEntityType}`
-        );
 
         if (questionnaireEntityType === "experimental-data-categorization") {
           const categorizeExperimentalDataYes = isCheckboxCardChecked(
@@ -260,12 +257,39 @@ window.savePageChanges = async (pageBeingLeftID) => {
             removeEntityType("remaining-data-categorization");
           }
         }
+
+        if (questionnaireEntityType === "entity-bucketing-data-categorization") {
+          const categorizeEntityBucketingDataYes = isCheckboxCardChecked(
+            "categorize-entity-bucketing-data-yes"
+          );
+          const categorizeEntityBucketingDataNo = isCheckboxCardChecked(
+            "categorize-entity-bucketing-data-no"
+          );
+          if (!categorizeEntityBucketingDataYes && !categorizeEntityBucketingDataNo) {
+            errorArray.push({
+              type: "notyf",
+              message:
+                "Please indicate if you would like to categorize your entity associated data.",
+            });
+            throw errorArray;
+          }
+
+          if (categorizeEntityBucketingDataYes) {
+            guidedUnSkipPage("entity-bucketing-primary-source-derivative-categorization-tab");
+            addEntityNameToEntityType("entity-associated-data-categorization", "Source");
+            addEntityNameToEntityType("entity-associated-data-categorization", "Derivative");
+          } else {
+            guidedSkipPage("entity-bucketing-primary-source-derivative-categorization-tab");
+            removeEntityType("entity-associated-data-categorization");
+          }
+        }
       }
       if (pageBeingLeftComponentType === "data-categorization-page") {
         const entityType = pageBeingLeftDataSet.entityType;
         const datasetEntityObj = getDatasetEntityObj();
         const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
         const datasetFileCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
+        console.log("Leaving data-categorization-page for entityType:", entityType);
 
         if (entityType === "non-data-folders") {
           const userSelectedNonDataFolders = window.sodaJSONObj["non-data-folders"];
@@ -462,6 +486,13 @@ window.savePageChanges = async (pageBeingLeftID) => {
           }
         }
 
+        if (entityType === "entity-associated-data-categorization") {
+          // Save selected entity-associated data categories
+          const selectedCategories =
+            getSelectedDataCategoriesByEntityType()["entity-associated-data-categorization"] || [];
+          window.sodaJSONObj["selected-entity-associated-data-categories"] = selectedCategories;
+        }
+
         if (entityType !== "remaining-data-categorization") {
           // Whenever leaving a data categorization page, check the count of the
           // non-data-folders (e.g. code, docs) combined with the experimentally
@@ -482,7 +513,6 @@ window.savePageChanges = async (pageBeingLeftID) => {
       }
       if (pageBeingLeftComponentType === "data-bucketing-page") {
         const entityType = pageBeingLeftDataSet.entityType;
-        console.log(`Saving changes for data bucketing page of entity type: ${entityType}`);
         if (entityType === "non-data-folders") {
           const userSelectedNonDataFolders = window.sodaJSONObj["non-data-folders"];
           for (const folder of userSelectedNonDataFolders) {

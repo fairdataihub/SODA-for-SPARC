@@ -286,8 +286,16 @@ export const moveFileToTargetLocation = (relativePathToMove, destionationRelativ
  * @param {Object} folderObj - The folder object to recursively process
  * @param {string} sourceBasePath - The base path to strip (e.g., "data/subjects/sub-1/")
  * @param {string} destinationPath - The destination path (e.g., "primary/sub-1/")
+ * @param {Object} pathMapping - (Optional) Object to track file moves: { newPath: { sourcePath, entity } }
+ * @param {string} entityId - The entity ID to associate with moved files
  */
-const moveFilesFromFolderRecursively = (folderObj, sourceBasePath, destinationPath) => {
+const moveFilesFromFolderRecursively = (
+  folderObj,
+  sourceBasePath,
+  destinationPath,
+  pathMapping = null,
+  entityId = null
+) => {
   if (folderObj?.files) {
     Object.values(folderObj.files).forEach((fileObj) => {
       if (fileObj.relativePath) {
@@ -319,6 +327,14 @@ const moveFilesFromFolderRecursively = (folderObj, sourceBasePath, destinationPa
         if (srcParent?.files?.[itemName]) {
           currentFolder.files[fileName] = srcParent.files[itemName];
           delete srcParent.files[itemName];
+
+          // Track the path mapping if provided
+          if (pathMapping && entityId) {
+            pathMapping[finalDestinationPath] = {
+              sourcePath: sourceBasePath,
+              entity: entityId,
+            };
+          }
         }
       }
     });
@@ -326,23 +342,62 @@ const moveFilesFromFolderRecursively = (folderObj, sourceBasePath, destinationPa
 
   if (folderObj?.folders) {
     Object.values(folderObj.folders).forEach((subFolder) => {
-      moveFilesFromFolderRecursively(subFolder, sourceBasePath, destinationPath);
+      moveFilesFromFolderRecursively(
+        subFolder,
+        sourceBasePath,
+        destinationPath,
+        pathMapping,
+        entityId
+      );
     });
   }
 };
 
+/**
+ * Creates a standardized dataset structure where files are reorganized based on the dataset structuring method.
+ * Also returns a mapping of which files came from which entity folders.
+ *
+ * For entity-association mode: Files are moved into Primary/Source/Derivative/Code/Docs/Protocol categories.
+ * For entity-buckets mode: Files are reorganized into hierarchical entity structures (e.g., primary/sub-123/file.txt).
+ *
+ * @param {Object} datasetStructure - The original dataset structure (currently unused, kept for compatibility)
+ * @param {Object} datasetEntityObj - Object containing entity-to-file mappings and categorizations
+ * @returns {Object} An object containing:
+ *   - structure: The reorganized dataset structure
+ *   - pathMapping: Object mapping new paths to mapping information
+ *                  Each value is an object with:
+ *                    - sourcePath: The original source base path (e.g., "data/subjects/sub-123/")
+ *                    - entity: The entity ID extracted from the source path (e.g., "sub-123")
+ *                  Example: {
+ *                    "primary/sub-123/file.txt": {
+ *                      sourcePath: "data/subjects/sub-123/",
+ *                      entity: "sub-123"
+ *                    }
+ *                  }
+ *
+ * @example
+ * const { structure, pathMapping } = createStandardizedDatasetStructure(
+ *   window.datasetStructureJSONObj,
+ *   window.sodaJSONObj["dataset-entity-obj"]
+ * );
+ *
+ * // Use the structure for rendering or backend operations
+ * useGlobalStore.setState({ datasetStructureJSONObj: structure });
+ *
+ * // Use the path mapping to identify entity origins
+ * for (const [newPath, mapping] of Object.entries(pathMapping)) {
+ *   console.log(`File ${newPath} came from entity ${mapping.entity} at ${mapping.sourcePath}`);
+ * }
+ */
 export const createStandardizedDatasetStructure = (datasetStructure, datasetEntityObj) => {
-  console.log("createStandardizedDatasetStructure - Input dataset structure:", datasetStructure);
-  console.log(
-    "createStandardizedDatasetStructure - Input dataset entity object:",
-    datasetEntityObj
-  );
-
   // --- Step 1: Preserve the original global structure ---
   let originalStructure = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
 
   // Remove any empty folders from the original structure
   originalStructure = deleteEmptyFoldersFromStructure(originalStructure);
+
+  // Initialize path mapping to track file moves
+  const pathMapping = {};
 
   const moveFilesByCategory = (categoryObj, destFolder) => {
     if (!categoryObj) return;
@@ -400,48 +455,13 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
     }
 
     if (datasetStructuringMethod === "entity-buckets") {
-      console.log(
-        "createStandardizedDatasetStructure - Entity Buckets structuring method selected"
-      );
       const subjects = getEntitiesByEntityType("subjects", false);
       const samples = getEntitiesByEntityType("non-derived-samples", false);
       const derivedSamples = getEntitiesByEntityType("derived-samples", false);
       const sites = getEntitiesByEntityType("sites", false);
 
-      console.log(
-        "createStandardizedDatasetStructure - Subjects:",
-        JSON.stringify(subjects, null, 2)
-      );
-      console.log(
-        "createStandardizedDatasetStructure - Samples:",
-        JSON.stringify(samples, null, 2)
-      );
-      console.log(
-        "createStandardizedDatasetStructure - Derived Samples:",
-        JSON.stringify(derivedSamples, null, 2)
-      );
-      console.log("createStandardizedDatasetStructure - Sites:", JSON.stringify(sites, null, 2));
-
-      // Helper function to determine if a file is categorized as Source or Derivative
-      const getFileCategorySubfolder = (filePath) => {
-        console.log("getFileCategorySubfolder - Checking file:", filePath);
-        const sourceFiles = datasetEntityObj?.["experimental-data-categorization"]?.["Source"];
-        console.log("getFileCategorySubfolder - Source files:", sourceFiles);
-        const derivativeFiles =
-          datasetEntityObj?.["experimental-data-categorization"]?.["Derivative"];
-
-        if (sourceFiles && sourceFiles[filePath]) {
-          return "source/";
-        }
-        if (derivativeFiles && derivativeFiles[filePath]) {
-          return "derivative/";
-        }
-        return ""; // Default to root of entity folder
-      };
-
       // Step 1: Move all subject folders to primary
       for (const subject of subjects) {
-        console.log("Iterating over subject:", subject);
         const subjectId = subject.id;
         const subjectFolderLocation =
           window.datasetStructureJSONObj?.folders?.data?.folders?.["subjects"]?.folders?.[
@@ -449,22 +469,19 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
           ];
 
         if (subjectFolderLocation) {
-          console.log(
-            `createStandardizedDatasetStructure - Moving subject ${subjectId} files to primary`
-          );
-
           // Move all files and folders from the subject folder to primary, preserving structure
           moveFilesFromFolderRecursively(
             subjectFolderLocation,
             `data/subjects/${subjectId}/`,
-            `primary/${subjectId}/`
+            `primary/${subjectId}/`,
+            pathMapping,
+            subjectId
           );
         }
       }
 
       // Step 2: Move all sample folders to their parent subject directories
       for (const sample of samples) {
-        console.log("Iterating over sample:", sample);
         const sampleId = sample.id;
         const parentSubjectId = sample.parentSubject || sample.metadata?.subject_id;
 
@@ -476,22 +493,19 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
         const sampleFolderLocation =
           window.datasetStructureJSONObj?.folders?.data?.folders?.["samples"]?.folders?.[sampleId];
         if (sampleFolderLocation) {
-          console.log(
-            `createStandardizedDatasetStructure - Moving sample ${sampleId} files to primary`
-          );
-
           // Move all files and folders from the sample folder to primary, preserving structure
           moveFilesFromFolderRecursively(
             sampleFolderLocation,
             `data/samples/${sampleId}/`,
-            `primary/${parentSubjectId}/${sampleId}/`
+            `primary/${parentSubjectId}/${sampleId}/`,
+            pathMapping,
+            sampleId
           );
         }
       }
 
       // Step 3: Move all derived-sample folders to their parent sample directories
       for (const derivedSample of derivedSamples) {
-        console.log("Iterating over derived-sample:", derivedSample);
         const derivedSampleId = derivedSample.id;
         const parentSubjectId = derivedSample.parentSubject || derivedSample.metadata?.subject_id;
         const parentSampleId = derivedSample.metadata?.was_derived_from;
@@ -508,22 +522,19 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
             derivedSampleId
           ];
         if (derivedSampleFolderLocation) {
-          console.log(
-            `createStandardizedDatasetStructure - Moving derived-sample ${derivedSampleId} files to primary`
-          );
-
           // Move all files and folders from the derived-sample folder to primary, preserving structure
           moveFilesFromFolderRecursively(
             derivedSampleFolderLocation,
             `data/derived-samples/${derivedSampleId}/`,
-            `primary/${parentSubjectId}/${parentSampleId}/${derivedSampleId}/`
+            `primary/${parentSubjectId}/${parentSampleId}/${derivedSampleId}/`,
+            pathMapping,
+            derivedSampleId
           );
         }
       }
 
       // Step 4: Move all site folders to their appropriate hierarchical locations
       for (const site of sites) {
-        console.log("Iterating over site:", site);
         const siteId = site.id;
         const parentSubjectId = site.parentSubject || site.metadata?.subject_id;
         const parentSampleId = site.parentSample || site.metadata?.sample_id;
@@ -541,47 +552,36 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
 
           if (parentDerivedSampleId) {
             baseDestinationPath = `primary/${parentSubjectId}/${parentSampleId}/${parentDerivedSampleId}/${siteId}/`;
-            console.log(
-              `createStandardizedDatasetStructure - Moving site ${siteId} under derived-sample to primary`
-            );
           } else if (parentSampleId) {
             baseDestinationPath = `primary/${parentSubjectId}/${parentSampleId}/${siteId}/`;
-            console.log(
-              `createStandardizedDatasetStructure - Moving site ${siteId} under sample to primary`
-            );
           } else {
             baseDestinationPath = `primary/${parentSubjectId}/${siteId}/`;
-            console.log(
-              `createStandardizedDatasetStructure - Moving site ${siteId} under subject to primary`
-            );
           }
 
           // Move all files and folders from the site folder to primary, preserving structure
           moveFilesFromFolderRecursively(
             siteFolderLocation,
             `data/sites/${siteId}/`,
-            baseDestinationPath
+            baseDestinationPath,
+            pathMapping,
+            siteId
           );
         }
       }
 
       for (const folder of window.sodaJSONObj?.["non-data-folders"] || []) {
-        console.log(
-          `createStandardizedDatasetStructure - Moving non-data folder ${folder} to root`
-        );
         const folderLocation =
           window.datasetStructureJSONObj?.folders?.data?.folders?.["non-data-folders"]?.folders?.[
             folder
           ];
-        const folderLocationRelativePath = folderLocation?.relativePath;
-        console.log(
-          `createStandardizedDatasetStructure - Non-data folder ${folder} relative path: ${folderLocationRelativePath}`
-        );
+
         if (folderLocation) {
           moveFilesFromFolderRecursively(
             folderLocation,
             `data/non-data-folders/${folder}/`,
-            `${folder.toLowerCase()}/`
+            `${folder.toLowerCase()}/`,
+            pathMapping,
+            folder
           );
         }
       }
@@ -594,17 +594,29 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
     );
 
     // --- Step 6: Capture the modified structure before reverting changes ---
-    const standardizedStructure = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
+    const standardizedDatasetStructure = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
 
-    useGlobalStore.setState({ datasetStructureJSONObj: standardizedStructure });
+    useGlobalStore.setState({ datasetStructureJSONObj: standardizedDatasetStructure });
     // --- Step 7: Revert any global changes to window.datasetStructureJSONObj ---
     window.datasetStructureJSONObj = originalStructure;
 
+    console.log("Return from createStandardizedDatasetStructure:");
     console.log(
-      "createStandardizedDatasetStructure - Return standardized dataset structure:",
-      standardizedStructure
+      JSON.stringify(
+        {
+          standardizedDatasetStructure,
+          pathMapping,
+        },
+        null,
+        2
+      )
     );
-    return standardizedStructure;
+
+    // Return both the structure and the path mapping
+    return {
+      standardizedDatasetStructure,
+      pathMapping: pathMapping,
+    };
   } catch (error) {
     console.error("Error while creating standardized dataset structure:", error);
     window.datasetStructureJSONObj = originalStructure;

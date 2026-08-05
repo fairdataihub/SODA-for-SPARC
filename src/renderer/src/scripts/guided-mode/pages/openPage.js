@@ -341,12 +341,6 @@ window.openPage = async (targetPageID) => {
         if (questionnaireEntityType === "remaining-data-categorization") {
           const datasetStructuringMode = window.sodaJSONObj["dataset-structuring-method"];
           if (datasetStructuringMode === "entity-association") {
-            const savedNonExperimentalCategories =
-              window.sodaJSONObj["selected-remaining-data-categories"] || [];
-            setSelectedDataCategoriesByEntityType({
-              "remaining-data-categorization": savedNonExperimentalCategories,
-            });
-
             setFileVisibilityFilter(
               [],
               [
@@ -366,6 +360,10 @@ window.openPage = async (targetPageID) => {
             console.log("Setting up page for entity-buckets mode");
           }
         }
+
+        if (questionnaireEntityType === "entity-bucketing-data-categorization") {
+          console.log("Setting up page for entity-bucketing-data-categorization mode");
+        }
       }
       if (targetPageComponentType === "data-categorization-page") {
         const pageEntityType = targetPageDataset.entityType;
@@ -377,6 +375,10 @@ window.openPage = async (targetPageID) => {
         if (pageEntityType === "non-data-folders") {
           // Filter files that may have been marked as experimental in a previous step
           setFileVisibilityFilter([], [{ type: "experimental", names: ["experimental"] }]);
+        }
+
+        if (pageEntityType === "entity-associated-data-categorization") {
+          console.log("Setting up page for entity-associated-data-categorization mode");
         }
 
         // Make any adjustments to the dataset entity object before setting it in the zustand store
@@ -642,18 +644,13 @@ window.openPage = async (targetPageID) => {
 
       if (targetPageComponentType === "data-bucketing-page") {
         const pageEntityType = targetPageDataset.entityType;
-        console.log("Bucketing page entity type:", pageEntityType);
         const entityIDs = getEntitiesByEntityType(pageEntityType, true);
-        console.log(`Entity IDs for ${pageEntityType}:`, entityIDs);
 
         if (entityIDs && entityIDs.length > 0) {
           // Create the parent folder for this entity type if it doesn't exist
           if (
             !window.datasetStructureJSONObj?.["folders"]?.["data"]?.["folders"]?.[pageEntityType]
           ) {
-            console.log(
-              `${pageEntityType} folder does not exist in dataset structure. Creating it.`
-            );
             window.datasetStructureJSONObj["folders"]["data"]["folders"][pageEntityType] =
               newEmptyFolderObj();
           }
@@ -666,7 +663,6 @@ window.openPage = async (targetPageID) => {
               ]?.["folders"]?.[entityID] !== undefined;
 
             if (!entityAlreadyHasBeenInstantiated) {
-              console.log(`Instantiating ${pageEntityType} folder for: ${entityID}`);
               window.datasetStructureJSONObj["folders"]["data"]["folders"][pageEntityType][
                 "folders"
               ][entityID] = newEmptyFolderObj();
@@ -725,7 +721,7 @@ window.openPage = async (targetPageID) => {
 
       // Review pages use the standardized dataset structure
       if (PAGE_CONFIG["review-pages"].has(pageID)) {
-        const standardizedDatasetStructure = createStandardizedDatasetStructure(
+        const { standardizedDatasetStructure } = createStandardizedDatasetStructure(
           window.datasetStructureJSONObj,
           window.sodaJSONObj["dataset-entity-obj"]
         );

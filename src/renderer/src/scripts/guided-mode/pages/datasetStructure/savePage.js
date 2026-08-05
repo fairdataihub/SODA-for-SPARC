@@ -312,18 +312,17 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       throw errorArray;
     }
 
-    const classForEntityAssociationMethodPages = "entity-association-workflow";
-    const classForEntityBucketsMethodPages = "entity-bucketing-workflow";
-
     if (userSelectedEntityAssociationMethod) {
-      guidedUnSkipPageSet(classForEntityAssociationMethodPages);
-      guidedSkipPageSet(classForEntityBucketsMethodPages);
+      guidedSkipPageSet("entity-bucketing-workflow");
+      guidedUnSkipPageSet("entity-association-workflow");
+
       window.sodaJSONObj["dataset-structuring-method"] = "entity-association";
     }
 
     if (userSelectedEntityBucketsMethod) {
-      guidedUnSkipPageSet(classForEntityBucketsMethodPages);
-      guidedSkipPageSet(classForEntityAssociationMethodPages);
+      guidedSkipPageSet("entity-association-workflow");
+      guidedUnSkipPageSet("entity-bucketing-workflow");
+
       window.sodaJSONObj["dataset-structuring-method"] = "entity-buckets";
     }
   }
@@ -426,8 +425,8 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
         );
         // If the user only has nonDataFolders, bypass the entity association and bucketing workflow pages since they are not relevant
         window.sodaJSONObj["dataset-structuring-method"] = "entity-buckets";
-        guidedUnSkipPageSet("non-data-entity-bucketing-workflow");
         guidedSkipPageSet("non-data-entity-association-workflow");
+        guidedUnSkipPageSet("non-data-entity-bucketing-workflow");
       }
 
       /*const datasetStructuringMethod = window.sodaJSONObj["dataset-structuring-method"];
@@ -543,9 +542,11 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       if (window.sodaJSONObj["dataset_metadata"]?.["sites"]) {
         delete window.sodaJSONObj["dataset_metadata"]["sites"];
       }
+      // Skip pages first
       guidedSkipPage("guided-manual-dataset-entity-and-metadata-tab");
       guidedSkipPage("guided-subjects-metadata-tab");
       guidedSkipPage("guided-samples-metadata-tab");
+      // Then unskip the spreadsheet page
       guidedUnSkipPage("guided-spreadsheet-import-dataset-entity-and-metadata-tab");
     }
 
@@ -583,12 +584,18 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       if (window.sodaJSONObj["imported-metadata-file-paths"]) {
         delete window.sodaJSONObj["imported-metadata-file-paths"];
       }
+      // Skip spreadsheet page first
       guidedSkipPage("guided-spreadsheet-import-dataset-entity-and-metadata-tab");
+      // Handle samples conditional skip/unskip
+      if (window.sodaJSONObj["selected-entities"]?.includes("samples")) {
+        // Skip nothing for samples in this branch; will unskip below
+      } else {
+        guidedSkipPage("guided-samples-metadata-tab");
+      }
+      // Then unskip the manual pages
       guidedUnSkipPage("guided-subjects-metadata-tab");
       if (window.sodaJSONObj["selected-entities"]?.includes("samples")) {
         guidedUnSkipPage("guided-samples-metadata-tab");
-      } else {
-        guidedSkipPage("guided-samples-metadata-tab");
       }
       guidedUnSkipPage("guided-manual-dataset-entity-and-metadata-tab");
     }
