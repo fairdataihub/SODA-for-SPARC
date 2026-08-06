@@ -79,10 +79,10 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
         "info",
         "Dataset Name will be Changed and Upload Progress Lost",
         `<div style="text-align: left;"> 
-          Changing your dataset name from ${window.sodaJSONObj["generate-dataset"]["dataset-name"]} to ${pennsieveDatasetName} will result in losing your progress in your current upload. If you want to change your dataset's name it is recommended
-          you do so after finishing your upload.
+          Changing your dataset name from ${window.sodaJSONObj["generate-dataset"]["dataset-name"]} to ${pennsieveDatasetName} will result in losing your progress in your current upload. 
+          If you want to change your dataset's name it is recommended you do so after finishing your upload.
         </div>`,
-        "Change Name and Lose Progress",
+        "Change Dataset Name and Continue",
         "Cancel"
       );
 

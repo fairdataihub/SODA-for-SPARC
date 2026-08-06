@@ -156,11 +156,11 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
       ) {
         let switchDaasetDestination = await swalConfirmAction(
           "info",
-          "Changing Your Dataset Destination Will Result in Lost Upload Progress",
-          `<div style="text-align: left;"> 
-            If you change your dataset upload destination you will lose all upload progress in your current dataset. Are you sure you want to continue?
+          "Changing Dataset Destination Will Erase Upload Progress",
+          `<div style="text-align: left;">
+            You are switching to a different dataset destination. If you continue, any upload progress for the current dataset will be lost.
           </div>`,
-          "Switch Dataset Destination",
+          "Continue anyway",
           "Cancel"
         );
 
@@ -254,11 +254,11 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
       ) {
         let switchDaasetDestination = await swalConfirmAction(
           "info",
-          "Changing Your Dataset Destination Will Result in Lost Upload Progress",
-          `<div style="text-align: left;"> 
-            If you change your dataset upload destination you will lose all upload progress in your current dataset. Are you sure you want to continue?
+          "Changing Dataset Destination Will Erase Upload Progress",
+          `<div style="text-align: left;">
+            You are switching to a different dataset destination. If you continue, any upload progress for the current dataset will be lost.
           </div>`,
-          "Switch Dataset Destination",
+          "Continue anyway",
           "Cancel"
         );
 
@@ -280,11 +280,11 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
       ) {
         let switchDaasetDestination = await swalConfirmAction(
           "info",
-          "Changing Your Dataset Destination Will Result in Lost Upload Progress",
-          `<div style="text-align: left;"> 
-            If you change your dataset upload destination you will lose all upload progress in your current dataset. Are you sure you want to continue?
+          "Changing Dataset Destination Will Erase Upload Progress",
+          `<div style="text-align: left;">
+            You are switching to a different dataset destination. If you continue, any upload progress for the current dataset will be lost.
           </div>`,
-          "Switch Dataset Destination",
+          "Continue anyway",
           "Cancel"
         );
 
