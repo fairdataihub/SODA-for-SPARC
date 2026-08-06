@@ -256,20 +256,53 @@ export const openPageDatasetStructure = async (targetPageID) => {
       /**
        * Update modalities column values.
        */
-      const updateModalitiesColumn = (rows) => {
+      const updateModalitiesColumn = (rows, pathMapping = {}) => {
+        const datasetStructuringMethod = window.sodaJSONObj?.["dataset-structuring-method"];
         const modalitiesColumnIndex = newManifestData.headers.indexOf("data modality");
+        const fileTypeColumnIndex = newManifestData.headers.indexOf("file type");
 
-        rows.forEach((row) => {
+        rows.forEach((row, rowIndex) => {
+          // Skip processing folders - only process files
+          if (row[fileTypeColumnIndex] === "folder") {
+            return;
+          }
+
+          console.log("updateModalitiesColumn called with method:", datasetStructuringMethod);
+          console.log("datasetEntityObj.modalities:", datasetEntityObj?.modalities);
+          console.log("pathMapping:", JSON.stringify(pathMapping, null, 2));
+
           let path = row[0];
-          const pathSegments = path.split("/");
-          if (pathSegments.length > 0) pathSegments[0] = "data";
-          path = pathSegments.join("/");
+          console.log(`Processing row ${rowIndex}, initial path:`, path);
+
+          if (datasetStructuringMethod === "entity-buckets") {
+            // For entity-buckets, we need to look up the original path from pathMapping
+            const mappingInfo = pathMapping[path];
+            console.log(`Entity-buckets: Looking up pathMapping for "${path}":`, mappingInfo);
+            if (mappingInfo && mappingInfo.sourcePath) {
+              // Reconstruct the original data path
+              path = mappingInfo.sourcePath;
+              console.log(`Converted to sourcePath:`, path);
+            }
+          } else {
+            // For entity-association, convert to data path format
+            const pathSegments = path.split("/");
+            if (pathSegments.length > 0) pathSegments[0] = "data";
+            path = pathSegments.join("/");
+            console.log(`Entity-association: Converted path to:`, path);
+          }
 
           const modalitiesList = [];
           for (const [modality, paths] of Object.entries(datasetEntityObj?.modalities || {})) {
-            if (paths?.[path]) modalitiesList.push(modality);
+            console.log(
+              `Checking modality "${modality}" for path "${path}":`,
+              JSON.stringify(paths?.[path], null, 2)
+            );
+            if (paths?.[path]) {
+              modalitiesList.push(modality);
+            }
           }
 
+          console.log(`Final modalities for row ${rowIndex}:`, modalitiesList);
           row[modalitiesColumnIndex] = modalitiesList.join(" ");
         });
 
@@ -322,7 +355,7 @@ export const openPageDatasetStructure = async (targetPageID) => {
         : newManifestData;
 
       updateEntityColumn(guidedManifestData.data, pathMapping);
-      updateModalitiesColumn(guidedManifestData.data);
+      updateModalitiesColumn(guidedManifestData.data, pathMapping);
       updateAlsoInDatasetColumn(guidedManifestData.data);
 
       // Save final manifest data

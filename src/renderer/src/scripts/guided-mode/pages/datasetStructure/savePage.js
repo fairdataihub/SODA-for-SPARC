@@ -542,11 +542,9 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       if (window.sodaJSONObj["dataset_metadata"]?.["sites"]) {
         delete window.sodaJSONObj["dataset_metadata"]["sites"];
       }
-      // Skip pages first
       guidedSkipPage("guided-manual-dataset-entity-and-metadata-tab");
       guidedSkipPage("guided-subjects-metadata-tab");
       guidedSkipPage("guided-samples-metadata-tab");
-      // Then unskip the spreadsheet page
       guidedUnSkipPage("guided-spreadsheet-import-dataset-entity-and-metadata-tab");
     }
 
@@ -584,18 +582,12 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
       if (window.sodaJSONObj["imported-metadata-file-paths"]) {
         delete window.sodaJSONObj["imported-metadata-file-paths"];
       }
-      // Skip spreadsheet page first
       guidedSkipPage("guided-spreadsheet-import-dataset-entity-and-metadata-tab");
-      // Handle samples conditional skip/unskip
-      if (window.sodaJSONObj["selected-entities"]?.includes("samples")) {
-        // Skip nothing for samples in this branch; will unskip below
-      } else {
-        guidedSkipPage("guided-samples-metadata-tab");
-      }
-      // Then unskip the manual pages
       guidedUnSkipPage("guided-subjects-metadata-tab");
       if (window.sodaJSONObj["selected-entities"]?.includes("samples")) {
         guidedUnSkipPage("guided-samples-metadata-tab");
+      } else {
+        guidedSkipPage("guided-samples-metadata-tab");
       }
       guidedUnSkipPage("guided-manual-dataset-entity-and-metadata-tab");
     }

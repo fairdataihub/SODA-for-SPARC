@@ -283,26 +283,39 @@ export const moveFileToTargetLocation = (relativePathToMove, destionationRelativ
 
 /**
  * Recursively moves files from a folder to a destination, stripping the source base path
+ * Also checks if files are categorized in entity-associated-data-categorization and routes them accordingly
  * @param {Object} folderObj - The folder object to recursively process
  * @param {string} sourceBasePath - The base path to strip (e.g., "data/subjects/sub-1/")
  * @param {string} destinationPath - The destination path (e.g., "primary/sub-1/")
  * @param {Object} pathMapping - (Optional) Object to track file moves: { newPath: { sourcePath, entity } }
  * @param {string} entityId - The entity ID to associate with moved files
+ * @param {Object} categoryMapping - (Optional) Map of file paths to their categories (Source/Derivative)
  */
 const moveFilesFromFolderRecursively = (
   folderObj,
   sourceBasePath,
   destinationPath,
   pathMapping = null,
-  entityId = null
+  entityId = null,
+  categoryMapping = null
 ) => {
   if (folderObj?.files) {
     Object.values(folderObj.files).forEach((fileObj) => {
       if (fileObj.relativePath) {
+        // Check if this file is categorized in entity-associated-data-categorization
+        let finalDestination = destinationPath;
+
+        if (categoryMapping && categoryMapping[fileObj.relativePath]) {
+          // Route categorized files to source/subjectId/ or derivative/subjectId/
+          const category = categoryMapping[fileObj.relativePath];
+          const entityIdFromDest = entityId || destinationPath.split("/")[1];
+          finalDestination = `${category.toLowerCase()}/${entityIdFromDest}/`;
+        }
+
         // Get the nested path within the source folder by removing the base path
         const nestedPath = fileObj.relativePath.substring(sourceBasePath.length);
         // Construct the final destination path
-        const finalDestinationPath = destinationPath + nestedPath;
+        const finalDestinationPath = finalDestination + nestedPath;
 
         // Manually move the file to preserve only the nested structure
         const destinationSegments = finalDestinationPath.split("/").filter(Boolean);
@@ -328,10 +341,10 @@ const moveFilesFromFolderRecursively = (
           currentFolder.files[fileName] = srcParent.files[itemName];
           delete srcParent.files[itemName];
 
-          // Track the path mapping if provided
+          // Track the path mapping if provided - use the file's original relativePath
           if (pathMapping && entityId) {
             pathMapping[finalDestinationPath] = {
-              sourcePath: sourceBasePath,
+              sourcePath: fileObj.relativePath,
               entity: entityId,
             };
           }
@@ -347,7 +360,8 @@ const moveFilesFromFolderRecursively = (
         sourceBasePath,
         destinationPath,
         pathMapping,
-        entityId
+        entityId,
+        categoryMapping
       );
     });
   }
@@ -408,6 +422,9 @@ export const createStandardizedDatasetStructure = () => {
   };
   const datasetStructuringMethod = window.sodaJSONObj["dataset-structuring-method"];
   const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
+  console.log("Creating standardized dataset structure with method:", datasetStructuringMethod);
+  console.log("Dataset entity object:", datasetEntityObj);
+  console.log("Dataset Structure:", originalStructure);
   try {
     if (datasetStructuringMethod === "entity-association") {
       // Move Code files into the code/ folder
@@ -456,6 +473,20 @@ export const createStandardizedDatasetStructure = () => {
     }
 
     if (datasetStructuringMethod === "entity-buckets") {
+      // Build a mapping of file paths to their categories (Source/Derivative) for entity-associated-data-categorization
+      const categoryMapping = {};
+      const sourceFiles =
+        datasetEntityObj?.["entity-associated-data-categorization"]?.["Source"] || {};
+      const derivativeFiles =
+        datasetEntityObj?.["entity-associated-data-categorization"]?.["Derivative"] || {};
+
+      Object.keys(sourceFiles).forEach((filePath) => {
+        categoryMapping[filePath] = "Source";
+      });
+      Object.keys(derivativeFiles).forEach((filePath) => {
+        categoryMapping[filePath] = "Derivative";
+      });
+
       const subjects = getEntitiesByEntityType("subjects", false);
       const samples = getEntitiesByEntityType("non-derived-samples", false);
       const derivedSamples = getEntitiesByEntityType("derived-samples", false);
@@ -476,7 +507,8 @@ export const createStandardizedDatasetStructure = () => {
             `data/subjects/${subjectId}/`,
             `primary/${subjectId}/`,
             pathMapping,
-            subjectId
+            subjectId,
+            categoryMapping
           );
         }
       }
@@ -500,7 +532,8 @@ export const createStandardizedDatasetStructure = () => {
             `data/samples/${sampleId}/`,
             `primary/${parentSubjectId}/${sampleId}/`,
             pathMapping,
-            sampleId
+            sampleId,
+            categoryMapping
           );
         }
       }
@@ -529,7 +562,8 @@ export const createStandardizedDatasetStructure = () => {
             `data/derived-samples/${derivedSampleId}/`,
             `primary/${parentSubjectId}/${parentSampleId}/${derivedSampleId}/`,
             pathMapping,
-            derivedSampleId
+            derivedSampleId,
+            categoryMapping
           );
         }
       }
@@ -565,7 +599,8 @@ export const createStandardizedDatasetStructure = () => {
             `data/sites/${siteId}/`,
             baseDestinationPath,
             pathMapping,
-            siteId
+            siteId,
+            categoryMapping
           );
         }
       }
@@ -582,7 +617,8 @@ export const createStandardizedDatasetStructure = () => {
             `data/non-data-folders/${folder}/`,
             `${folder.toLowerCase()}/`,
             pathMapping,
-            folder
+            folder,
+            categoryMapping
           );
         }
       }
