@@ -721,10 +721,7 @@ window.openPage = async (targetPageID) => {
 
       // Review pages use the standardized dataset structure
       if (PAGE_CONFIG["review-pages"].has(pageID)) {
-        const { standardizedDatasetStructure } = createStandardizedDatasetStructure(
-          window.datasetStructureJSONObj,
-          window.sodaJSONObj["dataset-entity-obj"]
-        );
+        const { standardizedDatasetStructure } = createStandardizedDatasetStructure();
 
         if (pageID === "guided-dataset-structure-and-manifest-review-tab") {
           const datasetMetadata = window.sodaJSONObj["dataset_metadata"] || {};

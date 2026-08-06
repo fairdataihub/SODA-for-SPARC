@@ -124,10 +124,7 @@ export const openPageDatasetStructure = async (targetPageID) => {
       );
 
       // Prepare cleaned dataset structure for server-side processing
-      const { standardizedDatasetStructure, pathMapping } = createStandardizedDatasetStructure(
-        window.datasetStructureJSONObj,
-        window.sodaJSONObj["dataset-entity-obj"]
-      );
+      const { standardizedDatasetStructure, pathMapping } = createStandardizedDatasetStructure();
       const sodaCopy = {
         ...window.sodaJSONObj,
         "metadata-files": {},

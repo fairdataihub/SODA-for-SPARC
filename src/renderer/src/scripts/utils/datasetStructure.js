@@ -389,7 +389,7 @@ const moveFilesFromFolderRecursively = (
  *   console.log(`File ${newPath} came from entity ${mapping.entity} at ${mapping.sourcePath}`);
  * }
  */
-export const createStandardizedDatasetStructure = (datasetStructure, datasetEntityObj) => {
+export const createStandardizedDatasetStructure = () => {
   // --- Step 1: Preserve the original global structure ---
   let originalStructure = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
 
@@ -407,6 +407,7 @@ export const createStandardizedDatasetStructure = (datasetStructure, datasetEnti
     });
   };
   const datasetStructuringMethod = window.sodaJSONObj["dataset-structuring-method"];
+  const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
   try {
     if (datasetStructuringMethod === "entity-association") {
       // Move Code files into the code/ folder
