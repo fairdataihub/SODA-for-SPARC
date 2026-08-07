@@ -216,7 +216,7 @@ const PennsieveAgentCheckDisplay = () => {
               {latestPennsieveAgentVersion !== null &&
                 latestPennsieveAgentVersion != LAST_TESTED_PENNSIEVE_AGENT_VERSION && (
                   <ExternalLink
-                    href={pennsieveAgentDownloadURL}
+                    href={lastTestedPennsieveAgentDownloadURL}
                     buttonText="Download the last version of the Pennsieve Agent tested for SODA"
                     buttonType="button"
                     buttonSize="md"
