@@ -321,9 +321,6 @@ export const openPageDatasetStructure = async (targetPageID) => {
 
         if (alsoInDatasetColumnIndex === -1) return rows; // Column doesn't exist
 
-        console.log("updateAlsoInDatasetColumn called with method:", datasetStructuringMethod);
-        console.log("fileToSourceMap:", JSON.stringify(fileToSourceMap, null, 2));
-
         if (datasetStructuringMethod === "entity-association") {
           rows.forEach((row, rowIndex) => {
             // Skip processing folders - only process files
@@ -333,14 +330,12 @@ export const openPageDatasetStructure = async (targetPageID) => {
 
             let alsoInDatasetValue = "";
             const filePath = row[0];
-            console.log(`Processing row ${rowIndex}, path:`, filePath);
 
             // For entity-association, convert to data path format
             let path = filePath;
             const pathSegments = path.split("/");
             if (pathSegments.length > 0) pathSegments[0] = "data";
             path = pathSegments.join("/");
-            console.log(`Entity-association: converted to path: ${path}`);
 
             const entityTypes = ["samples", "subjects"];
             for (const type of entityTypes) {
@@ -350,9 +345,7 @@ export const openPageDatasetStructure = async (targetPageID) => {
                   const { entityMetadata } = getEntityDataById(entity) || {};
                   if (entityMetadata?.metadata?.also_in_dataset) {
                     alsoInDatasetValue = entityMetadata.metadata.also_in_dataset;
-                    console.log(
-                      `Found also_in_dataset for entity "${entity}": ${alsoInDatasetValue}`
-                    );
+
                     break;
                   }
                 }
@@ -360,7 +353,6 @@ export const openPageDatasetStructure = async (targetPageID) => {
               if (alsoInDatasetValue) break;
             }
 
-            console.log(`Final also_in_dataset value for row ${rowIndex}: "${alsoInDatasetValue}"`);
             row[alsoInDatasetColumnIndex] = alsoInDatasetValue;
           });
         }
@@ -374,23 +366,17 @@ export const openPageDatasetStructure = async (targetPageID) => {
 
             let alsoInDatasetValue = "";
             const filePath = row[0];
-            console.log(`Processing row ${rowIndex}, path:`, filePath);
 
             // Look up the entity from fileToSourceMap using the file path
             const mappingInfo = fileToSourceMap[filePath];
-            console.log(`Entity-buckets: mappingInfo for "${filePath}":`, mappingInfo);
             if (mappingInfo && mappingInfo.entity) {
               const entityId = mappingInfo.entity;
               const { entityMetadata } = getEntityDataById(entityId) || {};
               if (entityMetadata?.metadata?.also_in_dataset) {
                 alsoInDatasetValue = entityMetadata.metadata.also_in_dataset;
-                console.log(
-                  `Found also_in_dataset for entity "${entityId}": ${alsoInDatasetValue}`
-                );
               }
             }
 
-            console.log(`Final also_in_dataset value for row ${rowIndex}: "${alsoInDatasetValue}"`);
             row[alsoInDatasetColumnIndex] = alsoInDatasetValue;
           });
         }

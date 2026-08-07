@@ -306,10 +306,11 @@ const moveFilesFromFolderRecursively = (
         let finalDestination = destinationPath;
 
         if (categoryMapping && categoryMapping[fileObj.relativePath]) {
-          // Route categorized files to source/subjectId/ or derivative/subjectId/
+          // Route categorized files to source/subjectId/[sample]/[site]/ or derivative/subjectId/[sample]/[site]/
           const category = categoryMapping[fileObj.relativePath];
-          const entityIdFromDest = entityId || destinationPath.split("/")[1];
-          finalDestination = `${category.toLowerCase()}/${entityIdFromDest}/`;
+          // Extract the full hierarchical path from the destination (everything after "primary/")
+          const hierarchicalPath = destinationPath.substring("primary/".length);
+          finalDestination = `${category.toLowerCase()}/${hierarchicalPath}`;
         }
 
         // Get the nested path within the source folder by removing the base path
@@ -482,17 +483,16 @@ export const createStandardizedDatasetStructure = () => {
         datasetEntityObj?.["entity-associated-data-categorization"]?.["Derivative"] || {};
 
       Object.keys(sourceFiles).forEach((filePath) => {
-        categoryMapping[filePath] = "Source";
+        categoryMapping[filePath] = "source";
       });
       Object.keys(derivativeFiles).forEach((filePath) => {
-        categoryMapping[filePath] = "Derivative";
+        categoryMapping[filePath] = "derivative";
       });
 
       const subjects = getEntitiesByEntityType("subjects", false);
       const samples = getEntitiesByEntityType("non-derived-samples", false);
       const derivedSamples = getEntitiesByEntityType("derived-samples", false);
       const sites = getEntitiesByEntityType("sites", false);
-      const performances = getEntitiesByEntityType("performances", false);
 
       // Step 1: Move all subject folders to primary
       for (const subject of subjects) {
@@ -620,26 +620,6 @@ export const createStandardizedDatasetStructure = () => {
             `${folder.toLowerCase()}/`,
             fileToSourceMap,
             folder,
-            categoryMapping
-          );
-        }
-      }
-
-      // Step 5: Move all performance folders to primary
-      for (const performance of performances) {
-        const performanceId = performance.id;
-        const performanceFolderLocation =
-          window.datasetStructureJSONObj?.folders?.data?.folders?.["performances"]?.folders?.[
-            performanceId
-          ];
-
-        if (performanceFolderLocation) {
-          moveFilesFromFolderRecursively(
-            performanceFolderLocation,
-            `data/performances/${performanceId}/`,
-            `primary/${performanceId}/`,
-            fileToSourceMap,
-            performanceId,
             categoryMapping
           );
         }

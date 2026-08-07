@@ -12,7 +12,6 @@ import DropDownNote from "../../utils/ui/DropDownNote";
 const DataCategoriesQuestionnairePage = ({ pageID, pageName, questionnaireEntityType }) => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const datasetStructuringMode = useGlobalStore((state) => state.datasetStructuringMode);
-  console.log("questionnaireEntityType", questionnaireEntityType);
 
   return (
     <GuidedModePage pageHeader={pageName}>

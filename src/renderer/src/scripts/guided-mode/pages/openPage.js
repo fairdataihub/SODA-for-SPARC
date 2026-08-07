@@ -356,10 +356,6 @@ window.openPage = async (targetPageID) => {
             );
           }
         }
-
-        if (questionnaireEntityType === "entity-bucketing-data-categorization") {
-          console.log("Setting up page for entity-bucketing-data-categorization mode");
-        }
       }
       if (targetPageComponentType === "data-categorization-page") {
         const pageEntityType = targetPageDataset.entityType;
@@ -371,10 +367,6 @@ window.openPage = async (targetPageID) => {
         if (pageEntityType === "non-data-folders") {
           // Filter files that may have been marked as experimental in a previous step
           setFileVisibilityFilter([], [{ type: "experimental", names: ["experimental"] }]);
-        }
-
-        if (pageEntityType === "entity-associated-data-categorization") {
-          console.log("Setting up page for entity-associated-data-categorization mode");
         }
 
         // Make any adjustments to the dataset entity object before setting it in the zustand store

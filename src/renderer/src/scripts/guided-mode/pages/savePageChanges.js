@@ -41,6 +41,7 @@ import {
   swalListSingleAction,
 } from "../../utils/swal-utils";
 import { addEntityNameToEntityType } from "../../../stores/slices/datasetEntitySelectorSlice";
+import { createStandardizedDatasetStructure } from "../../utils/datasetStructure";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -289,7 +290,6 @@ window.savePageChanges = async (pageBeingLeftID) => {
         const datasetEntityObj = getDatasetEntityObj();
         const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
         const datasetFileCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
-        console.log("Leaving data-categorization-page for entityType:", entityType);
 
         if (entityType === "non-data-folders") {
           const userSelectedNonDataFolders = window.sodaJSONObj["non-data-folders"];
@@ -354,79 +354,146 @@ window.savePageChanges = async (pageBeingLeftID) => {
           const samples = getExistingSamples();
           const subjects = getExistingSubjects();
 
-          performanceMetadata.forEach((performance) => {
-            const performanceId = performance.performance_id;
-            const performanceFiles = datasetEntityObj?.performances?.[performanceId];
+          if (window.sodaJSONObj["dataset-structuring-method"] === "entity-association") {
+            performanceMetadata.forEach((performance) => {
+              const performanceId = performance.performance_id;
+              const performanceFiles = datasetEntityObj?.performances?.[performanceId];
 
-            // Skip performances that have no associated files
-            if (!performanceFiles) {
-              performance.participants = [];
-              return;
-            }
+              console.log(`\n=== Processing performance: ${performanceId} ===`);
+              console.log("Performance files:", Object.keys(performanceFiles || {}));
 
-            // Participants grouped by subject
-            const groupedParticipants = {};
+              // Skip performances that have no associated files
+              if (!performanceFiles) {
+                performance.participants = [];
+                console.log(
+                  `Performance ${performanceId} has no associated files, participants = []`
+                );
+                return;
+              }
 
-            // Collect parent subjects and samples from matching sites (exclude site IDs)
-            for (const site of sites) {
-              const siteId = site.metadata.site_id;
-              const siteFiles = datasetEntityObj?.sites?.[siteId] || {};
+              // Participants grouped by subject
+              const groupedParticipants = {};
 
-              if (sharesAtLeastOneKey(performanceFiles, siteFiles)) {
-                const { parentSample, parentSubject } = site;
-                if (parentSubject) {
+              // Collect parent subjects and samples from matching sites (exclude site IDs)
+              console.log(`Checking ${sites.length} sites...`);
+              for (const site of sites) {
+                const siteId = site.metadata.site_id;
+                const siteFiles = datasetEntityObj?.sites?.[siteId] || {};
+
+                if (sharesAtLeastOneKey(performanceFiles, siteFiles)) {
+                  const { parentSample, parentSubject } = site;
+                  console.log(
+                    `  Site ${siteId} matches performance. parentSubject: ${parentSubject}, parentSample: ${parentSample}`
+                  );
+                  if (parentSubject) {
+                    if (!groupedParticipants[parentSubject]) {
+                      groupedParticipants[parentSubject] = new Set();
+                    }
+                    if (parentSample) {
+                      groupedParticipants[parentSubject].add(parentSample);
+                      console.log(`    Added sample ${parentSample} to subject ${parentSubject}`);
+                    }
+                  }
+                }
+              }
+
+              // Collect samples and their parent subjects
+              console.log(`Checking ${samples.length} samples...`);
+              for (const sample of samples) {
+                const sampleId = sample.metadata.sample_id;
+                const sampleFiles = datasetEntityObj?.samples?.[sampleId] || {};
+                const parentSubject = sample.metadata.subject_id || sample.parentSubject;
+
+                if (sharesAtLeastOneKey(performanceFiles, sampleFiles)) {
+                  console.log(
+                    `  Sample ${sampleId} matches performance. parentSubject: ${parentSubject}`
+                  );
                   if (!groupedParticipants[parentSubject]) {
                     groupedParticipants[parentSubject] = new Set();
                   }
-                  if (parentSample) {
-                    groupedParticipants[parentSubject].add(parentSample);
+                  groupedParticipants[parentSubject].add(sampleId);
+                  console.log(`    Added sample ${sampleId} to subject ${parentSubject}`);
+                }
+              }
+
+              // Add subjects that have direct files or already have related samples
+              console.log(`Checking ${subjects.length} subjects...`);
+              for (const subject of subjects) {
+                const subjectId = subject.metadata.subject_id;
+                const subjectFiles = datasetEntityObj?.subjects?.[subjectId] || {};
+
+                if (sharesAtLeastOneKey(performanceFiles, subjectFiles)) {
+                  console.log(`  Subject ${subjectId} matches performance`);
+                  if (!groupedParticipants[subjectId]) {
+                    groupedParticipants[subjectId] = new Set();
                   }
                 }
               }
-            }
 
-            // Collect samples and their parent subjects
-            for (const sample of samples) {
-              const sampleId = sample.metadata.sample_id;
-              const sampleFiles = datasetEntityObj?.samples?.[sampleId] || {};
-              const parentSubject = sample.metadata.subject_id || sample.parentSubject;
-
-              if (sharesAtLeastOneKey(performanceFiles, sampleFiles)) {
-                if (!groupedParticipants[parentSubject]) {
-                  groupedParticipants[parentSubject] = new Set();
-                }
-                groupedParticipants[parentSubject].add(sampleId);
-              }
-            }
-
-            // Add subjects that have direct files or already have related samples
-            for (const subject of subjects) {
-              const subjectId = subject.metadata.subject_id;
-              const subjectFiles = datasetEntityObj?.subjects?.[subjectId] || {};
-
-              if (sharesAtLeastOneKey(performanceFiles, subjectFiles)) {
-                if (!groupedParticipants[subjectId]) {
-                  groupedParticipants[subjectId] = new Set();
+              // Build ordered participant list (subject first, then samples)
+              const orderedParticipants = [];
+              for (const subject of subjects) {
+                const subjectId = subject.metadata.subject_id;
+                const samplesForSubject = groupedParticipants[subjectId];
+                if (samplesForSubject) {
+                  orderedParticipants.push(subjectId);
+                  console.log(`  Added subject: ${subjectId}`);
+                  samplesForSubject.forEach((sampleId) => {
+                    orderedParticipants.push(sampleId);
+                    console.log(`    Added sample: ${sampleId}`);
+                  });
                 }
               }
-            }
 
-            // Build ordered participant list (subject first, then samples)
-            const orderedParticipants = [];
-            for (const subject of subjects) {
-              const subjectId = subject.metadata.subject_id;
-              const samplesForSubject = groupedParticipants[subjectId];
-              if (samplesForSubject) {
-                orderedParticipants.push(subjectId);
-                samplesForSubject.forEach((sampleId) => {
-                  orderedParticipants.push(sampleId);
-                });
+              // Assign ordered participants list to performance
+              performance.participants = orderedParticipants;
+              console.log(`Final participants for ${performanceId}:`, orderedParticipants);
+            });
+          }
+          if (window.sodaJSONObj["dataset-structuring-method"] === "entity-buckets") {
+            const { fileToSourceMap } = createStandardizedDatasetStructure();
+            console.log("File to Source Map:", fileToSourceMap);
+
+            performanceMetadata.forEach((performance) => {
+              const performanceId = performance.performance_id;
+              const performanceFiles = datasetEntityObj?.performances?.[performanceId];
+
+              console.log(`\n=== Processing performance: ${performanceId} (entity-buckets) ===`);
+              console.log("Performance files:", Object.keys(performanceFiles || {}));
+
+              if (!Object.keys(performanceFiles || {}).length) {
+                performance.participants = [];
+                console.log(
+                  `Performance ${performanceId} has no associated files, participants = []`
+                );
+                return;
               }
-            }
 
-            // Assign ordered participants list to performance
-            performance.participants = orderedParticipants;
-          });
+              // Collect entities from fileToSourceMap by matching sourcePaths
+              const entitiesSet = new Set();
+              const orderedParticipants = [];
+
+              // For each file in performanceFiles
+              for (const perfFile of Object.keys(performanceFiles)) {
+                // Find matching entry in fileToSourceMap where sourcePath matches perfFile
+                for (const sourceMapEntry of Object.values(fileToSourceMap)) {
+                  if (sourceMapEntry.sourcePath === perfFile) {
+                    const entity = sourceMapEntry.entity;
+                    console.log(`  File ${perfFile} maps to entity: ${entity}`);
+                    if (!entitiesSet.has(entity)) {
+                      entitiesSet.add(entity);
+                      orderedParticipants.push(entity);
+                      console.log(`    Added entity: ${entity}`);
+                    }
+                    break;
+                  }
+                }
+              }
+
+              performance.participants = orderedParticipants;
+              console.log(`Final participants for ${performanceId}:`, orderedParticipants);
+            });
+          }
 
           // Update dataset metadata
           window.sodaJSONObj["dataset_metadata"]["performances"] = performanceMetadata;
