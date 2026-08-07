@@ -321,26 +321,26 @@ window.openPage = async (targetPageID) => {
           setSelectedDataCategoriesByEntityType({
             "experimental-data-categorization": savedExperimentalCategories,
           });
-
-          setFileVisibilityFilter(
-            [
-              {
-                type: "experimental",
-                names: ["experimental"],
-              },
-            ],
-            [
-              {
-                type: "non-data-folders",
-                names: ["Protocol", "Docs", "Code"],
-              },
-            ]
-          );
+          if (window.sodaJSONObj["dataset-structuring-method"] === "entity-association") {
+            setFileVisibilityFilter(
+              [
+                {
+                  type: "experimental",
+                  names: ["experimental"],
+                },
+              ],
+              [
+                {
+                  type: "non-data-folders",
+                  names: ["Protocol", "Docs", "Code"],
+                },
+              ]
+            );
+          }
         }
 
         if (questionnaireEntityType === "remaining-data-categorization") {
-          const datasetStructuringMode = window.sodaJSONObj["dataset-structuring-method"];
-          if (datasetStructuringMode === "entity-association") {
+          if (window.sodaJSONObj["dataset-structuring-method"] === "entity-association") {
             setFileVisibilityFilter(
               [],
               [
@@ -354,10 +354,6 @@ window.openPage = async (targetPageID) => {
                 },
               ]
             );
-          }
-
-          if (datasetStructuringMode === "entity-buckets") {
-            console.log("Setting up page for entity-buckets mode");
           }
         }
 
@@ -384,49 +380,55 @@ window.openPage = async (targetPageID) => {
         // Make any adjustments to the dataset entity object before setting it in the zustand store
         if (pageEntityType === "experimental") {
           // Filter out files that are selected as belonging to the supporting data folders
-          setFileVisibilityFilter(
-            [],
-            [
-              {
-                type: "non-data-folders",
-                names: ["Protocol", "Docs", "Code"],
-              },
-            ]
-          );
+          if (window.sodaJSONObj["dataset-structuring-method"] === "entity-association") {
+            setFileVisibilityFilter(
+              [],
+              [
+                {
+                  type: "non-data-folders",
+                  names: ["Protocol", "Docs", "Code"],
+                },
+              ]
+            );
+          }
         }
 
         if (pageEntityType === "experimental-data-categorization") {
           // Filter out files that are selected as belonging to the supporting data folders
-          setFileVisibilityFilter(
-            [
-              {
-                type: "experimental",
-                names: ["experimental"],
-              },
-            ],
-            [
-              {
-                type: "non-data-folders",
-                names: ["Protocol", "Docs", "Code"],
-              },
-            ]
-          );
+          if (window.sodaJSONObj["dataset-structuring-method"] === "entity-association") {
+            setFileVisibilityFilter(
+              [
+                {
+                  type: "experimental",
+                  names: ["experimental"],
+                },
+              ],
+              [
+                {
+                  type: "non-data-folders",
+                  names: ["Protocol", "Docs", "Code"],
+                },
+              ]
+            );
+          }
         }
         if (pageEntityType === "remaining-data-categorization") {
           // Filter out files that are selected as belonging to the supporting data folders
-          setFileVisibilityFilter(
-            [],
-            [
-              {
-                type: "experimental",
-                names: ["experimental"],
-              },
-              {
-                type: "non-data-folders",
-                names: ["Protocol", "Docs", "Code"],
-              },
-            ]
-          );
+          if (window.sodaJSONObj["dataset-structuring-method"] === "entity-association") {
+            setFileVisibilityFilter(
+              [],
+              [
+                {
+                  type: "experimental",
+                  names: ["experimental"],
+                },
+                {
+                  type: "non-data-folders",
+                  names: ["Protocol", "Docs", "Code"],
+                },
+              ]
+            );
+          }
         }
 
         if (pageEntityType === "sites") {
@@ -442,21 +444,23 @@ window.openPage = async (targetPageID) => {
             }
           }
 
-          const filterList = [
-            {
-              type: "non-data-folders",
-              names: ["Protocol", "Docs", "Code"],
-            },
-          ];
-          setFileVisibilityFilter(
-            [
+          if (window.sodaJSONObj["dataset-structuring-method"] === "entity-association") {
+            const filterList = [
               {
-                type: "experimental",
-                names: ["experimental"],
+                type: "non-data-folders",
+                names: ["Protocol", "Docs", "Code"],
               },
-            ],
-            filterList
-          );
+            ];
+            setFileVisibilityFilter(
+              [
+                {
+                  type: "experimental",
+                  names: ["experimental"],
+                },
+              ],
+              filterList
+            );
+          }
         }
 
         if (pageEntityType === "derived-samples") {
@@ -473,31 +477,33 @@ window.openPage = async (targetPageID) => {
             }
           }
 
-          const siteIDs = getEntitiesByEntityType("sites", true);
-          const sampleIDs = getEntitiesByEntityType("non-derived-samples", true);
-          const filterList = [
-            {
-              type: "non-data-folders",
-              names: ["Protocol", "Docs", "Code"],
-            },
-            {
-              type: "sites",
-              names: siteIDs,
-            },
-            {
-              type: "samples",
-              names: sampleIDs,
-            },
-          ];
-          setFileVisibilityFilter(
-            [
+          if (window.sodaJSONObj["dataset-structuring-method"] === "entity-association") {
+            const siteIDs = getEntitiesByEntityType("sites", true);
+            const sampleIDs = getEntitiesByEntityType("non-derived-samples", true);
+            const filterList = [
               {
-                type: "experimental",
-                names: ["experimental"],
+                type: "non-data-folders",
+                names: ["Protocol", "Docs", "Code"],
               },
-            ],
-            filterList
-          );
+              {
+                type: "sites",
+                names: siteIDs,
+              },
+              {
+                type: "samples",
+                names: sampleIDs,
+              },
+            ];
+            setFileVisibilityFilter(
+              [
+                {
+                  type: "experimental",
+                  names: ["experimental"],
+                },
+              ],
+              filterList
+            );
+          }
         }
 
         if (pageEntityType === "samples") {
@@ -512,31 +518,33 @@ window.openPage = async (targetPageID) => {
             }
           }
 
-          const siteIDs = getEntitiesByEntityType("sites", true);
-          const derivedSampleIDs = getEntitiesByEntityType("derived-samples", true);
-          const filterList = [
-            {
-              type: "non-data-folders",
-              names: ["Protocol", "Docs", "Code"],
-            },
-            {
-              type: "sites",
-              names: siteIDs,
-            },
-            {
-              type: "derived-samples",
-              names: derivedSampleIDs,
-            },
-          ];
-          setFileVisibilityFilter(
-            [
+          if (window.sodaJSONObj["dataset-structuring-method"] === "entity-association") {
+            const siteIDs = getEntitiesByEntityType("sites", true);
+            const derivedSampleIDs = getEntitiesByEntityType("derived-samples", true);
+            const filterList = [
               {
-                type: "experimental",
-                names: ["experimental"],
+                type: "non-data-folders",
+                names: ["Protocol", "Docs", "Code"],
               },
-            ],
-            filterList
-          );
+              {
+                type: "sites",
+                names: siteIDs,
+              },
+              {
+                type: "derived-samples",
+                names: derivedSampleIDs,
+              },
+            ];
+            setFileVisibilityFilter(
+              [
+                {
+                  type: "experimental",
+                  names: ["experimental"],
+                },
+              ],
+              filterList
+            );
+          }
         }
 
         if (pageEntityType === "subjects") {
@@ -552,37 +560,39 @@ window.openPage = async (targetPageID) => {
             }
           }
 
-          const siteIDs = getEntitiesByEntityType("sites", true);
-          const sampleIDs = getEntitiesByEntityType("non-derived-samples", true);
-          const derivedSampleIDs = getEntitiesByEntityType("derived-samples", true);
-          const filterList = [
-            {
-              type: "non-data-folders",
-              names: ["Protocol", "Docs", "Code"],
-            },
-            {
-              type: "sites",
-              names: siteIDs,
-            },
-            {
-              type: "samples",
-              names: sampleIDs,
-            },
-            {
-              type: "derived-samples",
-              names: derivedSampleIDs,
-            },
-          ];
-
-          setFileVisibilityFilter(
-            [
+          if (window.sodaJSONObj["dataset-structuring-method"] === "entity-association") {
+            const siteIDs = getEntitiesByEntityType("sites", true);
+            const sampleIDs = getEntitiesByEntityType("non-derived-samples", true);
+            const derivedSampleIDs = getEntitiesByEntityType("derived-samples", true);
+            const filterList = [
               {
-                type: "experimental",
-                names: ["experimental"],
+                type: "non-data-folders",
+                names: ["Protocol", "Docs", "Code"],
               },
-            ],
-            filterList
-          );
+              {
+                type: "sites",
+                names: siteIDs,
+              },
+              {
+                type: "samples",
+                names: sampleIDs,
+              },
+              {
+                type: "derived-samples",
+                names: derivedSampleIDs,
+              },
+            ];
+
+            setFileVisibilityFilter(
+              [
+                {
+                  type: "experimental",
+                  names: ["experimental"],
+                },
+              ],
+              filterList
+            );
+          }
         }
 
         if (pageEntityType === "performances") {
@@ -601,20 +611,23 @@ window.openPage = async (targetPageID) => {
             }
           }
 
-          setFileVisibilityFilter(
-            [
-              {
-                type: "experimental",
-                names: ["experimental"],
-              },
-            ],
-            [
-              {
-                type: "non-data-folders",
-                names: ["Protocol", "Docs", "Code"],
-              },
-            ]
-          );
+          const datasetStructuringMode = window.sodaJSONObj["dataset-structuring-method"];
+          if (datasetStructuringMode === "entity-association") {
+            setFileVisibilityFilter(
+              [
+                {
+                  type: "experimental",
+                  names: ["experimental"],
+                },
+              ],
+              [
+                {
+                  type: "non-data-folders",
+                  names: ["Protocol", "Docs", "Code"],
+                },
+              ]
+            );
+          }
         }
 
         if (pageEntityType === "modalities") {
@@ -630,15 +643,17 @@ window.openPage = async (targetPageID) => {
             }
           }
 
-          setFileVisibilityFilter(
-            [],
-            [
-              {
-                type: "non-data-folders",
-                names: ["Protocol", "Docs", "Code"],
-              },
-            ]
-          );
+          if (window.sodaJSONObj["dataset-structuring-method"] === "entity-association") {
+            setFileVisibilityFilter(
+              [],
+              [
+                {
+                  type: "non-data-folders",
+                  names: ["Protocol", "Docs", "Code"],
+                },
+              ]
+            );
+          }
         }
       }
 

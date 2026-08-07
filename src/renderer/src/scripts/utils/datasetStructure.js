@@ -410,6 +410,8 @@ export const createStandardizedDatasetStructure = () => {
   // Remove any empty folders from the original structure
   originalStructure = deleteEmptyFoldersFromStructure(originalStructure);
 
+  console.log("createStandardizedDatasetStructure - originalStructure:", originalStructure);
+
   // Initialize path mapping to track file moves
   const fileToSourceMap = {};
 
@@ -422,6 +424,8 @@ export const createStandardizedDatasetStructure = () => {
   };
   const datasetStructuringMethod = window.sodaJSONObj["dataset-structuring-method"];
   const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
+
+  console.log("createStandardizedDatasetStructure - datasetEntityObj:", datasetEntityObj);
   try {
     if (datasetStructuringMethod === "entity-association") {
       // Move Code files into the code/ folder
@@ -488,6 +492,7 @@ export const createStandardizedDatasetStructure = () => {
       const samples = getEntitiesByEntityType("non-derived-samples", false);
       const derivedSamples = getEntitiesByEntityType("derived-samples", false);
       const sites = getEntitiesByEntityType("sites", false);
+      const performances = getEntitiesByEntityType("performances", false);
 
       // Step 1: Move all subject folders to primary
       for (const subject of subjects) {
@@ -619,6 +624,26 @@ export const createStandardizedDatasetStructure = () => {
           );
         }
       }
+
+      // Step 5: Move all performance folders to primary
+      for (const performance of performances) {
+        const performanceId = performance.id;
+        const performanceFolderLocation =
+          window.datasetStructureJSONObj?.folders?.data?.folders?.["performances"]?.folders?.[
+            performanceId
+          ];
+
+        if (performanceFolderLocation) {
+          moveFilesFromFolderRecursively(
+            performanceFolderLocation,
+            `data/performances/${performanceId}/`,
+            `primary/${performanceId}/`,
+            fileToSourceMap,
+            performanceId,
+            categoryMapping
+          );
+        }
+      }
     }
 
     // Delete any empty folders in the dataset structure
@@ -635,10 +660,12 @@ export const createStandardizedDatasetStructure = () => {
     window.datasetStructureJSONObj = originalStructure;
 
     // Return both the structure and the path mapping
-    return {
+    const result = {
       standardizedDatasetStructure,
       fileToSourceMap: fileToSourceMap,
     };
+    console.log("createStandardizedDatasetStructure - returning:", result);
+    return result;
   } catch (error) {
     console.error("Error while creating standardized dataset structure:", error);
     window.datasetStructureJSONObj = originalStructure;
