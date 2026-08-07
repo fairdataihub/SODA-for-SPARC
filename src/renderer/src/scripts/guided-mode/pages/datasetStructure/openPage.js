@@ -124,7 +124,8 @@ export const openPageDatasetStructure = async (targetPageID) => {
       );
 
       // Prepare cleaned dataset structure for server-side processing
-      const { standardizedDatasetStructure, pathMapping } = createStandardizedDatasetStructure();
+      const { standardizedDatasetStructure, fileToSourceMap } =
+        createStandardizedDatasetStructure();
       const sodaCopy = {
         ...window.sodaJSONObj,
         "metadata-files": {},
@@ -191,7 +192,7 @@ export const openPageDatasetStructure = async (targetPageID) => {
       /**
        * Update entity column values.
        */
-      const updateEntityColumn = (rows, pathMapping = {}) => {
+      const updateEntityColumn = (rows, fileToSourceMap = {}) => {
         const datasetStructuringMethod = window.sodaJSONObj?.["dataset-structuring-method"];
 
         const entityTypes = ["sites", "derived-samples", "samples", "subjects"];
@@ -227,8 +228,6 @@ export const openPageDatasetStructure = async (targetPageID) => {
 
             row[entityColumnIndex] = entityId;
           });
-
-          return rows;
         }
 
         if (datasetStructuringMethod === "entity-buckets") {
@@ -240,71 +239,74 @@ export const openPageDatasetStructure = async (targetPageID) => {
 
             let filePath = row[0];
 
-            // Look up the entity from pathMapping using the file path
-            const mappingInfo = pathMapping[filePath];
+            // Look up the entity from fileToSourceMap using the file path
+            const mappingInfo = fileToSourceMap[filePath];
             if (mappingInfo && mappingInfo.entity) {
               row[entityColumnIndex] = mappingInfo.entity;
             } else {
               row[entityColumnIndex] = "";
             }
           });
-
-          return rows;
         }
       };
 
       /**
        * Update modalities column values.
        */
-      const updateModalitiesColumn = (rows, pathMapping = {}) => {
+      const updateModalitiesColumn = (rows, fileToSourceMap = {}) => {
         const datasetStructuringMethod = window.sodaJSONObj?.["dataset-structuring-method"];
         const modalitiesColumnIndex = newManifestData.headers.indexOf("data modality");
         const fileTypeColumnIndex = newManifestData.headers.indexOf("file type");
 
-        rows.forEach((row, rowIndex) => {
-          // Skip processing folders - only process files
-          if (row[fileTypeColumnIndex] === "folder") {
-            return;
-          }
-
-          console.log("updateModalitiesColumn called with method:", datasetStructuringMethod);
-          console.log("datasetEntityObj.modalities:", datasetEntityObj?.modalities);
-          console.log("pathMapping:", JSON.stringify(pathMapping, null, 2));
-
-          let path = row[0];
-          console.log(`Processing row ${rowIndex}, initial path:`, path);
-
-          if (datasetStructuringMethod === "entity-buckets") {
-            // For entity-buckets, we need to look up the original path from pathMapping
-            const mappingInfo = pathMapping[path];
-            console.log(`Entity-buckets: Looking up pathMapping for "${path}":`, mappingInfo);
-            if (mappingInfo && mappingInfo.sourcePath) {
-              // Reconstruct the original data path
-              path = mappingInfo.sourcePath;
-              console.log(`Converted to sourcePath:`, path);
+        if (datasetStructuringMethod === "entity-association") {
+          rows.forEach((row) => {
+            // Skip processing folders - only process files
+            if (row[fileTypeColumnIndex] === "folder") {
+              return;
             }
-          } else {
+
+            let path = row[0];
             // For entity-association, convert to data path format
             const pathSegments = path.split("/");
             if (pathSegments.length > 0) pathSegments[0] = "data";
             path = pathSegments.join("/");
-            console.log(`Entity-association: Converted path to:`, path);
-          }
 
-          const modalitiesList = [];
-          for (const [modality, paths] of Object.entries(datasetEntityObj?.modalities || {})) {
-            console.log(
-              `Checking modality "${modality}" for path "${path}":`,
-              JSON.stringify(paths?.[path], null, 2)
-            );
-            if (paths?.[path]) {
-              modalitiesList.push(modality);
+            const modalitiesList = [];
+            for (const [modality, paths] of Object.entries(datasetEntityObj?.modalities || {})) {
+              if (paths?.[path]) {
+                modalitiesList.push(modality);
+              }
             }
-          }
 
-          console.log(`Final modalities for row ${rowIndex}:`, modalitiesList);
-          row[modalitiesColumnIndex] = modalitiesList.join(" ");
-        });
+            row[modalitiesColumnIndex] = modalitiesList.join(" ");
+          });
+        }
+
+        if (datasetStructuringMethod === "entity-buckets") {
+          rows.forEach((row) => {
+            // Skip processing folders - only process files
+            if (row[fileTypeColumnIndex] === "folder") {
+              return;
+            }
+
+            let path = row[0];
+            // For entity-buckets, we need to look up the original path from fileToSourceMap
+            const mappingInfo = fileToSourceMap[path];
+            if (mappingInfo && mappingInfo.sourcePath) {
+              // Reconstruct the original data path
+              path = mappingInfo.sourcePath;
+            }
+
+            const modalitiesList = [];
+            for (const [modality, paths] of Object.entries(datasetEntityObj?.modalities || {})) {
+              if (paths?.[path]) {
+                modalitiesList.push(modality);
+              }
+            }
+
+            row[modalitiesColumnIndex] = modalitiesList.join(" ");
+          });
+        }
 
         return rows;
       };
@@ -312,36 +314,86 @@ export const openPageDatasetStructure = async (targetPageID) => {
       /**
        * Update also in dataset column values from entity metadata.
        */
-      const updateAlsoInDatasetColumn = (rows) => {
+      const updateAlsoInDatasetColumn = (rows, fileToSourceMap = {}) => {
         const alsoInDatasetColumnIndex = newManifestData.headers.indexOf("also in dataset");
+        const fileTypeColumnIndex = newManifestData.headers.indexOf("file type");
+        const datasetStructuringMethod = window.sodaJSONObj?.["dataset-structuring-method"];
 
         if (alsoInDatasetColumnIndex === -1) return rows; // Column doesn't exist
 
-        rows.forEach((row) => {
-          let path = row[0];
-          const pathSegments = path.split("/");
-          if (pathSegments.length > 0) pathSegments[0] = "data";
-          path = pathSegments.join("/");
+        console.log("updateAlsoInDatasetColumn called with method:", datasetStructuringMethod);
+        console.log("fileToSourceMap:", JSON.stringify(fileToSourceMap, null, 2));
 
-          let alsoInDatasetValue = "";
+        if (datasetStructuringMethod === "entity-association") {
+          rows.forEach((row, rowIndex) => {
+            // Skip processing folders - only process files
+            if (row[fileTypeColumnIndex] === "folder") {
+              return;
+            }
 
-          const entityTypes = ["samples", "subjects"];
-          for (const type of entityTypes) {
-            const entities = datasetEntityObj?.[type] || {};
-            for (const [entity, paths] of Object.entries(entities)) {
-              if (paths?.[path]) {
-                const { entityMetadata } = getEntityDataById(entity) || {};
-                if (entityMetadata?.metadata?.also_in_dataset) {
-                  alsoInDatasetValue = entityMetadata.metadata.also_in_dataset;
-                  break;
+            let alsoInDatasetValue = "";
+            const filePath = row[0];
+            console.log(`Processing row ${rowIndex}, path:`, filePath);
+
+            // For entity-association, convert to data path format
+            let path = filePath;
+            const pathSegments = path.split("/");
+            if (pathSegments.length > 0) pathSegments[0] = "data";
+            path = pathSegments.join("/");
+            console.log(`Entity-association: converted to path: ${path}`);
+
+            const entityTypes = ["samples", "subjects"];
+            for (const type of entityTypes) {
+              const entities = datasetEntityObj?.[type] || {};
+              for (const [entity, paths] of Object.entries(entities)) {
+                if (paths?.[path]) {
+                  const { entityMetadata } = getEntityDataById(entity) || {};
+                  if (entityMetadata?.metadata?.also_in_dataset) {
+                    alsoInDatasetValue = entityMetadata.metadata.also_in_dataset;
+                    console.log(
+                      `Found also_in_dataset for entity "${entity}": ${alsoInDatasetValue}`
+                    );
+                    break;
+                  }
                 }
               }
+              if (alsoInDatasetValue) break;
             }
-            if (alsoInDatasetValue) break;
-          }
 
-          row[alsoInDatasetColumnIndex] = alsoInDatasetValue;
-        });
+            console.log(`Final also_in_dataset value for row ${rowIndex}: "${alsoInDatasetValue}"`);
+            row[alsoInDatasetColumnIndex] = alsoInDatasetValue;
+          });
+        }
+
+        if (datasetStructuringMethod === "entity-buckets") {
+          rows.forEach((row, rowIndex) => {
+            // Skip processing folders - only process files
+            if (row[fileTypeColumnIndex] === "folder") {
+              return;
+            }
+
+            let alsoInDatasetValue = "";
+            const filePath = row[0];
+            console.log(`Processing row ${rowIndex}, path:`, filePath);
+
+            // Look up the entity from fileToSourceMap using the file path
+            const mappingInfo = fileToSourceMap[filePath];
+            console.log(`Entity-buckets: mappingInfo for "${filePath}":`, mappingInfo);
+            if (mappingInfo && mappingInfo.entity) {
+              const entityId = mappingInfo.entity;
+              const { entityMetadata } = getEntityDataById(entityId) || {};
+              if (entityMetadata?.metadata?.also_in_dataset) {
+                alsoInDatasetValue = entityMetadata.metadata.also_in_dataset;
+                console.log(
+                  `Found also_in_dataset for entity "${entityId}": ${alsoInDatasetValue}`
+                );
+              }
+            }
+
+            console.log(`Final also_in_dataset value for row ${rowIndex}: "${alsoInDatasetValue}"`);
+            row[alsoInDatasetColumnIndex] = alsoInDatasetValue;
+          });
+        }
 
         return rows;
       };
@@ -354,9 +406,9 @@ export const openPageDatasetStructure = async (targetPageID) => {
           )
         : newManifestData;
 
-      updateEntityColumn(guidedManifestData.data, pathMapping);
-      updateModalitiesColumn(guidedManifestData.data, pathMapping);
-      updateAlsoInDatasetColumn(guidedManifestData.data);
+      updateEntityColumn(guidedManifestData.data, fileToSourceMap);
+      updateModalitiesColumn(guidedManifestData.data, fileToSourceMap);
+      updateAlsoInDatasetColumn(guidedManifestData.data, fileToSourceMap);
 
       // Save final manifest data
       if (!window.sodaJSONObj["dataset_metadata"]) {

@@ -287,7 +287,7 @@ export const moveFileToTargetLocation = (relativePathToMove, destionationRelativ
  * @param {Object} folderObj - The folder object to recursively process
  * @param {string} sourceBasePath - The base path to strip (e.g., "data/subjects/sub-1/")
  * @param {string} destinationPath - The destination path (e.g., "primary/sub-1/")
- * @param {Object} pathMapping - (Optional) Object to track file moves: { newPath: { sourcePath, entity } }
+ * @param {Object} fileToSourceMap - (Optional) Object to track file moves: { newPath: { sourcePath, entity } }
  * @param {string} entityId - The entity ID to associate with moved files
  * @param {Object} categoryMapping - (Optional) Map of file paths to their categories (Source/Derivative)
  */
@@ -295,7 +295,7 @@ const moveFilesFromFolderRecursively = (
   folderObj,
   sourceBasePath,
   destinationPath,
-  pathMapping = null,
+  fileToSourceMap = null,
   entityId = null,
   categoryMapping = null
 ) => {
@@ -342,8 +342,8 @@ const moveFilesFromFolderRecursively = (
           delete srcParent.files[itemName];
 
           // Track the path mapping if provided - use the file's original relativePath
-          if (pathMapping && entityId) {
-            pathMapping[finalDestinationPath] = {
+          if (fileToSourceMap && entityId) {
+            fileToSourceMap[finalDestinationPath] = {
               sourcePath: fileObj.relativePath,
               entity: entityId,
             };
@@ -359,7 +359,7 @@ const moveFilesFromFolderRecursively = (
         subFolder,
         sourceBasePath,
         destinationPath,
-        pathMapping,
+        fileToSourceMap,
         entityId,
         categoryMapping
       );
@@ -378,7 +378,7 @@ const moveFilesFromFolderRecursively = (
  * @param {Object} datasetEntityObj - Object containing entity-to-file mappings and categorizations
  * @returns {Object} An object containing:
  *   - structure: The reorganized dataset structure
- *   - pathMapping: Object mapping new paths to mapping information
+ *   - fileToSourceMap: Object mapping new paths to mapping information
  *                  Each value is an object with:
  *                    - sourcePath: The original source base path (e.g., "data/subjects/sub-123/")
  *                    - entity: The entity ID extracted from the source path (e.g., "sub-123")
@@ -390,7 +390,7 @@ const moveFilesFromFolderRecursively = (
  *                  }
  *
  * @example
- * const { structure, pathMapping } = createStandardizedDatasetStructure(
+ * const { structure, fileToSourceMap } = createStandardizedDatasetStructure(
  *   window.datasetStructureJSONObj,
  *   window.sodaJSONObj["dataset-entity-obj"]
  * );
@@ -399,7 +399,7 @@ const moveFilesFromFolderRecursively = (
  * useGlobalStore.setState({ datasetStructureJSONObj: structure });
  *
  * // Use the path mapping to identify entity origins
- * for (const [newPath, mapping] of Object.entries(pathMapping)) {
+ * for (const [newPath, mapping] of Object.entries(fileToSourceMap)) {
  *   console.log(`File ${newPath} came from entity ${mapping.entity} at ${mapping.sourcePath}`);
  * }
  */
@@ -411,7 +411,7 @@ export const createStandardizedDatasetStructure = () => {
   originalStructure = deleteEmptyFoldersFromStructure(originalStructure);
 
   // Initialize path mapping to track file moves
-  const pathMapping = {};
+  const fileToSourceMap = {};
 
   const moveFilesByCategory = (categoryObj, destFolder) => {
     if (!categoryObj) return;
@@ -422,9 +422,6 @@ export const createStandardizedDatasetStructure = () => {
   };
   const datasetStructuringMethod = window.sodaJSONObj["dataset-structuring-method"];
   const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
-  console.log("Creating standardized dataset structure with method:", datasetStructuringMethod);
-  console.log("Dataset entity object:", datasetEntityObj);
-  console.log("Dataset Structure:", originalStructure);
   try {
     if (datasetStructuringMethod === "entity-association") {
       // Move Code files into the code/ folder
@@ -506,7 +503,7 @@ export const createStandardizedDatasetStructure = () => {
             subjectFolderLocation,
             `data/subjects/${subjectId}/`,
             `primary/${subjectId}/`,
-            pathMapping,
+            fileToSourceMap,
             subjectId,
             categoryMapping
           );
@@ -531,7 +528,7 @@ export const createStandardizedDatasetStructure = () => {
             sampleFolderLocation,
             `data/samples/${sampleId}/`,
             `primary/${parentSubjectId}/${sampleId}/`,
-            pathMapping,
+            fileToSourceMap,
             sampleId,
             categoryMapping
           );
@@ -561,7 +558,7 @@ export const createStandardizedDatasetStructure = () => {
             derivedSampleFolderLocation,
             `data/derived-samples/${derivedSampleId}/`,
             `primary/${parentSubjectId}/${parentSampleId}/${derivedSampleId}/`,
-            pathMapping,
+            fileToSourceMap,
             derivedSampleId,
             categoryMapping
           );
@@ -598,7 +595,7 @@ export const createStandardizedDatasetStructure = () => {
             siteFolderLocation,
             `data/sites/${siteId}/`,
             baseDestinationPath,
-            pathMapping,
+            fileToSourceMap,
             siteId,
             categoryMapping
           );
@@ -616,7 +613,7 @@ export const createStandardizedDatasetStructure = () => {
             folderLocation,
             `data/non-data-folders/${folder}/`,
             `${folder.toLowerCase()}/`,
-            pathMapping,
+            fileToSourceMap,
             folder,
             categoryMapping
           );
@@ -637,22 +634,10 @@ export const createStandardizedDatasetStructure = () => {
     // --- Step 7: Revert any global changes to window.datasetStructureJSONObj ---
     window.datasetStructureJSONObj = originalStructure;
 
-    console.log("Return from createStandardizedDatasetStructure:");
-    console.log(
-      JSON.stringify(
-        {
-          standardizedDatasetStructure,
-          pathMapping,
-        },
-        null,
-        2
-      )
-    );
-
     // Return both the structure and the path mapping
     return {
       standardizedDatasetStructure,
-      pathMapping: pathMapping,
+      fileToSourceMap: fileToSourceMap,
     };
   } catch (error) {
     console.error("Error while creating standardized dataset structure:", error);
