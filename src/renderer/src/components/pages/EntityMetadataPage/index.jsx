@@ -994,6 +994,16 @@ const EntityMetadataForm = () => {
               readOnly={!!selectedHierarchyEntity}
               disabled={!!selectedHierarchyEntity}
             />
+            <TextInput
+              label="Specimen ID"
+              description="The ID of the specimen this site belongs to (subject or sample)"
+              placeholder={entityBeingAddedParentSample || currentSelectedHierarchyEntityParentSample ? "e.g., sam-001" : "e.g., sub-001"}
+              required
+              value={getMetadataValue("specimen_id")}
+              onChange={(e) => handleChange("specimen_id", e.target.value)}
+              disabled={!!selectedHierarchyEntity}
+              readOnly={!!selectedHierarchyEntity}
+            />
             <OptionalFieldsNotice />
             <TextInput
               label="Site type"

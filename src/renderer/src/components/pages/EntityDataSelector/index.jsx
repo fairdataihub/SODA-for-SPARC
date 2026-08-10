@@ -255,7 +255,13 @@ const EntityDataSelectorPage = ({
                 );
 
               case "entity-associated-data-categorization":
-                return <Text>entity-associated-data-categorization</Text>;
+                return (
+                  <Text>
+                    Use the interface below to categorize your Source and Derivative data files that
+                    are associated with your entities. Any files not categorized will be marked as
+                    "Primary" by default and be placed in the Primary folder.
+                  </Text>
+                );
 
               case "sites":
                 return (

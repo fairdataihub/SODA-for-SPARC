@@ -11,6 +11,7 @@ import { handleAddEmptyFolder } from "./utils";
 
 const DataBucketingPage = ({ pageID, pageName, entityTypeStringSingular, entityType }) => {
   const selectedHierarchyEntity = useGlobalStore((state) => state.selectedHierarchyEntity);
+  console.log("DataBucketingPage: selectedHierarchyEntity:", selectedHierarchyEntity);
   const pathToRender = useGlobalStore((state) => state.pathToRender);
 
   const onAddEmptyFolderClick = () => {
@@ -48,7 +49,9 @@ const DataBucketingPage = ({ pageID, pageName, entityTypeStringSingular, entityT
               <Stack gap="lg">
                 <Paper shadow="sm" radius="md" p="md" withBorder>
                   <Text size="md" fw={500} mb="sm">
-                    Import data for {selectedHierarchyEntity.id}
+                    {["code", "protocol", "docs"].includes(selectedHierarchyEntity.id)
+                      ? `Import your ${selectedHierarchyEntity.id} below`
+                      : `Import data for ${selectedHierarchyEntity.id}`}
                   </Text>
                   <SelectedEntityPreviewer />
                   <EntityBucketingDataImporter pageID={pageID} entityType={entityType} />

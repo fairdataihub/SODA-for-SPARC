@@ -349,6 +349,54 @@ window.savePageChanges = async (pageBeingLeftID) => {
           // Utility: check if two objects share at least one common key
           const sharesAtLeastOneKey = (objA, objB) => Object.keys(objA).some((key) => key in objB);
 
+          // Function to order participants by type: sites, derived samples, samples, subjects
+          const orderParticipantsByType = (participants) => {
+            const orderedList = [];
+
+            // Sites first
+            for (const participant of participants) {
+              if (sites.some((s) => s.metadata.site_id === participant)) {
+                orderedList.push(participant);
+              }
+            }
+
+            // Derived samples second
+            for (const participant of participants) {
+              if (
+                samples.some(
+                  (s) =>
+                    s.metadata.sample_id === participant &&
+                    s.metadata.was_derived_from &&
+                    s.metadata.was_derived_from.trim() !== ""
+                )
+              ) {
+                orderedList.push(participant);
+              }
+            }
+
+            // Regular samples third
+            for (const participant of participants) {
+              if (
+                samples.some(
+                  (s) =>
+                    s.metadata.sample_id === participant &&
+                    (!s.metadata.was_derived_from || s.metadata.was_derived_from.trim() === "")
+                )
+              ) {
+                orderedList.push(participant);
+              }
+            }
+
+            // Subjects last
+            for (const participant of participants) {
+              if (subjects.some((s) => s.metadata.subject_id === participant)) {
+                orderedList.push(participant);
+              }
+            }
+
+            return orderedList;
+          };
+
           // Get existing entities
           const sites = getExistingSites();
           const samples = getExistingSamples();
@@ -359,7 +407,9 @@ window.savePageChanges = async (pageBeingLeftID) => {
               const performanceId = performance.performance_id;
               const performanceFiles = datasetEntityObj?.performances?.[performanceId];
 
-              console.log(`\n=== Processing performance: ${performanceId} ===`);
+              console.log(
+                `\n=== Processing performance: ${performanceId} (entity-association) ===`
+              );
               console.log("Performance files:", Object.keys(performanceFiles || {}));
 
               // Skip performances that have no associated files
@@ -371,88 +421,60 @@ window.savePageChanges = async (pageBeingLeftID) => {
                 return;
               }
 
-              // Participants grouped by subject
-              const groupedParticipants = {};
+              const matchedParticipants = [];
 
-              // Collect parent subjects and samples from matching sites (exclude site IDs)
-              console.log(`Checking ${sites.length} sites...`);
+              // Check sites for direct matches only
+              console.log(`Checking ${sites.length} sites for direct matches...`);
               for (const site of sites) {
                 const siteId = site.metadata.site_id;
                 const siteFiles = datasetEntityObj?.sites?.[siteId] || {};
 
                 if (sharesAtLeastOneKey(performanceFiles, siteFiles)) {
-                  const { parentSample, parentSubject } = site;
-                  console.log(
-                    `  Site ${siteId} matches performance. parentSubject: ${parentSubject}, parentSample: ${parentSample}`
-                  );
-                  if (parentSubject) {
-                    if (!groupedParticipants[parentSubject]) {
-                      groupedParticipants[parentSubject] = new Set();
-                    }
-                    if (parentSample) {
-                      groupedParticipants[parentSubject].add(parentSample);
-                      console.log(`    Added sample ${parentSample} to subject ${parentSubject}`);
-                    }
-                  }
+                  console.log(`  Site ${siteId} has direct match with performance files`);
+                  matchedParticipants.push(siteId);
                 }
               }
 
-              // Collect samples and their parent subjects
-              console.log(`Checking ${samples.length} samples...`);
+              // Check samples for direct matches only
+              console.log(`Checking ${samples.length} samples for direct matches...`);
               for (const sample of samples) {
                 const sampleId = sample.metadata.sample_id;
                 const sampleFiles = datasetEntityObj?.samples?.[sampleId] || {};
-                const parentSubject = sample.metadata.subject_id || sample.parentSubject;
 
                 if (sharesAtLeastOneKey(performanceFiles, sampleFiles)) {
-                  console.log(
-                    `  Sample ${sampleId} matches performance. parentSubject: ${parentSubject}`
-                  );
-                  if (!groupedParticipants[parentSubject]) {
-                    groupedParticipants[parentSubject] = new Set();
-                  }
-                  groupedParticipants[parentSubject].add(sampleId);
-                  console.log(`    Added sample ${sampleId} to subject ${parentSubject}`);
+                  console.log(`  Sample ${sampleId} has direct match with performance files`);
+                  matchedParticipants.push(sampleId);
                 }
               }
 
-              // Add subjects that have direct files or already have related samples
-              console.log(`Checking ${subjects.length} subjects...`);
+              // Check subjects for direct matches only
+              console.log(`Checking ${subjects.length} subjects for direct matches...`);
               for (const subject of subjects) {
                 const subjectId = subject.metadata.subject_id;
                 const subjectFiles = datasetEntityObj?.subjects?.[subjectId] || {};
 
                 if (sharesAtLeastOneKey(performanceFiles, subjectFiles)) {
-                  console.log(`  Subject ${subjectId} matches performance`);
-                  if (!groupedParticipants[subjectId]) {
-                    groupedParticipants[subjectId] = new Set();
-                  }
+                  console.log(`  Subject ${subjectId} has direct match with performance files`);
+                  matchedParticipants.push(subjectId);
                 }
               }
 
-              // Build ordered participant list (subject first, then samples)
-              const orderedParticipants = [];
-              for (const subject of subjects) {
-                const subjectId = subject.metadata.subject_id;
-                const samplesForSubject = groupedParticipants[subjectId];
-                if (samplesForSubject) {
-                  orderedParticipants.push(subjectId);
-                  console.log(`  Added subject: ${subjectId}`);
-                  samplesForSubject.forEach((sampleId) => {
-                    orderedParticipants.push(sampleId);
-                    console.log(`    Added sample: ${sampleId}`);
-                  });
-                }
-              }
+              // Order participants by type: sites, derived samples, samples, subjects
+              const orderedParticipants = orderParticipantsByType(matchedParticipants);
 
               // Assign ordered participants list to performance
               performance.participants = orderedParticipants;
               console.log(`Final participants for ${performanceId}:`, orderedParticipants);
             });
           }
+
           if (window.sodaJSONObj["dataset-structuring-method"] === "entity-buckets") {
             const { fileToSourceMap } = createStandardizedDatasetStructure();
             console.log("File to Source Map:", fileToSourceMap);
+            console.log(
+              "Available sites:",
+              sites.map((s) => ({ id: s.id, siteId: s.metadata?.site_id }))
+            );
 
             performanceMetadata.forEach((performance) => {
               const performanceId = performance.performance_id;
@@ -471,24 +493,34 @@ window.savePageChanges = async (pageBeingLeftID) => {
 
               // Collect entities from fileToSourceMap by matching sourcePaths
               const entitiesSet = new Set();
-              const orderedParticipants = [];
+              const matchedParticipants = [];
 
               // For each file in performanceFiles
               for (const perfFile of Object.keys(performanceFiles)) {
+                console.log(`  Looking for match for perfFile: ${perfFile}`);
+                let found = false;
                 // Find matching entry in fileToSourceMap where sourcePath matches perfFile
                 for (const sourceMapEntry of Object.values(fileToSourceMap)) {
                   if (sourceMapEntry.sourcePath === perfFile) {
                     const entity = sourceMapEntry.entity;
-                    console.log(`  File ${perfFile} maps to entity: ${entity}`);
+                    console.log(`    Found match! File ${perfFile} maps to entity: ${entity}`);
                     if (!entitiesSet.has(entity)) {
                       entitiesSet.add(entity);
-                      orderedParticipants.push(entity);
-                      console.log(`    Added entity: ${entity}`);
+                      matchedParticipants.push(entity);
+                      console.log(`      Added entity: ${entity}`);
                     }
+                    found = true;
                     break;
                   }
                 }
+                if (!found) {
+                  console.log(`    No match found in fileToSourceMap for ${perfFile}`);
+                }
               }
+
+              console.log(`Matched participants before ordering:`, matchedParticipants);
+              // Order participants by type: sites, derived samples, samples, subjects
+              const orderedParticipants = orderParticipantsByType(matchedParticipants);
 
               performance.participants = orderedParticipants;
               console.log(`Final participants for ${performanceId}:`, orderedParticipants);
@@ -588,6 +620,8 @@ window.savePageChanges = async (pageBeingLeftID) => {
             );
             console.log(`Categorized file count for ${folder}: ${categorizedFileCount}`);
           }
+        } else {
+          console.log("Handling case for entityType:", entityType);
         }
       }
 

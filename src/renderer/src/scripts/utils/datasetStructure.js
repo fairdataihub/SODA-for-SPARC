@@ -584,6 +584,7 @@ export const createStandardizedDatasetStructure = () => {
 
         const siteFolderLocation =
           window.datasetStructureJSONObj?.folders?.data?.folders?.["sites"]?.folders?.[siteId];
+
         if (siteFolderLocation) {
           let baseDestinationPath;
 
@@ -595,6 +596,8 @@ export const createStandardizedDatasetStructure = () => {
             baseDestinationPath = `primary/${parentSubjectId}/${siteId}/`;
           }
 
+          console.log(`Moving site ${siteId} to ${baseDestinationPath}`);
+
           // Move all files and folders from the site folder to primary, preserving structure
           moveFilesFromFolderRecursively(
             siteFolderLocation,
@@ -604,6 +607,8 @@ export const createStandardizedDatasetStructure = () => {
             siteId,
             categoryMapping
           );
+        } else {
+          console.warn(`Site folder not found for ${siteId} at data/sites/${siteId}/`);
         }
       }
 

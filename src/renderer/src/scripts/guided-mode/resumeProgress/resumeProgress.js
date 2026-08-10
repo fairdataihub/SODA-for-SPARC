@@ -94,6 +94,12 @@ window.guidedResumeProgress = async (progressFileName) => {
 
     window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
 
+    // Update the global store with the new dataset structure to ensure UI components reflect the correct data
+    // Deep clone to ensure complete isolation between datasets
+    useGlobalStore.setState({
+      datasetStructureJSONObj: structuredClone(window.datasetStructureJSONObj),
+    });
+
     // Save the skipped pages in a temp variable since guidedTransitionFromHome will remove them
     const prevSessionSkikppedPages = [...window.sodaJSONObj["skipped-pages"]];
 
