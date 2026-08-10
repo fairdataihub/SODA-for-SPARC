@@ -163,12 +163,25 @@ const guidedGetPageToReturnTo = async () => {
     return firstPageID;
   }
 
+  // TODO: Change to not allow user to sign in with different workspace/acct. Though acct may be difficult to
   const needsReconfirm = guidedCheckIfUserNeedsToReconfirmAccountDetails();
   if (needsReconfirm) {
     await swalShowInfo(
       "Your Pennsieve account or workspace has changed since you last worked on this dataset.",
-      "Please confirm your Pennsieve account and workspace details."
+      `
+      <div style="display: flex; flex-direction: row; text-align: left;">
+        Your workspace when last working on this dataset was: ${
+          window.sodaJSONObj?.["last-confirmed-pennsieve-workspace-details"]
+        }. 
+        </br>
+        Your current workspace is: ${guidedGetCurrentUserWorkSpace()}
+        </br>
+        </br>
+        You will be taken to the Pennsieve Login Page. Please confirm that your current workspace is the one you would like to use for your upload, and change it if not.
+       </div>
+       `
     );
+
     return window.sodaJSONObj["curation-mode"] === "free-form"
       ? "ffm-pennsieve-login-tab"
       : "gm-pennsieve-login-tab";

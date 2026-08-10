@@ -36,7 +36,6 @@ class Shutdown(Resource):
         api.logger.info("Shutting down server")
 
         if func is None:
-            print("Not running with the Werkzeug Server")
             return
 
         func()

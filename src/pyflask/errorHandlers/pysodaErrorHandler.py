@@ -13,7 +13,8 @@ from pysoda.utils import (
     PennsieveDatasetNameTaken,
     ConfigProfileNotSet,
     GenericUploadError,
-    PennsieveDatasetNameInvalid
+    PennsieveDatasetNameInvalid,
+    NoUploadActions
 )
 
 def handlePysodaErrors(e, api):
@@ -78,5 +79,8 @@ def handlePysodaErrors(e, api):
         api.abort(500, str(e))
     if isinstance(e, PennsieveDatasetNameInvalid):
         # Handle OSError separately
+        api.logger.info("Error message details: ", str(e))
+        api.abort(400, str(e))
+    if isinstance(e, NoUploadActions):
         api.logger.info("Error message details: ", str(e))
         api.abort(400, str(e))

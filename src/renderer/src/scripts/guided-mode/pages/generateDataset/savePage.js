@@ -8,7 +8,7 @@ import {
   setCheckboxCardUnchecked,
 } from "../../../../stores/slices/checkboxCardSlice";
 import { getSodaTextInputValue } from "../../../../stores/slices/sodaTextInputSlice";
-
+import { swalConfirmAction } from "../../../utils/swal-utils";
 import { guidedGetCurrentUserWorkSpace } from "../../../guided-mode/workspaces/workspaces";
 export const savePageGenerateDataset = async (pageBeingLeftID) => {
   const errorArray = [];
@@ -67,6 +67,34 @@ export const savePageGenerateDataset = async (pageBeingLeftID) => {
           'Pennsieve dataset names cannot contain any of the following characters: / ? % * : | " < > .',
       });
       throw errorArray;
+    }
+
+    if (
+      "dataset-name" in window.sodaJSONObj["generate-dataset"] &&
+      "upload-progress" in window.sodaJSONObj &&
+      window.sodaJSONObj["generate-dataset"]["dataset-name"] &&
+      window.sodaJSONObj["generate-dataset"]["dataset-name"] !== pennsieveDatasetName
+    ) {
+      let result = await swalConfirmAction(
+        "info",
+        "Dataset Name will be Changed and Upload Progress Lost",
+        `<div style="text-align: left;"> 
+          Changing your dataset name from ${window.sodaJSONObj["generate-dataset"]["dataset-name"]} to ${pennsieveDatasetName} will result in losing your progress in your current upload. 
+          If you want to change your dataset's name it is recommended you do so after finishing your upload.
+        </div>`,
+        "Change Dataset Name and Continue",
+        "Cancel"
+      );
+
+      if (!result) {
+        errorArray.push({
+          type: "notyf",
+          message: "Revert dataset name before continuing.",
+        });
+        throw errorArray;
+      }
+
+      delete window.sodaJSONObj["upload-progress"];
     }
     window.sodaJSONObj["generate-dataset"]["dataset-name"] = pennsieveDatasetName;
 

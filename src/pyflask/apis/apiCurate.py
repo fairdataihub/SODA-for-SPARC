@@ -20,7 +20,9 @@ from pysoda.core.dataset_generation import (
     start_subscriber,
     rename_files,
     get_origin_manifest_id,
-    generate_local_dataset
+    generate_local_dataset,
+    reset_upload_session_environment,
+    set_upload_state
 )
 
 from pysoda.utils import validation_error_message
@@ -137,6 +139,31 @@ class Curation(Resource):
 
 
 # TODO: Add example JSON structures for upload
+
+@api.route("/curation/session")
+class CurationSession(Resource):
+
+    def put(self):
+        return reset_upload_session_environment()
+
+    def post(self):
+        data = request.get_json() or {}
+
+        # no state to set
+        if "upload_progress" not in data:
+            return 
+
+        upload_progress = data["upload_progress"]
+
+        if not upload_progress:
+            return
+
+        try:
+            return set_upload_state(upload_progress)
+        except Exception as e:
+            api.logger.exception(e)
+            api.abort(500, str(e) )
+
 
 @api.route("/curation/manifest_file")
 class Curation(Resource):
