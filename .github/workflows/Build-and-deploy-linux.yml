@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - staging
+      - entity-folder-structuring
 
 jobs:
   deploy-on-linux:
