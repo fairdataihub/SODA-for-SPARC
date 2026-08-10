@@ -34,6 +34,7 @@ import {
   getExistingSamples,
   getExistingSites,
   deleteSubject,
+  getEntitiesByEntityType,
 } from "../../../stores/slices/datasetEntityStructureSlice";
 import {
   swalConfirmAction,
@@ -612,16 +613,70 @@ window.savePageChanges = async (pageBeingLeftID) => {
       }
       if (pageBeingLeftComponentType === "data-bucketing-page") {
         const entityType = pageBeingLeftDataSet.entityType;
-        if (entityType === "non-data-folders") {
-          const userSelectedNonDataFolders = window.sodaJSONObj["non-data-folders"];
-          for (const folder of userSelectedNonDataFolders) {
-            const categorizedFileCount = countFilesByDatasetStructureRelativePath(
-              `data/non-data-folders/${folder}`
+        const emptyEntities = [];
+
+        // For all entity types (subjects, samples, sites, non-data-folders, etc.)
+        // Use the same pattern as openPage to get entity IDs
+        const entityIDs = getEntitiesByEntityType(entityType, true);
+        if (entityIDs && entityIDs.length > 0) {
+          for (const entityID of entityIDs) {
+            const fileCount = countFilesByDatasetStructureRelativePath(
+              `data/${entityType}/${entityID}`
             );
-            console.log(`Categorized file count for ${folder}: ${categorizedFileCount}`);
+            if (fileCount === 0) {
+              emptyEntities.push(entityID);
+            }
           }
-        } else {
-          console.log("Handling case for entityType:", entityType);
+        }
+
+        // Show warning if any entities are empty
+        if (emptyEntities.length > 0) {
+          const isNonDataFolders = entityType === "non-data-folders";
+
+          if (isNonDataFolders) {
+            // Swal for non-data-folders
+            const continueWithEmptyFolders = await swalListDoubleAction(
+              emptyEntities,
+              "Folders that did not have any data files added detected",
+              `The following folders did not have any data files added to them. You indicated that your dataset
+              contains data that should go in these folders. You can either "Continue without adding data" and the empty folders
+              will remain in your dataset, or "Go back to add data" to add files to these folders now. Alternatively, you can go back
+              to the dataset content page and indicate that your dataset does not contain these types of files.`,
+              "Continue without adding data",
+              "Go back to add data",
+              `What would you like to do with the folders that did not have any data files added to them?`
+            );
+
+            if (!continueWithEmptyFolders) {
+              // User chose to go back - throw error to prevent navigation
+              errorArray.push({
+                type: "notyf",
+                message: `Please add data to these folders, or go back to the dataset content page and indicate that your dataset does not contain these types of files.`,
+              });
+              throw errorArray;
+            }
+          } else {
+            // Swal for entities (subjects, samples, sites, etc.)
+            const continueWithEmptyEntities = await swalListDoubleAction(
+              emptyEntities,
+              `${entityType} that did not have any data files added detected`,
+              `The following ${entityType} did not have any data files added to them. You indicated that your dataset
+              contains these ${entityType} and should have data files in their folders. You can either "Continue without adding data" and the empty
+              ${entityType} folders will remain in your dataset, or "Go back to add data" to add files to these ${entityType} now.`,
+              "Continue without adding data",
+              "Go back to add data",
+              `What would you like to do with the ${entityType} that did not have any data files added to them?`
+            );
+
+            if (!continueWithEmptyEntities) {
+              // User chose to go back - throw error to prevent navigation
+              errorArray.push({
+                type: "notyf",
+                message: `Please add data to these ${entityType} folders or remove the empty ${entityType} on the entity metadata page before continuing.`,
+              });
+              throw errorArray;
+            }
+          }
         }
       }
 

@@ -4,6 +4,7 @@ import { newEmptyFolderObj } from "../../../scripts/utils/datasetStructure";
 import { reRenderTreeView } from "../../../stores/slices/datasetTreeViewSlice";
 
 export const handleAddEmptyFolder = async (pathToRender) => {
+  console.log("handleAddEmptyFolder: pathToRender:", pathToRender);
   let entityBasedInputLabel = "Enter the folder name";
   if (pathToRender.length > 0) {
     if (pathToRender[1] === "subjects") {
