@@ -38,6 +38,19 @@ export const guidedSkipPageSet = (pageSetName) => {
 
   for (const page of pages) {
     if (page.classList.contains(currentModeClass)) {
+      // Check if ALL of this page's page sets are now skipped
+      const pageSetAttribute = page.getAttribute("data-page-set");
+      if (pageSetAttribute) {
+        const pageSets = pageSetAttribute.split(" ");
+        const skippedPageSets = window.sodaJSONObj["skipped-page-sets"];
+
+        // Only skip this page if ALL of its page sets are skipped
+        const allPageSetSkipped = pageSets.every((set) => skippedPageSets.includes(set));
+        if (!allPageSetSkipped) {
+          continue; // Skip this page, don't call guidedSkipPage
+        }
+      }
+
       guidedSkipPage(page.id);
     }
   }
@@ -84,10 +97,10 @@ export const guidedUnSkipPage = (pageId) => {
     const pageSets = pageSetAttribute.split(" ");
     const skippedPageSets = window.sodaJSONObj["skipped-page-sets"] || [];
 
-    // If any of this page's page sets are in the skipped list, don't unskip
-    const belongsToSkippedSet = pageSets.some((set) => skippedPageSets.includes(set));
-    if (belongsToSkippedSet) {
-      return; // Don't unskip this page because it belongs to a skipped page set
+    // Only keep skipped if ALL of this page's page sets are in the skipped list
+    const allPageSetsSkipped = pageSets.every((set) => skippedPageSets.includes(set));
+    if (allPageSetsSkipped) {
+      return; // Don't unskip this page because all of its page sets are skipped
     }
   }
 

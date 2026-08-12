@@ -293,6 +293,30 @@ const handlePerformancesSelection = async (selectedEntities, errorArray) => {
   }
 };
 
+export const setGuidedWorkflow = (workflowSet) => {
+  const workflowSets = {
+    "entity-association-workflow": "entity-association",
+    "entity-bucketing-workflow": "entity-buckets",
+    "non-standard-data-workflow": "entity-association",
+  };
+
+  if (!workflowSets[workflowSet]) {
+    console.error(`Invalid workflow set: ${workflowSet}`);
+    return;
+  }
+
+  // Skip all workflow sets
+  for (const workflow of Object.keys(workflowSets)) {
+    guidedSkipPageSet(workflow);
+  }
+
+  // Unskip the selected workflow
+  guidedUnSkipPageSet(workflowSet);
+
+  // Set the dataset structuring method based on the selected workflow
+  window.sodaJSONObj["dataset-structuring-method"] = workflowSets[workflowSet];
+};
+
 export const savePageDatasetStructure = async (pageBeingLeftID) => {
   const errorArray = [];
 
@@ -313,17 +337,11 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     }
 
     if (userSelectedEntityAssociationMethod) {
-      guidedSkipPageSet("entity-bucketing-workflow");
-      guidedUnSkipPageSet("entity-association-workflow");
-
-      window.sodaJSONObj["dataset-structuring-method"] = "entity-association";
+      setGuidedWorkflow("entity-association-workflow");
     }
 
     if (userSelectedEntityBucketsMethod) {
-      guidedSkipPageSet("entity-association-workflow");
-      guidedUnSkipPageSet("entity-bucketing-workflow");
-
-      window.sodaJSONObj["dataset-structuring-method"] = "entity-buckets";
+      setGuidedWorkflow("entity-bucketing-workflow");
     }
   }
 
@@ -420,27 +438,14 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     // Show/hide the supporting data categorization page based on whether user has any supporting folders
     if (nonDataFolders.length > 0) {
       if (!selectedEntities.includes("subjects")) {
-        console.log(
-          "User has non-data folders but no subjects. Skipping entity association workflow pages."
-        );
         // If the user only has nonDataFolders, bypass the entity association and bucketing workflow pages since they are not relevant
-        window.sodaJSONObj["dataset-structuring-method"] = "entity-buckets";
-        guidedSkipPageSet("non-data-entity-association-workflow");
-        guidedUnSkipPageSet("non-data-entity-bucketing-workflow");
+        setGuidedWorkflow("entity-bucketing-workflow");
       }
-
-      /*const datasetStructuringMethod = window.sodaJSONObj["dataset-structuring-method"];
-      if (datasetStructuringMethod === "entity-association") {
-        guidedUnSkipPageSet("non-data-entity-association-workflow");
-        guidedSkipPageSet("non-data-entity-bucketing-workflow");
-      }
-      if (datasetStructuringMethod === "entity-buckets") {
-        guidedUnSkipPageSet("non-data-entity-bucketing-workflow");
-        guidedSkipPageSet("non-data-entity-association-workflow");
-      }*/
     } else {
-      guidedSkipPageSet("non-data-entity-association-workflow");
-      guidedSkipPageSet("non-data-entity-bucketing-workflow");
+      // If the user selected no to everything, set the workflow to non-standard-data-workflow to skip the entity association and bucketing workflow pages since they are not relevant
+      if (!selectedEntities.includes("subjects")) {
+        setGuidedWorkflow("non-standard-data-workflow");
+      }
     }
 
     window.sodaJSONObj["non-data-folders"] = nonDataFolders.map((folder) => folder.toLowerCase());

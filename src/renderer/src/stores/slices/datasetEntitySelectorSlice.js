@@ -38,8 +38,6 @@ export const removeEntityFromEntityList = (entityType, entityName) => {
     produce((state) => {
       if (state.datasetEntityObj && state.datasetEntityObj[entityType]) {
         delete state.datasetEntityObj[entityType][entityName];
-      } else {
-        console.warn(`Entity type ${entityType} does not exist in datasetEntityObj.`);
       }
     })
   );
@@ -110,8 +108,6 @@ export const removeEntityType = (entityType) => {
     produce((state) => {
       if (state.datasetEntityObj && state.datasetEntityObj[entityType]) {
         delete state.datasetEntityObj[entityType];
-      } else {
-        console.warn(`Entity type ${entityType} does not exist in datasetEntityObj.`);
       }
     })
   );
