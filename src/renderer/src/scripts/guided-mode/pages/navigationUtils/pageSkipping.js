@@ -38,19 +38,6 @@ export const guidedSkipPageSet = (pageSetName) => {
 
   for (const page of pages) {
     if (page.classList.contains(currentModeClass)) {
-      // Check if ALL of this page's page sets are now skipped
-      const pageSetAttribute = page.getAttribute("data-page-set");
-      if (pageSetAttribute) {
-        const pageSets = pageSetAttribute.split(" ");
-        const skippedPageSets = window.sodaJSONObj["skipped-page-sets"];
-
-        // Only skip this page if ALL of its page sets are skipped
-        const allPageSetSkipped = pageSets.every((set) => skippedPageSets.includes(set));
-        if (!allPageSetSkipped) {
-          continue; // Skip this page, don't call guidedSkipPage
-        }
-      }
-
       guidedSkipPage(page.id);
     }
   }
@@ -152,6 +139,102 @@ export const guidedResetSkippedPages = (curationMode) => {
         guidedSkipPage(page.id);
       }
     }
+  }
+};
+
+export const guidedSkipWorkflow = (workflowName) => {
+  const pages = document.querySelectorAll(`[data-guided-workflow~="${workflowName}"]`);
+  const curationMode = window.sodaJSONObj["curation-mode"];
+  const currentModeClass = curationMode === "guided" ? "gm" : "ffm";
+
+  // Initialize skipped-workflows if it doesn't exist
+  if (!window.sodaJSONObj["skipped-workflows"]) {
+    window.sodaJSONObj["skipped-workflows"] = [];
+  }
+
+  // add the workflow to window.sodaJSONObj array if it isn't there already
+  if (!window.sodaJSONObj["skipped-workflows"].includes(workflowName)) {
+    window.sodaJSONObj["skipped-workflows"].push(workflowName);
+  }
+
+  for (const page of pages) {
+    if (page.classList.contains(currentModeClass)) {
+      // Check if ALL of this page's workflows are now skipped
+      const workflowAttribute = page.getAttribute("data-guided-workflow");
+      if (workflowAttribute) {
+        const workflows = workflowAttribute.split(" ");
+        const skippedWorkflows = window.sodaJSONObj["skipped-workflows"];
+
+        // Only skip this page if ALL of its workflows are skipped
+        const allWorkflowsSkipped = workflows.every((workflow) =>
+          skippedWorkflows.includes(workflow)
+        );
+        if (!allWorkflowsSkipped) {
+          continue; // Skip this page, don't call guidedSkipPage
+        }
+      }
+
+      guidedSkipPage(page.id);
+    }
+  }
+};
+
+export const guidedUnSkipWorkflow = (workflowName) => {
+  const pages = document.querySelectorAll(`[data-guided-workflow~="${workflowName}"]`);
+  const curationMode = window.sodaJSONObj["curation-mode"];
+  const currentModeClass = curationMode === "guided" ? "gm" : "ffm";
+
+  // remove the workflow from window.sodaJSONObj array if it is there
+  if (window.sodaJSONObj["skipped-workflows"]) {
+    if (window.sodaJSONObj["skipped-workflows"].includes(workflowName)) {
+      window.sodaJSONObj["skipped-workflows"].splice(
+        window.sodaJSONObj["skipped-workflows"].indexOf(workflowName),
+        1
+      );
+    }
+  }
+
+  for (const page of pages) {
+    if (page.classList.contains(currentModeClass)) {
+      guidedUnSkipPageByWorkflow(page.id);
+    }
+  }
+};
+
+export const guidedUnSkipPageByWorkflow = (pageId) => {
+  // Prevent unskipping pages that should always be skipped
+  if (PAGES_THAT_SHOULD_ALWAYS_BE_SKIPPED.includes(pageId)) {
+    return;
+  }
+
+  const page = document.getElementById(pageId);
+
+  // If the page no longer exists, return
+  if (!page) {
+    return;
+  }
+
+  // Check if this page belongs to any skipped workflow
+  const workflowAttribute = page.getAttribute("data-guided-workflow");
+  if (workflowAttribute) {
+    const workflows = workflowAttribute.split(" ");
+    const skippedWorkflows = window.sodaJSONObj["skipped-workflows"] || [];
+
+    // Only keep skipped if ALL of this page's workflows are in the skipped list
+    const allWorkflowsSkipped = workflows.every((workflow) => skippedWorkflows.includes(workflow));
+    if (allWorkflowsSkipped) {
+      return; // Don't unskip this page because all of its workflows are skipped
+    }
+  }
+
+  page.dataset.skipPage = "false";
+
+  // remove the page from window.sodaJSONObj array if it is there
+  if (window.sodaJSONObj["skipped-pages"].includes(pageId)) {
+    window.sodaJSONObj["skipped-pages"].splice(
+      window.sodaJSONObj["skipped-pages"].indexOf(pageId),
+      1
+    );
   }
 };
 

@@ -342,6 +342,9 @@ const EntityHierarchyRenderer = ({
       return getEntitiesByEntityType("subjects", false);
     }
     if (onlyRenderEntityType === "samples") {
+      return getEntitiesByEntityType("all-samples", false);
+    }
+    if (onlyRenderEntityType === "non-derived-samples") {
       return getEntitiesByEntityType("non-derived-samples", false);
     }
     if (onlyRenderEntityType === "sites") {

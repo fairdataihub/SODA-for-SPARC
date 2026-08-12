@@ -6,6 +6,8 @@ import {
   guidedUnSkipPage,
   guidedSkipPageSet,
   guidedUnSkipPageSet,
+  guidedSkipWorkflow,
+  guidedUnSkipWorkflow,
 } from "../../../guided-mode/pages/navigationUtils/pageSkipping";
 import {
   addEntityNameToEntityType,
@@ -294,6 +296,7 @@ const handlePerformancesSelection = async (selectedEntities, errorArray) => {
 };
 
 export const setGuidedWorkflow = (workflowSet) => {
+  console.log("Setting workflowSet to:", workflowSet);
   const workflowSets = {
     "entity-association-workflow": "entity-association",
     "entity-bucketing-workflow": "entity-buckets",
@@ -305,16 +308,23 @@ export const setGuidedWorkflow = (workflowSet) => {
     return;
   }
 
-  // Skip all workflow sets
+  // Skip all workflows
   for (const workflow of Object.keys(workflowSets)) {
-    guidedSkipPageSet(workflow);
+    guidedSkipWorkflow(workflow);
   }
 
   // Unskip the selected workflow
-  guidedUnSkipPageSet(workflowSet);
+  guidedUnSkipWorkflow(workflowSet);
 
   // Set the dataset structuring method based on the selected workflow
   window.sodaJSONObj["dataset-structuring-method"] = workflowSets[workflowSet];
+
+  if (workflowSets[workflowSet] !== "entity-association") {
+    console.log(
+      "setGuidedWorkflow: Skipping guided-remaining-data-categorization-page-set for non-entity-association workflow"
+    );
+    guidedSkipPageSet("guided-remaining-data-categorization-page-set");
+  }
 };
 
 export const savePageDatasetStructure = async (pageBeingLeftID) => {

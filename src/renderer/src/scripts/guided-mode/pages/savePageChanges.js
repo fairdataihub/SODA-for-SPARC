@@ -603,21 +603,37 @@ window.savePageChanges = async (pageBeingLeftID) => {
             "experimental",
             "non-data-folders",
           ]).length;
-
-          if (countOfNonRemainingDataCategories >= datasetFileCount) {
-            guidedSkipPageSet("guided-remaining-data-categorization-page-set");
+          if (window.sodaJSONObj["dataset-structuring-method"] === "entity-association") {
+            if (countOfNonRemainingDataCategories >= datasetFileCount) {
+              guidedSkipPageSet("guided-remaining-data-categorization-page-set");
+            } else {
+              guidedUnSkipPageSet("guided-remaining-data-categorization-page-set");
+            }
           } else {
-            guidedUnSkipPageSet("guided-remaining-data-categorization-page-set");
+            guidedSkipPageSet("guided-remaining-data-categorization-page-set");
           }
         }
       }
       if (pageBeingLeftComponentType === "data-bucketing-page") {
         const entityType = pageBeingLeftDataSet.entityType;
+        const createUserLegibleEntityType = (entityType) => {
+          switch (entityType) {
+            case "derived-samples":
+              return "derived samples";
+            case "non-derived-samples":
+              return "samples";
+            default:
+              return entityType;
+          }
+        };
+
+        const userLegibleEntityType = createUserLegibleEntityType(entityType);
         const emptyEntities = [];
 
         // For all entity types (subjects, samples, sites, non-data-folders, etc.)
         // Use the same pattern as openPage to get entity IDs
         const entityIDs = getEntitiesByEntityType(entityType, true);
+        console.log(`Checking ${entityType} for empty folders...`, entityIDs);
         if (entityIDs && entityIDs.length > 0) {
           for (const entityID of entityIDs) {
             const fileCount = countFilesByDatasetStructureRelativePath(
@@ -657,22 +673,28 @@ window.savePageChanges = async (pageBeingLeftID) => {
             }
           } else {
             // Swal for entities (subjects, samples, sites, etc.)
+            const userLegibleEntityTypePlural = userLegibleEntityType.endsWith("s")
+              ? userLegibleEntityType
+              : `${userLegibleEntityType}s`;
+
             const continueWithEmptyEntities = await swalListDoubleAction(
               emptyEntities,
-              `${entityType} that did not have any data files added detected`,
-              `The following ${entityType} did not have any data files added to them. You indicated that your dataset
-              contains these ${entityType} and should have data files in their folders. You can either "Continue without adding data" and the empty
-              ${entityType} folders will remain in your dataset, or "Go back to add data" to add files to these ${entityType} now.`,
+              `${userLegibleEntityTypePlural} that did not have any data files added detected`,
+              `The following ${userLegibleEntityTypePlural} did not have any data files added to them.
+              You indicated that your dataset contains these ${userLegibleEntityTypePlural} and should
+              have data files in their folders. You can either "Continue without adding data" and the empty
+              ${userLegibleEntityType} folders will remain in your dataset, or "Go back to add data" to add
+              files to these ${userLegibleEntityTypePlural} now.`,
               "Continue without adding data",
               "Go back to add data",
-              `What would you like to do with the ${entityType} that did not have any data files added to them?`
+              `What would you like to do with the ${userLegibleEntityTypePlural} that did not have any data files added to them?`
             );
 
             if (!continueWithEmptyEntities) {
               // User chose to go back - throw error to prevent navigation
               errorArray.push({
                 type: "notyf",
-                message: `Please add data to these ${entityType} folders or remove the empty ${entityType} on the entity metadata page before continuing.`,
+                message: `Please add data to these ${userLegibleEntityType} folders or remove the empty ${userLegibleEntityTypePlural} on the entity metadata page before continuing.`,
               });
               throw errorArray;
             }

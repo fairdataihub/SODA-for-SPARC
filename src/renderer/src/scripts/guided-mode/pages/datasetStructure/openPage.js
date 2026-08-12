@@ -241,7 +241,11 @@ export const openPageDatasetStructure = async (targetPageID) => {
 
             // Look up the entity from fileToSourceMap using the file path
             const mappingInfo = fileToSourceMap[filePath];
-            if (mappingInfo && mappingInfo.entity) {
+            if (
+              mappingInfo &&
+              mappingInfo.entity &&
+              !["code", "protocol", "docs"].includes(mappingInfo.entity)
+            ) {
               row[entityColumnIndex] = mappingInfo.entity;
             } else {
               row[entityColumnIndex] = "";
