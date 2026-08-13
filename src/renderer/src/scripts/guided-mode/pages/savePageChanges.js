@@ -651,26 +651,22 @@ window.savePageChanges = async (pageBeingLeftID) => {
 
           if (isNonDataFolders) {
             // Swal for non-data-folders
-            const continueWithEmptyFolders = await swalListDoubleAction(
+            await swalListSingleAction(
               emptyEntities,
               "Folders that did not have any data files added detected",
-              `The following folders did not have any data files added to them. You indicated that your dataset
-              contains data that should go in these folders. You can either "Continue without adding data" and the empty folders
-              will remain in your dataset, or "Go back to add data" to add files to these folders now. Alternatively, you can go back
-              to the dataset content page and indicate that your dataset does not contain these types of files.`,
-              "Continue without adding data",
-              "Go back to add data",
-              `What would you like to do with the folders that did not have any data files added to them?`
+              `The following folders did not have any data files added to them. You indicated that
+              your dataset contains data that should go in these folders. Please add data to these
+              folders, or go back to the dataset content page and indicate that your dataset does not
+              contain these types of files.`,
+              "Please add data to these folders before continuing."
             );
 
-            if (!continueWithEmptyFolders) {
-              // User chose to go back - throw error to prevent navigation
-              errorArray.push({
-                type: "notyf",
-                message: `Please add data to these folders, or go back to the dataset content page and indicate that your dataset does not contain these types of files.`,
-              });
-              throw errorArray;
-            }
+            // Prevent navigation - user must add data or change dataset content
+            errorArray.push({
+              type: "notyf",
+              message: `Please add data to these folders, or go back to the dataset content page and indicate that your dataset does not contain these types of files.`,
+            });
+            throw errorArray;
           } else {
             // Swal for entities (subjects, samples, sites, etc.)
             const userLegibleEntityTypePlural = userLegibleEntityType.endsWith("s")
