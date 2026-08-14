@@ -189,7 +189,7 @@ const SpreadsheetImportDatasetEntityAdditionPage = () => {
       <GuidedModeSection>
         <Text>
           If you already have SDS metadata files prepared, import them using the steps below.
-          Otherwise, download the template for each {getOxfordCommaSeparatedListOfEntities("and")},
+          Otherwise, download the template for each {getOxfordCommaSeparatedListOfEntities("and", false)},
           fill in the metadata, and then import the completed file.
         </Text>
       </GuidedModeSection>

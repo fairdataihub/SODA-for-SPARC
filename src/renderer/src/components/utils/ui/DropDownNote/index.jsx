@@ -273,8 +273,8 @@ const DropDownNote = ({ id }) => {
             </Text>
             <Text size="sm" mb="sm">
               Import all of your data at once, then use checkboxes to select files for each{" "}
-              {getOxfordCommaSeparatedListOfEntities("and")} and assign them to their respective
-              entities.
+              {getOxfordCommaSeparatedListOfEntities("and", false)} and assign them to their
+              respective entities.
             </Text>
             <Text size="sm" fw={500} mb="xs">
               Best for:
@@ -300,7 +300,10 @@ const DropDownNote = ({ id }) => {
             </Text>
             <Text size="sm" mb="sm">
               Organize your dataset by focusing on one entity at a time, iterating over all{" "}
-              {getOxfordCommaSeparatedListOfEntities("and")} in your dataset.
+              {getOxfordCommaSeparatedListOfEntities("and", true)} in your dataset. This can be
+              thought of as having a bucket for each entity where you'll select an entity and then
+              place all the data belonging to that entity into its bucket before moving on to the
+              next one.
             </Text>
             <Text size="sm" fw={500} mb="xs">
               Best for:

@@ -12,6 +12,8 @@ import {
   IconReport,
   IconFolderSymlink,
   IconReplace,
+  IconBucket,
+  IconListDetails,
 } from "@tabler/icons-react";
 
 export const checkboxCardSlice = (set) => ({
@@ -70,7 +72,7 @@ export const checkboxCardSlice = (set) => ({
       title: "File to entity association",
       description:
         "Import all your data at once, then use checkboxes to assign files to each entity.",
-      Icon: IconKeyboard,
+      Icon: IconListDetails,
       mutuallyExclusiveWithCards: ["guided-button-organize-ds-via-entity-buckets"],
       configValue: "dataset-structuring-method",
       configValueState: "entity-association",
@@ -80,7 +82,7 @@ export const checkboxCardSlice = (set) => ({
     "guided-button-organize-ds-via-entity-buckets": {
       title: "Entity-by-entity data import",
       description: "Select each entity and import its data files separately.",
-      Icon: IconFileSpreadsheet,
+      Icon: IconBucket,
       mutuallyExclusiveWithCards: ["guided-button-organize-ds-via-entity-association"],
       configValue: "dataset-structuring-method",
       configValueState: "entity-buckets",

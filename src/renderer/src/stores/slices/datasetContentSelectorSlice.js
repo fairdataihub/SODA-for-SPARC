@@ -52,7 +52,7 @@ export const removeEntityFromSelectedEntities = (entity) => {
   useGlobalStore.setState({ selectedEntities: newSelected, deSelectedEntities: newDeSelected });
 };
 
-export const getOxfordCommaSeparatedListOfEntities = (separator) => {
+export const getOxfordCommaSeparatedListOfEntities = (separator, usePlural = false) => {
   const selectedEntities = useGlobalStore.getState().selectedEntities || [];
   const entityTypeFilter = [
     "subjects",
@@ -66,7 +66,7 @@ export const getOxfordCommaSeparatedListOfEntities = (separator) => {
   const hierarchyEntities = selectedEntities
     .filter((entity) => entityTypeFilter.includes(entity))
     .map((entity) => {
-      const entityNameMap = {
+      const singularNameMap = {
         subjects: "subject",
         samples: "sample",
         derivedSamples: "derived sample",
@@ -74,7 +74,20 @@ export const getOxfordCommaSeparatedListOfEntities = (separator) => {
         sampleSites: "sample site",
         performances: "performance",
       };
-      return entityNameMap[entity] || entity;
+
+      const pluralNameMap = {
+        subjects: "subjects",
+        samples: "samples",
+        derivedSamples: "derived samples",
+        subjectSites: "subject sites",
+        sampleSites: "sample sites",
+        performances: "performances",
+      };
+
+      if (usePlural) {
+        return pluralNameMap[entity] || entity;
+      }
+      return singularNameMap[entity] || entity;
     });
 
   if (!hierarchyEntities || hierarchyEntities.length === 0) return "";

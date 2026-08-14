@@ -524,7 +524,7 @@ window.savePageChanges = async (pageBeingLeftID) => {
               );
 
             if (arraysAreDifferent) {
-              const hierarchyEntitiesList = getOxfordCommaSeparatedListOfEntities("or");
+              const hierarchyEntitiesList = getOxfordCommaSeparatedListOfEntities("or", false);
               const continueWithUnassociatedExperimentalFiles = await swalListDoubleAction(
                 unassociatedExperimentalFiles.map((file) =>
                   file.startsWith("data/") ? file.substring(5) : file
