@@ -304,7 +304,7 @@ window.savePageChanges = async (pageBeingLeftID) => {
             if (categorizedFileCount === 0) {
               errorArray.push({
                 type: "notyf",
-                message: `You indicated that your dataset contains ${folder} files, but you have not categorized any files into the ${folder} folder. Please categorize all of your ${folder} files before continuing.`,
+                message: `You indicated that your dataset contains ${folder} data, but you have not categorized any files into the ${folder} folder. Please categorize all of your ${folder} files before continuing.`,
               });
               throw errorArray;
             }
@@ -408,54 +408,41 @@ window.savePageChanges = async (pageBeingLeftID) => {
               const performanceId = performance.performance_id;
               const performanceFiles = datasetEntityObj?.performances?.[performanceId];
 
-              console.log(
-                `\n=== Processing performance: ${performanceId} (entity-association) ===`
-              );
-              console.log("Performance files:", Object.keys(performanceFiles || {}));
-
               // Skip performances that have no associated files
               if (!performanceFiles) {
                 performance.participants = [];
-                console.log(
-                  `Performance ${performanceId} has no associated files, participants = []`
-                );
+
                 return;
               }
 
               const matchedParticipants = [];
 
               // Check sites for direct matches only
-              console.log(`Checking ${sites.length} sites for direct matches...`);
               for (const site of sites) {
                 const siteId = site.metadata.site_id;
                 const siteFiles = datasetEntityObj?.sites?.[siteId] || {};
 
                 if (sharesAtLeastOneKey(performanceFiles, siteFiles)) {
-                  console.log(`  Site ${siteId} has direct match with performance files`);
                   matchedParticipants.push(siteId);
                 }
               }
 
               // Check samples for direct matches only
-              console.log(`Checking ${samples.length} samples for direct matches...`);
               for (const sample of samples) {
                 const sampleId = sample.metadata.sample_id;
                 const sampleFiles = datasetEntityObj?.samples?.[sampleId] || {};
 
                 if (sharesAtLeastOneKey(performanceFiles, sampleFiles)) {
-                  console.log(`  Sample ${sampleId} has direct match with performance files`);
                   matchedParticipants.push(sampleId);
                 }
               }
 
               // Check subjects for direct matches only
-              console.log(`Checking ${subjects.length} subjects for direct matches...`);
               for (const subject of subjects) {
                 const subjectId = subject.metadata.subject_id;
                 const subjectFiles = datasetEntityObj?.subjects?.[subjectId] || {};
 
                 if (sharesAtLeastOneKey(performanceFiles, subjectFiles)) {
-                  console.log(`  Subject ${subjectId} has direct match with performance files`);
                   matchedParticipants.push(subjectId);
                 }
               }
@@ -465,30 +452,19 @@ window.savePageChanges = async (pageBeingLeftID) => {
 
               // Assign ordered participants list to performance
               performance.participants = orderedParticipants;
-              console.log(`Final participants for ${performanceId}:`, orderedParticipants);
             });
           }
 
           if (window.sodaJSONObj["dataset-structuring-method"] === "entity-buckets") {
             const { fileToSourceMap } = createStandardizedDatasetStructure();
-            console.log("File to Source Map:", fileToSourceMap);
-            console.log(
-              "Available sites:",
-              sites.map((s) => ({ id: s.id, siteId: s.metadata?.site_id }))
-            );
 
             performanceMetadata.forEach((performance) => {
               const performanceId = performance.performance_id;
               const performanceFiles = datasetEntityObj?.performances?.[performanceId];
 
-              console.log(`\n=== Processing performance: ${performanceId} (entity-buckets) ===`);
-              console.log("Performance files:", Object.keys(performanceFiles || {}));
-
               if (!Object.keys(performanceFiles || {}).length) {
                 performance.participants = [];
-                console.log(
-                  `Performance ${performanceId} has no associated files, participants = []`
-                );
+
                 return;
               }
 
@@ -498,33 +474,24 @@ window.savePageChanges = async (pageBeingLeftID) => {
 
               // For each file in performanceFiles
               for (const perfFile of Object.keys(performanceFiles)) {
-                console.log(`  Looking for match for perfFile: ${perfFile}`);
                 let found = false;
                 // Find matching entry in fileToSourceMap where sourcePath matches perfFile
                 for (const sourceMapEntry of Object.values(fileToSourceMap)) {
                   if (sourceMapEntry.sourcePath === perfFile) {
                     const entity = sourceMapEntry.entity;
-                    console.log(`    Found match! File ${perfFile} maps to entity: ${entity}`);
                     if (!entitiesSet.has(entity)) {
                       entitiesSet.add(entity);
                       matchedParticipants.push(entity);
-                      console.log(`      Added entity: ${entity}`);
                     }
-                    found = true;
                     break;
                   }
                 }
-                if (!found) {
-                  console.log(`    No match found in fileToSourceMap for ${perfFile}`);
-                }
               }
 
-              console.log(`Matched participants before ordering:`, matchedParticipants);
               // Order participants by type: sites, derived samples, samples, subjects
               const orderedParticipants = orderParticipantsByType(matchedParticipants);
 
               performance.participants = orderedParticipants;
-              console.log(`Final participants for ${performanceId}:`, orderedParticipants);
             });
           }
 
@@ -633,7 +600,6 @@ window.savePageChanges = async (pageBeingLeftID) => {
         // For all entity types (subjects, samples, sites, non-data-folders, etc.)
         // Use the same pattern as openPage to get entity IDs
         const entityIDs = getEntitiesByEntityType(entityType, true);
-        console.log(`Checking ${entityType} for empty folders...`, entityIDs);
         if (entityIDs && entityIDs.length > 0) {
           for (const entityID of entityIDs) {
             const fileCount = countFilesByDatasetStructureRelativePath(

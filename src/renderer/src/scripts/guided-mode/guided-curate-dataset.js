@@ -3060,7 +3060,6 @@ document.getElementById("guided_curate_dataset-tab").addEventListener("click", (
     event.preventDefault();
     const entityType = useGlobalStore.getState().entityType;
     const selectedHierarchyEntity = useGlobalStore.getState().selectedHierarchyEntity;
-    console.log("Entity bucketing click:", { entityType, selectedHierarchyEntity });
     window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog", {
       importRelativePath: `data/${entityType}/${selectedHierarchyEntity?.id}/`,
     });
@@ -3072,7 +3071,6 @@ document.getElementById("guided_curate_dataset-tab").addEventListener("drop", (e
     event.preventDefault();
     const entityType = useGlobalStore.getState().entityType;
     const selectedHierarchyEntity = useGlobalStore.getState().selectedHierarchyEntity;
-    console.log("Entity bucketing drop:", { entityType, selectedHierarchyEntity });
     const itemsDroppedInFileExplorer = Array.from(event.dataTransfer.files).map(
       (file) => file.path
     );

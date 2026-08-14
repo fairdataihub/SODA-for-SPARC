@@ -60,6 +60,21 @@ export const guidedUnSkipPageSet = (className) => {
 
   for (const page of pages) {
     if (page.classList.contains(currentModeClass)) {
+      // Check if this page has a workflow and if that workflow is skipped
+      const workflowAttribute = page.getAttribute("data-guided-workflow");
+      if (workflowAttribute) {
+        const workflows = workflowAttribute.split(" ");
+        const skippedWorkflows = window.sodaJSONObj["skipped-workflows"] || [];
+
+        // If ALL workflows are skipped, don't unskip this page
+        const allWorkflowsSkipped = workflows.every((workflow) =>
+          skippedWorkflows.includes(workflow)
+        );
+        if (allWorkflowsSkipped) {
+          continue; // Skip unskipping this page
+        }
+      }
+
       guidedUnSkipPage(page.id);
     }
   }
@@ -180,7 +195,6 @@ export const guidedSkipWorkflow = (workflowName) => {
 };
 
 export const guidedUnSkipWorkflow = (workflowName) => {
-  const pages = document.querySelectorAll(`[data-guided-workflow~="${workflowName}"]`);
   const curationMode = window.sodaJSONObj["curation-mode"];
   const currentModeClass = curationMode === "guided" ? "gm" : "ffm";
 
@@ -194,7 +208,10 @@ export const guidedUnSkipWorkflow = (workflowName) => {
     }
   }
 
-  for (const page of pages) {
+  // Unskip all pages that have at least one active workflow
+  const allPagesWithWorkflows = document.querySelectorAll(`[data-guided-workflow]`);
+
+  for (const page of allPagesWithWorkflows) {
     if (page.classList.contains(currentModeClass)) {
       guidedUnSkipPageByWorkflow(page.id);
     }
@@ -222,8 +239,22 @@ export const guidedUnSkipPageByWorkflow = (pageId) => {
 
     // Only keep skipped if ALL of this page's workflows are in the skipped list
     const allWorkflowsSkipped = workflows.every((workflow) => skippedWorkflows.includes(workflow));
+
     if (allWorkflowsSkipped) {
       return; // Don't unskip this page because all of its workflows are skipped
+    }
+  }
+
+  // Check if this page belongs to any skipped page set
+  const pageSetAttribute = page.getAttribute("data-page-set");
+  if (pageSetAttribute) {
+    const pageSets = pageSetAttribute.split(" ");
+    const skippedPageSets = window.sodaJSONObj["skipped-page-sets"] || [];
+
+    // Skip this page if ANY of its page sets are skipped
+    const anyPageSetSkipped = pageSets.some((set) => skippedPageSets.includes(set));
+    if (anyPageSetSkipped) {
+      return; // Don't unskip this page because at least one of its page sets is skipped
     }
   }
 
@@ -242,8 +273,11 @@ export const getNonSkippedGuidedModePages = (parentElementToGetChildrenPagesFrom
   let allChildPages = Array.from(
     parentElementToGetChildrenPagesFrom.querySelectorAll(".guided--page")
   );
+
   const nonSkippedChildPages = allChildPages.filter((page) => {
-    return page.dataset.skipPage != "true";
+    const isSkipped = page.dataset.skipPage == "true";
+
+    return !isSkipped;
   });
 
   return nonSkippedChildPages;
@@ -255,7 +289,9 @@ export const getNextPageNotSkipped = (currentPageID) => {
 
   const currentPageIndex = siblingPages.indexOf(currentPageID);
   if (currentPageIndex != siblingPages.length - 1) {
-    return document.getElementById(siblingPages[currentPageIndex + 1]);
+    const nextPageId = siblingPages[currentPageIndex + 1];
+
+    return document.getElementById(nextPageId);
   } else {
     // Keep searching through subsequent parent containers until we find a non-skipped page
     let nextParentContainer = parentContainer.nextElementSibling;

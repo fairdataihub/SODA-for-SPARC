@@ -652,7 +652,6 @@ window.openPage = async (targetPageID) => {
       if (targetPageComponentType === "data-bucketing-page") {
         const pageEntityType = targetPageDataset.entityType;
         const entityIDs = getEntitiesByEntityType(pageEntityType, true);
-        console.log("Entity IDs for bucketing page:", entityIDs);
 
         if (entityIDs && entityIDs.length > 0) {
           // Create the parent folder for this entity type if it doesn't exist

@@ -19,6 +19,7 @@ import {
   getExistingSamples,
   getExistingSites,
   getEntityDataById,
+  getEntitiesByEntityType,
 } from "../../../../stores/slices/datasetEntityStructureSlice";
 import {
   deleteSubject,
@@ -296,7 +297,6 @@ const handlePerformancesSelection = async (selectedEntities, errorArray) => {
 };
 
 export const setGuidedWorkflow = (workflowSet) => {
-  console.log("Setting workflowSet to:", workflowSet);
   const workflowSets = {
     "entity-association-workflow": "entity-association",
     "entity-bucketing-workflow": "entity-buckets",
@@ -319,10 +319,9 @@ export const setGuidedWorkflow = (workflowSet) => {
   // Set the dataset structuring method based on the selected workflow
   window.sodaJSONObj["dataset-structuring-method"] = workflowSets[workflowSet];
 
-  if (workflowSets[workflowSet] !== "entity-association") {
-    console.log(
-      "setGuidedWorkflow: Skipping guided-remaining-data-categorization-page-set for non-entity-association workflow"
-    );
+  // Only skip remaining-data-categorization for entity-bucketing workflow
+  // For non-standard-data-workflow, we want to keep these pages visible
+  if (workflowSet === "entity-bucketing-workflow") {
     guidedSkipPageSet("guided-remaining-data-categorization-page-set");
   }
 };
@@ -352,6 +351,12 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
 
     if (userSelectedEntityBucketsMethod) {
       setGuidedWorkflow("entity-bucketing-workflow");
+      const nonDataFolders = getEntitiesByEntityType("non-data-folders");
+      if (nonDataFolders.length === 0) {
+        guidedSkipPageSet("non-data-entity-bucketing-workflow");
+      } else {
+        guidedUnSkipPageSet("non-data-entity-bucketing-workflow");
+      }
     }
   }
 
