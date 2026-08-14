@@ -23,7 +23,7 @@ const DataBucketingPage = ({ pageID, pageName, entityTypeStringSingular, entityT
       <GuidedModeSection>
         <Text>
           {entityType === "non-data-folders"
-            ? "Use the interface below to add data to each of the high level folders. Select the folder from the hierarchy on the left, then import or drag and drop the files that belong in that folder on the right."
+            ? "For each high level folder on the left, select the folder and import files that correspond to the data using the import button or drag and drop."
             : `Use the interface below to add data collected from each ${entityTypeStringSingular}. Select a ${entityTypeStringSingular} from the hierarchy on the left, then import or drag and drop the data files that belong to that ${entityTypeStringSingular} on the right.`}
         </Text>
       </GuidedModeSection>

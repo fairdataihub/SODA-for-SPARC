@@ -67,8 +67,9 @@ export const checkboxCardSlice = (set) => ({
       checked: false,
     },
     "guided-button-organize-ds-via-entity-association": {
-      title: "Organize dataset via entity association",
-      description: "Choose this method for your dataset structuring approach.",
+      title: "File to entity association",
+      description:
+        "Import all your data at once, then use checkboxes to assign files to each entity.",
       Icon: IconKeyboard,
       mutuallyExclusiveWithCards: ["guided-button-organize-ds-via-entity-buckets"],
       configValue: "dataset-structuring-method",
@@ -77,8 +78,8 @@ export const checkboxCardSlice = (set) => ({
       checked: false,
     },
     "guided-button-organize-ds-via-entity-buckets": {
-      title: "Organize dataset via entity buckets",
-      description: "Choose this method for your dataset structuring approach.",
+      title: "Entity-by-entity data import",
+      description: "Select each entity and import its data files separately.",
       Icon: IconFileSpreadsheet,
       mutuallyExclusiveWithCards: ["guided-button-organize-ds-via-entity-association"],
       configValue: "dataset-structuring-method",

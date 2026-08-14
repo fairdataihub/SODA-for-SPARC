@@ -526,12 +526,13 @@ export const createStandardizedDatasetStructure = () => {
         }
 
         const sampleFolderLocation =
-          window.datasetStructureJSONObj?.folders?.data?.folders?.["samples"]?.folders?.[sampleId];
+          window.datasetStructureJSONObj?.folders?.data?.folders?.["non-derived-samples"]
+            ?.folders?.[sampleId];
         if (sampleFolderLocation) {
           // Move all files and folders from the sample folder to primary, preserving structure
           moveFilesFromFolderRecursively(
             sampleFolderLocation,
-            `data/samples/${sampleId}/`,
+            `data/non-derived-samples/${sampleId}/`,
             `primary/${parentSubjectId}/${sampleId}/`,
             fileToSourceMap,
             sampleId,

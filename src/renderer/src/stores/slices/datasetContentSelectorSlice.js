@@ -54,9 +54,28 @@ export const removeEntityFromSelectedEntities = (entity) => {
 
 export const getOxfordCommaSeparatedListOfEntities = (separator) => {
   const selectedEntities = useGlobalStore.getState().selectedEntities || [];
-  const hierarchyEntities = selectedEntities.filter((entity) =>
-    ["subjects", "samples", "sites"].includes(entity)
-  );
+  const entityTypeFilter = [
+    "subjects",
+    "samples",
+    "derivedSamples",
+    "subjectSites",
+    "sampleSites",
+    "performances",
+  ];
+
+  const hierarchyEntities = selectedEntities
+    .filter((entity) => entityTypeFilter.includes(entity))
+    .map((entity) => {
+      const entityNameMap = {
+        subjects: "subject",
+        samples: "sample",
+        derivedSamples: "derived sample",
+        subjectSites: "subject site",
+        sampleSites: "sample site",
+        performances: "performance",
+      };
+      return entityNameMap[entity] || entity;
+    });
 
   if (!hierarchyEntities || hierarchyEntities.length === 0) return "";
   if (hierarchyEntities.length === 1) return hierarchyEntities[0];
