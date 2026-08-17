@@ -705,26 +705,11 @@ window.openPage = async (targetPageID) => {
     await openPageGenerateDataset(targetPageID);
     await openPageSharedWorkflowSteps(targetPageID);
 
-    const showCorrectFileExplorerByPage = (pageID) => {
-      // Get the element for the pageId
-
-      // Special case for data categorization pages
-      if (targetPageDataset.componentType === "data-categorization-page") {
-        setActiveFileExplorer("entity-data-selector");
-        return;
-      }
-      if (targetPageDataset.componentType === "data-bucketing-page") {
-        setActiveFileExplorer("entity-bucketing-data-import-tab");
-        return;
-      }
-      setActiveFileExplorer(pageID);
-    };
-    showCorrectFileExplorerByPage(targetPageID);
-
     const renderCorrectFileExplorerByPage = (pageID) => {
       const isCategorizationPageType =
         targetPageDataset.componentType === "data-categorization-page" ||
-        targetPageDataset.componentType === "data-categories-questionnaire-page";
+        targetPageDataset.componentType === "data-categories-questionnaire-page" ||
+        targetPageDataset.componentType === "data-bucketing-page";
 
       // Review pages use the standardized dataset structure
       if (PAGE_CONFIG["review-pages"].has(pageID)) {
@@ -744,6 +729,7 @@ window.openPage = async (targetPageID) => {
         });
 
         reRenderTreeView(true);
+        setActiveFileExplorer(pageID);
         return;
       }
 
@@ -763,6 +749,21 @@ window.openPage = async (targetPageID) => {
         });
 
         reRenderTreeView(true);
+
+        // Set the correct file explorer based on the page type
+        switch (targetPageDataset.componentType) {
+          case "data-bucketing-page":
+            setActiveFileExplorer("entity-bucketing-data-import-tab");
+            break;
+          case "data-categorization-page":
+            setActiveFileExplorer("entity-data-selector");
+            break;
+          case "data-categories-questionnaire-page":
+            setActiveFileExplorer("entity-data-selector");
+            break;
+          default:
+            setActiveFileExplorer("entity-data-selector");
+        }
       }
 
       // FFM unstructured import page

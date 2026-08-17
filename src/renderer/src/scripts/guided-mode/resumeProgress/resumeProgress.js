@@ -339,6 +339,15 @@ const patchPreviousGuidedModeVersions = async () => {
     return entity;
   });
 
+  // Apply the same lowercase patch to deSelected-entities
+  const deSelectedEntities = window.sodaJSONObj["deSelected-entities"] || [];
+  window.sodaJSONObj["deSelected-entities"] = deSelectedEntities.map((entity) => {
+    if (lowercaseFolders.includes(entity.toLowerCase())) {
+      return entity.toLowerCase();
+    }
+    return entity;
+  });
+
   // Update non-data-folders object keys to lowercase
   const nonDataFoldersObj = window.sodaJSONObj["dataset-entity-obj"]?.["non-data-folders"];
   if (nonDataFoldersObj) {
