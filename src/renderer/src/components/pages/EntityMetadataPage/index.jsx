@@ -994,20 +994,6 @@ const EntityMetadataForm = () => {
               readOnly={!!selectedHierarchyEntity}
               disabled={!!selectedHierarchyEntity}
             />
-            <TextInput
-              label="Specimen ID"
-              description="The ID of the specimen this site belongs to (subject or sample)"
-              placeholder={
-                entityBeingAddedParentSample || currentSelectedHierarchyEntityParentSample
-                  ? "e.g., sam-001"
-                  : "e.g., sub-001"
-              }
-              required
-              value={getMetadataValue("specimen_id")}
-              onChange={(e) => handleChange("specimen_id", e.target.value)}
-              disabled={!!selectedHierarchyEntity}
-              readOnly={!!selectedHierarchyEntity}
-            />
             <OptionalFieldsNotice />
             <TextInput
               label="Site type"
@@ -1116,7 +1102,8 @@ const EntityMetadataPage = ({ entityType }) => {
           {showFullMetadataFormFields
             ? `Tell us more about the ${entityType} you collected data from in the interface below.`
             : `The SDS requires descriptive metadata for all entities from which your experimental data were collected. These entities include ${getOxfordCommaSeparatedListOfEntities(
-                "and"
+                "and",
+                false
               )}, and are used to describe and structure your dataset.`}
         </Text>
         {!showFullMetadataFormFields && (
