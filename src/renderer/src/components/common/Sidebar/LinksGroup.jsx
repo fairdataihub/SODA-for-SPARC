@@ -11,6 +11,7 @@ import { getNonSkippedGuidedModePages } from "../../../scripts/guided-mode/pages
 import classes from "./Sidebar.module.css";
 import Swal from "sweetalert2";
 import { setOpenSidebarTab } from "../../../stores/slices/sideBarSlice";
+import { setNavigationState } from "../../../stores/slices/guidedModeSlice";
 import { checkIfPageIsValid } from "../../../scripts/guided-mode/pages/sidebar";
 import { swalShowError } from "../../../scripts/utils/swal-utils";
 import useGlobalStore from "../../../stores/globalStore";
@@ -41,7 +42,7 @@ async function handlePageNavigation(page, currentPage) {
   const intermediatePages = allPages.slice(currentIndex + 1, targetIndex);
 
   try {
-    await window.savePageChanges(currentPage);
+    await window.savePageChanges(currentPage, userIsNavigatingForward);
   } catch (errorArray) {
     if (userIsNavigatingForward) {
       await Swal.fire({
@@ -93,6 +94,7 @@ async function handlePageNavigation(page, currentPage) {
     }
   }
 
+  setNavigationState(true, userIsNavigatingForward);
   await window.openPage(targetPage);
 }
 

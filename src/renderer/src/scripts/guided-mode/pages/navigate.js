@@ -1,5 +1,6 @@
 import { getNextPageNotSkipped, getPrevPageNotSkipped } from "./navigationUtils/pageSkipping";
 import { prepareGuidedSidebar } from "../../../assets/nav";
+import { setNavigationState } from "../../../stores/slices/guidedModeSlice";
 import Swal from "sweetalert2";
 import { swalShowError, swalShowInfo } from "../../utils/swal-utils";
 
@@ -39,9 +40,10 @@ window.openCurationMode = async (curationMode) => {
 export const handleNextButtonClick = async () => {
   //Get the ID of the current page to handle actions on page leave (next button pressed)
   window.pageBeingLeftID = window.CURRENT_PAGE.id;
+  setNavigationState(true, true);
 
   try {
-    await window.savePageChanges(window.pageBeingLeftID);
+    await window.savePageChanges(window.pageBeingLeftID, true);
 
     // Delete the free-form progress file when leaving dataset generation
     // because the workflow is complete at this point.
@@ -113,9 +115,10 @@ export const handleNextButtonClick = async () => {
  */
 export const handleBackButtonClick = async () => {
   window.pageBeingLeftID = window.CURRENT_PAGE.id;
+  setNavigationState(true, false);
 
   try {
-    await window.savePageChanges(window.pageBeingLeftID);
+    await window.savePageChanges(window.pageBeingLeftID, false);
   } catch (error) {
     console.error("Error saving page changes during back button click", error);
   }
@@ -181,7 +184,7 @@ const guidedSaveAndExit = async () => {
     const currentPageID = window.CURRENT_PAGE.id;
 
     try {
-      await window.savePageChanges(currentPageID);
+      await window.savePageChanges(currentPageID, undefined);
     } catch (error) {
       const pageWithErrorName = window.CURRENT_PAGE.dataset.pageName;
 

@@ -98,10 +98,11 @@ export const guidedSaveProgress = async () => {
 /**
  *
  * @param {string} pageBeingLeftID  - The id of the html page that the user is leaving
+ * @param {boolean} movingForward - Whether the user is navigating forward (true) or backward (false)
  * @description Validate and save user progress for the page being left in the Prepare Dataset Step-by-Step workflow.
  *              Progress is saved in a progress file the user can access to resume their work after exiting their active workflow.
  */
-window.savePageChanges = async (pageBeingLeftID) => {
+window.savePageChanges = async (pageBeingLeftID, movingForward) => {
   // This function is used by both the navigation bar and the side buttons,
   // and whenever it is being called, we know that the user is trying to save the changes on the current page.
   // this function is async because we sometimes need to make calls to validate data before the page is ready to be left.
@@ -613,52 +614,56 @@ window.savePageChanges = async (pageBeingLeftID) => {
 
         // Show warning if any entities are empty
         if (emptyEntities.length > 0) {
-          const isNonDataFolders = entityType === "non-data-folders";
-
-          if (isNonDataFolders) {
-            // Swal for non-data-folders
-            await swalListSingleAction(
-              emptyEntities,
-              "Folders that did not have any data files added detected",
-              `The following folders did not have any data files added to them. You indicated that
+          // Only show swals when the user is moving forward, if they move backward, we don't
+          // want the swals to pop up.
+          if (movingForward === true) {
+            const isNonDataFolders = entityType === "non-data-folders";
+            console.log("movingForward", movingForward);
+            if (isNonDataFolders) {
+              // Swal for non-data-folders
+              await swalListSingleAction(
+                emptyEntities,
+                "Folders that did not have any data files added detected",
+                `The following folders did not have any data files added to them. You indicated that
               your dataset contains data that should go in these folders. Please add data to these
               folders, or go back to the dataset content page and indicate that your dataset does not
               contain these types of files.`,
-              "Please add data to these folders before continuing."
-            );
+                "Please add data to these folders before continuing."
+              );
 
-            // Prevent navigation - user must add data or change dataset content
-            errorArray.push({
-              type: "notyf",
-              message: `Please add data to these folders, or go back to the dataset content page and indicate that your dataset does not contain these types of files.`,
-            });
-            throw errorArray;
-          } else {
-            // Swal for entities (subjects, samples, sites, etc.)
-            const userLegibleEntityTypePlural = userLegibleEntityType.endsWith("s")
-              ? userLegibleEntityType
-              : `${userLegibleEntityType}s`;
+              // Prevent navigation - user must add data or change dataset content
+              errorArray.push({
+                type: "notyf",
+                message: `Please add data to these folders, or go back to the dataset content page and indicate that your dataset does not contain these types of files.`,
+              });
+              throw errorArray;
+            } else {
+              // Swal for entities (subjects, samples, sites, etc.)
+              const userLegibleEntityTypePlural = userLegibleEntityType.endsWith("s")
+                ? userLegibleEntityType
+                : `${userLegibleEntityType}s`;
 
-            const continueWithEmptyEntities = await swalListDoubleAction(
-              emptyEntities,
-              `${userLegibleEntityTypePlural} that did not have any data files added detected`,
-              `The following ${userLegibleEntityTypePlural} did not have any data files added to them.
+              const continueWithEmptyEntities = await swalListDoubleAction(
+                emptyEntities,
+                `${userLegibleEntityTypePlural} that did not have any data files added detected`,
+                `The following ${userLegibleEntityTypePlural} did not have any data files added to them.
               You indicated that your dataset contains these ${userLegibleEntityTypePlural} and should
               have data files in their folders. You can either "Continue without adding data" and the empty
               ${userLegibleEntityType} folders will remain in your dataset, or "Go back to add data" to add
               files to these ${userLegibleEntityTypePlural} now.`,
-              "Continue without adding data",
-              "Go back to add data",
-              `What would you like to do with the ${userLegibleEntityTypePlural} that did not have any data files added to them?`
-            );
+                "Continue without adding data",
+                "Go back to add data",
+                `What would you like to do with the ${userLegibleEntityTypePlural} that did not have any data files added to them?`
+              );
 
-            if (!continueWithEmptyEntities) {
-              // User chose to go back - throw error to prevent navigation
-              errorArray.push({
-                type: "notyf",
-                message: `Please add data to these ${userLegibleEntityType} folders or remove the empty ${userLegibleEntityTypePlural} on the entity metadata page before continuing.`,
-              });
-              throw errorArray;
+              if (!continueWithEmptyEntities) {
+                // User chose to go back - throw error to prevent navigation
+                errorArray.push({
+                  type: "notyf",
+                  message: `Please add data to these ${userLegibleEntityType} folders or remove the empty ${userLegibleEntityTypePlural} on the entity metadata page before continuing.`,
+                });
+                throw errorArray;
+              }
             }
           }
         }

@@ -8,8 +8,11 @@ export const guidedModeSlice = (set) => ({
   hiddenGuidedModeSections: [],
   manifestFileGenerationDisabled: false,
   curationMode: null,
-  sidebarLoadingState: false,
   datasetStructuringMode: null,
+  navigationState: {
+    navigationInProgress: false,
+    movingForward: false,
+  },
 });
 
 export const setGuidedDatasetName = (datasetName) => {
@@ -53,10 +56,16 @@ export const setCurationMode = (curationMode) => {
   useGlobalStore.setState({ curationMode });
 };
 
-export const setSideBarLoadingState = (isLoading) => {
-  useGlobalStore.setState({ sidebarLoadingState: isLoading });
-};
-
 export const setDatasetStructuringMode = (datasetStructuringMode) => {
   useGlobalStore.setState({ datasetStructuringMode });
+};
+
+export const setNavigationState = (navigationInProgress, movingForward) => {
+  useGlobalStore.setState((state) => ({
+    navigationState: {
+      ...state.navigationState,
+      navigationInProgress,
+      ...(movingForward !== undefined && { movingForward }),
+    },
+  }));
 };
