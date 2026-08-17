@@ -66,5 +66,5 @@ export const renderSideBar = (activePage) => {
 
 export const checkIfPageIsValid = async (pageID) => {
   await window.openPage(pageID);
-  await window.savePageChanges(pageID, undefined);
+  await window.savePageChanges(pageID, true);
 };

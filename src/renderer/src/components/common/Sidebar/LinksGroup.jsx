@@ -74,7 +74,6 @@ async function handlePageNavigation(page, currentPage) {
       } catch (error) {
         clientError(error);
         const pageName = document.getElementById(pageId)?.getAttribute("data-page-name") || pageId;
-        await window.openPage(pageId);
 
         // Ensure error is an array and format it properly
         const errorArray = Array.isArray(error) ? error : [error];
