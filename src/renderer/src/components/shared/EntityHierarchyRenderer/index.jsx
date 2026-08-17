@@ -367,6 +367,7 @@ const EntityHierarchyRenderer = ({
 
   // Handles both flat arrays of strings (like non-data-folders) and objects with id property
   const renderEntityList = (entities) => {
+    console.log("Rendering entities:", entities, "Selected entity ID:", selectedEntityId);
     return entities.map((entity, index) => {
       // Handle flat array of strings (like non-data-folders)
       const entityId = typeof entity === "string" ? entity : entity.id;

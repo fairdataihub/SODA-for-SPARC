@@ -61,10 +61,10 @@ const getBadgeColor = (entityId) => {
   if (entityId.startsWith("perf-")) return "red";
 
   // Entity type based colors
-  if (entityId === "Code") return "blue";
+  if (entityId === "code") return "blue";
   if (entityId === "Experimental") return "green";
-  if (entityId === "Protocol") return "gray";
-  if (entityId === "Docs") return "cyan";
+  if (entityId === "protocol") return "gray";
+  if (entityId === "docs") return "cyan";
   if (entityId === "Primary") return "teal";
   if (entityId === "Source") return "violet";
   if (entityId === "Derivative") return "yellow";
@@ -414,13 +414,13 @@ const generateEmptyFolderStructureMessage = (entityType, isEntityBucketingPage, 
         return "No data has been added to this derived sample yet. Use the interface above to drag and drop or import files for this derived sample.";
       case "non-data-folders":
         switch (activeEntity) {
-          case "Code":
+          case "code":
             return "No code files have been added to this entity yet. Use the interface above to drag and drop or import code files for this entity.";
           case "Experimental":
             return "No experimental files have been added to this entity yet. Use the interface above to drag and drop or import experimental files for this entity.";
-          case "Protocol":
+          case "protocol":
             return "No protocol files have been added to this entity yet. Use the interface above to drag and drop or import protocol files for this entity.";
-          case "Docs":
+          case "docs":
             return "No documentation files have been added to this entity yet. Use the interface above to drag and drop or import documentation files for this entity.";
           default:
             return "No folders or files to display. You can import files for this entity using the interface above.";

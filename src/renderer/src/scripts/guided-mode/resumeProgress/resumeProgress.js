@@ -205,6 +205,15 @@ const patchPreviousGuidedModeVersions = async () => {
   const oldHighLevelFolders = datasetEntityObj?.["high-level-folder-data-categorization"];
   const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
 
+  // Set dataset-structuring-method to entity-association for datasets from versions before 19.0.0
+  const lastVersionOfSodaUsed = window.sodaJSONObj["last-version-of-soda-used"];
+  if (lastVersionOfSodaUsed && lastVersionOfSodaUsed < "19.0.0") {
+    if (!window.sodaJSONObj["button-config"]) {
+      window.sodaJSONObj["button-config"] = {};
+    }
+    window.sodaJSONObj["button-config"]["dataset-structuring-method"] = "entity-association";
+  }
+
   // Migrate old manifest file data to new location
   const oldManifestData = window.sodaJSONObj["guided-manifest-file-data"];
   if (oldManifestData && Object.keys(oldManifestData).length > 0) {
@@ -232,17 +241,17 @@ const patchPreviousGuidedModeVersions = async () => {
     // Patch Non-data folders
     const codeFiles = oldHighLevelFolders["Code"];
     if (codeFiles && Object.keys(codeFiles).length > 0) {
-      datasetEntityObj["non-data-folders"]["Code"] = codeFiles;
+      datasetEntityObj["non-data-folders"]["code"] = codeFiles;
     }
 
     const protocolFiles = oldHighLevelFolders["Protocol"];
     if (protocolFiles && Object.keys(protocolFiles).length > 0) {
-      datasetEntityObj["non-data-folders"]["Protocol"] = protocolFiles;
+      datasetEntityObj["non-data-folders"]["protocol"] = protocolFiles;
     }
 
     const docsFiles = oldHighLevelFolders["Documentation"];
     if (docsFiles && Object.keys(docsFiles).length > 0) {
-      datasetEntityObj["non-data-folders"]["Docs"] = docsFiles;
+      datasetEntityObj["non-data-folders"]["docs"] = docsFiles;
     }
 
     // Remove old key
@@ -317,11 +326,30 @@ const patchPreviousGuidedModeVersions = async () => {
       .concat("sampleSites");
   }
 
-  // Update "code" in selected-entities to "Code"
-  if (selectedEntities.includes("code")) {
-    window.sodaJSONObj["selected-entities"] = selectedEntities
-      .filter((entity) => entity.toLowerCase() !== "code")
-      .concat("Code");
+  // Update non-data folder names to lowercase for consistency
+  const lowercaseFolders = ["code", "protocol", "docs"];
+  const oldNonDataFolderVariables = lowercaseFolders.map(
+    (folder) => folder.charAt(0).toUpperCase() + folder.slice(1)
+  );
+
+  window.sodaJSONObj["selected-entities"] = selectedEntities.map((entity) => {
+    if (lowercaseFolders.includes(entity.toLowerCase())) {
+      return entity.toLowerCase();
+    }
+    return entity;
+  });
+
+  // Update non-data-folders object keys to lowercase
+  const nonDataFoldersObj = window.sodaJSONObj["dataset-entity-obj"]?.["non-data-folders"];
+  if (nonDataFoldersObj) {
+    for (let i = 0; i < lowercaseFolders.length; i++) {
+      const folder = lowercaseFolders[i];
+      const capitalizedFolder = oldNonDataFolderVariables[i];
+      if (nonDataFoldersObj[capitalizedFolder]) {
+        nonDataFoldersObj[folder] = nonDataFoldersObj[capitalizedFolder];
+        delete nonDataFoldersObj[capitalizedFolder];
+      }
+    }
   }
 
   // Create a mutable copy of the dataset entity array to modify and then replace the original

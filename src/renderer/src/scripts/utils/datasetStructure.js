@@ -430,9 +430,9 @@ export const createStandardizedDatasetStructure = () => {
   try {
     if (datasetStructuringMethod === "entity-association") {
       // Move Code files into the code/ folder
-      moveFilesByCategory(datasetEntityObj?.["non-data-folders"]?.["Code"], "code/");
-      moveFilesByCategory(datasetEntityObj?.["non-data-folders"]?.["Docs"], "docs/");
-      moveFilesByCategory(datasetEntityObj?.["non-data-folders"]?.["Protocol"], "protocol/");
+      moveFilesByCategory(datasetEntityObj?.["non-data-folders"]?.["code"], "code/");
+      moveFilesByCategory(datasetEntityObj?.["non-data-folders"]?.["docs"], "docs/");
+      moveFilesByCategory(datasetEntityObj?.["non-data-folders"]?.["protocol"], "protocol/");
 
       // Move Primary files into the primary/ folder
       // (Files that are marked as primary during the computational workflow)
@@ -442,6 +442,16 @@ export const createStandardizedDatasetStructure = () => {
       );
       moveFilesByCategory(
         datasetEntityObj?.["experimental-data-categorization"]?.["Derivative"],
+        "derivative/"
+      );
+
+      // Move remaining data categorization files
+      moveFilesByCategory(
+        datasetEntityObj?.["remaining-data-categorization"]?.["Source"],
+        "source/"
+      );
+      moveFilesByCategory(
+        datasetEntityObj?.["remaining-data-categorization"]?.["Derivative"],
         "derivative/"
       );
 

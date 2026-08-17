@@ -118,11 +118,6 @@ export const openPageDatasetStructure = async (targetPageID) => {
 
       await purgeNonExistentFiles(window.datasetStructureJSONObj);
 
-      // Remove empty folders
-      window.datasetStructureJSONObj = deleteEmptyFoldersFromStructure(
-        window.datasetStructureJSONObj
-      );
-
       // Prepare cleaned dataset structure for server-side processing
       const { standardizedDatasetStructure, fileToSourceMap } =
         createStandardizedDatasetStructure();

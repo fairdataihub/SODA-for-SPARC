@@ -297,6 +297,7 @@ const handlePerformancesSelection = async (selectedEntities, errorArray) => {
 };
 
 export const setGuidedWorkflow = (workflowSet) => {
+  console.log(`Setting guided workflow to: ${workflowSet}`);
   const workflowSets = {
     "entity-association-workflow": "entity-association",
     "entity-bucketing-workflow": "entity-buckets",
@@ -442,12 +443,18 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     window.sodaJSONObj["deSelected-entities"] = deSelectedEntities;
 
     // Determine which high-level folders to include based on selections
-    const possibleNonDataFolders = ["Code", "Protocol", "Docs"];
+    const possibleNonDataFolders = ["code", "protocol", "docs"];
 
     // Filter selected entities to get the actual folder selections
     const nonDataFolders = possibleNonDataFolders.filter((folder) =>
       selectedEntities.includes(folder)
     );
+
+    if (nonDataFolders.length > 0 && !selectedEntities.includes("subjects")) {
+      guidedSkipPageSet("guided-entity-data-import-workflow");
+    } else {
+      guidedUnSkipPageSet("guided-entity-data-import-workflow");
+    }
 
     // Set up supporting data categorization entities and page visibility
     // Show/hide the supporting data categorization page based on whether user has any supporting folders
@@ -459,6 +466,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID) => {
     } else {
       // If the user selected no to everything, set the workflow to non-standard-data-workflow to skip the entity association and bucketing workflow pages since they are not relevant
       if (!selectedEntities.includes("subjects")) {
+        // Case where they select no to anything
         setGuidedWorkflow("non-standard-data-workflow");
       }
     }

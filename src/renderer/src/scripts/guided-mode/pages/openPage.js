@@ -332,7 +332,7 @@ window.openPage = async (targetPageID) => {
               [
                 {
                   type: "non-data-folders",
-                  names: ["Protocol", "Docs", "Code"],
+                  names: ["protocol", "docs", "code"],
                 },
               ]
             );
@@ -346,7 +346,7 @@ window.openPage = async (targetPageID) => {
               [
                 {
                   type: "non-data-folders",
-                  names: ["Protocol", "Docs", "Code"],
+                  names: ["protocol", "docs", "code"],
                 },
                 {
                   type: "experimental",
@@ -378,7 +378,7 @@ window.openPage = async (targetPageID) => {
               [
                 {
                   type: "non-data-folders",
-                  names: ["Protocol", "Docs", "Code"],
+                  names: ["protocol", "docs", "code"],
                 },
               ]
             );
@@ -398,7 +398,7 @@ window.openPage = async (targetPageID) => {
               [
                 {
                   type: "non-data-folders",
-                  names: ["Protocol", "Docs", "Code"],
+                  names: ["protocol", "docs", "code"],
                 },
               ]
             );
@@ -416,7 +416,7 @@ window.openPage = async (targetPageID) => {
                 },
                 {
                   type: "non-data-folders",
-                  names: ["Protocol", "Docs", "Code"],
+                  names: ["protocol", "docs", "code"],
                 },
               ]
             );
@@ -440,7 +440,7 @@ window.openPage = async (targetPageID) => {
             const filterList = [
               {
                 type: "non-data-folders",
-                names: ["Protocol", "Docs", "Code"],
+                names: ["protocol", "docs", "code"],
               },
             ];
             setFileVisibilityFilter(
@@ -475,7 +475,7 @@ window.openPage = async (targetPageID) => {
             const filterList = [
               {
                 type: "non-data-folders",
-                names: ["Protocol", "Docs", "Code"],
+                names: ["protocol", "docs", "code"],
               },
               {
                 type: "sites",
@@ -516,7 +516,7 @@ window.openPage = async (targetPageID) => {
             const filterList = [
               {
                 type: "non-data-folders",
-                names: ["Protocol", "Docs", "Code"],
+                names: ["protocol", "docs", "code"],
               },
               {
                 type: "sites",
@@ -559,7 +559,7 @@ window.openPage = async (targetPageID) => {
             const filterList = [
               {
                 type: "non-data-folders",
-                names: ["Protocol", "Docs", "Code"],
+                names: ["protocol", "docs", "code"],
               },
               {
                 type: "sites",
@@ -615,7 +615,7 @@ window.openPage = async (targetPageID) => {
               [
                 {
                   type: "non-data-folders",
-                  names: ["Protocol", "Docs", "Code"],
+                  names: ["protocol", "docs", "code"],
                 },
               ]
             );
@@ -641,7 +641,7 @@ window.openPage = async (targetPageID) => {
               [
                 {
                   type: "non-data-folders",
-                  names: ["Protocol", "Docs", "Code"],
+                  names: ["protocol", "docs", "code"],
                 },
               ]
             );
