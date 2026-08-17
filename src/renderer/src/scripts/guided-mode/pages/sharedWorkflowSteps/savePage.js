@@ -17,7 +17,7 @@ import { swalConfirmAction, swalShowInfo } from "../../../utils/swal-utils";
 
 import api from "../../../others/api/api";
 
-export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
+export const savePageSharedWorkflowSteps = async (pageBeingLeftID, movingForward) => {
   const errorArray = [];
 
   if (

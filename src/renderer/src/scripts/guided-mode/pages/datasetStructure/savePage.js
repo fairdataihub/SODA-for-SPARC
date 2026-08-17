@@ -327,7 +327,7 @@ export const setGuidedWorkflow = (workflowSet) => {
   }
 };
 
-export const savePageDatasetStructure = async (pageBeingLeftID) => {
+export const savePageDatasetStructure = async (pageBeingLeftID, movingForward) => {
   const errorArray = [];
 
   if (pageBeingLeftID === "guided-dataset-structuring-method-selection-tab") {

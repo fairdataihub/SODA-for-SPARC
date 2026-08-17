@@ -844,12 +844,12 @@ window.savePageChanges = async (pageBeingLeftID, movingForward) => {
     }
 
     // Handle page exit logic for pages that are not controlled by React components
-    await savePageDatasetStructure(pageBeingLeftID);
-    await savePageCurationPreparation(pageBeingLeftID);
-    await savePagePrepareMetadata(pageBeingLeftID);
-    await savePagePennsieveDetails(pageBeingLeftID);
-    await savePageSharedWorkflowSteps(pageBeingLeftID);
-    await savePageGenerateDataset(pageBeingLeftID);
+    await savePageDatasetStructure(pageBeingLeftID, movingForward);
+    await savePageCurationPreparation(pageBeingLeftID, movingForward);
+    await savePagePrepareMetadata(pageBeingLeftID, movingForward);
+    await savePagePennsieveDetails(pageBeingLeftID, movingForward);
+    await savePageSharedWorkflowSteps(pageBeingLeftID, movingForward);
+    await savePageGenerateDataset(pageBeingLeftID, movingForward);
 
     const datasetEntityArrayCopy = useGlobalStore.getState().datasetEntityArray;
     window.sodaJSONObj["dataset-entity-array"] = datasetEntityArrayCopy;
