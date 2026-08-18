@@ -120,7 +120,8 @@ export const createPyProc = async () => {
         pyflaskProcess.on("close", (code) => {
           log.info(`child process exited with code ${code}`);
           log.info("Server output during session found below:");
-          log.info(sessionServerOutput);
+          // Comment out when testing if necessary
+          // log.info(sessionServerOutput);
           global.serverLive = false;
         });
         // Event listener for when the process exits
@@ -245,8 +246,6 @@ ipcMain.handle("restart-server", (event, port) => {
     const READY_MESSAGE = ["running on"]; // <-- Change this to match your server's ready output
 
     pyflaskProcess.stdout.on("data", (data) => {
-      log.info(`stdout data check: ${data.toString()}`);
-
       const output = data.toString();
       const logOutput = `[pyflaskProcess output] ${output}`;
       event.sender.send("restart-server:progress", logOutput);
@@ -265,7 +264,6 @@ ipcMain.handle("restart-server", (event, port) => {
     });
 
     pyflaskProcess.stderr.on("data", (data) => {
-      log.info(`stderr data check: ${data.toString()}`);
       const output = data.toString();
       const logOutput = `[pyflaskProcess stderr] ${output}`;
       event.sender.send("restart-server:progress", logOutput);

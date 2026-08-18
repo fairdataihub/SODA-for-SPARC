@@ -27,7 +27,9 @@ const clientError = (error) => {
     window.log.error(JSON.stringify(error_headers));
   } else if (error.request) {
     // The request was made but no response was received
-    window.log.error(error.request);
+    window.log.error(
+      `Error with reqest to ${error.config?.url} with method ${error.config?.method}`
+    );
   }
 };
 
