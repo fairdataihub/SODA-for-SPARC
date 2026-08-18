@@ -1,12 +1,5 @@
 import useGlobalStore from "../globalStore";
 import { produce } from "immer";
-import {
-  getExistingSubjects,
-  getExistingSamples,
-  getExistingSites,
-  getExistingPerformancesR,
-} from "./datasetEntityStructureSlice";
-import { setFileVisibilityFilter } from "./datasetTreeViewSlice";
 import { getFileDetailsByRelativePath } from "../../scripts/utils/datasetStructure";
 
 // Slice initialization for the entity selector state
@@ -45,8 +38,6 @@ export const removeEntityFromEntityList = (entityType, entityName) => {
     produce((state) => {
       if (state.datasetEntityObj && state.datasetEntityObj[entityType]) {
         delete state.datasetEntityObj[entityType][entityName];
-      } else {
-        console.warn(`Entity type ${entityType} does not exist in datasetEntityObj.`);
       }
     })
   );
@@ -117,8 +108,6 @@ export const removeEntityType = (entityType) => {
     produce((state) => {
       if (state.datasetEntityObj && state.datasetEntityObj[entityType]) {
         delete state.datasetEntityObj[entityType];
-      } else {
-        console.warn(`Entity type ${entityType} does not exist in datasetEntityObj.`);
       }
     })
   );

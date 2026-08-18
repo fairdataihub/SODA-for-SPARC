@@ -33,6 +33,23 @@ const LIST_CONFIGS = {
       ].filter(Boolean),
   },
 
+  "dataset-structuring-page-entity-explanation-list": {
+    title: "You will need to provide data for:",
+    getItems: (selectedEntities) =>
+      [
+        selectedEntities.includes("subjects") &&
+          "Subjects: data about each individual (human or animal) participating in your study.",
+        selectedEntities.includes("samples") &&
+          "Samples: data from each physical specimen collected from subjects.",
+        selectedEntities.includes("derivedSamples") &&
+          "Derived Samples: data from additional samples created from those collected directly from subjects.",
+        selectedEntities.includes("subjectSites") &&
+          "Subject Sites: data from specific anatomical locations or extraction points on subjects.",
+        selectedEntities.includes("sampleSites") &&
+          "Sample Sites: data from specific anatomical locations or extraction points on samples.",
+      ].filter(Boolean),
+  },
+
   "selected-folders": {
     title: "Selected folders:",
     getItems: () => [],

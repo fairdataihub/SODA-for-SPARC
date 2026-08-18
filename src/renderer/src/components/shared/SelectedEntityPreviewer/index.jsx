@@ -50,11 +50,11 @@ const SelectedEntityPreviewer = () => {
   }
 
   return (
-    <Paper px="md" pb="md" withBorder mt="xs">
-      <Text fw={600} mb={5} mt="sm">
+    <Paper px="md" py={4} withBorder my="xs">
+      <Text fw={600} mb={2}>
         Overview of {activeEntity}:
       </Text>
-      <Stack gap={3}>
+      <Stack gap={1}>
         {Object.entries(relevantFields).map(([key, value]) => (
           <Group key={key}>
             <Text fw={600} miw={100}>

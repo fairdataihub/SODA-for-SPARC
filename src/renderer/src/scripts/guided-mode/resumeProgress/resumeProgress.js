@@ -94,6 +94,12 @@ window.guidedResumeProgress = async (progressFileName) => {
 
     window.datasetStructureJSONObj = window.sodaJSONObj["dataset-structure"];
 
+    // Update the global store with the new dataset structure to ensure UI components reflect the correct data
+    // Deep clone to ensure complete isolation between datasets
+    useGlobalStore.setState({
+      datasetStructureJSONObj: structuredClone(window.datasetStructureJSONObj),
+    });
+
     // Save the skipped pages in a temp variable since guidedTransitionFromHome will remove them
     const prevSessionSkikppedPages = [...window.sodaJSONObj["skipped-pages"]];
 
@@ -157,12 +163,25 @@ const guidedGetPageToReturnTo = async () => {
     return firstPageID;
   }
 
+  // TODO: Change to not allow user to sign in with different workspace/acct. Though acct may be difficult to
   const needsReconfirm = guidedCheckIfUserNeedsToReconfirmAccountDetails();
   if (needsReconfirm) {
     await swalShowInfo(
       "Your Pennsieve account or workspace has changed since you last worked on this dataset.",
-      "Please confirm your Pennsieve account and workspace details."
+      `
+      <div style="display: flex; flex-direction: row; text-align: left;">
+        Your workspace when last working on this dataset was: ${
+          window.sodaJSONObj?.["last-confirmed-pennsieve-workspace-details"]
+        }. 
+        </br>
+        Your current workspace is: ${guidedGetCurrentUserWorkSpace()}
+        </br>
+        </br>
+        You will be taken to the Pennsieve Login Page. Please confirm that your current workspace is the one you would like to use for your upload, and change it if not.
+       </div>
+       `
     );
+
     return window.sodaJSONObj["curation-mode"] === "free-form"
       ? "ffm-pennsieve-login-tab"
       : "gm-pennsieve-login-tab";
@@ -185,6 +204,15 @@ const patchPreviousGuidedModeVersions = async () => {
   const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
   const oldHighLevelFolders = datasetEntityObj?.["high-level-folder-data-categorization"];
   const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
+
+  // Set dataset-structuring-method to entity-association for datasets from versions before 19.0.0
+  const lastVersionOfSodaUsed = window.sodaJSONObj["last-version-of-soda-used"];
+  if (lastVersionOfSodaUsed && lastVersionOfSodaUsed < "19.0.0") {
+    if (!window.sodaJSONObj["button-config"]) {
+      window.sodaJSONObj["button-config"] = {};
+    }
+    window.sodaJSONObj["button-config"]["dataset-structuring-method"] = "entity-association";
+  }
 
   // Migrate old manifest file data to new location
   const oldManifestData = window.sodaJSONObj["guided-manifest-file-data"];
@@ -213,17 +241,17 @@ const patchPreviousGuidedModeVersions = async () => {
     // Patch Non-data folders
     const codeFiles = oldHighLevelFolders["Code"];
     if (codeFiles && Object.keys(codeFiles).length > 0) {
-      datasetEntityObj["non-data-folders"]["Code"] = codeFiles;
+      datasetEntityObj["non-data-folders"]["code"] = codeFiles;
     }
 
     const protocolFiles = oldHighLevelFolders["Protocol"];
     if (protocolFiles && Object.keys(protocolFiles).length > 0) {
-      datasetEntityObj["non-data-folders"]["Protocol"] = protocolFiles;
+      datasetEntityObj["non-data-folders"]["protocol"] = protocolFiles;
     }
 
     const docsFiles = oldHighLevelFolders["Documentation"];
     if (docsFiles && Object.keys(docsFiles).length > 0) {
-      datasetEntityObj["non-data-folders"]["Docs"] = docsFiles;
+      datasetEntityObj["non-data-folders"]["docs"] = docsFiles;
     }
 
     // Remove old key
@@ -298,11 +326,39 @@ const patchPreviousGuidedModeVersions = async () => {
       .concat("sampleSites");
   }
 
-  // Update "code" in selected-entities to "Code"
-  if (selectedEntities.includes("code")) {
-    window.sodaJSONObj["selected-entities"] = selectedEntities
-      .filter((entity) => entity.toLowerCase() !== "code")
-      .concat("Code");
+  // Update non-data folder names to lowercase for consistency
+  const lowercaseFolders = ["code", "protocol", "docs"];
+  const oldNonDataFolderVariables = lowercaseFolders.map(
+    (folder) => folder.charAt(0).toUpperCase() + folder.slice(1)
+  );
+
+  window.sodaJSONObj["selected-entities"] = selectedEntities.map((entity) => {
+    if (lowercaseFolders.includes(entity.toLowerCase())) {
+      return entity.toLowerCase();
+    }
+    return entity;
+  });
+
+  // Apply the same lowercase patch to deSelected-entities
+  const deSelectedEntities = window.sodaJSONObj["deSelected-entities"] || [];
+  window.sodaJSONObj["deSelected-entities"] = deSelectedEntities.map((entity) => {
+    if (lowercaseFolders.includes(entity.toLowerCase())) {
+      return entity.toLowerCase();
+    }
+    return entity;
+  });
+
+  // Update non-data-folders object keys to lowercase
+  const nonDataFoldersObj = window.sodaJSONObj["dataset-entity-obj"]?.["non-data-folders"];
+  if (nonDataFoldersObj) {
+    for (let i = 0; i < lowercaseFolders.length; i++) {
+      const folder = lowercaseFolders[i];
+      const capitalizedFolder = oldNonDataFolderVariables[i];
+      if (nonDataFoldersObj[capitalizedFolder]) {
+        nonDataFoldersObj[folder] = nonDataFoldersObj[capitalizedFolder];
+        delete nonDataFoldersObj[capitalizedFolder];
+      }
+    }
   }
 
   // Create a mutable copy of the dataset entity array to modify and then replace the original

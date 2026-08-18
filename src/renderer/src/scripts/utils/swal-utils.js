@@ -1,7 +1,6 @@
 import Swal from "sweetalert2";
 
-// TODO: Convert to new conventions
-const swalGetUserTextInput = async (
+export const swalGetUserTextInput = async (
   title,
   inputLabel,
   validationRegex,
@@ -13,7 +12,7 @@ const swalGetUserTextInput = async (
     title: title,
     input: "text",
     inputLabel: inputLabel,
-    width: 600,
+    width: 800,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     showConfirmButton: true,

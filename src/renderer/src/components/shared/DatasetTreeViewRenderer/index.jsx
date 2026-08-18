@@ -61,10 +61,10 @@ const getBadgeColor = (entityId) => {
   if (entityId.startsWith("perf-")) return "red";
 
   // Entity type based colors
-  if (entityId === "Code") return "blue";
+  if (entityId === "code") return "blue";
   if (entityId === "Experimental") return "green";
-  if (entityId === "Protocol") return "gray";
-  if (entityId === "Docs") return "cyan";
+  if (entityId === "protocol") return "gray";
+  if (entityId === "docs") return "cyan";
   if (entityId === "Primary") return "teal";
   if (entityId === "Source") return "violet";
   if (entityId === "Derivative") return "yellow";
@@ -214,7 +214,7 @@ const FileItem = ({
       my={`${ROW_CONFIG.margin}px`}
       style={{ flexWrap: "nowrap" }}
       h={`${ROW_CONFIG.height - ROW_CONFIG.margin * 2}px`}
-      ml={`${indent * 10 + 5}px`}
+      ml={`${indent * 10}px`}
     >
       {onFileClick && (
         <Tooltip label="Select this file" zIndex={2999}>
@@ -391,14 +391,43 @@ const FolderItem = ({
   );
 };
 
-const generateEmptyFolderStructureMessage = (entityType) => {
-  switch (entityType) {
-    case "samples":
-      return "No experimental files are available to assign to samples. This occurs when all experimental files have already been assigned to sites, as files linked to sites are automatically associated with their corresponding samples. No action is necessary - you can continue to the next step.";
-    case "subjects":
-      return "No experimental files are available to assign to subjects. This occurs when all experimental files have already been assigned to samples, as files linked to samples are automatically associated with their corresponding subjects. No action is necessary - you can continue to the next step.";
-    default:
-      return "No folders or files to display.";
+const generateEmptyFolderStructureMessage = (entityType, isEntityBucketingPage, activeEntity) => {
+  if (!isEntityBucketingPage) {
+    switch (entityType) {
+      case "samples":
+        return "No experimental files are available to assign to samples. This occurs when all experimental files have already been assigned to sites, as files linked to sites are automatically associated with their corresponding samples. No action is necessary - you can continue to the next step.";
+      case "subjects":
+        return "No experimental files are available to assign to subjects. This occurs when all experimental files have already been assigned to samples, as files linked to samples are automatically associated with their corresponding subjects. No action is necessary - you can continue to the next step.";
+      default:
+        return "No folders or files to display.";
+    }
+  }
+  if (isEntityBucketingPage) {
+    switch (entityType) {
+      case "samples":
+        return "No data has been added to this sample yet. Use the interface above to drag and drop or import files for this sample.";
+      case "subjects":
+        return "No data has been added to this subject yet. Use the interface above to drag and drop or import files for this subject.";
+      case "sites":
+        return "No data has been added to this site yet. Use the interface above to drag and drop or import files for this site.";
+      case "derived-samples":
+        return "No data has been added to this derived sample yet. Use the interface above to drag and drop or import files for this derived sample.";
+      case "non-data-folders":
+        switch (activeEntity) {
+          case "code":
+            return "No code files have been added to this entity yet. Use the interface above to drag and drop or import code files for this entity.";
+          case "Experimental":
+            return "No experimental files have been added to this entity yet. Use the interface above to drag and drop or import experimental files for this entity.";
+          case "protocol":
+            return "No protocol files have been added to this entity yet. Use the interface above to drag and drop or import protocol files for this entity.";
+          case "docs":
+            return "No documentation files have been added to this entity yet. Use the interface above to drag and drop or import documentation files for this entity.";
+          default:
+            return "No folders or files to display. You can import files for this entity using the interface above.";
+        }
+      default:
+        return "No folders or files to display. You can import files for this entity using the interface above.";
+    }
   }
 };
 // Main component - renders the entire dataset tree structure
@@ -411,9 +440,21 @@ const DatasetTreeViewRenderer = ({
   hideSearchBar,
   mutuallyExclusiveSelection,
   entityType,
+  excludeFolders = [], // Array of folder names to exclude from rendering
 }) => {
+  const datasetStructuringMode = useGlobalStore((state) => state.datasetStructuringMode);
   const activeFileExplorer = useGlobalStore((state) => state.activeFileExplorer);
-  const datasetRenderArray = useGlobalStore((state) => state.datasetRenderArray);
+  const activeEntity = useGlobalStore((state) => state.activeEntity);
+  let datasetRenderArray = useGlobalStore((state) => state.datasetRenderArray);
+
+  // Filter out excluded folders and their nested content if specified
+  if (excludeFolders.length > 0 && datasetRenderArray) {
+    datasetRenderArray = datasetRenderArray.filter((item) => {
+      // Check if any excluded folder appears in the path
+      const relativePath = item.relativePath || "";
+      return !excludeFolders.some((excludedFolder) => relativePath.includes(excludedFolder));
+    });
+  }
   const parentRef = useRef(null);
   const count = datasetRenderArray ? datasetRenderArray.length : 0;
   const rowVirtualizer = useVirtualizer({
@@ -442,9 +483,6 @@ const DatasetTreeViewRenderer = ({
     setInputSearchFilter(externallySetSearchFilterValue);
   }, [externallySetSearchFilterValue]);
 
-  if (activeFileExplorer !== fileExplorerId) {
-    return <Text>Inactive file explorer {fileExplorerId ? fileExplorerId : "NONE"}</Text>;
-  }
   const renderArrayIsEmpty =
     !datasetRenderArray || (Array.isArray(datasetRenderArray) && datasetRenderArray.length === 0);
 
@@ -466,140 +504,150 @@ const DatasetTreeViewRenderer = ({
 
   return (
     <Paper padding="md" shadow="sm" radius="md" p="sm" flex={1} w="100%" withBorder>
-      {itemSelectInstructions && (
-        <Stack gap="xs">
-          <Text size="lg" fw={500}>
-            Select files
-          </Text>
-          <Text>{itemSelectInstructions}</Text>
-        </Stack>
-      )}
-      <SelectedEntityPreviewer />
-      {!hideSearchBar && (
-        <TextInput
-          placeholder="Search files and folders..."
-          value={inputSearchFilter}
-          onChange={handleSearchChange}
-          leftSection={<IconSearch stroke={1.5} />}
-          mt="md"
-          mb="xs"
-        />
-      )}
-      <div
-        ref={parentRef}
-        style={{
-          maxHeight: 600,
-          overflowY: "auto",
-          position: "relative",
-        }}
-      >
-        {renderArrayIsEmpty ? (
-          <Center mt="md">
-            <Text size="sm" c="gray" p="sm">
-              {debouncedSearchFilter.length > 0
-                ? "No files or folders found matching the search criteria."
-                : generateEmptyFolderStructureMessage(entityType)}
-            </Text>
-          </Center>
-        ) : datasetRenderArrayIsLoading ? (
-          <Center w="100%">
-            <Loader size="md" color="primary" type="bars" m="xs" />
-          </Center>
-        ) : (
+      {activeFileExplorer !== fileExplorerId ? (
+        <Text>Inactive file explorer {fileExplorerId ? fileExplorerId : "NONE"}</Text>
+      ) : (
+        <>
+          {itemSelectInstructions && (
+            <Stack gap="xs">
+              <Text size="lg" fw={500}>
+                Select files
+              </Text>
+              <Text>{itemSelectInstructions}</Text>
+            </Stack>
+          )}
+          {fileExplorerId !== "entity-bucketing-data-import-tab" && <SelectedEntityPreviewer />}
+          {!hideSearchBar && (
+            <TextInput
+              placeholder="Search files and folders..."
+              value={inputSearchFilter}
+              onChange={handleSearchChange}
+              leftSection={<IconSearch stroke={1.5} />}
+              mt="md"
+              mb="xs"
+            />
+          )}
           <div
+            ref={parentRef}
             style={{
-              height: (() => {
-                const totalSize = rowVirtualizer.getTotalSize();
-                if (totalSize === 0 && count > 0) {
-                  const fallback = count * ROW_CONFIG.height;
-                  console.warn(
-                    "DatasetTreeViewRenderer: virtualizer totalSize=0, using fallback height",
-                    { count, fallback }
-                  );
-                  return fallback;
-                }
-                return totalSize;
-              })(),
-              width: "100%",
+              maxHeight: 600,
+              overflowY: "auto",
               position: "relative",
             }}
           >
-            {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-              const item = datasetRenderArray[virtualRow.index];
-              if (!item) return null;
+            {renderArrayIsEmpty ? (
+              <Center>
+                <Text size="sm" c="gray" p="sm">
+                  {debouncedSearchFilter.length > 0
+                    ? "No files or folders found matching the search criteria."
+                    : generateEmptyFolderStructureMessage(entityType, true, activeEntity)}
+                </Text>
+              </Center>
+            ) : datasetRenderArrayIsLoading ? (
+              <Center w="100%">
+                <Loader size="md" color="primary" type="bars" m="xs" />
+              </Center>
+            ) : (
+              <div
+                style={{
+                  height: (() => {
+                    const totalSize = rowVirtualizer.getTotalSize();
+                    if (totalSize === 0 && count > 0) {
+                      const fallback = count * ROW_CONFIG.height;
+                      console.warn(
+                        "DatasetTreeViewRenderer: virtualizer totalSize=0, using fallback height",
+                        { count, fallback }
+                      );
+                      return fallback;
+                    }
+                    return totalSize;
+                  })(),
+                  width: "100%",
+                  position: "relative",
+                }}
+              >
+                {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                  const item = datasetRenderArray[virtualRow.index];
+                  if (!item) return null;
 
-              const renderItem = () => {
-                switch (item.itemType) {
-                  case "folder":
-                    return (
-                      <FolderItem
-                        key={item.itemIndex}
-                        folderName={item.folderName}
-                        relativePath={item.relativePath}
-                        folderIsSelected={item.folderIsSelected}
-                        entitiesAssociatedWithFolder={item.entitiesAssociatedWithFolder}
-                        onFolderClick={
-                          folderActions?.["on-folder-click"] ? handleFolderItemClick : null
-                        }
-                        datasetStructureSearchFilter={datasetStructureSearchFilter}
-                        allowStructureEditing={allowStructureEditing}
-                        indent={item.itemIndent}
-                      />
-                    );
-                  case "metadataFile":
-                    return (
-                      <FileItem
-                        key={item.itemIndex}
-                        fileName={item.fileName}
-                        relativePath={item.relativePath}
-                        fileIsSelected={item.fileIsSelected}
-                        entitiesAssociatedWithFile={item.entitiesAssociatedWithFile}
-                        onFileClick={fileActions?.["on-file-click"] ? handleFileItemClick : null}
-                        allowStructureEditing={allowStructureEditing}
-                        indent={item.itemIndent}
-                        // Add extra props/styles for metadata files here
-                      />
-                    );
-                  case "file":
-                    return (
-                      <FileItem
-                        key={item.itemIndex}
-                        fileName={item.fileName}
-                        relativePath={item.relativePath}
-                        fileIsSelected={item.fileIsSelected}
-                        entitiesAssociatedWithFile={item.entitiesAssociatedWithFile}
-                        onFileClick={fileActions?.["on-file-click"] ? handleFileItemClick : null}
-                        allowStructureEditing={allowStructureEditing}
-                        indent={item.itemIndent}
-                      />
-                    );
-                  default:
-                    console.error("Unknown item type:", item.itemType);
-                    return null;
-                }
-              };
+                  const renderItem = () => {
+                    switch (item.itemType) {
+                      case "folder":
+                        return (
+                          <FolderItem
+                            key={item.itemIndex}
+                            folderName={item.folderName}
+                            relativePath={item.relativePath}
+                            folderIsSelected={item.folderIsSelected}
+                            entitiesAssociatedWithFolder={item.entitiesAssociatedWithFolder}
+                            onFolderClick={
+                              folderActions?.["on-folder-click"] ? handleFolderItemClick : null
+                            }
+                            datasetStructureSearchFilter={datasetStructureSearchFilter}
+                            allowStructureEditing={allowStructureEditing}
+                            indent={item.itemIndent}
+                          />
+                        );
+                      case "metadataFile":
+                        return (
+                          <FileItem
+                            key={item.itemIndex}
+                            fileName={item.fileName}
+                            relativePath={item.relativePath}
+                            fileIsSelected={item.fileIsSelected}
+                            entitiesAssociatedWithFile={item.entitiesAssociatedWithFile}
+                            onFileClick={
+                              fileActions?.["on-file-click"] ? handleFileItemClick : null
+                            }
+                            allowStructureEditing={allowStructureEditing}
+                            indent={item.itemIndent}
+                            // Add extra props/styles for metadata files here
+                          />
+                        );
+                      case "file":
+                        return (
+                          <FileItem
+                            key={item.itemIndex}
+                            fileName={item.fileName}
+                            relativePath={item.relativePath}
+                            fileIsSelected={item.fileIsSelected}
+                            entitiesAssociatedWithFile={item.entitiesAssociatedWithFile}
+                            onFileClick={
+                              fileActions?.["on-file-click"] ? handleFileItemClick : null
+                            }
+                            allowStructureEditing={allowStructureEditing}
+                            indent={item.itemIndent}
+                          />
+                        );
+                      default:
+                        console.error("Unknown item type:", item.itemType);
+                        return null;
+                    }
+                  };
 
-              return (
-                <div
-                  key={virtualRow.key}
-                  data-index={virtualRow.index}
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    height: `${ROW_CONFIG.height}px`,
-                    transform: `translateY(${virtualRow.start}px)`,
-                  }}
-                >
-                  {renderItem()}
-                </div>
-              );
-            })}
+                  return (
+                    <div
+                      key={virtualRow.key}
+                      data-index={virtualRow.index}
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: `${ROW_CONFIG.height}px`,
+                        transform: `translateY(${virtualRow.start}px)`,
+                      }}
+                    >
+                      {renderItem()}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
-        )}
-      </div>
-      <ContextMenu />
+          <ContextMenu />
+        </>
+      )}
     </Paper>
   );
 };

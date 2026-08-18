@@ -8,10 +8,13 @@ import {
   setActiveFormType,
   setEntityBeingAddedParentSubject,
   setEntityBeingAddedParentSample,
+  getEntitiesByEntityType,
 } from "../../../stores/slices/datasetEntityStructureSlice";
 import useGlobalStore from "../../../stores/globalStore";
 import { guidedOpenEntityEditSwal } from "./utils";
 import { setSelectedHierarchyEntity } from "../../../stores/slices/datasetContentSelectorSlice";
+import { setActiveEntity } from "../../../stores/slices/datasetEntitySelectorSlice";
+import { reRenderTreeView, setPathToRender } from "../../../stores/slices/datasetTreeViewSlice";
 import {
   getExistingSubjects,
   getExistingSamples,
@@ -158,6 +161,7 @@ const EntityHierarchyRenderer = ({
   allowEntityStructureEditing,
   allowEntitySelection,
   onlyRenderEntityType,
+  reRenderTreeViewOnEntitySelection = false,
 }) => {
   const selectedEntities = useGlobalStore((state) => state.selectedEntities);
   const datasetEntityArray = useGlobalStore((state) => state.datasetEntityArray);
@@ -185,9 +189,22 @@ const EntityHierarchyRenderer = ({
   );
 
   // Memoize the entity select handler to prevent recreation on each render
-  const handleEntitySelect = useCallback((entityData) => {
-    setSelectedHierarchyEntity(entityData);
-  }, []);
+  const handleEntitySelect = useCallback(
+    (entityData) => {
+      const entityType = useGlobalStore.getState().entityType;
+      setSelectedHierarchyEntity(entityData);
+      // Also set as active entity for SelectedEntityPreviewer and other components
+      setActiveEntity(entityData.id);
+
+      // Optionally trigger tree re-render when entity is selected
+      if (reRenderTreeViewOnEntitySelection) {
+        // Set the path to render as data/entityType/entityId
+        setPathToRender(["data", entityType, entityData.id]);
+        reRenderTreeView();
+      }
+    },
+    [reRenderTreeViewOnEntitySelection]
+  );
 
   // ----- SUBJECT OPERATIONS -----
   const handleAddSubjectButtonClick = useCallback(() => {
@@ -322,13 +339,24 @@ const EntityHierarchyRenderer = ({
     if (!onlyRenderEntityType) return [];
 
     if (onlyRenderEntityType === "subjects") {
-      return getExistingSubjects();
+      return getEntitiesByEntityType("subjects", false);
     }
     if (onlyRenderEntityType === "samples") {
-      return getExistingSamples();
+      return getEntitiesByEntityType("all-samples", false);
+    }
+    if (onlyRenderEntityType === "non-derived-samples") {
+      return getEntitiesByEntityType("non-derived-samples", false);
     }
     if (onlyRenderEntityType === "sites") {
-      return getExistingSites();
+      return getEntitiesByEntityType("sites", false);
+    }
+
+    if (onlyRenderEntityType === "derived-samples") {
+      return getEntitiesByEntityType("derived-samples", false);
+    }
+
+    if (onlyRenderEntityType === "non-data-folders") {
+      return getEntitiesByEntityType("non-data-folders", false);
     }
 
     console.error("Invalid entity type for rendering:", onlyRenderEntityType);
@@ -337,28 +365,36 @@ const EntityHierarchyRenderer = ({
   // Get the specific entities to render if we're only showing one type
   const entitiesToRender = onlyRenderEntityType ? getEntitiesToRender() : [];
 
-  // Fixed renderEntityList function - no hooks inside function
+  // Handles both flat arrays of strings (like non-data-folders) and objects with id property
   const renderEntityList = (entities) => {
-    return entities.map((entity) => (
-      <Box
-        key={entity.id}
-        onClick={() => handleEntitySelect(entity)}
-        p="xs"
-        style={{
-          width: "100%",
-          backgroundColor: entity.id === selectedEntityId ? "#e3f2fd" : "transparent",
-          color: entity.id === selectedEntityId ? "#0d47a1" : "#333",
-          border: "none",
-          borderLeft: `3px solid ${entity.id === selectedEntityId ? "#2196f3" : "transparent"}`,
-          cursor: "pointer",
-          transition: "background-color 0.2s ease, border-color 0.2s ease",
-          wordBreak: "break-word",
-          whiteSpace: "normal",
-        }}
-      >
-        <Text size="sm">{entity.id}</Text>
-      </Box>
-    ));
+    console.log("Rendering entities:", entities, "Selected entity ID:", selectedEntityId);
+    return entities.map((entity, index) => {
+      // Handle flat array of strings (like non-data-folders)
+      const entityId = typeof entity === "string" ? entity : entity.id;
+      const isSelected =
+        typeof entity === "string" ? selectedEntityId === entity : selectedEntityId === entity.id;
+
+      return (
+        <Box
+          key={typeof entity === "string" ? index : entity.id}
+          onClick={() => handleEntitySelect(typeof entity === "string" ? { id: entity } : entity)}
+          p="xs"
+          style={{
+            width: "100%",
+            backgroundColor: isSelected ? "#e3f2fd" : "transparent",
+            color: isSelected ? "#0d47a1" : "#333",
+            border: "none",
+            borderLeft: `3px solid ${isSelected ? "#2196f3" : "transparent"}`,
+            cursor: "pointer",
+            transition: "background-color 0.2s ease, border-color 0.2s ease",
+            wordBreak: "break-word",
+            whiteSpace: "normal",
+          }}
+        >
+          <Text size="sm">{entityId}</Text>
+        </Box>
+      );
+    });
   };
 
   // EARLY RETURN: If we're only rendering a specific entity type

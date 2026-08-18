@@ -13,9 +13,11 @@ import {
 import { guidedGetCurrentUserWorkSpace } from "../../workspaces/workspaces";
 import { countFilesInDatasetStructure } from "../../generateDataset/generate";
 import { createOrUpdateProgressFileSaveInfo } from "../../resumeProgress/progressFile";
+import { swalConfirmAction, swalShowInfo } from "../../../utils/swal-utils";
+
 import api from "../../../others/api/api";
 
-export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
+export const savePageSharedWorkflowSteps = async (pageBeingLeftID, movingForward) => {
   const errorArray = [];
 
   if (
@@ -64,6 +66,39 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
       });
       throw errorArray;
     } else {
+      // check if the prior workspace and user selected workspace
+      let priorWorkspace = window.sodaJSONObj?.["last-confirmed-pennsieve-workspace-details"];
+
+      // TODO: Only show if upload has already started
+      if (priorWorkspace && priorWorkspace !== userSelectedWorkSpace) {
+        let result = await swalConfirmAction(
+          "info",
+          "Workspace Will be Changed and Any Upload Progress Lost",
+          `<div style="text-align: left;"> 
+            If you have already started an upload and leave this page without switching your workspace back to the ${priorWorkspace} workspace, the following will happen:
+            <ol style="margin-top: .5rem;">
+              <li>You will lose all progress made in the upload in the ${priorWorkspace} workspace.</li>
+              <li>You will make a new dataset in the ${userSelectedWorkSpace} workspace.</li>
+            </ol>
+          </div>`,
+          "Continue",
+          "Cancel"
+        );
+
+        if (!result) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please select your prior workspace.",
+          });
+          throw errorArray;
+        }
+
+        // reset upload progress in json file here
+        if (window.sodaJSONObj && "upload-progress" in window.sodaJSONObj) {
+          delete window.sodaJSONObj["upload-progress"];
+        }
+      }
+
       window.sodaJSONObj["digital-metadata"]["dataset-workspace"] = userSelectedWorkSpace;
     }
     if (userSelectedWorkSpace === "Welcome") {
@@ -115,6 +150,33 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
     const isFreeform = prefix === "ffm";
 
     if (generateOnNewPennsieveDatasetCardChecked) {
+      if (
+        "upload-progress" in window.sodaJSONObj &&
+        window.sodaJSONObj["pennsieve-generation-target"] == "existing"
+      ) {
+        let switchDaasetDestination = await swalConfirmAction(
+          "info",
+          "Changing Dataset Destination Will Erase Upload Progress",
+          `<div style="text-align: left;">
+            You are switching to a different dataset destination. If you continue, any upload progress for the current dataset will be lost.
+          </div>`,
+          "Continue anyway",
+          "Cancel"
+        );
+
+        if (!switchDaasetDestination) {
+          if (!switchDaasetDestination) {
+            errorArray.push({
+              type: "notyf",
+              message: "Please reselect your prior dataset destination.",
+            });
+            throw errorArray;
+          }
+        }
+
+        delete window.sodaJSONObj["upload-progress"];
+      }
+
       // Clear previous selection if switching from existing -> new
       if (window.sodaJSONObj["previously-selected-dataset-id-to-upload-data-to"]) {
         delete window.sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
@@ -184,6 +246,58 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
           message: "Please select an existing Pennsieve dataset to upload data to.",
         });
         throw errorArray;
+      }
+
+      if (
+        "upload-progress" in window.sodaJSONObj &&
+        window.sodaJSONObj["pennsieve-generation-target"] == "new"
+      ) {
+        let switchDaasetDestination = await swalConfirmAction(
+          "info",
+          "Changing Dataset Destination Will Erase Upload Progress",
+          `<div style="text-align: left;">
+            You are switching to a different dataset destination. If you continue, any upload progress for the current dataset will be lost.
+          </div>`,
+          "Continue anyway",
+          "Cancel"
+        );
+
+        if (!switchDaasetDestination) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please reselect your prior dataset destination.",
+          });
+          throw errorArray;
+        }
+
+        delete window.sodaJSONObj["upload-progress"];
+      }
+
+      if (
+        selectedDatasetIdToUploadDataTo !==
+          window.sodaJSONObj["previously-selected-dataset-id-to-upload-data-to"] &&
+        "upload-progress" in window.sodaJSONObj
+      ) {
+        let switchDaasetDestination = await swalConfirmAction(
+          "info",
+          "Changing Dataset Destination Will Erase Upload Progress",
+          `<div style="text-align: left;">
+            You are switching to a different dataset destination. If you continue, any upload progress for the current dataset will be lost.
+          </div>`,
+          "Continue anyway",
+          "Cancel"
+        );
+
+        if (!switchDaasetDestination) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please reselect your prior dataset destination.",
+          });
+          // TODO: Reset state?
+          throw errorArray;
+        }
+
+        delete window.sodaJSONObj["upload-progress"];
       }
 
       window.sodaJSONObj["previously-selected-dataset-id-to-upload-data-to"] =
