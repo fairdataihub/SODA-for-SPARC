@@ -461,14 +461,14 @@ export const savePageDatasetStructure = async (pageBeingLeftID, movingForward) =
     if (!selectedEntities.includes("subjects")) {
       setGuidedWorkflow("non-standard-data-workflow");
       guidedUnSkipPageSet("guided-entity-data-import-workflow");
+    }
 
-      if (nonDataFolders.length > 0) {
-        // Unskip the pages where they can select which files go into code, protocol, or docs
-        guidedUnSkipPageSet("non-data-entity-association-workflow");
-      } else {
-        // Skip the non-standard data selection workflow pages if no non-data folders are selected
-        guidedSkipPageSet("non-data-entity-association-workflow");
-      }
+    if (nonDataFolders.length > 0) {
+      // Unskip the pages where they can select which files go into code, protocol, or docs
+      guidedUnSkipPageSet("non-data-entity-association-workflow");
+    } else {
+      // Skip the non-standard data selection workflow pages if no non-data folders are selected
+      guidedSkipPageSet("non-data-entity-association-workflow");
     }
 
     window.sodaJSONObj["non-data-folders"] = nonDataFolders.map((folder) => folder.toLowerCase());
