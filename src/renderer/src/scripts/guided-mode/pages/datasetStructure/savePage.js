@@ -450,24 +450,24 @@ export const savePageDatasetStructure = async (pageBeingLeftID, movingForward) =
       selectedEntities.includes(folder)
     );
 
-    if (nonDataFolders.length > 0 && !selectedEntities.includes("subjects")) {
-      guidedSkipPageSet("guided-entity-data-import-workflow");
-    } else {
-      guidedUnSkipPageSet("guided-entity-data-import-workflow");
-    }
+    /*
+    const workflowSets = {
+      "entity-association-workflow": "entity-association",
+      "entity-bucketing-workflow": "entity-buckets",
+      "non-standard-data-workflow": "entity-association",
+    };
+    */
 
-    // Set up supporting data categorization entities and page visibility
-    // Show/hide the supporting data categorization page based on whether user has any supporting folders
-    if (nonDataFolders.length > 0) {
-      if (!selectedEntities.includes("subjects")) {
-        // If the user only has nonDataFolders, bypass the entity association and bucketing workflow pages since they are not relevant
-        setGuidedWorkflow("entity-bucketing-workflow");
-      }
-    } else {
-      // If the user selected no to everything, set the workflow to non-standard-data-workflow to skip the entity association and bucketing workflow pages since they are not relevant
-      if (!selectedEntities.includes("subjects")) {
-        // Case where they select no to anything
-        setGuidedWorkflow("non-standard-data-workflow");
+    if (!selectedEntities.includes("subjects")) {
+      setGuidedWorkflow("non-standard-data-workflow");
+      guidedUnSkipPageSet("guided-entity-data-import-workflow");
+
+      if (nonDataFolders.length > 0) {
+        // Unskip the pages where they can select which files go into code, protocol, or docs
+        guidedUnSkipPageSet("non-data-entity-association-workflow");
+      } else {
+        // Skip the non-standard data selection workflow pages if no non-data folders are selected
+        guidedSkipPageSet("non-data-entity-association-workflow");
       }
     }
 

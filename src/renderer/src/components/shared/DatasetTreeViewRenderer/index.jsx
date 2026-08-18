@@ -505,7 +505,10 @@ const DatasetTreeViewRenderer = ({
   return (
     <Paper padding="md" shadow="sm" radius="md" p="sm" flex={1} w="100%" withBorder>
       {activeFileExplorer !== fileExplorerId ? (
-        <Text>Inactive file explorer {fileExplorerId ? fileExplorerId : "NONE"}</Text>
+        <Text>
+          Inactive file explorer. Should be {fileExplorerId ? fileExplorerId : "NONE"}
+          but it's {activeFileExplorer}
+        </Text>
       ) : (
         <>
           {itemSelectInstructions && (

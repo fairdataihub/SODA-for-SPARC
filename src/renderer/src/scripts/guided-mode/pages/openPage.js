@@ -705,11 +705,40 @@ window.openPage = async (targetPageID) => {
     await openPageGenerateDataset(targetPageID);
     await openPageSharedWorkflowSteps(targetPageID);
 
-    const renderCorrectFileExplorerByPage = (pageID) => {
+    const renderCorrectFileExplorerByPage = (pageID, componentType) => {
+      // Set the correct file explorer based on the page type
+      console.log(
+        "Setting activeFileExplorer for pageID:",
+        pageID,
+        "componentType:",
+        componentType
+      );
+      if (PAGE_CONFIG["review-pages"].has(pageID)) {
+        console.log("Case: review-pages, setting to:", pageID);
+        setActiveFileExplorer(pageID);
+      } else if (
+        pageID === "guided-unstructured-data-import-tab" ||
+        pageID === "ffm-unstructured-data-import-tab"
+      ) {
+        console.log(
+          "Case: unstructured-import-tab, setting to: guided-unstructured-data-import-tab"
+        );
+        setActiveFileExplorer("guided-unstructured-data-import-tab");
+      } else if (componentType === "data-bucketing-page") {
+        console.log("Case: data-bucketing-page, setting to: entity-bucketing-data-import-tab");
+        setActiveFileExplorer("entity-bucketing-data-import-tab");
+      } else if (componentType === "data-categorization-page") {
+        console.log("Case: data-categorization-page, setting to: entity-data-selector");
+        setActiveFileExplorer("entity-data-selector");
+      } else {
+        console.log("Case: default, setting to:", pageID);
+        setActiveFileExplorer(pageID);
+      }
+
       const isCategorizationPageType =
-        targetPageDataset.componentType === "data-categorization-page" ||
-        targetPageDataset.componentType === "data-categories-questionnaire-page" ||
-        targetPageDataset.componentType === "data-bucketing-page";
+        componentType === "data-categorization-page" ||
+        componentType === "data-categories-questionnaire-page" ||
+        componentType === "data-bucketing-page";
 
       // Review pages use the standardized dataset structure
       if (PAGE_CONFIG["review-pages"].has(pageID)) {
@@ -729,7 +758,6 @@ window.openPage = async (targetPageID) => {
         });
 
         reRenderTreeView(true);
-        setActiveFileExplorer(pageID);
         return;
       }
 
@@ -739,7 +767,7 @@ window.openPage = async (targetPageID) => {
       // Guided unstructured import / categorization pages
       if (
         isCategorizationPageType ||
-        PAGE_CONFIG["data-categorization"].has(targetPageDataset.componentType) ||
+        PAGE_CONFIG["data-categorization"].has(componentType) ||
         PAGE_CONFIG["unstructured-import"].has(pageID)
       ) {
         setPathToRender(["data"]);
@@ -749,21 +777,6 @@ window.openPage = async (targetPageID) => {
         });
 
         reRenderTreeView(true);
-
-        // Set the correct file explorer based on the page type
-        switch (targetPageDataset.componentType) {
-          case "data-bucketing-page":
-            setActiveFileExplorer("entity-bucketing-data-import-tab");
-            break;
-          case "data-categorization-page":
-            setActiveFileExplorer("entity-data-selector");
-            break;
-          case "data-categories-questionnaire-page":
-            setActiveFileExplorer("entity-data-selector");
-            break;
-          default:
-            setActiveFileExplorer("entity-data-selector");
-        }
       }
 
       // FFM unstructured import page
@@ -777,7 +790,7 @@ window.openPage = async (targetPageID) => {
       }
     };
 
-    renderCorrectFileExplorerByPage(targetPageID);
+    renderCorrectFileExplorerByPage(targetPageID, targetPageDataset.componentType);
 
     //Set all capsules to grey and set capsule of page being traversed to green
     setActiveProgressionTab(targetPageID);

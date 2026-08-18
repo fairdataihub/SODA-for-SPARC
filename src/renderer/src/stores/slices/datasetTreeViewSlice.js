@@ -481,6 +481,7 @@ export const setDatasetMetadataToPreview = (metadataKeys) => {
 };
 
 export const setActiveFileExplorer = (id) => {
+  console.log(`Setting active file explorer to: ${id}`);
   useGlobalStore.setState({ activeFileExplorer: id });
 };
 
