@@ -95,6 +95,17 @@ export const guidedSaveProgress = async () => {
   });
 };
 
+const createUserLegibleEntityType = (entityType) => {
+  switch (entityType) {
+    case "derived-samples":
+      return "derived samples";
+    case "non-derived-samples":
+      return "samples";
+    default:
+      return entityType;
+  }
+};
+
 /**
  *
  * @param {string} pageBeingLeftID  - The id of the html page that the user is leaving
@@ -342,6 +353,58 @@ window.savePageChanges = async (pageBeingLeftID, movingForward) => {
           }
         }
 
+        // Check for entities with no data files (sites, samples, derived-samples, subjects)
+        if (["sites", "samples", "derived-samples", "subjects"].includes(entityType)) {
+          const userLegibleEntityType = createUserLegibleEntityType(entityType);
+          const emptyEntities = [];
+
+          // For all entity types (subjects, samples, sites, etc.)
+          // Use the same pattern as openPage to get entity IDs
+          const entityIDs = getEntitiesByEntityType(entityType, true);
+          if (entityIDs && entityIDs.length > 0) {
+            for (const entityID of entityIDs) {
+              const entityFiles = datasetEntityObj?.[entityType]?.[entityID];
+              if (!entityFiles || Object.keys(entityFiles).length === 0) {
+                emptyEntities.push(entityID);
+              }
+            }
+          }
+
+          // Show warning if any entities are empty
+          if (emptyEntities.length > 0) {
+            // Only show swals when the user is moving forward, if they move backward, we don't
+            // want the swals to pop up.
+            if (movingForward === true) {
+              // Swal for entities (subjects, samples, sites, etc.)
+              const userLegibleEntityTypePlural = userLegibleEntityType.endsWith("s")
+                ? userLegibleEntityType
+                : `${userLegibleEntityType}s`;
+
+              const continueWithEmptyEntities = await swalListDoubleAction(
+                emptyEntities,
+                `${userLegibleEntityTypePlural} that did not have any files associated detected`,
+                `The following ${userLegibleEntityTypePlural} did not have any files associated to them.
+                You indicated that your dataset contains these ${userLegibleEntityTypePlural} and should
+                have data associated with them. You can either "Continue without associating data" and
+                your dataset metadata will not link any files to these ${userLegibleEntityType}, or
+                "Go back to associate data" to associate files to these ${userLegibleEntityTypePlural} now.`,
+                "Continue without associating data",
+                "Go back to associate data",
+                `What would you like to do with the ${userLegibleEntityTypePlural} that did not have any files associated to them?`
+              );
+
+              if (!continueWithEmptyEntities) {
+                // User chose to go back - throw error to prevent navigation
+                errorArray.push({
+                  type: "notyf",
+                  message: `Please add data to these ${userLegibleEntityType} folders or remove the empty ${userLegibleEntityTypePlural} on the entity metadata page before continuing.`,
+                });
+                throw errorArray;
+              }
+            }
+          }
+        }
+
         if (entityType === "performances") {
           // Clone current performances metadata to avoid mutating the original reference
           const performanceMetadata = structuredClone(
@@ -475,7 +538,6 @@ window.savePageChanges = async (pageBeingLeftID, movingForward) => {
 
               // For each file in performanceFiles
               for (const perfFile of Object.keys(performanceFiles)) {
-                let found = false;
                 // Find matching entry in fileToSourceMap where sourcePath matches perfFile
                 for (const sourceMapEntry of Object.values(fileToSourceMap)) {
                   if (sourceMapEntry.sourcePath === perfFile) {
@@ -584,16 +646,6 @@ window.savePageChanges = async (pageBeingLeftID, movingForward) => {
       }
       if (pageBeingLeftComponentType === "data-bucketing-page") {
         const entityType = pageBeingLeftDataSet.entityType;
-        const createUserLegibleEntityType = (entityType) => {
-          switch (entityType) {
-            case "derived-samples":
-              return "derived samples";
-            case "non-derived-samples":
-              return "samples";
-            default:
-              return entityType;
-          }
-        };
 
         const userLegibleEntityType = createUserLegibleEntityType(entityType);
         const emptyEntities = [];
