@@ -14,6 +14,8 @@ import {
   IconReplace,
   IconBucket,
   IconListDetails,
+  IconCheck,
+  IconX,
 } from "@tabler/icons-react";
 
 export const checkboxCardSlice = (set) => ({
@@ -324,6 +326,28 @@ export const checkboxCardSlice = (set) => ({
       checked: false,
       preventRadioHandler: true,
       additionalClasses: "change-current-account ds-dd organization",
+    },
+    "submission-nih-funded-yes": {
+      simpleButtonType: "Positive",
+      title: "Yes",
+      description: null,
+      Icon: null,
+      mutuallyExclusiveWithCards: ["submission-nih-funded-no"],
+      nextElementID: "guided-section-nih-funded-yes-message",
+      configValue: "submission-nih-funded",
+      configValueState: "yes",
+      checked: false,
+    },
+    "submission-nih-funded-no": {
+      simpleButtonType: "Negative",
+      title: "No",
+      description: null,
+      Icon: null,
+      mutuallyExclusiveWithCards: ["submission-nih-funded-yes"],
+      nextElementID: "guided-section-nih-funded-no-message",
+      configValue: "submission-nih-funded",
+      configValueState: "no",
+      checked: false,
     },
     "ffm-confirm-pennsieve-account-button": {
       simpleButtonType: "Positive",

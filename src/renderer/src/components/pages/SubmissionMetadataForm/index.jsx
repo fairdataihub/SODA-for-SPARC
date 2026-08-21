@@ -20,6 +20,7 @@ import {
   IconX,
   IconCalendar,
 } from "@tabler/icons-react";
+import CheckboxCard from "../../cards/CheckboxCard";
 import {
   Text,
   Grid,
@@ -46,6 +47,7 @@ import {
 } from "../../../stores/slices/datasetMetadataSlice";
 
 import DropdownSelect from "../../common/DropdownSelect";
+import NavigationButton from "../../buttons/Navigation";
 
 const SubmissionMetadataForm = () => {
   const fundingAgencyDropdownState = useGlobalStore(
@@ -91,63 +93,99 @@ const SubmissionMetadataForm = () => {
           the interface below.
         </Text>
       </GuidedModeSection>
-      <GuidedModeSection withBorder>
-        <DropdownSelect id="guided-funding-agency" />
-
-        {fundingAgencyDropdownState && (
-          <>
-            {/* Show text input if "Other" is selected as funding agency */}
-            {fundingAgencyDropdownState === "Other" && (
-              <TextInput
-                label="Funding agency name:"
-                placeholder="Enter the name of the funding agency"
-                description="Please specify the name of your funding agency."
-                value={manualFudingAgency}
-                onChange={(event) => setManualFundingAgency(event.target.value)}
-              />
-            )}
-            {/* Show consortium dropdown only if agency is NIH */}
-            {fundingAgencyDropdownState === "NIH" && (
-              <DropdownSelect id="guided-nih-funding-consortium" />
-            )}
-            {/* SPARC-specific milestone UI (only if NIH/SPARC is selected) */}
-            {fundingAgencyDropdownState === "NIH" && fundingConsortiumDropdownState === "SPARC" && (
-              <>
-                <TagsInput
-                  label="Milestone(s) accomplished"
-                  description="Enter the milestone(s) associated with this submission."
-                  placeholder="Type and press Enter to add a milestone"
-                  value={milestones}
-                  onChange={handleMilestonesChange}
-                  clearable
-                  data={[]}
-                />
-                <DatePickerInput
-                  type="multiple"
-                  value={milestoneDate}
-                  onChange={handleMilestoneDateChange}
-                  label="Milestone completion date"
-                  placeholder="MM/DD/YYYY"
-                  valueFormat="MM/DD/YYYY"
-                  icon={<IconCalendar size={16} />}
-                  clearable
-                  description="Enter the completion date(s) associated with the milestone(s). Leave blank if the completion date is not related to a pre-agreed milestone."
-                />
-              </>
-            )}
-
-            {fundingAgencyDropdownState && (
-              <TextInput
-                label="Award number:"
-                description="The award number issued by the funding agency. Leave blank if not applicable."
-                placeholder="Enter award number"
-                value={awardNumber}
-                onChange={(event) => setAwardNumber(event.target.value)}
-              />
-            )}
-          </>
-        )}
+      <GuidedModeSection>
+        <Stack gap={0}>
+          <label className="guided--form-label centered mt-md">
+            Is your submission funded by the NIH?
+          </label>
+          <Center>
+            <CheckboxCard id="submission-nih-funded-yes" />
+            <CheckboxCard id="submission-nih-funded-no" />
+          </Center>
+        </Stack>
       </GuidedModeSection>
+
+      <GuidedModeSection
+        sectionId="guided-section-nih-funded-no-message"
+        centered
+        className="hidden"
+      >
+        <Text size="md" fw={500}>
+          Continue to add contributor information.
+        </Text>
+        <NavigationButton
+          onClick={() => {
+            document.getElementById("guided-next-button").click();
+          }}
+          buttonCustomWidth={"215px"}
+          buttonText={"Continue to add contributor information"}
+          navIcon={"right-arrow"}
+          buttonSize={"md"}
+        />
+      </GuidedModeSection>
+
+      <GuidedModeSection
+        sectionId="guided-section-nih-funded-yes-message"
+        withBorder
+        className="hidden"
+      >
+          <DropdownSelect id="guided-funding-agency" />
+
+          {fundingAgencyDropdownState && (
+            <>
+              {/* Show text input if "Other" is selected as funding agency */}
+              {fundingAgencyDropdownState === "Other" && (
+                <TextInput
+                  label="Funding agency name:"
+                  placeholder="Enter the name of the funding agency"
+                  description="Please specify the name of your funding agency."
+                  value={manualFudingAgency}
+                  onChange={(event) => setManualFundingAgency(event.target.value)}
+                />
+              )}
+              {/* Show consortium dropdown only if agency is NIH */}
+              {fundingAgencyDropdownState === "NIH" && (
+                <DropdownSelect id="guided-nih-funding-consortium" />
+              )}
+              {/* SPARC-specific milestone UI (only if NIH/SPARC is selected) */}
+              {fundingAgencyDropdownState === "NIH" &&
+                fundingConsortiumDropdownState === "SPARC" && (
+                  <>
+                    <TagsInput
+                      label="Milestone(s) accomplished"
+                      description="Enter the milestone(s) associated with this submission."
+                      placeholder="Type and press Enter to add a milestone"
+                      value={milestones}
+                      onChange={handleMilestonesChange}
+                      clearable
+                      data={[]}
+                    />
+                    <DatePickerInput
+                      type="multiple"
+                      value={milestoneDate}
+                      onChange={handleMilestoneDateChange}
+                      label="Milestone completion date"
+                      placeholder="MM/DD/YYYY"
+                      valueFormat="MM/DD/YYYY"
+                      icon={<IconCalendar size={16} />}
+                      clearable
+                      description="Enter the completion date(s) associated with the milestone(s). Leave blank if the completion date is not related to a pre-agreed milestone."
+                    />
+                  </>
+                )}
+
+              {fundingAgencyDropdownState && (
+                <TextInput
+                  label="Award number:"
+                  description="The award number issued by the funding agency. Leave blank if not applicable."
+                  placeholder="Enter award number"
+                  value={awardNumber}
+                  onChange={(event) => setAwardNumber(event.target.value)}
+                />
+              )}
+            </>
+          )}
+        </GuidedModeSection>
     </GuidedModePage>
   );
 };
