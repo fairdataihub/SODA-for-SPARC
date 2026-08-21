@@ -36,7 +36,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     const milestoneAchieved =
       window.sodaJSONObj["dataset_metadata"]?.["submission"]?.["milestone_achieved"] || [];
     const milestoneCompletionDate =
-      window.sodaJSONObj["dataset_metadata"]?.["submission"]?.["milestone_completion_date"] || "";
+      window.sodaJSONObj["dataset_metadata"]?.["submission"]?.["milestone_completion_date"] || [];
 
     if (fundingAgency) {
       // Set the funding agency dropdown state
@@ -59,7 +59,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     // If the consortium is SPARC, set the milestones and milestone date
     if (fundingConsortium === "SPARC") {
       setMilestones(milestoneAchieved);
-      setMilestoneDate(milestoneCompletionDate ? new Date(milestoneCompletionDate) : null);
+      setMilestoneDate(milestoneCompletionDate);
     } else {
       setMilestones([]);
       setMilestoneDate(null);

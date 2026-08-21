@@ -297,7 +297,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
           if (fundingConsortium === "SPARC") {
             // If SPARC is selected, store the input for milestones and completion date
             milestonesAchieved = useGlobalStore.getState().milestones || [];
-            milestoneCompletionDate = useGlobalStore.getState().milestoneDate || "";
+            milestoneCompletionDate = useGlobalStore.getState().milestoneDate || [];
           }
         }
       }
@@ -312,19 +312,23 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
 
     // Prepare the submission metadata
     // Ensure milestone_completion_date is stored as an ISO 8601 string (if provided)
-    let milestoneCompletionIso = "";
     if (milestoneCompletionDate) {
       try {
-        const dateObj =
-          milestoneCompletionDate instanceof Date
-            ? milestoneCompletionDate
-            : new Date(milestoneCompletionDate);
-        if (!isNaN(dateObj)) {
-          milestoneCompletionIso = dateObj.toISOString();
+        if (!Array.isArray(milestoneCompletionDate))
+          milestoneCompletionDate = [milestoneCompletionDate];
+
+        if (
+          milestoneCompletionDate.some((date) => date === null || date === "" || date === undefined)
+        ) {
+          milestoneCompletionDate = [];
         }
+
+        milestoneCompletionDate = milestoneCompletionDate.map((date) => {
+          return new Date(date);
+        });
       } catch (err) {
         // Fallback: leave empty string if it cannot be parsed
-        milestoneCompletionIso = "";
+        milestoneCompletionDate = [];
       }
     }
 
@@ -333,7 +337,7 @@ export const savePagePrepareMetadata = async (pageBeingLeftID) => {
       funding_consortium: fundingConsortium,
       award_number: awardNumber,
       milestone_achieved: milestonesAchieved,
-      milestone_completion_date: milestoneCompletionIso,
+      milestone_completion_date: milestoneCompletionDate,
     };
     // Save the funding agency name for the dataset_description metadata
     window.sodaJSONObj["funding_agency"] = fundingAgency;

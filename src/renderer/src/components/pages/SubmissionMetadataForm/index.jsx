@@ -36,10 +36,10 @@ import {
   Card,
   Divider,
   Checkbox,
-  TagsInput,
   Badge,
+  TagsInput,
 } from "@mantine/core";
-import { DateInput } from "@mantine/dates";
+import { DatePickerInput } from "@mantine/dates";
 import {
   setManualFundingAgency,
   toggleCompletionDateChecked,
@@ -58,7 +58,20 @@ const SubmissionMetadataForm = () => {
   const manualFudingAgency = useGlobalStore((state) => state.manualFudingAgency);
   const awardNumber = useGlobalStore((state) => state.awardNumber);
   const milestones = useGlobalStore((state) => state.milestones || []);
-  const milestoneDate = useGlobalStore((state) => state.milestoneDate || null);
+  let milestoneDate = useGlobalStore((state) => state.milestoneDate || []);
+  if (!Array.isArray(milestoneDate)) {
+    if (milestoneDate == null || milestoneDate == undefined) {
+      milestoneDate = [];
+    } else {
+      milestoneDate = milestoneDate.map((date) => {
+        return new Date(date);
+      });
+    }
+  } else {
+    milestoneDate = milestoneDate.map((date) => {
+      return new Date(date);
+    });
+  }
 
   // Function to handle milestone tags changes
   const handleMilestonesChange = (values) => {
@@ -109,7 +122,8 @@ const SubmissionMetadataForm = () => {
                   clearable
                   data={[]}
                 />
-                <DateInput
+                <DatePickerInput
+                  type="multiple"
                   value={milestoneDate}
                   onChange={handleMilestoneDateChange}
                   label="Milestone completion date"
@@ -117,7 +131,7 @@ const SubmissionMetadataForm = () => {
                   valueFormat="MM/DD/YYYY"
                   icon={<IconCalendar size={16} />}
                   clearable
-                  description="Enter the completion date associated with the milestone(s). Leave blank if the completion date is not related to a pre-agreed milestone."
+                  description="Enter the completion date(s) associated with the milestone(s). Leave blank if the completion date is not related to a pre-agreed milestone."
                 />
               </>
             )}
