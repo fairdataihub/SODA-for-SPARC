@@ -151,88 +151,77 @@ export const validateEntityMetadata = (entityType, metadata = {}) => {
  * Return value: { entity: <entityObject>, children: { ... } }
  */
 export const getEntityDataById = (entityId) => {
+  if (!entityId) return null;
+
   const { datasetEntityArray } = useGlobalStore.getState();
-  if (!entityId || !datasetEntityArray) {
-    return null;
-  }
-  const subjects = getExistingSubjects();
-  const samples = getExistingSamples();
-  const nonDerivedSamples = getExistingSamples("derived-from-subjects");
-  const derivedSamples = getExistingSamples("derived-from-samples");
-  const sites = getExistingSites();
+  if (!datasetEntityArray || datasetEntityArray.length === 0) return null;
 
+  // Fast path: Handle subjects (direct array lookup)
   if (entityId.startsWith("sub-")) {
-    const subject = subjects.find((subject) => subject?.metadata?.subject_id === entityId);
-
+    const subject = datasetEntityArray.find((s) => s.id === entityId);
     if (!subject) return null;
 
-    const subjectsSamples = samples
-      .filter((s) => s.metadata?.subject_id === subject.id)
-      .map((s) => s.id);
+    const subjectsSamples = (subject.samples || []).map((s) => s.id);
+    const subjectsSites = [...(subject.subjectSites || []).map((s) => s.id)];
 
-    const subjectsSites = sites
-      .filter((site) => {
-        const specimenId = site.metadata?.specimen_id;
-        return specimenId === subject.id || subjectsSamples.includes(specimenId);
-      })
-      .map((s) => s.id);
+    // Add sites from samples
+    (subject.samples || []).forEach((sample) => {
+      (sample.sites || []).forEach((site) => {
+        subjectsSites.push(site.id);
+      });
+    });
 
-    const children = {
-      subjectsSamples,
-      subjectsSites,
+    return {
+      entityMetadata: subject,
+      entityChildren: { subjectsSamples, subjectsSites },
     };
-
-    return { entityMetadata: subject, entityChildren: children };
   }
 
-  if (entityId.startsWith("sam-")) {
-    const sample = getExistingSamples().find((s) => s.id === entityId);
-    if (!sample) return null;
-    const samplesDerivedFromSample = getExistingSamples("derived-from-samples")
-      .filter((s) => s.metadata?.was_derived_from === sample.id)
-      .map((s) => s.id);
+  // For other entity types, iterate through subjects once to find the target
+  for (const subject of datasetEntityArray) {
+    // Handle samples
+    if (entityId.startsWith("sam-")) {
+      const sample = subject.samples?.find((s) => s.id === entityId);
+      if (sample) {
+        const samplesDerivedFromSample = (sample.samples || [])
+          .filter((s) => s.metadata?.was_derived_from === sample.id)
+          .map((s) => s.id);
 
-    const sampleSites = getExistingSites()
-      .filter((site) => {
-        const specimenId = site.metadata?.specimen_id;
-        return specimenId === sample.id || samplesDerivedFromSample.includes(specimenId);
-      })
-      .map((s) => s.id);
+        const sampleSites = [...(sample.sites || []).map((s) => s.id)];
 
-    const children = {
-      samplesDerivedFromSample,
-      sampleSites,
-    };
-
-    return { entityMetadata: sample, entityChildren: children };
-  }
-
-  if (entityId.startsWith("site-")) {
-    for (const subject of subjects) {
-      if (subject.subjectSites) {
-        const site = subject.subjectSites.find((site) => site.id === entityId);
-        if (site) return { entityMetadata: site, entityChildren: {} };
+        return {
+          entityMetadata: sample,
+          entityChildren: { samplesDerivedFromSample, sampleSites },
+        };
       }
-      if (subject.samples) {
-        for (const sample of subject.samples) {
-          if (sample.sites) {
-            const site = sample.sites.find((site) => site.id === entityId);
-            if (site) return { entityMetadata: site, entityChildren: {} };
-          }
+    }
+
+    // Handle sites (subject and sample sites)
+    if (entityId.startsWith("site-")) {
+      // Check subject sites first
+      const subjectSite = subject.subjectSites?.find((s) => s.id === entityId);
+      if (subjectSite) {
+        return { entityMetadata: subjectSite, entityChildren: {} };
+      }
+
+      // Check sample sites
+      for (const sample of subject.samples || []) {
+        const sampleSite = sample.sites?.find((s) => s.id === entityId);
+        if (sampleSite) {
+          return { entityMetadata: sampleSite, entityChildren: {} };
         }
       }
     }
-    return null;
   }
 
+  // Handle performance entities (separate lookup)
   if (entityId.startsWith("perf-")) {
-    const performanceList = useGlobalStore.getState()["performanceList"];
-    if (performanceList) {
-      const perf =
-        performanceList.find((performance) => performance.performanceId === entityId) ||
-        performanceList.find((performance) => performance.performance_id === entityId);
-      if (!perf) return null;
-      return { entityMetadata: perf, entityChildren: {} };
+    const performanceList = useGlobalStore.getState().performanceList;
+    if (performanceList?.length > 0) {
+      const perf = performanceList.find(
+        (p) => p.performanceId === entityId || p.performance_id === entityId
+      );
+      if (perf) return { entityMetadata: perf, entityChildren: {} };
     }
   }
 
@@ -654,52 +643,61 @@ export const modifySampleSiteId = (subjectId, sampleId, oldSiteId, newSiteId) =>
 
 // Helper functions for entity metadata access and updates
 /**
- * Gets entity data for a selected hierarchy entity
- * @param {Object} selectedEntity - The flattened selected entity object
- * @returns {Object|null} The complete entity data object or null if not found
+ * Gets entity IDs by entity type
+ *
+ * Returns an array of entity IDs filtered by the specified entity type.
+ * Supports all entity types used in data bucketing workflows.
+ *
+ * @param {string} entityType - The type of entities to retrieve
+ *   - "subjects": All subject IDs
+ *   - "samples": All sample IDs
+ *   - "derived-samples": Samples derived from other samples
+ *   - "all-samples": Samples derived from subjects
+ *   - "samples-derived-from-samples": Samples derived from other samples
+ *   - "sites": All site IDs
+ *   - "subject-sites": Sites that belong to subjects
+ *   - "sample-sites": Sites that belong to samples
+ *   - "performances": All performance IDs
+ *   - "modalities": All modality IDs
+ *   - "experimental": Experimental data IDs
+ *   - "experimental-data-categorization": Experimental data category IDs
+ *   - "remaining-data-categorization": Remaining data category IDs
+ *   - "non-data-folders": Non-data folder category IDs
+ * @returns {Array<string>} Array of entity IDs matching the filter
  */
-export const getEntityDataFromSelection = (selectedEntity) => {
-  if (!selectedEntity) return null;
+export const getEntitiesByEntityType = (entityType, returnIdsOnly = true) => {
+  let entities = [];
 
-  const { entityType, entityId, parentId, parentType, grandParentId } = selectedEntity;
-  const { datasetEntityArray } = useGlobalStore.getState();
+  switch (entityType) {
+    case "subjects":
+      entities = getExistingSubjects();
+      break;
 
-  // For subject entities
-  if (entityType === "subject") {
-    return datasetEntityArray.find((subject) => subject.id === entityId) || null; // Changed from subjectId to id
+    case "non-derived-samples":
+      entities = getExistingSamples("derived-from-subjects");
+      break;
+
+    case "derived-samples":
+      entities = getExistingSamples("derived-from-samples");
+      break;
+
+    case "all-samples":
+      entities = getExistingSamples();
+      break;
+
+    case "sites":
+      entities = getExistingSites();
+      break;
+
+    case "non-data-folders":
+      return window.sodaJSONObj?.["non-data-folders"] || [];
+
+    default:
+      console.warn(`Unknown entity type: ${entityType}`);
+      return [];
   }
 
-  // Find parent subject (needed for all other entity types)
-  const parentSubjectId = grandParentId || parentId;
-  const subject = datasetEntityArray.find((subject) => subject.id === parentSubjectId); // Changed from subjectId to id
-  if (!subject) return null;
-
-  // For sample entities
-  if (entityType === "sample") {
-    return subject.samples?.find((sample) => sample.id === entityId) || null; // Changed from sampleId to id
-  }
-
-  // For site entities
-  if (entityType === "site") {
-    if (parentType === "sample") {
-      const sample = subject.samples?.find((sample) => sample.id === parentId); // Changed from sampleId to id
-      return sample?.sites?.find((site) => site.id === entityId) || null; // Changed from siteId to id
-    } else {
-      return subject.subjectSites?.find((site) => site.id === entityId) || null; // Changed from siteId to id
-    }
-  }
-
-  // For performance entities
-  if (entityType === "performance") {
-    if (parentType === "sample") {
-      const sample = subject.samples?.find((sample) => sample.id === parentId); // Changed from sampleId to id
-      return sample?.performances?.find((perf) => perf.id === entityId) || null; // Changed from performanceId to id
-    } else {
-      return subject.subjectPerformances?.find((perf) => perf.id === entityId) || null; // Changed from performanceId to id
-    }
-  }
-
-  return null;
+  return returnIdsOnly ? entities.map((entity) => entity.id) : entities;
 };
 
 /**

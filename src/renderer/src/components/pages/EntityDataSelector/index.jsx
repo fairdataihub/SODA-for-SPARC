@@ -67,17 +67,17 @@ const renderEntityList = (entityType, activeEntity, datasetEntityObj) => {
 
 const getInstructionalTextByEntityType = (entityType, datasetType) => {
   const instructionalText = {
-    Code: "Select the files that contain scripts, computational models, analysis pipelines, or other software used for data processing or analysis.",
+    code: "Select the files that contain scripts, computational models, analysis pipelines, or other software used for data processing or analysis.",
     Primary: "Select the files that are the main data files produced or collected in your study.",
     Source: "Select the files that are the original unprocessed data used in your study.",
     Derivative:
       "Select the files that were created by processing or transforming other data files.",
     Experimental: "Select the files that contain data collected from experiments or analyses.",
-    Protocol:
+    protocol:
       datasetType === "computational"
         ? "Select the files that describe the computational workflows, analysis procedures, or processing steps used in your data."
         : "Select the files that document the experimental procedures, equipment setups, or workflows used in your study.",
-    Docs: "Select the files that are supporting documents for your data.",
+    docs: "Select the files that are supporting documents for your data.",
     experimental: "Select the files that are described in the list above.",
   };
 
@@ -109,7 +109,6 @@ const EntityDataSelectorPage = ({
     selectedEntities.includes("subjectSites") || selectedEntities.includes("sampleSites");
   const includesSamples = selectedEntities.includes("samples");
   const includesDerivedSamples = selectedEntities.includes("derived-samples");
-  const datasetIncludesCode = selectedEntities.includes("code");
   const datasetEntityObj = useGlobalStore((state) => state.datasetEntityObj);
   const datasetType = useGlobalStore((state) => state.datasetType);
 
@@ -117,6 +116,7 @@ const EntityDataSelectorPage = ({
   const supplementaryFilesCount = countSelectedFilesByEntityType("non-data-folders");
   const countItemsSelected = countSelectedFilesByEntityType(entityType);
   const totalFilesSelected = countItemsSelected + supplementaryFilesCount;
+  const datasetStructuringMode = useGlobalStore((state) => state.datasetStructuringMode);
 
   // Calculate percentages for stacked progress bar
   const categorizedPercentage = itemCount > 0 ? (countItemsSelected / itemCount) * 100 : 0;
@@ -177,9 +177,9 @@ const EntityDataSelectorPage = ({
               case "non-data-folders":
                 // Map selected entities to their display names and format with Oxford comma
                 const entityDisplayMap = {
-                  Code: "code",
-                  Protocol: "protocol documentation",
-                  Docs: "documentation",
+                  code: "code",
+                  protocol: "protocol documentation",
+                  docs: "documentation",
                 };
 
                 const selectedSupportingEntitiesFormatted = oxfordComma(
@@ -189,11 +189,18 @@ const EntityDataSelectorPage = ({
                   false
                 );
 
-                return (
+                return selectedSupportingEntitiesFormatted === "code" ? (
+                  <Text>
+                    You indicated that your dataset contains code. The SDS requires these files to
+                    be placed into their own folders. Use the interface below to assign your code
+                    files to the correct folder by selecting a category on the left and then
+                    choosing the files that belong to it on the right.
+                  </Text>
+                ) : (
                   <>
                     <Text mb={0}>
                       You indicated that your dataset contains {selectedSupportingEntitiesFormatted}{" "}
-                      {selectedSupportingEntitiesFormatted != "Code" && "data"}. The SDS requires
+                      {selectedSupportingEntitiesFormatted != "code" && "data"}. The SDS requires
                       these files to be placed into their own folders. Use the interface below to
                       assign your supporting files to the correct folder by selecting a category on
                       the left and then choosing the files that belong to it on the right.
@@ -244,6 +251,15 @@ const EntityDataSelectorPage = ({
                     Use the interface below to categorize your Source and Derivative data files. Any
                     files not categorized will be marked as "Primary" by default and be placed in
                     the Primary folder.
+                  </Text>
+                );
+
+              case "entity-associated-data-categorization":
+                return (
+                  <Text>
+                    Use the interface below to categorize your Source and Derivative data files that
+                    are associated with your entities. Any files not categorized will be marked as
+                    "Primary" by default and be placed in the Primary folder.
                   </Text>
                 );
 
@@ -402,6 +418,9 @@ const EntityDataSelectorPage = ({
                   }}
                   entityType={entityType}
                   fileExplorerId="entity-data-selector"
+                  excludeFolders={
+                    datasetStructuringMode === "entity-buckets" ? ["non-data-folders"] : []
+                  }
                 />
               </Paper>
             ) : (

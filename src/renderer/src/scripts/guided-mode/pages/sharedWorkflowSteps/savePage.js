@@ -17,7 +17,7 @@ import { swalConfirmAction, swalShowInfo } from "../../../utils/swal-utils";
 
 import api from "../../../others/api/api";
 
-export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
+export const savePageSharedWorkflowSteps = async (pageBeingLeftID, movingForward) => {
   const errorArray = [];
 
   if (
@@ -70,7 +70,7 @@ export const savePageSharedWorkflowSteps = async (pageBeingLeftID) => {
       let priorWorkspace = window.sodaJSONObj?.["last-confirmed-pennsieve-workspace-details"];
 
       // TODO: Only show if upload has already started
-      if (priorWorkspace && priorWorkspace !== userSelectedWorkSpace) {
+      if (priorWorkspace && priorWorkspace !== userSelectedWorkSpace && movingForward) {
         let result = await swalConfirmAction(
           "info",
           "Workspace Will be Changed and Any Upload Progress Lost",

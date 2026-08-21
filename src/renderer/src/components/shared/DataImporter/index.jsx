@@ -5,8 +5,12 @@ import FullWidthContainer from "../../containers/FullWidthContainer";
 import DatasetTreeViewRenderer from "../DatasetTreeViewRenderer";
 import StateDisplayContainer from "../../containers/StateDisplayContainer";
 import classes from "./dataImporter.module.css";
+import useGlobalStore from "../../../stores/globalStore";
 
 const DataImporter = ({ dataImporterId }) => {
+  const datasetStructuringMode = useGlobalStore((state) => state.datasetStructuringMode);
+
+  console.log("Dataset structuring mode in DataImporter:", datasetStructuringMode);
   return (
     <FullWidthContainer className={classes["di"]}>
       <Box w="100%" m={0} p={0} id={dataImporterId} className={classes["di"]}>
@@ -41,7 +45,9 @@ const DataImporter = ({ dataImporterId }) => {
               <Text size="sm" c="dimmed" inline mt={7}>
                 {dataImporterId === "ffm-data-importer-dropzone"
                   ? "Select the dataset folder to upload to Pennsieve."
-                  : "Import all folders you would like to include in the dataset."}
+                  : datasetStructuringMode === "entity-buckets"
+                    ? "Import data for the selected entity."
+                    : "Import all folders you would like to include in the dataset."}
               </Text>
             </div>
           </Group>

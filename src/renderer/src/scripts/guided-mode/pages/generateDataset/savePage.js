@@ -10,7 +10,7 @@ import {
 import { getSodaTextInputValue } from "../../../../stores/slices/sodaTextInputSlice";
 import { swalConfirmAction } from "../../../utils/swal-utils";
 import { guidedGetCurrentUserWorkSpace } from "../../../guided-mode/workspaces/workspaces";
-export const savePageGenerateDataset = async (pageBeingLeftID) => {
+export const savePageGenerateDataset = async (pageBeingLeftID, movingForward) => {
   const errorArray = [];
   if (pageBeingLeftID === "guided-dataset-generation-options-tab") {
     const generateDatasetLocallyCardChecked = isCheckboxCardChecked("generate-dataset-locally");

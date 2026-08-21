@@ -3,6 +3,7 @@ import { openPageDatasetStructure } from "./datasetStructure/openPage.js";
 import { openPagePrepareMetadata } from "./prepareMetadata/openPage.js";
 import { openPageGenerateDataset } from "./generateDataset/openPage.js";
 import { openPageSharedWorkflowSteps } from "./sharedWorkflowSteps/openPage.js";
+import { newEmptyFolderObj } from "../../utils/datasetStructure.js";
 import {
   resetGuidedRadioButtons,
   updateGuidedRadioButtonsFromJSON,
@@ -26,9 +27,7 @@ import {
 import {
   setDatasetEntityArray,
   setActiveFormType,
-  getExistingSubjects,
-  getExistingSamples,
-  getExistingSites,
+  getEntitiesByEntityType,
 } from "../../../stores/slices/datasetEntityStructureSlice.js";
 import {
   setSelectedEntities,
@@ -40,7 +39,11 @@ import {
   filterRemovedFilesFromDatasetEntityObj,
   setEntityType,
 } from "../../../stores/slices/datasetEntitySelectorSlice.js";
-import { setDatasetType, setCurationMode } from "../../../stores/slices/guidedModeSlice.js";
+import {
+  setDatasetType,
+  setCurationMode,
+  setDatasetStructuringMode,
+} from "../../../stores/slices/guidedModeSlice.js";
 import { setSelectedHierarchyEntity } from "../../../stores/slices/datasetContentSelectorSlice.js";
 import { guidedSetNavLoadingState } from "./navigationUtils/pageLoading.js";
 import Swal from "sweetalert2";
@@ -224,6 +227,7 @@ window.openPage = async (targetPageID) => {
   //upon resolving it will set navLoadingstate to false
   try {
     setCurationMode(window.sodaJSONObj["curation-mode"]);
+    setDatasetStructuringMode(window.sodaJSONObj["dataset-structuring-method"] || null);
     //reset the radio buttons for the page being navigated to
     resetGuidedRadioButtons(targetPageID);
     //update the radio buttons using the button config from window.sodaJSONObj
@@ -306,6 +310,53 @@ window.openPage = async (targetPageID) => {
         setSelectedModalities(modalities);
       }
 
+      if (targetPageComponentType === "data-categories-questionnaire-page") {
+        // Extract the questionnaire entity type from the data attribute
+        const questionnaireEntityType = targetPageDataset.questionnaireEntityType;
+
+        // Restore user selections from JSON
+        if (questionnaireEntityType === "experimental-data-categorization") {
+          const savedExperimentalCategories =
+            window.sodaJSONObj["selected-experimental-data-categories"] || [];
+          setSelectedDataCategoriesByEntityType({
+            "experimental-data-categorization": savedExperimentalCategories,
+          });
+          if (window.sodaJSONObj["dataset-structuring-method"] === "entity-association") {
+            setFileVisibilityFilter(
+              [
+                {
+                  type: "experimental",
+                  names: ["experimental"],
+                },
+              ],
+              [
+                {
+                  type: "non-data-folders",
+                  names: ["protocol", "docs", "code"],
+                },
+              ]
+            );
+          }
+        }
+
+        if (questionnaireEntityType === "remaining-data-categorization") {
+          if (window.sodaJSONObj["dataset-structuring-method"] === "entity-association") {
+            setFileVisibilityFilter(
+              [],
+              [
+                {
+                  type: "non-data-folders",
+                  names: ["protocol", "docs", "code"],
+                },
+                {
+                  type: "experimental",
+                  names: ["experimental"],
+                },
+              ]
+            );
+          }
+        }
+      }
       if (targetPageComponentType === "data-categorization-page") {
         const pageEntityType = targetPageDataset.entityType;
         // Delete the manifest file because it throws off the count of files selected
@@ -321,211 +372,219 @@ window.openPage = async (targetPageID) => {
         // Make any adjustments to the dataset entity object before setting it in the zustand store
         if (pageEntityType === "experimental") {
           // Filter out files that are selected as belonging to the supporting data folders
-          setFileVisibilityFilter(
-            [],
-            [
-              {
-                type: "non-data-folders",
-                names: ["Protocol", "Docs", "Code"],
-              },
-            ]
-          );
+          if (window.sodaJSONObj["dataset-structuring-method"] === "entity-association") {
+            setFileVisibilityFilter(
+              [],
+              [
+                {
+                  type: "non-data-folders",
+                  names: ["protocol", "docs", "code"],
+                },
+              ]
+            );
+          }
         }
 
         if (pageEntityType === "experimental-data-categorization") {
           // Filter out files that are selected as belonging to the supporting data folders
-          setFileVisibilityFilter(
-            [
-              {
-                type: "experimental",
-                names: ["experimental"],
-              },
-            ],
-            [
-              {
-                type: "non-data-folders",
-                names: ["Protocol", "Docs", "Code"],
-              },
-            ]
-          );
+          if (window.sodaJSONObj["dataset-structuring-method"] === "entity-association") {
+            setFileVisibilityFilter(
+              [
+                {
+                  type: "experimental",
+                  names: ["experimental"],
+                },
+              ],
+              [
+                {
+                  type: "non-data-folders",
+                  names: ["protocol", "docs", "code"],
+                },
+              ]
+            );
+          }
         }
         if (pageEntityType === "remaining-data-categorization") {
           // Filter out files that are selected as belonging to the supporting data folders
-          setFileVisibilityFilter(
-            [],
-            [
-              {
-                type: "experimental",
-                names: ["experimental"],
-              },
-              {
-                type: "non-data-folders",
-                names: ["Protocol", "Docs", "Code"],
-              },
-            ]
-          );
+          if (window.sodaJSONObj["dataset-structuring-method"] === "entity-association") {
+            setFileVisibilityFilter(
+              [],
+              [
+                {
+                  type: "experimental",
+                  names: ["experimental"],
+                },
+                {
+                  type: "non-data-folders",
+                  names: ["protocol", "docs", "code"],
+                },
+              ]
+            );
+          }
         }
 
         if (pageEntityType === "sites") {
-          const sites = getExistingSites().map((site) => site.id);
-          for (const site of sites) {
+          const siteIDs = getEntitiesByEntityType("sites", true);
+          for (const site of siteIDs) {
             addEntityNameToEntityType("sites", site);
           }
 
           const prevSiteNames = getEntityNamesByEntityType("sites");
           for (const siteName of prevSiteNames) {
-            if (!sites.includes(siteName)) {
+            if (!siteIDs.includes(siteName)) {
               removeEntityFromEntityList("sites", siteName);
             }
           }
 
-          const filterList = [
-            {
-              type: "non-data-folders",
-              names: ["Protocol", "Docs", "Code"],
-            },
-          ];
-          setFileVisibilityFilter(
-            [
+          if (window.sodaJSONObj["dataset-structuring-method"] === "entity-association") {
+            const filterList = [
               {
-                type: "experimental",
-                names: ["experimental"],
+                type: "non-data-folders",
+                names: ["protocol", "docs", "code"],
               },
-            ],
-            filterList
-          );
+            ];
+            setFileVisibilityFilter(
+              [
+                {
+                  type: "experimental",
+                  names: ["experimental"],
+                },
+              ],
+              filterList
+            );
+          }
         }
 
         if (pageEntityType === "derived-samples") {
-          const derivedSamples = getExistingSamples("derived-from-samples").map(
-            (sample) => sample.id
-          );
+          const derivedSampleIDs = getEntitiesByEntityType("derived-samples", true);
 
-          for (const derivedSample of derivedSamples) {
+          for (const derivedSample of derivedSampleIDs) {
             addEntityNameToEntityType("derived-samples", derivedSample);
           }
 
           const prevDerivedSampleNames = getEntityNamesByEntityType("derived-samples");
           for (const derivedSampleName of prevDerivedSampleNames) {
-            if (!derivedSamples.includes(derivedSampleName)) {
+            if (!derivedSampleIDs.includes(derivedSampleName)) {
               removeEntityFromEntityList("derived-samples", derivedSampleName);
             }
           }
 
-          const sites = getExistingSites().map((site) => site.id);
-          const samples = getExistingSamples("derived-from-subjects").map((sample) => sample.id);
-          const filterList = [
-            {
-              type: "non-data-folders",
-              names: ["Protocol", "Docs", "Code"],
-            },
-            {
-              type: "sites",
-              names: sites,
-            },
-            {
-              type: "samples",
-              names: samples,
-            },
-          ];
-          setFileVisibilityFilter(
-            [
+          if (window.sodaJSONObj["dataset-structuring-method"] === "entity-association") {
+            const siteIDs = getEntitiesByEntityType("sites", true);
+            const sampleIDs = getEntitiesByEntityType("non-derived-samples", true);
+            const filterList = [
               {
-                type: "experimental",
-                names: ["experimental"],
+                type: "non-data-folders",
+                names: ["protocol", "docs", "code"],
               },
-            ],
-            filterList
-          );
+              {
+                type: "sites",
+                names: siteIDs,
+              },
+              {
+                type: "samples",
+                names: sampleIDs,
+              },
+            ];
+            setFileVisibilityFilter(
+              [
+                {
+                  type: "experimental",
+                  names: ["experimental"],
+                },
+              ],
+              filterList
+            );
+          }
         }
 
         if (pageEntityType === "samples") {
-          const samples = getExistingSamples("derived-from-subjects").map((sample) => sample.id);
-          for (const sample of samples) {
+          const sampleIDs = getEntitiesByEntityType("non-derived-samples", true);
+          for (const sample of sampleIDs) {
             addEntityNameToEntityType("samples", sample);
           }
           const prevSampleNames = getEntityNamesByEntityType("samples");
           for (const sampleName of prevSampleNames) {
-            if (!samples.includes(sampleName)) {
+            if (!sampleIDs.includes(sampleName)) {
               removeEntityFromEntityList("samples", sampleName);
             }
           }
 
-          const sites = getExistingSites().map((site) => site.id);
-          const derivedSamples = getExistingSamples("derived-from-samples").map(
-            (sample) => sample.id
-          );
-          const filterList = [
-            {
-              type: "non-data-folders",
-              names: ["Protocol", "Docs", "Code"],
-            },
-            {
-              type: "sites",
-              names: sites,
-            },
-            {
-              type: "derived-samples",
-              names: derivedSamples,
-            },
-          ];
-          setFileVisibilityFilter(
-            [
+          if (window.sodaJSONObj["dataset-structuring-method"] === "entity-association") {
+            const siteIDs = getEntitiesByEntityType("sites", true);
+            const derivedSampleIDs = getEntitiesByEntityType("derived-samples", true);
+            const filterList = [
               {
-                type: "experimental",
-                names: ["experimental"],
+                type: "non-data-folders",
+                names: ["protocol", "docs", "code"],
               },
-            ],
-            filterList
-          );
+              {
+                type: "sites",
+                names: siteIDs,
+              },
+              {
+                type: "derived-samples",
+                names: derivedSampleIDs,
+              },
+            ];
+            setFileVisibilityFilter(
+              [
+                {
+                  type: "experimental",
+                  names: ["experimental"],
+                },
+              ],
+              filterList
+            );
+          }
         }
 
         if (pageEntityType === "subjects") {
-          const subjects = getExistingSubjects().map((subject) => subject.id);
-          for (const subject of subjects) {
+          const subjectIDs = getEntitiesByEntityType("subjects", true);
+          for (const subject of subjectIDs) {
             addEntityNameToEntityType("subjects", subject);
           }
 
           const prevSubjectNames = getEntityNamesByEntityType("subjects");
           for (const subjectName of prevSubjectNames) {
-            if (!subjects.includes(subjectName)) {
+            if (!subjectIDs.includes(subjectName)) {
               removeEntityFromEntityList("subjects", subjectName);
             }
           }
 
-          const sites = getExistingSites().map((site) => site.id);
-          const samples = getExistingSamples("derived-from-subjects").map((sample) => sample.id);
-          const derivedSamples = getExistingSamples("derived-from-samples").map(
-            (sample) => sample.id
-          );
-          const filterList = [
-            {
-              type: "non-data-folders",
-              names: ["Protocol", "Docs", "Code"],
-            },
-            {
-              type: "sites",
-              names: sites,
-            },
-            {
-              type: "samples",
-              names: samples,
-            },
-            {
-              type: "derived-samples",
-              names: derivedSamples,
-            },
-          ];
-
-          setFileVisibilityFilter(
-            [
+          if (window.sodaJSONObj["dataset-structuring-method"] === "entity-association") {
+            const siteIDs = getEntitiesByEntityType("sites", true);
+            const sampleIDs = getEntitiesByEntityType("non-derived-samples", true);
+            const derivedSampleIDs = getEntitiesByEntityType("derived-samples", true);
+            const filterList = [
               {
-                type: "experimental",
-                names: ["experimental"],
+                type: "non-data-folders",
+                names: ["protocol", "docs", "code"],
               },
-            ],
-            filterList
-          );
+              {
+                type: "sites",
+                names: siteIDs,
+              },
+              {
+                type: "samples",
+                names: sampleIDs,
+              },
+              {
+                type: "derived-samples",
+                names: derivedSampleIDs,
+              },
+            ];
+
+            setFileVisibilityFilter(
+              [
+                {
+                  type: "experimental",
+                  names: ["experimental"],
+                },
+              ],
+              filterList
+            );
+          }
         }
 
         if (pageEntityType === "performances") {
@@ -544,20 +603,23 @@ window.openPage = async (targetPageID) => {
             }
           }
 
-          setFileVisibilityFilter(
-            [
-              {
-                type: "experimental",
-                names: ["experimental"],
-              },
-            ],
-            [
-              {
-                type: "non-data-folders",
-                names: ["Protocol", "Docs", "Code"],
-              },
-            ]
-          );
+          const datasetStructuringMode = window.sodaJSONObj["dataset-structuring-method"];
+          if (datasetStructuringMode === "entity-association") {
+            setFileVisibilityFilter(
+              [
+                {
+                  type: "experimental",
+                  names: ["experimental"],
+                },
+              ],
+              [
+                {
+                  type: "non-data-folders",
+                  names: ["protocol", "docs", "code"],
+                },
+              ]
+            );
+          }
         }
 
         if (pageEntityType === "modalities") {
@@ -573,65 +635,46 @@ window.openPage = async (targetPageID) => {
             }
           }
 
-          setFileVisibilityFilter(
-            [],
-            [
-              {
-                type: "non-data-folders",
-                names: ["Protocol", "Docs", "Code"],
-              },
-            ]
-          );
+          if (window.sodaJSONObj["dataset-structuring-method"] === "entity-association") {
+            setFileVisibilityFilter(
+              [],
+              [
+                {
+                  type: "non-data-folders",
+                  names: ["protocol", "docs", "code"],
+                },
+              ]
+            );
+          }
         }
       }
-      if (targetPageComponentType === "data-categories-questionnaire-page") {
-        // Extract the questionnaire entity type from the data attribute
-        const questionnaireEntityType = targetPageDataset.questionnaireEntityType;
 
-        // Restore user selections from JSON
-        if (questionnaireEntityType === "experimental-data-categorization") {
-          const savedExperimentalCategories =
-            window.sodaJSONObj["selected-experimental-data-categories"] || [];
-          setSelectedDataCategoriesByEntityType({
-            "experimental-data-categorization": savedExperimentalCategories,
-          });
+      if (targetPageComponentType === "data-bucketing-page") {
+        const pageEntityType = targetPageDataset.entityType;
+        const entityIDs = getEntitiesByEntityType(pageEntityType, true);
 
-          setFileVisibilityFilter(
-            [
-              {
-                type: "experimental",
-                names: ["experimental"],
-              },
-            ],
-            [
-              {
-                type: "non-data-folders",
-                names: ["Protocol", "Docs", "Code"],
-              },
-            ]
-          );
-        }
+        if (entityIDs && entityIDs.length > 0) {
+          // Create the parent folder for this entity type if it doesn't exist
+          if (
+            !window.datasetStructureJSONObj?.["folders"]?.["data"]?.["folders"]?.[pageEntityType]
+          ) {
+            window.datasetStructureJSONObj["folders"]["data"]["folders"][pageEntityType] =
+              newEmptyFolderObj();
+          }
 
-        if (questionnaireEntityType === "remaining-data-categorization") {
-          const savedNonExperimentalCategories =
-            window.sodaJSONObj["selected-remaining-data-categories"] || [];
-          setSelectedDataCategoriesByEntityType({
-            "remaining-data-categorization": savedNonExperimentalCategories,
-          });
+          // For each entity, create its folder if it doesn't exist
+          for (const entityID of entityIDs) {
+            const entityAlreadyHasBeenInstantiated =
+              window.datasetStructureJSONObj?.["folders"]?.["data"]?.["folders"]?.[
+                pageEntityType
+              ]?.["folders"]?.[entityID] !== undefined;
 
-          setFileVisibilityFilter(
-            [],
-            [
-              {
-                type: "non-data-folders",
-                names: ["Protocol", "Docs", "Code"],
-              },
-              {
-                type: "experimental",
-                names: ["experimental"],
-              },
-            ]
-          );
+            if (!entityAlreadyHasBeenInstantiated) {
+              window.datasetStructureJSONObj["folders"]["data"]["folders"][pageEntityType][
+                "folders"
+              ][entityID] = newEmptyFolderObj();
+            }
+          }
         }
       }
 
@@ -662,29 +705,44 @@ window.openPage = async (targetPageID) => {
     await openPageGenerateDataset(targetPageID);
     await openPageSharedWorkflowSteps(targetPageID);
 
-    const showCorrectFileExplorerByPage = (pageID) => {
-      // Get the element for the pageId
-
-      // Special case for data categorization pages
-      if (targetPageDataset.componentType === "data-categorization-page") {
+    const renderCorrectFileExplorerByPage = (pageID, componentType) => {
+      // Set the correct file explorer based on the page type
+      console.log(
+        "Setting activeFileExplorer for pageID:",
+        pageID,
+        "componentType:",
+        componentType
+      );
+      if (PAGE_CONFIG["review-pages"].has(pageID)) {
+        console.log("Case: review-pages, setting to:", pageID);
+        setActiveFileExplorer(pageID);
+      } else if (
+        pageID === "guided-unstructured-data-import-tab" ||
+        pageID === "ffm-unstructured-data-import-tab"
+      ) {
+        console.log(
+          "Case: unstructured-import-tab, setting to: guided-unstructured-data-import-tab"
+        );
+        setActiveFileExplorer("guided-unstructured-data-import-tab");
+      } else if (componentType === "data-bucketing-page") {
+        console.log("Case: data-bucketing-page, setting to: entity-bucketing-data-import-tab");
+        setActiveFileExplorer("entity-bucketing-data-import-tab");
+      } else if (componentType === "data-categorization-page") {
+        console.log("Case: data-categorization-page, setting to: entity-data-selector");
         setActiveFileExplorer("entity-data-selector");
       } else {
+        console.log("Case: default, setting to:", pageID);
         setActiveFileExplorer(pageID);
       }
-    };
-    showCorrectFileExplorerByPage(targetPageID);
 
-    const renderCorrectFileExplorerByPage = (pageID) => {
       const isCategorizationPageType =
-        targetPageDataset.componentType === "data-categorization-page" ||
-        targetPageDataset.componentType === "data-categories-questionnaire-page";
+        componentType === "data-categorization-page" ||
+        componentType === "data-categories-questionnaire-page" ||
+        componentType === "data-bucketing-page";
 
       // Review pages use the standardized dataset structure
       if (PAGE_CONFIG["review-pages"].has(pageID)) {
-        const standardizedDatasetStructure = createStandardizedDatasetStructure(
-          window.datasetStructureJSONObj,
-          window.sodaJSONObj["dataset-entity-obj"]
-        );
+        const { standardizedDatasetStructure } = createStandardizedDatasetStructure();
 
         if (pageID === "guided-dataset-structure-and-manifest-review-tab") {
           const datasetMetadata = window.sodaJSONObj["dataset_metadata"] || {};
@@ -709,7 +767,7 @@ window.openPage = async (targetPageID) => {
       // Guided unstructured import / categorization pages
       if (
         isCategorizationPageType ||
-        PAGE_CONFIG["data-categorization"].has(targetPageDataset.componentType) ||
+        PAGE_CONFIG["data-categorization"].has(componentType) ||
         PAGE_CONFIG["unstructured-import"].has(pageID)
       ) {
         setPathToRender(["data"]);
@@ -732,7 +790,7 @@ window.openPage = async (targetPageID) => {
       }
     };
 
-    renderCorrectFileExplorerByPage(targetPageID);
+    renderCorrectFileExplorerByPage(targetPageID, targetPageDataset.componentType);
 
     //Set all capsules to grey and set capsule of page being traversed to green
     setActiveProgressionTab(targetPageID);

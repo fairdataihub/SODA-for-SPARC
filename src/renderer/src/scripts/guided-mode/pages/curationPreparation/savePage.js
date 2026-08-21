@@ -2,7 +2,7 @@ import useGlobalStore from "../../../../stores/globalStore";
 import { isCheckboxCardChecked } from "../../../../stores/slices/checkboxCardSlice";
 import { createOrUpdateProgressFileSaveInfo } from "../../resumeProgress/progressFile";
 
-export const savePageCurationPreparation = async (pageBeingLeftID) => {
+export const savePageCurationPreparation = async (pageBeingLeftID, movingForward) => {
   const errorArray = [];
 
   if (pageBeingLeftID === "guided-name-subtitle-tab") {

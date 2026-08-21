@@ -112,6 +112,11 @@ const PerformanceMetadataForm = () => {
           withSeconds
           valueFormat="YYYY-MM-DD HH:mm:ss"
           clearable
+          error={
+            start_datetime && end_datetime && new Date(end_datetime) <= new Date(start_datetime)
+              ? "End date and time must be after start date and time."
+              : undefined
+          }
         />
       </Group>
     </Stack>
@@ -122,6 +127,8 @@ const PerformanceIdManagement = () => {
   const IsPerformanceFormVisible = useGlobalStore((state) => state.IsPerformanceFormVisible);
   const performance_id = useGlobalStore((state) => state.performance_id);
   const protocol_url_or_doi = useGlobalStore((state) => state.protocol_url_or_doi);
+  const start_datetime = useGlobalStore((state) => state.start_datetime);
+  const end_datetime = useGlobalStore((state) => state.end_datetime);
 
   const performanceList = useGlobalStore((state) => state.performanceList);
 
@@ -138,6 +145,10 @@ const PerformanceIdManagement = () => {
     protocol_url_or_doi,
     "string-is-valid-url-or-doi"
   );
+
+  // Validation for end date being after start date
+  const isEndDateAfterStart =
+    !start_datetime || !end_datetime || new Date(end_datetime) > new Date(start_datetime);
 
   // Function to handle selecting a performance for editing
   const selectPerformanceForEdit = (performance) => {
@@ -314,7 +325,10 @@ const PerformanceIdManagement = () => {
                       color="blue"
                       onClick={isEditMode ? updatePerformance : addPerformance}
                       disabled={
-                        !performance_id || !isPerformanceIdValid || !isProtocolUrlOrDoiValid
+                        !performance_id ||
+                        !isPerformanceIdValid ||
+                        !isProtocolUrlOrDoiValid ||
+                        !isEndDateAfterStart
                       }
                     >
                       {isEditMode ? "Update Performance" : "Add Performance"}

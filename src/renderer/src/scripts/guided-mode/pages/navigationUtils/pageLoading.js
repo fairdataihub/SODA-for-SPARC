@@ -1,4 +1,4 @@
-import { setSideBarLoadingState } from "../../../../stores/slices/guidedModeSlice";
+import { setNavigationState } from "../../../../stores/slices/guidedModeSlice";
 
 export const setPageLoadingState = (boolLoadingState) => {
   const pageParentContainers = document.querySelectorAll(".guided--parent-tab");
@@ -55,7 +55,7 @@ export const guidedSetNavLoadingState = (loadingState) => {
   const mainContinueButton = document.getElementById("guided-next-button");
   const saveAndExitButton = document.getElementById("guided-button-save-and-exit");
   const exitButton = document.getElementById("guided-button-exit");
-  setSideBarLoadingState(loadingState);
+  setNavigationState(loadingState);
 
   if (loadingState === true) {
     mainBackButton.disabled = true;

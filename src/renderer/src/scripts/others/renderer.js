@@ -440,7 +440,7 @@ window.synchronizePennsieveWorkspace = async () => {
 let preFlightCheckNotyf = null;
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
-window.run_pre_flight_checks = async (pennsieveAgentStatusDivId) => {
+window.run_pre_flight_checks = async (pennsieveAgentStatusDivId, showSwals = true) => {
   try {
     window.log.info("Running pre flight checks");
 
@@ -448,7 +448,6 @@ window.run_pre_flight_checks = async (pennsieveAgentStatusDivId) => {
       preFlightCheckNotyf = window.notyf.open({
         duration: 25000,
         type: "info",
-        duration: "15000",
         message: "Checking SODA's connection to Pennsieve...",
       });
     }
@@ -493,6 +492,10 @@ window.run_pre_flight_checks = async (pennsieveAgentStatusDivId) => {
     const pennsieveAgentStartedSuccessfully =
       await window.checkPennsieveAgent(pennsieveAgentStatusDivId);
     if (!pennsieveAgentStartedSuccessfully) {
+      // if Pennsieve Agent is being ran part of automatic retry process the SWALs hold up the process
+      if (!showSwals) {
+        return false;
+      }
       await swalShowInfo(
         "The Pennsieve Agent is not running",
         "Please follow the instructions to start the Pennsieve Agent and try again."

@@ -8,6 +8,6 @@ import { guidedGetCurrentUserWorkSpace } from "../../../guided-mode/workspaces/w
 import { error } from "jquery";
 import { isCheckboxCardChecked } from "../../../../stores/slices/checkboxCardSlice";
 
-export const savePagePennsieveDetails = async (pageBeingLeftID) => {
+export const savePagePennsieveDetails = async (pageBeingLeftID, movingForward) => {
   const errorArray = [];
 };

@@ -30,7 +30,7 @@ import { getDropDownState } from "../../../../stores/slices/dropDownSlice";
 import { isCheckboxCardChecked } from "../../../../stores/slices/checkboxCardSlice";
 import { sortContributorRoles } from "../../metadata/contributors/contributors";
 
-export const savePagePrepareMetadata = async (pageBeingLeftID) => {
+export const savePagePrepareMetadata = async (pageBeingLeftID, movingForward) => {
   const errorArray = [];
   if (pageBeingLeftID === "guided-manifest-subject-entity-selector-tab") {
     window.sodaJSONObj["subject-related-folders-and-files"] = getEntityObjForEntityType(

@@ -1,4 +1,5 @@
 import useGlobalStore from "../globalStore";
+import { setPathToRender } from "./datasetTreeViewSlice";
 
 // Define the slice with just the state properties
 export const datasetContentSelectorSlice = (set, get) => ({
@@ -51,11 +52,43 @@ export const removeEntityFromSelectedEntities = (entity) => {
   useGlobalStore.setState({ selectedEntities: newSelected, deSelectedEntities: newDeSelected });
 };
 
-export const getOxfordCommaSeparatedListOfEntities = (separator) => {
+export const getOxfordCommaSeparatedListOfEntities = (separator, usePlural = false) => {
   const selectedEntities = useGlobalStore.getState().selectedEntities || [];
-  const hierarchyEntities = selectedEntities.filter((entity) =>
-    ["subjects", "samples", "sites"].includes(entity)
-  );
+  const entityTypeFilter = [
+    "subjects",
+    "samples",
+    "derivedSamples",
+    "subjectSites",
+    "sampleSites",
+    "performances",
+  ];
+
+  const hierarchyEntities = selectedEntities
+    .filter((entity) => entityTypeFilter.includes(entity))
+    .map((entity) => {
+      const singularNameMap = {
+        subjects: "subject",
+        samples: "sample",
+        derivedSamples: "derived sample",
+        subjectSites: "subject site",
+        sampleSites: "sample site",
+        performances: "performance",
+      };
+
+      const pluralNameMap = {
+        subjects: "subjects",
+        samples: "samples",
+        derivedSamples: "derived samples",
+        subjectSites: "subject sites",
+        sampleSites: "sample sites",
+        performances: "performances",
+      };
+
+      if (usePlural) {
+        return pluralNameMap[entity] || entity;
+      }
+      return singularNameMap[entity] || entity;
+    });
 
   if (!hierarchyEntities || hierarchyEntities.length === 0) return "";
   if (hierarchyEntities.length === 1) return hierarchyEntities[0];
@@ -108,6 +141,12 @@ export const setDeSelectedDataCategories = (deSelectedDataCategories) => {
 
 export const setSelectedHierarchyEntity = (entityObj) => {
   useGlobalStore.setState({ selectedHierarchyEntity: entityObj });
+
+  // For non-data-folders, set the path to render to that folder's location
+  if (entityObj?.type === "non-data-folder") {
+    const folderName = entityObj?.id;
+    setPathToRender(["data", "non-data-folders", folderName]);
+  }
 
   switch (entityObj?.type) {
     case "subject":

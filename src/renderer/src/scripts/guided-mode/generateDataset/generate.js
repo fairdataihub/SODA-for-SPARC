@@ -37,6 +37,8 @@ const restartServer = async (caller) => {
 
   restartServerLock = true;
 
+  console.log("Restarting server");
+
   const removeListener = window.server.onRestartProgress((line) => {
     window.log.info(`[restartServer] ${caller} - Server restart progress: ${line}`);
   });
@@ -226,10 +228,7 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
     const pennsieveDatasetName = window.sodaJSONObj["generate-dataset"]["dataset-name"];
 
     // Create standardized dataset structure and store globally
-    const standardizedDatasetStructure = createStandardizedDatasetStructure(
-      window.datasetStructureJSONObj,
-      window.sodaJSONObj["dataset-entity-obj"]
-    );
+    const { standardizedDatasetStructure } = createStandardizedDatasetStructure();
     // Add imported metadata files to the structure
     addImportedMetadataFilesToStructure(standardizedDatasetStructure);
     window.sodaJSONObj["soda_json_structure"] = standardizedDatasetStructure;
@@ -785,6 +784,7 @@ const trackPennsieveDatasetGenerationProgress = async () => {
         clientError(error);
         try {
           await restartServer("progress tracking");
+          console.log("server restarted");
         } catch (e) {
           // do not let an error rise unguarded or get crash.
           // TODO: IF error happens repeatedly break and find graceful way to let calling function/upload function know to stop
@@ -852,7 +852,8 @@ const automaticRetry = async (supplementaryChecks = false, errorMessage = "") =>
       return;
     }
     supplementaryChecks = await window.run_pre_flight_checks(
-      "guided-mode-pre-generate-pennsieve-agent-check"
+      "guided-mode-pre-generate-pennsieve-agent-check",
+      false
     );
   }
 
@@ -872,7 +873,8 @@ const automaticRetry = async (supplementaryChecks = false, errorMessage = "") =>
     });
     while (!supplementaryChecks && amountOfTimesPennsieveUploadFailed <= 3) {
       supplementaryChecks = await window.run_pre_flight_checks(
-        "guided-mode-pre-generate-pennsieve-agent-check"
+        "guided-mode-pre-generate-pennsieve-agent-check",
+        false
       );
       if (!supplementaryChecks) amountOfTimesPennsieveUploadFailed += 1;
     }
@@ -921,10 +923,7 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
     );
 
     // Create standardized structure
-    const standardizedDatasetStructure = createStandardizedDatasetStructure(
-      window.datasetStructureJSONObj,
-      window.sodaJSONObj["dataset-entity-obj"]
-    );
+    const { standardizedDatasetStructure } = createStandardizedDatasetStructure();
     // Add imported metadata files to the structure
     addImportedMetadataFilesToStructure(standardizedDatasetStructure);
 

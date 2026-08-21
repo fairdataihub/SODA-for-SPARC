@@ -1,3 +1,5 @@
+import { newEmptyFolderObj } from "../../utils/datasetStructure";
+
 export const guidedGetDatasetId = (sodaJSON) => {
   let datasetId = sodaJSON?.["digital-metadata"]?.["pennsieve-dataset-id"];
   if (datasetId != undefined) {
@@ -60,7 +62,12 @@ export const initializeGuidedDatasetObject = (curationMode) => {
   window.sodaJSONObj["last-modified"] = "";
   window.sodaJSONObj["button-config"] = {};
   window.sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] = "false";
-  window.datasetStructureJSONObj = { folders: {}, files: {} };
+  window.datasetStructureJSONObj = {
+    folders: {
+      data: newEmptyFolderObj(),
+    },
+    files: {},
+  };
   window.sodaJSONObj["dataset-validated"] = "false";
 };
 

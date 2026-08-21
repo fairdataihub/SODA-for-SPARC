@@ -1,9 +1,10 @@
-import { Accordion, Text, List, Group, Table } from "@mantine/core";
+import { Accordion, Text, List, Group, Table, Stack } from "@mantine/core";
 import { IconInfoCircle } from "@tabler/icons-react";
 import SodaPaper from "../SodaPaper";
 import useGlobalStore from "../../../../stores/globalStore";
 import ExternalLink from "../../../buttons/ExternalLink";
 import DatasetStructureVisualAid from "../../../common/DatasetStructureVisualization";
+import { getOxfordCommaSeparatedListOfEntities } from "../../../../stores/slices/datasetContentSelectorSlice";
 
 const dropDownIcons = {
   info: <IconInfoCircle size={18} color="var(--mantine-color-primary-6)" />,
@@ -260,6 +261,72 @@ const DropDownNote = ({ id }) => {
       dropDownIcon: "info",
       dropDownButtonText: "Overview of the SDS",
       dropDownNote: <DatasetStructureVisualAid />,
+    },
+    "dataset-structuring-method-note": {
+      dropDownIcon: "info",
+      dropDownButtonText: "What's the difference between these methods?",
+      dropDownNote: (
+        <Stack spacing="md" mt="sm">
+          <SodaPaper>
+            <Text fw={600} mb="xs">
+              File to entity association
+            </Text>
+            <Text size="sm" mb="sm">
+              Import all of your data at once, then use checkboxes to select files for each{" "}
+              {getOxfordCommaSeparatedListOfEntities("and", false)} and assign them to their
+              respective entities.
+            </Text>
+            <Text size="sm" fw={500} mb="xs">
+              Best for:
+            </Text>
+            <List size="sm" spacing="xs" mb="md">
+              <List.Item>When all your data is stored in one location</List.Item>
+              <List.Item>Larger datasets with many entities</List.Item>
+              <List.Item>Data pertaining to entities are stored together</List.Item>
+            </List>
+            <Text size="sm" fw={500} mb="xs">
+              Workflow steps:
+            </Text>
+            <List size="sm" spacing="xs">
+              <List.Item>Import all your data at once</List.Item>
+              <List.Item>Use checkboxes to select files for each entity</List.Item>
+              <List.Item>Assign the selected files to their respective entities</List.Item>
+            </List>
+          </SodaPaper>
+
+          <SodaPaper>
+            <Text fw={600} mb="xs">
+              Entity-by-entity data import
+            </Text>
+            <Text size="sm" mb="sm">
+              Organize your dataset by focusing on one entity at a time, iterating over all{" "}
+              {getOxfordCommaSeparatedListOfEntities("and", true)} in your dataset. This can be
+              thought of as having a bucket for each entity where you'll select an entity and then
+              place all the data belonging to that entity into its bucket before moving on to the
+              next one.
+            </Text>
+            <Text size="sm" fw={500} mb="xs">
+              Best for:
+            </Text>
+            <List size="sm" spacing="xs" mb="md">
+              <List.Item>
+                When your entity related data is stored in different locations or folders and would
+                be best imported in a piecemeal fashion
+              </List.Item>
+              <List.Item>Smaller datasets with fewer entities</List.Item>
+              <List.Item>Pre-organized datasets that map directly to your entities</List.Item>
+            </List>
+            <Text size="sm" fw={500} mb="xs">
+              Workflow steps:
+            </Text>
+            <List size="sm" spacing="xs">
+              <List.Item>Select an entity from the list</List.Item>
+              <List.Item>Import data files for that entity</List.Item>
+              <List.Item>Repeat for each entity in your dataset</List.Item>
+            </List>
+          </SodaPaper>
+        </Stack>
+      ),
     },
   };
 

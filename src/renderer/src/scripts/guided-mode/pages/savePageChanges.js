@@ -16,7 +16,11 @@ import { savePagePrepareMetadata } from "./prepareMetadata/savePage";
 import { savePagePennsieveDetails } from "./pennsieveDetails/savePage";
 import { savePageGenerateDataset } from "./generateDataset/savePage";
 import { savePageSharedWorkflowSteps } from "./sharedWorkflowSteps/savePage";
-import { countFilesInDatasetStructure, getFilesByEntityType } from "../../utils/datasetStructure";
+import {
+  countFilesInDatasetStructure,
+  countFilesByDatasetStructureRelativePath,
+  getFilesByEntityType,
+} from "../../utils/datasetStructure";
 import {
   guidedSkipPage,
   guidedUnSkipPage,
@@ -30,6 +34,7 @@ import {
   getExistingSamples,
   getExistingSites,
   deleteSubject,
+  getEntitiesByEntityType,
 } from "../../../stores/slices/datasetEntityStructureSlice";
 import {
   swalConfirmAction,
@@ -37,6 +42,7 @@ import {
   swalListSingleAction,
 } from "../../utils/swal-utils";
 import { addEntityNameToEntityType } from "../../../stores/slices/datasetEntitySelectorSlice";
+import { createStandardizedDatasetStructure } from "../../utils/datasetStructure";
 
 while (!window.baseHtmlLoaded) {
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -89,13 +95,25 @@ export const guidedSaveProgress = async () => {
   });
 };
 
+const createUserLegibleEntityType = (entityType) => {
+  switch (entityType) {
+    case "derived-samples":
+      return "derived samples";
+    case "non-derived-samples":
+      return "samples";
+    default:
+      return entityType;
+  }
+};
+
 /**
  *
  * @param {string} pageBeingLeftID  - The id of the html page that the user is leaving
+ * @param {boolean} movingForward - Whether the user is navigating forward (true) or backward (false)
  * @description Validate and save user progress for the page being left in the Prepare Dataset Step-by-Step workflow.
  *              Progress is saved in a progress file the user can access to resume their work after exiting their active workflow.
  */
-window.savePageChanges = async (pageBeingLeftID) => {
+window.savePageChanges = async (pageBeingLeftID, movingForward) => {
   // This function is used by both the navigation bar and the side buttons,
   // and whenever it is being called, we know that the user is trying to save the changes on the current page.
   // this function is async because we sometimes need to make calls to validate data before the page is ready to be left.
@@ -205,227 +223,6 @@ window.savePageChanges = async (pageBeingLeftID) => {
           guidedSkipPage("guided-modalities-data-selection-tab");
         }
       }
-
-      if (pageBeingLeftComponentType === "data-categorization-page") {
-        const entityType = pageBeingLeftDataSet.entityType;
-        const datasetEntityObj = getDatasetEntityObj();
-        const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
-        const datasetFileCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
-
-        if (entityType === "non-data-folders") {
-          const userSelectedNonDataFolders = window.sodaJSONObj["non-data-folders"];
-          // Make sure the user categorized at least one file into each of the non-data folders
-          // that should have files categorized into them
-          for (const folder of userSelectedNonDataFolders) {
-            const categorizedFileCount = getCategorizedEntityFileList(
-              "non-data-folders",
-              folder
-            ).length;
-            if (categorizedFileCount === 0) {
-              errorArray.push({
-                type: "notyf",
-                message: `You indicated that your dataset contains ${folder} files, but you have not categorized any files into the ${folder} folder. Please categorize all of your ${folder} files before continuing.`,
-              });
-              throw errorArray;
-            }
-          }
-
-          // Check to make sure all files were not selected here (if they have subjects) because then there would
-          // be no experimental data
-          const nonDataFileCount = getFilesByEntityType(["non-data-folders"]);
-          const nonDataFileCountLength = nonDataFileCount.length;
-
-          if (nonDataFileCountLength >= datasetFileCount) {
-            if (selectedEntities.includes("subjects")) {
-              errorArray.push({
-                type: "notyf",
-                message: `You indicated that your dataset contains subject-related data (experimental), but all files are categorized as non-data folders (code, docs, protocol). Please decategorize the experimental data files from the non-data folders before continuing.`,
-              });
-              throw errorArray;
-            }
-          }
-        }
-
-        if (entityType === "experimental") {
-          const experimentalFileCount = getCategorizedEntityFileList(
-            "experimental",
-            "experimental"
-          ).length;
-
-          if (experimentalFileCount === 0) {
-            errorArray.push({
-              type: "notyf",
-              message: "Please select your experimental data files before continuing.",
-            });
-            throw errorArray;
-          }
-        }
-
-        if (entityType === "performances") {
-          // Clone current performances metadata to avoid mutating the original reference
-          const performanceMetadata = structuredClone(
-            window.sodaJSONObj.dataset_metadata.performances
-          );
-
-          // Utility: check if two objects share at least one common key
-          const sharesAtLeastOneKey = (objA, objB) => Object.keys(objA).some((key) => key in objB);
-
-          // Get existing entities
-          const sites = getExistingSites();
-          const samples = getExistingSamples();
-          const subjects = getExistingSubjects();
-
-          performanceMetadata.forEach((performance) => {
-            const performanceId = performance.performance_id;
-            const performanceFiles = datasetEntityObj?.performances?.[performanceId];
-
-            // Skip performances that have no associated files
-            if (!performanceFiles) {
-              performance.participants = [];
-              return;
-            }
-
-            // Participants grouped by subject
-            const groupedParticipants = {};
-
-            // Collect parent subjects and samples from matching sites (exclude site IDs)
-            for (const site of sites) {
-              const siteId = site.metadata.site_id;
-              const siteFiles = datasetEntityObj?.sites?.[siteId] || {};
-
-              if (sharesAtLeastOneKey(performanceFiles, siteFiles)) {
-                const { parentSample, parentSubject } = site;
-                if (parentSubject) {
-                  if (!groupedParticipants[parentSubject]) {
-                    groupedParticipants[parentSubject] = new Set();
-                  }
-                  if (parentSample) {
-                    groupedParticipants[parentSubject].add(parentSample);
-                  }
-                }
-              }
-            }
-
-            // Collect samples and their parent subjects
-            for (const sample of samples) {
-              const sampleId = sample.metadata.sample_id;
-              const sampleFiles = datasetEntityObj?.samples?.[sampleId] || {};
-              const parentSubject = sample.metadata.subject_id || sample.parentSubject;
-
-              if (sharesAtLeastOneKey(performanceFiles, sampleFiles)) {
-                if (!groupedParticipants[parentSubject]) {
-                  groupedParticipants[parentSubject] = new Set();
-                }
-                groupedParticipants[parentSubject].add(sampleId);
-              }
-            }
-
-            // Add subjects that have direct files or already have related samples
-            for (const subject of subjects) {
-              const subjectId = subject.metadata.subject_id;
-              const subjectFiles = datasetEntityObj?.subjects?.[subjectId] || {};
-
-              if (sharesAtLeastOneKey(performanceFiles, subjectFiles)) {
-                if (!groupedParticipants[subjectId]) {
-                  groupedParticipants[subjectId] = new Set();
-                }
-              }
-            }
-
-            // Build ordered participant list (subject first, then samples)
-            const orderedParticipants = [];
-            for (const subject of subjects) {
-              const subjectId = subject.metadata.subject_id;
-              const samplesForSubject = groupedParticipants[subjectId];
-              if (samplesForSubject) {
-                orderedParticipants.push(subjectId);
-                samplesForSubject.forEach((sampleId) => {
-                  orderedParticipants.push(sampleId);
-                });
-              }
-            }
-
-            // Assign ordered participants list to performance
-            performance.participants = orderedParticipants;
-          });
-
-          // Update dataset metadata
-          window.sodaJSONObj["dataset_metadata"]["performances"] = performanceMetadata;
-        }
-
-        if (entityType === "subjects") {
-          // Get a list of files that were marked as experimental but not assigned to any entities
-          const experimentalFiles = getFilesByEntityType("experimental");
-          const entityAssociatedFiles = getFilesByEntityType([
-            "sites",
-            "derived-samples",
-            "samples",
-            "subjects",
-          ]);
-          // Find items that were associated to experimentalFiles but not in entityAssociatedFiles
-          const unassociatedExperimentalFiles = experimentalFiles.filter(
-            (file) => !entityAssociatedFiles.includes(file)
-          );
-          const previousBypassedExperimentalFiles =
-            window.sodaJSONObj["bypassed-experimental-files"];
-          if (unassociatedExperimentalFiles.length > 0) {
-            // Check if the arrays are different by comparing their contents
-            const arraysAreDifferent =
-              !previousBypassedExperimentalFiles ||
-              previousBypassedExperimentalFiles.length !== unassociatedExperimentalFiles.length ||
-              !unassociatedExperimentalFiles.every((file) =>
-                previousBypassedExperimentalFiles.includes(file)
-              );
-
-            if (arraysAreDifferent) {
-              const hierarchyEntitiesList = getOxfordCommaSeparatedListOfEntities("or");
-              const continueWithUnassociatedExperimentalFiles = await swalListDoubleAction(
-                unassociatedExperimentalFiles.map((file) =>
-                  file.startsWith("data/") ? file.substring(5) : file
-                ),
-                "Unassociated Experimental Files Detected",
-                `The following experimental files have not been associated with any ${hierarchyEntitiesList}. 
-                You can choose to continue without associating these files, or go back to associate them with entities.`,
-                "Continue without associating these files",
-                "Go back to associate files",
-                "What would you like to do with these unassociated experimental files?"
-              );
-
-              if (continueWithUnassociatedExperimentalFiles) {
-                // User chose to continue - save the bypassed files
-                window.sodaJSONObj["bypassed-experimental-files"] = unassociatedExperimentalFiles;
-              } else {
-                // User chose to go back - throw error to prevent navigation
-                errorArray.push({
-                  type: "notyf",
-                  message:
-                    "Please associate all experimental files with entities before continuing.",
-                });
-                throw errorArray;
-              }
-            }
-          }
-        }
-
-        if (entityType !== "remaining-data-categorization") {
-          // Whenever leaving a data categorization page, check the count of the
-          // non-data-folders (e.g. code, docs) combined with the experimentally
-          // marked files, and if they are not equal, we can assume that their are files that
-          // were not categorized therefore remaining.
-
-          const countOfNonRemainingDataCategories = getFilesByEntityType([
-            "experimental",
-            "non-data-folders",
-          ]).length;
-
-          if (countOfNonRemainingDataCategories >= datasetFileCount) {
-            guidedSkipPageSet("guided-remaining-data-categorization-page-set");
-          } else {
-            guidedUnSkipPageSet("guided-remaining-data-categorization-page-set");
-          }
-        }
-      }
-
       if (pageBeingLeftComponentType === "data-categories-questionnaire-page") {
         const questionnaireEntityType = pageBeingLeftDataSet.questionnaireEntityType;
 
@@ -472,6 +269,454 @@ window.savePageChanges = async (pageBeingLeftID) => {
           } else {
             guidedSkipPage("remaining-data-categorization-tab");
             removeEntityType("remaining-data-categorization");
+          }
+        }
+
+        if (questionnaireEntityType === "entity-bucketing-data-categorization") {
+          const categorizeEntityBucketingDataYes = isCheckboxCardChecked(
+            "categorize-entity-bucketing-data-yes"
+          );
+          const categorizeEntityBucketingDataNo = isCheckboxCardChecked(
+            "categorize-entity-bucketing-data-no"
+          );
+          if (!categorizeEntityBucketingDataYes && !categorizeEntityBucketingDataNo) {
+            errorArray.push({
+              type: "notyf",
+              message:
+                "Please indicate if you would like to categorize your entity associated data.",
+            });
+            throw errorArray;
+          }
+
+          if (categorizeEntityBucketingDataYes) {
+            guidedUnSkipPage("entity-bucketing-primary-source-derivative-categorization-tab");
+            addEntityNameToEntityType("entity-associated-data-categorization", "Source");
+            addEntityNameToEntityType("entity-associated-data-categorization", "Derivative");
+          } else {
+            guidedSkipPage("entity-bucketing-primary-source-derivative-categorization-tab");
+            removeEntityType("entity-associated-data-categorization");
+          }
+        }
+      }
+      if (pageBeingLeftComponentType === "data-categorization-page") {
+        const entityType = pageBeingLeftDataSet.entityType;
+        const datasetEntityObj = getDatasetEntityObj();
+        const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
+        const datasetFileCount = countFilesInDatasetStructure(window.datasetStructureJSONObj);
+
+        if (entityType === "non-data-folders") {
+          const userSelectedNonDataFolders = window.sodaJSONObj["non-data-folders"];
+          // Make sure the user categorized at least one file into each of the non-data folders
+          // that should have files categorized into them
+          for (const folder of userSelectedNonDataFolders) {
+            const categorizedFileCount = getCategorizedEntityFileList(
+              "non-data-folders",
+              folder
+            ).length;
+            if (categorizedFileCount === 0) {
+              errorArray.push({
+                type: "notyf",
+                message: `You indicated that your dataset contains ${folder} data, but you have not categorized any files into the ${folder} folder. Please categorize all of your ${folder} files before continuing.`,
+              });
+              throw errorArray;
+            }
+          }
+
+          // Check to make sure all files were not selected here (if they have subjects) because then there would
+          // be no experimental data
+          const nonDataFileCount = getFilesByEntityType(["non-data-folders"]);
+          const nonDataFileCountLength = nonDataFileCount.length;
+
+          if (nonDataFileCountLength >= datasetFileCount) {
+            if (selectedEntities.includes("subjects")) {
+              errorArray.push({
+                type: "notyf",
+                message: `You indicated that your dataset contains subject-related data (experimental), but all files are categorized as non-data folders (code, docs, protocol). Please decategorize the experimental data files from the non-data folders before continuing.`,
+              });
+              throw errorArray;
+            }
+          }
+        }
+
+        if (entityType === "experimental") {
+          const experimentalFileCount = getCategorizedEntityFileList(
+            "experimental",
+            "experimental"
+          ).length;
+
+          if (experimentalFileCount === 0) {
+            errorArray.push({
+              type: "notyf",
+              message: "Please select your experimental data files before continuing.",
+            });
+            throw errorArray;
+          }
+        }
+
+        // Check for entities with no data files (sites, samples, derived-samples, subjects)
+        if (["sites", "samples", "derived-samples", "subjects"].includes(entityType)) {
+          const userLegibleEntityType = createUserLegibleEntityType(entityType);
+          const emptyEntities = [];
+
+          // For all entity types (subjects, samples, sites, etc.)
+          // Use the same pattern as openPage to get entity IDs
+          const entityIDs = getEntitiesByEntityType(entityType, true);
+          if (entityIDs && entityIDs.length > 0) {
+            for (const entityID of entityIDs) {
+              const entityFiles = datasetEntityObj?.[entityType]?.[entityID];
+              if (!entityFiles || Object.keys(entityFiles).length === 0) {
+                emptyEntities.push(entityID);
+              }
+            }
+          }
+
+          // Show warning if any entities are empty
+          if (emptyEntities.length > 0) {
+            // Only show swals when the user is moving forward, if they move backward, we don't
+            // want the swals to pop up.
+            if (movingForward === true) {
+              // Swal for entities (subjects, samples, sites, etc.)
+              const userLegibleEntityTypePlural = userLegibleEntityType.endsWith("s")
+                ? userLegibleEntityType
+                : `${userLegibleEntityType}s`;
+
+              const continueWithEmptyEntities = await swalListDoubleAction(
+                emptyEntities,
+                `${userLegibleEntityTypePlural} that did not have any files associated detected`,
+                `The following ${userLegibleEntityTypePlural} did not have any files associated to them.
+                You indicated that your dataset contains these ${userLegibleEntityTypePlural} and should
+                have data associated with them. You can either "Continue without associating data" and
+                your dataset metadata will not link any files to these ${userLegibleEntityType}, or
+                "Go back to associate data" to associate files to these ${userLegibleEntityTypePlural} now.`,
+                "Continue without associating data",
+                "Go back to associate data",
+                `What would you like to do with the ${userLegibleEntityTypePlural} that did not have any files associated to them?`
+              );
+
+              if (!continueWithEmptyEntities) {
+                // User chose to go back - throw error to prevent navigation
+                errorArray.push({
+                  type: "notyf",
+                  message: `Please add data to these ${userLegibleEntityType} folders or remove the empty ${userLegibleEntityTypePlural} on the entity metadata page before continuing.`,
+                });
+                throw errorArray;
+              }
+            }
+          }
+        }
+
+        if (entityType === "performances") {
+          // Clone current performances metadata to avoid mutating the original reference
+          const performanceMetadata = structuredClone(
+            window.sodaJSONObj.dataset_metadata.performances
+          );
+
+          // Utility: check if two objects share at least one common key
+          const sharesAtLeastOneKey = (objA, objB) => Object.keys(objA).some((key) => key in objB);
+
+          // Function to order participants by type: sites, derived samples, samples, subjects
+          const orderParticipantsByType = (participants) => {
+            const orderedList = [];
+
+            // Sites first
+            for (const participant of participants) {
+              if (sites.some((s) => s.metadata.site_id === participant)) {
+                orderedList.push(participant);
+              }
+            }
+
+            // Derived samples second
+            for (const participant of participants) {
+              if (
+                samples.some(
+                  (s) =>
+                    s.metadata.sample_id === participant &&
+                    s.metadata.was_derived_from &&
+                    s.metadata.was_derived_from.trim() !== ""
+                )
+              ) {
+                orderedList.push(participant);
+              }
+            }
+
+            // Regular samples third
+            for (const participant of participants) {
+              if (
+                samples.some(
+                  (s) =>
+                    s.metadata.sample_id === participant &&
+                    (!s.metadata.was_derived_from || s.metadata.was_derived_from.trim() === "")
+                )
+              ) {
+                orderedList.push(participant);
+              }
+            }
+
+            // Subjects last
+            for (const participant of participants) {
+              if (subjects.some((s) => s.metadata.subject_id === participant)) {
+                orderedList.push(participant);
+              }
+            }
+
+            return orderedList;
+          };
+
+          // Get existing entities
+          const sites = getExistingSites();
+          const samples = getExistingSamples();
+          const subjects = getExistingSubjects();
+
+          if (window.sodaJSONObj["dataset-structuring-method"] === "entity-association") {
+            performanceMetadata.forEach((performance) => {
+              const performanceId = performance.performance_id;
+              const performanceFiles = datasetEntityObj?.performances?.[performanceId];
+
+              // Skip performances that have no associated files
+              if (!performanceFiles) {
+                performance.participants = [];
+
+                return;
+              }
+
+              const matchedParticipants = [];
+
+              // Check sites for direct matches only
+              for (const site of sites) {
+                const siteId = site.metadata.site_id;
+                const siteFiles = datasetEntityObj?.sites?.[siteId] || {};
+
+                if (sharesAtLeastOneKey(performanceFiles, siteFiles)) {
+                  matchedParticipants.push(siteId);
+                }
+              }
+
+              // Check samples for direct matches only
+              for (const sample of samples) {
+                const sampleId = sample.metadata.sample_id;
+                const sampleFiles = datasetEntityObj?.samples?.[sampleId] || {};
+
+                if (sharesAtLeastOneKey(performanceFiles, sampleFiles)) {
+                  matchedParticipants.push(sampleId);
+                }
+              }
+
+              // Check subjects for direct matches only
+              for (const subject of subjects) {
+                const subjectId = subject.metadata.subject_id;
+                const subjectFiles = datasetEntityObj?.subjects?.[subjectId] || {};
+
+                if (sharesAtLeastOneKey(performanceFiles, subjectFiles)) {
+                  matchedParticipants.push(subjectId);
+                }
+              }
+
+              // Order participants by type: sites, derived samples, samples, subjects
+              const orderedParticipants = orderParticipantsByType(matchedParticipants);
+
+              // Assign ordered participants list to performance
+              performance.participants = orderedParticipants;
+            });
+          }
+
+          if (window.sodaJSONObj["dataset-structuring-method"] === "entity-buckets") {
+            const { fileToSourceMap } = createStandardizedDatasetStructure();
+
+            performanceMetadata.forEach((performance) => {
+              const performanceId = performance.performance_id;
+              const performanceFiles = datasetEntityObj?.performances?.[performanceId];
+
+              if (!Object.keys(performanceFiles || {}).length) {
+                performance.participants = [];
+
+                return;
+              }
+
+              // Collect entities from fileToSourceMap by matching sourcePaths
+              const entitiesSet = new Set();
+              const matchedParticipants = [];
+
+              // For each file in performanceFiles
+              for (const perfFile of Object.keys(performanceFiles)) {
+                // Find matching entry in fileToSourceMap where sourcePath matches perfFile
+                for (const sourceMapEntry of Object.values(fileToSourceMap)) {
+                  if (sourceMapEntry.sourcePath === perfFile) {
+                    const entity = sourceMapEntry.entity;
+                    if (!entitiesSet.has(entity)) {
+                      entitiesSet.add(entity);
+                      matchedParticipants.push(entity);
+                    }
+                    break;
+                  }
+                }
+              }
+
+              // Order participants by type: sites, derived samples, samples, subjects
+              const orderedParticipants = orderParticipantsByType(matchedParticipants);
+
+              performance.participants = orderedParticipants;
+            });
+          }
+
+          // Update dataset metadata
+          window.sodaJSONObj["dataset_metadata"]["performances"] = performanceMetadata;
+        }
+
+        if (entityType === "subjects") {
+          // Get a list of files that were marked as experimental but not assigned to any entities
+          const experimentalFiles = getFilesByEntityType("experimental");
+          const entityAssociatedFiles = getFilesByEntityType([
+            "sites",
+            "derived-samples",
+            "samples",
+            "subjects",
+          ]);
+          // Find items that were associated to experimentalFiles but not in entityAssociatedFiles
+          const unassociatedExperimentalFiles = experimentalFiles.filter(
+            (file) => !entityAssociatedFiles.includes(file)
+          );
+          const previousBypassedExperimentalFiles =
+            window.sodaJSONObj["bypassed-experimental-files"];
+          if (unassociatedExperimentalFiles.length > 0) {
+            // Check if the arrays are different by comparing their contents
+            const arraysAreDifferent =
+              !previousBypassedExperimentalFiles ||
+              previousBypassedExperimentalFiles.length !== unassociatedExperimentalFiles.length ||
+              !unassociatedExperimentalFiles.every((file) =>
+                previousBypassedExperimentalFiles.includes(file)
+              );
+
+            if (arraysAreDifferent) {
+              const hierarchyEntitiesList = getOxfordCommaSeparatedListOfEntities("or", false);
+              const continueWithUnassociatedExperimentalFiles = await swalListDoubleAction(
+                unassociatedExperimentalFiles.map((file) =>
+                  file.startsWith("data/") ? file.substring(5) : file
+                ),
+                "Unassociated Experimental Files Detected",
+                `The following experimental files have not been associated with any ${hierarchyEntitiesList}. 
+                You can choose to continue without associating these files, or go back to associate them with entities.`,
+                "Continue without associating these files",
+                "Go back to associate files",
+                "What would you like to do with these unassociated experimental files?"
+              );
+
+              if (continueWithUnassociatedExperimentalFiles) {
+                // User chose to continue - save the bypassed files
+                window.sodaJSONObj["bypassed-experimental-files"] = unassociatedExperimentalFiles;
+              } else {
+                // User chose to go back - throw error to prevent navigation
+                errorArray.push({
+                  type: "notyf",
+                  message:
+                    "Please associate all experimental files with entities before continuing.",
+                });
+                throw errorArray;
+              }
+            }
+          }
+        }
+
+        if (entityType === "entity-associated-data-categorization") {
+          // Save selected entity-associated data categories
+          const selectedCategories =
+            getSelectedDataCategoriesByEntityType()["entity-associated-data-categorization"] || [];
+          window.sodaJSONObj["selected-entity-associated-data-categories"] = selectedCategories;
+        }
+
+        if (entityType !== "remaining-data-categorization") {
+          // Whenever leaving a data categorization page, check the count of the
+          // non-data-folders (e.g. code, docs) combined with the experimentally
+          // marked files, and if they are not equal, we can assume that their are files that
+          // were not categorized therefore remaining.
+
+          const countOfNonRemainingDataCategories = getFilesByEntityType([
+            "experimental",
+            "non-data-folders",
+          ]).length;
+          if (window.sodaJSONObj["dataset-structuring-method"] === "entity-association") {
+            if (countOfNonRemainingDataCategories >= datasetFileCount) {
+              guidedSkipPageSet("guided-remaining-data-categorization-page-set");
+            } else {
+              guidedUnSkipPageSet("guided-remaining-data-categorization-page-set");
+            }
+          } else {
+            guidedSkipPageSet("guided-remaining-data-categorization-page-set");
+          }
+        }
+      }
+      if (pageBeingLeftComponentType === "data-bucketing-page") {
+        const entityType = pageBeingLeftDataSet.entityType;
+
+        const userLegibleEntityType = createUserLegibleEntityType(entityType);
+        const emptyEntities = [];
+
+        // For all entity types (subjects, samples, sites, non-data-folders, etc.)
+        // Use the same pattern as openPage to get entity IDs
+        const entityIDs = getEntitiesByEntityType(entityType, true);
+        if (entityIDs && entityIDs.length > 0) {
+          for (const entityID of entityIDs) {
+            const fileCount = countFilesByDatasetStructureRelativePath(
+              `data/${entityType}/${entityID}`
+            );
+            if (fileCount === 0) {
+              emptyEntities.push(entityID);
+            }
+          }
+        }
+
+        // Show warning if any entities are empty
+        if (emptyEntities.length > 0) {
+          // Only show swals when the user is moving forward, if they move backward, we don't
+          // want the swals to pop up.
+          if (movingForward === true) {
+            const isNonDataFolders = entityType === "non-data-folders";
+            console.log("movingForward", movingForward);
+            if (isNonDataFolders) {
+              // Swal for non-data-folders
+              await swalListSingleAction(
+                emptyEntities,
+                "Folders that did not have any data files added detected",
+                `The following folders did not have any data files added to them. You indicated that
+              your dataset contains data that should go in these folders. Please add data to these
+              folders, or go back to the dataset content page and indicate that your dataset does not
+              contain these types of files.`,
+                "Please add data to these folders before continuing."
+              );
+
+              // Prevent navigation - user must add data or change dataset content
+              errorArray.push({
+                type: "notyf",
+                message: `Please add data to these folders, or go back to the dataset content page and indicate that your dataset does not contain these types of files.`,
+              });
+              throw errorArray;
+            } else {
+              // Swal for entities (subjects, samples, sites, etc.)
+              const userLegibleEntityTypePlural = userLegibleEntityType.endsWith("s")
+                ? userLegibleEntityType
+                : `${userLegibleEntityType}s`;
+
+              const continueWithEmptyEntities = await swalListDoubleAction(
+                emptyEntities,
+                `${userLegibleEntityTypePlural} that did not have any data files added detected`,
+                `The following ${userLegibleEntityTypePlural} did not have any data files added to them.
+              You indicated that your dataset contains these ${userLegibleEntityTypePlural} and should
+              have data files in their folders. You can either "Continue without adding data" and the empty
+              ${userLegibleEntityType} folders will remain in your dataset, or "Go back to add data" to add
+              files to these ${userLegibleEntityTypePlural} now.`,
+                "Continue without adding data",
+                "Go back to add data",
+                `What would you like to do with the ${userLegibleEntityTypePlural} that did not have any data files added to them?`
+              );
+
+              if (!continueWithEmptyEntities) {
+                // User chose to go back - throw error to prevent navigation
+                errorArray.push({
+                  type: "notyf",
+                  message: `Please add data to these ${userLegibleEntityType} folders or remove the empty ${userLegibleEntityTypePlural} on the entity metadata page before continuing.`,
+                });
+                throw errorArray;
+              }
+            }
           }
         }
       }
@@ -651,12 +896,12 @@ window.savePageChanges = async (pageBeingLeftID) => {
     }
 
     // Handle page exit logic for pages that are not controlled by React components
-    await savePageDatasetStructure(pageBeingLeftID);
-    await savePageCurationPreparation(pageBeingLeftID);
-    await savePagePrepareMetadata(pageBeingLeftID);
-    await savePagePennsieveDetails(pageBeingLeftID);
-    await savePageSharedWorkflowSteps(pageBeingLeftID);
-    await savePageGenerateDataset(pageBeingLeftID);
+    await savePageDatasetStructure(pageBeingLeftID, movingForward);
+    await savePageCurationPreparation(pageBeingLeftID, movingForward);
+    await savePagePrepareMetadata(pageBeingLeftID, movingForward);
+    await savePagePennsieveDetails(pageBeingLeftID, movingForward);
+    await savePageSharedWorkflowSteps(pageBeingLeftID, movingForward);
+    await savePageGenerateDataset(pageBeingLeftID, movingForward);
 
     const datasetEntityArrayCopy = useGlobalStore.getState().datasetEntityArray;
     window.sodaJSONObj["dataset-entity-array"] = datasetEntityArrayCopy;
