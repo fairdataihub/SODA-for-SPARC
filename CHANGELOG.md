@@ -10,10 +10,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Feature Additions:
 
 - Added the entity bucketing workflow, allowing users to add data directly to entities and create an entity-structured dataset structure.
+- The submission file supports multiple milestone completion dates.
+- The Pennsieve Agent now notifies users of the latest version of the Pennsieve Agent as well as the last tested version of the Pennsieve Agent. We recommend users use both if they have issues.
 
 ## Bug fixes:
 
 - Fixed a bug allowing Performance end times to be before start times
+- SODA supports all single extension files and has an expanded list of double extensions. If double extension not recognized file is still imported.
+- If a save progress file has user information (workspace and profile) associated with it and a separate user tries to open it, SODA will now show a warning asking the user to sign in with prior creddentials or else reset their upload progress if any was made. This prevents users from accidentally overwriting another user's progress file or accidentally uploading to a different workspace than intended.
+- The progress bar for Upload Dataset and Prepare Dataset Step-by-Step will properly reset/continue where left off after an upload fails and the user closes SODA or exits and resumes the upload.
 
 ## v 18.2.0 - 2026-07-02
 
