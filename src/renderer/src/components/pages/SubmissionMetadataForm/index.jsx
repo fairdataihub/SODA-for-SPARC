@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
 import GuidedModePage from "../../containers/GuidedModePage";
 import GuidedModeSection from "../../containers/GuidedModeSection";
 import useGlobalStore from "../../../stores/globalStore";
 import {
   setAwardNumber,
   setMilestones,
-  setMilestoneDate,
+  setMilestoneBeingAddedName,
+  setMilestoneBeingAddedDate,
 } from "../../../stores/slices/datasetMetadataSlice";
 import {
   IconUser,
@@ -38,12 +38,8 @@ import {
   Divider,
   Checkbox,
   Badge,
-  TagsInput,
 } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
-import {
-  toggleCompletionDateChecked,
-} from "../../../stores/slices/datasetMetadataSlice";
 
 import DropdownSelect from "../../common/DropdownSelect";
 import NavigationButton from "../../buttons/Navigation";
@@ -52,32 +48,29 @@ const SubmissionMetadataForm = () => {
   const fundingConsortiumDropdownState = useGlobalStore(
     (state) => state.dropDownState["guided-nih-funding-consortium"]?.selectedValue
   );
-  const completionDateChecked = useGlobalStore((state) => state.completionDateChecked);
   const awardNumber = useGlobalStore((state) => state.awardNumber);
-  const milestones = useGlobalStore((state) => state.milestones || []);
-  let milestoneDate = useGlobalStore((state) => state.milestoneDate || []);
-  if (!Array.isArray(milestoneDate)) {
-    if (milestoneDate == null || milestoneDate == undefined) {
-      milestoneDate = [];
-    } else {
-      milestoneDate = milestoneDate.map((date) => {
-        return new Date(date);
-      });
-    }
-  } else {
-    milestoneDate = milestoneDate.map((date) => {
-      return new Date(date);
-    });
-  }
 
-  // Function to handle milestone tags changes
-  const handleMilestonesChange = (values) => {
-    setMilestones(values);
+  // Milestones and their completion date states (for the SPARC funding consortium)
+  const milestones = useGlobalStore((state) => state.milestones || []);
+  const milestoneBeingAddedName = useGlobalStore((state) => state.milestoneBeingAddedName);
+  const milestoneBeingAddedDate = useGlobalStore((state) => state.milestoneBeingAddedDate);
+
+  // Function to add a milestone with its completion date
+  const handleAddMilestone = () => {
+    if (milestoneBeingAddedName.trim()) {
+      const newMilestone = {
+        name: milestoneBeingAddedName.trim(),
+        date: milestoneBeingAddedDate,
+      };
+      setMilestones([...milestones, newMilestone]);
+      setMilestoneBeingAddedName("");
+      setMilestoneBeingAddedDate(null);
+    }
   };
 
-  // Function to handle milestone date change
-  const handleMilestoneDateChange = (date) => {
-    setMilestoneDate(date);
+  // Function to remove a milestone
+  const handleRemoveMilestone = (index) => {
+    setMilestones(milestones.filter((_, i) => i !== index));
   };
 
   return (
@@ -106,7 +99,7 @@ const SubmissionMetadataForm = () => {
         className="hidden"
       >
         <Text size="md" fw={500}>
-          Continue to add contributor information.
+          Submissions not funded by the NIH do not require funding information.
         </Text>
         <NavigationButton
           onClick={() => {
@@ -134,26 +127,84 @@ const SubmissionMetadataForm = () => {
         <DropdownSelect id="guided-nih-funding-consortium" />
         {fundingConsortiumDropdownState === "SPARC" && (
           <>
-            <TagsInput
-              label="Milestone(s) accomplished"
-              description="Enter the milestone(s) associated with this submission."
-              placeholder="Type and press Enter to add a milestone"
-              value={milestones}
-              onChange={handleMilestonesChange}
-              clearable
-              data={[]}
-            />
-            <DatePickerInput
-              type="multiple"
-              value={milestoneDate}
-              onChange={handleMilestoneDateChange}
-              label="Milestone completion date"
-              placeholder="MM/DD/YYYY"
-              valueFormat="MM/DD/YYYY"
-              icon={<IconCalendar size={16} />}
-              clearable
-              description="Enter the completion date(s) associated with the milestone(s). Leave blank if the completion date is not related to a pre-agreed milestone."
-            />
+            <div>
+              <Text size="md" fw={500} mb={3}>
+                Milestone(s) Accomplished
+              </Text>
+              <Text size="xs" mb={5}>
+                Enter the milestone(s) associated with this submission along with their completion
+                dates.
+              </Text>
+              <Stack gap="md" mb="md">
+                <Group gap="xs" align="flex-end">
+                  <div style={{ flex: 1 }}>
+                    <Text size="sm" fw={500} mb={3}>
+                      Milestone
+                    </Text>
+                    <TextInput
+                      placeholder="Enter the name of the milestone"
+                      value={milestoneBeingAddedName}
+                      onChange={(event) => setMilestoneBeingAddedName(event.currentTarget.value)}
+                      onKeyPress={(event) => {
+                        if (event.key === "Enter") {
+                          handleAddMilestone();
+                        }
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <Text size="sm" fw={500} mb={3}>
+                      Completion Date
+                    </Text>
+                    <DatePickerInput
+                      value={milestoneBeingAddedDate}
+                      onChange={setMilestoneBeingAddedDate}
+                      placeholder="MM/DD/YYYY"
+                      valueFormat="MM/DD/YYYY"
+                      icon={<IconCalendar size={16} />}
+                      clearable
+                      style={{ width: "150px" }}
+                    />
+                  </div>
+                  <Button onClick={handleAddMilestone} variant="default">
+                    Add
+                  </Button>
+                </Group>
+              </Stack>
+              {milestones.length > 0 && (
+                <Stack gap="xs" mb="md">
+                  {milestones.map((milestone, index) => (
+                    <Group
+                      key={index}
+                      justify="space-between"
+                      p="sm"
+                      style={{ border: "1px solid #e0e0e0", borderRadius: "4px" }}
+                    >
+                      <div>
+                        <Text fw={500}>{milestone.name}</Text>
+                        {milestone.date && (
+                          <Text size="sm" c="dimmed">
+                            {new Date(milestone.date).toLocaleDateString("en-US", {
+                              year: "numeric",
+                              month: "2-digit",
+                              day: "2-digit",
+                            })}
+                          </Text>
+                        )}
+                      </div>
+                      <Button
+                        size="xs"
+                        color="red"
+                        variant="light"
+                        onClick={() => handleRemoveMilestone(index)}
+                      >
+                        Delete Milestone
+                      </Button>
+                    </Group>
+                  ))}
+                </Stack>
+              )}
+            </div>
           </>
         )}
       </GuidedModeSection>

@@ -14,8 +14,9 @@ import { renderAdditionalLinksTable } from "../../guided-curate-dataset";
 import { setDropdownState } from "../../../../stores/slices/dropDownSlice";
 import {
   setMilestones,
-  setMilestoneDate,
   setAwardNumber,
+  setMilestoneBeingAddedName,
+  setMilestoneBeingAddedDate,
 } from "../../../../stores/slices/datasetMetadataSlice";
 import { renderContributorsTable } from "../../metadata/contributors/contributors";
 
@@ -37,15 +38,25 @@ export const openPagePrepareMetadata = async (targetPageID) => {
 
     // If the consortium is SPARC, set the milestones and milestone date
     if (fundingConsortium === "SPARC") {
-      setMilestones(milestoneAchieved);
-      setMilestoneDate(milestoneCompletionDate);
+      // Combine milestone names and dates into objects
+      const milestonesWithDates = milestoneAchieved.map((name, index) => ({
+        name,
+        date: milestoneCompletionDate[index] || null,
+      }));
+      setMilestones(milestonesWithDates);
     } else {
       setMilestones([]);
-      setMilestoneDate(null);
     }
+
+    // Set the funding consortium dropdown
+    setDropdownState("guided-nih-funding-consortium", fundingConsortium);
 
     // Set the award number
     setAwardNumber(awardNumber);
+
+    // Reset the milestone input fields
+    setMilestoneBeingAddedName("");
+    setMilestoneBeingAddedDate(null);
   }
 
   if (targetPageID === "guided-contributors-tab") {
