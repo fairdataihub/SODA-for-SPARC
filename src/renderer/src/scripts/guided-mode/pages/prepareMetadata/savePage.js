@@ -312,7 +312,6 @@ export const savePagePrepareMetadata = async (pageBeingLeftID, movingForward) =>
       const awardNumber = useGlobalStore.getState().awardNumber || "";
 
       if (fundingConsortiumDropDownValue !== "SPARC") {
-        console.log("Funding consortium selected is not SPARC:", fundingConsortiumDropDownValue);
         window.sodaJSONObj["dataset_metadata"]["submission"] = {
           consortium_data_standard: "SPARC", // Hardcoded for now (SODA only supports SPARC data standard)
           funding_consortium:
@@ -324,13 +323,11 @@ export const savePagePrepareMetadata = async (pageBeingLeftID, movingForward) =>
       }
 
       if (fundingConsortiumDropDownValue === "SPARC") {
-        console.log("Funding consortium selected is SPARC:", fundingConsortiumDropDownValue);
         // Get the milestone data for SPARC funding consortium
         const milestonesData = useGlobalStore.getState().milestones || [];
         const milestonesAchieved = milestonesData.map((m) => m.name || "");
         const milestoneCompletionDate = milestonesData.map((m) => m.date || null);
-        console.log("Milestones achieved:", milestonesAchieved);
-        console.log("Milestone completion dates:", milestoneCompletionDate);
+
         if (milestonesData.length === 0) {
           if (movingForward) {
             const userWantsToContinue = await swalConfirmAction(

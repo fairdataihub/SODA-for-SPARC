@@ -707,31 +707,18 @@ window.openPage = async (targetPageID) => {
 
     const renderCorrectFileExplorerByPage = (pageID, componentType) => {
       // Set the correct file explorer based on the page type
-      console.log(
-        "Setting activeFileExplorer for pageID:",
-        pageID,
-        "componentType:",
-        componentType
-      );
       if (PAGE_CONFIG["review-pages"].has(pageID)) {
-        console.log("Case: review-pages, setting to:", pageID);
         setActiveFileExplorer(pageID);
       } else if (
         pageID === "guided-unstructured-data-import-tab" ||
         pageID === "ffm-unstructured-data-import-tab"
       ) {
-        console.log(
-          "Case: unstructured-import-tab, setting to: guided-unstructured-data-import-tab"
-        );
         setActiveFileExplorer("guided-unstructured-data-import-tab");
       } else if (componentType === "data-bucketing-page") {
-        console.log("Case: data-bucketing-page, setting to: entity-bucketing-data-import-tab");
         setActiveFileExplorer("entity-bucketing-data-import-tab");
       } else if (componentType === "data-categorization-page") {
-        console.log("Case: data-categorization-page, setting to: entity-data-selector");
         setActiveFileExplorer("entity-data-selector");
       } else {
-        console.log("Case: default, setting to:", pageID);
         setActiveFileExplorer(pageID);
       }
 

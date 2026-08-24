@@ -297,7 +297,6 @@ const handlePerformancesSelection = async (selectedEntities, errorArray) => {
 };
 
 export const setGuidedWorkflow = (workflowSet) => {
-  console.log(`Setting guided workflow to: ${workflowSet}`);
   const workflowSets = {
     "entity-association-workflow": "entity-association",
     "entity-bucketing-workflow": "entity-buckets",

@@ -670,7 +670,6 @@ window.savePageChanges = async (pageBeingLeftID, movingForward) => {
           // want the swals to pop up.
           if (movingForward === true) {
             const isNonDataFolders = entityType === "non-data-folders";
-            console.log("movingForward", movingForward);
             if (isNonDataFolders) {
               // Swal for non-data-folders
               await swalListSingleAction(

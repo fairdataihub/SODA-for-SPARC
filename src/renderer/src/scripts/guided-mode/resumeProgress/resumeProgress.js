@@ -414,29 +414,10 @@ const patchPreviousGuidedModeVersions = async () => {
 
   // Patch for old submission metadata page
   const submissionMetadata = window.sodaJSONObj["dataset_metadata"]?.["submission"];
-  console.log("DEBUG: submissionMetadata exists:", !!submissionMetadata);
-  console.log("DEBUG: submissionMetadata value:", submissionMetadata);
 
   if (submissionMetadata) {
-    console.log(
-      "DEBUG: milestone_completion_date type:",
-      typeof submissionMetadata.milestone_completion_date
-    );
-    console.log(
-      "DEBUG: milestone_completion_date value:",
-      submissionMetadata.milestone_completion_date
-    );
-    console.log("DEBUG: milestone_achieved value:", submissionMetadata.milestone_achieved);
-    console.log(
-      "DEBUG: Is milestone_achieved an array?",
-      Array.isArray(submissionMetadata.milestone_achieved)
-    );
-
     // Ensure milestone_completion_date is an array with length matching milestone_achieved
     if (typeof submissionMetadata.milestone_completion_date === "string") {
-      console.log(
-        "DEBUG: Converting milestone_completion_date from string to array (matching milestone count)"
-      );
       // Convert string to array with same string repeated for each milestone
       submissionMetadata.milestone_completion_date = Array.isArray(
         submissionMetadata.milestone_achieved
@@ -445,26 +426,11 @@ const patchPreviousGuidedModeVersions = async () => {
             submissionMetadata.milestone_completion_date
           )
         : [submissionMetadata.milestone_completion_date];
-      console.log(
-        "DEBUG: milestone_completion_date after conversion:",
-        submissionMetadata.milestone_completion_date
-      );
-    } else if (Array.isArray(submissionMetadata.milestone_completion_date)) {
-      console.log(
-        "DEBUG: milestone_completion_date is already an array (old format), keeping as is"
-      );
     }
 
-    console.log(
-      "DEBUG: consortium_data_standard value:",
-      submissionMetadata.consortium_data_standard
-    );
     // Auto select the yes to NIH funding if the consortium_data_standard is SPARC
     if (submissionMetadata.consortium_data_standard === "SPARC") {
-      console.log("DEBUG: Setting submission-nih-funded to 'yes' because consortium is SPARC");
       window.sodaJSONObj["button-config"]["submission-nih-funded"] = "yes";
     }
-
-    console.log("DEBUG: Final submissionMetadata after patch:", submissionMetadata);
   }
 };
