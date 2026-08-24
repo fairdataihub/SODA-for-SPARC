@@ -315,7 +315,8 @@ export const savePagePrepareMetadata = async (pageBeingLeftID, movingForward) =>
         console.log("Funding consortium selected is not SPARC:", fundingConsortiumDropDownValue);
         window.sodaJSONObj["dataset_metadata"]["submission"] = {
           consortium_data_standard: "SPARC", // Hardcoded for now (SODA only supports SPARC data standard)
-          funding_consortium: fundingConsortiumDropDownValue,
+          funding_consortium:
+            fundingConsortiumDropDownValue === "Other" ? "" : fundingConsortiumDropDownValue,
           award_number: awardNumber,
           milestone_achieved: [],
           milestone_completion_date: [],
