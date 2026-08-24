@@ -622,7 +622,9 @@ export const createStandardizedDatasetStructure = () => {
   }
 
   // --- Step 6: Capture the modified structure before reverting changes ---
-  const standardizedDatasetStructure = JSON.parse(JSON.stringify(window.datasetStructureJSONObj));
+  const standardizedDatasetStructure = deleteEmptyFoldersFromStructure(
+    JSON.parse(JSON.stringify(window.datasetStructureJSONObj))
+  );
 
   useGlobalStore.setState({ datasetStructureJSONObj: standardizedDatasetStructure });
 
