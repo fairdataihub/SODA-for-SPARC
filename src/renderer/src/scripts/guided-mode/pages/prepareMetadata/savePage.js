@@ -282,31 +282,29 @@ export const savePagePrepareMetadata = async (pageBeingLeftID, movingForward) =>
   }
 
   if (pageBeingLeftID === "guided-submission-metadata-tab") {
-    const fundingAgencyDropDownValue = getDropDownState("guided-funding-agency");
+    const userSelectedNIHFundingYes = isCheckboxCardChecked("submission-nih-funded-yes");
+    const userSelectedNIHFundingNo = isCheckboxCardChecked("submission-nih-funded-no");
+
+    if (!userSelectedNIHFundingYes && !userSelectedNIHFundingNo) {
+      errorArray.push({
+        type: "notyf",
+        message: "Please indicate if your submission is funded by the NIH.",
+      });
+      throw errorArray;
+    }
+
     const fundingConsortiumDropDownValue = getDropDownState("guided-nih-funding-consortium");
     const awardNumber = useGlobalStore.getState().awardNumber || "";
 
-    let fundingAgency = "";
     let fundingConsortium = "";
     let milestonesAchieved = [];
     let milestoneCompletionDate = "";
-    if (fundingAgencyDropDownValue !== null) {
-      if (fundingAgencyDropDownValue === "NIH") {
-        if (fundingConsortiumDropDownValue !== null) {
-          fundingConsortium = fundingConsortiumDropDownValue;
-          if (fundingConsortium === "SPARC") {
-            // If SPARC is selected, store the input for milestones and completion date
-            milestonesAchieved = useGlobalStore.getState().milestones || [];
-            milestoneCompletionDate = useGlobalStore.getState().milestoneDate || [];
-          }
-        }
-      }
-      if (fundingAgencyDropDownValue === "Other") {
-        // Get the value from the other funding agency input
-        fundingAgency = useGlobalStore.getState().manualFudingAgency || "";
-      } else {
-        // Use the selected value from the dropdown
-        fundingAgency = fundingAgencyDropDownValue;
+    if (fundingConsortiumDropDownValue !== null) {
+      fundingConsortium = fundingConsortiumDropDownValue;
+      if (fundingConsortium === "SPARC") {
+        // If SPARC is selected, store the input for milestones and completion date
+        milestonesAchieved = useGlobalStore.getState().milestones || [];
+        milestoneCompletionDate = useGlobalStore.getState().milestoneDate || [];
       }
     }
 
@@ -339,8 +337,6 @@ export const savePagePrepareMetadata = async (pageBeingLeftID, movingForward) =>
       milestone_achieved: milestonesAchieved,
       milestone_completion_date: milestoneCompletionDate,
     };
-    // Save the funding agency name for the dataset_description metadata
-    window.sodaJSONObj["funding_agency"] = fundingAgency;
   }
 
   if (pageBeingLeftID === "guided-contributors-tab") {

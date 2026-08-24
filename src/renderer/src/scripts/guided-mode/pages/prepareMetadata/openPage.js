@@ -13,10 +13,9 @@ import lottie from "lottie-web";
 import { renderAdditionalLinksTable } from "../../guided-curate-dataset";
 import { setDropdownState } from "../../../../stores/slices/dropDownSlice";
 import {
-  setManualFundingAgency,
-  setAwardNumber,
   setMilestones,
   setMilestoneDate,
+  setAwardNumber,
 } from "../../../../stores/slices/datasetMetadataSlice";
 import { renderContributorsTable } from "../../metadata/contributors/contributors";
 
@@ -26,8 +25,6 @@ while (!window.baseHtmlLoaded) {
 
 export const openPagePrepareMetadata = async (targetPageID) => {
   if (targetPageID === "guided-submission-metadata-tab") {
-    // Set the funding agency (currently either NIH or Other)
-    const fundingAgency = window.sodaJSONObj["funding_agency"] || "";
     const fundingConsortium =
       window.sodaJSONObj["dataset_metadata"]?.["submission"]?.["funding_consortium"] || "";
 
@@ -38,24 +35,6 @@ export const openPagePrepareMetadata = async (targetPageID) => {
     const milestoneCompletionDate =
       window.sodaJSONObj["dataset_metadata"]?.["submission"]?.["milestone_completion_date"] || [];
 
-    if (fundingAgency) {
-      // Set the funding agency dropdown state
-
-      if (fundingAgency === "NIH") {
-        setDropdownState("guided-funding-agency", fundingAgency);
-        setDropdownState("guided-nih-funding-consortium", fundingConsortium);
-        setManualFundingAgency("");
-      } else {
-        setDropdownState("guided-funding-agency", "Other");
-        setDropdownState("guided-nih-funding-consortium", "");
-        setManualFundingAgency(fundingAgency);
-      }
-    } else {
-      setDropdownState("guided-funding-agency", "");
-      setDropdownState("guided-nih-funding-consortium", "");
-      setManualFundingAgency("");
-    }
-
     // If the consortium is SPARC, set the milestones and milestone date
     if (fundingConsortium === "SPARC") {
       setMilestones(milestoneAchieved);
@@ -65,7 +44,7 @@ export const openPagePrepareMetadata = async (targetPageID) => {
       setMilestoneDate(null);
     }
 
-    // Set the award number for all funding agencies
+    // Set the award number
     setAwardNumber(awardNumber);
   }
 
