@@ -278,11 +278,10 @@
 }
 
 .guided--steps {
-  margin-top: 25px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  margin-left: 30px;
+  width: 100%;
 }
 
 .guided--section {
