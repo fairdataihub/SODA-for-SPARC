@@ -737,7 +737,7 @@ const addPermissionUser = async (
     }
   );
 
-  window.log.info("Added permission ${selectedRole} to ${selectedUser} for ${selectedBfDataset}");
+  window.log.info(`Added permission ${selectedRole} to ${selectedUser} for ${selectedBfDataset}`);
 
   window.logGeneralOperationsForAnalytics(
     "Success",

@@ -1304,7 +1304,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       try {
         var accountPresent = await window.check_api_key();
       } catch (error) {
-        console.error(error);
+        clientError(error);
         $(".ui.active.blue.inline.loader.small").css("display", "none");
         $(".svg-change-current-account.dataset").css("display", "block");
         accountPresent = false;

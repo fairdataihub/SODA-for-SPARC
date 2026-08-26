@@ -2,7 +2,7 @@ import axios from "axios";
 // // get port number from the main process
 window.log.info("Requesting the port");
 window.port = await window.electron.ipcRenderer.invoke("get-port");
-window.log.info("Port is: " + window.port);
+window.log.info(`Port is: ${window.port}`);
 
 // Port is determined in startup code in src/main/index.js
 let client = axios.create({

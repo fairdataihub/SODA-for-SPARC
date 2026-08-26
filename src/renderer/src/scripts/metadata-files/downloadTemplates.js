@@ -183,7 +183,7 @@ downloadMetadataFiles.addEventListener("click", () => {
 window.electron.ipcRenderer.on(
   "selected-metadata-download-folder",
   (event, path, filename, helperConfig) => {
-    window.log.info("selected-metadata-download-folder", { path, filename, helperConfig });
+    window.log.info(`selected-metadata-download-folder ${path}, ${filename}, ${helperConfig}`);
     if (Array.isArray(path) && path.length > 0) {
       try {
         downloadTemplates(filename, path[0], helperConfig);

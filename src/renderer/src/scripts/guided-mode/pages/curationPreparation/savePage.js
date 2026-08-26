@@ -33,6 +33,6 @@ export const savePageCurationPreparation = async (pageBeingLeftID, movingForward
     }
 
     window.sodaJSONObj["digital-metadata"]["name"] = datasetNameInput;
-    window.log.info("[guided-name-subtitle-tab] Finalized dataset name:", datasetNameInput);
+    window.log.info(`[guided-name-subtitle-tab] Finalized dataset name: ${datasetNameInput}`);
   }
 };
