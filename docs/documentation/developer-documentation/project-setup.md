@@ -32,12 +32,14 @@ npm install --ignore-scripts
 SODA uses Conda to manage its Python environment. You'll need to have Conda installed. If you don't have it, download [Miniconda](https://docs.conda.io/projects/miniconda/en/latest/).
 
 #### For Linux/macOS:
+
 ```bash
 conda env create -f tools/anaconda-env/environment-Linux.yml
 conda activate env-electron-python
 ```
 
 #### For Windows:
+
 ```bash
 conda env create -f tools/anaconda-env/environment-Windows.yml
 conda activate env-electron-python
@@ -60,17 +62,22 @@ pip list
 ## Troubleshooting
 
 ### Node.js Version Mismatch
+
 If you have a different version of Node.js, consider using [nvm](https://github.com/nvm-sh/nvm) (macOS/Linux) or [nvm-windows](https://github.com/coreybutler/nvm-windows) to manage multiple Node.js versions.
 
 ### Conda Environment Issues
+
 If you encounter issues with the conda environment, try:
+
 ```bash
 conda env remove --name env-electron-python
 conda env create -f tools/anaconda-env/environment-Linux.yml  # or Windows
 ```
 
 ### Module Installation Issues
+
 Sometimes npm modules need to be rebuilt:
+
 ```bash
 npm rebuild
 ```
@@ -78,5 +85,6 @@ npm rebuild
 ## Next Steps
 
 Once your environment is set up, you can:
+
 - [Build the application locally](building-the-application-locally.md)
 - [Learn about the development workflow](building-the-application-locally.md#development-workflow)
