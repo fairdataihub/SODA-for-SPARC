@@ -9,8 +9,6 @@ import useGlobalStore from "../../../stores/globalStore";
 
 const DataImporter = ({ dataImporterId }) => {
   const datasetStructuringMode = useGlobalStore((state) => state.datasetStructuringMode);
-
-  console.log("Dataset structuring mode in DataImporter:", datasetStructuringMode);
   return (
     <FullWidthContainer className={classes["di"]}>
       <Box w="100%" m={0} p={0} id={dataImporterId} className={classes["di"]}>

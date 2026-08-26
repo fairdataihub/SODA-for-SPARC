@@ -398,11 +398,6 @@ const moveFilesFromFolderRecursively = (
  *
  * // Use the structure for rendering or backend operations
  * useGlobalStore.setState({ datasetStructureJSONObj: structure });
- *
- * // Use the path mapping to identify entity origins
- * for (const [newPath, mapping] of Object.entries(fileToSourceMap)) {
- *   console.log(`File ${newPath} came from entity ${mapping.entity} at ${mapping.sourcePath}`);
- * }
  */
 export const createStandardizedDatasetStructure = () => {
   // --- Step 1: Preserve the original global structure ---
@@ -410,8 +405,6 @@ export const createStandardizedDatasetStructure = () => {
 
   // Remove any empty folders from the original structure
   originalStructure = deleteEmptyFoldersFromStructure(originalStructure);
-
-  console.log("createStandardizedDatasetStructure - originalStructure:", originalStructure);
 
   // Initialize path mapping to track file moves
   const fileToSourceMap = {};
@@ -426,7 +419,6 @@ export const createStandardizedDatasetStructure = () => {
   const datasetStructuringMethod = window.sodaJSONObj["dataset-structuring-method"];
   const datasetEntityObj = window.sodaJSONObj["dataset-entity-obj"];
 
-  console.log("createStandardizedDatasetStructure - datasetEntityObj:", datasetEntityObj);
   try {
     if (datasetStructuringMethod === "entity-association") {
       // Move Code files into the code/ folder
@@ -607,8 +599,6 @@ export const createStandardizedDatasetStructure = () => {
             baseDestinationPath = `primary/${parentSubjectId}/${siteId}/`;
           }
 
-          console.log(`Moving site ${siteId} to ${baseDestinationPath}`);
-
           // Move all files and folders from the site folder to primary, preserving structure
           moveFilesFromFolderRecursively(
             siteFolderLocation,
@@ -660,7 +650,6 @@ export const createStandardizedDatasetStructure = () => {
       standardizedDatasetStructure,
       fileToSourceMap: fileToSourceMap,
     };
-    console.log("createStandardizedDatasetStructure - returning:", result);
     return result;
   } catch (error) {
     console.error("Error while creating standardized dataset structure:", error);

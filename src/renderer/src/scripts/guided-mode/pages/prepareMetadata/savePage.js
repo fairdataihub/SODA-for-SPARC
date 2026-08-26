@@ -24,7 +24,7 @@ import {
 } from "../../../utils/datasetStructure";
 import { bytesToReadableSize } from "../../generateDataset/generate";
 import client from "../../../client";
-import { swalListSingleAction } from "../../../utils/swal-utils";
+import { swalListSingleAction, swalConfirmAction } from "../../../utils/swal-utils";
 
 import { getDropDownState } from "../../../../stores/slices/dropDownSlice";
 import { isCheckboxCardChecked } from "../../../../stores/slices/checkboxCardSlice";
@@ -282,65 +282,80 @@ export const savePagePrepareMetadata = async (pageBeingLeftID, movingForward) =>
   }
 
   if (pageBeingLeftID === "guided-submission-metadata-tab") {
-    const fundingAgencyDropDownValue = getDropDownState("guided-funding-agency");
-    const fundingConsortiumDropDownValue = getDropDownState("guided-nih-funding-consortium");
-    const awardNumber = useGlobalStore.getState().awardNumber || "";
+    const userSelectedNIHFundingYes = isCheckboxCardChecked("submission-nih-funded-yes");
+    const userSelectedNIHFundingNo = isCheckboxCardChecked("submission-nih-funded-no");
 
-    let fundingAgency = "";
-    let fundingConsortium = "";
-    let milestonesAchieved = [];
-    let milestoneCompletionDate = "";
-    if (fundingAgencyDropDownValue !== null) {
-      if (fundingAgencyDropDownValue === "NIH") {
-        if (fundingConsortiumDropDownValue !== null) {
-          fundingConsortium = fundingConsortiumDropDownValue;
-          if (fundingConsortium === "SPARC") {
-            // If SPARC is selected, store the input for milestones and completion date
-            milestonesAchieved = useGlobalStore.getState().milestones || [];
-            milestoneCompletionDate = useGlobalStore.getState().milestoneDate || [];
+    if (!userSelectedNIHFundingYes && !userSelectedNIHFundingNo) {
+      errorArray.push({
+        type: "notyf",
+        message: "Please indicate if your submission is funded by the NIH.",
+      });
+      throw errorArray;
+    }
+
+    if (userSelectedNIHFundingNo) {
+      // Delete the submission metadata if the user selected "No" for NIH funding
+      if (window.sodaJSONObj["dataset_metadata"]?.["submission"]) {
+        delete window.sodaJSONObj["dataset_metadata"]["submission"];
+      }
+    }
+
+    if (userSelectedNIHFundingYes) {
+      const fundingConsortiumDropDownValue = getDropDownState("guided-nih-funding-consortium");
+      if (!fundingConsortiumDropDownValue) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please select a NIH funding consortium.",
+        });
+        throw errorArray;
+      }
+      const awardNumber = useGlobalStore.getState().awardNumber || "";
+
+      if (fundingConsortiumDropDownValue !== "SPARC") {
+        window.sodaJSONObj["dataset_metadata"]["submission"] = {
+          consortium_data_standard: "SPARC", // Hardcoded for now (SODA only supports SPARC data standard)
+          funding_consortium:
+            fundingConsortiumDropDownValue === "Other" ? "" : fundingConsortiumDropDownValue,
+          award_number: awardNumber,
+          milestone_achieved: [],
+          milestone_completion_date: [],
+        };
+      }
+
+      if (fundingConsortiumDropDownValue === "SPARC") {
+        // Get the milestone data for SPARC funding consortium
+        const milestonesData = useGlobalStore.getState().milestones || [];
+        const milestonesAchieved = milestonesData.map((m) => m.name || "");
+        const milestoneCompletionDate = milestonesData.map((m) => m.date || null);
+
+        if (milestonesData.length === 0) {
+          if (movingForward) {
+            const userWantsToContinue = await swalConfirmAction(
+              "warning",
+              "No Milestones Added",
+              "You have not added any milestones for your submission. Would you like to continue without adding milestones?",
+              "Continue",
+              "Cancel"
+            );
+
+            if (!userWantsToContinue) {
+              errorArray.push({
+                type: "notyf",
+                message: "Please add at least one milestone for SPARC funding.",
+              });
+              throw errorArray;
+            }
           }
         }
-      }
-      if (fundingAgencyDropDownValue === "Other") {
-        // Get the value from the other funding agency input
-        fundingAgency = useGlobalStore.getState().manualFudingAgency || "";
-      } else {
-        // Use the selected value from the dropdown
-        fundingAgency = fundingAgencyDropDownValue;
-      }
-    }
-
-    // Prepare the submission metadata
-    // Ensure milestone_completion_date is stored as an ISO 8601 string (if provided)
-    if (milestoneCompletionDate) {
-      try {
-        if (!Array.isArray(milestoneCompletionDate))
-          milestoneCompletionDate = [milestoneCompletionDate];
-
-        if (
-          milestoneCompletionDate.some((date) => date === null || date === "" || date === undefined)
-        ) {
-          milestoneCompletionDate = [];
-        }
-
-        milestoneCompletionDate = milestoneCompletionDate.map((date) => {
-          return new Date(date);
-        });
-      } catch (err) {
-        // Fallback: leave empty string if it cannot be parsed
-        milestoneCompletionDate = [];
+        window.sodaJSONObj["dataset_metadata"]["submission"] = {
+          consortium_data_standard: "SPARC", // Hardcoded for now (SODA only supports SPARC data standard)
+          funding_consortium: fundingConsortiumDropDownValue,
+          award_number: awardNumber,
+          milestone_achieved: milestonesAchieved,
+          milestone_completion_date: milestoneCompletionDate,
+        };
       }
     }
-
-    window.sodaJSONObj["dataset_metadata"]["submission"] = {
-      consortium_data_standard: "SPARC", // Hardcoded for now (SODA only supports SPARC data standard)
-      funding_consortium: fundingConsortium,
-      award_number: awardNumber,
-      milestone_achieved: milestonesAchieved,
-      milestone_completion_date: milestoneCompletionDate,
-    };
-    // Save the funding agency name for the dataset_description metadata
-    window.sodaJSONObj["funding_agency"] = fundingAgency;
   }
 
   if (pageBeingLeftID === "guided-contributors-tab") {

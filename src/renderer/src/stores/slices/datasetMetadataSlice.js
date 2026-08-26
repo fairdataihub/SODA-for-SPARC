@@ -7,6 +7,8 @@ export const initialState = {
   submissionMilestones: [],
   completionDateChecked: false,
   milestoneDate: null,
+  milestoneBeingAddedName: "",
+  milestoneBeingAddedDate: null,
 };
 
 export const datasetMetadataSlice = (set) => ({
@@ -46,5 +48,17 @@ export const toggleCompletionDateChecked = () => {
 export const setMilestoneDate = (date) => {
   useGlobalStore.setState({
     milestoneDate: date,
+  });
+};
+
+export const setMilestoneBeingAddedName = (milestoneBeingAddedName) => {
+  useGlobalStore.setState({
+    milestoneBeingAddedName,
+  });
+};
+
+export const setMilestoneBeingAddedDate = (milestoneBeingAddedDate) => {
+  useGlobalStore.setState({
+    milestoneBeingAddedDate,
   });
 };

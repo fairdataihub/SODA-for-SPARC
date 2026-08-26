@@ -13,17 +13,6 @@ export const guidedSkipPage = (pageId) => {
     return;
   }
 
-  const workflowAttr = page.getAttribute("data-guided-workflow");
-  const hasNonStandardWorkflow = workflowAttr?.includes("non-standard-data-workflow");
-
-  if (hasNonStandardWorkflow) {
-    const pageName = page.getAttribute("data-page-name") || "Unknown";
-    console.log(
-      `[pageSkipping] guidedSkipPage: "${pageId}" (${pageName}) - Workflows: ${workflowAttr}`
-    );
-    console.trace("  Stack trace:");
-  }
-
   page.dataset.skipPage = "true";
 
   // add the page to window.sodaJSONObj array if it isn't there already
@@ -82,23 +71,10 @@ export const guidedUnSkipPageSet = (className) => {
           skippedWorkflows.includes(workflow)
         );
         if (allWorkflowsSkipped) {
-          if (workflowAttribute.includes("non-standard-data-workflow")) {
-            console.log(
-              `[pageSkipping] guidedUnSkipPageSet "${className}": Skipping unskip for "${page.id}" - all workflows skipped`
-            );
-          }
           continue; // Skip unskipping this page
         }
       }
 
-      const workflowAttr = page.getAttribute("data-guided-workflow");
-      if (workflowAttr?.includes("non-standard-data-workflow")) {
-        console.log(
-          `[pageSkipping] guidedUnSkipPageSet "${className}": Unskipping "${page.id}" (${
-            page.getAttribute("data-page-name") || "Unknown"
-          })`
-        );
-      }
       guidedUnSkipPage(page.id);
     }
   }
@@ -126,11 +102,6 @@ export const guidedUnSkipPage = (pageId) => {
     const skippedWorkflows = window.sodaJSONObj["skipped-workflows"] || [];
     const allWorkflowsSkipped = workflows.every((workflow) => skippedWorkflows.includes(workflow));
     if (allWorkflowsSkipped) {
-      if (hasNonStandardWorkflow) {
-        console.log(
-          `[pageSkipping] guidedUnSkipPage: "${pageId}" - Cannot unskip, all workflows skipped`
-        );
-      }
       return; // Don't unskip because all workflows are skipped
     }
   }
@@ -144,20 +115,8 @@ export const guidedUnSkipPage = (pageId) => {
     // Only keep skipped if ALL of this page's page sets are in the skipped list
     const allPageSetsSkipped = pageSets.every((set) => skippedPageSets.includes(set));
     if (allPageSetsSkipped) {
-      if (hasNonStandardWorkflow) {
-        console.log(
-          `[pageSkipping] guidedUnSkipPage: "${pageId}" - Cannot unskip, all page sets skipped`
-        );
-      }
       return; // Don't unskip this page because all of its page sets are skipped
     }
-  }
-
-  if (hasNonStandardWorkflow) {
-    const pageName = page.getAttribute("data-page-name") || "Unknown";
-    console.log(
-      `[pageSkipping] guidedUnSkipPage: "${pageId}" (${pageName}) - Successfully unskipped`
-    );
   }
 
   page.dataset.skipPage = "false";

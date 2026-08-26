@@ -205,12 +205,13 @@ const patchPreviousGuidedModeVersions = async () => {
   const oldHighLevelFolders = datasetEntityObj?.["high-level-folder-data-categorization"];
   const selectedEntities = window.sodaJSONObj["selected-entities"] || [];
 
+  if (!window.sodaJSONObj["button-config"]) {
+    window.sodaJSONObj["button-config"] = {};
+  }
+
   // Set dataset-structuring-method to entity-association for datasets from versions before 19.0.0
   const lastVersionOfSodaUsed = window.sodaJSONObj["last-version-of-soda-used"];
   if (lastVersionOfSodaUsed && lastVersionOfSodaUsed < "19.0.0") {
-    if (!window.sodaJSONObj["button-config"]) {
-      window.sodaJSONObj["button-config"] = {};
-    }
     window.sodaJSONObj["button-config"]["dataset-structuring-method"] = "entity-association";
   }
 
@@ -408,6 +409,28 @@ const patchPreviousGuidedModeVersions = async () => {
     if (contributor.contributor_role && typeof contributor.contributor_role === "string") {
       contributor.contributor_roles = [contributor.contributor_role];
       delete contributor.contributor_role;
+    }
+  }
+
+  // Patch for old submission metadata page
+  const submissionMetadata = window.sodaJSONObj["dataset_metadata"]?.["submission"];
+
+  if (submissionMetadata) {
+    // Ensure milestone_completion_date is an array with length matching milestone_achieved
+    if (typeof submissionMetadata.milestone_completion_date === "string") {
+      // Convert string to array with same string repeated for each milestone
+      submissionMetadata.milestone_completion_date = Array.isArray(
+        submissionMetadata.milestone_achieved
+      )
+        ? new Array(submissionMetadata.milestone_achieved.length).fill(
+            submissionMetadata.milestone_completion_date
+          )
+        : [submissionMetadata.milestone_completion_date];
+    }
+
+    // Auto select the yes to NIH funding if the consortium_data_standard is SPARC
+    if (submissionMetadata.consortium_data_standard === "SPARC") {
+      window.sodaJSONObj["button-config"]["submission-nih-funded"] = "yes";
     }
   }
 };

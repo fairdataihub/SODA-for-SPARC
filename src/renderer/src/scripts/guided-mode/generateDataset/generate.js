@@ -37,8 +37,6 @@ const restartServer = async (caller) => {
 
   restartServerLock = true;
 
-  console.log("Restarting server");
-
   const removeListener = window.server.onRestartProgress((line) => {
     window.log.info(`[restartServer] ${caller} - Server restart progress: ${line}`);
   });
@@ -784,7 +782,6 @@ const trackPennsieveDatasetGenerationProgress = async () => {
         clientError(error);
         try {
           await restartServer("progress tracking");
-          console.log("server restarted");
         } catch (e) {
           // do not let an error rise unguarded or get crash.
           // TODO: IF error happens repeatedly break and find graceful way to let calling function/upload function know to stop

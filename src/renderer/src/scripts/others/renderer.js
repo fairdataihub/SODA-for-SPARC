@@ -327,7 +327,6 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
         await PennsieveAgentResolver.getLastTestedPennsieveAgentUrl();
       setLastTestedPennsieveAgentDownloadURL(lastPennsieveAgentTestedDownloadURL);
     } catch (e) {
-      console.log(e);
       setPennsieveAgentCheckError(
         "Unable to get information about the latest Pennsieve Agent release",
         "SODA must be able to retrieve the latest Pennsieve Agent version to ensure compatibility. Please check your internet connection and try again."
