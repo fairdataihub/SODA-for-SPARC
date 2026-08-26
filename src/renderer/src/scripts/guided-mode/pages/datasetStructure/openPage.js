@@ -47,7 +47,7 @@ export const openPageDatasetStructure = async (targetPageID) => {
           manifestGenerationDisabled = true;
         }
       } catch (error) {
-        console.error("Error checking if dataset is empty:", error);
+        window.log?.error?.(`Error checking if dataset is empty: ${JSON.stringify(error)}`);
         manifestGenerationDisabled = true; // Default to disabling manifest generation if we cannot confirm the dataset is empty
       }
     }

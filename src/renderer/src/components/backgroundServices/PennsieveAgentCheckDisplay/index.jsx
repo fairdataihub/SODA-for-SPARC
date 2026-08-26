@@ -35,11 +35,11 @@ const deletePennsieveAgentDBFilesAndRestart = async () => {
       if (window.fs.existsSync(filePath)) {
         await window.fs.unlink(filePath);
       } else {
-        console.error(`Unable to find Pennsieve agent DB file: ${filePath}`);
+        window.log.error(`Unable to find Pennsieve agent DB file: ${filePath}`);
       }
     }
   } catch (error) {
-    console.error("Error deleting Pennsieve agent DB files:", error);
+    window.log.error("Error deleting Pennsieve agent DB files:", error);
   }
 
   // Restart the Pennsieve agent check

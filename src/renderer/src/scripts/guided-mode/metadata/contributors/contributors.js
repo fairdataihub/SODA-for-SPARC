@@ -69,7 +69,7 @@ export const addContributor = (
   try {
     addOrUpdateStoredContributor(contributorObj);
   } catch (error) {
-    console.error("Failed to store contributor: " + error);
+    window.log?.error?.("Failed to store contributor: " + JSON.stringify(error));
   }
 };
 
@@ -107,7 +107,7 @@ export const editContributorByOrcid = (
   try {
     addOrUpdateStoredContributor(updatedContributorObj);
   } catch (error) {
-    console.error("Failed to update stored contributor: " + error);
+    window.log?.error?.("Failed to update stored contributor: " + JSON.stringify(error));
   }
 };
 

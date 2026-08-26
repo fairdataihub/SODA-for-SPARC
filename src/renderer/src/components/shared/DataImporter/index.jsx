@@ -14,10 +14,10 @@ const DataImporter = ({ dataImporterId }) => {
       <Box w="100%" m={0} p={0} id={dataImporterId} className={classes["di"]}>
         <Dropzone
           onDrop={(files) => {
-            console.info("Dropped files:", files);
+            window.log.info("Dropped files:", files);
           }}
           onReject={(files) => {
-            console.error("Rejected files:", files);
+            window.log.error("Rejected files:", files);
           }}
           onClick={(event) => event.preventDefault()}
           mb="lg"

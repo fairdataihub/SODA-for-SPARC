@@ -59,7 +59,7 @@ const openFolder = (generationLocation) => {
       },
     });
   } catch (error) {
-    console.error(error);
+    window.log?.error?.(`Error opening folder at ${generationLocation}: ${JSON.stringify(error)}`);
     clientError(error);
     Swal.fire({
       title: "Error",
@@ -1700,7 +1700,7 @@ window.readManifestFileAndStoreInSodaJSON = async () => {
 
     // Check if the file exists
     if (!fs.existsSync(manifestFilePath)) {
-      console.error("Manifest file not found at:", manifestFilePath);
+      window.log?.error?.(`Manifest file not found at: ${manifestFilePath}`);
       return;
     }
 
@@ -1718,7 +1718,7 @@ window.readManifestFileAndStoreInSodaJSON = async () => {
 
     window.sodaJSONObj["dataset_metadata"]["manifest_files"] = manifestData;
   } catch (error) {
-    console.error("Error reading or processing the manifest file:", error);
+    window.log?.error?.(`Error reading or processing the manifest file: ${JSON.stringify(error)}`);
   }
 };
 

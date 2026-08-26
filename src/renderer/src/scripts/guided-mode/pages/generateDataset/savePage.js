@@ -119,7 +119,11 @@ export const savePageGenerateDataset = async (pageBeingLeftID, movingForward) =>
           window.fs.unlinkSync(datasetSaveFilePath);
           console.info(`Deleted free-form progress file: ${datasetSaveFilePath}`);
         } catch (error) {
-          console.error(`Failed to delete free-form progress file ${datasetSaveFilePath}:`, error);
+          window.log?.error?.(
+            `Failed to delete free-form progress file ${datasetSaveFilePath}: ${JSON.stringify(
+              error
+            )}`
+          );
         }
       }
     }

@@ -60,7 +60,9 @@ export const deleteProgressFile = async (progressFilePath) => {
   try {
     window.fs.unlinkSync(progressFilePath);
   } catch (error) {
-    console.error(`Error deleting progress file at ${progressFilePath}:`, error);
+    window.log?.error?.(
+      `Error deleting progress file at ${progressFilePath}: ${JSON.stringify(error)}`
+    );
   }
 };
 
@@ -87,7 +89,7 @@ export const getGuidedProgressFileNames = (curationMode) => {
         });
       }
     } catch (error) {
-      console.error(`Error reading progress file ${fileName}:`, error);
+      window.log?.error?.(`Error reading progress file ${fileName}: ${JSON.stringify(error)}`);
     }
   }
 

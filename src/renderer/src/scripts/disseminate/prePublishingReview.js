@@ -559,7 +559,7 @@ window.validateAndPrepareForCurationSubmission = async () => {
     let status = await window.showPrePublishingStatus(true, "guided");
     return [status, embargoDetails];
   } catch (error) {
-    console.error("[PrepublishingFlow] Error during prepublishing flow:", error);
+    window.log?.error?.("[PrepublishingFlow] Error during prepublishing flow:", error);
     await Swal.fire({
       title: "Failed to determine if you are the dataset owner",
       text: userErrorMessage(error),

@@ -303,7 +303,7 @@ window.addManifestDetailsToDatasetStructure = async (
           }
         }
       } catch (e) {
-        console.error("Error reading manifest file:", e);
+        window.log?.error?.(`Error reading manifest file: ${JSON.stringify(e)}`);
       }
     }
   }
@@ -405,7 +405,7 @@ document.getElementById("confirm-account-workspace").addEventListener("click", a
     // Check to make sure the Pennsieve agent is installed
     await window.checkPennsieveAgent(pennsieveAgentCheckDivId);
   } catch (e) {
-    console.error("Error with agent" + e);
+    window.log?.error?.(`Error with agent: ${JSON.stringify(e)}`);
   }
 });
 

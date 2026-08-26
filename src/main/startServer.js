@@ -100,10 +100,7 @@ export const createPyProc = async () => {
         log.info(`Starting server on port ${port}`);
         pyflaskProcess = execFile(script, [port], (error, stdout, stderr) => {
           if (error) {
-            console.error(error);
             log.error(error);
-            // console.error(stderr)
-            // throw error;
           }
         });
         // log the stdout and stderr
@@ -147,12 +144,12 @@ export const createPyProc = async () => {
         pyflaskProcess.on("data", function () {});
 
         pyflaskProcess.on("error", function (err) {
-          console.error("Failed to start pyflaskProcess:", err);
+          log.error("Failed to start pyflaskProcess:", err);
           global.serverLive = false;
         });
 
         pyflaskProcess.on("close", function (err) {
-          console.error("Failed to start pyflaskProcess:", err);
+          log.error("Failed to start pyflaskProcess:", err);
           global.serverLive = false;
         });
 
@@ -176,7 +173,7 @@ export const createPyProc = async () => {
       if (pyflaskProcess != null) {
         log.info("child process success on port " + port);
       } else {
-        console.error("child process failed to start on port" + port);
+        log.error("child process failed to start on port" + port);
       }
       selectedPort = port;
     })

@@ -69,7 +69,7 @@ export const openPageSharedWorkflowSteps = async (targetPageID) => {
             }
           }
         } catch (error) {
-          console.error("Error auto-confirming organization: ", error);
+          window.log?.error?.(`Error auto-confirming organization: ${JSON.stringify(error)}`);
         }
       }
 
@@ -80,7 +80,7 @@ export const openPageSharedWorkflowSteps = async (targetPageID) => {
         const userEmail = userInformation.email;
         pennsieveIntroText.innerHTML = userEmail;
       } catch (err) {
-        console.error("Error fetching user email:", err);
+        window.log?.error?.(`Error fetching user email: ${JSON.stringify(err)}`);
         pennsieveIntroText.innerHTML = "";
       }
     }

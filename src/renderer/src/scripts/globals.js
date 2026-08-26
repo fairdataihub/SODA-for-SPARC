@@ -1811,7 +1811,6 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         });
       } catch (error) {
         clientError(error);
-        console.error("TODO: Address the error here with Mantine Select");
         initializeBootstrapSelect("#curatebforganizationlist", "show");
         return;
       }
@@ -1880,7 +1879,7 @@ window.openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             if (el && el.nodeType === 1) {
               setRender("dropdown-select", el);
             } else {
-              console.error("Could not find element to render dropdown-select component");
+              window.log.error("Could not find element to render dropdown-select component");
             }
           }, 100);
 

@@ -304,7 +304,7 @@ export const setGuidedWorkflow = (workflowSet) => {
   };
 
   if (!workflowSets[workflowSet]) {
-    console.error(`Invalid workflow set: ${workflowSet}`);
+    window.log?.error?.(`Invalid workflow set: ${workflowSet}`);
     return;
   }
 
@@ -397,7 +397,7 @@ export const savePageDatasetStructure = async (pageBeingLeftID, movingForward) =
       const isUnanswered = !isSelected && !isDeselected;
 
       if (isUnanswered) {
-        console.error(`VALIDATION FAILED: Question '${entity}' is unanswered!`);
+        window.log?.error?.(`VALIDATION FAILED: Question '${entity}' is unanswered!`);
         errorArray.push({
           type: "notyf",
           message: "Please answer all questions before continuing.",

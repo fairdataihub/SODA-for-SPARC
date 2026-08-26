@@ -810,8 +810,7 @@ window.openPage = async (targetPageID) => {
     window.sodaJSONObj["page-before-exit"] = targetPageID;
     await guidedSaveProgress();
   } catch (error) {
-    console.error("Error opening page:", targetPageID);
-    console.error("Error: ", error);
+    window.log?.error?.(`Error opening page ${targetPageID}: ${JSON.stringify(error)}`);
 
     // Unhide the current page if there is an error so the user is not stuck on a blank screen
     if (window.CURRENT_PAGE) {

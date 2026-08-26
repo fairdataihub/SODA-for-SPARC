@@ -65,9 +65,10 @@ export const handleNextButtonClick = async () => {
           transitionFromGuidedModeToHome();
           return;
         } catch (deleteError) {
-          console.error(
-            `Failed to delete free-form progress file ${progressFilePath}:`,
-            deleteError
+          window.log?.error?.(
+            `Failed to delete free-form progress file ${progressFilePath}: ${JSON.stringify(
+              deleteError
+            )}`
           );
         }
       }
@@ -92,7 +93,7 @@ export const handleNextButtonClick = async () => {
       await window.openPage(targetPageID);
     }
   } catch (error) {
-    console.error("[handleNextButtonClick] Error encountered:", error);
+    window.log?.error?.("[handleNextButtonClick] Error encountered: " + JSON.stringify(error));
     if (Array.isArray(error)) {
       for (const err of error) {
         if (err.type === "notyf") {
@@ -120,7 +121,9 @@ export const handleBackButtonClick = async () => {
   try {
     await window.savePageChanges(window.pageBeingLeftID, false);
   } catch (error) {
-    console.error("Error saving page changes during back button click", error);
+    window.log?.error?.(
+      "Error saving page changes during back button click: " + JSON.stringify(error)
+    );
   }
 
   const targetPage = getPrevPageNotSkipped(window.pageBeingLeftID);

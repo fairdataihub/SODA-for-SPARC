@@ -188,8 +188,7 @@ window.electron.ipcRenderer.on(
       try {
         downloadTemplates(filename, path[0], helperConfig);
       } catch (err) {
-        window.log.error("downloadTemplates failed", err);
-        console.error("downloadTemplates failed", err);
+        window.log?.error?.(`downloadTemplates failed for ${filename}: ${JSON.stringify(err)}`);
         window.electron.ipcRenderer.send(
           "track-event",
           "Error",

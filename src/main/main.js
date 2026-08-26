@@ -147,7 +147,7 @@ const createPyProc = async () => {
       if (pyflaskProcess != null) {
         log.info("child process success on port " + port);
       } else {
-        console.error("child process failed to start on port" + port);
+        log.error("child process failed to start on port" + port);
       }
       selectedPort = port;
     })

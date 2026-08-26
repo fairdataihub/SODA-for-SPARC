@@ -3,7 +3,7 @@ export function setGuidedProgressBarValue(destination, value) {
   if (progressBar) {
     progressBar.setAttribute("value", value);
   } else {
-    console.error(`Could not find progress bar for ${destination}`);
+    window.log?.error?.(`Could not find progress bar for ${destination}`);
   }
 }
 
