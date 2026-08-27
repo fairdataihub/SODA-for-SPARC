@@ -93,7 +93,11 @@ export const handleAddEmptyFolder = async (pathToRender) => {
       duration: 2000,
     });
   } catch (error) {
-    window.log.error(`Error creating empty folder: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
+    window.log.error(
+      `Error creating empty folder: ${
+        error instanceof Error ? error.message : JSON.stringify(error)
+      }`
+    );
     window.notyf.open({
       type: "error",
       message: "Failed to create folder",

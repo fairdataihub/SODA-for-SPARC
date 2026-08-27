@@ -44,7 +44,11 @@ const restartServer = async (caller) => {
   try {
     await window.server.restart(window.port);
   } catch (err) {
-    window.log.error(`[restartServer] ${caller} - Server restart failed: ${err instanceof Error ? err.message : JSON.stringify(err)}`);
+    window.log.error(
+      `[restartServer] ${caller} - Server restart failed: ${
+        err instanceof Error ? err.message : JSON.stringify(err)
+      }`
+    );
   } finally {
     removeListener(); // Always clean up the listener
     restartServerLock = false;
@@ -246,7 +250,11 @@ export const guidedGenerateDatasetOnPennsieve = async () => {
       try {
         datasetIsEmpty = await api.isDatasetEmpty(pennsieveDatasetId);
       } catch (error) {
-        window.log?.error?.(`[prepareUploadObj] Error checking if dataset is empty: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
+        window.log?.error?.(
+          `[prepareUploadObj] Error checking if dataset is empty: ${
+            error instanceof Error ? error.message : JSON.stringify(error)
+          }`
+        );
       }
 
       // --- First upload logic ---
@@ -801,7 +809,11 @@ const trackPennsieveDatasetGenerationProgress = async () => {
         continue;
       }
       // unexpected error; stop tracking progress
-      window.log?.error?.(`[Pennsieve Progress] Error tracking upload progress: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
+      window.log?.error?.(
+        `[Pennsieve Progress] Error tracking upload progress: ${
+          error instanceof Error ? error.message : JSON.stringify(error)
+        }`
+      );
       throw new Error(userErrorMessage(error));
     }
   }
@@ -902,7 +914,11 @@ const automaticRetry = async (supplementaryChecks = false, errorMessage = "") =>
 
 // Handle local generation failure UI + logging in one place
 const handleLocalGenerationFailure = async (error) => {
-  window.log.error(`Error during local dataset generation: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
+  window.log.error(
+    `Error during local dataset generation: ${
+      error instanceof Error ? error.message : JSON.stringify(error)
+    }`
+  );
   const errorMessage = userErrorMessage(error);
   guidedResetLocalGenerationUI();
   await swalShowError("Error generating dataset locally", errorMessage);
@@ -983,7 +999,11 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
       )
       .catch(async (error) => {
         clientError(error);
-        window.log?.error?.(`Error during local dataset generation: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
+        window.log?.error?.(
+          `Error during local dataset generation: ${
+            error instanceof Error ? error.message : JSON.stringify(error)
+          }`
+        );
         await handleLocalGenerationFailure(error);
       });
 
@@ -1007,7 +1027,11 @@ export const guidedGenerateDatasetLocally = async (filePath) => {
     window.unHideAndSmoothScrollToElement("guided-section-post-local-generation-success");
     guidedSetNavLoadingState(false);
   } catch (error) {
-    window.log?.error?.(`Error during local dataset generation: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
+    window.log?.error?.(
+      `Error during local dataset generation: ${
+        error instanceof Error ? error.message : JSON.stringify(error)
+      }`
+    );
 
     await handleLocalGenerationFailure(error);
   } finally {
@@ -1236,7 +1260,9 @@ const trackLocalDatasetGenerationProgress = async (standardizedDatasetStructure)
         await fetchProgressData();
 
       if (curationErrorMessage !== undefined && curationErrorMessage !== "") {
-        window.log?.error?.(`Error message during local dataset generation: ${curationErrorMessage}`);
+        window.log?.error?.(
+          `Error message during local dataset generation: ${curationErrorMessage}`
+        );
       }
 
       if (curationErrorMessage) {
@@ -1250,7 +1276,9 @@ const trackLocalDatasetGenerationProgress = async (standardizedDatasetStructure)
       updateProgressUI(uploadedFiles, elapsedTime);
       await new Promise((resolve) => setTimeout(resolve, 1000));
     } catch (error) {
-      window.log?.error?.(`Error tracking progress: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
+      window.log?.error?.(
+        `Error tracking progress: ${error instanceof Error ? error.message : JSON.stringify(error)}`
+      );
       throw new Error(userErrorMessage(error));
     }
   }
@@ -1359,7 +1387,11 @@ const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle)
       kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
       guidedGetDatasetId(window.sodaJSONObj)
     );
-    window.log?.error?.(`Failed to add dataset subtitle: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
+    window.log?.error?.(
+      `Failed to add dataset subtitle: ${
+        error instanceof Error ? error.message : JSON.stringify(error)
+      }`
+    );
     let emessage = userErrorMessage(error);
     datasetSubtitleUploadText.innerHTML = "Failed to add a dataset subtitle.";
     guidedUploadStatusIcon("guided-dataset-subtitle-upload-status", "error");
@@ -1512,7 +1544,11 @@ const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePa
       }
     );
   } catch (error) {
-    window.log?.error?.(`Failed to add dataset banner image: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
+    window.log?.error?.(
+      `Failed to add dataset banner image: ${
+        error instanceof Error ? error.message : JSON.stringify(error)
+      }`
+    );
 
     bannerText.innerHTML = "Failed to add a dataset banner image.";
     guidedUploadStatusIcon(bannerStatusId, "error");
@@ -1586,7 +1622,11 @@ const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) =
       }
     );
   } catch (error) {
-    window.log?.error?.(`Failed to add a dataset license: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
+    window.log?.error?.(
+      `Failed to add a dataset license: ${
+        error instanceof Error ? error.message : JSON.stringify(error)
+      }`
+    );
     datasetLicenseUploadText.innerHTML = "Failed to add a dataset license.";
     guidedUploadStatusIcon("guided-dataset-license-upload-status", "error");
 

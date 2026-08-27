@@ -652,7 +652,11 @@ export const createStandardizedDatasetStructure = () => {
     };
     return result;
   } catch (error) {
-    window?.log?.error?.(`Error while creating standardized dataset structure: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
+    window?.log?.error?.(
+      `Error while creating standardized dataset structure: ${
+        error instanceof Error ? error.message : JSON.stringify(error)
+      }`
+    );
     window.datasetStructureJSONObj = originalStructure;
     throw error;
   }

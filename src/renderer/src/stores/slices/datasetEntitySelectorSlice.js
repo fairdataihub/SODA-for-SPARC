@@ -165,7 +165,12 @@ export const setEntityType = (entityType) => {
 // Update the list of entities for a specific entity type
 export const setEntityListForEntityType = (entityType, entityListObj) => {
   if (!entityType || !entityListObj) {
-    window?.log?.error?.(`Missing parameters: entityType or entityListObj: ${JSON.stringify({ entityType, entityListObj })}`);
+    window?.log?.error?.(
+      `Missing parameters: entityType or entityListObj: ${JSON.stringify({
+        entityType,
+        entityListObj,
+      })}`
+    );
     return;
   }
 

@@ -2824,7 +2824,9 @@ const localFolderPathAndSubFoldersHaveNoFiles = (localFolderPath) => {
     // If no files with size > 0 are found, the folder is considered empty
     return true;
   } catch (error) {
-    window.log.error(`Error reading folder: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
+    window.log.error(
+      `Error reading folder: ${error instanceof Error ? error.message : JSON.stringify(error)}`
+    );
     return false; // Return false on error as we couldn't verify the folder
   }
 };
@@ -3600,7 +3602,11 @@ window.handleSelectedBannerImage = async (path, curationMode) => {
             }
           } catch (err) {
             conversion_success = false;
-            window?.log?.error?.(`Error converting image file: ${err instanceof Error ? err.message : JSON.stringify(err)}`);
+            window?.log?.error?.(
+              `Error converting image file: ${
+                err instanceof Error ? err.message : JSON.stringify(err)
+              }`
+            );
           }
 
           return file.write(converted_image_file, async () => {
@@ -3628,7 +3634,11 @@ window.handleSelectedBannerImage = async (path, curationMode) => {
                   })
                   .catch((err) => {
                     conversion_success = false;
-                    window?.log?.error?.(`Error resizing and writing image: ${err instanceof Error ? err.message : JSON.stringify(err)}`);
+                    window?.log?.error?.(
+                      `Error resizing and writing image: ${
+                        err instanceof Error ? err.message : JSON.stringify(err)
+                      }`
+                    );
                   });
                 if (window.fs.existsSync(converted_image_file)) {
                   let stats = window.fs.statSync(converted_image_file);
@@ -3654,7 +3664,9 @@ window.handleSelectedBannerImage = async (path, curationMode) => {
         })
         .catch((err) => {
           conversion_success = false;
-          window?.log?.error?.(`Error reading image file: ${err instanceof Error ? err.message : JSON.stringify(err)}`);
+          window?.log?.error?.(
+            `Error reading image file: ${err instanceof Error ? err.message : JSON.stringify(err)}`
+          );
           Swal.fire({
             icon: "error",
             text: "Something went wrong",
@@ -4919,7 +4931,9 @@ window.electron.ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
           file_size = stats.size;
         }
       } catch (err) {
-        window?.log?.error?.(`Error getting file size: ${err instanceof Error ? err.message : JSON.stringify(err)}`);
+        window?.log?.error?.(
+          `Error getting file size: ${err instanceof Error ? err.message : JSON.stringify(err)}`
+        );
         document.getElementById(metadataParaElement).innerHTML =
           "<span style='color:red'>Your SPARC metadata file does not exist or is unreadable. Please verify that you are importing the correct metadata file from your system. </span>";
 

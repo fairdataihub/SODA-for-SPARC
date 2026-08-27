@@ -517,7 +517,11 @@ const userIsWorkspaceGuest = async () => {
     });
   } catch (error) {
     clientError(error);
-    window?.log?.error?.(`[userIsWorkspaceGuest] Error fetching organizations: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
+    window?.log?.error?.(
+      `[userIsWorkspaceGuest] Error fetching organizations: ${
+        error instanceof Error ? error.message : JSON.stringify(error)
+      }`
+    );
     // TODO: Decide how to handle this (e.g., return false or rethrow)
 
     window.isGuest = false;

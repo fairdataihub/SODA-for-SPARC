@@ -399,7 +399,9 @@ export const reRenderTreeView = (resetOpenFolders = false) => {
 
     const endTime = performance.now();
   } catch (error) {
-    window?.log?.error?.(`Error in reRenderTreeView: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
+    window?.log?.error?.(
+      `Error in reRenderTreeView: ${error instanceof Error ? error.message : JSON.stringify(error)}`
+    );
   }
 };
 
@@ -430,7 +432,11 @@ export const getFolderStructureJsonByPath = (path) => {
 
     return safeDeepCopy(structure);
   } catch (error) {
-    window?.log?.error?.(`Error in getFolderStructureJsonByPath: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
+    window?.log?.error?.(
+      `Error in getFolderStructureJsonByPath: ${
+        error instanceof Error ? error.message : JSON.stringify(error)
+      }`
+    );
     return { folders: {}, files: {} };
   }
 };
@@ -457,7 +463,11 @@ export const moveFolderToNewLocation = (targetPath) => {
 
     reRenderTreeView();
   } catch (error) {
-    window?.log?.error?.(`Error in moveFolderToNewLocation: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
+    window?.log?.error?.(
+      `Error in moveFolderToNewLocation: ${
+        error instanceof Error ? error.message : JSON.stringify(error)
+      }`
+    );
   }
 };
 

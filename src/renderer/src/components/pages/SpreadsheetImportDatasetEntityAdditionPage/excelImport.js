@@ -86,7 +86,11 @@ export const handleEntityFileImport = async (entityType) => {
       message: `Successfully imported ${entities.length} ${entityType}`,
     });
   } catch (error) {
-    window.log?.error?.(`Error importing ${entityType}: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
+    window.log?.error?.(
+      `Error importing ${entityType}: ${
+        error instanceof Error ? error.message : JSON.stringify(error)
+      }`
+    );
 
     // Ask if user would like to open the file
     const fileName = window.path.basename(filePath);
@@ -97,7 +101,11 @@ export const handleEntityFileImport = async (entityType) => {
       try {
         await window.electron.ipcRenderer.invoke("shell-open-path", filePath);
       } catch (err) {
-        window.log?.error?.(`Failed to open file after import error: ${err instanceof Error ? err.message : JSON.stringify(err)}`);
+        window.log?.error?.(
+          `Failed to open file after import error: ${
+            err instanceof Error ? err.message : JSON.stringify(err)
+          }`
+        );
       }
     }
   }
@@ -563,7 +571,11 @@ export const handleDownloadTemplate = async (entityType, helperConfig) => {
       helperConfig
     );
   } catch (error) {
-    window.log.error(`Error sending IPC message for ${entityType} template: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
+    window.log.error(
+      `Error sending IPC message for ${entityType} template: ${
+        error instanceof Error ? error.message : JSON.stringify(error)
+      }`
+    );
   }
 };
 
