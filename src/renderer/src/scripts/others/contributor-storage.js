@@ -25,7 +25,11 @@ export const loadStoredContributors = () => {
     );
     return filteredByOrcid.filter((contributor) => contributor.contributor_name);
   } catch (err) {
-    window.log.info(`Error loading stored contributors file: ${err instanceof Error ? err.message : JSON.stringify(err)}`);
+    window.log.info(
+      `Error loading stored contributors file: ${
+        err instanceof Error ? err.message : JSON.stringify(err)
+      }`
+    );
     window.log.info("Returning empty array instead");
     return [];
   }
@@ -53,6 +57,10 @@ export const addOrUpdateStoredContributor = (contributorObj) => {
     window.fs.writeFileSync(window.storedContributorsPath, JSON.stringify(contributors));
     window.log.info("Stored contributors successfully written to file.");
   } catch (err) {
-    window.log.info(`Error saving stored contributors file: ${err instanceof Error ? err.message : JSON.stringify(err)}`);
+    window.log.info(
+      `Error saving stored contributors file: ${
+        err instanceof Error ? err.message : JSON.stringify(err)
+      }`
+    );
   }
 };
