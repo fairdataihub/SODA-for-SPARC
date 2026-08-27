@@ -30,12 +30,14 @@ The version is defined in `package.json`:
 The deployment process automatically detects whether a release is beta or production and configures the build accordingly:
 
 #### Beta Release
+
 - Version contains "beta" (e.g., `1.0.0-beta.1`)
 - Uses **TestPyPI** for pysodafair installation
 - Allows testing pre-release Python dependencies
 - Ideal for testing new features before official release
 
 #### Production Release
+
 - Version does NOT contain "beta" (e.g., `1.0.0`)
 - Uses **PyPI** for pysodafair installation
 - Uses stable, officially released dependencies
@@ -99,9 +101,11 @@ SODA uses GitHub Actions to automate deployment across three platforms. The work
 Builds and deploys the Linux version.
 
 **Triggers:**
+
 - Pushes to `main` or `staging` branches
 
 **Process:**
+
 1. Sets up Python 3.9, Node.js 25.9.0, and Conda
 2. Detects version from `package.json`
 3. **Configures pysodafair source:**
@@ -138,6 +142,7 @@ fi
 ```
 
 This ensures:
+
 - Beta releases can use pre-release versions of pysodafair
 - Production releases use stable, officially released versions
 - No manual configuration needed - it's automatic
@@ -147,12 +152,14 @@ This ensures:
 The conda environment configuration is version-specific:
 
 **For beta versions** (`tools/anaconda-env/environment-Linux.yml`):
+
 ```yaml
 - --extra-index-url https://test.pypi.org/simple/
 - pysodafair
 ```
 
 **For production versions** (default):
+
 ```yaml
 # - --extra-index-url
 - pysodafair
@@ -185,6 +192,7 @@ If a deployment fails:
 4. **Verify credentials** - Ensure `GITHUB_TOKEN` is configured (handled by GitHub automatically)
 
 Common issues:
+
 - **Python version mismatch**: Verify Python 3.9 is used
 - **Missing dependencies**: Check conda environment file for completeness
 - **pysodafair issues**: Verify the package exists on PyPI or TestPyPI for your version
@@ -202,6 +210,7 @@ If a release has critical issues:
 ## Best Practices
 
 ✅ **Do:**
+
 - Test beta releases thoroughly before marking as production
 - Use `staging` branch for pre-release testing
 - Keep `main` branch stable
@@ -209,6 +218,7 @@ If a release has critical issues:
 - Tag releases with semantic version tags
 
 ❌ **Don't:**
+
 - Deploy directly from feature branches to `main`
 - Change version without thorough testing
 - Skip beta releases for major changes

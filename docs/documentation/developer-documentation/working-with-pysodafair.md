@@ -59,10 +59,12 @@ SODA automatically detects whether it's building a beta or production version an
 ### Beta Version Detection
 
 A version is considered "beta" if it contains "beta" in the version string, for example:
+
 - `1.0.0-beta.1`
 - `2.1.0-beta`
 
 **For beta versions:**
+
 - pysodafair is installed from **TestPyPI**
 - This allows testing pre-release versions of pysodafair
 - Useful for testing new features before the official release
@@ -70,11 +72,13 @@ A version is considered "beta" if it contains "beta" in the version string, for 
 ### Production Version Detection
 
 All other versions are treated as production versions:
+
 - `1.0.0`
 - `2.1.0`
 - `1.0.0-rc.1`
 
 **For production versions:**
+
 - pysodafair is installed from **PyPI**
 - Uses the stable, official release
 - Ensures reliability for end users
@@ -145,6 +149,7 @@ fi
 ### pysodafair Installation Fails
 
 If installation from TestPyPI fails:
+
 1. Check your internet connection
 2. Verify the package exists on TestPyPI: https://test.pypi.org/project/pysodafair/
 3. Try reinstalling with verbose output:
@@ -155,6 +160,7 @@ If installation from TestPyPI fails:
 ### Version Conflicts
 
 If you experience version conflicts:
+
 1. Clear pip cache: `pip cache purge`
 2. Reinstall the environment:
    ```bash
