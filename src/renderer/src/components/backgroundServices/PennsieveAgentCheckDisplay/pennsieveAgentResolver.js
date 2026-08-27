@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const LAST_TESTED_PENNSIEVE_AGENT_VERSION = "v2.0.3";
+export const LAST_TESTED_PENNSIEVE_AGENT_VERSION = "v2.0.4";
 
 /**
  *
