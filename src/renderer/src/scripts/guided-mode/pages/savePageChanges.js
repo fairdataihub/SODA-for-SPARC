@@ -86,7 +86,11 @@ export const guidedSaveProgress = async () => {
   await new Promise((resolve, reject) => {
     window.fs.writeFile(guidedFilePath, json, (err) => {
       if (err) {
-        window.log.error(`[guidedSaveProgress] Failed to save progress file: ${err instanceof Error ? err.message : JSON.stringify(err)}`);
+        window.log.error(
+          `[guidedSaveProgress] Failed to save progress file: ${
+            err instanceof Error ? err.message : JSON.stringify(err)
+          }`
+        );
         reject(err);
       } else {
         resolve();
@@ -913,20 +917,34 @@ window.savePageChanges = async (pageBeingLeftID, movingForward) => {
     try {
       await guidedSaveProgress();
     } catch (error) {
-      window.log.error(`Error saving progress file: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
+      window.log.error(
+        `Error saving progress file: ${
+          error instanceof Error ? error.message : JSON.stringify(error)
+        }`
+      );
     }
   } catch (error) {
     if (Array.isArray(error)) {
       for (const err of error) {
         if (err?.message) {
-          window.log.error(`Error saving page ${pageBeingLeftID} changes: ${typeof err.message === 'string' ? err.message : JSON.stringify(err.message)}`);
+          window.log.error(
+            `Error saving page ${pageBeingLeftID} changes: ${
+              typeof err.message === "string" ? err.message : JSON.stringify(err.message)
+            }`
+          );
         }
         if (err?.errorText) {
-          window.log.error(`Error saving page ${pageBeingLeftID} changes: ${typeof err.errorText === 'string' ? err.errorText : JSON.stringify(err.errorText)}`);
+          window.log.error(
+            `Error saving page ${pageBeingLeftID} changes: ${
+              typeof err.errorText === "string" ? err.errorText : JSON.stringify(err.errorText)
+            }`
+          );
         }
       }
     }
-    window.log.error(`Error saving page changes: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
+    window.log.error(
+      `Error saving page changes: ${error instanceof Error ? error.message : JSON.stringify(error)}`
+    );
     guidedSetNavLoadingState(false);
     throw error;
   }

@@ -50,7 +50,11 @@ export const startBackgroundServices = async () => {
     try {
       initializePennsieveAccountList();
     } catch (error) {
-      window?.log?.error?.(`Error retrieving ps accounts: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
+      window?.log?.error?.(
+        `Error retrieving ps accounts: ${
+          error instanceof Error ? error.message : JSON.stringify(error)
+        }`
+      );
     }
 
     window.notyf.open({
@@ -59,7 +63,11 @@ export const startBackgroundServices = async () => {
       message: `Connected to SODA's background services successfully.`,
     });
   } catch (error) {
-    window?.log?.error?.(`Error connecting to server: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
+    window?.log?.error?.(
+      `Error connecting to server: ${
+        error instanceof Error ? error.message : JSON.stringify(error)
+      }`
+    );
     await showErrorAndRestart(error);
   }
 };
@@ -109,7 +117,9 @@ const connectToServer = async () => {
       );
       return;
     } catch (e) {
-      window?.log?.error?.(`Error connecting to server: ${e instanceof Error ? e.message : JSON.stringify(e)}`);
+      window?.log?.error?.(
+        `Error connecting to server: ${e instanceof Error ? e.message : JSON.stringify(e)}`
+      );
       await window.wait(retryInterval);
     }
   }
@@ -209,7 +219,9 @@ const startupServerAndApiCheck = async () => {
       Swal.close();
       return;
     } catch (e) {
-      window?.log?.error?.(`Error connecting to server: ${e instanceof Error ? e.message : JSON.stringify(e)}`);
+      window?.log?.error?.(
+        `Error connecting to server: ${e instanceof Error ? e.message : JSON.stringify(e)}`
+      );
       await window.wait(retryInterval);
     }
   }
