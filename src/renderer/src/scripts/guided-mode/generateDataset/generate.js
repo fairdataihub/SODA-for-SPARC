@@ -895,7 +895,10 @@ const automaticRetry = async (supplementaryChecks = false, errorMessage = "") =>
     Swal.fire({
       icon: "error",
       title: "Could not complete upload due to pre-flight check failures",
-      text: "Please return to the home page to try the upload again. If the problem persists, please contact support by using the Contact Us page in the sidebar.",
+      html: `<p style="text-align: left;">You may try your upload again. If the problem persists, please contact support by using the 'Contact Us' page in the sidebar.</p>
+          <p style="text-align: left;">
+        It is also possible to resolve this without contacting the SODA team by following the instructions for item three on the SODA documentation page <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/trouble-starting-the-pennsieve-agent-in-soda" target="_blank">here</a>. 
+        Please give special attention to the text for item three to avoid losing any upload progress that you may have.</p>`,
       confirmButtonText: "OK",
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
