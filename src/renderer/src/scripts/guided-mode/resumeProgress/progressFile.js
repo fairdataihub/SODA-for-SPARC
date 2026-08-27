@@ -60,7 +60,9 @@ export const deleteProgressFile = async (progressFilePath) => {
   try {
     window.fs.unlinkSync(progressFilePath);
   } catch (error) {
-    console.error(`Error deleting progress file at ${progressFilePath}:`, error);
+    window.log?.error?.(
+      `Error deleting progress file at ${progressFilePath}: ${JSON.stringify(error)}`
+    );
   }
 };
 
@@ -87,7 +89,7 @@ export const getGuidedProgressFileNames = (curationMode) => {
         });
       }
     } catch (error) {
-      console.error(`Error reading progress file ${fileName}:`, error);
+      window.log?.error?.(`Error reading progress file ${fileName}: ${JSON.stringify(error)}`);
     }
   }
 
@@ -111,11 +113,11 @@ export const createOrUpdateProgressFileSaveInfo = async (datasetNameInput) => {
     (file) => file.datasetName === datasetNameInput
   );
 
-  window.log.info("[guided-name-subtitle-tab] Previous save info:", {
-    prevDatasetName,
-    prevSaveFileName,
-    prevRandomSuffix,
-  });
+  window.log.info(`[guided-name-subtitle-tab] Previous save info:
+    ${prevDatasetName},
+    ${prevSaveFileName},
+    ${prevRandomSuffix},
+  `);
 
   if (!prevDatasetName) {
     if (existingProgressFileObj) {
@@ -162,11 +164,11 @@ export const createOrUpdateProgressFileSaveInfo = async (datasetNameInput) => {
   const randomString = Math.random().toString(16).slice(2, 10);
   const newSaveFileName = `${sanitizedDatasetName}-${prevRandomSuffix || randomString}`;
 
-  window.log.info("[guided-name-subtitle-tab] New save file info:", {
-    sanitizedDatasetName,
-    randomString,
-    newSaveFileName,
-  });
+  window.log.info(`[guided-name-subtitle-tab] New save file info: 
+    ${sanitizedDatasetName},
+    ${randomString},
+    ${newSaveFileName},
+  `);
 
   window.sodaJSONObj["save-file-name"] = newSaveFileName;
   if (!prevRandomSuffix) {
@@ -175,11 +177,11 @@ export const createOrUpdateProgressFileSaveInfo = async (datasetNameInput) => {
 
   const shouldRename = prevSaveFileName && prevDatasetName && prevDatasetName !== datasetNameInput;
 
-  window.log.info("[guided-name-subtitle-tab] Rename check:", {
-    prevDatasetName,
-    prevSaveFileName,
-    shouldRename,
-  });
+  window.log.info(`[guided-name-subtitle-tab] Rename check: 
+    ${prevDatasetName},
+    ${prevSaveFileName},
+    ${shouldRename},
+  `);
 
   if (shouldRename) {
     window.log.info(
@@ -201,10 +203,10 @@ export const createOrUpdateProgressFileSaveInfo = async (datasetNameInput) => {
     const oldProgressFilePath = `${guidedProgressFilePath}/${prevSaveFileName}.json`;
     const newProgressFilePath = `${guidedProgressFilePath}/${newSaveFileName}.json`;
 
-    window.log.info("[guided-name-subtitle-tab] Renaming progress file:", {
-      oldProgressFilePath,
-      newProgressFilePath,
-    });
+    window.log.info(`[guided-name-subtitle-tab] Renaming progress file: 
+      ${oldProgressFilePath},
+      ${newProgressFilePath},
+    `);
 
     if (oldProgressFilePath !== newProgressFilePath) {
       try {
@@ -215,7 +217,7 @@ export const createOrUpdateProgressFileSaveInfo = async (datasetNameInput) => {
       } catch (error) {
         window.log.error(
           `[guided-name-subtitle-tab] Error renaming guided progress file from ${oldProgressFilePath} → ${newProgressFilePath}:`,
-          error
+          error instanceof Error ? error.message : JSON.stringify(error)
         );
       }
 
@@ -226,10 +228,10 @@ export const createOrUpdateProgressFileSaveInfo = async (datasetNameInput) => {
           newSaveFileName
         );
 
-        window.log.info("[guided-name-subtitle-tab] Renaming banner image folder:", {
-          old: bannerImagePathToUpdate,
-          new: newBannerImagePath,
-        });
+        window.log.info(`[guided-name-subtitle-tab] Renaming banner image folder: 
+          old: ${bannerImagePathToUpdate},
+          new: ${newBannerImagePath},
+        `);
 
         try {
           window.fs.renameSync(bannerImagePathToUpdate, newBannerImagePath);
@@ -240,7 +242,7 @@ export const createOrUpdateProgressFileSaveInfo = async (datasetNameInput) => {
         } catch (error) {
           window.log.error(
             `[guided-name-subtitle-tab] Error renaming banner image folder from ${bannerImagePathToUpdate} → ${newBannerImagePath}:`,
-            error
+            error instanceof Error ? error.message : JSON.stringify(error)
           );
         }
       }

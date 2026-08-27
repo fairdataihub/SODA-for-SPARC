@@ -1,4 +1,13 @@
 {
+  "19.0.0": {
+    "features": [
+      "Added the entity bucketing workflow, allowing users to add data directly to entities and create an entity-structured dataset structure.",
+      "The submission file supports multiple milestone completion dates."
+    ],
+    "bug-fixes": [
+      "General progress bar issues that happen when a user resumes an upload have been resolved."
+    ]
+  },
   "18.2.0": {
     "announcements": {
       "features": [

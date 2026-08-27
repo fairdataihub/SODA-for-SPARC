@@ -92,7 +92,11 @@ document
 
       showVerificationCompleteMessage();
     } catch (err) {
-      console.error("[Verification] Error during file verification:", err);
+      window?.log?.error?.(
+        `[Verification] Error during file verification: ${
+          err instanceof Error ? err.message : JSON.stringify(err)
+        }`
+      );
       clientError(err);
       await swalShowError(
         "Could Not Verify Files",

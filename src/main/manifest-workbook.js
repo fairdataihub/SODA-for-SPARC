@@ -2,15 +2,18 @@ import { ipcMain, app } from "electron";
 import excel4node from "excel4node";
 import excelToJson from "convert-excel-to-json";
 import mv from "mv";
+import log from "electron-log";
 
 ipcMain.handle("mv", (event, source, destination) => {
-  mv(source, destination, function (err) {
-    if (err) {
-      console.error(err);
-      return err;
-    } else {
-      return "success";
-    }
+  return new Promise((resolve, reject) => {
+    mv(source, destination, function (err) {
+      if (err) {
+        log.error(err instanceof Error ? err.message : JSON.stringify(err));
+        reject(err);
+      } else {
+        resolve("success");
+      }
+    });
   });
 });
 

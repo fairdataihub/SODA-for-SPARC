@@ -25,25 +25,31 @@ export const loadStoredContributors = () => {
     );
     return filteredByOrcid.filter((contributor) => contributor.contributor_name);
   } catch (err) {
-    window.log.info("Error loading stored contributors file: " + err);
+    window.log.info(
+      `Error loading stored contributors file: ${
+        err instanceof Error ? err.message : JSON.stringify(err)
+      }`
+    );
     window.log.info("Returning empty array instead");
     return [];
   }
 };
 
 export const addOrUpdateStoredContributor = (contributorObj) => {
-  window.log.info("addOrUpdateStoredContributor called with:", contributorObj);
+  window.log.info(`addOrUpdateStoredContributor called with: ${JSON.stringify(contributorObj)}`);
   const contributors = loadStoredContributors();
   const index = contributors.findIndex(
     (contributor) => contributor.contributor_orcid_id === contributorObj.contributor_orcid_id
   );
 
   if (index !== -1) {
-    window.log.info(`Updating existing contributor at index ${index}:`, contributors[index]);
+    window.log.info(
+      `Updating existing contributor at index ${index}: ${JSON.stringify(contributors[index])}`
+    );
     contributors[index] = { ...contributors[index], ...contributorObj };
-    window.log.info("Contributor updated:", contributors[index]);
+    window.log.info(`Contributor updated: ${JSON.stringify(contributors[index])}`);
   } else {
-    window.log.info("Adding new contributor:", contributorObj);
+    window.log.info(`Adding new contributor: ${JSON.stringify(contributorObj)}`);
     contributors.push(contributorObj);
   }
 
@@ -51,6 +57,10 @@ export const addOrUpdateStoredContributor = (contributorObj) => {
     window.fs.writeFileSync(window.storedContributorsPath, JSON.stringify(contributors));
     window.log.info("Stored contributors successfully written to file.");
   } catch (err) {
-    window.log.info("Error saving stored contributors file: " + err);
+    window.log.info(
+      `Error saving stored contributors file: ${
+        err instanceof Error ? err.message : JSON.stringify(err)
+      }`
+    );
   }
 };

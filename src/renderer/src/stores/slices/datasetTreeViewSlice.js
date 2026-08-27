@@ -163,7 +163,6 @@ export const reRenderTreeView = (resetOpenFolders = false) => {
     const pathToRender = useGlobalStore.getState().pathToRender;
     const datasetStructureJSONObj = useGlobalStore.getState().datasetStructureJSONObj;
     const datasetStructureSearchFilter = useGlobalStore.getState().datasetStructureSearchFilter;
-    const fileVisibilityFilterActive = useGlobalStore.getState().fileVisibilityFilterActive;
     const fileVisibilityFilters = useGlobalStore.getState().fileVisibilityFilters;
     const calculateEntities = useGlobalStore.getState().calculateEntities;
     const datasetMetadataToPreview = useGlobalStore.getState().datasetMetadataToPreview;
@@ -400,7 +399,9 @@ export const reRenderTreeView = (resetOpenFolders = false) => {
 
     const endTime = performance.now();
   } catch (error) {
-    console.error("Error in reRenderTreeView:", error);
+    window?.log?.error?.(
+      `Error in reRenderTreeView: ${error instanceof Error ? error.message : JSON.stringify(error)}`
+    );
   }
 };
 
@@ -431,7 +432,11 @@ export const getFolderStructureJsonByPath = (path) => {
 
     return safeDeepCopy(structure);
   } catch (error) {
-    console.error("Error in getFolderStructureJsonByPath:", error);
+    window?.log?.error?.(
+      `Error in getFolderStructureJsonByPath: ${
+        error instanceof Error ? error.message : JSON.stringify(error)
+      }`
+    );
     return { folders: {}, files: {} };
   }
 };
@@ -458,7 +463,11 @@ export const moveFolderToNewLocation = (targetPath) => {
 
     reRenderTreeView();
   } catch (error) {
-    console.error("Error in moveFolderToNewLocation:", error);
+    window?.log?.error?.(
+      `Error in moveFolderToNewLocation: ${
+        error instanceof Error ? error.message : JSON.stringify(error)
+      }`
+    );
   }
 };
 
@@ -488,11 +497,34 @@ export const setActiveFileExplorer = (id) => {
 export const setPathToRender = (pathToRender) => {
   // Ensure the path exists in window.datasetStructureJSONObj
   let currentStructure = window.datasetStructureJSONObj;
+
+  if (!currentStructure) {
+    window?.log?.error?.("setPathToRender: window.datasetStructureJSONObj is null or undefined");
+    useGlobalStore.setState({ pathToRender });
+    return;
+  }
+
   for (const folderName of pathToRender) {
-    if (!currentStructure?.folders?.[folderName]) {
+    if (!currentStructure.folders) {
+      window?.log?.error?.(
+        `setPathToRender: currentStructure.folders is null when trying to access folder "${folderName}". Path: [${pathToRender.join(
+          ", "
+        )}]`
+      );
+      break;
+    }
+    if (!currentStructure.folders[folderName]) {
       currentStructure.folders[folderName] = newEmptyFolderObj();
     }
     currentStructure = currentStructure.folders[folderName];
+    if (!currentStructure) {
+      window?.log?.error?.(
+        `setPathToRender: currentStructure became null after accessing folder "${folderName}". Path: [${pathToRender.join(
+          ", "
+        )}]`
+      );
+      break;
+    }
   }
   useGlobalStore.setState({ pathToRender });
 };

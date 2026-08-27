@@ -86,7 +86,11 @@ export const handleEntityFileImport = async (entityType) => {
       message: `Successfully imported ${entities.length} ${entityType}`,
     });
   } catch (error) {
-    console.error(`Error importing ${entityType}:`, error);
+    window.log?.error?.(
+      `Error importing ${entityType}: ${
+        error instanceof Error ? error.message : JSON.stringify(error)
+      }`
+    );
 
     // Ask if user would like to open the file
     const fileName = window.path.basename(filePath);
@@ -97,8 +101,11 @@ export const handleEntityFileImport = async (entityType) => {
       try {
         await window.electron.ipcRenderer.invoke("shell-open-path", filePath);
       } catch (err) {
-        window.log?.warn?.("Failed to open file after import error", err.message);
-        console.warn("Failed to open file after import error", err);
+        window.log?.error?.(
+          `Failed to open file after import error: ${
+            err instanceof Error ? err.message : JSON.stringify(err)
+          }`
+        );
       }
     }
   }
@@ -564,7 +571,11 @@ export const handleDownloadTemplate = async (entityType, helperConfig) => {
       helperConfig
     );
   } catch (error) {
-    console.error(`Error sending IPC message for ${entityType} template:`, error);
+    window.log.error(
+      `Error sending IPC message for ${entityType} template: ${
+        error instanceof Error ? error.message : JSON.stringify(error)
+      }`
+    );
   }
 };
 
@@ -879,8 +890,8 @@ export const parseExcelToEntityMap = async (filePath, entityType) => {
     const entities = Object.values(entitiesMap);
     const validationErrors = validateFieldValues(entities, entityType, config);
     if (validationErrors.length > 0) {
-      console.error(`Validation failed with ${validationErrors.length} error(s):`);
-      validationErrors.forEach((err) => console.error("  -", err));
+      window.log.error(`Validation failed with ${validationErrors.length} error(s):`);
+      validationErrors.forEach((err) => window.log.error(`  - ${err}`));
       await swalListDisplayOnly(
         validationErrors,
         `${capitalizedSingularEntityType} Metadata Validation Issues`,

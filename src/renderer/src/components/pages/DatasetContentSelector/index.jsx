@@ -65,21 +65,21 @@ export const contentOptionsMap = {
     alt: "A decision tree depicting how to determine if your dataset has data collcted during performances. ",
     ml: 10,
   },
-  Code: {
+  code: {
     label: "Does your data include any code?",
     dropDownDescription:
       "Select yes if your data contains computational tools, scripts, or analysis pipelines that were used to generate or analyze your data. This includes custom code, analysis scripts, and simulation software relevant to understanding your results.",
 
     ml: 0,
   },
-  Protocol: {
+  protocol: {
     label:
       "Does your data include protocol files describing experimental or computational procedures?",
     dropDownDescription:
       "Select Yes if your dataset contains documents that describe how experiments were conducted, how samples were processed, or how data was analyzed (e.g., SOPs, methods documents, workflows, or Protocols.io exports).",
     ml: 0,
   },
-  Docs: {
+  docs: {
     label:
       "Did you include any documentation files (e.g., README, data dictionary, PDF award file)?",
     dropDownDescription:

@@ -56,6 +56,7 @@ import {
   bfAccountOptions,
 } from "../globals";
 import checkForAnnouncements from "./announcements";
+import { PennsieveAgentResolver } from "../../components/backgroundServices/PennsieveAgentCheckDisplay/pennsieveAgentResolver";
 import {
   swalListSingleAction,
   swalListTripleAction,
@@ -77,6 +78,8 @@ import {
   setPennsieveAgentOutOfDate,
   setPennsieveAgentCheckInProgress,
   setPostPennsieveAgentCheckAction,
+  setLatestPennsieveAgentVersion,
+  setLastTestedPennsieveAgentDownloadURL,
 } from "../../stores/slices/backgroundServicesSlice";
 import { setNavButtonDisabled, setNavButtonHidden } from "../../stores/slices/navButtonStateSlice";
 import { setStateDisplayData } from "../../stores/slices/stateDisplaySlice";
@@ -317,14 +320,30 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
       return false;
     }
 
+    // get last tested version of the Pennsieve Agent
+    let lastPennsieveAgentTestedDownloadURL;
+    try {
+      lastPennsieveAgentTestedDownloadURL =
+        await PennsieveAgentResolver.getLastTestedPennsieveAgentUrl();
+      setLastTestedPennsieveAgentDownloadURL(lastPennsieveAgentTestedDownloadURL);
+    } catch (e) {
+      setPennsieveAgentCheckError(
+        "Unable to get information about the latest Pennsieve Agent release",
+        "SODA must be able to retrieve the latest Pennsieve Agent version to ensure compatibility. Please check your internet connection and try again."
+      );
+      abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+
+      return false;
+    }
     // Declare variables to hold the latest Pennsieve agent version and
     // the platform specific download URL for the latest Pennsieve agent.
     let platformSpecificAgentDownloadURL;
     let latestPennsieveAgentVersion;
     try {
       ({ latestPennsieveAgentVersion, platformSpecificAgentDownloadURL } =
-        await getLatestPennsieveAgentVersion());
+        await PennsieveAgentResolver.getLatestPennsieveAgentVersion());
       setPennsieveAgentDownloadURL(platformSpecificAgentDownloadURL);
+      setLatestPennsieveAgentVersion(latestPennsieveAgentVersion);
     } catch (error) {
       setPennsieveAgentCheckError(
         "Unable to get information about the latest Pennsieve Agent release",
@@ -371,14 +390,12 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
       return false;
     }
 
-    if (usersPennsieveAgentVersion !== latestPennsieveAgentVersion) {
-      if (!window.allowOutdatedPennsieveAgentForThisSession === true) {
-        const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
-        setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
-        setPennsieveAgentOutOfDate(usersPennsieveAgentVersion, latestPennsieveAgentVersion);
-        abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
-        return false;
-      }
+    if (!window.allowOutdatedPennsieveAgentForThisSession === true) {
+      const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
+      setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
+      setPennsieveAgentOutOfDate(usersPennsieveAgentVersion, latestPennsieveAgentVersion);
+      abortPennsieveAgentCheck(pennsieveAgentStatusDivId);
+      return false;
     }
 
     // If we get to this point, it means all the background services are operational
@@ -422,7 +439,7 @@ window.synchronizePennsieveWorkspace = async () => {
 let preFlightCheckNotyf = null;
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
-window.run_pre_flight_checks = async (pennsieveAgentStatusDivId) => {
+window.run_pre_flight_checks = async (pennsieveAgentStatusDivId, showSwals = true) => {
   try {
     window.log.info("Running pre flight checks");
 
@@ -430,7 +447,6 @@ window.run_pre_flight_checks = async (pennsieveAgentStatusDivId) => {
       preFlightCheckNotyf = window.notyf.open({
         duration: 25000,
         type: "info",
-        duration: "15000",
         message: "Checking SODA's connection to Pennsieve...",
       });
     }
@@ -475,6 +491,10 @@ window.run_pre_flight_checks = async (pennsieveAgentStatusDivId) => {
     const pennsieveAgentStartedSuccessfully =
       await window.checkPennsieveAgent(pennsieveAgentStatusDivId);
     if (!pennsieveAgentStartedSuccessfully) {
+      // if Pennsieve Agent is being ran part of automatic retry process the SWALs hold up the process
+      if (!showSwals) {
+        return false;
+      }
       await swalShowInfo(
         "The Pennsieve Agent is not running",
         "Please follow the instructions to start the Pennsieve Agent and try again."
@@ -591,7 +611,8 @@ const getPlatformSpecificAgentDownloadURL = async () => {
   // asset couldn't be found.  Always return a string so callers don't have
   // to guard against falsy values.
   try {
-    const { platformSpecificAgentDownloadURL } = await getLatestPennsieveAgentVersion();
+    const { platformSpecificAgentDownloadURL } =
+      await PennsieveAgentResolver.getLatestPennsieveAgentVersion();
 
     if (platformSpecificAgentDownloadURL && typeof platformSpecificAgentDownloadURL === "string") {
       return platformSpecificAgentDownloadURL;
@@ -602,95 +623,16 @@ const getPlatformSpecificAgentDownloadURL = async () => {
       window.log.warn("Platform-specific agent URL was undefined, falling back to generic page");
   } catch (error) {
     // swallow and fall back
-    window.log && window.log.warn("Error fetching latest Pennsieve agent version", error);
+    window.log &&
+      window.log.warn(
+        `Error fetching latest Pennsieve agent version: ${
+          error instanceof Error ? error.message : JSON.stringify(error)
+        }`
+      );
   }
 
   // Generic release page is the last resort
   return "https://github.com/Pennsieve/pennsieve-agent/releases";
-};
-
-/**
- *
- * @param {*} partialStringToSearch - The partial string to search for in the release name
- * @param {*} releaseList - The list of Pennsieve agent releases to search for the partial string
- * @returns - The download URL for the Pennsieve agent release that contains the partial string
- */
-
-const findDownloadURL = (partialStringToSearch, releaseList) => {
-  for (const release of releaseList) {
-    const releaseName = release.name;
-    if (releaseName.includes(partialStringToSearch)) {
-      return release.browser_download_url;
-    }
-  }
-  return undefined;
-};
-const getLatestPennsieveAgentVersion = async () => {
-  const res = await axios.get(
-    "https://api.github.com/repos/Pennsieve/pennsieve-agent/releases/latest"
-  );
-
-  let latestReleaseAssets = res.data?.assets;
-  let latestPennsieveAgentVersion = res.data?.tag_name;
-
-  if (!latestReleaseAssets) {
-    throw new Error("Failed to extract assets from the latest Pennsieve agent release");
-  }
-
-  if (!latestPennsieveAgentVersion) {
-    throw new Error("Failed to retrieve the latest Pennsieve agent version");
-  }
-
-  const usersPlatform = window.process.platform();
-  let platformSpecificAgentDownloadURL;
-
-  if (latestPennsieveAgentVersion.includes("1.8.13") && usersPlatform === "darwin") {
-    // change asset information to 1.8.9
-    const updatedReleaseAsset = await axios.get(
-      "https://api.github.com/repos/Pennsieve/pennsieve-agent/releases/tags/1.8.9"
-    );
-    latestReleaseAssets = updatedReleaseAsset.data.assets;
-    latestPennsieveAgentVersion = updatedReleaseAsset.data.tag_name;
-  }
-
-  // Find the platform specific agent download url based on the user's platform
-  let systemArchitecture;
-  switch (usersPlatform) {
-    case "darwin":
-      // The Pennsieve has different agent releases for different architectures on MacOS
-      systemArchitecture = window.process.architecture();
-      if (systemArchitecture === "x64") {
-        platformSpecificAgentDownloadURL = findDownloadURL("x86_64.pkg", latestReleaseAssets);
-      }
-      if (systemArchitecture === "arm64") {
-        platformSpecificAgentDownloadURL = findDownloadURL("arm64.pkg", latestReleaseAssets);
-      }
-      if (!platformSpecificAgentDownloadURL) {
-        platformSpecificAgentDownloadURL = findDownloadURL(".pkg", latestReleaseAssets);
-      }
-      break;
-    case "win32":
-      platformSpecificAgentDownloadURL = findDownloadURL(".msi", latestReleaseAssets);
-      break;
-    case "linux":
-      platformSpecificAgentDownloadURL = findDownloadURL(".deb", latestReleaseAssets);
-      break;
-    default:
-      throw new Error(`Unsupported platform: ${usersPlatform}`);
-  }
-
-  // Throw an error if a download url for the user's platform could not be found in the latest release
-  if (!platformSpecificAgentDownloadURL) {
-    throw new Error(
-      `SODA has detected that a new version of the Pennsieve agent has been released, but could not find the ${usersPlatform} version.`
-    );
-  }
-
-  // returning an object makes the caller code clearer and easier to extend
-  return {
-    platformSpecificAgentDownloadURL,
-    latestPennsieveAgentVersion,
-  };
 };
 
 // Check app version on current app and display in the side bar
@@ -1589,7 +1531,11 @@ window.createMetadataDir = () => {
   try {
     window.fs.mkdirSync(metadataPath, { recursive: true });
   } catch (error) {
-    window.log.error(error);
+    window.log.error(
+      `Error creating metadata directory: ${
+        error instanceof Error ? error.message : JSON.stringify(error)
+      }`
+    );
   }
 };
 
@@ -2403,8 +2349,11 @@ const refreshBfTeamsList = async (teamList) => {
       }
       confirm_click_account_function();
     } catch (error) {
-      window.log.error(error);
-      console.error(error);
+      window?.log?.error?.(
+        `Error refreshing teams list: ${
+          error instanceof Error ? error.message : JSON.stringify(error)
+        }`
+      );
       confirm_click_account_function();
     }
   }
@@ -2830,7 +2779,9 @@ window.electron.ipcRenderer.on(
         duration: 3000,
       });
     } catch (error) {
-      console.error("Error importing folders", error);
+      window?.log?.error?.(
+        `Error importing folders: ${error instanceof Error ? error.message : JSON.stringify(error)}`
+      );
 
       // Optionally show an error notification
       window.notyf.open({
@@ -2873,7 +2824,9 @@ const localFolderPathAndSubFoldersHaveNoFiles = (localFolderPath) => {
     // If no files with size > 0 are found, the folder is considered empty
     return true;
   } catch (error) {
-    window.log.error(`Error reading folder: ${error.message}`);
+    window.log.error(
+      `Error reading folder: ${error instanceof Error ? error.message : JSON.stringify(error)}`
+    );
     return false; // Return false on error as we couldn't verify the folder
   }
 };
@@ -3177,7 +3130,9 @@ window.buildDatasetStructureJsonFromImportedData = async (
         }
       }
     } catch (error) {
-      console.error(error);
+      window?.log?.error?.(
+        `Error processing item: ${error instanceof Error ? error.message : JSON.stringify(error)}`
+      );
       inaccessibleItems.push(pathToExplore);
     }
   };
@@ -3430,7 +3385,9 @@ const mergeNewDatasetStructureToExistingDatasetStructureAtPath = async (
     useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
     reRenderTreeView();
   } catch (error) {
-    console.error(error);
+    window?.log?.error?.(
+      `Error importing data: ${error instanceof Error ? error.message : JSON.stringify(error)}`
+    );
     closeFileImportLoadingSweetAlert();
     window.notyf.open({
       type: error.message === "Importation cancelled" ? "info-grey" : "error",
@@ -3645,7 +3602,11 @@ window.handleSelectedBannerImage = async (path, curationMode) => {
             }
           } catch (err) {
             conversion_success = false;
-            console.error(err);
+            window?.log?.error?.(
+              `Error converting image file: ${
+                err instanceof Error ? err.message : JSON.stringify(err)
+              }`
+            );
           }
 
           return file.write(converted_image_file, async () => {
@@ -3673,7 +3634,11 @@ window.handleSelectedBannerImage = async (path, curationMode) => {
                   })
                   .catch((err) => {
                     conversion_success = false;
-                    console.error(err);
+                    window?.log?.error?.(
+                      `Error resizing and writing image: ${
+                        err instanceof Error ? err.message : JSON.stringify(err)
+                      }`
+                    );
                   });
                 if (window.fs.existsSync(converted_image_file)) {
                   let stats = window.fs.statSync(converted_image_file);
@@ -3699,7 +3664,9 @@ window.handleSelectedBannerImage = async (path, curationMode) => {
         })
         .catch((err) => {
           conversion_success = false;
-          console.error(err);
+          window?.log?.error?.(
+            `Error reading image file: ${err instanceof Error ? err.message : JSON.stringify(err)}`
+          );
           Swal.fire({
             icon: "error",
             text: "Something went wrong",
@@ -4079,7 +4046,9 @@ const restartServer = async () => {
   try {
     await window.server.restart(window.port);
   } catch (err) {
-    console.error("Upload failed:", err.message);
+    window?.log?.error?.(
+      `Upload failed: ${err instanceof Error ? err.message : JSON.stringify(err)}`
+    );
   } finally {
     removeListener(); // Always clean up the listener
   }
@@ -4256,7 +4225,9 @@ const initiate_generate = async (resume = false) => {
         await window.pennsieve.uploadManifest(manifestId);
         UPLOAD_COMPLETE = true;
       } catch (err) {
-        console.error("Upload failed:", err.message);
+        window?.log?.error?.(
+          `Upload failed: ${err instanceof Error ? err.message : JSON.stringify(err)}`
+        );
       } finally {
         removeListener(); // Always clean up the listener
       }
@@ -4580,7 +4551,9 @@ const initiate_generate = async (resume = false) => {
         to manually try again. Sometimes this can resolve the issue in the case of temporary network problems.
         However, if the issue persists please reach out to the SODA team by following the documentation <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here</a>.</span>
         `;
-      window.log.error(error);
+      window.log.error(
+        `Error uploading dataset: ${error instanceof Error ? error.message : JSON.stringify(error)}`
+      );
 
       //Enable the buttons (organize datasets, upload locally, curate existing dataset, curate new dataset)
       organizeDataset_option_buttons.style.display = "flex";
@@ -4637,7 +4610,11 @@ const initiate_generate = async (resume = false) => {
       uploadLocally.className = "content-button is-selected";
       uploadLocally.style = "background-color: #fff";
 
-      console.error(error);
+      window?.log?.error?.(
+        `Error generating dataset: ${
+          error instanceof Error ? error.message : JSON.stringify(error)
+        }`
+      );
       //Clear the interval to stop the generation of new sweet alerts after intitial error
       clearInterval(timerProgress);
       return;
@@ -4954,7 +4931,9 @@ window.electron.ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
           file_size = stats.size;
         }
       } catch (err) {
-        console.error(err);
+        window?.log?.error?.(
+          `Error getting file size: ${err instanceof Error ? err.message : JSON.stringify(err)}`
+        );
         document.getElementById(metadataParaElement).innerHTML =
           "<span style='color:red'>Your SPARC metadata file does not exist or is unreadable. Please verify that you are importing the correct metadata file from your system. </span>";
 

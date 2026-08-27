@@ -86,7 +86,11 @@ const downloadTemplates = async (templateItem, destinationFolder, helperConfig) 
       if (isMultipleTemplates) {
         console.warn(`Template not found for '${templateName}':`, err.message);
 
-        window.log?.warn?.(`Template not found for '${templateName}'`, err.message);
+        window.log?.warn?.(
+          `Template not found for '${templateName}': ${
+            err instanceof Error ? err.message : JSON.stringify(err)
+          }`
+        );
 
         continue;
       }
@@ -150,7 +154,9 @@ const downloadTemplates = async (templateItem, destinationFolder, helperConfig) 
       : window.path.join(destinationFolder, templateItem);
     await window.electron.ipcRenderer.invoke("shell-open-path", pathToOpen);
   } catch (err) {
-    window.log?.warn?.("Failed to open downloaded file", err.message);
+    window.log?.warn?.(
+      `Failed to open downloaded file: ${err instanceof Error ? err.message : JSON.stringify(err)}`
+    );
     console.warn("Failed to open downloaded file", err);
   }
 
@@ -183,13 +189,12 @@ downloadMetadataFiles.addEventListener("click", () => {
 window.electron.ipcRenderer.on(
   "selected-metadata-download-folder",
   (event, path, filename, helperConfig) => {
-    window.log.info("selected-metadata-download-folder", { path, filename, helperConfig });
+    window.log.info(`selected-metadata-download-folder ${path}, ${filename}, ${helperConfig}`);
     if (Array.isArray(path) && path.length > 0) {
       try {
         downloadTemplates(filename, path[0], helperConfig);
       } catch (err) {
-        window.log.error("downloadTemplates failed", err);
-        console.error("downloadTemplates failed", err);
+        window.log?.error?.(`downloadTemplates failed for ${filename}: ${JSON.stringify(err)}`);
         window.electron.ipcRenderer.send(
           "track-event",
           "Error",
@@ -197,7 +202,7 @@ window.electron.ipcRenderer.on(
         );
       }
     } else {
-      window.log.warn("No path selected for metadata download", { filename });
+      window.log.warn(`No path selected for metadata download: ${JSON.stringify({ filename })}`);
       console.warn("No path selected for metadata download", filename);
     }
   }

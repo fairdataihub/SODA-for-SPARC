@@ -6,6 +6,7 @@ import {
   deleteFilesByRelativePath,
   deleteFoldersByRelativePath,
 } from "../../../scripts/utils/datasetStructure";
+import { handleAddEmptyFolder } from "../../pages/DataBucketingPage/utils";
 import { IconFolder, IconFile } from "@tabler/icons-react";
 
 const ICON_SETTINGS = {
@@ -72,6 +73,30 @@ const ContextMenu = () => {
           </Group>
           <Divider my={3} />
 
+          {contextMenuItemType === "folder" && (
+            <Menu.Item
+              onClick={(e) => {
+                e.preventDefault();
+                window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog", {
+                  importRelativePath: contextMenuRelativePath,
+                });
+                closeContextMenu();
+              }}
+            >
+              Import data into this folder
+            </Menu.Item>
+          )}
+          {contextMenuItemType === "folder" && (
+            <Menu.Item
+              onClick={() => {
+                const pathArray = contextMenuRelativePath.split("/").filter((p) => p.length > 0);
+                handleAddEmptyFolder(pathArray);
+                closeContextMenu();
+              }}
+            >
+              Add empty folder inside this folder
+            </Menu.Item>
+          )}
           <Menu.Item
             onClick={() => {
               if (contextMenuItemType === "file") {
@@ -85,19 +110,6 @@ const ContextMenu = () => {
           >
             Delete {contextMenuItemType}
           </Menu.Item>
-          {contextMenuItemType === "folder" && (
-            <Menu.Item
-              onClick={(e) => {
-                e.preventDefault();
-                window.electron.ipcRenderer.send("open-folders-organize-datasets-dialog", {
-                  importRelativePath: contextMenuRelativePath,
-                });
-                closeContextMenu();
-              }}
-            >
-              Import data into {contextMenuItemName}
-            </Menu.Item>
-          )}
         </Menu.Dropdown>
       </Menu>
     </div>

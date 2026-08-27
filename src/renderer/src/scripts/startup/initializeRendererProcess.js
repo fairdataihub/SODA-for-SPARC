@@ -50,7 +50,11 @@ export const startBackgroundServices = async () => {
     try {
       initializePennsieveAccountList();
     } catch (error) {
-      console.error("Error retrieving ps accounts: ", error);
+      window?.log?.error?.(
+        `Error retrieving ps accounts: ${
+          error instanceof Error ? error.message : JSON.stringify(error)
+        }`
+      );
     }
 
     window.notyf.open({
@@ -59,7 +63,11 @@ export const startBackgroundServices = async () => {
       message: `Connected to SODA's background services successfully.`,
     });
   } catch (error) {
-    console.error("Error connecting to server: ", error);
+    window?.log?.error?.(
+      `Error connecting to server: ${
+        error instanceof Error ? error.message : JSON.stringify(error)
+      }`
+    );
     await showErrorAndRestart(error);
   }
 };
@@ -109,7 +117,9 @@ const connectToServer = async () => {
       );
       return;
     } catch (e) {
-      console.error("Error connecting to server: ", e);
+      window?.log?.error?.(
+        `Error connecting to server: ${e instanceof Error ? e.message : JSON.stringify(e)}`
+      );
       await window.wait(retryInterval);
     }
   }
@@ -209,7 +219,9 @@ const startupServerAndApiCheck = async () => {
       Swal.close();
       return;
     } catch (e) {
-      console.error("Error connecting to server: ", e);
+      window?.log?.error?.(
+        `Error connecting to server: ${e instanceof Error ? e.message : JSON.stringify(e)}`
+      );
       await window.wait(retryInterval);
     }
   }
@@ -324,7 +336,7 @@ const ensureServerVersionMatchesClientVersion = async () => {
 
   if (serverAppVersion !== appVersion) {
     window.log.info("Server version does not match client version");
-    console.error("Server version does not match client version");
+    window?.log?.error?.("Server version does not match client version");
     window.electron.ipcRenderer.send(
       "track-event",
       "Error",
@@ -380,7 +392,11 @@ const warnUserIfBetaVersionAndDntNotEnabled = async () => {
       // );
     }
   } catch (err) {
-    window.log.error("Error determing if beta pop up should exist:", err);
+    window.log.error(
+      `Error determing if beta pop up should exist: ${
+        err instanceof Error ? err.message : JSON.stringify(err)
+      }`
+    );
   }
 };
 

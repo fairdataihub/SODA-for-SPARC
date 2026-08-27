@@ -262,14 +262,12 @@ if (process.contextIsolated) {
 
           agentStartSpawn.stderr.on("data", (data) => {
             ///bin/sh: /usr/local/bin/pennsieve: Bad CPU type in executable
-            log.info("Error checking for Pennsieve Agent:", data.toString()); // Log data for debugging
-            console.error("Error checking for Pennsieve Agent:", data.toString());
+            log.error("Error checking for Pennsieve Agent:", data.toString()); // Log data for debugging
             resolve({ agentInstalled: false, errorMessage: data.toString() });
           });
 
           agentStartSpawn.on("error", (error) => {
-            log.info("Error spawning process to check for Pennsieve Agent:", error.toString()); // Log error for debugging
-            console.error("Error spawning process to check for Pennsieve Agent:", error.toString());
+            log.error("Error spawning process to check for Pennsieve Agent:", error.toString()); // Log error for debugging
             resolve({ agentInstalled: false, errorMessage: error.toString() });
           });
         });

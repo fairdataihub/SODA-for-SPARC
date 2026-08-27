@@ -303,7 +303,7 @@ window.addManifestDetailsToDatasetStructure = async (
           }
         }
       } catch (e) {
-        console.error("Error reading manifest file:", e);
+        window.log?.error?.(`Error reading manifest file: ${JSON.stringify(e)}`);
       }
     }
   }
@@ -405,7 +405,7 @@ document.getElementById("confirm-account-workspace").addEventListener("click", a
     // Check to make sure the Pennsieve agent is installed
     await window.checkPennsieveAgent(pennsieveAgentCheckDivId);
   } catch (e) {
-    console.error("Error with agent" + e);
+    window.log?.error?.(`Error with agent: ${JSON.stringify(e)}`);
   }
 });
 
@@ -772,7 +772,9 @@ const progressFileParse = (ev) => {
       let contentJson = JSON.parse(content);
       return contentJson;
     } catch (error) {
-      window.log.error(error);
+      window.log.error(
+        `Error reading file: ${error instanceof Error ? error.message : JSON.stringify(error)}`
+      );
       document.getElementById("para-progress-file-status").innerHTML =
         "<span style='color:red'>" + error + "</span>";
 
@@ -1674,237 +1676,6 @@ window.addManifestFilesForTreeView = () => {
       }
     }
   }
-};
-
-// Helper function to get file extension, matching against recognized extensions with longest-match-first logic
-const getFileExtension = (filename) => {
-  const lowerName = filename.toLowerCase();
-  // Sort extensions by length (longest first) to match double extensions before single ones
-  // NOTE: This list should be kept in sync with the list with the same variable in pysodafair.
-  const ps_recognized_file_extensions = [
-    ".cram",
-    ".jp2",
-    ".jpx",
-    ".lsm",
-    ".ndpi",
-    ".nifti",
-    ".oib",
-    ".oif",
-    ".roi",
-    ".rtf",
-    ".swc",
-    ".abf",
-    ".acq",
-    ".adicht",
-    ".adidat",
-    ".aedt",
-    ".afni",
-    ".ai",
-    ".avi",
-    ".bam",
-    ".bash",
-    ".bcl",
-    ".bcl.gz",
-    ".bin",
-    ".brik",
-    ".brukertiff.gz",
-    ".continuous",
-    ".cpp",
-    ".csv",
-    ".curv",
-    ".cxls",
-    ".czi",
-    ".data",
-    ".dcm",
-    ".df",
-    ".dicom",
-    ".doc",
-    ".docx",
-    ".e",
-    ".edf",
-    ".eps",
-    ".events",
-    ".fasta",
-    ".fastq",
-    ".fcs",
-    ".feather",
-    ".fig",
-    ".gif",
-    ".h4",
-    ".h5",
-    ".hdf4",
-    ".hdf5",
-    ".hdr",
-    ".he2",
-    ".he5",
-    ".head",
-    ".hoc",
-    ".htm",
-    ".html",
-    ".ibw",
-    ".img",
-    ".ims",
-    ".ipynb",
-    ".jpeg",
-    ".jpg",
-    ".js",
-    ".json",
-    ".lay",
-    ".lh",
-    ".lif",
-    ".m",
-    ".mat",
-    ".md",
-    ".mef",
-    ".mefd.gz",
-    ".mex",
-    ".mgf",
-    ".mgh",
-    ".mgh.gz",
-    ".mgz",
-    ".mnc",
-    ".moberg.gz",
-    ".mod",
-    ".mov",
-    ".mp4",
-    ".mph",
-    ".mpj",
-    ".mtw",
-    ".ncs",
-    ".nd2",
-    ".nev",
-    ".nex",
-    ".nex5",
-    ".nf3",
-    ".nii",
-    ".nii.gz",
-    ".ns1",
-    ".ns2",
-    ".ns3",
-    ".ns4",
-    ".ns5",
-    ".ns6",
-    ".nwb",
-    ".ogg",
-    ".ogv",
-    ".ome.btf",
-    ".ome.tif",
-    ".ome.tif2",
-    ".ome.tif8",
-    ".ome.tiff",
-    ".ome.xml",
-    ".openephys",
-    ".pdf",
-    ".pgf",
-    ".png",
-    ".ppt",
-    ".pptx",
-    ".ps",
-    ".pul",
-    ".py",
-    ".r",
-    ".raw",
-    ".rdata",
-    ".rh",
-    ".rhd",
-    ".sh",
-    ".sldasm",
-    ".slddrw",
-    ".smr",
-    ".spikes",
-    ".svg",
-    ".svs",
-    ".tab",
-    ".tar",
-    ".tar.gz",
-    ".tcsh",
-    ".tdm",
-    ".tdms",
-    ".text",
-    ".tif",
-    ".tiff",
-    ".tsv",
-    ".txt",
-    ".vcf",
-    ".webm",
-    ".xlsx",
-    ".xml",
-    ".yaml",
-    ".yml",
-    ".zip",
-    ".zsh",
-  ];
-
-  const sortedExtensions = [...ps_recognized_file_extensions].sort((a, b) => b.length - a.length);
-  for (const ext of sortedExtensions) {
-    if (lowerName.endsWith(ext.toLowerCase())) {
-      return ext;
-    }
-  }
-  // Fallback to the standard extname if nothing matches
-  return window.path.extname(filename);
-};
-
-// PRE-REQ: Happens after the dataset name has been selected
-window.ffmCreateManifest = async () => {
-  let datasetStructure = window.sodaJSONObj["dataset-structure"];
-  let manifestStructure = [];
-
-  // recursively go through the dataset structure
-  const createManifestStructure = async (
-    datasetStructure,
-    manifestStructure,
-    parentFolder = ""
-  ) => {
-    for (const folder in datasetStructure["folders"]) {
-      let folderName = parentFolder ? `${parentFolder}/${folder}` : folder;
-      const statsObj = await window.fs.stat(datasetStructure["folders"][folder]["path"]);
-      let timeStamp = statsObj.mtime.toISOString();
-      // replace timestamp . with , for SDS3 compliance (the . is used to separate fractional seconds)
-      timeStamp = timeStamp.replace(/\./g, ",");
-      manifestStructure.push({
-        filename: folderName,
-        timestamp: timeStamp,
-        description: "",
-        file_type: "folder",
-        entity: "",
-        data_modality: "",
-        also_in_dataset: "",
-        also_in_dataset_path: "",
-        data_dictionary_path: "",
-        entity_is_transitive: "",
-        additional_metadata: "",
-      });
-      createManifestStructure(datasetStructure["folders"][folder], manifestStructure, folderName);
-    }
-
-    for (const file in datasetStructure["files"]) {
-      let filePath = parentFolder ? `${parentFolder}/${file}` : file;
-      // get timestamp of the file at the given path
-      const statsObj = await window.fs.stat(datasetStructure["files"][file]["path"]);
-      let timeStamp = statsObj.mtime.toISOString();
-      timeStamp = timeStamp.replace(/\./g, ",");
-      const fileExtension = getFileExtension(datasetStructure["files"][file]["path"]);
-
-      manifestStructure.push({
-        filename: filePath,
-        timestamp: timeStamp,
-        description: "",
-        file_type: fileExtension,
-        entity: "",
-        data_modality: "",
-        also_in_dataset: "",
-        also_in_dataset_path: "",
-        data_dictionary_path: "",
-        entity_is_transitive: "",
-        additional_metadata: "",
-      });
-    }
-  };
-
-  await createManifestStructure(datasetStructure, manifestStructure);
-
-  return manifestStructure;
 };
 
 window.openmanifestEditSwal = async () => {

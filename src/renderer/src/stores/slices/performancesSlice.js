@@ -300,7 +300,11 @@ export const updatePerformance = () => {
     try {
       renameEntity("performances", originalId, newPerformanceId);
     } catch (err) {
-      console.error("Error renaming associated entity:", err);
+      window?.log?.error?.(
+        `Error renaming associated entity: ${
+          err instanceof Error ? err.message : JSON.stringify(err)
+        }`
+      );
     }
   }
 

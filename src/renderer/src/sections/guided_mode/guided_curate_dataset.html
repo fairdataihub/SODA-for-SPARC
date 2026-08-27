@@ -267,13 +267,22 @@
           <h1 class="text-sub-step-title">Dataset Structure Introduction</h1>
           <div class="guided--section">
             <p class="help-text" style="text-align: left">
-              In this section you will be guided through creating a dataset that conforms to the
-              SPARC Dataset Structure (SDS) by working on two goals:
+              In this section of SODA, you'll create a structured dataset from your data that
+              complies with the SPARC Dataset Structure (SDS) by:
             </p>
-            <ol>
-              <li>Organizing your data, documentation, and protocol files into specific folders</li>
-              <li>Creating a manifest file that describes your dataset and its contents</li>
-            </ol>
+            <div class="guided--steps">
+              <p class="guided--step">
+                <strong>Organizing Your Data</strong> - Import and organize your data,
+                documentation, and protocol files into specific folders
+              </p>
+              <p class="guided--step">
+                <strong>Creating a Manifest File</strong> — Generate a manifest file that describes
+                your dataset and its contents
+              </p>
+              <p class="help-text" style="text-align: left">
+                If you are unfamiliar with the SDS, view the dropdown below for an overview.
+              </p>
+            </div>
             <div
               data-component-type="dropdown-note-renderer"
               id="dataset-structure-visual-aid"
@@ -293,10 +302,65 @@
             </h2>
           </div>
         </div>
+        <div
+          id="guided-dataset-content-tab"
+          data-page-name="Dataset Content"
+          class="guided--page gm"
+          data-component-type="dataset-content-selector"
+        ></div>
+        <div
+          id="guided-dataset-structuring-method-selection-tab"
+          data-page-name="Dataset Structuring Method"
+          data-page-set="guided-subject-related-page-set"
+          class="guided--page gm"
+        >
+          <div class="guided--section">
+            <h1 class="text-sub-step-title">Dataset Structuring Method</h1>
+            <p class="help-text">
+              Before choosing your structuring method, it's important to understand that you'll be
+              organizing your dataset around <strong>entities</strong>. Below you'll see which
+              entities you will need to provide data for.
+            </p>
+            <div
+              data-component-type="info-list"
+              id="dataset-structuring-page-entity-explanation-list"
+              class="w-100"
+            ></div>
 
+            <p class="help-text mt-md">
+              Choose the method you would like to use to organize your dataset. If you're unsure
+              which approach to use, view the dropdown below for additional guidance.
+            </p>
+
+            <div
+              data-component-type="dropdown-note-renderer"
+              id="dataset-structuring-method-note"
+              style="align-self: flex-start"
+              class="w-100"
+            ></div>
+          </div>
+
+          <div class="guided--section">
+            <label class="guided--form-label centered"
+              >Which dataset structuring method would you like to use?
+            </label>
+            <div class="guided--radio-button-container">
+              <div
+                data-component-type="checkbox-card"
+                data-button-id="guided-button-organize-ds-via-entity-association"
+              ></div>
+              <div
+                data-component-type="checkbox-card"
+                data-button-id="guided-button-organize-ds-via-entity-buckets"
+              ></div>
+            </div>
+          </div>
+        </div>
         <div
           id="guided-unstructured-data-import-tab"
           class="guided--page gm"
+          data-page-set="guided-entity-data-import-workflow"
+          data-guided-workflow="entity-association-workflow non-standard-data-workflow"
           data-page-name="Data, Documentation, and Protocol File Selection"
         >
           <div class="guided--section">
@@ -314,6 +378,7 @@
             class="guided--section"
           ></div>
         </div>
+
         <div
           id="ffm-unstructured-data-import-tab"
           class="guided--page ffm"
@@ -338,23 +403,31 @@
           ></div>
         </div>
         <div
-          id="guided-dataset-content-tab"
-          data-page-name="Dataset Content"
-          class="guided--page gm"
-          data-component-type="dataset-content-selector"
-        ></div>
-        <div
           id="non-data-categorization-tab"
           data-page-name="Data Categorization"
           class="guided--page gm"
+          data-page-set="non-data-entity-association-workflow"
+          data-guided-workflow="entity-association-workflow non-standard-data-workflow"
           data-component-type="data-categorization-page"
+          data-entity-type="non-data-folders"
+          data-entity-type-string-singular="Data category"
+        ></div>
+        <div
+          id="non-data-bucketing-tab"
+          data-page-name="Non-experimental Data Selection"
+          class="guided--page gm"
+          data-page-set="non-data-entity-bucketing-workflow"
+          data-guided-workflow="entity-bucketing-workflow"
+          data-component-type="data-bucketing-page"
           data-entity-type="non-data-folders"
           data-entity-type-string-singular="Data category"
         ></div>
         <div
           id="experimental-data-tab"
           data-page-name="Experimental Data Selection"
-          class="guided--page guided-subject-related-page-set gm"
+          class="guided--page gm"
+          data-page-set="guided-subject-related-page-set"
+          data-guided-workflow="entity-association-workflow"
           data-component-type="data-categorization-page"
           data-entity-type="experimental"
           data-entity-type-string-singular="Experimental data"
@@ -363,7 +436,8 @@
         <div
           id="guided-entity-addition-method-selection-tab"
           data-page-name="Entity Addition Method"
-          class="guided--page guided-subject-related-page-set gm"
+          class="guided--page gm"
+          data-page-set="guided-subject-related-page-set"
         >
           <div class="guided--section">
             <h1 class="text-sub-step-title">Entity Addition Method</h1>
@@ -404,59 +478,132 @@
         <div
           id="guided-manual-dataset-entity-and-metadata-tab"
           data-page-name="Experimental Data Metadata"
-          class="guided--page guided-subject-related-page-set gm"
+          class="guided--page gm"
+          data-page-set="guided-subject-related-page-set"
           data-component-type="entity-metadata-page"
         ></div>
         <div
           id="guided-spreadsheet-import-dataset-entity-and-metadata-tab"
           data-page-name="Designate Entity Metadata via Spreadsheets"
-          class="guided--page guided-subject-related-page-set gm"
+          class="guided--page gm"
+          data-page-set="guided-subject-related-page-set"
           data-component-type="entity-spreadsheet-import-page"
         ></div>
         <div
           id="guided-sites-selection-tab"
           data-page-name="Sites Data Selection"
-          class="guided--page guided-sites-metadata-page-set guided-subject-related-page-set gm"
+          class="guided--page gm"
+          data-page-set="guided-sites-metadata-page-set guided-subject-related-page-set"
+          data-guided-workflow="entity-association-workflow"
           data-component-type="data-categorization-page"
+          data-entity-type="sites"
+          data-entity-type-string-singular="site"
+        ></div>
+        <div
+          id="guided-sites-bucketing-tab"
+          data-page-name="Sites Data Bucketing"
+          class="guided--page gm"
+          data-page-set="guided-sites-metadata-page-set guided-subject-related-page-set"
+          data-guided-workflow="entity-bucketing-workflow"
+          data-component-type="data-bucketing-page"
           data-entity-type="sites"
           data-entity-type-string-singular="site"
         ></div>
         <div
           id="guided-derived-samples-selection-tab"
           data-page-name="Derived Samples Data Selection"
-          class="guided--page guided-samples-metadata-page-set guided-derived-samples-metadata-page-set guided-subject-related-page-set gm"
+          class="guided--page gm"
+          data-page-set="guided-samples-metadata-page-set guided-derived-samples-metadata-page-set guided-subject-related-page-set"
+          data-guided-workflow="entity-association-workflow"
           data-component-type="data-categorization-page"
+          data-entity-type="derived-samples"
+          data-entity-type-string-singular="derived sample"
+        ></div>
+        <div
+          id="guided-derived-samples-bucketing-tab"
+          data-page-name="Derived Samples Data Bucketing"
+          class="guided--page gm"
+          data-page-set="guided-samples-metadata-page-set guided-derived-samples-metadata-page-set guided-subject-related-page-set"
+          data-guided-workflow="entity-bucketing-workflow"
+          data-component-type="data-bucketing-page"
           data-entity-type="derived-samples"
           data-entity-type-string-singular="derived sample"
         ></div>
         <div
           id="guided-samples-selection-tab"
           data-page-name="Samples Data Selection"
-          class="guided--page guided-samples-metadata-page-set guided-subject-related-page-set gm"
+          class="guided--page gm"
+          data-page-set="guided-samples-metadata-page-set guided-subject-related-page-set"
+          data-guided-workflow="entity-association-workflow"
           data-component-type="data-categorization-page"
           data-entity-type="samples"
           data-entity-type-string-singular="sample"
         ></div>
         <div
+          id="guided-samples-bucketing-tab"
+          data-page-name="Samples Data Bucketing"
+          class="guided--page gm"
+          data-page-set="guided-samples-metadata-page-set guided-subject-related-page-set"
+          data-guided-workflow="entity-bucketing-workflow"
+          data-component-type="data-bucketing-page"
+          data-entity-type="non-derived-samples"
+          data-entity-type-string-singular="sample"
+        ></div>
+        <div
           id="guided-subjects-selection-tab"
           data-page-name="Subjects Data Selection"
-          class="guided--page guided-subjects-metadata-page-set guided-subject-related-page-set gm"
+          class="guided--page gm"
+          data-page-set="guided-subjects-metadata-page-set guided-subject-related-page-set"
+          data-guided-workflow="entity-association-workflow"
           data-component-type="data-categorization-page"
           data-entity-type="subjects"
           data-entity-type-string-singular="subject"
         ></div>
-
+        <div
+          id="guided-subjects-bucketing-tab"
+          data-page-name="Subjects Data Bucketing"
+          class="guided--page gm"
+          data-page-set="guided-subjects-metadata-page-set guided-subject-related-page-set"
+          data-guided-workflow="entity-bucketing-workflow"
+          data-component-type="data-bucketing-page"
+          data-entity-type="subjects"
+          data-entity-type-string-singular="subject"
+        ></div>
+        <div
+          id="entity-bucketing-primary-source-derivative-questionnaire-tab"
+          data-page-name="Entity Associated Data Categorization"
+          class="guided--page gm"
+          data-page-set="guided-subject-related-page-set"
+          data-guided-workflow="entity-bucketing-workflow"
+          data-component-type="data-categories-questionnaire-page"
+          data-questionnaire-entity-type="entity-bucketing-data-categorization"
+        ></div>
+                
+        <div
+          id="entity-bucketing-primary-source-derivative-categorization-tab"
+          data-page-name="Entity Associated Data Categorization"
+          class="guided--page gm"
+          data-page-set="guided-subject-related-page-set"
+          data-guided-workflow="entity-bucketing-workflow"
+          data-component-type="data-categorization-page"
+          data-entity-type="entity-associated-data-categorization"
+          data-entity-type-string-singular="Data Category"
+        ></div>
         <div
           id="experimental-data-categories-questionnaire-tab"
           data-page-name="Experimental Data Categorization"
-          class="guided--page guided-subject-related-page-set gm"
+          class="guided--page gm"
+          data-page-set="guided-subject-related-page-set"
+          data-guided-workflow="entity-association-workflow"
           data-component-type="data-categories-questionnaire-page"
           data-questionnaire-entity-type="experimental-data-categorization"
         ></div>
         <div
           id="experimental-data-categorization-tab"
           data-page-name="Experimental Data Categorization"
-          class="guided--page guided-subject-related-page-set gm"
+          class="guided--page gm"
+          data-page-set="guided-subject-related-page-set"
+          data-guided-workflow="entity-association-workflow"
           data-component-type="data-categorization-page"
           data-entity-type="experimental-data-categorization"
           data-entity-type-string-singular="Data Category"
@@ -464,14 +611,18 @@
         <div
           id="remaining-data-categories-questionnaire-tab"
           data-page-name="Remaining Data Categorization"
-          class="guided--page guided-remaining-data-categorization-page-set gm"
+          class="guided--page gm"
+          data-page-set="guided-remaining-data-categorization-page-set guided-entity-data-import-workflow"
+          data-guided-workflow="entity-association-workflow non-standard-data-workflow"
           data-component-type="data-categories-questionnaire-page"
           data-questionnaire-entity-type="remaining-data-categorization"
         ></div>
         <div
           id="remaining-data-categorization-tab"
           data-page-name="Remaining Data Categorization"
-          class="guided--page guided-remaining-data-categorization-page-set gm"
+          class="guided--page gm"
+          data-page-set="guided-remaining-data-categorization-page-set guided-entity-data-import-workflow"
+          data-guided-workflow="entity-association-workflow non-standard-data-workflow"
           data-component-type="data-categorization-page"
           data-entity-type="remaining-data-categorization"
           data-entity-type-string-singular="Data Category"
@@ -479,7 +630,8 @@
         <div
           id="guided-performances-entity-addition-tab"
           data-page-name="Description Of Performances"
-          class="guided--page guided-performances-metadata-page-set guided-subject-related-page-set gm"
+          class="guided--page gm"
+          data-page-set="guided-performances-metadata-page-set guided-subject-related-page-set"
           data-component-type="performance-id-management-page"
           data-entity-type="performances"
           data-entity-type-string-singular="performance"
@@ -487,7 +639,8 @@
         <div
           id="guided-Performances-selection-tab"
           data-page-name="Performances Data Selection"
-          class="guided--page guided-performances-metadata-page-set guided-subject-related-page-set gm"
+          class="guided--page gm"
+          data-page-set="guided-performances-metadata-page-set guided-subject-related-page-set"
           data-component-type="data-categorization-page"
           data-entity-type="performances"
           data-entity-type-string-singular="performance"
@@ -495,13 +648,15 @@
         <div
           id="guided-modalities-selection-tab"
           data-page-name="Dataset Modalities"
-          class="guided--page guided-subject-related-page-set gm"
+          class="guided--page gm"
+          data-page-set="guided-subject-related-page-set"
           data-component-type="modality-selection-page"
         ></div>
         <div
           id="guided-modalities-data-selection-tab"
           data-page-name="Modalities Data Selection"
-          class="guided--page guided-subject-related-page-set gm"
+          class="guided--page gm"
+          data-page-set="guided-subject-related-page-set"
           data-component-type="data-categorization-page"
           data-entity-type="modalities"
           data-entity-type-string-singular="modality"
@@ -578,6 +733,10 @@
               provide that information which will then be used by SODA to automatically create the
               SPARC-required metadata files when generating your dataset in the last step of this
               process.
+            </p>
+            <p class="help-text">
+              <strong>Note:</strong> Try to fill out the metadata fields as completely as possible,
+              but you will be able to proceed even if some fields are left incomplete in most cases.
             </p>
           </div>
           <div class="guided--section">
@@ -737,7 +896,8 @@
 
         <div
           id="guided-subjects-metadata-tab"
-          class="guided--page guided-subjects-metadata-page-set gm"
+          class="guided--page gm"
+          data-page-set="guided-subjects-metadata-page-set"
           data-page-name="Subjects Metadata"
           data-component-type="entity-metadata-page"
           data-entity-type="subjects"
@@ -745,7 +905,8 @@
 
         <div
           id="guided-samples-metadata-tab"
-          class="guided--page guided-samples-metadata-page-set gm"
+          class="guided--page gm"
+          data-page-set="guided-samples-metadata-page-set"
           data-page-name="Samples Metadata"
           data-component-type="entity-metadata-page"
           data-entity-type="samples"
@@ -1219,7 +1380,8 @@
         ></div>
         <div
           id="guided-generate-dataset-locally"
-          class="guided--page gm local-generation-page-set"
+          class="guided--page gm"
+          data-page-set="local-generation-page-set"
           data-page-name="Local Dataset Generation"
         >
           <div class="guided--section">
@@ -1292,7 +1454,8 @@
 
         <div
           id="gm-pennsieve-login-tab"
-          class="guided--page gm pennsieve-generation-page-set"
+          class="guided--page gm"
+          data-page-set="pennsieve-generation-page-set"
           data-page-name="Pennsieve Log In"
         >
           <div class="guided--section">
@@ -1392,7 +1555,8 @@
 
         <div
           id="guided-pennsieve-generate-target-tab"
-          class="guided--page gm pennsieve-generation-page-set"
+          class="guided--page gm"
+          data-page-set="pennsieve-generation-page-set"
           data-page-name="Pennsieve Dataset"
           data-component-type="pennsieve-generate-target-page"
           data-curation-mode="gm"
@@ -1400,7 +1564,8 @@
 
         <div
           id="guided-pennsieve-settings-tab"
-          class="guided--page gm ffm pennsieve-generation-page-set"
+          class="guided--page gm ffm"
+          data-page-set="pennsieve-generation-page-set"
           data-page-name="Pennsieve Settings"
         >
           <div class="guided--section">
@@ -1614,7 +1779,8 @@
         </div>
         <div
           id="guided-dataset-generation-confirmation-tab"
-          class="guided--page gm ffm pennsieve-generation-page-set"
+          class="guided--page gm ffm"
+          data-page-set="pennsieve-generation-page-set"
           data-page-name="Review and Generate"
         >
           <div class="guided--section">

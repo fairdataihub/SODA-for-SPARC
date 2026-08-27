@@ -2,7 +2,7 @@ import useGlobalStore from "../../../../stores/globalStore";
 import { isCheckboxCardChecked } from "../../../../stores/slices/checkboxCardSlice";
 import { createOrUpdateProgressFileSaveInfo } from "../../resumeProgress/progressFile";
 
-export const savePageCurationPreparation = async (pageBeingLeftID) => {
+export const savePageCurationPreparation = async (pageBeingLeftID, movingForward) => {
   const errorArray = [];
 
   if (pageBeingLeftID === "guided-name-subtitle-tab") {
@@ -33,6 +33,6 @@ export const savePageCurationPreparation = async (pageBeingLeftID) => {
     }
 
     window.sodaJSONObj["digital-metadata"]["name"] = datasetNameInput;
-    window.log.info("[guided-name-subtitle-tab] Finalized dataset name:", datasetNameInput);
+    window.log.info(`[guided-name-subtitle-tab] Finalized dataset name: ${datasetNameInput}`);
   }
 };

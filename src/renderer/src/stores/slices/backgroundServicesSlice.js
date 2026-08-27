@@ -12,6 +12,7 @@ const initialState = {
   usersPennsieveAgentVersion: null,
   latestPennsieveAgentVersion: null,
   postPennsieveAgentCheckAction: null,
+  lastTestedPennsieveAgentDownloadURL: null,
 };
 
 export const backgroundServicesSlice = (set) => ({
@@ -39,6 +40,14 @@ export const setPennsieveAgentStartedSuccessfully = (successful) => {
     produce((state) => {
       state.pennsieveAgentCheckInProgress = false;
       state.pennsieveAgentStartedSuccessfully = successful;
+    })
+  );
+};
+
+export const setLastTestedPennsieveAgentDownloadURL = (downloadURL) => {
+  useGlobalStore.setState(
+    produce((state) => {
+      state.lastTestedPennsieveAgentDownloadURL = downloadURL;
     })
   );
 };

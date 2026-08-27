@@ -126,7 +126,11 @@ const checkForAnnouncements = async (state) => {
       });
     }
   } catch (error) {
-    console.error(error);
+    window?.log?.error?.(
+      `Error checking for announcements: ${
+        error instanceof Error ? error.message : JSON.stringify(error)
+      }`
+    );
   }
 };
 

@@ -47,7 +47,7 @@ export const openPageDatasetStructure = async (targetPageID) => {
           manifestGenerationDisabled = true;
         }
       } catch (error) {
-        console.error("Error checking if dataset is empty:", error);
+        window.log?.error?.(`Error checking if dataset is empty: ${JSON.stringify(error)}`);
         manifestGenerationDisabled = true; // Default to disabling manifest generation if we cannot confirm the dataset is empty
       }
     }
@@ -118,19 +118,13 @@ export const openPageDatasetStructure = async (targetPageID) => {
 
       await purgeNonExistentFiles(window.datasetStructureJSONObj);
 
-      // Remove empty folders
-      window.datasetStructureJSONObj = deleteEmptyFoldersFromStructure(
-        window.datasetStructureJSONObj
-      );
-
       // Prepare cleaned dataset structure for server-side processing
+      const { standardizedDatasetStructure, fileToSourceMap } =
+        createStandardizedDatasetStructure();
       const sodaCopy = {
         ...window.sodaJSONObj,
         "metadata-files": {},
-        "dataset-structure": createStandardizedDatasetStructure(
-          window.datasetStructureJSONObj,
-          window.sodaJSONObj["dataset-entity-obj"]
-        ),
+        "dataset-structure": standardizedDatasetStructure,
       };
       delete sodaCopy["generate-dataset"];
 
@@ -193,56 +187,125 @@ export const openPageDatasetStructure = async (targetPageID) => {
       /**
        * Update entity column values.
        */
-      const updateEntityColumn = (rows) => {
+      const updateEntityColumn = (rows, fileToSourceMap = {}) => {
+        const datasetStructuringMethod = window.sodaJSONObj?.["dataset-structuring-method"];
+
         const entityTypes = ["sites", "derived-samples", "samples", "subjects"];
+        const fileTypeColumnIndex = newManifestData.headers.indexOf("file type");
 
-        rows.forEach((row) => {
-          let path = row[0];
-          const pathSegments = path.split("/");
-          if (pathSegments.length > 0) pathSegments[0] = "data";
-          path = pathSegments.join("/");
-
-          let entityId = "";
-
-          for (const type of entityTypes) {
-            const entities = datasetEntityObj?.[type] || {};
-            for (const [entity, paths] of Object.entries(entities)) {
-              if (paths?.[path]) {
-                const { entityMetadata } = getEntityDataById(entity) || {};
-                if (!entityMetadata) continue;
-
-                entityId = entityMetadata.id;
-                break;
-              }
+        if (datasetStructuringMethod === "entity-association") {
+          rows.forEach((row) => {
+            // Skip processing folders - only process files
+            if (row[fileTypeColumnIndex] === "folder") {
+              return;
             }
-            if (entityId) break;
-          }
 
-          row[entityColumnIndex] = entityId;
-        });
+            let path = row[0];
+            const pathSegments = path.split("/");
+            if (pathSegments.length > 0) pathSegments[0] = "data";
+            path = pathSegments.join("/");
 
-        return rows;
+            let entityId = "";
+
+            for (const type of entityTypes) {
+              const entities = datasetEntityObj?.[type] || {};
+              for (const [entity, paths] of Object.entries(entities)) {
+                if (paths?.[path]) {
+                  const { entityMetadata } = getEntityDataById(entity) || {};
+                  if (!entityMetadata) continue;
+
+                  entityId = entityMetadata.id;
+                  break;
+                }
+              }
+              if (entityId) break;
+            }
+
+            row[entityColumnIndex] = entityId;
+          });
+        }
+
+        if (datasetStructuringMethod === "entity-buckets") {
+          rows.forEach((row) => {
+            // Skip processing folders - only process files
+            if (row[fileTypeColumnIndex] === "folder") {
+              return;
+            }
+
+            let filePath = row[0];
+
+            // Look up the entity from fileToSourceMap using the file path
+            const mappingInfo = fileToSourceMap[filePath];
+            if (
+              mappingInfo &&
+              mappingInfo.entity &&
+              !["code", "protocol", "docs"].includes(mappingInfo.entity)
+            ) {
+              row[entityColumnIndex] = mappingInfo.entity;
+            } else {
+              row[entityColumnIndex] = "";
+            }
+          });
+        }
       };
 
       /**
        * Update modalities column values.
        */
-      const updateModalitiesColumn = (rows) => {
+      const updateModalitiesColumn = (rows, fileToSourceMap = {}) => {
+        const datasetStructuringMethod = window.sodaJSONObj?.["dataset-structuring-method"];
         const modalitiesColumnIndex = newManifestData.headers.indexOf("data modality");
+        const fileTypeColumnIndex = newManifestData.headers.indexOf("file type");
 
-        rows.forEach((row) => {
-          let path = row[0];
-          const pathSegments = path.split("/");
-          if (pathSegments.length > 0) pathSegments[0] = "data";
-          path = pathSegments.join("/");
+        if (datasetStructuringMethod === "entity-association") {
+          rows.forEach((row) => {
+            // Skip processing folders - only process files
+            if (row[fileTypeColumnIndex] === "folder") {
+              return;
+            }
 
-          const modalitiesList = [];
-          for (const [modality, paths] of Object.entries(datasetEntityObj?.modalities || {})) {
-            if (paths?.[path]) modalitiesList.push(modality);
-          }
+            let path = row[0];
+            // For entity-association, convert to data path format
+            const pathSegments = path.split("/");
+            if (pathSegments.length > 0) pathSegments[0] = "data";
+            path = pathSegments.join("/");
 
-          row[modalitiesColumnIndex] = modalitiesList.join(" ");
-        });
+            const modalitiesList = [];
+            for (const [modality, paths] of Object.entries(datasetEntityObj?.modalities || {})) {
+              if (paths?.[path]) {
+                modalitiesList.push(modality);
+              }
+            }
+
+            row[modalitiesColumnIndex] = modalitiesList.join(" ");
+          });
+        }
+
+        if (datasetStructuringMethod === "entity-buckets") {
+          rows.forEach((row) => {
+            // Skip processing folders - only process files
+            if (row[fileTypeColumnIndex] === "folder") {
+              return;
+            }
+
+            let path = row[0];
+            // For entity-buckets, we need to look up the original path from fileToSourceMap
+            const mappingInfo = fileToSourceMap[path];
+            if (mappingInfo && mappingInfo.sourcePath) {
+              // Reconstruct the original data path
+              path = mappingInfo.sourcePath;
+            }
+
+            const modalitiesList = [];
+            for (const [modality, paths] of Object.entries(datasetEntityObj?.modalities || {})) {
+              if (paths?.[path]) {
+                modalitiesList.push(modality);
+              }
+            }
+
+            row[modalitiesColumnIndex] = modalitiesList.join(" ");
+          });
+        }
 
         return rows;
       };
@@ -250,36 +313,72 @@ export const openPageDatasetStructure = async (targetPageID) => {
       /**
        * Update also in dataset column values from entity metadata.
        */
-      const updateAlsoInDatasetColumn = (rows) => {
+      const updateAlsoInDatasetColumn = (rows, fileToSourceMap = {}) => {
         const alsoInDatasetColumnIndex = newManifestData.headers.indexOf("also in dataset");
+        const fileTypeColumnIndex = newManifestData.headers.indexOf("file type");
+        const datasetStructuringMethod = window.sodaJSONObj?.["dataset-structuring-method"];
 
         if (alsoInDatasetColumnIndex === -1) return rows; // Column doesn't exist
 
-        rows.forEach((row) => {
-          let path = row[0];
-          const pathSegments = path.split("/");
-          if (pathSegments.length > 0) pathSegments[0] = "data";
-          path = pathSegments.join("/");
+        if (datasetStructuringMethod === "entity-association") {
+          rows.forEach((row, rowIndex) => {
+            // Skip processing folders - only process files
+            if (row[fileTypeColumnIndex] === "folder") {
+              return;
+            }
 
-          let alsoInDatasetValue = "";
+            let alsoInDatasetValue = "";
+            const filePath = row[0];
 
-          const entityTypes = ["samples", "subjects"];
-          for (const type of entityTypes) {
-            const entities = datasetEntityObj?.[type] || {};
-            for (const [entity, paths] of Object.entries(entities)) {
-              if (paths?.[path]) {
-                const { entityMetadata } = getEntityDataById(entity) || {};
-                if (entityMetadata?.metadata?.also_in_dataset) {
-                  alsoInDatasetValue = entityMetadata.metadata.also_in_dataset;
-                  break;
+            // For entity-association, convert to data path format
+            let path = filePath;
+            const pathSegments = path.split("/");
+            if (pathSegments.length > 0) pathSegments[0] = "data";
+            path = pathSegments.join("/");
+
+            const entityTypes = ["samples", "subjects"];
+            for (const type of entityTypes) {
+              const entities = datasetEntityObj?.[type] || {};
+              for (const [entity, paths] of Object.entries(entities)) {
+                if (paths?.[path]) {
+                  const { entityMetadata } = getEntityDataById(entity) || {};
+                  if (entityMetadata?.metadata?.also_in_dataset) {
+                    alsoInDatasetValue = entityMetadata.metadata.also_in_dataset;
+
+                    break;
+                  }
                 }
               }
+              if (alsoInDatasetValue) break;
             }
-            if (alsoInDatasetValue) break;
-          }
 
-          row[alsoInDatasetColumnIndex] = alsoInDatasetValue;
-        });
+            row[alsoInDatasetColumnIndex] = alsoInDatasetValue;
+          });
+        }
+
+        if (datasetStructuringMethod === "entity-buckets") {
+          rows.forEach((row, rowIndex) => {
+            // Skip processing folders - only process files
+            if (row[fileTypeColumnIndex] === "folder") {
+              return;
+            }
+
+            let alsoInDatasetValue = "";
+            const filePath = row[0];
+
+            // Look up the entity from fileToSourceMap using the file path
+            const mappingInfo = fileToSourceMap[filePath];
+            if (mappingInfo && mappingInfo.entity) {
+              const entityId = mappingInfo.entity;
+              const { entityMetadata } = getEntityDataById(entityId) || {};
+              if (entityMetadata?.metadata?.also_in_dataset) {
+                alsoInDatasetValue = entityMetadata.metadata.also_in_dataset;
+              }
+            }
+
+            row[alsoInDatasetColumnIndex] = alsoInDatasetValue;
+          });
+        }
 
         return rows;
       };
@@ -292,9 +391,9 @@ export const openPageDatasetStructure = async (targetPageID) => {
           )
         : newManifestData;
 
-      updateEntityColumn(guidedManifestData.data);
-      updateModalitiesColumn(guidedManifestData.data);
-      updateAlsoInDatasetColumn(guidedManifestData.data);
+      updateEntityColumn(guidedManifestData.data, fileToSourceMap);
+      updateModalitiesColumn(guidedManifestData.data, fileToSourceMap);
+      updateAlsoInDatasetColumn(guidedManifestData.data, fileToSourceMap);
 
       // Save final manifest data
       if (!window.sodaJSONObj["dataset_metadata"]) {

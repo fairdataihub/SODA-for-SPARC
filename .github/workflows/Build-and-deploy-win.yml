@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - staging
+      - restart-server-subscriber-tweaks
 jobs:
   deploy-on-windows:
     runs-on: windows-latest
