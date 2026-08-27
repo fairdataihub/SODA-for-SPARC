@@ -242,7 +242,7 @@ export const moveFileToTargetLocation = (relativePathToMove, destionationRelativ
 
   // Check if the file exists before trying to move it
   if (!itemObject || !parentFolder || !parentFolder.files || !parentFolder.files[itemName]) {
-    window?.log?.warn?.(`moveFileToTargetLocation: File not found, skipping: ${relativePathToMove}`);
+    console.warn(`moveFileToTargetLocation: File not found, skipping: ${relativePathToMove}`);
     return;
   }
 
@@ -523,7 +523,7 @@ export const createStandardizedDatasetStructure = () => {
         const parentSubjectId = sample.parentSubject || sample.metadata?.subject_id;
 
         if (!parentSubjectId) {
-          window?.log?.warn?.(`Sample ${sampleId} has no parent subject, skipping`);
+          console.warn(`Sample ${sampleId} has no parent subject, skipping`);
           continue;
         }
 
@@ -550,7 +550,7 @@ export const createStandardizedDatasetStructure = () => {
         const parentSampleId = derivedSample.metadata?.was_derived_from;
 
         if (!parentSubjectId || !parentSampleId) {
-          window?.log?.warn?.(
+          console.warn(
             `Derived-sample ${derivedSampleId} has missing parent info (subject: ${parentSubjectId}, sample: ${parentSampleId}), skipping`
           );
           continue;
@@ -581,7 +581,7 @@ export const createStandardizedDatasetStructure = () => {
         const parentDerivedSampleId = site.metadata?.derived_sample_id;
 
         if (!parentSubjectId) {
-          window?.log?.warn?.(`Site ${siteId} has no parent subject, skipping`);
+          console.warn(`Site ${siteId} has no parent subject, skipping`);
           continue;
         }
 
@@ -609,7 +609,7 @@ export const createStandardizedDatasetStructure = () => {
             categoryMapping
           );
         } else {
-          window?.log?.warn?.(`Site folder not found for ${siteId} at data/sites/${siteId}/`);
+          console.warn(`Site folder not found for ${siteId} at data/sites/${siteId}/`);
         }
       }
 
@@ -652,7 +652,7 @@ export const createStandardizedDatasetStructure = () => {
     };
     return result;
   } catch (error) {
-    window?.log?.error?.("Error while creating standardized dataset structure:", error instanceof Error ? error.message : JSON.stringify(error));
+    window?.log?.error?.(`Error while creating standardized dataset structure: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
     window.datasetStructureJSONObj = originalStructure;
     throw error;
   }

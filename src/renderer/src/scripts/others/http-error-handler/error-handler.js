@@ -10,7 +10,9 @@ import client from "../../client";
  */
 const clientError = (error) => {
   // Handles gneral errors and getting basic information from Axios errors
-  window?.log?.error?.(error instanceof Error ? error.message : JSON.stringify(error));
+  window?.log?.error?.(
+    `Error from API call: ${error instanceof Error ? error.message : JSON.stringify(error)}`
+  );
 
   // Handle logging for Axios errors in greater detail
   if (error.response) {
@@ -18,8 +20,8 @@ const clientError = (error) => {
     let error_status = error.response.status;
     let error_headers = error.response.headers;
 
-    window.log.error("Error message: " + JSON.stringify(error_message));
-    window.log.error("Response Status: " + JSON.stringify(error_status));
+    window.log.error(`Error message: ${JSON.stringify(error_message)}`);
+    window.log.error(`Response Status: ${JSON.stringify(error_status)}`);
     window.log.error("Request config: ");
     window.log.error(JSON.stringify(error.config));
     window.log.error("Response Headers: ");
@@ -54,7 +56,11 @@ const userErrorMessage = (error, includeContactAddendum = true) => {
     // The request was made but no response was received
     // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
     // http.ClientRequest in node.js
-    window?.log?.error?.(error instanceof Error ? error.message : JSON.stringify(error));
+    window?.log?.error?.(
+      `Error: No response from server: ${
+        error instanceof Error ? error.message : JSON.stringify(error)
+      }`
+    );
     errorMessage = "The server did not respond to the request. <br>" + contactSODATeamAddendum;
   } else {
     // Something happened in setting up the request that triggered an Error

@@ -1035,7 +1035,9 @@ window.showCurrentDescription = async () => {
     parsedReadme = createParsedReadme(readme);
   } catch (error) {
     // log the error and send it to analytics
-    window?.log?.error?.(error instanceof Error ? error.message : JSON.stringify(error));
+    window?.log?.error?.(
+      `Error parsing README: ${error instanceof Error ? error.message : JSON.stringify(error)}`
+    );
 
     window.logGeneralOperationsForAnalytics(
       "Error",
@@ -1497,7 +1499,7 @@ const displayBannerImage = async (bannerImagePath) => {
             }
           } catch (err) {
             conversion_success = false;
-            window?.log?.error?.(err instanceof Error ? err.message : JSON.stringify(err));
+            window?.log?.error?.(`Error converting image file: ${err instanceof Error ? err.message : JSON.stringify(err)}`);
           }
 
           return file.write(converted_image_file, async () => {
@@ -1528,7 +1530,7 @@ const displayBannerImage = async (bannerImagePath) => {
                   })
                   .catch((err) => {
                     conversion_success = false;
-                    window?.log?.error?.(err instanceof Error ? err.message : JSON.stringify(err));
+                    window?.log?.error?.(`Error resizing and writing image: ${err instanceof Error ? err.message : JSON.stringify(err)}`);
                   });
                 if (window.fs.existsSync(converted_image_file)) {
                   let stats = window.fs.statSync(converted_image_file);
@@ -1553,7 +1555,7 @@ const displayBannerImage = async (bannerImagePath) => {
         })
         .catch((err) => {
           conversion_success = false;
-          window?.log?.error?.(err instanceof Error ? err.message : JSON.stringify(err));
+          window?.log?.error?.(`Error reading image file: ${err instanceof Error ? err.message : JSON.stringify(err)}`);
           Swal.fire({
             icon: "error",
             text: "Something went wrong",

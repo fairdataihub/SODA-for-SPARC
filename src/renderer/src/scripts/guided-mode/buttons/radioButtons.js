@@ -36,17 +36,11 @@ export const updateGuidedRadioButtonsFromJSON = (parentPageID) => {
     const buttonId = reactCard.getAttribute("data-checkbox-card-id");
     const checkboxData = getCheckboxDataByKey(buttonId);
     if (!buttonId) {
-      window.log?.error?.(
-        "[updateGuidedRadioButtonsFromJSON] data-checkbox-card-id missing for React element:",
-        reactCard
-      );
+      window.log?.error?.(`[updateGuidedRadioButtonsFromJSON] data-checkbox-card-id missing for React element: ${JSON.stringify(reactCard)}`);
       continue;
     }
     if (!checkboxData) {
-      window.log?.error?.(
-        "[updateGuidedRadioButtonsFromJSON] No checkboxData found for React buttonId:",
-        buttonId
-      );
+      window.log?.error?.(`[updateGuidedRadioButtonsFromJSON] No checkboxData found for React buttonId: ${buttonId}`);
       continue;
     }
     const buttonConfigValue = checkboxData?.configValue;

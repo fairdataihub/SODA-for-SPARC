@@ -93,7 +93,11 @@ export const handleNextButtonClick = async () => {
       await window.openPage(targetPageID);
     }
   } catch (error) {
-    window.log?.error?.("[handleNextButtonClick] Error encountered: " + JSON.stringify(error));
+    window.log?.error?.(
+      `[handleNextButtonClick] Error encountered: ${
+        error instanceof Error ? error.message : JSON.stringify(error)
+      }`
+    );
     if (Array.isArray(error)) {
       for (const err of error) {
         if (err.type === "notyf") {
@@ -122,7 +126,9 @@ export const handleBackButtonClick = async () => {
     await window.savePageChanges(window.pageBeingLeftID, false);
   } catch (error) {
     window.log?.error?.(
-      "Error saving page changes during back button click: " + JSON.stringify(error)
+      `Error saving page changes during back button click: ${
+        error instanceof Error ? error.message : JSON.stringify(error)
+      }`
     );
   }
 

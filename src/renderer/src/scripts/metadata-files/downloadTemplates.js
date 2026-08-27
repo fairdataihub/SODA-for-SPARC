@@ -86,7 +86,7 @@ const downloadTemplates = async (templateItem, destinationFolder, helperConfig) 
       if (isMultipleTemplates) {
         console.warn(`Template not found for '${templateName}':`, err.message);
 
-        window.log?.warn?.(`Template not found for '${templateName}'`, err.message);
+        window.log?.warn?.(`Template not found for '${templateName}': ${err instanceof Error ? err.message : JSON.stringify(err)}`);
 
         continue;
       }
@@ -150,7 +150,7 @@ const downloadTemplates = async (templateItem, destinationFolder, helperConfig) 
       : window.path.join(destinationFolder, templateItem);
     await window.electron.ipcRenderer.invoke("shell-open-path", pathToOpen);
   } catch (err) {
-    window.log?.warn?.("Failed to open downloaded file", err.message);
+    window.log?.warn?.(`Failed to open downloaded file: ${err instanceof Error ? err.message : JSON.stringify(err)}`);
     console.warn("Failed to open downloaded file", err);
   }
 
@@ -196,7 +196,7 @@ window.electron.ipcRenderer.on(
         );
       }
     } else {
-      window.log.warn("No path selected for metadata download", { filename });
+      window.log.warn(`No path selected for metadata download: ${JSON.stringify({ filename })}`);
       console.warn("No path selected for metadata download", filename);
     }
   }

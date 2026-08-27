@@ -50,7 +50,7 @@ export const renderComponent = (componentSlot, component) => {
     const root = createRoot(componentSlot);
     root.render(<SodaComponentWrapper>{component}</SodaComponentWrapper>);
   } catch (error) {
-    window?.log?.error?.("Error rendering component:", error instanceof Error ? error.message : JSON.stringify(error));
+    window?.log?.error?.(`Error rendering component: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
   }
 };
 
@@ -308,7 +308,7 @@ export const setRender = (componentType, componentSlot) => {
     try {
       renderFunction(componentSlot);
     } catch (error) {
-      window?.log?.error?.(`Error rendering component of type: ${componentType}`, error instanceof Error ? error.message : JSON.stringify(error));
+      window?.log?.error?.(`Error rendering component of type: ${componentType}: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
     }
   }
 };
@@ -322,7 +322,7 @@ document.querySelectorAll("[data-component-type]").forEach((componentSlot) => {
     try {
       renderFunction(componentSlot);
     } catch (error) {
-      window?.log?.error?.(`Error rendering component of type: ${componentType}`, error instanceof Error ? error.message : JSON.stringify(error));
+      window?.log?.error?.(`Error rendering component of type: ${componentType}: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
     }
   } else {
     window?.log?.error?.(`No render function found for component type: ${componentType}`);

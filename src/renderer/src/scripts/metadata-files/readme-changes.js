@@ -735,7 +735,7 @@ const loadExistingRCFile = async (filepath, type) => {
     $(`#button-fake-confirm-existing-${type}-file-load`).click();
   } catch (error) {
     let emessage = userErrorMessage(error);
-    window.log.error(error instanceof Error ? error.message : JSON.stringify(error));
+    window.log.error(`Error importing existing file: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
     Swal.fire({
       title: "Failed to import existing file",
       html: emessage,

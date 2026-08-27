@@ -772,7 +772,7 @@ const progressFileParse = (ev) => {
       let contentJson = JSON.parse(content);
       return contentJson;
     } catch (error) {
-      window.log.error(error instanceof Error ? error.message : JSON.stringify(error));
+      window.log.error(`Error reading file: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
       document.getElementById("para-progress-file-status").innerHTML =
         "<span style='color:red'>" + error + "</span>";
 

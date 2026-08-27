@@ -359,7 +359,7 @@ const EntityHierarchyRenderer = ({
       return getEntitiesByEntityType("non-data-folders", false);
     }
 
-    window?.log?.error?.("Invalid entity type for rendering:", JSON.stringify(onlyRenderEntityType));
+    window?.log?.error?.(`Invalid entity type for rendering: ${JSON.stringify(onlyRenderEntityType)}`);
     return [];
   };
   // Get the specific entities to render if we're only showing one type
