@@ -623,7 +623,7 @@ const DatasetTreeViewRenderer = ({
                           />
                         );
                       default:
-                        console.error("Unknown item type:", item.itemType);
+                        window?.log?.error?.("Unknown item type:", JSON.stringify(item.itemType));
                         return null;
                     }
                   };

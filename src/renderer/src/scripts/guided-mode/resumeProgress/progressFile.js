@@ -217,7 +217,7 @@ export const createOrUpdateProgressFileSaveInfo = async (datasetNameInput) => {
       } catch (error) {
         window.log.error(
           `[guided-name-subtitle-tab] Error renaming guided progress file from ${oldProgressFilePath} → ${newProgressFilePath}:`,
-          error
+          error instanceof Error ? error.message : JSON.stringify(error)
         );
       }
 
@@ -242,7 +242,7 @@ export const createOrUpdateProgressFileSaveInfo = async (datasetNameInput) => {
         } catch (error) {
           window.log.error(
             `[guided-name-subtitle-tab] Error renaming banner image folder from ${bannerImagePathToUpdate} → ${newBannerImagePath}:`,
-            error
+            error instanceof Error ? error.message : JSON.stringify(error)
           );
         }
       }

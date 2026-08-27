@@ -5,13 +5,15 @@ import mv from "mv";
 import log from "electron-log";
 
 ipcMain.handle("mv", (event, source, destination) => {
-  mv(source, destination, function (err) {
-    if (err) {
-      log.error(err);
-      return err;
-    } else {
-      return "success";
-    }
+  return new Promise((resolve, reject) => {
+    mv(source, destination, function (err) {
+      if (err) {
+        log.error(err instanceof Error ? err.message : JSON.stringify(err));
+        reject(err);
+      } else {
+        resolve("success");
+      }
+    });
   });
 });
 

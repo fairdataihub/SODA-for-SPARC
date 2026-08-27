@@ -165,7 +165,7 @@ export const setEntityType = (entityType) => {
 // Update the list of entities for a specific entity type
 export const setEntityListForEntityType = (entityType, entityListObj) => {
   if (!entityType || !entityListObj) {
-    console.error("Missing parameters: entityType or entityListObj", { entityType, entityListObj });
+    window?.log?.error?.("Missing parameters: entityType or entityListObj", JSON.stringify({ entityType, entityListObj }));
     return;
   }
 
@@ -305,7 +305,7 @@ export const modifyDatasetEntityForRelativeFilePath = (
             break;
 
           default:
-            console.error(`Unsupported action: ${action}`);
+            window?.log?.error?.(`Unsupported action: ${action}`);
         }
       }
     })

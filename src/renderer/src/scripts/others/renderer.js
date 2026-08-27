@@ -1526,7 +1526,7 @@ window.createMetadataDir = () => {
   try {
     window.fs.mkdirSync(metadataPath, { recursive: true });
   } catch (error) {
-    window.log.error(error);
+    window.log.error(error instanceof Error ? error.message : JSON.stringify(error));
   }
 };
 
@@ -2340,8 +2340,7 @@ const refreshBfTeamsList = async (teamList) => {
       }
       confirm_click_account_function();
     } catch (error) {
-      window.log.error(error);
-      console.error(error);
+      window?.log?.error?.(error instanceof Error ? error.message : JSON.stringify(error));
       confirm_click_account_function();
     }
   }
@@ -2767,7 +2766,7 @@ window.electron.ipcRenderer.on(
         duration: 3000,
       });
     } catch (error) {
-      console.error("Error importing folders", error);
+      window?.log?.error?.("Error importing folders", error instanceof Error ? error.message : JSON.stringify(error));
 
       // Optionally show an error notification
       window.notyf.open({
@@ -3114,7 +3113,7 @@ window.buildDatasetStructureJsonFromImportedData = async (
         }
       }
     } catch (error) {
-      console.error(error);
+      window?.log?.error?.(error instanceof Error ? error.message : JSON.stringify(error));
       inaccessibleItems.push(pathToExplore);
     }
   };
@@ -3367,7 +3366,7 @@ const mergeNewDatasetStructureToExistingDatasetStructureAtPath = async (
     useGlobalStore.setState({ datasetStructureJSONObj: window.datasetStructureJSONObj });
     reRenderTreeView();
   } catch (error) {
-    console.error(error);
+    window?.log?.error?.(error instanceof Error ? error.message : JSON.stringify(error));
     closeFileImportLoadingSweetAlert();
     window.notyf.open({
       type: error.message === "Importation cancelled" ? "info-grey" : "error",
@@ -3582,7 +3581,7 @@ window.handleSelectedBannerImage = async (path, curationMode) => {
             }
           } catch (err) {
             conversion_success = false;
-            console.error(err);
+            window?.log?.error?.(err instanceof Error ? err.message : JSON.stringify(err));
           }
 
           return file.write(converted_image_file, async () => {
@@ -3610,7 +3609,7 @@ window.handleSelectedBannerImage = async (path, curationMode) => {
                   })
                   .catch((err) => {
                     conversion_success = false;
-                    console.error(err);
+                    window?.log?.error?.(err instanceof Error ? err.message : JSON.stringify(err));
                   });
                 if (window.fs.existsSync(converted_image_file)) {
                   let stats = window.fs.statSync(converted_image_file);
@@ -3636,7 +3635,7 @@ window.handleSelectedBannerImage = async (path, curationMode) => {
         })
         .catch((err) => {
           conversion_success = false;
-          console.error(err);
+          window?.log?.error?.(err instanceof Error ? err.message : JSON.stringify(err));
           Swal.fire({
             icon: "error",
             text: "Something went wrong",
@@ -4016,7 +4015,7 @@ const restartServer = async () => {
   try {
     await window.server.restart(window.port);
   } catch (err) {
-    console.error("Upload failed:", err.message);
+    window?.log?.error?.("Upload failed:", err instanceof Error ? err.message : JSON.stringify(err));
   } finally {
     removeListener(); // Always clean up the listener
   }
@@ -4193,7 +4192,7 @@ const initiate_generate = async (resume = false) => {
         await window.pennsieve.uploadManifest(manifestId);
         UPLOAD_COMPLETE = true;
       } catch (err) {
-        console.error("Upload failed:", err.message);
+        window?.log?.error?.("Upload failed:", err instanceof Error ? err.message : JSON.stringify(err));
       } finally {
         removeListener(); // Always clean up the listener
       }
@@ -4517,7 +4516,7 @@ const initiate_generate = async (resume = false) => {
         to manually try again. Sometimes this can resolve the issue in the case of temporary network problems.
         However, if the issue persists please reach out to the SODA team by following the documentation <a href="https://docs.sodaforsparc.io/docs/miscellaneous/common-errors/sending-log-files-to-soda-team" target="_blank">here</a>.</span>
         `;
-      window.log.error(error);
+      window.log.error(error instanceof Error ? error.message : JSON.stringify(error));
 
       //Enable the buttons (organize datasets, upload locally, curate existing dataset, curate new dataset)
       organizeDataset_option_buttons.style.display = "flex";
@@ -4574,7 +4573,7 @@ const initiate_generate = async (resume = false) => {
       uploadLocally.className = "content-button is-selected";
       uploadLocally.style = "background-color: #fff";
 
-      console.error(error);
+      window?.log?.error?.(error instanceof Error ? error.message : JSON.stringify(error));
       //Clear the interval to stop the generation of new sweet alerts after intitial error
       clearInterval(timerProgress);
       return;
@@ -4891,7 +4890,7 @@ window.electron.ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
           file_size = stats.size;
         }
       } catch (err) {
-        console.error(err);
+        window?.log?.error?.(err instanceof Error ? err.message : JSON.stringify(err));
         document.getElementById(metadataParaElement).innerHTML =
           "<span style='color:red'>Your SPARC metadata file does not exist or is unreadable. Please verify that you are importing the correct metadata file from your system. </span>";
 

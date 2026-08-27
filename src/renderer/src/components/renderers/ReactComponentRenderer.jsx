@@ -50,7 +50,7 @@ export const renderComponent = (componentSlot, component) => {
     const root = createRoot(componentSlot);
     root.render(<SodaComponentWrapper>{component}</SodaComponentWrapper>);
   } catch (error) {
-    console.error("Error rendering component:", error);
+    window?.log?.error?.("Error rendering component:", error instanceof Error ? error.message : JSON.stringify(error));
   }
 };
 
@@ -65,7 +65,7 @@ const componentTypeRenderers = {
     };
     const pageComponent = pageIdToPageComponentMap[componentSlot.id];
     if (!pageComponent) {
-      console.error(`No page component found for page ID: ${componentSlot.id}`);
+      window?.log?.error?.(`No page component found for page ID: ${componentSlot.id}`);
     } else {
       renderComponent(componentSlot, pageComponent);
     }
@@ -308,7 +308,7 @@ export const setRender = (componentType, componentSlot) => {
     try {
       renderFunction(componentSlot);
     } catch (error) {
-      console.error(`Error rendering component of type: ${componentType}`, error);
+      window?.log?.error?.(`Error rendering component of type: ${componentType}`, error instanceof Error ? error.message : JSON.stringify(error));
     }
   }
 };
@@ -322,9 +322,9 @@ document.querySelectorAll("[data-component-type]").forEach((componentSlot) => {
     try {
       renderFunction(componentSlot);
     } catch (error) {
-      console.error(`Error rendering component of type: ${componentType}`, error);
+      window?.log?.error?.(`Error rendering component of type: ${componentType}`, error instanceof Error ? error.message : JSON.stringify(error));
     }
   } else {
-    console.error(`No render function found for component type: ${componentType}`);
+    window?.log?.error?.(`No render function found for component type: ${componentType}`);
   }
 });

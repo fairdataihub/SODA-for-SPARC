@@ -913,7 +913,7 @@ window.savePageChanges = async (pageBeingLeftID, movingForward) => {
     try {
       await guidedSaveProgress();
     } catch (error) {
-      window.log.error(error);
+      window.log.error(error instanceof Error ? error.message : JSON.stringify(error));
     }
   } catch (error) {
     if (Array.isArray(error)) {

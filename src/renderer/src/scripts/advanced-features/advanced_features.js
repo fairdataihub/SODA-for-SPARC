@@ -318,7 +318,7 @@ document.querySelector("#btn-confirm-dataset-manifest-page").addEventListener("c
     // Check to make sure the Pennsieve agent is installed
     agentCheckSuccessful = await window.checkPennsieveAgent(pennsieveAgentCheckDivId);
   } catch (e) {
-    window.log.error("Error with agent" + e);
+    window.log.error("Error with agent" + (e instanceof Error ? e.message : JSON.stringify(e)));
   }
 
   if (!agentCheckSuccessful) {

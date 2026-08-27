@@ -17,7 +17,7 @@ const DataImporter = ({ dataImporterId }) => {
             window.log.info("Dropped files:", files);
           }}
           onReject={(files) => {
-            window.log.error("Rejected files:", files);
+            window.log.error("Rejected files:", JSON.stringify(files));
           }}
           onClick={(event) => event.preventDefault()}
           mb="lg"

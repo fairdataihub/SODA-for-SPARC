@@ -29,12 +29,12 @@ export const setDatasetEntityArray = (datasetEntityArray) => {
 export const normalizeEntityId = (entityPrefix, entityId) => {
   // Return null if parameters are invalid
   if (!entityId || typeof entityId !== "string") {
-    console.error("Entity ID cannot be empty and must be a string");
+    window?.log?.error?.("Entity ID cannot be empty and must be a string");
     return null;
   }
 
   if (!entityPrefix || typeof entityPrefix !== "string") {
-    console.error("Entity prefix cannot be empty and must be a string");
+    window?.log?.error?.("Entity prefix cannot be empty and must be a string");
     return null;
   }
 
@@ -42,7 +42,7 @@ export const normalizeEntityId = (entityPrefix, entityId) => {
   const trimmedId = entityId.trim();
 
   if (trimmedId === "") {
-    console.error("Entity ID cannot be empty after trimming");
+    window?.log?.error?.("Entity ID cannot be empty after trimming");
     return null;
   }
 
@@ -711,7 +711,7 @@ export const getEntitiesByEntityType = (entityType, returnIdsOnly = true) => {
  */
 export const updateExistingEntityMetadata = (entity, metadataChanges) => {
   if (!entity || !entity.id || !entity.type) {
-    console.error("Invalid entity provided to updateExistingEntityMetadata", entity);
+    window?.log?.error?.("Invalid entity provided to updateExistingEntityMetadata", JSON.stringify(entity));
     return;
   }
   useGlobalStore.setState(
@@ -722,7 +722,7 @@ export const updateExistingEntityMetadata = (entity, metadataChanges) => {
         // Find subject by ID in the array
         const subject = state.datasetEntityArray.find((s) => s.id === entity.id);
         if (!subject) {
-          console.error(`Subject with ID ${entity.id} not found in array`);
+          window?.log?.error?.(`Subject with ID ${entity.id} not found in array`);
           return;
         }
 
@@ -746,7 +746,7 @@ export const updateExistingEntityMetadata = (entity, metadataChanges) => {
         // Find the parent subject
         const subject = state.datasetEntityArray.find((s) => s.id === entity.parentSubject);
         if (!subject) {
-          console.error(
+          window?.log?.error?.(
             `Parent subject with ID ${entity.parentSubject} not found for sample ${entity.id}`
           );
           return;
@@ -755,7 +755,7 @@ export const updateExistingEntityMetadata = (entity, metadataChanges) => {
         // Find the sample
         const sample = subject.samples?.find((s) => s.id === entity.id);
         if (!sample) {
-          console.error(`Sample with ID ${entity.id} not found in subject ${subject.id}`);
+          window?.log?.error?.(`Sample with ID ${entity.id} not found in subject ${subject.id}`);
           return;
         }
 
@@ -783,7 +783,7 @@ export const updateExistingEntityMetadata = (entity, metadataChanges) => {
         }
 
         if (!subject) {
-          console.error(`Parent subject not found for site ${entity.id}`);
+          window?.log?.error?.(`Parent subject not found for site ${entity.id}`);
           return;
         }
 
@@ -792,7 +792,7 @@ export const updateExistingEntityMetadata = (entity, metadataChanges) => {
           // Site belongs to a sample
           sample = subject.samples?.find((s) => s.id === entity.parentSample);
           if (!sample) {
-            console.error(
+            window?.log?.error?.(
               `Parent sample ${entity.parentSample} not found in subject ${subject.id}`
             );
             return;
@@ -801,7 +801,7 @@ export const updateExistingEntityMetadata = (entity, metadataChanges) => {
           // Find the site within the sample
           const site = sample.sites?.find((s) => s.id === entity.id);
           if (!site) {
-            console.error(`Site ${entity.id} not found in sample ${sample.id}`);
+            window?.log?.error?.(`Site ${entity.id} not found in sample ${sample.id}`);
             return;
           }
 
@@ -821,7 +821,7 @@ export const updateExistingEntityMetadata = (entity, metadataChanges) => {
           // Site belongs directly to the subject
           const site = subject.subjectSites?.find((s) => s.id === entity.id);
           if (!site) {
-            console.error(`Site ${entity.id} not found in subject's direct sites`);
+            window?.log?.error?.(`Site ${entity.id} not found in subject's direct sites`);
             return;
           }
 

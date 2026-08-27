@@ -399,7 +399,7 @@ export const reRenderTreeView = (resetOpenFolders = false) => {
 
     const endTime = performance.now();
   } catch (error) {
-    console.error("Error in reRenderTreeView:", error);
+    window?.log?.error?.("Error in reRenderTreeView:", error instanceof Error ? error.message : JSON.stringify(error));
   }
 };
 
@@ -430,7 +430,7 @@ export const getFolderStructureJsonByPath = (path) => {
 
     return safeDeepCopy(structure);
   } catch (error) {
-    console.error("Error in getFolderStructureJsonByPath:", error);
+    window?.log?.error?.("Error in getFolderStructureJsonByPath:", error instanceof Error ? error.message : JSON.stringify(error));
     return { folders: {}, files: {} };
   }
 };
@@ -457,7 +457,7 @@ export const moveFolderToNewLocation = (targetPath) => {
 
     reRenderTreeView();
   } catch (error) {
-    console.error("Error in moveFolderToNewLocation:", error);
+    window?.log?.error?.("Error in moveFolderToNewLocation:", error instanceof Error ? error.message : JSON.stringify(error));
   }
 };
 
@@ -489,14 +489,14 @@ export const setPathToRender = (pathToRender) => {
   let currentStructure = window.datasetStructureJSONObj;
 
   if (!currentStructure) {
-    console.error("setPathToRender: window.datasetStructureJSONObj is null or undefined");
+    window?.log?.error?.("setPathToRender: window.datasetStructureJSONObj is null or undefined");
     useGlobalStore.setState({ pathToRender });
     return;
   }
 
   for (const folderName of pathToRender) {
     if (!currentStructure.folders) {
-      console.error(
+      window?.log?.error?.(
         `setPathToRender: currentStructure.folders is null when trying to access folder "${folderName}". Path: [${pathToRender.join(
           ", "
         )}]`
@@ -508,7 +508,7 @@ export const setPathToRender = (pathToRender) => {
     }
     currentStructure = currentStructure.folders[folderName];
     if (!currentStructure) {
-      console.error(
+      window?.log?.error?.(
         `setPathToRender: currentStructure became null after accessing folder "${folderName}". Path: [${pathToRender.join(
           ", "
         )}]`

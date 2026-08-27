@@ -10,8 +10,7 @@ import client from "../../client";
  */
 const clientError = (error) => {
   // Handles gneral errors and getting basic information from Axios errors
-  console.error(error);
-  window.log.error(JSON.stringify(error));
+  window?.log?.error?.(error instanceof Error ? error.message : JSON.stringify(error));
 
   // Handle logging for Axios errors in greater detail
   if (error.response) {
@@ -55,7 +54,7 @@ const userErrorMessage = (error, includeContactAddendum = true) => {
     // The request was made but no response was received
     // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
     // http.ClientRequest in node.js
-    console.error(error);
+    window?.log?.error?.(error instanceof Error ? error.message : JSON.stringify(error));
     errorMessage = "The server did not respond to the request. <br>" + contactSODATeamAddendum;
   } else {
     // Something happened in setting up the request that triggered an Error

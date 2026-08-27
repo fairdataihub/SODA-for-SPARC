@@ -224,7 +224,7 @@ const sendUserAnalytics = () => {
         nodeStorage.setItem("kombuchaUserCreated", true);
       })
       .catch((err) => {
-        console.error(err);
+        log.error(err instanceof Error ? err.message : JSON.stringify(err));
       });
   }
 };
