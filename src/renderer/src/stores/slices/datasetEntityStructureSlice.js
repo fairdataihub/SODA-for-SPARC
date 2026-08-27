@@ -711,7 +711,10 @@ export const getEntitiesByEntityType = (entityType, returnIdsOnly = true) => {
  */
 export const updateExistingEntityMetadata = (entity, metadataChanges) => {
   if (!entity || !entity.id || !entity.type) {
-    window?.log?.error?.("Invalid entity provided to updateExistingEntityMetadata", JSON.stringify(entity));
+    window?.log?.error?.(
+      "Invalid entity provided to updateExistingEntityMetadata",
+      JSON.stringify(entity)
+    );
     return;
   }
   useGlobalStore.setState(

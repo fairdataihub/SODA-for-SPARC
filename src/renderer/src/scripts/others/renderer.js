@@ -2766,7 +2766,10 @@ window.electron.ipcRenderer.on(
         duration: 3000,
       });
     } catch (error) {
-      window?.log?.error?.("Error importing folders", error instanceof Error ? error.message : JSON.stringify(error));
+      window?.log?.error?.(
+        "Error importing folders",
+        error instanceof Error ? error.message : JSON.stringify(error)
+      );
 
       // Optionally show an error notification
       window.notyf.open({
@@ -4015,7 +4018,10 @@ const restartServer = async () => {
   try {
     await window.server.restart(window.port);
   } catch (err) {
-    window?.log?.error?.("Upload failed:", err instanceof Error ? err.message : JSON.stringify(err));
+    window?.log?.error?.(
+      "Upload failed:",
+      err instanceof Error ? err.message : JSON.stringify(err)
+    );
   } finally {
     removeListener(); // Always clean up the listener
   }
@@ -4192,7 +4198,10 @@ const initiate_generate = async (resume = false) => {
         await window.pennsieve.uploadManifest(manifestId);
         UPLOAD_COMPLETE = true;
       } catch (err) {
-        window?.log?.error?.("Upload failed:", err instanceof Error ? err.message : JSON.stringify(err));
+        window?.log?.error?.(
+          "Upload failed:",
+          err instanceof Error ? err.message : JSON.stringify(err)
+        );
       } finally {
         removeListener(); // Always clean up the listener
       }

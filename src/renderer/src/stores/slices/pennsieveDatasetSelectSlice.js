@@ -86,7 +86,10 @@ export const fetchDatasetsToUploadDataTo = async (fetchOnlyEmptyDatasets) => {
       }
     }
   } catch (error) {
-    window?.log?.error?.("❌ Failed to fetch datasets:", error?.response || error?.message || JSON.stringify(error));
+    window?.log?.error?.(
+      "❌ Failed to fetch datasets:",
+      error?.response || error?.message || JSON.stringify(error)
+    );
     setAvailableDatasetsToUploadDataTo([]);
     useGlobalStore.setState({
       datasetFetchErrorMessage:

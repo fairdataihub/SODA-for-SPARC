@@ -902,7 +902,10 @@ const automaticRetry = async (supplementaryChecks = false, errorMessage = "") =>
 
 // Handle local generation failure UI + logging in one place
 const handleLocalGenerationFailure = async (error) => {
-  window.log.error("Error during local dataset generation:", error instanceof Error ? error.message : JSON.stringify(error));
+  window.log.error(
+    "Error during local dataset generation:",
+    error instanceof Error ? error.message : JSON.stringify(error)
+  );
   const errorMessage = userErrorMessage(error);
   guidedResetLocalGenerationUI();
   await swalShowError("Error generating dataset locally", errorMessage);
