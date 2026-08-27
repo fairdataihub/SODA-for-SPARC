@@ -39,7 +39,10 @@ const deletePennsieveAgentDBFilesAndRestart = async () => {
       }
     }
   } catch (error) {
-    window.log.error("Error deleting Pennsieve agent DB files:", error instanceof Error ? error.message : JSON.stringify(error));
+    window.log.error(
+      "Error deleting Pennsieve agent DB files:",
+      error instanceof Error ? error.message : JSON.stringify(error)
+    );
   }
 
   // Restart the Pennsieve agent check

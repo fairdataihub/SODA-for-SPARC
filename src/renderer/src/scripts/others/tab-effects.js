@@ -2192,7 +2192,9 @@ window.transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, catego
       // Check to make sure the Pennsieve agent is installed
       window.checkPennsieveAgent(pennsieveAgentCheckDivId);
     } catch (e) {
-      window?.log?.error?.("Error with agent" + (e instanceof Error ? e.message : JSON.stringify(e)));
+      window?.log?.error?.(
+        "Error with agent" + (e instanceof Error ? e.message : JSON.stringify(e))
+      );
     }
   }
   // hide related previous divs

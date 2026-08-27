@@ -229,7 +229,10 @@ const guidedUnSubmitDatasetForReview = async () => {
     await window.showPublishingStatus("noClear", "guided");
     // Track success
   } catch (error) {
-    window.log.error("[Dataset Unsubmission] Error:", error instanceof Error ? error.message : JSON.stringify(error));
+    window.log.error(
+      "[Dataset Unsubmission] Error:",
+      error instanceof Error ? error.message : JSON.stringify(error)
+    );
   }
 };
 
@@ -264,7 +267,10 @@ export const guidedSetPublishingStatusUI = async () => {
       $("#guided-unshare-dataset-with-curation-team-message").addClass("hidden");
     }
   } catch (error) {
-    window.log.error("[PrepublishingFlow] Error fetching publishing status:", error instanceof Error ? error.message : JSON.stringify(error));
+    window.log.error(
+      "[PrepublishingFlow] Error fetching publishing status:",
+      error instanceof Error ? error.message : JSON.stringify(error)
+    );
     await Swal.fire({
       title: "Error fetching publishing status",
       html: userErrorMessage(error),
@@ -412,7 +418,10 @@ window.guidedModifyCurationTeamAccess = async (action) => {
 
       setButtonState(shareBtn, { disabled: false, loading: false });
     } catch (error) {
-      window.log.error("[Curation Access] Share flow error:", error instanceof Error ? error.message : JSON.stringify(error));
+      window.log.error(
+        "[Curation Access] Share flow error:",
+        error instanceof Error ? error.message : JSON.stringify(error)
+      );
       setButtonState(shareBtn, { disabled: false, loading: false });
       await Swal.fire({
         title: "Failed to share dataset with Curation Team",
@@ -463,7 +472,10 @@ window.guidedModifyCurationTeamAccess = async (action) => {
       });
       setButtonState(unshareBtn, { disabled: false, loading: false });
     } catch (error) {
-      window.log.error("[Curation Access] Unshare flow error:", error instanceof Error ? error.message : JSON.stringify(error));
+      window.log.error(
+        "[Curation Access] Unshare flow error:",
+        error instanceof Error ? error.message : JSON.stringify(error)
+      );
       setButtonState(unshareBtn, { disabled: false, loading: false });
       await Swal.fire({
         title: "Failed to unshare dataset from Curation Team",
@@ -771,7 +783,10 @@ window.guidedCreateLocalManifestCopy = async () => {
       message: "Manifest file successfully generated",
     });
   } catch (error) {
-    window.log.error("[guidedCreateLocalManifestCopy] Error generating manifest:", error instanceof Error ? error.message : JSON.stringify(error));
+    window.log.error(
+      "[guidedCreateLocalManifestCopy] Error generating manifest:",
+      error instanceof Error ? error.message : JSON.stringify(error)
+    );
     clientError(error);
   }
 };

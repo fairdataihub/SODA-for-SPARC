@@ -563,7 +563,10 @@ export const handleDownloadTemplate = async (entityType, helperConfig) => {
       helperConfig
     );
   } catch (error) {
-    window.log.error(`Error sending IPC message for ${entityType} template:`, error instanceof Error ? error.message : JSON.stringify(error));
+    window.log.error(
+      `Error sending IPC message for ${entityType} template:`,
+      error instanceof Error ? error.message : JSON.stringify(error)
+    );
   }
 };
 

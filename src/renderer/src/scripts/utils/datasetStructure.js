@@ -242,7 +242,9 @@ export const moveFileToTargetLocation = (relativePathToMove, destionationRelativ
 
   // Check if the file exists before trying to move it
   if (!itemObject || !parentFolder || !parentFolder.files || !parentFolder.files[itemName]) {
-    window?.log?.warn?.(`moveFileToTargetLocation: File not found, skipping: ${relativePathToMove}`);
+    window?.log?.warn?.(
+      `moveFileToTargetLocation: File not found, skipping: ${relativePathToMove}`
+    );
     return;
   }
 
@@ -652,7 +654,10 @@ export const createStandardizedDatasetStructure = () => {
     };
     return result;
   } catch (error) {
-    window?.log?.error?.("Error while creating standardized dataset structure:", error instanceof Error ? error.message : JSON.stringify(error));
+    window?.log?.error?.(
+      "Error while creating standardized dataset structure:",
+      error instanceof Error ? error.message : JSON.stringify(error)
+    );
     window.datasetStructureJSONObj = originalStructure;
     throw error;
   }
