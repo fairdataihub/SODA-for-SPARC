@@ -92,6 +92,6 @@
   "programmingLanguage": ["JavaScript", "HTML", "Python", "CSS"],
   "referencePublication": "10.5281/zenodo.5565455.svg)",
   "schema:releaseNotes": "## Feature Additions:\n\n- SODA supports importing dataset metadata using excel spreadsheets.\n\n## Bug fixes:\n\n- SODA server will not crash when uploading for a long period of time.\n- SODA will not try to rename files if they have not been processed on Pennsieve yet.\n- SODA will not upload duplicate files if upload fails before a file was renamed on Pennsieve.",
-  "version": "18.1.0",
+  "version": "19.0.1",
   "type": "SoftwareSourceCode"
 }
