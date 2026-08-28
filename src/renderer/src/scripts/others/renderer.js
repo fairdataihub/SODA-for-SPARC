@@ -56,7 +56,10 @@ import {
   bfAccountOptions,
 } from "../globals";
 import checkForAnnouncements from "./announcements";
-import { PennsieveAgentResolver } from "../../components/backgroundServices/PennsieveAgentCheckDisplay/pennsieveAgentResolver";
+import {
+  LAST_TESTED_PENNSIEVE_AGENT_VERSION,
+  PennsieveAgentResolver,
+} from "../../components/backgroundServices/PennsieveAgentCheckDisplay/pennsieveAgentResolver";
 import {
   swalListSingleAction,
   swalListTripleAction,
@@ -80,6 +83,7 @@ import {
   setPostPennsieveAgentCheckAction,
   setLatestPennsieveAgentVersion,
   setLastTestedPennsieveAgentDownloadURL,
+  setUsersPennsieveAgentVersion,
 } from "../../stores/slices/backgroundServicesSlice";
 import { setNavButtonDisabled, setNavButtonHidden } from "../../stores/slices/navButtonStateSlice";
 import { setStateDisplayData } from "../../stores/slices/stateDisplaySlice";
@@ -381,6 +385,7 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
     try {
       const versionObj = await window.spawn.getPennsieveAgentVersion();
       usersPennsieveAgentVersion = versionObj["Agent Version"];
+      setUsersPennsieveAgentVersion(usersPennsieveAgentVersion);
     } catch (error) {
       setPennsieveAgentCheckError(
         "Unable to verify the Pennsieve Agent version",
@@ -390,7 +395,13 @@ window.checkPennsieveAgent = async (pennsieveAgentStatusDivId) => {
       return false;
     }
 
-    if (!window.allowOutdatedPennsieveAgentForThisSession === true) {
+    if (
+      !window.allowOutdatedPennsieveAgentForThisSession == true &&
+      !(
+        usersPennsieveAgentVersion == latestPennsieveAgentVersion &&
+        latestPennsieveAgentVersion == LAST_TESTED_PENNSIEVE_AGENT_VERSION
+      )
+    ) {
       const pennsieveAgentDownloadURL = await getPlatformSpecificAgentDownloadURL();
       setPennsieveAgentDownloadURL(pennsieveAgentDownloadURL);
       setPennsieveAgentOutOfDate(usersPennsieveAgentVersion, latestPennsieveAgentVersion);
