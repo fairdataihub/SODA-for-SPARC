@@ -1,4 +1,8 @@
 {
+  "19.0.1": {
+    "features": [],
+    "bug-fixes": ["Pennsieve Log In page no longer prevents some users from continuing."]
+  },
   "19.0.0": {
     "features": [
       "Added the entity bucketing workflow, allowing users to add data directly to entities and create an entity-structured dataset structure.",
