@@ -19,28 +19,29 @@
 <br />
 <p align="center">
   <a href="#">
-    <img src="/src/renderer/src/assets/img/logo-can1024-grey-circle.png" alt="Logo" width="100" height="100">
+    <img src="resources/soda_icon.png" alt="Logo" width="70" height="110">
   </a>
 
-  <h3 align="center">Keep Calm and Curate!</h3>
+  <h3 align="center">Streamlining FAIR Data Sharing</h3>
 
   <p align="center">
-    Your one-stop tool for curating and submitting SPARC datasets <br/>
-   <i> By SPARC investigators, for SPARC investigators </i>
-    <br />
-    <br />
-    <a href="https://docs.sodaforsparc.io/"><strong>Explore our documentation »</strong></a>
-    <br />
-    <br />
-    <a href="https://github.com/fairdataihub/SODA-for-SPARC/issues">Report Issue</a>
-    ·
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLSfyUw2_NI1-2tlAr8oB5_JcJ_yjTB-zUDt9skfGjNU9qjITwg/viewform?ts=5e433bea">Submit feedback </a>
+
+  <br />
+  <a href="https://docs.sodaforsparc.io/"><strong>Explore our documentation »</strong></a>
+  <br />
+  <br />
+  <a href="https://github.com/fairdataihub/SODA-for-SPARC/issues">Report Issue</a>
+  ·
+  <a href="https://docs.google.com/forms/d/e/1FAIpQLSfyUw2_NI1-2tlAr8oB5_JcJ_yjTB-zUDt9skfGjNU9qjITwg/viewform?ts=5e433bea">Submit feedback </a>
+
   </p>
 </p>
 
 ## About
 
-SODA (Software to Organize Data Automatically) for SPARC is an open-source and free cross-platform desktop software intended to facilitate the data organization and submission process for [SPARC](https://commonfund.nih.gov/sparc) investigators according to the [FAIR SPARC data curation guidelines](https://sparc.science/help/7k8nEPuw3FjOq2HuS8OVsd#top). The idea for a computer software that assists researchers in curating and sharing their data originated during the SPARC Hackathon in December 2018, where it won the Public's Choice Award, before receiving support from the National Institutes of Health (NIH) for further development. SODA for SPARC is designed such that users can accomplish all the requirements to submit a SPARC dataset rapidly through a single interface. Moreover, requirements have been broken down into easy-to-perform steps and automation has been integrated to reduce users' effort to a bare minimum during each step, often to just a few clicks.
+SODA (Software to Organize Data Automatically) was originally created to facilitate the data organization and submission process for [SPARC](https://commonfund.nih.gov/sparc) investigators according to the [FAIR SPARC data curation guidelines](https://sparc.science/help/7k8nEPuw3FjOq2HuS8OVsd#top). The idea for a computer software that assists researchers in curating and sharing their data originated during the SPARC Hackathon in December 2018, where it won the Public's Choice Award, before receiving support from the National Institutes of Health (NIH) for further development.
+
+Now, SODA has expanded to help researchers prepare and share FAIR peripheral nervous system (PNS) related data and models using the SPARC Dataset Structure (SDS) and the SPARC Portal. Since 2021, SODA has been installed on over 1500 computers, empowering researchers worldwide.
 
 <p align="center">
   <img src="./docs/SODA-HOMEPAGE.png" alt="interface" width="600">
@@ -57,15 +58,15 @@ All our releases are also accessible in the [releases tab](https://github.com/fa
 
 ## Documentation
 
-See the [our dedicated webpage](https://docs.sodaforsparc.io/) for the full documentation, including details about each features and how to use them.
+See the [our dedicated webpage](https://docs.sodaforsparc.io/) for the full documentation, including details about each feature and how to use them.
 
 ## Issues and Feedback
 
-To report any issues with the software, suggest improvements, or request a new feature, please open a new issue via the [Issues tab](https://github.com/fairdataihub/SODA-for-SPARC/issues). Provide adequate information (operating system, steps leading to error, screenshots) so we can help you efficiently. Alternatively, you could also use [our feedback form](https://docs.google.com/forms/d/e/1FAIpQLSfyUw2_NI1-2tlAr8oB5_JcJ_yjTB-zUDt9skfGjNU9qjITwg/viewform?ts=5e433bea). The feedback form is also accessible directly in the user interface of SODA.
+To report any issues with the software, suggest improvements, or request a new feature, please open a new issue via the [Issues tab](https://github.com/fairdataihub/SODA-for-SPARC/issues). Provide adequate information (operating system, steps leading to error, screenshots) so we can help you efficiently.
 
 ## Contributing
 
-If you want to contribute, modify SODA to better suit your needs, or compile it for an operating system not mentioned above, please follow the instructions provided in the [developer section](https://docs.sodaforsparc.io/docs/developer-documentation/project-setup) of our documentation.
+If you want to contribute, modify SODA to better suit your needs, or compile it for an operating system not mentioned above, please follow the instructions provided in the [developer section](https://docs.sodaforsparc.io/docs/miscellaneous/developer-documentation/project-setup) of our documentation.
 
 ## License
 
@@ -73,7 +74,7 @@ SODA is distributed under the MIT License. See [LICENSE](https://github.com/fair
 
 ## Privacy Policy
 
-SODA uses Kombucha Analytics for tracking. Tracking is anonymous and no identifying personal information is collected. Tracking is implemented as part of our agreement with the SPARC program to report usage statistics for SODA. Tracking is also used to identify errors and subsequently improve user experience. To learn more about what is tracked and how we use Kombucha Analytics within SODA, please read our [Privacy Policy](https://github.com/fairdataihub/SODA-for-SPARC/wiki/Privacy-Policy).
+SODA uses Kombucha Analytics for tracking. Tracking is anonymous and no identifying personal information is collected. Tracking is implemented as part of our agreement with the SPARC program to report usage statistics for SODA. Tracking is also used to identify errors and subsequently improve user experience. To learn more about what is tracked and how we use Kombucha Analytics within SODA, please read our [Privacy Policy](https://docs.sodaforsparc.io/docs/miscellaneous/legal/privacypolicy).
 
 ## Acknowledgments
 
