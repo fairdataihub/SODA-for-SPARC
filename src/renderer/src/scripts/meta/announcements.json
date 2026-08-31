@@ -1,4 +1,8 @@
 {
+  "19.0.2": {
+    "features": [],
+    "bug-fixes": ["LICENSE and README files will appear in manifest if imported."]
+  },
   "19.0.1": {
     "features": [],
     "bug-fixes": ["Pennsieve Log In page no longer prevents some users from continuing."]
