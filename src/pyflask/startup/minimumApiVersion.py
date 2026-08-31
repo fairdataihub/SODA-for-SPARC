@@ -8,7 +8,7 @@ def get_api_version():
     Returns the version of the API
     """
 
-    return {"version": os.getenv("API_VERSION", "19.0.1")}
+    return {"version": os.getenv("API_VERSION", "19.0.2")}
 
 
 
